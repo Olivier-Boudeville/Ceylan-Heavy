@@ -10,16 +10,20 @@
 # Projects section.
 
 # LOANI_BASE may have been set before by .bashrc.local :
+if [ -z "${LOANI_BASE}" ] ; then
+	# Defaults to :
+	LOANI_BASE=/mnt/raid/md0/LOANI-0.3/LOANI-installations
+fi
 
 export OSDL_VERSION=0.4
-export OSDL_ROOT=${LOANI_BASE}/OSDL/OSDL-${OSDL_VERSION}
+export OSDL_ROOT=${LOANI_BASE}/OSDL
 # Do not interfer with LOANI : export OSDL=${OSDL_ROOT}/src
-export OSDL_SRC=${OSDL_ROOT}/src
+export OSDL_SRC=${OSDL_ROOT}/trunk/src
 export OSDL_DOC=${OSDL_SRC}/doc/web/main/documentation
 
 export CEYLAN_VERSION=0.3
-export CEYLAN_ROOT=${LOANI_BASE}/Ceylan/Ceylan-${CEYLAN_VERSION}
-export CEYLAN_SRC=${CEYLAN_ROOT}/src
+export CEYLAN_ROOT=${LOANI_BASE}/Ceylan
+export CEYLAN_SRC=${CEYLAN_ROOT}/trunk/src
 export CEYLAN_DOC=${CEYLAN_SRC}/doc/web/main/documentation
 
 export YAG_VERSION=0.5
@@ -131,12 +135,8 @@ export PAGER=/usr/bin/less
 
 
 # Host section :
-export ARANOR=192.168.0.3
-export ETURANIS=192.168.0.5
-export SONATA=192.168.0.4
-export RAINBOW=192.168.0.8
 
-export TOARANOR="root@aranor:/root"
+export TOARANOR="sye@aranor:/root"
 export TOETURANIS="sye@eturanis:/home/sye"
 export TOSONATA="sye@sonata:/home/sye"
 export TORAINBOW="sye@rainbow:/home/sye"
