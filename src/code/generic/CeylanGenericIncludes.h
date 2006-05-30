@@ -1,0 +1,31 @@
+#ifndef CEYLAN_GENERIC_INCLUDES_H_
+#define CEYLAN_GENERIC_INCLUDES_H_
+
+
+// Please include below all header files to be exported by module generic.
+
+
+#include "CeylanBasicResourceManager.h"
+#include "CeylanCountedPointer.h"
+#include "CeylanDocMainPage.h"
+#include "CeylanException.h"
+#include "CeylanHeaderVersion.h"
+#include "CeylanLibtoolVersion.h"
+#include "CeylanOperators.h"
+#include "CeylanRegularExpression.h"
+#include "CeylanResource.h"
+#include "CeylanResourceManager.h"
+#include "CeylanSingleton.h"
+#include "CeylanSmartResource.h"
+#include "CeylanSmartResourceManager.h"
+#include "CeylanStringUtils.h"
+#include "CeylanTestException.h"
+#include "CeylanTimestamp.h"
+#include "CeylanTypes.h"
+#include "CeylanUnicode.h"
+#include "CeylanUtils.h"
+#include "CeylanVersion.h"
+
+
+
+#endif // CEYLAN_GENERIC_INCLUDES_H_

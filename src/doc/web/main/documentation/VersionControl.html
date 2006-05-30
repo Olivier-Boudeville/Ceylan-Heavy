@@ -1,0 +1,46 @@
+Used to be CVS
+Now that Sourceforge supports it, we use Subversion (SVN).
+
+import : http://svnbook.red-bean.com/nightly/en/svn-book.html#svn.ref.svn.c.import
+
+cd /mnt/raid/md0/LOANI-0.3/LOANI-installations/Ceylan
+mkdir tmp
+cp -r Ceylan-0.3 tmp
+svn import --username wondersye -m "Ceylan 0.3 : CVS to SVN transition for this new version." tmp https://svn.sourceforge.net:/svnroot/ceylan
+
+(rule of thumb : SVN will take everything in the specified directory and put it at the root of the trunk, therefore the specified directory itself will not appear in the repository)
+
+
+"""
+Error validating server certificate for 'https://svn.sourceforge.net:443':
+ - The certificate is not issued by a trusted authority. Use the
+   fingerprint to validate the certificate manually!
+Certificate information:
+ - Hostname: *.sourceforge.net
+ - Valid: from Dec  8 13:40:07 2005 GMT until Feb  7 13:40:07 2007 GMT
+ - Issuer: Equifax Secure Certificate Authority, Equifax, US
+ - Fingerprint: 49:b8:cb:87:04:8c:49:39:45:83:dd:4c:cf:c7:54:57:b0:9e:84:5d
+(R)eject, accept (t)emporarily or accept (p)ermanently? p
+svn: PROPFIND request failed on '/svnroot/ceylan'
+svn: PROPFIND of '/svnroot/ceylan': Could not read status line: Secure connection truncated (https://svn.sourceforge.net)
+"""
+
+
+"""
+svn import --username wondersye -m "Ceylan 0.3 : CVS to SVN transition for this new version." Ceylan-0.3 https://svn.sourceforge.net/svnroot/ceylan
+Authentication realm: <https://svn.sourceforge.net:443> SourceForge Subversion area
+Password for 'wondersye':
+svn: MKACTIVITY of '/svnroot/ceylan/!svn/act/3c472146-3d0e-0410-b1ec-b641e9999bae': 403 Forbidden (https://svn.sourceforge.net)
+"""
+
+Because in your project, for each developer in admin->members, "Allow access to Subversion repository (developer access)" must be specifically set.
+
+http://sourceforge.net/project/admin/userperms.php?group_id=158516
+
+
+svnadmin dump . > 20060305-svn-Ceylan-dump
+cat 20060305-svn-Ceylan-dump |svndumpfilter exclude src > 20060305-svn-Ceylan-dump-filtered
+svnadmin load ceylan < 20060305-svn-Ceylan-dump-filtered
+bzip2 20060305-svn-Ceylan-dump-filtered
+mv 20060305-svn-Ceylan-dump-filtered.bz2 svndump.bz2
+scp svndump.bz2 wondersye@shell.sourceforge.net:/home/groups/c/ce/ceylan/svndump.bz2

@@ -1,0 +1,2 @@
+- move general rules from Ceylan-0.x/src to Ceylan-0.x so that the test subdirectory is always Ceylan-0.x/test, both in SVN and in source releases.
+- add trunk and branches in SVN

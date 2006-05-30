@@ -1,0 +1,150 @@
+
+
+		TO-DO list for the Ceylan project, release @CEYLAN_VERSION@
+		 
+			
+		
+Tasks priorities, shown between brackets, range from 1 (the smallest priority) to 10 (the top).
+
+Tasks are listed thematically, in each theme from the most important task to the least.
+
+First concern : add only functionnalities really needed, mainly by OSDL.
+
+
+* Build :
+
+	[4] test build stops on error
+	[3] get rid of libtool link warning : "libtool: link: warning: library XXX was moved" : embedded location (ex : /usr/local/lib/libXXX.so) differs indeed from real library location
+	[1] better icpc remark selection 	
+	
+		
+* Generic functionnalities :
+
+	[7] integrate linear algebra (/home/sye/Projets/OSDL/OSDL-common/OldWorkSLib/C++/)
+	[6] add a way of getting the version of the dynamically loaded Ceylan (and OSDL) library (see SDL-1.2.7/test/testver.c)
+	[4] add new data structures :
+		+ a templated Singleton
+		+ ring buffer
+		+ object-oriented advanced arrays and buffers (dynamically sized, bound-checking, etc.)
+		+ hash table
+		+ trees : binary, balanced, etc. 
+	[4] add localization service (XML-based ?) to support various languages
+	[4] add security service, including encryption, private/publiv key (by means of other libraries)
+	[4] add compression support (by means of other libraries)
+	[4] add word-generator service (or in OSDL ?)
+	[4] add signal handler support :
+	
+  if( -1 == (int) signal(SIGINT, finish_prog ))
+  {
+    perror(argv[0]);
+    exit(1);
+  }
+  if( -1 == (int) signal(SIGTERM, finish_prog ))
+  {
+    perror(argv[0]);
+    exit(1);
+  }
+  if( -1 == (int) signal(SIGHUP, finish_prog ))
+  {
+    perror(argv[0]);
+    exit(1);
+  }
+  if( -1 == (int) signal(SIGQUIT, finish_prog ))
+  {
+    perror(argv[0]);
+    exit(1);
+  }
+
+	[3] ensure modularity is effective, that it's simple to add new components or replace / specialize existing ones on a project-by-project basis
+	[3] set optimizing services (runtime profiling), hand-written or reused : look for available too
+	[3] add XML support (reading/writing using dedicated parsers, xsltproc or xalan or other)
+	[2] add a configuration helper (settings registery), which is able to read and write various properties
+	[2] use data compression algorithm (mainly lossless), to be used for files and network
+
+  done:
+	[9] check countable is usable		  
+	[9] add std::string convertToHTML( const std::string & message ) throw()
+  	
+
+* Math :
+
+	[3] add various random generators (uniform, gaussian, etc.)
+	[3] add parametrized movements
+	[2] add Runge-Kutta (order 4) solver for physics engine
+	
+
+* System :
+
+	[2] support abstract file systems (ex : file system in a file)
+		
+	
+* Events :
+
+	[6] implement the Event service (reliable publish and subscribe event framework)
+	
+		
+* Network :
+
+	[2] add a portable client/server module, which can be used locally (both are on the same host, communicating directly by memory, not the loopback) and remotely (UDP/TCP)
+	[2] add cross-platform message-based networking, a.k.a a serialization / externalisation common scheme, based on the "natural language" of the most common platform for each particular project use
+	[2] add network services such as file transfer, dynamic code and data retrieval based on cache and versions, on-the-fly compression
+	[1] add full blown network layer, including middleware able to provide remote method invocation
+	
+	
+* Documentation :
+
+	[5] update HTML documentation : architecture, high level API description
+	[4] create Ceylan's user guide, it should be designed in a way that is fairly simple to understand and teach (docbook)
+	[2] add in header files something like :
+
+/*
+ * Ceylan : General-purpose open-source C++ library
+ *
+ * Web page : http://osdl.sourceforge.net/Ceylan/Ceylan-0.2/src/doc/web/index.html
+ *
+ * Copyright (C) 2004 "the Ceylan team" (see AUTHORS or Authors.html file)
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the Lesser GNU General Public License (LGPL) 
+ * as published by the Free Software Foundation; either version 2 of the License, or (at
+ * your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ */
+
+
+* Log system :
+
+	[5] create the parser which add/remove, at will, log overhead
+	[2] support for format-strings as printf does it
+	[1] store log messages in an external file (classical or XML) so that localization is easier : no hard-coded sentences
+		
+ done :
+	[5] implement CeylanLogHTML
+	[4] allow to specify at runtime which log plug (classical, html, etc.) is to be used
+	[3] automatically handle the log service log cycle, whatever may happen in the application
+			
+	
+* Binding :	
+
+	[6] python / C++ integration module, using BOOST.python
+	[4] game client using python / C++, game server using Erlang
+	
+
+* Cross-platform :
+	
+	[6] add Windows support (port everything in Ceylan, not helper libs)
+	[4] add Mac OSX support (port everything in Ceylan, not helper libs)
+	[1] add AIX, Solaris, IRIX, HP-UX platforms
+	
+	
+* Quality :
+
+	[3] use unit-testing (ex: CppUnit) as much as possible
+	[3] use Valgrind to check memory management
+	[1] use astyle to ensure source code uniformity (might be a bad idea) [only on contributed code ?]	
+	

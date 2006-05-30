@@ -1,0 +1,12 @@
+Created Saturday, March 4, 2006.
+
+
+		Ceylan 0.3 main changes
+	
+		
+- autotools fully used, instead of a custom GNUmakefile-based build system
+- management system for optional feature added, to increase portability	
+- Subversion (SNV) used, instead of CVS	
+- Ceylan has now a Sourceforge project of its own, http://ceylan.sourceforge.net
+
+

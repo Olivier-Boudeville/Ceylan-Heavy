@@ -1,0 +1,167 @@
+# Bash configuration file.
+
+# Created 2002, June 26.
+# Author : Olivier Boudeville (olivier.boudeville@online.fr)
+
+# This script triggers the UNIX-common part of bash configuration.
+
+
+
+# Projects section.
+
+# LOANI_BASE may have been set before by .bashrc.local :
+
+export OSDL_VERSION=0.4
+export OSDL_ROOT=${LOANI_BASE}/OSDL/OSDL-${OSDL_VERSION}
+# Do not interfer with LOANI : export OSDL=${OSDL_ROOT}/src
+export OSDL_SRC=${OSDL_ROOT}/src
+export OSDL_DOC=${OSDL_SRC}/doc/web/main/documentation
+
+export CEYLAN_VERSION=0.3
+export CEYLAN_ROOT=${LOANI_BASE}/Ceylan/Ceylan-${CEYLAN_VERSION}
+export CEYLAN_SRC=${CEYLAN_ROOT}/src
+export CEYLAN_DOC=${CEYLAN_SRC}/doc/web/main/documentation
+
+export YAG_VERSION=0.5
+export YAG_ROOT=/home/${USER}/Projects/Tools/yag/yag-osdl-${YAG_VERSION}
+
+
+export GAMES_BASE=${PROJECTS_BASE}/OSDL-common/club/games
+
+export SKEL_VERSION=0.1
+export SKEL_ROOT=${GAMES_BASE}/Skelmiskapr-${SKEL_VERSION}
+export SKEL_SRC=${SKEL_ROOT}/src
+export SKEL_DOC=${SKEL_SRC}/doc
+
+
+# For shell scripts :
+export PATH=${CEYLAN_SRC}/code/scripts/shell:${PATH}
+
+VERSION_FILE="${OSDL_ROOT}/conf/loani-versions.sh"
+if [ -f ${VERSION_FILE} ] ; then
+	source ${VERSION_FILE}
+fi
+
+
+# Sourceforge's section :
+
+export SF_USER=wondersye
+export SF=${SF_USER}@shell.sourceforge.net
+export SF_SHELL="${SF}:/home/users/"`echo "${SF_USER}" | head -c 1`"/"`echo "${SF_USER}" | head -c 2`"/${SF_USER}"
+
+# Compile farm :
+export CF=${SF_USER}@cf.sourceforge.net
+
+export CVS_RSH=ssh
+
+# CVS not used anymore :
+CVS_CO_CEYLAN='cvs -z3 -d:ext:${SF_USER}@cvs.sourceforge.net:/cvsroot/ceylan co'
+SVN_CO_CEYLAN='svn co https://svn.sourceforge.net/svnroot/ceylan ceylan'
+
+CVS_CO_OSDL='cvs -z3 -d:ext:${SF_USER}@cvs.sourceforge.net:/cvsroot/osdl co'
+SVN_CO_OSDL='svn co https://svn.sourceforge.net/svnroot/osdl osdl'
+
+# Needed to oerride RCS's /usr/bin/ci :
+alias ci="${CEYLAN_SRC}/code/scripts/shell/ci"
+
+# Internal CVS servers :
+
+INTERNAL_USER="${USER}"
+INTERNAL_SERVER=sonata
+CVS_BASE="/var/cvs/"
+
+alias cvsespe='cvs -z3 -d:ext:${INTERNAL_USER}@${INTERNAL_SERVER}:${CVS_BASE}/Esperide'
+alias cvsonce='cvs -z3 -d:ext:${INTERNAL_USER}@${INTERNAL_SERVER}:${CVS_BASE}/OnceSol'
+alias cvsclon='cvs -z3 -d:ext:${INTERNAL_USER}@${INTERNAL_SERVER}:${CVS_BASE}/ClonicTree'
+alias cvsosdlint='cvs -z3 -d:ext:${INTERNAL_USER}@${INTERNAL_SERVER}:${CVS_BASE}/OSDL'
+alias cvsceylint='cvs -z3 -d:ext:${INTERNAL_USER}@${INTERNAL_SERVER}:${CVS_BASE}/Ceylan'
+alias cvsosdlcom='cvs -z3 -d:ext:${INTERNAL_USER}@${INTERNAL_SERVER}:${CVS_BASE}/OSDL-common'
+alias cvsconfig='cvs -z3 -d:ext:${INTERNAL_USER}@${INTERNAL_SERVER}:${CVS_BASE}/Configurations'
+
+
+
+# Aliases section :
+
+alias ll='ls -l'
+alias la='ls -alg $*|more'
+alias lc='ls -clt'
+alias sl='ls'
+
+alias lr='ls -Rx $*|more'
+alias dir='ls -l $*|more'
+
+alias dc='cd'
+alias s='cd ..'
+
+alias cp='cp -i'
+alias rm='rm -i'
+alias mv='mv -i'
+
+alias h='history'
+alias print='lpr -p'
+alias printText='a2ps'
+alias mo='more'
+alias r='fc -e -'
+alias lock='xlock -mode blank'
+alias m=make
+alias sonata='ssh $USER@sonata'
+alias aranor='ssh $USER@aranor'
+
+
+
+# Shell section :
+
+HISTSIZE=1000
+IGNOREOF=1 
+set -o emacs 
+umask 002
+
+export PATH=/bin:/usr/bin:/usr/local/bin:/usr/local:/usr/bin/X11:/sbin:/usr/sbin:$PATH:.
+export PATH=$PATH:/home/$USER/bin:/home/$USER/bin/other:/usr/local/Logiciels
+export LD_LIBRARY_PATH=/usr/lib:/usr/local/lib:$LD_LIBRARY_PATH
+
+export LS_COLORS='no=00:fi=00:di=01;35:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jpg=01;35:*.png=01;35:*.gif=01;35:*.bmp=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.png=01;35:*.mpg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:'
+
+export PS1="\n\e[95m\h \e[92m\u\e[95m \e[96m\t \e[93m"'$PWD'"\e[97m\n> "  
+
+export MANPATH=/usr/share/man:$MANPATH
+export EDITOR=nedit
+export SHELL=bash
+export PAGER=/usr/bin/less
+
+
+# Host section :
+export ARANOR=192.168.0.3
+export ETURANIS=192.168.0.5
+export SONATA=192.168.0.4
+export RAINBOW=192.168.0.8
+
+export TOARANOR="root@aranor:/root"
+export TOETURANIS="sye@eturanis:/home/sye"
+export TOSONATA="sye@sonata:/home/sye"
+export TORAINBOW="sye@rainbow:/home/sye"
+
+export TOARANOR_FTP="www-data@aranor:/home/ftp/LOANI-archive-repository"
+
+# Cubbyhole section :
+
+export ARCHIVE=archive@aranor:/home/archive
+export PYTHONSTARTUP=${CEYLAN_SRC}/code/scripts/python/startup.py
+export TRASH=$HOME/tmp/Trash
+export DATA_VAULT=$HOME/Vault
+export PLUG="--HTMLPlug"
+
+
+# xterm section :
+
+alias xt='/usr/bin/X11/xterm -bg black -fg white -name `basename $PWD`&'
+alias xterm='xterm -fg black'
+case $TERM in
+    xterm*)
+ 		PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD}\007"'
+        ;;
+esac
+
+
+#echo "-- Bash basically initialized according to Boudeville Standards --"
+

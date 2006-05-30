@@ -1,0 +1,33 @@
+
+<p>
+Some new rules are to be enforced :
+<ol>
+<!--
+	<li><b></b> : </li>
+-->
+	<li>no <b>system header</b> mentioned in Ceylan installed headers (hence no system-specific types such as mode_t in our headers) : otherwise the API exposed by Ceylan would depend on these system headers, then on a config.h that should
+be installed to select them but may clash with others, and so on. This implies using opaque handle for forward-declared but undefined struct pointer such as <code>struct ceylan_mode_t ;</code></li>
+	<li>all <b>header include guards</b> are designed to not collide with other non-Ceylan headers : for example, <code>HAVE_CTIME</code> is to be replaced by <code>CEYLAN_USES_CTIME</code></li>
+	<li><b>pkg-config</b> should be used whenever available</li>
+	<li>in each module, <b>public headers</b> should be listed alphabetically (<code>use /bin/ls -1 *.h</code>) in CeylanMODULE_NAMEIncludes.h (ex : CeylanMathsIncludes.h)</li>
+	<li>no <b>inferior to (&lt;)</b> nor  <b>superior to (&gt;)</b> symbols in log messages if not used to specify HTML tags. Otherwise they would be interpreted as mark-up elements. So to delimit precisely strings, prefer using <code>'A specific message'</code> to <code>&lt;A specific message&gt;</code>
+
+</li>
+	<li>use <b>--consolePlug</b> if you are debugging the file layer, since <code>--classicalPlug</code> would use that layer for logging purpose otherwise. Use this latter classical plug to debug the log system, including the HTML aggregator. Finally, use <code>--HTMLPlug</code> for all other needs.</li>
+	<li>to better understand <b>Locatable referentials</b>, see : <code>test/interface/testCeylanLocatable.cc</code></li>
+</ol>
+</p>
+
+
+<p>
+<ul>
+
+<!--
+	<li><b></b> : </li>
+-->
+
+	<li><b>Anonymous check-out</b> : svn co https://svn.sourceforge.net/svnroot/ceylan ceylan</li>
+	<li>See <b>test/logs/testCeylanFullLogSystem.cc</b> for more informations about the robustness of the log system, depending on its settings (the chosen log plug) and the error cases (normal return, ::exit, uncaught exception, division by zero, etc.)</li>
+</ul>
+http://gcc.gnu.org/onlinedocs/libstdc++/27_io/howto.html
+</p>

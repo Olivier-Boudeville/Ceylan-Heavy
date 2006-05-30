@@ -1,0 +1,409 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+
+<!--    This document is part of the Ceylan project. 
+        For any comment, please mail to olivier.boudeville@online.fr
+-->
+
+<!--    
+        Creation date : 2004, October 1.
+        Author : Olivier Boudeville (olivier.boudeville@online.fr)
+-->
+
+<html lang="EN">
+<head>
+  <title>Ceylan -  Library's user's guide for the 0.2 version</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="description" content="Ceylan">
+  <meta name="keywords" content="Ceylan, library, video, game">
+  <link rel="stylesheet" type="text/css" href="../../common/css/Ceylan.css">
+  <link href="../../images/Ceylan-icon.png" rel="Ceylan icon">
+</head>
+
+<body>
+
+  <div class="banner">
+    <p><em>General</em> <a href="../../common/black.html" onclick="parent.toolbar.location=&#39;../MainMenu.html&#39;">home page</a>
+    <a href="../Map.html">site map</a> <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20Coding%20good%20practises%20">mail us</a></p>
+  </div><a name="_top_"></a> 
+
+
+<h1>The art of coding : good practises</h1>
+
+<h2>Overview</h2>
+
+<p>
+This document lists some common rules and tricks that may save a few hours of painful debugging to developers. It is still work in progress.
+</p>
+
+
+<a name="toc">
+<center>
+	<table summary="Table of content" style="border: none">
+        <tr>
+          <td>
+
+		   <div class="box">
+  				<a href="#standards">Coding standards</a><br>
+  				<a href="#cubbyhole">Random advices</a><br>
+  				<a href="#mistakes">Some common mistakes</a>
+          </div>
+
+          </td>
+        </tr>
+      </table>
+</center>
+<!--
+<br><p><center>[<a href="#toc">Back to the table of contents</a>]</center></p><br><br>
+  -->
+
+ 
+<a name="standards"></a> 
+<h2>Coding standards</h2>
+<p>
+The GNU project released its own rules, available <a href="http://www.gnu.org/prep/standards/standards.html" target="_blank">here</a>. Even though some recommendations would be difficult to enforce or would not correspond to the context of the Ceylan developments, these guidelines are mostly relevant. All developers should read them once ! We found these sections especially interesting :
+<ul>
+    <li><a href="http://www.gnu.org/prep/standards/standards.html#Conditional-Compilation" target="_blank">Conditional Compilation</a></li>
+    <li><a href="http://www.gnu.org/prep/standards/standards.html#Command_002dLine-Interfaces" target="_blank">Standards for Command Line Interfaces</a></li>
+    <li><a href="http://www.gnu.org/prep/standards/standards.html#System-Portability" target="_blank">Portability between System Types</a></li>
+    <li><a href="http://www.gnu.org/prep/standards/standards.html#CPU-Portability" target="_blank">Portability between cpus</a></li>
+    <li><a href="http://www.gnu.org/prep/standards/standards.html#Internationalization" target="_blank">Internationalization</a></li>
+    <li><a href="http://www.gnu.org/prep/standards/standards.html#GNU-Manuals" target="_blank">GNU Manuals</a></li>
+    <li><a href="http://www.gnu.org/prep/standards/standards.html#Configuration" target="_blank">How Configuration Should Work</a></li>
+    <li><a href="http://www.gnu.org/prep/standards/standards.html#Makefile-Basics" target="_blank">General Conventions for Makefiles</a></li>
+</ul>
+
+</p>
+
+<p>
+We were less convinced by some other recommendations, about CamelCase, formatting for Emacs, etc. 
+</p>
+
+
+<h3>Specific topics raised by these guidelines</h3>
+
+<h4>Change Logs</h4>
+<p>
+Apart from the <a href="http://www.gnu.org/prep/standards/standards.html#Change-Logs" target="_blank">GNU point of view</a> about Change Logs, there is a need for tools that automate their generation from the versioning system being used. [<a href="http://www.linux-france.org/prj/inetdoc/sources/sources.Changelog.html" target="_blank">More infos</a>, in French]. As we are using CVS, <a href="http://directory.fsf.org/devel/vc/CVS/cvs2cl.html" target="_blank">cvs2cl</a> seems to be the way to go.
+</p>
+
+<h4>Code formatting</h4>
+<p>
+The <code>indent</code> or <code>astyle</code> tools could be used as well, to ensure formatting consistency.
+</p>
+
+<br><p><center>[<a href="#toc">Back to the table of contents</a>]</center></p><br><br>
+
+
+
+
+<a name="cubbyhole"></a> 
+<h2>Random advices</h2>
+
+<p>
+Programs that use malloc ought to <code>#include &lt;stdlib.h&gt;</code>. On 32-bit systems you can get away with not including it, but on 64-bit systems it will assume malloc() returns a 32-bit integer and butcher the 64-bit pointers it returns.
+</p>
+
+<p>
+How to stop cleanly a thread ? Make it regularly check a boolean <code>stopDemanded</code>.
+</p>
+
+<p>
+Use systematically and regularly <a href="http://valgrind.kde.org/" target="_blank">Valgrind</a>. 
+</p>
+
+<em>Valgrind is a GPL'd system for debugging and profiling x86-Linux programs. With the tools that come with Valgrind, you can automatically detect many memory management and threading bugs, avoiding hours of frustrating bug-hunting, making your programs more stable. You can also perform detailed profiling to help speed up your programs.</em>
+
+<p>
+The <code>throw()</code> qualifier in function signature should never be omitted, and fully specified, to avoid the unpleasant <code>Aborted</code> at runtime.
+</p>
+
+<p>
+Always remember that the const qualifier comes <b>before</b> the throw qualifier, for example : <code>void myMethod() const throw( SomeException)</code>
+</p>
+
+<p><a href="http://www.parashift.com/c++-faq-lite/exceptions.html#faq-17.3" target="_blank">Never</a> throw an exception from a destructor :
+</p>
+
+
+<p>
+The first line of an implementation file <code>X.cc</code> should begin with <code>#include "X.h"</code> : this allows to check directly that <code>X.h</code> does not depend on any includes that could be defined in <code>X.cc</code>, and therefore that <code>X.h</code> is really autonomous.
+</p>
+
+
+<p>Why using functors ? A Functor allows us to wrap up a function inside an object.
+When a convenient function (ex : a STL one) takes a predicate (a function returning a boolean value when it is given a particular instance type), but the evaluation of the function requires dynamic informations, passing only a classical function won't do, since it cannot be adapted to fit with the neccasary dynamic behaviour. Instead, if one uses a functor, this object's constructor can be given those run-time informations so that it build a particular evaluation of the predicate. Afterwards, in the convenient function, instead of specified a simple predicate, one can use the functor, whose operator () has been redefined : this way, it behaves exactly the same way as the predicate, with the advantage of being dynamically defined.</p>
+
+<p>An example demonstrating the usefulness of functors is when one needs a predicate which returns whether the specified object is equal or not to a particular one. The former object, which is not known at compile time, cannot be expressed thanks to a pure predicate. Instead, the functor's constructor can be given this object, so that its () operator will return true if and only if its argument is equal to that particular constructor-provided object.
+</p>
+
+<p>
+When adding or changing a source file, please use four-space tabulations, and format code and comments so that they fit in a 100-character wide line.
+</p>
+
+<p>
+The only language to be used in source code is english.
+</p>
+
+<p>
+We recommend a text editor such as <a href="http://www.nedit.org" target="_blank">nedit</a>.
+</p>
+
+<p>
+In a conditional expression, for example in <code>if ( aVariable == aValue)</code>, maybe reversing the two members (<code>if ( aValue == aVariable)</code>) could be safer, since if the equality operator (==) is by mistake replaced by the assignement operator (=), the compiler will complain. When possible, avoiding lvalues on the left part could be a good trick.
+</p>
+
+
+<p>
+In C++, instead of 
+<center>
+    <table summary="Code" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+int * myPointer = static_cast<int*>( ::malloc( sizeof(int) * numInt ) )) ;
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+prefer 
+
+<center>
+    <table summary="Code" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+int * myPointer = new int[numInt] ;
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+<code></code>which is much simpler and safer.
+</p>
+
+
+<p>
+Dealing with multi-dimensional arrays is often tricky.  Using malloc makes it nasty. If you are using C++, you should really use new. That would catch many errors at compile time.
+</p>
+
+<p>A general rule of thumb is that there should be no <code>malloc</code> nor <code>free</code> in a C++ program, except when using a C library, including of course the system libraries.
+</p>
+
+<br><p><center>[<a href="#toc">Back to the table of contents</a>]</center></p><br><br>
+
+
+<a name="mistakes"></a>
+<h2>Some common mistakes</h2>
+
+
+<h3>C++</h3>
+
+
+<h4>Linking</h4>
+<p>
+When linking <b>statically</b>, the order of the object files and libraries is critical. A static library satisfies references only for the files before it on the linker command line. This is normal
+behaviour, and it means that you sometimes have to have some libraries repeated in case there is a circular dependency, like <code>-lfoo -lbar -lfoo</code>.
+</p>
+
+<p>
+The reason for this is that the linker (<code>ld</code>) reads the linked files in the order of the
+command line, and when linking statically, references are linked at that point. When linking dynamically, the symbols are only checked to see that all references are satisfied.
+</p>
+
+<h4>Testing logical values</h4>
+
+<p>
+Wanting to test a flag against a binary mask (most of the time, a number with only one binary digit set to one) ? First idea would be to write the following (correct) form : 
+<code>if ( flags & UseVideo )</code>.</p>
+
+<p>What I do not like in that case is the (implicit) conversion from a number (<code>flags & UseVideo</code>, which may be equal to any non-null value) to a logical value (<code>true</code> or <code>false</code>). I think that in that case C and C++ are too low-level (weakly typed), which results in misleading (unwanted) conversions, such as taking a pointer as a boolean value with no warning at all (with numerous constructors with default values, who never was bitten by this ?).  
+</p>
+
+<p>
+A form I would prefer is thus : <code>if ( ( flags & UseVideo ) != 0 )</code>. Each parenthesis is needed, since a mistake with operator priority can occur easily : the following form 
+<code>if ( flags & UseVideo != 0 )</code> is incorrect, since it is interpreted as <code>if ( flags & ( UseVideo != 0 ) )</code>. Beware !
+</p>
+
+
+<h3>STL</h3>
+
+
+<p>
+See <a href="http://www.cppreference.com/" target="_blank">C/C++ Reference</a> for informations about the STL API. Please keep in mind the STL is complex, wicked and evil.
+</p>
+
+<p>
+When iterating in a list, the first elements are at the front (and the last are at the back).
+</p>
+
+<p>For example :
+
+<center>
+    <table summary="Code" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+ vector&lt;int&gt; v ;
+ for( int i = 0; i < 5; i++ )
+   v.push_back( i ) ;
+
+ cout << "The first element is " << v.front()
+      << " and the last element is " << v.back() << endl ;
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+
+<p>
+This code produces the following output : <br>
+<div style="box"><code>The first element is 0 and the last element is 4</code></div>.
+</p>
+  
+<p>
+Never modify a container (ex : a list) while iterating on it. Even if it sounds obvious, it can happen when calling in an iteration an object which triggers a list modification (ex : iterating on a list of event sources to unsubscribe a listener which in turn remove them from the listener list, etc.).
+</p>
+
+<p>
+Even such simple code is incorrect :
+
+<center>
+    <table summary="Code" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+void EventListener::forgetSource( EventSource & source ) throw( EventException )
+{
+
+	for ( it = _sources.begin(); it != _sources.end() ; it ++ )
+		if ( (*it) == & source )
+			_sources.erase( it ) ;
+}
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+One should use <code>_sources.remove( & source ) ;</code> instead, or <code>remove_if</code>, since <code>erase</code> invalidates the iterator. 
+</p>
+
+<p>
+In general, the structure of the list (number and order of elements) should not change while using an iterator on it, only the elements may be modified. However, on many cases, we need to remove elements while iterating on a list.
+</p>
+
+<p>For example, in a Surface/Widget framework (see <code>OSDLSurface.cc</code> and <code>OSDLWidget.cc</code>), the surface is an event source, and the widgets are event listeners (to simplify, let's forget for a while that widgets are surfaces too, so that they can themselves contain widget recursively). If the surface is to take ownership of its widgets, then upon deallocation, the surface will have to delete its widgets, which are its listeners. However, in the underlying source/listener framework, the listeners should normally unsubscribe from the source, since often the source is often unable to know when to detach them.  
+</p>
+
+<p>
+In the Surface/Widget framework, the source is to trigger the separation. The following simple solution would be nevertheless be wrong :
+
+<center>
+    <table summary="Code" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+Surface::~Surface() throw()
+{
+	
+	// Just unsubscribe this listener widget from this source surface :
+	for ( list<EventListener *>::iterator it = _listeners.begin(); it != _listeners.end(); it++ )
+		(*it)->unsubscribeFrom( *this ) ;
+}		
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+
+</p>
+
+<p>
+Why ? Because the <code>Widget::unsubscribeFrom</code> method causes the surface to be called so that the corresponding widget is removed. Therefore the listener list changes while iterating on it, which leads directly to a nasty segmentation fault with very little information, even in the debugger.
+</p>
+
+<p>
+So, how to overcome this difficulty ? Use as frequently as possible the correct following form instead, with no iterator :
+<center>
+    <table summary="Code" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+Surface::~Surface() throw()
+{
+
+	Ceylan::EventListener * widget ;
+
+	while ( ! _listeners.empty() )
+	{
+		widget = _listeners.back() ;
+		widget->unsubscribeFrom( *this ) ;
+		delete widget ;
+	}
+	
+}		
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+</p>
+
+<p>
+However, on some cases one does not want to destroy the whole list, but wants to iterate in it until some specific elements to remove are found. The solution can be to use multiple passes onto the list, and/or to use cautiously <code>remove</code>.
+</p>
+
+<p>
+No iterator (no STL ?), no cry !
+</p>
+
+
+<h3>Python</h3>
+<p>
+The mutable default parameter is, in my opinion, one of the worst pitfall [<a href="http://www.python.org/doc/faq/general.html#why-are-default-values-shared-between-objects" target="_blank">See detailed explanation</a>].
+</p>
+
+
+<br><p><center>[<a href="#toc">Back to the table of contents</a>]</center></p><br><br>
+
+<br>
+<br>
+<br>
+<br>
+  
+<h3>Please react !</h3>
+
+<p>If you have information more detailed or more recent than those presented in this document, if you noticed errors, neglects or points insufficiently discussed, or if you would like to contribute and help us, even a little bit, <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20Coding%20good%20practises%20">drop
+us a line</a> !</p>
+
+<br>
+<br>
+
+<hr>
+
+<center>
+  [<a href="#_top_">Top</a>]
+  <br>
+  <br>
+  <em>Last update : 2006, January 7</em>
+</center>
+
+</body>
+</html>

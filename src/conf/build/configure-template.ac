@@ -1,0 +1,1083 @@
+# 'configure-template.ac' is the source file in charge of dealing
+# with the Autoconf/Automake macros to be found in the generated
+# 'configure.ac'. One can use the 'checkConfigure.sh' script to check
+# whether the corresponding 'configure.ac' is the appropriate result.
+
+# This is a way of customizing settings prior to the whole 'autogen.sh' process,
+# leading to have the build system generated. 
+
+
+AC_PREREQ(2.59)
+
+
+# Declaration section for the Autotools macros.
+
+
+AC_INIT([ST_PROJECT_NAME],[ST_VERSION],[ST_MAILING_LIST_BUGTRACKING])
+
+AC_CONFIG_SRCDIR([ST_CONFIG_HEADER.in])
+AC_CONFIG_AUX_DIR([conf/build])
+
+# Detects the canonical host and target build environment :
+AC_CANONICAL_TARGET
+
+AM_INIT_AUTOMAKE
+
+# CeylanTemporaryConfig.h is the first basic config file to be generated,
+# it contains what classically is in a usual config.h.
+# It is then transformed by AX_PREFIX_CONFIG_H into CeylanConfig.h, whose
+# defines are prefixed and have include guards.
+# Finally AC_CONFIG_COMMANDS updates CeylanConfig.h so that symbols
+# such as CEYLAN_HAVE_CTIME are replaced by CEYLAN_USES_CTIME.
+
+# This macro adds '-DHAVE_CONFIG_H' in DEFS for compiler, but Ceylan
+# ignores this too common (hence risky) symbol, and uses 
+# CEYLAN_USES_CONFIG_H instead.
+AC_CONFIG_HEADERS([ST_CONFIG_HEADER],[],[])
+CPPFLAGS="-DCEYLAN_USES_CONFIG_H $CPPFLAGS"
+AC_SUBST(CPPFLAGS)
+
+
+# CeylanConfig.h will be the only config header to be installed.
+# It is obtained from ST_CONFIG_HEADER by renaming all entries that may 
+# clash when included by some user code.
+# Ex : HAVE_CTIME is ultimately renamed to CEYLAN_USES_CTIME
+AX_PREFIX_CONFIG_H([CeylanConfig.h])
+
+# How to use it remains unclear : #AC_CONFIG_HEADERS([ST_CONFIG_HEADER:conf/build/CeylanConfig-header.in:conf/build/CeylanConfig-footer.in])
+
+
+
+# Naming section.
+
+PROJECT_NAME=ST_PROJECT_NAME
+AC_SUBST(PROJECT_NAME)
+
+UNIX_PROJECT_NAME=ST_UNIX_PROJECT_NAME
+AC_SUBST(UNIX_PROJECT_NAME)
+
+
+
+# Ceylan version numbers for current release.
+
+
+# Usual versioning. 
+
+
+CEYLAN_MAJOR_VERSION=ST_MAJOR_VERSION
+AC_SUBST(CEYLAN_MAJOR_VERSION)
+
+CEYLAN_MINOR_VERSION=ST_MINOR_VERSION
+AC_SUBST(CEYLAN_MINOR_VERSION)
+
+CEYLAN_RELEASE=ST_RELEASE
+AC_SUBST(CEYLAN_RELEASE)
+
+
+CEYLAN_VERSION=ST_VERSION
+AC_SUBST(CEYLAN_VERSION)
+
+CEYLAN_FULL_VERSION=ST_FULL_VERSION
+AC_SUBST(CEYLAN_FULL_VERSION)
+
+
+
+# Libtool-style versioning.
+
+CEYLAN_MAJOR_ANCESTOR=ST_MAJOR_ANCESTOR
+AC_SUBST(CEYLAN_MAJOR_ANCESTOR)
+
+# From previous variables Libtool version can be deduced :
+
+CEYLAN_LT_RELEASE=$CEYLAN_VERSION
+AC_SUBST(CEYLAN_LT_RELEASE)
+
+
+CEYLAN_LT_CURRENT=$CEYLAN_MAJOR_VERSION
+AC_SUBST(CEYLAN_LT_CURRENT)
+
+CEYLAN_LT_REVISION=$CEYLAN_MINOR_VERSION
+AC_SUBST(CEYLAN_LT_REVISION)
+
+CEYLAN_LT_AGE=`expr $CEYLAN_MAJOR_VERSION - $CEYLAN_MAJOR_ANCESTOR`
+AC_SUBST(CEYLAN_LT_AGE)
+
+
+CEYLAN_LIBTOOL_VERSION="$CEYLAN_LT_CURRENT.$CEYLAN_LT_REVISION.$CEYLAN_LT_AGE"
+# The CEYLAN_LIBTOOL_VERSION symbol is used to update
+# generic/CeylanHeaderVersion.h with the actual Ceylan libtool version, 
+# so that this header-embedded version can be compared with the library
+# version (see : test/ceylan.m4). 
+AC_SUBST(CEYLAN_LIBTOOL_VERSION)
+
+
+# The value must be quoted with "" since it will be an argument of a C++ 
+# function call.
+# See : generic/CeylanUtils.cc for the library-embedded version.
+AC_DEFINE_UNQUOTED([LIBTOOL_VERSION],
+	["$CEYLAN_LIBTOOL_VERSION"],
+	[Current Libtool version for the Ceylan library])
+
+
+# Archive base directory. 
+CEYLAN_ARCHIVE_DIR="\${HOME}/Archive/${PROJECT_NAME}"
+AC_SUBST(CEYLAN_ARCHIVE_DIR)
+
+
+# Documentation section.
+
+CEYLAN_SF_WEB_SERVER="sourceforge.net"
+AC_SUBST(CEYLAN_SF_WEB_SERVER)
+
+CEYLAN_SF_URL="http://${UNIX_PROJECT_NAME}.${CEYLAN_SF_WEB_SERVER}"
+AC_SUBST(CEYLAN_SF_URL)
+
+CEYLAN_SF_VERSION_URL="${CEYLAN_SF_URL}/${PROJECT_NAME}-${CEYLAN_VERSION}"
+AC_SUBST(CEYLAN_SF_VERSION_URL)
+
+CEYLAN_MIRROR_WEB_SERVER="esperide.com"
+AC_SUBST(CEYLAN_MIRROR_WEB_SERVER)
+
+# Used not to mix projects and versions :
+CEYLAN_CURRENT_VERSION_PREFIX="${PROJECT_NAME}-${CEYLAN_VERSION}"
+AC_SUBST(CEYLAN_CURRENT_VERSION_PREFIX)
+
+
+# Local directories.
+# They are gathered here since doxygen configuration file needs them also.
+
+# Local root of the whole Ceylan documentation :
+# If the user wants to redefine his prefix, then he should reconfigure the
+# package : if not hardcoding the prefix at the configure step, then for
+# example we could not use autoconf to generate doxygen.conf which needs
+# a full expanded output path (hence not containing ${prefix}).
+CEYLAN_LOCAL_DOC_DIR="\${prefix}/share/${PROJECT_NAME}/doc"
+AC_SUBST(CEYLAN_LOCAL_DOC_DIR)
+
+# Local root of the whole Ceylan html documentation :
+# (ex : PREFIX/doc/web)
+CEYLAN_LOCAL_WEB_DIR=$CEYLAN_LOCAL_DOC_DIR/web
+AC_SUBST(CEYLAN_LOCAL_WEB_DIR)
+
+# Local root of the whole Ceylan general html documentation :
+# (not specific to any version; no special subdirectory used)
+# (ex : PREFIX/doc/web)
+CEYLAN_LOCAL_WEB_SHARED_DIR=$CEYLAN_LOCAL_WEB_DIR
+AC_SUBST(CEYLAN_LOCAL_WEB_SHARED_DIR)
+
+
+# Local root of the Ceylan HTML documentation specific to this current version :
+# (ex : PREFIX/doc/web/Ceylan-u.v)
+CEYLAN_LOCAL_WEB_CURRENT_VERSION_DIR=$CEYLAN_LOCAL_WEB_DIR/$CEYLAN_CURRENT_VERSION_PREFIX
+AC_SUBST(CEYLAN_LOCAL_WEB_CURRENT_VERSION_DIR)
+
+
+# Local root of the Ceylan API HTML documentation specific to this current
+# version :
+# (ex : PREFIX/doc/web/Ceylan-u.v/api)
+CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR=$CEYLAN_LOCAL_WEB_DIR/$CEYLAN_CURRENT_VERSION_PREFIX/api
+AC_SUBST(CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR)
+
+
+
+# Support section.
+
+CEYLAN_MAILING_LIST_SUPPORT=ST_MAILING_LIST_SUPPORT
+AC_SUBST(CEYLAN_MAILING_LIST_SUPPORT)
+
+CEYLAN_MAILING_LIST_BUGTRACKING=ST_MAILING_LIST_BUGTRACKING
+AC_SUBST(CEYLAN_MAILING_LIST_BUGTRACKING)
+
+
+
+# If the user did not override CXXFLAGS, provide our own default settings :
+# (in all cases the clumsy "-g -O2" automake default is removed) 
+CXXFLAGS=${CXXFLAGS-""}
+
+
+# Checks for programs :
+AC_PROG_CXX
+AC_PROG_AWK
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+
+
+
+# Tells the libtool machinery that the package supports DLLs on Windows :
+AC_LIBTOOL_WIN32_DLL
+AM_PROG_LIBTOOL
+
+
+# Checks for header files.
+AC_HEADER_DIRENT
+AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
+
+# Only headers independent from all Ceylan features are checked here : 
+AC_CHECK_HEADERS([limits.h stdint.h string.h strings.h time.h sys/time.h utime.h termios.h netdb.h sys/socket.h netinet/in.h arpa/inet.h unistd.h sys/utsname.h sys/sysinfo.h conio.h fcntl.h])
+
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
+AC_C_CONST
+AC_C_INLINE
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_HEADER_TIME
+AC_STRUCT_TM
+AC_C_VOLATILE
+
+# Checks for library functions.
+AC_FUNC_CLOSEDIR_VOID
+AC_FUNC_ERROR_AT_LINE
+AC_FUNC_FORK
+# No, 'malloc' was only in a comment : AC_FUNC_MALLOC
+AC_FUNC_SELECT_ARGTYPES
+AC_TYPE_SIGNAL
+AC_FUNC_STAT
+AC_FUNC_UTIME_NULL
+
+# Only functions independent from all Ceylan features are checked here : 
+AC_CHECK_FUNCS([isdigit islower isupper exit putenv getenv floor floorf floorl ceil ceilf ceill round roundf roundl pow powf powl abs labs llabs fabs fabsf fabsl exp expf expl sqrt sqrtf sqrtl cos cosf cosl sin sinf sinl strdup strerror sleep time ctime localtime gettimeofday utime sysinfo uname stat mkdir unlink rename rmdir getcwd gethostname sethostname getdomainname setdomainname gethostbyname gethostbyaddr ])
+
+
+# Only symbols independent from all Ceylan features are checked here : 
+
+AC_CHECK_DECLS([O_RDONLY, O_WRONLY, O_RDWR, O_CREAT, O_EXCL, O_TRUNC, O_APPEND],[],[AC_MSG_ERROR(at least one flag for opening file not available)],[
+		#ifdef HAVE_FCNTL_H
+		#include <fcntl.h>
+		#endif // HAVE_FCNTL_H		
+            ] )
+
+
+# Build section.
+
+
+CEYLAN_TEST_DIR="\${exec_prefix}/tests"
+AC_SUBST(CEYLAN_TEST_DIR)
+
+
+CEYLAN_GENERIC="\$(top_srcdir)/code/generic"
+AC_SUBST(CEYLAN_GENERIC)
+
+CEYLAN_INTERFACES="\$(top_srcdir)/code/interfaces"
+AC_SUBST(CEYLAN_INTERFACES)
+
+CEYLAN_LOGS="\$(top_srcdir)/code/logs"
+AC_SUBST(CEYLAN_LOGS)
+
+CEYLAN_MATHS="\$(top_srcdir)/code/maths"
+AC_SUBST(CEYLAN_MATHS)
+
+CEYLAN_MODULES="\$(top_srcdir)/code/modules"
+AC_SUBST(CEYLAN_MODULES)
+
+CEYLAN_SYSTEM="\$(top_srcdir)/code/system"
+AC_SUBST(CEYLAN_SYSTEM)
+
+
+# Substitution script to update various project templates.
+CEYLAN_SUBSTITUTE="\$(top_srcdir)/code/scripts/shell/substitute.sh"
+AC_SUBST(CEYLAN_SUBSTITUTE)
+
+
+# Compiler-specific optimization flags.
+
+
+# Debug versus optimizations section.
+
+# See if the user wants aggressive optimizations of the code :
+AC_ARG_ENABLE(debug,
+	AS_HELP_STRING(--enable-debug,[disable aggressive optimizations [[default=yes]]]),,enable_debug=yes)
+if test x$enable_debug = xyes; then
+
+	# Debug requested :
+	DEBUG=1
+	DEBUG_EVENTS=1
+	DEBUG_DEMANGLE=1
+	DEBUG_LOG=0
+	DEBUG_SYSTEM=1
+	
+	AM_CXXFLAGS="$AM_CXXFLAGS -g" 
+    if test x$ac_cv_cxx_compiler_gnu = xyes; then
+		# Add -pg to manage profile information for gprof.
+		AM_CXXFLAGS="$AM_CXXFLAGS -ggdb -O0 -fno-inline -fbounds-check -ftrapv -fnon-call-exceptions -fstack-check"
+		AM_LDFLAGS="$AM_LDFLAGS -s"
+	fi	 
+else
+
+	# Aggressive optimizations :
+	DEBUG=0
+	DEBUG_EVENTS=0
+	DEBUG_DEMANGLE=0	
+	DEBUG_LOG=0
+	DEBUG_SYSTEM=0
+	
+    if test x$ac_cv_cxx_compiler_gnu = xyes; then
+		# -fomit-frame-pointer : may prevent debugging on some platforms
+		# -ffast-math : not requesting exact IEEE or ISO implementation rules/specifications
+        AM_CXXFLAGS="$AM_CXXFLAGS -g0 -O3 -fexpensive-optimizations -fomit-frame-pointer -ffast-math -funroll-loops"
+    fi
+    case "$target" in
+        i486-*-*)
+            if test x$ac_cv_cxx_compiler_gnu = xyes; then
+                AM_CXXFLAGS="$AM_CXXFLAGS -march=i486"
+            fi
+            ;;
+        i?86-*-*)
+            if test x$ac_cv_cxx_compiler_gnu = xyes; then
+                AM_CXXFLAGS="$AM_CXXFLAGS -march=pentium -mcpu=pentiumpro"
+            fi
+            ;;
+        *-*-osf*)
+            if test x$ac_cv_cxx_compiler_gnu != xyes; then
+                AM_CXXFLAGS="$AM_CXXFLAGS -g3 -fast -arch host"
+            fi
+            ;;
+    esac
+fi
+
+AC_DEFINE_UNQUOTED([DEBUG],
+	[$DEBUG],
+	[Define to 1 if generic debug mode is to be enabled])
+
+AC_DEFINE_UNQUOTED([DEBUG_EVENTS],
+	[$DEBUG_EVENTS],
+	[Define to 1 if debug mode for events is to be enabled])
+	
+AC_DEFINE_UNQUOTED([DEBUG_DEMANGLE],
+	[$DEBUG_DEMANGLE],
+	[Define to 1 if debug mode for name mangling is to be enabled])
+
+AC_DEFINE_UNQUOTED([DEBUG_LOG],
+	[$DEBUG_LOG],
+	[Define to 1 if debug mode for log system is to be enabled])
+
+AC_DEFINE_UNQUOTED([DEBUG_SYSTEM],
+	[$DEBUG_SYSTEM],
+	[Define to 1 if debug mode for system layer is to be enabled])
+
+
+
+
+# Warning and error section.
+
+# Add verbose warnings by default, and allow ANSI compliance checking :
+AC_ARG_ENABLE(strict-ansi,
+	AS_HELP_STRING(--enable-strict-ansi,[enable strict ANSI compliance build [[default=yes]]]),,enable_strict_ansi=yes)
+if test x$ac_cv_cxx_compiler_gnu = xyes; then
+	# Basically paranoïd in all cases :
+	
+	# Following warnings are not used, explanations follow : 
+	#    -Weffc++ : the standard library headers trigger zillions of warnings.
+	#    -Waggregate-return : even a simple std::string is an aggregate.
+	#    -Wunused-parameter : inherited methods may not use some of their
+	# parameters, not wanting to freeze API with "__attribute__" keyword.
+	#    -Wpadded : add it if wanting to reorder fields of structures to save
+	# some bytes.
+	#    -Wmissing-noreturn : would force declaring __attribute__ ((noreturn))
+	# in every method which throws exceptions about unimplemented feature
+	#	 -Wold-style-cast : some standard macros (WIFEXITED, WEXITSTATUS, 
+	# etc.) expand into old-style C casts
+	#
+    AM_CXXFLAGS="$AM_CXXFLAGS -Wall -Werror -Woverloaded-virtual -W -Wfloat-equal -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-format-attribute -Wpacked -Wredundant-decls -Wunreachable-code -Wno-unused-parameter"
+    if test x$enable_strict_ansi = xyes; then
+		# Do not know what "-D_XOPEN_SOURCE" would change.
+        AM_CXXFLAGS="$AM_CXXFLAGS -ansi -pedantic-errors"
+    fi
+fi
+
+
+
+# Colors for build output section.
+
+# Some color definitions, to be more readable.
+
+# In the case your terminal does not support color, use :
+# --disable-colored-build
+
+# See also : function updateColorSupport of
+# Ceylan-x.y/src/code/scripts/termUtils.sh 
+
+# Text color codes :
+
+black_text=30
+red_text=31
+green_text=32
+yellow_text=33
+blue_text=34
+magenta_text=35
+cyan_text=36
+white_text=37
+
+
+# Background color codes :
+
+black_back=40
+red_back=41
+green_back=42
+yellow_back=43
+blue_back=44
+magenta_back=45
+cyan_back=46
+white_back=47
+
+
+# Text attributes :
+
+none_att=00
+bold_att=01
+underscore_att=04
+blink_att=05
+reverse_att=07
+concealed_att=08
+
+default_att=$none_att
+
+
+# Pre defined text styles :
+
+# Uses terminal features such as fancy make colors by default :
+AC_ARG_ENABLE(colored-build,
+	AS_HELP_STRING(--enable-colored-build,[enable colored build [[default=yes]]]),,enable_colored_build=yes)
+if test x$enable_colored_build = xyes; then
+
+	# The quadrigram '@<:@' is needed to allow for an unbalanced '[' :
+	
+	CEYLAN_DEFAULT_STYLE="@<:@${default_att};${white_text};${black_back}m"
+	CEYLAN_TITLE_STYLE="@<:@${default_att};${magenta_text};${black_back}m"
+	CEYLAN_ITEM_STYLE="@<:@${default_att};${cyan_text};${black_back}m"
+	CEYLAN_COMMAND_STYLE="@<:@${default_att};${cyan_text};${black_back}m"
+	CEYLAN_MAKE_STYLE="@<:@${default_att};${green_text};${black_back}m"
+	CEYLAN_COMPILE_STYLE="@<:@${default_att};${cyan_text};${black_back}m"
+	CEYLAN_LINK_STYLE="@<:@${default_att};${magenta_text};${black_back}m"
+	CEYLAN_INSTALL_STYLE="@<:@${default_att};${blue_text};${black_back}m"
+	CEYLAN_CLEAN_STYLE="@<:@${default_att};${yellow_text};${black_back}m"
+	CEYLAN_ERROR_STYLE="@<:@${default_att};${white_text};${red_back}m"
+	CEYLAN_WARNING_STYLE="@<:@${default_att};${yellow_text};${black_back}m"
+
+else
+
+	CEYLAN_DEFAULT_STYLE=""
+	CEYLAN_TITLE_STYLE=""
+	CEYLAN_ITEM_STYLE=""
+	CEYLAN_COMMAND_STYLE=""
+	CEYLAN_MAKE_STYLE=""
+	CEYLAN_COMPILE_STYLE=""
+	CEYLAN_LINK_STYLE=""
+	CEYLAN_INSTALL_STYLE=""
+	CEYLAN_CLEAN_STYLE=""
+	CEYLAN_ERROR_STYLE=""
+	CEYLAN_WARNING_STYLE=""
+
+fi
+
+AC_SUBST(CEYLAN_DEFAULT_STYLE)
+AC_SUBST(CEYLAN_TITLE_STYLE)
+AC_SUBST(CEYLAN_ITEM_STYLE)
+AC_SUBST(CEYLAN_COMMAND_STYLE)
+AC_SUBST(CEYLAN_MAKE_STYLE)
+AC_SUBST(CEYLAN_COMPILE_STYLE)
+AC_SUBST(CEYLAN_LINK_STYLE)
+AC_SUBST(CEYLAN_INSTALL_STYLE)
+AC_SUBST(CEYLAN_CLEAN_STYLE)
+AC_SUBST(CEYLAN_ERROR_STYLE)
+AC_SUBST(CEYLAN_WARNING_STYLE)
+
+
+
+# Checks whether regular expression feature should and can be activated.
+# CEYLAN_USES_REGEX depends notably on :
+#	- choice : whether user requests them
+#   - headers : regex.h 
+#	- functions : regex_t, regcomp, regexec, regfree 
+#   - symbols : REG_EXTENDED, REG_NOSUB
+#   - see also : AM_WITH_REGEX to choose regex over rx
+#	- use : recommended
+CheckRegexFeature()
+{
+
+	# Are Regex wanted ?
+	CEYLAN_USES_REGEX=0
+	AC_ARG_ENABLE([regex],
+		AS_HELP_STRING(--enable-regex,[use Ceylan regular expressions feature [[default=yes]]]),
+		[case "${enableval}" in
+			yes) regex=yes ;;
+			no)  regex=no ;;
+			*) AC_MSG_ERROR(bad value ${enableval} for --enable-regex) ;;
+		esac],[regex=yes])
+	# If wanted, are regular expressions available ?	
+	AC_MSG_CHECKING([whether Ceylan regex feature is wanted])
+	if test x$regex = xyes; then
+		AC_MSG_RESULT([yes])
+		have_regex=yes
+		AC_CHECK_HEADER([regex.h],[],[have_regex=no])
+		if test x$have_regex = xyes; then
+			AC_CHECK_FUNCS([regcomp regexec regfree],[],[have_regex=no])
+			# regex_t, REG_EXTENDED and REG_NOSUB could be tested as well.
+		fi	
+		if test x$have_regex = xyes; then
+			CEYLAN_USES_REGEX=1
+		else	
+			AC_MSG_WARN([Regular expression support requested but not available, disabling it])
+		fi
+		AC_MSG_CHECKING([whether Ceylan regex feature is enabled])
+		AC_MSG_RESULT([$have_regex])
+	else
+		# Regex not wanted here :
+		AC_MSG_RESULT([no])	
+	fi
+	
+	AC_DEFINE_UNQUOTED([USES_REGEX],
+		[$CEYLAN_USES_REGEX],
+		[Define to 1 if Ceylan is to use regular expressions internally])
+
+}
+
+
+
+# Checks whether multithreading feature should and can be activated.
+# CEYLAN_USES_THREADS depends on :
+#   - headers : pthread.h
+#   - functions : pthread_create pthread_cond_destroy pthread_cond_timedwait pthread_cond_signal pthread_cond_broadcast pthread_mutex_lock pthread_mutex_unlock
+#   - symbols : 
+#   - use : when pthreads if available for example, otherwise use an
+# abstraction layer such as SDL
+#	- see also : CheckPTHREAD in SDL's configure.in
+CheckMultithreadFeature()
+{
+
+	# Is multithread support wanted ?
+	CEYLAN_USES_THREADS=0
+	AC_ARG_ENABLE([multithread],
+		AS_HELP_STRING(--enable-multithread,[use Ceylan multithread feature [[default=yes]]]),
+		[case "${enableval}" in
+			yes) multithread=yes ;;
+			no)  multithread=no ;;
+			*) AC_MSG_ERROR(bad value ${enableval} for --enable-multithread) ;;
+		esac],[multithread=yes])
+	# If wanted, is multithreading available ?	
+	AC_MSG_CHECKING([whether Ceylan multithread feature is wanted])
+	if test x$multithread = xyes; then
+		AC_MSG_RESULT([yes])
+		have_multithread=yes
+		AC_CHECK_HEADERS([pthread.h],[],[have_multithread=no])
+		if test x$have_multithread = xyes; then
+			AC_CHECK_FUNCS([pthread_create pthread_cond_destroy pthread_cond_timedwait pthread_cond_signal pthread_cond_broadcast pthread_mutex_init pthread_mutex_lock pthread_mutex_unlock],[],[have_multithread=no])
+		fi	
+		if test x$have_multithread = xyes; then
+			CEYLAN_USES_THREADS=1    
+			case "$target" in
+        		*-*-bsdi*)
+            		pthread_cflags="-D_REENTRANT -D_THREAD_SAFE"
+            		pthread_lib=""
+            		;;
+        		*-*-darwin*)
+            		pthread_cflags="-D_THREAD_SAFE"
+					# causes Carbon.p complaints?
+					# pthread_cflags="-D_REENTRANT -D_THREAD_SAFE"
+            		;;
+        		*-*-freebsd*)
+           			pthread_cflags="-D_REENTRANT -D_THREAD_SAFE"
+            		pthread_lib="-pthread"
+            		;;
+       			*-*-netbsd*)
+            		pthread_cflags="-I/usr/pkg/include -D_REENTRANT"
+            		pthread_lib="-L/usr/pkg/lib -lpthread -lsem"
+            		;;
+        		*-*-openbsd*)
+            		pthread_cflags="-D_REENTRANT"
+            		pthread_lib="-pthread"
+            		;;
+        		*-*-solaris*)
+            		pthread_cflags="-D_REENTRANT"
+            		pthread_lib="-lpthread -lposix4"
+            		;;
+        		*-*-sysv5*)
+            		pthread_cflags="-D_REENTRANT -Kthread"
+            		pthread_lib=""
+            		;;
+        		*-*-irix*)
+            		pthread_cflags="-D_SGI_MP_SOURCE"
+            		pthread_lib="-lpthread"
+            		;;
+        		*-*-aix*)
+            		pthread_cflags="-D_REENTRANT -mthreads"
+            		pthread_lib="-lpthread"
+            		;;
+        		*-*-hpux11*)
+            		pthread_cflags="-D_REENTRANT"
+            		pthread_lib="-L/usr/lib -lpthread"
+            		;;
+        		*-*-qnx*)
+            		pthread_cflags=""
+            		pthread_lib=""
+            		;;
+        		*-*-osf*)
+            		pthread_cflags="-D_REENTRANT"
+            		if test x$ac_cv_prog_gcc = xyes; then
+                		pthread_lib="-lpthread -lrt"
+            		else
+                		pthread_lib="-lpthread -lexc -lrt"
+            		fi
+            		;;
+        		*)
+            		pthread_cflags="-D_REENTRANT"
+            		pthread_lib="-lpthread"
+            		;;
+    		esac
+			
+			AM_CXXFLAGS="$AM_CXXFLAGS $pthread_cflags"
+            LIBS="$LIBS $pthread_lib"
+
+		else	
+			AC_MSG_WARN([Multithread support requested but not available, disabling it])
+		fi
+		AC_MSG_CHECKING([whether Ceylan multithread feature is enabled])
+		AC_MSG_RESULT([$have_multithread])
+	else
+		# Multithread not wanted here :
+		AC_MSG_RESULT([no])	
+	fi
+	
+	AC_DEFINE_UNQUOTED([USES_THREADS],
+		[$CEYLAN_USES_THREADS],
+		[Define to 1 if Ceylan is to provide multithreading support])
+		
+}
+
+
+# Checks whether network support feature should and can be activated.
+# CEYLAN_USES_NETWORK depends on :
+#   - headers : sys/socket.h unistd.h
+#   - functions : socket
+#   - symbols :
+#   - use : when network layer is desired and has been ported
+#   - note : basic network informations remain available (get/set of host name,
+# of domain name, etc.) even if this feature is not enabled
+CheckNetworkFeature()
+{
+
+	# Is network support wanted ?
+	CEYLAN_USES_NETWORK=0
+	AC_ARG_ENABLE([network],
+		AS_HELP_STRING(--enable-network,[use Ceylan network feature [[default=yes]]]),
+		[case "${enableval}" in
+			yes) network=yes ;;
+			no)  network=no ;;
+			*) AC_MSG_ERROR(bad value ${enableval} for --enable-network) ;;
+		esac],[network=yes])
+	# If wanted, is network available ?	
+	AC_MSG_CHECKING([whether Ceylan network feature is wanted])
+	if test x$network = xyes; then
+		AC_MSG_RESULT([yes])
+		have_network=yes
+		AC_CHECK_HEADERS([sys/socket.h unistd.h],[],[have_network=no])
+		if test x$have_network = xyes; then
+			AC_CHECK_FUNCS([socket],[],[have_network=no])
+		fi	
+		if test x$have_network = xyes; then
+			CEYLAN_USES_NETWORK=1
+		else	
+			AC_MSG_WARN([Network support requested but not available, disabling it])
+		fi
+		AC_MSG_CHECKING([whether Ceylan network support feature is enabled])
+		AC_MSG_RESULT([$have_network])
+	else
+		# Network not wanted here :
+		AC_MSG_RESULT([no])	
+	fi
+	
+	AC_DEFINE_UNQUOTED([USES_NETWORK],
+		[$CEYLAN_USES_NETWORK],
+		[Define to 1 if Ceylan is to provide network support])
+
+}
+
+
+
+# Checks whether file descriptor feature should and can be activated.
+# CEYLAN_USES_FILE_DESCRIPTORS depends on :
+#   - headers : unistd.h 
+#   - functions : dup dup2 
+#   - symbols :
+#   - use : when supported, i.e. mostly on UNIX
+CheckFileDescriptorFeature()
+{
+
+	# Is file descriptor support wanted ?
+	CEYLAN_USES_FILE_DESCRIPTORS=0
+	AC_ARG_ENABLE([file-descriptor],
+		AS_HELP_STRING(--enable-file-descriptor,[use Ceylan file descriptor feature [[default=yes]]]),
+		[case "${enableval}" in
+			yes) file_descriptor=yes ;;
+			no)  file_descriptor=no ;;
+			*) AC_MSG_ERROR(bad value ${enableval} for --enable-file-descriptor) ;;
+		esac],[file_descriptor=yes])
+	# If wanted, are file descriptors available ?	
+	AC_MSG_CHECKING([whether Ceylan file descriptor feature is wanted])
+	if test x$file_descriptor = xyes; then
+		AC_MSG_RESULT([yes])
+		have_file_descriptor=yes
+		AC_CHECK_HEADERS([fcntl.h sys/select.h unistd.h],[],[have_file_descriptor=no])
+		if test x$have_file_descriptor = xyes; then
+			AC_CHECK_FUNCS([dup dup2],[],[have_file_descriptor=no])
+		fi	
+		if test x$have_file_descriptor = xyes; then
+			CEYLAN_USES_FILE_DESCRIPTORS=1
+		else	
+			AC_MSG_WARN([File descriptor support requested but not available, disabling it])
+		fi
+		AC_MSG_CHECKING([whether Ceylan file descriptor support feature is enabled])
+		AC_MSG_RESULT([$have_file_descriptor])
+	else
+		# File descriptor not wanted here :
+		AC_MSG_RESULT([no])	
+	fi
+	
+	AC_DEFINE_UNQUOTED([USES_FILE_DESCRIPTORS],
+		[$CEYLAN_USES_FILE_DESCRIPTORS],
+		[Define to 1 if Ceylan is to provide file descriptor support])
+		
+}
+
+
+# Checks whether symbolic link feature should and can be activated.
+# CEYLAN_USES_SYMBOLIC_LINKS depends on :
+#   - headers : unistd.h
+#   - functions : symlink 
+#   - symbols :
+#   - use : when supported, i.e. mostly on UNIX
+CheckFileSymbolicLinkFeature()
+{
+
+	# Is symbolic link support wanted ?
+	CEYLAN_USES_SYMBOLIC_LINKS=0
+	AC_ARG_ENABLE([symbolic-link],
+		AS_HELP_STRING(--enable-symbolic-link,[use Ceylan symbolic link feature [[default=yes]]]),
+		[case "${enableval}" in
+			yes) symbolic_link=yes ;;
+			no)  symbolic_link=no ;;
+			*) AC_MSG_ERROR(bad value ${enableval} for --enable-symbolic-link) ;;
+		esac],[symbolic_link=yes])
+	# If wanted, are symbolic links available ?	
+	AC_MSG_CHECKING([whether Ceylan symbolic link feature is wanted])
+	if test x$symbolic_link = xyes; then
+		AC_MSG_RESULT([yes])
+		have_symbolic_link=yes
+		AC_CHECK_HEADERS([unistd.h],[],[have_symbolic_link=no])
+		if test x$have_symbolic_link = xyes; then
+			AC_CHECK_FUNCS([symlink],[],[have_symbolic_link=no])
+		fi	
+		if test x$have_symbolic_link = xyes; then
+			CEYLAN_USES_SYMBOLIC_LINKS=1
+		else	
+			AC_MSG_WARN([Symbolic link support requested but not available, disabling it])
+		fi
+		AC_MSG_CHECKING([whether Ceylan symbolic link support feature is enabled])
+		AC_MSG_RESULT([$have_symbolic_link])
+	else
+		# Symbolic links not wanted here :
+		AC_MSG_RESULT([no])	
+	fi
+	
+	AC_DEFINE_UNQUOTED([USES_SYMBOLIC_LINKS],
+		[$CEYLAN_USES_SYMBOLIC_LINKS],
+		[Define to 1 if Ceylan is to provide symbolic link support])
+		
+}
+
+
+# Checks whether advanced file attribute feature should and can be activated.
+# CEYLAN_USES_ADVANCED_FILE_ATTRIBUTES depends on :
+#   - headers : 
+#   - functions :  
+#   - symbols : group/other in addition to owner (ex : S_IRGRP),
+# supplementary opening flags(ex : O_NONBLOCK)
+#   - use : not available with minGW for example
+CheckAdvancedFileAttributeFeature()
+{
+
+	# Is advanced file attribute support wanted ?
+	CEYLAN_USES_ADVANCED_FILE_ATTRIBUTES=0
+	AC_ARG_ENABLE([advanced-file-attribute],
+		AS_HELP_STRING(--enable-advanced-file-attribute,[use Ceylan advanced file attribute feature [[default=yes]]]),
+		[case "${enableval}" in
+			yes) advanced_file_attribute=yes ;;
+			no)  advanced_file_attribute=no ;;
+			*) AC_MSG_ERROR(bad value ${enableval} for --enable-advanced-file-attribute) ;;
+		esac],[advanced_file_attribute=yes])
+	# If wanted, is advanced file attribute support available ?	
+	AC_MSG_CHECKING([whether Ceylan advanced file attribute feature is wanted])
+	if test x$advanced_file_attribute = xyes; then
+		AC_MSG_RESULT([yes])
+		have_advanced_file_attribute=yes
+		AC_CHECK_HEADERS([sys/stat.h fcntl.h],[],[have_advanced_file_attribute=no])
+		if test x$have_advanced_file_attribute = xyes; then
+			AC_CHECK_DECLS([S_IRGRP, S_IROTH, O_NONBLOCK, O_SYNC],[],[have_advanced_file_attribute=no])
+		fi	
+		if test x$have_advanced_file_attribute = xyes; then
+			CEYLAN_USES_ADVANCED_FILE_ATTRIBUTES=1
+		else	
+			AC_MSG_WARN([Advanced file attribute support requested but not available, disabling it])
+		fi
+		AC_MSG_CHECKING([whether Ceylan advanced file attribute feature is enabled])
+		AC_MSG_RESULT([$have_advanced_file_attribute])
+	else
+		# Advanced file attribute not wanted here :
+		AC_MSG_RESULT([no])	
+	fi
+	
+	AC_DEFINE_UNQUOTED([USES_ADVANCED_FILE_ATTRIBUTES],
+		[$CEYLAN_USES_ADVANCED_FILE_ATTRIBUTES],
+		[Define to 1 if Ceylan is to provide advanced file attribute support])
+}
+
+
+# Checks whether file read/write lock feature should and can be activated.
+# CEYLAN_USES_FILE_LOCKS depends on :
+#   - headers : fcntl.h
+#   - functions : fcntl
+#   - symbols : 
+#   - use : not available with minGW for example
+#   - depends on : file descriptor support
+CheckFileLockFeature()
+{
+
+	# Are file locks wanted ?
+	CEYLAN_USES_FILE_LOCKS=0
+	AC_ARG_ENABLE([file-lock],
+		AS_HELP_STRING(--enable-file-lock,[use Ceylan file lock feature [[default=yes]]]),
+		[case "${enableval}" in
+			yes) file_lock=yes ;;
+			no)  file_lock=no ;;
+			*) AC_MSG_ERROR(bad value ${enableval} for --enable-file-lock) ;;
+		esac],[file_lock=yes])
+	# If wanted, are file locks available ?	
+	AC_MSG_CHECKING([whether Ceylan file lock feature is wanted])
+	if test x$file_lock = xyes; then
+		AC_MSG_RESULT([yes])
+		have_file_lock=yes
+		AC_CHECK_HEADERS([fcntl.h],[],[have_file_lock=no])
+		if test x$have_file_lock = xyes; then
+			AC_CHECK_FUNCS([fcntl],[],[have_file_lock=no])
+		fi	
+		if test x$have_file_lock = xyes; then
+			CEYLAN_USES_FILE_LOCKS=1
+		else	
+			AC_MSG_WARN([File lock support requested but not available, disabling it])
+		fi
+		# It is 'have_file_descriptor' indeed :
+		if test x$have_file_descriptor = xno; then
+			have_file_lock=no
+			CEYLAN_USES_FILE_LOCKS=0
+			AC_MSG_WARN(File lock support requested but depends on file descriptor support which is not available, disabling file lock support])
+		fi
+		AC_MSG_CHECKING([whether Ceylan file lock support feature is enabled])
+		AC_MSG_RESULT([$have_file_lock])
+	else
+		# File lock not wanted here :
+		AC_MSG_RESULT([no])	
+	fi
+	
+	AC_DEFINE_UNQUOTED([USES_FILE_LOCKS],
+		[$CEYLAN_USES_FILE_LOCKS],
+		[Define to 1 if Ceylan is to provide file lock support])
+		
+}
+
+
+# Checks whether the advanced process management feature should and 
+# can be activated.
+# CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT depends on :
+#   - headers : sys/times.h sys/types.h unistd.h pwd.h
+#   - functions : times fork getpid kill waitpid getpwuid geteuid execvp
+#   - symbols : 
+#   - use : not available with minGW for example
+#   - depends on :
+CheckAdvancedProcessManagementFeature()
+{
+
+	# Is advanced process management support wanted ?
+	CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT=0
+	AC_ARG_ENABLE([advanced-process-management],
+		AS_HELP_STRING(--enable-advanced-process-management,[use Ceylan advanced process management feature [[default=yes]]]),
+		[case "${enableval}" in
+			yes) advanced_process_management=yes ;;
+			no)  advanced_process_management=no ;;
+			*) AC_MSG_ERROR(bad value ${enableval} for --enable-advanced-process-management) ;;
+		esac],[advanced_process_management=yes])
+	# If wanted, is advanced process management available ?	
+	AC_MSG_CHECKING([whether Ceylan advanced process management feature is wanted])
+	if test x$advanced_process_management = xyes; then
+		AC_MSG_RESULT([yes])
+		have_advanced_process_management=yes
+		AC_CHECK_HEADERS([sys/times.h sys/types.h unistd.h pwd.h ],[],[have_advanced_process_management=no])
+		if test x$have_advanced_process_management = xyes; then
+			AC_CHECK_FUNCS([times fork getpid kill waitpid getpwuid geteuid execvp getpwuid ],[],[have_advanced_process_management=no])
+		fi	
+		if test x$have_advanced_process_management = xyes; then
+			CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT=1
+		else	
+			AC_MSG_WARN([Advanced process management support requested but not available, disabling it])
+		fi
+		AC_MSG_CHECKING([whether Ceylan advanced process management feature is enabled])
+		AC_MSG_RESULT([$have_advanced_process_management])
+	else
+		# File lock not wanted here :
+		AC_MSG_RESULT([no])	
+	fi
+	
+	AC_DEFINE_UNQUOTED([USES_ADVANCED_PROCESS_MANAGEMENT],
+		[$CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT],
+		[Define to 1 if Ceylan is to support avanced process management])
+}
+
+
+# Checks whether mkdir takes one (ex : minGW) or two arguments (ex : Linux).
+CheckMkdir()
+{
+
+	AC_MSG_CHECKING([whether mkdir takes two arguments])
+	have_mkdir_two_args=no
+	AC_TRY_COMPILE([
+		#include <sys/stat.h>
+		#include <sys/types.h>
+            ],[
+              mkdir( "aPath", S_IRWXU ) ;
+            ],[have_mkdir_two_args=yes])
+			
+	AC_MSG_RESULT([$have_mkdir_two_args])
+					
+	AC_DEFINE_UNQUOTED([HAVE_MKDIR_TWO_ARGS],
+		[$have_mkdir_two_args],
+		[Define to 1 if mkdir takes two arguments])
+			
+}
+
+
+# Still needing platform detection for some specifities :
+#   - CeylanDirectory : 
+#	 + directory separator, root directory : ARCH_WINDOWS
+CheckPlatform()
+{
+
+	CEYLAN_ARCH_WINDOWS=0
+	CEYLAN_ARCH_LINUX=0
+
+	case "$target" in
+	
+		*-*-cygwin*)
+			CEYLAN_ARCH_WINDOWS=1
+			CFLAGS="$CFLAGS -I/usr/include/mingw -DWIN32 -Uunix -mno-cygwin"
+			LIBS="$LIBS -mno-cygwin"
+			;;
+		
+		*-*-mingw32*)
+			CEYLAN_ARCH_WINDOWS=1
+	        LIBS="-lmingw32 -lSDLmain $LIBS -mwindows"
+			;;
+				
+	    *-*-linux*) 
+			CEYLAN_ARCH_LINUX=1 
+			;;
+		
+	    *)
+	        # No identified
+	        ;;
+		
+	esac
+
+
+	AC_DEFINE_UNQUOTED([ARCH_WINDOWS],
+		[$CEYLAN_ARCH_WINDOWS],
+		[Define to 1 if this platform is a Windows one])
+
+	AC_DEFINE_UNQUOTED([ARCH_LINUX],
+		[$CEYLAN_ARCH_LINUX],
+		[Define to 1 if this platform is GNU/Linux])
+
+}
+
+
+# TODO : use CXXCOMPILE/CXXLINK to customize build output.
+
+
+
+# Make general checks :
+
+CheckMkdir
+CheckPlatform
+
+# Enable/disable various features of the Ceylan library :
+
+AC_MSG_NOTICE([checking Ceylan optional features])
+
+# The order of these checks matters, since some of them depends on others :
+# for example, if feature A needs B, checkAFeature must be after checkBFeature.
+
+CheckRegexFeature
+CheckMultithreadFeature
+CheckNetworkFeature
+CheckFileDescriptorFeature
+CheckFileSymbolicLinkFeature
+CheckAdvancedFileAttributeFeature
+CheckFileLockFeature
+CheckAdvancedProcessManagementFeature
+
+
+AC_SUBST(SYSTEM_LIBS)
+
+# Directories conditionnally selected by the configure step :
+AC_SUBST(CEYLAN_EXTRA_DIRS)
+
+# Libraries conditionnally selected by the configure step :
+AC_SUBST(CEYLAN_EXTRA_LIBS)
+
+AC_SUBST(AM_CXXFLAGS)
+AC_SUBST(AM_LDFLAGS)
+
+# Updates the config file generated by AX_PREFIX_CONFIG_H :
+AC_CONFIG_COMMANDS([configprefix],[cat CeylanConfig.h | sed 's|CEYLAN_HAVE_|CEYLAN_USES_|g' > .CeylanConfig.h; /bin/mv -f .CeylanConfig.h code/CeylanConfig.h; /bin/rm -f _configs.sed])
+
+AC_CONFIG_FILES([ 
+    Makefile
+	code/Makefile
+	code/generic/CeylanHeaderVersion.h
+	code/generic/Makefile
+	code/interfaces/Makefile
+	code/logs/Makefile
+	code/maths/Makefile
+	code/modules/Makefile
+	code/scripts/python/Makefile
+	code/scripts/python/tests/Makefile
+	code/scripts/shell/Makefile
+	code/scripts/shell/tests/Makefile
+	code/scripts/Makefile
+	code/system/Makefile
+	conf/doc/Makefile
+	conf/Makefile
+	conf/MakeColors.inc
+	conf/build/Makefile
+	conf/build/ceylan-0.3.pc
+	conf/build/m4/Makefile
+	conf/doc/doxygen.conf
+	conf/environment/Makefile
+	doc/basic/Ceylan-AUTHORS-template.txt
+	doc/basic/Ceylan-COPYING.LIB-template.txt
+	doc/basic/Ceylan-FAQ-template.txt
+	doc/basic/Ceylan-INSTALL-template.txt
+	doc/basic/Ceylan-MAINTENERS-template.txt
+	doc/basic/Ceylan-NEWS-template.txt
+	doc/basic/Ceylan-README-template.txt
+	doc/basic/Ceylan-THANKS-template.txt
+	doc/basic/Ceylan-TODO-template.txt
+	doc/basic/Makefile
+	doc/Makefile
+])
+
+
+AC_OUTPUT
+

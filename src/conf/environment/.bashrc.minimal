@@ -1,0 +1,44 @@
+# Bash configuration file.
+
+# Created 2004, April 16
+# Author : Olivier Boudeville (olivier.boudeville@online.fr)
+
+# This script sets main all-UNIX practical tricks.
+
+
+alias ll='ls -l'
+alias la='ls -alg $*|more'
+alias lc='ls -clt'
+
+alias l='ls -aF'
+alias ls='ls -F'
+alias ll='ls -aF -l'
+
+alias lr='ls -Rx $*|more'
+alias dir='ls -l $*|more'
+alias s='cd ..'
+alias cp='cp -i'
+alias rm='rm -i'
+alias mv='mv -i'
+
+alias h='history'
+alias print='lpr -p'
+alias printText='a2ps'
+alias mo='more'
+alias r='fc -e -'
+
+alias sonata='ssh $USER@sonata'
+alias aranor='ssh $USER@aranor'
+
+# "cd" keyboard counterparts :
+alias xs='cd $1'
+alias vf='cd $1'
+
+# Shell section :
+
+HISTSIZE=1000
+IGNOREOF=1 
+set -o emacs 
+umask 002
+
+export PS1="\n\h \u \t "'$PWD'"\n> "  

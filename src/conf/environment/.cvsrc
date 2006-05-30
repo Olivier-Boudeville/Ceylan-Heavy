@@ -1,0 +1,5 @@
+log -N
+diff -u -N
+update -Pd
+co -P
+cvs -z6

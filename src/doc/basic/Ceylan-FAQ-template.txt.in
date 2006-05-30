@@ -1,0 +1,32 @@
+
+			This is the Ceylan mini-FAQ
+			
+			
+			
+* General FAQ
+
+	Q: How to have more information about Ceylan in general ?
+	A: See @CEYLAN_SF_URL@
+
+	Q: How to have more information about this version of Ceylan ?
+	A: This is the @CEYLAN_FULL_VERSION@ version of the Ceylan library, corresponding to the dedicated documentation section at @CEYLAN_SF_VERSION_URL@
+
+	Q: What licence applies to the Ceylan library ? 
+	A: See the COPYING.LIB file
+	
+	
+* User FAQ
+
+	Q: How can I build the Ceylan library ? 
+	A: See the INSTALL file
+		
+	Q: How can I report bugs ?
+	A: Send bug reports to the ceylan-bugs@lists.sourceforge.net mailing list
+	
+		
+* Developper FAQ
+
+	Q: How can I regenerate the build system, with regards to the Autotools ? 
+	A: See the conf/build directory, notably autogen.sh
+	
+	

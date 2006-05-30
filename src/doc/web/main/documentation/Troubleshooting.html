@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+
+<!--    This document is part of the Ceylan project. 
+        For any comment, please mail to olivier.boudeville@online.fr
+-->
+
+<!--    
+        Creation date : 2005, February 5.
+        Author : Olivier Boudeville (olivier.boudeville@online.fr)
+-->
+
+<html lang="EN">
+<head>
+  <title>Ceylan -  Troubleshooting</title>
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=iso-8859-1">
+  <meta name="description" content="Ceylan">
+  <meta name="keywords" content="Ceylan, library, video, game">
+  <link rel="stylesheet" type="text/css" href="../../common/css/Ceylan.css">
+  <link href="../../images/Ceylan-icon.png" rel="Ceylan icon">
+</head>
+
+<body>
+  <div class="banner">
+    <p><em>General</em> <a href="../../common/black.html" onclick="parent.toolbar.location=&#39;../MainMenu.html&#39;">home page</a>
+    <a href="../Map.html">site map</a> <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20Troubleshooting">mail us</a></p>
+  </div><a name="_top_"></a> 
+
+<h1>Ceylan troubleshooting</h1>
+
+<h2>Overview</h2>
+<p>
+This section tries to help the Ceylan users with all the issues they can encounter when building or installing the Ceylan library. More precisely, this section focuses on Ceylan internal issues. To deal with errors lying on the user code specifically (when the Ceylan library is misused), then refer to the Ceylan user's guide <a href="Ceylan-usersguide.html#troubleshooting">troubleshooting section</a>.
+</p>
+
+
+<h2>Issues and solutions</h2>
+
+<dl>
+
+
+	<dt>While building Ceylan or a related application or library, I get : <code>libtool: unrecognized option `--tag=CXX'
+Try `libtool --help' for more information.</code></dt>
+	<dd>The libtool version found in your PATH is too old. If the <code>checktools</code> make target is evaluated, then the most ancient supported version for libtool will be displayed with the found one, in yellow. Just check that yours is more recent than the requested version. For example, <code>libtool found, using </usr/bin/libtool> [version 1.4.3, must be 1.5.2 or higher]</code> will probably lead to build failures.</dd>
+
+
+	<dt>Compile error in CeylanTypes.h: <code>size of array CEYLAN_stop_wrong_size_for_XXX is negative</code></dt>
+	<dd>
+	<p>
+	This error has been triggered by the Ceylan build system because one of the basic data types which have been defined by Ceylan is not of the expected size.
+	</p>
+	<p> For example, <code>Sint16</code> should be a signed integer on 16 bits. If ever, on a specific platform and with a specific compiler, Ceylan assumption was wrong about the size in memory of a data type, the previous error is fired.
+	</p>	
+	<p>
+	You therefore have found a bug in Ceylan, please <a href="mailto:osdl-bugs@lists.sourceforge.net?subject=[Ceylan]%20Bad%20data%20type%20size">click here</a> to send us a bug report (it should take you less than half a minute to do so), telling us what is your compiler (name and version), what is your platform (CPU and OS) and which data type failed (the XXX in CEYLAN_stop_wrong_size_for_XXX). Thank you !
+	</p>  
+	</dd>
+
+
+	<dt>While building Ceylan or a related application or library, I get : <code>Creating executable XXX on YYY : libtool: link: warning: library `ZZZ' was moved.</dt>
+	<dd>This is a libtool joke, this build system detects a library was moved and complains. To the best of our knowledge, this message does not matter at all. We did not manage yet to get rid of it for the prerequesite libraries we use (ex : libSDL_image.la).
+	</dd>
+	
+
+	<dt>I changed a test (ex : tests/testTime.cc), it was built but it does not seem to be taken into account on my installation</dt>
+	<dd><p>
+	Be sure to run <code>make all</code> from the root directory (ex : <code>$CEYLAN_ROOT/src</code>) : only the main makefile has for purpose to install the examples. Executing a make from test directory will build it, not install it. To check, just look at the dates of the executable to be found under <code>$CEYLAN_ROOT/bin</code>.</p>
+	</dd>
+
+
+	<dt>How to view correctly the Ceylan (and OSDL) source files ?</dt>
+	<dd>	
+	<p>
+	To get rid of annoying issues with tabulation length and window sizes, we recommend using <a href="http://www.nedit.org/" target="_blank">nedit</a> (or its counterpart <code>nc</code>) as source code editor, with following settings :
+	<ul>
+		<li><b>tabulations</b> (<em>Preferences->Tabs</em>)
+: Tab spacing (for hardware tab characters) : 4, with no tabs emulated, with use of tab characters in padding and emulated tabs</li>
+		<li><b>window size</b> (<em>Preferences->Default Settings->Initial Window Size->Custom</em>) : enter 60x100, and remember to select afterwards <em>Preferences->Save Defaults</em></li>
+	</ul>
+	</p>	
+	</dd>
+ 
+	<dt>I want to add a new module or sub-module to Ceylan</dt>
+	<dd>Please refer to the relevant section of the <a href="../../../../../../../OSDL/OSDL-0.3/src/doc/web/main/documentation/OSDL/OSDL-0.3/OSDL-usersguide.html#newModule" target="_blank">OSDL user's guide</a>.
+	</dd>
+
+
+</dl>
+
+<br>
+<br>
+<br>
+<br>
+  
+<h3>Please react !</h3>
+
+<p>If you have information more detailed or more recent than those
+presented in this document, if you noticed errors, neglects or points
+insufficiently discussed, or if you would like to contribute and help us, even a little bit, <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20Troubleshooting">drop
+us a line</a> !</p>
+
+<br>
+<br>
+
+<hr>
+
+<center>
+  [<a href="#_top_">Top</a>]
+  <br>
+  <br>
+  <em>Last update : 2005, February 27</em>
+</center>
+
+</body>
+</html>

@@ -1,0 +1,28 @@
+               
+			  
+			     What has changed in Ceylan ?
+         
+	(Organized release by release, from the latest to the oldest)
+			 
+
+			 
+*** Main changes in Ceylan 0.3 [released in 2006] :
+
+	* custom-made GNU makefiles replaced by fully autotool-based build system (automake, autoconf, libtool)
+	* Ceylan platform-related feature system added, with eight first features available on the GNU/Linux platform, namely the support of : regular expressions, multithread, network, file descriptors, symbolic links, advanced file attribute, file locks and advanced process management
+	* migration from CVS to SVN
+	* having now a dedicated official website (http://ceylan.sourceforge.net) and mirror site (http://ceylan.esperide.com), instead of using OSDL's ones
+
+
+			 
+*** Main changes in Ceylan 0.2 [released in 2004] :
+
+	* a lot more modules added
+	* ChangeLog system added, along with auto-generated README and INSTALL files
+
+
+
+*** Main changes in Ceylan 0.1 [released in 2003] :
+
+	* first Ceylan library built and tested
+

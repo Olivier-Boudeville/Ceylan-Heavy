@@ -1,0 +1,18 @@
+nedit*text.background: black
+nedit*text.foreground: white
+nedit*text.cursorForeground: white
+nedit*text.selectBackground: gray50
+nedit*text.lineNumForeground: red
+nedit.shell: /bin/bash
+nedit.maxPrevOpenFiles: 50
+
+
+xdvi*background: white
+xdvi*foreground: black
+dtterm*allowSendEvents: true
+ghostview*background: white
+ghostview*foreground: black
+xfig*background: white
+xfig*foreground: black
+
+

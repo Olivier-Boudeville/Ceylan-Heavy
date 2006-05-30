@@ -1,0 +1,115 @@
+# Bash configuration file.
+
+# Created 2002, June 27.
+# Author : Olivier Boudeville (olivier.boudeville@online.fr)
+
+# This script triggers the Linux-specific part of bash configuration.
+
+
+
+# Compilers section :
+
+
+# Intel C++ compiler :
+alias icc=/opt/intel/compiler70/ia32/bin/icc
+
+export GCC_DEFAULT_ROOT=/usr/local
+export GCC_ALTERNATE_ROOT=/usr/bin
+
+
+export GCC_DEFAULT_LOCATION=${GCC_DEFAULT_ROOT}/bin/gcc
+export GCC_ALTERNATE_LOCATION=${GCC_ALTERNATE_ROOT}/bin/gcc
+
+
+if [ -x "$GCC_DEFAULT_LOCATION" ] ; then
+	alias gcc='$GCC_DEFAULT_LOCATION'
+	export C_COMPILER=$GCC_DEFAULT_LOCATION
+	export GCC_ROOT=$GCC_DEFAULT_ROOT
+
+else
+	if [ -x "$GCC_ALTERNATE_LOCATION" ] ; then
+		alias gcc='$GCC_ALTERNATE_LOCATION'
+		export C_COMPILER=$GCC_ALTERNATE_LOCATION
+		export GCC_ROOT=$GCC_ALTERNATE_ROOT
+	else
+		unset C_COMPILER	
+	fi	
+fi
+
+
+export GPP_DEFAULT_LOCATION=${GCC_DEFAULT_ROOT}/bin/g++
+export GPP_ALTERNATE_LOCATION=${GCC_ALTERNATE_ROOT}/bin/g++
+
+if [ -x "$GPP_DEFAULT_LOCATION" ] ; then
+	alias g++='$GPP_DEFAULT_LOCATION'
+	export CPP_COMPILER=$GPP_DEFAULT_LOCATION
+else
+	if [ -x "$GPP_ALTERNATE_LOCATION" ] ; then
+		alias g++='$GPP_ALTERNATE_LOCATION'
+		export CPP_COMPILER=$GPP_ALTERNATE_LOCATION
+	else
+		unset CPP_COMPILER	
+		unset GCC_ROOT
+	fi	
+fi
+
+
+# Java :
+JAVA_SERVER_ROOT=
+alias javaServer1.3.1_02='$JAVA_SERVER_ROOT/bin/java'
+alias javacServer1.3.1_02='$JAVA_SERVER_ROOT/bin/javac'
+alias jarServer1.3.1_02='$JAVA_SERVER_ROOT/bin/jar'
+alias javadocServer1.3.1_02='$JAVA_SERVER_ROOT/bin/javadoc'
+
+JAVA_LOCAL_ROOT=
+alias javaLocal1.3.1_02='$JAVA_LOCAL_ROOT/bin/java'
+alias javacLocal1.3.1_02='$JAVA_LOCAL_ROOT/bin/javac'
+alias jarLocal1.3.1_02='$JAVA_LOCAL_ROOT/bin/jar'
+alias javadocLocal1.3.1_02='$JAVA_LOCAL_ROOT/bin/javadoc'
+
+alias java='javaLocal1.3.1_02'
+alias javac='javacLocal1.3.1_02'
+alias jar='jarLocal1.3.1_02'
+alias javadoc='javadocLocal1.3.1_02'
+
+
+# tidy :
+export PATH=$PATH:/usr/local/Logiciels/tidy/bin
+
+# astyle :
+export PATH=$PATH:/usr/local/Logiciels/astyle
+
+# Python Imaging Library (PIL) :
+IMAGING_VERSION=1.1.4
+PIL_ROOT=/usr/local/Logiciels/Imaging-${IMAGING_VERSION}/PIL
+
+# aranor CVS repository :
+export CVSROOT=:ext:$USER@aranor:/var/lib/cvs
+
+
+
+# Linux-specific aliases :
+
+alias l='ls -aF --color'
+alias ls='ls -F --color'
+alias ll='ls -aF -l --color'
+
+# "cd" keyboard counterparts :
+alias xs='cd $1'
+alias vf='cd $1'
+
+
+# Versions and path for OSDL and Ceylan set in .bashrc.common
+
+
+# No text output, otherwise scp fails.
+
+#echo "-- Bash initialized according to Boudeville Standards on Linux --"
+
+
+#FORTUNE=`which fortune`
+#
+#if [ -x "${FORTUNE}" ]; then
+#	echo
+#	${FORTUNE}
+#fi

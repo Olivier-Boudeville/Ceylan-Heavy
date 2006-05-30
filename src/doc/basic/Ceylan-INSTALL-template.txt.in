@@ -1,0 +1,21 @@
+
+
+		Ceylan build and installation instructions
+		
+		
+The installation of Ceylan @CEYLAN_FULL_VERSION@ is detailed on the website, please refer to @CEYLAN_SF_URL@, notably at @CEYLAN_SF_VERSION_URL@ for everything specific to this @CEYLAN_VERSION@ version.
+
+The installation procedure is very close to the GNU standard one. 
+
+It is mainly a matter of :
+	bunzip2 -f Ceylan-@CEYLAN_FULL_VERSION@.tar.bz2 && tar -xvf Ceylan-@CEYLAN_FULL_VERSION@.tar
+	cd Ceylan-@CEYLAN_VERSION@
+	./configure
+	make
+	make check
+	su
+	make install
+
+With future releases, one may then enter :
+	exit
+	make installcheck

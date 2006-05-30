@@ -1,0 +1,16 @@
+Created Saturday, March 4, 2006.
+
+
+		Ceylan 0.3 release notes
+		
+
+This version is a major milestone, and is very different from the 0.2 version (see Ceylan-0.3-changes.txt and ChangeLog for more details).
+
+We aimed at an increased portability and modularity. Even if they are improved, there are still some more efforts to plan before meeting our requirements.
+
+		
+Support available through the ceylan-support@lists.sourceforge.net mailing list.
+
+Report Ceylan bugs to the ceylan-bugs@lists.sourceforge.net mailing list.
+
+

@@ -1,0 +1,4 @@
+export TOASM="-p 222 olivier@asmodehn.homeunix.net"
+export TOASMCP="scp -P 222 XYZ olivier@asmodehn.homeunix.net:/home/olivier"
+
+export LOANI_BASE=/mnt/raid/md0/LOANI-0.3/LOANI-installations

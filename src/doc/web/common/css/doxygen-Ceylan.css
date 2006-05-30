@@ -1,0 +1,88 @@
+H1 { text-align: center; }
+
+CAPTION { font-weight: bold }
+
+div.box { border: solid; border-width: thin; color: #303030; width: 100% }
+
+A.qindex {}
+A.qindexRef {}
+A.el { text-decoration: none; font-weight: bold }
+A.elRef { font-weight: bold }
+A.code { text-decoration: none; font-weight: normal; color: #333333 }
+A.codeRef { font-weight: normal; color: #111111 }
+
+
+a:link {
+  color:#000000; 
+  font-size: 110%;
+  background: transparent;
+  text-decoration: none
+}
+
+a:visited {
+  color: #808080;  
+  font-size: 110%;
+  background: transparent;
+  text-decoration: none
+}
+
+a:active {
+  color: #000000;
+  font-size: 110%;
+  background: transparent;
+  font-weight: bold;  
+  text-decoration: none
+}
+
+a:hover {   
+  color:#000000;
+  font-size: 110%;
+  text-decoration:underline;
+  font-weight: bold;
+
+}
+
+
+
+DL.el { margin-left: -1cm }
+DIV.fragment { width: 100%; border: none; background-color: #F0F0F0}
+DIV.ah { background-color: #DDDDDD; font-weight: bold; color: #303030; margin-bottom: 3px; margin-top: 3px }
+
+TD.md { background-color: #E0E0E0; font-weight: bold; }
+TD.mdname1 { background-color: #E0E0E0; font-weight: bold; color: #888888; }
+TD.mdname { background-color: #E0E0E0; font-weight: bold; color: #888888; width: 600px; }
+
+DIV.groupHeader { margin-left: 16px; margin-top: 12px; margin-bottom: 6px; font-weight: bold }
+DIV.groupText { margin-left: 16px; font-style: italic; font-size: smaller }
+BODY { background:  #FFFFFF; color: #000000 }
+TD.indexkey { 
+   background-color: #CCCCCC; 
+   font-weight: bold; 
+   padding-right  : 10px; 
+   padding-top    : 2px; 
+   padding-left   : 10px; 
+   padding-bottom : 2px; 
+   margin-left    : 0px; 
+   margin-right   : 0px; 
+   margin-top     : 2px; 
+   margin-bottom  : 2px  
+}
+TD.indexvalue { 
+   background-color: #E0E0E0; 
+   font-style: italic; 
+   padding-right  : 10px; 
+   padding-top    : 2px; 
+   padding-left   : 10px; 
+   padding-bottom : 2px; 
+   margin-left    : 0px; 
+   margin-right   : 0px; 
+   margin-top     : 2px; 
+   margin-bottom  : 2px  
+}
+span.keyword       { color: #777777 }
+span.keywordtype   { color: #999999 }
+span.keywordflow   { color: #333333 }
+span.comment       { color: #555555 }
+span.preprocessor  { color: #111111 }
+span.stringliteral { color: #222222 }
+span.charliteral   { color: #444444 }

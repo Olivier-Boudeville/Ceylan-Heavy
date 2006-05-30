@@ -1,0 +1,75 @@
+## Makefile.am for the main Ceylan library.
+
+
+SUFFIXES = .cc .h
+
+
+# These are the subdirectories (i.e. submodules) that are always built :
+BUILT_SUBDIRS = \
+	generic     \
+	logs        \
+	modules     \
+	interfaces  \
+	maths       \
+	system      
+
+	
+	
+# These are the subdirectories which may be built :
+EXTRA_SUBDIRS =	@CEYLAN_EXTRA_DIRS@
+
+# Subdirectories taken into account but not especially built :
+OTHER_SUBDIRS = scripts
+
+# These are the subdirectories which will be taken into account now :
+SUBDIRS = $(BUILT_SUBDIRS) $(OTHER_SUBDIRS) $(EXTRA_SUBDIRS)
+
+# These are the subdirectories which will be distributed with 'make dist' :
+DIST_SUBDIRS = $(SUBDIRS)
+
+
+# The Ceylan library target :
+lib_LTLIBRARIES = libCeylan.la
+
+# All the library sources :
+libCeylan_la_SOURCES = $(GENERAL_SRCS)
+
+# Linker flag for the library :
+libCeylan_la_LDFLAGS = \
+	-no-undefined                                                             \
+	-release $(CEYLAN_LT_RELEASE)                                             \
+	-version-info $(CEYLAN_LT_CURRENT):$(CEYLAN_LT_REVISION):$(CEYLAN_LT_AGE) 
+
+				
+# Submodule convenience libraries :	
+SUBLIBS = \
+	generic/libCeylanGeneric.la       \
+	logs/libCeylanLogs.la             \
+	modules/libCeylanModules.la       \
+	interfaces/libCeylanInterfaces.la \
+	maths/libCeylanMaths.la           \
+	system/libCeylanSystem.la         	
+	
+	
+# The overall library is made from submodule convenience libraries and al :	
+libCeylan_la_LIBADD	= \
+	$(SUBLIBS)           \
+	@CEYLAN_EXTRA_LIBS@   \
+	@SYSTEM_LIBS@        
+	
+	
+libCeylan_la_DEPENDENCIES = \
+	$(SUBLIBS)           \
+	@CEYLAN_EXTRA_LIBS@   
+
+	
+libCeylanIncludedir      = $(includedir)/Ceylan
+libCeylanInclude_HEADERS = Ceylan.h CeylanConfig.h
+
+
+# Run ldconfig after installing the library:
+install-hook:
+	-ldconfig
+
+clean-local:
+	-@rm -f stamp-h1 CeylanTemporaryConfig.h*
