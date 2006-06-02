@@ -378,7 +378,7 @@ nedit.warnFileMods: True
 nedit.warnRealFileMods: True
 nedit.warnExit: True
 nedit.searchMethod: Literal
-nedit.textRows: 60
+nedit.textRows: 45
 nedit.textCols: 80
 nedit.tabDistance: 4
 nedit.emulateTabs: 0
