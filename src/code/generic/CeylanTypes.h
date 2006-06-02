@@ -44,6 +44,7 @@
 //#include <inttypes.h>   // for int8_t and others
 
 
+
 namespace Ceylan
 {
 	
@@ -52,72 +53,151 @@ namespace Ceylan
 	 * Links can be made between the Ceylan basic data types (ex : Sint16) and
 	 * the ones defined by the C language (ex : signed short) and by OpenGL
 	 * (ex : GLshort).
-	 * Between brackets, C synonyms to data types are specified, then OpenGL
-	 * ones (they all start by 'GL'). 
+	 *
+	 * C synonyms to data types are specified, then OpenGL ones (they all 
+	 * start with'GL'). 
+	 *
+	 * For each Ceylan basic numerical datatype, its lower and higher accepted
+	 * values are specified. For example, if x is a Uint8, then :
+	 * Uint8Min <= x <= Uint8Max.
 	 *
 	 * @note Depending on the platform and the compiler, size of C types may
 	 * differ. All sizes are therefore checked at compile time. 
+	 *
+	 * @note For example, int (signed or not) is 4 bytes (32 bits) on 32-bit
+	 * processors, and 2 bytes (16 bits) on 16-bit processors. With 4-bit
+	 * processors, it will be probably a mess again.
 	 *                                         
 	 */
 	 
 	 
 	// First, integer types.
-	
-
-	/**
-	 * Unsigned 8-bit int (unsigned char, GLubyte, GLboolean). 
-	 *
-	 * Could be as well, if inttypes.h was used : typedef uint8_t Uint8 ;
-	 *
-	 */
-	typedef unsigned char Uint8 ;
-	
+		
 	
 
 	/**
 	 * Signed 8-bit int (signed char, GLbyte). 	
+	 * 
+	 * Ranges from -128 to 127 (both included).
 	 *
 	 * Could be as well, if inttypes.h was used : typedef int8_t Sint8 ;
 	 *
 	 */
 	typedef signed char	Sint8 ;
 
-	
+	extern Ceylan::Sint8 Sint8Min /* = -128 */  ;
+	extern Ceylan::Sint8 Sint8Max /* =  127 */  ;
+
+
 	/**
-	 * Unsigned 16-bit int (unsigned short, GLushort). 
+	 * Unsigned 8-bit int (unsigned char, GLubyte, GLboolean).
+	 * 
+	 * Ranges from 0 to 255 (both included).
 	 *
-	 * Could be as well, if inttypes.h was used : typedef uint16_t Uint16 ;
+	 * Could be as well, if inttypes.h was used : typedef uint8_t Uint8 ;
 	 *
 	 */
-	typedef unsigned short Uint16 ;
+	typedef unsigned char Uint8 ;
 	
-	
+	extern Ceylan::Uint8 Uint8Min /* =   0 */ ;
+	extern Ceylan::Uint8 Uint8Max /* = 255 */ ;
+
+
+
+
 	/**
 	 * Signed 16-bit int (signed short, GLshort). 
+	 *
+	 * Ranges from -32 768 to 32 767 (both included).
 	 *
 	 * Could be as well, if inttypes.h was used : typedef int16_t Sint16 ;
 	 *
 	 */
 	typedef signed short Sint16 ;
 
-	
+	extern Ceylan::Sint16 Sint16Min /* = -32768  */ ;
+	extern Ceylan::Sint16 Sint16Max /* =  32767  */ ;
+
+
 	/**
-	 * Unsigned 32-bit int (unsigned int, GLuint, GLenum, GLbitfield). 	
+	 * Unsigned 16-bit int (unsigned short, GLushort). 
 	 *
-	 * Could be as well, if inttypes.h was used : typedef uint32_t Uint32 ;
+	 * Ranges from 0 to 65 535 (both included).
+	 *
+	 * Could be as well, if inttypes.h was used : typedef uint16_t Uint16 ;
 	 *
 	 */
-	typedef unsigned int Uint32 ;
+	typedef unsigned short Uint16 ;
+	
+	extern Ceylan::Uint16 Uint16Min /* =     0 */ ;
+	extern Ceylan::Uint16 Uint16Max /* = 65535 */ ;
+	
 
 
+	
 	/**
 	 * Signed 32-bit int (signed int, GLint, GLsizei).
+	 *
+	 * Ranges from -2 147 483 648 to 2 147 483 647 (both included).
 	 *
 	 * Could be as well, if inttypes.h was used : typedef int32_t Sint32 ;
 	 *
 	 */
 	typedef signed int Sint32 ;
 
+
+	/*
+	 * Actually is -2147483648 but is incremented since 
+	 * 'this decimal constant is unsigned only in ISO C90'.
+	 *
+	 */
+	extern Ceylan::Sint32 Sint32Min /* = -2147483647  */ ;
+	extern Ceylan::Sint32 Sint32Max /* =  2147483647  */ ;
+	
+	
+	/**
+	 * Unsigned 32-bit int (unsigned int, GLuint, GLenum, GLbitfield). 	
+	 *
+	 * Ranges from 0 to 4 294 967 295 (both included).
+	 *
+	 * Could be as well, if inttypes.h was used : typedef uint32_t Uint32 ;
+	 *
+	 */
+	typedef unsigned int Uint32 ;
+
+	extern Ceylan::Uint32 Uint32Min /* = 0  */ ;
+	
+	
+	/*
+	 * Actually is 4294967294 but is set to a lower value (the highest 
+	 * possible one) since 'this decimal constant is unsigned only in ISO C90'.
+	 *
+	 */
+	extern Ceylan::Uint32 Uint32Max 
+		/* = 4294967294 in theory, 2147483647 actually */ ;
+	
+
+
+		
+	/**
+	 * Variable able to store very large signed integer values.
+	 *
+	 * Ranges depend on the platform.
+	 *
+	 */
+	typedef signed long SignedLongInteger ;
+	
+	
+	/**
+	 * Variable able to store very large positive integer values.
+	 *
+	 * Ranges depend on the platform.
+	 *
+	 */
+	typedef unsigned long UnsignedLongInteger ;
+	
+	
+	
 
 	/** 
 	 * 64-bit data types are not supported on all platforms.
@@ -174,6 +254,8 @@ namespace Ceylan
 	/**
 	 * Unsigned 64-bit int. 	
 	 *
+	 * Ranges not specified for the moment. 
+	 *
 	 * Could be as well, if inttypes.h was used : typedef uint64_t Uint64 ;
 	 *
 	 */
@@ -183,10 +265,12 @@ namespace Ceylan
 	/**
 	 * Signed 64-bit int.	
 	 *
+	 * Ranges from  (both included).
+	 *
 	 * Could be as well, if inttypes.h was used : typedef int64_t Sint64 ;
 	 *
 	 */
-	typedef CEYLAN_64_BIT_TYPE Sint64 ;
+	typedef signed CEYLAN_64_BIT_TYPE Sint64 ;
 	
 	
 #else // CEYLAN_64_BIT_TYPE
@@ -209,6 +293,7 @@ namespace Ceylan
  * From here normally Ceylan::Uint64 and Ceylan::Sint64 can be used in 
  * all cases.
  *
+ *
  */
 	 
 	
@@ -222,13 +307,62 @@ namespace Ceylan
 	 *
 	 */
 	
-	/// 32-bit floats (GLfloat, GLclampf).	 
+	
+	/**
+	 * 32-bit floats (GLfloat, GLclampf).	 
+	 *
+	 * Ranges from -3.4*10^-38 to 3.4*10^38 (both included).
+	 *
+	 * Mantissa is coded in 23 bits, exponent in 8 bits, sign in 1 bit.
+	 *
+	 * Precision is at least 6 digits after the decimal point. 
+	 * 
+	 */
 	typedef float Float32 ;
 	
-	/// 64-bit doubles a.k.a. long floats (GLdouble, GLclampd).	 
+	extern Ceylan::Float32 Float32Min /* = -3.4E-38 */ ;
+	extern Ceylan::Float32 Float32Max /* =  3.4E38  */ ;
+	
+	
+	/**
+	 * 64-bit doubles a.k.a. long floats (GLdouble, GLclampd).	 
+	 *
+	 * Ranges from -1.7*10^-308 to 1.7*10^308 (both included).
+	 *
+	 * Mantissa is coded in 52 bits, exponent in 11 bits, sign in 1 bit.
+	 *
+	 * Precision is at least 15 digits after the decimal point. 
+	 *
+	 */
 	typedef double Float64 ;
 	
-	// long double are non standard.
+	extern Ceylan::Float64 Float64Min /* = -1.7E-308 */ ;
+	extern Ceylan::Float64 Float64Max /* =  1.7E308  */ ;
+	
+	
+	/**
+	 * 80-bit long double are non standard.
+	 *
+	 * Ranges from -3.4*10^-4932 to 3.4*10^4932 (both included).
+	 *
+	 * Mantissa is coded 64 in bits, exponent in 15 bits, sign in 1 bit.
+	 *
+	 * Precision is at least 17 digits after the decimal point. 
+	 *
+	 */
+	typedef long double Float80 ;
+	
+	extern Ceylan::Float80 Float80Min /* = -3.4E-4932 */ ;
+
+	/*
+	 * Actually is 3.4E4932 but is set to a lower value (the highest 
+	 * possible one) since 'floating constant exceeds range of double'.
+	 *
+	 */
+	extern Ceylan::Float80 Float80Max 
+		/*= 3.4E4932 in theory, 1.7E308 actually */ ;
+	
+	
 	
 	
 	/**
@@ -242,24 +376,17 @@ namespace Ceylan
 	/**
 	 * Variable able to store element for list.
 	 *
-	 * Using 'int' just because a datatype has to be specified, hopefully 
-	 * the size does not depend on the listed type.
+	 * Using 'Ceylan::Uint16' just because a datatype has to be specified,
+	 * hopefully the size does not depend on the listed type.
 	 *
 	 * @see CeylanStringUtils.h for StringSize
 	 *
 	 */
-	typedef std::list<int>::size_type ListSize ;
+	typedef std::list<Ceylan::Uint16>::size_type ListSize ;
 	
 	
 	/// Flags, fields of 32 bits. 
 	typedef Ceylan::Uint32 Flags ;
-	
-	
-	/// Variable able to store very large signed integer values.
-	typedef signed long SignedLongInteger ;
-	
-	/// Variable able to store very large positive integer values.
-	typedef unsigned long UnsignedLongInteger ;
 	
 	
 	
@@ -279,19 +406,21 @@ namespace Ceylan
 #define CEYLAN_COMPILE_TIME_ASSERT(name, x)               \
 		typedef int CEYLAN_stop_wrong_size_for_ ## name[(x) * 2 - 1]
 
-	CEYLAN_COMPILE_TIME_ASSERT( uint8,   sizeof(Uint8)   == 1 ) ;
-	CEYLAN_COMPILE_TIME_ASSERT( sint8,   sizeof(Sint8)   == 1 ) ;
+	CEYLAN_COMPILE_TIME_ASSERT( uint8,   sizeof(Uint8)   == 1  ) ;
+	CEYLAN_COMPILE_TIME_ASSERT( sint8,   sizeof(Sint8)   == 1  ) ;
 	
-	CEYLAN_COMPILE_TIME_ASSERT( uint16,  sizeof(Uint16)  == 2 ) ;
-	CEYLAN_COMPILE_TIME_ASSERT( sint16,  sizeof(Sint16)  == 2 ) ;
+	CEYLAN_COMPILE_TIME_ASSERT( uint16,  sizeof(Uint16)  == 2  ) ;
+	CEYLAN_COMPILE_TIME_ASSERT( sint16,  sizeof(Sint16)  == 2  ) ;
 	
-	CEYLAN_COMPILE_TIME_ASSERT( uint32,  sizeof(Uint32)  == 4 ) ;
-	CEYLAN_COMPILE_TIME_ASSERT( sint32,  sizeof(Sint32)  == 4 ) ;
-	CEYLAN_COMPILE_TIME_ASSERT( float32, sizeof(Float32) == 4 ) ;
+	CEYLAN_COMPILE_TIME_ASSERT( uint32,  sizeof(Uint32)  == 4  ) ;
+	CEYLAN_COMPILE_TIME_ASSERT( sint32,  sizeof(Sint32)  == 4  ) ;
+	CEYLAN_COMPILE_TIME_ASSERT( float32, sizeof(Float32) == 4  ) ;
 	
-	CEYLAN_COMPILE_TIME_ASSERT( uint64,  sizeof(Uint64)  == 8 ) ;
-	CEYLAN_COMPILE_TIME_ASSERT( sint64,  sizeof(Sint64)  == 8 ) ;
-	CEYLAN_COMPILE_TIME_ASSERT( float64, sizeof(Float64) == 8 ) ;
+	CEYLAN_COMPILE_TIME_ASSERT( uint64,  sizeof(Uint64)  == 8  ) ;
+	CEYLAN_COMPILE_TIME_ASSERT( sint64,  sizeof(Sint64)  == 8  ) ;
+	CEYLAN_COMPILE_TIME_ASSERT( float64, sizeof(Float64) == 8  ) ;
+
+	//CEYLAN_COMPILE_TIME_ASSERT( float80, sizeof(Float80) == 10 ) ;
 
 }
 
