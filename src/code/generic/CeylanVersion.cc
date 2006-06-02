@@ -175,7 +175,7 @@ bool Version::isUsualVersionSchemeCompliant() const throw()
 }
 
 
-bool ::operator < ( const Ceylan::Version & vFirst, 
+bool operator < ( const Ceylan::Version & vFirst, 
 	const Ceylan::Version & vSecond ) /* throw( VersionException ) */
 {
 
@@ -206,7 +206,7 @@ bool ::operator < ( const Ceylan::Version & vFirst,
 
 
 
-bool ::operator == ( const Ceylan::Version & vFirst, 
+bool operator == ( const Ceylan::Version & vFirst, 
 	const Ceylan::Version & vSecond ) /* throw( VersionException ) */
 {
 
