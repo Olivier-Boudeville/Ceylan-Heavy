@@ -48,6 +48,7 @@ GENERIC_IMPLEMENTATIONS = \
 	CeylanStringUtils.cc                 \
 	CeylanTestException.cc               \
 	CeylanTimestamp.cc                   \
+	CeylanTypes.cc                       \
 	CeylanUnicode.cc                     \
 	CeylanUtils.cc                       \
 	CeylanVersion.cc
