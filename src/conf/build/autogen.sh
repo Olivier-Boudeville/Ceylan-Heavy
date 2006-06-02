@@ -130,6 +130,15 @@ execute()
 			echo "Error while executing '$*', see $log_filename" 1>&2
 		else
 			echo "Error while executing '$*'" 1>&2
+			
+			if [ "$1" == "aclocal" ]; then
+				echo -e "\nNote : if aclocal is failing since AM_CXXFLAGS (used in configure.ac) cannot be found in library, then check that your aclocal version is indeed 1.9 or newer. For example, with Debian-based distributions, /usr/bin/aclocal is a symbolic link to /etc/alternatives/aclocal, which itself is a symbolic link which may or may not point to the expected aclocal version. Your version of $1 is :\n\t" `$1 --version` "\n\n\t" `/bin/ls -l --color $(type -p $1)` 
+			elif [ "$1" == "automake" ]; then
+				echo -e "\nNote : check that your automake version is indeed 1.9 or newer. For example, with Debian-based distributions, /usr/bin/automake is a symbolic link to /etc/alternatives/automake, which itself is a symbolic link which may or may not point to the expected automake version. Your version of $1 is :\n\t" `$1 --version` "\n\n\t" `/bin/ls -l --color $(type -p $1)`
+			elif [ "$1" == "./configure" ]; then
+				echo -e "\nNote : check the following log :" `pwd`/config.log
+  			fi
+			
 		fi
 			
 		exit $RES
