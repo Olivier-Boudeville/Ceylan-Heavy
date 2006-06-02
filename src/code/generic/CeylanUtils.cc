@@ -51,7 +51,7 @@ using namespace Ceylan ;
 
 #define CEYLAN_DEBUG_VERSION 0
 
-const LibtoolVersion & Ceylan::GetVersion() throw()
+const Ceylan::LibtoolVersion & Ceylan::GetVersion() throw()
 {
 
 
