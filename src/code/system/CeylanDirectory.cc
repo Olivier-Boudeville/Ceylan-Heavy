@@ -381,14 +381,37 @@ string Directory::GetCurrentWorkingDirectoryName() throw( DirectoryException )
 
 #if CEYLAN_USES_GETCWD
 
+	/*
+	 * With following automatic variable, frame size is deemed 
+	 * 'too large for reliable stack checking' :
+	 
 	char buf[ PATH_MAX + 1 ] ;
+	 
+	 * Another solution would be to use a static string, but this method 
+	 * would not be reentrant anymore.
+	 *
+	 * Hence using dynamic allocation, even if slower :
+	 *
+	 */
 
-	if( ::getcwd( buf, PATH_MAX ) )
-		return buf ;
-
-	throw DirectoryException( "GetCurrentWorkingDirectoryName : "
-		"unable to determine current directory : "
-		 + explainError( getError() ) ) ;
+	char * buf = new char[ PATH_MAX + 1 ] ;
+	
+	if ( ::getcwd( buf, PATH_MAX ) )
+	{
+		string res( buf ) ;
+		delete buf ;
+		
+		return res ;
+		
+	}
+	else
+	{
+		delete buf ;
+	
+		throw DirectoryException( "GetCurrentWorkingDirectoryName : "
+			"unable to determine current directory : "
+		 	+ explainError( getError() ) ) ;
+	}		
 		 
 #else // CEYLAN_USES_GETCWD
 
