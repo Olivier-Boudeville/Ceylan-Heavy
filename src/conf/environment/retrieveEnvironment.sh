@@ -3,10 +3,11 @@
 # Not : this script is seldom tested.
 
 
-USAGE="Usage : "`basename $0`" <install root> [ -d | --debug ] [ --link | -l ] [ -h | --help ]\n Settles down the developer environment, from environment already described in <install root>. If --link is set, won't install anything but expect to be able to link on an existing environment already set in <install root>.\nExample : `basename $0` $HOME/Projects/OSDL-loanized/LOANI-installations --link"
+USAGE="Usage : "`basename $0`" <install root> [ -d | --debug ] [ --link | -l ] [ -h | --help ]\n Settles down the developer environment, from environment already described in <install root>. If --link is set, will not install anything but expect to be able to link on an existing environment already set in <install root>.\nExample : `basename $0` $HOME/Projects/ceylan --link"
 
-# Another install root could be : /mnt/raid/md0/LOANI-0.3/LOANI-installations
-
+# Other install roots could be : 
+#   - /mnt/raid/md0/LOANI-0.3/LOANI-installations
+#   - $HOME/Projects/OSDL-loanized/LOANI-installations
 
 # Default settings.
 
@@ -127,7 +128,7 @@ checkBackupable()
 	fi
 	
 	if [ -e "${1}.${BACKUP_SUFFIX}" -o -h "${1}.${BACKUP_SUFFIX}" ] ; then
-		ERROR "A previous back-up of your file ${1} already exists (${1}.${BACKUP_SUFFIX}), probably because of a previous developer environment retrieval. Please check whether this back-up file is to be kept, if not, remove it first : this script won't overwrite any file."
+		ERROR "A previous back-up of your file ${1} already exists (${1}.${BACKUP_SUFFIX}), probably because of a previous developer environment retrieval. Please check whether all these {.*|*}.${BACKUP_SUFFIX} files are to be kept, if not, remove them all first : this script will not overwrite any file."
 		exit 11
 	fi
 
