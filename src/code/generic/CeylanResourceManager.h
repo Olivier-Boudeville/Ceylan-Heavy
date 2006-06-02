@@ -236,7 +236,7 @@ namespace Ceylan
 
 
 	template <class Key>
-	ResourceManager<Key>::ResourceManager<Key>() throw() :
+	ResourceManager<Key>::ResourceManager() throw() :
 		_cacheHits( 0 ),
 		_cacheMisses( 0 )
 	{
