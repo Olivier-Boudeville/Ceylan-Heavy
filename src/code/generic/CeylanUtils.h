@@ -26,7 +26,7 @@ namespace Ceylan
 	
 	
 	/// Returns the version of the Ceylan library currently linked.
-	const LibtoolVersion & Ceylan::GetVersion() throw() ;
+	const Ceylan::LibtoolVersion & GetVersion() throw() ;
 	
 	
 	/** 
