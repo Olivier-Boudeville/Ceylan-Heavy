@@ -1,9 +1,8 @@
 #!/bin/bash
 
-# Not : this script is seldom tested.
 
 
-USAGE="Usage : "`basename $0`" <install root> [ -d | --debug ] [ --link | -l ] [ -h | --help ]\n Settles down the developer environment, from environment already described in <install root>. If --link is set, will not install anything but expect to be able to link on an existing environment already set in <install root>.\nExample : `basename $0` $HOME/Projects/ceylan --link"
+USAGE="Usage : "`basename $0`" [<install root>] [ -d | --debug ] [ --chekout | -c ] [ -h | --help ]\n Settles down the developer environment, from environment already described in <install root>, if specified, otherwise from environment defined in the source tree of this script. If --link is set, will not install anything but expect to be able to link on an existing environment already set in <install root>.\nExample : `basename $0` $HOME/Projects/ceylan --link"
 
 # Other install roots could be : 
 #   - /mnt/raid/md0/LOANI-0.3/LOANI-installations
@@ -41,24 +40,10 @@ if [ "$1" == "-h" -o "$1" == "--help" ] ; then
 	exit 0
 fi	
 
-INSTALL_ROOT="$1"
-
-
-if [ -z "$INSTALL_ROOT" ]; then
-	echo "Error, no install root specified."
-	echo -e "$USAGE"
-	exit 1
-fi
-
-if [ ! -d $INSTALL_ROOT ]; then
-	echo "Error, install root directory <$1> does not exist, create it first." 
-	echo -e "$USAGE"
-	exit 2
-fi
-
-shift
 
 DEBUG "There are $# arguments."
+
+INSTALL_ROOT=""
 
 while [ $# -gt 0 ] ; do
 
@@ -72,9 +57,9 @@ while [ $# -gt 0 ] ; do
 		token_eaten=0
 	fi
 	
-	if [ "$1" == "-l" -o "$1" == "--link" ] ; then
-		DEBUG "Link mode activated"
-		do_link=0
+	if [ "$1" == "-c" -o "$1" == "--checkout" ] ; then
+		DEBUG "SVN checkout mode activated"
+		do_link=1
 		token_eaten=0		
 	fi
 	
@@ -84,9 +69,7 @@ while [ $# -gt 0 ] ; do
 	fi
 	
 	if [ "$token_eaten" == "1" ] ; then
-		echo "Error, unknown argument : $1"
-		echo -e "$USAGE"
-		exit 2
+		INSTALL_ROOT="$1"
 	fi
 	
 	shift
@@ -94,20 +77,35 @@ while [ $# -gt 0 ] ; do
 done
 
 
+
+if [ -z "$INSTALL_ROOT" ]; then
+	INSTALL_ROOT=`dirname $0`/../../../../..
+	echo "No install root specified, using <$INSTALL_ROOT>."
+fi
+
+if [ ! -d $INSTALL_ROOT ]; then
+	echo "Error, install root directory <$INSTALL_ROOT> does not exist, create it first." 
+	echo -e "$USAGE"
+	exit 2
+fi
+
+
 retrieveProjects()
 {
 	
 	DEBUG "It should be is LOANI's job. Consider using it."
+
+	# This part, when linking is disabled, is seldom tested.
 	
-	echo "   - installing SVN projects into $INSTALL_ROOT"
+	echo "   - installing SVN-based projects into $INSTALL_ROOT"
 
 	cd $INSTALL_ROOT
 
-	CEYLAN_MODULES="Ceylan"
+	CEYLAN_MODULES="ceylan"
 
 	for m in $CEYLAN_MODULES; do
 		echo "      + retrieving module $m"
-		svn $CVS_PARAMETER co $m
+		svn $SVN_PARAMETER co $m
 		echo
 		echo 
 		echo
@@ -117,8 +115,8 @@ retrieveProjects()
 
 
 checkBackupable()
-# Checks that no back-up file is already existing, so that any new backup would not
-# overwrite a previous one.
+# Checks that no back-up file is already existing, so that any new backup
+# would not overwrite a previous one.
 # Usage : checkBackupable <file>
 {
 
@@ -159,7 +157,7 @@ prepareDeveloperEnvironment()
 	
 	echo "      + configuring Xdefaults, vi, bash, CVS, and related"
 		
-	for f in $BASE/.Xdefaults $BASE/.vimrc $BASE/.bashrc* $BASE/.cvsrc; do
+	for f in $BASE/.Xdefaults $BASE/.vimrc $BASE/.bash* $BASE/.cvsrc; do
 		if [ -e $HOME/`basename $f` -o -h $HOME/`basename $f` ] ; then
 			backUpFile $HOME/`basename $f`
 		fi	
