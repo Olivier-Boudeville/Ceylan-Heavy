@@ -2,7 +2,7 @@
 
 
 
-USAGE="Usage : "`basename $0`" [<install root>] [ -d | --debug ] [ --chekout | -c ] [ -h | --help ]\n Settles down the developer environment, from environment already described in <install root>, if specified, otherwise from environment defined in the source tree of this script. If --link is set, will not install anything but expect to be able to link on an existing environment already set in <install root>.\nExample : `basename $0` $HOME/Projects/ceylan --link"
+USAGE="Usage : "`basename $0`" [<install root>] [ -d | --debug ] [ --checkout | -c ] [ -p | --preclean ] [ -h | --help ]\n Settles down the developer environment, from environment already described in <install root>, if specified, otherwise from environment defined in the source tree of this script. If --checkout is set, will install modules from SVN.\nExample : `basename $0` $HOME/Projects/ceylan, or simply `basename $0` (recommended)"
 
 # Other install roots could be : 
 #   - /mnt/raid/md0/LOANI-0.3/LOANI-installations
@@ -20,6 +20,9 @@ do_debug=1
 
 # Link mode (on by default, i.e. set to 0)
 do_link=0
+
+# clean previous back-up mode (off by default, i.e. set to 1)
+do_clean_previous=1
 
 
 DEBUG()
@@ -63,6 +66,12 @@ while [ $# -gt 0 ] ; do
 		token_eaten=0		
 	fi
 	
+	if [ "$1" == "-p" -o "$1" == "--preclean" ] ; then
+		DEBUG "Will preclean any previously existing back-up file"
+		do_clean_previous=1
+		token_eaten=0		
+	fi
+	
 	if [ "$1" == "-h" -o "$1" == "--help" ] ; then
 		echo -e "Help requested : $USAGE"
 		exit 0
@@ -79,15 +88,26 @@ done
 
 
 if [ -z "$INSTALL_ROOT" ]; then
+	
 	INSTALL_ROOT=`dirname $0`/../../../../..
-	echo "No install root specified, using <$INSTALL_ROOT>."
+	echo "No install root specified, using this source tree."
 fi
 
-if [ ! -d $INSTALL_ROOT ]; then
+
+# Transforming INSTALL_ROOT into an absolute path :
+CURRENT_DIR=`pwd`
+cd $INSTALL_ROOT
+INSTALL_ROOT=`pwd`
+cd $CURRENT_DIR
+
+if [ ! -d "$INSTALL_ROOT" ]; then
 	echo "Error, install root directory <$INSTALL_ROOT> does not exist, create it first." 
 	echo -e "$USAGE"
 	exit 2
 fi
+
+
+echo "Using INSTALL_ROOT = $INSTALL_ROOT"
 
 
 retrieveProjects()
@@ -146,12 +166,28 @@ backUpFile()
 }
 
 
+preClean()
+{
+
+	echo "   - precleaning of previous back-up files"
+
+	for f in $HOME/.Xdefaults.previous $HOME/.vimrc.previous $HOME/.bash*.previous $HOME/.cvsrc.previous $HOME/.nedit/nedit.rc.previous ; do
+	
+		if [ -e "$f" ] ; then
+			/bin/rm -f $f
+		fi
+			
+	done
+	
+
+}
+
 prepareDeveloperEnvironment()
 {
 
+	
 	BASE=$INSTALL_ROOT/Ceylan/trunk/src/conf/environment
-	
-	
+		
 	echo "   - preparing developer environment"
 	
 	
@@ -164,6 +200,7 @@ prepareDeveloperEnvironment()
 		ln -s $f $HOME/`basename $f`
 	done
 	
+	cd $BASE
 	
 	echo "      + configuring nedit"
 	
@@ -181,7 +218,6 @@ prepareDeveloperEnvironment()
 	mkdir -p $HOME/tmp/tmp3
 	mkdir -p $HOME/tmp/tmp4
 	mkdir -p $HOME/tmp/tmp5
-
 	
 }
 
@@ -192,6 +228,10 @@ echo "Retrieving classical developer environment."
 echo
 echo "(if not done already, consider publishing your SSH public key to Sourceforge to avoid typing your password multiple times)" 
 echo
+
+if [ "$do_clean_previous" == "1" ] ; then
+	preClean
+fi
 
 if [ "$do_link" == "1" ] ; then
 	retrieveProjects
