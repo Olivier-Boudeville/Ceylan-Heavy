@@ -42,7 +42,7 @@ int main( int argc, char * argv[] )
 			+ myLocator.toString() ) ;
 		
 		// When run from build tree :
-		string firstPath  = "../../src/code" ;
+		string firstPath  = "../src/code" ;
 		
 		myLocator.addPath( firstPath ) ;
         LogPlug::info( "Adding a first path : " + myLocator.toString() ) ;
