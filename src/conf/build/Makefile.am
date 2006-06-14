@@ -31,7 +31,7 @@ CONFIGURE_SCRIPTS_BASE_URL = http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/
 
 DOWNLOADED_HELPERS = config.guess config.sub
 
-CONFIG_FILES = $(CONFIGURE_FILE) $(DOWNLOADED_HELPERS)
+CONFIG_FILES = $(DOWNLOADED_HELPERS)
 
 
 all : links
@@ -56,7 +56,7 @@ download-config-scripts: clean-download
 links:
 	@echo "@CEYLAN_MAKE_STYLE@    Creating links to config\
 	files@CEYLAN_DEFAULT_STYLE@"
-	@cd $(TOP); for f in $(CONFIG_FILES); do \
+	@cd ${top_builddir}; for f in $(CONFIG_FILES); do \
 	ln -sf conf/build/$$f ; done 
 	
 	
