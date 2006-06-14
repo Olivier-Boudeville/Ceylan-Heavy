@@ -26,7 +26,8 @@ test_install_location="$library_location"
 test_install_location_opt="--prefix=$test_install_location"
 
 # To check the user can override them :
-test_overriden_options="CPPFLAGS=\"-DTEST_CPPFLAGS\" LDFLAGS=\"-LTEST_LDFLAGS\""
+#test_overriden_options="CPPFLAGS=\"-DTEST_CPPFLAGS\" LDFLAGS=\"-LTEST_LDFLAGS\""
+test_overriden_options=""
 
 configure_opt="-enable-strict-ansi --enable-debug $library_location_opt $test_install_location_opt $test_overriden_options"
 
@@ -208,7 +209,7 @@ generateCustom()
 	(aclocal --version) < /dev/null > /dev/null 2>&1 || {
 		echo
 		echo "**Error**: Missing \`aclocal'.  The version of \`automake'"
-		echo "installed doesn't appear recent enough."
+		echo "installed does not appear recent enough."
 		echo "You can get automake from ftp://ftp.gnu.org/pub/gnu/"
 		exit 22
 	}
@@ -259,13 +260,17 @@ generateCustom()
 	echo
 	echo " - executing 'configure' script"
 	
-
 	(./configure --version) < /dev/null > /dev/null 2>&1 || {
 		echo
 		echo "**Error**: the 'configure' cannot be properly used"
 		exit 26
 	}
 	
+
+	if [ -n "$library_location_opt" ] ; then
+		echo "(updating, for this script only, library search path with ${library_location}/lib)"
+		LD_LIBRARY_PATH=$library_location/lib:$LD_LIBRARY_PATH
+	fi
 	
  	execute ./configure $configure_opt
 	
