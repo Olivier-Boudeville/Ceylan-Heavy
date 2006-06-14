@@ -626,7 +626,7 @@ namespace Ceylan
 
 
 	template <class Key>
-	SmartResourceManager<Key>::SmartResourceManager<Key>() throw() :
+	SmartResourceManager<Key>::SmartResourceManager() throw() :
 		ResourceManager<Key>(),
 		_quota( 0 ),
 		_totalSize( 0 ),
@@ -639,7 +639,7 @@ namespace Ceylan
 
 		
 	template <class Key>
-	SmartResourceManager<Key>::SmartResourceManager<Key>( System::Size quota,
+	SmartResourceManager<Key>::SmartResourceManager( System::Size quota,
 		CachePolicy policy )
 			throw() :
 		ResourceManager<Key>(),
