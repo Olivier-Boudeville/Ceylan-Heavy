@@ -230,7 +230,7 @@ namespace Ceylan
 
 
 	template <class Key>
-	BasicResourceManager<Key>::BasicResourceManager<Key>() throw() :
+	BasicResourceManager<Key>::BasicResourceManager() throw() :
 		ResourceManager<Key>(),
 		_entries()
 	{
@@ -239,7 +239,7 @@ namespace Ceylan
 
 				
 	template <class Key>
-	BasicResourceManager<Key>::~BasicResourceManager<Key>() throw()
+	BasicResourceManager<Key>::~BasicResourceManager() throw()
 	{
 	
 		/**
