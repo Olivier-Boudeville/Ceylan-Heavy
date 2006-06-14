@@ -82,7 +82,7 @@ echo -e "(be warned that some tests might take a long time, and that some of the
 
 # This script will automatically run each test of each selected Ceylan module.
 #TESTED_MODULES="generic logs interfaces modules system maths"
-TESTED_ROOT_MODULES=`cd ${TEST_ROOT}; find . -type d -mindepth 1 | grep -v autom4te.cache | grep -v .svn | grep -v '.deps' | grep -v '.libs' | grep -v 'testCeylan' `
+TESTED_ROOT_MODULES=`cd ${TEST_ROOT}; find . -mindepth 1 -type d | grep -v autom4te.cache | grep -v .svn | grep -v '.deps' | grep -v '.libs' | grep -v 'testCeylan' `
 
 # "[OK] " is 5 character wide and must be aligned along the right edge :
 COLUMNS=`tput cols`
@@ -95,7 +95,7 @@ for m in ${TESTED_ROOT_MODULES} ; do
 	
 	printColor "\n${term_offset}${term_primary_marker}Playing all tests of module '"`echo $m | sed 's|^./||1'`"' : " $magenta_text $black_back
 	
-	TESTS=`find ${TEST_ROOT}/$m -perm +o+x,g+x -a -type f -a -name 'testCeylan*' -mindepth 1 -maxdepth 1`
+	TESTS=`find ${TEST_ROOT}/$m -mindepth 1 -maxdepth 1 -perm +o+x,g+x -a -type f -a -name 'testCeylan*' `
 	if [ "$is_batch" == "1" ] ; then
 	
 		for t in $TESTS ; do
@@ -130,7 +130,8 @@ for m in ${TESTED_ROOT_MODULES} ; do
 				./$t --interactive
 			fi			
 		
-			if [ "$?" == 0 ] ; then
+			return_code="$?"
+			if [ "$return_code" == 0 ] ; then
 				# Test succeeded :
 				if [ "$is_batch" == "1" ] ; then
 					echo
@@ -144,7 +145,7 @@ for m in ${TESTED_ROOT_MODULES} ; do
 				error_count=$(($error_count+1))
 				if [ "$is_batch" == "1" ] ; then
 					echo
-					printColor "${term_offset}$t seems to be failed (exit status $?)     " $white_text $red_back
+					printColor "${term_offset}$t seems to be failed (exit status $return_code)     " $white_text $red_back
 				else
 					printf "[${white_text}m[[${red_text}mKO[${white_text}m]\n"
 				
