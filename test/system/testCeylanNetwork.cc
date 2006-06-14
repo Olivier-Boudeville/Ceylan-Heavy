@@ -126,10 +126,13 @@ int main( int argc, char * argv[] )
 
 		
 		string numericalAddress = "82.225.152.215" ;
-		
+				
+		IPAddressvFour tempv4( numericalAddress ) ;
+		LogPlug::info( "FQDN for " + tempv4.toString() + " is : '"
+			+ getFQDNFromIP( tempv4 ) + "'." ) ;
+
 		LogPlug::info( "FQDN for " + numericalAddress + " is : '"
-			+ getFQDNFromIP( IPAddressvFour( numericalAddress ) )
-			+ "'." ) ;
+			+ getFQDNFromIPv4( numericalAddress ) + "'." ) ;
 
 		LogPlug::info( "FQDN for " + wikipediaHost + " is : '"
 			+ getFQDNFromHostname( wikipediaHost ) + "'." ) ;
