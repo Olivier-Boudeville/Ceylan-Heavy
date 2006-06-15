@@ -639,7 +639,13 @@ string operator + ( Ceylan::Float64 i, const string & s )
 }
 
 
-string operator + ( const string & s, Ceylan::Float80 i ) 
+
+/*
+ * See CeylanTypes.h to understand why Ceylan::Float80 is not defined anymore.
+ *
+ */
+
+string operator + ( const string & s, Ceylan::LongFloat i ) 
 	throw( Ceylan::Exception )
 {
 
@@ -656,7 +662,7 @@ string operator + ( const string & s, Ceylan::Float80 i )
     if ( oss.fail() )
 	{
         throw Ceylan::Exception( "Conversion error in Ceylan operator "
-			"const string & + Ceylan::Float80 -> string." ) ;
+			"const string & + Ceylan::LongFloat -> string." ) ;
 	}
 	
 #endif // CEYLAN_DEBUG
@@ -666,7 +672,7 @@ string operator + ( const string & s, Ceylan::Float80 i )
 }
 
 
-string operator + ( Ceylan::Float80 i, const string & s ) 
+string operator + ( Ceylan::LongFloat i, const string & s ) 
 	throw( Ceylan::Exception )
 {
 
@@ -683,7 +689,7 @@ string operator + ( Ceylan::Float80 i, const string & s )
     if ( oss.fail() )
 	{
         throw Ceylan::Exception( "Conversion error in Ceylan operator "
-			"Ceylan::Float80 + const string & -> string." ) ;
+			"Ceylan::LongFloat + const string & -> string." ) ;
 	}
 	
 #endif // CEYLAN_DEBUG
@@ -691,8 +697,6 @@ string operator + ( Ceylan::Float80 i, const string & s )
     return ( res ) ;
 
 }
-
-
 
 
 string operator + ( const string & s, const void * p ) 
@@ -1200,7 +1204,13 @@ string Ceylan::toString( Ceylan::Float64 value, Ceylan::Uint8 precision )
 }
 
 
-string Ceylan::toString( Ceylan::Float80 value, Ceylan::Uint8 precision ) 
+
+/*
+ * See CeylanTypes.h to understand why Ceylan::Float80 is not defined anymore.
+ *
+ */
+ 
+string Ceylan::toString( Ceylan::LongFloat value, Ceylan::Uint8 precision ) 
 	throw( Ceylan::Exception )
 {
     ostringstream oss ;
@@ -1218,7 +1228,7 @@ string Ceylan::toString( Ceylan::Float80 value, Ceylan::Uint8 precision )
     if ( oss.fail() )
 	{
         throw Ceylan::Exception( "Conversion error in method "
-			"Ceylan::toString : long Ceylan::Float64 -> string."
+			"Ceylan::toString : Ceylan::LongFloat -> string."
         ) ;
 	}
 	
