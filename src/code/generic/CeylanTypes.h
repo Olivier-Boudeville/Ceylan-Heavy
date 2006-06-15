@@ -182,7 +182,7 @@ namespace Ceylan
 	/**
 	 * Variable able to store very large signed integer values.
 	 *
-	 * Ranges depend on the platform.
+	 * Actual ranges depend on the platform.
 	 *
 	 */
 	typedef signed long SignedLongInteger ;
@@ -191,7 +191,7 @@ namespace Ceylan
 	/**
 	 * Variable able to store very large positive integer values.
 	 *
-	 * Ranges depend on the platform.
+	 * Actual ranges depend on the platform.
 	 *
 	 */
 	typedef unsigned long UnsignedLongInteger ;
@@ -339,6 +339,34 @@ namespace Ceylan
 	extern Ceylan::Float64 Float64Min /* = -1.7E-308 */ ;
 	extern Ceylan::Float64 Float64Max /* =  1.7E308  */ ;
 	
+
+
+	/*
+	 * Very large floating point values are not encapsulated with regard to
+	 * their bit widths since they depend too much on the underlying platform.
+	 *
+	 * For example, GNU/Linux IA32 thinks `long double' is 96-bits (while the
+	 * real number of used bits is only 80, both in processor and in memory),
+	 * whereas HP-UX thinks it is 128-bits, other 80, etc.
+	 *
+	 * So the largest fixed-size floating point value used by Ceylan is
+	 * Ceylan::Float64 (64-bits).
+	 *
+	 * One can use nevertheless (Un)SignedLongFloat, provided she does not
+	 * rely on any specific bit width.
+	 *
+	 */ 
+	 
+	 
+	/**
+	 * Variable able to store very large (signed) floating-point values.
+	 *
+	 * Actual ranges depend on the platform.
+	 *
+	 */
+	typedef long double LongFloat ;
+	
+		
 	
 	/**
 	 * 80-bit long double are non standard.
@@ -350,17 +378,36 @@ namespace Ceylan
 	 * Precision is at least 17 digits after the decimal point. 
 	 *
 	 */
-	typedef long double Float80 ;
+	//typedef long double Float80 ;
 	
-	extern Ceylan::Float80 Float80Min /* = -3.4E-4932 */ ;
+	//extern Ceylan::Float80 Float80Min /* = -3.4E-4932 */ ;
 
 	/*
 	 * Actually is 3.4E4932 but is set to a lower value (the highest 
 	 * possible one) since 'floating constant exceeds range of double'.
 	 *
 	 */
-	extern Ceylan::Float80 Float80Max 
-		/*= 3.4E4932 in theory, 1.7E308 actually */ ;
+	//extern Ceylan::Float80 Float80Max 
+	//	/*= 3.4E4932 in theory, 1.7E308 actually */ ;
+	
+	
+	
+	/**
+	 * 96-bit long double are non standard.
+	 *
+	 */
+	//typedef long double Float96 ;
+
+	
+	//extern Ceylan::Float96 Float96Min /* = -3.4E-4932 */ ;
+
+	/*
+	 * Actually is 3.4E4932 but is set to a lower value (the highest 
+	 * possible one) since 'floating constant exceeds range of double'.
+	 *
+	 */
+	//extern Ceylan::Float96 Float96Max 
+	//	/*= 3.4E4932 in theory, 1.7E308 actually */ ;
 	
 	
 	
@@ -420,7 +467,7 @@ namespace Ceylan
 	CEYLAN_COMPILE_TIME_ASSERT( sint64,  sizeof(Sint64)  == 8  ) ;
 	CEYLAN_COMPILE_TIME_ASSERT( float64, sizeof(Float64) == 8  ) ;
 
-	//CEYLAN_COMPILE_TIME_ASSERT( float80, sizeof(Float80) == 10 ) ;
+	//CEYLAN_COMPILE_TIME_ASSERT( Float96, sizeof(Float96) == 12 ) ;
 
 }
 
