@@ -25,6 +25,6 @@ Ceylan::Float32 Float32Max =  3.4E38  ;
 Ceylan::Float64 Float64Min = -1.7E-308 ;
 Ceylan::Float64 Float64Max =  1.7E308  ;
 
-Ceylan::Float80 Float80Min = -3.4E-4932 ;
-Ceylan::Float80 Float80Max = 1.7E308    ; // should have been : 3.4E4932
+//Ceylan::Float80 Float80Min = -3.4E-4932 ;
+//Ceylan::Float80 Float80Max = 1.7E308    ; // should have been : 3.4E4932
 
