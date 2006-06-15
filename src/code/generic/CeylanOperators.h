@@ -1,6 +1,7 @@
 #ifndef CEYLAN_OPERATORS_H_
 #define CEYLAN_OPERATORS_H_
 
+
 #include "CeylanException.h"      // for Ceylan::Exception
 #include "CeylanTypes.h"          // for Ceylan::Uint8, etc.
 
@@ -79,7 +80,8 @@ std::string operator + ( Ceylan::Uint32 i, const std::string & s )
 
 
 /*
- * No serialization of Uint64 and Sint64 for the moment.
+ * No serialization of Uint64 and Sint64 for the moment, since
+ * in some cases they are just fake datatypes.
  
 std::string operator + ( const std::string & s, Ceylan::Sint64 i ) 
 	throw( Ceylan::Exception ) ;
@@ -129,10 +131,15 @@ std::string operator + ( Ceylan::Float64 i, const std::string & s )
 	throw( Ceylan::Exception ) ;
 
 
-std::string operator + ( const std::string & s, Ceylan::Float80 i ) 
+/*
+ * See CeylanTypes.h to understand why Ceylan::Float80 is not defined anymore.
+ *
+ */
+  
+std::string operator + ( const std::string & s, Ceylan::LongFloat i ) 
 	throw( Ceylan::Exception ) ;
 	
-std::string operator + ( Ceylan::Float80 i, const std::string & s ) 
+std::string operator + ( Ceylan::LongFloat i, const std::string & s ) 
 	throw( Ceylan::Exception ) ;
 
 
@@ -262,7 +269,7 @@ namespace Ceylan
 	 * specified value prefixed by '0b'.
 	 *
 	 */
-    std::string toString( unsigned long value, bool bitField = false ) 
+    std::string toString( Ceylan::UnsignedLongInteger value, bool bitField = false ) 
 		throw( Exception ) ;
 		
 		
@@ -273,7 +280,7 @@ namespace Ceylan
 	 * specified value prefixed by '0b'.
 	 *
 	 */
-    std::string toString( signed long value, bool bitField = false ) 
+    std::string toString( Ceylan::SignedLongInteger value, bool bitField = false ) 
 		throw( Exception ) ;
 		
 	
@@ -349,11 +356,14 @@ namespace Ceylan
 	 *
 	 * @throw Exception if the conversion failed.
 	 *
+	 * @see CeylanTypes.h to understand why Ceylan::Float80 is not defined
+	 * anymore.
+	 *
 	 */
-    std::string toString( Ceylan::Float80 value, 
+    std::string toString( Ceylan::LongFloat value, 
 			Ceylan::Uint8 precision = Ceylan::DigitOutputPrecision ) 
 		throw( Exception ) ;
-	
+		
 	
 	
 	/**
@@ -387,7 +397,7 @@ namespace Ceylan
 		const std::string & numericalString ) throw( Exception ) ;
 		
 		
-    /// Converts, if possible, a string containing a pointer into a pointer.
+    /// Converts, if possible, a string containing a pointer into that pointer.
     void * stringToAddress( const std::string & addressString ) 
 		throw( Exception ) ;
 
