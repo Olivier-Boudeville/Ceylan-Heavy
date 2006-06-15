@@ -20,6 +20,13 @@ int main( int argc, char * argv[] )
 		<< " bytes, and the size of Ceylan::Sint32 is " 
 		<< sizeof( Ceylan::Sint32 ) << " bytes." << std::endl ;
 
+	/*
+	 * Not used anymore :
+	  
+	std::cerr << "The size of a Float80 is " << sizeof( Ceylan::Float80  )
+		<< " bytes." << std::endl ;
+	 */
+	
 	std::cerr << "The size of a StringSize variable is " 
 		<< sizeof( Ceylan::StringSize )
 		<< " bytes, and the size of a ListSize variable is " 
