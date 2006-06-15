@@ -91,6 +91,10 @@ space_for_test_name=`echo $(( $COLUMNS - 5 ))`
 test_count=0
 error_count=0
 
+if [ "$is_batch" == "0" ] ; then
+	echo -e "\n\tTest results established at "`date '+%A, %B %-e, %Y'\n\n` > ${TESTLOGFILE}
+fi
+
 for m in ${TESTED_ROOT_MODULES} ; do
 	
 	printColor "\n${term_offset}${term_primary_marker}Playing all tests of module '"`echo $m | sed 's|^./||1'`"' : " $magenta_text $black_back
@@ -125,7 +129,7 @@ for m in ${TESTED_ROOT_MODULES} ; do
 			# run in interactive mode, so that those which are long 
 			# (ex : stress tests) are shorten.
 			if [ "$is_batch" == "0" ] ; then
-				./$t --batch 1>${TESTLOGFILE} 2>&1
+				./$t --batch 1>>${TESTLOGFILE} 2>&1
 			else
 				./$t --interactive
 			fi			
