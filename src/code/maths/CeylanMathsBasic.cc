@@ -14,8 +14,8 @@ using namespace Ceylan::Maths ;
 
 
 
-MathsException::MathsException( const std::string & message ) throw()
-	: Ceylan::Exception( "Maths exception : " + message )
+MathsException::MathsException( const std::string & message ) throw() :
+	Ceylan::Exception( "Maths exception : " + message )
 {
 
 }
@@ -27,79 +27,132 @@ MathsException::~MathsException() throw()
 }
 
 
-bool Ceylan::Maths::IsNull( float x, long double epsilon ) throw()
+
+
+// IsNull section.
+
+
+
+bool Ceylan::Maths::IsNull( Ceylan::Float32 x ) throw()
+{
+	return Abs( x ) < EpsilonFloat32 ;
+}
+
+
+bool Ceylan::Maths::IsNull( Ceylan::Float32 x, Ceylan::Float32 epsilon ) 
+	throw()
 {
 	return Abs( x ) < epsilon ;
 }
 
 
-bool Ceylan::Maths::IsNull( double x, long double epsilon ) throw()
+
+bool Ceylan::Maths::IsNull( Ceylan::Float64 x ) throw()
+{
+	return Abs( x ) < EpsilonFloat64 ;
+}
+
+
+bool Ceylan::Maths::IsNull( Ceylan::Float64 x, Ceylan::Float64 epsilon ) throw()
 {
 	return Abs( x ) < epsilon ;
 }
 
 
-bool Ceylan::Maths::IsNull( long double x, long double epsilon ) throw()
+
+bool Ceylan::Maths::IsNull( Ceylan::LongFloat x ) throw()
+{
+	return Abs( x ) < EpsilonLongFloat ;
+}
+
+
+bool Ceylan::Maths::IsNull( Ceylan::LongFloat x, Ceylan::LongFloat epsilon )
+	throw()
 {
 	return Abs( x ) < epsilon ;
 }
 
 
 
-bool Ceylan::Maths::AreEqual( float x, float y, 
-	long double epsilon ) throw()
+// AreEqual section.
+
+
+bool Ceylan::Maths::AreEqual( Ceylan::Float32 x, Ceylan::Float32 y ) throw()
+{
+	return Abs( x - y ) < EpsilonFloat32 ;
+}
+
+
+bool Ceylan::Maths::AreEqual( Ceylan::Float32 x, Ceylan::Float32 y, 
+	Ceylan::Float32 epsilon ) throw()
 {
 	return Abs( x - y ) < epsilon ;
 }
 
 
-bool Ceylan::Maths::AreEqual( double x, double y, 
-	long double epsilon ) throw()
+
+bool Ceylan::Maths::AreEqual( Ceylan::Float64 x, Ceylan::Float64 y ) throw()
+{
+	return Abs( x - y  ) < EpsilonFloat64 ;
+}
+
+
+bool Ceylan::Maths::AreEqual( Ceylan::Float64 x, Ceylan::Float64 y, 
+	Ceylan::Float64 epsilon ) throw()
 {
 	return Abs( x - y  ) < epsilon ;
 }
 
 
-bool Ceylan::Maths::AreEqual( long double x, long double y, 
-	long double epsilon ) throw()
+
+bool Ceylan::Maths::AreEqual( Ceylan::LongFloat x, Ceylan::LongFloat y ) 
+	throw()
+{
+	return Abs( x - y  ) < EpsilonLongFloat ;
+}
+
+
+bool Ceylan::Maths::AreEqual( Ceylan::LongFloat x, Ceylan::LongFloat y, 
+	Ceylan::LongFloat epsilon ) throw()
 {
 	return Abs( x - y  ) < epsilon ;
 }
 
 
 
-float Ceylan::Maths::Floor( float x ) throw()
+
+Ceylan::Float32 Ceylan::Maths::Floor( Ceylan::Float32 x ) throw()
 {
 	return ::floorf( x ) ;
 }
 
 
-double Ceylan::Maths::Floor( double x ) throw()
+Ceylan::Float64 Ceylan::Maths::Floor( Ceylan::Float64 x ) throw()
 {
 	return ::floor( x ) ;
 }
 
 
-long double Ceylan::Maths::Floor( long double x ) throw()
+Ceylan::LongFloat Ceylan::Maths::Floor( Ceylan::LongFloat x ) throw()
 {
 	return ::floorl( x ) ;
 }
 
 
 
-float Ceylan::Maths::Ceil( float x ) throw()
+Ceylan::Float32 Ceylan::Maths::Ceil( Ceylan::Float32 x ) throw()
 {
 	return ::ceilf( x ) ;
 }
 
 
-double Ceylan::Maths::Ceil( double x ) throw()
+Ceylan::Float64 Ceylan::Maths::Ceil( Ceylan::Float64 x ) throw()
 {
 	return ::ceil( x ) ;
 }
 
 
-long double Ceylan::Maths::Ceil( long double x ) throw()
+Ceylan::LongFloat Ceylan::Maths::Ceil( Ceylan::LongFloat x ) throw()
 {
 	return ::ceill( x ) ;
 }
@@ -109,48 +162,48 @@ long double Ceylan::Maths::Ceil( long double x ) throw()
 // Round section.
 
 
-float Ceylan::Maths::Round( float x ) throw()
+Ceylan::Float32 Ceylan::Maths::Round( Ceylan::Float32 x ) throw()
 {
 	return ::roundf( x ) ;
 }
 
 
-float Ceylan::Maths::Round( float x, Ceylan::Uint8 precision ) throw()
+Ceylan::Float32 Ceylan::Maths::Round( Ceylan::Float32 x, Ceylan::Uint8 precision ) throw()
 {
 	
-	double offset = ::pow( 10, precision ) ;
+	Ceylan::Float64 offset = ::pow( 10, precision ) ;
 	
 	return Round( offset * x ) / offset ;
 }
 
 
 
-double Ceylan::Maths::Round( double x ) throw()
+Ceylan::Float64 Ceylan::Maths::Round( Ceylan::Float64 x ) throw()
 {
 	return ::round( x ) ;
 }
 
 
-double Ceylan::Maths::Round( double x, Ceylan::Uint8 precision ) throw()
+Ceylan::Float64 Ceylan::Maths::Round( Ceylan::Float64 x, Ceylan::Uint8 precision ) throw()
 {
 	
-	double offset = ::pow( 10, precision ) ;
+	Ceylan::Float64 offset = ::pow( 10, precision ) ;
 	
 	return Round( offset * x ) / offset ;
 }
 
 
 
-long double Ceylan::Maths::Round( long double x ) throw()
+Ceylan::LongFloat Ceylan::Maths::Round( Ceylan::LongFloat x ) throw()
 {
 	return ::roundl( x ) ;
 }
 
 
-long double Ceylan::Maths::Round( long double x, Ceylan::Uint8 precision ) throw()
+Ceylan::LongFloat Ceylan::Maths::Round( Ceylan::LongFloat x, Ceylan::Uint8 precision ) throw()
 {
 	
-	long double offset = ::powl( 10, precision ) ;
+	Ceylan::LongFloat offset = ::powl( 10, precision ) ;
 	
 	return Round( offset * x ) / offset ;
 }
@@ -192,19 +245,19 @@ long long int Ceylan::Maths::Abs( long long int x ) throw()
  */
  
 
-float Ceylan::Maths::Abs( float x ) throw()
+Ceylan::Float32 Ceylan::Maths::Abs( Ceylan::Float32 x ) throw()
 {
 	return ::fabsf( x ) ;
 }
 
 
-double Ceylan::Maths::Abs( double x ) throw()
+Ceylan::Float64 Ceylan::Maths::Abs( Ceylan::Float64 x ) throw()
 {
 	return ::fabs( x ) ;
 }
 
 
-long double Ceylan::Maths::Abs( long double x ) throw() 
+Ceylan::LongFloat Ceylan::Maths::Abs( Ceylan::LongFloat x ) throw() 
 {
 	return ::fabsl( x ) ;
 }
@@ -277,18 +330,18 @@ long long int Ceylan::Maths::Min( long long int x, long long int y ) throw()
 
  */
 
-float Ceylan::Maths::Min( float x, float y ) throw()
+Ceylan::Float32 Ceylan::Maths::Min( Ceylan::Float32 x, Ceylan::Float32 y ) throw()
 {
 	return ( x < y ) ? x : y ;
 }
 
-double Ceylan::Maths::Min( double x, double y ) throw()
+Ceylan::Float64 Ceylan::Maths::Min( Ceylan::Float64 x, Ceylan::Float64 y ) throw()
 {
 	return ( x < y ) ? x : y ;
 }
 
 
-long double Ceylan::Maths::Min( long double x, long double y ) throw()
+Ceylan::LongFloat Ceylan::Maths::Min( Ceylan::LongFloat x, Ceylan::LongFloat y ) throw()
 {
 	return ( x < y ) ? x : y ;
 }
@@ -356,144 +409,144 @@ long long int Ceylan::Maths::Max( long long int x, long long int y ) throw()
  */
  
 
-float Ceylan::Maths::Max( float x, float y ) throw()
+Ceylan::Float32 Ceylan::Maths::Max( Ceylan::Float32 x, Ceylan::Float32 y ) throw()
 {
 	return ( x > y ) ? x : y ;
 }
 
-double Ceylan::Maths::Max( double x, double y ) throw()
-{
-	return ( x > y ) ? x : y ;
-}
-
-
-long double Ceylan::Maths::Max( long double x, long double y ) throw()
+Ceylan::Float64 Ceylan::Maths::Max( Ceylan::Float64 x, Ceylan::Float64 y ) throw()
 {
 	return ( x > y ) ? x : y ;
 }
 
 
+Ceylan::LongFloat Ceylan::Maths::Max( Ceylan::LongFloat x, Ceylan::LongFloat y ) throw()
+{
+	return ( x > y ) ? x : y ;
+}
 
-float Ceylan::Maths::Exp( float x ) throw() 
+
+
+Ceylan::Float32 Ceylan::Maths::Exp( Ceylan::Float32 x ) throw() 
 {
 	return ::expf( x ) ;
 }
 
 
-double Ceylan::Maths::Exp( double x ) throw()
+Ceylan::Float64 Ceylan::Maths::Exp( Ceylan::Float64 x ) throw()
 {
 	return ::exp( x ) ;
 }
 
 
-long double Ceylan::Maths::Exp( long double x ) throw()
+Ceylan::LongFloat Ceylan::Maths::Exp( Ceylan::LongFloat x ) throw()
 {
 	return ::expl( x ) ;
 }
 
 
-float Ceylan::Maths::Pow( float x, float y ) throw() 
+Ceylan::Float32 Ceylan::Maths::Pow( Ceylan::Float32 x, Ceylan::Float32 y ) throw() 
 {
 	return ::powf( x, y ) ;
 }
 
 
-double Ceylan::Maths::Pow( double x, double y ) throw() 
+Ceylan::Float64 Ceylan::Maths::Pow( Ceylan::Float64 x, Ceylan::Float64 y ) throw() 
 {
 	return ::pow( x, y ) ;
 }
 
 
-long double Ceylan::Maths::Pow( long double x, long double y ) throw() 
+Ceylan::LongFloat Ceylan::Maths::Pow( Ceylan::LongFloat x, Ceylan::LongFloat y ) throw() 
 {
 	return ::powl( x, y ) ;
 }
 
 
 
-float Ceylan::Maths::Pow2( float x ) throw() 
+Ceylan::Float32 Ceylan::Maths::Pow2( Ceylan::Float32 x ) throw() 
 {
 	return x * x ;
 }
 
 
-double Ceylan::Maths::Pow2( double x ) throw() 
+Ceylan::Float64 Ceylan::Maths::Pow2( Ceylan::Float64 x ) throw() 
 {
 	return x * x ;
 }
 
 
-long double Ceylan::Maths::Pow2( long double x ) throw() 
+Ceylan::LongFloat Ceylan::Maths::Pow2( Ceylan::LongFloat x ) throw() 
 {
 	return x * x ;
 }
 
 
 
-float Ceylan::Maths::Sqrt( float x ) throw( MathsException )
+Ceylan::Float32 Ceylan::Maths::Sqrt( Ceylan::Float32 x ) throw( MathsException )
 {
 	if ( x < 0 )
 		throw MathsException( 
-			"Sqrt( float x ) : parameter is negative ("
+			"Sqrt( Ceylan::Float32 x ) : parameter is negative ("
 			+ Ceylan::toString( x ) + ")." ) ; 
 	return ::sqrtf( x ) ;		
 }
 
 
-double Ceylan::Maths::Sqrt( double x ) throw( MathsException )
+Ceylan::Float64 Ceylan::Maths::Sqrt( Ceylan::Float64 x ) throw( MathsException )
 {
 	if ( x < 0 )
 		throw MathsException( 
-			"Sqrt( double x ) : parameter is negative ("
+			"Sqrt( Ceylan::Float64 x ) : parameter is negative ("
 			+ Ceylan::toString( x ) + ")." ) ; 
 	return ::sqrt( x ) ;		
 }
 
 
-long double Ceylan::Maths::Sqrt( long double x ) throw( MathsException )
+Ceylan::LongFloat Ceylan::Maths::Sqrt( Ceylan::LongFloat x ) throw( MathsException )
 {
 	if ( x < 0 )
 		throw MathsException( 
-			"Sqrt( long double x ) : parameter is negative ("
+			"Sqrt( Ceylan::LongFloat x ) : parameter is negative ("
 			+ Ceylan::toString( x ) + ")." ) ; 
 	return ::sqrtl( x ) ;		
 }
 
 
 
-float Ceylan::Maths::Cos( float x ) throw()
+Ceylan::Float32 Ceylan::Maths::Cos( Ceylan::Float32 x ) throw()
 {
 	return ::cosf( x ) ;
 }
 
 
-double Ceylan::Maths::Cos( double x ) throw()
+Ceylan::Float64 Ceylan::Maths::Cos( Ceylan::Float64 x ) throw()
 {
 	return ::cos( x ) ;
 }
 
 
-long double Ceylan::Maths::Cos( long double x ) throw() 
+Ceylan::LongFloat Ceylan::Maths::Cos( Ceylan::LongFloat x ) throw() 
 {
 	return ::cosl( x ) ;
 }
 
 
 
-float Ceylan::Maths::Sin( float x ) throw()
+Ceylan::Float32 Ceylan::Maths::Sin( Ceylan::Float32 x ) throw()
 {
 	return ::sinf( x ) ;
 }
 
 
 
-double Ceylan::Maths::Sin( double x ) throw()
+Ceylan::Float64 Ceylan::Maths::Sin( Ceylan::Float64 x ) throw()
 {
 	return ::sin( x ) ;
 }
 
 
-long double Ceylan::Maths::Sin( long double x ) throw() 
+Ceylan::LongFloat Ceylan::Maths::Sin( Ceylan::LongFloat x ) throw() 
 {
 	return ::sinl( x ) ;
 }
