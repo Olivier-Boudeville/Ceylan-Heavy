@@ -75,64 +75,64 @@ effective-changelog-creation:
 update-authors:
 	@echo "@CEYLAN_COMMAND_STYLE@    Generating AUTHORS\
 	file@CEYLAN_DEFAULT_STYLE@"
-	-@cp -f ${top_srcdir}/doc/basic/Ceylan-AUTHORS-template.txt\
+	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-AUTHORS-template.txt\
 	${top_builddir}/AUTHORS
 
 
 update-copying:
 	@echo "@CEYLAN_COMMAND_STYLE@    Generating COPYING.LIB\
 	file@CEYLAN_DEFAULT_STYLE@"
-	-@cp -f ${top_srcdir}/doc/basic/Ceylan-COPYING.LIB-template.txt\
+	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-COPYING.LIB-template.txt\
 	${top_builddir}/COPYING.LIB
 	
 	
 update-faq:
 	@echo "@CEYLAN_COMMAND_STYLE@    Generating FAQ file\
 	@CEYLAN_DEFAULT_STYLE@"
-	-@cp -f ${top_srcdir}/doc/basic/Ceylan-FAQ-template.txt\
+	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-FAQ-template.txt\
 	${top_builddir}/FAQ
 	
 	
 update-install:
 	@echo "@CEYLAN_COMMAND_STYLE@    Generating INSTALL file\
 	@CEYLAN_DEFAULT_STYLE@"
-	-@cp -f ${top_srcdir}/doc/basic/Ceylan-INSTALL-template.txt\
+	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-INSTALL-template.txt\
 	${top_builddir}/INSTALL 
 	 
 	 
 update-maint:
 	@echo "@CEYLAN_COMMAND_STYLE@    Generating MAINTENERS file\
 	@CEYLAN_DEFAULT_STYLE@"
-	-@cp -f ${top_srcdir}/doc/basic/Ceylan-MAINTENERS-template.txt\
+	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-MAINTENERS-template.txt\
 	${top_builddir}/MAINTENERS
  
  
 update-news:
 	@echo "@CEYLAN_COMMAND_STYLE@    Generating NEWS file\
 	@CEYLAN_DEFAULT_STYLE@"
-	-@cp -f ${top_srcdir}/doc/basic/Ceylan-NEWS-template.txt\
+	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-NEWS-template.txt\
 	${top_builddir}/NEWS
  
  
 update-readme:
 	@echo "@CEYLAN_COMMAND_STYLE@    Generating README file\
 	@CEYLAN_DEFAULT_STYLE@"
-	-@cp -f ${top_srcdir}/doc/basic/Ceylan-README-template.txt\
+	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-README-template.txt\
 	${top_builddir}/README
-	-@@CEYLAN_SUBSTITUTE@ ST_DATE "$(CURRENT_DATE)" ${top_srcdir}/README
+	-@@CEYLAN_SUBSTITUTE@ ST_DATE "$(CURRENT_DATE)" ${top_builddir}/README
 
 
 update-thanks:
 	@echo "@CEYLAN_COMMAND_STYLE@    Generating THANKS file\
 	@CEYLAN_DEFAULT_STYLE@"
-	-@cp -f ${top_srcdir}/doc/basic/Ceylan-THANKS-template.txt\
+	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-THANKS-template.txt\
 	 ${top_builddir}/THANKS 
 	 
 	 
 update-todo: 	
 	@echo "@CEYLAN_COMMAND_STYLE@    Generating TODO file\
 	@CEYLAN_DEFAULT_STYLE@"
-	-@cp -f ${top_srcdir}/doc/basic/Ceylan-TODO-template.txt\
+	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-TODO-template.txt\
 	${top_builddir}/TODO 
 		
 		
