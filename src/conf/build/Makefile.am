@@ -57,7 +57,7 @@ links:
 	@echo "@CEYLAN_MAKE_STYLE@    Creating links to config\
 	files@CEYLAN_DEFAULT_STYLE@"
 	@cd ${top_builddir}; for f in $(CONFIG_FILES); do \
-	ln -sf conf/build/$$f ; done 
+	ln -sf ${top_srcdir}/conf/build/$$f ; done 
 	
 	
 clean-local:
