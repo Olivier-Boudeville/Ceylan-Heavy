@@ -28,11 +28,9 @@ $FIND . \( -name 'autom4te.cache' -o -name '.deps' -o -name '.libs' \) -exec $RM
 # Files :
 $FIND . \( -name ltmain.sh -o -name aclocal.m4 -o -name install-sh -o -name missing -o -name depcomp -o -name stamp-h1 -o -name configure.ac -o -name configure-from-autoscan.ac -o -name configure-from-autoupdate.ac -o -name configure -o -name 'auto*.log' -o -name 'auto*.err' -o -name config.guess -o -name config.log -o -name config.status -o -name config.sub -o -name libtool -o -name Makefile -o -name Makefile.in -o -name CeylanConfig.h -o -name CeylanHeaderVersion.h -o -name '*.so' -o -name '*.a' -o -name 'svn-commit*.tmp' -o -name '*.o' -o -name '*.loT' -o -name '*.lo' -o -name 'test*.log' -o -name '*.la' \) -exec $RM -f '{}' ';' 2>/dev/null
 
-cd src
-
 $RM -f TODO MAINTENERS AUTHORS INSTALL FAQ ChangeLog THANKS NEWS COPYING.LIB README ceylan-*.tar.gz
 																	
-$RM -f doc/basic/Ceylan-*-template.txt conf/doc/doxygen.conf conf/build/ceylan-*.pc code/CeylanConfig.h.in
+$RM -f src/doc/basic/Ceylan-*-template.txt src/conf/doc/doxygen.conf src/conf/build/ceylan-*.pc src/code/CeylanConfig.h.in
 								 
 echo "    Cleaning done."
 
