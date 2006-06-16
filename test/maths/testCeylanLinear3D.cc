@@ -265,12 +265,12 @@ int main( int argc, char * argv[] )
 		
 		
 		/*
-		 * Testing only a necessary condition, using relaxed epsilon to 
-		 * overcome computing errors :
+		 * Testing only a necessary condition, not using any spcial relaxed
+		 * epsilon to overcome computing errors :
 		 *
 		 */
 		
-		if ( ! AreRelativelyEqual( ~v1, ~( m3*v1), 100 * EpsilonFloat ) )
+		if ( ! AreRelativelyEqual( ~v1, ~( m3*v1) ) )
 			throw Ceylan::TestException( 
 				"Incorrect Matrix3 inverse returned : ~v1 = "
 				+ Ceylan::toString( ~v1 ) + " whereas ~( m3*v1) = " 
