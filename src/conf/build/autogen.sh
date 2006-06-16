@@ -1,6 +1,6 @@
 #!/bin/bash
 
-USAGE="Usage :"`basename $0`" : (re)generates all the autotools-based build system."
+USAGE="Usage : "`basename $0`" [--no-build] [--chain-test] : (re)generates all the autotools-based build system.\n\t --no-build : stop just after having generated the configure script\n\t --chain-test : build and install the library, and then build the test suite and run it against the installation"
 
 # Main settings section.
 
@@ -14,10 +14,44 @@ do_check=0
 do_install=0
 do_installcheck=0
 
-if [ $1 == "--no-build" ] ; then
-	do_stop_after_configure_generation=0
-fi
+do_chain_tests=1
 
+
+while [ "$#" -gt "0" ] ; do
+	token_eaten=1
+	
+	if [ "$1" == "-v" ] ; then
+		be_verbose=0
+		token_eaten=0
+	fi
+	
+	if [ "$1" == "-q" ] ; then
+		be_quiet=0
+		token_eaten=0
+	fi
+
+	if [ "$1" == "--no-build" ] ; then
+		do_stop_after_configure_generation=0
+		token_eaten=0
+	fi
+	
+	if [ "$1" == "--chain-test" ] ; then
+		do_chain_tests=0
+		token_eaten=0
+	fi
+	
+	if [ "$1" == "-h" ] ; then
+		echo -e "$USAGE"
+		exit
+		token_eaten=0
+	fi
+
+	if [ "$token_eaten" == "1" ] ; then
+		echo "Error, unknown argument ($1)." 1>&2
+		exit 4
+	fi	
+	shift
+done
 
 ceylan_features_opt="--disable-regex --disable-multithread --disable-network --disable-file-descriptor --disable-symbolic-link --disable-advanced-file-attribute --disable-file-lock --disable-advanced-process-management"
 
@@ -143,6 +177,8 @@ execute()
 				echo -e "\nNote : check that your automake version is indeed 1.9 or newer. For example, with Debian-based distributions, /usr/bin/automake is a symbolic link to /etc/alternatives/automake, which itself is a symbolic link which may or may not point to the expected automake version. Your version of $1 is :\n\t" `$1 --version` "\n\n\t" `/bin/ls -l --color $(type -p $1)`
 			elif [ "$1" == "./configure" ]; then
 				echo -e "\nNote : check the following log :" `pwd`/config.log
+			elif [ "$1" == "./autogen.sh" ]; then
+				echo -e "\n\t$? test(s) failed"
   			fi
 			
 		fi
@@ -347,6 +383,14 @@ generateCustom()
 	 	execute make installcheck
 	fi
 	
+	
+	if [ "$do_chain_tests" -eq 0 ] ; then
+		echo
+		echo " - building and running test suite"
+		cd test
+	 	execute ./autogen.sh
+	fi
+		
 		
 }
 
