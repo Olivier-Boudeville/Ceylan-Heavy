@@ -28,96 +28,140 @@ int main( int argc, char * argv[] )
 	
     try
     {
+	
 		
-		LogPlug::info( "Testing extended string operators." ) ;
+		LogPlug::info( "Testing extended string operators, first with "
+			"string + Ceylan datatype, then the other way round, "
+			"Ceylan datatype + string." ) ;
 
-        signed char i1   = -11 ;
-        unsigned char i2 = 2 ;
+		string s ;
+		
+		
 
-        signed short i3   = -4 ;
-        unsigned short i4 = 112 ;
+		// Integer datatypes.
+		
+		
+        Ceylan::Sint8 sint8 = -11 ;
+        s = string( "Ceylan::Sint8 : -11 ---> " ) + sint8 ;
+        LogPlug::info( s ) ;
 
-        signed int i5   = -34 ;
-        unsigned int i6 = 58 ;
-        long i7         = -782 ;
+        s = sint8 + string( " ---> Ceylan::Sint8 : -11" ) ;
+        LogPlug::info( s ) ;
+		
+		
+        Ceylan::Uint8 uint8 = 2 ;
+        s = string( "Ceylan::Uint8 : 2 ---> " ) + uint8 ;
+        LogPlug::info( s ) ;
 
-        float i8  = -12.342 ;
-        double i9 = -1026.23 ;
+        s = uint8 + string( " ---> Ceylan::Uint8 : 2" ) ;
+        LogPlug::info( s ) ;
 
-        const char * i10 = "Ceylan is good" ;
 
-        const void * p1 = static_cast<const void *>( i10 ) ;
 
-        string s1 = string( "signed char i1 = -11 ---> " ) + i1 ;
-        LogPlug::info( s1 ) ;
-        string s2 = string( "unsigned char i2 = 2 ---> " ) + i2 ;
-        LogPlug::info( s2 ) ;
+        Ceylan::Sint16 sint16 = -4 ;
+        s = string( "Ceylan::Sint16 : -4  ---> " ) + sint16 ;
+        LogPlug::info( s ) ;
 
-        string s3 = string( "signed short i3 = -4 ---> " ) + i3 ;
-        LogPlug::info( s3 ) ;
+        s = sint16 + string( " ---> Ceylan::Sint16 : -4" ) ;
+        LogPlug::info( s ) ;
+		
+		
+        Ceylan::Uint16 uint16 = 112 ;
+        s = string( "Ceylan::Uint16 : 112  ---> " ) + uint16 ;
+        LogPlug::info( s ) ;
 
-        string s4 = string( "unsigned short i4 = 112 ---> " ) + i4 ;
-        LogPlug::info( s4 ) ;
+        s = uint16 + string( " ---> Ceylan::Uint16 : 112" ) ;
+        LogPlug::info( s ) ;
 
-        string s5 = string( "signed int i5 = -34 ---> " ) + i5 ;
-        LogPlug::info( s5 ) ;
-        string s6 = string( "unsigned int i6 = 58 ---> " ) + i6 ;
-        LogPlug::info( s6 ) ;
 
-        string s7 = string( "long  i7 = -782 ---> " ) + i7 ;
-        LogPlug::info( s7 ) ;
+        Ceylan::Sint32 sint32 = -34 ;
+        s = string( "Ceylan::Sint32 : -34 ---> " ) + sint32 ;
+        LogPlug::info( s ) ;
 
-        string s8 = string( "float i8 = -12.342 ---> " ) + i8 ;
-        LogPlug::info( s8 ) ;
+        s = sint32 + string( " ---> Ceylan::Sint32 : -34" ) ;
+        LogPlug::info( s ) ;
+		
+		
+        Ceylan::Uint32 uint32 = 58 ;
+        s = string( "Ceylan::Uint32 : 58 ---> " ) + uint32 ;
+        LogPlug::info( s ) ;
 
-        string s9 = string( "double i9 = -1026.23 ---> " ) + i9 ;
-        LogPlug::info( s9 ) ;
+        s = uint32 + string( " ---> Ceylan::Uint32 : 58" ) ;
+        LogPlug::info( s ) ;
+		
+		
+		
+		Ceylan::SignedLongInteger slongint = -308 ;
+        s = string( "Ceylan::SignedLongInteger : -308 ---> " ) + slongint ;
+        LogPlug::info( s ) ;
+		
+        s = slongint + string( " ---> Ceylan::SignedLongInteger : -308" ) ;
+        LogPlug::info( s ) ;
+		
+		
+		Ceylan::UnsignedLongInteger ulongint = 300000 ;
+        s = string( "Ceylan::UnsignedLongInteger : 300000 ---> " ) + ulongint ;
+        LogPlug::info( s ) ;
+		
+        s = ulongint + string( " ---> Ceylan::UnsignedLongInteger : 300000" ) ;
+        LogPlug::info( s ) ;
+		
+		
+		// Sint64 / Uint64 not tested.
+		
+		
+		
+		// Floating-point datatypes.
+		
+		
+		Ceylan::Float32 float32 = -12.342 ;
+        s = string( "Ceylan::Float32 : -12.342 ---> " ) + float32 ;
+        LogPlug::info( s ) ;
+		
+        s = float32 + string( " ---> Ceylan::Float32 : -12.342" ) ;
+        LogPlug::info( s ) ;
+		
+		
+		Ceylan::Float64 float64 = -1026.23 ;
+        s = string( "Ceylan::Float64 : -1026.23 ---> " ) + float64 ;
+        LogPlug::info( s ) ;
+		
+        s = float64 + string( " ---> Ceylan::Float64 : -1026.23" ) ;
+        LogPlug::info( s ) ;
+		
+				
+		Ceylan::LongFloat longfloat = -22423242236.15 ;
+        s = string( "Ceylan::Float64 : -22423242236.15 ---> " ) + longfloat ;
+        LogPlug::info( s ) ;
+		
+        s = longfloat + string( " ---> Ceylan::Float64 : -22423242236.15" ) ;
+        LogPlug::info( s ) ;
 
-        string s10 = string( "char * i10 = Ceylan is good ---> " ) + i10 ;
-        LogPlug::info( s10 ) ;
 
-        string s11 = string( "void * p1 ---> " ) + p1 ;
-        LogPlug::info( s11 ) ;
+
+		// Other datatypes.
+
+        const char * charpointer = "Ceylan is good" ;
+		s = string( "char * : Ceylan is good ---> " ) + charpointer ;
+        LogPlug::info( s ) ;
+
+		s = charpointer + string( " ---> char * : Ceylan is good" ) ;
+        LogPlug::info( s ) ;
+
+ 
+        const void * pointer = static_cast<const void *>( charpointer ) ;
+		s = string( "const void * : ---> " ) + pointer ;
+		LogPlug::info( s ) ;
+
+		s = pointer + string( " ---> const void *" ) ;
+		LogPlug::info( s ) ;
+
 
         const char * c = " made of a mix of " ;
-        string s12 = "This string is" + string( c ) + "all strings" + "." ;
-        LogPlug::info( s12 ) ;
+        s = "This string is" + string( c ) + "all strings" + "." ;
+        LogPlug::info( s ) ;
 
 
-        LogPlug::info( "And now, the same thing, but,"
-			" er, in reverse order, er, whizzz !\n" ) ;
-
-        string r1 = i1 + string( "---> signed char i1 = -11" ) ;
-        LogPlug::info( r1 ) ;
-
-        string r2 = i2 + string( "---> unsigned char i2 = 2" ) ;
-        LogPlug::info( r2 ) ;
-
-        string r3 = i3 + string( "---> signed short i3 = -4" ) ;
-        LogPlug::info( r3 ) ;
-
-        string r4 = i4 + string( "---> unsigned short i4 = 112" ) ;
-        LogPlug::info( r4 ) ;
-
-        string r5 = i5 + string( "---> signed int i5 = -34" ) ;
-        LogPlug::info( r5 ) ;
-        string r6 = i6 + string( "---> unsigned int i6 = 58" ) ;
-        LogPlug::info( r6 ) ;
-
-        string r7 = i7 + string( "---> long  i7 = -782" ) ;
-        LogPlug::info( r7 ) ;
-
-        string r8 = i8 + string( "---> float i8 = -12.342" ) ;
-        LogPlug::info( r8 ) ;
-
-        string r9 = i9 + string( "---> double i9 = -1026.23" ) ;
-        LogPlug::info( r9 ) ;
-
-        string r10 = i10 + string( "---> char * i10 = Ceylan is good" ) ;
-        LogPlug::info( r10 ) ;
-
-        string r11 = p1 + string( "---> void * p1" ) ;
-        LogPlug::info( r11 ) ;
 
 		Ceylan::Uint8 precision = 3 ;
 		
@@ -136,14 +180,14 @@ int main( int argc, char * argv[] )
 			+ Ceylan::toNumericalString( precision ) + " digits : " 
 			+ Ceylan::toString( 75312.0f, precision ) + "." ) ;
 			
-		unsigned char aChar = 0 ;
+		Ceylan::Uint8 aChar = 0 ;
 	      LogPlug::info( "Testing Ceylan::toNumericalString "
-		  	"for eight bit numbers : the number 0 is translated in : '" 
+		  	"for eight bit numbers : the number 0 is translated in '" 
 			+ Ceylan::toNumericalString( aChar ) 
-			+ "', and not '" + Ceylan::toString( aChar ) + "'." ) ;
+			+ "' instead of '" + Ceylan::toString( aChar ) + "'." ) ;
 			
 
-        int * p = new int[ 3 ] ;
+        Sint32 * p = new Sint32[ 3 ] ;
 
         LogPlug::info( "Finally, testing output for a pointer : " 
 			+ Ceylan::toString( p ) ) ;
