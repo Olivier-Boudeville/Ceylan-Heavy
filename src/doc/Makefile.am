@@ -75,13 +75,12 @@ MIRROR_WEB_DIR       = /var/www/@PROJECT_NAME@
 
 # Web content should not contain 'common' section, since both doc and api 
 # need it.
-# These variables will be evaluated from the 'src/doc/web' directory.
 
-WEB_CONTENT_FILES    = `find . -path 'common' -prune -a -type f -o ! -path '*.svn*' -a -type f`
+WEB_CONTENT_FILES    = `find @srcdir@ -path 'common' -prune -a -type f -o ! -path '*.svn*' -a -type f`
 
-COMMON_WEB_FILES     = `find common ! -path '*.svn*' -type f -follow`
+COMMON_WEB_FILES     = `find @srcdir@/common ! -path '*.svn*' -type f -follow`
 
-HTML_FILES           = `find . -name '*.html' -a -type f`
+HTML_FILES           = `find @srcdir@ -name '*.html' -a -type f`
 
 
 # Tools section
@@ -110,7 +109,7 @@ SCP_OPT      = "-p -r"
 
 
 # For various tools such as doxygen and al :
-include $(top_srcdir)/conf/build/ToolsSettings.inc
+include $(top_srcdir)/src/conf/build/ToolsSettings.inc
 
 		
 .PHONY: all install doc build inc web links site common api check-dot  \
@@ -138,7 +137,7 @@ local-web: site api
 site: common 
 	@echo; echo "@CEYLAN_INSTALL_STYLE@    Copying web source tree to\
 	local web repository [@CEYLAN_LOCAL_WEB_DIR@]@CEYLAN_DEFAULT_STYLE@"
-	@cd web; cp --parents $(WEB_CONTENT_FILES) \
+	@cd $(srcdir)/web; cp --parents $(WEB_CONTENT_FILES) \
 	@CEYLAN_LOCAL_WEB_SHARED_DIR@
 	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark local doc site,\
 	which is to be found in :"
@@ -152,7 +151,8 @@ common:
 	@echo; echo "@CEYLAN_INSTALL_STYLE@    Copying common web files to\
 	local doc repository\
 	[@CEYLAN_LOCAL_WEB_SHARED_DIR@]@CEYLAN_DEFAULT_STYLE@"
-	@cd web ; cp --parents $(COMMON_WEB_FILES) @CEYLAN_LOCAL_WEB_SHARED_DIR@
+	@cd $(srcdir)/web ; \
+	cp --parents $(COMMON_WEB_FILES) @CEYLAN_LOCAL_WEB_SHARED_DIR@
 
 
 
@@ -176,14 +176,14 @@ api: check-dot fix-dox-conf
 	LD_LIBRARY_PATH=`pwd`/$(GCC_ROOT)/lib:$$LD_LIBRARY_PATH \
 	$(DOXYGEN) $(DOXYGEN_GENERATED_CONF)
 	@rm -f @CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/doxygen.css
-	@cp -f web/common/css/doxygen-@PROJECT_NAME@.css \
+	@cp -f $(srcdir)/web/common/css/doxygen-@PROJECT_NAME@.css \
 	@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/doxygen.css 
-	@cp -f web/common/doxygen/*.png\
+	@cp -f $(srcdir)/web/common/doxygen/*.png\
 	@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html
 	@echo
 	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark\
 	@CEYLAN_CURRENT_VERSION_PREFIX@ API, which is located in :\
-	file://@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/index.html@CEYLAN_DEFAULT_STYLE@"
+file://@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/index.html@CEYLAN_DEFAULT_STYLE@"
 	
 			
 check-dot:
