@@ -7,12 +7,17 @@ USAGE="Usage :"`basename $0`" : (re)generates all the autotools-based build syst
 # 0 means true, 1 means false :
 do_remove_generated=0
 do_clean_prefix=0
-do_stop_after_configure=1
+do_stop_after_configure_generation=1
 do_clean=0
 do_build=0
 do_check=0
 do_install=0
 do_installcheck=0
+
+if [ $1 == "--no-build" ] ; then
+	do_stop_after_configure_generation=0
+fi
+
 
 ceylan_features_opt="--disable-regex --disable-multithread --disable-network --disable-file-descriptor --disable-symbolic-link --disable-advanced-file-attribute --disable-file-lock --disable-advanced-process-management"
 
@@ -38,8 +43,9 @@ cd `dirname $COMMAND`
 RUNNING_DIR=`pwd`
 #echo "RUNNING_DIR = $RUNNING_DIR"
 
-# How to go from RUNNING_DIR to src directory :
-SOURCE_OFFSET="../.."
+# How to go from RUNNING_DIR to base directory 
+# (the one containing src and test) :
+SOURCE_OFFSET="../../.."
 
 
 # debug mode activated iff equal to true (0) :
@@ -172,9 +178,9 @@ generateCustom()
 
 	# Update timestamps since SVN may mess them up :
 	CONFIG_SOURCE=configure-template.ac
-	CONFIG_TARGET=configure.ac
-	
 	touch $CONFIG_SOURCE
+
+	CONFIG_TARGET=configure.ac
 	
 	# Config files are to lie in 'src/conf/build' directory :
 	CONFIG_DIR=$RUNNING_DIR
@@ -185,14 +191,15 @@ generateCustom()
 	echo " - generating $CONFIG_TARGET, by filling $CONFIG_SOURCE with $SETTINGS_FILE"
 
 	# Generates 'configure.ac' with an already cooked dedicated Makefile :
-	make -f MakeConfigure clean config-files
+	execute make -f MakeConfigure clean config-files
 	
-	# Prepare to run everything from the root directory ('src').
+	# Prepare to run everything from the root directory (containing 'src'
+	# and 'test').
 	# This is because automake and al *must* be run from that directory
 	# and that configure.ac has a hardcoded AC_CONFIG_AUX_DIR
 	
 	
-	# Go to the root, the 'src' top directory :
+	# Go to the top directory of the sources :
 	cd $SOURCE_OFFSET
 		
 	echo
@@ -234,13 +241,13 @@ generateCustom()
 
 	M4_DIR=$CONFIG_DIR/m4 
 	
-	ACLOCAL_OUTPUT=conf/build/m4/aclocal.m4
+	ACLOCAL_OUTPUT=src/conf/build/m4/aclocal.m4
 	
 	# Do not use '--acdir=.' since it prevents aclocal from writing its file :
 	execute aclocal -I $M4_DIR --output=$ACLOCAL_OUTPUT $force $verbose
 
 	# automake wants absolutely to find aclocal.m4 in the top-level directory :
-	ln -sf conf/build/m4/aclocal.m4
+	ln -sf src/conf/build/m4/aclocal.m4
 
 	echo
 	echo " - generating a '#define'-based template file for 'configure'"
@@ -285,7 +292,7 @@ generateCustom()
 
 	# Add GNU gettext (autopoint) ?
 	
-	if [ "$do_stop_after_configure" -eq 0 ] ; then
+	if [ "$do_stop_after_configure_generation" -eq 0 ] ; then
 		echo
 		echo "Now you are ready to run $RUNNING_DIR/$SOURCE_OFFSET/configure"
 		return
