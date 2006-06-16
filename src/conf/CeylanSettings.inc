@@ -88,7 +88,7 @@ CEYLAN_MAJOR_ANCESTOR=0
 # Build section 
 
 # (tag : ST_CONFIG_HEADER).
-CEYLAN_CONFIG_HEADER="code/CeylanTemporaryConfig.h"
+CEYLAN_CONFIG_HEADER="src/code/CeylanTemporaryConfig.h"
 
 
 
