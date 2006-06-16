@@ -6,7 +6,9 @@ AUTOMAKE_OPTIONS = 1.9
 SUBDIRS = src
 
 # These are the subdirectories which will be distributed with 'make dist' :
-DIST_SUBDIRS = $(SUBDIRS) test
+# (the 'test' directory is not included since it is managed by dist-hook, as
+# it may or may not be configured).
+DIST_SUBDIRS = $(SUBDIRS) 
 
 
 .PHONY: source-release update-basic-doc-files bz2 tgz style doc api stat    \
@@ -40,7 +42,7 @@ CEYLAN_PROJECT_FILES = `current_dir=$(shell basename $$PWD); cd $(top_srcdir)/..
 # A file is assumed to be a source file if it is a file, not located in
 # a directory named .svn, and if its name finishes by .h or .cc. 
 # Useful notably for style make targets. 
-# Only takes into account the library (ex : test sources are igored).
+# Only takes into account the library (ex : test sources are ignored).
 # The following line should not be broken otherwise it will not work.
 CEYLAN_LIBRARY_SOURCE_FILES = `cd $(top_srcdir); find src/code -path '*.svn*' -prune -a \( -type d -a ! -name '*.svn*' \) -o -name '*.cc' -o -name '*.h' -a -type f| grep -v '.svn'`
 
@@ -76,7 +78,7 @@ source-release: update-basic-doc-files
 	-@cd test; if [ -f Makefile ] ; then make clean; fi
 	@mkdir -p $(SRC_RELEASE_ARCHIVE_DIR); \
 	files=$(CEYLAN_PROJECT_FILES); cd $(top_srcdir)/.. ; \
-	tar cvhf - $$files | \
+	tar cvf - $$files | \
 	bzip2 > "$(SRC_RELEASE_ARCHIVE_DIR)/$(SRC_RELEASE_ARCHIVE_NAME)" \
 	&& echo \
 	&& echo "@CEYLAN_COMMAND_STYLE@    + Source release for @PROJECT_NAME@\
@@ -87,14 +89,20 @@ source-release: update-basic-doc-files
 
 
 # Creates a SVN snapshot one can run 'svn update' on :
+# (note : seems to delete as well generated file in the current source base)
 snapshot:
 	@echo; echo "@CEYLAN_COMMAND_STYLE@    Creating a SVN Ceylan snapshot\
 	@CEYLAN_DEFAULT_STYLE@"; echo
 	@svn co https://svn.sourceforge.net/svnroot/ceylan ceylan
 	@(cd ceylan/Ceylan/trunk/src/conf/build && ./autogen.sh --no-build \
 	&& cd ../../.. && rm -rf autom4te.cache )
-	@cd ceylan && tar cvjf - Ceylan | \
-	bzip2 > $(HOME)/Ceylan-@CEYLAN_VERSION@-svn-snapshot.tar.bz2
+	@cd ceylan && tar cvhf - Ceylan | \
+	bzip2 > $(HOME)/Ceylan-@CEYLAN_VERSION@-svn-snapshot.tar.bz2 \
+	&& echo \
+	&& echo "@CEYLAN_COMMAND_STYLE@    + SVN snapshot for @PROJECT_NAME@\
+	available at :" \
+	&& echo "      $(HOME)/Ceylan-@CEYLAN_VERSION@-svn-snapshot.tar.bz2\
+	@CEYLAN_DEFAULT_STYLE@" && echo
 	-@rm -rf ceylan
 	
 	
@@ -108,7 +116,7 @@ bz2:
 	@PROJECT_NAME@-@CEYLAN_VERSION@ project\
 	in a bz2 archive@CEYLAN_DEFAULT_STYLE@"; echo
 	@mkdir -p $(SRC_SNAPSHOT_ARCHIVE_DIR); files=$(CEYLAN_PROJECT_FILES);\
-	cd $(top_srcdir)/.. ; tar cvhf - $$files |	bzip2 > \
+	cd $(top_srcdir)/.. ; tar cvf - $$files | bzip2 > \
 	"$(SRC_SNAPSHOT_ARCHIVE_DIR)/$(SRC_SNAPSHOT_ARCHIVE_NAME).tar.bz2" \
 	&& echo && echo "@CEYLAN_COMMAND_STYLE@    + whole @PROJECT_NAME@\
 	project has been saved in file"	&& echo \
@@ -161,7 +169,7 @@ doc:
 	
 	
 api:
-	cd doc; $(MAKE) api  
+	cd src/doc; $(MAKE) api  
 
 
 stat:
