@@ -76,11 +76,11 @@ MIRROR_WEB_DIR       = /var/www/@PROJECT_NAME@
 # Web content should not contain 'common' section, since both doc and api 
 # need it.
 
-WEB_CONTENT_FILES    = `find @srcdir@ -path 'common' -prune -a -type f -o ! -path '*.svn*' -a -type f`
+WEB_CONTENT_FILES    = `cd @srcdir@/web; find . -path 'common' -prune -a -type f -o ! -path '*.svn*' -a -type f`
 
-COMMON_WEB_FILES     = `find @srcdir@/common ! -path '*.svn*' -type f -follow`
+COMMON_WEB_FILES     = `cd @srcdir@/web; find common ! -path '*.svn*' -type f -follow`
 
-HTML_FILES           = `find @srcdir@ -name '*.html' -a -type f`
+HTML_FILES           = `cd @srcdir@/web; find . -name '*.html' -a -type f`
 
 
 # Tools section
@@ -88,7 +88,7 @@ HTML_FILES           = `find @srcdir@ -name '*.html' -a -type f`
 DOXYGEN_ROOT = @top_srcdir@/../../../doxygen-$(doxygen_VERSION)
 DOXYGEN      = `PATH=$(DOXYGEN_ROOT)/bin:$$PATH which doxygen 2>/dev/null`
 
-DOXYGEN_GENERATED_CONF = @top_builddir@conf/doc/doxygen.conf
+DOXYGEN_GENERATED_CONF = @top_builddir@/src/conf/doc/doxygen.conf
 
 
 DOT_ROOT     = @top_srcdir@/../../../dot-graphviz-$(dot_VERSION)
@@ -194,7 +194,7 @@ check-dot:
 	
 	
 fix-dox-conf:
-	@ @CEYLAN_SUBSTITUTE@ '\$${prefix}' "${prefix}" $(DOXYGEN_GENERATED_CONF)
+	@@CEYLAN_SUBSTITUTE@ '\$${prefix}' "${prefix}" $(DOXYGEN_GENERATED_CONF)
 		
 		
 tidy:	
@@ -332,7 +332,7 @@ info-dirs:
 info-files: info-html
 	@echo; echo "    + web documentation files are   : ";\
 	echo "$(WEB_CONTENT_FILES)"
-	@echo; echo "    + common web files are          : "; cd web;\
+	@echo; echo "    + common web files are          : ";\
 	echo "$(COMMON_WEB_FILES)"
 	@echo; echo "    + doxygen configuration file is :\
 	$(DOXYGEN_GENERATED_CONF)"
