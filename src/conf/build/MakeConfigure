@@ -1,4 +1,4 @@
-TOP = ../..
+TOP = ../../..
 
 
 # This special Makefile is not generated, it has been directly written since
@@ -6,11 +6,11 @@ TOP = ../..
 
 
 # For all static settings such as version numbers, mail support, etc. :
-SETTINGS_FILE := $(TOP)/conf/CeylanSettings.inc
+SETTINGS_FILE := $(TOP)/src/conf/CeylanSettings.inc
 include $(SETTINGS_FILE)
 
 
-SUBSTITUTE := $(TOP)/code/scripts/shell/substitute.sh
+SUBSTITUTE := $(TOP)/src/code/scripts/shell/substitute.sh
 
 
 .PHONY: all config-files check-configure download-config-scripts \
