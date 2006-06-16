@@ -5,7 +5,6 @@ EXTRA_DIST = \
 	.bashrc                    \
 	.bashrc.Linux              \
 	.bashrc.common             \
-	.bashrc.local              \
 	.bashrc.minimal            \
 	.cvsrc                     \
 	.vimrc                     \
