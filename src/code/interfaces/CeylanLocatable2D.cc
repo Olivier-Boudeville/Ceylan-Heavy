@@ -95,7 +95,7 @@ Bipoint Locatable2D::getCenter() const throw( LocatableException )
 	Real factor = localMatrix.getElementAt( 2, 2 ) ;
 	
 	// Prefer to avoid '==' comparison with floating point values :
-	if ( Maths::Abs( factor )< Maths::EpsilonDouble )
+	if ( Maths::IsNull( factor ) )
 		throw LocatableException( "Locatable2D::getCenter : "
 			"homogeneous factor is too close to zero ("
 			+ Ceylan::toString( factor ) + ")." ) ;
