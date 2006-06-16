@@ -239,8 +239,19 @@ AC_TYPE_SIGNAL
 AC_FUNC_STAT
 AC_FUNC_UTIME_NULL
 
-# Only functions independent from all Ceylan features are checked here : 
-AC_CHECK_FUNCS([isdigit islower isupper exit putenv getenv floor floorf floorl ceil ceilf ceill round roundf roundl pow powf powl abs labs llabs fabs fabsf fabsl exp expf expl sqrt sqrtf sqrtl cos cosf cosl sin sinf sinl strdup strerror sleep time ctime localtime gettimeofday utime sysinfo uname stat mkdir unlink rename rmdir getcwd gethostname sethostname getdomainname setdomainname gethostbyname gethostbyaddr ])
+# Only functions independent from all Ceylan features are checked here. 
+# Following functions are not tested anymore since they must be available
+# thanks to '#include <cmath>' : 
+#	- ceil, ceilf, ceill
+#	- cos, cosf, cosl
+#	- exp, expf, expl
+#	- fabs, fabsf, fabsl
+#	- floor, floorf, floorl 
+#	- pow, powf, powl
+#	- round, roundf, roundl
+#	- sin, sinf, sinl
+#	- sqrt, sqrtf, sqrtl
+AC_CHECK_FUNCS([isdigit islower isupper abs labs llabs exit putenv getenv strdup strerror sleep time ctime localtime gettimeofday utime sysinfo uname stat mkdir unlink rename rmdir getcwd gethostname sethostname getdomainname setdomainname gethostbyname gethostbyaddr])
 
 
 # Only symbols independent from all Ceylan features are checked here : 
@@ -249,7 +260,7 @@ AC_CHECK_DECLS([O_RDONLY, O_WRONLY, O_RDWR, O_CREAT, O_EXCL, O_TRUNC, O_APPEND],
 		#ifdef HAVE_FCNTL_H
 		#include <fcntl.h>
 		#endif // HAVE_FCNTL_H		
-            ] )
+            ])
 
 
 # Build section.
@@ -565,78 +576,87 @@ CheckMultithreadFeature()
 	AC_MSG_CHECKING([whether Ceylan multithread feature is wanted])
 	if test x$multithread = xyes; then
 		AC_MSG_RESULT([yes])
+		# Determines which settings should be tried on this platform :
+		case "$target" in
+			*-*-bsdi*)
+            	pthread_cflags="-D_REENTRANT -D_THREAD_SAFE"
+            	pthread_lib=""
+            	;;
+        	*-*-darwin*)
+            	pthread_cflags="-D_THREAD_SAFE"
+				# causes Carbon.p complaints?
+				# pthread_cflags="-D_REENTRANT -D_THREAD_SAFE"
+            	;;
+        	*-*-freebsd*)
+           		pthread_cflags="-D_REENTRANT -D_THREAD_SAFE"
+            	pthread_lib="-pthread"
+            	;;
+       		*-*-netbsd*)
+            	pthread_cflags="-I/usr/pkg/include -D_REENTRANT"
+            	pthread_lib="-L/usr/pkg/lib -lpthread -lsem"
+            	;;
+        	*-*-openbsd*)
+            	pthread_cflags="-D_REENTRANT"
+            	pthread_lib="-pthread"
+            	;;
+        	*-*-solaris*)
+            	pthread_cflags="-D_REENTRANT"
+            	pthread_lib="-lpthread -lposix4"
+            	;;
+        	*-*-sysv5*)
+            	pthread_cflags="-D_REENTRANT -Kthread"
+            	pthread_lib=""
+            	;;
+        	*-*-irix*)
+            	pthread_cflags="-D_SGI_MP_SOURCE"
+            	pthread_lib="-lpthread"
+            	;;
+        	*-*-aix*)
+            	pthread_cflags="-D_REENTRANT -mthreads"
+            	pthread_lib="-lpthread"
+            	;;
+        	*-*-hpux11*)
+            	pthread_cflags="-D_REENTRANT"
+            	pthread_lib="-L/usr/lib -lpthread"
+            	;;
+        	*-*-qnx*)
+            	pthread_cflags=""
+            	pthread_lib=""
+            	;;
+        	*-*-osf*)
+            	pthread_cflags="-D_REENTRANT"
+            	if test x$ac_cv_prog_gcc = xyes; then
+            		pthread_lib="-lpthread -lrt"
+            	else
+            		pthread_lib="-lpthread -lexc -lrt"
+            	fi
+            	;;
+        	*)
+            	pthread_cflags="-D_REENTRANT"
+            	pthread_lib="-lpthread"
+            	;;
+		esac
+			
+        # Saves the original compiler flags and libraries :
+        ac_save_cflags="$CFLAGS"
+		ac_save_libs="$LIBS"
+        # Adds (for the tests) the pthread compiler flags and libraries :
+        CFLAGS="$CFLAGS $pthread_cflags"
+		LIBS="$LIBS $pthread_lib"
 		have_multithread=yes
 		AC_CHECK_HEADERS([pthread.h],[],[have_multithread=no])
 		if test x$have_multithread = xyes; then
+			# Needs LIBS correctly configured :
 			AC_CHECK_FUNCS([pthread_create pthread_cond_destroy pthread_cond_timedwait pthread_cond_signal pthread_cond_broadcast pthread_mutex_init pthread_mutex_lock pthread_mutex_unlock],[],[have_multithread=no])
 		fi	
 		if test x$have_multithread = xyes; then
-			CEYLAN_USES_THREADS=1    
-			case "$target" in
-        		*-*-bsdi*)
-            		pthread_cflags="-D_REENTRANT -D_THREAD_SAFE"
-            		pthread_lib=""
-            		;;
-        		*-*-darwin*)
-            		pthread_cflags="-D_THREAD_SAFE"
-					# causes Carbon.p complaints?
-					# pthread_cflags="-D_REENTRANT -D_THREAD_SAFE"
-            		;;
-        		*-*-freebsd*)
-           			pthread_cflags="-D_REENTRANT -D_THREAD_SAFE"
-            		pthread_lib="-pthread"
-            		;;
-       			*-*-netbsd*)
-            		pthread_cflags="-I/usr/pkg/include -D_REENTRANT"
-            		pthread_lib="-L/usr/pkg/lib -lpthread -lsem"
-            		;;
-        		*-*-openbsd*)
-            		pthread_cflags="-D_REENTRANT"
-            		pthread_lib="-pthread"
-            		;;
-        		*-*-solaris*)
-            		pthread_cflags="-D_REENTRANT"
-            		pthread_lib="-lpthread -lposix4"
-            		;;
-        		*-*-sysv5*)
-            		pthread_cflags="-D_REENTRANT -Kthread"
-            		pthread_lib=""
-            		;;
-        		*-*-irix*)
-            		pthread_cflags="-D_SGI_MP_SOURCE"
-            		pthread_lib="-lpthread"
-            		;;
-        		*-*-aix*)
-            		pthread_cflags="-D_REENTRANT -mthreads"
-            		pthread_lib="-lpthread"
-            		;;
-        		*-*-hpux11*)
-            		pthread_cflags="-D_REENTRANT"
-            		pthread_lib="-L/usr/lib -lpthread"
-            		;;
-        		*-*-qnx*)
-            		pthread_cflags=""
-            		pthread_lib=""
-            		;;
-        		*-*-osf*)
-            		pthread_cflags="-D_REENTRANT"
-            		if test x$ac_cv_prog_gcc = xyes; then
-                		pthread_lib="-lpthread -lrt"
-            		else
-                		pthread_lib="-lpthread -lexc -lrt"
-            		fi
-            		;;
-        		*)
-            		pthread_cflags="-D_REENTRANT"
-            		pthread_lib="-lpthread"
-            		;;
-    		esac
-			
-			AM_CXXFLAGS="$AM_CXXFLAGS $pthread_cflags"
-            LIBS="$LIBS $pthread_lib"
-
+			CEYLAN_USES_THREADS=1 
+			AM_CXXFLAGS="$AM_CXXFLAGS $pthread_cflags"  
 		else	
 			AC_MSG_WARN([Multithread support requested but not available, disabling it])
+			# Restores previous settings :
+			CFLAGS=$ac_save_cflags
+			LIBS=$ac_save_libs
 		fi
 		AC_MSG_CHECKING([whether Ceylan multithread feature is enabled])
 		AC_MSG_RESULT([$have_multithread])
@@ -819,7 +839,16 @@ CheckAdvancedFileAttributeFeature()
 		have_advanced_file_attribute=yes
 		AC_CHECK_HEADERS([sys/stat.h fcntl.h],[],[have_advanced_file_attribute=no])
 		if test x$have_advanced_file_attribute = xyes; then
-			AC_CHECK_DECLS([S_IRGRP, S_IROTH, O_NONBLOCK, O_SYNC],[],[have_advanced_file_attribute=no])
+			AC_CHECK_DECLS([S_IRGRP, S_IROTH, O_NONBLOCK, O_SYNC],[],[have_advanced_file_attribute=no],[
+		#ifdef HAVE_FCNTL_H
+		#include <fcntl.h>
+		#endif // HAVE_FCNTL_H
+		
+		#ifdef HAVE_SYS_STAT_H
+		#include <sys/stat.h>
+		#endif // HAVE_SYS_STAT_H
+		
+			])
 		fi	
 		if test x$have_advanced_file_attribute = xyes; then
 			CEYLAN_USES_ADVANCED_FILE_ATTRIBUTES=1
@@ -946,8 +975,13 @@ CheckMkdir()
 	AC_MSG_CHECKING([whether mkdir takes two arguments])
 	have_mkdir_two_args=no
 	AC_TRY_COMPILE([
+		#ifdef HAVE_SYS_STAT_H
 		#include <sys/stat.h>
+		#endif // HAVE_SYS_STAT_H
+			
+		#ifdef HAVE_SYS_TYPES_H
 		#include <sys/types.h>
+		#endif // HAVE_SYS_TYPES_H
             ],[
               mkdir( "aPath", S_IRWXU ) ;
             ],[have_mkdir_two_args=yes])
