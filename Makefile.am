@@ -1,4 +1,4 @@
-# Root Makefile.am for the whole Ceylan library.
+# Root Makefile.am for the whole Ceylan package, including tests.
 
 # Requires following version of automake or newer :
 AUTOMAKE_OPTIONS = 1.9
@@ -34,14 +34,15 @@ SRC_SNAPSHOT_ARCHIVE_NAME = \
 # in case of mistake, too many files will be archived, not too few.
 # Useful notably for bz2 and tgz make targets.
 # The following line should not be broken otherwise it will not work.
-CEYLAN_PROJECT_FILES = `cd ../..; find @PROJECT_NAME@-@CEYLAN_VERSION@ \( -path '*.svn*' -prune -o -path '*.libs' -prune -o -path '.deps' -prune -o -path '*autom4te.cache*' -prune -o -path '*LOANI-*' -prune \) -a \( -type d -a ! -name '*.svn*' -a ! -name '.libs' -a ! -name '*LOANI*' \) -o \( -type f -a ! -name '*.o' -a ! -name '*.exe' ! -name '*.a' ! -name '*.so*' ! -name '.*list' ! -name '*.lo' ! -name '*.Plo' ! -name '*.la' ! -name '*.lai' ! -name 'Makefile.in' ! -name 'stamp-h1' ! -name 'ceylan-?.?.tar.gz' ! -name 'Makefile' ! -name '.*.d' ! -name '*.log' ! -name '*.pyc' \)| grep -v '.svn' | grep -v autom4te.cache`
+CEYLAN_PROJECT_FILES = `current_dir=$(shell basename $$PWD); cd $(top_srcdir)/..; find $$current_dir \( -path '*.svn*' -prune -o -path '*.libs' -prune -o -path '.deps' -prune -o -path '*autom4te.cache*' -prune -o -path '*LOANI-*' -prune \) -a \( -type d -a ! -name '*.svn*' -a ! -name '.libs' -a ! -name '*LOANI*' \) -o \( -type f -a ! -name '*.o' -a ! -name '*.exe' ! -name '*.a' ! -name '*.so*' ! -name '.*list' ! -name '*.lo' ! -name '*.Plo' ! -name '*.la' ! -name '*.lai' ! -name 'Makefile.in' ! -name 'stamp-h1' ! -name 'ceylan-?.?.tar.gz' ! -name 'Makefile' ! -name '.*.d' ! -name '*.log' ! -name '*.pyc' \)| grep -v '.svn' | grep -v autom4te.cache`
 	
 		
 # A file is assumed to be a source file if it is a file, not located in
 # a directory named .svn, and if its name finishes by .h or .cc. 
-# Useful notably for style make targets.
+# Useful notably for style make targets. 
+# Only takes into account the library (ex : test sources are igored).
 # The following line should not be broken otherwise it will not work.
-CEYLAN_LIBRARY_SOURCE_FILES = `find code -path '*.svn*' -prune -a \( -type d -a ! -name '*.svn*' \) -o -name '*.cc' -o -name '*.h' -a -type f| grep -v '.svn'`
+CEYLAN_LIBRARY_SOURCE_FILES = `cd $(top_srcdir); find src/code -path '*.svn*' -prune -a \( -type d -a ! -name '*.svn*' \) -o -name '*.cc' -o -name '*.h' -a -type f| grep -v '.svn'`
 
 
 
@@ -60,20 +61,21 @@ rpm: tgz
 install-lib:
 	cd src/code && $(MAKE) install-libLTLIBRARIES
 
+
 # Run ldconfig after installing the library:
 install-hook:
 	-ldconfig
 
 update-basic-doc-files:
-	cd ${top_builddir}/doc/basic; $(MAKE) update-basic-doc-files 
+	cd ${top_builddir}/src/doc/basic; $(MAKE) update-basic-doc-files 
 
 
-# clean required not to archive test* executables :			
-source-release: clean update-basic-doc-files
+source-release: update-basic-doc-files
 	@echo; echo "@CEYLAN_COMMAND_STYLE@    Making source release\
 	$(SRC_RELEASE_ARCHIVE_NAME) :@CEYLAN_DEFAULT_STYLE@"; echo
+	-@cd test; if [ -f Makefile ] ; then make clean; fi
 	@mkdir -p $(SRC_RELEASE_ARCHIVE_DIR); \
-	files=$(CEYLAN_PROJECT_FILES); cd ../.. ; \
+	files=$(CEYLAN_PROJECT_FILES); cd $(top_srcdir)/.. ; \
 	tar cvhf - $$files | \
 	bzip2 > "$(SRC_RELEASE_ARCHIVE_DIR)/$(SRC_RELEASE_ARCHIVE_NAME)" \
 	&& echo \
@@ -86,13 +88,14 @@ source-release: clean update-basic-doc-files
 
 # Creates a SVN snapshot one can run 'svn update' on :
 snapshot:
-	@echo; echo "@CEYLAN_COMMAND_STYLE@    Creating a SVN snapshot\
+	@echo; echo "@CEYLAN_COMMAND_STYLE@    Creating a SVN Ceylan snapshot\
 	@CEYLAN_DEFAULT_STYLE@"; echo
 	@svn co https://svn.sourceforge.net/svnroot/ceylan ceylan
-	@(cd ceylan/Ceylan/trunk/src/conf/build && ./autogen.sh \
-	&& cd ../../ && rm -rf autom4te.cache )
-	@cd ceylan && tar zcvf $(HOME)/Ceylan.tar.gz Ceylan
-	@rm -rf ceylan
+	@(cd ceylan/Ceylan/trunk/src/conf/build && ./autogen.sh --no-build \
+	&& cd ../../.. && rm -rf autom4te.cache )
+	@cd ceylan && tar cvjf - Ceylan | \
+	bzip2 > $(HOME)/Ceylan-@CEYLAN_VERSION@-svn-snapshot.tar.bz2
+	-@rm -rf ceylan
 	
 	
 # Brute-force archiving with bzip2, see also the 'source-release' target.
@@ -105,7 +108,7 @@ bz2:
 	@PROJECT_NAME@-@CEYLAN_VERSION@ project\
 	in a bz2 archive@CEYLAN_DEFAULT_STYLE@"; echo
 	@mkdir -p $(SRC_SNAPSHOT_ARCHIVE_DIR); files=$(CEYLAN_PROJECT_FILES);\
-	cd ../.. ; tar cvhf - $$files |	bzip2 > \
+	cd $(top_srcdir)/.. ; tar cvhf - $$files |	bzip2 > \
 	"$(SRC_SNAPSHOT_ARCHIVE_DIR)/$(SRC_SNAPSHOT_ARCHIVE_NAME).tar.bz2" \
 	&& echo && echo "@CEYLAN_COMMAND_STYLE@    + whole @PROJECT_NAME@\
 	project has been saved in file"	&& echo \
@@ -121,7 +124,7 @@ tgz:
 	@PROJECT_NAME@-@CEYLAN_VERSION@ project\
 	in a tgz archive@CEYLAN_DEFAULT_STYLE@"; echo
 	@mkdir -p $(SRC_SNAPSHOT_ARCHIVE_DIR); files=$(CEYLAN_PROJECT_FILES);\
-	cd ../.. ; tar cvf - $$files | gzip > \
+	cd $(top_srcdir)/.. ; tar cvf - $$files | gzip > \
 	"$(SRC_SNAPSHOT_ARCHIVE_DIR)/$(SRC_SNAPSHOT_ARCHIVE_NAME).tar.gz" \
 	&& echo	&& echo "@CEYLAN_COMMAND_STYLE@    + whole @PROJECT_NAME@\
 	project has been saved in file"	&& echo \
@@ -146,7 +149,7 @@ style:
 	read value; if [ "$$value" == "y" ]; then \
 	echo; echo "@CEYLAN_COMMAND_STYLE@    Enforcing standard project style\
 	defined in $(ASTYLE_CONF) in source files :@CEYLAN_DEFAULT_STYLE@ ";\
-	stylefile=$(ASTYLE_CONF);\
+	stylefile=$(ASTYLE_CONF); cd $(top_srcdir)/.. ;\
 	for f in $(CEYLAN_LIBRARY_SOURCE_FILES); do ( echo "    Processing $$f";\
 	$(ASTYLE) `cat $$stylefile` < $$f > $$f.tmp;\
 	mv $$f.tmp $$f ); done; else echo \
@@ -154,11 +157,11 @@ style:
 
 
 doc:
-	cd ${top_srcdir}/doc; $(MAKE) site  
+	cd src/doc; $(MAKE) site  
 	
 	
 api:
-	cd ${top_srcdir}/doc; $(MAKE) api  
+	cd doc; $(MAKE) api  
 
 
 stat:
@@ -283,6 +286,7 @@ real-clean: clean-local
 	-@rm -rf autom4te.cache
 
 
+# Only useful if the source and build directories are the same.
 clean-generated: 
 	@cd ${top_srcdir}/conf/build; cleanGeneratedConfigFiles.sh 
 
@@ -292,10 +296,10 @@ distclean-local: real-clean
 
 # Grab the test programs for the distribution :
 dist-hook:
-	@if test -f $(srcdir)/../test/Makefile; then \
-	(cd $(srcdir)/../test; make distclean); fi
-	-@rm -rf $(srcdir)/../test/autom4te*
-	@cp -rp $(srcdir)/../test $(distdir)
+	@if test -f $(srcdir)/test/Makefile; then \
+	(cd $(srcdir)/test; make distclean); fi
+	-@rm -rf $(srcdir)/test/autom4te*
+	@cp -rp $(srcdir)/test $(distdir)
 	-@rm -rf `find $(distdir) -type d -name '.svn' -print`
 	-@cd $(distdir); rm -f config.log config.status libtool \
 	code/CeylanConfig.h
