@@ -1,5 +1,7 @@
 #include "CeylanMutex.h"
 
+#include <cerrno>              // for EINVAL, EDEADLK, EPERM, etc.
+
 
 #if CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"      // for configure-time feature settings
@@ -10,7 +12,7 @@ extern "C"
 {
 
 #ifdef CEYLAN_USES_PTHREAD_H
-#include <pthread.h>
+#include <pthread.h>           // for pthread_mutex_t, etc.
 #endif //CEYLAN_USES_PTHREAD_H
 
 }
@@ -24,8 +26,10 @@ using namespace Ceylan::System ;
 
 #ifdef CEYLAN_USES_PTHREAD_H
 
+// Duplicate definition, see : CeylanThread.cc
+
 // Avoid exposing system-dependent pthread_mutex_t in the headers :
-struct SystemSpecificMutexType
+struct Mutex::SystemSpecificMutexType
 {
 	pthread_mutex_t _mutex ;
 } ;
@@ -133,6 +137,7 @@ void Mutex::preUnlock() throw( LockException )
 	
 
 	if ( ( res = ::pthread_mutex_unlock( & _internalMutex->_mutex ) ) != 0 )
+	{
 	
 		string errorMessage ;
 		
