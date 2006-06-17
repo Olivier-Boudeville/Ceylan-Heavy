@@ -107,7 +107,7 @@ namespace Ceylan
 
 
 				/// Returns the reference on the mutex itself.
-				inline SystemSpecificMutexType & getMutexReference() throw() ;
+				SystemSpecificMutexType & getMutexReference() throw() ;
 
 
 
