@@ -36,7 +36,7 @@ SRC_SNAPSHOT_ARCHIVE_NAME = \
 # in case of mistake, too many files will be archived, not too few.
 # Useful notably for bz2 and tgz make targets.
 # The following line should not be broken otherwise it will not work.
-CEYLAN_PROJECT_FILES = `current_dir=$(shell basename $$PWD); cd $(top_srcdir)/..; find $$current_dir \( -path '*.svn*' -prune -o -path '*.libs' -prune -o -path '.deps' -prune -o -path '*autom4te.cache*' -prune -o -path '*LOANI-*' -prune \) -a \( -type d -a ! -name '*.svn*' -a ! -name '.libs' -a ! -name '*LOANI*' \) -o \( -type f -a ! -name '*.o' -a ! -name '*.exe' ! -name '*.a' ! -name '*.so*' ! -name '.*list' ! -name '*.lo' ! -name '*.Plo' ! -name '*.la' ! -name '*.lai' ! -name 'Makefile.in' ! -name 'stamp-h1' ! -name 'ceylan-?.?.tar.gz' ! -name 'Makefile' ! -name '.*.d' ! -name '*.log' ! -name '*.pyc' \)| grep -v '.svn' | grep -v autom4te.cache`
+CEYLAN_PROJECT_FILES = `current_dir=\`basename $$PWD\`; cd $(top_srcdir)/..; find $$current_dir \( -path '*.svn*' -prune -o -path '*.libs' -prune -o -path '.deps' -prune -o -path '*autom4te.cache*' -prune -o -path 'testCeylan*-logs' -prune -o -path '*LOANI-*' -prune \) -a \( -type d -a ! -name '*.svn*' -a ! -name '.libs' -a ! -name '*LOANI*' \) -o \( -type f -a ! -name '*.o' -a ! -name '*.exe' ! -name '*.a' ! -name '*.so*' ! -name '.*list' ! -name '*.lo' ! -name '*.Plo' ! -name '*.la' ! -name '*.lai' ! -name 'Makefile.in' ! -name 'stamp-h1' ! -name 'ceylan-?.?.tar.gz' ! -name 'Makefile' ! -name '.*.d' ! -name '*.log' ! -name '*.pyc' \)| grep -v '.svn' | grep -v '.deps' | grep -v autom4te.cache`
 	
 		
 # A file is assumed to be a source file if it is a file, not located in
