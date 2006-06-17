@@ -527,7 +527,7 @@ CheckRegexFeature()
 	if test x$regex = xyes; then
 		AC_MSG_RESULT([yes])
 		have_regex=yes
-		AC_CHECK_HEADER([regex.h],[],[have_regex=no])
+		AC_CHECK_HEADERS([regex.h],[],[have_regex=no])
 		if test x$have_regex = xyes; then
 			AC_CHECK_FUNCS([regcomp regexec regfree],[],[have_regex=no])
 			# regex_t, REG_EXTENDED and REG_NOSUB could be tested as well.
