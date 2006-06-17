@@ -3,8 +3,8 @@
 
 #include "CeylanOperators.h"   // for string + operator
 
-#include <cstdlib>   // for abs etc.
-#include <cmath>     // for fabsf etc.
+#include <cstdlib>   // for abs, etc.
+#include <cmath>     // for fabsf, etc.
 
 
 
