@@ -22,9 +22,9 @@ extern "C"
 //#include <unistd.h>
 #endif // CEYLAN_USES_UNISTD_H
 
-#ifdef CEYLAN_USES_SYS_TYME_H
-//#include <sys/time.h>
-#endif // CEYLAN_USES_SYS_TYME_H
+#ifdef CEYLAN_USES_SYS_TIME_H
+#include <sys/time.h>           // for gettimeofday
+#endif // CEYLAN_USES_SYS_TIME_H
 
 }
 
@@ -54,21 +54,21 @@ using namespace Ceylan::Features ;
 
 
 // Avoid exposing system-dependent pthread_t in the headers :
-struct SystemSpecificThreadIdentifier
+struct Thread::SystemSpecificThreadIdentifier
 {
 	pthread_t _thread ;
 } ;
 
 
 // Avoid exposing system-dependent pthread_attr_t in the headers :
-struct SystemSpecificThreadAttribute
+struct Thread::SystemSpecificThreadAttribute
 {
 	pthread_attr_t _threadAttribute ;
 } ;
 
 
 // Avoid exposing system-dependent pthread_cond_t in the headers :
-struct SystemSpecificThreadCondition
+struct Thread::SystemSpecificThreadCondition
 {
 	pthread_cond_t _threadCondition ;
 } ;
@@ -99,7 +99,45 @@ Synchronized<ThreadCount> * Thread::_Number = 0 ;
 
 
 
+namespace
+{
 
+
+	/// Helper wrapper function for the Thread::Run static method.
+	extern "C" void * Run( void * threadObject )
+	{
+
+		/*
+		 * A dynamic_cast could not be used, since void * is not a pointer to
+		 * class.
+		 *
+		 */
+
+		Thread::Run( * reinterpret_cast<Thread * >( threadObject ) ) ;
+		return 0 ;
+		
+	}
+
+}
+
+
+#ifdef CEYLAN_USES_PTHREAD_H
+
+/*
+ * Duplicate definition, see : CeylanMutex.cc
+ *
+ * Amazingly, it works without a double definition clashing when the library 
+ * is created.
+ *
+ */
+
+// Avoid exposing system-dependent pthread_mutex_t in the headers :
+struct Mutex::SystemSpecificMutexType
+{
+	pthread_mutex_t _mutex ;
+} ;
+
+#endif // CEYLAN_USES_PTHREAD_H
 
 
 Thread::Thread() throw( FeatureNotAvailableException ) :
@@ -116,8 +154,8 @@ Thread::Thread() throw( FeatureNotAvailableException ) :
 
 	LogPlug::debug( "Creation of an unnamed thread." ) ;
 
-	_id = new pthread_t ;
-	_attr = new pthread_attr_t ;
+	_id = new SystemSpecificThreadIdentifier ;
+	_attr = new SystemSpecificThreadAttribute ;
 	
 #else // CEYLAN_USES_PTHREAD_H
 	
@@ -144,8 +182,8 @@ Thread::Thread( const string & name )
 
 	LogPlug::debug( "Creation of a thread named " + name ) ;
 	
-	_id = new pthread_t ;
-	_attr = new pthread_attr_t ;
+	_id = new SystemSpecificThreadIdentifier ;
+	_attr = new SystemSpecificThreadAttribute ;
 	
 #else // CEYLAN_USES_PTHREAD_H
 	
@@ -199,11 +237,14 @@ void Thread::run() throw( RunnableException )
 
 #ifdef CEYLAN_USES_PTHREAD_H
 
-	int error ;
+	Sint32 error ;
 
 	LogPlug::debug( getName() + " is running" ) ;
 
-	if ( ( error = ::pthread_create( &_id, 0, ::Run, 
+	if ( ( error = ::pthread_create( 
+		& _id->_thread, 
+		/* pthread_attr_t */ 0, 
+		/* wrapper function for Thread::Run */ ::Run, 
 		dynamic_cast<void*>( this ) ) ) )
 	{
 		threadCreationFailed( error ) ;
@@ -268,8 +309,9 @@ void Thread::waitUntilOver() throw()
 
 #ifdef CEYLAN_USES_PTHREAD_H
 
-	void * ptr ;
-	::pthread_join( *_id, &ptr ) ;
+	// Ignored :
+	void * threadReturn = 0 ;
+	::pthread_join( _id->_thread, & threadReturn ) ;
 	
 #endif // CEYLAN_USES_PTHREAD_H
 
@@ -366,28 +408,6 @@ void Thread::Sleep( System::Second seconds,	System::Microsecond microseconds )
 }
 
 
-namespace
-{
-
-
-	/// Helper wrapper function for the Thread::Run static method.
-	extern "C" void * Run( void * threadObject )
-	{
-
-		/*
-		 * A dynamic_cast could not be used, since void * is not a pointer to
-		 * class.
-		 *
-		 */
-
-		Thread::Run( * reinterpret_cast<Thread * >( threadObject ) ) ;
-		return 0 ;
-		
-	}
-
-}
-
-
 void Thread::Run( Thread & thread ) throw()
 {
 
@@ -421,7 +441,8 @@ Thread::Waiter::Waiter() throw( FeatureNotAvailableException ) :
 #ifdef CEYLAN_USES_PTHREAD_H
 
 	LogPlug::debug( "Creation of a Waiter mutex." ) ;
-	::pthread_cond_init( & _condition, 0 ) ;
+	::pthread_cond_init( & _condition->_threadCondition, 
+		/* pthread_condattr_t */ 0 ) ;
 
 #else
 
@@ -440,7 +461,7 @@ Thread::Waiter::~Waiter() throw()
 
 	LogPlug::debug( "Destruction of a Waiter mutex." ) ;
 
-	if ( ::pthread_cond_destroy( & _condition ) )
+	if ( ::pthread_cond_destroy( & _condition->_threadCondition ) )
 	{
 		LogPlug::warning( "pthread_cond_destroy@Thread::Waiter::~Waiter() : "
 			"some threads are currently waiting on condition." ) ;
@@ -460,12 +481,13 @@ bool Thread::Waiter::wait( System::Second seconds ) throw()
 
 
 	LogPlug::debug( "Waiter mutex will wait for " 
-		+ Ceylan::toString( seconds ) + " seconds." ) ;
+		+ Ceylan::toString( seconds ) + " second(s)." ) ;
 
 	if ( seconds == 0 )
 	{
 		lock() ;
-		::pthread_cond_wait( & _condition, & getMutexReference() ) ;
+		::pthread_cond_wait( & _condition->_threadCondition, 
+			& getMutexReference()._mutex ) ;
 		unlock() ;
 	}
 	else
@@ -484,7 +506,8 @@ bool Thread::Waiter::wait( System::Second seconds ) throw()
 		LogPlug::debug( "Calling pthread_cond_timedwait...." ) ;
 
 		ret = ::pthread_cond_timedwait(
-			& _condition, & getMutexReference(), & timeout ) == ETIMEDOUT ;
+			& _condition->_threadCondition, 
+			& getMutexReference()._mutex, & timeout ) == ETIMEDOUT ;
 
 		LogPlug::debug( "... pthread_cond_timedwait called ! " ) ;
 
@@ -510,7 +533,9 @@ bool Thread::Waiter::signal() throw()
 
 	LogPlug::debug( "Waiter mutex is signaled." ) ;
 
-	bool ret = ( ::pthread_cond_signal( & _condition ) == 0 ) ;
+	bool ret = ( ::pthread_cond_signal( 
+		& _condition->_threadCondition ) == 0 ) ;
+		
 	unlock() ;
 	
 	return ret ;
@@ -533,7 +558,9 @@ bool Thread::Waiter::broadcast() throw()
 
 	LogPlug::debug( "Waiter mutex is broadcasted" ) ;
 
-	bool ret = ( ::pthread_cond_broadcast( & _condition ) == 0 ) ;
+	bool ret = ( ::pthread_cond_broadcast( 
+		& _condition->_threadCondition ) == 0 ) ;
+		
 	unlock() ;
 	
 	return ret ;
@@ -559,7 +586,7 @@ void Thread::cancel() throw()
 	LogPlug::debug( "Cancelling thread " + getName() ) ;
 	_terminated = true ;
 	_running = false ;
-	::pthread_cancel( _id ) ;
+	::pthread_cancel( _id->_thread ) ;
 	
 #endif // CEYLAN_USES_PTHREAD_H
 	
