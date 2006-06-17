@@ -17,7 +17,7 @@ extern "C"
 
 
 #ifdef CEYLAN_USES_SYS_TYPES_H
-//#include <sys/types.h>       // for mode_t
+#include <sys/types.h>         // for mode_t
 #endif // CEYLAN_USES_SYS_TYPES_H
 
 #ifdef CEYLAN_USES_SYS_STAT_H
@@ -29,7 +29,7 @@ extern "C"
 #endif // CEYLAN_USES_FCNTL_H
 
 #if CEYLAN_USES_UNISTD_H
-//#include <unistd.h>            // for FIXME
+#include <unistd.h>            // for FIXME
 #endif // CEYLAN_USES_UNISTD_H
 
 #if CEYLAN_USES_UTIME_H
@@ -59,7 +59,7 @@ using namespace Ceylan::Log ;
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
 // Avoid exposing system-dependent mode_t in the headers :
-struct SystemSpecificPermissionFlag
+struct File::SystemSpecificPermissionFlag
 {
 	mode_t _mode ;
 } ;
@@ -315,9 +315,9 @@ File::File( const string & name, OpeningFlag openFlag,
 	_fstream(),
 	_name( name ),
 	_openFlag( openFlag ),
-	_permissions( permissions )
-	,_lockedForReading( false )
-	,_lockedForWriting( false )
+	_permissions( permissions ),
+	_lockedForReading( false ),
+	_lockedForWriting( false )
 {
 
 	if ( openFlag != DoNotOpen )
@@ -336,14 +336,14 @@ File::File( const string & name,
 	_fdes( static_cast<FileDescriptor>( -1 ) ),
 	_name( name ),
 	_openFlag( CreateToWriteBinary ),
-	_permissions( permissionFlag )
-	,_lockedForReading( false )
-	,_lockedForWriting( false )
+	_permissions( permissionFlag ),
+	_lockedForReading( false ),
+	_lockedForWriting( false )
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
-	SystemSpecificPermissionFlag myMode ;
+	File::SystemSpecificPermissionFlag myMode ;
 	ConvertToFileDescriptorPermissionFlag( _permissions, myMode ) ;
 	_fdes = ::open( 
 		name.c_str(), 
@@ -1418,7 +1418,7 @@ void File::reopen() throw( File::CouldNotOpen )
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
-	SystemSpecificPermissionFlag myMode ;
+	File::SystemSpecificPermissionFlag myMode ;
 	ConvertToFileDescriptorPermissionFlag( _permissions, myMode ) ;
 	_fdes = ::open( _name.c_str(), 
 		ConvertToFileDescriptorOpenFlag( _openFlag ),
@@ -1480,7 +1480,7 @@ string File::interpretState() const throw()
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
-	return "File uses file descriptor " + Ceylan:::toString( _fdes ) ;
+	return "File uses file descriptor " + Ceylan::toString( _fdes ) ;
 	
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
