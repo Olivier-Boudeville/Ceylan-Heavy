@@ -19,7 +19,7 @@ extern "C"
 {
 
 #if CEYLAN_USES_UNISTD_H
-#include <unistd.h>                  // for pid_t, sysconf 
+#include <unistd.h>                  // for pid_t, sysconf, fork 
 #endif // CEYLAN_USES_UNISTD_H
 
 #ifdef CEYLAN_USES_SYS_WAIT_H
@@ -110,20 +110,23 @@ void Process::run() throw( RunnableException )
 
 #if CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
 
-	_id = ::fork() ;
+	// pid_t can be -1, whereas _id is unsigned :
+	pid_t res = ::fork() ;
 
-	if ( _id == -1 )
+	if ( res == -1 )
 	{
 		_error = errno ;
 		processCreationFailed() ;
 		return ;
 	}
 
+	_id = static_cast<Pid>( res ) ;
+	
 	_error = 0 ;
 
 	if ( _id == 0 )
 	{
-		// We are the forked child.
+		// We are the forked child. getpid is expected to be non-negative :
 		_id = ::getpid() ;
 		start() ;
 	}
@@ -179,7 +182,7 @@ bool Process::isRunning() const throw( ProcessException )
 
 #if CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
 
-	Pid p = 0 ;
+	pid_t p = 0 ;
 
 	if ( _id > 0 )
 	{
@@ -364,7 +367,7 @@ void Process::RunExecutable(
 		+ filename + " : "
 		+ System::explainError( errno ) + " " + cargv[0] ) ;
 
-	for ( Ceylan::Uin16 i = 0; cargv[i] != 0 ; i++ )
+	for ( Ceylan::Uint16 i = 0; cargv[i] != 0 ; i++ )
 		delete [] cargv[i] ;
 
 	delete [] cargv ;
@@ -493,7 +496,7 @@ bool Process::RedirectStdin( const string & filename ) throw( ProcessException )
 
 	try
 	{
-		File f( filename, File::ReadOnly ) ;
+		File f( filename, File::Read ) ;
 		ret = DuplicateStream( f.getDescriptor(), STDIN_FILENO ) ;
 		f.close() ;
 	}
