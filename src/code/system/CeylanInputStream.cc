@@ -19,15 +19,15 @@ extern "C"
 #endif // CEYLAN_USES_SYS_TYPES_H
 
 #ifdef CEYLAN_USES_UNISTD_H
-#include <unistd.h>
+//#include <unistd.h>
 #endif // CEYLAN_USES_UNISTD_H
 
 #ifdef CEYLAN_USES_STRINGS_H
-#include <strings.h>
+//#include <strings.h>
 #endif // CEYLAN_USES_STRINGS_H
 
 #ifdef CEYLAN_USES_SYS_SELECT_H
-#include <sys/select.h>
+//#include <sys/select.h>
 #endif // CEYLAN_USES_SYS_SELECT_H
 
 }
@@ -67,14 +67,14 @@ void InputStream::setSelected( bool newStatus ) throw()
 
 
 
-int InputStream::Select( list<InputStream*> & is ) 
+Ceylan::Uint16 InputStream::Select( list<InputStream*> & is ) 
 	throw( InputStream::SelectFailedException )
 {
 
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
-	if ( is.size() == 0 )
+	if ( is.empty() )
 		return 0 ;
 
 	// Creates the set of waiting file descriptors.
@@ -104,9 +104,9 @@ int InputStream::Select( list<InputStream*> & is )
 	 * retrying select.
 	 *
 	 */
-	const int selectWaitingTime = 2 ;
+	const Ceylan::Uint8 selectWaitingTime = 2 ;
 
-	int attemptCount = selectAttemptCount ;
+	Ceylan::Uint8 attemptCount = selectAttemptCount ;
 
 	for ( ; attemptCount; attemptCount-- )
 	{
@@ -117,8 +117,8 @@ int InputStream::Select( list<InputStream*> & is )
 				+ explainError( getError() )
 				+ string( "), retrying in " )
 				+ selectWaitingTime
-				+ string( " ..." ) ) ;
-			Thread::sleep( selectWaitingTime ) ;
+				+ string( " second(s) ..." ) ) ;
+			Thread::Sleep( selectWaitingTime ) ;
 		}
 		else
 		{
@@ -132,7 +132,7 @@ int InputStream::Select( list<InputStream*> & is )
 			+ " attempts, still no InputStream selected." ) ;
 
 
-	int selectedCount = 0 ;
+	Ceylan::Uint16 selectedCount = 0 ;
 	for ( list<InputStream*>::iterator it = is.begin(); it != is.end(); it++ )
 	{
 		if ( *it && ( FD_ISSET( (*it)->getInputStreamID(), & waitFDSet ) ) )
@@ -155,13 +155,13 @@ int InputStream::Select( list<InputStream*> & is )
 }
 
 
-int InputStream::Test( list<InputStream*> & is ) 
+Ceylan::Uint16 InputStream::Test( list<InputStream*> & is ) 
 	throw( InputStream::SelectFailedException )
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
-	if ( is.size() == 0 )
+	if ( is.empty() )
 		return 0 ;
 
 	// Asks to return immediatly.
@@ -195,7 +195,7 @@ int InputStream::Test( list<InputStream*> & is )
 			+ explainError( getError() ) ) ;
 	}
 
-	int selectedCount = 0 ;
+	Ceylan::Uint16 selectedCount = 0 ;
 	for ( list<InputStream*>::iterator it = is.begin(); it != is.end(); it++ )
 	{
 		if ( *it && ( FD_ISSET( (*it)->getInputStreamID(), & waitFDSet ) ) )
