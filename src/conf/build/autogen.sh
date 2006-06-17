@@ -1,8 +1,20 @@
 #!/bin/bash
 
-USAGE="Usage : "`basename $0`" [--no-build] [--chain-test] : (re)generates all the autotools-based build system.\n\t --no-build : stop just after having generated the configure script\n\t --chain-test : build and install the library, and then build the test suite and run it against the installation"
+USAGE="Usage : "`basename $0`" [--no-build] [--chain-test] [--configure-options [option 1] [option 2] [...] ]: (re)generates all the autotools-based build system.\n\t --no-build : stop just after having generated the configure script\n\t --chain-test : build and install the library, and then build the test suite and run it against the installation\n\t --configure-options : all following options will be directly passed whenever configure is run"
 
 # Main settings section.
+
+ceylan_features_opt="--disable-regex --disable-multithread --disable-network --disable-file-descriptor --disable-symbolic-link --disable-advanced-file-attribute --disable-file-lock --disable-advanced-process-management"
+
+PREFIX="$HOME/tmp-Ceylan-test-install"
+PREFIX_OPT="--prefix=$PREFIX"
+#PREFIX_OPT=""
+
+# To check the user can override them :
+#test_overriden_options="CPPFLAGS=\"-DTEST_CPPFLAGS\" LDFLAGS=\"-LTEST_LDFLAGS\""
+
+configure_opt="$ceylan_features_opt -enable-strict-ansi --enable-debug $PREFIX_OPT $test_overriden_options"
+
 
 # 0 means true, 1 means false :
 do_remove_generated=0
@@ -40,6 +52,15 @@ while [ "$#" -gt "0" ] ; do
 		token_eaten=0
 	fi
 	
+	if [ "$1" == "--configure-options" ] ; then
+		shift
+		configure_opt="$*"
+		while [ "$#" -gt "0" ] ; do
+			shift
+		done		
+		token_eaten=0
+	fi
+	
 	if [ "$1" == "-h" ] ; then
 		echo -e "$USAGE"
 		exit
@@ -53,16 +74,6 @@ while [ "$#" -gt "0" ] ; do
 	shift
 done
 
-ceylan_features_opt="--disable-regex --disable-multithread --disable-network --disable-file-descriptor --disable-symbolic-link --disable-advanced-file-attribute --disable-file-lock --disable-advanced-process-management"
-
-PREFIX="$HOME/tmp-Ceylan-test-install"
-PREFIX_OPT="--prefix=$PREFIX"
-#PREFIX_OPT=""
-
-# To check the user can override them :
-#test_overriden_options="CPPFLAGS=\"-DTEST_CPPFLAGS\" LDFLAGS=\"-LTEST_LDFLAGS\""
-
-configure_opt="$ceylan_features_opt -enable-strict-ansi --enable-debug $PREFIX_OPT $test_overriden_options"
 
 
 RM="/bin/rm -f"
@@ -208,7 +219,15 @@ generateCustom()
 	if [ "$do_clean_prefix" -eq 0 ] ; then
 		echo
 		echo " - cleaning PREFIX = $PREFIX"
-		${RM} -r $PREFIX
+		unset returnedChar
+		read -p "Do you really want to erase the whole $PREFIX tree ? (y/n) [n] " returnedChar 
+
+		if [ "$returnedChar" = "y" ] ; then
+			${RM} -r $PREFIX
+			echo "(prefix cleaned)"
+		else
+			echo "(nothing removed)"
+		fi
 	fi
 	
 
@@ -335,7 +354,7 @@ generateCustom()
 	fi
 		
 	echo
-	echo " - executing 'configure' script"
+	echo " - executing 'configure' script with following options : ' $configure_opt'."
 	
 
 	(./configure --version) < /dev/null > /dev/null 2>&1 || {
