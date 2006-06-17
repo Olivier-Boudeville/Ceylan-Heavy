@@ -76,11 +76,24 @@ MIRROR_WEB_DIR       = /var/www/@PROJECT_NAME@
 # Web content should not contain 'common' section, since both doc and api 
 # need it.
 
-WEB_CONTENT_FILES    = `cd @srcdir@/web; find . -path 'common' -prune -a -type f -o ! -path '*.svn*' -a -type f`
+# A lot of complication (the creation of directories then the installation
+# of files) comes from distcheck and its setting the whole source tree
+# (including the directories) in read-only : it is a mess to handle with
+# cp --parents and/or /bin/install.
 
-COMMON_WEB_FILES     = `cd @srcdir@/web; find common ! -path '*.svn*' -type f -follow`
 
-HTML_FILES           = `cd @srcdir@/web; find . -name '*.html' -a -type f`
+WEB_CONTENT_FILES    = `cd @srcdir@; find . -path 'common' -prune -a -type f -o ! -path '*.svn*' -a -type f`
+
+WEB_CONTENT_DIRS     = `cd @srcdir@; find . -path 'common' -prune -a -type d -o ! -path '*.svn*' -a -type d`
+
+
+
+COMMON_WEB_FILES     = `cd @srcdir@; find common ! -path '*.svn*' -type f -follow`
+
+COMMON_WEB_DIRS      = `cd @srcdir@; find common ! -path '*.svn*' -type d -follow` 
+
+
+HTML_FILES           = `cd @srcdir@; find . -name '*.html' -a -type f`
 
 
 # Tools section
@@ -132,13 +145,14 @@ doc: local-web remind-locations
 local-web: site api
 
 
-# The 'site' target takes automatically  of both shared tree and
+# The 'site' target takes automatically care of both shared tree and
 # of the tree specific to this version :
 site: common 
 	@echo; echo "@CEYLAN_INSTALL_STYLE@    Copying web source tree to\
 	local web repository [@CEYLAN_LOCAL_WEB_DIR@]@CEYLAN_DEFAULT_STYLE@"
-	@cd $(srcdir)/web; cp --parents $(WEB_CONTENT_FILES) \
-	@CEYLAN_LOCAL_WEB_SHARED_DIR@
+	@cd $(srcdir)/web; for d in $(WEB_CONTENT_DIRS); do \
+	mkdir -p @CEYLAN_LOCAL_WEB_SHARED_DIR@/$$d ; done ;  \ 
+	cp -f --parents $(WEB_CONTENT_FILES) @CEYLAN_LOCAL_WEB_SHARED_DIR@
 	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark local doc site,\
 	which is to be found in :"
 	@echo "      file://@CEYLAN_LOCAL_WEB_DIR@/index.html@CEYLAN_DEFAULT_STYLE@"
@@ -151,9 +165,9 @@ common:
 	@echo; echo "@CEYLAN_INSTALL_STYLE@    Copying common web files to\
 	local doc repository\
 	[@CEYLAN_LOCAL_WEB_SHARED_DIR@]@CEYLAN_DEFAULT_STYLE@"
-	@cd $(srcdir)/web ; \
-	cp --parents $(COMMON_WEB_FILES) @CEYLAN_LOCAL_WEB_SHARED_DIR@
-
+	@cd $(srcdir)/web; for d in $(COMMON_WEB_DIRS); do \
+	mkdir -p @CEYLAN_LOCAL_WEB_SHARED_DIR@/$$d ; done ; \
+	cp -f --parents $(COMMON_WEB_FILES) @CEYLAN_LOCAL_WEB_SHARED_DIR@
 
 
 # One must prevent doxygen from overwriting the master 
@@ -206,7 +220,7 @@ tidy:
 	@echo "@CEYLAN_COMMAND_STYLE@    Tidying all html\
 	files@CEYLAN_DEFAULT_STYLE@"
 	@for f in $(HTML_FILES); do ( echo "  + tidying $$f";\
-	$(TIDY) -config $(TOP)/conf/tidy.conf -m $$f ); done
+	$(TIDY) -config @top_srcdir@/src/conf/doc/tidy.conf -m $$f ); done
 
 
 	
