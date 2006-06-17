@@ -86,7 +86,7 @@ namespace Ceylan
 				 * on this platform.
 				 * 				 
 				 */
-				static int Select( std::list<InputStream*> & is ) 
+				static Ceylan::Uint16 Select( std::list<InputStream*> & is ) 
 					throw ( SelectFailedException ) ;
 		
 		
@@ -108,7 +108,7 @@ namespace Ceylan
 				 * on this platform.
 				 *
 				 */
-				static int Test( std::list<InputStream*> & is )
+				static Ceylan::Uint16 Test( std::list<InputStream*> & is )
 					throw( SelectFailedException ) ;
 
 	
