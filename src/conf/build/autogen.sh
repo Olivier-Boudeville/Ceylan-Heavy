@@ -1,10 +1,12 @@
 #!/bin/bash
 
-USAGE="Usage : "`basename $0`" [--no-build] [--chain-test] [--configure-options [option 1] [option 2] [...] ]: (re)generates all the autotools-based build system.\n\t --no-build : stop just after having generated the configure script\n\t --chain-test : build and install the library, and then build the test suite and run it against the installation\n\t --configure-options : all following options will be directly passed whenever configure is run"
+USAGE="Usage : "`basename $0`" [--disable-all-features] [--no-build][--chain-test] [--configure-options [option 1] [option 2] [...] ]: (re)generates all the autotools-based build system.\n\t --disable-all-features : build a library with none of the optional features\n\t --no-build : stop just after having generated the configure script\n\t --chain-test : build and install the library, and then build the test suite and run it against the installation\n\t --configure-options : all following options will be directly passed whenever configure is run"
 
 # Main settings section.
 
-ceylan_features_opt="--disable-regex --disable-multithread --disable-network --disable-file-descriptor --disable-symbolic-link --disable-advanced-file-attribute --disable-file-lock --disable-advanced-process-management"
+ceylan_features_disable_opt="--disable-regex --disable-multithread --disable-network --disable-file-descriptor --disable-symbolic-link --disable-advanced-file-attribute --disable-file-lock --disable-advanced-process-management"
+
+ceylan_features_opt=""
 
 PREFIX="$HOME/tmp-Ceylan-test-install"
 PREFIX_OPT="--prefix=$PREFIX"
@@ -39,6 +41,11 @@ while [ "$#" -gt "0" ] ; do
 	
 	if [ "$1" == "-q" ] ; then
 		be_quiet=0
+		token_eaten=0
+	fi
+	
+	if [ "$1" == "--disable-all-features" ] ; then
+		ceylan_features_opt="$ceylan_features_disable_opt"
 		token_eaten=0
 	fi
 
