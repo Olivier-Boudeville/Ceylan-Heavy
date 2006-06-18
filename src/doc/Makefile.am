@@ -81,19 +81,20 @@ MIRROR_WEB_DIR       = /var/www/@PROJECT_NAME@
 # (including the directories) in read-only : it is a mess to handle with
 # cp --parents and/or /bin/install.
 
+# These variable are made to be evaluated from $(srcdir)/web :
 
-WEB_CONTENT_FILES    = `cd @srcdir@; find . -path 'common' -prune -a -type f -o ! -path '*.svn*' -a -type f`
+WEB_CONTENT_FILES    = `find . -path 'common' -prune -a -type f -o ! -path '*.svn*' -a -type f`
 
-WEB_CONTENT_DIRS     = `cd @srcdir@; find . -path 'common' -prune -a -type d -o ! -path '*.svn*' -a -type d`
-
-
-
-COMMON_WEB_FILES     = `cd @srcdir@; find common ! -path '*.svn*' -type f -follow`
-
-COMMON_WEB_DIRS      = `cd @srcdir@; find common ! -path '*.svn*' -type d -follow` 
+WEB_CONTENT_DIRS     = `find . -path 'common' -prune -a -type d -o ! -path '*.svn*' -a -type d`
 
 
-HTML_FILES           = `cd @srcdir@; find . -name '*.html' -a -type f`
+
+COMMON_WEB_FILES     = `find common ! -path '*.svn*' -type f -follow`
+
+COMMON_WEB_DIRS      = `find common ! -path '*.svn*' -type d -follow` 
+
+
+HTML_FILES           = `find . -name '*.html' -a -type f`
 
 
 # Tools section
@@ -161,15 +162,26 @@ site: common
 
 
 common: 
-	@mkdir -p @CEYLAN_LOCAL_WEB_SHARED_DIR@
 	@echo; echo "@CEYLAN_INSTALL_STYLE@    Copying common web files to\
 	local doc repository\
 	[@CEYLAN_LOCAL_WEB_SHARED_DIR@]@CEYLAN_DEFAULT_STYLE@"
+	@if [ -d "@CEYLAN_LOCAL_DOC_DIR@" ] ; then \
+	chmod a+w @CEYLAN_LOCAL_DOC_DIR@; else \
+	chmod a+w `dirname @CEYLAN_LOCAL_DOC_DIR@`; \
+	mkdir -p @CEYLAN_LOCAL_DOC_DIR@ ; fi
+	@mkdir -p @CEYLAN_LOCAL_WEB_DIR@
+	@mkdir -p @CEYLAN_LOCAL_WEB_SHARED_DIR@
 	@cd $(srcdir)/web; for d in $(COMMON_WEB_DIRS); do \
 	mkdir -p @CEYLAN_LOCAL_WEB_SHARED_DIR@/$$d ; done ; \
 	cp -f --parents $(COMMON_WEB_FILES) @CEYLAN_LOCAL_WEB_SHARED_DIR@
 
 
+uninstall-hook:
+	@echo; echo "@CEYLAN_INSTALL_STYLE@    Uninstalling documentation from \
+	@CEYLAN_LOCAL_DOC_SHARED_DIR@ @CEYLAN_DEFAULT_STYLE@"
+	-@rm -rf @CEYLAN_LOCAL_DOC_DIR@
+	
+	
 # One must prevent doxygen from overwriting the master 
 # doxygen-@PROJECT_NAME@.css through the symbolic link !
 # We assume here that 'dot' has been compiled with our default 
