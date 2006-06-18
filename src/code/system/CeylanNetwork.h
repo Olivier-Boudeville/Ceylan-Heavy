@@ -4,6 +4,8 @@
 
 #include "CeylanException.h"          // for inheritance
 #include "CeylanTextDisplayable.h"    // for inheritance
+#include "CeylanTypes.h"              // for Ceylan::Uint16
+
 
 #include <string>
 #include <list>
@@ -170,7 +172,11 @@ namespace Ceylan
 					const throw() ;
 
 
-				
+				/// The maximum number of characters of an hostname.
+				static const Ceylan::Uint16 HostNameMaxLength ;
+
+
+
 			protected:
 		
 			
@@ -215,7 +221,7 @@ namespace Ceylan
 				HostDNSEntry & operator = ( const HostDNSEntry & source )
 					throw() ;
 				
-				
+							
 		} ;
 		
 		
