@@ -1,6 +1,6 @@
 #!/bin/bash
 
-USAGE="Usage : "`basename $0`" [--disable-all-features] [--no-build][--chain-test] [--configure-options [option 1] [option 2] [...] ]: (re)generates all the autotools-based build system.\n\t --disable-all-features : build a library with none of the optional features\n\t --no-build : stop just after having generated the configure script\n\t --chain-test : build and install the library, and then build the test suite and run it against the installation\n\t --configure-options : all following options will be directly passed whenever configure is run"
+USAGE="Usage : "`basename $0`" [ -h | --help ] [ -d | --disable-all-features ] [ -n | --no-build ] [ -c | --chain-test ] [ --configure-options [option 1] [option 2] [...] ] : (re)generates all the autotools-based build system.\n\t --disable-all-features : build a library with none of the optional features\n\t --no-build : stop just after having generated the configure script\n\t --chain-test : build and install the library, make distcheck and then build the test suite and run it against the installation\n\t --configure-options : all following options will be directly passed whenever configure is run"
 
 # Main settings section.
 
@@ -27,35 +27,36 @@ do_build=0
 do_check=0
 do_install=0
 do_installcheck=0
-
+do_distcheck=1
 do_chain_tests=1
 
 
 while [ "$#" -gt "0" ] ; do
 	token_eaten=1
 	
-	if [ "$1" == "-v" ] ; then
+	if [ "$1" == "-v" ] || [ "$1" == "--verbose" ] ; then
 		be_verbose=0
 		token_eaten=0
 	fi
 	
-	if [ "$1" == "-q" ] ; then
+	if [ "$1" == "-q" ] || [ "$1" == "--quiet" ] ; then
 		be_quiet=0
 		token_eaten=0
 	fi
 	
-	if [ "$1" == "--disable-all-features" ] ; then
+	if [ "$1" == "-d" ] || [ "$1" == "--disable-all-features" ] ; then
 		ceylan_features_opt="$ceylan_features_disable_opt"
 		token_eaten=0
 	fi
 
-	if [ "$1" == "--no-build" ] ; then
+	if [ "$1" == "-n" ] || [ "$1" == "--no-build" ] ; then
 		do_stop_after_configure_generation=0
 		token_eaten=0
 	fi
 	
-	if [ "$1" == "--chain-test" ] ; then
+	if [ "$1" == "-c" ] || [ "$1" == "--chain-test" ] ; then
 		do_chain_tests=0
+		do_distcheck=0
 		token_eaten=0
 	fi
 	
@@ -68,14 +69,14 @@ while [ "$#" -gt "0" ] ; do
 		token_eaten=0
 	fi
 	
-	if [ "$1" == "-h" ] ; then
+	if [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then
 		echo -e "$USAGE"
 		exit
 		token_eaten=0
 	fi
 
 	if [ "$token_eaten" == "1" ] ; then
-		echo "Error, unknown argument ($1)." 1>&2
+		echo -e "Error, unknown argument ($1).\n$USAGE" 1>&2
 		exit 4
 	fi	
 	shift
@@ -407,6 +408,12 @@ generateCustom()
 		echo
 		echo " - checking install"
 	 	execute make installcheck
+	fi
+	
+	if [ "$do_distcheck" -eq 0 ] ; then
+		echo
+		echo " - making distcheck"
+	 	execute make distcheck
 	fi
 	
 	
