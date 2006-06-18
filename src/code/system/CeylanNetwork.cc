@@ -64,6 +64,9 @@ NetworkException::~NetworkException() throw()
 }
 
 
+const Ceylan::Uint16 Ceylan::Network::HostDNSEntry::HostNameMaxLength = 256 ;
+
+
 #ifdef CEYLAN_USES_NETDB_H
 
 #include <netdb.h>
@@ -407,9 +410,10 @@ const string Ceylan::Network::getLocalHostName() throw( NetworkException )
 
 #if CEYLAN_USES_GETHOSTNAME
 
-	char hostBuffer[ HOST_NAME_MAX + 1 ] ;
+	// HOST_NAME_MAX does not seem to be widely defined :
+	char hostBuffer[ HostDNSEntry::HostNameMaxLength  + 1 ] ;
 
-	if ( ::gethostname( hostBuffer, HOST_NAME_MAX ) )
+	if ( ::gethostname( hostBuffer, HostDNSEntry::HostNameMaxLength ) )
 	throw NetworkException( "Ceylan::Network::getLocalHostName : "
 		"unable to determine local host name : "
 		+ explainError( getError() ) ) ;
