@@ -66,7 +66,9 @@ libCeylan_la_DEPENDENCIES = \
 libCeylanIncludedir      = $(includedir)/Ceylan
 libCeylanInclude_HEADERS = Ceylan.h CeylanConfig.h
 
-
+DISTCLEANFILES = CeylanConfig.h
+	
+	
 # Run ldconfig after installing the library:
 install-hook:
 	-ldconfig
