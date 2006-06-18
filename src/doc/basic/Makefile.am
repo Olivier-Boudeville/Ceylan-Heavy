@@ -32,8 +32,11 @@ update-basic-doc-files: update-changelog update-authors update-copying  \
 	update-thanks update-todo 
 
 
-install-data-local: update-changelog $(RAW_DOC_FILES)
-	@mkdir -p @CEYLAN_LOCAL_DOC_DIR@
+install-data-local: $(RAW_DOC_FILES) # update-changelog
+	@if [ -d "@CEYLAN_LOCAL_DOC_DIR@" ] ; then \
+	chmod a+w @CEYLAN_LOCAL_DOC_DIR@; else \
+	chmod a+w `dirname @CEYLAN_LOCAL_DOC_DIR@`; \
+	mkdir -p @CEYLAN_LOCAL_DOC_DIR@ ; fi
 	@cd ${top_builddir}; cp -f AUTHORS COPYING.LIB FAQ INSTALL MAINTENERS \
 	NEWS README THANKS TODO @CEYLAN_LOCAL_DOC_DIR@
  
@@ -63,7 +66,8 @@ effective-changelog-creation:
 	@if [ ! -x "$(CHANGELOG_COMMAND)" ] ; then echo\
 	"@CEYLAN_WARNING_STYLE@No Changelog tool\
 	available, nothing done@CEYLAN_DEFAULT_STYLE@"; else\
-	cd ${top_srcdir}; $(CHANGELOG_COMMAND) 1>/dev/null 2>&1 ; fi
+	cd ${top_srcdir}; \
+	$(CHANGELOG_COMMAND) -o ${top_builddir}/ChangeLog 1>/dev/null 2>&1 ; fi
 	-@/bin/rm -f ${top_srcdir}/ChangeLog.bak
 
 
