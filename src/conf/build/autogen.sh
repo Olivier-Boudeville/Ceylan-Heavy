@@ -196,8 +196,6 @@ execute()
 				echo -e "\nNote : check that your automake version is indeed 1.9 or newer. For example, with Debian-based distributions, /usr/bin/automake is a symbolic link to /etc/alternatives/automake, which itself is a symbolic link which may or may not point to the expected automake version. Your version of $1 is :\n\t" `$1 --version` "\n\n\t" `/bin/ls -l --color $(type -p $1)`
 			elif [ "$1" == "./configure" ]; then
 				echo -e "\nNote : check the following log :" `pwd`/config.log
-			elif [ "$1" == "./autogen.sh" ]; then
-				echo -e "\n\t$? test(s) failed"
   			fi
 			
 		fi
@@ -213,7 +211,6 @@ execute()
 generateCustom()
 # Old-fashioned way of regenerating the build system from scratch : 
 {
-
 
 	echo "--- generating build system"
 	
@@ -409,6 +406,7 @@ generateCustom()
 		echo " - checking install"
 	 	execute make installcheck
 	fi
+	
 	
 	if [ "$do_distcheck" -eq 0 ] ; then
 		echo
