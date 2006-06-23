@@ -38,18 +38,17 @@ const LevelOfDetail LogAggregatorHTML::DefaultGlobalLevelOfDetail
 const string LogAggregatorHTML::HTMLPageSuffix = ".html" ;
 
 
+
 LogAggregatorHTML::LogAggregatorHTML( 
 		const string & callerDescription,
 		const string & logDirectoryName,
 		bool useGlobalLevelOfDetail,
 		bool beSmart ) 
 	throw( LogAggregatorException )	: 
-		LogAggregator( beSmart ),
+		LogAggregator( beSmart, useGlobalLevelOfDetail ),
 		_callerDescription( callerDescription ),
 		_logDirectoryName( logDirectoryName ),
-		_outputDirectory( 0 ),
-		_useGlobalLevelOfDetail( useGlobalLevelOfDetail ),
-		_globalLevelOfDetail( DefaultGlobalLevelOfDetail )
+		_outputDirectory( 0 )
 {
 
 	try 
@@ -231,14 +230,14 @@ void LogAggregatorHTML::write( const LogChannel & channel )
 
 	CEYLAN_LOG( "Writing on disk channel " + channel.toString() ) ;
 	
-	LevelOfDetail sourceLevelOfDetail ;
-	VerbosityLevels targetChannelLevel ;
 	
 	File logChannelPage( 
 		_outputDirectory->getPath() 
 		+ Directory::Separator 
 		+ File::TransformIntoValidFilename( channel.getName() )
 		+ HTMLPageSuffix ) ;
+
+	LevelOfDetail sourceLevelOfDetail ;
 	
 	WriteChannelHeader( channel, logChannelPage ) ;
 		
@@ -251,36 +250,7 @@ void LogAggregatorHTML::write( const LogChannel & channel )
 	{
 		sourceLevelOfDetail = MaximumLevelOfDetailForMessage ;
 	}
-	
-	
-	// Now map the selected level to a verbosity level :
 		
-	switch( sourceLevelOfDetail )
-	{
-	
-		case MaximumLevelOfDetailForMessage :
-		
-			/*
-			 * If all is being printed, useless to print filtering 
-			 * metadatas :
-			 *
-			 */
-			targetChannelLevel = Ceylan::low ;
-			break ;
-			
-		case DefaultLevelOfDetailForListener :
-		
-			// Let's select medium for usual case :
-			targetChannelLevel = Ceylan::medium ;
-			
-		default:
-			
-			// Defaulting to maximum verbosity :		
-			targetChannelLevel = Ceylan::high ;
-			break ;				
-			
-	}		
-	
 	for ( list<LogMessage *>::const_iterator it = 
 			channel._messages.begin() ; 
 		it != channel._messages.end() ; it++ )
