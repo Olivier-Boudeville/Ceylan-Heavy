@@ -2,13 +2,13 @@
 #define CEYLAN_STRING_UTILS_H_
 
 
-#include "CeylanTypes.h"          // for Ceylan::Uint16
-#include "CeylanException.h"      // for Ceylan::Exception
-
 
 #include <sstream>                // for istringstream
 #include <string>
 #include <list>                   // for string, string::size_type
+
+#include "CeylanTypes.h"          // for Ceylan::Uint16
+#include "CeylanException.h"      // for Ceylan::Exception
 
 
 
@@ -55,7 +55,7 @@ namespace Ceylan
 	 * @see playTests.sh
 	 *
 	 */
-	const std::string BatchTestOption = "--batch" ;
+	extern const std::string BatchTestOption ;
 
 	
 	
