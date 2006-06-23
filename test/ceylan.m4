@@ -37,6 +37,8 @@
 #
 AC_DEFUN([CEYLAN_PATH],
 [
+  CEYLAN_OLDEST_SUPPORTED_MAJOR=0
+  CEYLAN_OLDEST_SUPPORTED_MINOR=3  
   # Setting the install path of the Ceylan library :
   CEYLAN_LIBS=" -lCeylan "
   AC_ARG_WITH(libCeylan,
@@ -44,12 +46,19 @@ AC_DEFUN([CEYLAN_PATH],
       [
         CEYLAN_CPPFLAGS="-I${withval}/include/Ceylan"
         CEYLAN_LIBS="-L${withval}/lib -lCeylan"
+		LD_LIBRARY_PATH="${withval}/lib:$LD_LIBRARY_PATH"
+		export LD_LIBRARY_PATH
       ],[
 	  	# Use pkg-config if possible, otherwise choose default values :
 		# PKG_CONFIG_PATH should contain /usr/local/lib/pkgconfig, use
 		# export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
-	  	PKG_CHECK_MODULES(CEYLAN, ceylan-$1.$2 >= $1.$2,
-			[CEYLAN_CPPFLAGS="${CEYLAN_CFLAGS} ${CEYLAN_CPPFLAGS}"],
+		# For the moment 
+	  	PKG_CHECK_MODULES(CEYLAN, ceylan-$1.$2 >= $CEYLAN_OLDEST_SUPPORTED_MAJOR.$CEYLAN_OLDEST_SUPPORTED_MINOR,
+			[
+				CEYLAN_CPPFLAGS="${CEYLAN_CFLAGS} ${CEYLAN_CPPFLAGS}"
+				LD_LIBRARY_PATH=`pkg-config ceylan-$1.$2 --variable=libdir`:$LD_LIBRARY_PATH
+				export LD_LIBRARY_PATH
+			],
 			[
 				default_install_path=/usr/local
 				AC_MSG_WARN([pkg-config failed, defaulting to install path $default_install_path])
@@ -76,10 +85,10 @@ AC_DEFUN([CEYLAN_PATH],
   AC_LANG_PUSH([C++]) 
   AC_CHECK_HEADERS([Ceylan.h],[],[have_ceylan=no])
   if test x$have_ceylan = xno; then
-    AC_MSG_ERROR([No usable Ceylan header file (Ceylan.h) found])
+    AC_MSG_ERROR([No usable Ceylan header file (Ceylan.h) found. If the Ceylan library has been installed in a non-standard location (ex : when configuring it, --prefix=$HOME/myCeylanInstall was added), use the --with-libCeylan option, ex : --with-libCeylan=$HOME/myCeylanInstall.])
   fi
   # Now we must check that we will link indeed to the expected version
-  # of Ceylan library, as specified with full_version :
+  # of Ceylan library, as specified by CEYLAN_PATH arguments :
   # Note : 
   #   - this test will be disabled if cross-compiling
   #   - we do not use AC_CACHE_CHECK and al on purpose, to avoid the
