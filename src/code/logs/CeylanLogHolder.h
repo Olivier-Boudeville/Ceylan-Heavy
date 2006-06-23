@@ -4,6 +4,7 @@
 
 #include "CeylanTextDisplayable.h" // for inheritance
 #include "CeylanLog.h"             // for LogException
+#include "CeylanTypes.h"           // for Ceylan::Uint16
 
 #include <string>
 
@@ -117,8 +118,8 @@ namespace Ceylan
 				 * correctly started.
 				 *
 		 		 */
-				LogHolder( int argCount, const char * const arguments[] )
-					throw( LogException ) ;
+				LogHolder( Ceylan::Uint16 argCount, 
+					const char * const arguments[] ) throw( LogException ) ;
 			
 	
 				/// Basic virtual destructor.
