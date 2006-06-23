@@ -1,7 +1,7 @@
 #include "CeylanMathsBasic.h"
 
-
 #include "CeylanOperators.h"   // for string + operator
+
 
 #include <cstdlib>   // for abs, etc.
 #include <cmath>     // for fabsf, etc.
@@ -26,6 +26,57 @@ MathsException::~MathsException() throw()
 
 }
 
+
+
+// Definitions of most common constants.
+
+
+const Ceylan::LongFloat Ceylan::Maths::E =
+	2.7182818284590452353602874713526625L ;
+	
+const Ceylan::LongFloat Ceylan::Maths::Log2E = 
+	1.4426950408889634073599246810018922L ;
+
+const Ceylan::LongFloat Ceylan::Maths::Log10E = 
+	0.4342944819032518276511289189166051L ;
+
+const Ceylan::LongFloat Ceylan::Maths::LogE2 = 
+	0.6931471805599453094172321214581766L ;
+	
+const Ceylan::LongFloat Ceylan::Maths::LogE10 = 
+	2.3025850929940456840179914546843642L ;
+
+
+const Ceylan::LongFloat Ceylan::Maths::Pi = 
+	3.1415926535897932384626433832795029L ;
+	
+const Ceylan::LongFloat Ceylan::Maths::Pi_div_2 = 
+	1.5707963267948966192313216916397514L ;
+	
+const Ceylan::LongFloat Ceylan::Maths::Pi_div_4 = 
+	0.7853981633974483096156608458198757L ;
+	
+const Ceylan::LongFloat Ceylan::Maths::One_div_Pi = 
+	0.3183098861837906715377675267450287L ;
+	
+const Ceylan::LongFloat Ceylan::Maths::Two_div_Pi = 
+	0.6366197723675813430755350534900574L ;
+	
+const Ceylan::LongFloat Ceylan::Maths::Two_div_sqrt_Pi	= 
+	1.1283791670955125738961589031215452L ;
+			
+			
+const Ceylan::LongFloat Ceylan::Maths::Sqrt_2 = 
+	1.4142135623730950488016887242096981L ;
+	
+const Ceylan::LongFloat Ceylan::Maths::One_div_sqrt_2 = 
+	0.7071067811865475244008443621048490L ;
+	
+	
+const Ceylan::LongFloat Ceylan::Maths::EpsilonFloat32   = 1.0e-7 ;			
+const Ceylan::LongFloat Ceylan::Maths::EpsilonFloat64   = 1.0e-9 ;
+const Ceylan::LongFloat Ceylan::Maths::EpsilonLongFloat = 1.0e-11 ;
+const Ceylan::LongFloat Ceylan::Maths::Epsilon          = EpsilonFloat32 ;
 
 
 
