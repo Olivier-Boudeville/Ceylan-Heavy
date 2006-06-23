@@ -1,6 +1,8 @@
 #ifndef CEYLAN_LOG_AGGREGATOR_HTML_FRAGMENTS_H_
 #define CEYLAN_LOG_AGGREGATOR_HTML_FRAGMENTS_H_
 
+
+
 #include <string>
 
 
@@ -9,6 +11,10 @@
  * should be stored.
  *
  * @see LogAggregatorHTML
+ *
+ * @note This header is meant to be included only once, by
+ * CeylanLogAggregatorHTML.cc, otherwise its symbols would be defined
+ * multiple times.
  *
  */
  
