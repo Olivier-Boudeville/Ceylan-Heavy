@@ -18,6 +18,11 @@ using std::istringstream ;
 using std::string ;
 
 
+const Ceylan::Uint16 Ceylan::DigitOutputPrecision = 40 ;
+
+const std::string Ceylan::HexDigits = "0123456789ABCDEF" ;
+
+
 
 /**
  * For all these operators, using an internal static string instead of a string
@@ -1133,7 +1138,7 @@ string Ceylan::toHexString( Ceylan::UnsignedLongInteger value, bool prefix,
 	
 	while ( value )
 	{	
-		res += hexDigits[ value % 16 ] ;
+		res += HexDigits[ value % 16 ] ;
 		value /= 16 ;			
 	}
 			
@@ -1239,6 +1244,34 @@ string Ceylan::toString( Ceylan::LongFloat value, Ceylan::Uint8 precision )
 }
 
 
+string Ceylan::toString( Ceylan::VerbosityLevels level ) throw( Exception )
+{
+
+	switch( level )
+	{
+	
+		case low:
+			return "low" ;
+			break ;
+				
+		case medium:
+			return "medium" ;
+			break ;
+				
+		case high:
+			return "high" ;
+			break ;
+				
+		default:
+			throw Ceylan::Exception( "Conversion error in method "
+				"Ceylan::toString : Ceylan::VerbosityLevels -> string : "
+				"unknown verbosity level." ) ;
+			break ;
+				
+	}
+	
+}
+
 
 string Ceylan::toNumericalString( Uint8 number ) throw( Ceylan::Exception )
 {
@@ -1248,7 +1281,7 @@ string Ceylan::toNumericalString( Uint8 number ) throw( Ceylan::Exception )
 	oss.precision( Ceylan::DigitOutputPrecision ) ;
 
     string res ;
-
+	
     oss << static_cast<Ceylan::Uint16>( number ) ;
     res = oss.str() ;
 
