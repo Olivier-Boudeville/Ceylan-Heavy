@@ -152,40 +152,9 @@ namespace Ceylan
 					const throw() ;
 
 
-				/// Default value for the aggregator-wide level of detail.
-				static const LevelOfDetail DefaultGlobalLevelOfDetail ; 
-	
-			
 			
 			protected:
-			
-			
-				/**
-				 * Returns the most appropriate level of detail for 
-				 * log channel output, depending only on the state of 
-				 * the aggregator.
-				 *
-				 * Basically, maps a global or local level of detail 
-				 * to a verbosity level.
-				 *
-				 */
-				 virtual Ceylan::VerbosityLevels 
-				 	getOverallVerbosityLevel() const throw() ;
-				 
-				 
-				 /**
-				  * Returns the most appropriate level of detail for 
-				  * log message output, depending on the state of the
-				  * aggregator and on the message's level of detail.
-				  *
-				  * Basically, maps a global or local level of detail 
-				  * to a verbosity level.
-			  	  *
-				  */
-				 virtual Ceylan::VerbosityLevels getMessageVerbosityLevel( 
-				 		const LogMessage & message ) 
-				 	const throw() ;			 
-					
+								
 					
 				/**
 				 * Internal method used to perform the effective 
