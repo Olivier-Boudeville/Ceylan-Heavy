@@ -25,8 +25,11 @@ namespace Ceylan
 		 * The protocol separator, between the protocol name and the
 		 * embedded URI.
 		 *
+		 * Example : the protocol separator in
+		 * 'http://osdl.sourceforge.net' is '://'. It is the usual one.
+		 *
 		 */
-		const std::string ProtocolSeparator = "://" ;
+		extern const std::string ProtocolSeparator  ;
 				 
 		 
 		/**
