@@ -68,8 +68,10 @@ int main( int argc, char * argv[] )
 		else
 		{
 			if ( secondStamp < firstStamp )
-				throw Ceylan::TestException( "First timestamp should be "
-					"at most equal to second, if not inferior." ) ;
+				throw Ceylan::TestException( "First timestamp ("
+					+ firstStamp.toString() 
+					+ ") should be at most equal to second ("
+					+ secondStamp.toString() + "), if not inferior." ) ;
 			else		
 				LogPlug::info( "First timestamp is equal to second." ) ;
 		}
@@ -77,7 +79,9 @@ int main( int argc, char * argv[] )
 			
 		if ( thirdStamp < firstStamp  )
 			throw Ceylan::TestException( 
-				"Third timestamp is inferior to first, which is abnormal." ) ;
+				"Third timestamp (" + thirdStamp.toString() 
+					+ ") is inferior to first (" + firstStamp.toString()
+					+ "), which is abnormal." ) ;
 		else
 			LogPlug::info( "Third timestamp is superior "
 				"or equal to first." ) ;
