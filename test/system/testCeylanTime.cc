@@ -83,6 +83,15 @@ int main( int argc, char * argv[] )
 			
 		}
 		
+		if ( argc > 1 && argv[1] == Ceylan::BatchTestOption )
+		{
+		
+			LogPlug::info( "Non-interactive test mode, "
+				"no scheduling granularity computed." ) ;
+				
+			return Ceylan::ExitSuccess ;
+			
+		}	
 		
 		Microsecond granularity = getSchedulingGranularity() ;
 		LogPlug::info( "Measured scheduling granularity is " 
