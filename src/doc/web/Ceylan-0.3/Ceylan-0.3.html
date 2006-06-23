@@ -31,3 +31,53 @@ be installed to select them but may clash with others, and so on. This implies u
 </ul>
 http://gcc.gnu.org/onlinedocs/libstdc++/27_io/howto.html
 </p>
+
+
+<h3>Tools needed to build the Ceylan library</h3>
+<p>
+Before reporting an error, please check you have upgraded following tools with their latest stable version available :
+<ul>
+
+<!--
+	<li></li>
+-->
+	<li>automake</li>
+	<li>autoconf</li>
+	<li>make</li>
+	<li>gcc</li>
+	<li>g++</li>
+</ul>
+ 
+</p>
+
+
+<h3>Releasing a new Ceylan version</h3>
+<p>
+<ol>
+<!--
+	<li></li>
+-->
+	<li>use <code>src/conf/build/autogen.sh --chain-test</code> to check everything is working as expected</li>
+	<li>create a distribution with <code>make dist</code> and build that package on as many other hosts as possible</li>
+	<li>when satisfied with the result, ensure the version control system is up-to-date with the <code>src/code/scripts/shell/toci</code> script</li>
+	<li>create a tag for this new release, for example :
+	<center>
+    <table summary="a box" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+				<code>svn copy https://svn.sourceforge.net/svnroot/ceylan/trunk https://svn.sourceforge.net/svnroot/ceylan/tags/release-0.3.0 -m "First release of the 0.3 series, GNU/linux only for the moment."</code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+	</li>
+	<li>generate a ChangeLog thanks to <code>make effective-changelog-creation</code> in <code>src/doc/basic</code></li>
+	<li>upload a distribution archive to <a href="http://sourceforge.net/projects/ceylan" target="_blank">Sourceforge</a>, and paste the previous ChangeLog. Add the relevant release notes</li>
+	<li>send a release notice to <code>ceylan-announces@lists.sourceforge.net</code></li>
+	<li>write a corresponding news item</li>
+	<li>update the release numbers for the next verion in <code>/src/conf/CeylanSettings.inc</code> : <code>CEYLAN_MAJOR_VERSION</code> and/or <code>CEYLAN_MINOR_VERSION</code> and/or <code>CEYLAN_RELEASE</code></li>
+</ol>
+
+</p>
