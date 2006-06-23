@@ -1,10 +1,14 @@
 #include "CeylanUniformResourceIdentifier.h"
 
+#include "CeylanStringUtils.h" // for StringSize
+
 
 using namespace Ceylan ;
 using namespace Ceylan::URI ;
 
 using std::string ;
+
+const std::string Ceylan::URI::ProtocolSeparator = "://" ;
 
 
 
@@ -12,7 +16,7 @@ const string Ceylan::URI::getProtocolName( const string & fullURI,
 	const string & protocolSeparator ) throw()
 {
 
-	unsigned int endOfPrefix = fullURI.find( protocolSeparator ) ;
+	Ceylan::StringSize endOfPrefix = fullURI.find( protocolSeparator ) ;
 
 	if ( endOfPrefix == string::npos )
 	{
