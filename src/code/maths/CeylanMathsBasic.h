@@ -103,7 +103,7 @@ namespace Ceylan
 		 * (used to be the M_E maths.h constant).
 		 *
 		 */
-		const Ceylan::LongFloat E = 2.7182818284590452353602874713526625L ;
+		extern const Ceylan::LongFloat E ;
 
 
 		/**
@@ -111,7 +111,7 @@ namespace Ceylan
 		 * (used to be the M_LOG2E maths.h constant).
 		 *
 		 */
-		const Ceylan::LongFloat Log2E = 1.4426950408889634073599246810018922L ;
+		extern const Ceylan::LongFloat Log2E ;
 	
 	
 		/**
@@ -119,7 +119,7 @@ namespace Ceylan
 		 * (used to be the M_LOG10E maths.h constant).
 		 *
 		 */
-		const Ceylan::LongFloat Log10E = 0.4342944819032518276511289189166051L ;
+		extern const Ceylan::LongFloat Log10E ;
 	
 	
 		/**
@@ -127,7 +127,7 @@ namespace Ceylan
 		 * (used to be the M_LN2 maths.h constant).
 		 *
 		 */
-		const Ceylan::LongFloat LogE2 = 0.6931471805599453094172321214581766L ;
+		extern const Ceylan::LongFloat LogE2 ;
 	
 	
 		/**
@@ -135,7 +135,7 @@ namespace Ceylan
 		 * (used to be the M_LN10 maths.h constant).
 		 *
 		 */
-		const Ceylan::LongFloat LogE10 = 2.3025850929940456840179914546843642L ;
+		extern const Ceylan::LongFloat LogE10 ;
 
 
 
@@ -147,7 +147,7 @@ namespace Ceylan
 		 * (used to be the M_PI maths.h constant).
 		 *
 		 */
-		const Ceylan::LongFloat Pi = 3.1415926535897932384626433832795029L ;
+		extern const Ceylan::LongFloat Pi ;
 	
 	
 		/** 
@@ -155,7 +155,7 @@ namespace Ceylan
 		 * (used to be the M_PI_2 maths.h constant).
 		 *
 		 */
-		const Ceylan::LongFloat Pi_div_2 = 1.5707963267948966192313216916397514L ;
+		extern const Ceylan::LongFloat Pi_div_2 ;
 	
 	
 		/** 
@@ -163,7 +163,7 @@ namespace Ceylan
 		 * (used to be the M_PI_4 maths.h constant).
 		 *
 		 */
-		const Ceylan::LongFloat Pi_div_4 = 0.7853981633974483096156608458198757L ;
+		extern const Ceylan::LongFloat Pi_div_4 ;
 	
 	
 		/** 
@@ -171,7 +171,7 @@ namespace Ceylan
 		 * (used to be the M_1_PI maths.h constant).
 		 *
 		 */
-		const Ceylan::LongFloat One_div_Pi = 0.3183098861837906715377675267450287L ;
+		extern const Ceylan::LongFloat One_div_Pi ;
 	
 	
 		/** 
@@ -179,7 +179,7 @@ namespace Ceylan
 		 * (used to be the M_2_PI maths.h constant).
 		 *
 		 */
-		const Ceylan::LongFloat Two_div_Pi = 0.6366197723675813430755350534900574L ;
+		extern const Ceylan::LongFloat Two_div_Pi ;
 	
 	
 		/** 
@@ -187,8 +187,7 @@ namespace Ceylan
 		 * (used to be the M_2_SQRTPI maths.h constant).
 		 *
 		 */
-		const Ceylan::LongFloat Two_div_sqrt_Pi 
-			= 1.1283791670955125738961589031215452L ;
+		extern const Ceylan::LongFloat Two_div_sqrt_Pi ;
 	
 	
 	
@@ -201,7 +200,7 @@ namespace Ceylan
 		 * (used to be the M_SQRT2 maths.h constant).
 		 *
 		 */
-		const Ceylan::LongFloat Sqrt_2 = 1.4142135623730950488016887242096981L ;
+		extern const Ceylan::LongFloat Sqrt_2 ;
 	
 	
 		/** 
@@ -209,8 +208,7 @@ namespace Ceylan
 		 * (used to be the M_SQRT1_2 maths.h constant).
 		 *
 		 */
-		const Ceylan::LongFloat One_div_sqrt_2 
-			= 0.7071067811865475244008443621048490L ;
+		extern const Ceylan::LongFloat One_div_sqrt_2 ;
 	
 	
 		/**
@@ -218,7 +216,7 @@ namespace Ceylan
 		 * two numbers x and y are deemed equal if | x - y | < EpsilonFloat32
 		 *
 		 */
-		const Ceylan::LongFloat EpsilonFloat32 = 1.0e-7 ;
+		extern const Ceylan::LongFloat EpsilonFloat32 ;
 
 
 		/**
@@ -226,7 +224,7 @@ namespace Ceylan
 		 * two numbers x and y are deemed equal if | x - y | < EpsilonFloat64
 		 *
 		 */
-		const Ceylan::LongFloat EpsilonFloat64 = 1.0e-9 ;
+		extern const Ceylan::LongFloat EpsilonFloat64 ;
 
 
 		/**
@@ -234,7 +232,7 @@ namespace Ceylan
 		 * two numbers x and y are deemed equal if | x - y | < EpsilonLongFloat
 		 *
 		 */
-		const Ceylan::LongFloat EpsilonLongFloat = 1.0e-11 ;
+		extern const Ceylan::LongFloat EpsilonLongFloat ;
 
 
 		/**
@@ -242,7 +240,7 @@ namespace Ceylan
 		 * two numbers x and y are deemed equal if | x - y | < Epsilon
 		 *
 		 */
-		const Ceylan::LongFloat Epsilon = EpsilonFloat32 ;
+		extern const Ceylan::LongFloat Epsilon ;
 
 		
 		
