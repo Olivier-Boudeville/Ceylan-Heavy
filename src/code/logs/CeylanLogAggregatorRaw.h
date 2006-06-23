@@ -136,42 +136,12 @@ namespace Ceylan
 				virtual const std::string toString( 
 						Ceylan::VerbosityLevels level = Ceylan::high )
 					const throw() ;
-
-
-				/// Default value for the aggregator-wide level of detail.
-				static const LevelOfDetail DefaultGlobalLevelOfDetail ; 
 	
 			
 			
 			protected:
 			
-			
-				/**
-				 * Returns the most appropriate level of detail for 
-				 * log channel output, depending only on the state of 
-				 * the aggregator.
-				 *
-				 * Basically, maps a global or local level of detail 
-				 * to a verbosity level.
-				 *
-				 */
-				 virtual Ceylan::VerbosityLevels 
-				 	getOverallVerbosityLevel() const throw() ;
-				 
-				 
-				 /**
-				  * Returns the most appropriate level of detail for 
-				  * log message output, depending on the state of the
-				  * aggregator and on the message's level of detail.
-				  *
-				  * Basically, maps a global or local level of detail 
-				  * to a verbosity level.
-			  	  *
-				  */
-				 virtual Ceylan::VerbosityLevels getMessageVerbosityLevel( 
-				 		const LogMessage & message ) 
-				 	const throw() ;			 
-					
+								
 					
 				/**
 				 * Internal method used to perform the effective 
@@ -204,6 +174,7 @@ namespace Ceylan
 				 */
 				std::string _logFilename ;				
 				
+				
 				/// The file where aggregations will take place.
 				System::File * _outputFile ;
 				
@@ -215,25 +186,6 @@ namespace Ceylan
 				 */
 				bool _immediateWrite ; 
 				
-				
-				/**
-				 * Tells whether a global (aggregator-wide) level of 
-				 * detail for channels should be used.
-				 *
-				 * @note if set, will override log channels levels of details.
-				 *
-				 */
-				bool _useGlobalLevelOfDetail ; 
-				
-				
-				/**
-				 * Defines the aggregator-wide level of detail, used if
-				 * _useGlobalLevelOfDetail is set.
-				 *
-				 */
-				LevelOfDetail _globalLevelOfDetail ;
-
-
 
 		private:
 		
