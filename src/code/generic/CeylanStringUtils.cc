@@ -37,6 +37,8 @@ using namespace Ceylan::Log ;
 #endif // CEYLAN_DEBUG_DEMANGLE
 
 
+const std::string Ceylan::BatchTestOption = "--batch" ;
+
 
 StringSize Ceylan::countChars( const string & aString, char targetChar )
 	throw()
