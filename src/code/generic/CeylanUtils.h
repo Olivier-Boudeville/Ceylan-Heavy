@@ -4,7 +4,7 @@
 
 #include "CeylanLibtoolVersion.h"  // for LibtoolVersion
 #include "CeylanException.h"       // for inheritance
-#include "CeylanTypes.h"           // for Ceylan::Uint16
+#include "CeylanTypes.h"           // for Ceylan::Uint16, Ceylan::Sint16
 #include "CeylanHeaderVersion.h"   // for actual header-embedded libtool version
 
 #include <string>
@@ -83,21 +83,23 @@ namespace Ceylan
 			UtilsException( const std::string & message ) throw() : 
 				Exception( message )
 			{		
+			
 			}
 			
 			virtual ~UtilsException() throw()
 			{
+			
 			}	
 		
 	} ;	
 
 
 	/// Return value to be used on success.
-	const int ExitSuccess = 0 ;
+	extern const Ceylan::Sint16 ExitSuccess ;
 
 
 	/// Return value to be used on failure (any non zero value could be used).
-	const int ExitFailure = 1 ;
+	extern const Ceylan::Sint16 ExitFailure ;
 
 
 	/**
@@ -108,7 +110,7 @@ namespace Ceylan
 	 * a real basic assumption was unexpectedly not met.
 	 *
 	 */
-	const int ExitDebugFailure = 10 ;
+	extern const Ceylan::Sint16 ExitDebugFailure ;
 	
 	
 	/**
@@ -158,8 +160,13 @@ namespace Ceylan
 	KeyChar getChar() throw() ;
 
 
-	/// Default string to display when waiting for a key to be hit.
-	const std::string DefaultWaitForKeyMessage = "Press any key to continue" ;
+	/**
+	 * Default string to display when waiting for a key to be hit.
+	 *
+	 * Ex : "Press any key to continue".
+	 *
+	 */
+	extern const std::string DefaultWaitForKeyMessage ;
 
 
 	/**
