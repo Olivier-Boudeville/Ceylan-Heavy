@@ -3,7 +3,7 @@
 #include "CeylanLogPlug.h"  // for GetTransport
 #include "CeylanLog.h"      // for ProtocolSeparator
 
-// for getEmbeddedURI, getProtocolName :
+// for getEmbeddedURI, getProtocolName,ProtocolSeparator  :
 #include "CeylanUniformResourceIdentifier.h" 
 
 
@@ -30,7 +30,7 @@ Loggable::~Loggable() throw()
 
 void Loggable::setChannelName( const std::string & channelName ) throw()
 {
-	LogSource::setChannelName( ProtocolName + ProtocolSeparator 
+	LogSource::setChannelName( ProtocolName + Ceylan::URI::ProtocolSeparator 
 		+ channelName ) ;
 }
 
@@ -38,8 +38,8 @@ void Loggable::setChannelName( const std::string & channelName ) throw()
 bool Loggable::IsALoggableChannelName( const string & channelName ) throw()
 {
 
-	return ( Ceylan::URI::getProtocolName( channelName, ProtocolSeparator ) 
-		== ProtocolName ) ;
+	return ( Ceylan::URI::getProtocolName( channelName,
+		Ceylan::URI::ProtocolSeparator ) == ProtocolName ) ;
 		
 }
 
@@ -50,6 +50,6 @@ const string Loggable::GetEmbeddedChannelName( const string & fullChannelName )
 
 	// Removes protocol separator (typically : '//')
 	return Ceylan::URI::getEmbeddedURI( fullChannelName, 
-		ProtocolSeparator ) ;
+		Ceylan::URI::ProtocolSeparator ) ;
 			
 }
