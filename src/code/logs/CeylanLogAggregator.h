@@ -79,6 +79,10 @@ namespace Ceylan
 				 * log messages into browsable files, according to various
 				 * encodings (raw, HTML, etc.).
 				 *
+				 * @param useGlobalLevelOfDetail tells whether log 
+				 * channels levels of detail are to be overriden by 
+				 * the aggregator-wide one.
+				 *
 				 * @param beSmart tells whether this aggregator should 
 				 * be smart, i.e. should detect log messages whose class 
 				 * name is mangled, and correct that so that they are 
@@ -90,7 +94,8 @@ namespace Ceylan
 				 * than basic ones when creating a new channel.
 				 *
 				 */
-				explicit LogAggregator( bool beSmart = true ) throw() ;
+				explicit LogAggregator( bool useGlobalLevelOfDetail = true, 
+					bool beSmart = true ) throw() ;
 					
 							
 				/// Basic virtual destructor.
@@ -196,8 +201,12 @@ namespace Ceylan
 				virtual const std::string toString( 
 					Ceylan::VerbosityLevels level = Ceylan::high ) 
 					const throw() ;
-			
-			
+					
+
+				/// Default value for the aggregator-wide level of detail.
+				static const LevelOfDetail DefaultGlobalLevelOfDetail ;
+				
+				 
 			
 			protected:
 
@@ -293,6 +302,55 @@ namespace Ceylan
 				 *
 				 */
 				virtual void demangle( LogMessage & objectLogMessage ) throw() ;
+
+
+				
+				/**
+				 * Returns the most appropriate level of detail for 
+				 * log channel output, depending only on the state of 
+				 * the aggregator.
+				 *
+				 * Basically, maps a global or local level of detail 
+				 * to a verbosity level.
+				 *
+				 */
+				 virtual Ceylan::VerbosityLevels 
+				 	getOverallVerbosityLevel() const throw() ;
+				 
+				 
+				 /**
+				  * Returns the most appropriate level of detail for 
+				  * log message output, depending on the state of the
+				  * aggregator and on the message's level of detail.
+				  *
+				  * Basically, maps a global or local level of detail 
+				  * to a verbosity level.
+			  	  *
+				  */
+				 virtual Ceylan::VerbosityLevels getMessageVerbosityLevel( 
+				 		const LogMessage & message ) 
+				 	const throw() ;			 
+				
+				
+				
+				/**
+				 * Converts a level of detail of a log listener into
+				 * a corresponding verbosity level. 
+				 *
+				 */
+				static Ceylan::VerbosityLevels
+					ConvertListenerLevelOfDetailToVerbosityLevel( 
+						LevelOfDetail level ) throw() ; 
+				
+				
+				/**
+				 * Converts a level of detail of a log message into
+				 * a corresponding verbosity level. 
+				 *
+				 */
+				static Ceylan::VerbosityLevels
+					ConvertMessageLevelOfDetailToVerbosityLevel( 
+						LevelOfDetail level ) throw() ; 
 				
 				
 				/// List of all known Log channels.
@@ -306,6 +364,24 @@ namespace Ceylan
 				 */
 				bool _beSmart ;
 		
+		
+				/**
+				 * Tells whether a global (aggregator-wide) level of 
+				 * detail for channels should be used.
+				 *
+				 * @note if set, will override log channels levels of details.
+				 *
+				 */
+				bool _useGlobalLevelOfDetail ; 
+				
+				
+				/**
+				 * Defines the aggregator-wide level of detail, used if
+				 * _useGlobalLevelOfDetail is set.
+				 *
+				 */
+				LevelOfDetail _globalLevelOfDetail ;
+
 		
 		
 		private:
