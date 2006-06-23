@@ -33,7 +33,7 @@ const string Ceylan::URI::getEmbeddedURI( const string & fullURI,
 	const string & protocolSeparator ) throw()
 {
 
-	unsigned int endOfPrefix = fullURI.find( protocolSeparator ) ;
+	Ceylan::StringSize endOfPrefix = fullURI.find( protocolSeparator ) ;
 
 	if ( endOfPrefix == string::npos )
 	{
