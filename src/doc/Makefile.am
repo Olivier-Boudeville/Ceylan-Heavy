@@ -152,7 +152,7 @@ site: common
 	@echo; echo "@CEYLAN_INSTALL_STYLE@    Copying web source tree to\
 	local web repository [@CEYLAN_LOCAL_WEB_DIR@]@CEYLAN_DEFAULT_STYLE@"
 	@cd $(srcdir)/web; for d in $(WEB_CONTENT_DIRS); do \
-	mkdir -p @CEYLAN_LOCAL_WEB_SHARED_DIR@/$$d ; done ;  \ 
+	mkdir -p @CEYLAN_LOCAL_WEB_SHARED_DIR@/$$d ; done ;  \
 	cp -f --parents $(WEB_CONTENT_FILES) @CEYLAN_LOCAL_WEB_SHARED_DIR@
 	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark local doc site,\
 	which is to be found in :"
