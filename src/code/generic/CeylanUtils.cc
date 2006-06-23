@@ -17,7 +17,6 @@
 extern "C"
 {
 
-
 #ifdef CEYLAN_USES_TERMIOS_H
 #include <termios.h>            // for UNIX KeyboardHit.
 #endif // CEYLAN_USES_TERMIOS_H
@@ -26,18 +25,21 @@ extern "C"
 #include <conio.h>              // for Windows kbhit and getch
 #endif // CEYLAN_USES_CONIO_H
 
-
 }
-
-
 
 #include <cstdio>               // for KeyboardHit.
 #include <ctime>
 
-
 #include <algorithm>            // for Split*
 #include <iostream>				// for cerr, endl, cout
 
+
+const Ceylan::Sint16 Ceylan::ExitSuccess      =  0 ;
+const Ceylan::Sint16 Ceylan::ExitFailure      =  1 ;
+const Ceylan::Sint16 Ceylan::ExitDebugFailure = 10 ;
+
+const std::string Ceylan::DefaultWaitForKeyMessage = 
+	"Press any key to continue" ;
 
 
 using std::string ;
