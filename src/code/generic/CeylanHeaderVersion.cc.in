@@ -1,0 +1,12 @@
+#include "CeylanHeaderVersion.h"
+
+
+/*
+ * The file CeylanHeaderVersion.cc is generated from 
+ * CeylanHeaderVersion.cc.in, so that the embedded library version can be
+ * automatically updated whenever appropriate.
+ *
+ */
+const std::string Ceylan::actualCeylanHeaderLibtoolVersion =
+	"@CEYLAN_LIBTOOL_VERSION@" ;
+
