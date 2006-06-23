@@ -29,7 +29,7 @@ const string LogHolder::HTMLPlugOption      = "--HTMLPlug" ;
 KnownPlugs LogHolder::DefaultPlug = classicalPlug ;
 
 
-LogHolder::LogHolder( int argCount, 
+LogHolder::LogHolder( Ceylan::Uint16 argCount, 
 		const char * const arguments[] ) throw( LogException ) :
 	_chosenPlug( DefaultPlug )
 {
