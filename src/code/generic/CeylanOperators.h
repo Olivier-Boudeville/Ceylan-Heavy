@@ -3,6 +3,7 @@
 
 
 #include "CeylanException.h"      // for Ceylan::Exception
+#include "CeylanDisplayable.h"    // for Ceylan::VerbosityLevels
 #include "CeylanTypes.h"          // for Ceylan::Uint8, etc.
 
 #include <string>
@@ -176,10 +177,11 @@ namespace Ceylan
 	 * on string insertion operations to express floating-point values, 
 	 * counting both the digits before and after the decimal point.
 	 *
-	 * @note 40 seems to be largely enough, even for Ceylan::Float64.
+	 * @note 40, the actual value, seems to be largely enough, even for
+	 * Ceylan::Float64.
 	 *
 	 */
-	const Ceylan::Uint16 DigitOutputPrecision = 40 ;
+	extern const Ceylan::Uint16 DigitOutputPrecision ;
 	
 	
     /// Returns a user-friendly representation of a pointer.
@@ -269,8 +271,8 @@ namespace Ceylan
 	 * specified value prefixed by '0b'.
 	 *
 	 */
-    std::string toString( Ceylan::UnsignedLongInteger value, bool bitField = false ) 
-		throw( Exception ) ;
+    std::string toString( Ceylan::UnsignedLongInteger value, 
+		bool bitField = false ) throw( Exception ) ;
 		
 		
 	/**
@@ -280,13 +282,13 @@ namespace Ceylan
 	 * specified value prefixed by '0b'.
 	 *
 	 */
-    std::string toString( Ceylan::SignedLongInteger value, bool bitField = false ) 
-		throw( Exception ) ;
+    std::string toString( Ceylan::SignedLongInteger value, 
+		bool bitField = false ) throw( Exception ) ;
 		
 	
 	
-	/// The hexadecimal digits.
-	const std::string hexDigits = "0123456789ABCDEF" ;
+	/// The hexadecimal digits : 0123456789ABCDEF.
+	extern const std::string HexDigits ;
 	
 	
 	/**
@@ -365,7 +367,15 @@ namespace Ceylan
 		throw( Exception ) ;
 		
 	
+	/**
+	 * Converts a verbosity level into a string.
+	 *
+	 * @see Displayable
+	 *
+	 */
+    std::string toString( Ceylan::VerbosityLevels level ) throw( Exception ) ;
 	
+		 
 	/**
 	 * Converts the numerical value to a string.
 	 *
