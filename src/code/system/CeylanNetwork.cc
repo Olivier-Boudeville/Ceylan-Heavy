@@ -104,6 +104,12 @@ HostDNSEntry::HostDNSEntry( const std::string & hostName )
 	
 	_internalEntry->_entry = ::gethostbyname( hostName.c_str() ) ;
 	
+	// Hard to factor code without creating a string most often useless :
+	if ( _internalEntry->_entry == 0 )
+		LogPlug::error( 
+			"HostDNSEntry constructor failed for argument '"
+			+ hostName + "'." ) ;
+			
 	manageHostEntry() ;
 	
 
@@ -135,11 +141,17 @@ HostDNSEntry::HostDNSEntry( const IPAddress & ip ) throw( NetworkException )
 	
 	if ( ip.getType() == Network::IPv4 )
 		_internalEntry->_entry = ::gethostbyaddr( 
-			reinterpret_cast<const char *>( &binaryIp), 
+			reinterpret_cast<const char *>( &binaryIp ), 
 			sizeof(in_addr), AF_INET ) ;
 	else
 		throw NetworkException( "HostDNSEntry constructor from IP failed : "
 			"address type not supported on this platform." ) ;
+			
+	// Hard to factor code without creating a string most often useless :
+	if ( _internalEntry->_entry == 0 )
+		LogPlug::error( 
+			"HostDNSEntry constructor failed for argument '"
+			+ ip.toString() + "'." ) ;
 			
 	manageHostEntry() ;
 	
