@@ -21,9 +21,6 @@ using namespace Ceylan::Log ;
 using namespace Ceylan::System ;
 
 
-const LevelOfDetail LogAggregatorRaw::DefaultGlobalLevelOfDetail 
-	= MaximumLevelOfDetailForMessage ;
-
 
 LogAggregatorRaw::LogAggregatorRaw( 
 		const string & logFilename,
@@ -31,12 +28,10 @@ LogAggregatorRaw::LogAggregatorRaw(
 		bool useGlobalLevelOfDetail,
 		bool beSmart ) 
 	throw( LogAggregatorException )	: 
-		LogAggregator( beSmart ),
+		LogAggregator( beSmart, useGlobalLevelOfDetail ),
 		_logFilename( logFilename ),
 		_outputFile( 0 ),
-		_immediateWrite( immediateWrite ),
-		_useGlobalLevelOfDetail( useGlobalLevelOfDetail ),
-		_globalLevelOfDetail( DefaultGlobalLevelOfDetail )
+		_immediateWrite( immediateWrite )
 {
 
 	try 
@@ -151,120 +146,6 @@ void LogAggregatorRaw::store( LogMessage & message ) throw( LogException )
 	if ( _immediateWrite )
 		write( message ) ;			
 		
-}
-
-
-Ceylan::VerbosityLevels LogAggregatorRaw::getOverallVerbosityLevel() 
-	const throw()
-{
-
-	LevelOfDetail sourceLevelOfDetail ;
-	Ceylan::VerbosityLevels targetChannelLevel ;
-	
-	
-	// Level of detail globally overriden ?
-	if ( _useGlobalLevelOfDetail )			
-	{
-		sourceLevelOfDetail = _globalLevelOfDetail ;
-	} 
-	else
-	{
-		sourceLevelOfDetail = MaximumLevelOfDetailForMessage ;
-	}
-	
-	
-	// Now map the selected level to a verbosity level :
-		
-	switch( sourceLevelOfDetail )
-	{
-	
-		case MaximumLevelOfDetailForMessage :
-	
-			/*
-			 * If all is being printed, useless to print filtering
-			 * metadatas :
-			 *
-			 */
-			CEYLAN_LOG( "LogAggregatorRaw::getOverallVerbosityLevel : "
-				"level of detail will be low." ) ;
-			targetChannelLevel = Ceylan::low ;
-			break ;
-			
-			
-		case DefaultLevelOfDetailForListener :
-		
-			CEYLAN_LOG( "LogAggregatorRaw::getOverallVerbosityLevel : "
-				"level of detail will be medium." ) ;
-			// Let's select medium for usual case :
-			targetChannelLevel = Ceylan::medium ;
-			break ;
-			
-			
-		default:
-			
-			CEYLAN_LOG( "LogAggregatorRaw::getOverallVerbosityLevel : "
-				"level of detail will be high." ) ;
-			// Defaulting to maximum verbosity :		
-			targetChannelLevel = Ceylan::high ;
-			break ;				
-			
-	}		
-	
-	return targetChannelLevel ;
-	
-}
-
-
-Ceylan::VerbosityLevels LogAggregatorRaw::getMessageVerbosityLevel( 
-		const LogMessage & message ) const throw()
-{
-
-	LevelOfDetail sourceLevelOfDetail ;
-	Ceylan::VerbosityLevels targetMessageLevel ;
-	
-	
-	// Level of detail globally overriden ?
-	if ( _useGlobalLevelOfDetail )			
-	{
-		sourceLevelOfDetail = _globalLevelOfDetail ;
-	} 
-	else
-	{
-		sourceLevelOfDetail = message.getLevelOfDetail() ;
-	}
-	
-	
-	// Now map the selected level to a verbosity level :
-		
-	switch( sourceLevelOfDetail )
-	{
-	
-		case MaximumLevelOfDetailForMessage :
-		
-			/*
-			 * If all is being printed, useless to print filtering
-			 * metadatas :
-			 *
-			 */
-			targetMessageLevel = Ceylan::low ;
-			break ;
-			
-			
-		case DefaultLevelOfDetailForListener :
-		
-			// Let's select medium for usual case :
-			targetMessageLevel = Ceylan::medium ;
-			
-			
-		default:
-			
-			// Defaulting to maximum verbosity :		
-			targetMessageLevel = Ceylan::high ;
-			break ;				
-			
-	}		
-	
-	return targetMessageLevel ;
 }
 	
 
