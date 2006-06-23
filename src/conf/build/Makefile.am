@@ -8,7 +8,9 @@ BUILD_SCRIPTS_SET = \
 	autogen.sh                     \
 	checkConfigure.sh              \
 	cleanGeneratedConfigFiles.sh   \
-	test-build-against-features.sh
+	build-and-test-package.sh
+
+
 
 EXTRA_DIST     = \
 	$(BUILD_SCRIPTS_SET)   \
@@ -53,7 +55,8 @@ download-config-scripts: clean-download
 	@chmod +x $(DOWNLOADED_HELPERS)
 
 
-links:
+dist-hook:
+	@cp $(srcdir)/build-and-test-package.sh $(top_distdir)
 	
 	
 clean-local:
