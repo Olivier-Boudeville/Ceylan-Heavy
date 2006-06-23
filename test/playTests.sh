@@ -72,12 +72,10 @@ TEST_DIR="tests-results-"`date '+%Y%m%d'`
 
 
 if [ "$is_batch" == "0" ] ; then
-	echo -e "\nRunning in batch mode, tests will be silent, only results are to be output."
+	echo -e "\nRunning in batch mode, tests will be short and silent, only results are to be output."
 else	
-	echo -e "\nInteractive tests will only need the enter key to be pressed one or more times."
+	echo -e "\nInteractive tests will only need the enter key to be pressed one or more times. Be warned though that some tests might take a long time, and that some of them have no special output except a test result."
 fi
-
-echo -e "(be warned that some tests might take a long time, and that some of them have no special output except a test result)"
 
 
 # This script will automatically run each test of each selected Ceylan module.
@@ -92,8 +90,11 @@ test_count=0
 error_count=0
 
 if [ "$is_batch" == "0" ] ; then
-	echo -e "\n\tTest results established at "`date '+%A, %B %-e, %Y'\n\n` > ${TESTLOGFILE}
+	echo -e "\n\tTest results established at "`date '+%A, %B %-e, %Y'`"\n\n" > ${TESTLOGFILE}
 fi
+
+echo -e "\n\nLibrary search path is : LD_LIBRARY_PATH='$LD_LIBRARY_PATH'" >> ${TESTLOGFILE}
+
 
 for m in ${TESTED_ROOT_MODULES} ; do
 	
@@ -129,6 +130,7 @@ for m in ${TESTED_ROOT_MODULES} ; do
 			# run in interactive mode, so that those which are long 
 			# (ex : stress tests) are shorten.
 			if [ "$is_batch" == "0" ] ; then
+				echo -e "\n\n########### Running now $t" >>${TESTLOGFILE}
 				./$t --batch 1>>${TESTLOGFILE} 2>&1
 			else
 				./$t --interactive
@@ -151,8 +153,9 @@ for m in ${TESTED_ROOT_MODULES} ; do
 					echo
 					printColor "${term_offset}$t seems to be failed (exit status $return_code)     " $white_text $red_back
 				else
+					echo "$t failed, whose shared library dependencies are : " >>${TESTLOGFILE}
+					ldd ./$t >>${TESTLOGFILE}
 					printf "[${white_text}m[[${red_text}mKO[${white_text}m]\n"
-				
 				fi	
 			fi
 		
