@@ -41,8 +41,16 @@ LogAggregator::LogAggregatorException::~LogAggregatorException() throw()
 }
 	
 	
+const LevelOfDetail LogAggregator::DefaultGlobalLevelOfDetail 
+	= Ceylan::Log::DefaultLevelOfDetailForListener ;
+	
 							
-LogAggregator::LogAggregator( bool beSmart ) throw() : _beSmart( beSmart )
+LogAggregator::LogAggregator( bool beSmart, 
+		bool useGlobalLevelOfDetail ) throw() : 
+	_beSmart( beSmart ),
+	_useGlobalLevelOfDetail( useGlobalLevelOfDetail ),
+	_globalLevelOfDetail( DefaultGlobalLevelOfDetail )
+
 {
 	CEYLAN_LOG( "LogAggregator constructor." ) ;
 }
@@ -706,6 +714,125 @@ void LogAggregator::demangle( LogMessage & objectLogMessage ) throw()
 	
 }
 
+
+
+Ceylan::VerbosityLevels LogAggregator::getOverallVerbosityLevel() const throw()
+{
+
+	LevelOfDetail level ;
+	
+	// Level of detail globally overriden ?
+	if ( _useGlobalLevelOfDetail )			
+	{
+		level = _globalLevelOfDetail ;
+	} 
+	else
+	{
+		level = DefaultLevelOfDetailForListener ;
+	}
+	
+	
+	// Now maps the selected level to a verbosity level :
+	 
+	Ceylan::VerbosityLevels res =
+		ConvertListenerLevelOfDetailToVerbosityLevel( level ) ;
+		
+	CEYLAN_LOG( "LogAggregator::getOverallVerbosityLevel : "
+		"level of detail is : " + Ceylan::toString( res ) ) ;
+	
+	return res ;
+
+}
+
+				 
+Ceylan::VerbosityLevels LogAggregator::getMessageVerbosityLevel( 
+	const LogMessage & message ) const throw()
+{
+
+	LevelOfDetail level ;
+	
+	
+	// Level of detail globally overriden ?
+	if ( _useGlobalLevelOfDetail )			
+	{
+		level = _globalLevelOfDetail ;
+	} 
+	else
+	{
+		level = message.getLevelOfDetail() ;
+	}
+
+
+	// Now maps the selected level to a verbosity level :
+	 
+	Ceylan::VerbosityLevels res =
+			LogAggregator::ConvertMessageLevelOfDetailToVerbosityLevel(
+		level ) ;
+	
+	CEYLAN_LOG( "LogAggregator::getMessageVerbosityLevel : "
+		"level of detail is : " + Ceylan::toString( res ) ) ;
+				
+	return res ;			
+
+}
+					
+					
+					
+Ceylan::VerbosityLevels 
+		LogAggregator::ConvertListenerLevelOfDetailToVerbosityLevel(
+	LevelOfDetail level ) throw()
+{
+	
+	/*
+	 * Maps the selected level to a verbosity level :
+	 *
+	 * @note : a switch/case/default test could not be used since case label 
+	 * would not reduce to an integer constant : 'case
+	 * MaximumLevelOfDetailForMessage:' cannot refer to an extern, in C/C++
+	 * No comment.
+	 *
+	 */
+	 
+	/*
+	 * If the listener LOD is MaximumLevelOfDetailForListener (0), only
+	 * top-priority messages are taken into account, hence the verbosity
+	 * is low, etc.
+	 *
+	 */
+	if ( level == MaximumLevelOfDetailForListener )
+		return Ceylan::low ;
+	else if ( level < DefaultLevelOfDetailForListener )
+		return Ceylan::medium ;
+	else
+		return Ceylan::high ;
+		
+}
+	
+
+Ceylan::VerbosityLevels 
+		LogAggregator::ConvertMessageLevelOfDetailToVerbosityLevel(
+	LevelOfDetail level ) throw()
+{
+	
+	/*
+	 * Maps the selected level to a verbosity level :
+	 *
+	 * @note : a switch/case/default test could not be used since case label 
+	 * would not reduce to an integer constant : 'case
+	 * MaximumLevelOfDetailForMessage:' cannot refer to an extern, in C/C++
+	 * No comment.
+	 *
+	 */
+	
+	// For a message, a maximum LOD leads to a maximum verbosity : 
+	if ( level == MaximumLevelOfDetailForMessage )
+		return Ceylan::high ;
+	else if ( level <= DefaultLevelOfDetailForMessage )
+		return Ceylan::medium ;
+	else
+		return Ceylan::low ;
+		
+}
 
 const string LogAggregator::toString( Ceylan::VerbosityLevels level ) 
 	const throw()
