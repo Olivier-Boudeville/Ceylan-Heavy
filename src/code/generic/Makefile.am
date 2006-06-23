@@ -38,6 +38,7 @@ GENERIC_INTERFACES = \
 
 GENERIC_IMPLEMENTATIONS = \
 	CeylanException.cc                   \
+	CeylanHeaderVersion.cc               \
 	CeylanLibtoolVersion.cc              \
 	CeylanOperators.cc                   \
 	CeylanRegularExpression.cc           \
