@@ -262,7 +262,7 @@ string Ceylan::encodeToPhonetic( const std::string & message ) throw()
 	string result ;
 		
 	for ( string::const_iterator it = message.begin(); 
-		it != message.end(); it ++ )
+		it != message.end(); it++ )
 	{
 
 		// No leading nor trailing space :
@@ -396,9 +396,49 @@ list<string> Ceylan::split( const string & stringToSplit, char splittingChar )
 {
 
 	list<string> result ;
+
+#define CEYLAN_TRUSTS_STL_WITH_TEMPLATES 0
+
+#if CEYLAN_TRUSTS_STL_WITH_TEMPLATES
 	
 	split<string, char>( stringToSplit, splittingChar, result ) ;
+
+#else // CEYLAN_TRUSTS_STL_WITH_TEMPLATES
+
+	string splitWord ;
 	
+	Ceylan::display( "Splitting '" + stringToSplit + "' with '" 
+		+ toString( splittingChar ) + "'." ) ;
+		
+	for ( std::string::const_iterator it = stringToSplit.begin() ;
+		it != stringToSplit.end(); it++ )
+	{
+	
+		
+		if ( *it == splittingChar )
+		{
+			Ceylan::display( "Adding '" + splitWord + "' to " 
+				+ formatStringList( result, true ) + " whose size is "
+				+ toString( result.size() ) + " element(s)." ) ;
+				
+			result.push_back( splitWord ) ;
+			splitWord.clear() ;
+		}
+		else
+		{	
+			splitWord += *it ;
+		}	 
+	
+	}	
+	
+	if ( ! splitWord.empty() )
+		result.push_back( splitWord ) ;
+
+	Ceylan::display( "Result is : " +  formatStringList( result, true ) 
+		+ ", final size is " + toString( result.size() ) ) ;
+		
+#endif // CEYLAN_TRUSTS_STL_WITH_TEMPLATES	
+
 	return result ;
 	
 }
@@ -500,7 +540,7 @@ list<string> Ceylan::splitIntoWords( const string & sentenceToSplit ) throw()
 				string spaces ;
 					
 				// Start at 1 so that having (n-1) spaces :
-				for ( unsigned int i = 1; i < voidItemCount; i++ )
+				for ( Ceylan::Uint32 i = 1; i < voidItemCount; i++ )
 					spaces += " " ;
 				
 				corrected.push_back( spaces ) ;
@@ -538,7 +578,7 @@ string Ceylan::formatStringList( const list<string> & stringList,
 		res = "<ul>" ; 
 		
 		for ( list<string>::const_iterator it = stringList.begin(); 
-			it != stringList.end();	it++ )
+				it != stringList.end();	it++ )
 			if ( surroundByTicks )	
 				res += "<li>'" + ( *it ) + "'</li>" ; 
 			else			
