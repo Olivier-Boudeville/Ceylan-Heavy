@@ -28,11 +28,11 @@ extern "C"
 #include <fcntl.h>             // for mode_t
 #endif // CEYLAN_USES_FCNTL_H
 
-#if CEYLAN_USES_UNISTD_H
+#ifdef CEYLAN_USES_UNISTD_H
 #include <unistd.h>            // for FIXME
 #endif // CEYLAN_USES_UNISTD_H
 
-#if CEYLAN_USES_UTIME_H
+#ifdef CEYLAN_USES_UTIME_H
 #include <utime.h>             // for utime     
 #endif // CEYLAN_USES_UTIME_H
 
