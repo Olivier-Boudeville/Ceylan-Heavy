@@ -1,6 +1,6 @@
 #!/bin/bash
 
-USAGE="Usage : "`basename $0`" [ -h | --help ] [ -d | --disable-all-features ] [ -n | --no-build ] [ -c | --chain-test ] [ --configure-options [option 1] [option 2] [...] ] : (re)generates all the autotools-based build system.\n\t --disable-all-features : build a library with none of the optional features\n\t --no-build : stop just after having generated the configure script\n\t --chain-test : build and install the library, make distcheck and then build the test suite and run it against the installation\n\t --configure-options : all following options will be directly passed whenever configure is run"
+USAGE="Usage : "`basename $0`" [ -h | --help ] [ -d | --disable-all-features ] [ -n | --no-build ] [ -c | --chain-test ] [ -o | --only-prepare-dist ] [ --configure-options [option 1] [option 2] [...] ] : (re)generates all the autotools-based build system.\n\t --disable-all-features : build a library with none of the optional features\n\t --no-build : stop just after having generated the configure script\n\t --chain-test : build and install the library, make distcheck and then build the test suite and run it against the installation\n\t --only-prepare-dist : configure all but do not build anything\n\t --configure-options : all following options will be directly passed whenever configure is run"
 
 # Main settings section.
 
@@ -29,6 +29,7 @@ do_install=0
 do_installcheck=0
 do_distcheck=1
 do_chain_tests=1
+do_only_prepare_dist=1
 
 
 while [ "$#" -gt "0" ] ; do
@@ -57,6 +58,17 @@ while [ "$#" -gt "0" ] ; do
 	if [ "$1" == "-c" ] || [ "$1" == "--chain-test" ] ; then
 		do_chain_tests=0
 		do_distcheck=0
+		token_eaten=0
+	fi
+	
+	if [ "$1" == "-o" ] || [ "$1" == "--only-prepare-dist" ] ; then
+		do_build=1
+		do_check=1
+		do_install=1
+		do_installcheck=1
+		do_distcheck=1
+		do_chain_tests=1
+		do_only_prepare_dist=0
 		token_eaten=0
 	fi
 	
@@ -372,7 +384,6 @@ generateCustom()
  	execute ./configure $configure_opt
 	
 
-
 	if [ "$do_clean" -eq 0 ] ; then
 		echo
 		echo " - cleaning all"
@@ -420,6 +431,14 @@ generateCustom()
 		echo " - building and running test suite"
 		cd test
 	 	execute ./autogen.sh
+	elif [ "$do_only_prepare_dist" -eq 0 ] ; then
+		echo
+		echo " - generating configure for test suite"
+		cd test
+	 	execute ./autogen.sh --only-prepare-dist
+		cd .. 
+		echo " - making distribution package"
+		execute make dist 
 	fi
 		
 		
