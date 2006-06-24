@@ -52,9 +52,12 @@ Version::Version( const std::string & versionText ) throw( VersionException )
 	 */
 	 	 
 	if ( numbers.size() != 3 )
-		throw Ceylan::Exception( "Version constructor : input string <"
+		throw Ceylan::Exception( "Version constructor : input string '"
 			+ versionText 
-			+ "> cannot be split into three parts thanks to dots." ) ;
+			+ "' cannot be split into three parts thanks to dots, "
+			"we have " + Ceylan::toString( numbers.size() ) + " elements : " 
+			+ Ceylan::formatStringList( numbers, 
+				/* surroundByTicks */ true ) ) ;
 	
 	try
 	{
