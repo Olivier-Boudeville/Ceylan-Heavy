@@ -153,7 +153,8 @@ site: common
 	local web repository [@CEYLAN_LOCAL_WEB_DIR@]@CEYLAN_DEFAULT_STYLE@"
 	@cd $(srcdir)/web; for d in $(WEB_CONTENT_DIRS); do \
 	mkdir -p @CEYLAN_LOCAL_WEB_SHARED_DIR@/$$d ; done ;  \
-	cp -f --parents $(WEB_CONTENT_FILES) @CEYLAN_LOCAL_WEB_SHARED_DIR@
+	for f in $(WEB_CONTENT_FILES); do \
+	cp -f $$f @CEYLAN_LOCAL_WEB_SHARED_DIR@/$$f; done
 	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark local doc site,\
 	which is to be found in :"
 	@echo "      file://@CEYLAN_LOCAL_WEB_DIR@/index.html@CEYLAN_DEFAULT_STYLE@"
@@ -173,7 +174,8 @@ common:
 	@mkdir -p @CEYLAN_LOCAL_WEB_SHARED_DIR@
 	@cd $(srcdir)/web; for d in $(COMMON_WEB_DIRS); do \
 	mkdir -p @CEYLAN_LOCAL_WEB_SHARED_DIR@/$$d ; done ; \
-	cp -f --parents $(COMMON_WEB_FILES) @CEYLAN_LOCAL_WEB_SHARED_DIR@
+	for f in $(COMMON_WEB_FILES); do \
+	cp -f $$f @CEYLAN_LOCAL_WEB_SHARED_DIR@/$$f; done
 
 
 uninstall-hook:
