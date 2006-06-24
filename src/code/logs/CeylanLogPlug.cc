@@ -226,6 +226,7 @@ void LogPlug::CreateBasicPlug() throw ( LogException )
 			"no transport available" ) ;
 						
 	LogrootLogSource = new LogSource( "Log root", * Transport ) ;
+	
 	LogrootLogSource->send( "Starting log plug service, from Ceylan "
 		+ Ceylan::GetVersion().toString() + "." ) ; 
 	
