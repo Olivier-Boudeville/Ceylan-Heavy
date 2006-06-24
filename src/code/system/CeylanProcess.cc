@@ -18,7 +18,7 @@
 extern "C"
 {
 
-#if CEYLAN_USES_UNISTD_H
+#ifdef CEYLAN_USES_UNISTD_H
 #include <unistd.h>                  // for pid_t, sysconf, fork 
 #endif // CEYLAN_USES_UNISTD_H
 
@@ -568,15 +568,14 @@ Ceylan::Uint32 Process::GetTime() throw( ProcessException )
 			"clock ticks equal to zero according to the system" ) ;
 
 	struct tms t ;
-	::times( & t ) ;
-
-	if ( t.tms_utime == -1 )
+	
+	if ( ::times( & t ) == static_cast<clock_t>( -1 ) )
 		throw ProcessException( "Process::GetTime : unable to determine "
 			"time spent in the process : " 
 			+ System::explainError( errno ) ) ;
 	
-	return static_cast<Ceylan::Uint32>( static_cast<double>( t.tms_utime ) 
-		/ clockticks ) ;
+	return static_cast<Ceylan::Uint32>( 
+		static_cast<SignedLongInteger>( t.tms_utime ) / clockticks ) ;
 		
 #else // CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
 
