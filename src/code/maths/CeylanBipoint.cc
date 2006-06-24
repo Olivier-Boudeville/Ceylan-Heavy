@@ -182,6 +182,9 @@ const string Bipoint::toString( VerbosityLevels level ) const throw()
 		return res ;
 		
 	}
+	
+	// Useless but avoids warnings :
+	return res ;
 				
 }
 
