@@ -650,7 +650,8 @@ namespace Ceylan
 		 * @example Round(-3,23456, 3 ) = -3,235 or -3.2349999...
 		 *
 		 */
-		Ceylan::Float32 Round( Ceylan::Float32 x, Ceylan::Uint8 precision ) throw() ;
+		Ceylan::Float32 Round( Ceylan::Float32 x, Ceylan::Uint8 precision )
+			throw() ;
 
 		
 		
@@ -710,7 +711,8 @@ namespace Ceylan
 		 * @example Round(-3,23456, 3 ) = -3,235 or -3.2349999...
 		 *
 		 */
-		Ceylan::Float64 Round( Ceylan::Float64 x, Ceylan::Uint8 precision ) throw() ;
+		Ceylan::Float64 Round( Ceylan::Float64 x, Ceylan::Uint8 precision )
+			throw() ;
 				
 				
 		
@@ -770,7 +772,8 @@ namespace Ceylan
 		 * @example Round(-3,23456, 3 ) = -3,235 or -3.2349999...
 		 *
 		 */
-		Ceylan::LongFloat Round( Ceylan::LongFloat x, Ceylan::Uint8 precision ) throw() ;
+		Ceylan::LongFloat Round( Ceylan::LongFloat x, Ceylan::Uint8 precision )
+			throw() ;
 	
 			
 				
@@ -780,16 +783,16 @@ namespace Ceylan
 		// Integer signed types :
 
 		/// Computes the absolute value of specified argument.
-		char Abs( char x ) throw() ;		
+		Ceylan::Sint8 Abs( Ceylan::Sint8 x ) throw() ;		
 		
 		/// Computes the absolute value of specified argument.
-		short Abs( short x ) throw() ;
+		Ceylan::Sint16 Abs( Ceylan::Sint16 x ) throw() ;
 				
 		/// Computes the absolute value of specified argument.
-		int Abs( int x ) throw() ;
+		Ceylan::Sint32 Abs( Ceylan::Sint32 x ) throw() ;
 				
 		/// Computes the absolute value of specified argument.
-		long Abs( long x ) throw() ;
+		Ceylan::SignedLongInteger Abs( Ceylan::SignedLongInteger x ) throw() ;
 		
 		
 		/**
@@ -838,7 +841,7 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		char Min( char x, char y ) throw() ;		
+		Ceylan::Sint8 Min( Ceylan::Sint8 x, Ceylan::Sint8 y ) throw() ;		
 
 		
 		/**
@@ -847,7 +850,7 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		unsigned char Min( unsigned char x, unsigned char y ) throw() ;		
+		Ceylan::Uint8 Min( Ceylan::Uint8 x, Ceylan::Uint8 y ) throw() ;		
 		
 		
 		/**
@@ -856,7 +859,7 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		short Min( short x, short y ) throw() ;
+		Ceylan::Sint16 Min( Ceylan::Sint16 x, Ceylan::Sint16 y ) throw() ;
 			
 			
 		/**
@@ -865,7 +868,7 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		unsigned short Min( unsigned short x, unsigned short y ) throw() ;
+		Ceylan::Uint16 Min( Ceylan::Uint16 x, Ceylan::Uint16 y ) throw() ;
 				
 				
 		/**
@@ -874,7 +877,7 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		int Min( int x, int y ) throw() ;
+		Ceylan::Sint32 Min( Ceylan::Sint32 x, Ceylan::Sint32 y ) throw() ;
 	
 		
 		/**
@@ -883,7 +886,7 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		unsigned int Min( unsigned int x, unsigned int y ) throw() ;
+		Ceylan::Uint32 Min( Ceylan::Uint32 x, Ceylan::Uint32 y ) throw() ;
 		
 				
 		/**
@@ -892,7 +895,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		long Min( long x, long y ) throw() ;
+		Ceylan::SignedLongInteger Min( Ceylan::SignedLongInteger x,
+			Ceylan::SignedLongInteger y ) throw() ;
 
 				
 		/**
@@ -901,7 +905,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		unsigned long Min( unsigned long x, unsigned long y ) throw() ;
+		Ceylan::UnsignedLongInteger Min( Ceylan::UnsignedLongInteger x,
+			Ceylan::UnsignedLongInteger y ) throw() ;
 	
 		
 		/**
@@ -913,6 +918,7 @@ namespace Ceylan
 		 *
 		 */
 		//long long int Min( long long int x, long long int y ) throw() ;
+		
 		
 		
 		// Floating point types :
@@ -942,7 +948,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		Ceylan::LongFloat Min( Ceylan::LongFloat x, Ceylan::LongFloat y ) throw() ;
+		Ceylan::LongFloat Min( Ceylan::LongFloat x, Ceylan::LongFloat y )
+			throw() ;
 		
 		
 		
@@ -973,7 +980,7 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		char Max( char x, char y ) throw() ;		
+		Ceylan::Sint8 Max( Ceylan::Sint8 x, Ceylan::Sint8 y ) throw() ;		
 
 		
 		/**
@@ -982,7 +989,7 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		unsigned char Max( unsigned char x, unsigned char y ) throw() ;		
+		Ceylan::Uint8 Max( Ceylan::Uint8 x, Ceylan::Uint8 y ) throw() ;		
 		
 		
 		/**
@@ -991,7 +998,7 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		short Max( short x, short y ) throw() ;
+		Ceylan::Sint16 Max( Ceylan::Sint16 x, Ceylan::Sint16 y ) throw() ;
 			
 			
 		/**
@@ -1000,7 +1007,7 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		unsigned short Max( unsigned short x, unsigned short y ) throw() ;
+		Ceylan::Uint16 Max( Ceylan::Uint16 x, Ceylan::Uint16 y ) throw() ;
 				
 				
 		/**
@@ -1009,7 +1016,7 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		int Max( int x, int y ) throw() ;
+		Ceylan::Sint32 Max( Ceylan::Sint32 x, Ceylan::Sint32 y ) throw() ;
 	
 		
 		/**
@@ -1018,7 +1025,7 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		unsigned int Max( unsigned int x, unsigned int y ) throw() ;
+		Ceylan::Uint32 Max( Ceylan::Uint32 x, Ceylan::Uint32 y ) throw() ;
 		
 				
 		/**
@@ -1027,7 +1034,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		long Max( long x, long y ) throw() ;
+		Ceylan::SignedLongInteger Max( Ceylan::SignedLongInteger x,
+			Ceylan::SignedLongInteger y ) throw() ;
 
 				
 		/**
@@ -1036,7 +1044,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		unsigned long Max( unsigned long x, unsigned long y ) throw() ;
+		Ceylan::UnsignedLongInteger Max( Ceylan::UnsignedLongInteger x,
+			Ceylan::UnsignedLongInteger y ) throw() ;
 	
 		
 		/**
@@ -1048,6 +1057,7 @@ namespace Ceylan
 		 *
 		 */
 		//long long int Max( long long int x, long long int y ) throw() ;
+		
 		
 		
 		// Floating point types :
@@ -1077,7 +1087,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		Ceylan::LongFloat Max( Ceylan::LongFloat x, Ceylan::LongFloat y ) throw() ;
+		Ceylan::LongFloat Max( Ceylan::LongFloat x, Ceylan::LongFloat y )
+			throw() ;
 		
 			
 
@@ -1119,7 +1130,8 @@ namespace Ceylan
 		Ceylan::Float64 Pow( Ceylan::Float64 x, Ceylan::Float64 y ) throw() ;
 		
 		/// Computes the value of x raised to the power of y.		
-		Ceylan::LongFloat Pow( Ceylan::LongFloat x, Ceylan::LongFloat y ) throw() ;
+		Ceylan::LongFloat Pow( Ceylan::LongFloat x, Ceylan::LongFloat y )
+			throw() ;
 		
 		
 		
@@ -1137,6 +1149,7 @@ namespace Ceylan
 			
 				
 		// Square root :
+		
 		
 		/**
 		 * Computes the non-negative square root of x, throw an 
@@ -1362,13 +1375,15 @@ namespace Ceylan
 			
 			
 				/// Basic constructor.
-				explicit IntToIntFunctor( int creationParameter ) throw() ;
+				explicit IntToIntFunctor( 
+					Ceylan::Sint32 creationParameter ) throw() ;
 				
 				/// Basic virtual destructor;
 				virtual ~IntToIntFunctor() throw() ;
 				
 				/// The callable method.
-				virtual int operator() ( int callParameter ) throw() = 0 ;
+				virtual Ceylan::Sint32 operator() ( 
+					Ceylan::Sint32 callParameter ) throw() = 0 ;
 	
 		
 	            /**
@@ -1396,7 +1411,7 @@ namespace Ceylan
 				 * the functor.
 				 *
 				 */
-				int _creationParameter ;
+				Ceylan::Sint32 _creationParameter ;
 			
  		} ;
 				
