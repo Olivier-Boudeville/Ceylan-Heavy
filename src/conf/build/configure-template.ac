@@ -591,10 +591,15 @@ CheckMultithreadFeature()
            		pthread_cflags="-D_REENTRANT -D_THREAD_SAFE"
             	pthread_lib="-pthread"
             	;;
-       		*-*-netbsd*)
-            	pthread_cflags="-I/usr/pkg/include -D_REENTRANT"
-            	pthread_lib="-L/usr/pkg/lib -lpthread -lsem"
-            	;;
+			*-*-netbsd*)
+				# -I/usr/pkg/include removed since its pthread.h had 
+				# conflicting types with /usr/include/pthread_types.h :
+				pthread_cflags="-D_REENTRANT"
+				# -lsem removed, it does not exist with NetBSD 2.0.2 :
+				pthread_lib="-L/usr/pkg/lib -lpthread"
+				# Needed for any future AC_RUN_IFELSE :
+				export LD_LIBRARY_PATH="/usr/pkg/lib:$LD_LIBRARY_PATH"
+				;;
         	*-*-openbsd*)
             	pthread_cflags="-D_REENTRANT"
             	pthread_lib="-pthread"
