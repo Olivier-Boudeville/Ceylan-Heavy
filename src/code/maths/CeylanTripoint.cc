@@ -169,6 +169,9 @@ const string Tripoint::toString( VerbosityLevels level ) const throw()
 		return res ;
 		
 	}
+	
+	// Useless but avoids warnings :
+	return res ;
 				
 }
 
