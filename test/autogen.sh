@@ -281,7 +281,6 @@ generateCustom()
  	execute ./configure $configure_opt
 	
 
-
 	if [ "$do_clean" -eq 0 ] ; then
 		echo
 		echo " - cleaning all"
