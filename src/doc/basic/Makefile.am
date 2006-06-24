@@ -50,7 +50,7 @@ CHANGELOG_COMMAND   = "$(CHANGELOG_GENERATOR)"
 
 
 update-changelog: 
-	@if [ "${CREATE_CHANGELOG}" == true ]; then\
+	@if [ "${CREATE_CHANGELOG}" == true ] ; then \
 	if [ ! -x "$(CHANGELOG_COMMAND)" ] ; then echo\
 	"@CEYLAN_WARNING_STYLE@    No ChangeLog tool\
 	available, nothing done@CEYLAN_DEFAULT_STYLE@"; \
