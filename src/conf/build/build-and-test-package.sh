@@ -9,6 +9,8 @@ CEYLAN_INSTALL_TEST_ROOT=$HOME/tmp-ceylan-test-install-$SUFFIX
 
 mkdir $CEYLAN_INSTALL_ROOT $CEYLAN_INSTALL_TEST_ROOT
 
-./configure --prefix=$CEYLAN_INSTALL_ROOT && make && make install && cd test && ./configure --prefix=$CEYLAN_INSTALL_TEST_ROOT --with-libCeylan=$CEYLAN_INSTALL_ROOT && make && make install && ./playTests.sh
+CONFIGURE_COMMON_OPT=""
+#CONFIGURE_COMMON_OPT="CXX=g++-3.4"
 
+./configure ${CONFIGURE_COMMON_OPT} --prefix=$CEYLAN_INSTALL_ROOT && make && make install && cd test && ./configure ${CONFIGURE_COMMON_OPT} --prefix=$CEYLAN_INSTALL_TEST_ROOT --with-libCeylan=$CEYLAN_INSTALL_ROOT && make && make install && ./playTests.sh
 
