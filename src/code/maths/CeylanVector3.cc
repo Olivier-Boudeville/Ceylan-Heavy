@@ -210,6 +210,9 @@ const string Vector3::toString( VerbosityLevels level ) const throw()
 		
 	}
 				
+	// Useless but avoids warnings :
+	return res ;
+	
 }
 
 
