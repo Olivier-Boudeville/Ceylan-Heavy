@@ -70,9 +70,76 @@ AC_DEFUN([CEYLAN_PATH],
 		# CEYLAN_CPPFLAGS="-I/usr/local/include/Ceylan"
 		# CEYLAN_LIBS="-L/usr/local/lib -lCeylan"
       ])
+  # Add pthread flags in case the Ceylan multithreading feature is enabled :
+  case "$target" in
+      *-*-bsdi*)
+    	  pthread_cflags="-D_REENTRANT -D_THREAD_SAFE"
+    	  pthread_lib=""
+    	  ;;
+      *-*-darwin*)
+    	  pthread_cflags="-D_THREAD_SAFE"
+    	  # causes Carbon.p complaints?
+    	  # pthread_cflags="-D_REENTRANT -D_THREAD_SAFE"
+    	  ;;
+      *-*-freebsd*)
+    	  pthread_cflags="-D_REENTRANT -D_THREAD_SAFE"
+    	  pthread_lib="-pthread"
+    	  ;;
+      *-*-netbsd*)
+	  	  # -I/usr/pkg/include removed since its pthread.h had 
+		  # conflicting types with /usr/include/pthread_types.h :
+    	  pthread_cflags="-D_REENTRANT"
+		  # -lsem removed, it does not exist with NetBSD 2.0.2 :
+    	  pthread_lib="-L/usr/pkg/lib -lpthread"
+		  # Needed for AC_RUN_IFELSE :
+		  LD_LIBRARY_PATH="/usr/pkg/lib:$LD_LIBRARY_PATH"
+		  export LD_LIBRARY_PATH
+    	  ;;
+      *-*-openbsd*)
+    	  pthread_cflags="-D_REENTRANT"
+    	  pthread_lib="-pthread"
+    	  ;;
+      *-*-solaris*)
+    	  pthread_cflags="-D_REENTRANT"
+    	  pthread_lib="-lpthread -lposix4"
+    	  ;;
+      *-*-sysv5*)
+    	  pthread_cflags="-D_REENTRANT -Kthread"
+    	  pthread_lib=""
+    	  ;;
+      *-*-irix*)
+    	  pthread_cflags="-D_SGI_MP_SOURCE"
+    	  pthread_lib="-lpthread"
+    	  ;;
+      *-*-aix*)
+    	  pthread_cflags="-D_REENTRANT -mthreads"
+    	  pthread_lib="-lpthread"
+    	  ;;
+      *-*-hpux11*)
+    	  pthread_cflags="-D_REENTRANT"
+    	  pthread_lib="-L/usr/lib -lpthread"
+    	  ;;
+      *-*-qnx*)
+    	  pthread_cflags=""
+    	  pthread_lib=""
+    	  ;;
+      *-*-osf*)
+    	  pthread_cflags="-D_REENTRANT"
+    	  if test x$ac_cv_prog_gcc = xyes; then
+    		  pthread_lib="-lpthread -lrt"
+    	  else
+    		  pthread_lib="-lpthread -lexc -lrt"
+    	  fi
+    	  ;;
+      *)
+    	  pthread_cflags="-D_REENTRANT"
+    	  pthread_lib="-lpthread"
+    	  ;;
+  esac
+	  
   # Updating the overall build flags :
-  CPPFLAGS="$CPPFLAGS $CEYLAN_CPPFLAGS"
-  LIBS="$LIBS $CEYLAN_LIBS"
+  CPPFLAGS="$CPPFLAGS $CEYLAN_CPPFLAGS $pthread_cflags"
+  LIBS="$LIBS $CEYLAN_LIBS $pthread_lib"
   #AC_MSG_NOTICE([CPPFLAGS = $CPPFLAGS])
   #AC_MSG_NOTICE([LIBS = $LIBS])  
   AC_SUBST(CPPFLAGS)
@@ -104,7 +171,7 @@ AC_DEFUN([CEYLAN_PATH],
     AC_MSG_RESULT([yes])
   else
     AC_MSG_RESULT([no])
-    AC_MSG_ERROR([The Ceylan installation does not seem to be clean, since headers do not match the library version])  
+    AC_MSG_ERROR([The Ceylan installation does not seem to be clean, since link failed or headers did not match the library version])  
   fi
   have_compatible_ceylan_version=yes
   AC_RUN_IFELSE([
