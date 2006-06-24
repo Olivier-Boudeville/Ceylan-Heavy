@@ -1,7 +1,7 @@
 
 SUBDIRS=m4
 
-.PHONY: all check-configure download-config-scripts links \
+.PHONY: all check-configure download-config-scripts \
 	clean clean-download real-clean
 
 BUILD_SCRIPTS_SET = \
@@ -36,7 +36,7 @@ DOWNLOADED_HELPERS = config.guess config.sub
 CONFIG_FILES = $(DOWNLOADED_HELPERS)
 
 
-all : links
+all:
 	
 		
 check-configure: 
