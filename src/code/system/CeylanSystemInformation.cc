@@ -24,7 +24,7 @@ using namespace Ceylan::System ;   // for SystemException
 extern "C" 
 {
 
-#if CEYLAN_USES_SYS_SYSINFO_H
+#ifdef CEYLAN_USES_SYS_SYSINFO_H
 #include <sys/sysinfo.h>           // for GNU/Linux sysinfo
 #endif // CEYLAN_USES_SYS_SYSINFO_H
 
@@ -36,7 +36,7 @@ UnsignedLongInteger Ceylan::System::getSecondsSinceSystemBoot()
 	throw( SystemException )
 { 
 	
-#if CEYLAN_USES_SYSINFO
+#ifdef CEYLAN_USES_SYSINFO
 	
 	struct sysinfo sysinfoStruct ;
 	
@@ -63,7 +63,7 @@ Ceylan::Uint32 Ceylan::System::getTotalProcessCount()
 	throw( SystemException )
 { 
 
-#if CEYLAN_USES_SYSINFO
+#ifdef CEYLAN_USES_SYSINFO
 	
 	struct sysinfo sysinfoStruct ;
 	
@@ -91,7 +91,7 @@ UnsignedLongInteger Ceylan::System::getTotalSystemMemorySize()
 	throw( SystemException )
 { 
 	
-#if CEYLAN_USES_SYSINFO
+#ifdef CEYLAN_USES_SYSINFO
 
 	struct sysinfo sysinfoStruct ;
 	
@@ -119,7 +119,7 @@ UnsignedLongInteger Ceylan::System::getFreeSystemMemorySize()
 	throw( SystemException )
 { 
 	
-#if CEYLAN_USES_SYSINFO
+#ifdef CEYLAN_USES_SYSINFO
 
 	struct sysinfo sysinfoStruct ;
 	
@@ -147,7 +147,7 @@ UnsignedLongInteger Ceylan::System::getTotalSwapMemorySize()
 	throw( SystemException )
 { 
 	
-#if CEYLAN_USES_SYSINFO
+#ifdef CEYLAN_USES_SYSINFO
 
 	struct sysinfo sysinfoStruct ;
 	
@@ -175,7 +175,7 @@ UnsignedLongInteger Ceylan::System::getFreeSwapMemorySize()
 	throw( SystemException )
 { 
 	
-#if CEYLAN_USES_SYSINFO
+#ifdef CEYLAN_USES_SYSINFO
 
 	struct sysinfo sysinfoStruct ;
 	
@@ -205,7 +205,7 @@ UnsignedLongInteger Ceylan::System::getTotalHighMemorySize()
 	throw( SystemException )
 { 
 	
-#if CEYLAN_USES_SYSINFO
+#ifdef CEYLAN_USES_SYSINFO
 
 	struct sysinfo sysinfoStruct ;
 	
@@ -233,7 +233,7 @@ UnsignedLongInteger Ceylan::System::getFreeHighMemorySize()
 	throw( SystemException )
 { 
 	
-#if CEYLAN_USES_SYSINFO
+#ifdef CEYLAN_USES_SYSINFO
 
 	struct sysinfo sysinfoStruct ;
 	
@@ -262,7 +262,7 @@ UnsignedLongInteger Ceylan::System::getSharedMemorySize()
 	throw( SystemException )
 { 
 	
-#if CEYLAN_USES_SYSINFO
+#ifdef CEYLAN_USES_SYSINFO
 
 	struct sysinfo sysinfoStruct ;
 	
@@ -290,7 +290,7 @@ UnsignedLongInteger Ceylan::System::getBuffersMemorySize()
 	throw( SystemException )
 { 
 	
-#if CEYLAN_USES_SYSINFO
+#ifdef CEYLAN_USES_SYSINFO
 
 	struct sysinfo sysinfoStruct ;
 	
