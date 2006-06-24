@@ -52,13 +52,11 @@ Controller::~Controller() throw()
 const string Controller::toString( Ceylan::VerbosityLevels level ) 
 	const throw() 
 {
-
-	string result ;
 	
 	if ( _listeners.empty() )
 		return "MVC Controller has currently no model subscribed" ;
-	else
-		return "MVC Controller has currently " 
-			+ Ceylan::toString( _listeners.size() ) + " model(s) subscribed" ;
+	
+	return "MVC Controller has currently " 
+		+ Ceylan::toString( _listeners.size() ) + " model(s) subscribed" ;
 				
 }
