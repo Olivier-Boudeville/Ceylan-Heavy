@@ -1,6 +1,6 @@
 #!/bin/bash
 
-USAGE="Usage :"`basename $0`" : (re)generates all the autotools-based build system for Ceylan tests."
+USAGE="Usage :"`basename $0`"[--only-prepare-dist] : (re)generates all the autotools-based build system for Ceylan tests.\n\t--only-prepare-dist : perform only necessary operations so that the test directory can be distributed afterwards"
 
 # These tests must rely on a related Ceylan source directory, since they :
 #	- need to know which Ceylan version is to be tested
@@ -16,6 +16,11 @@ do_clean=0
 do_build=0
 do_install=0
 do_test=0
+
+if [ "$1" == "--only-prepare-dist" ] ; then
+	do_stop_after_configure=0
+fi
+
 
 library_location="$HOME/tmp-Ceylan-test-install"
 
@@ -60,6 +65,7 @@ wait()
 	
 }
 
+cd `dirname $0`
 
 # Searches for the Ceylan substitute script :
 CEYLAN_SUBSTITUTE_SCRIPT="../src/code/scripts/shell/substitute.sh"
