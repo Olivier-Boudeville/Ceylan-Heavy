@@ -1,4 +1,4 @@
-# ceylan.m4 is to be found in ${top_srcdir]/test to help Ceylan users
+# ceylan.m4 is to be found in ${top_srcdir]/test to help Ceylan users
 # detecting the Ceylan library appropriately from their programs.
 
 m4dir=${datadir}/@PROJECT_NAME@/aclocal
