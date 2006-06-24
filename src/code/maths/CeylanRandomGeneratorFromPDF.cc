@@ -191,6 +191,9 @@ const string RandomGeneratorFromPDF::toString( VerbosityLevels level )
 		return base + "with no PDF registered. "
 			+ RandomGenerator::toString( level ) ;	
 	}
+	
+	// Useless but avoids warnings :
+	return base ;
 		
 }
 
