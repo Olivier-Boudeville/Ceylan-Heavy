@@ -54,8 +54,14 @@ export SF_USER=wondersye
 export SF=${SF_USER}@shell.sourceforge.net
 export SF_SHELL="${SF}:/home/users/"`echo "${SF_USER}" | head -c 1`"/"`echo "${SF_USER}" | head -c 2`"/${SF_USER}"
 
+
 # Compile farm :
-export CF=${SF_USER}@cf.sourceforge.net
+
+alias sfcf='ssh ${SF_USER}@cf.sourceforge.net'
+
+# Correct that with your user :
+export TOSFCF=${SF_USER}@cf-shell.sourceforge.net:/home/users/w/wo/${SF_USER}
+
 
 export CVS_RSH=ssh
 
@@ -66,7 +72,7 @@ SVN_CO_CEYLAN='svn co https://svn.sourceforge.net/svnroot/ceylan ceylan'
 CVS_CO_OSDL='cvs -z3 -d:ext:${SF_USER}@cvs.sourceforge.net:/cvsroot/osdl co'
 SVN_CO_OSDL='svn co https://svn.sourceforge.net/svnroot/osdl osdl'
 
-# Needed to oerride RCS's /usr/bin/ci :
+# Needed to override RCS's /usr/bin/ci :
 alias ci="${CEYLAN_SRC}/code/scripts/shell/ci"
 
 # Internal CVS servers :
@@ -111,6 +117,7 @@ alias lock='xlock -mode blank'
 alias m=make
 alias sonata='ssh $USER@sonata'
 alias aranor='ssh $USER@aranor'
+alias sfcf='ssh $USER@aranor'
 
 
 
@@ -143,6 +150,7 @@ export TOSONATA="sye@sonata:/home/sye"
 export TORAINBOW="sye@rainbow:/home/sye"
 
 export TOARANOR_FTP="www-data@aranor:/home/ftp/LOANI-archive-repository"
+
 
 # Cubbyhole section :
 
