@@ -305,11 +305,11 @@ distclean-local: real-clean
 # Grab the test programs for the distribution :
 dist-hook:
 	@if ! test -f $(srcdir)/test/configure; then \
-	echo "The configure script for the tests does not seem to have been generated. Please consider running autogen.sh in the test directory first." ; false ; fi
+	echo "Test configure script not available, generating it." ; \
+	cd $(srcdir)/test ; ./autogen.sh --only-prepare-dist; fi
 	@if test -f $(srcdir)/test/Makefile; then \
-	(cd $(srcdir)/test; make distclean); else \
-	echo "The Makefile for the tests does not seem to have been available. Please consider running configure in the test directory first." ; false ; fi	
-	-@rm -rf $(srcdir)/test/autom4te*
+	(cd $(srcdir)/test; make distclean); fi	
+	-@rm -rf $(srcdir)/test/autom4te* $(srcdir)/test/testsOutcome.txt
 	@cp -rp $(srcdir)/test $(distdir)
 	-@rm -rf `find $(distdir) -type d -name '.svn' -print`
 	-@cd $(distdir); rm -f config.log config.status libtool \
