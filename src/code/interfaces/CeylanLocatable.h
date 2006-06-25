@@ -227,6 +227,7 @@ namespace Ceylan
 			virtual ~Locatable() throw() ;
 			
 			
+			
 			/**
 			 * Returns whether this Locatable is defined absolutely
 			 * (returns true) or relatively to a father referential
@@ -465,6 +466,7 @@ namespace Ceylan
 			bool _isUpToDate ;
 
 		
+		
 			/**
 			 * Copy constructor made private to ensure that it will 
 			 * be never called.
@@ -485,6 +487,7 @@ namespace Ceylan
 			 * 
 			 */			 
 			Locatable & operator = ( const Locatable & source ) throw() ;
+		
 				
 	} ;
 	
