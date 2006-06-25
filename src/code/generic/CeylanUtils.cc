@@ -9,9 +9,17 @@
 #include "CeylanFeatures.h"     // for areFileDescriptorsSupported
 
 
+#include <cstdio>               // for KeyboardHit.
+#include <ctime>
+
+#include <algorithm>            // for Split*
+#include <iostream>				// for cerr, endl, cout
+
+
 #ifdef CEYLAN_USES_CONFIG_H
 #include <CeylanConfig.h>       // for the actual CEYLAN_LIBTOOL_VERSION
 #endif // CEYLAN_USES_CONFIG_H
+
 
 
 extern "C"
@@ -27,19 +35,14 @@ extern "C"
 
 }
 
-#include <cstdio>               // for KeyboardHit.
-#include <ctime>
-
-#include <algorithm>            // for Split*
-#include <iostream>				// for cerr, endl, cout
 
 
 const Ceylan::Sint16 Ceylan::ExitSuccess      =  0 ;
 const Ceylan::Sint16 Ceylan::ExitFailure      =  1 ;
 const Ceylan::Sint16 Ceylan::ExitDebugFailure = 10 ;
 
-const std::string Ceylan::DefaultWaitForKeyMessage = 
-	"Press any key to continue" ;
+const std::string Ceylan::DefaultWaitForKeyMessage( 
+	"Press any key to continue" ) ;
 
 
 using std::string ;
@@ -249,7 +252,7 @@ KeyChar Ceylan::waitForKey( const string & message ) throw()
 void Ceylan::checkpoint( const std::string & message ) throw()
 {
  
- 	static int checkpointCount = 1 ;
+ 	static Ceylan::Uint32 checkpointCount = 1 ;
  
  	if ( message.empty() )
 		std::cout << "Checkpoint [" << ++checkpointCount 
@@ -264,7 +267,7 @@ void Ceylan::checkpoint( const std::string & message ) throw()
 void Ceylan::breakpoint( const std::string & message ) throw()
 {
  
- 	static int breakpointCount = 1 ;
+ 	static Ceylan::Uint32 breakpointCount = 1 ;
 
 	if ( ! message.empty() )
 		std::cout << std::endl 
