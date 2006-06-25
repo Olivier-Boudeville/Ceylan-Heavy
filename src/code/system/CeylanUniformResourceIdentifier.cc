@@ -8,8 +8,15 @@ using namespace Ceylan::URI ;
 
 using std::string ;
 
-const std::string Ceylan::URI::ProtocolSeparator = "://" ;
+const std::string Ceylan::URI::ProtocolSeparator( "://" ) ;
 
+
+const string Ceylan::URI::getProtocolName( const string & fullURI ) throw()
+{
+
+	return getProtocolName( fullURI, ProtocolSeparator ) ;
+
+}
 
 
 const string Ceylan::URI::getProtocolName( const string & fullURI,
@@ -27,6 +34,14 @@ const string Ceylan::URI::getProtocolName( const string & fullURI,
 	return fullURI.substr( 0, endOfPrefix ) ;
 
 }
+
+
+const string Ceylan::URI::getEmbeddedURI( const string & fullURI ) throw()
+{
+
+	return getEmbeddedURI( fullURI, ProtocolSeparator ) ;
+
+}	
 
 
 const string Ceylan::URI::getEmbeddedURI( const string & fullURI,
