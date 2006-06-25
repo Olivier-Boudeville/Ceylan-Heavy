@@ -82,23 +82,53 @@ const string Timestamp::toString( Ceylan::VerbosityLevels level ) const throw()
 
 bool Timestamp::operator < (Timestamp & second ) throw() 
 {
+
+	/*
+	 * Note that reverse comparisons (>) have to be done, otherwise
+	 * 8:13:00 < 8:12:59 for example !
+	 *
+	 */
 	if ( _year < second._year )
 		return true ;
+	
+	if ( _year > second._year )
+		return false ;
+		
 		
 	if ( _month < second._month )
 		return true ;
 		
+	if ( _month > second._month )
+		return false ;
+
+		
 	if ( _day < second._day )
 		return true ;
+		
+	if ( _day > second._day )
+		return false ;
+
 		
 	if ( _hour < second._hour )
 		return true ;
 		
+	if ( _hour > second._hour )
+		return false ;
+		
+		
 	if ( _minute < second._minute )
 		return true ;
 		
+	if ( _minute > second._minute )
+		return false ;
+		
+		
 	if ( _second < second._second )
 		return true ;
+		
+	if ( _second > second._second )
+		return false ;
+		
 		
 	return false ;
 		
