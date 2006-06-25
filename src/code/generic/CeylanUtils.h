@@ -145,7 +145,7 @@ namespace Ceylan
 
 
 	/// Corresponds to a read character.
-	typedef int KeyChar ;
+	typedef Ceylan::Sint32 KeyChar ;
 	
 	
 	/**
