@@ -1,12 +1,13 @@
 #ifndef CEYLAN_EXCEPTION_H_
 #define CEYLAN_EXCEPTION_H_
 
-#include <string>
-#include <exception>
-#include <iosfwd>                   // for ostream
-
 
 #include "CeylanTextDisplayable.h"  // for inheritance
+
+
+#include <string>
+#include <exception>                // for std::exception
+#include <iosfwd>                   // for ostream
 
 
 
@@ -27,6 +28,7 @@ namespace Ceylan
      */
     class Exception : public std::exception, public TextDisplayable
     {
+
 
         public:
 
