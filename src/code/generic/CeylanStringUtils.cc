@@ -407,8 +407,6 @@ list<string> Ceylan::split( const string & stringToSplit, char splittingChar )
 
 	string splitWord ;
 	
-	Ceylan::display( "Splitting '" + stringToSplit + "' with '" 
-		+ toString( splittingChar ) + "'." ) ;
 		
 	for ( std::string::const_iterator it = stringToSplit.begin() ;
 		it != stringToSplit.end(); it++ )
@@ -416,11 +414,7 @@ list<string> Ceylan::split( const string & stringToSplit, char splittingChar )
 	
 		
 		if ( *it == splittingChar )
-		{
-			Ceylan::display( "Adding '" + splitWord + "' to " 
-				+ formatStringList( result, true ) + " whose size is "
-				+ toString( result.size() ) + " element(s)." ) ;
-				
+		{				
 			result.push_back( splitWord ) ;
 			splitWord.clear() ;
 		}
@@ -433,9 +427,6 @@ list<string> Ceylan::split( const string & stringToSplit, char splittingChar )
 	
 	if ( ! splitWord.empty() )
 		result.push_back( splitWord ) ;
-
-	Ceylan::display( "Result is : " +  formatStringList( result, true ) 
-		+ ", final size is " + toString( result.size() ) ) ;
 		
 #endif // CEYLAN_TRUSTS_STL_WITH_TEMPLATES	
 
