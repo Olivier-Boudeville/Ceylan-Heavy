@@ -20,6 +20,7 @@ namespace Ceylan
 	class MVCEvent : public Event
 	{
 	
+	
 		public:
 		
 		
@@ -28,6 +29,7 @@ namespace Ceylan
 			
 			/// Virtual destructor.
 			virtual ~MVCEvent() throw() ;
+	
 	
 			
 		private:
