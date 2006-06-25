@@ -201,7 +201,7 @@ namespace Ceylan
 		private:
 		
 		
-			/*
+			/**
 			 * Copy constructor made private to ensure that it will be never
 			 * called.
 			 * The compiler should complain whenever this undefined operator 
