@@ -160,6 +160,19 @@ AC_DEFUN([CEYLAN_PATH],
   #   - this test will be disabled if cross-compiling
   #   - we do not use AC_CACHE_CHECK and al on purpose, to avoid the
   # traps of cached entries.
+  have_working_ceylan_library=yes
+  AC_RUN_IFELSE([
+  	AC_LANG_PROGRAM(
+	  [[#include "Ceylan.h"]],[[Ceylan::Uint32 x;]])],
+	[],[have_working_ceylan_library=no],[AC_MSG_WARN([No Ceylan library sanity test run, since cross-compiling])])
+  AC_MSG_CHECKING([whether the Ceylan library can be linked to])
+  if test x$have_working_ceylan_library = xyes; then
+  	# Cross-compilation goes here, too.
+    AC_MSG_RESULT([yes])
+  else
+    AC_MSG_RESULT([no])
+    AC_MSG_ERROR([The Ceylan library could not be successfully linked to.])  
+  fi
   have_ceylan_headers_matching_library_version=yes
   AC_RUN_IFELSE([
   	AC_LANG_PROGRAM(
@@ -171,7 +184,7 @@ AC_DEFUN([CEYLAN_PATH],
     AC_MSG_RESULT([yes])
   else
     AC_MSG_RESULT([no])
-    AC_MSG_ERROR([The Ceylan installation does not seem to be clean, since link failed or headers did not match the library version])  
+    AC_MSG_ERROR([The Ceylan installation does not seem to be clean, since headers did not match the library version.])  
   fi
   have_compatible_ceylan_version=yes
   AC_RUN_IFELSE([
