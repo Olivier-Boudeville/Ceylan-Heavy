@@ -314,8 +314,11 @@ if test x$enable_debug = xyes; then
 	AM_CXXFLAGS="$AM_CXXFLAGS -g" 
     if test x$ac_cv_cxx_compiler_gnu = xyes; then
 		# Add -pg to manage profile information for gprof.
-		AM_CXXFLAGS="$AM_CXXFLAGS -ggdb -O0 -fno-inline -fbounds-check -ftrapv -fnon-call-exceptions -fstack-check"
-		AM_LDFLAGS="$AM_LDFLAGS -s"
+		# -fstack-check used to be specified but wroke havoc in generated code,
+		# causing crashes and various valgrind reports.
+		#AM_CXXFLAGS="$AM_CXXFLAGS -ggdb -O0 -fno-inline -fbounds-check -ftrapv -fnon-call-exceptions"
+		# Safest settings :
+		AM_CXXFLAGS="$AM_CXXFLAGS -ggdb -O0 -fno-inline"				
 	fi	 
 else
 
@@ -331,6 +334,9 @@ else
 		# -ffast-math : not requesting exact IEEE or ISO implementation rules/specifications
         AM_CXXFLAGS="$AM_CXXFLAGS -g0 -O3 -fexpensive-optimizations -fomit-frame-pointer -ffast-math -funroll-loops"
     fi
+	
+	AM_LDFLAGS="$AM_LDFLAGS --strip-all"
+	
     case "$target" in
         i486-*-*)
             if test x$ac_cv_cxx_compiler_gnu = xyes; then
