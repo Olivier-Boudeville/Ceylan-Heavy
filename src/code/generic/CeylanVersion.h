@@ -189,14 +189,14 @@ namespace Ceylan
 			virtual bool isUsualVersionSchemeCompliant() const throw() ;
 			
 			
-				 
-
 
 			/// The major version number, i.e. the first version coordinate.
 			VersionNumber _major ;
 
+
 			/// The minor version number, i.e. the second version coordinate.
 			VersionNumber _minor ;
+
 
 			/**
 			 * The release version number (or patch number), i.e. the third
@@ -210,7 +210,7 @@ namespace Ceylan
 		private:
 		
 		
-			/*
+			/**
 			 * Copy constructor made private to ensure that it will be never
 			 * called.
 			 * The compiler should complain whenever this undefined operator 
@@ -226,7 +226,6 @@ namespace Ceylan
 			 * The compiler should complain whenever this undefined operator is
 			 * called, implicitly or not.
 			 * 
-			 *
 			 */			 
 			Version & operator = ( const Version & source ) throw() ;
 
