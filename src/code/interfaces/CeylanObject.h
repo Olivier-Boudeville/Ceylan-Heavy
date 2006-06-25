@@ -35,6 +35,7 @@ namespace Ceylan
         public:
 
 
+
             /**
 			 * Constructs a brand new Ceylan::Object.
 			 *
@@ -190,6 +191,7 @@ namespace Ceylan
 				Ceylan::VerbosityLevels level = Ceylan::high ) 
 					const throw() ;
 
+			
 			
 		protected:
 
