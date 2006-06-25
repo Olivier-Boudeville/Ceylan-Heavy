@@ -21,7 +21,7 @@ namespace Ceylan
 	 * Describes a 16-bit UNICODE value.
 	 *
 	 */
-	typedef Uint16 Unicode ;
+	typedef Ceylan::Uint16 Unicode ;
 
 
 

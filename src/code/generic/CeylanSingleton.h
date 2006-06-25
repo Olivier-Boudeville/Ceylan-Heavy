@@ -2,9 +2,10 @@
 #define CEYLAN_SINGLETON_H_
 
 
+#include "CeylanException.h"
+
 #include <string>
 
-#include "CeylanException.h"
 
 
 namespace Ceylan

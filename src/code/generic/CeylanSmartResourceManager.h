@@ -15,6 +15,7 @@
 // Usually no particular need to debug this code :
 #define CEYLAN_DEBUG_SMART_RESOURCE_MANAGER 0
 
+
 namespace Ceylan
 {
 
@@ -444,6 +445,7 @@ namespace Ceylan
 			 virtual const std::string toString( 
 			 	Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
 
+
 			
 			
 		protected:
@@ -564,6 +566,7 @@ namespace Ceylan
 			/// Metadata associated to a cached resource.
 			struct CacheEntry
 			{
+			
 			
 				/// A pointer to the Resource itself.
 				const SmartResource * _resource ;

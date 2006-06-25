@@ -88,7 +88,7 @@ namespace Ceylan
 			
 			
 			/// Months of the year range from 1 to 12, from January to December.
-			typedef Ceylan::Uint8 MonthofTheYear ;
+			typedef Ceylan::Uint8 MonthOfTheYear ;
 			
 			
 			/// Days of the month range from 1 to 31.
@@ -119,7 +119,7 @@ namespace Ceylan
 			Year _year ;
 			
 			/// Timestamp's month.
-			MonthofTheYear _month ;
+			MonthOfTheYear _month ;
 
 			/// Timestamp's day.
 			DayOfTheMonth _day ;
