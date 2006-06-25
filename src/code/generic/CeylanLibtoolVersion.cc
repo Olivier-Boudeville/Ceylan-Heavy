@@ -4,6 +4,7 @@
 
 #include <list>
 
+
 using std::string ;
 
 using namespace Ceylan ;
@@ -159,6 +160,7 @@ bool LibtoolVersion::canBeComparedWith( const Version & version ) const throw()
 	// Only Libtool versions can be compared with Libtool versions :
 	
 	return ( dynamic_cast<const LibtoolVersion *>( & version ) != 0 ) ;
+	
 }
 
 
