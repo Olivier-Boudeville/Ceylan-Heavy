@@ -97,7 +97,7 @@ namespace Ceylan
 			 * @see isLocked, postLock, unlock
 			 *
 			 */
-			 virtual void lock() throw( LockException ) ;
+			virtual void lock() throw( LockException ) ;
 							
 				
 			
