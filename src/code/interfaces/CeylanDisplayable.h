@@ -28,6 +28,7 @@ namespace Ceylan
 
         public:
 
+
             /// Void interface, just used to ensure strong typing.
 
 
@@ -52,7 +53,7 @@ namespace Ceylan
 		
 			/**
 			 * Copy constructor cannot be private since it is needed in 
-			 * some cases.
+			 * some cases (return by value).
 			 *
 			 * Displayable( const Displayable & source ) throw() ;
 			 *
