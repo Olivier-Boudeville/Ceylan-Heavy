@@ -1,14 +1,13 @@
 #ifndef CEYLAN_STRING_UTILS_H_
 #define CEYLAN_STRING_UTILS_H_
 
+#include "CeylanTypes.h"          // for Ceylan::Uint16
+#include "CeylanException.h"      // for Ceylan::Exception
 
 
 #include <sstream>                // for istringstream
 #include <string>
 #include <list>                   // for string, string::size_type
-
-#include "CeylanTypes.h"          // for Ceylan::Uint16
-#include "CeylanException.h"      // for Ceylan::Exception
 
 
 
@@ -34,7 +33,7 @@ namespace Ceylan
 	 * Describes a character encoded in Latin-1 (ISO 8859-1 character set).
 	 *
 	 */
-	typedef Uint8 Latin1Char ;
+	typedef Ceylan::Uint8 Latin1Char ;
 	
 	
 	/**
@@ -43,6 +42,7 @@ namespace Ceylan
 	 *
 	 */
 	typedef std::string::size_type StringSize ;
+
 
 
 	/**
