@@ -429,12 +429,11 @@ namespace Ceylan
 	 * @see CeylanStringUtils.h for StringSize
 	 *
 	 */
-	typedef std::list<Ceylan::Uint16>::size_type ListSize ;
+	typedef std::list<Ceylan::Uint16>::size_type ListSize ;	
 	
 	
 	/// Flags, fields of 32 bits. 
 	typedef Ceylan::Uint32 Flags ;
-	
 	
 	
 	/*
@@ -468,6 +467,7 @@ namespace Ceylan
 	CEYLAN_COMPILE_TIME_ASSERT( float64, sizeof(Float64) == 8  ) ;
 
 	//CEYLAN_COMPILE_TIME_ASSERT( Float96, sizeof(Float96) == 12 ) ;
+	 
 
 }
 
