@@ -3,6 +3,7 @@
 #include "CeylanStringUtils.h"
 #include "CeylanOperators.h"
 
+
 #ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"       // for configure-time settings
 #endif // CEYLAN_USES_CONFIG_H
@@ -101,6 +102,17 @@ const Flags Features::FileLocks = 0x00000040 ;
 const Flags Features::AdvancedProcessManagement = 0x00000080 ; 
 
 
+/*
+ * The plugin feature, linked with preprocessor symbol
+ * CEYLAN_USES_PLUGINS.
+ *
+ * Equal to 0b00000000000000000000000100000000.
+ *
+ */
+const Flags Features::Plugins = 0x00000100 ; 
+
+
+
 
 FeatureNotAvailableException::FeatureNotAvailableException( 
 		const std::string & message ) throw() :
@@ -180,6 +192,14 @@ void Features::checkForSupportedFeatures( Flags featuresFlag )
 		if ( ! isAdvancedProcessManagementSupported() )
 			throw FeatureNotAvailableException( 
 				"Advanced process management" + endOfMessage ) ;			
+	}
+	
+	
+	if ( featuresFlag & AdvancedProcessManagement )
+	{
+		if ( ! arePluginsSupported() )
+			throw FeatureNotAvailableException( 
+				"Plugin" + endOfMessage ) ;			
 	}
 	
 	
@@ -282,6 +302,17 @@ bool Features::isAdvancedProcessManagementSupported() throw()
 
 }
 
+bool Features::arePluginsSupported() throw()
+{
+
+#if CEYLAN_USES_PLUGINS
+	return true ;
+#else // CEYLAN_USES_PLUGINS
+	return false ; 	
+#endif // CEYLAN_USES_PLUGINS
+
+}
+
 
 const std::string Features::describeAvailableFeatures() throw() 
 {
@@ -336,8 +367,16 @@ const std::string Features::describeAvailableFeatures() throw()
 		featureList.push_back( "Advanced process management not supported" ) ;
 
 
+	if ( arePluginsSupported() )
+		featureList.push_back( "Plugins are supported" ) ;
+	else
+		featureList.push_back( "Plugins are not supported" ) ;
+
+
 	return "Summary of optional features available with "
 		"the Ceylan library currently linked :"
 		+ Ceylan::formatStringList( featureList ) ;
 			
 }
+
+

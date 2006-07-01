@@ -25,10 +25,12 @@ namespace Ceylan
 	 *  - advanced file attributes (for opening and permissions) support
 	 *  - read/write file lock support
 	 *  - advanced process management
+	 *	- plugin support
 	 *
 	 */
 	namespace Features
 	{
+	
 	
 	
 		/**
@@ -149,6 +151,15 @@ namespace Ceylan
 		 */
 		extern const Ceylan::Flags AdvancedProcessManagement ;
 
+
+		/**
+		 * Designates the plugin feature, for dynamic loading a shared objects.
+		 *
+		 */
+		extern const Ceylan::Flags Plugins ;
+
+
+
 	
 		/**
 		 * Checks that the version of the Ceylan library currently linked
@@ -185,9 +196,12 @@ namespace Ceylan
 	
 		/// Tells whether file locks are supported.
 		bool areFileLocksSupported() throw() ;
-	
+		
 		/// Tells whether advanced process management is supported.
 		bool isAdvancedProcessManagementSupported() throw() ;
+	
+		/// Tells whether plugins are supported.
+		bool arePluginsSupported() throw() ;
 	
 	
 		/**
