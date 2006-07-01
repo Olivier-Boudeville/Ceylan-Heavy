@@ -15,6 +15,7 @@
 #include "CeylanMutex.h"
 #include "CeylanNetwork.h"
 #include "CeylanOutputStream.h"
+#include "CeylanPipe.h"
 #include "CeylanProcess.h"
 #include "CeylanRunnable.h"
 #include "CeylanStream.h"

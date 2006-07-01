@@ -23,6 +23,7 @@ SYSTEM_INTERFACES = \
 	CeylanMutex.h                        \
 	CeylanNetwork.h                      \
 	CeylanOutputStream.h                 \
+	CeylanPipe.h                         \
 	CeylanProcess.h                      \
 	CeylanRunnable.h                     \
 	CeylanStream.h                       \
@@ -45,6 +46,7 @@ SYSTEM_IMPLEMENTATIONS = \
 	CeylanMutex.cc                       \
 	CeylanNetwork.cc                     \
 	CeylanOutputStream.cc                \
+	CeylanPipe.cc                        \
 	CeylanProcess.cc                     \
 	CeylanRunnable.cc                    \
 	CeylanStream.cc                      \
