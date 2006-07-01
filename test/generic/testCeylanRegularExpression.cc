@@ -36,7 +36,7 @@ int main( int argc, char * argv[] )
 		{
 			LogPlug::warning( "Regular expression support not available, "
 				"nothing tested." ) ;
-			return 0 ;
+			return Ceylan::ExitSuccess ;
 		}	
 		
 
