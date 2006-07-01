@@ -2,9 +2,9 @@
 #define CEYLAN_MODULE_H_
 
 
-#include "CeylanTextDisplayable.h"  // for Ceylan::TextDisplayable
-#include "CeylanObject.h"           // for Ceylan::Object
+#include "CeylanObject.h"           // for inheritance
 #include "CeylanVersion.h"          // for Ceylan::Version
+#include "CeylanException.h"        // for Exception
 
 
 #include <string>
@@ -12,6 +12,19 @@
 
 namespace Ceylan
 {
+
+
+
+	/// Raised whenever a module-related operation failed.
+	class ModuleException : public Ceylan::Exception
+	{
+	
+		public:
+		
+			ModuleException( const std::string & message ) throw() ;
+			virtual ~ModuleException() throw() ;
+	
+	} ;
 
 
 
@@ -72,6 +85,15 @@ namespace Ceylan
 				const std::string & licence ) throw () ;
 
 
+			/**
+			 * Constructor of a blank module.
+			 * Useful whenever the module informations cannot be obtained at
+			 * the object creation, ex : Ceylan::Plugin.
+			 *
+			 */
+			Module() throw() ;
+			
+			
             /// Basic virtual destructor.
             virtual ~Module() throw() ;
 
@@ -149,9 +171,11 @@ namespace Ceylan
 
 
 
-        protected:
 
+		private:
+		
 
+ 
 			/// Name of the module.
             std::string _name ;
 			
@@ -179,9 +203,6 @@ namespace Ceylan
             std::string _licence ;
 
 
-
-		private:
-		
 		
 			/**
 			 * Copy constructor made private to ensure that it will be 

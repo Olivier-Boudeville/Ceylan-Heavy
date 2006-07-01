@@ -14,6 +14,21 @@ using namespace Ceylan ;
 using namespace Ceylan::Log ;
 
 
+
+ModuleException::ModuleException( const std::string & message ) throw() :
+	Ceylan::Exception( message )
+{
+
+}
+
+
+ModuleException::~ModuleException() throw()
+{
+
+}
+
+
+
 Module::Module( const string  & name, 
 				const string  & description, 
 				const string  & homepageURL,
@@ -34,6 +49,22 @@ Module::Module( const string  & name,
 	setVersion( version ) ;
 		
     send( "Creating " + toString( low ) ) ;
+	
+}
+
+
+Module::Module() throw() :
+		Object(),
+        _name(),
+        _description(),
+        _homepageURL(),
+        _author(),
+        _authorMail(),
+        _version(),
+		_licence()
+{
+		
+    send( "Creating a blank module" ) ;
 	
 }
 
