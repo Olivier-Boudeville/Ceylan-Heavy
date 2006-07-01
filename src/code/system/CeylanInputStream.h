@@ -44,10 +44,13 @@ namespace Ceylan
 				class SelectFailedException : public IOException
 				{
 					public: 
+					
 						explicit SelectFailedException( 
 								const std::string & message ) throw() : 
 							IOException( message )
-						{}
+						{
+						
+						}
 				} ;
 	
 	
@@ -126,6 +129,7 @@ namespace Ceylan
 				/**
 				 * Copy constructor made private to ensure that it will 
 				 * be never called.
+				 *
 				 * The compiler should complain whenever this undefined
 				 * constructor is called, implicitly or not.
 				 * 
