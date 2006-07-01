@@ -5,6 +5,8 @@ AUTOMAKE_OPTIONS = 1.9
 
 SUBDIRS = src
 
+EXTRA_SUBDIRS = libltdl
+
 # These are the subdirectories which will be distributed with 'make dist' :
 # (the 'test' directory is not included since it is managed by dist-hook, as
 # it may or may not be configured).
