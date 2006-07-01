@@ -229,6 +229,9 @@ AC_HEADER_TIME
 AC_STRUCT_TM
 AC_C_VOLATILE
 
+# Checks for libraries.
+
+
 # Checks for library functions.
 AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_ERROR_AT_LINE
@@ -735,7 +738,7 @@ CheckNetworkFeature()
 # Checks whether file descriptor feature should and can be activated.
 # CEYLAN_USES_FILE_DESCRIPTORS depends on :
 #   - headers : unistd.h 
-#   - functions : dup dup2 
+#   - functions : dup dup2 pipe
 #   - symbols :
 #   - use : when supported, i.e. mostly on UNIX
 CheckFileDescriptorFeature()
@@ -757,7 +760,7 @@ CheckFileDescriptorFeature()
 		have_file_descriptor=yes
 		AC_CHECK_HEADERS([fcntl.h sys/select.h unistd.h],[],[have_file_descriptor=no])
 		if test x$have_file_descriptor = xyes; then
-			AC_CHECK_FUNCS([dup dup2],[],[have_file_descriptor=no])
+			AC_CHECK_FUNCS([dup dup2 pipe],[],[have_file_descriptor=no])
 		fi	
 		if test x$have_file_descriptor = xyes; then
 			CEYLAN_USES_FILE_DESCRIPTORS=1
@@ -969,7 +972,7 @@ CheckAdvancedProcessManagementFeature()
 		AC_MSG_CHECKING([whether Ceylan advanced process management feature is enabled])
 		AC_MSG_RESULT([$have_advanced_process_management])
 	else
-		# File lock not wanted here :
+		# Advanced process management not wanted here :
 		AC_MSG_RESULT([no])	
 	fi
 	
@@ -979,6 +982,70 @@ CheckAdvancedProcessManagementFeature()
 }
 
 
+# Checks whether the plugin feature should and can be activated.
+# CEYLAN_USES_PLUGINS depends on :
+#   - headers : dlfcn.h
+#   - functions : dlopen dlsym dlclose dlerror
+#   - symbols : 
+#   - use : 
+#   - depends on :
+CheckPluginFeature()
+{
+
+	# Is plugin support wanted ?
+	CEYLAN_USES_PLUGINS=0
+	AC_ARG_ENABLE([plugin-support],
+		AS_HELP_STRING(--enable-plugin-support,[use Ceylan plugin support feature [[default=yes]]]),
+		[case "${enableval}" in
+			yes) plugin_support=yes ;;
+			no)  plugin_support=no ;;
+			*) AC_MSG_ERROR(bad value ${enableval} for --enable-plugin-support) ;;
+		esac],[plugin_support=yes])
+	# If wanted, is plugin support available ?	
+	AC_MSG_CHECKING([whether Ceylan plugin support feature is wanted])
+	if test x$plugin_support = xyes; then
+		AC_MSG_RESULT([yes])
+		have_plugin_support=yes
+		#AC_LIBLTDL_INSTALLABLE
+		# Suppose AC_LIB_LTDL checks for an available LTDL :
+		#AC_LIB_LTDL
+		#AC_LIBLTDL_CONVENIENCE
+		LIBS="$LIBS $LIBLTDL"
+		CPPFLAGS="$CPPFLAGS $LTDLINCL"
+		#AC_CHECK_HEADERS([dlfcn.h],[have_plugin_support=no],[])
+		# Never found, is in /usr/share/libtool/libltdl/ltdl.h :
+		#saved_cppflags="$CPPFLAGS"
+		#CPPFLAGS="$CPPFLAGS $LTDLINCL -I$ac_top_srcdir/libltdl"
+		#echo "-----LIBS=$LIBS,CPPFLAGS = $CPPFLAGS" 
+		#Always here, useless check : AC_CHECK_HEADERS([ltdl.h],[],[have_plugin_support=no])
+		# On some systems a libltdl.so symbolic link lacks.
+		#AC_CHECK_LIB([ltdl],[lt_dlopenext],[LIBS="$LIBS -ltdl"],[have_plugin_support=no])
+		#AC_CHECK_FUNCS([dlopen dlsym dlclose dlerror],[],[have_plugin_support=no])
+		
+		have_plugin_support=no
+		
+		if test x$have_plugin_support = xyes; then
+			CEYLAN_USES_PLUGINS=1
+		else	
+			AC_MSG_WARN([Plugin support requested but not available (no libltdl found), disabling it])
+		fi
+		AC_MSG_CHECKING([whether Ceylan plugin feature is enabled])
+		AC_MSG_RESULT([$have_plugin_support])
+	else
+		# Plugin feature not wanted here :
+		AC_MSG_RESULT([no])	
+	fi
+	
+	AC_DEFINE_UNQUOTED([USES_PLUGINS],
+		[$CEYLAN_USES_PLUGINS],
+		[Define to 1 if Ceylan is to support plugin])
+}
+
+
+
+# Section of non feature-based checkings.
+
+ 
 # Checks whether mkdir takes one (ex : minGW) or two arguments (ex : Linux).
 CheckMkdir()
 {
@@ -1074,6 +1141,7 @@ CheckFileSymbolicLinkFeature
 CheckAdvancedFileAttributeFeature
 CheckFileLockFeature
 CheckAdvancedProcessManagementFeature
+CheckPluginFeature
 
 
 AC_SUBST(SYSTEM_LIBS)
@@ -1130,3 +1198,15 @@ AC_CONFIG_FILES([
 
 AC_OUTPUT
 
+echo \
+"------------------------------------------------------------------------
+Configuration:
+
+  Source code location:   ${srcdir}
+  C++ compiler:           ${CXX}
+  C++ compiler flags:     ${CXXFLAGS}
+  Host System Type:       ${host}
+  Install path (prefix):  ${prefix}
+
+  See src/code/CeylanConfig.h for further configuration information.
+------------------------------------------------------------------------"
