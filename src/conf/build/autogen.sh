@@ -8,7 +8,8 @@ ceylan_features_disable_opt="--disable-regex --disable-multithread --disable-net
 
 ceylan_features_opt=""
 
-PREFIX="$HOME/tmp-Ceylan-test-install"
+PREFIX_DEFAULT="$HOME/tmp-Ceylan-test-install"
+PREFIX="$PREFIX_DEFAULT"
 PREFIX_OPT="--prefix=$PREFIX"
 #PREFIX_OPT=""
 
@@ -235,16 +236,20 @@ generateCustom()
 	
 	if [ "$do_clean_prefix" -eq 0 ] ; then
 		echo
-		echo " - cleaning PREFIX = $PREFIX"
-		unset returnedChar
-		read -p "Do you really want to erase the whole $PREFIX tree ? (y/n) [n] " returnedChar 
-
-		if [ "$returnedChar" = "y" ] ; then
-			${RM} -r $PREFIX
-			echo "(prefix cleaned)"
-		else
-			echo "(nothing removed)"
-		fi
+		if [ -z "$PREFIX" -o "$PREFIX" == "$HOME" ] ; then
+			echo "(no PREFIX=$PREFIX removed)"
+		else	
+			returnedChar="y"
+			if [ "$PREFIX" != "$PREFIX_DEFAULT" ] ; then
+				read -p "Do you really want to erase the whole $PREFIX tree ? (y/n) [n] " returnedChar 
+			fi
+			
+			if [ "$returnedChar" == "y" ] ; then
+				echo " - cleaning PREFIX = $PREFIX"
+				${RM} -r $PREFIX
+				echo "(prefix cleaned)"
+			fi
+		fi	
 	fi
 	
 
@@ -275,7 +280,7 @@ generateCustom()
 	cd $SOURCE_OFFSET
 		
 	echo
-	echo " - preparing libtool, by executing libtoolize"
+	echo " - preparing libtool and ltdl, by executing libtoolize"
 	
 	
 	(libtool --version) < /dev/null > /dev/null 2>&1 || {
@@ -298,7 +303,7 @@ generateCustom()
 		libtoolize_verbose="--debug"
 	fi
 	
-	execute libtoolize --automake $copy $force $libtoolize_verbose
+	execute libtoolize --ltdl --automake $copy $force $libtoolize_verbose
 	
 	echo
 	echo " - generating aclocal.m4, by scanning configure.ac"
