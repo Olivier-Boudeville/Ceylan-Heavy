@@ -1,6 +1,6 @@
 #include "CeylanFile.h"
 
-#include "CeylanLogPlug.h"
+#include "CeylanLogPlug.h"     // for Log primitives
 #include "CeylanDirectory.h"   // for Directory
 #include "CeylanOperators.h"   // for toString
 #include "CeylanStringUtils.h" // for StringSize
@@ -153,6 +153,11 @@ File::FileException::FileException( const string & reason ) throw() :
 
 }
 
+
+File::FileException::~FileException() throw()
+{
+
+}
 
 
 // Numerous child classes :	
@@ -373,6 +378,14 @@ File::File( const string & name,
 File::~File() throw()
 {
 	close() ;
+}
+
+
+const std::string & File::getName() const throw()
+{ 
+
+	return _name ; 
+	
 }
 
 
@@ -699,9 +712,9 @@ Size File::read( char * buffer, Size maxLength ) throw( File::ReadFailed )
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
-	SignedSize n = FDRead( _fdes, buffer, maxLength ) ;
+	SignedSize n = System::FDRead( _fdes, buffer, maxLength ) ;
 
-	// Actually, n should never be negative.
+	// Actually, n should never be negative :
 	if ( n < 0 )
 		throw ReadFailed( "File::read failed for file '" 
 			+ _name + "' : " + System::explainError() ) ;
@@ -782,7 +795,7 @@ Size File::write( const char * buffer, Size maxLength )
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
-	SignedSize n = FDWrite( _fdes, buffer, maxLength ) ;
+	SignedSize n = System::FDWrite( _fdes, buffer, maxLength ) ;
 
 	if ( n < static_cast<SignedSize>( maxLength ) )
 		throw WriteFailed( "File::write failed for file '" 
