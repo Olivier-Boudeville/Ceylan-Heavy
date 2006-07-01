@@ -115,8 +115,11 @@ namespace Ceylan
 				{ 
 					public: 
 					
-						explicit FileException( 
-								const std::string & reason ) throw() ; 
+						explicit FileException( const std::string & reason )
+							throw() ;
+						
+						virtual ~FileException() throw() ; 
+							
 				} ;
 
 
@@ -621,8 +624,7 @@ namespace Ceylan
 
 
 				/// Returns this file's name.
-				inline const std::string & getName() const throw()
-				{ return _name; }
+				const std::string & getName() const throw() ;
 
 
 				/**
@@ -731,7 +733,7 @@ namespace Ceylan
 				 * @see getSize
 				 *
 				 */
-				Size size() const throw( CouldNotStatFile ) ;
+				virtual Size size() const throw( CouldNotStatFile ) ;
 
 
 				/**
@@ -750,7 +752,7 @@ namespace Ceylan
 				 * @throw ReadFailed if a read error occurred.
 				 *
 				 */
-		 		Size read( char * buffer, Size maxLength ) 
+		 		virtual Size read( char * buffer, Size maxLength ) 
 					throw( ReadFailed ) ;
 
 
@@ -765,7 +767,7 @@ namespace Ceylan
 				 * @throw WriteFailed if a write error occurred.
 				 *
 				 */
-				Size write( const std::string & message ) 
+				virtual Size write( const std::string & message ) 
 					throw( File::WriteFailed ) ;
 
 
@@ -783,7 +785,7 @@ namespace Ceylan
 				 * @throw WriteFailed if a write error occurred.
 				 *
 				 */
-				Size write( const char * buffer, Size maxLength ) 
+				virtual Size write( const char * buffer, Size maxLength ) 
 					throw( WriteFailed ) ;
 
 
