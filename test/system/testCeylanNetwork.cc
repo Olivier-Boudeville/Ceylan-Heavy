@@ -22,6 +22,7 @@ const string invalidHostname2 = "192.110.0.4" ;
 const string invalidHostname3 = "ceylan/sourceforge/net" ;
 
 
+// FIXME : add ping to avoid failure if network not here
 
 /**
  * Test of Ceylan Network utilities.
