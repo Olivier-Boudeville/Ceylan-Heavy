@@ -15,7 +15,8 @@ using namespace Ceylan::Log ;
 
 
 
-FileLocatorException::FileLocatorException( const std::string & message ) throw() :
+FileLocatorException::FileLocatorException( const std::string & message )
+		throw() :
 	SystemException( message )
 {
 
@@ -36,7 +37,8 @@ FileLocator::FileLocator() throw() :
 }
 
 
-FileLocator::FileLocator( const string & variableName, char separator ) throw() :
+FileLocator::FileLocator( const string & variableName, char separator ) 
+		throw() :
 	_paths()
 {
 	addPathsFromEnvironmentVariable( variableName, separator ) ;
@@ -52,7 +54,8 @@ FileLocator::~FileLocator() throw()
 bool FileLocator::addPath( const string & newPath ) throw() 
 {
 	
-	for ( list<string>::const_iterator it = _paths.begin(); it != _paths.end(); it++ )
+	for ( list<string>::const_iterator it = _paths.begin(); 
+			it != _paths.end(); it++ )
 		if ( (*it) == newPath )
 			return false ;
 			
@@ -67,7 +70,8 @@ bool FileLocator::addPaths( const std::list<std::string> & paths ) throw()
 	
 	bool res = false ;
 	
-	for ( list<string>::const_iterator it = paths.begin(); it != paths.end(); it++ )
+	for ( list<string>::const_iterator it = paths.begin(); 
+			it != paths.end(); it++ )
 		res |= addPath( (*it ) ) ;
 	
 	return res ;		
@@ -75,19 +79,22 @@ bool FileLocator::addPaths( const std::list<std::string> & paths ) throw()
 }
 
 
-bool FileLocator::addPathsFromEnvironmentVariable( const std::string & variableName,
-	char separator ) throw()
+bool FileLocator::addPathsFromEnvironmentVariable( 
+	const std::string & variableName, char separator ) throw()
 {	
-	return addPaths( Ceylan::split( getEnvironmentVariable( variableName ), separator ) ) ;
+	return addPaths( Ceylan::split( getEnvironmentVariable( variableName ),
+		separator ) ) ;
 }
 
 	
 bool FileLocator::removePath( const string & pathToRemove ) throw()
 {
 
-	for ( list<string>::const_iterator it = _paths.begin(); it != _paths.end() ; it++ )
+	for ( list<string>::const_iterator it = _paths.begin(); 
+			it != _paths.end() ; it++ )
 		if ( (*it) == pathToRemove )
 		{
+			// Iterator will not be used anymore afterwards :
 			_paths.remove( pathToRemove ) ;
 			return true ;
 		}	
@@ -97,13 +104,16 @@ bool FileLocator::removePath( const string & pathToRemove ) throw()
 }
 
 
-string FileLocator::find( const string & filename ) const throw( FileLocatorException ) 
+string FileLocator::find( const string & filename ) const 
+	throw( FileLocatorException ) 
 {
 
 	string fullPath ;
 	
-	for ( list<string>::const_iterator it = _paths.begin(); it != _paths.end(); it++ )
+	for ( list<string>::const_iterator it = _paths.begin(); 
+		it != _paths.end(); it++ )
 	{
+	
 		fullPath = Directory::JoinPath( (*it), filename ) ;
 		
 		//LogPlug::debug( "FileLocator::find : testing '" + fullPath + "'." ) ;
@@ -118,7 +128,14 @@ string FileLocator::find( const string & filename ) const throw( FileLocatorExce
 }
 
 
-const string FileLocator::toString( Ceylan::VerbosityLevels level ) const throw()
+const std::list<std::string> & FileLocator::getPaths() const throw()
+{
+	return _paths ;
+}
+
+
+const string FileLocator::toString( Ceylan::VerbosityLevels level ) const
+	throw()
 {
 	
 	if ( _paths.empty() ) 
@@ -128,3 +145,4 @@ const string FileLocator::toString( Ceylan::VerbosityLevels level ) const throw(
 		+ Ceylan::formatStringList( _paths ) ;
 				 
 }
+
