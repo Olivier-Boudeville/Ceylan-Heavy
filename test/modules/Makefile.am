@@ -33,11 +33,9 @@ testCeylanPlugin_DEPENDENCIES = $(LIBLTDL) ceylan-test-plugin.la
 
 ceylan_test_plugin_la_SOURCES = ceylan-test-plugin.cc
 ceylan_test_plugin_la_LDFLAGS = -no-undefined -module -avoid-version
-ceylan_test_plugin_la_LIBADD  = @CEYLAN_FULL_PATH@ 
 
 ceylan_test_unknown_plugin_la_SOURCES = ceylan-test-unknown-plugin.cc
 ceylan_test_unknown_plugin_la_LDFLAGS = -no-undefined -module -avoid-version
-ceylan_test_unknown_plugin_la_LIBADD  = @CEYLAN_FULL_PATH@ 
 
 # The unknown plugin must be in the same directory as the test loading it
 # to be easily found :
