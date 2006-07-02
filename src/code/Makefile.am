@@ -48,13 +48,15 @@ SUBLIBS = \
 	modules/libCeylanModules.la       \
 	interfaces/libCeylanInterfaces.la \
 	maths/libCeylanMaths.la           \
-	system/libCeylanSystem.la         	
-	
+	system/libCeylanSystem.la
+	         	
+
+EXTRA_SUBLIBS = @CEYLAN_EXTRA_LIBLTDL_SUBLIB@	
 	
 # The overall library is made from submodule convenience libraries and al :	
 libCeylan_la_LIBADD	= \
 	$(SUBLIBS)           \
-	@CEYLAN_EXTRA_LIBS@   \
+	@CEYLAN_EXTRA_LIBS@  \
 	@SYSTEM_LIBS@        
 	
 	
