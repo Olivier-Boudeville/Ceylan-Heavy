@@ -8,6 +8,61 @@
 #include <string>
 
 
+/// The marker used for symbols exported by the plugin.
+#define CEYLAN_SYMBOL_MARKER "_LTX_"
+
+
+/*
+ * Is not accepted by the preprocessor :
+ 
+#define CEYLAN_PLUGIN_DECLARE_NAME(name) \
+#define plugin_name name
+
+ */	
+	
+/**
+ * Use this macro to declare a symbol which is to be exported by the plugin,
+ * so that it can be dynamically loaded.
+ *
+ * @example CEYLAN_PLUGIN_EXPORTED_SYMBOL(my_function) 
+ *
+ * int my_function() {...}
+ *
+ * Such declarations can be gathered into a header file to make an interface
+ * for a plugin type, with different plugins implementing it.
+ *
+ * @note The plugin name must be defined previously.
+ *
+ * @see ceylan-test-plugin.cc
+ *
+ * Is not accepted by the preprocessor :
+ *
+#define CEYLAN_PLUGIN_EXPORTED_SYMBOL(symbol)\
+	#define symbol plugin_name##CEYLAN_SYMBOL_MARKER##symbol
+ */
+
+
+	
+/**
+ * Use this macro to declare a symbol which is to remain internal to the 
+ * plugin, i.e. that is not to be exported.
+ *
+ * @example CEYLAN_PLUGIN_INTERNAL_SYMBOL(my_function) 
+ *
+ * int my_function() {...}
+ *
+ * @note The plugin name must be defined previously.
+ *
+ * @see ceylan-test-plugin.cc
+ *
+ * Is not accepted by the preprocessor :
+ *
+#define CEYLAN_PLUGIN_INTERNAL_SYMBOL(symbol)\
+	#define symbol _##plugin_name##_symbol
+ */
+
+
+
 
 namespace Ceylan
 {
@@ -88,12 +143,19 @@ namespace Ceylan
 			 * If filename is an empty string, the 
 			 * binary loaded will be the main program itself.
 			 *
+			 * @param autoPrefix if true, then if a symbol 'foo' of a plugin
+			 * named 'my-Plugin' is requested, then the actually loaded symbol
+			 * will be 'my_Plugin_LTX_foo'. It allows all plugins to implement
+			 * the same API while still being able to be able to be loaded
+			 * simultaneously. Otherwise their name would clash and prevent
+			 * from linking.
+			 *
 			 * @throw PluginException if the plugin feature is not available
 			 * or if the plugin could not be loaded successfully.
 			 *
 			 */
-			explicit Plugin( const std::string & filename = "" ) 
-				throw( PluginException ) ;
+			explicit Plugin( const std::string & filename = "",
+				bool autoPrefix = true ) throw( PluginException ) ;
 	
 		
 			/// Virtual destructor.
@@ -102,22 +164,12 @@ namespace Ceylan
 			
 			
             /**
-			 * Returns the plugin name, as read in the library.
+			 * Returns the plugin-embedded name, as read in the library.
 			 *
 			 * @throw ModuleException if the operation failed.
 			 *
 			 */
-            virtual std::string getName() const throw( ModuleException ) ;
-
-
-            /**
-			 * This operation cannot be performed on plugin instances.
-			 *
-			 * @throw ModuleException whevener called.
-			 *
-			 */
-            virtual void setName( const std::string & name )
-				throw( ModuleException ) ;
+            virtual std::string getEmbeddedName() throw( PluginException ) ;
 
 
             /**
@@ -200,7 +252,14 @@ namespace Ceylan
 			bool isResident() const throw( PluginException ) ;
 			
 			
-			/// Returns the filename corresponding to this plugin.
+			/**
+			 * Returns the filename corresponding to this plugin, from the
+			 * loader point of view.
+			 *
+			 * This name (ex : ceylan-test-plugin.so) can be different from the
+			 * user-specified one (ex :ceylan-test-plugin).
+			 *
+			 */
 			const std::string & getFileName() const ;
 
 
@@ -225,10 +284,33 @@ namespace Ceylan
 			static Ceylan::System::FileLocator PluginLocator ;
 
 
-
+			/**
+			 * The characters that will be added automatically between the
+			 * plugin name and the loaded symbols if auto-prefix is on.
+			 * 
+			 * For example, retrieving the symbol 'my_test_constant' in
+			 * plugin named 'ceylan-test-plugin' will cause the look-up of
+			 * symbol 'ceylan_test_plugin_LTX_my_test_constant'.
+			 *
+			 */
+			static const std::string SymbolMarker  ; 
+			
+			
+			 
 		protected:
-		
-		
+					
+
+			/**
+			 * Reads from plugin the usual module metadata, such as 
+			 * plugin description, author, version, licence, etc.
+			 *
+			 * @throw PluginException if the operation failed.
+			 *
+			 */
+			virtual void retrieveMetadata() throw( PluginException ) ;
+			
+			
+			
 			/**
 			 * Tells whether the plugin system is currently initialized,
 			 * by recording the current number of times the system was 
@@ -247,9 +329,17 @@ namespace Ceylan
 			SystemSpecificPluginHandle * _pluginHandle ;
 		
 				
-			/// The filename of the plugin.
+			/// The user-specified filename of the plugin.
 			std::string _filename ;
 	
+		
+			/**
+			 * Tells whether the plugin loader expects symbols to be
+			 * prefixed according to CEYLAN_PLUGIN_* macros.
+			 *
+			 */
+			bool _autoPrefix ;
+		
 		
 			/**
 			 * Copy constructor made private to ensure that it will never be 
