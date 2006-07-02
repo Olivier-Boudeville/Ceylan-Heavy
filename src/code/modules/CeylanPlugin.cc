@@ -466,8 +466,10 @@ void Plugin::retrieveMetadata() throw( PluginException )
 
 	try
 	{	
-		setVersion( Version(  * static_cast<const std::string *>( 
-			getSymbol( "Version" ) ) ) ) ;
+		Version versionFromPlugin( * static_cast<const std::string *>( 
+			getSymbol( "Version" ) ) ) ;
+			
+		setVersion( versionFromPlugin ) ;
 	}
 	catch( const Ceylan::VersionException & e )
 	{
