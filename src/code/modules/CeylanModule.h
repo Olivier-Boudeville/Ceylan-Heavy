@@ -98,16 +98,29 @@ namespace Ceylan
             virtual ~Module() throw() ;
 
 
-            /// Returns this module's name.
-            virtual std::string getName() const throw() ;
+            /**
+			 * Returns the name of this module.
+			 *
+			 * @throw ModuleException if the operation failed.
+			 *
+			 */
+            virtual std::string getName() const throw( ModuleException ) ;
 
-            /// Sets this module's name.
-            virtual void setName( const std::string & name ) throw() ;
+
+            /**
+			 * Sets the name of this module.
+			 *
+			 * @throw ModuleException if the operation failed.
+			 *
+			 */
+            virtual void setName( const std::string & name )
+				throw( ModuleException ) ;
 
 
 
             /// Returns this module's description.
             virtual std::string getDescription() const throw() ;
+
 
             /// Sets this module's description.
             virtual void setDescription( const std::string & description )
