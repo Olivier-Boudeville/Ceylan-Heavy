@@ -70,7 +70,9 @@ int main( int argc, char * argv[] )
 		}
 		
 		
-		Plugin myPlugin( "ceylan-test-plugin" ) ;
+		Plugin myPlugin( "ceylan-test-plugin", /* auto-prefix */ true ) ;
+		
+		LogPlug::info( "First loaded plugin : " + myPlugin.toString() ) ;
 		
 		Ceylan::Sint16 expectedConstant = 123 ;
 		
@@ -92,14 +94,14 @@ int main( int argc, char * argv[] )
 		 * How to transtype void * to a function pointer ?
 		 * error: ISO C++ forbids casting between pointer-to-function and
 		 * pointer-to-object
-
-			
+		 * Union-cast, memcopy, pre-integral cast : nothin satisfactory.
+		 *
 		TestFunction * readFunction = 
 			reinterpret_cast<TestFunction *>(
 				myPlugin.getSymbol( "my_test_function" ) ) ;
-
 		 */
-		
+
+		// Forced (dangerous) C-style cast :
 		TestFunction * readFunction = (TestFunction *)
 				myPlugin.getSymbol( "my_test_function" ) ;
 		
@@ -126,9 +128,16 @@ int main( int argc, char * argv[] )
 		
 		Plugin myOtherPlugin( "ceylan-test-unknown-plugin" ) ;
 			
+		LogPlug::info( "Second loaded plugin : " + myOtherPlugin.toString() ) ;
+		
+		
+		LogPlug::info( "Note that we are reading the same symbols in two "
+			"simultaneously loaded plugins with not link symbol clashes, "
+			"thanks to automatic symbol prefixing" ) ;
+						
 		readConstant = 
 			* reinterpret_cast<Ceylan::Sint16 *>(
-				myOtherPlugin.getSymbol( "my_test_other_constant" ) ) ;
+				myOtherPlugin.getSymbol( "my_test_constant" ) ) ;
 
 		if ( readConstant != expectedOtherConstant )
 			throw Ceylan::TestException( 
@@ -140,7 +149,7 @@ int main( int argc, char * argv[] )
 				"from an unknown plugin." ) ;
 				
 		readFunction = (TestFunction *)
-				myOtherPlugin.getSymbol( "my_test_other_function" ) ;
+				myOtherPlugin.getSymbol( "my_test_function" ) ;
 
 		Ceylan::Uint32 expectedOtherReturnValue = 20 ;
 		readReturnValue = readFunction( fromMain ) ;
