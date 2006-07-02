@@ -43,6 +43,7 @@ using std::string ;
 
 using namespace Ceylan::System ;
 using namespace Ceylan::Log ;
+using namespace Ceylan ;
 
 
 
@@ -86,7 +87,8 @@ Pipe::WriteFailed::WriteFailed( const string & reason ) throw() :
 
 
 
-Pipe::Pipe() throw( CouldNotCreate, Features::FeatureNotAvailableException ) 
+Pipe::Pipe() throw( Pipe::CouldNotCreate, 
+	Features::FeatureNotAvailableException ) 
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
