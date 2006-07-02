@@ -3,9 +3,11 @@
 # Requires following version of automake or newer :
 AUTOMAKE_OPTIONS = 1.9
 
-SUBDIRS = src
+# This order must prevail so that libltdl is available when Ceylan is linked :
+SUBDIRS = $(EXTRA_SUBDIRS) src 
 
-EXTRA_SUBDIRS = libltdl
+EXTRA_SUBDIRS = @CEYLAN_EXTRA_LIBLTDL_SUBDIR@
+
 
 # These are the subdirectories which will be distributed with 'make dist' :
 # (the 'test' directory is not included since it is managed by dist-hook, as
