@@ -76,13 +76,13 @@ Module::~Module() throw()
 
 
 
-string Module::getName() const throw()
+string Module::getName() const throw( ModuleException )
 {
     return _name ;
 }
 
 
-void Module::setName( const string & name ) throw()
+void Module::setName( const string & name ) throw( ModuleException )
 {
     _name = name ;
 }
