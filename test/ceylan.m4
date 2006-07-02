@@ -44,6 +44,7 @@ AC_DEFUN([CEYLAN_PATH],
   AC_ARG_WITH(libCeylan,
     AS_HELP_STRING([--with-libCeylan],[path to the Ceylan library (prefix)]),
       [
+	  	CEYLAN_FULL_PATH="${withval}/lib/libCeylan.la"
         CEYLAN_CPPFLAGS="-I${withval}/include/Ceylan"
         CEYLAN_LIBS="-L${withval}/lib -lCeylan"
 		LD_LIBRARY_PATH="${withval}/lib:$LD_LIBRARY_PATH"
@@ -57,6 +58,7 @@ AC_DEFUN([CEYLAN_PATH],
 			[
 				CEYLAN_CPPFLAGS="${CEYLAN_CFLAGS} ${CEYLAN_CPPFLAGS}"
 				LD_LIBRARY_PATH=`pkg-config ceylan-$1.$2 --variable=libdir`:$LD_LIBRARY_PATH
+				CEYLAN_FULL_PATH=`pkg-config ceylan-$1.$2 --variable=libdir`/libCeylan.la
 				export LD_LIBRARY_PATH
 			],
 			[
@@ -64,11 +66,13 @@ AC_DEFUN([CEYLAN_PATH],
 				AC_MSG_WARN([pkg-config failed, defaulting to install path $default_install_path])
         		CEYLAN_CPPFLAGS="-I${default_install_path}/include/Ceylan"
         		CEYLAN_LIBS="-L${default_install_path}/lib -lCeylan"
+				CEYLAN_FULL_PATH="${default_install_path}/lib/libCeylan.la"
 			])	
 		# If pkg-config is not available on your platform, you can just 
-		# uncomment the following two lines (possibly updated if needed) :
+		# uncomment the following three lines (possibly updated if needed) :
 		# CEYLAN_CPPFLAGS="-I/usr/local/include/Ceylan"
 		# CEYLAN_LIBS="-L/usr/local/lib -lCeylan"
+		# CEYLAN_FULL_PATH="/usr/local/lib/libCeylan.la"
       ])
   # Add pthread flags in case the Ceylan multithreading feature is enabled :
   case "$target" in
@@ -140,6 +144,7 @@ AC_DEFUN([CEYLAN_PATH],
   # Updating the overall build flags :
   CPPFLAGS="$CPPFLAGS $CEYLAN_CPPFLAGS $pthread_cflags"
   LIBS="$LIBS $CEYLAN_LIBS $pthread_lib"
+  AC_SUBST(CEYLAN_FULL_PATH)
   #AC_MSG_NOTICE([CPPFLAGS = $CPPFLAGS])
   #AC_MSG_NOTICE([LIBS = $LIBS])  
   AC_SUBST(CPPFLAGS)
