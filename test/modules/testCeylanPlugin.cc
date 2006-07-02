@@ -87,16 +87,21 @@ int main( int argc, char * argv[] )
 			LogPlug::info( "Successfully read a constant from plugin." ) ;
 	
 	
-		TestFunction * readFunction = 0 ;
+		//TestFunction * readFunction = 0 ;
 		/*
 		 * How to transtype void * to a function pointer ?
-		 * ISO C++ interdit le transtypage entre un pointeur de fonction 
-		 * et un pointeur d'objet
+		 * error: ISO C++ forbids casting between pointer-to-function and
+		 * pointer-to-object
+
 			
 		TestFunction * readFunction = 
 			reinterpret_cast<TestFunction *>(
 				myPlugin.getSymbol( "my_test_function" ) ) ;
-		*/
+
+		 */
+		
+		TestFunction * readFunction = (TestFunction *)
+				myPlugin.getSymbol( "my_test_function" ) ;
 		
 		string fromMain = "I am a string set from main()" ;		
 
@@ -112,6 +117,44 @@ int main( int argc, char * argv[] )
 		else
 			LogPlug::info( "Successfully executed a function from plugin." ) ;
 	
+		const string otherPluginName = "ceylan-test-unknown-plugin" ;
+		
+		LogPlug::info( "Now testing with a plugin which was unknown at "
+			"build time for this test" ) ;
+			
+		Ceylan::Sint16 expectedOtherConstant = 100 ;
+		
+		Plugin myOtherPlugin( "ceylan-test-unknown-plugin" ) ;
+			
+		readConstant = 
+			* reinterpret_cast<Ceylan::Sint16 *>(
+				myOtherPlugin.getSymbol( "my_test_other_constant" ) ) ;
+
+		if ( readConstant != expectedOtherConstant )
+			throw Ceylan::TestException( 
+				"Reading a constant from an unknown plugin failed : expecting '"
+				+ Ceylan::toString( expectedOtherConstant ) + "', read '"
+				+ Ceylan::toString( readConstant ) + "'." ) ;
+		else
+			LogPlug::info( "Successfully read a constant "
+				"from an unknown plugin." ) ;
+				
+		readFunction = (TestFunction *)
+				myOtherPlugin.getSymbol( "my_test_other_function" ) ;
+
+		Ceylan::Uint32 expectedOtherReturnValue = 20 ;
+		readReturnValue = readFunction( fromMain ) ;
+		
+		if ( readReturnValue != expectedOtherReturnValue )
+			throw Ceylan::TestException( 
+				"Executing a function from an unknown plugin failed : "
+				"expecting return value '"
+				+ Ceylan::toString( expectedOtherReturnValue ) + "', read '"
+				+ Ceylan::toString( readReturnValue ) + "'." ) ;
+		else
+			LogPlug::info( 
+				"Successfully executed a function from an unknown plugin." ) ;
+				
 		LogPlug::info( "End of Plugin test." ) ;
 		
 	}
