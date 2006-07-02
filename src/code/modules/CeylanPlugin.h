@@ -29,11 +29,14 @@ namespace Ceylan
 
 	/**
 	 * Plugin encapsulation for Dynamic Shared Object (DSO) management.
-	 *
+	 * This class allows to load arbitrary, user-specified plugins at runtime.
+	 * 
 	 * @note The plugin feature must be available to successfully create and
 	 * use a Plugin object.
 	 *
 	 * @see Features::arePluginsSupported
+	 *
+	 * @note Our plugin system relies on ltdl.
 	 *
 	 */
 	class Plugin : public Ceylan::Module
@@ -52,6 +55,8 @@ namespace Ceylan
 		 */
 		struct SystemSpecificPluginHandle ;
 		
+		typedef Ceylan::Uint32 ReferenceCount ;
+		
 		
 		public:
 	
@@ -65,32 +70,76 @@ namespace Ceylan
 			 * succcessfully.
 			 *
 			 * @param filename the filename of the shared library that should
-			 * be loaded. If it is not an absolute filename, the file is
-			 * searched through system library search paths. For example, on
-			 * GNU/Linux, it is searched first in directories specified by
-			 * LD_LIBRARY_PATH, then in /etc/ld.so.cache, then in /lib,
-			 * then in /usr/lib. If filename is an empty string, the binary
-			 * loaded will be the main program itself.
-			 *
-			 * @param resolveAllNow if true requests that all undefined symbols
-			 * are resolved during this call, instead of being resolved just
-			 * before the actual code is executed.
-			 * 
-			 * @param makeAvailable if true, all of the external symbols of 
-			 * the loaded library will be made available for next libraries
-			 * to be loaded. 
+			 * be loaded. If the filename has no directory component, the 
+			 * plugin will be searched through :
+			 *   1. user-defined search path, see PluginLocator
+			 *   2. libltdl's search path, which is the value of the 
+			 * environment variable LTDL_LIBRARY_PATH
+			 *   3. system-dependent library search path, for example on Linux
+			 * it is LD_LIBRARY_PATH. 
+			 * Different file name extensions will be appended to the file 
+			 * name until the plugin is found : the libtool archive extension
+			 * `.la', the extension used for native dynamic libraries on the
+			 * host platform, e.g., `.so', `.sl', etc. This lookup strategy 
+			 * was designed to allow programs that do not have knowledge 
+			 * about native dynamic libraries naming conventions to be able 
+			 * to open dynamically such libraries as well as libtool modules
+			 * transparently. 
+			 * If filename is an empty string, the 
+			 * binary loaded will be the main program itself.
 			 *
 			 * @throw PluginException if the plugin feature is not available
 			 * or if the plugin could not be loaded successfully.
 			 *
 			 */
-			explicit Plugin( const std::string & filename = "",
-				bool resolveAllNow = false, bool makeAvailable = false ) 
+			explicit Plugin( const std::string & filename = "" ) 
 				throw( PluginException ) ;
 	
 		
 			/// Virtual destructor.
 			virtual ~Plugin() throw() ;
+			
+			
+			
+            /**
+			 * Returns the plugin name, as read in the library.
+			 *
+			 * @throw ModuleException if the operation failed.
+			 *
+			 */
+            virtual std::string getName() const throw( ModuleException ) ;
+
+
+            /**
+			 * This operation cannot be performed on plugin instances.
+			 *
+			 * @throw ModuleException whevener called.
+			 *
+			 */
+            virtual void setName( const std::string & name )
+				throw( ModuleException ) ;
+
+
+            /**
+			 * Returns the actual filename of this plugin.
+			 *
+			 * @throw ModuleException if the operation failed.
+			 *
+			 */
+            virtual std::string getFilename() const throw( ModuleException ) ;
+
+			
+           /**
+			 * Returns the current reference count of this plugin.
+			 *
+			 * This is a reference counter that describes how many times this
+			 * plugin is currently loaded.
+			 *
+			 * @throw ModuleException if the operation failed.
+			 *
+			 */
+            virtual ReferenceCount getReferenceCount() const 
+				throw( ModuleException ) ;
 			
 			
 			/**
@@ -125,6 +174,32 @@ namespace Ceylan
 			void close() throw( PluginException ) ;
 		
 		
+			/**
+			 * Mark this plugin so that it cannot be closed dynamically. 
+			 * This can be useful if a plugin implements some core 
+			 * functionality in the application, which would cause its code 
+			 * to crash if removed.
+			 *
+			 * When loading the running binary as a plugin, it will always be
+			 * marked as resident.
+			 *
+			 * @throw PluginException if the operation failed.
+			 *
+			 */
+			void makeResident() throw( PluginException ) ;
+			
+			
+			/**
+			 * Checks whether this plugin has been marked as resident.
+			 *
+			 * @return true iff it has been marked as resident.
+			 *
+			 * @throw PluginException if the operation failed.
+			 *
+			 */
+			bool isResident() const throw( PluginException ) ;
+			
+			
 			/// Returns the filename corresponding to this plugin.
 			const std::string & getFileName() const ;
 
