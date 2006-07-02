@@ -95,6 +95,13 @@ else
     esac
 fi
 
+if test x$ac_cv_cxx_compiler_gnu = xyes; then
+	# Path to the static archive for the Standard Library needed for plugins :
+	# See : test/modules/Makefile.am
+	CEYLAN_LIBSTDCPLUSPLUS=`$CXX -print-file-name=libstdc++.a`
+	AC_SUBST(CEYLAN_LIBSTDCPLUSPLUS)
+fi
+
 
 # Warning and error section.
 
