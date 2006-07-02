@@ -36,6 +36,8 @@ AC_PROG_MAKE_SET
 
 # Tells the libtool machinery that the package supports DLLs on Windows :
 AC_LIBTOOL_WIN32_DLL
+
+AC_LIBTOOL_DLOPEN
 AM_PROG_LIBTOOL
 
 
