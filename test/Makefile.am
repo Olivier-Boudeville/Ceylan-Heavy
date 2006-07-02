@@ -15,5 +15,6 @@ check:
 
 clean-local:
 	@echo " Cleaning all test logs"	
+	-@/bin/rm -f `find . -name 'testsOutcome.txt'`
 	-@/bin/rm -f `find . -name 'test*.log'`
 	-@/bin/rm -rf `find . -name 'testCeylan*-logs'`
