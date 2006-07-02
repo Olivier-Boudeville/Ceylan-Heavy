@@ -203,10 +203,6 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
-AC_LIBTOOL_DLOPEN
-#AC_LIBLTDL_CONVENIENCE
-AM_PROG_LIBTOOL
-
 
 # Checks for header files.
 AC_HEADER_DIRENT
@@ -332,7 +328,8 @@ else
 	
     if test x$ac_cv_cxx_compiler_gnu = xyes; then
 		# -fomit-frame-pointer : may prevent debugging on some platforms
-		# -ffast-math : not requesting exact IEEE or ISO implementation rules/specifications
+		# -ffast-math : not requesting exact IEEE or ISO implementation
+		# rules/specifications
         AM_CXXFLAGS="$AM_CXXFLAGS -g0 -O3 -fexpensive-optimizations -fomit-frame-pointer -ffast-math -funroll-loops"
     fi
 	
@@ -562,7 +559,9 @@ CheckRegexFeature()
 # Checks whether multithreading feature should and can be activated.
 # CEYLAN_USES_THREADS depends on :
 #   - headers : pthread.h
-#   - functions : pthread_create pthread_cond_destroy pthread_cond_timedwait pthread_cond_signal pthread_cond_broadcast pthread_mutex_lock pthread_mutex_unlock
+#   - functions : pthread_create pthread_cond_destroy pthread_cond_timedwait
+# pthread_cond_signal pthread_cond_broadcast pthread_mutex_lock
+# pthread_mutex_unlock
 #   - symbols : 
 #   - use : when pthreads if available for example, otherwise use an
 # abstraction layer such as SDL
@@ -1009,12 +1008,6 @@ CheckPluginFeature()
 		saved_CPPFLAGS="$CPPFLAGS"
 		AC_MSG_RESULT([yes])
 		have_plugin_support=yes
-		#AC_LIB_LTDL
-		# Does not seem to define anything in this case (both empty) :
-		echo cccccccccccLTDLINCL=$LTDLINCL
-		echo cccccccccccLIBLTDL=$LIBLTDL
-		AC_SUBST(LTDLINCL)
-		AC_SUBST(LIBLTDL)	
 		CEYLAN_LTDLINCL="-I\${top_srcdir}/libltdl"
 		CEYLAN_LIBLTDL="-L\${top_builddir}/libltdl -lltdl"
 		# Performs the configure time checks required to build ltdl.o 
@@ -1056,8 +1049,7 @@ CheckPluginFeature()
 
 	# Cannot be specified before since using plugin requires to add for example
 	# AC_LIBTOOL_DLOPEN before this call :
-	#AC_LIBTOOL_DLOPEN
-	#AM_PROG_LIBTOOL
+	AM_PROG_LIBTOOL
 
 }
 
