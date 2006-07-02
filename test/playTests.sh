@@ -95,9 +95,13 @@ fi
 
 echo -e "\n\nLibrary search path is : LD_LIBRARY_PATH='$LD_LIBRARY_PATH'" >> ${TESTLOGFILE}
 
+# So that test plugin can be found :
+saved_LTDL_LIBRARY_PATH="$LTDL_LIBRARY_PATH"
 
 for m in ${TESTED_ROOT_MODULES} ; do
-	
+
+	LTDL_LIBRARY_PATH="$saved_LTDL_LIBRARY_PATH:${TEST_ROOT}/$m"
+	export LTDL_LIBRARY_PATH
 	printColor "\n${term_offset}${term_primary_marker}Playing all tests of module '"`echo $m | sed 's|^./||1'`"' : " $magenta_text $black_back
 	
 	TESTS=`find ${TEST_ROOT}/$m -mindepth 1 -maxdepth 1 -perm +o+x,g+x -a -type f -a -name 'testCeylan*' `
@@ -179,6 +183,8 @@ else
 fi	
 
 echo -e "\nEnd of tests"
+
+LTDL_LIBRARY_PATH="$saved_LTDL_LIBRARY_PATH"
 
 exit $error_count
 
