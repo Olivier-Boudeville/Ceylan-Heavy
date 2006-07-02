@@ -203,10 +203,8 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
-
-
-# Tells the libtool machinery that the package supports DLLs on Windows :
-AC_LIBTOOL_WIN32_DLL
+AC_LIBTOOL_DLOPEN
+#AC_LIBLTDL_CONVENIENCE
 AM_PROG_LIBTOOL
 
 
@@ -989,6 +987,9 @@ CheckAdvancedProcessManagementFeature()
 #   - symbols : 
 #   - use : 
 #   - depends on :
+# Note that CheckPluginFeature must be called in all cases, since it is
+# here that AM_PROG_LIBTOOL is called (it needs to be so due to
+# pre-AC_PROG_LIBTOOL necessary calls for plugins).
 CheckPluginFeature()
 {
 
@@ -1004,33 +1005,46 @@ CheckPluginFeature()
 	# If wanted, is plugin support available ?	
 	AC_MSG_CHECKING([whether Ceylan plugin support feature is wanted])
 	if test x$plugin_support = xyes; then
+		saved_LIBS="$LIBS"
+		saved_CPPFLAGS="$CPPFLAGS"
 		AC_MSG_RESULT([yes])
 		have_plugin_support=yes
-		#AC_LIBLTDL_INSTALLABLE
-		# Suppose AC_LIB_LTDL checks for an available LTDL :
 		#AC_LIB_LTDL
-		#AC_LIBLTDL_CONVENIENCE
-		LIBS="$LIBS $LIBLTDL"
-		CPPFLAGS="$CPPFLAGS $LTDLINCL"
-		#AC_CHECK_HEADERS([dlfcn.h],[have_plugin_support=no],[])
-		# Never found, is in /usr/share/libtool/libltdl/ltdl.h :
-		#saved_cppflags="$CPPFLAGS"
-		#CPPFLAGS="$CPPFLAGS $LTDLINCL -I$ac_top_srcdir/libltdl"
-		#echo "-----LIBS=$LIBS,CPPFLAGS = $CPPFLAGS" 
-		#Always here, useless check : AC_CHECK_HEADERS([ltdl.h],[],[have_plugin_support=no])
-		# On some systems a libltdl.so symbolic link lacks.
-		#AC_CHECK_LIB([ltdl],[lt_dlopenext],[LIBS="$LIBS -ltdl"],[have_plugin_support=no])
-		#AC_CHECK_FUNCS([dlopen dlsym dlclose dlerror],[],[have_plugin_support=no])
-		
-		have_plugin_support=no
-		
+		# Does not seem to define anything in this case (both empty) :
+		echo cccccccccccLTDLINCL=$LTDLINCL
+		echo cccccccccccLIBLTDL=$LIBLTDL
+		AC_SUBST(LTDLINCL)
+		AC_SUBST(LIBLTDL)	
+		CEYLAN_LTDLINCL="-I\${top_srcdir}/libltdl"
+		CEYLAN_LIBLTDL="-L\${top_builddir}/libltdl -lltdl"
+		# Performs the configure time checks required to build ltdl.o 
+		# correctly (dlopen support) :
+		AC_LIBTOOL_DLOPEN
+		# Tells the libtool machinery that the package supports DLLs
+		# on Windows :
+		AC_LIBTOOL_WIN32_DLL
+		CPPFLAGS="$CPPFLAGS $LTDLINCL $CEYLAN_LTDLINCL"
+		LIBS="$LIBS $LIBLTDL $CEYLAN_LIBLTDL"
+		# No AC_CHECK_HEADERS, AC_CHECK_LIB nor AC_CHECK_FUNCS performed since
+		# ltld is embedded in our sources.
+		have_plugin_support=yes		
 		if test x$have_plugin_support = xyes; then
 			CEYLAN_USES_PLUGINS=1
+			AC_DEFINE_UNQUOTED([HAVE_LTDL_H],
+				[1],
+				[Define to 1 if you have the <ltdl.h> header file.])
+			AC_CONFIG_SUBDIRS([libltdl])
+			CEYLAN_EXTRA_LIBLTDL_SUBDIR=libltdl
+			AC_SUBST(CEYLAN_EXTRA_LIBLTDL_SUBDIR)
+			CEYLAN_EXTRA_LIBS="$CEYLAN_EXTRA_LIBS \${top_builddir}/libltdl/libltdl.la"
 		else	
 			AC_MSG_WARN([Plugin support requested but not available (no libltdl found), disabling it])
+			LIBS="$saved_LIBS"
+			CPPFLAGS="$saved_CPPFLAGS"
 		fi
 		AC_MSG_CHECKING([whether Ceylan plugin feature is enabled])
 		AC_MSG_RESULT([$have_plugin_support])
+		
 	else
 		# Plugin feature not wanted here :
 		AC_MSG_RESULT([no])	
@@ -1039,6 +1053,12 @@ CheckPluginFeature()
 	AC_DEFINE_UNQUOTED([USES_PLUGINS],
 		[$CEYLAN_USES_PLUGINS],
 		[Define to 1 if Ceylan is to support plugin])
+
+	# Cannot be specified before since using plugin requires to add for example
+	# AC_LIBTOOL_DLOPEN before this call :
+	#AC_LIBTOOL_DLOPEN
+	#AM_PROG_LIBTOOL
+
 }
 
 
