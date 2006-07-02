@@ -307,6 +307,7 @@ distclean-local: real-clean
 
 
 # Grab the test programs for the distribution :
+# (the touch for both m4 is due to a libltdl bug with dist automake target)
 dist-hook:
 	@if ! test -f $(srcdir)/test/configure; then \
 	echo "Test configure script not available, generating it." ; \
@@ -318,3 +319,4 @@ dist-hook:
 	-@rm -rf `find $(distdir) -type d -name '.svn' -print`
 	-@cd $(distdir); rm -f config.log config.status libtool \
 	code/CeylanConfig.h
+	-@touch $(srcdir)/libtool.m4 $(srcdir)/ltdl.m4
