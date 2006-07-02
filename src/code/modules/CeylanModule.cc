@@ -175,7 +175,7 @@ const string Module::toString( VerbosityLevels level ) const throw()
 
     string res ;
 
-    res = "Module " + _name + ", version " + _version.toString() ;
+    res = "Module " + getName() + ", version " + _version.toString() ;
 
     if ( level == low )
         return res ;
