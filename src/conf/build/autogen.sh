@@ -28,7 +28,7 @@ do_build=0
 do_check=0
 do_install=0
 do_installcheck=0
-do_distcheck=1
+do_distcheck=0
 do_chain_tests=1
 do_only_prepare_dist=1
 
