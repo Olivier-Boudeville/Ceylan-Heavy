@@ -11,6 +11,7 @@ BUILT_SUBDIRS = \
 	modules     \
 	interfaces  \
 	maths       \
+	network     \
 	system      
 
 	
@@ -44,10 +45,11 @@ libCeylan_la_LDFLAGS = \
 # Submodule convenience libraries :	
 SUBLIBS = \
 	generic/libCeylanGeneric.la       \
-	logs/libCeylanLogs.la             \
-	modules/libCeylanModules.la       \
 	interfaces/libCeylanInterfaces.la \
+	logs/libCeylanLogs.la             \
 	maths/libCeylanMaths.la           \
+	modules/libCeylanModules.la       \
+	network/libCeylanNetwork.la       \
 	system/libCeylanSystem.la
 	         	
 
