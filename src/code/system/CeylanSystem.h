@@ -102,8 +102,8 @@ namespace Ceylan
 		 */
 		typedef int FileDescriptor ;
 
-
-	
+		
+		
 		/// Error number as defined by errno.
 		typedef int ErrorCode ;
 	
