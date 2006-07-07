@@ -395,7 +395,7 @@ bool Process::RedirectStdout( const string & filename )
 	try
 	{
 		File f( filename ) ;
-		ret = DuplicateStream( f.getDescriptor(), STDOUT_FILENO ) ;
+		ret = DuplicateStream( f.getFileDescriptor(), STDOUT_FILENO ) ;
 		f.close() ;
 	}
 	catch( const SystemException & e )
@@ -447,7 +447,7 @@ bool Process::RedirectStderr( const string & filename )
 	try
 	{
 		File f( filename ) ;
-		ret = DuplicateStream( f.getDescriptor(), STDERR_FILENO ) ;
+		ret = DuplicateStream( f.getFileDescriptor(), STDERR_FILENO ) ;
 		f.close() ;
 	}
 	catch( const SystemException & e )
@@ -497,7 +497,7 @@ bool Process::RedirectStdin( const string & filename ) throw( ProcessException )
 	try
 	{
 		File f( filename, File::Read ) ;
-		ret = DuplicateStream( f.getDescriptor(), STDIN_FILENO ) ;
+		ret = DuplicateStream( f.getFileDescriptor(), STDIN_FILENO ) ;
 		f.close() ;
 	}
 	catch( const SystemException & e )
