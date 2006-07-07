@@ -28,6 +28,9 @@ extern "C"
 #include "ltdl.h"               // for lt_dlinit, etc.
 #endif // CEYLAN_USES_LTDL_H
 
+#ifdef CEYLAN_USES_STRING_H
+#include <string.h>             // for memcpy
+#endif // CEYLAN_USES_STRING_H
 }
 
 
@@ -302,23 +305,24 @@ bool Plugin::isOpen() const throw()
 }
 		
 	
-void * Plugin::getSymbol( const string & symbol ) const throw( PluginException )
+void * Plugin::getDataSymbol( const string & dataName ) const 
+	throw( PluginException )
 {
 
 #if CEYLAN_USES_PLUGINS
 
 	if ( ! isOpen() )
-		throw PluginException( "Plugin::getSymbol : "
-			"loading symbol '" + symbol 
+		throw PluginException( "Plugin::getDataSymbol : "
+			"loading symbol '" + dataName 
 			+ "' requested whereas plugin not opened." ) ; 
 	
 	// Note that the symbol is not especially prefixed : libltdl does it.
 	
-    lt_ptr f = ::lt_dlsym( _pluginHandle->_handle, symbol.c_str() ) ;
+    lt_ptr f = ::lt_dlsym( _pluginHandle->_handle, dataName.c_str() ) ;
 
 	if ( f == 0 )
-		throw PluginException( "Plugin::getSymbol : "
-			"symbol '" + symbol + "' not found in '"
+		throw PluginException( "Plugin::getDataSymbol : "
+			"symbol '" + dataName + "' not found in '"
 			+ _filename + "'." ) ; 
 	
 	return f ;
@@ -326,7 +330,60 @@ void * Plugin::getSymbol( const string & symbol ) const throw( PluginException )
 	
 #else // CEYLAN_USES_PLUGINS
 
-	throw PluginException( "Plugin::getSymbol : "
+	throw PluginException( "Plugin::getDataSymbol : "
+		"plugin feature not available" ) ;
+		
+#endif // CEYLAN_USES_PLUGINS
+	
+}
+
+
+Plugin::BasicFunctionPointer Plugin::getFunctionSymbol( 
+	const string & functionName ) const throw( PluginException )
+{
+
+#if CEYLAN_USES_PLUGINS
+
+	if ( ! isOpen() )
+		throw PluginException( "Plugin::getFunctionSymbol : "
+			"loading symbol '" + functionName 
+			+ "' requested whereas plugin not opened." ) ; 
+	
+	// Note that the symbol is not especially prefixed : libltdl does it.
+	
+    lt_ptr f = ::lt_dlsym( _pluginHandle->_handle, functionName.c_str() ) ;
+
+	if ( f == 0 )
+		throw PluginException( "Plugin::getFunctionSymbol : "
+			"symbol '" + functionName + "' not found in '"
+			+ _filename + "'." ) ; 
+	
+	/*
+	 * Ugly hack as ISO C++ does not accept conversions from void * to
+	 * function pointers.
+	 *
+	 * Other solutions would be : 
+	 *    - conversion to integral types
+	 *    - union cast
+	 */
+	BasicFunctionPointer returned ;
+	
+	// This check could be performed at compile-time :
+	if ( sizeof(BasicFunctionPointer) != sizeof(lt_ptr) )
+		throw PluginException( "Plugin::getFunctionSymbol : "
+			"unable to convert from pointer to function (size is "
+			+ Ceylan::toString( sizeof(BasicFunctionPointer) ) 
+			+ ") to pointer to object lt_ptr (size is "
+			+ Ceylan::toString( sizeof(lt_ptr) ) + "." ) ;
+	
+	::memcpy( &returned, &f, sizeof(BasicFunctionPointer) ) ;  	
+			 
+	return returned ;
+	
+	
+#else // CEYLAN_USES_PLUGINS
+
+	throw PluginException( "Plugin::getFunctionSymbol : "
 		"plugin feature not available" ) ;
 		
 #endif // CEYLAN_USES_PLUGINS
@@ -453,21 +510,21 @@ void Plugin::retrieveMetadata() throw( PluginException )
 	setName( getEmbeddedName() ) ;
 	
 	setDescription( * static_cast<const std::string *>( 
-		getSymbol( "Description" ) ) ) ;
+		getDataSymbol( "Description" ) ) ) ;
 	
 	setHomePage( * static_cast<const std::string *>( 
-		getSymbol( "Url" ) ) ) ;
+		getDataSymbol( "Url" ) ) ) ;
 		
 	setAuthor( * static_cast<const std::string *>( 
-		getSymbol( "Author" ) ) ) ;
+		getDataSymbol( "Author" ) ) ) ;
 		
 	setAuthorMail( * static_cast<const std::string *>( 
-		getSymbol( "AuthorMail" ) ) ) ;
+		getDataSymbol( "AuthorMail" ) ) ) ;
 
 	try
 	{	
 		Version versionFromPlugin( * static_cast<const std::string *>( 
-			getSymbol( "Version" ) ) ) ;
+			getDataSymbol( "Version" ) ) ) ;
 			
 		setVersion( versionFromPlugin ) ;
 	}
@@ -478,7 +535,7 @@ void Plugin::retrieveMetadata() throw( PluginException )
 	}
 
 	setLicence(  * static_cast<const std::string *>( 
-		getSymbol( "Licence" ) ) ) ;
+		getDataSymbol( "Licence" ) ) ) ;
 		
 		
 }
