@@ -32,6 +32,7 @@ using namespace Ceylan::System ;
 struct Mutex::SystemSpecificMutexType
 {
 	pthread_mutex_t _mutex ;
+	
 } ;
 
 #endif // CEYLAN_USES_PTHREAD_H
