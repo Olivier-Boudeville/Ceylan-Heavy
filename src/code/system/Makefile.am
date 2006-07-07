@@ -17,15 +17,13 @@ SYSTEM_INTERFACES = \
 	CeylanEnvironmentVariables.h         \
 	CeylanFile.h                         \
 	CeylanFileLocator.h                  \
-	CeylanIPAddress.h                    \
-	CeylanIPAddressvFour.h               \
 	CeylanInputStream.h                  \
 	CeylanMutex.h                        \
-	CeylanNetwork.h                      \
 	CeylanOutputStream.h                 \
 	CeylanPipe.h                         \
 	CeylanProcess.h                      \
 	CeylanRunnable.h                     \
+	CeylanSignal.h                       \
 	CeylanStream.h                       \
 	CeylanSynchronized.h                 \
 	CeylanSystem.h                       \
@@ -40,21 +38,16 @@ SYSTEM_IMPLEMENTATIONS = \
 	CeylanEnvironmentVariables.cc        \
 	CeylanFile.cc                        \
 	CeylanFileLocator.cc                 \
-	CeylanIPAddress.cc                   \
-	CeylanIPAddressvFour.cc              \
 	CeylanInputStream.cc                 \
 	CeylanMutex.cc                       \
-	CeylanNetwork.cc                     \
 	CeylanOutputStream.cc                \
 	CeylanPipe.cc                        \
 	CeylanProcess.cc                     \
 	CeylanRunnable.cc                    \
+	CeylanSignal.cc                      \
 	CeylanStream.cc                      \
 	CeylanSystem.cc                      \
 	CeylanSystemInformation.cc           \
 	CeylanThread.cc                      \
 	CeylanUniformResourceIdentifier.cc
-
-	 
-# DISABLED = CeylanSharedPointer.h
 
