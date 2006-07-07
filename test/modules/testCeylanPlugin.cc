@@ -78,7 +78,7 @@ int main( int argc, char * argv[] )
 		
 		Ceylan::Sint16 readConstant = 
 			* reinterpret_cast<Ceylan::Sint16 *>(
-				myPlugin.getSymbol( "my_test_constant" ) ) ;
+				myPlugin.getDataSymbol( "my_test_constant" ) ) ;
 
 		if ( readConstant != expectedConstant )
 			throw Ceylan::TestException( 
@@ -96,15 +96,10 @@ int main( int argc, char * argv[] )
 		 * pointer-to-object
 		 * Union-cast, memcopy, pre-integral cast : nothin satisfactory.
 		 *
-		TestFunction * readFunction = 
-			reinterpret_cast<TestFunction *>(
-				myPlugin.getSymbol( "my_test_function" ) ) ;
 		 */
+		TestFunction * readFunction = reinterpret_cast<TestFunction *>(
+				myPlugin.getFunctionSymbol( "my_test_function" ) ) ;
 
-		// Forced (dangerous) C-style cast :
-		TestFunction * readFunction = (TestFunction *)
-				myPlugin.getSymbol( "my_test_function" ) ;
-		
 		string fromMain = "I am a string set from main()" ;		
 
 		Ceylan::Uint32 expectedReturnValue = 17 ;
@@ -137,7 +132,7 @@ int main( int argc, char * argv[] )
 						
 		readConstant = 
 			* reinterpret_cast<Ceylan::Sint16 *>(
-				myOtherPlugin.getSymbol( "my_test_constant" ) ) ;
+				myOtherPlugin.getDataSymbol( "my_test_constant" ) ) ;
 
 		if ( readConstant != expectedOtherConstant )
 			throw Ceylan::TestException( 
@@ -148,8 +143,8 @@ int main( int argc, char * argv[] )
 			LogPlug::info( "Successfully read a constant "
 				"from an unknown plugin." ) ;
 				
-		readFunction = (TestFunction *)
-				myOtherPlugin.getSymbol( "my_test_function" ) ;
+		readFunction = reinterpret_cast<TestFunction *>(
+				myOtherPlugin.getFunctionSymbol( "my_test_function" ) ) ;
 
 		Ceylan::Uint32 expectedOtherReturnValue = 20 ;
 		readReturnValue = readFunction( fromMain ) ;
