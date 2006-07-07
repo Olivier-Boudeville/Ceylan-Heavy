@@ -55,7 +55,7 @@ namespace Ceylan
 				} ;
 
 
-				class ReadFailed: public PipeException
+				class ReadFailed: public InputStream::ReadFailedException
 				{ 
 					public: 
 					
@@ -65,7 +65,7 @@ namespace Ceylan
 
 
 
-				class WriteFailed: public PipeException
+				class WriteFailed: public OutputStream::WriteFailedException
 				{ 
 					public: 
 					
@@ -124,7 +124,7 @@ namespace Ceylan
 				 *
 				 */
 		 		virtual Size read( char * buffer, Size maxLength ) 
-					throw( ReadFailed ) ;
+					throw( InputStream::ReadFailedException ) ;
 
 
 				/**
@@ -139,7 +139,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual Size write( const std::string & message ) 
-					throw( Pipe::WriteFailed ) ;
+					throw( OutputStream::WriteFailedException ) ;
 	
 		
 				/**
@@ -157,7 +157,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual Size write( const char * buffer, Size maxLength ) 
-					throw( WriteFailed ) ;
+					throw( OutputStream::WriteFailedException ) ;
 		
 		
 				/**
@@ -169,6 +169,17 @@ namespace Ceylan
 		
 				/// Clears up the input data stream
 				virtual void clearInput() throw() ;
+		
+				
+				/**
+				 * Closes the pipe.
+				 *
+				 * @return true iff an operation had to be performed.
+				 *
+				 * @throw CloseException if the close operation failed.
+				 *
+				 */
+				virtual bool close() throw( Stream::CloseException ) ;
 		
 		
 				virtual StreamID getInputStreamID() const throw() ;
