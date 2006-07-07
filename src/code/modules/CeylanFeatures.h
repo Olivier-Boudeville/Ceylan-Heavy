@@ -159,6 +159,13 @@ namespace Ceylan
 		extern const Ceylan::Flags Plugins ;
 
 
+		/**
+		 * Designates the signal feature, for UNIX-style process signals.
+		 *
+		 */
+		extern const Ceylan::Flags Signals ;
+
+
 
 	
 		/**
@@ -202,6 +209,9 @@ namespace Ceylan
 	
 		/// Tells whether plugins are supported.
 		bool arePluginsSupported() throw() ;
+	
+		/// Tells whether signals are supported.
+		bool areSignalsSupported() throw() ;
 	
 	
 		/**
