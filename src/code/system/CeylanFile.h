@@ -154,7 +154,7 @@ namespace Ceylan
 				} ;
 
 
-				class ReadFailed: public FileException
+				class ReadFailed: public InputStream::ReadFailedException
 				{ 
 					public: 
 					
@@ -163,7 +163,7 @@ namespace Ceylan
 				} ;
 
 
-				class WriteFailed: public FileException
+				class WriteFailed: public OutputStream::WriteFailedException
 				{ 
 					public: 
 					
@@ -630,8 +630,13 @@ namespace Ceylan
 				/**
 				 * Closes the file for read/write actions.
 				 *
+				 * @return true iff an operation had to be performed.
+				 *
+				 * @throw CloseException if the close operation failed, 
+				 * including if the file was not already opened.
+				 *
 				 */
-				virtual void close() throw( CloseFailed ) ;
+				bool close() throw( Stream::CloseException ) ;
 
 
 				/**
@@ -753,9 +758,18 @@ namespace Ceylan
 				 *
 				 */
 		 		virtual Size read( char * buffer, Size maxLength ) 
-					throw( ReadFailed ) ;
+					throw( InputStream::ReadFailedException ) ;
 
 
+				/**
+				 * Tells whether there is data available on input.
+				 *
+				 * This methods returns always true for files.
+				 *
+				 */
+				virtual bool hasAvailableData() const throw() ;
+				
+				
 				/**
 				 * Writes message to this file.
 				 *
@@ -768,7 +782,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual Size write( const std::string & message ) 
-					throw( File::WriteFailed ) ;
+					throw( OutputStream::WriteFailedException ) ;
 
 
 				/**
@@ -786,7 +800,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual Size write( const char * buffer, Size maxLength ) 
-					throw( WriteFailed ) ;
+					throw( OutputStream::WriteFailedException ) ;
 
 
 				/**
@@ -812,7 +826,7 @@ namespace Ceylan
 				 * feature is not available.
 				 *
 				 */
-				FileDescriptor getDescriptor() const 
+				FileDescriptor getFileDescriptor() const 
 					throw( Features::FeatureNotAvailableException ) ;
 
 
@@ -830,10 +844,19 @@ namespace Ceylan
 				virtual StreamID getStreamID() const throw() ;
 
 
-				/// Returns this file's file descriptor.
+				/**
+				 * Returns this file descriptor for this file, or -1 if 
+				 * the file descriptor feature is not available.
+				 *
+				 */
 				virtual StreamID getInputStreamID() const throw() ;
 
-				/// Returns this file's file descriptor.
+
+				/**
+				 * Returns this file descriptor for this file, or -1 if 
+				 * the file descriptor feature is not available.
+				 *
+				 */
 				virtual StreamID getOutputStreamID() const throw() ;
 
 
