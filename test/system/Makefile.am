@@ -8,8 +8,7 @@ testssystem_PROGRAMS = \
 	testCeylanEnvironmentVariable          \
 	testCeylanFileAndDirectories           \
 	testCeylanFileLocator                  \
-	testCeylanIPAddressvFour               \
-	testCeylanNetwork                      \
+	testCeylanSignals                      \
 	testCeylanSystemInformation            \
 	testCeylanTime
 
@@ -17,8 +16,7 @@ testssystem_PROGRAMS = \
 testCeylanEnvironmentVariable_SOURCES = testCeylanEnvironmentVariable.cc
 testCeylanFileAndDirectories_SOURCES  = testCeylanFileAndDirectories.cc
 testCeylanFileLocator_SOURCES         = testCeylanFileLocator.cc
-testCeylanIPAddressvFour_SOURCES      = testCeylanIPAddressvFour.cc
-testCeylanNetwork_SOURCES             = testCeylanNetwork.cc
+testCeylanSignals_SOURCES             = testCeylanSignals.cc
 testCeylanSystemInformation_SOURCES   = testCeylanSystemInformation.cc
 testCeylanTime_SOURCES                = testCeylanTime.cc
 
