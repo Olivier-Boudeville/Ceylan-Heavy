@@ -3,9 +3,9 @@
 
 
 #include "CeylanTextDisplayable.h"     // for inheritance
+#include "CeylanSystem.h"              // for IOException
 
 
-#include <list>
 #include <string>
 
 
@@ -40,6 +40,37 @@ namespace Ceylan
 
 			public:
 			
+			
+			
+				/// Exception thrown when a stream operation failed.
+				class StreamException : public Ceylan::System::IOException
+				{
+					public: 
+					
+						explicit StreamException( 
+								const std::string & reason ) throw() : 
+							IOException( reason )
+						{
+						
+						}
+						
+				} ;
+
+
+
+				/// Exception thrown when a stream operation failed.
+				class CloseException : public StreamException
+				{
+					public: 
+					
+						explicit CloseException( 
+								const std::string & reason ) throw() : 
+							StreamException( reason )
+						{
+						
+						}
+						
+				} ;
 				
 				
 				/// Basic constructor.
@@ -52,6 +83,17 @@ namespace Ceylan
 	
 				/// Returns the stream's unique ID.
 				virtual StreamID getStreamID() const throw() = 0 ;
+				
+
+				/**
+				 * Closes the stream.
+				 *
+				 * @return true iff an operation had to be performed.
+				 *
+				 * @throw CloseException if the close operation failed.
+				 *
+				 */
+				virtual bool close() throw( CloseException ) = 0 ;
 				
 				
             	/**
@@ -71,6 +113,19 @@ namespace Ceylan
 						const throw() = 0 ;
 			
 			
+				/**
+				 * Closes and zeroes the specified file descriptor.
+				 * It is passed by address so that this function can set it
+				 * to zero on successful close.
+				 *
+				 * @return true iff an operation had to be performed.
+				 *
+				 * @throw CloseException if the close operation failed.
+				 *
+				 */
+				static bool Close( FileDescriptor & fd ) 
+					throw( CloseException ) ;
+		
 
 			private:
 			
