@@ -6,7 +6,7 @@ noinst_LTLIBRARIES = libCeylanInterfaces.la
 
 libCeylanInterfaces_la_SOURCES = $(INTERFACES_INTERFACES) $(INTERFACES_IMPLEMENTATIONS)
 
-libCeylanInterfaces_la_CPPFLAGS = -I@CEYLAN_GENERIC@ -I@CEYLAN_LOGS@ -I@CEYLAN_SYSTEM@ -I@CEYLAN_MATHS@ -I@CEYLAN_MODULES@
+libCeylanInterfaces_la_CPPFLAGS = -I@CEYLAN_GENERIC@ -I@CEYLAN_LOGS@ -I@CEYLAN_SYSTEM@ -I@CEYLAN_MATHS@ -I@CEYLAN_MODULES@ -I@CEYLAN_NETWORK@
 
 libCeylanInterfacesIncludedir      = $(includedir)/Ceylan
 libCeylanInterfacesInclude_HEADERS = $(INTERFACES_INTERFACES)
