@@ -4,7 +4,7 @@ USAGE="Usage : "`basename $0`" [ -h | --help ] [ -d | --disable-all-features ] [
 
 # Main settings section.
 
-ceylan_features_disable_opt="--disable-regex --disable-multithread --disable-network --disable-file-descriptor --disable-symbolic-link --disable-advanced-file-attribute --disable-file-lock --disable-advanced-process-management"
+ceylan_features_disable_opt="--disable-regex --disable-multithread --disable-network --disable-file-descriptor --disable-symbolic-link --disable-advanced-file-attribute --disable-file-lock --disable-advanced-process-management --disable-plugin-support --disable-signal-support"
 
 ceylan_features_opt=""
 
@@ -58,7 +58,10 @@ while [ "$#" -gt "0" ] ; do
 	
 	if [ "$1" == "-c" ] || [ "$1" == "--chain-test" ] ; then
 		do_chain_tests=0
-		do_distcheck=0
+		
+		#do_distcheck=0
+		do_distcheck=1
+		
 		token_eaten=0
 	fi
 	
