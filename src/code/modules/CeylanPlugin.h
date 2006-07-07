@@ -113,6 +113,21 @@ namespace Ceylan
 		typedef Ceylan::Uint32 ReferenceCount ;
 		
 		
+		
+		/**
+		 * Pointer to function, used to distinguish pointer-to-function loaded
+		 * symbols from pointer-to-object ones.
+		 *
+		 * In ISO C++, those two kinds of pointers are especially risky to 
+		 * cast to each other.
+		 *
+		 * No 'extern "C"' declaration seems needed.
+		 *
+		 */
+		typedef void * (*BasicFunctionPointer) (void) ;
+	
+	
+		
 		public:
 	
 		
@@ -203,16 +218,41 @@ namespace Ceylan
 	
 	
 			/**
-			 * Returns the reference on the symbol <b>sym</b> within the
-			 * opened plugin (DSO).
+			 * Returns the reference on the data symbol <b>dataName</b> 
+			 * within the opened plugin (DSO).
+			 *
+			 * @param symbol the data (non-function) symbol to look-up.
+			 *
+			 * @throw PluginException if the plugin feature is not available
+			 * or if the plugin could not be loaded successfully.
+			 *
+			 * @see getFunctionSymbol, testCeylanPlugin.cc
+			 *
+			 */
+			void * getDataSymbol( const std::string & dataName ) const
+				throw( PluginException ) ;
+
+
+			/**
+			 * Returns the reference on the symbol <b>functionName</b> 
+			 * within the opened plugin (DSO).
 			 *
 			 * @param symbol the symbol to look-up.
 			 *
 			 * @throw PluginException if the plugin feature is not available
 			 * or if the plugin could not be loaded successfully.
 			 *
+			 * @see getDataSymbol, testCeylanPlugin.cc
+			 *
+			 * @example :
+			 * typedef Ceylan::Uint32 TestFunction( 
+			 *	const std::string & message ) ;
+			 * TestFunction * readFunction = reinterpret_cast<TestFunction *>(
+			 *   myPlugin.getFunctionSymbol( "my_test_function" ) ) ;
+			 *
 			 */
-			void * getSymbol( const std::string & symbol ) const
+			BasicFunctionPointer getFunctionSymbol( 
+					const std::string & functionName ) const
 				throw( PluginException ) ;
 		
 			
