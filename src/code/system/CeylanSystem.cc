@@ -85,7 +85,6 @@ Ceylan::System::IOException::~IOException() throw()
 }
 
 
-
 ErrorCode Ceylan::System::getError() throw()
 {
 	return errno ;
