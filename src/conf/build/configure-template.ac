@@ -210,7 +210,7 @@ AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
 
 # Only headers independent from all Ceylan features are checked here : 
-AC_CHECK_HEADERS([math.h limits.h stdint.h string.h strings.h time.h sys/time.h utime.h termios.h netdb.h sys/socket.h netinet/in.h arpa/inet.h unistd.h sys/utsname.h sys/sysinfo.h conio.h fcntl.h])
+AC_CHECK_HEADERS([math.h limits.h stdint.h string.h strings.h time.h sys/time.h utime.h termios.h netdb.h sys/socket.h netinet/in.h arpa/inet.h unistd.h sys/utsname.h sys/sysinfo.h conio.h fcntl.h errno.h sys/types.h netinet/in.h])
 
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -284,6 +284,9 @@ AC_SUBST(CEYLAN_MODULES)
 
 CEYLAN_SYSTEM="\$(top_srcdir)/src/code/system"
 AC_SUBST(CEYLAN_SYSTEM)
+
+CEYLAN_NETWORK="\$(top_srcdir)/src/code/network"
+AC_SUBST(CEYLAN_NETWORK)
 
 
 # Substitution script to update various project templates.
@@ -685,7 +688,7 @@ CheckMultithreadFeature()
 
 # Checks whether network support feature should and can be activated.
 # CEYLAN_USES_NETWORK depends on :
-#   - headers : sys/socket.h unistd.h
+#   - headers : sys/socket.h
 #   - functions : socket
 #   - symbols :
 #   - use : when network layer is desired and has been ported
@@ -708,7 +711,7 @@ CheckNetworkFeature()
 	if test x$network = xyes; then
 		AC_MSG_RESULT([yes])
 		have_network=yes
-		AC_CHECK_HEADERS([sys/socket.h unistd.h],[],[have_network=no])
+		AC_CHECK_HEADERS([sys/socket.h],[],[have_network=no])
 		if test x$have_network = xyes; then
 			AC_CHECK_FUNCS([socket],[],[have_network=no])
 		fi	
@@ -1009,7 +1012,9 @@ CheckPluginFeature()
 		AC_MSG_RESULT([yes])
 		have_plugin_support=yes
 		CEYLAN_LTDLINCL="-I\${top_srcdir}/libltdl"
-		CEYLAN_LIBLTDL="-L\${top_builddir}/libltdl -lltdl"
+		# Built as static library :
+		#CEYLAN_LIBLTDL="-L\${top_builddir}/libltdl -lltdl"
+		CEYLAN_LIBLTDL=""
 		# Performs the configure time checks required to build ltdl.o 
 		# correctly (dlopen support) :
 		AC_LIBTOOL_DLOPEN
@@ -1050,6 +1055,51 @@ CheckPluginFeature()
 	# Cannot be specified before since using plugin requires to add for example
 	# AC_LIBTOOL_DLOPEN before this call :
 	AM_PROG_LIBTOOL
+
+}
+
+
+# Checks whether the signals feature should and can be activated.
+# CEYLAN_USES_SIGNALS depends on :
+#   - headers : signal.h
+#   - functions : signal raise 
+#   - symbols : SIG_IGN SIG_DFL SIGHUP
+CheckSignalFeature()
+{
+
+	# Is signal support wanted ?
+	CEYLAN_USES_SIGNALS=0
+	AC_ARG_ENABLE([signal-support],
+		AS_HELP_STRING(--enable-signal-support,[use Ceylan signal support feature [[default=yes]]]),
+		[case "${enableval}" in
+			yes) signal_support=yes ;;
+			no)  signal_support=no ;;
+			*) AC_MSG_ERROR(bad value ${enableval} for --enable-signal-support) ;;
+		esac],[signal_support=yes])
+	# If wanted, is signal support available ?	
+	AC_MSG_CHECKING([whether Ceylan signal support feature is wanted])
+	if test x$signal_support = xyes; then
+		AC_MSG_RESULT([yes])
+		have_signals=yes
+		AC_CHECK_HEADERS([signal.h],[],[have_signals=no])
+		if test x$have_signals = xyes; then
+			AC_CHECK_FUNCS([signal raise],[],[have_signals=no])
+		fi	
+		if test x$have_signals = xyes; then
+			CEYLAN_USES_SIGNALS=1
+		else	
+			AC_MSG_WARN([Signal support requested but not available, disabling it])
+		fi
+		AC_MSG_CHECKING([whether Ceylan signal feature is enabled])
+		AC_MSG_RESULT([$have_signals])
+	else
+		# Signals not wanted here :
+		AC_MSG_RESULT([no])	
+	fi
+	
+	AC_DEFINE_UNQUOTED([USES_SIGNALS],
+		[$CEYLAN_USES_SIGNALS],
+		[Define to 1 if Ceylan is to support signals])
 
 }
 
@@ -1154,6 +1204,7 @@ CheckAdvancedFileAttributeFeature
 CheckFileLockFeature
 CheckAdvancedProcessManagementFeature
 CheckPluginFeature
+CheckSignalFeature
 
 
 AC_SUBST(SYSTEM_LIBS)
@@ -1180,6 +1231,7 @@ AC_CONFIG_FILES([
 	src/code/logs/Makefile
 	src/code/maths/Makefile
 	src/code/modules/Makefile
+	src/code/network/Makefile
 	src/code/scripts/python/Makefile
 	src/code/scripts/python/tests/Makefile
 	src/code/scripts/shell/Makefile
