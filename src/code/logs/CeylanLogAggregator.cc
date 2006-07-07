@@ -5,7 +5,6 @@
 #include "CeylanObjectIdentifier.h" // for generateFromChannelName
 #include "CeylanObjectChannel.h"    // for ObjectChannel
 #include "CeylanLoggable.h"         // for Loggable, getEmbeddedChannelName
-#include "CeylanNetwork.h"          // for getProtocolName, getEmbeddedURI
 #include "CeylanStringUtils.h"      // for demangle
 
 #include "CeylanOperators.h"
