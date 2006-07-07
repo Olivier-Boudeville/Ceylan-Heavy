@@ -61,7 +61,8 @@ using namespace Ceylan::Log ;
 // Avoid exposing system-dependent mode_t in the headers :
 struct File::SystemSpecificPermissionFlag
 {
-	mode_t _mode ;
+	mode_t _mode ;	
+	
 } ;
 
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
@@ -187,14 +188,14 @@ File::CouldNotStatFile::CouldNotStatFile( const string & reason )
 		
 	
 File::ReadFailed::ReadFailed( const string & reason ) throw() :
-	File::FileException( reason )
+	InputStream::ReadFailedException( reason )
 {
 
 }
 				
 	
 File::WriteFailed::WriteFailed( const string & reason ) throw() :
-	File::FileException( reason )
+	OutputStream::WriteFailedException( reason )
 {
 
 }
@@ -377,7 +378,19 @@ File::File( const string & name,
 
 File::~File() throw()
 {
-	close() ;
+
+	if ( _fdes <= 0 )
+		return ;
+		
+	try
+	{
+		close() ;
+	}
+	catch( const Stream::CloseException & e )
+	{
+		LogPlug::error( "File destructor : close failed : " + e.toString() ) ;
+	}
+		
 }
 
 
@@ -389,26 +402,24 @@ const std::string & File::getName() const throw()
 }
 
 
-void File::close() throw( CloseFailed )
+bool File::close() throw( Stream::CloseException )
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
-
+	
 	if ( _fdes > 0 )
-	{
-		int volatile ret = ::close( _fdes ) ;
-		while ( ret == EINTR )
-			ret = ::close( _fdes ) ;
-		return ;
-	}
+		return Stream::Close( _fdes ) ;
 
-	throw CloseFailed( "File::close : file '" +  _name 
+	throw CloseException( "File::close : file '" +  _name 
 		+ "' does not seem to have been already opened." ) ;
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
 	if ( _fstream.is_open() )
 		_fstream.close() ;
+
+	throw CloseException( "File::close : file '" +  _name 
+		+ "' does not seem to have been already opened." ) ;
 	
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
 	
@@ -707,7 +718,8 @@ Size File::size() const throw( File::CouldNotStatFile )
 }
 
 
-Size File::read( char * buffer, Size maxLength ) throw( File::ReadFailed )
+Size File::read( char * buffer, Size maxLength ) 
+	throw( InputStream::ReadFailedException )
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
@@ -764,7 +776,14 @@ Size File::read( char * buffer, Size maxLength ) throw( File::ReadFailed )
 }
 
 
-Size File::write( const string & message ) throw( File::WriteFailed )
+bool File::hasAvailableData() const throw()
+{
+	return true ;
+}
+
+
+Size File::write( const string & message ) 
+	throw( OutputStream::WriteFailedException )
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
@@ -790,7 +809,7 @@ Size File::write( const string & message ) throw( File::WriteFailed )
 
 
 Size File::write( const char * buffer, Size maxLength ) 
-	throw( File::WriteFailed )
+	throw( OutputStream::WriteFailedException )
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
@@ -906,7 +925,7 @@ time_t File::getLastChangeTime() const throw( GetChangeTimeFailed )
 
 
 
-FileDescriptor File::getDescriptor() const 
+FileDescriptor File::getFileDescriptor() const 
 	throw( Features::FeatureNotAvailableException )
 {
 
@@ -916,7 +935,7 @@ FileDescriptor File::getDescriptor() const
 	
 #else // if CEYLAN_USES_FILE_DESCRIPTORS
 
-	throw Features::FeatureNotAvailableException( "File::getDescriptor : "
+	throw Features::FeatureNotAvailableException( "File::getFileDescriptor : "
 		"file descriptor feature not available" ) ;
 		
 #endif // if CEYLAN_USES_FILE_DESCRIPTORS	
@@ -931,7 +950,7 @@ StreamID File::getStreamID() const throw()
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
-	return static_cast<StreamID>( getDescriptor() ) ;
+	return static_cast<StreamID>( getFileDescriptor() ) ;
 	
 #else // if CEYLAN_USES_FILE_DESCRIPTORS
 
@@ -962,7 +981,7 @@ const std::string File::toString( Ceylan::VerbosityLevels level )
 	string res = "File object for filename <" + _name + ">" ;
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
-	res += ", with file descriptor " + Ceylan::toString( getDescriptor() ) ;
+	res += ", with file descriptor " + Ceylan::toString( getFileDescriptor() ) ;
 #endif // CEYLAN_USES_FILE_DESCRIPTORS	
 	
 	res += ", with opening openFlags = " + Ceylan::toString( _openFlag ) 
