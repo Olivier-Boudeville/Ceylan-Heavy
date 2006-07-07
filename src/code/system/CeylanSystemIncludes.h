@@ -18,6 +18,7 @@
 #include "CeylanPipe.h"
 #include "CeylanProcess.h"
 #include "CeylanRunnable.h"
+#include "CeylanSignal.h"
 #include "CeylanStream.h"
 #include "CeylanSynchronized.h"
 #include "CeylanSystem.h"
