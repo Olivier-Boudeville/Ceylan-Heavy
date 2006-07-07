@@ -103,7 +103,8 @@ int main( int argc, char * argv[] )
 					"Unable to create directory " + newDir + "." ) ;
 		}		
 		
-		string targetFile = newDir + Directory::Separator + "Ceylan-rulez.txt" ;
+		string targetFile = newDir + Directory::Separator 
+			+ "Ceylan-rulez.txt" ;
 		
 		if ( File::Exists( targetFile ) )
 		{
