@@ -2,7 +2,6 @@
 #define CEYLAN_INPUT_STREAM_H_
 
 
-#include "CeylanSystem.h"     // for IOException
 #include "CeylanStream.h"     // for inheritance
 
 
@@ -41,16 +40,33 @@ namespace Ceylan
 	
 	
 				/// Exception thrown when select() fails.
-				class SelectFailedException : public IOException
+				class SelectFailedException : public StreamException
 				{
 					public: 
 					
 						explicit SelectFailedException( 
-								const std::string & message ) throw() : 
-							IOException( message )
+								const std::string & reason ) throw() : 
+							StreamException( reason )
 						{
 						
 						}
+						
+				} ;
+	
+	
+	
+				/// Exception thrown when a read operation failed.
+				class ReadFailedException: public StreamException
+				{ 
+					public: 
+					
+						explicit ReadFailedException( 
+								const std::string & reason ) throw() : 
+							StreamException( reason )
+						{
+						
+						}
+								
 				} ;
 	
 	
@@ -65,10 +81,38 @@ namespace Ceylan
 				/// Tells if the stream has data to read.
 				inline bool isSelected() const throw() ;
 		
+		
 				/// Returns the stream's unique ID.
 				virtual StreamID getInputStreamID() const = 0 ;
 
 
+				/**
+				 * Reads up to maxLength bytes from this InputStream to
+				 * specified buffer.
+				 *
+				 * @param buffer the buffer where to store read bytes. 
+				 * Its size must be at least maxLength bytes.
+				 *
+				 * @param maxLength the maximum number of bytes that should 
+				 * be read.
+				 *
+				 * @return The number of bytes actually read, which should
+				 * be maxLength or lower.
+				 *
+				 * @throw ReadFailed if a read error occurred.
+				 *
+				 */
+		 		virtual Size read( char * buffer, Size maxLength ) 
+					throw( ReadFailedException ) = 0 ;
+
+
+				/**
+				 * Tells whether there is data available on input.
+				 *
+				 */
+				virtual bool hasAvailableData() const throw() = 0 ;
+		
+		
 
 				// Static section.
 
