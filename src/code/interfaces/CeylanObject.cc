@@ -1,6 +1,5 @@
 #include "CeylanObject.h"
 
-#include "CeylanNetwork.h"             // for getMostPreciseLocalHostName
 #include "CeylanProcess.h"             // for getHostingPID
 #include "CeylanTextIdentifier.h"
 #include "CeylanOperators.h"
