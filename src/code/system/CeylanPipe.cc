@@ -73,14 +73,14 @@ Pipe::CouldNotCreate::CouldNotCreate( const string & reason )
 		
 
 Pipe::ReadFailed::ReadFailed( const string & reason ) throw() :
-	Pipe::PipeException( reason )
+	InputStream::ReadFailedException( reason )
 {
 
 }
 				
 	
 Pipe::WriteFailed::WriteFailed( const string & reason ) throw() :
-	Pipe::PipeException( reason )
+	OutputStream::WriteFailedException( reason )
 {
 
 }
@@ -139,17 +139,13 @@ Pipe::Pipe( const Pipe & other ) throw( PipeException,
 Pipe::~Pipe() throw()
 {
 
-#if CEYLAN_USES_FILE_DESCRIPTORS
-
-	::close( _fd[ 0 ] ) ;
-	::close( _fd[ 1 ] ) ;
-
-#endif // CEYLAN_USES_FILE_DESCRIPTORS
+	close() ;
 	
 }
 
 
-Size Pipe::read( char * buffer, Size maxLength ) throw( ReadFailed )
+Size Pipe::read( char * buffer, Size maxLength ) 
+	throw( InputStream::ReadFailedException )
 {
 
 	SignedSize n = System::FDRead( _fd[ 0 ], buffer, maxLength ) ;
@@ -163,7 +159,8 @@ Size Pipe::read( char * buffer, Size maxLength ) throw( ReadFailed )
 }
 
 
-Size Pipe::write( const string & message ) throw( Pipe::WriteFailed )
+Size Pipe::write( const string & message ) 
+	throw( OutputStream::WriteFailedException )
 {
 
 	return write( message.c_str(), message.size() ) ;
@@ -172,7 +169,7 @@ Size Pipe::write( const string & message ) throw( Pipe::WriteFailed )
 
 
 Size Pipe::write( const char * buffer, Size maxLength ) 
-	throw( Pipe::WriteFailed )
+	throw( OutputStream::WriteFailedException )
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
@@ -210,19 +207,21 @@ bool Pipe::hasAvailableData() const throw()
 	FD_ZERO( & set ) ;
 	FD_SET( _fd[ 0 ], & set ) ;
 	
-	int n = ::select( _fd[ 0 ] + 1, & set, 0, 0, & tv ) ;
+	Ceylan::Sint32  n = ::select( _fd[ 0 ] + 1, & set, 0, 0, & tv ) ;
 	
 	if ( n > 0 )
 		return FD_ISSET( _fd[ 0 ], & set ) ;
 	
 	if ( n == -1 )
-		LogPlug::error( "Pipe::hasAvailableData : " 
+		LogPlug::error( "Pipe::hasAvailableData failed : " 
 			+ System::explainError() ) ;
 
 	return false ;
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS	
 
+	LogPlug::error( "Pipe::hasAvailableData failed : "
+		"pipe support not available." ) ; 
 	return false ;
 	
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
@@ -240,6 +239,27 @@ void Pipe::clearInput() throw()
 		
 }
 
+
+bool Pipe::close() throw( Stream::CloseException )
+{
+
+#if CEYLAN_USES_FILE_DESCRIPTORS
+
+	bool res = Stream::Close( _fd[ 0 ] ) ;
+	
+	if ( Stream::Close( _fd[ 1 ] ) )
+		return true ;
+	else
+		return res ;	
+
+#else
+
+	throw Stream::CloseException( "Pipe::close failed : "
+		"pipe support not available." ) ;
+		
+#endif // CEYLAN_USES_FILE_DESCRIPTORS
+
+}
 
 
 StreamID Pipe::getInputStreamID() const throw()
