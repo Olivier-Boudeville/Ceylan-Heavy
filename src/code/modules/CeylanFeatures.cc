@@ -112,6 +112,16 @@ const Flags Features::AdvancedProcessManagement = 0x00000080 ;
 const Flags Features::Plugins = 0x00000100 ; 
 
 
+/*
+ * The signal feature, linked with preprocessor symbol
+ * CEYLAN_USES_SIGNALSS.
+ *
+ * Equal to 0b00000000000000000000001000000000.
+ *
+ */
+const Flags Features::Signals = 0x00000200 ; 
+
+
 
 
 FeatureNotAvailableException::FeatureNotAvailableException( 
@@ -200,6 +210,13 @@ void Features::checkForSupportedFeatures( Flags featuresFlag )
 		if ( ! arePluginsSupported() )
 			throw FeatureNotAvailableException( 
 				"Plugin" + endOfMessage ) ;			
+	}
+	
+	if ( featuresFlag & Signals )
+	{
+		if ( ! areSignalsSupported() )
+			throw FeatureNotAvailableException( 
+				"Signal" + endOfMessage ) ;			
 	}
 	
 	
@@ -302,6 +319,7 @@ bool Features::isAdvancedProcessManagementSupported() throw()
 
 }
 
+
 bool Features::arePluginsSupported() throw()
 {
 
@@ -310,6 +328,18 @@ bool Features::arePluginsSupported() throw()
 #else // CEYLAN_USES_PLUGINS
 	return false ; 	
 #endif // CEYLAN_USES_PLUGINS
+
+}
+
+
+bool Features::areSignalsSupported() throw()
+{
+
+#if CEYLAN_USES_SIGNALS
+	return true ;
+#else // CEYLAN_USES_SIGNALS
+	return false ; 	
+#endif // CEYLAN_USES_SIGNALS
 
 }
 
@@ -371,6 +401,12 @@ const std::string Features::describeAvailableFeatures() throw()
 		featureList.push_back( "Plugins are supported" ) ;
 	else
 		featureList.push_back( "Plugins are not supported" ) ;
+
+
+	if ( areSignalsSupported() )
+		featureList.push_back( "Signals are supported" ) ;
+	else
+		featureList.push_back( "Signals are not supported" ) ;
 
 
 	return "Summary of optional features available with "
