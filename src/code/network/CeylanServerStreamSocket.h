@@ -22,6 +22,11 @@ namespace Ceylan
 		/**
 		 * Server-side implementation of connection-based socket.
 		 *
+		 * @note For read/write operations with such server socket, 
+		 * the file descriptor being used is the one returned by 
+		 * accept (i.e. the per-connection socket), not the main
+		 * listening socket.
+		 *
 		 * @see ClientStreamSocket
 		 *
 		 */
@@ -78,9 +83,11 @@ namespace Ceylan
 				 * @param reuse tells whether the local addresses are allowed
 				 * to be reused in bind().
 				 *
+				 * @throw SocketException if socket creation failed.
+				 *
 				 */
-				ServerStreamSocket( Port port, bool reuse = true )
-					throw( ServerStreamSocketException ) ;
+				explicit ServerStreamSocket( Port port, bool reuse = true )
+					throw( SocketException ) ;
 	
 				
 				/// Virtual destructor.
@@ -114,9 +121,9 @@ namespace Ceylan
 				 *
 				 */
 				virtual System::FileDescriptor 
-						getAcceptedFileDescriptor() const
+						getFileDescriptorForTransport() const
 					throw( Features::FeatureNotAvailableException ) ;
-	
+		
 	
 				/**
 				 * Returns the current maximum number of pending connections
@@ -145,6 +152,22 @@ namespace Ceylan
 					DefaultMaximumPendingConnectionsCount = 20 ;
 	
 	
+            	/**
+            	 * Returns a user-friendly description of the state of 
+				 * this object.
+            	 *
+				 * @param level the requested verbosity level.
+				 *
+				 * @note Text output format is determined from overall 
+				 * settings.
+				 *
+				 * @see TextDisplayable
+				 *
+				 */
+				virtual const std::string toString( 
+					Ceylan::VerbosityLevels level = Ceylan::high ) 
+						const throw() ;
+	
 	
 	
 			protected:
@@ -161,6 +184,18 @@ namespace Ceylan
 				virtual void prepareToAccept() 
 					throw( ServerStreamSocketException ) ;
 		
+		
+				/**
+				 * Called whenever the accept method succeeds.
+				 *
+				 * @note This method is made to be overriden by actual 
+				 * specialized servers.
+				 *
+				 * @throw ServerStreamSocketException on failure.
+				 *
+				 */
+				virtual void accepted() throw( ServerStreamSocketException ) ;
+
 
 
 			private:
