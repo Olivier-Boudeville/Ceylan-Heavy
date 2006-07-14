@@ -210,7 +210,7 @@ AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
 
 # Only headers independent from all Ceylan features are checked here : 
-AC_CHECK_HEADERS([math.h limits.h stdint.h string.h strings.h time.h sys/time.h utime.h termios.h netdb.h sys/socket.h netinet/in.h arpa/inet.h unistd.h sys/utsname.h sys/sysinfo.h conio.h fcntl.h errno.h sys/types.h netinet/in.h])
+AC_CHECK_HEADERS([math.h limits.h stdint.h string.h strings.h time.h sys/time.h utime.h termios.h netdb.h netinet/in.h arpa/inet.h unistd.h sys/utsname.h sys/sysinfo.h conio.h fcntl.h errno.h sys/types.h netinet/in.h])
 
 
 # Checks for typedefs, structures, and compiler characteristics.
