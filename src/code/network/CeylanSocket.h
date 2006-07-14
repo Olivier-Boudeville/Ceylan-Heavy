@@ -190,6 +190,22 @@ namespace Ceylan
 				virtual System::StreamID getOutputStreamID() const throw() ;
 
 
+            	/**
+            	 * Returns a user-friendly description of the state of 
+				 * this object.
+            	 *
+				 * @param level the requested verbosity level.
+				 *
+				 * @note Text output format is determined from overall 
+				 * settings.
+				 *
+				 * @see TextDisplayable
+				 *
+				 */
+				virtual const std::string toString( 
+					Ceylan::VerbosityLevels level = Ceylan::high ) 
+						const throw() ;
+
 
 
 			protected:
@@ -221,7 +237,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual struct SystemSpecificSocketAddress & getAddress()
-					throw( Features::FeatureNotAvailableException ) = 0 ;
+					throw( Features::FeatureNotAvailableException ) ;
 		
 		
 				/** 
