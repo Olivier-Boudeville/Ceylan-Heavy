@@ -66,6 +66,7 @@ extern "C"
 
 
 using namespace Ceylan::Network ;
+using namespace Ceylan::System ;
 using namespace Ceylan::Log ;
 
 
@@ -77,7 +78,7 @@ using std::string ;
 /**
  * Avoid exposing system-dependent sockaddr_in in the headers :
  *
- * @note sockaddr_in is described in 'man '.
+ * @note sockaddr_in is described in system includes.
  *
  */
 struct Socket::SystemSpecificSocketAddress
@@ -105,7 +106,7 @@ Socket::SocketException::~SocketException() throw()
 
 	
 // Is protected :
-Socket::Socket() throw( SocketException ) :
+Socket::Socket() throw( Socket::SocketException ) :
 	_fdes   ( 0 ),
 	_port   ( 0 ),
 	_address( 0 )
@@ -148,7 +149,17 @@ Socket::Socket( Port port ) throw( SocketException ):
 
 Socket::~Socket() throw()
 {
-	close() ;
+
+	// No destructor should throw exception :
+	try
+	{
+		close() ;
+	}
+	catch( const Stream::CloseException	& e )
+	{
+		LogPlug::error( "Socket destructor failed : " + e.toString() ) ;
+	}
+	
 }
 
 
@@ -194,54 +205,13 @@ struct Socket::SystemSpecificSocketAddress & Socket::getAddress()
 }
 
 
-FileDescriptor Socket::getSupplementaryFileDescriptor() const
-	throw( Features::FeatureNotAvailableException )
-{
-
-#if CEYLAN_USES_NETWORK
-
-	return _fdes ;
-		
-#else // CEYLAN_USES_NETWORK
-
-	throw Features::FeatureNotAvailableException( 
-		"Socket::getSupplementaryFileDescriptor : "
-		"network support not available." ) ;
-		
-#endif // CEYLAN_USES_NETWORK
-
-}
-
-
-#if 0
-
 void Socket::createSocket( Port port ) throw( SocketException )
 {
 
-#if CEYLAN_USES_NETWORK
-
-	_port = port ;
-	
-	_fdes = ::socket( 
-		/* domain : IPv4 */ PF_INET, /* type */ SOCK_STREAM, 
-			/* protocol : TCP */ 0 ) ;
-	
-	if ( _fdes == -1 )
-		throw SocketException( "Socket::createSocket failed : "
-			+ System::explainError() ) ;
-				
-	_address->_socketAddress.sin_family = AF_INET ;
-	_address->_socketAddress.sin_port = ::htons( _port ) ;
-	
-#else // CEYLAN_USES_NETWORK
-
-	throw Features::FeatureNotAvailableException( 
-		"Socket::createSocket : network support not available." ) ;
+	throw SocketException( "Socket::createSocket must be overriden "
+		"by child classes." ) ;
 		
-#endif // CEYLAN_USES_NETWORK
-
 }
-#endif
 
 
 Size Socket::read( char * buffer, Size maxLength ) 
