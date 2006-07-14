@@ -87,7 +87,7 @@ using std::string ;
 
 
 ClientStreamSocket::ClientStreamSocket() 
-		throw( ClientStreamSocket::SocketException ) :
+		throw( Socket::SocketException ) :
 	StreamSocket(),
 	_serverHostName(),
 	_serverHostInfo( 0 )
@@ -153,19 +153,38 @@ void ClientStreamSocket::connect( const string & serverHostname, Port port )
 			reinterpret_cast<sockaddr *>( & getAddress()._socketAddress ),
 			sizeof( sockaddr_in ) ) < 0 )
 		throw ClientStreamSocketException( "ClientStreamSocket::connect : "
-			"could not connect from IP " 
-			+ serverIP->toString() + " of host '" 
-				+ _serverHostName + "' : " + System::explainError() ) ;
+			"could not connect to IP " 
+			+ serverIP->toString() + " for host '" 
+			+ _serverHostName + "' : " + System::explainError() ) ;
 	
 	connected() ;
 	
 }
 
 
-void ClientStreamSocket::connected()
+const std::string ClientStreamSocket::toString( Ceylan::VerbosityLevels level ) 
+	const throw()
+{
+
+	string res ;
+	
+	if ( _serverHostInfo == 0 )
+		res = "ClientStreamSocket not linked to a specified server. " ;
+	else		
+		res = "ClientStreamSocket linked to server '"
+			+ _serverHostName + "'. " ;
+			
+	return res + StreamSocket::toString( level ) ;
+	
+}	
+
+
+void ClientStreamSocket::connected() throw( ClientStreamSocketException )
 {
 
 	// Empty implementation made to be overriden.
+	LogPlug::debug( "ClientStreamSocket::connected : "
+		"connection up and running." ) ;
 	
 }
 
