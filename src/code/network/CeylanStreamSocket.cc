@@ -101,12 +101,13 @@ struct Socket::SystemSpecificSocketAddress
 
 
 	
-StreamSocket::StreamSocket() throw( StreamSocket::SocketException ) :
+StreamSocket::StreamSocket() throw( Socket::SocketException ) :
 	Socket()
 {
 
 #if CEYLAN_USES_NETWORK
 
+	LogPlug::trace( "StreamSocket empty constructor" ) ;
 	
 #else // CEYLAN_USES_NETWORK
 
@@ -124,7 +125,8 @@ StreamSocket::StreamSocket( Port port ) throw( SocketException ):
 
 #if CEYLAN_USES_NETWORK
 
-	
+	createSocket( _port ) ;
+
 #else // CEYLAN_USES_NETWORK
 
 	throw SocketException( "StreamSocket constructor failed : "
@@ -137,26 +139,6 @@ StreamSocket::StreamSocket( Port port ) throw( SocketException ):
 
 StreamSocket::~StreamSocket() throw()
 {
-
-}
-
-
-
-
-struct StreamSocket::SystemSpecificSocketAddress & Socket::getAddress()
-	throw( Features::FeatureNotAvailableException )
-{
-
-#if CEYLAN_USES_NETWORK
-
-	return *_address ;
-		
-#else // CEYLAN_USES_NETWORK
-
-	throw Features::FeatureNotAvailableException( 
-		"StreamSocket::getAddress : network support not available." ) ;
-		
-#endif // CEYLAN_USES_NETWORK
 
 }
 
@@ -175,7 +157,10 @@ void StreamSocket::createSocket( Port port ) throw( SocketException )
 	if ( _fdes == -1 )
 		throw SocketException( "StreamSocket::createSocket failed : "
 			+ System::explainError() ) ;
-				
+	
+	LogPlug::debug( "StreamSocket::createSocket : socket created with "
+		+ toString() ) ;
+					
 	getAddress()._sockaddr.sin_family = AF_INET ;
 	getAddress()._sockaddr.sin_port = ::htons( _port ) ;
 	
@@ -189,13 +174,43 @@ void StreamSocket::createSocket( Port port ) throw( SocketException )
 }
 
 
+FileDescriptor StreamSocket::getFileDescriptorForTransport() const
+	throw( Features::FeatureNotAvailableException )
+{
+
+#if CEYLAN_USES_NETWORK
+
+	return _fdes ;
+	
+#else // CEYLAN_USES_NETWORK
+
+	throw Features::FeatureNotAvailableException( 
+		"StreamSocket::getFileDescriptorForTransport : "
+		"network support not available." ) ;
+		
+#endif // CEYLAN_USES_NETWORK
+
+}
+
+
 Size StreamSocket::read( char * buffer, Size maxLength ) 
 	throw( InputStream::ReadFailedException )
 {
 
 #if CEYLAN_USES_NETWORK
 
-	SignedSize n = System::FDRead( getFileDescriptor(), buffer, maxLength ) ;
+	SignedSize n ;
+	
+	try
+	{	
+		n = System::FDRead( getFileDescriptorForTransport(), 
+			buffer, maxLength ) ;
+	}
+	catch( const Ceylan::Exception & e )
+	{
+		throw ReadFailedException( "StreamSocket::read failed : " 
+			+ e.toString() ) ;
+	}	
 
 	// Actually, n should never be negative :
 	if ( n < 0 )
@@ -206,7 +221,8 @@ Size StreamSocket::read( char * buffer, Size maxLength )
 
 #else // CEYLAN_USES_NETWORK	
 
-	throw ReadFailed( "StreamSocket::read : network support not available." ) ;
+	throw ReadFailedException( 
+		"StreamSocket::read : network support not available." ) ;
 	
 #endif // CEYLAN_USES_NETWORK	
 
@@ -220,8 +236,19 @@ Size StreamSocket::write( const string & message )
 
 #if CEYLAN_USES_NETWORK
 
-	SignedSize n = FDWrite( getFileDescriptor(), message.c_str(), 
-		message.size() ) ;
+	SignedSize n ;
+	
+	try
+	{	
+		n = FDWrite( getFileDescriptorForTransport(), 
+			message.c_str(), message.size() ) ;
+	}	
+	catch( const Ceylan::Exception & e )
+	{
+		throw WriteFailedException( "StreamSocket::write failed : " 
+			+ e.toString() ) ;
+	}	
+
 
 	if ( n < static_cast<SignedSize>( message.size() ) )
 		throw WriteFailedException( "StreamSocket::write failed : " 
@@ -245,7 +272,8 @@ Size StreamSocket::write( const char * buffer, Size maxLength )
 
 #if CEYLAN_USES_NETWORK
 
-	SignedSize n = System::FDWrite( getFileDescriptor(), buffer, maxLength ) ;
+	SignedSize n = System::FDWrite( getFileDescriptorForTransport(), 
+		buffer, maxLength ) ;
 
 	if ( n < static_cast<SignedSize>( maxLength ) )
 		throw WriteFailedException( "StreamSocket::write failed : " 
@@ -313,4 +341,11 @@ void StreamSocket::clearInput() throw( InputStream::ReadFailedException )
 }
 
 
+const std::string StreamSocket::toString( Ceylan::VerbosityLevels level ) 
+	const throw()
+{
+
+	return "Stream" + Socket::toString( level ) ;
+	
+}	
 
