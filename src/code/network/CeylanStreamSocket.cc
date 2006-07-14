@@ -64,8 +64,8 @@ extern "C"
 }
 
 
-
 using namespace Ceylan::System ;
+using namespace Ceylan::Network ;
 using namespace Ceylan::Log ;
 
 
@@ -101,7 +101,7 @@ struct Socket::SystemSpecificSocketAddress
 
 
 	
-StreamSocket::StreamSocket() throw( SocketException ) :
+StreamSocket::StreamSocket() throw( StreamSocket::SocketException ) :
 	Socket()
 {
 
@@ -161,25 +161,6 @@ struct StreamSocket::SystemSpecificSocketAddress & Socket::getAddress()
 }
 
 
-FileDescriptor StreamSocket::getSupplementaryFileDescriptor() const
-	throw( Features::FeatureNotAvailableException )
-{
-
-#if CEYLAN_USES_NETWORK
-
-	return _fdes ;
-		
-#else // CEYLAN_USES_NETWORK
-
-	throw Features::FeatureNotAvailableException( 
-		"StreamSocket::getSupplementaryFileDescriptor : "
-		"network support not available." ) ;
-		
-#endif // CEYLAN_USES_NETWORK
-
-}
-
-
 void StreamSocket::createSocket( Port port ) throw( SocketException )
 {
 
@@ -195,8 +176,8 @@ void StreamSocket::createSocket( Port port ) throw( SocketException )
 		throw SocketException( "StreamSocket::createSocket failed : "
 			+ System::explainError() ) ;
 				
-	_address->_sockaddr.sin_family = AF_INET ;
-	_address->_sockaddr.sin_port = ::htons( _port ) ;
+	getAddress()._sockaddr.sin_family = AF_INET ;
+	getAddress()._sockaddr.sin_port = ::htons( _port ) ;
 	
 #else // CEYLAN_USES_NETWORK
 
