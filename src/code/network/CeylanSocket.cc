@@ -1,7 +1,8 @@
 #include "CeylanSocket.h"
 
 
-#include "CeylanLogPlug.h"
+#include "CeylanLogPlug.h"     // for LogPlug
+#include "CeylanOperators.h"   // for toString
 
 
 #if CEYLAN_USES_CONFIG_H
@@ -135,7 +136,14 @@ Socket::Socket( Port port ) throw( SocketException ):
 #if CEYLAN_USES_NETWORK
 
 	_address = new SystemSpecificSocketAddress ;
-	createSocket( _port ) ;
+	
+	/*
+	 * Cannot use here : 'createSocket( _port ) ;' since it would call
+	 * Socket::createSocket in spite of any overloading.
+	 * Therefore child classes (ex : CeylanStreamSocket) should call this
+	 * method in their own constructor.
+	 *
+	 */
 	
 #else // CEYLAN_USES_NETWORK
 
@@ -350,6 +358,16 @@ StreamID Socket::getOutputStreamID() const throw()
 }
 
 
+const std::string Socket::toString( Ceylan::VerbosityLevels level ) 
+	const throw()
+{
+
+	return "Socket associated to port " + Ceylan::toString( _port )
+		+ " and to file descriptor " + Ceylan::toString( _fdes ) ;
+	
+}	
+						
+						
 bool Socket::close() throw( Stream::CloseException )
 {
 
