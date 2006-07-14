@@ -2,13 +2,13 @@
 
 //#include "System.h"
 
-#include "CeylanLogPlug.h"
+#include "CeylanLogPlug.h"            // for LogPlug
 #include "CeylanNetwork.h"            // for HostDNSEntry
 #include "CeylanIPAddressvFour.h"     // for IPAddressvFour
 
 
 #if CEYLAN_USES_CONFIG_H
-#include "CeylanConfig.h"      // for configure-time feature settings
+#include "CeylanConfig.h"             // for configure-time feature settings
 #endif // CEYLAN_USES_CONFIG_H
 
 
@@ -20,13 +20,31 @@ extern "C"
 {
 
 #ifdef CEYLAN_USES_NETDB_H
-#include <netdb.h> // CEYLAN_USES_NETDB_H
+//#include <netdb.h>                    // for inet_aton
 #endif // CEYLAN_USES_NETDB_H
+
+#ifdef CEYLAN_USES_SYS_SOCKET_H
+#include <sys/socket.h>                 // for inet_aton
+#endif // CEYLAN_USES_SYS_SOCKET_H
+
+#ifdef CEYLAN_USES_NETINET_IN_H
+#include <netinet/in.h>                 // for inet_aton
+#endif // CEYLAN_USES_NETINET_IN_H
+
+#ifdef CEYLAN_USES_ARPA_INET_H
+#include <arpa/inet.h>                  // for inet_aton
+#endif // CEYLAN_USES_ARPA_INET_H
 
 }
 
+using namespace Ceylan::System ;
+using namespace Ceylan::Network ;
+using namespace Ceylan::Log ;
+using namespace Ceylan ;
+
 
 #if CEYLAN_USES_NETWORK
+
 
 /**
  * Avoid exposing system-dependent sockaddr_in in the headers :
@@ -63,18 +81,16 @@ ClientStreamSocket::ClientStreamSocketException::~ClientStreamSocketException()
 // Some behaviours are duplicated in clients for Stream and Datagram sockets.
 
 
-using namespace Ceylan::Network ;
-using namespace Ceylan::Log ;
-
 
 using std::string ;
 
 
 
-ClientStreamSocket::ClientStreamSocket() throw( SocketException ) :
+ClientStreamSocket::ClientStreamSocket() 
+		throw( ClientStreamSocket::SocketException ) :
 	StreamSocket(),
 	_serverHostName(),
-	_serverHostinfo( 0 )
+	_serverHostInfo( 0 )
 {
 
 }
@@ -83,8 +99,8 @@ ClientStreamSocket::ClientStreamSocket() throw( SocketException ) :
 ClientStreamSocket::~ClientStreamSocket() throw()
 {
 
-	if ( _serverHostinfo != 0 )
-		delete _serverHostinfo ;
+	if ( _serverHostInfo != 0 )
+		delete _serverHostInfo ;
 
 }
 
@@ -99,7 +115,7 @@ void ClientStreamSocket::connect( const string & serverHostname, Port port )
 	
 	try
 	{
-		_serverHostinfo = new HostDNSEntry( _serverHostName ) ;
+		_serverHostInfo = new HostDNSEntry( _serverHostName ) ;
 	}
 	catch(  const NetworkException & e )
 	{
@@ -115,7 +131,7 @@ void ClientStreamSocket::connect( const string & serverHostname, Port port )
 	 *
 	 */
 	IPAddressvFour * serverIP = dynamic_cast<IPAddressvFour *>( 
-		* _serverHostinfo->getAddresses().begin() ) ;
+		* _serverHostInfo->getAddresses().begin() ) ;
 		
 	if ( serverIP == 0 )
 		throw ClientStreamSocketException( "ClientStreamSocket::connect : "
@@ -125,63 +141,39 @@ void ClientStreamSocket::connect( const string & serverHostname, Port port )
 	// It is actually something like an unsigned long (see man inet_ntoa) :
 	struct in_addr binaryIP ;
 			
-	if ( ::inet_aton( serverIP.toString().c_str(), & binaryIP ) == 0 )
+	if ( ::inet_aton( serverIP->toString().c_str(), & binaryIP ) == 0 )
 		throw ClientStreamSocketException( "ClientStreamSocket::connect : "
 			"could not forge a network address from IP " 
-			+ serverIP.toString() + " of host '" 
+			+ serverIP->toString() + " of host '" 
 				+ _serverHostName + "'." ) ;
 	
-	getAddress()->_socketAddress.sin_addr = * ( in_addr *)_serverHostinfo->h_addr;
+	getAddress()._socketAddress.sin_addr = binaryIP ;
 
-		int n = ::connect( getFileDescriptor(), (sockaddr *) & getAddress(), sizeof( sockaddr_in ) );
+	if ( ::connect( getFileDescriptor(),
+			reinterpret_cast<sockaddr *>( & getAddress()._socketAddress ),
+			sizeof( sockaddr_in ) ) < 0 )
+		throw ClientStreamSocketException( "ClientStreamSocket::connect : "
+			"could not connect from IP " 
+			+ serverIP->toString() + " of host '" 
+				+ _serverHostName + "' : " + System::explainError() ) ;
 	
-		if( n < 0 )
-		{
-			setError( errno );
-			clientConnectionFailed();
-			return false;
-		}
-		else connected();
-
-	}
-
-	return ( n == 0 );
-}
-
-Client::~Client()
-{
-}
-
-void Client::connected()
-{
-}
-
-void Client::clientConnectionFailed()
-{
-	cerr << "Client::connect("<< _server << "," << getPort() << ") failed: " << System::explainError( getError() ) << endl;
-}
-
-void Client::getHostByNameFailed()
-{
-	const char * str;
+	connected() ;
 	
-	switch( getError() )
-	{
-		case HOST_NOT_FOUND:	str = "The specified host is unknown."; break;
-		case NO_DATA:		str = "The requested name is valid but does not have an IP address."; break;
- 		case NO_RECOVERY:	str = "A non-recoverable name server error occurred."; break;
-		case TRY_AGAIN:		str = "A temporary error occurred on an authoritative name server.  Try again later."; break;
-		default: 		str = "Unknown error."; break;	
-	}
-	
-	cerr << "Socket::getHostByNameFailed(port) failed: " << str << endl;
 }
 
 
-const std::string &ClientStreamSocket::getServerName() const throw()
+void ClientStreamSocket::connected()
 {
 
-	return _server ;
+	// Empty implementation made to be overriden.
+	
+}
+
+
+const std::string & ClientStreamSocket::getServerName() const throw()
+{
+
+	return _serverHostName ;
 	
 }
 
