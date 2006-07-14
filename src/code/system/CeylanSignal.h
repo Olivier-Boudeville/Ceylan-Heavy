@@ -9,6 +9,7 @@
 #include <string>
 
 
+
 /**
  * UNIX-style POSIX reliable signal management.
  *
