@@ -2,10 +2,11 @@
 #define CEYLAN_SOCKET_H_
 
 
-#include "CeylanInputStream.h"       // for inheritance
-#include "CeylanOutputStream.h"      // for inheritance
-#include "CeylanFeatures.h"          // for FeatureNotAvailableException
-#include "CeylanTypes.h"             // for Ceylan::Uint32
+#include "CeylanInputStream.h"    // for inheritance
+#include "CeylanOutputStream.h"   // for inheritance
+#include "CeylanFeatures.h"       // for FeatureNotAvailableException
+#include "CeylanTypes.h"          // for Ceylan::Uint32
+#include "CeylanSystem.h"         // for SystemException, FileDescriptor, etc.
 
 
 
@@ -37,7 +38,7 @@ namespace Ceylan
 		 * @see DatagramSocket
 		 *
 		 */
-		class Socket: public InputStream,  public OutputStream 
+		class Socket: public System::InputStream, public System::OutputStream 
 		{
 
 
@@ -60,7 +61,7 @@ namespace Ceylan
 		
 		
 				/// Mother class for all socket-related exceptions.
-				class SocketException: public SystemException
+				class SocketException: public System::SystemException
 				{ 
 					public: 
 					
@@ -96,7 +97,8 @@ namespace Ceylan
 				 * @throw ReadFailed if a read error occurred.
 				 *
 				 */
-		 		virtual Size read( char * buffer, Size maxLength ) 
+		 		virtual System::Size read( char * buffer, 
+						System::Size maxLength ) 
 					throw( InputStream::ReadFailedException ) = 0 ;
 				
 		
@@ -111,7 +113,7 @@ namespace Ceylan
 				 * @throw WriteFailed if a write error occurred.
 				 *
 				 */
-				virtual Size write( const std::string & message ) 
+				virtual System::Size write( const std::string & message ) 
 					throw( OutputStream::WriteFailedException ) = 0 ;
 
 
@@ -129,7 +131,8 @@ namespace Ceylan
 				 * @throw WriteFailed if a write error occurred.
 				 *
 				 */
-				virtual Size write( const char * buffer, Size maxLength ) 
+				virtual System::Size write( const char * buffer, 
+						System::Size maxLength ) 
 					throw( OutputStream::WriteFailedException ) = 0 ;
 
 		
@@ -162,7 +165,7 @@ namespace Ceylan
 				 * feature is not available.
 				 *
 				 */
-				FileDescriptor getFileDescriptor() const 
+				System::FileDescriptor getFileDescriptor() const 
 					throw( Features::FeatureNotAvailableException ) ;
 					
 					
@@ -176,7 +179,7 @@ namespace Ceylan
 				 * the file descriptor feature is not available.
 				 *
 				 */
-				virtual StreamID getInputStreamID() const throw() ;
+				virtual System::StreamID getInputStreamID() const throw() ;
 
 
 				/**
@@ -184,7 +187,7 @@ namespace Ceylan
 				 * the file descriptor feature is not available.
 				 *
 				 */
-				virtual StreamID getOutputStreamID() const throw() ;
+				virtual System::StreamID getOutputStreamID() const throw() ;
 
 
 
@@ -217,19 +220,22 @@ namespace Ceylan
 				 * is not available.
 				 *
 				 */
-				struct SystemSpecificSocketAddress & getAddress()
+				virtual struct SystemSpecificSocketAddress & getAddress()
 					throw( Features::FeatureNotAvailableException ) = 0 ;
 		
-		
-				
 		
 				/** 
 				 * Creates the socket associated with the port <b>port</b>.
 				 *
+				 * This method must be overriden by child classes, this
+				 * basic implementation throws a SocketException in all cases
+				 * to force redefinition.
+				 *
 				 * @throw SocketException if the operation failed.
+				 *
 				 */
 				virtual void createSocket( Port port ) 
-					throw( SocketException ) = 0 ;
+					throw( SocketException ) ;
 		
 		
 				/** 
@@ -241,19 +247,16 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool close() throw( Stream::CloseException ) ;
-		
-		
-		
-			private:
 
-	
+		
 				/**
 				 * Internal file descriptor, used if this feature is 
 				 * available.
 				 *
 				 * This is the original file descriptor for this socket.
+				 *
 				 */
-				FileDescriptor _fdes ;
+				System::FileDescriptor _fdes ;
 			
 			
 				/**
@@ -264,6 +267,11 @@ namespace Ceylan
 				 */
 				Port _port ;
 		
+		
+		
+			private:
+
+	
 		
 				/**
 				 * The system-specific socket address for this socket.
