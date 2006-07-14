@@ -89,7 +89,8 @@ namespace Ceylan
 				 * @throw ReadFailed if a read error occurred.
 				 *
 				 */
-		 		virtual Size read( char * buffer, Size maxLength ) 
+		 		virtual System::Size read( char * buffer, 
+						System::Size maxLength ) 
 					throw( InputStream::ReadFailedException ) ;
 				
 		
@@ -104,7 +105,7 @@ namespace Ceylan
 				 * @throw WriteFailed if a write error occurred.
 				 *
 				 */
-				virtual Size write( const std::string & message ) 
+				virtual System::Size write( const std::string & message ) 
 					throw( OutputStream::WriteFailedException ) ;
 
 
@@ -122,7 +123,8 @@ namespace Ceylan
 				 * @throw WriteFailed if a write error occurred.
 				 *
 				 */
-				virtual Size write( const char * buffer, Size maxLength ) 
+				virtual System::Size write( const char * buffer, 
+						System::Size maxLength ) 
 					throw( OutputStream::WriteFailedException ) ;
 
 		
@@ -158,22 +160,6 @@ namespace Ceylan
 				struct SystemSpecificSocketAddress & getAddress()
 					throw( Features::FeatureNotAvailableException ) ;
 		
-		
-				/** 
-				 * Returns the supplementary file descriptor.
-				 *
-				 * Different from the original file descriptor only for 
-				 * server-side sockets after their accept() method has been
-				 * called.
-				 *
-				 * @throw FeatureNotAvailableException if the file descriptor
-				 * feature is not available.
-				 *
-				 * @see getFileDescriptor()
-				 */
-				virtual FileDescriptor getSupplementaryFileDescriptor() const
-					throw( Features::FeatureNotAvailableException ) ;
-				
 		
 				/** 
 				 * Creates the socket associated with the port <b>port</b>.
