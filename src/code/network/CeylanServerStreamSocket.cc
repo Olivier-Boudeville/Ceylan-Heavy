@@ -1,17 +1,82 @@
-#include "CeylanServerStream.h"
+#include "CeylanServerStreamSocket.h"
 
 
+//#include "Server.h"             // for FIXME
+//#include "CeylanSystem.h"       // for FIXME
+//#include "CeylanThread.h"       // for FIXME
 
-#include "Server.h"
-#include "System.h"
-#include "Thread.h"
+#include "CeylanLogPlug.h"       // for LogPlug
+#include "CeylanOperators.h"     // for toString
+#include "CeylanThread.h"        // for Sleep
 
-extern "C" int errno;
+
+#if CEYLAN_USES_CONFIG_H
+#include "CeylanConfig.h"      // for configure-time feature settings
+#endif // CEYLAN_USES_CONFIG_H
+
 
 extern "C"
 {
-#include <unistd.h>
+
+#ifdef CEYLAN_USES_UNISTD_H
+//#include <unistd.h>            // for FIXME
+#endif // CEYLAN_USES_UNISTD_H
+
+#ifdef CEYLAN_USES_SYS_TYPES_H
+#include <sys/types.h>         // for setsockopt, bind, accept
+#endif // CEYLAN_USES_SYS_TYPES_H
+
+#ifdef CEYLAN_USES_SYS_SOCKET_H
+#include <sys/socket.h>        // for setsockopt, bind, listen, accept
+#endif // CEYLAN_USES_SYS_SOCKET_H
+
+#ifdef CEYLAN_USES_ARPA_INET_H
+#include <arpa/inet.h>         // for htonl
+#endif // CEYLAN_USES_ARPA_INET_H
+
 }
+
+
+using namespace Ceylan::System ;
+using namespace Ceylan::Network ;
+using namespace Ceylan::Log ;
+
+
+using std::string ;
+
+
+
+#if CEYLAN_USES_NETWORK
+
+
+/**
+ * Avoid exposing system-dependent sockaddr_in in the headers :
+ *
+ * @note This definition had to be directly duplicated from
+ * file CeylanSocket.cc.
+ *
+ */
+struct Socket::SystemSpecificSocketAddress
+{
+	sockaddr_in _socketAddress ;	
+	
+} ;
+
+
+/**
+ * Avoid exposing system-dependent sockaddr_in in the headers :
+ *
+ * @note This definition had to be directly duplicated from
+ * file CeylanStreamSocket.cc.
+ *
+ */
+struct ServerStreamSocket::SystemSpecificSocketAddress
+{
+	sockaddr_in _socketAddress ;	
+	
+} ;
+
+#endif // CEYLAN_USES_NETWORK
 
 
 
@@ -31,98 +96,170 @@ ServerStreamSocket::ServerStreamSocketException::~ServerStreamSocketException()
 
 
 
-Server::Server( int port, bool reuse ):
-	Socket ( port ),
-	_nfdes ( 0 ),
-	_client(),
-	_bind  ( false )
+ServerStreamSocket::ServerStreamSocket( Port port, bool reuse )
+		throw( ServerStreamSocketException ):
+	StreamSocket( port ),
+	_acceptedFileDescriptor( 0 ),
+	_clientAddress(0),
+	_bound( false ),
+	_maximumPendingConnectionsCount( DefaultMaximumPendingConnectionsCount )
 {
-	if( reuse )
+
+#if CEYLAN_USES_NETWORK
+
+	_clientAddress = new SystemSpecificSocketAddress ;
+	
+	if ( reuse )
 	{
-		int i = 1;
-		::setsockopt( getFileDescriptor(), SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char *>(&i), sizeof(i) );
+	
+		// Reuse option set to non-zero to enable option :
+		int reuseOption = 1 ;
+		
+		// See : man 7 socket
+		if ( ::setsockopt( getFileDescriptor(), 
+			/* socket level */ SOL_SOCKET, 
+			/* option name */ SO_REUSEADDR, 
+			/* option value buffer */ reinterpret_cast<char *>( &reuseOption ), 
+			/* option buffer length */ sizeof( reuseOption ) != 0 ) )
+				throw ServerStreamSocketException( 
+					"ServerStreamSocketException constructor : "
+					"could not set reuse option on listening socket : "
+					 + System::explainError() ) ;
 	}
+
+#else // CEYLAN_USES_NETWORK
+
+	throw ServerStreamSocketException( 
+		"ServerStreamSocketException constructor failed : "
+		"network support not available." ) ; 
+	
+#endif // CEYLAN_USES_NETWORK
+	
 }
 
-Server::~Server()
-{
-	::close( _nfdes );
-}
 
-bool Server::prepareToAccept()
+ServerStreamSocket::~ServerStreamSocket() throw()
 {
-	if( ! _bind )
+	// No destructor should throw exception :
+	try
 	{
+		Stream::Close( _acceptedFileDescriptor ) ;
+	}
+	catch( const Stream::CloseException	& e )
+	{
+		LogPlug::error( "ServerStreamSocket destructor failed : " 
+			+ e.toString() ) ;
+	}
 
-		getAddress().sin_addr.s_addr = htonl( INADDR_ANY );
+	delete _clientAddress ;
+	
+}
+
+
+void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
+{
+
+
+	if ( _bound )
+		throw ServerStreamSocketException( 
+			"ServerStreamSocket::prepareToAccept : socket already bound" ) ;
+	
+	getAddress()._socketAddress.sin_addr.s_addr = ::htonl( INADDR_ANY ) ;
  
- 		int i = 0;
-		for( ; i < 5; i++ )
-		{
-			if( ! ::bind( getFileDescriptor(), (sockaddr*)(& getAddress()), sizeof( sockaddr_in ) ) ) break;
-			Thread::sleep( 1 );
-		}
+ 	Ceylan::Uint8 bindAttemptCount = 0 ;
+	const Ceylan::Uint8 maxBindAttemptCount = 5 ;
 		
-		if( i == 5 )
-        	{
-			setError( errno );
-			bindFailed();
-			return false;
-        	}
+	for ( ; bindAttemptCount < maxBindAttemptCount; bindAttemptCount++ )
+	{
 
-		if( ::listen( getFileDescriptor(), 10 ) == -1 )
-		{
-			listenFailed();
-			setError( errno );
-			return false;
-		}
+		LogPlug::debug( "ServerStreamSocket::prepareToAccept : bind attempt #"
+			+ Ceylan::toString( bindAttemptCount + 1 ) ) ;
 		
-		_bind = true;
-	
+		if ( ::bind( getFileDescriptor(), 
+				reinterpret_cast<sockaddr *>( & getAddress()._socketAddress ),
+				sizeof( sockaddr_in ) ) == 0 ) 
+			break ;
+		
+		Thread::Sleep( 1 /* second */ ) ;
+		
 	}
-	return true;
-}
+		
+	if ( bindAttemptCount == maxBindAttemptCount )
+		throw ServerStreamSocketException(
+			"ServerStreamSocket::prepareToAccept : bind attempts failed : "
+			+ System::explainError() ) ;
+					
 
-bool Server::accept()
-{
-	prepareToAccept();
+	if ( ::listen( getFileDescriptor(), _maximumPendingConnectionsCount ) != 0 )
+		throw ServerStreamSocketException(
+			"ServerStreamSocket::prepareToAccept : listen failed : "
+			+ System::explainError() ) ;
+ 
+ 	_bound = true ;
 	
-	socklen_t sz = (socklen_t)sizeof( _client );
+}
+
+
+void ServerStreamSocket::accept() throw( ServerStreamSocketException )
+{
+
+	prepareToAccept() ;
 	
-	_nfdes = ::accept( getFileDescriptor(), (sockaddr*)(& _client), &sz );
-	if( _nfdes == -1 )
-	{
-		setError( errno );
-		acceptFailed();
-		return false;
-	}
-	else
-	{
-		accepted();
-	}
-	return _nfdes > 0;
+	socklen_t size = static_cast<socklen_t>( 
+		sizeof( getAddress()._socketAddress ) ) ;
+	
+
+	/*
+	 * Extracts the first connection request on the queue of pending
+	 * connections, creates a new connected socket, and returns a new file
+	 * descriptor referring to that socket :
+	 *
+	 * The original file descriptor (returned by getFileDescriptor) is
+	 * unaffected by this call.
+	 */
+	_acceptedFileDescriptor = ::accept( getFileDescriptor(), 
+		reinterpret_cast<sockaddr *>( & getAddress()._socketAddress ),
+		& size ) ;
+		
+	if ( _acceptedFileDescriptor == -1 )
+		throw ServerStreamSocketException(
+			"ServerStreamSocket::accept failed : " + System::explainError() ) ;
+			
 }
 
-int Server::getFD() const
+
+FileDescriptor ServerStreamSocket::getAcceptedFileDescriptor() const
+	throw( Features::FeatureNotAvailableException )
 {
-	return _nfdes;
+
+#if CEYLAN_USES_NETWORK
+
+	return _acceptedFileDescriptor ;
+		
+#else // CEYLAN_USES_NETWORK
+
+	throw Features::FeatureNotAvailableException( 
+		"ServerStreamSocket::getAcceptedFileDescriptor : "
+		"network support not available." ) ;
+		
+#endif // CEYLAN_USES_NETWORK
+
 }
 
-void Server::accepted()
-{
-}
 
-void Server::bindFailed()
+ServerStreamSocket::ConnectionCount
+		ServerStreamSocket::getMaximumPendingConnectionsCount()
+	const throw()
 {
-	cerr << "bind@Server::prepareToAccept() failed: " << System::explainError( getError() ) << endl;
-}
 
-void Server::listenFailed()
-{
-	cerr << "listen@Server::prepareToAccept() failed: " << System::explainError( getError() ) << endl;
-}
+	return _maximumPendingConnectionsCount ;
+}	
+					
 
-void Server::acceptFailed()
+void ServerStreamSocket::setMaximumPendingConnectionsCount( 
+	ConnectionCount newMax ) throw()
 {
-	cerr << "accept@Server::accept() failed: " << System::explainError( getError() ) << endl;
-}
+	_maximumPendingConnectionsCount = newMax ;
+}	
+					
+					
