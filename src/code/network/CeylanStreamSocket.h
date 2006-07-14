@@ -74,7 +74,7 @@ namespace Ceylan
 				
 				
 				/**
-				 * Reads up to maxLength bytes from this file to specified
+				 * Reads up to maxLength bytes from this socket to specified
 				 * buffer.
 				 *
 				 * @param buffer the buffer where to store read bytes. 
@@ -146,21 +146,27 @@ namespace Ceylan
 					throw( InputStream::ReadFailedException ) ;
 
 
+            	/**
+            	 * Returns an user-friendly description of the state of
+				 * this object.
+            	 *
+				 * @param level the requested verbosity level.
+				 *
+				 * @note Text output format is determined from overall 
+				 * settings.
+				 *
+				 * @see TextDisplayable
+				 *
+				 */
+            	virtual const std::string toString( 
+					Ceylan::VerbosityLevels level = Ceylan::high ) 
+						const throw() ;
+			
+				
 				
 			protected:
 
-		
-				/**
-				 * Returns the socket address structure reference.
-				 *
-				 * @throw FeatureNotAvailableException if the network feature
-				 * is not available.
-				 *
-				 */
-				struct SystemSpecificSocketAddress & getAddress()
-					throw( Features::FeatureNotAvailableException ) ;
-		
-		
+				
 				/** 
 				 * Creates the socket associated with the port <b>port</b>.
 				 *
@@ -170,6 +176,25 @@ namespace Ceylan
 				virtual void createSocket( Port port ) 
 					throw( SocketException )  ;
 		
+		
+				/**
+				 * Returns the file descriptor that should be used by this 
+				 * stream socket to read/write data from/to peers. 
+				 *
+				 * For client stream socket, the returned file descriptor
+				 * corresponds to the original socket, whereas for servers
+				 * it corresponds to the socket created especially for an
+				 * already accepted connection, not the original one.
+				 *
+				 * @throw FeatureNotAvailableException if the file descriptor
+				 * feature is not available.
+				 *
+				 * @see getFileDescriptor()
+				 *
+				 */
+				virtual System::FileDescriptor 
+						getFileDescriptorForTransport() const
+					throw( Features::FeatureNotAvailableException ) ;
 				
 		
 			private:
