@@ -38,6 +38,7 @@ namespace Ceylan
 		/**
 		 * Handles abstract IP (Internet Protocol) addresses.
 		 *
+		 * @todo Add informations from netinet/in.h (ex : IN_CLASSA).
 		 *
 		 */		
 		class IPAddress : public TextDisplayable
