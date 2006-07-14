@@ -1,10 +1,6 @@
 #include "CeylanServerStreamSocket.h"
 
 
-//#include "Server.h"             // for FIXME
-//#include "CeylanSystem.h"       // for FIXME
-//#include "CeylanThread.h"       // for FIXME
-
 #include "CeylanLogPlug.h"       // for LogPlug
 #include "CeylanOperators.h"     // for toString
 #include "CeylanThread.h"        // for Sleep
@@ -33,6 +29,10 @@ extern "C"
 #ifdef CEYLAN_USES_ARPA_INET_H
 #include <arpa/inet.h>         // for htonl
 #endif // CEYLAN_USES_ARPA_INET_H
+
+#ifdef CEYLAN_USES_NETINET_IN_H
+#include <netinet/in.h>        // for htonl
+#endif // CEYLAN_USES_NETINET_IN_H
 
 }
 
@@ -97,7 +97,7 @@ ServerStreamSocket::ServerStreamSocketException::~ServerStreamSocketException()
 
 
 ServerStreamSocket::ServerStreamSocket( Port port, bool reuse )
-		throw( ServerStreamSocketException ):
+		throw( SocketException ):
 	StreamSocket( port ),
 	_acceptedFileDescriptor( 0 ),
 	_clientAddress(0),
@@ -120,11 +120,11 @@ ServerStreamSocket::ServerStreamSocket( Port port, bool reuse )
 			/* socket level */ SOL_SOCKET, 
 			/* option name */ SO_REUSEADDR, 
 			/* option value buffer */ reinterpret_cast<char *>( &reuseOption ), 
-			/* option buffer length */ sizeof( reuseOption ) != 0 ) )
+			/* option buffer length */ sizeof( reuseOption ) ) != 0 )
 				throw ServerStreamSocketException( 
 					"ServerStreamSocketException constructor : "
 					"could not set reuse option on listening socket : "
-					 + System::explainError() ) ;
+					+ System::explainError() ) ;
 	}
 
 #else // CEYLAN_USES_NETWORK
@@ -156,15 +156,121 @@ ServerStreamSocket::~ServerStreamSocket() throw()
 }
 
 
+
+
+void ServerStreamSocket::accept() throw( ServerStreamSocketException )
+{
+
+	prepareToAccept() ;
+	
+	socklen_t size = static_cast<socklen_t>( 
+		sizeof( getAddress()._socketAddress ) ) ;
+	
+	LogPlug::debug( "ServerStreamSocket::accept : ready to accept." ) ;
+	
+	/*
+	 * Extracts the first connection request on the queue of pending
+	 * connections, creates a new connected socket, and returns a new file
+	 * descriptor referring to that socket :
+	 *
+	 * The original file descriptor (returned by getFileDescriptor) is
+	 * unaffected by this call.
+	 */
+	_acceptedFileDescriptor = ::accept( getFileDescriptor(), 
+		reinterpret_cast<sockaddr *>( & getAddress()._socketAddress ),
+		& size ) ;
+		
+	if ( _acceptedFileDescriptor == -1 )
+		throw ServerStreamSocketException(
+			"ServerStreamSocket::accept failed : " + System::explainError() ) ;
+
+	LogPlug::debug( "ServerStreamSocket::accept : accept performed." ) ;
+
+	accepted() ;
+			
+}
+
+
+FileDescriptor ServerStreamSocket::getFileDescriptorForTransport() const
+	throw( Features::FeatureNotAvailableException )
+{
+
+#if CEYLAN_USES_NETWORK
+
+	return _acceptedFileDescriptor ;
+		
+#else // CEYLAN_USES_NETWORK
+
+	throw Features::FeatureNotAvailableException( 
+		"ServerStreamSocket::getFileDescriptorForTransport : "
+		"network support not available." ) ;
+		
+#endif // CEYLAN_USES_NETWORK
+
+}
+
+
+
+
+ServerStreamSocket::ConnectionCount
+		ServerStreamSocket::getMaximumPendingConnectionsCount()
+	const throw()
+{
+
+	return _maximumPendingConnectionsCount ;
+}	
+					
+
+void ServerStreamSocket::setMaximumPendingConnectionsCount( 
+	ConnectionCount newMax ) throw()
+{
+	_maximumPendingConnectionsCount = newMax ;
+}	
+
+
+const std::string ServerStreamSocket::toString( Ceylan::VerbosityLevels level ) 
+	const throw()
+{
+
+	string res ;
+	
+	
+	// @todo : add client IP
+	
+	if ( _bound )
+		res = "ServerStreamSocket linked to client" ;
+	else		
+		res = "ServerStreamSocket not linked to any client" ;
+
+	if ( level == Ceylan::low )
+		return res ;
+	
+	res += ". File descriptor for accepted connection is " 
+		+ Ceylan::toString( _acceptedFileDescriptor	) ;
+		
+	res += ". The current maximum number of pending connections "
+		"for this socket is " 
+		+ Ceylan::toString( getMaximumPendingConnectionsCount() ) ;
+	
+	if	( level == Ceylan::medium )
+		return res ;
+	
+	return res + ". " + StreamSocket::toString( level ) ;
+	
+}	
+						
+
 void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 {
 
-
+	LogPlug::trace( "Entering ServerStreamSocket::prepareToAccept" ) ;
+	
 	if ( _bound )
 		throw ServerStreamSocketException( 
 			"ServerStreamSocket::prepareToAccept : socket already bound" ) ;
 	
-	getAddress()._socketAddress.sin_addr.s_addr = ::htonl( INADDR_ANY ) ;
+	getAddress()._socketAddress.sin_addr.s_addr = 
+		::htonl( /* Address to accept any incoming message */ INADDR_ANY ) ;
  
  	Ceylan::Uint8 bindAttemptCount = 0 ;
 	const Ceylan::Uint8 maxBindAttemptCount = 5 ;
@@ -189,77 +295,27 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 			"ServerStreamSocket::prepareToAccept : bind attempts failed : "
 			+ System::explainError() ) ;
 					
-
+	LogPlug::debug( "ServerStreamSocket::prepareToAccept : bind succeeded." ) ;
+	
 	if ( ::listen( getFileDescriptor(), _maximumPendingConnectionsCount ) != 0 )
 		throw ServerStreamSocketException(
 			"ServerStreamSocket::prepareToAccept : listen failed : "
 			+ System::explainError() ) ;
+
+	LogPlug::debug( "ServerStreamSocket::prepareToAccept : "
+		"listen succeeded." ) ;
  
  	_bound = true ;
 	
 }
 
-
-void ServerStreamSocket::accept() throw( ServerStreamSocketException )
-{
-
-	prepareToAccept() ;
-	
-	socklen_t size = static_cast<socklen_t>( 
-		sizeof( getAddress()._socketAddress ) ) ;
-	
-
-	/*
-	 * Extracts the first connection request on the queue of pending
-	 * connections, creates a new connected socket, and returns a new file
-	 * descriptor referring to that socket :
-	 *
-	 * The original file descriptor (returned by getFileDescriptor) is
-	 * unaffected by this call.
-	 */
-	_acceptedFileDescriptor = ::accept( getFileDescriptor(), 
-		reinterpret_cast<sockaddr *>( & getAddress()._socketAddress ),
-		& size ) ;
-		
-	if ( _acceptedFileDescriptor == -1 )
-		throw ServerStreamSocketException(
-			"ServerStreamSocket::accept failed : " + System::explainError() ) ;
-			
-}
-
-
-FileDescriptor ServerStreamSocket::getAcceptedFileDescriptor() const
-	throw( Features::FeatureNotAvailableException )
-{
-
-#if CEYLAN_USES_NETWORK
-
-	return _acceptedFileDescriptor ;
-		
-#else // CEYLAN_USES_NETWORK
-
-	throw Features::FeatureNotAvailableException( 
-		"ServerStreamSocket::getAcceptedFileDescriptor : "
-		"network support not available." ) ;
-		
-#endif // CEYLAN_USES_NETWORK
-
-}
-
-
-ServerStreamSocket::ConnectionCount
-		ServerStreamSocket::getMaximumPendingConnectionsCount()
-	const throw()
-{
-
-	return _maximumPendingConnectionsCount ;
-}	
 					
-
-void ServerStreamSocket::setMaximumPendingConnectionsCount( 
-	ConnectionCount newMax ) throw()
+void ServerStreamSocket::accepted() throw( ServerStreamSocketException )
 {
-	_maximumPendingConnectionsCount = newMax ;
-}	
-					
+
+	// Empty implementation made to be overriden.
+	LogPlug::debug( "ServerStreamSocket::accepted : "
+		"connection up and running." ) ;
+	
+}
 					
