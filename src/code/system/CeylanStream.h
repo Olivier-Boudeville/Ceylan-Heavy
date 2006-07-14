@@ -81,10 +81,6 @@ namespace Ceylan
 				virtual ~Stream() throw() ;
 	
 	
-				/// Returns the stream's unique ID.
-				virtual StreamID getStreamID() const throw() = 0 ;
-				
-
 				/**
 				 * Closes the stream.
 				 *
