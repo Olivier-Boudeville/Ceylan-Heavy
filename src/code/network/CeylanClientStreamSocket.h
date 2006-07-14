@@ -54,16 +54,17 @@ namespace Ceylan
 				} ;
 
 
-
 	
 				/**
 				 * Constructs a client-side stream socket.
 				 *
-				 * @throw SocketException if the operation failed.
+				 * @throw SocketException if socket creation failed.
 				 *
 				 */
 				ClientStreamSocket() throw( SocketException ) ;
 	
+	
+				/// Virtual destructor.
 				virtual ~ClientStreamSocket() throw() ;
 	
 	
@@ -80,18 +81,46 @@ namespace Ceylan
 				virtual void connect( const std::string & serverHostname, 
 						Port port )
 					throw( SocketException ) ;
+
+	
+            	/**
+            	 * Returns a user-friendly description of the state of 
+				 * this object.
+            	 *
+				 * @param level the requested verbosity level.
+				 *
+				 * @note Text output format is determined from overall 
+				 * settings.
+				 *
+				 * @see TextDisplayable
+				 *
+				 */
+				virtual const std::string toString( 
+					Ceylan::VerbosityLevels level = Ceylan::high ) 
+						const throw() ;
 	
 	
 	
 			protected:
 	
 	
-				/// Called after the connection is established.
-				virtual void connected() ;
+	
+				/**
+				 * Called after the connection is established.
+				 *
+				 * @note This method is made to be overriden by actual 
+				 * specialized clients.
+				 *
+				 * @throw ClientStreamSocketException on failure.
+				 *
+				 */
+				virtual void connected() 
+					throw( ClientStreamSocketException ) ;
 	
 
 				/// Returns the hostname of the server.
 				const std::string & getServerName() const throw() ;
+	
 	
 	
 			private:
