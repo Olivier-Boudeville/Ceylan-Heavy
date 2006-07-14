@@ -396,8 +396,7 @@ void Thread::Sleep( System::Second seconds,	System::Microsecond microseconds )
 
 	try
 	{
-	
-		System::basicSleep( seconds, 1000 * microseconds ) ;
+			System::basicSleep( seconds, 1000 * microseconds ) ;
 	}
 	catch( const SystemException & e )
 	{
