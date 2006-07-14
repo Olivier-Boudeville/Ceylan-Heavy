@@ -1,5 +1,5 @@
-#ifndef CEYLAN_CLIENT_STREAM_SOCKET_H
-#define CEYLAN_CLIENT_STREAM_SOCKET_H
+#ifndef CEYLAN_CLIENT_STREAM_SOCKET_H_
+#define CEYLAN_CLIENT_STREAM_SOCKET_H_
 
 
 #include "CeylanStreamSocket.h"      // for inheritance
@@ -15,6 +15,8 @@ namespace Ceylan
 
 	namespace Network
 	{
+
+
 
 
 		/// A ClientStreamSocket owns a HostDNSEntry :
@@ -70,27 +72,26 @@ namespace Ceylan
 				 *
 				 * @param serverHostname the hostname of the server.
 				 *
-				 * @param port the port of the server.
+				 * @param port the TCP port of the server.
 				 *
 				 * @throw SocketException if the operation failed.
 				 *				 
 				 */
-				virtual void connect( const string & serverHostname, Port port )
+				virtual void connect( const std::string & serverHostname, 
+						Port port )
 					throw( SocketException ) ;
 	
 	
 	
 			protected:
 	
-				/// Called after the connection is established.
-				virtual void connected();
 	
-				/// This method is called when connection fails.
-				virtual void clientConnectionFailed();
-
+				/// Called after the connection is established.
+				virtual void connected() ;
+	
 
 				/// Returns the hostname of the server.
-				const std::string & getServerName() const ;
+				const std::string & getServerName() const throw() ;
 	
 	
 			private:
@@ -100,7 +101,7 @@ namespace Ceylan
 				std::string _serverHostName ;
 	
 				/// DNS record for linked server.
-				HostDNSEntry * _serverHostinfo ;
+				HostDNSEntry * _serverHostInfo ;
 	
 	
 				/**
@@ -134,4 +135,4 @@ namespace Ceylan
 } 
 
 
-#endif // CEYLAN_CLIENT_STREAM_SOCKET_H
+#endif // CEYLAN_CLIENT_STREAM_SOCKET_H_
