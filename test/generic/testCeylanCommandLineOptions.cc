@@ -37,7 +37,15 @@ int main( int argc,  char * argv[] )
 			+ ", option list is " 
 			+ formatStringList( options, /* surroundByTicks */ true ) ) ;
 		
-		LogPlug::info( "Example of use to parse easily options." ) ;
+		
+		LogPlug::info( "Example of use of Ceylan::parseCommandLineOptions "
+			"to parse easily options, with detection of unsupported options "
+			"and use of options taking arguments." ) ;
+		
+		
+		
+		// No switch allowed, using if/else clauses :
+		
 		
 		std::string token ;
 		bool tokenEaten ;
@@ -46,11 +54,11 @@ int main( int argc,  char * argv[] )
 		while ( ! options.empty() )
 		{
 		
-			tokenEaten = false ;
-			
 			token = options.front() ;
 			options.pop_front() ;
-			
+
+			tokenEaten = false ;
+						
 			if ( token == "--consolePlug" )
 			{
 				LogPlug::info( "Console plug selected" ) ;
@@ -66,13 +74,13 @@ int main( int argc,  char * argv[] )
 				LogPlug::info( "Classical plug selected" ) ;
 				tokenEaten = true ;
 			} else		
-			if ( token == "--countOption" )
+			if ( token == "--countedOption" )
 			{
 				std::string count = options.front() ;
 				options.pop_front() ;
-				tokenEaten = true ;
 				LogPlug::info( "Option with argument selected, argument is : "
 					+ count ) ;
+				tokenEaten = true ;
 			}
 			
 			if ( ! tokenEaten )
