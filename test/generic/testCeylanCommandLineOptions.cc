@@ -36,6 +36,52 @@ int main( int argc,  char * argv[] )
 			+ "', option count is " + Ceylan::toString( options.size() ) 
 			+ ", option list is " 
 			+ formatStringList( options, /* surroundByTicks */ true ) ) ;
+		
+		LogPlug::info( "Example of use to parse easily options." ) ;
+		
+		std::string token ;
+		bool tokenEaten ;
+		
+		
+		while ( ! options.empty() )
+		{
+		
+			tokenEaten = false ;
+			
+			token = options.front() ;
+			options.pop_front() ;
+			
+			if ( token == "--consolePlug" )
+			{
+				LogPlug::info( "Console plug selected" ) ;
+				tokenEaten = true ;
+			} else
+			if ( token == "--htmlPlug" )
+			{
+				LogPlug::info( "HTML plug selected" ) ;
+				tokenEaten = true ;
+			} else
+			if ( token == "--classicalPlug" )
+			{
+				LogPlug::info( "Classical plug selected" ) ;
+				tokenEaten = true ;
+			} else		
+			if ( token == "--countOption" )
+			{
+				std::string count = options.front() ;
+				options.pop_front() ;
+				tokenEaten = true ;
+				LogPlug::info( "Option with argument selected, argument is : "
+					+ count ) ;
+			}
+			
+			if ( ! tokenEaten )
+			{
+				LogPlug::error( "Unexpected command line argument : "
+					+ token ) ;
+			}
+		
+		}
 			
         LogPlug::info( "End of command line option management test." ) ;
 
