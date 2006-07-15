@@ -13,6 +13,9 @@ using namespace Ceylan::Log ;
 /**
  * Test of Ceylan command line option management.
  *
+ * @example : "testCeylanCommandLineOptions --consolePlug --countedOption 3
+ * --unknownOption --htmlPlug"
+ *
  * @see Ceylan::parseCommandLineOptions.
  *
  */
