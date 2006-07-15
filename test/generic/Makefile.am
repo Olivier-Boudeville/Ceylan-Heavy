@@ -6,6 +6,7 @@ testsgeneric_CXXFLAGS = @AM_CXXFLAGS@
 
 testsgeneric_PROGRAMS = \
 	testCeylanBasicResourceManager            \
+	testCeylanCommandLineOptions              \
 	testCeylanCountedPointer                  \
 	testCeylanMostBasic                       \
 	testCeylanOperators                       \
@@ -20,6 +21,7 @@ testsgeneric_PROGRAMS = \
 
 
 testCeylanBasicResourceManager_SOURCES = testCeylanBasicResourceManager.cc
+testCeylanCommandLineOptions_SOURCES   = testCeylanCommandLineOptions.cc
 testCeylanCountedPointer_SOURCES       = testCeylanCountedPointer.cc
 testCeylanMostBasic_SOURCES            = testCeylanMostBasic.cc
 testCeylanOperators_SOURCES            = testCeylanOperators.cc
