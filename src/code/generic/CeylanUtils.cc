@@ -89,6 +89,18 @@ const Ceylan::LibtoolVersion & Ceylan::GetVersion() throw()
 }
 
 
+void Ceylan::parseCommandLineOptions( std::string & readExecutableName, 
+	list<string> & readOptions, Ceylan::Uint16 argumentCount, 
+	char ** argumentVector ) throw()
+{
+
+	readExecutableName = string( argumentVector[0] ) ;
+	
+	for ( Ceylan::Uint16 arg = 1 ; arg < argumentCount; arg++ )
+		readOptions.push_back( argumentVector[arg] ) ;	
+
+}
+
 
 void Ceylan::emergencyShutdown( const string & message ) throw() 
 {
