@@ -94,6 +94,34 @@ namespace Ceylan
 	} ;	
 
 
+
+	/**
+	 * Parses arguments given to an executable (argc, argv) and translates it
+	 * into an executable name and a set of option words, stored in specified
+	 * list of strings.
+	 *
+	 * Arguments are easier to take into account this way.
+	 *
+	 * @param readExecutableName the string where this function will store 
+	 * the executable name.
+	 *
+	 * @param readOptions the list of strings where this function will store 
+	 * the options, one word by string, in the same order as they were in 
+	 * the command line.
+	 *
+	 * @param argumentCount the number of arguments (argc).
+	 *
+	 * @param argumentVector the array of option strings (char ** argv).
+	 *
+	 * @see testCeylanCommandLineOptions.cc
+	 *
+	 */
+	void parseCommandLineOptions( std::string & readExecutableName ,
+		std::list<std::string> & readOptions, 
+		Ceylan::Uint16 argumentCount, char ** argumentVector ) throw() ;
+		
+
+
 	/// Return value to be used on success.
 	extern const Ceylan::Sint16 ExitSuccess ;
 
