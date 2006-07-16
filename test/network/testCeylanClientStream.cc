@@ -38,7 +38,7 @@ class MyTestStreamClient : public Ceylan::Network::ClientStreamSocket
 		
 			LogPlug::info( "Client connected !" ) ;
 			
-			string s = "This is a test line for server, quitting now : Q\n";
+			string s = "This is a test line from client, quitting now ! Q\n";
 			write( s ) ;
 			
 			LogPlug::info( "Client sent : '" + s + "'." ) ;
@@ -93,7 +93,8 @@ int main( int argc, char * argv[] )
 		char buffer[ 10 ] ;
 	
 		if ( myClient.read( buffer, 2 ) > 0 ) 
-			cout << "Client read from server : " << buffer << endl ;
+			cout << "Client read from server : '" << buffer 
+				<< "'." << endl ;
 		
         LogPlug::info( "Connection terminated, current client state is : "
 			+ myClient.toString() ) ;			
