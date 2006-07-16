@@ -561,6 +561,9 @@ string Ceylan::formatStringList( const list<string> & stringList,
 	bool surroundByTicks ) throw()
 {
 
+	if ( stringList.empty() )
+		return "(empty list)" ;
+		
 	string res ;
 	
 	if ( TextDisplayable::GetOutputFormat() == TextDisplayable::html )
