@@ -76,10 +76,53 @@ int main( int argc, char * argv[] )
 
 		string targetServer ;
 		
-		if ( argc < 2 )
-			targetServer = "localhost" ;
-		else	
-			targetServer = argv[1] ;
+		std::string executableName ;
+		std::list<std::string> options ;
+		
+		Ceylan::parseCommandLineOptions( executableName, options, argc, argv ) ;
+	
+		std::string token ;
+		bool tokenEaten ;
+		
+		
+		while ( ! options.empty() )
+		{
+		
+			token = options.front() ;
+			options.pop_front() ;
+
+			tokenEaten = false ;
+						
+			if ( token == "--batch" )
+			{
+				LogPlug::info( "Running in batch mode (ignored)" ) ;
+				tokenEaten = true ;
+			} else
+			if ( token == "--interactive" )
+			{
+				LogPlug::info( "Running in interactive mode (ignored)" ) ;
+				tokenEaten = true ;
+			} else		
+			if ( token == "--server" )
+			{
+				targetServer = options.front() ;
+				options.pop_front() ;
+				LogPlug::info( "Will try to connect to server '"
+					+ targetServer + "'." ) ;
+				tokenEaten = true ;
+			}
+			
+			if ( ! tokenEaten )
+			{
+				LogPlug::error( "Unexpected command line argument : "
+					+ token ) ;
+			}
+		
+		}
+	
+	
+		if ( targetServer.empty() )
+			targetServer = "localhost" ;    
 	
         LogPlug::info( "Client created : " + myClient.toString()
 			+ ", will try to connect to '" + targetServer + "'." ) ;
@@ -96,6 +139,13 @@ int main( int argc, char * argv[] )
 			cout << "Client read from server : '" << buffer 
 				<< "'." << endl ;
 		
+		const char expectedAnswer = '+' ; 
+		
+		if ( buffer[0] != expectedAnswer )
+			throw Ceylan::TestException( "Incorrect answer from server : "
+				"received '" + string( buffer ) + "', instead of '" 
+				+ toString( expectedAnswer ) + "'." ) ;
+				
         LogPlug::info( "Connection terminated, current client state is : "
 			+ myClient.toString() ) ;			
 		
