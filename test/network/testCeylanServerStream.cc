@@ -23,8 +23,9 @@ class MyTestStreamServer : public Ceylan::Network::ServerStreamSocket
 	public:
 	
 	
-		MyTestStreamServer(): 
-			ServerStreamSocket( 6969, /* reuse */ true )
+		MyTestStreamServer( bool isBatch ):
+			ServerStreamSocket( 6969, /* reuse */ true ),
+			_batch( isBatch )
 		{
 		
 			LogPlug::info( "MyTestStreamServer created : "
@@ -78,11 +79,16 @@ class MyTestStreamServer : public Ceylan::Network::ServerStreamSocket
 					}
 					else
 					{
+					
 						cout << buffer ;
 						cout.flush() ;
 						
-						// Sleep for 0.1 second :
-						Thread::Sleep( 0, 100000 /* microseconds */ ) ;
+						if ( ! _batch )
+						{
+							// Sleep for 0.1 second :
+							Thread::Sleep( 0, 100000 /* microseconds */ ) ;
+						}
+							
 					}
 					
 				}
@@ -95,7 +101,13 @@ class MyTestStreamServer : public Ceylan::Network::ServerStreamSocket
 			
 		}
 		
-
+	
+	private:
+	
+	
+		bool _batch ;
+		
+		
 } ;
 
 
@@ -121,7 +133,41 @@ int main( int argc, char * argv[] )
         LogPlug::info( "Testing Ceylan's network implementation "
 			"of stream socket for servers." ) ;
 
-		MyTestStreamServer myServer ;
+		bool isBatch = false ;
+
+		std::string executableName ;
+		std::list<std::string> options ;
+		
+		Ceylan::parseCommandLineOptions( executableName, options, argc, argv ) ;
+		
+		std::string token ;
+		bool tokenEaten ;
+		
+		
+		while ( ! options.empty() )
+		{
+		
+			token = options.front() ;
+			options.pop_front() ;
+
+			tokenEaten = false ;
+						
+			if ( token == "--batch" )
+			{
+				LogPlug::info( "Batch mode selected" ) ;
+				isBatch = true ;
+				tokenEaten = true ;
+			}
+			
+			if ( ! tokenEaten )
+			{
+				LogPlug::error( "Unexpected command line argument : "
+					+ token ) ;
+			}
+		
+		}
+		
+		MyTestStreamServer myServer( isBatch ) ;
 	
         LogPlug::info( "Server created, waiting for connections : "
 			+ myServer.toString() ) ;
