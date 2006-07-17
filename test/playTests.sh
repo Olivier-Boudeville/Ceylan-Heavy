@@ -1,6 +1,8 @@
 #!/bin/bash
 
 TESTLOGFILE=`pwd`"/testsOutcome.txt"
+PLAYTEST_LOCAL_FILE="playTests-local.sh"
+
 
 USAGE="`basename $0` [--interactive] : executes all tests for Ceylan in a row.\n\tIf the --interactive option is used, tests will not be run in batch mode, and will prompt the user for various inputs. Otherwise only their final result will be output. In all cases their messages will be stored in file ${TESTLOGFILE}. The return code of this script will be the number of failed tests (beware to overflow of the return code)"
  
@@ -54,6 +56,89 @@ ERROR_INTERNAL()
 
 DEBUG_INTERNAL "Debug mode activated"
 
+
+# Some useful test functions :
+
+display_launching()
+# Usage : display_launching <name of the test>
+{
+
+	test_name="$1"
+	
+	if [ "$is_batch" == "1" ] ; then
+		printColor "${term_primary_marker}Launching $test_name" $cyan_text $blue_back
+	else
+		printf "[${cyan_text}m%-${space_for_test_name}s" `echo $test_name|sed 's|^./||'`
+	fi
+	
+}
+
+
+display_test_result()
+# Usage : display_test_result <name of the test> <test path> <returned code>
+{
+
+	test_name="$1"
+	t="$2"
+	return_code="$3"
+	
+	if [ "$return_code" == 0 ] ; then
+		# Test succeeded :
+		if [ "$is_batch" == "1" ] ; then
+			echo
+			printColor "${term_offset}$test_name seems to be successful     " $green_text $black_back
+		else
+			printf  "[${white_text}m[[${green_text}mOK[${white_text}m]\n"
+		fi	
+				
+	else
+			
+		# Test failed :
+		error_count=$(($error_count+1))
+		if [ "$is_batch" == "1" ] ; then
+			echo
+			printColor "${term_offset}$t seems to be failed (exit status $return_code)     " $white_text $red_back
+		else
+			echo "$t failed, whose shared library dependencies are : " >>${TESTLOGFILE}
+			ldd $t >>${TESTLOGFILE}
+			printf "[${white_text}m[[${red_text}mKO[${white_text}m]\n"
+		fi	
+	fi
+}
+
+
+run_test()
+# Usage : run_test <name of the test> <test path> 
+{
+
+	test_name="$1"
+	t="$2"
+	
+	# The --interactive parameter is used to tell the test it is 
+	# run in interactive mode, so that those which are long 
+	# (ex : stress tests) are shorten.
+	if [ "$is_batch" == "0" ] ; then
+		echo -e "\n\n########### Running now $t" >>${TESTLOGFILE}
+		$t --batch 1>>${TESTLOGFILE} 2>&1
+	else
+		$t --interactive
+	fi			
+		
+	return_code="$?"
+	
+	display_test_result "$test_name" "$t" "$return_code"
+	
+		
+	if [ "$is_batch" == "1" ] ; then
+		printColor "${term_primary_marker}End of $test_name, press enter to continue" $cyan_text $blue_back
+		read 
+		clear
+	fi		
+			
+}
+
+
+
 # Try to find term utilities :
 
 TEST_ROOT=`dirname $0`
@@ -79,7 +164,7 @@ fi
 
 
 # This script will automatically run each test of each selected Ceylan module.
-#TESTED_MODULES="generic logs interfaces modules system maths"
+#TESTED_MODULES="generic logs interfaces modules system maths network"
 TESTED_ROOT_MODULES=`cd ${TEST_ROOT}; find . -mindepth 1 -type d | grep -v autom4te.cache | grep -v .svn | grep -v '.deps' | grep -v '.libs' | grep -v 'testCeylan' `
 
 # "[OK] " is 5 character wide and must be aligned along the right edge :
@@ -98,15 +183,32 @@ echo -e "\n\nLibrary search path is : LD_LIBRARY_PATH='$LD_LIBRARY_PATH'" >> ${T
 # So that test plugin can be found :
 saved_LTDL_LIBRARY_PATH="$LTDL_LIBRARY_PATH"
 
+
 for m in ${TESTED_ROOT_MODULES} ; do
 
 	LTDL_LIBRARY_PATH="$saved_LTDL_LIBRARY_PATH:${TEST_ROOT}/$m"
 	export LTDL_LIBRARY_PATH
+	
+	# Some local scripts are needed in some cases, for example when a test
+	# client requires a test server to be launched before.
+	
+	PLAYTEST_LOCAL="${TEST_ROOT}/$m/${PLAYTEST_LOCAL_FILE}"
+	
+	
 	printColor "\n${term_offset}${term_primary_marker}Playing all tests of module '"`echo $m | sed 's|^./||1'`"' : " $magenta_text $black_back
+
+	
+	if [ -f "${PLAYTEST_LOCAL}" ] ; then
+		EXCLUDED_TESTS=""
+		source ${PLAYTEST_LOCAL}
+	fi
+		
 	
 	TESTS=`find ${TEST_ROOT}/$m -mindepth 1 -maxdepth 1 -perm +o+x,g+x -a -type f -a -name 'testCeylan*' `
+	
 	if [ "$is_batch" == "1" ] ; then
 	
+		# Lists all tests that are to be run :
 		for t in $TESTS ; do
 			if [ -x "$t" -a -f "$t" ] ; then
 				printColor "${term_offset}${term_offset}+ `basename $t`" $cyan_text $black_back
@@ -119,60 +221,35 @@ for m in ${TESTED_ROOT_MODULES} ; do
 	fi
 
 	for t in $TESTS ; do
+	
 		if [ -x "$t" -a -f "$t" ] ; then
+
+			to_be_excluded=1
+			for excluded in ${EXCLUDED_TESTS} ; do
+				if [ `basename "$t"` == "$excluded" ] ; then
+					to_be_excluded=0
+				fi	
+			done	
 		
+			if [ "$to_be_excluded" == "0" ] ; then
+				# Skip this test, as PLAYTEST_LOCAL_FILE took care of it :
+				#echo "Skipping $t"
+				continue
+			fi
+			
 			test_count=$(($test_count+1))
 			test_name=`basename $t`
 			
-			if [ "$is_batch" == "1" ] ; then
-				printColor "${term_primary_marker}Launching $test_name" $cyan_text $blue_back
-			else
-				printf "[${cyan_text}m%-${space_for_test_name}s" `echo $test_name|sed 's|^./||'`
-			fi
-				
-			# The --interactive parameter is used to tell the test it is 
-			# run in interactive mode, so that those which are long 
-			# (ex : stress tests) are shorten.
-			if [ "$is_batch" == "0" ] ; then
-				echo -e "\n\n########### Running now $t" >>${TESTLOGFILE}
-				./$t --batch 1>>${TESTLOGFILE} 2>&1
-			else
-				./$t --interactive
-			fi			
-		
-			return_code="$?"
-			if [ "$return_code" == 0 ] ; then
-				# Test succeeded :
-				if [ "$is_batch" == "1" ] ; then
-					echo
-					printColor "${term_offset}$test_name seems to be successful     " $green_text $black_back
-				else
-					printf  "[${white_text}m[[${green_text}mOK[${white_text}m]\n"
-				fi	
-				
-			else
-				# Test failed :
-				error_count=$(($error_count+1))
-				if [ "$is_batch" == "1" ] ; then
-					echo
-					printColor "${term_offset}$t seems to be failed (exit status $return_code)     " $white_text $red_back
-				else
-					echo "$t failed, whose shared library dependencies are : " >>${TESTLOGFILE}
-					ldd ./$t >>${TESTLOGFILE}
-					printf "[${white_text}m[[${red_text}mKO[${white_text}m]\n"
-				fi	
-			fi
-		
-			if [ "$is_batch" == "1" ] ; then
-				printColor "${term_primary_marker}End of $test_name, press enter to continue" $cyan_text $blue_back
-				read 
-				clear
-			fi	
+			display_launching $test_name
+			
+			run_test $test_name "$t"
+			
 		fi
 			
 	done
 		
 done 
+
 
 echo 
 
@@ -180,6 +257,7 @@ if [ "$error_count" -eq "0" ] ; then
 	echo "   Test result : [${green_text}m all $test_count tests succeeded[${white_text}m"
 else
 	echo "   Test result : [${red_text}m $error_count out of $test_count tests failed[${white_text}m"
+	echo "   (see ${TESTLOGFILE} for more details)"
 fi	
 
 echo -e "\nEnd of tests"
