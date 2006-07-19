@@ -3,6 +3,7 @@
 
 
 #include "CeylanSystem.h"        // for Size, SignedSize, etc.
+#include "CeylanTypes.h"         // for Ceylan::Byte
 #include "CeylanInputStream.h"   // for inheritance
 #include "CeylanOutputStream.h"  // for inheritance
 #include "CeylanFeatures.h"      // for FeatureNotAvailableException
@@ -757,7 +758,7 @@ namespace Ceylan
 				 * @throw ReadFailed if a read error occurred.
 				 *
 				 */
-		 		virtual Size read( char * buffer, Size maxLength ) 
+		 		virtual Size read( Ceylan::Byte * buffer, Size maxLength ) 
 					throw( InputStream::ReadFailedException ) ;
 
 
@@ -799,7 +800,8 @@ namespace Ceylan
 				 * @throw WriteFailed if a write error occurred.
 				 *
 				 */
-				virtual Size write( const char * buffer, Size maxLength ) 
+				virtual Size write( const Ceylan::Byte * buffer, 
+						Size maxLength ) 
 					throw( OutputStream::WriteFailedException ) ;
 
 
@@ -1187,7 +1189,7 @@ namespace Ceylan
 				/// Transfers bytes from a file descriptor to another.
 				static void FromFDtoFD( FileDescriptor from, 
 						FileDescriptor to, Size length )
-					throw( ReadFailed, WriteFailed,
+					throw( IOException, 
 						Features::FeatureNotAvailableException ) ;
 
 
