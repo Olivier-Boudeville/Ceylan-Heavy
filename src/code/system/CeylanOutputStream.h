@@ -4,6 +4,7 @@
 
 #include "CeylanSystem.h"     // for IOException
 #include "CeylanStream.h"     // for inheritance
+#include "CeylanTypes.h"      // for Ceylan::Byte, etc.
 
 
 namespace Ceylan
@@ -87,8 +88,8 @@ namespace Ceylan
 				 * @throw WriteFailed if a write error occurred.
 				 *
 				 */
-				virtual Size write( const char * buffer, Size maxLength ) 
-					throw( WriteFailedException ) = 0 ;
+				virtual Size write( const Ceylan::Byte * buffer, 
+					Size maxLength ) throw( WriteFailedException ) = 0 ;
 
 
 
