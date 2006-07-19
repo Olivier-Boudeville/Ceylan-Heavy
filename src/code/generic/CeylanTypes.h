@@ -103,7 +103,32 @@ namespace Ceylan
 	extern Ceylan::Uint8 Uint8Max /* = 255 */ ;
 
 
-
+	/**
+	 * char, signed char, and unsigned char are different types.
+	 *
+	 * Hence if :
+	 *
+	 * signed char * u ;
+	 * char * v = 0 ;
+	 *
+	 * then
+	 * u = v ;
+	 *
+	 * or 
+	 *
+	 * u = static_cast<signed char *>( v ) ; 
+	 *
+	 * will trigger a compiler error, invalid conversion or static_cast
+	 * from type `char*' to type `signed char*'
+	 * 
+	 * Hence we defined Ceylan::Byte to trace the fact we are using internally
+	 * char (returned for example by the c_str() method of std::string) 
+	 * without knowing whether it is signed or not, hence without being able
+	 * to specify Ceylan::Uint8 or Ceylan::Sint8.
+	 *
+	 */
+	typedef char Ceylan::Byte ;
+	 
 
 	/**
 	 * Signed 16-bit int (signed short, GLshort). 
