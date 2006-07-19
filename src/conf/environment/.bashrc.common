@@ -117,7 +117,6 @@ alias lock='xlock -mode blank'
 alias m='make 2>&1 | more'
 alias sonata='ssh $USER@sonata'
 alias aranor='ssh $USER@aranor'
-alias sfcf='ssh $USER@aranor'
 
 
 
