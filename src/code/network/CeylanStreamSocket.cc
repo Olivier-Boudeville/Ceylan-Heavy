@@ -31,7 +31,7 @@ extern "C"
 
 
 #ifdef CEYLAN_USES_SYS_SOCKET_H
-//#include <sys/socket.h>        // for socket
+#include <sys/socket.h>        // for socket
 #endif // CEYLAN_USES_SYS_SOCKET_H
 
 
@@ -162,7 +162,7 @@ void StreamSocket::createSocket( Port port ) throw( SocketException )
 		+ toString() ) ;
 					
 	getAddress()._sockaddr.sin_family = AF_INET ;
-	getAddress()._sockaddr.sin_port = ::htons( _port ) ;
+	getAddress()._sockaddr.sin_port = htons( _port ) ;
 	
 #else // CEYLAN_USES_NETWORK
 
