@@ -81,3 +81,23 @@ Before reporting an error, please check you have upgraded following tools with t
 </ol>
 
 </p>
+
+
+For client/server model :
+<ul>
+
+<!--
+	<li><b></b> : </li>
+-->
+
+	<li>Each <b>client</b> can, by default, call any method of any object of any ActiveObject subclass on the server</li>
+	<li>To do so, the client must <b>specify</b> to the server : a class identifier, an instance identifier, a method identifier, and the list of its arguments</li>
+	<li>On the <b>server-side</b>, first there is a dictionnary whose keys are class identifiers, and whose values are classes (actually, their dictionary of instances). It is known as <em>the class dictionnary</em></li>
+	<li>Second, on a per-class basis, there is an <b>instance dictionnary</b> : for this given class, its keys are instance identifiers, and its values are pointer to instances of this class</li>
+	<li><b></b> : </li>
+	<li><b></b> : </li>
+	<li><b></b> : </li>
+	<li><b></b> : </li>
+	<li><b></b> : </li>
+	<li><b></b> : </li>
+</ul>
