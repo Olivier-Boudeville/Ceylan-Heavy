@@ -5,15 +5,13 @@
 // Please include below all header files to be exported by module system.
 
 
+#include "CeylanAnonymousInputStream.h"
 #include "CeylanDirectory.h"
 #include "CeylanEnvironmentVariables.h"
 #include "CeylanFile.h"
 #include "CeylanFileLocator.h"
-#include "CeylanIPAddress.h"
-#include "CeylanIPAddressvFour.h"
 #include "CeylanInputStream.h"
 #include "CeylanMutex.h"
-#include "CeylanNetwork.h"
 #include "CeylanOutputStream.h"
 #include "CeylanPipe.h"
 #include "CeylanProcess.h"
