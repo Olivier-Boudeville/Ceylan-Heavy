@@ -146,10 +146,11 @@ namespace Ceylan
 		 * @return the number of bytes that have actually been read.
 		 *
 		 * @throw FeatureNotAvailableException if the file descriptor
-		 * feature is not available.
+		 * feature is not available, and IOException is a system error
+		 * occurred.
 		 *
 		 */
-		SignedSize FDRead( FileDescriptor fd, char * dataBuffer, 
+		Size FDRead( FileDescriptor fd, Ceylan::Byte * dataBuffer, 
 				Size toReadBytesNumber ) 
 			throw( IOException, Features::FeatureNotAvailableException ) ;
 	
@@ -163,10 +164,11 @@ namespace Ceylan
 		 * @return the number of bytes that have actually been read.
 		 *
 		 * @throw FeatureNotAvailableException if the file descriptor
-		 * feature is not available.
+		 * feature is not available, and IOException is a system error
+		 * occurred.
 		 *
 		 */
-		SignedSize FDWrite( FileDescriptor fd, const char * dataBuffer, 
+		Size FDWrite( FileDescriptor fd, const Ceylan::Byte * dataBuffer, 
 				Size toWriteBytesNumber )
 			throw( IOException, Features::FeatureNotAvailableException ) ;
 			
