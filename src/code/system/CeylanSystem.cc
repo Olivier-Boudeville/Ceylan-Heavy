@@ -120,7 +120,7 @@ string Ceylan::System::getShellName() throw()
 }
 
 
-SignedSize Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
+Size Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
 		Size toReadBytesNumber )
 	throw( IOException, Features::FeatureNotAvailableException )
 {
@@ -136,18 +136,20 @@ SignedSize Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
 	while ( toReadBytesNumber &&
 		( readBytesNumber = ::read( fd, pos, toReadBytesNumber ) ) != 0 )
 	{
+	
 		if ( readBytesNumber < 0 )
-			throw IOException( explainError( getError() ) ) ;
+			throw IOException( "Ceylan::System::FDRead failed : "
+				+ explainError() ) ;
 
 		totalReadBytesNumber += readBytesNumber ;
-		toReadBytesNumber -= readBytesNumber ;
-		pos += readBytesNumber ;
+		toReadBytesNumber    -= readBytesNumber ;
+		pos                  += readBytesNumber ;
 
 	}
 
 	// readBytesNumber == 0 means end of file.
 
-	return totalReadBytesNumber ;
+	return static_cast<Size>( totalReadBytesNumber ) ;
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
@@ -159,8 +161,8 @@ SignedSize Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
 }
 
 
-SignedSize Ceylan::System::FDWrite( FileDescriptor fd, 
-		const char * dataBuffer, Size toWriteBytesNumber ) 
+Size Ceylan::System::FDWrite( FileDescriptor fd, 
+		const Ceylan::Byte * dataBuffer, Size toWriteBytesNumber ) 
 	throw( IOException, Features::FeatureNotAvailableException )
 {
 
@@ -175,15 +177,18 @@ SignedSize Ceylan::System::FDWrite( FileDescriptor fd,
 	while( toWriteBytesNumber
 		&& ( wroteBytesNumber = ::write( fd, pos, toWriteBytesNumber ) ) != 0 )
 	{
-		if( wroteBytesNumber < 0 )
-			throw IOException( explainError( getError() ) ) ;
+	
+		if ( wroteBytesNumber < 0 )
+			throw IOException( "Ceylan::System::FDWrite failed : "
+				+ explainError() ) ;
 
 		totalWroteBytesNumber += wroteBytesNumber ;
-		toWriteBytesNumber -= wroteBytesNumber ;
-		pos += wroteBytesNumber ;
+		toWriteBytesNumber    -= wroteBytesNumber ;
+		pos                   += wroteBytesNumber ;
+		
 	}
 
-	return totalWroteBytesNumber ;
+	return static_cast<Size>( totalWroteBytesNumber ) ;
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
