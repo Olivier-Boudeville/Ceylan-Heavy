@@ -6,12 +6,16 @@
 #include <cstdlib>             // for abs, etc.
 #include <cmath>               // for fabsf, etc.
 
+#if CEYLAN_USES_CONFIG_H
+#include "CeylanConfig.h"      // for configure-time feature settings
+#endif // CEYLAN_USES_CONFIG_H
+
 
 extern "C"
 {
 
 #ifdef CEYLAN_USES_MATH_H
-//#include <math.h>              // for cos, ceil, etc. 
+#include <math.h>              // for cos, ceil, etc. (fallback)
 #endif // CEYLAN_USES_MATH_H
 
 }
@@ -224,7 +228,18 @@ Ceylan::LongFloat Ceylan::Maths::Ceil( Ceylan::LongFloat x ) throw()
 
 Ceylan::Float32 Ceylan::Maths::Round( Ceylan::Float32 x ) throw()
 {
+
+#ifdef CEYLAN_USES_ROUNDF 
+
 	return ::roundf( x ) ;
+	
+#else // CEYLAN_USES_ROUNDF
+
+	// Use floor if floor is not available :
+	return ::floorf( x ) ;
+
+#endif // CEYLAN_USES_ROUNDF
+	
 }
 
 
@@ -241,7 +256,18 @@ Ceylan::Float32 Ceylan::Maths::Round( Ceylan::Float32 x,
 
 Ceylan::Float64 Ceylan::Maths::Round( Ceylan::Float64 x ) throw()
 {
+
+#ifdef CEYLAN_USES_ROUND
+
 	return ::round( x ) ;
+	
+#else // CEYLAN_USES_ROUND
+
+	// Use floor if round is not available :
+	return ::floor( x ) ;
+
+#endif // CEYLAN_USES_ROUND
+
 }
 
 
@@ -258,7 +284,18 @@ Ceylan::Float64 Ceylan::Maths::Round( Ceylan::Float64 x,
 
 Ceylan::LongFloat Ceylan::Maths::Round( Ceylan::LongFloat x ) throw()
 {
+
+#ifdef CEYLAN_USES_ROUND
+
 	return ::round( x ) ;
+	
+#else // CEYLAN_USES_ROUND
+
+	// Use floor if round is not available :
+	return ::floor( x ) ;
+
+#endif // CEYLAN_USES_ROUND
+
 }
 
 
