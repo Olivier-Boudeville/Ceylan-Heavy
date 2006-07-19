@@ -210,7 +210,7 @@ AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
 
 # Only headers independent from all Ceylan features are checked here : 
-AC_CHECK_HEADERS([math.h limits.h stdint.h string.h strings.h time.h sys/time.h utime.h termios.h netdb.h netinet/in.h arpa/inet.h unistd.h sys/utsname.h sys/sysinfo.h conio.h fcntl.h errno.h sys/types.h netinet/in.h])
+AC_CHECK_HEADERS([math.h limits.h stdint.h string.h strings.h time.h sys/time.h utime.h termios.h netdb.h netinet/in.h arpa/inet.h unistd.h sys/utsname.h sys/sysinfo.h conio.h fcntl.h errno.h sys/types.h netinet/in.h byteswap.h machine/bswap.h])
 
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -245,10 +245,13 @@ AC_FUNC_UTIME_NULL
 #	- fabs, fabsf, fabsl
 #	- floor, floorf, floorl 
 #	- pow, powf, powl
-#	- round, roundf, roundl
 #	- sin, sinf, sinl
 #	- sqrt, sqrtf, sqrtl
-AC_CHECK_FUNCS([isdigit islower isupper abs labs llabs exit putenv getenv strdup strerror sleep time ctime localtime gettimeofday utime sysinfo uname stat mkdir unlink rename rmdir getcwd gethostname sethostname getdomainname setdomainname gethostbyname gethostbyaddr])
+# However the following functions are still tested since they are lacking
+# on some platforms (ex : OpenBSD 3.8)
+#	- round, roundf, roundl
+
+AC_CHECK_FUNCS([round roundf roundl isdigit islower isupper abs labs llabs exit putenv getenv strdup strerror sleep time ctime localtime gettimeofday utime sysinfo uname stat mkdir unlink rename rmdir getcwd gethostname sethostname getdomainname setdomainname gethostbyname gethostbyaddr])
 
 
 # Only symbols independent from all Ceylan features are checked here : 
@@ -1170,12 +1173,29 @@ CheckPlatform()
 
 	AC_DEFINE_UNQUOTED([ARCH_WINDOWS],
 		[$CEYLAN_ARCH_WINDOWS],
-		[Define to 1 if this platform is a Windows one])
+		[Define to 1 if the target platform is a Windows one])
 
 	AC_DEFINE_UNQUOTED([ARCH_LINUX],
 		[$CEYLAN_ARCH_LINUX],
-		[Define to 1 if this platform is GNU/Linux])
+		[Define to 1 if the target platform is GNU/Linux])
 
+}
+
+
+
+# Knowing the endianness of the host that will run the Ceylan library
+# allows for correct and fast marshalling.
+CheckEndianness()
+{
+
+	CEYLAN_RUNS_ON_LITTLE_ENDIAN=1
+	AC_C_BIGENDIAN([CEYLAN_RUNS_ON_LITTLE_ENDIAN=0],
+		[CEYLAN_RUNS_ON_LITTLE_ENDIAN=1])
+	
+	AC_DEFINE_UNQUOTED([RUNS_ON_LITTLE_ENDIAN],
+		[$CEYLAN_RUNS_ON_LITTLE_ENDIAN],
+		[Define to 1 if the target platform is little endian])
+ 
 }
 
 
@@ -1187,6 +1207,8 @@ CheckPlatform()
 
 CheckMkdir
 CheckPlatform
+CheckEndianness
+
 
 # Enable/disable various features of the Ceylan library :
 
