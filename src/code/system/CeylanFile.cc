@@ -718,20 +718,22 @@ Size File::size() const throw( File::CouldNotStatFile )
 }
 
 
-Size File::read( char * buffer, Size maxLength ) 
+Size File::read( Ceylan::Byte * buffer, Size maxLength ) 
 	throw( InputStream::ReadFailedException )
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
-	SignedSize n = System::FDRead( _fdes, buffer, maxLength ) ;
-
-	// Actually, n should never be negative :
-	if ( n < 0 )
-		throw ReadFailed( "File::read failed for file '" 
-			+ _name + "' : " + System::explainError() ) ;
-
-	return static_cast<Size>( n ) ;
+	try
+	{	
+		return System::FDRead( _fdes, buffer, maxLength ) ;		
+	}
+	catch( const Ceylan::Exception & e )
+	{
+		throw InputStream::ReadFailedException( 
+			"File::read failed for file '" + _name + "' : " + e.toString() ) ;
+	}
+		
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS	
 
@@ -741,13 +743,15 @@ Size File::read( char * buffer, Size maxLength )
 	SignedSize n = ( _fstream.rdbuf() )->sgetn( buffer, maxLength ) ;
 
 	if ( ! _fstream.good() )
-		throw ReadFailed( "File::read failed for file '" + _name 
+		throw InputStream::ReadFailedException( 
+			"File::read failed for file '" + _name 
 			+ "' : " + interpretState() ) ;
 
 
-	// Actually, n should never be negative.
+	// Actually, n may be negative.
 	if ( n < 0 )
-		throw ReadFailed( "File::read failed for file '" 
+		throw InputStream::ReadFailedException( 
+			"File::read failed for file '" 
 			+ _name + "' : negative size read" ) ;
 
 	return static_cast<Size>( n ) ;
@@ -759,12 +763,14 @@ Size File::read( char * buffer, Size maxLength )
 		static_cast<std::streamsize>( maxLength ) ) ;
 
 	if ( ! _fstream.good() )
-		throw ReadFailed( "File::read failed for file '" + _name 
+		throw InputStream::ReadFailedException( 
+			"File::read failed for file '" + _name 
 			+ "' : " + interpretState() ) ;
 
-	// Actually, n should never be negative.
+	// Actually, n may be negative.
 	if ( n < 0 )
-		throw ReadFailed( "File::read failed for file '" 
+		throw InputStream::ReadFailedException( 
+			"File::read failed for file '" 
 			+ _name + "' : negative size read" ) ;
 			
 	return static_cast<Size>( n ) ;
@@ -788,13 +794,16 @@ Size File::write( const string & message )
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
-	SignedSize n = FDWrite( _fdes, message.c_str(), message.size() ) ;
-
-	if ( n < static_cast<SignedSize>( message.size() ) )
-		throw WriteFailed( "File::write failed for file '" 
-			+ _name + "' : " + System::explainError() ) ;
-
-	return static_cast<Size>( n ) ;
+	try
+	{	
+			
+		return System::FDWrite( _fdes, message.c_str(), message.size() ) ;
+	}
+	catch( const Ceylan::Exception & e )
+	{
+		throw OutputStream::WriteFailedException( 
+			"File::write failed for file '" + _name + "' : " + e.toString() ) ;
+	}
 
 #else // if CEYLAN_USES_FILE_DESCRIPTORS	
 
@@ -808,19 +817,21 @@ Size File::write( const string & message )
 }
 
 
-Size File::write( const char * buffer, Size maxLength ) 
+Size File::write( const Ceylan::Byte * buffer, Size maxLength ) 
 	throw( OutputStream::WriteFailedException )
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
-	SignedSize n = System::FDWrite( _fdes, buffer, maxLength ) ;
-
-	if ( n < static_cast<SignedSize>( maxLength ) )
-		throw WriteFailed( "File::write failed for file '" 
-			+ _name + "' : " + System::explainError() ) ;
-
-	return static_cast<Size>( n ) ;
+	try
+	{	
+		return System::FDWrite( _fdes, buffer, maxLength ) ;
+	}
+	catch( const Ceylan::Exception & e )
+	{
+		throw OutputStream::WriteFailedException( 
+			"File::write failed for file '" + _name + "' : " + e.toString() ) ;
+	}
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS	
 
@@ -1764,7 +1775,7 @@ FIXME File::ConvertToStreamPermissionFlag( PermissionFlag permissionFlag )
 
 
 void File::FromFDtoFD( FileDescriptor from, FileDescriptor to, Size length )
-	throw( ReadFailed, WriteFailed, Features::FeatureNotAvailableException )
+	throw( IOException, Features::FeatureNotAvailableException )
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
@@ -1773,37 +1784,39 @@ void File::FromFDtoFD( FileDescriptor from, FileDescriptor to, Size length )
 	
 	Size bufferSize = ( length > BigBufferSize ? BigBufferSize : length ) ;
 
-	char * buf = new char[ bufferSize ] ;
+	Ceylan::Byte * buf = new Ceylan::Byte[ bufferSize ] ;
 
-	SignedSize readCount ;
+	Size readCount ;
 
-	while ( written < length )
+	try
 	{
-		Size toRead = length - written ;
-
-		if ( toRead > bufferSize )
-			toRead = bufferSize ;
-
-		if ( ( readCount = FDRead( from, buf, toRead ) ) < 0 )
+	
+		while ( written < length )
 		{
-			delete [] buf ;
-			throw ReadFailed( "File::FromFDtoFD : "
-				"read failed for descriptor " 
-				+ Ceylan::toString( from ) + "." ) ;
+		
+			Size toRead = length - written ;
+
+			if ( toRead > bufferSize )
+				toRead = bufferSize ;
+
+			readCount = FDRead( from, buf, toRead ) ;
+
+			FDWrite( to, buf, readCount ) ;
+			
+			written += readCount ;
+			
 		}
 
-		if ( FDWrite( to, buf, (Size) readCount ) < 0 )
-		{
-			delete [] buf ;
-			throw WriteFailed("File::FromFDtoFD : "
-				"write failed for descriptor " 
-				+ Ceylan::toString( to ) + "." ) ;
-		}
-
-		written += readCount ;
+		delete [] buf ;
+		
 	}
+	catch( const Ceylan::Exception & e)
+	{
 
-	delete [] buf ;
+		delete [] buf ;
+		throw IOException( "File::FromFDtoFD failed : " + e.toString() ) ;
+		
+	}	
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
