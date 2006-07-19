@@ -45,6 +45,13 @@ using namespace Ceylan::Log ;
 using std::string ;
 
 
+/*
+ * Avoid ::htonl, use directy htonl since it is a macro on some platforms
+ * (ex : NetBSD)
+ *
+ */
+
+
 
 #if CEYLAN_USES_NETWORK
 
@@ -270,7 +277,7 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 			"ServerStreamSocket::prepareToAccept : socket already bound" ) ;
 	
 	getAddress()._socketAddress.sin_addr.s_addr = 
-		::htonl( /* Address to accept any incoming message */ INADDR_ANY ) ;
+		htonl( /* Address to accept any incoming message */ INADDR_ANY ) ;
  
  	Ceylan::Uint8 bindAttemptCount = 0 ;
 	const Ceylan::Uint8 maxBindAttemptCount = 5 ;
