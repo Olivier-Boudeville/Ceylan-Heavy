@@ -17,17 +17,17 @@ extern "C"
 
 
 #ifdef CEYLAN_USES_SYS_TIME_H
-//#include <sys/time.h>          // for 
+#include <sys/time.h>          // for select, on OpenBSD 
 #endif // CEYLAN_USES_SYS_TIME_H
 
 
 #ifdef CEYLAN_USES_STRING_H
-//#include <string.h>            // for 
+#include <string.h>            // for select, on OpenBSD
 #endif // CEYLAN_USES_STRING_H
 
 
 #ifdef CEYLAN_USES_SYS_TYPES_H
-//#include <sys/types.h>         // for 
+#include <sys/types.h>         // for select, on OpenBSD
 #endif // CEYLAN_USES_SYS_TYPES_H
 
 
@@ -42,24 +42,23 @@ extern "C"
 
 
 #ifdef CEYLAN_USES_UNISTD_H
-//#include <unistd.h>            // for FIXME
+#include <unistd.h>            // for timeval, select, on OpenBSD
 #endif // CEYLAN_USES_UNISTD_H
 
 
 #ifdef CEYLAN_USES_RESOLV_H
-#include <resolv.h>              // for sockaddr_in
+#include <resolv.h>            // for sockaddr_in
 #endif // CEYLAN_USES_RESOLV_H
 
 
 #ifdef CEYLAN_USES_STRINGS_H
-//#include <strings.h>           // for AIX
+#include <strings.h>           // for AIX
 #endif // CEYLAN_USES_STRINGS_H
 
 
 #ifdef CEYLAN_USES_SYS_SELECT_H
-//#include <sys/select.h>        // for AIX
+#include <sys/select.h>        // for AIX
 #endif // CEYLAN_USES_SYS_SELECT_H
-
 
 
 }
