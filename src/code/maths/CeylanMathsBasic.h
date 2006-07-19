@@ -615,6 +615,9 @@ namespace Ceylan
 		 * @example Round(0.5)  =  1
 		 * @example Round(1.6)  =  2
 		 *
+		 * @note On some platforms (at least OpenBSD 3.8), round operation 
+		 * is not available, floor will be used instead.
+		 *
 		 */
 		Ceylan::Float32 Round( Ceylan::Float32 x ) throw() ;
 
@@ -649,6 +652,9 @@ namespace Ceylan
 		 * @example Round(1.676, 2) = 1.68 or 1.67999999...
 		 * @example Round(-3,23456, 3 ) = -3,235 or -3.2349999...
 		 *
+		 * @note On some platforms (at least OpenBSD 3.8), round operation 
+		 * is not available, floor will be used instead.
+		 *
 		 */
 		Ceylan::Float32 Round( Ceylan::Float32 x, Ceylan::Uint8 precision )
 			throw() ;
@@ -673,6 +679,9 @@ namespace Ceylan
 		 * @example Round(-0.8) = -1
 		 * @example Round(0.5)  =  1
 		 * @example Round(1.6)  =  2
+		 *
+		 * @note On some platforms (at least OpenBSD 3.8), round operation 
+		 * is not available, floor will be used instead.
 		 *
 		 */
 		Ceylan::Float64 Round( Ceylan::Float64 x ) throw() ;
@@ -710,6 +719,9 @@ namespace Ceylan
 		 * @example Round(1.676, 2) = 1.68 or 1.67999999...
 		 * @example Round(-3,23456, 3 ) = -3,235 or -3.2349999...
 		 *
+		 * @note On some platforms (at least OpenBSD 3.8), round operation 
+		 * is not available, floor will be used instead.
+		 *
 		 */
 		Ceylan::Float64 Round( Ceylan::Float64 x, Ceylan::Uint8 precision )
 			throw() ;
@@ -734,6 +746,9 @@ namespace Ceylan
 		 * @example Round(-0.8) = -1
 		 * @example Round(0.5)  =  1
 		 * @example Round(1.6)  =  2
+		 *
+		 * @note On some platforms (at least OpenBSD 3.8), round operation 
+		 * is not available, floor will be used instead.
 		 *
 		 */
 		Ceylan::LongFloat Round( Ceylan::LongFloat x ) throw() ;
@@ -770,6 +785,9 @@ namespace Ceylan
 		 *
 		 * @example Round(1.676, 2) = 1.68 or 1.67999999...
 		 * @example Round(-3,23456, 3 ) = -3,235 or -3.2349999...
+		 *
+		 * @note On some platforms (at least OpenBSD 3.8), round operation 
+		 * is not available, floor will be used instead.
 		 *
 		 */
 		Ceylan::LongFloat Round( Ceylan::LongFloat x, Ceylan::Uint8 precision )
