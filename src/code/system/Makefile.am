@@ -13,6 +13,7 @@ libCeylanSystemInclude_HEADERS = $(SYSTEM_INTERFACES)
 
 
 SYSTEM_INTERFACES = \
+	CeylanAnonymousInputStream.h         \
 	CeylanDirectory.h                    \
 	CeylanEnvironmentVariables.h         \
 	CeylanFile.h                         \
@@ -34,6 +35,7 @@ SYSTEM_INTERFACES = \
 
 
 SYSTEM_IMPLEMENTATIONS = \
+	CeylanAnonymousInputStream.cc        \
 	CeylanDirectory.cc                   \
 	CeylanEnvironmentVariables.cc        \
 	CeylanFile.cc                        \
