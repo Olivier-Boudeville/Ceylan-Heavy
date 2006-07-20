@@ -97,7 +97,7 @@ bool InputStream::isSelected() const throw()
 
 
 
-Size InputStream::read( Ceylan::Byte * buffer, Size maxLength )
+Size InputStream::read( Ceylan::Byte * buffer, Size length )
 	throw( ReadFailedException )
 {
 
