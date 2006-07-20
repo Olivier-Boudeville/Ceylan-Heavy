@@ -141,13 +141,13 @@ namespace Ceylan
 				 * specified buffer.
 				 *
 				 * @param buffer the buffer where to store read bytes. 
-				 * Its size must be at least maxLength bytes.
+				 * Its size must be at least 'length' bytes.
 				 *
-				 * @param maxLength the maximum number of bytes that should 
+				 * @param length the maximum number of bytes that should 
 				 * be read.
 				 *
 				 * @return The number of bytes actually read, which should
-				 * be maxLength or lower.
+				 * be equal to 'length' or lower.
 				 *
 				 * @throw ReadFailed if a read error occurred, or if this
 				 * default implementation has not been overriden.
@@ -156,7 +156,7 @@ namespace Ceylan
 				 * using it can be defined here.
 				 *
 				 */
-		 		virtual Size read( Ceylan::Byte * buffer, Size maxLength ) 
+		 		virtual Size read( Ceylan::Byte * buffer, Size length ) 
 					throw( ReadFailedException ) ;
 
 
