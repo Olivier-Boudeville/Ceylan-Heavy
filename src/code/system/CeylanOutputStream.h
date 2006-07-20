@@ -60,6 +60,11 @@ namespace Ceylan
 				virtual StreamID getOutputStreamID() const throw() = 0 ;
 
 
+
+				// Write section.
+				
+
+
 				/**
 				 * Writes message to this OutputStream.
 				 *
@@ -72,7 +77,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual Size write( const std::string & message ) 
-					throw( WriteFailedException ) = 0 ;
+					throw( WriteFailedException ) ;
 
 
 				/**
@@ -80,16 +85,132 @@ namespace Ceylan
 				 * to this OutputStream.
 				 *
 				 * @param buffer the buffer where to find bytes that must
-				 * be written. Its size must be at least maxLength bytes.
+				 * be written. Its size must be at least 'length' bytes.
+				 *
+				 * @param length the maximum number of bytes that should 
+				 * be read.
 				 *
 				 * @return The number of bytes actually written, which 
-				 * should be equal to maxLength.
+				 * should be equal to 'length'.
 				 *
 				 * @throw WriteFailed if a write error occurred.
 				 *
+				 * @note This method is not pure virtual so that other methods
+				 * using it can be defined here.
+				 *
 				 */
 				virtual Size write( const Ceylan::Byte * buffer, 
-					Size maxLength ) throw( WriteFailedException ) = 0 ;
+					Size length ) throw( WriteFailedException ) ;
+
+
+
+
+				// Write integer types subsection.
+
+
+				/**
+				 * Writes a Ceylan::Sint8 to this output stream.
+				 *
+				 * @throw WriteFailedException in case a system error occured.
+				 *
+				 */
+				virtual void writeSint8( Ceylan::Sint8 toWrite ) 
+					throw( WriteFailedException ) ;
+
+
+				/**
+				 * Writes a Ceylan::Uint8 to this output stream.
+				 *
+				 * @throw WriteFailedException in case a system error occured.
+				 *
+				 */
+				virtual void writeUint8( Ceylan::Uint8 toWrite ) 
+					throw( WriteFailedException ) ;
+
+
+
+				/**
+				 * Writes a Ceylan::Sint16 to this output stream.
+				 *
+				 * @throw WriteFailedException in case a system error occured.
+				 *
+				 */
+				virtual void writeSint16( Ceylan::Sint16 toWrite ) 
+					throw( WriteFailedException ) ;
+
+
+				/**
+				 * Writes a Ceylan::Uint16 to this output stream.
+				 *
+				 * @throw WriteFailedException in case a system error occured.
+				 *
+				 */
+				virtual void writeUint16( Ceylan::Uint16 toWrite ) 
+					throw( WriteFailedException ) ;
+
+
+
+				/**
+				 * Writes a Ceylan::Sint32 to this output stream.
+				 *
+				 * @throw WriteFailedException in case a system error occured.
+				 *
+				 */
+				virtual void writeSint32( Ceylan::Sint32 toWrite ) 
+					throw( WriteFailedException ) ;
+
+
+				/**
+				 * Writes a Ceylan::Uint32 to this output stream.
+				 *
+				 * @throw WriteFailedException in case a system error occured.
+				 *
+				 */
+				virtual void writeUint32( Ceylan::Uint32 toWrite ) 
+					throw( WriteFailedException ) ;
+
+
+
+
+				// Write floating-point types subsection.
+				
+				
+				/**
+				 * Writes a Ceylan::Uint32 to this output stream.
+				 *
+				 * @throw WriteFailedException in case a system error occured.
+				 *
+				 */
+				virtual void writeFloat32( Ceylan::Float32 toWrite ) 
+					throw( WriteFailedException ) ;
+
+
+				/**
+				 * Writes a Ceylan::Uint32 to this output stream.
+				 *
+				 * @throw WriteFailedException in case a system error occured.
+				 *
+				 */
+				virtual void writeFloat64( Ceylan::Float64 toWrite ) 
+					throw( WriteFailedException ) ;
+
+
+
+				/**
+				 * Writes a string to this output stream.
+				 *
+				 * @note Written strings can have no more than 65535 
+				 * characters.
+				 *
+				 * @param result the string to fill from this input stream.
+				 *
+				 * @throw ReadFailedException in case a system error occured,
+				 * or EOFException is a protocol error occured, with fewer
+				 * bytes available than expected.
+				 *
+				 */
+				virtual void writeString( std::string & toWrite ) 
+					throw( WriteFailedException ) ;
 
 
 
