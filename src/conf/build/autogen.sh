@@ -16,8 +16,6 @@ PREFIX_OPT="--prefix=$PREFIX"
 # To check the user can override them :
 #test_overriden_options="CPPFLAGS=\"-DTEST_CPPFLAGS\" LDFLAGS=\"-LTEST_LDFLAGS\""
 
-configure_opt="$ceylan_features_opt -enable-strict-ansi --enable-debug $PREFIX_OPT $test_overriden_options"
-
 
 # 0 means true, 1 means false :
 do_remove_generated=0
@@ -58,7 +56,6 @@ while [ "$#" -gt "0" ] ; do
 	
 	if [ "$1" == "-c" ] || [ "$1" == "--chain-test" ] ; then
 		do_chain_tests=0
-		
 		#do_distcheck=0
 		do_distcheck=1
 		
@@ -98,6 +95,8 @@ while [ "$#" -gt "0" ] ; do
 	shift
 done
 
+
+configure_opt="$ceylan_features_opt -enable-strict-ansi --enable-debug $PREFIX_OPT $test_overriden_options"
 
 
 RM="/bin/rm -f"
