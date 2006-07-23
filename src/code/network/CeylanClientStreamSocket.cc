@@ -1,7 +1,5 @@
 #include "CeylanClientStreamSocket.h"
 
-//#include "System.h"
-
 #include "CeylanLogPlug.h"            // for LogPlug
 #include "CeylanNetwork.h"            // for HostDNSEntry
 #include "CeylanIPAddressvFour.h"     // for IPAddressvFour
@@ -12,27 +10,25 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
-//extern "C" int errno;
-//extern "C" int h_errno;
 
 
 extern "C"
 {
 
 #ifdef CEYLAN_USES_NETDB_H
-//#include <netdb.h>                    // for inet_aton
+#include <netdb.h>                    // for inet_aton
 #endif // CEYLAN_USES_NETDB_H
 
 #ifdef CEYLAN_USES_SYS_SOCKET_H
-#include <sys/socket.h>                 // for inet_aton
+#include <sys/socket.h>               // for inet_aton
 #endif // CEYLAN_USES_SYS_SOCKET_H
 
 #ifdef CEYLAN_USES_NETINET_IN_H
-#include <netinet/in.h>                 // for inet_aton
+#include <netinet/in.h>               // for inet_aton
 #endif // CEYLAN_USES_NETINET_IN_H
 
 #ifdef CEYLAN_USES_ARPA_INET_H
-#include <arpa/inet.h>                  // for inet_aton
+#include <arpa/inet.h>                // for inet_aton
 #endif // CEYLAN_USES_ARPA_INET_H
 
 }
@@ -93,6 +89,15 @@ ClientStreamSocket::ClientStreamSocket()
 	_serverHostInfo( 0 )
 {
 
+#if CEYLAN_USES_NETWORK
+
+#else // CEYLAN_USES_NETWORK
+
+	throw SocketException( "ClientStreamSocket constructor : "
+		"network feature not available." ) ;
+		
+#endif // CEYLAN_USES_NETWORK
+
 }
 
 
@@ -108,6 +113,8 @@ ClientStreamSocket::~ClientStreamSocket() throw()
 void ClientStreamSocket::connect( const string & serverHostname, Port port ) 
 	throw( SocketException )
 {
+
+#if CEYLAN_USES_NETWORK
 
 	_serverHostName = serverHostname ;
 	
@@ -158,6 +165,14 @@ void ClientStreamSocket::connect( const string & serverHostname, Port port )
 			+ _serverHostName + "' : " + System::explainError() ) ;
 	
 	connected() ;
+
+
+#else // CEYLAN_USES_NETWORK
+
+	throw SocketException( "ClientStreamSocket::connect : "
+		"network feature not available." ) ;
+		
+#endif // CEYLAN_USES_NETWORK
 	
 }
 
