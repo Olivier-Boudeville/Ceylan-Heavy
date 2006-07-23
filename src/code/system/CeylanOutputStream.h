@@ -75,6 +75,11 @@ namespace Ceylan
 				 *
 				 * @throw WriteFailed if a write error occurred.
 				 *
+				 * @note This method is not pure virtual so that other methods
+				 * using it can be defined here. However its OutputStream
+				 * implementation just throws a WriteFailedException to 
+				 * remember it has to be overloaded.
+				 *
 				 */
 				virtual Size write( const std::string & message ) 
 					throw( WriteFailedException ) ;
@@ -96,7 +101,9 @@ namespace Ceylan
 				 * @throw WriteFailed if a write error occurred.
 				 *
 				 * @note This method is not pure virtual so that other methods
-				 * using it can be defined here.
+				 * using it can be defined here. However its OutputStream
+				 * implementation just throws a WriteFailedException to 
+				 * remember it has to be overloaded.
 				 *
 				 */
 				virtual Size write( const Ceylan::Byte * buffer, 
