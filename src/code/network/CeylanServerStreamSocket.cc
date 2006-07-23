@@ -147,6 +147,9 @@ ServerStreamSocket::ServerStreamSocket( Port port, bool reuse )
 
 ServerStreamSocket::~ServerStreamSocket() throw()
 {
+
+#if CEYLAN_USES_NETWORK
+
 	// No destructor should throw exception :
 	try
 	{
@@ -160,6 +163,8 @@ ServerStreamSocket::~ServerStreamSocket() throw()
 
 	delete _clientAddress ;
 	
+#endif // CEYLAN_USES_NETWORK
+	
 }
 
 
@@ -167,6 +172,8 @@ ServerStreamSocket::~ServerStreamSocket() throw()
 
 void ServerStreamSocket::accept() throw( ServerStreamSocketException )
 {
+
+#if CEYLAN_USES_NETWORK
 
 	prepareToAccept() ;
 	
@@ -194,6 +201,8 @@ void ServerStreamSocket::accept() throw( ServerStreamSocketException )
 	LogPlug::debug( "ServerStreamSocket::accept : accept performed." ) ;
 
 	accepted() ;
+
+#endif // CEYLAN_USES_NETWORK	
 			
 }
 
@@ -225,6 +234,7 @@ ServerStreamSocket::ConnectionCount
 {
 
 	return _maximumPendingConnectionsCount ;
+	
 }	
 					
 
@@ -238,6 +248,8 @@ void ServerStreamSocket::setMaximumPendingConnectionsCount(
 const std::string ServerStreamSocket::toString( Ceylan::VerbosityLevels level ) 
 	const throw()
 {
+
+#if CEYLAN_USES_NETWORK
 
 	string res ;
 	
@@ -263,12 +275,22 @@ const std::string ServerStreamSocket::toString( Ceylan::VerbosityLevels level )
 		return res ;
 	
 	return res + ". " + StreamSocket::toString( level ) ;
+
+#else // CEYLAN_USES_NETWORK
+
+	return "ServerStreamSocket (no network support not available)" ;
+	
+#endif // CEYLAN_USES_NETWORK	
 	
 }	
 						
 
 void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 {
+
+
+#if CEYLAN_USES_NETWORK
+
 
 	LogPlug::trace( "Entering ServerStreamSocket::prepareToAccept" ) ;
 	
@@ -313,6 +335,14 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 		"listen succeeded." ) ;
  
  	_bound = true ;
+
+
+#else // CEYLAN_USES_NETWORK
+
+	throw ServerStreamSocketException( "ServerStreamSocket::prepareToAccept : "
+		"no network support available." ) ;
+	
+#endif // CEYLAN_USES_NETWORK	
 	
 }
 
