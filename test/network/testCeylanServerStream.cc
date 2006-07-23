@@ -133,6 +133,15 @@ int main( int argc, char * argv[] )
         LogPlug::info( "Testing Ceylan's network implementation "
 			"of stream socket for servers." ) ;
 
+
+		if ( ! Features::isNetworkingSupported() )
+		{
+			LogPlug::info( 
+				"No network support available, no test performed." ) ;
+			return Ceylan::ExitSuccess ;
+		}
+		
+		
 		bool isBatch = false ;
 
 		std::string executableName ;
