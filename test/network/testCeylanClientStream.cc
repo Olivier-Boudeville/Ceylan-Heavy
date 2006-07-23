@@ -72,6 +72,15 @@ int main( int argc, char * argv[] )
         LogPlug::info( "Testing Ceylan's network implementation "
 			"of stream socket for clients." ) ;
 
+
+		if ( ! Features::isNetworkingSupported() )
+		{
+			LogPlug::info( 
+				"No network support available, no test performed." ) ;
+			return Ceylan::ExitSuccess ;
+		}
+
+
 		MyTestStreamClient myClient ;
 
 		string targetServer ;
