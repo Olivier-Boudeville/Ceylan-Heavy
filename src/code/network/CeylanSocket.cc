@@ -238,7 +238,8 @@ Size Socket::read( char * buffer, Size maxLength )
 
 #else // CEYLAN_USES_NETWORK	
 
-	throw ReadFailed( "Socket::read : network support not available." ) ;
+	throw ReadFailedException( 
+		"Socket::read : network support not available." ) ;
 	
 #endif // CEYLAN_USES_NETWORK	
 
