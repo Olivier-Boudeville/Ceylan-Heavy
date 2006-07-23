@@ -40,11 +40,23 @@ OutputStream::~OutputStream() throw()
 }
 
 
+Size OutputStream::write( const std::string & message ) 
+	throw( WriteFailedException )
+{
+
+	throw WriteFailedException( 
+		"In OutputStream::write (std::string based) failed : "
+		"this method should have been subclassed." ) ;
+
+}
+
+
 Size OutputStream::write( const Ceylan::Byte * buffer, Size length ) 
 	throw( WriteFailedException )
 {
 
-	throw WriteFailedException( "In OutputStream::write failed : "
+	throw WriteFailedException( 
+		"In OutputStream::write (buffer-based) failed : "
 		"this method should have been subclassed." ) ;
 
 }
