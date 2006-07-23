@@ -405,21 +405,41 @@ const std::string & File::getName() const throw()
 bool File::close() throw( Stream::CloseException )
 {
 
+	/*
+	 * Exception and returned boolean are both needed :
+	 *  - all close files should have been opened previously
+	 *  - returned boolean comes from the Stream-inherited signature
+	 *
+	 */
+	 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 	
 	if ( _fdes > 0 )
+	{
 		return Stream::Close( _fdes ) ;
+	}	
+	else
+	{
 
-	throw CloseException( "File::close : file '" +  _name 
-		+ "' does not seem to have been already opened." ) ;
+		throw CloseException( "File::close : file '" +  _name 
+			+ "' does not seem to have been already opened." ) ;
+			
+	}
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
 	if ( _fstream.is_open() )
+	{
 		_fstream.close() ;
-
-	throw CloseException( "File::close : file '" +  _name 
-		+ "' does not seem to have been already opened." ) ;
+		return true ;
+	}	
+	else
+	{
+	
+		throw CloseException( "File::close : file '" +  _name 
+			+ "' does not seem to have been already opened." ) ;
+			
+	}
 	
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
 	
@@ -429,7 +449,14 @@ bool File::close() throw( Stream::CloseException )
 void File::remove() throw( RemoveFailed )
 {
 
-	close() ;
+	try
+	{
+		close() ;
+	}
+	catch( const Stream::CloseException & e )
+	{
+		throw RemoveFailed( "File::remove failed : " + e.toString() ) ;
+	}
 
 #ifdef CEYLAN_USES_UNLINK	
 
