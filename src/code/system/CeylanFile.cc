@@ -317,6 +317,7 @@ File::ConversionFailed::ConversionFailed( const string & reason ) throw() :
 File::File( const string & name, OpeningFlag openFlag, 
 	PermissionFlag permissions )
 		throw( File::CouldNotOpen ):
+	InputOutputStream(),	
 	_fdes( static_cast<FileDescriptor>( -1 ) ),
 	_fstream(),
 	_name( name ),
@@ -339,6 +340,7 @@ File::File( const string & name,
 			PermissionFlag permissionFlag )
 		throw( File::CouldNotCreate, File::ReadFailed, File::WriteFailed,
 			Features::FeatureNotAvailableException ):
+	InputOutputStream(),		
 	_fdes( static_cast<FileDescriptor>( -1 ) ),
 	_name( name ),
 	_openFlag( CreateToWriteBinary ),

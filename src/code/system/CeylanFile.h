@@ -2,11 +2,10 @@
 #define CEYLAN_FILE_H_
 
 
-#include "CeylanSystem.h"        // for Size, SignedSize, etc.
-#include "CeylanTypes.h"         // for Ceylan::Byte
-#include "CeylanInputStream.h"   // for inheritance
-#include "CeylanOutputStream.h"  // for inheritance
-#include "CeylanFeatures.h"      // for FeatureNotAvailableException
+#include "CeylanSystem.h"              // for Size, SignedSize, etc.
+#include "CeylanTypes.h"               // for Ceylan::Byte
+#include "CeylanInputOutputStream.h"   // for inheritance
+#include "CeylanFeatures.h"            // for FeatureNotAvailableException
 
 
 
@@ -88,7 +87,7 @@ namespace Ceylan
 		 * FeatureNotAvailableException.
 		 *
 		 */
-		class File: public InputStream, public OutputStream
+		class File: public InputOutputStream
 		{
 		
 				
@@ -1115,8 +1114,8 @@ namespace Ceylan
 				 *
 				 * @throw ConversionFailed if the mapping failed.
 				 *
-				 * @note Currently disabled since not supported by the
-				 * underlying C++ stream layer.
+				 * @note Currently disabled since permission soecifications 
+				 * are not supported by the underlying C++ stream layer.
 				 *
 				static FIXME ConvertToStreamPermissionFlag( 
 						PermissionFlag permissionFlag ) 

@@ -2,9 +2,8 @@
 #define CEYLAN_PIPE_H_
 
 
-#include "CeylanInputStream.h"   // for inheritance
-#include "CeylanOutputStream.h"  // for inheritance
-#include "CeylanFeatures.h"      // for FeatureNotAvailableException
+#include "CeylanInputOutputStream.h"  // for inheritance
+#include "CeylanFeatures.h"           // for FeatureNotAvailableException
 
 
 
@@ -27,7 +26,7 @@ namespace Ceylan
 		 * beforehand : Features::areFileDescriptorsSupported
 		 *
 		 */
-		class Pipe: public InputStream, public OutputStream 
+		class Pipe: public InputOutputStream 
 		{
 
 	

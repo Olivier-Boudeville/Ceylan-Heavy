@@ -70,6 +70,7 @@
 #include "CeylanInterfacesIncludes.h"
 #include "CeylanLogIncludes.h"
 #include "CeylanMathsIncludes.h"
+#include "CeylanMiddlewareIncludes.h"
 #include "CeylanModulesIncludes.h"
 #include "CeylanNetworkIncludes.h"
 #include "CeylanSystemIncludes.h"

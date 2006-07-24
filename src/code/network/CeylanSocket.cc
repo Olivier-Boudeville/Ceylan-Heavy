@@ -107,6 +107,7 @@ Socket::SocketException::~SocketException() throw()
 	
 // Is protected :
 Socket::Socket() throw( Socket::SocketException ) :
+	InputOutputStream(),
 	_fdes   ( 0 ),
 	_port   ( 0 ),
 	_address( 0 )
@@ -127,6 +128,7 @@ Socket::Socket() throw( Socket::SocketException ) :
 
 
 Socket::Socket( Port port ) throw( SocketException ):
+	InputOutputStream(),
 	_fdes   ( 0 ),
 	_port   ( port ),
 	_address()

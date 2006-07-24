@@ -2,7 +2,7 @@
 #define CEYLAN_GENERIC_INCLUDES_H_
 
 
-// Please include below all header files to be exported by module generic.
+// Please include below all header files to be exported by module 'Generic'.
 
 
 #include "CeylanBasicResourceManager.h"

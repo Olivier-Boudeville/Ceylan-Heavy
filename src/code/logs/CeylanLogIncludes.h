@@ -2,7 +2,7 @@
 #define CEYLAN_LOG_INCLUDES_H_
 
 
-// Please include below all header files to be exported by module logs.
+// Please include below all header files to be exported by module 'Log'.
 
 
 #include "CeylanLog.h"

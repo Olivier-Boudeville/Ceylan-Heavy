@@ -2,7 +2,7 @@
 #define CEYLAN_SYSTEM_INCLUDES_H_
 
 
-// Please include below all header files to be exported by module system.
+// Please include below all header files to be exported by module 'System'.
 
 
 #include "CeylanAnonymousInputStream.h"
@@ -11,6 +11,7 @@
 #include "CeylanFile.h"
 #include "CeylanFileLocator.h"
 #include "CeylanInputStream.h"
+#include "CeylanInputOutputStream.h"
 #include "CeylanMutex.h"
 #include "CeylanOutputStream.h"
 #include "CeylanPipe.h"

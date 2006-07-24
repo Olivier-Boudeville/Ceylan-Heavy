@@ -2,7 +2,7 @@
 #define CEYLAN_INTERFACES_INCLUDES_H_
 
 
-// Please include below all header files to be exported by module interfaces.
+// Please include below all header files to be exported by module 'Interfaces'.
 
 
 

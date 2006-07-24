@@ -2,11 +2,12 @@
 #define CEYLAN_SOCKET_H_
 
 
-#include "CeylanInputStream.h"    // for inheritance
-#include "CeylanOutputStream.h"   // for inheritance
-#include "CeylanFeatures.h"       // for FeatureNotAvailableException
-#include "CeylanTypes.h"          // for Ceylan::Uint32
-#include "CeylanSystem.h"         // for SystemException, FileDescriptor, etc.
+#include "CeylanInputOutputStream.h" // for inheritance
+#include "CeylanFeatures.h"          // for FeatureNotAvailableException
+#include "CeylanTypes.h"             // for Ceylan::Uint32
+
+// for SystemException, FileDescriptor, etc. :
+#include "CeylanSystem.h"            
 
 
 
@@ -38,7 +39,7 @@ namespace Ceylan
 		 * @see DatagramSocket
 		 *
 		 */
-		class Socket: public System::InputStream, public System::OutputStream 
+		class Socket: public System::InputOutputStream
 		{
 
 

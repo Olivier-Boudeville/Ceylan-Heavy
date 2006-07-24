@@ -2,7 +2,7 @@
 #define CEYLAN_MATHS_INCLUDES_H_
 
 
-// Please include below all header files to be exported by module maths.
+// Please include below all header files to be exported by module 'Maths'.
 
 
 #include "CeylanBipoint.h"

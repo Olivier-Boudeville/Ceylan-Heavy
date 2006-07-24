@@ -7,10 +7,11 @@ SUFFIXES = .cc .h
 # These are the subdirectories (i.e. submodules) that are always built :
 BUILT_SUBDIRS = \
 	generic     \
-	logs        \
-	modules     \
 	interfaces  \
+	logs        \
 	maths       \
+	middleware  \
+	modules     \
 	network     \
 	system      
 

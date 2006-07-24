@@ -19,6 +19,7 @@ SYSTEM_INTERFACES = \
 	CeylanFile.h                         \
 	CeylanFileLocator.h                  \
 	CeylanInputStream.h                  \
+	CeylanInputOutputStream.h            \
 	CeylanMutex.h                        \
 	CeylanOutputStream.h                 \
 	CeylanPipe.h                         \
@@ -41,6 +42,7 @@ SYSTEM_IMPLEMENTATIONS = \
 	CeylanFile.cc                        \
 	CeylanFileLocator.cc                 \
 	CeylanInputStream.cc                 \
+	CeylanInputOutputStream.cc           \
 	CeylanMutex.cc                       \
 	CeylanOutputStream.cc                \
 	CeylanPipe.cc                        \

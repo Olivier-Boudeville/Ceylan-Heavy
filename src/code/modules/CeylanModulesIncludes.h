@@ -2,7 +2,7 @@
 #define CEYLAN_MODULES_INCLUDES_H_
 
 
-// Please include below all header files to be exported by module modules.
+// Please include below all header files to be exported by module 'Modules'.
 
 
 #include "CeylanFeatures.h"

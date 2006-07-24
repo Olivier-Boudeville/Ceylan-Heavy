@@ -1,7 +1,6 @@
 #include "CeylanPipe.h"
 
 #include "CeylanFile.h"        // for Duplicate
-//#include "CeylanSystem.h"      // for
 #include "CeylanLogPlug.h"     // for Log primitives
 
 
@@ -10,7 +9,6 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
-//extern "C" int errno ;
 
 extern "C" 
 { 
@@ -30,12 +28,18 @@ extern "C"
 
 
 #ifdef CEYLAN_USES_STRING_H
-//#include <string.h>          // for
+#include <string.h>            // for::select
 #endif // CEYLAN_USES_STRING_H
 
 
-//#include <strings.h>
-//#include <sys/select.h>
+#ifdef CEYLAN_USES_STRINGS_H
+#include <strings.h>           // for::select
+#endif // CEYLAN_USES_STRINGS_H
+
+
+#ifdef CEYLAN_USES_SYS_SELECT_H
+#include <sys/select.h>        // for::select
+#endif // CEYLAN_USES_SYS_SELECT_H
 
 }
        
@@ -88,7 +92,8 @@ Pipe::WriteFailed::WriteFailed( const string & reason ) throw() :
 
 
 Pipe::Pipe() throw( Pipe::CouldNotCreate, 
-	Features::FeatureNotAvailableException ) 
+		Features::FeatureNotAvailableException ) :
+	InputOutputStream()
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
@@ -113,9 +118,7 @@ Pipe::Pipe() throw( Pipe::CouldNotCreate,
 
 Pipe::Pipe( const Pipe & other ) throw( PipeException,
 		Features::FeatureNotAvailableException ) :
-	Stream(),
-	InputStream(),
-	OutputStream()
+	InputOutputStream()
 {
 
 	_fd[ 1 ] = -1 ;
@@ -139,7 +142,17 @@ Pipe::Pipe( const Pipe & other ) throw( PipeException,
 Pipe::~Pipe() throw()
 {
 
-	close() ;
+	try
+	{
+	
+		close() ;
+	
+	}
+	catch( const Stream::CloseException	& e )
+	{
+		LogPlug::error( "Pipe destructor failed : " + e.toString() ) ;
+	}
+	
 	
 }
 
@@ -152,7 +165,8 @@ Size Pipe::read( char * buffer, Size maxLength )
 
 	// Actually, n should never be negative :
 	if ( n < 0 )
-		throw ReadFailed( "Pipe::read failed : " + System::explainError() ) ;
+		throw ReadFailedException( "Pipe::read failed : " 
+			+ System::explainError() ) ;
 
 	return static_cast<Size>( n ) ;
 	
@@ -177,7 +191,7 @@ Size Pipe::write( const char * buffer, Size maxLength )
 	SignedSize n = System::FDWrite( _fd[ 1 ], buffer, maxLength ) ;
 
 	if ( n < static_cast<SignedSize>( maxLength ) )
-		throw WriteFailed( "Pipe::write failed : " 
+		throw WriteFailedException( "Pipe::write failed : " 
 			+ System::explainError() ) ;
 
 	return static_cast<Size>( n ) ;
@@ -207,7 +221,7 @@ bool Pipe::hasAvailableData() const throw()
 	FD_ZERO( & set ) ;
 	FD_SET( _fd[ 0 ], & set ) ;
 	
-	Ceylan::Sint32  n = ::select( _fd[ 0 ] + 1, & set, 0, 0, & tv ) ;
+	Ceylan::Sint32 n = ::select( _fd[ 0 ] + 1, & set, 0, 0, & tv ) ;
 	
 	if ( n > 0 )
 		return FD_ISSET( _fd[ 0 ], & set ) ;
@@ -222,6 +236,7 @@ bool Pipe::hasAvailableData() const throw()
 
 	LogPlug::error( "Pipe::hasAvailableData failed : "
 		"pipe support not available." ) ; 
+		
 	return false ;
 	
 #endif // CEYLAN_USES_FILE_DESCRIPTORS

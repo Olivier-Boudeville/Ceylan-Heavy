@@ -2,7 +2,7 @@
 #define CEYLAN_NETWORK_INCLUDES_H_
 
 
-// Please include below all header files to be exported by module network.
+// Please include below all header files to be exported by module 'Network'.
 
 
 #include "CeylanClientStreamSocket.h"
