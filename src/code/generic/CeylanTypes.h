@@ -127,7 +127,7 @@ namespace Ceylan
 	 * to specify Ceylan::Uint8 or Ceylan::Sint8.
 	 *
 	 */
-	typedef char Ceylan::Byte ;
+	typedef char Byte ;
 	 
 
 	/**
