@@ -139,7 +139,20 @@ namespace Ceylan
 						Ceylan::VerbosityLevels level = Ceylan::high )
 					const throw() ;
 								
-								
+				
+				/**
+				 * Returns whether the specified option is a known plug 
+				 * option.
+				 *
+				 * Useful for command-line argument parsing.
+				 *
+				 * @example "--consolePlug" returns true.
+				 *
+				 */ 
+				static bool IsAKnownPlugOption( const std::string & option )
+					throw() ;
+					
+									
 				/**
 				 * Command-line option which is to be used to select the
 				 * console plug.	
