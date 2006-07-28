@@ -94,6 +94,15 @@ MultiplexedServerStreamSocket::~MultiplexedServerStreamSocket() throw()
 }
 
 
+void MultiplexedServerStreamSocket::run() throw( ServerStreamSocketException )
+{
+
+#if CEYLAN_USES_NETWORK
+
+	
+#endif // CEYLAN_USES_NETWORK
+
+}
 
 
 void MultiplexedServerStreamSocket::accept() 
