@@ -118,6 +118,7 @@ Pipe::Pipe() throw( Pipe::CouldNotCreate,
 
 Pipe::Pipe( const Pipe & other ) throw( PipeException,
 		Features::FeatureNotAvailableException ) :
+	Stream(),
 	InputOutputStream()
 {
 
