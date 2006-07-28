@@ -79,6 +79,10 @@ int main( int argc,  char * argv[] )
 			} else		
 			if ( token == "--countedOption" )
 			{
+				if ( options.empty() )
+					throw CommandLineParseException( "Option " + token 
+						+ " expected one argument, none found." ) ;
+				
 				std::string count = options.front() ;
 				options.pop_front() ;
 				LogPlug::info( "Option with argument selected, argument is : "
@@ -86,10 +90,16 @@ int main( int argc,  char * argv[] )
 				tokenEaten = true ;
 			}
 			
+			if ( LogHolder::IsAKnownPlugOption( token ) )
+			{
+				// Ignores log-related (argument-less) options.
+				tokenEaten = true ;
+			}
+			
 			if ( ! tokenEaten )
 			{
-				LogPlug::error( "Unexpected command line argument : "
-					+ token ) ;
+				throw CommandLineParseException( 
+					"Unexpected command line argument : " + token ) ;
 			}
 		
 		}
