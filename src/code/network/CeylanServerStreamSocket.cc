@@ -27,11 +27,11 @@ extern "C"
 #endif // CEYLAN_USES_SYS_SOCKET_H
 
 #ifdef CEYLAN_USES_ARPA_INET_H
-#include <arpa/inet.h>         // for htonl
+#include <arpa/inet.h>         // for htonl, sockaddr_in
 #endif // CEYLAN_USES_ARPA_INET_H
 
 #ifdef CEYLAN_USES_NETINET_IN_H
-#include <netinet/in.h>        // for htonl
+#include <netinet/in.h>        // for htonl, sockaddr_in
 #endif // CEYLAN_USES_NETINET_IN_H
 
 }
@@ -43,13 +43,6 @@ using namespace Ceylan::Log ;
 
 
 using std::string ;
-
-
-/*
- * Avoid ::htonl, use directy htonl since it is a macro on some platforms
- * (ex : NetBSD)
- *
- */
 
 
 
@@ -65,25 +58,21 @@ using std::string ;
  */
 struct Socket::SystemSpecificSocketAddress
 {
-	sockaddr_in _socketAddress ;	
-	
+	   sockaddr_in _socketAddress ;
+
 } ;
 
-
-/**
- * Avoid exposing system-dependent sockaddr_in in the headers :
- *
- * @note This definition had to be directly duplicated from
- * file CeylanStreamSocket.cc.
- *
- */
-struct ServerStreamSocket::SystemSpecificSocketAddress
-{
-	sockaddr_in _socketAddress ;	
-	
-} ;
 
 #endif // CEYLAN_USES_NETWORK
+
+
+
+/*
+ * Avoid ::htonl, use directy htonl since it is a macro on some platforms
+ * (ex : NetBSD)
+ *
+ */
+
 
 
 
@@ -106,15 +95,12 @@ ServerStreamSocket::ServerStreamSocketException::~ServerStreamSocketException()
 ServerStreamSocket::ServerStreamSocket( Port port, bool reuse )
 		throw( SocketException ):
 	StreamSocket( port ),
-	_acceptedFileDescriptor( 0 ),
-	_clientAddress(0),
 	_bound( false ),
+	_stopRequested( false ),
 	_maximumPendingConnectionsCount( DefaultMaximumPendingConnectionsCount )
 {
 
 #if CEYLAN_USES_NETWORK
-
-	_clientAddress = new SystemSpecificSocketAddress ;
 	
 	if ( reuse )
 	{
@@ -148,92 +134,30 @@ ServerStreamSocket::ServerStreamSocket( Port port, bool reuse )
 ServerStreamSocket::~ServerStreamSocket() throw()
 {
 
-#if CEYLAN_USES_NETWORK
-
-	// The main listening socket is taken care of in mother classes.
-	
-	// No destructor should throw exception :
-	try
-	{
-		closeAcceptedConnection() ;
-	}
-	catch( const Stream::CloseException	& e )
-	{
-		LogPlug::error( "ServerStreamSocket destructor failed : " 
-			+ e.toString() ) ;
-	}
-
-	delete _clientAddress ;
-	
-#endif // CEYLAN_USES_NETWORK
-	
+	// StreamSocket takes care of everything needed.
 }
 
 
-
-
-void ServerStreamSocket::accept() throw( ServerStreamSocketException )
+void ServerStreamSocket::run() throw( ServerStreamSocketException )
 {
 
-#if CEYLAN_USES_NETWORK
-
-	if ( ! _bound )
-		prepareToAccept() ;
+	LogPlug::trace( "Entering in ServerStreamSocket::run" ) ;
 	
-	socklen_t size = static_cast<socklen_t>( 
-		sizeof( getAddress()._socketAddress ) ) ;
+	Ceylan::Uint32 connectionCount = 0 ;
 	
-	LogPlug::debug( "ServerStreamSocket::accept : ready to accept." ) ;
-	
-	/*
-	 * Extracts the first connection request on the queue of pending
-	 * connections, creates a new connected socket, and returns a new file
-	 * descriptor referring to that socket :
-	 *
-	 * The original file descriptor (returned by getFileDescriptor) is
-	 * unaffected by this call.
-	 *
-	 * @see man 2 accept
-	 *
-	 */
-	_acceptedFileDescriptor = ::accept( getFileDescriptor(), 
-		reinterpret_cast<sockaddr *>( & getAddress()._socketAddress ),
-		& size ) ;
+	while ( ! isRequestedToStop() )
+	{	
+		connectionCount++ ;
 		
-	if ( _acceptedFileDescriptor == -1 )
-		throw ServerStreamSocketException(
-			"ServerStreamSocket::accept failed : " + System::explainError() ) ;
-
-	LogPlug::debug( "ServerStreamSocket::accept : accept performed." ) ;
-
-	accepted() ;
+		LogPlug::info( "ServerStreamSocket::run : waiting for connection #" 
+			+ Ceylan::toString( connectionCount ) ) ;
+		accept() ;
+		
+	}
 	
-	cleanAfterAccept() ;
-
-#endif // CEYLAN_USES_NETWORK	
-			
-}
-
-
-FileDescriptor ServerStreamSocket::getFileDescriptorForTransport() const
-	throw( Features::FeatureNotAvailableException )
-{
-
-#if CEYLAN_USES_NETWORK
-
-	return _acceptedFileDescriptor ;
-		
-#else // CEYLAN_USES_NETWORK
-
-	throw Features::FeatureNotAvailableException( 
-		"ServerStreamSocket::getFileDescriptorForTransport : "
-		"network support not available." ) ;
-		
-#endif // CEYLAN_USES_NETWORK
+	LogPlug::trace( "Exiting from ServerStreamSocket::run" ) ;
 
 }
-
-
 
 
 ServerStreamSocket::ConnectionCount
@@ -269,12 +193,16 @@ const std::string ServerStreamSocket::toString( Ceylan::VerbosityLevels level )
 	else		
 		res = "ServerStreamSocket not ready to accept new connections" ;
 
+	res += ". " ;
+	
+	if ( _stopRequested )
+		res = "ServerStreamSocket is requested to stop" ;
+	else		
+		res = "ServerStreamSocket is not requested to stop" ;
+
 	if ( level == Ceylan::low )
 		return res ;
-	
-	res += ". File descriptor for accepted connection is " 
-		+ Ceylan::toString( _acceptedFileDescriptor	) ;
-		
+			
 	res += ". The current maximum number of pending connections "
 		"for this socket is " 
 		+ Ceylan::toString( getMaximumPendingConnectionsCount() ) ;
@@ -379,7 +307,7 @@ void ServerStreamSocket::cleanAfterAccept() throw( ServerStreamSocketException )
 
 	LogPlug::trace( "Entering ServerStreamSocket::cleanAfterAccept" ) ;
 	
-	closeAcceptedConnection() ;
+	closeAcceptedConnections() ;
 	
 #else // CEYLAN_USES_NETWORK
 
@@ -391,18 +319,7 @@ void ServerStreamSocket::cleanAfterAccept() throw( ServerStreamSocketException )
 }
 
 
-bool ServerStreamSocket::closeAcceptedConnection() 
-	throw( Stream::CloseException )
-{
 
-	Stream::Close( _acceptedFileDescriptor ) ;
-	
-	// _clientAddress will be reused as is (reassigned but not reallocated).	
-	
-	return true ;
-
-}
-	
 					
 void ServerStreamSocket::accepted() throw( ServerStreamSocketException )
 {
@@ -412,4 +329,18 @@ void ServerStreamSocket::accepted() throw( ServerStreamSocketException )
 		"connection up and running." ) ;
 		
 }
-					
+
+
+bool ServerStreamSocket::isRequestedToStop() const throw()
+{
+	return _stopRequested ;
+}			
+
+
+void ServerStreamSocket::requestToStop() throw()
+{
+
+	LogPlug::trace( "ServerStreamSocket::requestToStop" ) ;
+	_stopRequested = true ;
+	
+}			
