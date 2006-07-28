@@ -23,9 +23,11 @@ class MyTestStreamServer : public Ceylan::Network::ServerStreamSocket
 	public:
 	
 	
-		MyTestStreamServer( bool isBatch ):
+		MyTestStreamServer( bool isBatch, 
+				Ceylan::Uint32 targetConnectionCount ):
 			ServerStreamSocket( 6969, /* reuse */ true ),
-			_batch( isBatch )
+			_batch( isBatch ),
+			_targetConnectionCount( targetConnectionCount )
 		{
 		
 			LogPlug::info( "MyTestStreamServer created : "
@@ -33,6 +35,29 @@ class MyTestStreamServer : public Ceylan::Network::ServerStreamSocket
 				
 		}
 		
+		
+		void run() throw( ServerStreamSocketException )
+		{
+
+			/*
+			 * Instead of relying on a connection count to know when to stop,
+			 * the order could come from the network as well, with for
+			 * example a bool _requestedToStop :
+			 *
+			 * while ( ! _requestedToStop )
+			 *		accept() ;
+			 *
+			 */
+			 
+			for ( Ceylan::Uint32 i = 0; i < _targetConnectionCount; i++ )
+			{	
+				LogPlug::info( "Waiting for connection #" 
+					+ Ceylan::toString( i+1 ) ) ;
+				accept() ;
+			}	
+		
+		}
+			
 		
 		void accepted() throw( ServerStreamSocketException )
 		{
@@ -107,6 +132,7 @@ class MyTestStreamServer : public Ceylan::Network::ServerStreamSocket
 	
 		bool _batch ;
 		
+		Ceylan::Uint32 _targetConnectionCount ;
 		
 } ;
 
@@ -143,7 +169,9 @@ int main( int argc, char * argv[] )
 		
 		
 		bool isBatch = false ;
-
+		Ceylan::Uint32 targetConnectionCount = 1 ;
+		
+		
 		std::string executableName ;
 		std::list<std::string> options ;
 		
@@ -168,20 +196,41 @@ int main( int argc, char * argv[] )
 				tokenEaten = true ;
 			}
 			
+			if ( token == "--connection-count" )
+			{
+				if ( options.empty() )
+					throw CommandLineParseException( "Option " + token 
+						+ " expected one argument, none found." ) ;
+				targetConnectionCount = static_cast<Ceylan::Uint32>(
+					Ceylan::stringToUnsignedLong( options.front() ) ) ;
+				options.pop_front() ;	
+				LogPlug::info( "Will handle " + 
+					Ceylan::toString( targetConnectionCount ) 
+					+ " client requests before stopping" )  ;
+				tokenEaten = true ;
+			}
+			
+			if ( LogHolder::IsAKnownPlugOption( token ) )
+			{
+				// Ignores log-related (argument-less) options.
+				tokenEaten = true ;
+			}
+			
+			
 			if ( ! tokenEaten )
 			{
-				LogPlug::error( "Unexpected command line argument : "
-					+ token ) ;
+				throw CommandLineParseException( 
+					"Unexpected command line argument : " + token ) ;
 			}
 		
 		}
 		
-		MyTestStreamServer myServer( isBatch ) ;
+		MyTestStreamServer myServer( isBatch, targetConnectionCount ) ;
 	
         LogPlug::info( "Server created, waiting for connections : "
 			+ myServer.toString() ) ;
-			
-		myServer.accept() ;
+		
+		myServer.run() ;
 		
         LogPlug::info( "Connection terminated, current server state is : "
 			+ myServer.toString() ) ;
