@@ -13,22 +13,24 @@ libCeylanNetworkInclude_HEADERS = $(NETWORK_INTERFACES)
 
 
 NETWORK_INTERFACES = \
-	CeylanClientStreamSocket.h           \
-	CeylanIPAddress.h                    \
-	CeylanIPAddressvFour.h               \
-	CeylanNetwork.h                      \
-	CeylanNetworkIncludes.h              \
-	CeylanServerStreamSocket.h           \
-	CeylanSocket.h                       \
+	CeylanClientStreamSocket.h             \
+	CeylanIPAddress.h                      \
+	CeylanIPAddressvFour.h                 \
+	CeylanMultiplexedServerStreamSocket.h  \
+	CeylanNetwork.h                        \
+	CeylanNetworkIncludes.h                \
+	CeylanServerStreamSocket.h             \
+	CeylanSocket.h                         \
 	CeylanStreamSocket.h                       
 
 
 NETWORK_IMPLEMENTATIONS = \
-	CeylanClientStreamSocket.cc          \
-	CeylanIPAddress.cc                   \
-	CeylanIPAddressvFour.cc              \
-	CeylanNetwork.cc                     \
-	CeylanServerStreamSocket.cc          \
-	CeylanSocket.cc                      \
+	CeylanClientStreamSocket.cc            \
+	CeylanIPAddress.cc                     \
+	CeylanIPAddressvFour.cc                \
+	CeylanMultiplexedServerStreamSocket.cc \
+	CeylanNetwork.cc                       \
+	CeylanServerStreamSocket.cc            \
+	CeylanSocket.cc                        \
 	CeylanStreamSocket.cc                       
 
