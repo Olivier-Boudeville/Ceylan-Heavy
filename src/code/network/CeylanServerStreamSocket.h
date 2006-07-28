@@ -22,28 +22,23 @@ namespace Ceylan
 		/**
 		 * Server-side implementation of connection-based socket.
 		 *
-		 * This server basically manages two sockets : the listening one, 
-		 * which, whenever incoming connections are accepted, leads to a 
-		 * new socket creation. This service is designed to take care of at 
-		 * most a client at a time, but, depending on how the accepted method
-		 * is overriden, a given server can handle sequentially any number of
-		 * clients. 
+		 * This server basically factorizes all primitives common to all
+		 * stream server implementations, including one managing at most one 
+		 * connection at a time (SequentialServerStreamSocket) and one able
+		 * to deal with any number of simultaneous connections 
+		 * (MultiplexedServerStreamSocket).
 		 *
 		 * On exit, after the process is terminated, the socket port should
 		 * be readily available for next socket creations.
 		 *
-		 * More advanced servers can handle one listening socket and as 
-		 * many sockets as there are accepted connections.
+		 * @note For read/write operations with such server socket, 
+		 * the file descriptor being used is one returned by accept 
+		 * (i.e. a per-connection socket), not the main listening socket.
+		 *
+		 * @see ClientStreamSocket
 		 *
 		 * @see ServerMultiplexedStreamSocket for a server that manages any
 		 * number of clients too, but in parallel rather than sequentially.
-		 *
-		 * @note For read/write operations with such server socket, 
-		 * the file descriptor being used is the one returned by 
-		 * accept (i.e. the per-connection socket), not the main
-		 * listening socket.
-		 *
-		 * @see ClientStreamSocket
 		 *
 		 */
 		class ServerStreamSocket: public StreamSocket
@@ -111,6 +106,19 @@ namespace Ceylan
 	
 	
 				/**
+				 * Activates this server so that it can handle incoming 
+				 * requests.
+				 *
+				 * This main loop while last as long as the server is not 
+				 * requested to stop.
+				 *
+				 * @see requestToStop()
+				 *
+				 */
+				virtual void run() throw( ServerStreamSocketException ) ;
+				
+				
+				/**
 				 * Accepts first available incoming connection.
 				 *
 				 * If there is no pending connection present on the queue,
@@ -119,27 +127,9 @@ namespace Ceylan
 				 * @throw ServerStreamSocketException on failure.
 				 *
 				 */
-				virtual void accept() throw( ServerStreamSocketException ) ;
-	
-
-				/**
-				 * Returns the new file descriptor, obtained after accept(),
-				 * corresponding to a new connected socket taken from the
-				 * queue of pending connections.
-				 *
-				 * This file descriptor will no longer be the same after next
-				 * accept().
-				 *
-				 * @throw FeatureNotAvailableException if the file descriptor
-				 * feature is not available.
-				 *
-				 * @see getFileDescriptor()
-				 *
-				 */
-				virtual System::FileDescriptor 
-						getFileDescriptorForTransport() const
-					throw( Features::FeatureNotAvailableException ) ;
-		
+				virtual void accept() 
+					throw( ServerStreamSocketException ) = 0  ;
+			
 	
 				/**
 				 * Returns the current maximum number of pending connections
@@ -221,8 +211,8 @@ namespace Ceylan
 				 * @throw CloseException if the close operation failed.
 				 *
 				 */
-				virtual bool closeAcceptedConnection() 
-					throw( Stream::CloseException ) ;
+				virtual bool closeAcceptedConnections() 
+					throw( Stream::CloseException ) = 0 ;
 		
 		
 				/**
@@ -253,25 +243,24 @@ namespace Ceylan
 				virtual void accepted() throw( ServerStreamSocketException ) ;
 
 
+				/**
+				 * Tells whether this server will stop as soon as possible,
+				 * no later than any current connection is over.
+				 *
+				 */
+				virtual bool isRequestedToStop() const throw() ;
+				
+				
+				/**
+				 * Requests the server to stop just after having completed an
+				 * eventual current connection.
+				 *
+				 * Multiple stop requests can be sent.
+				 *
+				 */
+				virtual void requestToStop() throw() ;
+				 
 
-			private:
-	
-			
-				/**
-				 * Stores the latest file descriptor corresponding to 
-				 * an accepted incoming connection.
-				 *
-				 */
-				System::FileDescriptor _acceptedFileDescriptor ;
-		
-		
-				/**
-				 * The system-specific socket address for the latest accepted 
-				 * client.
-				 *
-				 */
-				SystemSpecificSocketAddress * _clientAddress ;
-		
 
 				/**
 				 * Tells whether this server socket is already bound, i.e. if a
@@ -279,6 +268,22 @@ namespace Ceylan
 				 *
 				 */
 				bool _bound ;
+
+
+
+
+			private:
+	
+				
+				
+				/**
+				 * Tells whether this server socket is requested to stop, i.e.
+				 * whether, when any currently processed connection is over,
+				 * the server will stop responding to new requests, whether
+				 * they are already waiting in the connection queue or not.
+				 * 
+				 */
+				bool _stopRequested ;
 				
 				
 				/**
@@ -290,6 +295,31 @@ namespace Ceylan
 				 */
 				Ceylan::Uint32 _maximumPendingConnectionsCount ;
 				
+				
+				
+				/**
+				 * Copy constructor made private to ensure that it will 
+				 * be never called.
+				 *
+				 * The compiler should complain whenever this undefined
+				 * constructor is called, implicitly or not.
+				 *
+				 */
+				ServerStreamSocket( const ServerStreamSocket & source ) 
+					throw() ;
+
+
+				/**
+				 * Assignment operator made private to ensure that it will
+				 * be never called.
+				 *
+				 * The compiler should complain whenever this undefined 
+				 * operator is called, implicitly or not.
+				 *
+				 */
+				ServerStreamSocket & operator = ( 
+					const ServerStreamSocket & source )	throw() ;
+
 		
 		
 		} ;
