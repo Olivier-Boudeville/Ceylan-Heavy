@@ -2,9 +2,10 @@
 #define CEYLAN_PROTOCOL_SERVER_H_
 
 
-//#include "CeylanStreamSocket.h"      // for inheritance
+#include "CeylanTextDisplayable.h"  // for inheritance
 
 #include <string>
+#include <list>
 
 
 
@@ -18,10 +19,14 @@ namespace Ceylan
 
 
 		/**
-		 * 
+		 * Designates an applicative server, built on top of an 
+		 * InputOutputStream, this stream being most often a network one.
+		 *
+		 * Such server handles requests sent by clients, and manages them in
+		 * a remote-invocation-method maneer. 
 		 *
 		 */
-		class ProtocolServer: public 
+		class ProtocolServer: public TextDisplayable
 		{
 		
 		
@@ -29,7 +34,7 @@ namespace Ceylan
 			
 			
 				/**
-				 *
+				 * Constructs a new protocol server.
 				 *
 				 *
 				 */
