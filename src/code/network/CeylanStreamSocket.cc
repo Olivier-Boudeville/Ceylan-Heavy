@@ -140,6 +140,12 @@ StreamSocket::StreamSocket( Port port ) throw( SocketException ):
 StreamSocket::~StreamSocket() throw()
 {
 
+	/*
+	 * The Socket mother class destructor takes care of the closing of _fdes.
+	 * and related members.
+	 *
+	 */
+	
 }
 
 
