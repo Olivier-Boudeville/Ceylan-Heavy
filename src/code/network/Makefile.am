@@ -19,6 +19,7 @@ NETWORK_INTERFACES = \
 	CeylanMultiplexedServerStreamSocket.h  \
 	CeylanNetwork.h                        \
 	CeylanNetworkIncludes.h                \
+	CeylanSequentialServerStreamSocket.h   \
 	CeylanServerStreamSocket.h             \
 	CeylanSocket.h                         \
 	CeylanStreamSocket.h                       
@@ -30,6 +31,7 @@ NETWORK_IMPLEMENTATIONS = \
 	CeylanIPAddressvFour.cc                \
 	CeylanMultiplexedServerStreamSocket.cc \
 	CeylanNetwork.cc                       \
+	CeylanSequentialServerStreamSocket.cc  \
 	CeylanServerStreamSocket.cc            \
 	CeylanSocket.cc                        \
 	CeylanStreamSocket.cc                       
