@@ -129,7 +129,7 @@ ServerStreamSocket::ServerStreamSocket( Port port, bool reuse )
 			/* option value buffer */ reinterpret_cast<char *>( &reuseOption ), 
 			/* option buffer length */ sizeof( reuseOption ) ) != 0 )
 				throw ServerStreamSocketException( 
-					"ServerStreamSocketException constructor : "
+					"ServerStreamSocket constructor : "
 					"could not set reuse option on listening socket : "
 					+ System::explainError() ) ;
 	}
@@ -137,7 +137,7 @@ ServerStreamSocket::ServerStreamSocket( Port port, bool reuse )
 #else // CEYLAN_USES_NETWORK
 
 	throw ServerStreamSocketException( 
-		"ServerStreamSocketException constructor failed : "
+		"ServerStreamSocket constructor failed : "
 		"network support not available." ) ; 
 	
 #endif // CEYLAN_USES_NETWORK
@@ -150,10 +150,12 @@ ServerStreamSocket::~ServerStreamSocket() throw()
 
 #if CEYLAN_USES_NETWORK
 
+	// The main listening socket is taken care of in mother classes.
+	
 	// No destructor should throw exception :
 	try
 	{
-		Stream::Close( _acceptedFileDescriptor ) ;
+		closeAcceptedConnection() ;
 	}
 	catch( const Stream::CloseException	& e )
 	{
@@ -175,7 +177,8 @@ void ServerStreamSocket::accept() throw( ServerStreamSocketException )
 
 #if CEYLAN_USES_NETWORK
 
-	prepareToAccept() ;
+	if ( ! _bound )
+		prepareToAccept() ;
 	
 	socklen_t size = static_cast<socklen_t>( 
 		sizeof( getAddress()._socketAddress ) ) ;
@@ -189,6 +192,9 @@ void ServerStreamSocket::accept() throw( ServerStreamSocketException )
 	 *
 	 * The original file descriptor (returned by getFileDescriptor) is
 	 * unaffected by this call.
+	 *
+	 * @see man 2 accept
+	 *
 	 */
 	_acceptedFileDescriptor = ::accept( getFileDescriptor(), 
 		reinterpret_cast<sockaddr *>( & getAddress()._socketAddress ),
@@ -201,6 +207,8 @@ void ServerStreamSocket::accept() throw( ServerStreamSocketException )
 	LogPlug::debug( "ServerStreamSocket::accept : accept performed." ) ;
 
 	accepted() ;
+	
+	cleanAfterAccept() ;
 
 #endif // CEYLAN_USES_NETWORK	
 			
@@ -257,9 +265,9 @@ const std::string ServerStreamSocket::toString( Ceylan::VerbosityLevels level )
 	// @todo : add client IP
 	
 	if ( _bound )
-		res = "ServerStreamSocket linked to client" ;
+		res = "ServerStreamSocket bound and listening for new connections" ;
 	else		
-		res = "ServerStreamSocket not linked to any client" ;
+		res = "ServerStreamSocket not ready to accept new connections" ;
 
 	if ( level == Ceylan::low )
 		return res ;
@@ -293,38 +301,44 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 
 
 	LogPlug::trace( "Entering ServerStreamSocket::prepareToAccept" ) ;
-	
+
 	if ( _bound )
-		throw ServerStreamSocketException( 
+		throw ServerStreamSocketException(
 			"ServerStreamSocket::prepareToAccept : socket already bound" ) ;
-	
-	getAddress()._socketAddress.sin_addr.s_addr = 
-		htonl( /* Address to accept any incoming message */ INADDR_ANY ) ;
+				
+	getAddress()._socketAddress.sin_addr.s_addr = htonl( 
+		/* Address to accept any incoming connection */ INADDR_ANY ) ;
  
  	Ceylan::Uint8 bindAttemptCount = 0 ;
 	const Ceylan::Uint8 maxBindAttemptCount = 5 ;
-		
+	
 	for ( ; bindAttemptCount < maxBindAttemptCount; bindAttemptCount++ )
 	{
 
-		LogPlug::debug( "ServerStreamSocket::prepareToAccept : bind attempt #"
-			+ Ceylan::toString( bindAttemptCount + 1 ) ) ;
-		
+		LogPlug::debug( "ServerStreamSocket::prepareToAccept : "
+			"bind attempt #" + Ceylan::toString( bindAttemptCount + 1 ) ) ;
+	
 		if ( ::bind( getFileDescriptor(), 
-				reinterpret_cast<sockaddr *>( & getAddress()._socketAddress ),
+				reinterpret_cast<sockaddr *>( 
+					& getAddress()._socketAddress ),
 				sizeof( sockaddr_in ) ) == 0 ) 
 			break ;
-		
+	
 		Thread::Sleep( 1 /* second */ ) ;
-		
+	
 	}
-		
+	
+	
 	if ( bindAttemptCount == maxBindAttemptCount )
 		throw ServerStreamSocketException(
 			"ServerStreamSocket::prepareToAccept : bind attempts failed : "
 			+ System::explainError() ) ;
-					
-	LogPlug::debug( "ServerStreamSocket::prepareToAccept : bind succeeded." ) ;
+				
+	LogPlug::debug( "ServerStreamSocket::prepareToAccept : "
+		"bind succeeded." ) ;
+
+ 	_bound = true ;
+	
 	
 	if ( ::listen( getFileDescriptor(), _maximumPendingConnectionsCount ) != 0 )
 		throw ServerStreamSocketException(
@@ -334,8 +348,17 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 	LogPlug::debug( "ServerStreamSocket::prepareToAccept : "
 		"listen succeeded." ) ;
  
- 	_bound = true ;
 
+
+	/*
+	 * From this moment, a socket dedicated to this connection is created,
+	 * it is the one that will be used for example by read operations in
+	 * the 'accepted( method, thanks to the getFileDescriptorForTransport
+	 * method.
+	 *
+	 * @see StreamSocket::read
+	 *
+	 */
 
 #else // CEYLAN_USES_NETWORK
 
@@ -346,6 +369,40 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 	
 }
 
+
+void ServerStreamSocket::cleanAfterAccept() throw( ServerStreamSocketException )
+{
+
+
+#if CEYLAN_USES_NETWORK
+
+
+	LogPlug::trace( "Entering ServerStreamSocket::cleanAfterAccept" ) ;
+	
+	closeAcceptedConnection() ;
+	
+#else // CEYLAN_USES_NETWORK
+
+	throw ServerStreamSocketException( "ServerStreamSocket::cleanAfterAccept : "
+		"no network support available." ) ;
+	
+#endif // CEYLAN_USES_NETWORK	
+	
+}
+
+
+bool ServerStreamSocket::closeAcceptedConnection() 
+	throw( Stream::CloseException )
+{
+
+	Stream::Close( _acceptedFileDescriptor ) ;
+	
+	// _clientAddress will be reused as is (reassigned but not reallocated).	
+	
+	return true ;
+
+}
+	
 					
 void ServerStreamSocket::accepted() throw( ServerStreamSocketException )
 {
@@ -353,6 +410,6 @@ void ServerStreamSocket::accepted() throw( ServerStreamSocketException )
 	// Empty implementation made to be overriden.
 	LogPlug::debug( "ServerStreamSocket::accepted : "
 		"connection up and running." ) ;
-	
+		
 }
 					
