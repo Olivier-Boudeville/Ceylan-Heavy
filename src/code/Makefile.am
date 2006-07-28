@@ -49,6 +49,7 @@ SUBLIBS = \
 	interfaces/libCeylanInterfaces.la \
 	logs/libCeylanLogs.la             \
 	maths/libCeylanMaths.la           \
+	middleware/libCeylanMiddleware.la \
 	modules/libCeylanModules.la       \
 	network/libCeylanNetwork.la       \
 	system/libCeylanSystem.la
