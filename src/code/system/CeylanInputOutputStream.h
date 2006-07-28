@@ -2,7 +2,7 @@
 #define CEYLAN_INPUT_OUTPUT_STREAM_H_
 
 
-#include "CeylanInputStream.h"     // for inheritance
+#include "CeylanInputStream.h"      // for inheritance
 #include "CeylanOutputStream.h"     // for inheritance
 
 
