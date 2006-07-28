@@ -62,19 +62,14 @@ int main( int argc,  char * argv[] )
 
 			tokenEaten = false ;
 						
-			if ( token == "--consolePlug" )
+			if ( token == "--batch" )
 			{
-				LogPlug::info( "Console plug selected" ) ;
+				LogPlug::info( "Batch mode selected (but ignored)" ) ;
 				tokenEaten = true ;
 			} else
-			if ( token == "--htmlPlug" )
+			if ( token == "--interactive" )
 			{
-				LogPlug::info( "HTML plug selected" ) ;
-				tokenEaten = true ;
-			} else
-			if ( token == "--classicalPlug" )
-			{
-				LogPlug::info( "Classical plug selected" ) ;
+				LogPlug::info( "Interactive mode selected (but ignored)" ) ;
 				tokenEaten = true ;
 			} else		
 			if ( token == "--countedOption" )
@@ -88,8 +83,7 @@ int main( int argc,  char * argv[] )
 				LogPlug::info( "Option with argument selected, argument is : "
 					+ count ) ;
 				tokenEaten = true ;
-			}
-			
+			} else
 			if ( LogHolder::IsAKnownPlugOption( token ) )
 			{
 				// Ignores log-related (argument-less) options.
