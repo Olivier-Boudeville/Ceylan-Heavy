@@ -8,10 +8,10 @@ testsnetwork_PROGRAMS = \
 	testCeylanClientStream                 \
 	testCeylanIPAddressvFour               \
 	testCeylanNetwork                      \
-	testCeylanServerStream
+	testCeylanSequentialServerStream
 
 
-testCeylanClientStream_SOURCES        = testCeylanClientStream.cc
-testCeylanIPAddressvFour_SOURCES      = testCeylanIPAddressvFour.cc
-testCeylanNetwork_SOURCES             = testCeylanNetwork.cc
-testCeylanServerStream_SOURCES        = testCeylanServerStream.cc
+testCeylanClientStream_SOURCES           = testCeylanClientStream.cc
+testCeylanIPAddressvFour_SOURCES         = testCeylanIPAddressvFour.cc
+testCeylanNetwork_SOURCES                = testCeylanNetwork.cc
+testCeylanSequentialServerStream_SOURCES = testCeylanSequentialServerStream.cc
