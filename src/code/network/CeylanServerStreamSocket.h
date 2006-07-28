@@ -22,6 +22,22 @@ namespace Ceylan
 		/**
 		 * Server-side implementation of connection-based socket.
 		 *
+		 * This server basically manages two sockets : the listening one, 
+		 * which, whenever incoming connections are accepted, leads to a 
+		 * new socket creation. This service is designed to take care of at 
+		 * most a client at a time, but, depending on how the accepted method
+		 * is overriden, a given server can handle sequentially any number of
+		 * clients. 
+		 *
+		 * On exit, after the process is terminated, the socket port should
+		 * be readily available for next socket creations.
+		 *
+		 * More advanced servers can handle one listening socket and as 
+		 * many sockets as there are accepted connections.
+		 *
+		 * @see ServerMultiplexedStreamSocket for a server that manages any
+		 * number of clients too, but in parallel rather than sequentially.
+		 *
 		 * @note For read/write operations with such server socket, 
 		 * the file descriptor being used is the one returned by 
 		 * accept (i.e. the per-connection socket), not the main
@@ -185,13 +201,53 @@ namespace Ceylan
 					throw( ServerStreamSocketException ) ;
 		
 		
+				/** 
+				 * Restores the server state after an accepted connection is
+				 * over, so that next connections in the queue can be accepted
+				 * in turn.
+				 *
+				 * @throw ServerStreamSocketException if the operation failed.
+				 *
+				 */
+				virtual void cleanAfterAccept()
+					throw( ServerStreamSocketException ) ;
+		
+		
+				/** 
+				 * Closes any accepted connection, including its socket.
+				 *
+				 * @return true iff an operation had to be performed.
+				 *
+				 * @throw CloseException if the close operation failed.
+				 *
+				 */
+				virtual bool closeAcceptedConnection() 
+					throw( Stream::CloseException ) ;
+		
+		
 				/**
 				 * Called whenever the accept method succeeds.
+				 *
+				 * If this server has to handle (sequentially) multiple
+				 * clients, then the overriden implementation of this method
+				 * should end up at least with a close, with _bound set to
+				 * false. And the server must loop with regular calls to the 
+				 * accept method.
+				 *
+				 * Otherwise, if the server stops accepting connections after
+				 * the one being processed, any other connection initiated 
+				 * after the current one was begun will wait till this latter
+				 * is terminated, and will have this exception thrown :
+				 * StreamSocket::read failed : Ceylan::System::FDRead failed :
+				 * Connection reset by peer, since the server refuses upcoming
+				 * connections.
 				 *
 				 * @note This method is made to be overriden by actual 
 				 * specialized servers.
 				 *
 				 * @throw ServerStreamSocketException on failure.
+				 *
+				 * @see testCeylanServerStream.cc
 				 *
 				 */
 				virtual void accepted() throw( ServerStreamSocketException ) ;
