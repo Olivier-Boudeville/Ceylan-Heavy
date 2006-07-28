@@ -10,6 +10,7 @@
 #include "CeylanIPAddressvFour.h"
 #include "CeylanMultiplexedServerStreamSocket.h"
 #include "CeylanNetwork.h"
+#include "CeylanSequentialServerStreamSocket.h"
 #include "CeylanServerStreamSocket.h"
 #include "CeylanSocket.h"
 #include "CeylanStreamSocket.h"
