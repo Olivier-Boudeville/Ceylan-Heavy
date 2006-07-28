@@ -282,6 +282,9 @@ AC_SUBST(CEYLAN_LOGS)
 CEYLAN_MATHS="\$(top_srcdir)/src/code/maths"
 AC_SUBST(CEYLAN_MATHS)
 
+CEYLAN_MIDDLEWARE="\$(top_srcdir)/src/code/middleware"
+AC_SUBST(CEYLAN_MIDDLEWARE)
+
 CEYLAN_MODULES="\$(top_srcdir)/src/code/modules"
 AC_SUBST(CEYLAN_MODULES)
 
@@ -1252,6 +1255,7 @@ AC_CONFIG_FILES([
 	src/code/interfaces/Makefile
 	src/code/logs/Makefile
 	src/code/maths/Makefile
+	src/code/middleware/Makefile
 	src/code/modules/Makefile
 	src/code/network/Makefile
 	src/code/scripts/python/Makefile
