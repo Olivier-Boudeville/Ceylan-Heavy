@@ -75,6 +75,7 @@ namespace Ceylan
 	}
 	
 	
+	/// Exception raised by common utils services. 
 	class UtilsException : public Exception
 	{
 	
@@ -93,6 +94,33 @@ namespace Ceylan
 		
 	} ;	
 
+
+
+	/**
+	 * Exception raised wheneve the parsing of a command line failed, for
+	 * exemple when a given option requires more arguments than available 
+	 * in the command line.
+	 *
+	 * @see testCeylanCommandLineOptions.cc
+	 *
+	 */
+	class CommandLineParseException : public UtilsException
+	{
+	
+		public:
+		
+			CommandLineParseException( const std::string & message ) throw() : 
+				UtilsException( message )
+			{		
+			
+			}
+			
+			virtual ~CommandLineParseException() throw()
+			{
+			
+			}	
+		
+	} ;	
 
 
 	/**
@@ -120,7 +148,7 @@ namespace Ceylan
 		std::list<std::string> & readOptions, 
 		Ceylan::Uint16 argumentCount, char ** argumentVector ) throw() ;
 		
-
+	
 
 	/// Return value to be used on success.
 	extern const Ceylan::Sint16 ExitSuccess ;
