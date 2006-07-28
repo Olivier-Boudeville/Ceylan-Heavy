@@ -13,7 +13,7 @@
 
 #echo "playTests-local.sh sourced"
 
-server_test_name="testCeylanServerStream"
+server_test_name="testCeylanSequentialServerStream"
 client_test_name="testCeylanClientStream"
 
 server_test_exec="${TEST_ROOT}/$m/${server_test_name}"
