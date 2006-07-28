@@ -75,8 +75,17 @@ namespace Ceylan
 				 *
 				 * @param port the TCP port of the server.
 				 *
-				 * @throw SocketException if the operation failed.
-				 *				 
+				 * @throw SocketException if the operation failed. 	
+				 * If no server is available at the target endpoint, this
+				 * method will fail with a SocketException carrying the 
+				 * message "Connection refused", ex : 
+				 * "could not connect to IP 127.0.0.1 for host 'localhost' :
+				 * Connection refused". The same error will occur if there
+				 * is a server at the endpoint but its queue of pending 
+				 * connections is full.
+				 *
+				 * @see ServerStreamSocket::setMaximumPendingConnectionsCount
+				 *
 				 */
 				virtual void connect( const std::string & serverHostname, 
 						Port port )
