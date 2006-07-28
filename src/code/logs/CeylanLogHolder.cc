@@ -193,3 +193,20 @@ const string LogHolder::toString( Ceylan::VerbosityLevels level )
 
 
 }	
+
+
+bool LogHolder::IsAKnownPlugOption( const std::string & option ) throw()
+{
+
+	if ( option == ConsolePlugOption )
+		return true ;
+		
+	if ( option == ClassicalPlugOption )
+		return true ;
+		
+	if ( option == HTMLPlugOption )
+		return true ;
+	
+	return false ;
+		
+}
