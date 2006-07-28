@@ -16,7 +16,7 @@ namespace Ceylan
 	namespace System
 	{
 	
-		/// Multiplexed servers have anonymous IO streams.
+		/// Multiplexed servers create anonymous IO streams.
 		class AnonymousInputOutputStream ;
 		
 	}
@@ -34,9 +34,8 @@ namespace Ceylan
 		 *
 		 * This server basically manages n+1 sockets : the listening one, 
 		 * which, whenever incoming connections are accepted, leads to a 
-		 * new socket creation being created. Thus there can be n 
-		 * simultaneously connected sockets, each one being viewed as an 
-		 * anonymous input/output stream.
+		 * new socket creation being created, and n simultaneously connected
+		 * sockets, each one being viewed as an anonymous input/output stream.
 		 *
 		 * @see ServerMultiplexedStreamSocket for a server that manages any
 		 * number of clients too, but sequentially rather than in parallel.
@@ -92,6 +91,19 @@ namespace Ceylan
 	
 	
 				/**
+				 * Activates this server so that it can handle incoming 
+				 * requests.
+				 *
+				 * This main loop while last as long as the server is not 
+				 * requested to stop.
+				 *
+				 * @see requestToStop()
+				 *
+				 */
+				virtual void run() throw( ServerStreamSocketException ) ;
+	
+	
+				/**
 				 * Accepts all incoming connections, as long as it is not
 				 * requested to stop.
 				 *
@@ -107,6 +119,33 @@ namespace Ceylan
 	
 
 
+				/**
+				 * Manages a connection for which data is available.
+				 *
+				 * This method is to be subclassed so that this multiplexed
+				 * server can perform its task on each per-connection socket,
+				 * viewed as an abstract input/output stream.
+				 *
+				 * @note It is the responability of this method to return 
+				 * approriately, i.e. if it does not return or if it returns
+				 * after a long time, all other connections will be frozen
+				 * in the meantime.
+				 *
+				 * @param stream the input/output stream that is dedicated to
+				 * a particular connection to this server. When this method is
+				 * called by the server, the stream is selected, i.e. has 
+				 * already data available for reading. This data may be 
+				 * interpreted by this method as a request that can be decoded,
+				 * then applied by the server, then its result can be sent 
+				 * back to the client thanks to the same I/O stream.
+				 *
+				 * @throw MultiplexedServerStreamSocketException if an error
+				 * occurred.
+				 *
+				 */
+				virtual void handleConnection( 
+						System::AnonymousInputOutputStream & stream )
+					throw( MultiplexedServerStreamSocketException ) = 0 ;
 					
 	
             	/**
