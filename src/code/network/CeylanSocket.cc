@@ -169,6 +169,9 @@ Socket::~Socket() throw()
 		LogPlug::error( "Socket destructor failed : " + e.toString() ) ;
 	}
 	
+	if ( _address != 0 )
+		delete _address ;
+	
 }
 
 
