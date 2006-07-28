@@ -1,9 +1,6 @@
 #include "CeylanTimestamp.h"
 
 
-#include <ctime>
-
-
 #include "CeylanSystem.h"      // for explainError
 #include "CeylanOperators.h"
 
@@ -12,6 +9,7 @@
 #include "CeylanConfig.h"       // for configure-time settings
 #endif // CEYLAN_USES_CONFIG_H
 
+#include <ctime>
 
 using std::string ;
 
