@@ -16,7 +16,7 @@ using namespace std ;
 
 
 
-class MyTestStreamServer : public Ceylan::Network::ServerStreamSocket
+class MyTestStreamServer : public Ceylan::Network::SequentialServerStreamSocket
 {
 
 
@@ -25,7 +25,7 @@ class MyTestStreamServer : public Ceylan::Network::ServerStreamSocket
 	
 		MyTestStreamServer( bool isBatch, 
 				Ceylan::Uint32 targetConnectionCount ):
-			ServerStreamSocket( 6969, /* reuse */ true ),
+			SequentialServerStreamSocket( 6969, /* reuse */ true ),
 			_batch( isBatch ),
 			_targetConnectionCount( targetConnectionCount )
 		{
