@@ -104,6 +104,8 @@ ClientStreamSocket::ClientStreamSocket()
 ClientStreamSocket::~ClientStreamSocket() throw()
 {
 
+	// The socket is taken care of in mother classes.
+
 	if ( _serverHostInfo != 0 )
 		delete _serverHostInfo ;
 
