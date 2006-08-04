@@ -45,19 +45,6 @@ namespace Ceylan
 		{
 		
 
-			/**
-			 * Opaque handle for forward-declared but undefined struct
-			 * pointer to system socket address, used to avoid
-			 * including system-specific headers which define for 
-			 * example sockaddr_in.
-			 *
-			 * Otherwise the API exposed by Ceylan would depend on these
-			 * headers, then on a config.h that should then be installed
-			 * but may clash with others, and so on.
-			 *
-			 */
-			struct SystemSpecificSocketAddress ;
-
 
 			/// Records connection count.
 			typedef Ceylan::Uint32 ConnectionCount ;
