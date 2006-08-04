@@ -13,6 +13,7 @@ libCeylanLogsInclude_HEADERS = $(LOGS_INTERFACES)
 
 noinst_HEADERS = CeylanLogLight.h CeylanLogAggregatorHTMLFragments.h
 
+
 LOGS_INTERFACES = \
 	CeylanLog.h                          \
 	CeylanLogAggregator.h                \
