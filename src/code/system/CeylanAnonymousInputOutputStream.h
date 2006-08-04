@@ -3,7 +3,6 @@
 
 
 #include "CeylanInputOutputStream.h"     // for inheritance
-#include "CeylanSystem.h"                // for FileDescriptor
 
 
 
@@ -37,27 +36,17 @@ namespace Ceylan
 	
 	
 				/**
-				 * Basic constructor for AnonymousInputOutputStream, whose
-				 * instances are created not selected.
-				 *
-				 * @throw StreamException if the operation failed, included
-				 * if the file descriptor feature is not available.
+				 * Basic constructor for AnonymousInputOutputStream.
 				 *
 				 */
-				explicit AnonymousInputOutputStream( FileDescriptor fd )
-					 throw( StreamException ) ;
+				explicit AnonymousInputOutputStream()
+					throw( StreamException ) ;
 		
 		
-				/// Basic virtual destructor.
+				/// Basic virtual destructor, closes the file descriptor.
 				virtual ~AnonymousInputOutputStream() throw() ;
 		
-		
-				/// Returns the input stream's unique ID.
-				virtual StreamID getInputStreamID() const ;
-
-				/// Returns the output stream's unique ID.
-				virtual StreamID getOutputStreamID() const ;
-
+	
 
             	/**
             	 * Returns an user-friendly description of the state of
@@ -77,12 +66,8 @@ namespace Ceylan
 
 
 
-	
+
 			private:
-
-
-				/// Stores the file descriptor of this stream.
-				FileDescriptor _fdes ;
 
 
 				/**
