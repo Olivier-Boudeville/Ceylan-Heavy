@@ -211,36 +211,7 @@ Size Pipe::write( const char * buffer, Size maxLength )
 bool Pipe::hasAvailableData() const throw()
 {
 
-#if CEYLAN_USES_FILE_DESCRIPTORS
-
-	struct timeval tv ;
-	tv.tv_sec  = 0 ;
-	tv.tv_usec = 0 ;
-	
-	// Creates the set of waiting file descriptors :
-	fd_set set ;
-	FD_ZERO( & set ) ;
-	FD_SET( _fd[ 0 ], & set ) ;
-	
-	Ceylan::Sint32 n = ::select( _fd[ 0 ] + 1, & set, 0, 0, & tv ) ;
-	
-	if ( n > 0 )
-		return FD_ISSET( _fd[ 0 ], & set ) ;
-	
-	if ( n == -1 )
-		LogPlug::error( "Pipe::hasAvailableData failed : " 
-			+ System::explainError() ) ;
-
-	return false ;
-
-#else // CEYLAN_USES_FILE_DESCRIPTORS	
-
-	LogPlug::error( "Pipe::hasAvailableData failed : "
-		"pipe support not available." ) ; 
-		
-	return false ;
-	
-#endif // CEYLAN_USES_FILE_DESCRIPTORS
+	return System::HasAvailableData( _fd[ 0 ] ) ;
 				
 }
 
