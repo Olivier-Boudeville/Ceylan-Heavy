@@ -6,6 +6,7 @@
 #include "CeylanSystem.h"             // for FileDescriptor
 
 #include <string>
+#include <set>                        // for _currentConnections
 
 
 
@@ -41,6 +42,9 @@ namespace Ceylan
 		 * number of clients too, but sequentially rather than in parallel.
 		 *
 		 * @see ClientStreamSocket
+		 *
+		 * The clearInput method operates on the listening socket, it does
+		 * not apply to any of the transport streams.
 		 *
 		 */
 		class MultiplexedServerStreamSocket: public ServerStreamSocket
@@ -160,7 +164,7 @@ namespace Ceylan
 				 * @see TextDisplayable
 				 *
 				 */
-				virtual const std::string toString( 
+				virtual const std::string toString(
 					Ceylan::VerbosityLevels level = Ceylan::high ) 
 						const throw() ;
 	
@@ -169,11 +173,43 @@ namespace Ceylan
 			protected:
 
 				
+				/**
+				 * The list of current accepted connection-based sockets.
+				 *
+				 * It is a set of pointers and not a list, since not only it
+				 * has to be enumerated, but also it is searched for specific
+				 * elements (with find).
+				 *
+				 */
+				std::set<System::AnonymousInputOutputStream *>
+					_currentConnections ;
 
 
 			private:
 	
 			
+				/**
+				 * Copy constructor made private to ensure that it will 
+				 * be never called.
+				 *
+				 * The compiler should complain whenever this undefined
+				 * constructor is called, implicitly or not.
+				 *
+				 */
+				MultiplexedServerStreamSocket( 
+					const MultiplexedServerStreamSocket & source ) throw() ;
+
+
+				/**
+				 * Assignment operator made private to ensure that it will
+				 * be never called.
+				 *
+				 * The compiler should complain whenever this undefined 
+				 * operator is called, implicitly or not.
+				 *
+				 */
+				MultiplexedServerStreamSocket & operator = ( 
+					const MultiplexedServerStreamSocket & source ) throw() ;
 		
 		
 		} ;
