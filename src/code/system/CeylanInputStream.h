@@ -166,6 +166,18 @@ namespace Ceylan
 				 */
 				virtual bool hasAvailableData() const throw() = 0 ;
 		
+                
+				/**
+				 * Clears the input stream.
+				 *
+				 * @throw InputStream::ReadFailedException if the operation
+				 * failed.
+				 *
+				 */
+				virtual void clearInput()
+					throw( InputStream::ReadFailedException ) ;
+
+
 
 
 				// Read integer types subsection.
@@ -348,6 +360,17 @@ namespace Ceylan
 				/// Used to set the selection status.
 				virtual void setSelected( bool newStatus ) throw() ;
 		
+		
+				/**
+				 * Sets this input stream's unique ID.
+				 *
+				 * @throw InputStreamException in all cases as long as not
+				 * specifically overriden.
+				 *
+				 */
+				virtual void setStreamID( StreamID newInputStreamID )
+					throw( InputStreamException )  ;
+	
 	
 			private:
 
