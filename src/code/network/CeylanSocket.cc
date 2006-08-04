@@ -1,8 +1,12 @@
 #include "CeylanSocket.h"
 
+#include "CeylanLogPlug.h"                      // for LogPlug
+#include "CeylanOperators.h"                    // for toString
 
-#include "CeylanLogPlug.h"     // for LogPlug
-#include "CeylanOperators.h"   // for toString
+
+// for SystemSpecificSocketAddress :
+#include "CeylanSystemSpecificSocketAddress.h"  
+
 
 
 #if CEYLAN_USES_CONFIG_H
@@ -46,11 +50,6 @@ extern "C"
 #endif // CEYLAN_USES_UNISTD_H
 
 
-#ifdef CEYLAN_USES_RESOLV_H
-#include <resolv.h>            // for sockaddr_in
-#endif // CEYLAN_USES_RESOLV_H
-
-
 #ifdef CEYLAN_USES_STRINGS_H
 #include <strings.h>           // for AIX
 #endif // CEYLAN_USES_STRINGS_H
@@ -72,22 +71,6 @@ using namespace Ceylan::Log ;
 
 using std::string ;
 
-
-#if CEYLAN_USES_NETWORK
-
-/**
- * Avoid exposing system-dependent sockaddr_in in the headers :
- *
- * @note sockaddr_in is described in system includes.
- *
- */
-struct Socket::SystemSpecificSocketAddress
-{
-	sockaddr_in _socketAddress ;	
-	
-} ;
-
-#endif // CEYLAN_USES_NETWORK
 
 
 
@@ -116,6 +99,7 @@ Socket::Socket() throw( Socket::SocketException ) :
 #if CEYLAN_USES_NETWORK
 
 	_address = new SystemSpecificSocketAddress ;
+	
 	
 #else // CEYLAN_USES_NETWORK
 
@@ -199,7 +183,7 @@ Port Socket::getPort() const throw()
 }
 
 
-struct Socket::SystemSpecificSocketAddress & Socket::getAddress()
+SystemSpecificSocketAddress & Socket::getAddress()
 	throw( Features::FeatureNotAvailableException )
 {
 
@@ -232,14 +216,7 @@ Size Socket::read( char * buffer, Size maxLength )
 
 #if CEYLAN_USES_NETWORK
 
-	SignedSize n = System::FDRead( getFileDescriptor(), buffer, maxLength ) ;
-
-	// Actually, n should never be negative :
-	if ( n < 0 )
-		throw ReadFailedException( "Socket::read failed : " 
-			+ System::explainError() ) ;
-
-	return static_cast<Size>( n ) ;
+	return System::FDRead( getFileDescriptor(), buffer, maxLength ) ;
 
 #else // CEYLAN_USES_NETWORK	
 
@@ -258,14 +235,14 @@ Size Socket::write( const string & message )
 
 #if CEYLAN_USES_NETWORK
 
-	SignedSize n = FDWrite( getFileDescriptor(), message.c_str(), 
+	Size n = FDWrite( getFileDescriptor(), message.c_str(), 
 		message.size() ) ;
 
-	if ( n < static_cast<SignedSize>( message.size() ) )
-		throw WriteFailedException( "Socket::write failed : " 
+	if ( n < message.size() )
+		throw WriteFailedException( "Socket::write (std::string) failed : " 
 			+ System::explainError() ) ;
 
-	return static_cast<Size>( n ) ;
+	return n ;
 
 #else // if CEYLAN_USES_NETWORK	
 	
@@ -283,13 +260,13 @@ Size Socket::write( const char * buffer, Size maxLength )
 
 #if CEYLAN_USES_NETWORK
 
-	SignedSize n = System::FDWrite( getFileDescriptor(), buffer, maxLength ) ;
+	Size n = System::FDWrite( getFileDescriptor(), buffer, maxLength ) ;
 
-	if ( n < static_cast<SignedSize>( maxLength ) )
-		throw WriteFailedException( "Socket::write failed : " 
+	if ( n < maxLength )
+		throw WriteFailedException( "Socket::write (char *) failed : " 
 			+ System::explainError() ) ;
 
-	return static_cast<Size>( n ) ;
+	return n ;
 
 #else // CEYLAN_USES_NETWORK	
 
@@ -307,35 +284,16 @@ bool Socket::hasAvailableData() const throw()
 
 #if CEYLAN_USES_NETWORK
 
-	struct timeval tv ;
-	tv.tv_sec  = 0 ;
-	tv.tv_usec = 0 ;
-	
-	fd_set set ;
-	FD_ZERO( & set ) ;
-	FD_SET( getFileDescriptor(), & set ) ;
-	
-	Ceylan::Sint32 n = ::select( getFileDescriptor() + 1, 
-		& set, 0, 0, & tv ) ;
+	return System::HasAvailableData( getFileDescriptor() ) ;
 
-	if ( n > 0 )	
-		return FD_ISSET( getFileDescriptor(), & set ) ;
-
-	if ( n == -1 )
-		LogPlug::error( "Socket::hasAvailableData failed : " 
-			+ System::explainError() ) ;
-	
-	return false ;	
-
-#else // CEYLAN_USES_NETWORK	
+#else // CEYLAN_USES_NETWORK
 
 	LogPlug::error( "Socket::hasAvailableData failed : "
-		"network support not available." ) ; 
-		
-	return false ;
-	
-#endif // CEYLAN_USES_NETWORK	
+		"network support not available." ) ;
 
+	return false ;
+
+#endif // CEYLAN_USES_NETWORK
 
 }
 
