@@ -21,7 +21,7 @@ namespace Ceylan
 		 * Simple connection-based socket I/O class.
 		 *
 		 * These are Internet sockets, not the ones used for UNIX IPC
-		 * (interprocess communication).
+		 * (interprocess communication) family.
 		 *
 		 * Designed to be subclassed.
 		 *
@@ -128,24 +128,6 @@ namespace Ceylan
 					throw( OutputStream::WriteFailedException ) ;
 
 		
-				/**
-				 * Tells whether there is data available on input.
-				 *
-				 */
-				virtual bool hasAvailableData() const throw() ;
-		
-		
-				/**
-				 * Clears the input stream.
-				 *
-				 * @throw InputStream::ReadFailedException if the operation
-				 * failed.
-				 *
-				 */
-				virtual void clearInput()
-					throw( InputStream::ReadFailedException ) ;
-
-
             	/**
             	 * Returns an user-friendly description of the state of
 				 * this object.
