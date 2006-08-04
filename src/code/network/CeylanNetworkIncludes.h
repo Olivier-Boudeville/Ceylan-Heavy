@@ -11,9 +11,17 @@
 #include "CeylanMultiplexedServerStreamSocket.h"
 #include "CeylanNetwork.h"
 #include "CeylanSequentialServerStreamSocket.h"
+#include "CeylanServerAnonymousInputOutputStream.h"
 #include "CeylanServerStreamSocket.h"
 #include "CeylanSocket.h"
 #include "CeylanStreamSocket.h"
+
+/*
+ * Private non-exported non-installed headers : 
+ *   - CeylanSystemSpecificSocket.h : for portability, only for internal
+ * purposes
+ *
+ */
 
 
 #endif // CEYLAN_NETWORK_INCLUDES_H_
