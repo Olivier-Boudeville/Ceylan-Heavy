@@ -135,6 +135,13 @@ namespace Ceylan
 		 */
 		std::string getShellName() throw() ; 
 
+
+		/**
+		 * Tells whether there is data available on specified file
+		 * descriptor.
+		 *
+		 */
+		bool HasAvailableData( FileDescriptor fd ) throw() ;
 		
 	
 		/**
