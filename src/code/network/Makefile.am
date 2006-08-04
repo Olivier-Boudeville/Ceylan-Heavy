@@ -11,28 +11,33 @@ libCeylanNetwork_la_CPPFLAGS = -I@CEYLAN_LOGS@ -I@CEYLAN_GENERIC@ -I@CEYLAN_INTE
 libCeylanNetworkIncludedir      = $(includedir)/Ceylan
 libCeylanNetworkInclude_HEADERS = $(NETWORK_INTERFACES)
 
+noinst_HEADERS = CeylanSystemSpecificSocketAddress.h
+
 
 NETWORK_INTERFACES = \
-	CeylanClientStreamSocket.h             \
-	CeylanIPAddress.h                      \
-	CeylanIPAddressvFour.h                 \
-	CeylanMultiplexedServerStreamSocket.h  \
-	CeylanNetwork.h                        \
-	CeylanNetworkIncludes.h                \
-	CeylanSequentialServerStreamSocket.h   \
-	CeylanServerStreamSocket.h             \
-	CeylanSocket.h                         \
+	CeylanServerAnonymousInputOutputStream.h   \
+	CeylanClientStreamSocket.h                 \
+	CeylanIPAddress.h                          \
+	CeylanIPAddressvFour.h                     \
+	CeylanMultiplexedServerStreamSocket.h      \
+	CeylanNetwork.h                            \
+	CeylanNetworkIncludes.h                    \
+	CeylanSequentialServerStreamSocket.h       \
+	CeylanServerStreamSocket.h                 \
+	CeylanSocket.h                             \
 	CeylanStreamSocket.h                       
 
 
+
 NETWORK_IMPLEMENTATIONS = \
-	CeylanClientStreamSocket.cc            \
-	CeylanIPAddress.cc                     \
-	CeylanIPAddressvFour.cc                \
-	CeylanMultiplexedServerStreamSocket.cc \
-	CeylanNetwork.cc                       \
-	CeylanSequentialServerStreamSocket.cc  \
-	CeylanServerStreamSocket.cc            \
-	CeylanSocket.cc                        \
+	CeylanServerAnonymousInputOutputStream.cc  \
+	CeylanClientStreamSocket.cc                \
+	CeylanIPAddress.cc                         \
+	CeylanIPAddressvFour.cc                    \
+	CeylanMultiplexedServerStreamSocket.cc     \
+	CeylanNetwork.cc                           \
+	CeylanSequentialServerStreamSocket.cc      \
+	CeylanServerStreamSocket.cc                \
+	CeylanSocket.cc                            \
 	CeylanStreamSocket.cc                       
 
