@@ -5,10 +5,14 @@
 #include "CeylanOperators.h"     // for toString
 #include "CeylanThread.h"        // for Sleep
 
+// for SystemSpecificSocketAddress :
+#include "CeylanSystemSpecificSocketAddress.h"  
+
 
 #if CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"      // for configure-time feature settings
 #endif // CEYLAN_USES_CONFIG_H
+
 
 
 extern "C"
@@ -46,33 +50,11 @@ using std::string ;
 
 
 
-#if CEYLAN_USES_NETWORK
-
-
-/**
- * Avoid exposing system-dependent sockaddr_in in the headers :
- *
- * @note This definition had to be directly duplicated from
- * file CeylanSocket.cc.
- *
- */
-struct Socket::SystemSpecificSocketAddress
-{
-	   sockaddr_in _socketAddress ;
-
-} ;
-
-
-#endif // CEYLAN_USES_NETWORK
-
-
-
 /*
  * Avoid ::htonl, use directy htonl since it is a macro on some platforms
  * (ex : NetBSD)
  *
  */
-
 
 
 
@@ -135,6 +117,7 @@ ServerStreamSocket::~ServerStreamSocket() throw()
 {
 
 	// StreamSocket takes care of everything needed.
+	
 }
 
 
@@ -227,6 +210,12 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 
 #if CEYLAN_USES_NETWORK
 
+	/*
+	 * createSocket has been called by StreamSocket constructor, hence it
+	 * has been initialized, and sin_family and sin_port have been already
+	 * set.
+	 *
+	 */
 
 	LogPlug::trace( "Entering ServerStreamSocket::prepareToAccept" ) ;
 
@@ -275,7 +264,6 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 
 	LogPlug::debug( "ServerStreamSocket::prepareToAccept : "
 		"listen succeeded." ) ;
- 
 
 
 	/*
