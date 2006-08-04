@@ -107,6 +107,17 @@ Size InputStream::read( Ceylan::Byte * buffer, Size length )
 }
 
 
+void InputStream::clearInput() throw( InputStream::ReadFailedException )
+{
+	
+	char c ;
+
+	while ( hasAvailableData() )
+		read( &c, 1 ) ;
+
+}
+
+
 
 
 // Read integer types subsection.
@@ -569,5 +580,13 @@ Ceylan::Uint16 InputStream::Test( list<InputStream*> & is )
 void InputStream::setSelected( bool newStatus ) throw()
 {
 	_isSelected = newStatus ;
+}
+
+
+void InputStream::setStreamID( StreamID newInputStreamID ) 
+	throw( InputStreamException )
+{
+	throw InputStreamException( "InputStream::setStreamID : "
+		"operation not supportedby this class." ) ;
 }
 
