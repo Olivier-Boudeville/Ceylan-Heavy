@@ -19,6 +19,20 @@ namespace Ceylan
 	{
 
 
+		/**
+		 * Opaque handle for forward-declared but undefined struct
+		 * pointer to system socket address, used to avoid
+		 * including system-specific headers which define for 
+		 * example sockaddr_in.
+		 *
+		 * Otherwise the API exposed by Ceylan would depend on these
+		 * headers, then on a config.h that should then be installed
+		 * but may clash with others, and so on.
+		 *
+		 */
+		class SystemSpecificSocketAddress ;
+
+
 
 		/**
 		 * Port number, as specified for sockets.
@@ -40,22 +54,7 @@ namespace Ceylan
 		 *
 		 */
 		class Socket: public System::InputOutputStream
-		{
-
-
-			/**
-			 * Opaque handle for forward-declared but undefined struct
-			 * pointer to system socket address, used to avoid
-			 * including system-specific headers which define for 
-			 * example sockaddr_in.
-			 *
-			 * Otherwise the API exposed by Ceylan would depend on these
-			 * headers, then on a config.h that should then be installed
-			 * but may clash with others, and so on.
-			 *
-			 */
-			struct SystemSpecificSocketAddress ;
-			
+		{			
 			
 			public:
 		
@@ -152,7 +151,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual void clearInput()
-					throw( InputStream::ReadFailedException ) = 0 ;
+					throw( InputStream::ReadFailedException ) ;
 
 
 				/** 
@@ -168,8 +167,22 @@ namespace Ceylan
 				 */
 				System::FileDescriptor getFileDescriptor() const 
 					throw( Features::FeatureNotAvailableException ) ;
+	
 					
-					
+				/** 
+				 * Returns the file descriptor that should be used for that
+				 * socket so that 
+				 *
+				 * This file descriptor does not change, both for client and
+				 * server sides.
+				 *
+				 * @throw FeatureNotAvailableException if the file descriptor
+				 * feature is not available.
+				 *
+				 */
+				virtual System::FileDescriptor getFileDescriptorForTransport()
+					const throw( Features::FeatureNotAvailableException ) ;
+							
 
 				/// Returns the port number of the socket.
 				Port getPort() const throw() ;
@@ -237,7 +250,7 @@ namespace Ceylan
 				 * is not available.
 				 *
 				 */
-				virtual struct SystemSpecificSocketAddress & getAddress()
+				virtual SystemSpecificSocketAddress & getAddress()
 					throw( Features::FeatureNotAvailableException ) ;
 		
 		
@@ -271,6 +284,9 @@ namespace Ceylan
 				 * available.
 				 *
 				 * This is the original file descriptor for this socket.
+				 * Depending on the specialization of this socket, it may
+				 * or may not be the file descriptor that is used for 
+				 * transport.
 				 *
 				 */
 				System::FileDescriptor _fdes ;
@@ -292,6 +308,10 @@ namespace Ceylan
 		
 				/**
 				 * The system-specific socket address for this socket.
+				 *
+				 * It will be used by server sockets to bind to the target
+				 * port, whereas client sockets will use it to connect to
+				 * the target server.
 				 *
 				 */
 				SystemSpecificSocketAddress * _address ;
