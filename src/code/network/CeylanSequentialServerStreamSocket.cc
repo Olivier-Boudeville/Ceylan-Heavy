@@ -1,38 +1,17 @@
 #include "CeylanSequentialServerStreamSocket.h"
 
 
-#include "CeylanLogPlug.h"       // for LogPlug
-#include "CeylanOperators.h"     // for toString
-#include "CeylanThread.h"        // for Sleep
+#include "CeylanLogPlug.h"                           // for LogPlug
+#include "CeylanOperators.h"                         // for toString
+#include "CeylanThread.h"                            // for Sleep
+#include "CeylanServerAnonymousInputOutputStream.h"  // for this object
+
 
 
 #if CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"      // for configure-time feature settings
 #endif // CEYLAN_USES_CONFIG_H
 
-
-extern "C"
-{
-
-
-#ifdef CEYLAN_USES_SYS_TYPES_H
-#include <sys/types.h>         // for accept
-#endif // CEYLAN_USES_SYS_TYPES_H
-
-#ifdef CEYLAN_USES_SYS_SOCKET_H
-#include <sys/socket.h>        // for accept
-#endif // CEYLAN_USES_SYS_SOCKET_H
-
-
-#ifdef CEYLAN_USES_ARPA_INET_H
-#include <arpa/inet.h>         // for sockaddr_in
-#endif // CEYLAN_USES_ARPA_INET_H
-
-#ifdef CEYLAN_USES_NETINET_IN_H
-#include <netinet/in.h>        // for sockaddr_in
-#endif // CEYLAN_USES_NETINET_IN_H
-
-}
 
 
 using namespace Ceylan::System ;
@@ -42,42 +21,6 @@ using namespace Ceylan::Log ;
 
 using std::string ;
 
-
-
-
-#if CEYLAN_USES_NETWORK
-
-
-/**
- * Avoid exposing system-dependent sockaddr_in in the headers :
- *
- * @note This definition had to be directly duplicated from
- * file CeylanSocket.cc.
- *
- */
-struct Socket::SystemSpecificSocketAddress
-{
-	   sockaddr_in _socketAddress ;
-
-} ;
-
-
-/**
- * Avoid exposing system-dependent sockaddr_in in the headers :
- *
- * @note This definition had to be directly duplicated from
- * file CeylanStreamSocket.cc.
- *
- */
-struct SequentialServerStreamSocket::SystemSpecificSocketAddress
-{
-
-	sockaddr_in _socketAddress ;
-		
-} ;
-
-
-#endif // CEYLAN_USES_NETWORK
 
 
 
@@ -98,14 +41,11 @@ SequentialServerStreamSocket::SequentialServerStreamSocketException::~Sequential
 SequentialServerStreamSocket::SequentialServerStreamSocket( Port port, 
 		bool reuse ) throw( SocketException ):
 	ServerStreamSocket( port, reuse ),
-	_acceptedFileDescriptor( 0 ),
-	_clientAddress(0)
+	_currentConnection( 0 )
 {
 
 #if CEYLAN_USES_NETWORK
 
-	_clientAddress = new SystemSpecificSocketAddress ;
-	
 
 #else // CEYLAN_USES_NETWORK
 
@@ -135,8 +75,6 @@ SequentialServerStreamSocket::~SequentialServerStreamSocket() throw()
 		LogPlug::error( "SequentialServerStreamSocket destructor failed : " 
 			+ e.toString() ) ;
 	}
-
-	delete _clientAddress ;
 	
 #endif // CEYLAN_USES_NETWORK
 	
@@ -149,37 +87,29 @@ void SequentialServerStreamSocket::accept()
 
 #if CEYLAN_USES_NETWORK
 
+	if ( _currentConnection != 0 )
+		throw ServerStreamSocketException( 
+			"SequentialServerStreamSocket::accept : "
+			"a connection is still active" ) ;
+			
 	if ( ! _bound )
 		prepareToAccept() ;
 	
-	socklen_t size = static_cast<socklen_t>( 
-		sizeof( getAddress()._socketAddress ) ) ;
+	try
+	{
 	
-	LogPlug::debug( "SequentialServerStreamSocket::accept : "
-		"ready to accept a new connection." ) ;
-	
-	/*
-	 * Extracts the first connection request on the queue of pending
-	 * connections, creates a new connected socket, and returns a new file
-	 * descriptor referring to that socket.
-	 *
-	 * The original file descriptor (returned by getFileDescriptor) is
-	 * unaffected by this call.
-	 *
-	 * @see man 2 accept
-	 *
-	 */
-	_acceptedFileDescriptor = ::accept( getFileDescriptor(), 
-		reinterpret_cast<sockaddr *>( & getAddress()._socketAddress ),
-		& size ) ;
+		// Accepts the connection :
+		_currentConnection = new ServerAnonymousInputOutputStream(
+			getFileDescriptor() ) ;
+			
+	}
+	catch( const ServerAnonymousInputOutputStreamException & e )
+	{
+		throw ServerStreamSocketException( 
+			"SequentialServerStreamSocket::accept failed : "
+			+ e.toString() ) ;
+	}	
 		
-	if ( _acceptedFileDescriptor == -1 )
-		throw SequentialServerStreamSocketException(
-			"SequentialServerStreamSocket::accept failed : " 
-			+ System::explainError() ) ;
-
-	LogPlug::debug( "SequentialServerStreamSocket::accept : "
-		"accept performed." ) ;
 
 	accepted() ;
 	
@@ -196,8 +126,24 @@ FileDescriptor SequentialServerStreamSocket::getFileDescriptorForTransport()
 
 #if CEYLAN_USES_NETWORK
 
-	return _acceptedFileDescriptor ;
+	if ( _currentConnection != 0 )
+	{
+	
+		return static_cast<FileDescriptor>(
+			_currentConnection->getOutputStreamID() ) ;
+			
+	}		
+	else	
+	{
 		
+		LogPlug::error(
+			 "SequentialServerStreamSocket::getFileDescriptorForTransport : "
+			 "returning null file descriptor" ) ;
+		return 0 ;
+	
+	}		 
+		
+			
 #else // CEYLAN_USES_NETWORK
 
 	throw Features::FeatureNotAvailableException( 
@@ -214,19 +160,26 @@ const std::string SequentialServerStreamSocket::toString(
 	Ceylan::VerbosityLevels level ) const throw()
 {
 
+	string res = "SequentialServerStreamSocket " ;
+	
 #if CEYLAN_USES_NETWORK
 
-	string res = "SequentialServerStreamSocket whose file descriptor "
-		"for accepted connection is " 
-		+ Ceylan::toString( _acceptedFileDescriptor	) ;
 
-	res += ". " + ServerStreamSocket::toString( level ) ;
+	if ( _currentConnection != 0 )
+		res += "with a running connection : " 
+			+ _currentConnection->toString( level ) ;
+	else
+		res += "not connected to any peer" ;
 	
-	return res ;
+	if ( level == Ceylan::low )
+		return res ;
+	
+	return res + ". " + ServerStreamSocket::toString( level ) ;
+	
 	
 #else // CEYLAN_USES_NETWORK
 
-	return "ServerStreamSocket (no network support not available)" ;
+	return res + "(no network support not available)" ;
 	
 #endif // CEYLAN_USES_NETWORK	
 	
@@ -237,11 +190,15 @@ bool SequentialServerStreamSocket::closeAcceptedConnections()
 	throw( Stream::CloseException )
 {
 
-	Stream::Close( _acceptedFileDescriptor ) ;
+	if ( _currentConnection != 0 )
+	{
+		delete _currentConnection ;
+		_currentConnection = 0 ;
+		return true ;
+		
+	}
 	
-	// _clientAddress will be reused as is (reassigned but not reallocated).	
-	
-	return true ;
+	return false ;
 
 }
 	
