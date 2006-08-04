@@ -19,6 +19,21 @@ namespace Ceylan
 
 
 		/**
+		 * Opaque handle for forward-declared but undefined struct
+		 * pointer to system socket address, used to avoid
+		 * including system-specific headers which define for 
+		 * example sockaddr_in.
+		 *
+		 * Otherwise the API exposed by Ceylan would depend on these
+		 * headers, then on a config.h that should then be installed
+		 * but may clash with others, and so on.
+		 *
+		 */
+		class ServerAnonymousInputOutputStream ;
+
+
+
+		/**
 		 * Server, based on stream sockets, that can serve any number of 
 		 * clients, although not in parallel : clients are taken care of 
 		 * sequentially, one after the other. 
@@ -50,18 +65,6 @@ namespace Ceylan
 		{
 		
 
-			/**
-			 * Opaque handle for forward-declared but undefined struct
-			 * pointer to system socket address, used to avoid
-			 * including system-specific headers which define for 
-			 * example sockaddr_in.
-			 *
-			 * Otherwise the API exposed by Ceylan would depend on these
-			 * headers, then on a config.h that should then be installed
-			 * but may clash with others, and so on.
-			 *
-			 */
-			struct SystemSpecificSocketAddress ;
 
 			
 
@@ -180,20 +183,12 @@ namespace Ceylan
 	
 			
 				/**
-				 * Stores the latest file descriptor corresponding to 
-				 * an accepted incoming connection.
+				 * Stores informations about the latest accepted incoming
+				 * connection and the corresponding remote peer.
 				 *
 				 */
-				System::FileDescriptor _acceptedFileDescriptor ;
-		
-		
-				/**
-				 * The system-specific socket address for the latest accepted 
-				 * client.
-				 *
-				 */
-				SystemSpecificSocketAddress * _clientAddress ;
-		
+				ServerAnonymousInputOutputStream * _currentConnection ;
+				
 		
 
 				/**
