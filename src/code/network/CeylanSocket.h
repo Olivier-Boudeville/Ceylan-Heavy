@@ -19,6 +19,7 @@ namespace Ceylan
 	{
 
 
+
 		/**
 		 * Opaque handle for forward-declared but undefined struct
 		 * pointer to system socket address, used to avoid
@@ -31,8 +32,7 @@ namespace Ceylan
 		 *
 		 */
 		class SystemSpecificSocketAddress ;
-
-
+		
 
 		/**
 		 * Port number, as specified for sockets.
@@ -50,7 +50,7 @@ namespace Ceylan
 		 * Designed to be subclassed.
 		 *
 		 * @see StreamSocket
-		 * @see DatagramSocket
+		 * @see DatagramSocket when available
 		 *
 		 */
 		class Socket: public System::InputOutputStream
@@ -79,10 +79,9 @@ namespace Ceylan
 				/// Virtual destructor.
 				virtual ~Socket() throw() ;
 				
-				
-				
+								 
 				/**
-				 * Reads up to maxLength bytes from this file to specified
+				 * Reads up to maxLength bytes from this socket to specified
 				 * buffer.
 				 *
 				 * @param buffer the buffer where to store read bytes. 
@@ -94,41 +93,41 @@ namespace Ceylan
 				 * @return The number of bytes actually read, which should
 				 * be maxLength or lower.
 				 *
-				 * @throw ReadFailed if a read error occurred.
+				 * @throw ReadFailedException if a read error occurred.
 				 *
 				 */
 		 		virtual System::Size read( char * buffer, 
 						System::Size maxLength ) 
-					throw( InputStream::ReadFailedException ) = 0 ;
+					throw( InputStream::ReadFailedException ) ;
 				
 		
 				/**
 				 * Writes message to this socket.
 				 *
-				 * @param message the message to write to this file.
+				 * @param message the message to write to this socket.
 				 *
 				 * @return The number of bytes actually written, which 
 				 * should be equal to the size of the string or lower.
 				 *
-				 * @throw WriteFailed if a write error occurred.
+				 * @throw WriteFailedException if a write error occurred.
 				 *
 				 */
 				virtual System::Size write( const std::string & message ) 
-					throw( OutputStream::WriteFailedException ) = 0 ;
+					throw( OutputStream::WriteFailedException ) ;
 
 
 				/**
 				 * Writes up to maxLength bytes from the specified buffer
-				 * to this file.
+				 * to this socket.
 				 *
 				 * @param buffer the buffer where to find bytes that must
-				 * be written to this file.
+				 * be written to this socket.
 				 * Its size must be at least maxLength bytes.
 				 *
 				 * @return The number of bytes actually written, which 
 				 * should be equal to maxLength.
 				 *
-				 * @throw WriteFailed if a write error occurred.
+				 * @throw WriteFailedException if a write error occurred.
 				 *
 				 */
 				virtual System::Size write( const char * buffer, 
@@ -156,52 +155,84 @@ namespace Ceylan
 
 				/** 
 				 * Returns the original file descriptor associated with the
-				 * socket.
+				 * socket on its creation.
 				 *
 				 * This file descriptor does not change, both for client and
 				 * server sides.
 				 *
-				 * @throw FeatureNotAvailableException if the file descriptor
+				 * @throw SocketException if the operation failed, or
+				 * FeatureNotAvailableException if the file descriptor
 				 * feature is not available.
 				 *
+				 * @see getFileDescriptorForTransport
+				 *
 				 */
-				System::FileDescriptor getFileDescriptor() const 
-					throw( Features::FeatureNotAvailableException ) ;
+				System::FileDescriptor getOriginalFileDescriptor() const 
+					throw( SocketException,
+						Features::FeatureNotAvailableException ) ;
 	
 					
 				/** 
 				 * Returns the file descriptor that should be used for that
-				 * socket so that 
+				 * socket to communicate with its peer(s).
 				 *
-				 * This file descriptor does not change, both for client and
-				 * server sides.
+				 * @note Depending on this socket being client-side or
+				 * server-side, it may use a different file descriptor from
+				 * the original one, this method tells which one is to be
+				 * used to read or write data.
 				 *
 				 * @throw FeatureNotAvailableException if the file descriptor
 				 * feature is not available.
+				 *
+				 * @see getOriginalFileDescriptor
 				 *
 				 */
 				virtual System::FileDescriptor getFileDescriptorForTransport()
 					const throw( Features::FeatureNotAvailableException ) ;
 							
 
-				/// Returns the port number of the socket.
-				Port getPort() const throw() ;
+				/**
+				 * Returns the local port number of the socket.
+				 *
+				 * @throw SocketException if this operation failed.
+				 *
+				 */
+				Port getLocalPort() const throw( SocketException ) ;
 		
 		
 				/**
-				 * Returns this socket descriptor for this file, or -1 if 
-				 * the file descriptor feature is not available.
+				 * Returns the remote port number this socket is linked to,
+				 * i.e. the port of the peer of this socket.
+				 *
+				 * @throw SocketException if this operation failed, including 
+				 * if this socket is not connected.
 				 *
 				 */
-				virtual System::StreamID getInputStreamID() const throw() ;
+				Port getPeerPort() const throw( SocketException ) ;
+		
+		
+				/**
+				 * Returns the file descriptor for this socket, which is a 
+				 * StreamID.
+				 *
+				 * @throw InputStreamException if no identifier is available,
+				 * or if the file descriptor feature is not available.
+				 *
+				 */
+				virtual System::StreamID getInputStreamID() const 
+					throw( InputStreamException ) ;
 
 
 				/**
-				 * Returns this socket descriptor for this file, or -1 if 
-				 * the file descriptor feature is not available.
+				 * Returns the file descriptor for this socket, which is a 
+				 * StreamID.
+				 *
+				 * @throw OutputStreamException if no identifier is available,
+				 * or if the file descriptor feature is not available.
 				 *
 				 */
-				virtual System::StreamID getOutputStreamID() const throw() ;
+				virtual System::StreamID getOutputStreamID() const
+					throw( OutputStreamException) ;
 
 
             	/**
@@ -237,34 +268,41 @@ namespace Ceylan
 				/**
 				 * Server-side constructor.
 				 *
+				 * @param localPort the local port to bind to.
+				 *
 				 * @throw SocketException if the operation failed.
 				 *
 				 */
-				explicit Socket( Port port ) throw( SocketException ) ;
+				explicit Socket( Port localPort ) throw( SocketException ) ;
 		
 		
 				/**
-				 * Returns the socket address structure reference.
+				 * Returns the socket address structure reference of the 
+				 * connected peer, if any.
 				 *
-				 * @throw FeatureNotAvailableException if the network feature
+				 * @throw SocketException if there is no connected peer, or 
+				 * FeatureNotAvailableException if the network feature
 				 * is not available.
 				 *
 				 */
-				virtual SystemSpecificSocketAddress & getAddress()
-					throw( Features::FeatureNotAvailableException ) ;
+				virtual SystemSpecificSocketAddress & getPeerAddress()
+					throw( SocketException,
+						Features::FeatureNotAvailableException ) ;
 		
 		
 				/** 
 				 * Creates the socket associated with the port <b>port</b>.
 				 *
-				 * This method must be overriden by child classes, this
-				 * basic implementation throws a SocketException in all cases
+				 * @param localPort the specified local port.
+				 *
+				 * @note This method must be overriden by child classes, this
+				 * basic implementation throws a SocketException in all cases,
 				 * to force redefinition.
 				 *
 				 * @throw SocketException if the operation failed.
 				 *
 				 */
-				virtual void createSocket( Port port ) 
+				virtual void createSocket( Port localPort ) 
 					throw( SocketException ) ;
 		
 		
@@ -278,33 +316,20 @@ namespace Ceylan
 				 */
 				virtual bool close() throw( Stream::CloseException ) ;
 
-		
-				/**
-				 * Internal file descriptor, used if this feature is 
-				 * available.
-				 *
-				 * This is the original file descriptor for this socket.
-				 * Depending on the specialization of this socket, it may
-				 * or may not be the file descriptor that is used for 
-				 * transport.
-				 *
-				 */
-				System::FileDescriptor _fdes ;
-			
-			
-				/**
-				 * Internal file descriptor, used if this feature is 
-				 * available.
-				 *
-				 * This is the original file descriptor for this socket.
-				 */
-				Port _port ;
-		
-		
-		
-			private:
 
-	
+				/**
+				 * The local port this socket will be bound to.
+				 *
+				 */
+				Port _localPort ;
+		
+		
+				/**
+				 * The remote (peer) port this socket will be bound to.
+				 *
+				 */
+				Port _peerPort ;
+		
 		
 				/**
 				 * The system-specific socket address for this socket.
@@ -315,9 +340,28 @@ namespace Ceylan
 				 *
 				 */
 				SystemSpecificSocketAddress * _address ;
+
 				
-				
-				
+				/**
+				 * Internal file descriptor, used if this feature is
+				 * available.
+				 * The local port this socket will be bound to.
+				 *
+ 				 * This is the original file descriptor for this socket.
+				 * Depending on the specialization of this socket, it may
+				 * or may not be the file descriptor that is used for
+				 * transport.
+				 *
+				 */
+				System::FileDescriptor _originalFD ;
+			
+		
+		
+		
+			private:
+
+	
+
 				/**
 				 * Copy constructor made private to ensure that it will 
 				 * be never called.

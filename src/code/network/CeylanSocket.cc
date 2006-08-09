@@ -2,6 +2,7 @@
 
 #include "CeylanLogPlug.h"                      // for LogPlug
 #include "CeylanOperators.h"                    // for toString
+#include "CeylanAnonymousConnection.h"          // for AnonymousConnection
 
 
 // for SystemSpecificSocketAddress :
@@ -21,17 +22,17 @@ extern "C"
 
 
 #ifdef CEYLAN_USES_SYS_TIME_H
-#include <sys/time.h>          // for select, on OpenBSD 
+//#include <sys/time.h>          // for select, on OpenBSD 
 #endif // CEYLAN_USES_SYS_TIME_H
 
 
 #ifdef CEYLAN_USES_STRING_H
-#include <string.h>            // for select, on OpenBSD
+//#include <string.h>            // for select, on OpenBSD
 #endif // CEYLAN_USES_STRING_H
 
 
 #ifdef CEYLAN_USES_SYS_TYPES_H
-#include <sys/types.h>         // for select, on OpenBSD
+//#include <sys/types.h>         // for select, on OpenBSD
 #endif // CEYLAN_USES_SYS_TYPES_H
 
 
@@ -40,13 +41,8 @@ extern "C"
 #endif // CEYLAN_USES_SYS_SOCKET_H
 
 
-#ifdef CEYLAN_USES_NETINET_IN_H
-#include <netinet/in.h>        // for htons
-#endif // CEYLAN_USES_NETINET_IN_H
-
-
 #ifdef CEYLAN_USES_UNISTD_H
-#include <unistd.h>            // for timeval, select, on OpenBSD
+//#include <unistd.h>            // for timeval, select, on OpenBSD
 #endif // CEYLAN_USES_UNISTD_H
 
 
@@ -91,19 +87,18 @@ Socket::SocketException::~SocketException() throw()
 // Is protected :
 Socket::Socket() throw( Socket::SocketException ) :
 	InputOutputStream(),
-	_fdes   ( 0 ),
-	_port   ( 0 ),
-	_address( 0 )
+	_localPort( 0 ),
+	_peerPort( 0 ),
+	_address( 0 ),
+	_originalFD( 0 )
 {
 
 #if CEYLAN_USES_NETWORK
-
-	_address = new SystemSpecificSocketAddress ;
 	
 	
 #else // CEYLAN_USES_NETWORK
 
-	throw SocketException( "Socket constructor failed : "
+	throw SocketException( "Socket empty constructor failed : "
 		"network support not available." ) ; 
 	
 #endif // CEYLAN_USES_NETWORK
@@ -111,20 +106,20 @@ Socket::Socket() throw( Socket::SocketException ) :
 }
 
 
-Socket::Socket( Port port ) throw( SocketException ):
+Socket::Socket( Port localPort ) throw( SocketException ):
 	InputOutputStream(),
-	_fdes   ( 0 ),
-	_port   ( port ),
-	_address()
+	_localPort( localPort ) ,
+	_peerPort( 0 ),
+	_address( 0 ),
+	_originalFD( 0 )
 {
 
 #if CEYLAN_USES_NETWORK
-
-	_address = new SystemSpecificSocketAddress ;
 	
 	/*
-	 * Cannot use here : 'createSocket( _port ) ;' since it would call
+	 * Cannot use here : 'createSocket( _localPort ) ;' since it would call
 	 * Socket::createSocket in spite of any overloading.
+	 *
 	 * Therefore child classes (ex : CeylanStreamSocket) should call this
 	 * method in their own constructor.
 	 *
@@ -132,7 +127,7 @@ Socket::Socket( Port port ) throw( SocketException ):
 	
 #else // CEYLAN_USES_NETWORK
 
-	throw SocketException( "Socket constructor failed : "
+	throw SocketException( "Socket port-based constructor failed : "
 		"network support not available." ) ; 
 	
 #endif // CEYLAN_USES_NETWORK
@@ -152,62 +147,10 @@ Socket::~Socket() throw()
 	{
 		LogPlug::error( "Socket destructor failed : " + e.toString() ) ;
 	}
-	
-	if ( _address != 0 )
-		delete _address ;
-	
-}
-
-
-FileDescriptor Socket::getFileDescriptor() const
-	throw( Features::FeatureNotAvailableException )
-{
-
-#if CEYLAN_USES_NETWORK
-
-	return _fdes ;
-	
-#else // CEYLAN_USES_NETWORK
-
-	throw Features::FeatureNotAvailableException( 
-		"Socket::getFileDescriptor : network support not available." ) ;
-		
-#endif // CEYLAN_USES_NETWORK
-
-}
-
-
-Port Socket::getPort() const throw()
-{
-	return _port ;
-}
-
-
-SystemSpecificSocketAddress & Socket::getAddress()
-	throw( Features::FeatureNotAvailableException )
-{
-
-#if CEYLAN_USES_NETWORK
-
-	return *_address ;
-		
-#else // CEYLAN_USES_NETWORK
-
-	throw Features::FeatureNotAvailableException( 
-		"Socket::getAddress : network support not available." ) ;
-		
-#endif // CEYLAN_USES_NETWORK
-
-}
-
-
-void Socket::createSocket( Port port ) throw( SocketException )
-{
-
-	throw SocketException( "Socket::createSocket must be overriden "
-		"by child classes." ) ;
 		
 }
+
+
 
 
 Size Socket::read( char * buffer, Size maxLength ) 
@@ -216,12 +159,22 @@ Size Socket::read( char * buffer, Size maxLength )
 
 #if CEYLAN_USES_NETWORK
 
-	return System::FDRead( getFileDescriptor(), buffer, maxLength ) ;
+	try
+	{
+	
+		// FDRead can throw IOException and FeatureNotAvailableException :
+		return System::FDRead( getFileDescriptorForTransport(), 
+			buffer, maxLength ) ;
+	}
+	catch( const Ceylan::Exception & e )
+	{
+		throw ReadFailedException( "Socket::read failed : " + e.toString() ) ;
+	}	
 
 #else // CEYLAN_USES_NETWORK	
 
 	throw ReadFailedException( 
-		"Socket::read : network support not available." ) ;
+		"Socket::read failed : network support not available." ) ;
 	
 #endif // CEYLAN_USES_NETWORK	
 
@@ -235,10 +188,25 @@ Size Socket::write( const string & message )
 
 #if CEYLAN_USES_NETWORK
 
-	Size n = FDWrite( getFileDescriptor(), message.c_str(), 
-		message.size() ) ;
+	Size n ; 
+	
+	StringSize messageSize =  message.size() ;
+	
+	try
+	{
+		// FDWrite can throw IOException and FeatureNotAvailableException :
+		n = System::FDWrite( getFileDescriptorForTransport(), 
+			message.c_str(), messageSize ) ;
+	}
+	catch( const Ceylan::Exception & e )
+	{
+		throw WriteFailedException( "Socket::write (std::string) failed : " 
+			+ e.toString() ) ;
+	}	
 
-	if ( n < message.size() )
+	// Actually if this method returns a value, it is messageSize :
+	
+	if ( n < messageSize )
 		throw WriteFailedException( "Socket::write (std::string) failed : " 
 			+ System::explainError() ) ;
 
@@ -246,8 +214,8 @@ Size Socket::write( const string & message )
 
 #else // if CEYLAN_USES_NETWORK	
 	
-	throw WriteFailedException( 
-		"Socket::write failed : network support not available." ) ;
+	throw WriteFailedException( "Socket::write (std::string) failed : "
+		"network support not available." ) ;
 			
 #endif // if CEYLAN_USES_NETWORK	
 
@@ -260,7 +228,20 @@ Size Socket::write( const char * buffer, Size maxLength )
 
 #if CEYLAN_USES_NETWORK
 
-	Size n = System::FDWrite( getFileDescriptor(), buffer, maxLength ) ;
+	Size n ; 
+	
+	try
+	{
+		n = System::FDWrite( getFileDescriptorForTransport(), 
+			buffer, maxLength ) ;
+	}
+	catch( const Ceylan::Exception & e )
+	{
+		throw WriteFailedException( "Socket::write (char *) failed : " 
+			+ e.toString() ) ;
+	}	
+
+	// Actually if this method returns a value, it is maxLength :
 
 	if ( n < maxLength )
 		throw WriteFailedException( "Socket::write (char *) failed : " 
@@ -270,8 +251,8 @@ Size Socket::write( const char * buffer, Size maxLength )
 
 #else // CEYLAN_USES_NETWORK	
 
-	throw WriteFailedException( 
-		"Socket::write failed : network support not available." ) ;
+	throw WriteFailedException( "Socket::write (char *) failed : " 
+		"network support not available." ) ;
 	
 #endif // CEYLAN_USES_NETWORK	
 
@@ -284,8 +265,9 @@ bool Socket::hasAvailableData() const throw()
 
 #if CEYLAN_USES_NETWORK
 
-	return System::HasAvailableData( getFileDescriptor() ) ;
-
+	// HasAvailableData does not throw any exception :
+	return System::HasAvailableData( getFileDescriptorForTransport() ) ;
+	
 #else // CEYLAN_USES_NETWORK
 
 	LogPlug::error( "Socket::hasAvailableData failed : "
@@ -301,23 +283,111 @@ bool Socket::hasAvailableData() const throw()
 void Socket::clearInput() throw( InputStream::ReadFailedException )
 {
 
-	char c ;
+	Ceylan::Byte b ;
 	
 	while ( hasAvailableData() ) 
-		read( &c, 1 ) ;
+		read( &b, 1 ) ;
 		
 }
 
 
-StreamID Socket::getInputStreamID() const throw()
+FileDescriptor Socket::getOriginalFileDescriptor() const
+	throw( SocketException, Features::FeatureNotAvailableException )
 {
-	return static_cast<StreamID>( getFileDescriptor() ) ;
+
+#if CEYLAN_USES_NETWORK
+
+	return _originalFD ;
+				
+#else // CEYLAN_USES_NETWORK
+
+	throw Features::FeatureNotAvailableException( 
+		"Socket::getOriginalFileDescriptor : network support not available." ) ;
+		
+#endif // CEYLAN_USES_NETWORK
+
 }
 
 
-StreamID Socket::getOutputStreamID() const throw()
+FileDescriptor Socket::getFileDescriptorForTransport() const
+	throw( SocketException, Features::FeatureNotAvailableException )
 {
-	return static_cast<StreamID>( getFileDescriptor() ) ;
+
+#if CEYLAN_USES_NETWORK
+
+	// Basic sockets use the original (and only) file descriptor :
+	return _originalFD ;
+				
+#else // CEYLAN_USES_NETWORK
+
+	throw Features::FeatureNotAvailableException( 
+		"Socket::getOriginalFileDescriptor : network support not available." ) ;
+		
+#endif // CEYLAN_USES_NETWORK
+
+}
+
+
+
+Port Socket::getLocalPort() const throw()
+{
+	return _localPort ;
+}
+
+
+Port Socket::getPeerPort() const throw()
+{
+	return _peerPort ;
+}
+
+
+StreamID Socket::getInputStreamID() const throw( InputStreamException )
+{
+
+#if CEYLAN_USES_NETWORK
+
+	try
+	{
+		return static_cast<StreamID>( getFileDescriptorForTransport() ) ;
+	}
+	catch( const Ceylan::Exception & e )
+	{
+		throw InputStreamException( "Socket::getInputStreamID failed : "
+			+ e.toString() ) ;
+	}
+	
+	
+#else // CEYLAN_USES_NETWORK
+
+	throw SocketException( "Socket::getInputStreamID failed : "
+		"network feature not available." ) ;
+		
+#endif // CEYLAN_USES_NETWORK
+}
+
+
+StreamID Socket::getOutputStreamID() const throw( OutputStreamException )
+{
+
+#if CEYLAN_USES_NETWORK
+
+	try
+	{
+		return static_cast<StreamID>( getFileDescriptorForTransport() ) ;
+	}
+	catch( const Ceylan::Exception & e )
+	{
+		throw OutputStreamException( "Socket::getOutputStreamID failed : "
+			+ e.toString() ) ;
+	}
+	
+	
+#else // CEYLAN_USES_NETWORK
+
+	throw SocketException( "Socket::getOutputStreamID failed : "
+		"network feature not available." ) ;
+		
+#endif // CEYLAN_USES_NETWORK
 }
 
 
@@ -325,19 +395,68 @@ const std::string Socket::toString( Ceylan::VerbosityLevels level )
 	const throw()
 {
 
-	return "Socket associated to port " + Ceylan::toString( _port )
-		+ " and to file descriptor " + Ceylan::toString( _fdes ) ;
+	string res = "Socket associated to local port " 
+		+ Ceylan::toString( getLocalPort() ) 
+		+ ", with original file descriptor being " 
+		+ Ceylan::toString( getOriginalFileDescriptor() ) 
+		+ ". The peer port is " + Ceylan::toString( getPeerPort()
+		+ ", and the file descriptor for transport is " 
+		+ Ceylan::toString( getFileDescriptorForTransport() ) ;
 	
-}	
-						
+	// Add _address interpretation here.
+	
+	return res ;
+	
+}
+
+
+
+
+// Protected section.
+
+
+// Constructors are defined at the top of this file.
+
+
+
+SystemSpecificSocketAddress & Socket::getPeerAddress()
+	throw( SocketException, Features::FeatureNotAvailableException )
+{
+
+#if CEYLAN_USES_NETWORK
+
+	if ( _address != 0 )
+		return *_address ;
+	else
+		throw SocketException( "Socket::getPeerAddress : "
+			"no available address." ) ;
+					
+#else // CEYLAN_USES_NETWORK
+
+	throw Features::FeatureNotAvailableException( 
+		"Socket::getPeerAddress : network support not available." ) ;
+		
+#endif // CEYLAN_USES_NETWORK
+
+}
+
+
+void Socket::createSocket( Port port ) throw( SocketException )
+{
+
+	throw SocketException( "Socket::createSocket must be overriden "
+		"by child classes." ) ;
+		
+}
+					
 						
 bool Socket::close() throw( Stream::CloseException )
 {
 
 #if CEYLAN_USES_NETWORK
 
-	return Stream::Close( _fdes ) ;
-
+	return Stream::Close( _originalFD ) ;
+	
 #else // CEYLAN_USES_NETWORK	
 
 	LogPlug::error( "Socket::close failed : "
