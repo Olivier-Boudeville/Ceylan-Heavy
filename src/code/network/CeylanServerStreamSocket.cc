@@ -74,9 +74,9 @@ ServerStreamSocket::ServerStreamSocketException::~ServerStreamSocketException()
 
 
 
-ServerStreamSocket::ServerStreamSocket( Port port, bool reuse )
+ServerStreamSocket::ServerStreamSocket( Port serverPort, bool reuse )
 		throw( SocketException ):
-	StreamSocket( port ),
+	StreamSocket( serverPort ),
 	_bound( false ),
 	_stopRequested( false ),
 	_maximumPendingConnectionsCount( DefaultMaximumPendingConnectionsCount )
@@ -91,7 +91,7 @@ ServerStreamSocket::ServerStreamSocket( Port port, bool reuse )
 		int reuseOption = 1 ;
 		
 		// See : man 7 socket
-		if ( ::setsockopt( getFileDescriptor(), 
+		if ( ::setsockopt( getOriginalFileDescriptor(), 
 			/* socket level */ SOL_SOCKET, 
 			/* option name */ SO_REUSEADDR, 
 			/* option value buffer */ reinterpret_cast<char *>( &reuseOption ), 
@@ -130,6 +130,7 @@ void ServerStreamSocket::run() throw( ServerStreamSocketException )
 	
 	while ( ! isRequestedToStop() )
 	{	
+	
 		connectionCount++ ;
 		
 		LogPlug::info( "ServerStreamSocket::run : waiting for connection #" 
@@ -143,9 +144,15 @@ void ServerStreamSocket::run() throw( ServerStreamSocketException )
 }
 
 
+Port ServerStreamSocket::getLocalPort() const throw( SocketException )
+{
+	return _port ;
+}
+
+
+
 ServerStreamSocket::ConnectionCount
-		ServerStreamSocket::getMaximumPendingConnectionsCount()
-	const throw()
+		ServerStreamSocket::getMaximumPendingConnectionsCount() const throw()
 {
 
 	return _maximumPendingConnectionsCount ;
@@ -160,6 +167,7 @@ void ServerStreamSocket::setMaximumPendingConnectionsCount(
 }	
 
 
+
 const std::string ServerStreamSocket::toString( Ceylan::VerbosityLevels level ) 
 	const throw()
 {
@@ -168,8 +176,6 @@ const std::string ServerStreamSocket::toString( Ceylan::VerbosityLevels level )
 
 	string res ;
 	
-	
-	// @todo : add client IP
 	
 	if ( _bound )
 		res = "ServerStreamSocket bound and listening for new connections" ;
@@ -187,10 +193,10 @@ const std::string ServerStreamSocket::toString( Ceylan::VerbosityLevels level )
 		return res ;
 			
 	res += ". The current maximum number of pending connections "
-		"for this socket is " 
+		"for this server stream socket is " 
 		+ Ceylan::toString( getMaximumPendingConnectionsCount() ) ;
 	
-	if	( level == Ceylan::medium )
+	if ( level == Ceylan::medium )
 		return res ;
 	
 	return res + ". " + StreamSocket::toString( level ) ;
@@ -223,7 +229,7 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 		throw ServerStreamSocketException(
 			"ServerStreamSocket::prepareToAccept : socket already bound" ) ;
 				
-	getAddress()._socketAddress.sin_addr.s_addr = htonl( 
+	_address->_socketAddress.sin_addr.s_addr = htonl( 
 		/* Address to accept any incoming connection */ INADDR_ANY ) ;
  
  	Ceylan::Uint8 bindAttemptCount = 0 ;
@@ -235,9 +241,9 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 		LogPlug::debug( "ServerStreamSocket::prepareToAccept : "
 			"bind attempt #" + Ceylan::toString( bindAttemptCount + 1 ) ) ;
 	
-		if ( ::bind( getFileDescriptor(), 
+		if ( ::bind( getOriginalFileDescriptor(), 
 				reinterpret_cast<sockaddr *>( 
-					& getAddress()._socketAddress ),
+					& _address->_socketAddress ),
 				sizeof( sockaddr_in ) ) == 0 ) 
 			break ;
 	
@@ -250,14 +256,16 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 		throw ServerStreamSocketException(
 			"ServerStreamSocket::prepareToAccept : bind attempts failed : "
 			+ System::explainError() ) ;
+
+ 	_bound = true ;
 				
 	LogPlug::debug( "ServerStreamSocket::prepareToAccept : "
 		"bind succeeded." ) ;
 
- 	_bound = true ;
 	
 	
-	if ( ::listen( getFileDescriptor(), _maximumPendingConnectionsCount ) != 0 )
+	if ( ::listen( getOriginalFileDescriptor(), 
+			_maximumPendingConnectionsCount ) != 0 )
 		throw ServerStreamSocketException(
 			"ServerStreamSocket::prepareToAccept : listen failed : "
 			+ System::explainError() ) ;
@@ -269,7 +277,7 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 	/*
 	 * From this moment, a socket dedicated to this connection is created,
 	 * it is the one that will be used for example by read operations in
-	 * the 'accepted( method, thanks to the getFileDescriptorForTransport
+	 * the 'accepted' method, thanks to the getFileDescriptorForTransport
 	 * method.
 	 *
 	 * @see StreamSocket::read
