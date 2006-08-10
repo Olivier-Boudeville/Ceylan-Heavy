@@ -50,8 +50,16 @@ namespace Ceylan
 				virtual ~AnonymousInputStream() throw() ;
 		
 		
-				/// Returns the stream's unique ID.
-				virtual StreamID getInputStreamID() const ;
+				/**
+				 * Returns the stream's unique ID.
+				 *
+				 * @throw InputStreamException if the operation failed, for 
+				 * example if this input stream has not received a valid
+				 * identifier yet.
+				 *
+				 */
+				virtual StreamID getInputStreamID() const 
+					throw( InputStreamException ) ;
 
 
             	/**
