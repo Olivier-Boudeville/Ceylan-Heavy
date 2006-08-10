@@ -43,6 +43,7 @@ AnonymousInputStream::~AnonymousInputStream() throw()
 
 
 StreamID AnonymousInputStream::getInputStreamID() const
+	throw( InputStreamException )
 {
 
 	return static_cast<StreamID>( _fdes ) ;
