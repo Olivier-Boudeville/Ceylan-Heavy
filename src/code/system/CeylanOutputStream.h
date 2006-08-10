@@ -2,7 +2,6 @@
 #define CEYLAN_OUTPUT_STREAM_H_
 
 
-#include "CeylanSystem.h"     // for IOException
 #include "CeylanStream.h"     // for inheritance
 #include "CeylanTypes.h"      // for Ceylan::Byte, etc.
 
@@ -33,15 +32,34 @@ namespace Ceylan
 			public:
 					
 					
+	
+				/**
+				 * Exception thrown when an operation on an OutputStream 
+				 * failed.
+				 *
+				 */
+				class OutputStreamException : public StreamException
+				{
+					public: 
+					
+						explicit OutputStreamException( 
+								const std::string & reason ) throw() : 
+							StreamException( reason )
+						{
+						
+						}
+						
+				} ;
+						
 						
 				/// Exception thrown when a write operation failed.
-				class WriteFailedException: public IOException
+				class WriteFailedException: public OutputStreamException
 				{ 
 					public: 
 					
 						explicit WriteFailedException( 
 								const std::string & reason ) throw() : 
-							IOException( reason )
+							OutputStreamException( reason )
 						{
 						
 						}
@@ -56,8 +74,16 @@ namespace Ceylan
 				virtual ~OutputStream() throw() ;
 	
 	
-				/// Returns the output stream's unique ID.
-				virtual StreamID getOutputStreamID() const throw() = 0 ;
+				/**
+				 * Returns the output stream's unique ID.
+				 *
+				 * @throw OutputStreamException if the operation failed, for 
+				 * example if this output stream has not received a valid
+				 * identifier yet.
+				 *
+				 */
+				virtual StreamID getOutputStreamID() const 
+					throw( OutputStreamException ) = 0 ;
 
 
 
