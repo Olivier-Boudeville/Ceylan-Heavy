@@ -26,7 +26,7 @@ namespace Ceylan
 		 * stream server implementations, including one managing at most one 
 		 * connection at a time (SequentialServerStreamSocket) and one able
 		 * to deal with any number of simultaneous connections 
-		 * (MultiplexedServerStreamSocket).
+		 * (MultiplexedServerStreamSocket) with no multithreading.
 		 *
 		 * On exit, after the process is terminated, the socket port should
 		 * be readily available for next socket creations.
@@ -35,10 +35,7 @@ namespace Ceylan
 		 * the file descriptor being used is one returned by accept 
 		 * (i.e. a per-connection socket), not the main listening socket.
 		 *
-		 * @see ClientStreamSocket
-		 *
-		 * @see ServerMultiplexedStreamSocket for a server that manages any
-		 * number of clients too, but in parallel rather than sequentially.
+		 * @see SequentialServerStreamSocket, MultiplexedServerStreamSocket
 		 *
 		 */
 		class ServerStreamSocket: public StreamSocket
@@ -84,8 +81,8 @@ namespace Ceylan
 				 * @throw SocketException if socket creation failed.
 				 *
 				 */
-				explicit ServerStreamSocket( Port port, bool reuse = true )
-					throw( SocketException ) ;
+				explicit ServerStreamSocket( Port serverPort, 
+					bool reuse = true )	throw( SocketException ) ;
 	
 				
 				/// Virtual destructor.
@@ -96,8 +93,8 @@ namespace Ceylan
 				 * Activates this server so that it can handle incoming 
 				 * requests.
 				 *
-				 * This main loop while last as long as the server is not 
-				 * requested to stop.
+				 * This main loop will accept incoming connections as long 
+				 * as the server is not requested to stop.
 				 *
 				 * @see requestToStop()
 				 *
@@ -117,6 +114,17 @@ namespace Ceylan
 				virtual void accept() 
 					throw( ServerStreamSocketException ) = 0  ;
 			
+	
+
+				/**
+				 * Returns the local port number of the socket.
+				 *
+				 * @throw SocketException if this operation failed.
+				 *
+				 */
+				virtual Port getLocalPort() const throw( SocketException ) ;
+	
+	
 	
 				/**
 				 * Returns the current maximum number of pending connections
@@ -145,6 +153,7 @@ namespace Ceylan
 					DefaultMaximumPendingConnectionsCount = 20 ;
 	
 	
+	
             	/**
             	 * Returns a user-friendly description of the state of 
 				 * this object.
@@ -163,11 +172,14 @@ namespace Ceylan
 	
 	
 	
+	
 			protected:
 
 		
+		
 				/** 
 				 * Prepares the socket for accepting connections.
+				 *
 				 * It calls bind() and listen().
 				 *
 				 * @throw ServerStreamSocketException if the operation failed,
@@ -191,7 +203,7 @@ namespace Ceylan
 		
 		
 				/** 
-				 * Closes any accepted connection, including its socket.
+				 * Closes all accepted connection(s), including their socket.
 				 *
 				 * @return true iff an operation had to be performed.
 				 *
@@ -205,11 +217,14 @@ namespace Ceylan
 				/**
 				 * Called whenever the accept method succeeds.
 				 *
-				 * If this server has to handle (sequentially) multiple
-				 * clients, then the overriden implementation of this method
-				 * should end up at least with a close, with _bound set to
-				 * false. And the server must loop with regular calls to the 
+				 * If this server has to handle (potentially sequentially)
+				 * multiple clients, then the overriden implementation of
+				 * this method should end up by cleaning this accepted
+				 * connection.
+				 * And the server must loop with regular calls to the 
 				 * accept method.
+				 *
+				 * @see run
 				 *
 				 * Otherwise, if the server stops accepting connections after
 				 * the one being processed, any other connection initiated 
@@ -224,7 +239,7 @@ namespace Ceylan
 				 *
 				 * @throw ServerStreamSocketException on failure.
 				 *
-				 * @see testCeylanServerStream.cc
+				 * @see testCeylanSequentialServerStream.cc
 				 *
 				 */
 				virtual void accepted() throw( ServerStreamSocketException ) ;
@@ -255,7 +270,6 @@ namespace Ceylan
 				 *
 				 */
 				bool _bound ;
-
 
 
 
