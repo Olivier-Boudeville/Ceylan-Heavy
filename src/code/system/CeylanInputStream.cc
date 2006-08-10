@@ -110,10 +110,10 @@ Size InputStream::read( Ceylan::Byte * buffer, Size length )
 void InputStream::clearInput() throw( InputStream::ReadFailedException )
 {
 	
-	char c ;
+	Ceylan::Byte b ;
 
 	while ( hasAvailableData() )
-		read( &c, 1 ) ;
+		read( &b, 1 ) ;
 
 }
 
