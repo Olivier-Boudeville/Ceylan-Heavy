@@ -1,10 +1,10 @@
 #include "CeylanSequentialServerStreamSocket.h"
 
 
-#include "CeylanLogPlug.h"                           // for LogPlug
-#include "CeylanOperators.h"                         // for toString
-#include "CeylanThread.h"                            // for Sleep
-#include "CeylanServerAnonymousInputOutputStream.h"  // for this object
+#include "CeylanLogPlug.h"                // for LogPlug
+#include "CeylanOperators.h"              // for toString
+#include "CeylanThread.h"                 // for Sleep
+#include "CeylanAnonymousStreamSocket.h"  // for AnonymousStreamSocket
 
 
 
@@ -38,9 +38,10 @@ SequentialServerStreamSocket::SequentialServerStreamSocketException::~Sequential
 
 
 
-SequentialServerStreamSocket::SequentialServerStreamSocket( Port port, 
+
+SequentialServerStreamSocket::SequentialServerStreamSocket( Port listeningPort, 
 		bool reuse ) throw( SocketException ):
-	ServerStreamSocket( port, reuse ),
+	ServerStreamSocket( listeningPort, reuse ),
 	_currentConnection( 0 )
 {
 
@@ -81,6 +82,14 @@ SequentialServerStreamSocket::~SequentialServerStreamSocket() throw()
 }
 
 
+bool SequentialServerStreamSocket::isConnected() const throw()
+{
+
+	return _currentConnection != 0 ;
+	
+}
+
+
 void SequentialServerStreamSocket::accept() 
 	throw( ServerStreamSocketException )
 {
@@ -88,7 +97,7 @@ void SequentialServerStreamSocket::accept()
 #if CEYLAN_USES_NETWORK
 
 	if ( _currentConnection != 0 )
-		throw ServerStreamSocketException( 
+		throw SequentialServerStreamSocketException( 
 			"SequentialServerStreamSocket::accept : "
 			"a connection is still active" ) ;
 			
@@ -98,14 +107,14 @@ void SequentialServerStreamSocket::accept()
 	try
 	{
 	
-		// Accepts the connection :
-		_currentConnection = new ServerAnonymousInputOutputStream(
-			getFileDescriptor() ) ;
+		// Accepts the connection, by passing the listening file descriptor :
+		_currentConnection = new AnonymousStreamSocket( 
+			getOriginalFileDescriptor() ) ;
 			
 	}
-	catch( const ServerAnonymousInputOutputStreamException & e )
+	catch( const SocketException & e )
 	{
-		throw ServerStreamSocketException( 
+		throw SequentialServerStreamSocketException( 
 			"SequentialServerStreamSocket::accept failed : "
 			+ e.toString() ) ;
 	}	
@@ -121,27 +130,17 @@ void SequentialServerStreamSocket::accept()
 
 
 FileDescriptor SequentialServerStreamSocket::getFileDescriptorForTransport()
-	const throw( Features::FeatureNotAvailableException )
+	const throw( SocketException, Features::FeatureNotAvailableException )
 {
 
 #if CEYLAN_USES_NETWORK
 
 	if ( _currentConnection != 0 )
-	{
-	
-		return static_cast<FileDescriptor>(
-			_currentConnection->getOutputStreamID() ) ;
-			
-	}		
+		return _currentConnection->getOriginalFileDescriptor() ;
 	else	
-	{
-		
-		LogPlug::error(
+		throw SequentialServerStreamSocketException( 
 			 "SequentialServerStreamSocket::getFileDescriptorForTransport : "
-			 "returning null file descriptor" ) ;
-		return 0 ;
-	
-	}		 
+			 "no available connection." ) ;
 		
 			
 #else // CEYLAN_USES_NETWORK
