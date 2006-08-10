@@ -15,7 +15,7 @@ noinst_HEADERS = CeylanSystemSpecificSocketAddress.h
 
 
 NETWORK_INTERFACES = \
-	CeylanServerAnonymousInputOutputStream.h   \
+	CeylanAnonymousStreamSocket.h	           \
 	CeylanClientStreamSocket.h                 \
 	CeylanIPAddress.h                          \
 	CeylanIPAddressvFour.h                     \
@@ -30,7 +30,7 @@ NETWORK_INTERFACES = \
 
 
 NETWORK_IMPLEMENTATIONS = \
-	CeylanServerAnonymousInputOutputStream.cc  \
+	CeylanAnonymousStreamSocket.cc	           \
 	CeylanClientStreamSocket.cc                \
 	CeylanIPAddress.cc                         \
 	CeylanIPAddressvFour.cc                    \
