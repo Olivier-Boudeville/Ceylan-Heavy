@@ -19,24 +19,20 @@ namespace Ceylan
 
 
 		/**
-		 * Opaque handle for forward-declared but undefined struct
-		 * pointer to system socket address, used to avoid
-		 * including system-specific headers which define for 
-		 * example sockaddr_in.
-		 *
-		 * Otherwise the API exposed by Ceylan would depend on these
-		 * headers, then on a config.h that should then be installed
-		 * but may clash with others, and so on.
+		 * A sequential stream server owns at most one anonymous stream
+		 * socket at a time, which is spawned each time a new connection 
+		 * is accepted. 
 		 *
 		 */
-		class ServerAnonymousInputOutputStream ;
+		class AnonymousStreamSocket ;
 
 
 
 		/**
 		 * Server, based on stream sockets, that can serve any number of 
 		 * clients, although not in parallel : clients are taken care of 
-		 * sequentially, one after the other. 
+		 * sequentially, one after the other, each one thanks to a dedicated
+		 * anonymous stream socket. 
 		 *
 		 * Connection requests that are received while one connection is 
 		 * already running are queued.
@@ -44,10 +40,11 @@ namespace Ceylan
 		 *
 		 * This server basically manages two sockets : the listening one, 
 		 * which, whenever incoming connections are accepted, leads to a 
-		 * new socket creation. This service is designed to take care of at 
-		 * most a client at a time, but, depending on how the accepted method
-		 * is overriden, a given server can handle sequentially any number of
-		 * clients. 
+		 * new (anonymous) socket creation. 
+		 *
+		 * This service is designed to take care of at most a client at 
+		 * a time, but, depending on how the accepted method is overriden, 
+		 * a given server can handle sequentially any number of clients. 
 		 *
 		 * On exit, after the process is terminated, the socket port should
 		 * be readily available for next socket creations.
@@ -58,15 +55,14 @@ namespace Ceylan
 		 * @see ServerMultiplexedStreamSocket for a server that manages any
 		 * number of clients too, but in parallel rather than sequentially.
 		 *
-		 * @see ClientStreamSocket
+		 * @see ClientStreamSocket a client that is designed for both 
+		 * sequential and multiplexed servers.
 		 *
 		 */
 		class SequentialServerStreamSocket: public ServerStreamSocket
 		{
 		
 
-
-			
 
 			public:
 	
@@ -94,9 +90,9 @@ namespace Ceylan
 
 	
 				/**
-				 * Constructs a new server-side socket.
+				 * Constructs a new server-side sequential stream socket.
 				 *
-				 * @param port the TCP port of this server socket.
+				 * @param port the TCP port of this listening server socket.
 				 *
 				 * @param reuse tells whether the local addresses are allowed
 				 * to be reused in bind().
@@ -104,13 +100,21 @@ namespace Ceylan
 				 * @throw SocketException if socket creation failed.
 				 *
 				 */
-				explicit SequentialServerStreamSocket( Port port, 
+				explicit SequentialServerStreamSocket( Port listeningPort, 
 					bool reuse = true )	throw( SocketException ) ;
 	
 				
 				/// Virtual destructor.
 				virtual ~SequentialServerStreamSocket() throw() ;
 	
+
+				/**
+				 * Tells whether this socket is currently connected to a 
+				 * client.
+				 *
+				 */
+				virtual bool isConnected() const throw() ;
+
 					
 				
 				/**
@@ -133,15 +137,17 @@ namespace Ceylan
 				 * This file descriptor will no longer be the same after next
 				 * accept().
 				 *
-				 * @throw FeatureNotAvailableException if the file descriptor
+				 * @throw SocketException if the operation failed, including
+				 * if there is no anonymous socket available for transport,
+				 * or FeatureNotAvailableException if the file descriptor
 				 * feature is not available.
 				 *
 				 * @see getFileDescriptor()
 				 *
 				 */
-				virtual System::FileDescriptor 
-						getFileDescriptorForTransport() const
-					throw( Features::FeatureNotAvailableException ) ;
+				virtual System::FileDescriptor getFileDescriptorForTransport()
+					const throw( SocketException, 
+						Features::FeatureNotAvailableException ) ;
 		
 	
             	/**
@@ -186,8 +192,12 @@ namespace Ceylan
 				 * Stores informations about the latest accepted incoming
 				 * connection and the corresponding remote peer.
 				 *
+				 * It does not correspond to the listening socket, but to
+				 * an anonymous socket especially spawned for the current
+				 * connection.
+				 *
 				 */
-				ServerAnonymousInputOutputStream * _currentConnection ;
+				AnonymousStreamSocket * _currentConnection ;
 				
 		
 
