@@ -26,7 +26,13 @@ namespace Ceylan
 		/**
 		 * Client-side implementation of connection-based socket.
 		 *
-		 * @see ServerStreamSocket
+		 * At any time, a client stream socket can be connected at most at 
+		 * one server.
+		 *
+		 * These client sockets do not care about the nature of their servers,
+		 * which can be indifferently sequential or multiplexed.
+		 *
+		 * @see SequentialServerStreamSocket, MultiplexedServerStreamSocket.
 		 *
 		 */
 		class ClientStreamSocket: public StreamSocket
@@ -69,11 +75,27 @@ namespace Ceylan
 	
 	
 				/**
+				 * Tells whether this socket is currenty connnected to a 
+				 * server.
+				 *
+				 */
+				virtual bool isConnected() const throw() ;
+				
+				
+				/**
 				 * Connects this socket to the specified server.
+				 *
+				 * Once the connection succeeds, the connected() method is 
+				 * automatically called.
+				 *
+				 * @see connected
+				 *
+				 * Then when this method returns, the disconnect() method is 
+				 * called.
 				 *
 				 * @param serverHostname the hostname of the server.
 				 *
-				 * @param port the TCP port of the server.
+				 * @param serverPort the TCP port of the server.
 				 *
 				 * @throw SocketException if the operation failed. 	
 				 * If no server is available at the target endpoint, this
@@ -88,9 +110,34 @@ namespace Ceylan
 				 *
 				 */
 				virtual void connect( const std::string & serverHostname, 
-						Port port )
+						Port serverPort )
 					throw( SocketException ) ;
 
+
+				/**
+				 * Disconnects this socket so that it will be able to 
+				 * connect to servers again in the future.
+				 *
+				 * @throw SocketException if the socket is not already
+				 * connected.
+				 *
+				 * @see isConnected
+				 *
+				 */
+				virtual void disconnect() throw( SocketException ) ;
+
+		
+		
+				/**
+				 * Returns the remote port number this socket is linked to,
+				 * i.e. the port of the peer of this socket.
+				 *
+				 * @throw SocketException if this operation failed, including 
+				 * if this socket is not connected.
+				 *
+				 */
+				virtual Port getPeerPort() const throw( SocketException ) ;
+	
 	
             	/**
             	 * Returns a user-friendly description of the state of 
@@ -115,10 +162,14 @@ namespace Ceylan
 	
 	
 				/**
-				 * Called after the connection is established.
+				 * Called, after the connection is established, by connect().
+				 * In connect(), just after this connected() method returns,
+				 * the disconnect() method is automatically called.
 				 *
 				 * @note This method is made to be overriden by actual 
-				 * specialized clients.
+				 * specialized clients. This is the place where the 
+				 * client-side of the client/server protocol will have to
+				 * be implemented.
 				 *
 				 * @throw ClientStreamSocketException on failure.
 				 *
@@ -138,7 +189,13 @@ namespace Ceylan
 				/// The hostname of the server this socket is to be linked to.
 				std::string _serverHostName ;
 	
-				/// DNS record for linked server.
+				/**
+				 * DNS record for linked server.
+				 *
+				 * It acts also like a flag telling whether the socket is 
+				 * currently connected.
+				 *
+				 */
 				HostDNSEntry * _serverHostInfo ;
 	
 	
