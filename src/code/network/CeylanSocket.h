@@ -20,6 +20,10 @@ namespace Ceylan
 
 
 
+		/// Sockets have to handle IP address about their peers and themselves.
+		class IPAddress ;
+		
+		
 		/**
 		 * Opaque handle for forward-declared but undefined struct
 		 * pointer to system socket address, used to avoid
@@ -79,6 +83,26 @@ namespace Ceylan
 				/// Virtual destructor.
 				virtual ~Socket() throw() ;
 				
+
+				/**
+				 * Tells whether this socket is currently connected to a 
+				 * peer.
+				 *
+				 */
+				virtual bool isConnected() const throw() = 0 ;
+
+
+
+				// Read section.
+				
+				
+				/**
+				 * Tells whether there is data available on input, i.e.
+				 * on the file descriptor used for transport.
+				 *
+				 */
+				virtual bool hasAvailableData() const throw() ;
+
 								 
 				/**
 				 * Reads up to maxLength bytes from this socket to specified
@@ -99,6 +123,10 @@ namespace Ceylan
 		 		virtual System::Size read( char * buffer, 
 						System::Size maxLength ) 
 					throw( InputStream::ReadFailedException ) ;
+				
+
+				
+				// Write section.
 				
 		
 				/**
@@ -132,26 +160,9 @@ namespace Ceylan
 				 */
 				virtual System::Size write( const char * buffer, 
 						System::Size maxLength ) 
-					throw( OutputStream::WriteFailedException ) = 0 ;
+					throw( OutputStream::WriteFailedException ) ;
 
 		
-				/**
-				 * Tells whether there is data available on input.
-				 *
-				 */
-				virtual bool hasAvailableData() const throw() = 0 ;
-		
-		
-				/**
-				 * Clears the input stream.
-				 *
-				 * @throw InputStream::ReadFailedException if the operation
-				 * failed.
-				 *
-				 */
-				virtual void clearInput()
-					throw( InputStream::ReadFailedException ) ;
-
 
 				/** 
 				 * Returns the original file descriptor associated with the
@@ -181,14 +192,17 @@ namespace Ceylan
 				 * the original one, this method tells which one is to be
 				 * used to read or write data.
 				 *
-				 * @throw FeatureNotAvailableException if the file descriptor
+				 * @throw SocketException if the operation failed, or
+				 * FeatureNotAvailableException if the file descriptor
 				 * feature is not available.
 				 *
 				 * @see getOriginalFileDescriptor
 				 *
 				 */
 				virtual System::FileDescriptor getFileDescriptorForTransport()
-					const throw( Features::FeatureNotAvailableException ) ;
+					const throw( SocketException,
+						Features::FeatureNotAvailableException ) ;
+							
 							
 
 				/**
@@ -197,7 +211,7 @@ namespace Ceylan
 				 * @throw SocketException if this operation failed.
 				 *
 				 */
-				Port getLocalPort() const throw( SocketException ) ;
+				virtual Port getLocalPort() const throw( SocketException ) ;
 		
 		
 				/**
@@ -208,7 +222,38 @@ namespace Ceylan
 				 * if this socket is not connected.
 				 *
 				 */
-				Port getPeerPort() const throw( SocketException ) ;
+				virtual Port getPeerPort() const throw( SocketException ) ;
+		
+		
+							
+				/**
+				 * Returns the local IP address corresponding to this socket.
+				 *
+				 * Ownership of the returned object is transferred to the
+				 * caller, which has to deallocate it when of no more use.
+				 *
+				 * @note It is not an obvious question, since computers may
+				 * have more than one interface, and often the socket are 
+				 * bound thanks to INADDR_ANY, which means any interface.
+				 *
+				 * @throw SocketException if this operation failed.
+				 *
+				 */
+				virtual IPAddress * getLocalIPAddress() const 
+					throw( SocketException ) ;
+		
+		
+				/**
+				 * Returns the remote IP address this socket is linked to,
+				 * i.e. the IP address of the peer of this socket.
+				 *
+				 * @throw SocketException if this operation failed, including 
+				 * if this socket is not connected.
+				 *
+				 */
+				virtual IPAddress * getPeerIPAddress() const 
+					throw( SocketException ) ;
+		
 		
 		
 				/**
@@ -284,26 +329,23 @@ namespace Ceylan
 				 * FeatureNotAvailableException if the network feature
 				 * is not available.
 				 *
-				 */
-				virtual SystemSpecificSocketAddress & getPeerAddress()
+				virtual SystemSpecificSocketAddress & getAddress()
 					throw( SocketException,
 						Features::FeatureNotAvailableException ) ;
 		
+				 */
+	
 		
 				/** 
 				 * Creates the socket associated with the port <b>port</b>.
 				 *
 				 * @param localPort the specified local port.
 				 *
-				 * @note This method must be overriden by child classes, this
-				 * basic implementation throws a SocketException in all cases,
-				 * to force redefinition.
-				 *
 				 * @throw SocketException if the operation failed.
 				 *
 				 */
 				virtual void createSocket( Port localPort ) 
-					throw( SocketException ) ;
+					throw( SocketException ) = 0 ;
 		
 		
 				/** 
@@ -318,25 +360,25 @@ namespace Ceylan
 
 
 				/**
-				 * The local port this socket will be bound to.
+				 * The port this socket is created with.
+				 *
+				 * For client sockets, the port of the remote server will be
+				 * recorded here.
+				 *
+				 * For server sockets, it will be the local port where the
+				 * server will be listening.
 				 *
 				 */
-				Port _localPort ;
-		
-		
-				/**
-				 * The remote (peer) port this socket will be bound to.
-				 *
-				 */
-				Port _peerPort ;
-		
+				Port _port ;
+				
 		
 				/**
 				 * The system-specific socket address for this socket.
 				 *
 				 * It will be used by server sockets to bind to the target
 				 * port, whereas client sockets will use it to connect to
-				 * the target server.
+				 * the target server, and anonymous sockets will store 
+				 * informations about the client.
 				 *
 				 */
 				SystemSpecificSocketAddress * _address ;
