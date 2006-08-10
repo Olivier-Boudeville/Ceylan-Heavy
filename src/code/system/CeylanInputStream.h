@@ -127,15 +127,30 @@ namespace Ceylan
 				bool isSelected() const throw() ;
 		
 		
-				/// Returns the stream's unique ID.
-				virtual StreamID getInputStreamID() const = 0 ;
+				/**
+				 * Returns the stream's unique ID.
+				 *
+				 * @throw InputStreamException if the operation failed, for 
+				 * example if this input stream has not received a valid
+				 * identifier yet.
+				 *
+				 */
+				virtual StreamID getInputStreamID() const 
+					throw( InputStreamException ) = 0 ;
+
 
 
 
 				// Read section.
 				
 								
-				
+				/**
+				 * Tells whether there is data available on input.
+				 *
+				 */
+				virtual bool hasAvailableData() const throw() = 0 ;
+		
+ 				
 				/**
 				 * Reads up to maxLength bytes from this InputStream to
 				 * specified buffer.
@@ -160,13 +175,7 @@ namespace Ceylan
 					throw( ReadFailedException ) ;
 
 
-				/**
-				 * Tells whether there is data available on input.
-				 *
-				 */
-				virtual bool hasAvailableData() const throw() = 0 ;
-		
-                
+               
 				/**
 				 * Clears the input stream.
 				 *
