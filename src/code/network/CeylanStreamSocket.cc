@@ -1,7 +1,7 @@
 #include "CeylanStreamSocket.h"
 
 
-#include "CeylanLogPlug.h"
+#include "CeylanLogPlug.h"     // for LogPlug
 
 // for SystemSpecificSocketAddress :
 #include "CeylanSystemSpecificSocketAddress.h"  
@@ -29,7 +29,7 @@ extern "C"
 
 
 #ifdef CEYLAN_USES_RESOLV_H
-#include <resolv.h>              // for sockaddr_in
+#include <resolv.h>            // for sockaddr_in
 #endif // CEYLAN_USES_RESOLV_H
 
 
@@ -81,7 +81,7 @@ StreamSocket::StreamSocket() throw( Socket::SocketException ) :
 	
 #else // CEYLAN_USES_NETWORK
 
-	throw SocketException( "StreamSocket constructor failed : "
+	throw SocketException( "StreamSocket empty constructor failed : "
 		"network support not available." ) ; 
 	
 #endif // CEYLAN_USES_NETWORK
@@ -95,11 +95,12 @@ StreamSocket::StreamSocket( Port port ) throw( SocketException ):
 
 #if CEYLAN_USES_NETWORK
 
+	// It could not be called from Socket mother class :
 	createSocket( _port ) ;
 
 #else // CEYLAN_USES_NETWORK
 
-	throw SocketException( "StreamSocket constructor failed : "
+	throw SocketException( "StreamSocket port-based constructor failed : "
 		"network support not available." ) ; 
 	
 #endif // CEYLAN_USES_NETWORK
@@ -111,8 +112,8 @@ StreamSocket::~StreamSocket() throw()
 {
 
 	/*
-	 * The Socket mother class destructor takes care of the closing of _fdes.
-	 * and related members (_address).
+	 * The Socket mother class destructor takes care of the closing of 
+	 * file descriptor and related members (address).
 	 *
 	 */
 	
@@ -126,23 +127,24 @@ void StreamSocket::createSocket( Port port ) throw( SocketException )
 
 	_port = port ;
 	
-	_fdes = ::socket( /* domain : IPv4 */ PF_INET, /* type */ SOCK_STREAM, 
-			/* protocol : TCP */ 0 ) ;
 	
-	if ( _fdes == -1 )
+	_originalFD = ::socket( /* domain : IPv4 */ PF_INET, 
+		/* type */ SOCK_STREAM,	/* protocol : TCP */ 0 ) ;
+	
+	if ( _originalFD == -1 )
 		throw SocketException( "StreamSocket::createSocket failed : "
 			+ System::explainError() ) ;
 	
-	LogPlug::debug( "StreamSocket::createSocket : socket created with "
+	LogPlug::debug( "StreamSocket::createSocket : socket created for "
 		+ toString() ) ;
 
-	// Blanks and initializes inherited _address :
-	getAddress().blank() ;
+	// Blanks and initializes inherited address :
+	_address->blank() ;
 					
-	getAddress()._socketAddress.sin_family = 
+	_address->_socketAddress.sin_family = 
 		/* Internet family, not UNIX */ AF_INET ;
 		
-	getAddress()._socketAddress.sin_port = htons( _port ) ;
+	_address->_socketAddress.sin_port = htons( _port ) ;
 	
 #else // CEYLAN_USES_NETWORK
 
@@ -154,125 +156,7 @@ void StreamSocket::createSocket( Port port ) throw( SocketException )
 }
 
 
-FileDescriptor StreamSocket::getFileDescriptorForTransport() const
-	throw( Features::FeatureNotAvailableException )
-{
 
-#if CEYLAN_USES_NETWORK
-
-	// Default is to return the Socket-inherited file descriptor :
-	return _fdes ;
-	
-#else // CEYLAN_USES_NETWORK
-
-	throw Features::FeatureNotAvailableException( 
-		"StreamSocket::getFileDescriptorForTransport : "
-		"network support not available." ) ;
-		
-#endif // CEYLAN_USES_NETWORK
-
-}
-
-
-Size StreamSocket::read( char * buffer, Size maxLength ) 
-	throw( InputStream::ReadFailedException )
-{
-
-#if CEYLAN_USES_NETWORK
-
-	// There are potentially two file descriptors with streams :
-	
-	Size n ;
-	
-	try
-	{	
-		n = System::FDRead( getFileDescriptorForTransport(), 
-			buffer, maxLength ) ;
-	}
-	catch( const Ceylan::Exception & e )
-	{
-		throw ReadFailedException( "StreamSocket::read failed : " 
-			+ e.toString() ) ;
-	}	
-
-	return n ;
-
-#else // CEYLAN_USES_NETWORK	
-
-	throw ReadFailedException( 
-		"StreamSocket::read : network support not available." ) ;
-	
-#endif // CEYLAN_USES_NETWORK	
-
-
-}
-
-
-Size StreamSocket::write( const string & message ) 
-	throw( OutputStream::WriteFailedException )
-{
-
-#if CEYLAN_USES_NETWORK
-
-	// There are potentially two file descriptors with streams :
-	
-	Size n ;
-	
-	try
-	{	
-		n = FDWrite( getFileDescriptorForTransport(), 
-			message.c_str(), message.size() ) ;
-	}	
-	catch( const Ceylan::Exception & e )
-	{
-		throw WriteFailedException( 
-			"StreamSocket::write (std::string) failed : " + e.toString() ) ;
-	}	
-
-
-	if ( n < message.size() )
-		throw WriteFailedException( 
-			"StreamSocket::write (std::string) failed : "
-			+ System::explainError() ) ;
-
-	return n ;
-
-#else // CEYLAN_USES_NETWORK	
-	
-	throw WriteFailedException( 
-		"StreamSocket::write failed (std::string) : "
-		"network support not available." ) ;
-			
-#endif // CEYLAN_USES_NETWORK	
-
-}
-
-
-Size StreamSocket::write( const char * buffer, Size maxLength ) 
-	throw( OutputStream::WriteFailedException )
-{
-
-#if CEYLAN_USES_NETWORK
-
-	// There are potentially two file descriptors with streams :
-	
-	Size n = System::FDWrite( getFileDescriptorForTransport(), 
-		buffer, maxLength ) ;
-
-	if ( n < maxLength )
-		throw WriteFailedException( "StreamSocket::write (char *) failed : " 
-			+ System::explainError() ) ;
-
-	return n ;
-
-#else // CEYLAN_USES_NETWORK	
-
-	throw WriteFailedException( "StreamSocket::write (char *) failed : "
-		"network support not available." ) ;
-	
-#endif // CEYLAN_USES_NETWORK	
-
-}
 
 
 const std::string StreamSocket::toString( Ceylan::VerbosityLevels level ) 
