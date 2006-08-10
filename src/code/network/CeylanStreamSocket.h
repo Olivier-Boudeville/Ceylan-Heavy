@@ -51,7 +51,8 @@ namespace Ceylan
 		
 		
 				/**
-				 * Client-side constructor for connection-based sockets.
+				 * Client-side constructor for connection-based sockets, used
+				 * also for anonymous stream sockets.
 				 *
 				 * @throw SocketException if the operation failed.
 				 *
@@ -65,68 +66,14 @@ namespace Ceylan
 				 * @throw SocketException if the operation failed.
 				 *
 				 */
-				explicit StreamSocket( Port port ) throw( SocketException ) ;
+				explicit StreamSocket( Port localPort ) 
+					throw( SocketException ) ;
 		
 
 				/// Virtual destructor.
 				virtual ~StreamSocket() throw() ;
 				
 				
-				
-				/**
-				 * Reads up to maxLength bytes from this socket to specified
-				 * buffer.
-				 *
-				 * @param buffer the buffer where to store read bytes. 
-				 * Its size must be at least maxLength bytes.
-				 *
-				 * @param maxLength the maximum number of bytes that should 
-				 * be read.
-				 *
-				 * @return The number of bytes actually read, which should
-				 * be maxLength or lower.
-				 *
-				 * @throw ReadFailed if a read error occurred.
-				 *
-				 */
-		 		virtual System::Size read( char * buffer, 
-						System::Size maxLength ) 
-					throw( InputStream::ReadFailedException ) ;
-				
-		
-				/**
-				 * Writes message to this socket.
-				 *
-				 * @param message the message to write to this file.
-				 *
-				 * @return The number of bytes actually written, which 
-				 * should be equal to the size of the string or lower.
-				 *
-				 * @throw WriteFailed if a write error occurred.
-				 *
-				 */
-				virtual System::Size write( const std::string & message ) 
-					throw( OutputStream::WriteFailedException ) ;
-
-
-				/**
-				 * Writes up to maxLength bytes from the specified buffer
-				 * to this file.
-				 *
-				 * @param buffer the buffer where to find bytes that must
-				 * be written to this file.
-				 * Its size must be at least maxLength bytes.
-				 *
-				 * @return The number of bytes actually written, which 
-				 * should be equal to maxLength.
-				 *
-				 * @throw WriteFailed if a write error occurred.
-				 *
-				 */
-				virtual System::Size write( const char * buffer, 
-						System::Size maxLength ) 
-					throw( OutputStream::WriteFailedException ) ;
-
 		
             	/**
             	 * Returns an user-friendly description of the state of
@@ -150,33 +97,15 @@ namespace Ceylan
 
 				
 				/** 
-				 * Creates the socket associated with the port <b>port</b>.
+				 * Creates the stream (TCP) socket associated with the port
+				 * <b>port</b>.
 				 *
 				 * @throw SocketException if the operation failed.
 				 *
 				 */
 				virtual void createSocket( Port port ) 
 					throw( SocketException )  ;
-		
-		
-				/**
-				 * Returns the file descriptor that should be used by this 
-				 * stream socket to read/write data from/to peers. 
-				 *
-				 * For client stream socket, the returned file descriptor
-				 * corresponds to the original socket, whereas for servers
-				 * it corresponds to the socket created especially for an
-				 * already accepted connection, not the original one.
-				 *
-				 * @throw FeatureNotAvailableException if the file descriptor
-				 * feature is not available.
-				 *
-				 * @see getFileDescriptor()
-				 *
-				 */
-				virtual System::FileDescriptor 
-						getFileDescriptorForTransport() const
-					throw( Features::FeatureNotAvailableException ) ;
+						
 				
 		
 			private:
