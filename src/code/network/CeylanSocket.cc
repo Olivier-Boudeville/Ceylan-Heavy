@@ -2,8 +2,7 @@
 
 #include "CeylanLogPlug.h"                      // for LogPlug
 #include "CeylanOperators.h"                    // for toString
-#include "CeylanAnonymousConnection.h"          // for AnonymousConnection
-
+#include "CeylanStringUtils.h"                  // for StringSize
 
 // for SystemSpecificSocketAddress :
 #include "CeylanSystemSpecificSocketAddress.h"  
@@ -87,14 +86,14 @@ Socket::SocketException::~SocketException() throw()
 // Is protected :
 Socket::Socket() throw( Socket::SocketException ) :
 	InputOutputStream(),
-	_localPort( 0 ),
-	_peerPort( 0 ),
+	_port( 0 ),
 	_address( 0 ),
 	_originalFD( 0 )
 {
 
 #if CEYLAN_USES_NETWORK
 	
+	_address = new SystemSpecificSocketAddress ;
 	
 #else // CEYLAN_USES_NETWORK
 
@@ -106,10 +105,9 @@ Socket::Socket() throw( Socket::SocketException ) :
 }
 
 
-Socket::Socket( Port localPort ) throw( SocketException ):
+Socket::Socket( Port port ) throw( SocketException ):
 	InputOutputStream(),
-	_localPort( localPort ) ,
-	_peerPort( 0 ),
+	_port( port ) ,
 	_address( 0 ),
 	_originalFD( 0 )
 {
@@ -117,13 +115,15 @@ Socket::Socket( Port localPort ) throw( SocketException ):
 #if CEYLAN_USES_NETWORK
 	
 	/*
-	 * Cannot use here : 'createSocket( _localPort ) ;' since it would call
+	 * Cannot use here : 'createSocket( _port ) ;' since it would call
 	 * Socket::createSocket in spite of any overloading.
 	 *
 	 * Therefore child classes (ex : CeylanStreamSocket) should call this
 	 * method in their own constructor.
 	 *
 	 */
+
+	_address = new SystemSpecificSocketAddress ;
 	
 #else // CEYLAN_USES_NETWORK
 
@@ -148,9 +148,41 @@ Socket::~Socket() throw()
 		LogPlug::error( "Socket destructor failed : " + e.toString() ) ;
 	}
 		
+	if ( _address != 0 )
+		delete _address ;
+		
 }
 
 
+bool Socket::hasAvailableData() const throw()
+{
+
+#if CEYLAN_USES_NETWORK
+
+	try
+	{
+		return System::HasAvailableData( getFileDescriptorForTransport() ) ;
+	}
+	catch( const Ceylan::Exception & e )
+	{
+	
+		LogPlug::error( "Socket::hasAvailableData failed : "
+			+ e.toString() ) ;
+			
+		return false ;	
+		
+	} 	
+
+#else // CEYLAN_USES_NETWORK
+
+	LogPlug::error( "Socket::hasAvailableData failed : "
+		"network support not available." ) ;
+
+	return false ;
+
+#endif // CEYLAN_USES_NETWORK
+
+}
 
 
 Size Socket::read( char * buffer, Size maxLength ) 
@@ -259,38 +291,6 @@ Size Socket::write( const char * buffer, Size maxLength )
 }
 
 
-
-bool Socket::hasAvailableData() const throw()
-{
-
-#if CEYLAN_USES_NETWORK
-
-	// HasAvailableData does not throw any exception :
-	return System::HasAvailableData( getFileDescriptorForTransport() ) ;
-	
-#else // CEYLAN_USES_NETWORK
-
-	LogPlug::error( "Socket::hasAvailableData failed : "
-		"network support not available." ) ;
-
-	return false ;
-
-#endif // CEYLAN_USES_NETWORK
-
-}
-
-
-void Socket::clearInput() throw( InputStream::ReadFailedException )
-{
-
-	Ceylan::Byte b ;
-	
-	while ( hasAvailableData() ) 
-		read( &b, 1 ) ;
-		
-}
-
-
 FileDescriptor Socket::getOriginalFileDescriptor() const
 	throw( SocketException, Features::FeatureNotAvailableException )
 {
@@ -329,16 +329,33 @@ FileDescriptor Socket::getFileDescriptorForTransport() const
 
 
 
-Port Socket::getLocalPort() const throw()
+Port Socket::getLocalPort() const throw( SocketException )
 {
-	return _localPort ;
+	throw SocketException( "Socket::getLocalPort : not implemented yet." ) ;
 }
 
 
-Port Socket::getPeerPort() const throw()
+Port Socket::getPeerPort() const throw( SocketException )
 {
-	return _peerPort ;
+	throw SocketException( "Socket::getPeerPort : not implemented yet." ) ;
 }
+
+
+
+IPAddress * Socket::getLocalIPAddress() const throw( SocketException )
+{
+	throw SocketException( 
+		"Socket::getLocalIPAddress : not implemented yet." ) ;
+}
+
+
+IPAddress * Socket::getPeerIPAddress() const throw( SocketException )
+{
+	throw SocketException( 
+		"Socket::getPeerIPAddress : not implemented yet." ) ;
+
+}
+
 
 
 StreamID Socket::getInputStreamID() const throw( InputStreamException )
@@ -395,14 +412,30 @@ const std::string Socket::toString( Ceylan::VerbosityLevels level )
 	const throw()
 {
 
-	string res = "Socket associated to local port " 
-		+ Ceylan::toString( getLocalPort() ) 
-		+ ", with original file descriptor being " 
-		+ Ceylan::toString( getOriginalFileDescriptor() ) 
-		+ ". The peer port is " + Ceylan::toString( getPeerPort()
-		+ ", and the file descriptor for transport is " 
-		+ Ceylan::toString( getFileDescriptorForTransport() ) ;
+	string res ;
 	
+	
+	try
+	{
+	
+		res = "Socket associated to local port " 
+			+ Ceylan::toString( getLocalPort() ) 
+			+ ", with original file descriptor being " 
+			+ Ceylan::toString( getOriginalFileDescriptor() ) 
+			+ ". The file descriptor for transport is " 
+			+ Ceylan::toString( getFileDescriptorForTransport() ) ;
+			
+		if ( isConnected() )
+			res += ". This Socket is currently connected" ;
+		else		
+			res += ". This Socket is currently not connected" ;
+
+	}
+	catch( const Ceylan::Exception & e )
+	{
+		return "Socket::toString failed (abnormal)" ;
+	}
+		
 	// Add _address interpretation here.
 	
 	return res ;
@@ -418,7 +451,7 @@ const std::string Socket::toString( Ceylan::VerbosityLevels level )
 // Constructors are defined at the top of this file.
 
 
-
+/*
 SystemSpecificSocketAddress & Socket::getPeerAddress()
 	throw( SocketException, Features::FeatureNotAvailableException )
 {
@@ -439,15 +472,7 @@ SystemSpecificSocketAddress & Socket::getPeerAddress()
 #endif // CEYLAN_USES_NETWORK
 
 }
-
-
-void Socket::createSocket( Port port ) throw( SocketException )
-{
-
-	throw SocketException( "Socket::createSocket must be overriden "
-		"by child classes." ) ;
-		
-}
+*/
 					
 						
 bool Socket::close() throw( Stream::CloseException )
