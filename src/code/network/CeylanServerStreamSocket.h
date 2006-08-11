@@ -20,6 +20,14 @@ namespace Ceylan
 
 
 		/**
+		 * These sockets are the ones that are created when a connection is
+		 * accepted.
+		 *
+		 */
+		class AnonymousStreamSocket ;
+		
+		
+		/**
 		 * Server-side implementation of connection-based socket.
 		 *
 		 * This server basically factorizes all primitives common to all
@@ -108,10 +116,13 @@ namespace Ceylan
 				 * If there is no pending connection present on the queue,
 				 * blocks the caller until a connection is present. 
 				 *
+				 * @return A pointer to the AnonymousStreamSocket created
+				 * for the connection.
+				 *
 				 * @throw ServerStreamSocketException on failure.
 				 *
 				 */
-				virtual void accept() 
+				virtual AnonymousStreamSocket * accept() 
 					throw( ServerStreamSocketException ) = 0  ;
 			
 	
@@ -215,7 +226,12 @@ namespace Ceylan
 		
 		
 				/**
-				 * Called whenever the accept method succeeds.
+				 * Called whenever a new connection is established, i.e. 
+				 * when the accept method succeeds.
+				 *
+				 * It is up to this method, designed to be overriden, to 
+				 * handle the connection from its start to its end, and then
+				 * to return so that this server gains back the socket control.
 				 *
 				 * If this server has to handle (potentially sequentially)
 				 * multiple clients, then the overriden implementation of
@@ -223,8 +239,12 @@ namespace Ceylan
 				 * connection.
 				 * And the server must loop with regular calls to the 
 				 * accept method.
+				 * 
+				 * @see run, the default implementation does that.
 				 *
-				 * @see run
+				 * @param newConnection the connection-related socket is 
+				 * specified, so that the user code can use it to perform
+				 * its task.
 				 *
 				 * Otherwise, if the server stops accepting connections after
 				 * the one being processed, any other connection initiated 
@@ -242,7 +262,8 @@ namespace Ceylan
 				 * @see testCeylanSequentialServerStream.cc
 				 *
 				 */
-				virtual void accepted() throw( ServerStreamSocketException ) ;
+				virtual void accepted( AnonymousStreamSocket & newConnection )
+					throw( ServerStreamSocketException ) ;
 
 
 				/**
