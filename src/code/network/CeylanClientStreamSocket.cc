@@ -115,6 +115,9 @@ void ClientStreamSocket::connect( const string & serverHostname,
 			"socket already connected" ) ;
 			
 	_serverHostName = serverHostname ;
+
+	// Blanks inherited address before filling it with the server address :
+	_address->blank() ;
 	
 	/*
 	 * Creates the socket and fills sin_family and sin_port :
@@ -148,8 +151,6 @@ void ClientStreamSocket::connect( const string & serverHostname,
 			"could not determine an IPv4 address from host '" 
 				+ _serverHostName + "'." ) ;
 	
-	// Blanks inherited address before filling it with the server address :
-	_address->blank() ;
 	
 	
 	// It is actually something like an unsigned long (see man inet_ntoa) :
@@ -169,6 +170,11 @@ void ClientStreamSocket::connect( const string & serverHostname,
 	
 	_address->_socketAddress.sin_addr = binaryIP ;
 
+	LogPlug::trace( "ClientStreamSocket::connect : connecting to "
+		+ _serverHostName + ":" + Ceylan::toString( serverPort )
+		+ " with local file descriptor " 
+		+ Ceylan::toString( getOriginalFileDescriptor() ) ) ;
+		
 	if ( ::connect( getOriginalFileDescriptor(),
 			reinterpret_cast<sockaddr *>( & _address->_socketAddress ),
 			sizeof( sockaddr_in ) ) < 0 )
@@ -176,6 +182,8 @@ void ClientStreamSocket::connect( const string & serverHostname,
 			"could not connect to IP " 
 			+ serverIP->toString() + " for host '" 
 			+ _serverHostName + "' : " + System::explainError() ) ;
+
+	LogPlug::trace( "ClientStreamSocket::connect : successfully connected." ) ;
 	
 	// Once connected, call the user-supplied code :
 	connected() ;
@@ -195,6 +203,8 @@ void ClientStreamSocket::connect( const string & serverHostname,
 void ClientStreamSocket::disconnect() throw( SocketException )
 {
 
+	LogPlug::trace( "ClientStreamSocket::disconnect : disconnecting now." ) ;
+	
 	if ( ! isConnected() )
 		throw SocketException( "ClientStreamSocket::disconnect : "
 			"this socket was not already connected." ) ;
@@ -233,7 +243,7 @@ const std::string ClientStreamSocket::toString( Ceylan::VerbosityLevels level )
 	if ( isConnected() )
 		res = "ClientStreamSocket linked to server "
 			+ _serverHostName + ":" 
-			+ Ceylan::toString( getPeerPort() ) + ", DNS info is "
+			+ Ceylan::toString( getPeerPort() ) + ". "
 			+ _serverHostInfo->toString( level ) + ". " ;
 	else		
 		res = "ClientStreamSocket not linked to any specific server. " ;
