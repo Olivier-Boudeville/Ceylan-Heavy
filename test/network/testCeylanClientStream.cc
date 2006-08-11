@@ -14,8 +14,16 @@ using namespace std ;
 
 
 
-
-
+/**
+ * Test class for stream clients.
+ *
+ * Against a running server to compare implementations, one may use : 
+ *   - telnet localhost 6969
+ *   - ./testCeylanClientStream --consolePlug localhost 6969
+ *
+ * and watch the result with : netstat -a --tcp -p
+ *
+ */
 class MyTestStreamClient : public Ceylan::Network::ClientStreamSocket
 {
 
@@ -23,8 +31,9 @@ class MyTestStreamClient : public Ceylan::Network::ClientStreamSocket
 	public:
 	
 	
-		MyTestStreamClient(): 
-			ClientStreamSocket()
+		MyTestStreamClient( bool interactiveMode ): 
+			ClientStreamSocket(),
+			_interactiveMode( interactiveMode )
 		{
 		
 			LogPlug::info( "MyTestStreamClient created : "
@@ -36,15 +45,87 @@ class MyTestStreamClient : public Ceylan::Network::ClientStreamSocket
 		void connected() throw( ClientStreamSocketException )
 		{
 		
-			LogPlug::info( "Client connected !" ) ;
+			LogPlug::info( "Client connected ! New state is : "
+				+ toString() ) ;
 			
-			string s = "This is a test line from client, quitting now ! Q\n";
-			write( s ) ;
 			
-			LogPlug::info( "Client sent : '" + s + "'." ) ;
+			if ( _interactiveMode )
+			{
+			
+				cout << "Type any number of characters, end them by 'Q' : "
+					<< endl ;
+					 
+				char c ;
+				
+				do
+				{
+					
+					c = cin.get() ;
+					write( &c, 1 ) ;
+					//cout << c ;
+				
+				}
+				while( c != 'Q' ) ;
+				
+				cout << endl ;
+				
+				// 'Q' is the latest sent character.
+									
+			}
+			else
+			{
+			
+				string toSend = "This is a test line from client, "
+					"stopping connection now ! Q\n" ;
+				
+				bool beSlow = false ;
+				
+				if ( beSlow )
+				{
+				
+					for ( string::const_iterator it = toSend.begin() ;
+						it != toSend.end(); it++ )
+					{
+					
+						write( &( *it ), 1 ) ;
+					
+						// Sleep for 0.1 second :
+						Thread::Sleep( 0, 100000 /* microseconds */ ) ;
+
+					}
+				}
+				else
+				{				
+					write( toSend ) ;
+				}
+				
+				LogPlug::info( "Client sent : '" + toSend + "'." ) ;
+			
+			}	
+			
+
+			char buffer[ 10 ] ;
+	
+			if ( read( buffer, 2 ) > 0 ) 
+				cout << "Client read from server : '" << buffer 
+					<< "'." << endl ;
+		
+			const char expectedAnswer = '+' ; 
+		
+			if ( buffer[0] != expectedAnswer )
+				throw ClientStreamSocketException( 
+					"Incorrect answer from server : received '" 
+					+ string( buffer ) + "', instead of '" 
+					+ Ceylan::toString( expectedAnswer ) + "'." ) ;
 			
 		}
 		
+	
+	private:
+	
+	
+		/// Tells whether the user is expected to type messages. 
+		bool _interactiveMode ;
 		
 
 } ;
@@ -81,12 +162,14 @@ int main( int argc, char * argv[] )
 		}
 
 
-		MyTestStreamClient myClient ;
-
+		// Determines which server and port should be chosen :
+		
 		string targetServer ;
 		
 		std::string executableName ;
 		std::list<std::string> options ;
+		
+		bool interactiveMode = false ;
 		
 		Ceylan::parseCommandLineOptions( executableName, options, argc, argv ) ;
 	
@@ -104,12 +187,14 @@ int main( int argc, char * argv[] )
 						
 			if ( token == "--batch" )
 			{
-				LogPlug::info( "Running in batch mode (ignored)" ) ;
+				LogPlug::info( "Running in batch mode." ) ;
+				interactiveMode = false ;
 				tokenEaten = true ;
 			} else
 			if ( token == "--interactive" )
 			{
-				LogPlug::info( "Running in interactive mode (ignored)" ) ;
+				LogPlug::info( "Running in interactive mode." ) ;
+				interactiveMode = true ;
 				tokenEaten = true ;
 			} else		
 			if ( token == "--server" )
@@ -118,6 +203,11 @@ int main( int argc, char * argv[] )
 				options.pop_front() ;
 				LogPlug::info( "Will try to connect to server '"
 					+ targetServer + "'." ) ;
+				tokenEaten = true ;
+			} else
+			if ( LogHolder::IsAKnownPlugOption( token ) )
+			{
+				// Ignores log-related (argument-less) options.
 				tokenEaten = true ;
 			}
 			
@@ -130,30 +220,20 @@ int main( int argc, char * argv[] )
 		}
 	
 	
+		MyTestStreamClient myClient( interactiveMode ) ;
+
+	
 		if ( targetServer.empty() )
 			targetServer = "localhost" ;    
 	
         LogPlug::info( "Client created : " + myClient.toString()
 			+ ", will try to connect to '" + targetServer + "'." ) ;
 		
+		
+		// Now, connect and communicate :
 			
 		myClient.connect( targetServer, /* port */ 6969 ) ;
 
-		LogPlug::info( "Client connected, its state is : "
-			+ myClient.toString() ) ;
-
-		char buffer[ 10 ] ;
-	
-		if ( myClient.read( buffer, 2 ) > 0 ) 
-			cout << "Client read from server : '" << buffer 
-				<< "'." << endl ;
-		
-		const char expectedAnswer = '+' ; 
-		
-		if ( buffer[0] != expectedAnswer )
-			throw Ceylan::TestException( "Incorrect answer from server : "
-				"received '" + string( buffer ) + "', instead of '" 
-				+ toString( expectedAnswer ) + "'." ) ;
 				
         LogPlug::info( "Connection terminated, current client state is : "
 			+ myClient.toString() ) ;			
