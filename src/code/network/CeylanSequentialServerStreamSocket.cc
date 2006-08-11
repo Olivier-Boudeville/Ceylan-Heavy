@@ -90,7 +90,7 @@ bool SequentialServerStreamSocket::isConnected() const throw()
 }
 
 
-void SequentialServerStreamSocket::accept() 
+AnonymousStreamSocket * SequentialServerStreamSocket::accept() 
 	throw( ServerStreamSocketException )
 {
 
@@ -103,6 +103,10 @@ void SequentialServerStreamSocket::accept()
 			
 	if ( ! _bound )
 		prepareToAccept() ;
+
+
+	LogPlug::trace( "SequentialServerStreamSocket::accept : "
+		"will accept now connections, state is : " + toString() ) ;
 	
 	try
 	{
@@ -119,11 +123,19 @@ void SequentialServerStreamSocket::accept()
 			+ e.toString() ) ;
 	}	
 		
-
-	accepted() ;
+	LogPlug::trace( "SequentialServerStreamSocket::accept : "
+		"new connection accepted, will be taken care of now : "
+		+ _currentConnection->toString() ) ;
+		
+	accepted( *_currentConnection ) ;
+	
+	LogPlug::trace( "SequentialServerStreamSocket::accept : "
+		"connection terminated, cleaning up afterwards" ) ;
 	
 	cleanAfterAccept() ;
 
+	return 0 ;
+	
 #endif // CEYLAN_USES_NETWORK	
 			
 }
