@@ -16,21 +16,22 @@ using namespace std ;
 
 
 
-class MyTestStreamServer : public Ceylan::Network::SequentialServerStreamSocket
+class MyTestSequentialStreamServer : 
+	public Ceylan::Network::SequentialServerStreamSocket
 {
 
 
 	public:
 	
 	
-		MyTestStreamServer( bool isBatch, 
+		MyTestSequentialStreamServer( bool isBatch, 
 				Ceylan::Uint32 targetConnectionCount ):
 			SequentialServerStreamSocket( 6969, /* reuse */ true ),
 			_batch( isBatch ),
 			_targetConnectionCount( targetConnectionCount )
 		{
 		
-			LogPlug::info( "MyTestStreamServer created : "
+			LogPlug::info( "MyTestSequentialStreamServer created : "
 				+ toString() ) ;
 				
 		}
@@ -59,11 +60,19 @@ class MyTestStreamServer : public Ceylan::Network::SequentialServerStreamSocket
 		}
 			
 		
-		void accepted() throw( ServerStreamSocketException )
+		void accepted( AnonymousStreamSocket & newConnection ) 
+			throw( ServerStreamSocketException )
 		{
 		
-			LogPlug::info( "MyTestStreamServer : connection accepted : "
-				+ toString() ) ;
+			/*
+			 * newConnection does not have to be used, since read/write
+			 * methods are also available for sequential servers
+			 * (only one client can exist, these methods are linked to it)
+			 *
+			 */
+		
+			LogPlug::info( "MyTestSequentialStreamServer : "
+				"connection accepted : " + toString() ) ;
 		       
 			char buffer[ 2 ] ;
 			buffer[1] = 0 ;
@@ -71,8 +80,8 @@ class MyTestStreamServer : public Ceylan::Network::SequentialServerStreamSocket
 			while( true )
 			{
 			
-				LogPlug::trace( 
-					"MyTestStreamServer : will read from socket now." ) ;
+				LogPlug::trace( "MyTestSequentialStreamServer::accepted : "
+					"will read from socket now." ) ;
 				
 				System::Size readCount ;
 				
@@ -85,43 +94,44 @@ class MyTestStreamServer : public Ceylan::Network::SequentialServerStreamSocket
 				catch( const InputStream::ReadFailedException & e )
 				{
 					throw ServerStreamSocketException( 
-						"MyTestStreamServer::accepted failed : " 
+						"MyTestSequentialStreamServer::accepted failed : " 
 						+ e.toString() ) ;
 				}
 				
 				 
-				LogPlug::trace( "MyTestStreamServer : read "
-					+ Ceylan::toString( readCount ) + " bytes." ) ;
+				LogPlug::trace( "MyTestSequentialStreamServer : read "
+					+ Ceylan::toString( readCount ) + " byte(s)." ) ;
 				
-				if ( readCount > 0 )
+				if ( readCount == 0 )
 				{
+				
+					LogPlug::debug( "MyTestSequentialStreamServer::accepted :"
+						"no byte could be read." ) ;
 
-					if ( buffer[0] == 'Q' )
-					{
-						cout << endl;
-						write( "+", 2 ) ;
-						return;
-					}
-					else
-					{
-					
-						cout << buffer ;
-						cout.flush() ;
-						
-						if ( ! _batch )
-						{
-							// Sleep for 0.1 second :
-							Thread::Sleep( 0, 100000 /* microseconds */ ) ;
-						}
-							
-					}
-					
+					return ;
+				
 				}
-				else 
+					
+				if ( buffer[0] == 'Q' )
 				{
+					cout << endl ;
+					write( "+", 2 ) ;
 					return ;
 				}
-				
+				else
+				{
+					
+					cout << buffer ;
+					cout.flush() ;
+					
+					if ( ! _batch )
+					{	
+						// Sleep for 0.1 second :	
+						Thread::Sleep( 0, /* microseconds */ 100000 ) ;
+					}
+													
+				}
+									
 			}
 			
 		}
@@ -225,7 +235,8 @@ int main( int argc, char * argv[] )
 		
 		}
 		
-		MyTestStreamServer myServer( isBatch, targetConnectionCount ) ;
+		MyTestSequentialStreamServer myServer( isBatch, 
+			targetConnectionCount ) ;
 	
         LogPlug::info( "Server created, waiting for connections : "
 			+ myServer.toString() ) ;
