@@ -58,6 +58,13 @@ namespace Ceylan
 		 * @see ClientStreamSocket a client that is designed for both 
 		 * sequential and multiplexed servers.
 		 *
+		 * Following methods have to be subclassed so that the server can
+		 * perform its specific task :
+		 *   - accepted
+		 *
+		 * Read/write methods communicate with the connection socket, not the
+		 * listening socket.
+		 * 
 		 */
 		class SequentialServerStreamSocket: public ServerStreamSocket
 		{
@@ -123,10 +130,14 @@ namespace Ceylan
 				 * If there is no pending connection present on the queue,
 				 * blocks the caller until a connection is present. 
 				 *
+				 * @return a null pointer, since the return of this call
+				 * corresponds to the end of the related connection.
+				 *
 				 * @throw ServerStreamSocketException on failure.
 				 *
 				 */
-				virtual void accept() throw( ServerStreamSocketException ) ;
+				virtual AnonymousStreamSocket * accept() 
+					throw( ServerStreamSocketException )  ;
 	
 
 				/**
