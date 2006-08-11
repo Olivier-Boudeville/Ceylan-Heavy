@@ -2,6 +2,7 @@
 
 
 #include "CeylanLogPlug.h"     // for LogPlug
+#include "CeylanOperators.h"   // for operators
 
 // for SystemSpecificSocketAddress :
 #include "CeylanSystemSpecificSocketAddress.h"  
@@ -127,7 +128,6 @@ void StreamSocket::createSocket( Port port ) throw( SocketException )
 
 	_port = port ;
 	
-	
 	_originalFD = ::socket( /* domain : IPv4 */ PF_INET, 
 		/* type */ SOCK_STREAM,	/* protocol : TCP */ 0 ) ;
 	
@@ -135,8 +135,10 @@ void StreamSocket::createSocket( Port port ) throw( SocketException )
 		throw SocketException( "StreamSocket::createSocket failed : "
 			+ System::explainError() ) ;
 	
-	LogPlug::debug( "StreamSocket::createSocket : socket created for "
-		+ toString() ) ;
+	LogPlug::debug( "StreamSocket::createSocket : "
+		"this socket, whose original file descriptor is " 
+		+ Ceylan::toString( _originalFD ) + ", will be associated with port " 
+		+ Ceylan::toString( _port ) + "." ) ;
 
 	// Blanks and initializes inherited address :
 	_address->blank() ;
