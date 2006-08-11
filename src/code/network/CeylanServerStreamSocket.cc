@@ -1,9 +1,11 @@
 #include "CeylanServerStreamSocket.h"
 
 
-#include "CeylanLogPlug.h"       // for LogPlug
-#include "CeylanOperators.h"     // for toString
-#include "CeylanThread.h"        // for Sleep
+#include "CeylanLogPlug.h"               // for LogPlug
+#include "CeylanOperators.h"             // for toString
+#include "CeylanThread.h"                // for Sleep
+#include "CeylanAnonymousStreamSocket.h" // for AnonymousStreamSocket
+
 
 // for SystemSpecificSocketAddress :
 #include "CeylanSystemSpecificSocketAddress.h"  
@@ -126,6 +128,7 @@ void ServerStreamSocket::run() throw( ServerStreamSocketException )
 
 	LogPlug::trace( "Entering in ServerStreamSocket::run" ) ;
 	
+	// Records the total number of created connections :
 	Ceylan::Uint32 connectionCount = 0 ;
 	
 	while ( ! isRequestedToStop() )
@@ -274,16 +277,6 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 		"listen succeeded." ) ;
 
 
-	/*
-	 * From this moment, a socket dedicated to this connection is created,
-	 * it is the one that will be used for example by read operations in
-	 * the 'accepted' method, thanks to the getFileDescriptorForTransport
-	 * method.
-	 *
-	 * @see StreamSocket::read
-	 *
-	 */
-
 #else // CEYLAN_USES_NETWORK
 
 	throw ServerStreamSocketException( "ServerStreamSocket::prepareToAccept : "
@@ -317,12 +310,13 @@ void ServerStreamSocket::cleanAfterAccept() throw( ServerStreamSocketException )
 
 
 					
-void ServerStreamSocket::accepted() throw( ServerStreamSocketException )
+void ServerStreamSocket::accepted( AnonymousStreamSocket & newConnection )
+	throw( ServerStreamSocketException )
 {
 
 	// Empty implementation made to be overriden.
 	LogPlug::debug( "ServerStreamSocket::accepted : "
-		"connection up and running." ) ;
+		"connection up and running : " + newConnection.toString() ) ;
 		
 }
 
