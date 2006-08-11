@@ -331,13 +331,15 @@ FileDescriptor Socket::getFileDescriptorForTransport() const
 
 Port Socket::getLocalPort() const throw( SocketException )
 {
-	throw SocketException( "Socket::getLocalPort : not implemented yet." ) ;
+	//throw SocketException( "Socket::getLocalPort : not implemented yet." ) ;
+	return 0 ;
 }
 
 
 Port Socket::getPeerPort() const throw( SocketException )
 {
-	throw SocketException( "Socket::getPeerPort : not implemented yet." ) ;
+	//throw SocketException( "Socket::getPeerPort : not implemented yet." ) ;
+	return 0 ;
 }
 
 
@@ -421,12 +423,12 @@ const std::string Socket::toString( Ceylan::VerbosityLevels level )
 		res = "Socket associated to local port " 
 			+ Ceylan::toString( getLocalPort() ) 
 			+ ", with original file descriptor being " 
-			+ Ceylan::toString( getOriginalFileDescriptor() ) 
-			+ ". The file descriptor for transport is " 
-			+ Ceylan::toString( getFileDescriptorForTransport() ) ;
-			
+			+ Ceylan::toString( getOriginalFileDescriptor() ) ;
+		
 		if ( isConnected() )
-			res += ". This Socket is currently connected" ;
+			res += ". This Socket is currently connected, "
+				"and the file descriptor for transport is " 
+				+ Ceylan::toString( getFileDescriptorForTransport() ) ;
 		else		
 			res += ". This Socket is currently not connected" ;
 
@@ -450,29 +452,6 @@ const std::string Socket::toString( Ceylan::VerbosityLevels level )
 
 // Constructors are defined at the top of this file.
 
-
-/*
-SystemSpecificSocketAddress & Socket::getPeerAddress()
-	throw( SocketException, Features::FeatureNotAvailableException )
-{
-
-#if CEYLAN_USES_NETWORK
-
-	if ( _address != 0 )
-		return *_address ;
-	else
-		throw SocketException( "Socket::getPeerAddress : "
-			"no available address." ) ;
-					
-#else // CEYLAN_USES_NETWORK
-
-	throw Features::FeatureNotAvailableException( 
-		"Socket::getPeerAddress : network support not available." ) ;
-		
-#endif // CEYLAN_USES_NETWORK
-
-}
-*/
 					
 						
 bool Socket::close() throw( Stream::CloseException )
