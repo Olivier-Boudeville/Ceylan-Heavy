@@ -78,12 +78,14 @@ AnonymousStreamSocket::AnonymousStreamSocket(
 {
 
 #if CEYLAN_USES_NETWORK
-		
-	socklen_t addressSize = static_cast<socklen_t>( 
-		sizeof( _address->_socketAddress ) ) ;
+	
 
 	LogPlug::debug( "AnonymousStreamSocket constructor : "
-		"ready to accept a new connection." ) ;
+		"ready to accept a new connection using listening file descriptor " 
+		+ Ceylan::toString( listeningFD ) + "." ) ;
+		 
+	socklen_t addressSize = static_cast<socklen_t>( 
+		sizeof( _address->_socketAddress ) ) ;
 
 	_originalFD = ::accept( listeningFD, 
 		reinterpret_cast<sockaddr *>( & _address->_socketAddress ),
