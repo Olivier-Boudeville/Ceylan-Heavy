@@ -3,7 +3,7 @@
 
 
 #include "CeylanInputOutputStream.h"     // for inheritance
-
+#include "CeylanStream.h"                // for StreamException
 
 
 namespace Ceylan 
@@ -39,8 +39,7 @@ namespace Ceylan
 				 * Basic constructor for AnonymousInputOutputStream.
 				 *
 				 */
-				explicit AnonymousInputOutputStream()
-					throw( StreamException ) ;
+				AnonymousInputOutputStream() throw( Stream::StreamException ) ;
 		
 		
 				/// Basic virtual destructor, closes the file descriptor.
