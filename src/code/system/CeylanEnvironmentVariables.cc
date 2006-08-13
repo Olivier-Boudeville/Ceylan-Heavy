@@ -31,7 +31,7 @@ const string Ceylan::System::getEnvironmentVariable(
 {
 
 
-#if CEYLAN_USES_GETENV
+#ifdef CEYLAN_USES_GETENV
 	
 	// Returns a pointer in the environment, should not be deallocated.
 	
@@ -56,8 +56,9 @@ void Ceylan::System::setEnvironmentVariable( const string & variableName,
 	const string & variableValue ) throw( UtilsException )
 {
 	
-
-#if CEYLAN_USES_PUTENV
+	// setenv could be used as well.
+	
+#ifdef CEYLAN_USES_PUTENV
 
 	const string envString = variableName + "=" + variableValue ;
 	char * newEnv = new char[ envString.size() + 1 ] ;
@@ -103,8 +104,11 @@ void Ceylan::System::unsetEnvironmentVariable( const string & variableName )
 	throw( UtilsException )
 {
 
+#ifdef CEYLAN_USES_UNSETENV
 
-#if CEYLAN_USES_PUTENV
+	::unsetenv( variableName.c_str() ) ;
+	
+#elif defined(CEYLAN_USES_PUTENV)
 
 	// Could reuse too the 'setEnvironmentVariable' method.
 	
@@ -136,12 +140,12 @@ void Ceylan::System::unsetEnvironmentVariable( const string & variableName )
 	 *
 	 */
 
-#else // CEYLAN_USES_PUTENV
+#else // CEYLAN_USES_UNSETENV
 
 	throw UtilsException( "Ceylan::System::unsetEnvironmentVariable : "
 		"not available on this platform." ) ;
 		
-#endif // CEYLAN_USES_PUTENV
+#endif // CEYLAN_USES_UNSETENV
 			
 			
 }	
