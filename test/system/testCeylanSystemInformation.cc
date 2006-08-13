@@ -34,38 +34,59 @@ int main( int argc, char * argv[] )
         LogPlug::info( "Testing Ceylan's primitives for "
 			"querying system informations." ) ;
 
-
-		LogPlug::info( "Number of seconds since the system booted : " 
-			+ Ceylan::toString( getSecondsSinceSystemBoot() ) + "." ) ;
 		
-		LogPlug::info( "Current number of running processes : " 
-			+ Ceylan::toString( getTotalProcessCount() ) + "." ) ;
+		/*
+		 * These features depends on sysinfo, which is not available on all
+		 * platforms (ex : it is lacking on vanilla FreeBSD 5.4-RELEASE).
+		 *
+		 */
 		
-		LogPlug::info( "Total size of usable main memory, in bytes : " 
-			+ Ceylan::toString( getTotalSystemMemorySize() ) + "." ) ;
+		try
+		{
 		
-		LogPlug::info( "Size of currently available main memory, in bytes : " 
-			+ Ceylan::toString( getFreeSystemMemorySize() ) + "." ) ;
 		
-		LogPlug::info( "Total size of swap memory, in bytes : " 
-			+ Ceylan::toString( getTotalSwapMemorySize() ) + "." ) ;
+			LogPlug::info( "Number of seconds since the system booted : " 
+				+ Ceylan::toString( getSecondsSinceSystemBoot() ) + "." ) ;
 		
-		LogPlug::info( "Size of currently available swap memory, in bytes : " 
-			+ Ceylan::toString( getFreeSwapMemorySize() ) + "." ) ;
+			LogPlug::info( "Current number of running processes : " 
+				+ Ceylan::toString( getTotalProcessCount() ) + "." ) ;
 		
-		LogPlug::info( "Total size of usable high memory, in bytes : " 
-			+ Ceylan::toString( getTotalHighMemorySize() ) + "." ) ;
+			LogPlug::info( "Total size of usable main memory, in bytes : " 
+				+ Ceylan::toString( getTotalSystemMemorySize() ) + "." ) ;
 		
-		LogPlug::info( "Size of currently available high memory, in bytes : " 
-			+ Ceylan::toString( getFreeHighMemorySize() ) + "." ) ;
+			LogPlug::info( 
+				"Size of currently available main memory, in bytes : " 
+				+ Ceylan::toString( getFreeSystemMemorySize() ) + "." ) ;
 		
-		LogPlug::info( "Size of memory currently being shared, in bytes : " 
-			+ Ceylan::toString( getSharedMemorySize() ) + "." ) ;
+			LogPlug::info( "Total size of swap memory, in bytes : " 
+				+ Ceylan::toString( getTotalSwapMemorySize() ) + "." ) ;
 		
-		LogPlug::info( "Size of memory currently used by buffers, in bytes : " 
-			+ Ceylan::toString( getBuffersMemorySize() ) + "." ) ;
+			LogPlug::info( 
+				"Size of currently available swap memory, in bytes : " 
+				+ Ceylan::toString( getFreeSwapMemorySize() ) + "." ) ;
+		
+			LogPlug::info( "Total size of usable high memory, in bytes : " 
+				+ Ceylan::toString( getTotalHighMemorySize() ) + "." ) ;
+		
+			LogPlug::info( 
+				"Size of currently available high memory, in bytes : " 
+				+ Ceylan::toString( getFreeHighMemorySize() ) + "." ) ;
+		
+			LogPlug::info( "Size of memory currently being shared, in bytes : " 
+				+ Ceylan::toString( getSharedMemorySize() ) + "." ) ;
+		
+			LogPlug::info( 
+				"Size of memory currently used by buffers, in bytes : " 
+				+ Ceylan::toString( getBuffersMemorySize() ) + "." ) ;
 			
-			
+		}
+		catch ( const SystemException & e )
+		{
+			LogPlug::error( "Test failed on a non-fatal error : "
+				+ e.toString() ) ;
+		}
+		
+		
         LogPlug::info( "End of querying system information test." ) ;
 
 
