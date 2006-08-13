@@ -15,7 +15,7 @@ using namespace Ceylan::Log ;
 
 
 AnonymousInputOutputStream::AnonymousInputOutputStream()
-		throw( StreamException )
+		throw( Stream::StreamException )
 {
 
 }
