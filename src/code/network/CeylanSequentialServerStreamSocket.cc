@@ -135,7 +135,15 @@ AnonymousStreamSocket * SequentialServerStreamSocket::accept()
 	cleanAfterAccept() ;
 
 	return 0 ;
-	
+
+#else // CEYLAN_USES_NETWORK	
+
+
+	throw ServerStreamSocketException( 
+		"SequentialServerStreamSocket::accept : "
+		"network feature not available." ) ;
+		
+			
 #endif // CEYLAN_USES_NETWORK	
 			
 }
