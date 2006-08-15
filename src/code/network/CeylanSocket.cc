@@ -138,6 +138,8 @@ Socket::Socket( Port port ) throw( SocketException ):
 Socket::~Socket() throw()
 {
 
+#if CEYLAN_USES_NETWORK
+
 	// No destructor should throw exception :
 	try
 	{
@@ -150,6 +152,8 @@ Socket::~Socket() throw()
 		
 	if ( _address != 0 )
 		delete _address ;
+
+#endif // CEYLAN_USES_NETWORK
 		
 }
 
