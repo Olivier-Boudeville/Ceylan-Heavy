@@ -288,7 +288,16 @@ AnonymousStreamSocket * MultiplexedServerStreamSocket::accept()
 	// No cleanAfterAccept() called, since connections are still alive here.
 
 	return res ;
-	
+
+
+#else // CEYLAN_USES_NETWORK	
+
+
+	throw ServerStreamSocketException( 
+		"MultiplexedServerStreamSocket::accept : "
+		"network feature not available." ) ;
+		
+		
 #endif // CEYLAN_USES_NETWORK	
 			
 }
