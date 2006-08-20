@@ -46,30 +46,52 @@ AC_DEFUN([CEYLAN_PATH],
       [
         CEYLAN_CPPFLAGS="-I${withval}/include/Ceylan"
         CEYLAN_LIBS="-L${withval}/lib -lCeylan"
+		# Get ready for configure tests :
 		LD_LIBRARY_PATH="${withval}/lib:$LD_LIBRARY_PATH"
 		export LD_LIBRARY_PATH
       ],[
-	  	# Use pkg-config if possible, otherwise choose default values :
-		# PKG_CONFIG_PATH should contain /usr/local/lib/pkgconfig, use
-		# export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
-		# For the moment 
-	  	PKG_CHECK_MODULES(CEYLAN, ceylan-$1.$2 >= $CEYLAN_OLDEST_SUPPORTED_MAJOR.$CEYLAN_OLDEST_SUPPORTED_MINOR,
-			[
-				CEYLAN_CPPFLAGS="${CEYLAN_CFLAGS} ${CEYLAN_CPPFLAGS}"
-				LD_LIBRARY_PATH=`pkg-config ceylan-$1.$2 --variable=libdir`:$LD_LIBRARY_PATH
-				export LD_LIBRARY_PATH
-			],
-			[
-				default_install_path=/usr/local
-				AC_MSG_WARN([pkg-config failed, defaulting to install path $default_install_path])
+		default_install_path=/usr/local
+	  	# No path specified, trying to guess it :
+		# Is pkg-config available ?
+		AC_MSG_WARN([sye testing 1])
+		AC_PATH_PROG(PKG_CONFIG,pkg-config,[no]) 
+		if test $PKG_CONFIG = "no" ; then 
+			AC_MSG_WARN([pkg-config tool not found, using default install path ${default_install_path}])
+        	CEYLAN_CPPFLAGS="-I${default_install_path}/include/Ceylan"
+        	CEYLAN_LIBS="-L${default_install_path}/lib -lCeylan"
+		else 
+			AC_MSG_WARN([sye testing 2])
+			# Here pkg-config is available.
+			# Use it if possible, otherwise choose default values :
+			# PKG_CONFIG_PATH should contain /usr/local/lib/pkgconfig, use
+			# export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
+			# Check if Ceylan pkg-config configuration file is found :
+			AC_MSG_CHECKING([for ceylan-$1.$2.pc (Ceylan pkg-config configuration file)]) 
+			if $PKG_CONFIG --exists ceylan-$1.$2 ; then
+				AC_MSG_RESULT(yes) 
+			AC_MSG_WARN([sye testing 3])
+				PKG_CHECK_MODULES(CEYLAN, ceylan-$1.$2 >= $CEYLAN_OLDEST_SUPPORTED_MAJOR.$CEYLAN_OLDEST_SUPPORTED_MINOR,
+				[
+					# pkg-config succeeded and set CEYLAN_CFLAGS and 
+					# CEYLAN_LIBS :
+					CEYLAN_CPPFLAGS="${CEYLAN_CFLAGS} ${CEYLAN_CPPFLAGS}"
+					# CEYLAN_LIBS left as set
+					# Get ready for configure tests :
+					LD_LIBRARY_PATH=`$PKG_CONFIG ceylan-$1.$2 --variable=libdir`:$LD_LIBRARY_PATH
+					export LD_LIBRARY_PATH
+				],
+				[
+					AC_MSG_WARN([pkg-config failed for ceylan-$1.$2, defaulting to install path $default_install_path])
+        			CEYLAN_CPPFLAGS="-I${default_install_path}/include/Ceylan"
+        			CEYLAN_LIBS="-L${default_install_path}/lib -lCeylan"
+				])
+			else
+				AC_MSG_WARN([pkg-config did not find ceylan-$1.$2.pc, using default install path ${default_install_path}])
         		CEYLAN_CPPFLAGS="-I${default_install_path}/include/Ceylan"
         		CEYLAN_LIBS="-L${default_install_path}/lib -lCeylan"
-			])	
-		# If pkg-config is not available on your platform, you can just 
-		# uncomment the following two lines (possibly updated if needed) :
-		# CEYLAN_CPPFLAGS="-I/usr/local/include/Ceylan"
-		# CEYLAN_LIBS="-L/usr/local/lib -lCeylan"
-      ])
+			fi
+		fi			
+     	])
   # Add pthread flags in case the Ceylan multithreading feature is enabled :
   case "$target" in
       *-*-bsdi*)
@@ -140,8 +162,8 @@ AC_DEFUN([CEYLAN_PATH],
   # Updating the overall build flags :
   CPPFLAGS="$CPPFLAGS $CEYLAN_CPPFLAGS $pthread_cflags"
   LIBS="$LIBS $CEYLAN_LIBS $pthread_lib"
-  #AC_MSG_NOTICE([CPPFLAGS = $CPPFLAGS])
-  #AC_MSG_NOTICE([LIBS = $LIBS])  
+  AC_MSG_NOTICE([Ceylan guessed CPPFLAGS = $CPPFLAGS])
+  AC_MSG_NOTICE([Ceylan guessed LIBS = $LIBS])  
   AC_SUBST(CPPFLAGS)
   AC_SUBST(LIBS)
   # Checking for Ceylan header files :
