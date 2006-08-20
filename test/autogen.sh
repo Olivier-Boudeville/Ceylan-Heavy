@@ -1,6 +1,6 @@
 #!/bin/bash
 
-USAGE="Usage :"`basename $0`"[--only-prepare-dist] [--ceylan-install-prefix <a prefix>] : (re)generates all the autotools-based build system for Ceylan tests.\n\t--only-prepare-dist : perform only necessary operations so that the test directory can be distributed afterwards\n\t--ceylan-install-prefix <a prefix> : use the specified prefix to find Ceylan installation"
+USAGE="Usage :"`basename $0`" [--only-prepare-dist] [--ceylan-install-prefix <a prefix>] : (re)generates all the autotools-based build system for Ceylan tests.\n\t--only-prepare-dist : perform only necessary operations so that the test directory can be distributed afterwards\n\t--ceylan-install-prefix <a prefix> : use the specified prefix to find Ceylan installation"
 
 # These tests must rely on a related Ceylan source directory, since they :
 #	- need to know which Ceylan version is to be tested
@@ -62,10 +62,11 @@ debug()
 }
 
 
-
+# Where the Ceylan library should be found :
 library_location_opt="--with-libCeylan=$library_location"
 #library_location_opt=""
 
+# Where these tests should be installed :
 test_install_location="$library_location"
 test_install_location_opt="--prefix=$test_install_location"
 
