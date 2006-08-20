@@ -144,7 +144,7 @@ export PAGER=/usr/bin/less
 
 # Host section :
 
-export TOARANOR="sye@aranor:/root"
+export TOARANOR="sye@aranor:/home/sye"
 export TOETURANIS="sye@eturanis:/home/sye"
 export TOSONATA="sye@sonata:/home/sye"
 export TORAINBOW="sye@rainbow:/home/sye"
