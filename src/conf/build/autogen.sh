@@ -11,6 +11,7 @@ ceylan_features_opt=""
 
 PREFIX_DEFAULT="$HOME/tmp-Ceylan-test-install"
 PREFIX="$PREFIX_DEFAULT"
+
 PREFIX_OPT="--prefix=$PREFIX"
 #PREFIX_OPT=""
 
@@ -443,12 +444,12 @@ generateCustom()
 		echo
 		echo " - building and running test suite"
 		cd test
-	 	execute ./autogen.sh
+	 	execute ./autogen.sh --ceylan-install-prefix $PREFIX
 	elif [ "$do_only_prepare_dist" -eq 0 ] ; then
 		echo
 		echo " - generating configure for test suite"
 		cd test
-	 	execute ./autogen.sh --only-prepare-dist
+	 	execute ./autogen.sh --only-prepare-dist --ceylan-install-prefix $PREFIX
 		cd .. 
 		echo " - making distribution package"
 		execute make dist 
