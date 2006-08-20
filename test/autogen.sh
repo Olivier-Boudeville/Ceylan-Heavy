@@ -1,6 +1,6 @@
 #!/bin/bash
 
-USAGE="Usage :"`basename $0`"[--only-prepare-dist] : (re)generates all the autotools-based build system for Ceylan tests.\n\t--only-prepare-dist : perform only necessary operations so that the test directory can be distributed afterwards"
+USAGE="Usage :"`basename $0`"[--only-prepare-dist] [--ceylan-install-prefix <a prefix>] : (re)generates all the autotools-based build system for Ceylan tests.\n\t--only-prepare-dist : perform only necessary operations so that the test directory can be distributed afterwards\n\t--ceylan-install-prefix <a prefix> : use the specified prefix to find Ceylan installation"
 
 # These tests must rely on a related Ceylan source directory, since they :
 #	- need to know which Ceylan version is to be tested
@@ -17,12 +17,51 @@ do_build=0
 do_install=0
 do_test=0
 
-if [ "$1" == "--only-prepare-dist" ] ; then
-	do_stop_after_configure=0
-fi
+
+while [ "$#" -gt "0" ] ; do
+	token_eaten=1
+		
+	if [ "$1" == "-o" ] || [ "$1" == "--only-prepare-dist" ] ; then
+		do_stop_after_configure=0
+		token_eaten=0
+	fi
+	
+	if [ "$1" == "--ceylan-install-prefix" ] ; then
+		shift
+		library_location="$1"
+		if [ ! -d "$ceylan_install_prefix" ] ; then
+			echo -e "Error, specified prefix for Ceylan install ($ceylan_install_prefix) does not exist.\n$USAGE" 1>&2
+			exit 10
+		fi
+		
+		token_eaten=0
+	fi
+	
+	if [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then
+		echo -e "$USAGE"
+		exit
+		token_eaten=0
+	fi
+
+	if [ "$token_eaten" == "1" ] ; then
+		echo -e "Error, unknown argument ($1).\n$USAGE" 1>&2
+		exit 4
+	fi	
+	shift
+done
 
 
-library_location="$HOME/tmp-Ceylan-test-install"
+# debug mode activated iff equal to true (0) :
+debug_mode=1
+
+debug()
+{
+	if [ $debug_mode -eq 0 ] ; then
+		echo "debug : $*"
+	fi	
+}
+
+
 
 library_location_opt="--with-libCeylan=$library_location"
 #library_location_opt=""
@@ -39,16 +78,6 @@ configure_opt="-enable-strict-ansi --enable-debug $library_location_opt $test_in
 
 RM="/bin/rm -f"
 
-
-# debug mode activated iff equal to true (0) :
-debug_mode=1
-
-debug()
-{
-	if [ $debug_mode -eq 0 ] ; then
-		echo "debug : $*"
-	fi	
-}
 
 
 
