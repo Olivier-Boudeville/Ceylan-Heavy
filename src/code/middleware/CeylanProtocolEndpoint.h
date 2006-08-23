@@ -1,8 +1,10 @@
-#ifndef CEYLAN_PROTOCOL_SERVER_H_
-#define CEYLAN_PROTOCOL_SERVER_H_
+#ifndef CEYLAN_PROTOCOL_ENDPOINT_H_
+#define CEYLAN_PROTOCOL_ENDPOINT_H_
 
 
-#include "CeylanProtocolEndpoint.h"  // for inheritance
+#include "CeylanTextDisplayable.h"  // for inheritance
+#include "CeylanMiddleware.h"       // for MiddlewareException
+
 
 #include <string>
 
@@ -12,31 +14,71 @@ namespace Ceylan
 {
 
 
+
+	namespace System
+	{
+	
+		// Endpoints rely on an InputOutputStream to communicate.
+		class InputOutputStream ;
+		
+	}
+	
+	
+	
 	namespace Middleware
 	{
 
 
 
 		/**
-		 * Designates an applicative server, built on top of an 
-		 * InputOutputStream, this stream being most often a network one.
-		 *
-		 * Such server handles requests sent by clients, and manages them in
-		 * a remote-invocation-method maneer. 
-		 * 
-		 * Between the protocol server and the stream, a marshaller takes
-		 * care of the appropriate encoding/decoding. 
+		 * Exception to be raised whenever a protocol-related issue arises.
 		 *
 		 */
-		class ProtocolServer: public ProtocolEndpoint
+		class ProtocolException : public MiddlewareException 
+		{
+		
+			public:
+			
+			
+				ProtocolException( const std::string & message ) throw() ;
+				virtual ~ProtocolException() throw() ;
+				
+		
+		} ;
+		
+		
+		
+		/**
+		 * An endpoint needs a marshaller to interact with the stream on 
+		 * its behalf.
+		 *
+		 */
+		class Marshaller ;
+		
+		 	
+			
+			
+		/**
+		 * Designates a protocol endpoint, which is an abstraction for both
+		 * the client and the server side.
+		 *
+		 * A protocol endpoint is built on top of an InputOutputStream, 
+		 * this stream being most often a network one, or a pipe one.
+		 *
+		 * A protocol needs a Marshaller object to read and write informations
+		 * from and to the stream.
+		 *
+		 */
+		class ProtocolEndpoint: public TextDisplayable
 		{
 		
 		
 			public:
 			
 			
+			
 				/**
-				 * Constructs a new protocol server.
+				 * Constructs a new protocol endpoint.
 				 *
 				 * @param stream the stream that will be used
 				 * to exchange informations with peers according to the
@@ -53,12 +95,12 @@ namespace Ceylan
 				 * marshaller when itself deleted.
 				 *
 				 */
-				ProtocolServer( System::InputOutputStream & stream,
+				ProtocolEndpoint( System::InputOutputStream & stream,
 					Marshaller & marshaller ) throw() ;
 				
 				
 				/// Virtual destructor.
-				virtual ~ProtocolServer() throw() ;
+				virtual ~ProtocolEndpoint() throw() ;
 				
 				
 				
@@ -84,6 +126,23 @@ namespace Ceylan
 
 
 
+				/**
+				 * The stream that will be used to exchange informations 
+				 * with peers.
+				 *
+				 */
+				System::InputOutputStream * _stream ;
+
+
+				/**
+				 * The marshaller that will be used to (de)serialize
+				 * informations from/to the stream.
+				 *
+				 */
+				Marshaller * _marshaller ;
+
+
+
 
 			private:
 	
@@ -97,7 +156,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				ProtocolServer( const ProtocolServer & source ) throw() ;
+				ProtocolEndpoint( const ProtocolEndpoint & source ) throw() ;
 
 
 				/**
@@ -108,8 +167,8 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 *
 				 */
-				ProtocolServer & operator = ( const ProtocolServer & source )
-					throw() ;
+				ProtocolEndpoint & operator = ( 
+					const ProtocolEndpoint & source ) throw() ;
 
 			
 		
@@ -122,4 +181,4 @@ namespace Ceylan
 
 
 
-#endif // CEYLAN_PROTOCOL_SERVER_H_
+#endif // CEYLAN_PROTOCOL_ENDPOINT_H_

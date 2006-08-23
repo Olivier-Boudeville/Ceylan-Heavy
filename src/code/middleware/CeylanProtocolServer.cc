@@ -10,8 +10,9 @@ using namespace Ceylan::Log ;
 using namespace Ceylan::Middleware ;
 
 
-ProtocolServer::ProtocolServer() throw() :
-	TextDisplayable()
+ProtocolServer::ProtocolServer( System::InputOutputStream & stream,
+	Marshaller & marshaller ) throw() :
+	ProtocolEndpoint( stream, marshaller )
 {
 
 }
@@ -27,7 +28,8 @@ const string ProtocolServer::toString( Ceylan::VerbosityLevels level )
 	const throw()
 {
 
-	return "Protocol server" ;
+	return "Protocol server, which is a " 
+		+ ProtocolEndpoint::toString( level ) ;
 	
 }
 
