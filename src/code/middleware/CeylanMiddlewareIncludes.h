@@ -5,6 +5,7 @@
 // Please include below all header files to be exported by module 'Middleware'.
 
 
+#include "CeylanLightWeightMarshaller.h"
 #include "CeylanMarshaller.h"
 #include "CeylanMiddleware.h"
 #include "CeylanProtocolEndpoint.h"
