@@ -84,8 +84,14 @@ namespace Ceylan
 				bool close() throw( Stream::CloseException ) ;
 
 
-				/// Returns the current index in buffer.
-				virtual Size getIndex() const throw() ;
+
+				/// Returns the current index of filled block in buffer.
+				virtual Size getBlockIndex() const throw() ;
+
+
+				/// Returns the current length of filled block in buffer.
+				virtual Size getBlockLength() const throw() ;
+
 
 
 				/**
@@ -216,8 +222,21 @@ namespace Ceylan
 				/// The total size of the internal buffer.
 				Size _size ;
 				
-				/// The current index in the internal buffer.
+				
+				/**
+				 * The current index of the beginning of the filled block
+				 * in the buffer.
+				 *
+				 */
 				Size _index ;
+				
+				
+				/**
+				 * The current length of the filled block in the buffer.
+				 *
+				 */
+				Size _len ;
+				
 				
 				/// The internal buffer.
 				Ceylan::Byte * _buffer ;
