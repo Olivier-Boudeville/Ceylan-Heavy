@@ -343,6 +343,19 @@ namespace Ceylan
 			Ceylan::Float64 epsilon ) throw() ;
 		
 
+		/** 
+		 * Tells whether x and y are exactly 'equal' : x == y, with no compile
+		 * warning about the fact that comparing floating point values 
+		 * with == operator is most of the time absurd, which is true indeed.
+		 *
+		 * @note Only to be used on special cases where one wants bit-per-bit
+		 * comparison, for example for marshalling tests. Hence usually using
+		 * this function is a mistake, as comparing floating point with ==
+		 * or != is unsafe.
+		 *
+		 */
+		bool AreExactlyEqual( Ceylan::Float64 x, Ceylan::Float64 y ) throw() ;
+		
 		
 		/** 
 		 * Tells whether x and y are 'equal' as floating point numbers : 
