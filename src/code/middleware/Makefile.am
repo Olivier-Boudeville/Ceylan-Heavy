@@ -14,6 +14,7 @@ libCeylanMiddlewareInclude_HEADERS = $(MIDDLEWARE_INTERFACES)
 
 
 MIDDLEWARE_INTERFACES = \
+	CeylanLightWeightMarshaller.h        \
 	CeylanMarshaller.h                   \
 	CeylanMiddleware.h                   \
 	CeylanMiddlewareIncludes.h           \
@@ -22,6 +23,7 @@ MIDDLEWARE_INTERFACES = \
 	
 
 MIDDLEWARE_IMPLEMENTATIONS = \
+	CeylanLightWeightMarshaller.cc       \
 	CeylanMarshaller.cc                  \
 	CeylanMiddleware.cc                  \
 	CeylanProtocolEndpoint.cc            \
