@@ -146,6 +146,7 @@ AC_CONFIG_FILES([
 	interfaces/Makefile
 	logs/Makefile
 	maths/Makefile 
+	middleware/Makefile 
 	modules/Makefile 
 	network/Makefile
 	system/Makefile
