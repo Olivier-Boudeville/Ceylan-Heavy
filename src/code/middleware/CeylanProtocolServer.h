@@ -18,14 +18,25 @@ namespace Ceylan
 
 
 		/**
-		 * Designates an applicative server, built on top of an 
-		 * InputOutputStream, this stream being most often a network one.
+		 * Designates an applicative server which implements the server side
+		 * of a protocol specification.
 		 *
 		 * Such server handles requests sent by clients, and manages them in
 		 * a remote-invocation-method maneer. 
 		 * 
-		 * Between the protocol server and the stream, a marshaller takes
-		 * care of the appropriate encoding/decoding. 
+		 * There marshaller hides to the protocol server the details of the 
+		 * underlying stream that will be used to transport protcolol 
+		 * informations : the marshaller will take care of the appropriate
+		 * encoding/decoding on the behalf of this protocol server. 
+		 *
+		 * @note Here the "server" word means an object whose role is to answer
+		 * to requests, it is not especially linked with a networked server 
+		 * for example : a protocol server respects the server-side behaviour
+		 * of a protocol specification, the protcol itself is conveyed by any 
+		 * technical solution, which may be a network-based one (ex : TCP/IP 
+		 * server socket), or a UNIX pipe, or anything else, the protocol server
+		 * does not need to know that. 
+		 * 
 		 *
 		 */
 		class ProtocolServer: public ProtocolEndpoint
@@ -38,14 +49,6 @@ namespace Ceylan
 				/**
 				 * Constructs a new protocol server.
 				 *
-				 * @param stream the stream that will be used
-				 * to exchange informations with peers according to the
-				 * underlying protocol.
-				 *
-				 * @note The endpoint has a reference on the stream but it
-				 * does not own it, hence it will not deallocate it when
-				 * the endpoint itself will be deallocated.
-				 *
 				 * @param marshaller the marshaller that will encode and/or
 				 * decode data to/from the stream for the protocol to be 
 				 * serialized. As marshallers are per-connection object, the
@@ -53,8 +56,7 @@ namespace Ceylan
 				 * marshaller when itself deleted.
 				 *
 				 */
-				ProtocolServer( System::InputOutputStream & stream,
-					Marshaller & marshaller ) throw() ;
+				ProtocolServer( Marshaller & marshaller ) throw() ;
 				
 				
 				/// Virtual destructor.
