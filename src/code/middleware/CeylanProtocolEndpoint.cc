@@ -1,7 +1,6 @@
 #include "CeylanProtocolEndpoint.h"
 
 #include "CeylanLogPlug.h"            // for LogPlug
-#include "CeylanInputOutputStream.h"  // for InputOutputStream
 #include "CeylanMarshaller.h"         // for Marshaller
 
 
@@ -30,10 +29,8 @@ ProtocolException::~ProtocolException() throw()
 
 
 				
-ProtocolEndpoint::ProtocolEndpoint( System::InputOutputStream & stream,
-		Marshaller & marshaller ) throw() :
+ProtocolEndpoint::ProtocolEndpoint( Marshaller & marshaller ) throw() :
 	TextDisplayable(),
-	_stream( & stream ),
 	_marshaller( & marshaller )
 {
 
@@ -42,8 +39,6 @@ ProtocolEndpoint::ProtocolEndpoint( System::InputOutputStream & stream,
 
 ProtocolEndpoint::~ProtocolEndpoint() throw()
 {
-
-	// _stream not owned, hence not deallocated.
 	
 	delete _marshaller ;
 
@@ -54,8 +49,7 @@ const string ProtocolEndpoint::toString( Ceylan::VerbosityLevels level )
 	const throw()
 {
 
-	return "Protocol endpoint using as underlying stream "
-		+ _stream->toString( level ) + " with following marshaller : "
+	return "Protocol endpoint using following marshaller : "
 		+ _marshaller->toString( level ) ;
 	
 }
