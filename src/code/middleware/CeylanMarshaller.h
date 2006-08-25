@@ -33,7 +33,8 @@ namespace Ceylan
 
 
 		/**
-		 * Encodes et decodes basic data types from a given stream.
+		 * Encodes and decodes basic data types, for example so that they
+		 * can be directly written and read from and to a given stream.
 		 *
 		 * It is notably the building block of a protocol endpoint, as for
 		 * example a protocol server must demarshall what the client sent,
@@ -46,6 +47,14 @@ namespace Ceylan
 		 * Various encodings can be used, from basic home-made ones,
 		 * which just take care of endianness, to more powerful ones, 
 		 * including PER ASN.1 encodings.
+		 *
+		 * @note The Marshaller abstract class does not enforce a specific
+		 * interface, for example to ensure that its child classes all 
+		 * implement readUint32, since depending an the actual marshalling 
+		 * this may or may not be make sense. 
+		 * For example, ASN marshalling is PDU-based (it handles only full
+		 * structures), hence fine-grain (ex : Uint32) encoding cannot be used
+		 * with it.
 		 *
 		 */
 		class Marshaller: public TextDisplayable
