@@ -10,9 +10,8 @@ using namespace Ceylan::Log ;
 using namespace Ceylan::Middleware ;
 
 
-ProtocolServer::ProtocolServer( System::InputOutputStream & stream,
-	Marshaller & marshaller ) throw() :
-	ProtocolEndpoint( stream, marshaller )
+ProtocolServer::ProtocolServer( Marshaller & marshaller ) throw() :
+	ProtocolEndpoint( marshaller )
 {
 
 }
