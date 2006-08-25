@@ -168,6 +168,15 @@ bool Ceylan::Maths::AreEqual( Ceylan::Float64 x, Ceylan::Float64 y,
 }
 
 
+bool Ceylan::Maths::AreExactlyEqual( Ceylan::Float64 x, Ceylan::Float64 y )
+	throw()
+{
+
+	// Do not now how to implement it reliably :
+	return Abs( x - y )< ( EpsilonLongFloat / 100 ) ;
+	
+}
+
 
 bool Ceylan::Maths::AreEqual( Ceylan::LongFloat x, Ceylan::LongFloat y ) 
 	throw()
