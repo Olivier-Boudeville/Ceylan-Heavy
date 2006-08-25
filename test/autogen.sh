@@ -30,11 +30,10 @@ while [ "$#" -gt "0" ] ; do
 	if [ "$1" == "--ceylan-install-prefix" ] ; then
 		shift
 		library_location="$1"
-		if [ ! -d "$ceylan_install_prefix" ] ; then
-			echo -e "Error, specified prefix for Ceylan install ($ceylan_install_prefix) does not exist.\n$USAGE" 1>&2
+		if [ ! -d "$library_location" ] ; then
+			echo -e "Error, specified prefix for Ceylan install ($library_location) does not exist.\n$USAGE" 1>&2
 			exit 10
 		fi
-		
 		token_eaten=0
 	fi
 	
@@ -65,7 +64,7 @@ debug()
 
 # Where the Ceylan library should be found :
 
-if [ -n "$library_location" ] ; then
+if [ -n "$library_location" ] ; then
 	library_location_opt="--with-libCeylan=$library_location"
 fi
 
@@ -73,7 +72,7 @@ fi
 # Where these tests should be installed :
 test_install_location="$library_location"
 
-if [ -n "test_install_location" ] ; then
+if [ -n "$test_install_location" ] ; then
 	test_install_location_opt="--prefix=$test_install_location"
 else
 	test_install_location_opt=""
