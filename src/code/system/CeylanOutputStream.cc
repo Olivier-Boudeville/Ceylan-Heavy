@@ -1,6 +1,8 @@
 #include "CeylanOutputStream.h" 
 
 #include "CeylanStringUtils.h" // for StringSize
+#include "CeylanOperators.h"   // for toString
+#include "CeylanLogPlug.h"     // for LogPlug
 
 
 #if CEYLAN_USES_CONFIG_H
@@ -250,6 +252,16 @@ void OutputStream::writeString( string & toWrite )
 {
 
 	StringSize stringSize = toWrite.size() ;
+
+	if ( stringSize > Ceylan::Uint16Max )
+		throw WriteFailedException( "OutputStream::writeString : "
+			"string '" + toWrite + "' is too long." ) ;
+	
+	/*
+	Log::LogPlug::debug( "OutputStream::writeString : string size is "
+		+ Ceylan::toString( stringSize ) + " characters." ) ;
+	 */
+	 	
 	writeUint16( stringSize ) ;
 	
 	Size writeCount = write( toWrite.data(), stringSize ) ;
