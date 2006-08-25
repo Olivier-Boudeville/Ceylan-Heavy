@@ -232,14 +232,12 @@ namespace Ceylan
 				/**
 				 * Writes a string to this output stream.
 				 *
-				 * @note Written strings can have no more than 65535 
+				 * @note Written strings cannot have more than 65535 
 				 * characters.
 				 *
-				 * @param result the string to fill from this input stream.
+				 * @param toWrite the string to write to this output stream.
 				 *
-				 * @throw ReadFailedException in case a system error occured,
-				 * or EOFException is a protocol error occured, with fewer
-				 * bytes available than expected.
+				 * @throw WriteFailedException in case a system error occured.
 				 *
 				 */
 				virtual void writeString( std::string & toWrite ) 
