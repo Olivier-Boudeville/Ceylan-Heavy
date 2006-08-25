@@ -13,6 +13,7 @@
 #include "CeylanFileLocator.h"
 #include "CeylanInputStream.h"
 #include "CeylanInputOutputStream.h"
+#include "CeylanMemoryStream.h"
 #include "CeylanMutex.h"
 #include "CeylanOutputStream.h"
 #include "CeylanPipe.h"
