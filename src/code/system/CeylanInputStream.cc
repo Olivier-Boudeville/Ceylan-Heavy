@@ -119,6 +119,13 @@ void InputStream::clearInput() throw( InputStream::ReadFailedException )
 
 
 
+/*
+ * The endianness of the target system is to be read from the configure step, 
+ * the symbol is CEYLAN_RUNS_ON_LITTLE_ENDIAN.
+ *
+ */
+				
+
 
 // Read integer types subsection.
 
@@ -185,7 +192,6 @@ Ceylan::Sint16 InputStream::readSint16()
 
 	return bswap_16( *ret ) ;
 	
-	
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 	
 		
@@ -247,7 +253,6 @@ Ceylan::Sint32 InputStream::readSint32()
 
 	return bswap_32( *ret ) ;
 	
-	
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 	
 		
@@ -277,7 +282,6 @@ Ceylan::Uint32 InputStream::readUint32()
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
 	return bswap_32( *ret ) ;
-	
 	
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 	
@@ -340,7 +344,6 @@ Ceylan::Float64 InputStream::readFloat64()
 
 	return bswap_64( *ret ) ;
 	
-	
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 	
 		
@@ -361,6 +364,12 @@ void InputStream::readString( std::string & result )
 	 
 	Uint16 stringSize = readUint16() ;
 	
+	/*
+	Log::LogPlug::debug( "InputStream::readString : string size is "
+		+ Ceylan::toString( stringSize ) + " characters." ) ;
+	 */
+	 
+	 
 	// Blanks the result :
 	result.erase() ;
 	
