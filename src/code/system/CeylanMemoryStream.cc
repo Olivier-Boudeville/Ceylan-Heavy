@@ -21,6 +21,18 @@ extern "C"
 }
 
 
+// Set to 1 to debug memory stream : 
+#define CEYLAN_DEBUG_MEMORY_STREAM 0
+
+#if CEYLAN_DEBUG_MEMORY_STREAM
+
+#define DISPLAY_DEBUG_MEMORY_STREAM(message) LogPlug::debug(message)
+
+#else // CEYLAN_DEBUG_MEMORY_STREAM
+
+#define DISPLAY_DEBUG_MEMORY_STREAM(message) 
+
+#endif // CEYLAN_DEBUG_MEMORY_STREAM 
 
 using std::string ;
 
@@ -51,6 +63,7 @@ MemoryStream::MemoryStream( Size bufferSize ) throw():
 	InputOutputStream(),
 	_size( bufferSize ),
 	_index( 0 ),
+	_len( 0 ),
 	_buffer()	
 {
 
@@ -75,10 +88,17 @@ bool MemoryStream::close() throw( Stream::CloseException )
 }
 
 
-Size MemoryStream::getIndex() const throw()
+Size MemoryStream::getBlockIndex() const throw()
 { 
 
 	return _index ; 
+	
+}
+
+Size MemoryStream::getBlockLength() const throw()
+{ 
+
+	return _len ; 
 	
 }
 
@@ -91,12 +111,6 @@ Size MemoryStream::getSize() const throw()
 }
 
 
-/*
- * write : adds a block in buffer after current index.
- * read : removes a block in buffer before current index.
- *
- */	
-
 
 Size MemoryStream::read( Ceylan::Byte * buffer, Size maxLength ) 
 	throw( InputStream::ReadFailedException )
@@ -104,17 +118,65 @@ Size MemoryStream::read( Ceylan::Byte * buffer, Size maxLength )
 
 #ifdef CEYLAN_USES_MEMCPY
 
-	LogPlug::debug( "MemoryStream::read begin : " + toString() ) ;
+	DISPLAY_DEBUG_MEMORY_STREAM( "MemoryStream::read of " 
+		+ Ceylan::toString( maxLength ) + " byte(s), begin : " + toString() ) ;
 	
-	if ( maxLength > _index )
+	
+	/*
+	 * Must not read what has not been written yet :
+	 *
+	 * Apparently the left part of the modulo (%) must not be negative,
+	 * otherwise result is wrong :
+	 *
+	 */
+
+	// Never read past the write index : 
+	if ( maxLength > _len )
 		throw ReadFailedException( "MemoryStream::read : "
-			"attempt to read more than available in the buffer" ) ;
+			"attempt to read more than available in the buffer : "
+			+ toString() ) ;
 
-	_index -= maxLength ;
+	/*
+	 * Either the read index plus the requested size is before the end of 
+	 * buffer and there is only one block to read, either the read index 
+	 * wil have to loop back to the beginning of buffer, hence with two
+	 * blocks.
+	 *
+	 */
+	//Size endOfReadBlock = _index + maxLength ; 	 
+	if ( _index + maxLength > _size )
+	{
+	
+		DISPLAY_DEBUG_MEMORY_STREAM( 
+			"MemoryStream::read : two blocks needed" ) ;
+	
+		/* 
+		 * Most complex case : first read from read index to end of buffer,
+		 * then from beginning to the rest of requested data (before write 
+		 * index in all cases).
+		 *
+		 */
+		Size firstBlockLen = _size - _index ;
+		::memcpy( buffer, _buffer + _index, firstBlockLen ) ;
+		::memcpy( buffer + firstBlockLen, _buffer, maxLength - firstBlockLen ) ;
+			
+		
+	}
+	else
+	{
+		
+		DISPLAY_DEBUG_MEMORY_STREAM( 
+			"MemoryStream::read : one block is enough" ) ;
+		
+		// Simple case : one block.
+		::memcpy( buffer, _buffer + _index, maxLength ) ;
+	
+	}
 
-	::memcpy( buffer, _buffer + _index, maxLength ) ;
-
-	LogPlug::debug( "MemoryStream::read end : " + toString() ) ;
+	_index = ( _index + maxLength ) % _size ;
+	_len -= maxLength ;
+	
+	DISPLAY_DEBUG_MEMORY_STREAM( "MemoryStream::read end : " + toString() ) ;
 	
 	return maxLength ;
 	
@@ -130,7 +192,7 @@ Size MemoryStream::read( Ceylan::Byte * buffer, Size maxLength )
 
 bool MemoryStream::hasAvailableData() const throw()
 {
-	return _index > 0 ;
+	return _len > 0 ;
 }
 
 
@@ -146,18 +208,71 @@ Size MemoryStream::write( const string & message )
 Size MemoryStream::write( const Ceylan::Byte * buffer, Size maxLength ) 
 	throw( OutputStream::WriteFailedException )
 {
-
-	LogPlug::debug( "MemoryStream::write begin : " + toString() ) ;
-
-	if ( _index + maxLength > _size )
-		throw WriteFailedException( "MemoryStream::write : "
-			"buffer overflow, too much data for it" ) ;
 	
-	::memcpy( _buffer + _index, buffer, maxLength ) ;
+	DISPLAY_DEBUG_MEMORY_STREAM( "MemoryStream::write of " 
+		+ Ceylan::toString( maxLength ) + " byte(s), begin : " + toString() ) ;
 
-	_index += maxLength ;
+	
+	/*
+	 * Must not write on what has not been read yet :
+	 *
+	 * Apparently the left part of the modulo (%) must not be negative,
+	 * otherwise result is wrong :
+	 *
+	 */
+	 
+	Size maxPossibleWriteSize = _size - _len ;
+				
+	DISPLAY_DEBUG_MEMORY_STREAM( "Max size for writing : " 
+		+ Ceylan::toString( maxPossibleWriteSize ) ) ;
+		
+	// Never read past the write index : 
+	if ( maxLength > maxPossibleWriteSize )
+		throw WriteFailedException( "MemoryStream::write : "
+			"attempt to write more than free space in buffer (which is "
+			+ Ceylan::toString( maxPossibleWriteSize ) + " byte(s)) : "
+			+ toString() ) ;
 
-	LogPlug::debug( "MemoryStream::write end : " + toString() ) ;
+	/*
+	 * Either the write index plus the requested size is before the end of 
+	 * buffer and there is only one block to read, either the write index 
+	 * wil have to loop back to the beginning of buffer, hence with two
+	 * blocks.
+	 *
+	 */
+	
+	Size endOfBlock = ( _index + _len ) % _size ; 
+	if ( endOfBlock + maxLength > _size )
+	{
+		
+		DISPLAY_DEBUG_MEMORY_STREAM( 
+			"MemoryStream::write : two blocks needed" ) ;
+	
+		/* 
+		 * Most complex case : first write from write index to end of buffer,
+		 * then from beginning to the rest of requested data.
+		 *
+		 */
+		Size firstBlockLen = _size - endOfBlock ;
+		::memcpy( _buffer + endOfBlock, buffer, firstBlockLen ) ;
+		::memcpy( _buffer, buffer + firstBlockLen, maxLength - firstBlockLen ) ;
+		
+	}
+	else
+	{
+
+		DISPLAY_DEBUG_MEMORY_STREAM( 
+			"MemoryStream::write : one block is enough" ) ;
+		
+		// Simple case : one block.
+		::memcpy( _buffer + endOfBlock, buffer, maxLength ) ;
+		
+		
+	}
+	
+	_len += maxLength ;
+
+	DISPLAY_DEBUG_MEMORY_STREAM( "MemoryStream::write end : " + toString() ) ;
 	
 	return maxLength ;
 	
@@ -190,8 +305,10 @@ const std::string MemoryStream::toString( Ceylan::VerbosityLevels level )
 {
 
 	string res = "MemoryStream object of size " + Ceylan::toString( _size )
-		+ " bytes, whose index position is " + Ceylan::toString( _index )
-		+ " bytes, whose ID is " + Ceylan::toString( getStreamID() ) ;
+		+ " bytes, whose fill index position is " 
+		+ Ceylan::toString( _index ) + ", whose fill length is "
+		+ Ceylan::toString( _len )+ " byte(s), whose ID is " 
+		+ Ceylan::toString( getStreamID() ) ;
 		
 	return res ;
 	
