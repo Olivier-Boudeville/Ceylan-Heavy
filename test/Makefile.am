@@ -1,4 +1,4 @@
-SUBDIRS = generic interfaces logs maths modules network system
+SUBDIRS = generic interfaces logs maths middleware modules network system
 
 # All programs using the Ceylan library should use in their 
 # configure.ac the CEYLAN_PATH macro defined in ceylan.m4 :
