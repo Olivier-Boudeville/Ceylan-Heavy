@@ -1,6 +1,7 @@
 #!/bin/bash
 
-USAGE="Usage :"`basename $0`" [--only-prepare-dist] [--ceylan-install-prefix <a prefix>] : (re)generates all the autotools-based build system for Ceylan tests.\n\t--only-prepare-dist : perform only necessary operations so that the test directory can be distributed afterwards\n\t--ceylan-install-prefix <a prefix> : use the specified prefix to find Ceylan installation"
+
+USAGE="Usage : "`basename $0`" [--only-prepare-dist] [--ceylan-install-prefix <a prefix>] : (re)generates all the autotools-based build system for Ceylan tests.\n\t--only-prepare-dist : perform only necessary operations so that the test directory can be distributed afterwards\n\t--ceylan-install-prefix <a prefix> : use the specified prefix to find the Ceylan library installation. Ex : --ceylan-install-prefix $HOME/tmp-Ceylan-test-install"
 
 # These tests must rely on a related Ceylan source directory, since they :
 #	- need to know which Ceylan version is to be tested
@@ -63,12 +64,21 @@ debug()
 
 
 # Where the Ceylan library should be found :
-library_location_opt="--with-libCeylan=$library_location"
-#library_location_opt=""
+
+if [ -n "$library_location" ] ; then
+	library_location_opt="--with-libCeylan=$library_location"
+fi
+
 
 # Where these tests should be installed :
 test_install_location="$library_location"
-test_install_location_opt="--prefix=$test_install_location"
+
+if [ -n "test_install_location" ] ; then
+	test_install_location_opt="--prefix=$test_install_location"
+else
+	test_install_location_opt=""
+fi
+
 
 # To check the user can override them :
 #test_overriden_options="CPPFLAGS=\"-DTEST_CPPFLAGS\" LDFLAGS=\"-LTEST_LDFLAGS\""
