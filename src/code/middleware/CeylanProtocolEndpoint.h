@@ -15,13 +15,6 @@ namespace Ceylan
 
 
 
-	namespace System
-	{
-	
-		// Endpoints rely on an InputOutputStream to communicate.
-		class InputOutputStream ;
-		
-	}
 	
 	
 	
@@ -80,23 +73,17 @@ namespace Ceylan
 				/**
 				 * Constructs a new protocol endpoint.
 				 *
-				 * @param stream the stream that will be used
-				 * to exchange informations with peers according to the
-				 * underlying protocol.
-				 *
-				 * @note The endpoint has a reference on the stream but it
-				 * does not own it, hence it will not deallocate it when
-				 * the endpoint itself will be deallocated.
-				 *
-				 * @param marshaller the marshaller that will encode and/or
-				 * decode data to/from the stream for the protocol to be 
-				 * serialized. As marshallers are per-connection object, the
-				 * protocol endpoint takes ownership of it and will delete the
-				 * marshaller when itself deleted.
+				 * @param marshaller a marshaller that will encode and/or
+				 * decode data to/from the stream it encapsulates, on the 
+				 * behalf of this protocol endpoint so that the actual 
+				 * protocol-driven informations are properly serialized. 
+				 * 
+				 * As marshallers are per-connection objects, a protocol
+				 * endpoint takes ownership of its marshaller and will delete
+				 * it when itself deleted.
 				 *
 				 */
-				ProtocolEndpoint( System::InputOutputStream & stream,
-					Marshaller & marshaller ) throw() ;
+				ProtocolEndpoint( Marshaller & marshaller ) throw() ;
 				
 				
 				/// Virtual destructor.
@@ -122,21 +109,14 @@ namespace Ceylan
 	
 	
 	
+	
 			protected:
 
 
 
 				/**
-				 * The stream that will be used to exchange informations 
-				 * with peers.
-				 *
-				 */
-				System::InputOutputStream * _stream ;
-
-
-				/**
 				 * The marshaller that will be used to (de)serialize
-				 * informations from/to the stream.
+				 * informations of this endpoint.
 				 *
 				 */
 				Marshaller * _marshaller ;
