@@ -219,8 +219,7 @@ void MultiplexedServerStreamSocket::run() throw( ServerStreamSocketException )
 		    */
 		   while ( ! connectionsToRemove.empty() )
 		   {
-		       AnonymousStreamSocket & toDel = 
-		    	   * connectionsToRemove.front() ;
+		       AnonymousStreamSocket & toDel = * connectionsToRemove.front() ;
 		       connectionsToRemove.pop_front() ;
 		       
 		       closeConnection( toDel ) ;
