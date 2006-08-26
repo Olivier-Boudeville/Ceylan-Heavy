@@ -35,6 +35,9 @@ namespace Ceylan
 			public:
 
 
+				/// Index in the internal buffer.
+				typedef Size Index ;
+				
 
 				/// Mother class for all memory-related exceptions.
 				class MemoryStreamException: public SystemException
@@ -86,16 +89,15 @@ namespace Ceylan
 
 
 				/// Returns the current index of filled block in buffer.
-				virtual Size getBlockIndex() const throw() ;
+				virtual Index getBlockIndex() const throw() ;
 
 
 				/// Returns the current length of filled block in buffer.
 				virtual Size getBlockLength() const throw() ;
 
 
-
 				/**
-				 * Returns the buffer size.
+				 * Returns the buffer total size, in bytes.
 				 *
 				 * @see getSize
 				 *
@@ -103,6 +105,43 @@ namespace Ceylan
 				virtual Size getSize() const throw() ;
 
 
+				/**
+				 * Returns the index of the next free chunk in the buffer 
+				 * that is to be filled by read data .
+				 *
+				 * It corresponds to the current end of filled buffer.
+				 *
+				 * @see getSize
+				 *
+				 */
+				virtual Index getIndexOfNextFreeChunk() const throw() ;
+				
+				
+				/**
+				 * Returns the index of the next free chunk in the buffer 
+				 * that is to be filled by read data .
+				 *
+				 * It corresponds to the current end of filled buffer.
+				 *
+				 * @see getSize
+				 *
+				 */
+				virtual Byte * getAddressOfNextFreeChunk() const throw() ;
+				
+				
+				/**
+				 * Returns the size of the biggest free chunk that can be found
+				 * starting at the first free location in the buffer.
+				 *
+				 * It corresponds to the size, in bytes, between the current 
+				 * end of filled buffer and the end of the overall buffer.
+				 *
+				 * @see getSize
+				 *
+				 */
+				virtual Size getSizeOfNextFreeChunk() const throw() ;
+				
+				
 				/**
 				 * Reads up to maxLength bytes from this file to specified
 				 * buffer.
@@ -132,9 +171,9 @@ namespace Ceylan
 			
 				
 				/**
-				 * Writes message to this file.
+				 * Writes message to this stream.
 				 *
-				 * @param message the message to write to this file.
+				 * @param message the message to write to this stream.
 				 *
 				 * @return The number of bytes actually written, which 
 				 * should be equal to the size of the string or lower.
@@ -148,7 +187,7 @@ namespace Ceylan
 
 				/**
 				 * Writes up to maxLength bytes from the specified buffer
-				 * to this file.
+				 * to this stream.
 				 *
 				 * @param buffer the buffer where to find bytes that must
 				 * be written to this file.
@@ -163,6 +202,25 @@ namespace Ceylan
 				virtual Size write( const Ceylan::Byte * buffer, 
 						Size maxLength ) 
 					throw( OutputStream::WriteFailedException ) ;
+
+
+				/**
+				 * Declares that specified size should be added to the 
+				 * current size of the buffer.
+				 *
+				 * It is used whenever data is directly written to the 
+				 * internal buffer for better performance.
+				 *
+				 * @param bytesAdded the number of bytes added to the filled
+				 * block in buffer. It must of course not go past the end of 
+				 * the internal buffer.
+				 *
+				 * @throw MemoryStreamException if the specified size is too
+				 * big for the remaining space. 
+				 *
+				 */
+				virtual void increaseFilledBlockOf( Size bytesAdded )
+					throw( MemoryStreamException ) ;
 
 
 
