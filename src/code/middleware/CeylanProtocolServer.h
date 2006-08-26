@@ -63,7 +63,26 @@ namespace Ceylan
 				virtual ~ProtocolServer() throw() ;
 				
 				
-				
+				/**
+				 * Reacts on data arrival, performs any work needed, and sends
+				 * back an answer to the client if needed.
+				 *
+				 * This pure virtual method must be overriden by the user.
+				 * The marshaller can help writing a protocol exchange by 
+				 * taking care of lower-level decoding/encoding.
+				 *
+				 * @return whether, from the protocol server point of view,
+				 * the connection should be kept at the return of this method
+				 * (if true). If false, incoming client data will not be 
+				 * waited for anymore, and the connection will be closed.
+				 *
+				 * @throw ProtocolException on failure.
+				 *
+				 */
+				virtual bool notifyDataAvailability() 
+					throw( ProtocolException ) = 0 ;
+					
+					
             	/**
             	 * Returns a user-friendly description of the state of 
 				 * this object.
