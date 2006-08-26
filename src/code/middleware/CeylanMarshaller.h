@@ -3,6 +3,7 @@
 
 
 #include "CeylanMiddleware.h"       // for MiddlewareException
+#include "CeylanSystem.h"           // for Size
 
 
 
@@ -13,8 +14,18 @@ namespace Ceylan
 	namespace System
 	{
 	
+	
 		// Marshallers reference an InputOutputStream they encapsulate.
 		class InputOutputStream ;
+		
+		
+		/*
+		 * Marshallers can have a buffered stream in memory to accumulate read
+		 * data.
+		 *
+		 */
+		class MemoryStream ;
+		
 		
 	}
 
@@ -128,11 +139,18 @@ namespace Ceylan
 				 * the marshaller to read/write the bistream to be 
 				 * transformed into higher level constructs.
 				 *
+				 * @param bufferedSize the size in bytes of an internal
+				 * buffered stream used so that only full PDU can be made
+				 * available by the marshaller. A null size means no buffer
+				 * wanted.
+				 *
 				 * @note The marshaller does not take ownership of the stream,
 				 * hence will not deallocate it.
 				 *
 				 */
-				Marshaller( System::InputOutputStream & lowerLevelStream )
+				explicit Marshaller( 
+					System::InputOutputStream & lowerLevelStream,
+					System::Size bufferedSize = 0 )
 					throw() ;
 				
 				
@@ -140,6 +158,32 @@ namespace Ceylan
 				virtual ~Marshaller() throw() ;
 				
 				
+				/**
+				 * Requests this marshaller to read as much data as possible,
+				 * so that there may be enough data to read at least a full PDU.
+				 *
+				 * In practise, this marshaller will try to read from its
+				 * encapsulated lower level stream the full remaining free size
+				 * between the current index of its internal buffer and the
+				 * end of that buffer.
+				 *
+				 * @return the number of bytes available in the buffer for
+				 * reading. This is not the number of bytes read, insofar as 
+				 * there may already be some data before this method was 
+				 * called. The caller can use the returned information to 
+				 * figure out if it waits for more data or if there is already
+				 * enough to be decoded in place.
+				 *
+				 * @note Using this method only makes sense if the marshaller
+				 * has an internal buffer.
+				 *
+				 * @throw MarshallException if the operation failed, including
+				 * if there is no buffer available, or DecodeException if
+				 * there is not enough space in the buffer to read more data.
+				 *
+				 */
+				virtual System::Size retrieveData() throw( DecodeException ) ;
+				 
 				
             	/**
             	 * Returns a user-friendly description of the state of 
@@ -169,6 +213,16 @@ namespace Ceylan
 				 */
 				System::InputOutputStream * _lowerLevelStream ;
 
+
+				/**
+				 * An in-memory buffered stream that may be used to cache
+				 * read bytes until they form a full structure that has to
+				 * be read as a whole (like a PDU) or not at all, for example
+				 * by a protocol endpoint.
+				 * 
+				 */
+				System::MemoryStream * _bufferStream ;
+				
 
 
 			private:
