@@ -111,6 +111,32 @@ Size MemoryStream::getSize() const throw()
 }
 
 
+MemoryStream::Index MemoryStream::getIndexOfNextFreeChunk() const throw()
+{
+
+	return ( _index + _len ) % _size ;
+	
+}
+
+
+Ceylan::Byte * MemoryStream::getAddressOfNextFreeChunk() const throw()
+{
+
+	return _buffer + getIndexOfNextFreeChunk() ;
+	
+}
+
+
+Size MemoryStream::getSizeOfNextFreeChunk() const throw()
+{
+
+	if ( ( _index + _len ) > _size )
+		return _index - getIndexOfNextFreeChunk() ;
+	else	
+		return _size - getIndexOfNextFreeChunk() ;
+	
+}
+
 
 Size MemoryStream::read( Ceylan::Byte * buffer, Size maxLength ) 
 	throw( InputStream::ReadFailedException )
@@ -143,7 +169,6 @@ Size MemoryStream::read( Ceylan::Byte * buffer, Size maxLength )
 	 * blocks.
 	 *
 	 */
-	//Size endOfReadBlock = _index + maxLength ; 	 
 	if ( _index + maxLength > _size )
 	{
 	
@@ -176,6 +201,15 @@ Size MemoryStream::read( Ceylan::Byte * buffer, Size maxLength )
 	_index = ( _index + maxLength ) % _size ;
 	_len -= maxLength ;
 	
+	
+	/*
+	 * Prefer having index at the beginning of buffer to have a bigger 
+	 * usable free block :
+	 *
+	 */
+	if ( _len == 0 )
+		_index = 0 ;
+			
 	DISPLAY_DEBUG_MEMORY_STREAM( "MemoryStream::read end : " + toString() ) ;
 	
 	return maxLength ;
@@ -279,6 +313,17 @@ Size MemoryStream::write( const Ceylan::Byte * buffer, Size maxLength )
 }
 
 
+void MemoryStream::increaseFilledBlockOf( Size bytesAdded ) 
+	throw( MemoryStreamException )
+{
+
+	if ( bytesAdded > getSizeOfNextFreeChunk() )
+		throw MemoryStreamException( "MemoryStream::increaseFilledBlockOf : "
+			" would not fit in buffer." ) ;
+	_len +=	bytesAdded ;	
+	
+}
+	
 
 StreamID MemoryStream::getStreamID() const throw()
 {
