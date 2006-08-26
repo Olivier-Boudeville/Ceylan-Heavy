@@ -5,7 +5,12 @@ testsmiddlewaredir=@CEYLAN_TEST_DIR@/middleware
 
 
 testsmiddleware_PROGRAMS = \
-	testCeylanLightWeightMarshaller
+	testCeylanLightWeightMarshaller        \
+	testCeylanMultiLwMarshalledServer
 
 
-testCeylanLightWeightMarshaller_SOURCES    = testCeylanLightWeightMarshaller.cc
+testCeylanLightWeightMarshaller_SOURCES       = \
+	testCeylanLightWeightMarshaller.cc
+	
+testCeylanMultiLwMarshalledServer_SOURCES = \
+	testCeylanMultiLwMarshalledServer.cc
