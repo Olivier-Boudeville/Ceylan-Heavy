@@ -14,9 +14,6 @@ namespace Ceylan
 {
 
 
-
-	
-	
 	
 	namespace Middleware
 	{
