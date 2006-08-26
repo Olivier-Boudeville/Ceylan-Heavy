@@ -51,8 +51,10 @@ namespace Ceylan
 		 *   - accepted
 		 *
 		 *
-		 * Read/write methods communicate with the listening socket, as there
-		 * may be more than one living connection at a time.
+		 * Inherited read/write methods communicate with the listening socket, 
+		 * as there may be more than one living connection at a time, which
+		 * therefore would need to be specifically chosen thanks to the 
+		 * interface.
 		 *
 		 */
 		class MultiplexedServerStreamSocket: public ServerStreamSocket
@@ -154,7 +156,7 @@ namespace Ceylan
 				 * Then this method must return so that this server can
 				 * go on serving requests. 
 				 *
-				 * These slice of communication should not be too long, 
+				 * These slices of communication should not be too long, 
 				 * otherwise such request being processed would freeze all
 				 * other connections.
 				 *
@@ -174,7 +176,7 @@ namespace Ceylan
 				 * this operation. Otherwise, i.e. if false is returned, it 
 				 * will be closed and removed by this server.
 				 *
-				 * This input/output stream that is dedicated to a particular
+				 * This input/output stream is dedicated to a particular
 				 * connection to this server, and when this method is
 				 * called by the server, the stream is selected, i.e. has 
 				 * already data available for reading. This data may be 
@@ -249,8 +251,7 @@ namespace Ceylan
 				 * specific elements (with find).
 				 *
 				 */
-				std::set<AnonymousStreamSocket *>
-					_currentConnections ;
+				std::set<AnonymousStreamSocket *> _currentConnections ;
 
 
 
