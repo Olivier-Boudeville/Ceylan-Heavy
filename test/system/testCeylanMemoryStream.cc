@@ -80,7 +80,7 @@ int main( int argc, char * argv[] )
 		
 		// Read/write in disorder and wrap-around the full buffer :
 		
-		while ( io_count < 10000 )
+		while ( io_count < 2000 )
 		{
 		
 			if ( ( io_count % 50 ) == 0 )
@@ -90,9 +90,11 @@ int main( int argc, char * argv[] )
 				
 			if ( inBuffer == 0 )
 			{
+			
 				// Order to write (only possibility) :
 				LogPlug::debug( "Forced writing." ) ;
-				shouldRead = false ;		
+				shouldRead = false ;
+						
 			}
 			else if ( inBuffer == streamSize )
 			{
@@ -100,6 +102,7 @@ int main( int argc, char * argv[] )
 				// Can only read :
 				LogPlug::debug( "Forced reading." ) ;
 				shouldRead = true ;
+				
 			}
 			else
 			{ 
@@ -108,11 +111,14 @@ int main( int argc, char * argv[] )
 			
 				if ( myGenerator.getNewValue() == 0 ) 
 				{
+				
 					// 0 : write
 					shouldRead = false ;
+					
 				}
 				else
 				{
+				
 					// 1 : read
 					shouldRead = true ;
 				
@@ -133,9 +139,11 @@ int main( int argc, char * argv[] )
 			}
 			else 
 			{
+			
 				myMemoryStream.writeUint8( toWrite ) ;
 				toWrite++ ;
 				inBuffer++ ;
+				
 			}
 		
 			io_count++ ;
@@ -143,7 +151,195 @@ int main( int argc, char * argv[] )
 		}
 		
         LogPlug::info( "Disordered test succeeded." ) ;
+		
+		
+		
+		
+		LogPlug::info( "Now testing automatic buffer reorganization, "
+			"first with only one whole block to move." ) ;
 			
+		myMemoryStream.blank() ;
+		
+		Size wroteBytes = 10 ;
+		
+		for ( Size i = 0; i < wroteBytes; i++ )
+			myMemoryStream.writeUint8( i ) ;
+		
+		// Buffer should be : 0|1|2|3|4|5|6|7|8|9|XXXXXX...	
+		
+		Size readBytes = 3 ;
+		
+		// Ignored reads :
+		for ( Size i = 0; i < readBytes; i++ )
+			myMemoryStream.readUint8() ;
+		
+		Size remainingBytes = wroteBytes - readBytes ;
+				
+		/*
+		 * Buffer should be now : X|X|X|3|4|5|6|7|8|9|XXXXXX...	
+		 * Filled index should be 3, length 7 :
+		 *
+		 */
+		if ( myMemoryStream.getBlockIndex() != readBytes )
+			throw TestException( "Wrong filled index : expected to be " 
+				+ Ceylan::toString( readBytes ) + ", is "
+				+ Ceylan::toString( myMemoryStream.getBlockIndex() ) + "." ) ;
+			
+		if ( myMemoryStream.getBlockLength() != remainingBytes )
+			throw TestException( "Wrong filled length : expected to be " 
+				+ Ceylan::toString( remainingBytes ) + ", is "
+				+ Ceylan::toString( myMemoryStream.getBlockLength() ) + "." ) ;
+			
+		myMemoryStream.moveFilledBlockToBufferStart() ;
+		
+		if ( myMemoryStream.getBlockIndex() != 0 )
+			throw TestException( 
+				"Wrong filled index after move : expected to be 0, is "
+				+ Ceylan::toString( myMemoryStream.getBlockIndex() ) + "." ) ;
+			
+		if ( myMemoryStream.getBlockLength() != remainingBytes )
+			throw TestException( 
+				"Wrong filled length after move : expected to be " 
+				+ Ceylan::toString( remainingBytes ) + ", is "
+				+ Ceylan::toString( myMemoryStream.getBlockLength() ) + "." ) ;
+		
+		
+		// We should have here : 3|4|5|6|7|8|9|XXXXXX
+		
+		Ceylan::Uint8 newRead = myMemoryStream.getElementAt( 0 ) ;
+		
+		if ( newRead != 3 )
+			throw TestException( "Wrong element read at index 0 after move ("
+					+ Ceylan::toNumericalString( newRead ) 
+					+ "), 3 was expected." ) ;
+		
+		newRead = myMemoryStream.getElementAt( 6 ) ;
+		
+		if ( newRead != 9 )
+			throw TestException( "Wrong element read at index 6 after move ("
+					+ Ceylan::toNumericalString( newRead ) 
+					+ "), 9 was expected." ) ;
+		
+
+		for ( Size i = readBytes; i < wroteBytes; i++ )
+		{
+		
+			newRead = myMemoryStream.readUint8() ;
+			if ( newRead != i )
+				throw TestException( "Wrong element read (" 
+					+ Ceylan::toNumericalString( newRead ) 
+					+ "), " + Ceylan::toNumericalString( i ) 
+					+ " was expected." ) ;
+					
+		}
+		
+		
+		
+		
+		LogPlug::info( "Now testing automatic buffer reorganization, "
+			"second with two chunks to move." ) ;
+		
+		
+		myMemoryStream.blank() ;
+		
+		wroteBytes = 18 ;
+		
+		for ( Size i = 0; i < wroteBytes; i++ )
+			myMemoryStream.writeUint8( i ) ;
+		
+		// Buffer should be : 0|1|2|3|4|5|6|7|8|9|..|16|17|X|X	
+		
+		readBytes = 15 ;
+		
+		// Ignored reads :
+		for ( Size i = 0; i < readBytes; i++ )
+			myMemoryStream.readUint8() ;
+			
+		// Buffer should be : X|X|X|..X|15|16|17|X|X	
+		
+		wroteBytes = 5 ;
+		for ( Size i = 0; i < wroteBytes; i++ )
+			myMemoryStream.writeUint8( i ) ;
+
+						
+		/*
+		 * Buffer should be now : 2|3|4|X|X|X|..X|15|16|17|0|1	
+		 * Filled index should be 14, length 8 :
+		 *
+		 */
+		if ( myMemoryStream.getBlockIndex() != readBytes )
+			throw TestException( 
+				"Wrong filled index : expected to be " 
+				+ Ceylan::toString( 14 ) + ", is "
+				+ Ceylan::toString( myMemoryStream.getBlockIndex() ) + "." ) ;
+		
+		remainingBytes = 8 ;
+		
+		if ( myMemoryStream.getBlockLength() != remainingBytes )
+			throw TestException( 
+				"Wrong filled length : expected to be " 
+				+ Ceylan::toString( remainingBytes ) + ", is "
+				+ Ceylan::toString( myMemoryStream.getBlockLength() ) + "." ) ;
+
+			
+		myMemoryStream.moveFilledBlockToBufferStart() ;
+
+		// We should now have here : 15|16|17|0|1|2|3|4|X|X|X|..X|
+		
+		if ( myMemoryStream.getBlockIndex() != 0 )
+			throw TestException( 
+				"Wrong filled index after move : expected to be 0, is "
+				+ Ceylan::toString( myMemoryStream.getBlockIndex() ) + "." ) ;
+			
+		if ( myMemoryStream.getBlockLength() != remainingBytes )
+			throw TestException( 
+				"Wrong filled length after move : expected to be " 
+				+ Ceylan::toString( remainingBytes ) + ", is "
+				+ Ceylan::toString( myMemoryStream.getBlockLength() ) + "." ) ;
+		
+			
+		newRead = myMemoryStream.getElementAt( 0 ) ;
+		
+		// To debug : Ceylan::checkpoint( myMemoryStream.toString() ) ;
+		
+		if ( newRead != 15 )
+			throw TestException( "Wrong element read at index 0 ("
+					+ Ceylan::toNumericalString( newRead ) 
+					+ ") after move, 15 was expected." ) ;
+					
+		
+		newRead = myMemoryStream.getElementAt( 7 ) ;
+		
+		if ( newRead != 4 )
+			throw TestException( "Wrong element read at index 7 ("
+					+ Ceylan::toNumericalString( newRead ) 
+					+ ") after move, 4 was expected." ) ;
+		
+		for ( Size i = 15; i < 18; i++ )
+		{
+		
+			newRead = myMemoryStream.readUint8() ;
+			if ( newRead != i )
+				throw TestException( "Wrong element read (" 
+					+ Ceylan::toNumericalString( newRead ) 
+					+ ") after move, " + Ceylan::toNumericalString( i ) 
+					+ " was expected." ) ;
+					
+		}
+				
+		for ( Size i = 0; i < 5; i++ )
+		{
+		
+			newRead = myMemoryStream.readUint8() ;
+			if ( newRead != i )
+				throw TestException( "Wrong element read (" 
+					+ Ceylan::toNumericalString( newRead ) 
+					+ ") after move, " + Ceylan::toNumericalString( i ) 
+					+ " was expected." ) ;
+					
+		}
+		
+				
         LogPlug::info( "End of memory stream test." ) ;
 
 
