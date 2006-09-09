@@ -18,10 +18,12 @@
 using namespace Ceylan::System ;
 
 
-Stream::Stream() throw()
+Stream::Stream( bool blocking ) throw():
+	_isBlocking( blocking )
 {
 
 }
+		
 		
 Stream::~Stream() throw()
 {
@@ -29,6 +31,26 @@ Stream::~Stream() throw()
 }
 
 
+bool Stream::isBlocking() const throw()
+{
+
+	return _isBlocking ;
+	
+}
+
+
+const std::string Stream::toString( Ceylan::VerbosityLevels level ) 
+	const throw()
+{
+
+	if ( _isBlocking )
+		return "Blocking Stream" ;
+	else	
+		return "Non-blocking Stream" ;
+		
+}
+
+	
 bool Stream::Close( FileDescriptor & fd ) throw( CloseException )
 {
 
@@ -76,3 +98,18 @@ bool Stream::Close( FileDescriptor & fd ) throw( CloseException )
 	return false ;
 
 }
+
+
+void Stream::setBlocking( bool newStatus ) 
+	throw( NonBlockingNotSupportedException )
+{
+
+	// To be overriden :
+	if ( newStatus == false )
+		throw NonBlockingNotSupportedException( 
+			"Stream::setBlocking : this stream cannot be put in "
+			"non-blocking mode." ) ;
+
+}
+
+	
