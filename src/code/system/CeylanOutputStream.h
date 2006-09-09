@@ -67,8 +67,16 @@ namespace Ceylan
 				} ;
 				
 				
-				/// Basic constructor.
-				OutputStream() throw() ;
+				/**
+				 * Basic constructor for OutputStream.
+				 *
+				 * @param blocking tells whether this output stream should be
+				 * created in blocking mode (the default) or in non-blocking
+				 * mode (if supported).
+				 *
+				 */
+				explicit OutputStream( bool blocking = true ) throw() ;
+	
 	
 				/// Basic destructor.
 				virtual ~OutputStream() throw() ;
@@ -240,8 +248,28 @@ namespace Ceylan
 				 * @throw WriteFailedException in case a system error occured.
 				 *
 				 */
-				virtual void writeString( std::string & toWrite ) 
+				virtual void writeString( const std::string & toWrite ) 
 					throw( WriteFailedException ) ;
+
+
+
+
+            	/**
+            	 * Returns an user-friendly description of the state of
+				 * this object.
+            	 *
+				 * @param level the requested verbosity level.
+				 *
+				 * @note Text output format is determined from overall 
+				 * settings.
+				 *
+				 * @see TextDisplayable
+				 *
+				 */
+            	virtual const std::string toString( 
+					Ceylan::VerbosityLevels level = Ceylan::high ) 
+						const throw() ;
+
 
 
 
