@@ -56,6 +56,24 @@ namespace Ceylan
 
 
 
+				/**
+				 * Raised whenever a non-blocking accept did not find any 
+				 * connection (this is not a fatal error).
+				 *
+				 */
+				class NonBlockingAcceptException: 
+					public AnonymousStreamSocketException
+				{ 
+					public: 
+					
+						explicit NonBlockingAcceptException( 
+							const std::string & reason ) throw() ;
+						
+						virtual ~NonBlockingAcceptException() throw() ; 
+							
+				} ;
+
+
 	
 				/**
 				 * Constructs a new server-side socket dedicated to an
@@ -68,11 +86,16 @@ namespace Ceylan
 				 * @param listeningFD listening file descriptor of this 
 				 * server socket, used to accept a new connection.
 				 *
+				 * @param blocking tells whether this socket should be
+				 * created in blocking mode (the default) or in non-blocking
+				 * mode.
+				 *
 				 * @throw SocketException if socket creation failed.
 				 *
 				 */
 				explicit AnonymousStreamSocket( 
-						System::FileDescriptor listeningFD ) 
+						System::FileDescriptor listeningFD,
+						bool blocking = true ) 
 					throw( SocketException ) ;
 	
 				
@@ -92,7 +115,7 @@ namespace Ceylan
 				 */
 				virtual bool isConnected() const throw() ;
 
-	
+			
 	
             	/**
             	 * Returns a user-friendly description of the state of 
@@ -115,7 +138,7 @@ namespace Ceylan
 	
 			protected:
 
-		
+						
 
 
 			private:
