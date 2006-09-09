@@ -4,6 +4,7 @@
 
 #include "CeylanMarshaller.h"       // for inheritance
 #include "CeylanInputStream.h"      // for IOException
+#include "CeylanMemoryStream.h"     // for MemoryStream
 
 
 namespace Ceylan
@@ -16,14 +17,14 @@ namespace Ceylan
 
 
 		/**
-		 * Encodes et decodes basic data types from a given stream, with most
-		 * basic encoding routines which deal only with endianness for 
+		 * Encodes et decodes basic data types from a given stream with most
+		 * basic encoding routines, which deal only with endianness for 
 		 * fixed-size types.
 		 *
 		 * More precisely, this marshaller allows to encode and decode basic
-		 * data types such as Ceylan::Uint32 so that it can for example go
+		 * data types such as Ceylan::Uint32 so that they can for example go
 		 * through a network channel while being correctly understood by both
-		 * sides of the channel no matter their respective endiannesses are.
+		 * sides of the channel, no matter their respective endiannesses are.
 		 *
 		 * To do so, a pivot format is chosen, and both sides ensure that it is
 		 * respected : the sender converts its own format to the pivot one, the
@@ -34,8 +35,8 @@ namespace Ceylan
 		 * the usual sequence of bits transformed into litlle endian format.
 		 * We preferred little endian (the native encoding for x86) to the big
 		 * one (the one of PowerPC, Sparc, but also the network order), so 
-		 * that on most cases no conversion has to be performed (x86 just 
-		 * have to write and read bytes as they are).
+		 * that on most cases no conversion has to be performed (x86 actually
+		 * just writes and reads bytes as they are).
 		 *
 		 * @see CeylanTypes.h
 		 *
@@ -55,16 +56,22 @@ namespace Ceylan
 				 * Constructs a new marshaller/demarshaller object.
 				 *
 				 * @param lowerLevelStream the stream that will be used by 
-				 * the marshaller to read/write the bistream to be 
+				 * the marshaller to read/write the bitstream to be 
 				 * transformed into higher level constructs, here basic Ceylan
 				 * datatypes such as Ceylan::Sint16, or strings.
+				 *
+				 * @param bufferedSize the size in bytes of an internal
+				 * buffered stream used so that only full PDU can be made
+				 * available by the marshaller. A null size means no buffer
+				 * wanted.
 				 *
 				 * @note The marshaller does not take ownership of the stream,
 				 * hence will not deallocate it.
 				 *
 				 */
 				LightWeightMarshaller(
-					System::InputOutputStream & lowerLevelStream ) throw() ;
+					System::InputOutputStream & lowerLevelStream,
+					System::Size bufferedSize = 0 ) throw() ;
 				
 				
 				/// Virtual destructor.
@@ -361,6 +368,27 @@ namespace Ceylan
 
 
 
+				/**
+				 * Returns the input stream that should be used for direct
+				 * encoding/decoding.
+				 *
+				 * For buffered stream, it is the buffer, for the rest it 
+				 * is directly the lower-level stream.
+				 *
+				 *
+				 */
+				inline System::InputOutputStream & getEffectiveStream()
+					throw()
+				{
+				
+					if ( isBuffered() ) 
+						return * _bufferStream ;
+					else
+						return * _lowerLevelStream ;
+							
+				}
+				
+					
 
 			private:
 	
