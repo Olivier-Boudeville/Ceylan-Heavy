@@ -50,7 +50,7 @@ const string ProtocolEndpoint::toString( Ceylan::VerbosityLevels level )
 {
 
 	return "Protocol endpoint using following marshaller : "
-		+ _marshaller->toString( level ) ;
+		+ _marshaller->toString( Ceylan::low ) ;
 	
 }
 
