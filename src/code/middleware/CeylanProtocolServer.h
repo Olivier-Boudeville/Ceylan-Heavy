@@ -37,6 +37,13 @@ namespace Ceylan
 		 * server socket), or a UNIX pipe, or anything else, the protocol server
 		 * does not need to know that. 
 		 * 
+		 * Following methods have to be subclassed so that the protocol server
+		 * can perform its specific task :
+		 *   - notifyDataAvailability, which may drive the internal marshaller
+		 * so that enough data is retrieved to form a self-standing request
+		 * (PDU).
+		 *
+		 * (see Marshaller::retrieveData)
 		 *
 		 */
 		class ProtocolServer: public ProtocolEndpoint
@@ -68,8 +75,19 @@ namespace Ceylan
 				 * back an answer to the client if needed.
 				 *
 				 * This pure virtual method must be overriden by the user.
+				 *
 				 * The marshaller can help writing a protocol exchange by 
-				 * taking care of lower-level decoding/encoding.
+				 * taking care of lower-level decoding/encoding, and if the
+				 * marshaller is buffered, one may use :
+				 * _marshaller->retrieveData( expectedPDUSize) here, where
+				 * expectedPDUSize is the size needed by this protocol server
+				 * so that it can interpret the request. The retrieveData
+				 * method returns the number of bytes ready to be decoded in 
+				 * the buffer of the marshaller. Therefore if this returned
+				 * size is less than the minimum size requested by the server,
+				 * then the protocol server can just return true and wait 
+				 * next notifications, until the read bytes accumulate in the
+				 * buffer and the size it needs is reached.
 				 *
 				 * @return whether, from the protocol server point of view,
 				 * the connection should be kept at the return of this method
@@ -78,10 +96,27 @@ namespace Ceylan
 				 *
 				 * @throw ProtocolException on failure.
 				 *
+				 * @see testCeylanMultiLwProtocolServer.cc
+				 *
 				 */
 				virtual bool notifyDataAvailability() 
 					throw( ProtocolException ) = 0 ;
 					
+
+				/**
+				 * Tells whether the underlying communication system (for 
+				 * example a network server) is expected to shutdown, once
+				 * this instance of protocol exchange is over.
+				 *
+				 * @note This request is a special one that must be managed
+				 * specifically, as it goes beyond the field of a particular
+				 * protocol-based connection : the underlying media can be
+				 * stopped only by specific means that violate the separation
+				 * between protocol objects and communication objects.
+				 * 
+				 */
+				virtual bool isShutdownRequested() const throw() ;
+				
 					
             	/**
             	 * Returns a user-friendly description of the state of 
@@ -104,6 +139,28 @@ namespace Ceylan
 			protected:
 
 
+				/**
+				 * Records the fact that the protocol determined that the
+				 * underlying medium should be stopped once the protocol
+				 * exchange is terminated.
+				 *
+				 */
+				virtual void askForShutdown() throw() ;
+
+
+				/**
+				 * Tells whether, when the protocol exchange will be
+				 * terminated, the underlying medium should be stopped
+				 *
+				 * @note This is the only means for protocol objects to i
+				 * interfere with communication objects : without this
+				 * mechanism, they are truly independent. 
+				 *
+				 * The communication object (ex : network server) may or 
+				 * may not take this information into account.
+				 *
+				 */
+				bool _shutdownRequested ;
 
 
 			private:
