@@ -25,14 +25,18 @@ AnonymousProtocolAwareStreamSocket::AnonymousProtocolAwareStreamSocket(
 	_protocolServer( & protocolServerToTrigger )
 {
 	
+	// Here the connection is accepted.
+	
 }
 
 
 AnonymousProtocolAwareStreamSocket::AnonymousProtocolAwareStreamSocket( 
 		System::FileDescriptor listeningFD ) throw( SocketException ):
-	AnonymousStreamSocket( listeningFD ),
+	AnonymousStreamSocket( listeningFD, /* blocking */ false ),
 	_protocolServer( 0 )
 {
+	
+	// Here the connection is accepted.
 	
 }
 
@@ -80,17 +84,31 @@ void AnonymousProtocolAwareStreamSocket::setProtocolServer(
 	
 }
 
-	
+
 const std::string AnonymousProtocolAwareStreamSocket::toString( 
 	Ceylan::VerbosityLevels level ) const throw()
 {
 		
-	string res= "AnonymousProtocolAwareStreamSocket " ;
+	string res= "AnonymousProtocolAwareStreamSocket" ;
 	
-	if ( _protocolServer != 0 )
-		res += "associated with " + _protocolServer->toString( level ) ;
-	else	
-		res += "not associated with any protocol server" ;
+	if ( level != Ceylan::low )
+	{
+	
+		/*
+		 * Avoid cycles in toString calls :
+		 * AnonymousProtocolAwareStreamSocket -> ProtocolServer 
+		 * -> ProtocolEndpoint -> Marshaller 
+		 * -> AnonymousProtocolAwareStreamSocket
+		 *
+		 */
+	 
+		if ( _protocolServer != 0 )
+			res += " associated with " 
+				+ _protocolServer->toString( Ceylan::low ) ;
+		else	
+			res += " not associated with any protocol server" ;
+						
+	}
 		
 	res += ". It is an " + AnonymousStreamSocket::toString( level ) ;
 	
