@@ -72,7 +72,7 @@ MultiplexedServerStreamSocket::MultiplexedServerStreamSocketException::~Multiple
 MultiplexedServerStreamSocket::MultiplexedServerStreamSocket( 
 	Port listeningPort, bool reuse )
 		throw( SocketException ):
-	ServerStreamSocket( listeningPort, reuse ),
+	ServerStreamSocket( listeningPort, reuse, /* blocking */ false ),
 	_currentConnections()
 {
 
@@ -129,6 +129,7 @@ void MultiplexedServerStreamSocket::run() throw( ServerStreamSocketException )
 
 	prepareToAccept() ;
 	
+
 	list<InputStream *> watchedSockets ;
 	
 	// Among all the watched sockets, the listening one is the first :
@@ -136,6 +137,11 @@ void MultiplexedServerStreamSocket::run() throw( ServerStreamSocketException )
 	 
 	 
 	list<AnonymousStreamSocket*> connectionsToRemove ;
+
+
+	LogPlug::trace( "MultiplexedServerStreamSocket::run : "
+		"entering main listening loop." ) ;
+
 	
 	while ( ! isRequestedToStop() )
 	{	
@@ -147,18 +153,62 @@ void MultiplexedServerStreamSocket::run() throw( ServerStreamSocketException )
 		try
 		{
 		
-			// Blocks until there is data to read somewhere :
+	
+			LogPlug::trace( "MultiplexedServerStreamSocket::run : "
+				"waiting for selected sockets." ) ;
+				
+			/*
+			 * Blocks until there is data to read somewhere :
+			 *
+			 * @note A time-out may be useful here.
+			 *
+			 */
 			InputStream::Select( watchedSockets ) ;
+
+			LogPlug::trace( "MultiplexedServerStreamSocket::run : "
+				"at least a socket is selected." ) ;
+				
 
 			// Searches for the input stream(s) that are selected :
 			for ( list<InputStream*>::iterator it = watchedSockets.begin(); 
 				it != watchedSockets.end(); it++ ) 
 			{
 			
+				if ( (*it)->isFaulty() )
+				{
+					
+					if ( (*it) != this )
+					{
+				
+						LogPlug::warning( 
+							"MultiplexedServerStreamSocket::run : "
+							"a faulty connection socket will be removed : "
+							+ (*it)->toString() ) ;
+							
+						connectionsToRemove.push_back(
+							dynamic_cast<AnonymousStreamSocket*>( *it ) ) ;
+						
+					}
+					else
+					{
+					
+						LogPlug::error( "MultiplexedServerStreamSocket::run : "
+							"listening socket is in faulty state : "
+							+ toString() + ", trying to overcome..." ) ;
+							
+						// Trying to make as if everything was normal :	
+						setFaulty( false ) ;	
+							
+					}
+					
+				}	
+				
+				
 				if ( (*it)->isSelected() )
 				{
 				
 					FileDescriptor selectedFD = (*it)->getInputStreamID() ;
+			
 			
 					/*
 					 * Depending on the selected stream, different actions
@@ -169,18 +219,37 @@ void MultiplexedServerStreamSocket::run() throw( ServerStreamSocketException )
 					{
 					
 						/*
-						 * A client is knocking at the door, let's accept it 
-						 * and store its connection manager into the streams
-						 * that should be watched :
+						 * A client is (most probably) knocking at the door,
+						 * let's accept it and store its connection manager
+						 * into the streams that should be watched :
 						 *
 						 */
-					
-						connectionCount++ ;		
 						LogPlug::info( "MultiplexedServerStreamSocket::run : "
-							"accepting connection #"
-							+ Ceylan::toString( connectionCount ) ) ;
+							"trying to accept a new connection." ) ;
+							
+						InputStream * newAnonymousSocket = accept() ;
 						
-						watchedSockets.push_back( accept() ) ;
+						if ( newAnonymousSocket != 0 )
+						{
+							
+							watchedSockets.push_back( newAnonymousSocket ) ;
+					
+							connectionCount++ ;		
+							LogPlug::info( 
+								"MultiplexedServerStreamSocket::run : "
+								"connection #" 
+								+ Ceylan::toString( connectionCount ) 
+								+ " accepted." ) ;
+						
+						}
+						else
+						{
+						
+							LogPlug::info( 
+								"MultiplexedServerStreamSocket::run : "
+								"no connection could be accepted." ) ;
+							
+						}
 											
 					}
 					else // not the listening socket
@@ -200,8 +269,13 @@ void MultiplexedServerStreamSocket::run() throw( ServerStreamSocketException )
 								+ (*it)->toString() ) ;
 						}
 						
+						LogPlug::debug( "MultiplexedServerStreamSocket::run : "
+							"following connection socket has data available : "
+							+ connection->toString() + "." ) ;
+							
 						if ( ! handleConnection( *connection ) )
 							connectionsToRemove.push_back( connection ) ;
+												
 							
 					} // connection managed
 					
@@ -211,6 +285,13 @@ void MultiplexedServerStreamSocket::run() throw( ServerStreamSocketException )
 				
 			} // for it in watchedSockets...
 			
+			
+			LogPlug::trace( "MultiplexedServerStreamSocket::run : "
+				"end of select scan." ) ;
+		
+			// Sleep for 0.2 second :
+			Thread::Sleep( 0 /* second */, 200000 /* microsecond*/) ;
+		
 		
 		   /*
 		    * Now remove the dead connections since we are not iterating
@@ -219,11 +300,16 @@ void MultiplexedServerStreamSocket::run() throw( ServerStreamSocketException )
 		    */
 		   while ( ! connectionsToRemove.empty() )
 		   {
-		       AnonymousStreamSocket & toDel = * connectionsToRemove.front() ;
-		       connectionsToRemove.pop_front() ;
+		   		
+				AnonymousStreamSocket & toDel = * connectionsToRemove.front() ;
+				connectionsToRemove.pop_front() ;
+
+				LogPlug::trace( "MultiplexedServerStreamSocket::run : "
+					"removing stopped connection : " + toDel.toString() ) ;
 		       
-		       closeConnection( toDel ) ;
-		       watchedSockets.remove( & toDel ) ;   
+				closeConnection( toDel ) ;
+				watchedSockets.remove( & toDel ) ;  
+			    
 		   }
 				 
 
@@ -264,9 +350,19 @@ AnonymousStreamSocket * MultiplexedServerStreamSocket::accept()
 	{
 	
 		// Accepts the connection, by passing the listening file descriptor :
-		res = new AnonymousStreamSocket( getOriginalFileDescriptor() ) ;
+		res = new AnonymousStreamSocket( getOriginalFileDescriptor(),
+			/* blocking */ false ) ;
 			
 	}
+	catch( const AnonymousStreamSocket::NonBlockingAcceptException & e )
+	{
+
+		LogPlug::warning( "MultiplexedServerStreamSocket::accept : "
+			+ e.toString() ) ;
+			
+		return 0 ;
+		
+	}	
 	catch( const SocketException & e )
 	{
 		throw MultiplexedServerStreamSocketException( 
@@ -309,8 +405,10 @@ void MultiplexedServerStreamSocket::closeConnection(
 
 	if ( _currentConnections.find( &connection ) != _currentConnections.end() )
 	{
+					
 		delete &connection ;
 		_currentConnections.erase( &connection ) ;
+		
 	}
 	else
 		throw MultiplexedServerStreamSocketException( 
@@ -337,8 +435,8 @@ const std::string MultiplexedServerStreamSocket::toString(
 		list<string> connectionDescriptions ;
 	
 		for ( set<AnonymousStreamSocket *>::const_iterator it =
-				_currentConnections.begin(); it != _currentConnections.end(); 
-					it++ )
+					_currentConnections.begin(); 
+				it != _currentConnections.end(); it++ )
 			connectionDescriptions.push_back( (*it)->toString( level ) ) ;
 	
 		res += " managing currently following connection(s) : "
@@ -369,7 +467,11 @@ bool MultiplexedServerStreamSocket::closeAcceptedConnections()
 		
 	for ( set<AnonymousStreamSocket *>::const_iterator it =
 			_currentConnections.begin(); it != _currentConnections.end(); it++ )
+	{	
+						
 		delete (*it) ;
+			
+	}
 		
 	_currentConnections.clear() ;
 	
