@@ -36,13 +36,29 @@ namespace Ceylan
 	
 		
 				/// Basic constructor for InputStream, created not selected.
-				InputOutputStream() throw() ;
+				explicit InputOutputStream( bool blocking = true ) throw() ;
 		
 		
 				/// Basic virtual destructor.
 				virtual ~InputOutputStream() throw() ;
 		
 			
+            	/**
+            	 * Returns an user-friendly description of the state of
+				 * this object.
+            	 *
+				 * @param level the requested verbosity level.
+				 *
+				 * @note Text output format is determined from overall 
+				 * settings.
+				 *
+				 * @see TextDisplayable
+				 *
+				 */
+            	virtual const std::string toString( 
+					Ceylan::VerbosityLevels level = Ceylan::high ) 
+						const throw() ;
+
 		
 	
 			private:
