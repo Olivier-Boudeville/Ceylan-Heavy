@@ -73,12 +73,49 @@ namespace Ceylan
 				} ;
 				
 				
-				/// Basic constructor.
-				Stream() throw() ;
+				/**
+				 * Exception thrown when a stream is set to non-blocking
+				 * whereas it failed or is not supported at all.
+				 *
+				 */
+				class NonBlockingNotSupportedException: 
+					public StreamException
+				{ 
+					public: 
+					
+						explicit NonBlockingNotSupportedException( 
+								const std::string & reason ) throw() : 
+							StreamException( reason )
+						{
+						
+						}
+								
+				} ;
+				
+				
+				
+				/**
+				 * Basic constructor for stream instances.
+				 *
+				 * @param blocking tells whether this stream should be
+				 * created in blocking mode (the default) or in non-blocking
+				 * mode (if supported).
+				 *
+				 */
+				explicit Stream( bool blocking = true ) throw() ;
 	
 	
 				/// Basic virtual destructor.
 				virtual ~Stream() throw() ;
+	
+	
+
+				/**
+				 * Tells whether this stream is in blocking mode (if true),
+				 * or in non-blocking mode (if false).
+				 *
+				 */
+				bool isBlocking() const throw() ;
 	
 	
 				/**
@@ -121,10 +158,40 @@ namespace Ceylan
 				 */
 				static bool Close( FileDescriptor & fd ) 
 					throw( CloseException ) ;
+
+
+
+		protected:
 		
+		
+		
+				/**
+				 * Sets the blocking mode of this stream.
+				 *
+				 * @param newStatus if true, sets the stream in blocking mode,
+				 * if false set to non-blocking mode. If the stream is 
+				 * already in the target state, nothing is done.
+				 *
+				 * @throw NonBlockingNotSupportedException if the operation
+				 * failed or is not supported.
+				 *
+				 * @note This default implementation always raises its 
+				 * exception, streams that supports non-blocking access have to
+				 * override it.
+				 *
+				 */
+				virtual void setBlocking( bool newStatus )
+					throw( NonBlockingNotSupportedException ) ;
+
+
 
 			private:
 			
+			
+			
+				/// Stores whether the stream is in blocking mode.
+				bool _isBlocking ;
+				
 			
 				/**
 				 * Copy constructor made private to ensure that it will
