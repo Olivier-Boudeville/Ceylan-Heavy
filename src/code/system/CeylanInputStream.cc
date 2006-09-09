@@ -59,6 +59,7 @@ extern "C"
 }
 
 #include <ctime>
+#include <cerrno>  // for EBADF
 
 
 
@@ -72,8 +73,10 @@ using namespace Ceylan::Log ;
 using namespace Ceylan ;
 
 
-InputStream::InputStream() throw() :
-	_isSelected( false )
+InputStream::InputStream( bool blocking ) throw() :
+	Stream( blocking ),	
+	_isSelected( false ),
+	_isFaulty( false )
 {
 
 }
@@ -89,8 +92,36 @@ bool InputStream::isSelected() const throw()
 {
 	return _isSelected ;
 }
-		
 
+
+bool InputStream::isFaulty() const throw()
+{
+	return _isFaulty ;
+}	
+
+
+const std::string InputStream::toString( Ceylan::VerbosityLevels level ) 
+	const throw()
+{
+
+	string res = "InputStream whose ID is " 
+		+ Ceylan::toString( getInputStreamID() ) + ", which is " ;
+		
+	if ( ! isSelected() )
+		res += "not " ;
+		 
+	res += "selected, and which is " ;
+
+	if ( ! isFaulty() )
+		res += "not " ;
+	
+	res += "faulty" ;
+	
+	res += ". This is a " + Stream::toString( level ) ;
+
+	return res ;
+	
+}
 
 
 // Read section.
@@ -133,7 +164,6 @@ void InputStream::clearInput() throw( InputStream::ReadFailedException )
 Ceylan::Sint8 InputStream::readSint8() 
 	throw( ReadFailedException, EOFException )
 {
-
 	
 	const Ceylan::Uint8 TypeSize = 1 ;
 	
@@ -463,9 +493,12 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 	/// Maximum number of select attempts.
 	const int selectAttemptCount = 5 ;
 
+	
+	/// Maximum number of select attempts.
+
 	/**
 	 * Each thread will wait for selectWaitingTime seconds before 
-	 * retrying select.
+	 * retrying a blocking select.
 	 *
 	 */
 	const Ceylan::Uint8 selectWaitingTime = 2 ;
@@ -474,15 +507,61 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 
 	for ( ; attemptCount; attemptCount-- )
 	{
+			
+		// Will block for ever until an error or some data is coming :
 		if ( ::select( maxFD + 1, & waitFDSet, 0, 0, 0 ) < 0 )
 		{
 
-			LogPlug::debug( "No InputStream selected ("
-				+ explainError( getError() )
-				+ string( "), retrying in " )
-				+ selectWaitingTime
-				+ string( " second(s) ..." ) ) ;
-			Thread::Sleep( selectWaitingTime ) ;
+			
+			if ( System::getError() == EBADF )
+			{
+			
+				LogPlug::error( "InputStream::Select : there seems to be "
+					"at least one bad file descriptor in the list, "
+					"checking them to flag them as faulty." ) ;
+				
+				for ( list<InputStream*>::iterator it = is.begin(); 
+					it != is.end(); it++ )
+				{
+				
+					fd_set testFDSet ;
+					FD_ZERO( & testFDSet ) ;
+					
+					FileDescriptor testedFD = (*it)->getInputStreamID() ;
+					FD_SET( testedFD, & testFDSet ) ;
+					
+					// No waiting desired :
+					struct timeval timeout ;
+					timeout.tv_sec  = 0 ;
+           			timeout.tv_usec = 0 ;
+					
+					if ( ( ::select( testedFD + 1, 
+							&testFDSet, 0, 0, &timeout ) < 0 )
+						&& ( System::getError() == EBADF ) )
+					{
+					
+						LogPlug::error( "InputStream::Select : "
+							"following stream is faulty : " + (*it)->toString()
+							+ ", flagging it as such." ) ;
+						(*it)->setFaulty( true ) ;
+							
+					}
+				
+				}
+			}
+			else
+			{
+			
+				LogPlug::error( "InputStream::Select : "
+					"no InputStream selected ("	+ explainError( getError() )
+					+ "), retrying in " + Ceylan::toString( selectWaitingTime )
+					+ " second(s) ..." ) ;
+					
+				Thread::Sleep( selectWaitingTime ) ;
+					
+			}
+				
+			
 		}
 		else
 		{
@@ -507,6 +586,7 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 	}
 
 	return selectedCount ;
+
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 	
@@ -588,7 +668,19 @@ Ceylan::Uint16 InputStream::Test( list<InputStream*> & is )
 
 void InputStream::setSelected( bool newStatus ) throw()
 {
+
+	if ( ( _isSelected == false ) && ( newStatus == true ) )
+		LogPlug::debug( "InputStream::setSelected : selecting descriptor #"
+			+ Ceylan::toString( getInputStreamID() ) ) ;
+			
 	_isSelected = newStatus ;
+	
+}
+
+
+void InputStream::setFaulty( bool newFaultyState ) throw()
+{
+	_isFaulty = newFaultyState ;
 }
 
 
