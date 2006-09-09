@@ -25,8 +25,9 @@ using namespace Ceylan::Middleware ;
 
 
 LightWeightMarshaller::LightWeightMarshaller( 
-		System::InputOutputStream & lowerLevelStream) throw() :
-	Marshaller( lowerLevelStream )
+		System::InputOutputStream & lowerLevelStream,
+		System::Size bufferedSize ) throw() :
+	Marshaller( lowerLevelStream, bufferedSize )
 {
 
 }
@@ -43,6 +44,9 @@ LightWeightMarshaller::~LightWeightMarshaller() throw()
 /*
  * Decoding (read) basic datatypes section.
  *
+ * Decoding needs to be operated in buffered stream if an, otherwise directly
+ * on the lower-level I/O stream.
+ *
  * @see Ceylan::System::InputStream
  *
  */
@@ -55,7 +59,7 @@ Ceylan::Sint8 LightWeightMarshaller::decodeSint8()
 	throw( DecodeException, IOException )
 {
 
-	return _lowerLevelStream->readSint8() ;
+	return getEffectiveStream().readSint8() ;
 	
 	// We let IOException instances propagate.
 	
@@ -66,7 +70,7 @@ Ceylan::Uint8 LightWeightMarshaller::decodeUint8()
 	throw( DecodeException, IOException )
 {
 
-	return _lowerLevelStream->readUint8() ;
+	return getEffectiveStream().readUint8() ;
 	
 	// We let IOException instances propagate.
 	
@@ -77,7 +81,7 @@ Ceylan::Sint16 LightWeightMarshaller::decodeSint16()
 	throw( DecodeException, IOException )					
 {
 
-	return _lowerLevelStream->readSint16() ;
+	return getEffectiveStream().readSint16() ;
 	
 	// We let IOException instances propagate.
 	
@@ -88,7 +92,7 @@ Ceylan::Uint16 LightWeightMarshaller::decodeUint16()
 	throw( DecodeException, IOException )
 {
 
-	return _lowerLevelStream->readUint16() ;
+	return getEffectiveStream().readUint16() ;
 	
 	// We let IOException instances propagate.
 	
@@ -99,7 +103,7 @@ Ceylan::Sint32 LightWeightMarshaller::decodeSint32()
 	throw( DecodeException, IOException )
 {
 
-	return _lowerLevelStream->readSint32() ;
+	return getEffectiveStream().readSint32() ;
 	
 	// We let IOException instances propagate.
 	
@@ -111,7 +115,7 @@ Ceylan::Uint32 LightWeightMarshaller::decodeUint32()
 	throw( DecodeException, IOException )
 {
 
-	return _lowerLevelStream->readUint32() ;
+	return getEffectiveStream().readUint32() ;
 	
 	// We let IOException instances propagate.
 	
@@ -123,7 +127,7 @@ Ceylan::Float32 LightWeightMarshaller::decodeFloat32()
 	throw( DecodeException, IOException )
 {
 
-	return _lowerLevelStream->readFloat32() ;
+	return getEffectiveStream().readFloat32() ;
 	
 	// We let IOException instances propagate.
 	
@@ -135,7 +139,7 @@ Ceylan::Float64 LightWeightMarshaller::decodeFloat64()
 	throw( DecodeException, IOException )
 {
 
-	return _lowerLevelStream->readFloat64() ;
+	return getEffectiveStream().readFloat64() ;
 	
 	// We let IOException instances propagate.
 	
@@ -146,7 +150,7 @@ void LightWeightMarshaller::decodeString( std::string & result )
 	throw( DecodeException, IOException )
 {
 
-	_lowerLevelStream->readString( result ) ;
+	getEffectiveStream().readString( result ) ;
 	
 	// We let IOException instances propagate.
 	
@@ -158,6 +162,8 @@ void LightWeightMarshaller::decodeString( std::string & result )
 				
 /*
  * Encoding (write) basic datatypes section.
+ *
+ * Encoding does not need to be buffered, direct writing is performed.
  *
  * @see Ceylan::System::OutputStream
  *
