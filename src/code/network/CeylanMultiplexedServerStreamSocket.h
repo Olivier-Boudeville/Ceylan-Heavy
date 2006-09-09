@@ -50,11 +50,15 @@ namespace Ceylan
 		 * Following methods may be subclassed for specific servers :
 		 *   - accepted
 		 *
-		 *
 		 * Inherited read/write methods communicate with the listening socket, 
 		 * as there may be more than one living connection at a time, which
 		 * therefore would need to be specifically chosen thanks to the 
 		 * interface.
+		 *
+		 * @note Such servers are designed to be data-driven : they block
+		 * most of the time, waiting for incoming requests, but they cannot
+		 * perform actions on their own, in the background, between two
+		 * requests. 
 		 *
 		 */
 		class MultiplexedServerStreamSocket: public ServerStreamSocket
@@ -84,9 +88,30 @@ namespace Ceylan
 
 
 
+				/**
+				 * Exception to be raised whenever the underlyng network 
+				 * server is requested to shutdown.
+				 *
+				 */
+				class NetworkServerShutdownException:
+					public MultiplexedServerStreamSocketException
+				{
+				
+					public: 
+					
+						explicit NetworkServerShutdownException( 
+							const std::string & reason ) throw() ;
+						
+						virtual ~NetworkServerShutdownException()
+							 throw() ; 
+				
+				} ;
+				
+	
 	
 				/**
-				 * Constructs a new multiplexed server-side socket.
+				 * Constructs a new multiplexed non-blocking server-side 
+				 * socket.
 				 *
 				 * @param listeningPort the TCP port of this listening server
 				 * socket.
@@ -133,6 +158,13 @@ namespace Ceylan
 				 * If there is no pending connection present on the queue,
 				 * blocks the caller until a connection is present. 
 				 *
+				 * @return a pointer to a newly created AnonymousStreamSocket,
+				 * corresponding to a new connection, or null, if ever no
+				 * connection was available and the server socket is 
+				 * non-blocking. This might happen even after a select, since
+				 * the connection request can have been cancelled in the
+				 * meantime by the client.
+				 * 
 				 * @throw ServerStreamSocketException on failure.
 				 *
 				 * @see stop
@@ -185,7 +217,10 @@ namespace Ceylan
 				 * back to the client thanks to the same I/O stream.
 				 *
 				 * @throw MultiplexedServerStreamSocketException if an error
-				 * occurred.
+				 * occurred, and more precisely its 
+				 * NetworkServerShutdownException child class whenever a 
+				 * connection determined that the network server should be
+				 * stopped.
 				 *
 				 * @see closeConnection, which should be used by this method
 				 * when the underlying protocol determines the connection is
@@ -236,6 +271,10 @@ namespace Ceylan
 				 * @return true iff an operation had to be performed.
 				 *
 				 * @throw CloseException if the close operation failed.
+				 *
+				 * @note This method just closes blindly all currently
+				 * accepted connections, it does not use the (possibly 
+				 * overriden) closeConnection method.
 				 *
 				 */
 				virtual bool closeAcceptedConnections() 
