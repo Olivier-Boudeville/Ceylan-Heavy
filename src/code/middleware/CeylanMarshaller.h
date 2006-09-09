@@ -109,10 +109,10 @@ namespace Ceylan
 		 * the other way round, from transport to endpoint.
 		 *
 		 * Hence it is the place where the actual marshalling/demarshalling 
-		 * is provided.
+		 * is taken care of.
 		 *
 		 * Various encodings can be used, from basic home-made ones,
-		 * which just take care of endianness, to more powerful ones, 
+		 * which just handle endianness, to more powerful ones, 
 		 * including PER ASN.1 encodings.
 		 *
 		 * @note The Marshaller abstract class does not enforce a specific
@@ -129,7 +129,9 @@ namespace Ceylan
 		{
 		
 		
+		
 			public:
+			
 			
 			
 				/**
@@ -154,36 +156,56 @@ namespace Ceylan
 					throw() ;
 				
 				
+				
 				/// Virtual destructor.
 				virtual ~Marshaller() throw() ;
 				
 				
+				
 				/**
-				 * Requests this marshaller to read as much data as possible,
-				 * so that there may be enough data to read at least a full PDU.
+				 * Requests this marshaller to read either a minimum size or
+				 * as much data as possible, so that there may be enough 
+				 * data to read at least a full PDU.
 				 *
-				 * In practise, this marshaller will try to read from its
-				 * encapsulated lower level stream the full remaining free size
-				 * between the current index of its internal buffer and the
-				 * end of that buffer.
+				 * @param requestedSize the contiguous size that is needed 
+				 * by the caller to store the bytes it is waiting for. If 
+				 * this needed size is greater than the buffer size, the
+				 * condition will never be met and a DecodeException is thrown.
+				 * If the needed size is smaller than the buffer size but 
+				 * bigger than the remaining size of next free chunk, as 
+				 * normally previous PDU should have been decoded, at the 
+				 * expense of an automatic move in buffer, the beginning of the
+				 * PDU to decode will be set back to the beginning of the
+				 * buffer so that the full PDU will be able to fit in buffer.
 				 *
+				 * If the requested size is null, then this marshaller will
+				 * try to read from its encapsulated lower level stream the 
+				 * full remaining free size between the current index of 
+				 * its internal buffer and the end of that buffer.
+				 *
+				 * 
 				 * @return the number of bytes available in the buffer for
-				 * reading. This is not the number of bytes read, insofar as 
-				 * there may already be some data before this method was 
-				 * called. The caller can use the returned information to 
+				 * reading. This is not necessarily the exact number of bytes
+				 * that were just read, insofar as  there may already be 
+				 * some data in the buffer before this method was called. 
+				 *
+				 * The caller can use the returned information to 
 				 * figure out if it waits for more data or if there is already
 				 * enough to be decoded in place.
 				 *
 				 * @note Using this method only makes sense if the marshaller
 				 * has an internal buffer.
 				 *
-				 * @throw MarshallException if the operation failed, including
-				 * if there is no buffer available, or DecodeException if
-				 * there is not enough space in the buffer to read more data.
+				 * @throw DecodeException if the operation failed, including
+				 * if there is no buffer available, or if there is not enough
+				 * space in the buffer to fulfill requested size or to read 
+				 * more data.
 				 *
 				 */
-				virtual System::Size retrieveData() throw( DecodeException ) ;
+				virtual System::Size retrieveData( 
+					System::Size requestedSize = 0 ) throw( DecodeException ) ;
 				 
+				
 				
             	/**
             	 * Returns a user-friendly description of the state of 
@@ -203,6 +225,7 @@ namespace Ceylan
 	
 	
 	
+	
 			protected:
 
 
@@ -214,6 +237,12 @@ namespace Ceylan
 				System::InputOutputStream * _lowerLevelStream ;
 
 
+				inline bool isBuffered() const throw()
+				{
+					return _bufferStream != 0 ;
+				}
+				
+				
 				/**
 				 * An in-memory buffered stream that may be used to cache
 				 * read bytes until they form a full structure that has to
@@ -222,6 +251,7 @@ namespace Ceylan
 				 * 
 				 */
 				System::MemoryStream * _bufferStream ;
+				
 				
 
 
