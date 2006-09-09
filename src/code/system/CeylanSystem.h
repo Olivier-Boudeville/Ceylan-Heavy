@@ -150,7 +150,8 @@ namespace Ceylan
 		 *
 		 * Will raise an IOException if read fails.
 		 *
-		 * @return the number of bytes that have actually been read.
+		 * @return the number of bytes that have actually been read, which is
+		 * zero or more.
 		 *
 		 * @throw FeatureNotAvailableException if the file descriptor
 		 * feature is not available, and IOException is a system error
