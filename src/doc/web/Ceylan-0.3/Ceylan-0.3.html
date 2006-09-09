@@ -86,6 +86,15 @@ Before reporting an error, please check you have upgraded following tools with t
 </p>
 
 
+How does the middleware layer works ?
+
+A multiplexed server stream spawns a connection whenever a client connects to the listening socket.
+
+This connection lives on top on a dedicated socket, which gets selected on the server side whenever they are bytes to be read.
+
+The multiplexed server detects it (at least one file descriptor is selected), awakes the corresponding anonymous protocol-aware socket, which is turn trigger its protocol server (by calling its notifyDataAvailability method). The protocol server determines how may bytes it needs to decode the next chunk of informations from the client, and asks it to its marshaller, thanks to its retrieveData method. This marshaller uses its internal buffer (memory stream instance) to read the incoming bytes, and will returned the bytes available for reading in its buffer. 
+
+
 For client/server model :
 <ul>
 
