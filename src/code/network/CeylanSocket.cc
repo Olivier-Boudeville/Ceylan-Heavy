@@ -21,17 +21,17 @@ extern "C"
 
 
 #ifdef CEYLAN_USES_SYS_TIME_H
-//#include <sys/time.h>          // for select, on OpenBSD 
+#include <sys/time.h>          // for select, on OpenBSD 
 #endif // CEYLAN_USES_SYS_TIME_H
 
 
 #ifdef CEYLAN_USES_STRING_H
-//#include <string.h>            // for select, on OpenBSD
+#include <string.h>            // for select, on OpenBSD
 #endif // CEYLAN_USES_STRING_H
 
 
 #ifdef CEYLAN_USES_SYS_TYPES_H
-//#include <sys/types.h>         // for select, on OpenBSD
+#include <sys/types.h>         // for select, on OpenBSD
 #endif // CEYLAN_USES_SYS_TYPES_H
 
 
@@ -41,12 +41,17 @@ extern "C"
 
 
 #ifdef CEYLAN_USES_UNISTD_H
-//#include <unistd.h>            // for timeval, select, on OpenBSD
+#include <unistd.h>            // for fcntl, for timeval, select, on OpenBSD
 #endif // CEYLAN_USES_UNISTD_H
 
 
-#ifdef CEYLAN_USES_STRINGS_H
-#include <strings.h>           // for AIX
+#ifdef CEYLAN_USES_STRING_H
+#include <string.h>            // for select, on OpenBSD
+#endif // CEYLAN_USES_STRING_H
+
+
+#ifdef CEYLAN_USES_FCNTL_H
+#include <fcntl.h>             // for fcntl
 #endif // CEYLAN_USES_STRINGS_H
 
 
@@ -84,8 +89,8 @@ Socket::SocketException::~SocketException() throw()
 
 	
 // Is protected :
-Socket::Socket() throw( Socket::SocketException ) :
-	InputOutputStream(),
+Socket::Socket( bool blocking ) throw( Socket::SocketException ) :
+	InputOutputStream( true ),
 	_port( 0 ),
 	_address( 0 ),
 	_originalFD( 0 )
@@ -95,6 +100,9 @@ Socket::Socket() throw( Socket::SocketException ) :
 	
 	_address = new SystemSpecificSocketAddress ;
 	
+	if ( blocking == false )
+		setBlocking( false ) ;
+		
 #else // CEYLAN_USES_NETWORK
 
 	throw SocketException( "Socket empty constructor failed : "
@@ -105,8 +113,8 @@ Socket::Socket() throw( Socket::SocketException ) :
 }
 
 
-Socket::Socket( Port port ) throw( SocketException ):
-	InputOutputStream(),
+Socket::Socket( Port port, bool blocking ) throw( SocketException ):
+	InputOutputStream( blocking ),
 	_port( port ) ,
 	_address( 0 ),
 	_originalFD( 0 )
@@ -124,6 +132,9 @@ Socket::Socket( Port port ) throw( SocketException ):
 	 */
 
 	_address = new SystemSpecificSocketAddress ;
+
+	if ( blocking == false )
+		setBlocking( false ) ;
 	
 #else // CEYLAN_USES_NETWORK
 
@@ -198,9 +209,15 @@ Size Socket::read( char * buffer, Size maxLength )
 	try
 	{
 	
+		setSelected( false ) ;
+
+		LogPlug::debug( "Socket::read : using file descriptor "
+			+ Ceylan::toString( getFileDescriptorForTransport() ) ) ;
+			
 		// FDRead can throw IOException and FeatureNotAvailableException :
 		return System::FDRead( getFileDescriptorForTransport(), 
 			buffer, maxLength ) ;
+			
 	}
 	catch( const Ceylan::Exception & e )
 	{
@@ -475,3 +492,59 @@ bool Socket::close() throw( Stream::CloseException )
 #endif // CEYLAN_USES_NETWORK	
 
 }
+
+
+void Socket::setBlocking( bool newStatus )
+	throw( NonBlockingNotSupportedException )
+{
+
+#if CEYLAN_USES_NETWORK
+
+	// Anything to do ?
+	if ( newStatus == isBlocking() )
+		return ;
+
+	// Yes, retrieve current flags :
+	int currentFDState = ::fcntl( getOriginalFileDescriptor(),
+		F_GETFL, 0 ) ;
+		
+	if ( currentFDState < 0 )
+		throw NonBlockingNotSupportedException( "Socket::setBlocking : "
+			"retrieving attributes failed : " + System::explainError() ) ;
+			
+	// Set newer flags :
+	if ( newStatus )
+	{
+	
+		LogPlug::trace( "Socket::setBlocking : "
+			"setting a non-blocking socket to blocking." ) ;
+			
+		if ( ::fcntl( getOriginalFileDescriptor(), F_SETFL, 
+				currentFDState & (~O_NONBLOCK) ) < 0 )
+			throw NonBlockingNotSupportedException( "Socket::setBlocking : "
+				"setting to blocking failed : " + System::explainError() ) ;
+
+	}
+	else
+	{
+	
+		LogPlug::trace( "Socket::setBlocking : "
+			"setting a blocking socket to non-blocking." ) ;
+	
+		if ( ::fcntl( getOriginalFileDescriptor(), F_SETFL, 
+				currentFDState | O_NONBLOCK ) < 0 )
+			throw NonBlockingNotSupportedException( "Socket::setBlocking : "
+				"setting to non-blocking failed : " + System::explainError() ) ;
+	
+	}
+	
+#else // CEYLAN_USES_NETWORK	
+		
+	throw NonBlockingNotSupportedException( 
+		"Socket::setBlocking failed : network support not available." ) ; 
+			
+#endif // CEYLAN_USES_NETWORK	
+
+}
+
+	
