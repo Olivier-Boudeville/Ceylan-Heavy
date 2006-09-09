@@ -41,6 +41,8 @@ namespace Ceylan
 		 * protocol server whose marshaller is associated with the anonymous
 		 * stream socket which is in charge of this connection.
 		 *
+		 * These sockets are non-blocking.
+		 *
 		 * @see MultiplexedProtocolBasedServer
 		 *
 		 */
@@ -177,8 +179,8 @@ namespace Ceylan
 				 */
 				Middleware::ProtocolServer * _protocolServer ;
 				
-
-
+				
+				
 			private:
 	
 				
