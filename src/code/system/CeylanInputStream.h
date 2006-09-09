@@ -90,7 +90,7 @@ namespace Ceylan
 						}
 								
 				} ;
-				
+								
 				
 	
 				/**
@@ -113,19 +113,39 @@ namespace Ceylan
 				} ;
 	
 	
-	
-	
-				/// Basic constructor for InputStream, created not selected.
-				InputStream() throw() ;
+		
+				/**
+				 * Basic constructor for InputStream, created not selected.
+				 *
+				 * @param blocking tells whether this input stream should be
+				 * created in blocking mode (the default) or in non-blocking
+				 * mode (if supported).
+				 *
+				 */
+				explicit InputStream( bool blocking = true ) throw() ;
 		
 		
 				/// Basic virtual destructor.
 				virtual ~InputStream() throw() ;
 		
 		
+		
 				/// Tells if the stream has data to read.
 				bool isSelected() const throw() ;
 		
+
+				/**
+				 * Tells whether this InputStream is faulty, i.e. encountered
+				 * a fatal error and must not be used anymore.
+				 *
+				 * @example Socket inputstreams can die a nasty death, which
+				 * causes the select operation to fail when in the selected
+				 * set.
+				 *
+				 */
+				bool isFaulty() const throw() ;
+		
+						 
 		
 				/**
 				 * Returns the stream's unique ID.
@@ -138,6 +158,23 @@ namespace Ceylan
 				virtual StreamID getInputStreamID() const 
 					throw( InputStreamException ) = 0 ;
 
+
+				
+            	/**
+            	 * Returns an user-friendly description of the state of
+				 * this object.
+            	 *
+				 * @param level the requested verbosity level.
+				 *
+				 * @note Text output format is determined from overall 
+				 * settings.
+				 *
+				 * @see TextDisplayable
+				 *
+				 */
+            	virtual const std::string toString( 
+					Ceylan::VerbosityLevels level = Ceylan::high ) 
+						const throw() ;
 
 
 
@@ -169,6 +206,9 @@ namespace Ceylan
 				 *
 				 * @note This method is not pure virtual so that other methods
 				 * using it can be defined here.
+				 *
+				 * @note Each read method should set the selected status to
+				 * false, after the actual reading.
 				 *
 				 */
 		 		virtual Size read( Ceylan::Byte * buffer, Size length ) 
@@ -363,11 +403,22 @@ namespace Ceylan
 
 	
 	
+	
 			protected:
 	
 	
-				/// Used to set the selection status.
+	
+				/// Used to set the selection status of this stream.
 				virtual void setSelected( bool newStatus ) throw() ;
+
+
+				/**
+				 * Sets the faulty state of this stream.
+				 *
+				 * @param newFaultyState the new faulty state.
+				 *
+				 */
+				void setFaulty( bool newFaultyState = true ) throw() ;
 		
 		
 				/**
@@ -381,7 +432,18 @@ namespace Ceylan
 					throw( InputStreamException )  ;
 	
 	
+	
 			private:
+
+
+
+				/// Stores the selected status.
+				bool _isSelected ;
+				
+				
+				/// Tells whether this InputStream is hopelessly faulty.
+				bool _isFaulty ; 
+
 
 
 				/**
@@ -406,10 +468,7 @@ namespace Ceylan
 				InputStream & operator = ( const InputStream & source ) 
 					throw() ;
 	
-	
-				/// Stores the selected status.
-				bool _isSelected ;
-	
+		
 		} ;
 					
 	}
