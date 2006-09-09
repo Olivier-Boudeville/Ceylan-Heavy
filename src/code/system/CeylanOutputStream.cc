@@ -22,7 +22,7 @@ extern "C"
 
 
 using namespace Ceylan::System ;
-using namespace Ceylan::System ;
+using namespace Ceylan::Log ;
 
 
 using std::string ;
@@ -30,7 +30,8 @@ using std::string ;
 
 
 
-OutputStream::OutputStream() throw()
+OutputStream::OutputStream( bool blocking ) throw():
+	Stream( blocking )
 {
 
 }
@@ -247,7 +248,7 @@ void OutputStream::writeFloat64( Ceylan::Float64 toWrite )
 }	
 
 
-void OutputStream::writeString( string & toWrite )
+void OutputStream::writeString( const string & toWrite )
 	throw( WriteFailedException )
 {
 
@@ -266,9 +267,24 @@ void OutputStream::writeString( string & toWrite )
 	
 	Size writeCount = write( toWrite.data(), stringSize ) ;
 	
+	LogPlug::debug( "OutputStream::writeString : wrote "
+		+ Ceylan::toString( writeCount ) + " bytes." ) ;
+		
 	if ( writeCount < stringSize ) 
 		throw WriteFailedException( "In OutputStream::writeString" ) ;
 	
 }
 
 
+const std::string OutputStream::toString( Ceylan::VerbosityLevels level ) 
+	const throw()
+{
+
+	string res = "OutputStream whose ID is " 
+		+ Ceylan::toString( getOutputStreamID() ) ;
+			
+	res += ". This is a " + Stream::toString( level ) ;
+
+	return res ;
+	
+}
