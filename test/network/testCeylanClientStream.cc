@@ -15,13 +15,16 @@ using namespace std ;
 
 
 /**
- * Test class for stream clients.
+ * Test class of stream clients, for stream servers.
  *
  * Against a running server to compare implementations, one may use : 
  *   - telnet localhost 6969
  *   - ./testCeylanClientStream --consolePlug localhost 6969
  *
  * and watch the result with : netstat -a --tcp -p
+ *
+ * @see testCeylanSequentialServerStream.cc, 
+ * testCeylanMultiplexedServerStream.cc
  *
  */
 class MyTestStreamClient : public Ceylan::Network::ClientStreamSocket
