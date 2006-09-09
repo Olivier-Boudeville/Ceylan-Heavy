@@ -28,8 +28,8 @@ namespace Ceylan
 		 * connection-triggered sockets, each one corresponding to a 
 		 * connected client managed by a dedicated protocol server.
 		 *
-		 * Following methods have to be subclassed so that the server can
-		 * perform its specific task :
+		 * Following methods have to be subclassed so that the multiplexed 
+		 * server can perform its specific task :
 		 *   - accepted, which must associate a specific protocol server to
 		 * the AnonymousProtocolAwareStreamSocket instance created for a
 		 * newly accepted connection 
@@ -40,6 +40,8 @@ namespace Ceylan
 		 * as there may be more than one living connection at a time, which
 		 * therefore would need to be specifically chosen thanks to the 
 		 * interface.
+		 *
+		 * @see testCeylanMultiLwProtocolServer.cc
 		 *
 		 */
 		class MultiplexedProtocolBasedStreamServer: 
@@ -127,6 +129,8 @@ namespace Ceylan
 				 *
 				 * @throw ServerStreamSocketException in all cases.
 				 *
+				 * @see testCeylanMultiLwProtocolServer.cc
+				 *
 				 */
 				virtual void accepted( AnonymousStreamSocket & newConnection )
 					throw( ServerStreamSocketException ) ;
@@ -173,6 +177,17 @@ namespace Ceylan
 					throw( MultiplexedServerStreamSocketException ) ;
 				
 
+				/**
+				 * Closes specified connection, and manages shutdown requests.
+				 *
+				 * @param connection a reference to the connection that is 
+				 * to be terminated by this server.
+				 *
+				 */
+				virtual void closeConnection( 
+						AnonymousStreamSocket & connection )
+					throw( MultiplexedServerStreamSocketException ) ;
+	
 	
             	/**
             	 * Returns a user-friendly description of the state of 
