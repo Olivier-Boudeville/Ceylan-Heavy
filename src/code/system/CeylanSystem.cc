@@ -45,10 +45,11 @@ extern "C"
 
 
 #include <cstdlib>
-#include <cerrno>                         // for errno
+#include <cerrno>                         // for errno, EAGAIN
 #include <iostream>                       // for sync_with_stdio
 
 
+// For Windows select : #define FD_SETSIZE 512 (instead of 64)
 
 using std::string ;
 
@@ -165,26 +166,45 @@ Size Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
+ 	LogPlug::trace( "Ceylan::System::FDRead : will try to read "
+		+ Ceylan::toString( toReadBytesNumber ) + " byte(s)." ) ;
 
 	char * pos = dataBuffer ;
 
- 	SignedSize readBytesNumber, totalReadBytesNumber = 0 ;
+ 	SignedSize readBytesNumber ;
+	SignedSize totalReadBytesNumber = 0 ;
 
 	while ( toReadBytesNumber &&
 		( readBytesNumber = ::read( fd, pos, toReadBytesNumber ) ) != 0 )
 	{
 	
-		if ( readBytesNumber < 0 )
-			throw IOException( "Ceylan::System::FDRead failed : "
-				+ explainError() ) ;
+		if ( readBytesNumber < 0 ) 
+		{
+		
+			// Non-blocking reads return EAGAIN if there is no data :
+			if ( System::getError() == EAGAIN )
+			{
+				readBytesNumber = 0 ;
+				break ;
+			}	
+			else
+			{	
+				throw IOException( "Ceylan::System::FDRead failed : "
+					+ explainError() ) ;
+			}
+					
+		}		
 
 		totalReadBytesNumber += readBytesNumber ;
 		toReadBytesNumber    -= readBytesNumber ;
 		pos                  += readBytesNumber ;
 
 	}
+ 
+	// readBytesNumber == 0 means end of file, if blocking.
 
-	// readBytesNumber == 0 means end of file.
+ 	LogPlug::trace( "Ceylan::System::FDRead : read "
+		+ Ceylan::toString( totalReadBytesNumber ) + " byte(s)." ) ;
 
 	return static_cast<Size>( totalReadBytesNumber ) ;
 
@@ -216,8 +236,22 @@ Size Ceylan::System::FDWrite( FileDescriptor fd,
 	{
 	
 		if ( wroteBytesNumber < 0 )
-			throw IOException( "Ceylan::System::FDWrite failed : "
-				+ explainError() ) ;
+		{
+		
+			// Non-blocking write return EAGAIN if writing would block :
+			if ( System::getError() == EAGAIN )
+			{
+				wroteBytesNumber = 0 ;
+				break ;
+			
+			}
+			else
+			{
+			
+				throw IOException( "Ceylan::System::FDWrite failed : "
+					+ explainError() ) ;
+			}
+		}
 
 		totalWroteBytesNumber += wroteBytesNumber ;
 		toWriteBytesNumber    -= wroteBytesNumber ;
