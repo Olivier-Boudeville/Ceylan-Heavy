@@ -304,10 +304,15 @@ namespace Ceylan
 				/**
 				 * Client-side constructor.
 				 *
+				 * @param blocking tells whether this socket should be
+				 * created in blocking mode (the default) or in non-blocking
+				 * mode.
+				 *
 				 * @throw SocketException if the operation failed.
 				 *
 				 */
-				Socket() throw( SocketException ) ;
+				explicit Socket( bool blocking = true ) 
+					throw( SocketException ) ;
 
 
 				/**
@@ -315,10 +320,15 @@ namespace Ceylan
 				 *
 				 * @param localPort the local port to bind to.
 				 *
+				 * @param blocking tells whether this socket should be
+				 * created in blocking mode (the default) or in non-blocking
+				 * mode.
+				 *
 				 * @throw SocketException if the operation failed.
 				 *
 				 */
-				explicit Socket( Port localPort ) throw( SocketException ) ;
+				Socket( Port localPort, bool blocking = true ) 
+					throw( SocketException ) ;
 		
 		
 				/**
@@ -357,6 +367,21 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool close() throw( Stream::CloseException ) ;
+
+		
+				/**
+				 * Sets the blocking mode of this socket.
+				 *
+				 * @param newStatus if true, sets the socket in blocking mode,
+				 * if false set to non-blocking mode. If the socket is 
+				 * already in the target state, nothing is done.
+				 *
+				 * @throw NonBlockingNotSupportedException if the operation
+				 * failed.
+				 *
+				 */
+				virtual void setBlocking( bool newStatus )
+					throw( NonBlockingNotSupportedException ) ;
 
 
 				/**
