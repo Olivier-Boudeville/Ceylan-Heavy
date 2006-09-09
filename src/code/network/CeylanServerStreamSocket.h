@@ -86,11 +86,16 @@ namespace Ceylan
 				 * @param reuse tells whether the local addresses are allowed
 				 * to be reused in bind().
 				 *
+				 * @param blocking tells whether this socket should be
+				 * created in blocking mode or in non-blocking mode (the
+				 * default).
+				 *
 				 * @throw SocketException if socket creation failed.
 				 *
 				 */
 				explicit ServerStreamSocket( Port serverPort, 
-					bool reuse = true )	throw( SocketException ) ;
+						bool reuse = true, bool blocking = false )
+					throw( SocketException ) ;
 	
 				
 				/// Virtual destructor.
