@@ -105,8 +105,9 @@ AnonymousStreamSocket::AnonymousStreamSocket(
 		sizeof( _address->_socketAddress ) ) ;
 
 	/*
-	 * @todo Add a time-out, in case the connection request was cancelled
-	 * after the select but before this accept :
+	 * A time-out could be added, in case the connection request was cancelled
+	 * after the select but before this accept, if ever blocking sockets 
+	 * were chosen (non-blocking are to be preferred anyway) :
 	 *
 	 */
 	_originalFD = ::accept( listeningFD, 
