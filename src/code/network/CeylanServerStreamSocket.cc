@@ -56,6 +56,9 @@ using std::string ;
  * Avoid ::htonl, use directy htonl since it is a macro on some platforms
  * (ex : NetBSD)
  *
+ * @see http://www.amk.ca/python/howto/sockets/ for many socket programming
+ * tips.
+ *
  */
 
 
@@ -76,9 +79,10 @@ ServerStreamSocket::ServerStreamSocketException::~ServerStreamSocketException()
 
 
 
-ServerStreamSocket::ServerStreamSocket( Port serverPort, bool reuse )
+ServerStreamSocket::ServerStreamSocket( Port serverPort, bool reuse, 
+	bool blocking )
 		throw( SocketException ):
-	StreamSocket( serverPort ),
+	StreamSocket( serverPort, blocking ),
 	_bound( false ),
 	_stopRequested( false ),
 	_maximumPendingConnectionsCount( DefaultMaximumPendingConnectionsCount )
@@ -92,7 +96,7 @@ ServerStreamSocket::ServerStreamSocket( Port serverPort, bool reuse )
 		// Reuse option set to non-zero to enable option :
 		int reuseOption = 1 ;
 		
-		// See : man 7 socket
+		// See : man 7 socket or man 7 ip
 		if ( ::setsockopt( getOriginalFileDescriptor(), 
 			/* socket level */ SOL_SOCKET, 
 			/* option name */ SO_REUSEADDR, 
@@ -103,7 +107,7 @@ ServerStreamSocket::ServerStreamSocket( Port serverPort, bool reuse )
 					"could not set reuse option on listening socket : "
 					+ System::explainError() ) ;
 	}
-
+	
 #else // CEYLAN_USES_NETWORK
 
 	throw ServerStreamSocketException( 
