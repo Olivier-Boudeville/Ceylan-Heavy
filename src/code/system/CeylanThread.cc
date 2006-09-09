@@ -390,9 +390,13 @@ void Thread::Sleep( System::Second seconds,	System::Microsecond microseconds )
 	throw( ThreadException )
 {
 
+#if CEYLAN_DEBUG_THREADS
+ 
 	LogPlug::debug( "Current thread will be sleeping for "
-		+ Ceylan::toString( seconds  ) + " seconds and "
-		+ Ceylan::toString( microseconds ) + " microseconds." ) ;
+		+ Ceylan::toString( seconds  ) + " second(s) and "
+		+ Ceylan::toString( microseconds ) + " microsecond(s)." ) ;
+
+#endif // CEYLAN_DEBUG_THREADS
 
 	try
 	{
