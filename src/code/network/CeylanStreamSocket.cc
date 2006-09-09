@@ -72,8 +72,8 @@ StreamSocket::StreamSocketException::~StreamSocketException() throw()
 
 
 	
-StreamSocket::StreamSocket() throw( Socket::SocketException ) :
-	Socket()
+StreamSocket::StreamSocket( bool blocking ) throw( Socket::SocketException ) :
+	Socket( blocking )
 {
 
 #if CEYLAN_USES_NETWORK
@@ -90,8 +90,8 @@ StreamSocket::StreamSocket() throw( Socket::SocketException ) :
 }
 
 
-StreamSocket::StreamSocket( Port port ) throw( SocketException ):
-	Socket( port )
+StreamSocket::StreamSocket( Port port, bool blocking ) throw( SocketException ):
+	Socket( port, blocking )
 {
 
 #if CEYLAN_USES_NETWORK
