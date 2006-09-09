@@ -35,6 +35,7 @@ namespace Ceylan
 			public:
 
 
+
 				/// Index in the internal buffer.
 				typedef Size Index ;
 				
@@ -76,6 +77,13 @@ namespace Ceylan
 
 
 				/**
+				 * Blanks the buffer so that it is emptied.
+				 *
+				 */
+				virtual void blank() throw() ;
+				 
+
+				/**
 				 * Closes the stream for read/write actions.
 				 *
 				 * @return true iff an operation had to be performed.
@@ -84,16 +92,9 @@ namespace Ceylan
 				 * including if the file was not already opened.
 				 *
 				 */
-				bool close() throw( Stream::CloseException ) ;
+				virtual bool close() throw( Stream::CloseException ) ;
 
 
-
-				/// Returns the current index of filled block in buffer.
-				virtual Index getBlockIndex() const throw() ;
-
-
-				/// Returns the current length of filled block in buffer.
-				virtual Size getBlockLength() const throw() ;
 
 
 				/**
@@ -105,45 +106,9 @@ namespace Ceylan
 				virtual Size getSize() const throw() ;
 
 
-				/**
-				 * Returns the index of the next free chunk in the buffer 
-				 * that is to be filled by read data .
-				 *
-				 * It corresponds to the current end of filled buffer.
-				 *
-				 * @see getSize
-				 *
-				 */
-				virtual Index getIndexOfNextFreeChunk() const throw() ;
-				
 				
 				/**
-				 * Returns the index of the next free chunk in the buffer 
-				 * that is to be filled by read data .
-				 *
-				 * It corresponds to the current end of filled buffer.
-				 *
-				 * @see getSize
-				 *
-				 */
-				virtual Byte * getAddressOfNextFreeChunk() const throw() ;
-				
-				
-				/**
-				 * Returns the size of the biggest free chunk that can be found
-				 * starting at the first free location in the buffer.
-				 *
-				 * It corresponds to the size, in bytes, between the current 
-				 * end of filled buffer and the end of the overall buffer.
-				 *
-				 * @see getSize
-				 *
-				 */
-				virtual Size getSizeOfNextFreeChunk() const throw() ;
-				
-				
-				/**
-				 * Reads up to maxLength bytes from this file to specified
+				 * Reads up to maxLength bytes from this stream to specified
 				 * buffer.
 				 *
 				 * @param buffer the buffer where to store read bytes. 
@@ -203,7 +168,70 @@ namespace Ceylan
 						Size maxLength ) 
 					throw( OutputStream::WriteFailedException ) ;
 
+				
+				
+				
+				// Lower-level access section.
 
+
+				/**
+				 * Returns the index of the next free chunk in the buffer 
+				 * that is to be filled by read data.
+				 *
+				 * It corresponds to the current end of filled buffer.
+				 *
+				 * @see getSize
+				 *
+				 */
+				virtual Index getIndexOfNextFreeChunk() const throw() ;
+				
+				
+				/**
+				 * Returns the index of the next free chunk in the buffer 
+				 * that is to be filled by read data .
+				 *
+				 * It corresponds to the current end of filled buffer.
+				 *
+				 * @see getSize
+				 *
+				 */
+				virtual Byte * getAddressOfNextFreeChunk() const throw() ;
+				
+				
+				/**
+				 * Returns the size of the biggest free chunk that can be found
+				 * starting at the first free location in the buffer.
+				 *
+				 * It corresponds to the size, in bytes, between the current 
+				 * end of filled buffer and the end of the overall buffer.
+				 *
+				 * @see getSize
+				 *
+				 */
+				virtual Size getSizeOfNextFreeChunk() const throw() ;
+				
+
+				/// Returns the current index of filled block in buffer.
+				virtual Index getBlockIndex() const throw() ;
+
+
+				/// Returns the current length of filled block in buffer.
+				virtual Size getBlockLength() const throw() ;
+
+
+
+				/**
+				 * Returns the element at specified index in buffer.
+				 *
+				 * @param targetIndex the index of the requested element.
+				 * It will wrapped around (modulo) if necessary, so that it
+				 * is in [0;getSize()[
+				 *
+				 */
+				virtual Ceylan::Byte getElementAt( Index targetIndex ) 
+					const throw() ;
+					
+					
 				/**
 				 * Declares that specified size should be added to the 
 				 * current size of the buffer.
@@ -221,6 +249,20 @@ namespace Ceylan
 				 */
 				virtual void increaseFilledBlockOf( Size bytesAdded )
 					throw( MemoryStreamException ) ;
+
+
+				/**
+				 * Translates the filled block in buffer so that the beginning
+				 * of block is at the beginning of buffer.
+				 *
+				 * This way, the free space of the buffer goes from the end
+				 * of filled block to the end of buffer, and if more data is
+				 * read, it will still make one block in buffer.
+				 *
+				 */
+				virtual void moveFilledBlockToBufferStart()
+					throw( MemoryStreamException ) ;
+
 
 
 
@@ -256,6 +298,9 @@ namespace Ceylan
             	 * Returns an user-friendly description of the state of
 				 * this object.
             	 *
+				 * If the highest level of detail is requested, the full buffer
+				 * will be dumped.
+				 *
 				 * @param level the requested verbosity level.
 				 *
 				 * @note Text output format is determined from overall 
@@ -272,9 +317,8 @@ namespace Ceylan
 
 
 
-
-
 			protected:
+
 
 
 				/// The total size of the internal buffer.
