@@ -80,6 +80,15 @@ MemoryStream::~MemoryStream() throw()
 }
 
 
+void MemoryStream::blank() throw()
+{
+
+	_index = 0 ;
+	_len = 0 ;
+	
+}
+
+
 bool MemoryStream::close() throw( Stream::CloseException )
 {
 
@@ -88,52 +97,10 @@ bool MemoryStream::close() throw( Stream::CloseException )
 }
 
 
-Size MemoryStream::getBlockIndex() const throw()
-{ 
-
-	return _index ; 
-	
-}
-
-Size MemoryStream::getBlockLength() const throw()
-{ 
-
-	return _len ; 
-	
-}
-
-
 Size MemoryStream::getSize() const throw()
 {
 
 	return _size ;
-	
-}
-
-
-MemoryStream::Index MemoryStream::getIndexOfNextFreeChunk() const throw()
-{
-
-	return ( _index + _len ) % _size ;
-	
-}
-
-
-Ceylan::Byte * MemoryStream::getAddressOfNextFreeChunk() const throw()
-{
-
-	return _buffer + getIndexOfNextFreeChunk() ;
-	
-}
-
-
-Size MemoryStream::getSizeOfNextFreeChunk() const throw()
-{
-
-	if ( ( _index + _len ) > _size )
-		return _index - getIndexOfNextFreeChunk() ;
-	else	
-		return _size - getIndexOfNextFreeChunk() ;
 	
 }
 
@@ -313,6 +280,60 @@ Size MemoryStream::write( const Ceylan::Byte * buffer, Size maxLength )
 }
 
 
+
+// Lower-level access section.
+
+
+MemoryStream::Index MemoryStream::getIndexOfNextFreeChunk() const throw()
+{
+
+	return ( _index + _len ) % _size ;
+	
+}
+
+
+Ceylan::Byte * MemoryStream::getAddressOfNextFreeChunk() const throw()
+{
+
+	return _buffer + getIndexOfNextFreeChunk() ;
+	
+}
+
+
+Size MemoryStream::getSizeOfNextFreeChunk() const throw()
+{
+
+	if ( ( _index + _len ) > _size )
+		return _index - getIndexOfNextFreeChunk() ;
+	else	
+		return _size - getIndexOfNextFreeChunk() ;
+	
+}
+
+
+MemoryStream::Index MemoryStream::getBlockIndex() const throw()
+{ 
+
+	return _index ; 
+	
+}
+
+Size MemoryStream::getBlockLength() const throw()
+{ 
+
+	return _len ; 
+	
+}
+
+
+Ceylan::Byte MemoryStream::getElementAt( Index targetIndex ) const throw()
+{
+
+	return _buffer[ targetIndex % _size ] ;
+	
+}
+
+
 void MemoryStream::increaseFilledBlockOf( Size bytesAdded ) 
 	throw( MemoryStreamException )
 {
@@ -324,6 +345,57 @@ void MemoryStream::increaseFilledBlockOf( Size bytesAdded )
 	
 }
 	
+	
+void MemoryStream::moveFilledBlockToBufferStart() throw( MemoryStreamException )
+{
+
+	if ( _index == 0 )
+		return ;
+	
+	/*
+	 * Here the index is not at the beginning, hence it must be moved.
+	 * Some cases are hard to handle :
+	 *
+	 * indices : 12345    must become 12345
+	 * values  : CDEAB                ABCDE
+	 * (elements are replacing other elements)
+	 * hence a very rudimentary approach is used, with an intermediate buffer : 
+	 *
+	 */
+	Ceylan::Byte * _permutedBuffer = new Ceylan::Byte[ _size ] ;
+	
+	// Two cases : one whole block to translate, or two chunks to merge :
+	if ( _index + _len > _size )
+	{
+	
+		// Two chunks, first goes from _index to end of buffer :
+		Size firstChunkSize = _size - _index ;
+		
+		::memcpy( _permutedBuffer, _buffer + _index, firstChunkSize ) ;
+		
+		// Second had wrapped-around the end of buffer :
+		::memcpy( _permutedBuffer + firstChunkSize, _buffer, 
+			_len - firstChunkSize ) ;
+		
+	}
+	else
+	{
+	
+		// Only one block, easy :
+		::memcpy( _permutedBuffer, _buffer + _index, _len ) ;
+		
+	}
+	
+		
+	delete [] _buffer ;
+	
+	_buffer = _permutedBuffer ;
+	
+	_index = 0 ;
+	// _len unchanged.
+	 
+}
+
 
 StreamID MemoryStream::getStreamID() const throw()
 {
@@ -354,8 +426,20 @@ const std::string MemoryStream::toString( Ceylan::VerbosityLevels level )
 		+ Ceylan::toString( _index ) + ", whose fill length is "
 		+ Ceylan::toString( _len )+ " byte(s), whose ID is " 
 		+ Ceylan::toString( getStreamID() ) ;
-		
-	return res ;
+	
+	if ( level != Ceylan::high )
+		return res ;
+	
+	res += ". Displaying buffer content : [ " ;
+	
+	for ( Index i = 0 ; i < _size-1 ; i++ )
+	{
+		res += Ceylan::toNumericalString( getElementAt( i ) ) + "-" ;
+	}
+	
+	res += Ceylan::toNumericalString( getElementAt( _size ) ) ;
+	
+	return res + " ]" ;
 	
 }
 
