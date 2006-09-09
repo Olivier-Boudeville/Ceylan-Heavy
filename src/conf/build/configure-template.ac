@@ -316,6 +316,7 @@ if test x$enable_debug = xyes; then
 	DEBUG_DEMANGLE=0
 	DEBUG_LOG=0
 	DEBUG_SYSTEM=1
+	DEBUG_THREADS=0
 	
 	AM_CXXFLAGS="$AM_CXXFLAGS -g" 
     if test x$ac_cv_cxx_compiler_gnu = xyes; then
@@ -334,6 +335,7 @@ else
 	DEBUG_DEMANGLE=0	
 	DEBUG_LOG=0
 	DEBUG_SYSTEM=0
+	DEBUG_THREADS=0
 	
     if test x$ac_cv_cxx_compiler_gnu = xyes; then
 		# -fomit-frame-pointer : may prevent debugging on some platforms
@@ -382,6 +384,10 @@ AC_DEFINE_UNQUOTED([DEBUG_LOG],
 AC_DEFINE_UNQUOTED([DEBUG_SYSTEM],
 	[$DEBUG_SYSTEM],
 	[Define to 1 if debug mode for system layer is to be enabled])
+
+AC_DEFINE_UNQUOTED([DEBUG_THREADS],
+	[$DEBUG_THREADS],
+	[Define to 1 if debug mode for threads is to be enabled])
 
 
 
