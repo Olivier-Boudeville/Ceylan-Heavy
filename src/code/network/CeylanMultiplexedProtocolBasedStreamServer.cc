@@ -44,7 +44,6 @@ MultiplexedProtocolBasedStreamServer::~MultiplexedProtocolBasedStreamServer()
 		
 }
 
-// Add handleConnection 
 
 AnonymousStreamSocket * MultiplexedProtocolBasedStreamServer::accept() 
 	throw( ServerStreamSocketException )
@@ -59,7 +58,7 @@ AnonymousStreamSocket * MultiplexedProtocolBasedStreamServer::accept()
 	LogPlug::trace( "MultiplexedProtocolBasedStreamServer::accept : "
 		"will accept now connections, state is : " + toString() ) ;
 	
-	AnonymousProtocolAwareStreamSocket * res ;
+	AnonymousProtocolAwareStreamSocket * protocolSocket ;
 	
 	try
 	{
@@ -71,10 +70,19 @@ AnonymousStreamSocket * MultiplexedProtocolBasedStreamServer::accept()
 		 * the customizeProtocolFor method.
 		 * 
 		 */
-		res = new AnonymousProtocolAwareStreamSocket(
+		protocolSocket = new AnonymousProtocolAwareStreamSocket(
 			getOriginalFileDescriptor() ) ;
 			
 	}
+	catch( const AnonymousStreamSocket::NonBlockingAcceptException & e )
+	{
+
+		LogPlug::warning( "MultiplexedProtocolBasedStreamServer::accept : "
+			+ e.toString() ) ;
+			
+		return 0 ;
+		
+	}	
 	catch( const SocketException & e )
 	{
 		throw MultiplexedServerStreamSocketException( 
@@ -82,31 +90,31 @@ AnonymousStreamSocket * MultiplexedProtocolBasedStreamServer::accept()
 			+ e.toString() ) ;
 	}	
 
-	_currentConnections.insert( res ) ;
+	_currentConnections.insert( protocolSocket ) ;
 		
 	LogPlug::trace( "MultiplexedProtocolBasedStreamServer::accept : "
-		"new connection accepted" ) ;
+		"new connection accepted by the anonymous socket." ) ;
 	
 	/*
 	 * The user-supplied accepted method must link a protocol server to the
 	 * newly created AnonymousProtocolAwareStreamSocket :
 	 *
 	 */
-	accepted( *res ) ;
+	accepted( *protocolSocket ) ;
 	
-	if ( ! res->hasProtocolServer() )
-		throw  MultiplexedServerStreamSocketException( 
+	if ( ! protocolSocket->hasProtocolServer() )
+		throw MultiplexedServerStreamSocketException( 
 			"MultiplexedProtocolBasedStreamServer::accept : "
 			"the user-overriden accepted() method did not set "
-			"a protocol server to : " + res->toString() ) ;
+			"a protocol server to : " + protocolSocket->toString() ) ;
 			
 			
 	LogPlug::trace( "MultiplexedProtocolBasedStreamServer::accept : "
-		"connection terminated, cleaning up afterwards" ) ;
+		"connection registered" ) ;
 	
 	// No cleanAfterAccept() called, since connections are still alive here.
 
-	return res ;
+	return protocolSocket ;
 
 
 #else // CEYLAN_USES_NETWORK	
@@ -140,6 +148,9 @@ bool MultiplexedProtocolBasedStreamServer::handleConnection(
 	throw( MultiplexedServerStreamSocketException )
 {
 
+	LogPlug::trace( "MultiplexedProtocolBasedStreamServer::handleConnection "
+		"for " + connection.toString( Ceylan::low ) ) ;
+		
 	AnonymousProtocolAwareStreamSocket * realSocket = 
 		dynamic_cast<AnonymousProtocolAwareStreamSocket *>( & connection ) ;
 		
@@ -148,9 +159,12 @@ bool MultiplexedProtocolBasedStreamServer::handleConnection(
 	 * a protocol server attached indeed.
 	 *
 	 */
+	 
 	try
 	{
+	
 		return realSocket->getProtocolServer().notifyDataAvailability() ;
+			
 	}
 	catch( const AnonymousStreamSocket::AnonymousStreamSocketException & e )
 	{
@@ -175,7 +189,38 @@ bool MultiplexedProtocolBasedStreamServer::handleConnection(
 		
 }
 
-	
+
+void MultiplexedProtocolBasedStreamServer::closeConnection( 
+		AnonymousStreamSocket & connection )
+	throw( MultiplexedServerStreamSocketException )
+{
+
+	if ( _currentConnections.find( &connection ) != _currentConnections.end() )
+	{
+		
+		AnonymousProtocolAwareStreamSocket * realSocket = 
+			dynamic_cast<AnonymousProtocolAwareStreamSocket *>( & connection ) ;
+		
+		/*
+		 * No test needed, it is really a protocol-aware socket, and it has
+		 * a protocol server attached indeed.
+		 *
+		 */
+		if ( realSocket->getProtocolServer().isShutdownRequested() )
+			requestToStop() ;
+			
+		delete &connection ;
+		_currentConnections.erase( &connection ) ;
+		
+	}
+	else
+		throw MultiplexedServerStreamSocketException( 
+			"MultiplexedServerStreamSocket::closeConnection : "
+			"unable to find following connection : " + connection.toString() ) ;
+
+}
+
+
 const std::string MultiplexedProtocolBasedStreamServer::toString(
 	Ceylan::VerbosityLevels level ) const throw()
 {
@@ -210,7 +255,8 @@ const std::string MultiplexedProtocolBasedStreamServer::toString(
 
 #else // CEYLAN_USES_NETWORK
 
-	return "MultiplexedProtocolBasedStreamServer (no network support not available)" ;
+	return "MultiplexedProtocolBasedStreamServer "
+		"(no network support not available)" ;
 	
 #endif // CEYLAN_USES_NETWORK	
 	
