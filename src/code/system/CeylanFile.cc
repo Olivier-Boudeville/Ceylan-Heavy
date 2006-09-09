@@ -751,11 +751,15 @@ Size File::read( Ceylan::Byte * buffer, Size maxLength )
 	throw( InputStream::ReadFailedException )
 {
 
+	setSelected( false ) ;
+
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
 	try
 	{	
-		return System::FDRead( _fdes, buffer, maxLength ) ;		
+
+		return System::FDRead( _fdes, buffer, maxLength ) ;	
+			
 	}
 	catch( const Ceylan::Exception & e )
 	{
