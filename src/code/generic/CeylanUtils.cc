@@ -267,10 +267,10 @@ void Ceylan::checkpoint( const std::string & message ) throw()
  	static Ceylan::Uint32 checkpointCount = 1 ;
  
  	if ( message.empty() )
-		std::cout << "Checkpoint [" << ++checkpointCount 
+		std::cout << "Checkpoint [" << checkpointCount++ 
 			<< "]" << std::endl ;
 	else
-		std::cout << "Checkpoint [" << ++checkpointCount << "] : " 
+		std::cout << "Checkpoint [" << checkpointCount++ << "] : " 
 			<< message << std::endl ;
 		
 }
@@ -287,7 +287,7 @@ void Ceylan::breakpoint( const std::string & message ) throw()
 	
  	std::cout << std::endl 
 		<< "Successfully arrived at breakpoint number #"
-		<< ++breakpointCount << std::endl ;
+		<< breakpointCount++ << std::endl ;
 
 	 waitForKey() ;
  
