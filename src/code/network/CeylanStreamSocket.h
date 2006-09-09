@@ -54,19 +54,28 @@ namespace Ceylan
 				 * Client-side constructor for connection-based sockets, used
 				 * also for anonymous stream sockets.
 				 *
+				 * @param blocking tells whether this socket should be
+				 * created in blocking mode (the default) or in non-blocking
+				 * mode.
+				 *
 				 * @throw SocketException if the operation failed.
 				 *
 				 */
-				StreamSocket() throw( SocketException ) ; 
+				explicit StreamSocket( bool blocking = true ) 
+					throw( SocketException ) ; 
 		
 
 				/**
 				 * Server-side constructor for connection-based sockets.
 				 *
+				 * @param blocking tells whether this socket should be
+				 * created in blocking mode (the default) or in non-blocking
+				 * mode.
+				 *
 				 * @throw SocketException if the operation failed.
 				 *
 				 */
-				explicit StreamSocket( Port localPort ) 
+				StreamSocket( Port localPort, bool blocking = true  ) 
 					throw( SocketException ) ;
 		
 
