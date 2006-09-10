@@ -312,11 +312,17 @@ if test x$enable_debug = xyes; then
 
 	# Debug requested :
 	DEBUG=1
-	DEBUG_EVENTS=1
+	DEBUG_EVENTS=0
 	DEBUG_DEMANGLE=0
 	DEBUG_LOG=0
-	DEBUG_SYSTEM=1
+	DEBUG_SYSTEM=0
 	DEBUG_THREADS=0
+	DEBUG_THREADS=0
+	DEBUG_LOW_LEVEL_STREAMS=0
+	DEBUG_NETWORK_CLIENTS=0
+	DEBUG_NETWORK_SERVERS=0
+	DEBUG_PROTOCOL_SERVERS=0
+	DEBUG_MARSHALLERS=0
 	
 	AM_CXXFLAGS="$AM_CXXFLAGS -g" 
     if test x$ac_cv_cxx_compiler_gnu = xyes; then
@@ -336,6 +342,11 @@ else
 	DEBUG_LOG=0
 	DEBUG_SYSTEM=0
 	DEBUG_THREADS=0
+	DEBUG_LOW_LEVEL_STREAMS=0
+	DEBUG_NETWORK_CLIENTS=0
+	DEBUG_NETWORK_SERVERS=0
+	DEBUG_PROTOCOL_SERVERS=0
+	DEBUG_MARSHALLERS=0
 	
     if test x$ac_cv_cxx_compiler_gnu = xyes; then
 		# -fomit-frame-pointer : may prevent debugging on some platforms
@@ -388,6 +399,26 @@ AC_DEFINE_UNQUOTED([DEBUG_SYSTEM],
 AC_DEFINE_UNQUOTED([DEBUG_THREADS],
 	[$DEBUG_THREADS],
 	[Define to 1 if debug mode for threads is to be enabled])
+
+AC_DEFINE_UNQUOTED([DEBUG_LOW_LEVEL_STREAMS],
+	[$DEBUG_LOW_LEVEL_STREAMS],
+	[Define to 1 if debug mode for low-level streams is to be enabled])
+
+AC_DEFINE_UNQUOTED([DEBUG_NETWORK_CLIENTS],
+	[$DEBUG_NETWORK_SERVERS],
+	[Define to 1 if debug mode for network clients is to be enabled])
+
+AC_DEFINE_UNQUOTED([DEBUG_NETWORK_SERVERS],
+	[$DEBUG_NETWORK_SERVERS],
+	[Define to 1 if debug mode for network servers is to be enabled])
+
+AC_DEFINE_UNQUOTED([DEBUG_PROTOCOL_SERVERS],
+	[$DEBUG_PROTOCOL_SERVERS],
+	[Define to 1 if debug mode for protocol servers is to be enabled])
+
+AC_DEFINE_UNQUOTED([DEBUG_MARSHALLERS],
+	[$DEBUG_MARSHALLERS],
+	[Define to 1 if debug mode for marshallers is to be enabled])
 
 
 
