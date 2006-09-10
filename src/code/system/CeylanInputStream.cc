@@ -394,10 +394,10 @@ void InputStream::readString( std::string & result )
 	 
 	Uint16 stringSize = readUint16() ;
 	
-	/*
-	Log::LogPlug::debug( "InputStream::readString : string size is "
+#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+	LogPlug::debug( "InputStream::readString : string size is "
 		+ Ceylan::toString( stringSize ) + " characters." ) ;
-	 */
+#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 	 
 	 
 	// Blanks the result :
@@ -505,13 +505,19 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 
 	Ceylan::Uint8 attemptCount = selectAttemptCount ;
 
+	int selectedCount ;
+	
 	for ( ; attemptCount; attemptCount-- )
 	{
+		
 			
 		// Will block for ever until an error or some data is coming :
-		if ( ::select( maxFD + 1, & waitFDSet, 0, 0, 0 ) < 0 )
+		selectedCount = ::select( maxFD + 1, & waitFDSet, 0, 0, 0 ) ;
+		
+		if ( selectedCount < 0 )
 		{
-
+	
+			// Error :
 			
 			if ( System::getError() == EBADF )
 			{
@@ -565,9 +571,11 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 		}
 		else
 		{
-			break ;
+			if ( selectedCount > 0 )
+				break ;
 		}
-	}
+		
+	} // for : more select attempts left ?
 
 	if ( attemptCount == 0 )
 		throw SelectFailedException( string( "After " )
@@ -575,7 +583,7 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 			+ " attempts, still no InputStream selected." ) ;
 
 
-	Ceylan::Uint16 selectedCount = 0 ;
+	selectedCount = 0 ;
 	for ( list<InputStream*>::iterator it = is.begin(); it != is.end(); it++ )
 	{
 		if ( *it && ( FD_ISSET( (*it)->getInputStreamID(), & waitFDSet ) ) )
@@ -597,6 +605,7 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 #endif // CEYLAN_USES_FILE_DESCRIPTORS	
 	
 }
+
 
 
 Ceylan::Uint16 InputStream::Test( list<InputStream*> & is ) 
@@ -634,10 +643,58 @@ Ceylan::Uint16 InputStream::Test( list<InputStream*> & is )
 
 	if ( ::select( maxFD + 1, & waitFDSet, 0, 0, & tv ) < 0 )
 	{
-		throw SelectFailedException(
-			"InputStream select failed in non-blocking test method : "
-			+ explainError( getError() ) ) ;
+	
+		// Error :
+			
+		if ( System::getError() == EBADF )
+		{
+			
+			LogPlug::error( "InputStream::Test : there seems to be "
+				"at least one bad file descriptor in the list, "
+				"checking them to flag them as faulty." ) ;
+				
+			for ( list<InputStream*>::iterator it = is.begin(); 
+				it != is.end(); it++ )
+			{
+				
+				fd_set testFDSet ;
+				FD_ZERO( & testFDSet ) ;
+					
+				FileDescriptor testedFD = (*it)->getInputStreamID() ;
+				FD_SET( testedFD, & testFDSet ) ;
+				
+				// No waiting desired :
+				struct timeval timeout ;
+				timeout.tv_sec  = 0 ;
+           		timeout.tv_usec = 0 ;
+					
+				if ( ( ::select( testedFD + 1, 
+						&testFDSet, 0, 0, &timeout ) < 0 )
+					&& ( System::getError() == EBADF ) )
+				{
+					
+					LogPlug::error( "InputStream::Select : "
+						"following stream is faulty : " + (*it)->toString()
+						+ ", flagging it as such." ) ;
+				
+					(*it)->setFaulty( true ) ;
+							
+				}
+				
+			}
+			
+		}
+		else // a real error :
+		{
+				
+			throw SelectFailedException(
+				"InputStream select failed in non-blocking test method : "
+				+ explainError( getError() ) ) ;
+		}
+		
+		
 	}
+
 
 	Ceylan::Uint16 selectedCount = 0 ;
 	for ( list<InputStream*>::iterator it = is.begin(); it != is.end(); it++ )
@@ -669,9 +726,11 @@ Ceylan::Uint16 InputStream::Test( list<InputStream*> & is )
 void InputStream::setSelected( bool newStatus ) throw()
 {
 
+#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 	if ( ( _isSelected == false ) && ( newStatus == true ) )
 		LogPlug::debug( "InputStream::setSelected : selecting descriptor #"
 			+ Ceylan::toString( getInputStreamID() ) ) ;
+#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 			
 	_isSelected = newStatus ;
 	
