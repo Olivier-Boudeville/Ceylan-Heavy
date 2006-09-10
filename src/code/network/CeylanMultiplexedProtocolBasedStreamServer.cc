@@ -8,6 +8,7 @@
 #include "CeylanProtocolServer.h"                     // for ProtocolServer
 #include "CeylanProtocolEndpoint.h"                   // for ProtocolException
 
+
 #if CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"      // for configure-time feature settings
 #endif // CEYLAN_USES_CONFIG_H
@@ -55,8 +56,11 @@ AnonymousStreamSocket * MultiplexedProtocolBasedStreamServer::accept()
 		prepareToAccept() ;
 
 
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 	LogPlug::trace( "MultiplexedProtocolBasedStreamServer::accept : "
 		"will accept now connections, state is : " + toString() ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
+	
 	
 	AnonymousProtocolAwareStreamSocket * protocolSocket ;
 	
@@ -77,8 +81,8 @@ AnonymousStreamSocket * MultiplexedProtocolBasedStreamServer::accept()
 	catch( const AnonymousStreamSocket::NonBlockingAcceptException & e )
 	{
 
-		LogPlug::warning( "MultiplexedProtocolBasedStreamServer::accept : "
-			+ e.toString() ) ;
+		LogPlug::warning( "MultiplexedProtocolBasedStreamServer::accept "
+			"cancelled : " + e.toString() ) ;
 			
 		return 0 ;
 		
@@ -92,8 +96,12 @@ AnonymousStreamSocket * MultiplexedProtocolBasedStreamServer::accept()
 
 	_currentConnections.insert( protocolSocket ) ;
 		
+
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 	LogPlug::trace( "MultiplexedProtocolBasedStreamServer::accept : "
 		"new connection accepted by the anonymous socket." ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
+
 	
 	/*
 	 * The user-supplied accepted method must link a protocol server to the
@@ -109,8 +117,11 @@ AnonymousStreamSocket * MultiplexedProtocolBasedStreamServer::accept()
 			"a protocol server to : " + protocolSocket->toString() ) ;
 			
 			
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 	LogPlug::trace( "MultiplexedProtocolBasedStreamServer::accept : "
 		"connection registered" ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
+
 	
 	// No cleanAfterAccept() called, since connections are still alive here.
 
@@ -148,8 +159,12 @@ bool MultiplexedProtocolBasedStreamServer::handleConnection(
 	throw( MultiplexedServerStreamSocketException )
 {
 
+
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 	LogPlug::trace( "MultiplexedProtocolBasedStreamServer::handleConnection "
 		"for " + connection.toString( Ceylan::low ) ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
+		
 		
 	AnonymousProtocolAwareStreamSocket * realSocket = 
 		dynamic_cast<AnonymousProtocolAwareStreamSocket *>( & connection ) ;
