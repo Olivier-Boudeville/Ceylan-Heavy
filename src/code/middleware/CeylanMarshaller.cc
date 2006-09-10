@@ -14,7 +14,12 @@ using namespace Ceylan::System ;
 using namespace Ceylan::Middleware ;
 
 
-				
+#if CEYLAN_USES_CONFIG_H
+#include "CeylanConfig.h"      // for configure-time settings
+#endif // CEYLAN_USES_CONFIG_H
+	
+	
+			
 MarshallException::MarshallException( const string & message ) throw() : 
 	MiddlewareException( message )
 {
@@ -82,10 +87,13 @@ Marshaller::~Marshaller() throw()
 System::Size Marshaller::retrieveData( System::Size requestedSize ) 
 	throw( DecodeException )
 {
-			
+
+
+#if CEYLAN_DEBUG_MARSHALLERS			
 	LogPlug::trace( "Marshaller::retrieveData : " 
 		+ Ceylan::toString( requestedSize ) + " byte(s) requested." ) ;
-		
+#endif // CEYLAN_DEBUG_MARSHALLERS
+	
 	if ( ! isBuffered() )
 		throw DecodeException( "Marshaller::retrieveData : "
 			"no buffer available for this operation." ) ;
@@ -141,15 +149,19 @@ System::Size Marshaller::retrieveData( System::Size requestedSize )
 	try
 	{
 	
+#if CEYLAN_DEBUG_MARSHALLERS			
 		LogPlug::debug( "Marshaller::retrieveData : will try to read " 
 			+ Ceylan::toString( targetFreeSize ) + " actual byte(s)." ) ;
+#endif // CEYLAN_DEBUG_MARSHALLERS
 			
 		// Avoid useless buffer copy thanks to in-place writing :	
 		readSize = _lowerLevelStream->read(
 			_bufferStream->getAddressOfNextFreeChunk(), targetFreeSize ) ;
 
+#if CEYLAN_DEBUG_MARSHALLERS			
 		LogPlug::debug( "Marshaller::retrieveData : read " 
 			+ Ceylan::toString( readSize ) + " actual byte(s)." ) ;
+#endif // CEYLAN_DEBUG_MARSHALLERS
 			
 	}
 	catch( const InputStream::ReadFailedException & e )
@@ -160,7 +172,7 @@ System::Size Marshaller::retrieveData( System::Size requestedSize )
 
 	if ( readSize == 0 )
 		LogPlug::error( "Marshaller::retrieveData : read zero byte "
-			"from lower-level stream (abnormal as should be selected)." ) ;
+			"from lower-level stream (abnormal, as should be selected)." ) ;
 			
 	try
 	{
@@ -173,11 +185,14 @@ System::Size Marshaller::retrieveData( System::Size requestedSize )
 		throw DecodeException( "Marshaller::retrieveData has a bug : "
 			+ e.toString() ) ;
 	}
+
 	
+#if CEYLAN_DEBUG_MARSHALLERS			
 	LogPlug::trace( "Marshaller::retrieveData : " 
 		+ Ceylan::toString( readSize ) + " byte(s) read, "
 		+ Ceylan::toString(  _bufferStream->getBlockLength() ) 
 		+ " byte(s) available now." ) ;
+#endif // CEYLAN_DEBUG_MARSHALLERS
 		
 	return _bufferStream->getBlockLength() ;
 			
