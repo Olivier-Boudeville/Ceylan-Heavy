@@ -258,17 +258,19 @@ void OutputStream::writeString( const string & toWrite )
 		throw WriteFailedException( "OutputStream::writeString : "
 			"string '" + toWrite + "' is too long." ) ;
 	
-	/*
+#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 	Log::LogPlug::debug( "OutputStream::writeString : string size is "
 		+ Ceylan::toString( stringSize ) + " characters." ) ;
-	 */
+#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 	 	
 	writeUint16( stringSize ) ;
 	
 	Size writeCount = write( toWrite.data(), stringSize ) ;
 	
+#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 	LogPlug::debug( "OutputStream::writeString : wrote "
 		+ Ceylan::toString( writeCount ) + " bytes." ) ;
+#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 		
 	if ( writeCount < stringSize ) 
 		throw WriteFailedException( "In OutputStream::writeString" ) ;
