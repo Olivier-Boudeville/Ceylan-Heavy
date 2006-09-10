@@ -114,7 +114,11 @@ void MultiplexedServerStreamSocket::run() throw( ServerStreamSocketException )
 
 #if CEYLAN_USES_NETWORK
 
+
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 	LogPlug::trace( "Entering in MultiplexedServerStreamSocket::run" ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
+
 
 	// Records the total number of created connections :
 	Ceylan::Uint32 connectionCount = 0 ;
@@ -139,8 +143,10 @@ void MultiplexedServerStreamSocket::run() throw( ServerStreamSocketException )
 	list<AnonymousStreamSocket*> connectionsToRemove ;
 
 
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 	LogPlug::trace( "MultiplexedServerStreamSocket::run : "
 		"entering main listening loop." ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 
 	
 	while ( ! isRequestedToStop() )
@@ -154,8 +160,10 @@ void MultiplexedServerStreamSocket::run() throw( ServerStreamSocketException )
 		{
 		
 	
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 			LogPlug::trace( "MultiplexedServerStreamSocket::run : "
 				"waiting for selected sockets." ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 				
 			/*
 			 * Blocks until there is data to read somewhere :
@@ -165,8 +173,10 @@ void MultiplexedServerStreamSocket::run() throw( ServerStreamSocketException )
 			 */
 			InputStream::Select( watchedSockets ) ;
 
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 			LogPlug::trace( "MultiplexedServerStreamSocket::run : "
 				"at least a socket is selected." ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 				
 
 			// Searches for the input stream(s) that are selected :
@@ -224,8 +234,10 @@ void MultiplexedServerStreamSocket::run() throw( ServerStreamSocketException )
 						 * into the streams that should be watched :
 						 *
 						 */
-						LogPlug::info( "MultiplexedServerStreamSocket::run : "
+#if CEYLAN_DEBUG_NETWORK_SERVERS
+						LogPlug::trace( "MultiplexedServerStreamSocket::run : "
 							"trying to accept a new connection." ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 							
 						InputStream * newAnonymousSocket = accept() ;
 						
@@ -235,19 +247,24 @@ void MultiplexedServerStreamSocket::run() throw( ServerStreamSocketException )
 							watchedSockets.push_back( newAnonymousSocket ) ;
 					
 							connectionCount++ ;		
-							LogPlug::info( 
+
+#if CEYLAN_DEBUG_NETWORK_SERVERS
+							LogPlug::trace( 
 								"MultiplexedServerStreamSocket::run : "
 								"connection #" 
 								+ Ceylan::toString( connectionCount ) 
 								+ " accepted." ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 						
 						}
 						else
 						{
 						
-							LogPlug::info( 
+#if CEYLAN_DEBUG_NETWORK_SERVERS
+							LogPlug::trace( 
 								"MultiplexedServerStreamSocket::run : "
 								"no connection could be accepted." ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 							
 						}
 											
@@ -269,9 +286,12 @@ void MultiplexedServerStreamSocket::run() throw( ServerStreamSocketException )
 								+ (*it)->toString() ) ;
 						}
 						
-						LogPlug::debug( "MultiplexedServerStreamSocket::run : "
+						
+#if CEYLAN_DEBUG_NETWORK_SERVERS
+						LogPlug::trace( "MultiplexedServerStreamSocket::run : "
 							"following connection socket has data available : "
 							+ connection->toString() + "." ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 							
 						if ( ! handleConnection( *connection ) )
 							connectionsToRemove.push_back( connection ) ;
@@ -286,11 +306,16 @@ void MultiplexedServerStreamSocket::run() throw( ServerStreamSocketException )
 			} // for it in watchedSockets...
 			
 			
+			
+#if CEYLAN_DEBUG_NETWORK_SERVERS
+
 			LogPlug::trace( "MultiplexedServerStreamSocket::run : "
 				"end of select scan." ) ;
 		
 			// Sleep for 0.2 second :
 			Thread::Sleep( 0 /* second */, 200000 /* microsecond*/) ;
+			
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 		
 		
 		   /*
@@ -304,8 +329,10 @@ void MultiplexedServerStreamSocket::run() throw( ServerStreamSocketException )
 				AnonymousStreamSocket & toDel = * connectionsToRemove.front() ;
 				connectionsToRemove.pop_front() ;
 
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 				LogPlug::trace( "MultiplexedServerStreamSocket::run : "
 					"removing stopped connection : " + toDel.toString() ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 		       
 				closeConnection( toDel ) ;
 				watchedSockets.remove( & toDel ) ;  
@@ -323,7 +350,9 @@ void MultiplexedServerStreamSocket::run() throw( ServerStreamSocketException )
 		
 	}
 	
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 	LogPlug::trace( "Exiting from MultiplexedServerStreamSocket::run" ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 
 	
 #endif // CEYLAN_USES_NETWORK
@@ -341,8 +370,10 @@ AnonymousStreamSocket * MultiplexedServerStreamSocket::accept()
 		prepareToAccept() ;
 
 
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 	LogPlug::trace( "MultiplexedServerStreamSocket::accept : "
 		"will accept now connections, state is : " + toString() ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 	
 	AnonymousStreamSocket * res ;
 	
@@ -357,8 +388,8 @@ AnonymousStreamSocket * MultiplexedServerStreamSocket::accept()
 	catch( const AnonymousStreamSocket::NonBlockingAcceptException & e )
 	{
 
-		LogPlug::warning( "MultiplexedServerStreamSocket::accept : "
-			+ e.toString() ) ;
+		LogPlug::warning( "MultiplexedServerStreamSocket::accept "
+			"cancelled : " + e.toString() ) ;
 			
 		return 0 ;
 		
@@ -372,13 +403,17 @@ AnonymousStreamSocket * MultiplexedServerStreamSocket::accept()
 
 	_currentConnections.insert( res ) ;
 		
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 	LogPlug::trace( "MultiplexedServerStreamSocket::accept : "
 		"new connection accepted" ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 		
 	accepted( *res ) ;
 	
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 	LogPlug::trace( "MultiplexedServerStreamSocket::accept : "
 		"connection terminated, cleaning up afterwards" ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 	
 	// No cleanAfterAccept() called, since connections are still alive here.
 
