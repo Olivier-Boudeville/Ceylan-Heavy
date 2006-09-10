@@ -78,7 +78,11 @@ StreamSocket::StreamSocket( bool blocking ) throw( Socket::SocketException ) :
 
 #if CEYLAN_USES_NETWORK
 
+
+#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 	LogPlug::trace( "StreamSocket empty constructor" ) ;
+#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+
 	
 #else // CEYLAN_USES_NETWORK
 
@@ -135,10 +139,13 @@ void StreamSocket::createSocket( Port port ) throw( SocketException )
 		throw SocketException( "StreamSocket::createSocket failed : "
 			+ System::explainError() ) ;
 	
+#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 	LogPlug::debug( "StreamSocket::createSocket : "
 		"this socket, whose original file descriptor is " 
 		+ Ceylan::toString( _originalFD ) + ", will be associated with port " 
 		+ Ceylan::toString( _port ) + "." ) ;
+#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+
 
 	// Blanks and initializes inherited address :
 	_address->blank() ;
