@@ -20,6 +20,8 @@ using namespace std ;
  * This test server is multiplexed and uses light-weight marshalling
  * thanks to a protocol server.
  *
+ * @see testCeylanClientStream.cc for test client.
+ *
  */
 class MyTestMultiLwMarshalledServer : 
 	public Ceylan::Network::MultiplexedServerStreamSocket
@@ -170,11 +172,9 @@ class MyTestMultiLwMarshalledServer :
 int main( int argc, char * argv[] )
 {
 
-	return 1 ;
 	
 	LogHolder logger( argc, argv ) ;
 
-	
 	
     try
     {
