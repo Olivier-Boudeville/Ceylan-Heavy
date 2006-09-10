@@ -170,10 +170,14 @@ void ClientStreamSocket::connect( const string & serverHostname,
 	
 	_address->_socketAddress.sin_addr = binaryIP ;
 
+
+#if CEYLAN_DEBUG_NETWORK_CLIENTS
 	LogPlug::trace( "ClientStreamSocket::connect : connecting to "
 		+ _serverHostName + ":" + Ceylan::toString( serverPort )
 		+ " with local file descriptor " 
 		+ Ceylan::toString( getOriginalFileDescriptor() ) ) ;
+#endif // CEYLAN_DEBUG_NETWORK_CLIENTS
+
 		
 	if ( ::connect( getOriginalFileDescriptor(),
 			reinterpret_cast<sockaddr *>( & _address->_socketAddress ),
@@ -183,7 +187,9 @@ void ClientStreamSocket::connect( const string & serverHostname,
 			+ serverIP->toString() + " for host '" 
 			+ _serverHostName + "' : " + System::explainError() ) ;
 
+#if CEYLAN_DEBUG_NETWORK_CLIENTS
 	LogPlug::trace( "ClientStreamSocket::connect : successfully connected." ) ;
+#endif // CEYLAN_DEBUG_NETWORK_CLIENTS
 	
 	// Once connected, call the user-supplied code :
 	connected() ;
@@ -203,7 +209,9 @@ void ClientStreamSocket::connect( const string & serverHostname,
 void ClientStreamSocket::disconnect() throw( SocketException )
 {
 
+#if CEYLAN_DEBUG_NETWORK_CLIENTS
 	LogPlug::trace( "ClientStreamSocket::disconnect : disconnecting now." ) ;
+#endif // CEYLAN_DEBUG_NETWORK_CLIENTS
 	
 	if ( ! isConnected() )
 		throw SocketException( "ClientStreamSocket::disconnect : "
@@ -256,9 +264,11 @@ const std::string ClientStreamSocket::toString( Ceylan::VerbosityLevels level )
 void ClientStreamSocket::connected() throw( ClientStreamSocketException )
 {
 
+#if CEYLAN_DEBUG_NETWORK_CLIENTS
 	// Empty implementation made to be overriden.
 	LogPlug::debug( "ClientStreamSocket::connected : "
 		"connection up and running." ) ;
+#endif // CEYLAN_DEBUG_NETWORK_CLIENTS
 	
 }
 
