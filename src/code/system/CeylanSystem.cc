@@ -166,8 +166,10 @@ Size Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
+#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
  	LogPlug::trace( "Ceylan::System::FDRead : will try to read "
 		+ Ceylan::toString( toReadBytesNumber ) + " byte(s)." ) ;
+#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 
 	char * pos = dataBuffer ;
 
@@ -203,8 +205,11 @@ Size Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
  
 	// readBytesNumber == 0 means end of file, if blocking.
 
+#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
  	LogPlug::trace( "Ceylan::System::FDRead : read "
 		+ Ceylan::toString( totalReadBytesNumber ) + " byte(s)." ) ;
+#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+
 
 	return static_cast<Size>( totalReadBytesNumber ) ;
 
@@ -473,7 +478,7 @@ Microsecond Ceylan::System::getAccuracyOfPreciseTime( Microsecond * minGap,
 	Microsecond currentSecond ;
 	Microsecond currentMicrosecond ;
 
-#if CEYLAN_DEBUG
+#if CEYLAN_DEBUG_SYSTEM
 
 	/*
 	 * Will not be displayed during the measure since it would risk to distort
@@ -485,7 +490,7 @@ Microsecond Ceylan::System::getAccuracyOfPreciseTime( Microsecond * minGap,
 	 */
 	Microsecond * durations = new Microsecond[numberOfMeasures] ;
 	
-#endif // CEYLAN_DEBUG
+#endif // CEYLAN_DEBUG_SYSTEM
 
 	getPreciseTime( lastSecond, lastMicrosecond ) ;
 
@@ -500,9 +505,9 @@ Microsecond Ceylan::System::getAccuracyOfPreciseTime( Microsecond * minGap,
 			maxDuration = currentDuration ;
 		cumulativeDuration += currentDuration ;
 		
-#if CEYLAN_DEBUG
+#if CEYLAN_DEBUG_SYSTEM
 		durations[i] = currentDuration ;
-#endif // CEYLAN_DEBUG
+#endif // CEYLAN_DEBUG_SYSTEM
 
 		lastSecond = currentSecond ;
 		lastMicrosecond = currentMicrosecond ;
@@ -515,7 +520,7 @@ Microsecond Ceylan::System::getAccuracyOfPreciseTime( Microsecond * minGap,
  	if ( maxGap != 0 )
 		*maxGap = maxDuration ;
 
-#if CEYLAN_DEBUG
+#if CEYLAN_DEBUG_SYSTEM
 
 	for ( Ceylan::Uint32 i = 0; i < numberOfMeasures; i++ )
 		Log::LogPlug::debug( "Duration of getPreciseTime call : "
@@ -526,7 +531,7 @@ Microsecond Ceylan::System::getAccuracyOfPreciseTime( Microsecond * minGap,
 			
 	delete durations ;
 			
-#endif // CEYLAN_DEBUG
+#endif // CEYLAN_DEBUG_SYSTEM
 
 	Microsecond result = static_cast<Microsecond>( 
 		cumulativeDuration /  numberOfMeasures ) ;
@@ -791,9 +796,11 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	Ceylan::Uint32 fullTimeSliceCount = ( seconds * 1000000 + micros ) 
 		/ usedGranularity ;
 		
+#if CEYLAN_DEBUG_SYSTEM
 	LogPlug::debug( "Ceylan::System::smartSleep : will first use "
 		+ Ceylan::toString( fullTimeSliceCount ) 
 		+ " full time slice(s) for waiting." ) ;
+#endif // CEYLAN_DEBUG_SYSTEM
 
 	/*
 	 * Sleep for the main part. Use 'basicSleep' rather than
@@ -805,11 +812,18 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	 */
 	if ( fullTimeSliceCount != 0 )
 	{
+	
+#if CEYLAN_DEBUG_SYSTEM
+	
 		LogPlug::debug( "Ceylan::System::smartSleep : will ask basicSleep "
 			+ Ceylan::toString( fullTimeSliceCount 
 				* getSchedulingGranularity() )
 			+ " microseconds." ) ;
+			
+#endif // CEYLAN_DEBUG_SYSTEM
+
 		basicSleep( fullTimeSliceCount * getSchedulingGranularity() ) ;
+		
 	}
 
 	Second currentSecond ;
@@ -853,10 +867,14 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	else
 	{
 
+		
+#if CEYLAN_DEBUG_SYSTEM
 		Microsecond remaining = static_cast<Microsecond>( -currentError ) ;
+		
 		LogPlug::debug( "Ceylan::System::smartSleep : remaining time ("
 			+ Ceylan::toString( remaining ) + " microseconds)"
 			+ " will be spent in active waiting." ) ;
+#endif // CEYLAN_DEBUG_SYSTEM
 
 	}
 
@@ -1003,8 +1021,10 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 	if ( granularity != 0 )
 		return granularity ;
 
+#if CEYLAN_DEBUG_SYSTEM
 	LogPlug::trace( "Ceylan::System::getSchedulingGranularity : "
 		"computing granularity now." ) ;
+#endif // CEYLAN_DEBUG_SYSTEM
 
 
 	// Not computed yet, let's evaluate it one time for all.
@@ -1065,10 +1085,12 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 				/ ( currentMeasuredDuration + lastMeasuredDuration ) < 0.005 )
 			break ;
 
+#if CEYLAN_DEBUG_SYSTEM
 		LogPlug::debug( "Previous (" + Ceylan::toString( lastMeasuredDuration )
 			+ ") and current (" + Ceylan::toString( currentMeasuredDuration )
 			+ ") measured durations are not deemed relatively equal, "
 			" continuing." ) ;
+#endif // CEYLAN_DEBUG_SYSTEM
 
 	}
 
@@ -1083,11 +1105,15 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 	}
 	else
 	{
+
+#if CEYLAN_DEBUG_SYSTEM
 		// currentMeasuredDuration is the duration of our time slice.
 		LogPlug::debug( "Relative equality has been found between previous ("
 			+ Ceylan::toString( lastMeasuredDuration )
 			+ ") and current (" + Ceylan::toString( currentMeasuredDuration )
 			+ ") measured durations." ) ;
+#endif // CEYLAN_DEBUG_SYSTEM
+
 	}
 
 	// Useless but careful :
@@ -1117,8 +1143,10 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 
 	granularity /= sampleCount ;
 
+#if CEYLAN_DEBUG_SYSTEM
 	LogPlug::debug( "Final returned scheduling granularity is "
 		+ Ceylan::toString( granularity ) + " microseconds." ) ;
+#endif // CEYLAN_DEBUG_SYSTEM
 
 	return granularity ;
 
