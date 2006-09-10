@@ -184,14 +184,14 @@ namespace Ceylan
 					throw( NonBlockingNotSupportedException ) ;
 
 
+				/// Stores whether the stream is in blocking mode.
+				bool _isBlocking ;
+				
+				
 
 			private:
 			
 			
-			
-				/// Stores whether the stream is in blocking mode.
-				bool _isBlocking ;
-				
 			
 				/**
 				 * Copy constructor made private to ensure that it will
