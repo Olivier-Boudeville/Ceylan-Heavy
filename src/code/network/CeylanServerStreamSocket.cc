@@ -130,7 +130,11 @@ ServerStreamSocket::~ServerStreamSocket() throw()
 void ServerStreamSocket::run() throw( ServerStreamSocketException )
 {
 
+
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 	LogPlug::trace( "Entering in ServerStreamSocket::run" ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
+	 
 	
 	// Records the total number of created connections :
 	Ceylan::Uint32 connectionCount = 0 ;
@@ -140,13 +144,17 @@ void ServerStreamSocket::run() throw( ServerStreamSocketException )
 	
 		connectionCount++ ;
 		
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 		LogPlug::info( "ServerStreamSocket::run : waiting for connection #" 
 			+ Ceylan::toString( connectionCount ) ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 		accept() ;
 		
 	}
 	
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 	LogPlug::trace( "Exiting from ServerStreamSocket::run" ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 
 }
 
@@ -230,7 +238,9 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 	 *
 	 */
 
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 	LogPlug::trace( "Entering ServerStreamSocket::prepareToAccept" ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 
 	if ( _bound )
 		throw ServerStreamSocketException(
@@ -245,8 +255,10 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 	for ( ; bindAttemptCount < maxBindAttemptCount; bindAttemptCount++ )
 	{
 
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 		LogPlug::debug( "ServerStreamSocket::prepareToAccept : "
 			"bind attempt #" + Ceylan::toString( bindAttemptCount + 1 ) ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 	
 		if ( ::bind( getOriginalFileDescriptor(), 
 				reinterpret_cast<sockaddr *>( 
@@ -254,7 +266,8 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 				sizeof( sockaddr_in ) ) == 0 ) 
 			break ;
 	
-		Thread::Sleep( 1 /* second */ ) ;
+		// 0.5 second waiting :
+		Thread::Sleep( 0 /* second */, 500000 /* microseconds */ ) ;
 	
 	}
 	
@@ -266,9 +279,10 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 
  	_bound = true ;
 				
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 	LogPlug::debug( "ServerStreamSocket::prepareToAccept : "
 		"bind succeeded." ) ;
-
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 	
 	
 	if ( ::listen( getOriginalFileDescriptor(), 
@@ -277,8 +291,10 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 			"ServerStreamSocket::prepareToAccept : listen failed : "
 			+ System::explainError() ) ;
 
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 	LogPlug::debug( "ServerStreamSocket::prepareToAccept : "
 		"listen succeeded." ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 
 
 #else // CEYLAN_USES_NETWORK
@@ -297,8 +313,9 @@ void ServerStreamSocket::cleanAfterAccept() throw( ServerStreamSocketException )
 
 #if CEYLAN_USES_NETWORK
 
-
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 	LogPlug::trace( "Entering ServerStreamSocket::cleanAfterAccept" ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 	
 	closeAcceptedConnections() ;
 	
@@ -318,9 +335,12 @@ void ServerStreamSocket::accepted( AnonymousStreamSocket & newConnection )
 	throw( ServerStreamSocketException )
 {
 
-	// Empty implementation made to be overriden.
+	// Empty implementation, made to be overriden.
+	
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 	LogPlug::debug( "ServerStreamSocket::accepted : "
 		"connection up and running : " + newConnection.toString() ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 		
 }
 
@@ -334,7 +354,10 @@ bool ServerStreamSocket::isRequestedToStop() const throw()
 void ServerStreamSocket::requestToStop() throw()
 {
 
+#if CEYLAN_DEBUG_NETWORK_SERVERS
 	LogPlug::trace( "ServerStreamSocket::requestToStop" ) ;
+#endif // CEYLAN_DEBUG_NETWORK_SERVERS
+
 	_stopRequested = true ;
 	
 }			
