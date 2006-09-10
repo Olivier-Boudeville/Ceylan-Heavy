@@ -211,8 +211,11 @@ Size Socket::read( char * buffer, Size maxLength )
 	
 		setSelected( false ) ;
 
+#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 		LogPlug::debug( "Socket::read : using file descriptor "
 			+ Ceylan::toString( getFileDescriptorForTransport() ) ) ;
+#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+			
 			
 		// FDRead can throw IOException and FeatureNotAvailableException :
 		return System::FDRead( getFileDescriptorForTransport(), 
@@ -515,9 +518,11 @@ void Socket::setBlocking( bool newStatus )
 	// Set newer flags :
 	if ( newStatus )
 	{
-	
+
+#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS	
 		LogPlug::trace( "Socket::setBlocking : "
 			"setting a non-blocking socket to blocking." ) ;
+#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 			
 		if ( ::fcntl( getOriginalFileDescriptor(), F_SETFL, 
 				currentFDState & (~O_NONBLOCK) ) < 0 )
@@ -528,8 +533,10 @@ void Socket::setBlocking( bool newStatus )
 	else
 	{
 	
+#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS	
 		LogPlug::trace( "Socket::setBlocking : "
 			"setting a blocking socket to non-blocking." ) ;
+#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 	
 		if ( ::fcntl( getOriginalFileDescriptor(), F_SETFL, 
 				currentFDState | O_NONBLOCK ) < 0 )
@@ -537,6 +544,8 @@ void Socket::setBlocking( bool newStatus )
 				"setting to non-blocking failed : " + System::explainError() ) ;
 	
 	}
+	
+	_isBlocking = newStatus ;
 	
 #else // CEYLAN_USES_NETWORK	
 		
