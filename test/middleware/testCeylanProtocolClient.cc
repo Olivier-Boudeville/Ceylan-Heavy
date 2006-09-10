@@ -113,34 +113,46 @@ class MyTestProtocolClient : public Ceylan::Network::ClientStreamSocket
 			
 				// Chooses among ping, sum, echo, quit :
 				Ceylan::Maths::Random::WhiteNoiseGenerator myRequestChooser( 
-					1, 5 ) ;
-					
-				switch( myRequestChooser.getNewValue() )
+					1, 4 ) ;
+				
+				Ceylan::Uint16 requestCount = 0 ;
+				
+				while ( requestCount < 5 )
 				{
 				
-					case 1:
-						sendPing() ;
-						break ;
+					requestCount++ ;
+					
+					LogPlug::info( "Sending now request #" 
+						+ Ceylan::toString( requestCount ) + "." ) ;
 						
-					case 2:
-						sendSum() ;
-						break ;
 						
-					case 3:
-						sendToEcho( "Ceylan rocks, my friend !" ) ;
-						break ;
-						
-					case 4:
-						sendQuit() ;
-						return ;
-						break ;
-						
-					default:
-						throw TestException( 
-							"MyTestProtocolClient:: connected :	"
-							"random generator returned value out of bounds" ) ;	
+					switch( myRequestChooser.getNewValue() )
+					{
 				
+						case 1:
+							sendPing() ;
+							break ;
+						
+						case 2:
+							sendSum() ;
+							break ;
+						
+						case 3:
+							sendToEcho( "Ceylan rocks, my friend !" ) ;
+							break ;
+						
+						default:
+							throw TestException( 
+								"MyTestProtocolClient:: connected :	"
+								"random generator returned value out of bounds"
+							) ;	
+				
+					}
+					
 				}
+				
+				// Finish by making the server shutdown :
+				sendQuit() ;
 			
 			}
 						
