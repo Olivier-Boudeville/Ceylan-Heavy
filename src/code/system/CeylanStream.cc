@@ -9,13 +9,27 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
+// Not available in their C++ form :
+extern "C"
+{
+
+
 #ifdef CEYLAN_USES_ERRNO_H
 #include <errno.h>             // for errno
 #endif // CEYLAN_USES_ERRNO_H
 
+#ifdef CEYLAN_USES_UNISTD_H
+#include <unistd.h>            // for close on OpenBSD
+#endif // CEYLAN_USES_UNISTD_H
+
+}
+
+
+#include <cerrno>
 
 
 using namespace Ceylan::System ;
+
 
 
 Stream::Stream( bool blocking ) throw():
@@ -104,7 +118,7 @@ void Stream::setBlocking( bool newStatus )
 	throw( NonBlockingNotSupportedException )
 {
 
-	// To be overriden :
+	// To be overriden by child classes supporting it (ex : sockets) :
 	if ( newStatus == false )
 		throw NonBlockingNotSupportedException( 
 			"Stream::setBlocking : this stream cannot be put in "
