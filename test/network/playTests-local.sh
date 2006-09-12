@@ -1,4 +1,4 @@
-#!/bin/bash
+# Not designed to be executed, must be sourced.
 
 # This script is a necessary special case since the server must be run
 # before the client is launched.
@@ -11,7 +11,7 @@
 # that no Ceylan server is already running, which may block the test.
 #
 
-#echo "playTests-local.sh sourced"
+DEBUG_INTERNAL "playTests-local.sh sourced"
 
 
 
@@ -37,9 +37,9 @@ EXCLUDED_TESTS="${sequential_server_test_name} ${multiplexed_server_test_name} $
 
 # First, launch the server :
 
-#echo "Will launch the server"
+DEBUG_INTERNAL "Will launch the server"
 t=${sequential_server_test_exec}
-if [ "$is_batch" == "0" ] ; then
+if [ "$is_batch" = "0" ] ; then
 	echo -e "\n\n########### Running now $t" >>${TESTLOGFILE}
 	$t --batch 1>>${TESTLOGFILE} 2>&1 &
 	SERVER_PID="$!"
@@ -55,14 +55,14 @@ display_launching ${client_test_name}
 # Ensure that the server is ready before the client :
 sleep 1
 
-#echo "Will launch the client"
+DEBUG_INTERNAL "Will launch the client"
 run_test ${client_test_name} ${client_test_exec}
 
-#echo "Wait for the server"
+DEBUG_INTERNAL "Wait for the server"
 # Now inspect the server result :
 wait ${SERVER_PID} 
 return_code="$?"
-#echo "Server return code is $return_code"
+DEBUG_INTERNAL "Server return code is $return_code"
 
 display_launching ${sequential_server_test_name}
 display_test_result "${sequential_server_test_name}" "${sequential_server_test_exec}" "$return_code"
@@ -82,9 +82,9 @@ client_test_exec="${TEST_ROOT}/$m/${client_test_name}"
 
 # First, launch the server :
 
-#echo "Will launch the server"
+DEBUG_INTERNAL "Will launch the server"
 t=${multiplexed_server_test_exec}
-if [ "$is_batch" == "0" ] ; then
+if [ "$is_batch" = "0" ] ; then
 	echo -e "\n\n########### Running now $t" >>${TESTLOGFILE}
 	$t --batch 1>>${TESTLOGFILE} 2>&1 &
 	SERVER_PID="$!"
@@ -100,14 +100,14 @@ display_launching ${client_test_name}
 # Ensure that the server is ready before the client :
 sleep 1
 
-#echo "Will launch the client"
+DEBUG_INTERNAL "Will launch the client"
 run_test ${client_test_name} ${client_test_exec}
 
-#echo "Wait for the server"
+DEBUG_INTERNAL "Wait for the server"
 # Now inspect the server result :
 wait ${SERVER_PID} 
 return_code="$?"
-#echo "Server return code is $return_code"
+DEBUG_INTERNAL "Server return code is $return_code"
 
 display_launching ${multiplexed_server_test_name}
 display_test_result "${multiplexed_server_test_name}" "${multiplexed_server_test_exec}" "$return_code"
