@@ -108,7 +108,7 @@ const string LogMessage::getPreformattedText() const throw()
 		return "Error : LogMessage whose content is " 
 			+ _message 
 			+ ", whose level of detail is " 
-			+ Ceylan::toString( _levelOfDetail )
+			+ Ceylan::toNumericalString( _levelOfDetail )
 			+ " does not have a timestamp, whereas it should." ;
 	
 #endif // CEYLAN_DEBUG
@@ -127,7 +127,7 @@ const string LogMessage::toString( Ceylan::VerbosityLevels level ) const throw()
 		return "Error : LogMessage whose content is " 
 			+ _message 
 			+ ", whose level of detail is " 
-			+ Ceylan::toString( _levelOfDetail )
+			+ Ceylan::toNumericalString( _levelOfDetail )
 			+ " does not have a timestamp, whereas it should" ;
 	
 #endif // CEYLAN_DEBUG
@@ -153,7 +153,7 @@ const string LogMessage::toString( Ceylan::VerbosityLevels level ) const throw()
 		res.push_back( "content : [" + _message + "]" ) ;
 		
 		res.push_back( "level of detail : " 
-			+ Ceylan::toString( _levelOfDetail ) ) ;
+			+ Ceylan::toNumericalString( _levelOfDetail ) ) ;
 			
 		res.push_back( "timestamp : " + _timestamp->toString() ) ; 	
 		  
