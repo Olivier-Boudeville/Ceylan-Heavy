@@ -52,6 +52,13 @@ using namespace Ceylan::Features ;
 
 #ifdef CEYLAN_USES_PTHREAD_H
 
+extern "C"
+{
+
+#include "pthread.h"
+
+}
+
 
 // Avoid exposing system-dependent pthread_t in the headers :
 struct Thread::SystemSpecificThreadIdentifier
