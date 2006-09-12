@@ -353,6 +353,9 @@ namespace Ceylan
 				 *
 				 * @throw SocketException if the operation failed.
 				 *
+				 * @note It is the place where socket attributes are 
+				 * effectively set (ex : non-blocking).
+				 *
 				 */
 				virtual void createSocket( Port localPort ) 
 					throw( SocketException ) = 0 ;
