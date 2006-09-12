@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 
 USAGE="`basename $0` : builds and installs the Ceylan library from a just-extracted distributed package, and builds, installs and runs the test suite against this install."
