@@ -1,5 +1,5 @@
-Created Saturday, March 4, 2006.
-
+Created on Saturday, March 4, 2006.
+Updated on Tuesday, September 12, 2006.
 
 		Ceylan 0.3 main changes
 	
@@ -8,5 +8,7 @@ Created Saturday, March 4, 2006.
 - management system for optional feature added, to increase portability	
 - Subversion (SNV) used, instead of CVS	
 - Ceylan has now a Sourceforge project of its own, http://ceylan.sourceforge.net
+- networking support extended a lot
 
+For more details, see the ChangeLog file.
 
