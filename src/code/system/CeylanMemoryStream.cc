@@ -21,6 +21,8 @@ extern "C"
 }
 
 
+#include <climits>
+
 // Set to 1 to debug memory stream : 
 #define CEYLAN_DEBUG_MEMORY_STREAM 0
 
@@ -400,8 +402,9 @@ void MemoryStream::moveFilledBlockToBufferStart() throw( MemoryStreamException )
 StreamID MemoryStream::getStreamID() const throw()
 {
 
-	return reinterpret_cast<StreamID>( this ) ;
-	
+	// Beware to 64-bit machines :
+	return reinterpret_cast<long int>( this ) ;
+
 }
 
 
