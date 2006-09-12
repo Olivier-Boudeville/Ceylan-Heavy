@@ -44,6 +44,21 @@ extern "C"
 #endif // CEYLAN_USES_SYS_SELECT_H
 
 
+#ifdef CEYLAN_USES_UNISTD_H
+#include <unistd.h>            // for fcntl
+#endif // CEYLAN_USES_UNISTD_H
+
+
+#ifdef CEYLAN_USES_FCNTL_H
+#include <fcntl.h>             // for fcntl
+#endif // CEYLAN_USES_STRINGS_H
+
+
+#ifdef CEYLAN_USES_SYS_IOCTL_H
+#include <sys/ioctl.h>        // for FreeBSD ioctl
+#endif // CEYLAN_USES_SYS_IOCTL_H
+
+
 }
 
 
@@ -76,6 +91,8 @@ StreamSocket::StreamSocket( bool blocking ) throw( Socket::SocketException ) :
 	Socket( blocking )
 {
 
+	// Used by clients, which have to call createSocket when appropriate.
+
 #if CEYLAN_USES_NETWORK
 
 
@@ -98,6 +115,8 @@ StreamSocket::StreamSocket( Port port, bool blocking ) throw( SocketException ):
 	Socket( port, blocking )
 {
 
+	// Used by servers, hence createSocket is called through inheritance.
+	
 #if CEYLAN_USES_NETWORK
 
 	// It could not be called from Socket mother class :
@@ -147,6 +166,26 @@ void StreamSocket::createSocket( Port port ) throw( SocketException )
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 
 
+	if ( ! isBlocking() )
+	{
+		
+		/*
+		 * Was recorded but not done since the descriptor is only available
+		 * now :
+		 *
+		 */
+		try
+		{
+			setBlocking( false ) ;
+		}	
+		catch( Stream::NonBlockingNotSupportedException & e )
+		{
+			throw SocketException( "Socket port-less constructor : "
+				"unable to set this socket in non-blocking mode : "
+				+ e.toString() ) ;
+		}
+	}	
+
 	// Blanks and initializes inherited address :
 	_address->blank() ;
 					
@@ -166,13 +205,134 @@ void StreamSocket::createSocket( Port port ) throw( SocketException )
 
 
 
-
-
 const std::string StreamSocket::toString( Ceylan::VerbosityLevels level ) 
 	const throw()
 {
 
 	return "Stream" + Socket::toString( level ) ;
 	
-}	
+}
 
+	
+
+void StreamSocket::setBlocking( bool newStatus )
+	throw( NonBlockingNotSupportedException )
+{
+
+#if CEYLAN_USES_NETWORK
+
+
+#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+
+	if ( getOriginalFileDescriptor() == 0 )
+		throw NonBlockingNotSupportedException( 
+			"StreamSocket::setBlocking : null descriptor, "
+				"socket not created yet ?" ) ;
+	
+#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+
+
+#if CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS
+
+	// Yes, retrieve current flags :
+	int currentFDState = ::fcntl( getOriginalFileDescriptor(),
+		F_GETFL, 0 ) ;
+
+	if ( currentFDState < 0 )
+		throw NonBlockingNotSupportedException( 
+			"StreamSocket::setBlocking : retrieving attributes failed : " 
+			+ System::explainError() ) ;
+
+#endif // CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS
+	
+		
+			
+	// Set newer flags :
+	if ( newStatus )
+	{
+
+
+#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS	
+
+		LogPlug::trace( "StreamSocket::setBlocking : "
+			"setting a non-blocking socket to blocking, "
+			"using file descriptor #" 
+			+ Ceylan::toString( getOriginalFileDescriptor() )
+			+ "." ) ;
+			
+#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+		
+		
+			
+#if CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS
+
+		if ( ::fcntl( getOriginalFileDescriptor(), F_SETFL, 
+				currentFDState & (~O_NONBLOCK) ) < 0 )
+			throw NonBlockingNotSupportedException( 
+				"StreamSocket::setBlocking : "
+				"setting to blocking with fcntl failed : " 
+				+ System::explainError() ) ;
+
+#else // CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS
+
+		int nonBlockingFlag = 0 ;
+		if ( ::ioctl( getOriginalFileDescriptor(), FIONBIO, &nonBlockingFlag ) )
+			throw NonBlockingNotSupportedException( 
+				"StreamSocket::setBlocking : "
+				"setting to blocking with ioctl failed : " 
+				+ System::explainError() ) ;			
+		
+#endif // CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS
+
+	}
+	else
+	{
+	
+	
+#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+	
+		LogPlug::trace( 
+			"StreamSocket::setBlocking : "
+			"setting a blocking socket to non-blocking, "
+			"using file descriptor #" 
+			+ Ceylan::toString( getOriginalFileDescriptor() )
+			+ "." ) ;
+			
+#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+	
+	
+	
+#if CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS
+
+		if ( ::fcntl( getOriginalFileDescriptor(), F_SETFL, 
+				currentFDState | O_NONBLOCK ) < 0 )
+			throw NonBlockingNotSupportedException( 
+				"StreamSocket::setBlocking : "
+				"setting to non-blocking with fcntl failed : " 
+				+ System::explainError() ) ;
+
+#else // CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS
+
+		int nonBlockingFlag = 1 ;
+		if ( ::ioctl( getOriginalFileDescriptor(), FIONBIO, &nonBlockingFlag ) )
+			throw NonBlockingNotSupportedException( 
+				"StreamSocket::setBlocking : "
+				"setting to non-blocking with ioctl failed : " 
+				+ System::explainError() ) ;			
+
+#endif // CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS
+	
+	}
+	
+	_isBlocking = newStatus ;
+	
+#else // CEYLAN_USES_NETWORK	
+		
+	throw NonBlockingNotSupportedException( 
+		"StreamSocket::setBlocking failed : network support not available." ) ; 
+			
+#endif // CEYLAN_USES_NETWORK	
+
+}
+
+	
