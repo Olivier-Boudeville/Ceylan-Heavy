@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 TESTLOGFILE=`pwd`"/testsOutcome.txt"
 PLAYTEST_LOCAL_FILE="playTests-local.sh"
@@ -17,7 +17,7 @@ if [ "$#" -ge "2" ] ; then
 	exit 1
 fi	
 
-if [ "$#" == "1" ] ; then
+if [ "$#" = "1" ] ; then
 	if [ "$1" != "--interactive" ] ; then
 		echo "$1 : unknown option." 1>&2
 		echo -e "Usage : $USAGE" 1>&2
@@ -36,7 +36,7 @@ debug_mode=1
 DEBUG_INTERNAL()
 # Prints debug informations if debug mode is on.
 {
-	[ "$debug_mode" == 1 ] || echo "Debug : $*"
+	[ "$debug_mode" = 1 ] || echo "Debug : $*"
 }
 
 
@@ -57,7 +57,7 @@ ERROR_INTERNAL()
 DEBUG_INTERNAL "Debug mode activated"
 
 
-# Some useful test functions :
+# Some useful test functions :
 
 display_launching()
 # Usage : display_launching <name of the test>
@@ -65,7 +65,7 @@ display_launching()
 
 	test_name="$1"
 	
-	if [ "$is_batch" == "1" ] ; then
+	if [ "$is_batch" = "1" ] ; then
 		printColor "${term_primary_marker}Launching $test_name" $cyan_text $blue_back
 	else
 		printf "[${cyan_text}m%-${space_for_test_name}s" `echo $test_name|sed 's|^./||'`
@@ -82,9 +82,9 @@ display_test_result()
 	t="$2"
 	return_code="$3"
 	
-	if [ "$return_code" == 0 ] ; then
+	if [ "$return_code" = 0 ] ; then
 		# Test succeeded :
-		if [ "$is_batch" == "1" ] ; then
+		if [ "$is_batch" = "1" ] ; then
 			echo
 			printColor "${term_offset}$test_name seems to be successful     " $green_text $black_back
 		else
@@ -95,7 +95,7 @@ display_test_result()
 			
 		# Test failed :
 		error_count=$(($error_count+1))
-		if [ "$is_batch" == "1" ] ; then
+		if [ "$is_batch" = "1" ] ; then
 			echo
 			printColor "${term_offset}$t seems to be failed (exit status $return_code)     " $white_text $red_back
 		else
@@ -115,9 +115,9 @@ run_test()
 	t="$2"
 	
 	# The --interactive parameter is used to tell the test it is 
-	# run in interactive mode, so that those which are long 
+	# run in interactive mode, so that those which are long 
 	# (ex : stress tests) are shorten.
-	if [ "$is_batch" == "0" ] ; then
+	if [ "$is_batch" = "0" ] ; then
 		echo -e "\n\n########### Running now $t" >>${TESTLOGFILE}
 		$t --batch 1>>${TESTLOGFILE} 2>&1
 	else
@@ -129,7 +129,7 @@ run_test()
 	display_test_result "$test_name" "$t" "$return_code"
 	
 		
-	if [ "$is_batch" == "1" ] ; then
+	if [ "$is_batch" = "1" ] ; then
 		printColor "${term_primary_marker}End of $test_name, press enter to continue" $cyan_text $blue_back
 		read 
 		clear
@@ -151,12 +151,15 @@ else
 	exit
 fi	
 
+# For testCeylanFileLocator and others that need to search relative paths :
+# (do not know why shell fails when doing a 'cd test' when run from trunk)
+cd ${TEST_ROOT}
 
 # Creates a test directory to avoid polluting other directories :
 TEST_DIR="tests-results-"`date '+%Y%m%d'`
 
 
-if [ "$is_batch" == "0" ] ; then
+if [ "$is_batch" = "0" ] ; then
 	echo -e "\nRunning in batch mode, tests will be short and silent, only results are to be output."
 else	
 	echo -e "\nInteractive tests will only need the enter key to be pressed one or more times. Be warned though that some tests might take a long time, and that some of them have no special output except a test result."
@@ -164,28 +167,45 @@ fi
 
 
 # This script will automatically run each test of each selected Ceylan module.
-#TESTED_MODULES="generic logs interfaces modules system maths network"
 TESTED_ROOT_MODULES=`cd ${TEST_ROOT}; find . -mindepth 1 -type d | grep -v autom4te.cache | grep -v .svn | grep -v '.deps' | grep -v '.libs' | grep -v 'testCeylan' `
 
-# "[OK] " is 5 character wide and must be aligned along the right edge :
-COLUMNS=`tput cols`
-space_for_test_name=`echo $(( $COLUMNS - 5 ))`
+# For debug purpose :
+#TESTED_ROOT_MODULES="generic logs interfaces modules system maths network middleware"
+
+DEBUG_INTERNAL "Tested modules are : ${TESTED_ROOT_MODULES}"
+
+
+# "[OK] " is 5 character wide and must be aligned along the right edge :
+if [ -z "${COLUMNS}" ] ; then
+	DEBUG_INTERNAL "Retrieving columns thanks to tput"	
+	COLUMNS=`tput cols`
+	if [ -z "${COLUMNS}" ] ; then
+		DEBUG_INTERNAL "Retrieving columns thanks to stty"	
+		COLUMNS=`stty size |awk '{print $2}'`
+	fi	
+fi
+DEBUG_INTERNAL "Columns = ${COLUMNS}"	
+
+space_for_test_name=`echo $(( ${COLUMNS} - 5 ))`
+DEBUG_INTERNAL "Space for test names = ${space_for_test_name}"	
 
 test_count=0
 error_count=0
 
-if [ "$is_batch" == "0" ] ; then
+if [ "$is_batch" = "0" ] ; then
 	echo -e "\n\tTest results established at "`date '+%A, %B %-e, %Y'`"\n\n" > ${TESTLOGFILE}
 fi
 
 echo -e "\n\nLibrary search path is : LD_LIBRARY_PATH='$LD_LIBRARY_PATH'" >> ${TESTLOGFILE}
 
-# So that test plugin can be found :
+# So that test plugin can be found :
 saved_LTDL_LIBRARY_PATH="$LTDL_LIBRARY_PATH"
 
 
 for m in ${TESTED_ROOT_MODULES} ; do
 
+	DEBUG_INTERNAL "Testing module ${m}"
+	
 	LTDL_LIBRARY_PATH="$saved_LTDL_LIBRARY_PATH:${TEST_ROOT}/$m"
 	export LTDL_LIBRARY_PATH
 	
@@ -200,13 +220,16 @@ for m in ${TESTED_ROOT_MODULES} ; do
 	
 	if [ -f "${PLAYTEST_LOCAL}" ] ; then
 		EXCLUDED_TESTS=""
-		source ${PLAYTEST_LOCAL}
+		DEBUG_INTERNAL "Sourcing ${PLAYTEST_LOCAL}"
+		. ${PLAYTEST_LOCAL}
 	fi
 		
 	
-	TESTS=`find ${TEST_ROOT}/$m -mindepth 1 -maxdepth 1 -perm +o+x,g+x -a -type f -a -name 'testCeylan*' `
+	TESTS=`find ${TEST_ROOT}/$m -mindepth 1 -maxdepth 1 -perm -o+x,g+x -a -type f -a -name 'testCeylan*' `
+
+	DEBUG_INTERNAL "Tests in module ${m} are : '${TESTS}'"
 	
-	if [ "$is_batch" == "1" ] ; then
+	if [ "$is_batch" = "1" ] ; then
 	
 		# Lists all tests that are to be run :
 		for t in $TESTS ; do
@@ -226,12 +249,12 @@ for m in ${TESTED_ROOT_MODULES} ; do
 
 			to_be_excluded=1
 			for excluded in ${EXCLUDED_TESTS} ; do
-				if [ `basename "$t"` == "$excluded" ] ; then
+				if [ `basename "$t"` = "$excluded" ] ; then
 					to_be_excluded=0
 				fi	
 			done	
 		
-			if [ "$to_be_excluded" == "0" ] ; then
+			if [ "$to_be_excluded" = "0" ] ; then
 				# Skip this test, as PLAYTEST_LOCAL_FILE took care of it :
 				#echo "Skipping $t"
 				continue
