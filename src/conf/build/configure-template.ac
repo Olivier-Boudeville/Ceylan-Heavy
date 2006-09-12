@@ -210,7 +210,7 @@ AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
 
 # Only headers independent from all Ceylan features are checked here : 
-AC_CHECK_HEADERS([math.h limits.h stdint.h string.h strings.h time.h sys/time.h utime.h termios.h netdb.h netinet/in.h arpa/inet.h unistd.h sys/utsname.h sys/sysinfo.h conio.h fcntl.h errno.h sys/types.h netinet/in.h byteswap.h machine/bswap.h])
+AC_CHECK_HEADERS([math.h limits.h stdint.h string.h strings.h time.h sys/time.h utime.h termios.h netdb.h netinet/in.h arpa/inet.h unistd.h sys/utsname.h sys/sysinfo.h conio.h fcntl.h sys/ioctl.h errno.h sys/types.h netinet/in.h byteswap.h machine/bswap.h])
 
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -311,7 +311,7 @@ AC_ARG_ENABLE(debug,
 if test x$enable_debug = xyes; then
 
 	# Debug requested :
-	DEBUG=1
+	DEBUG=0
 	DEBUG_EVENTS=0
 	DEBUG_DEMANGLE=0
 	DEBUG_LOG=0
@@ -1181,14 +1181,22 @@ CheckMkdir()
 # Still needing platform detection for some specifities :
 #   - CeylanDirectory : 
 #	 + directory separator, root directory : ARCH_WINDOWS
+#	 + non-blocking socket call (fcntl) not working properly on FreeBSD
 CheckPlatform()
 {
 
 	CEYLAN_ARCH_WINDOWS=0
 	CEYLAN_ARCH_LINUX=0
-
+	CEYLAN_ARCH_FREEBSD=0
+	CEYLAN_ARCH_NETBSD=0
+	CEYLAN_ARCH_OPENBSD=0
+	
 	case "$target" in
 	
+		*-*-win32*) 
+			CEYLAN_ARCH_WINDOWS=1
+			;;
+
 		*-*-cygwin*)
 			CEYLAN_ARCH_WINDOWS=1
 			CFLAGS="$CFLAGS -I/usr/include/mingw -DWIN32 -Uunix -mno-cygwin"
@@ -1203,9 +1211,21 @@ CheckPlatform()
 	    *-*-linux*) 
 			CEYLAN_ARCH_LINUX=1 
 			;;
-		
+			
+		*-*-freebsd*)
+			CEYLAN_ARCH_FREEBSD=1 
+			;;
+			
+		*-*-netbsd*) 
+			CEYLAN_ARCH_NETBSD=1 
+			;;
+
+		*-*-openbsd*) 
+			CEYLAN_ARCH_OPENBSD=1 
+			;;
+							
 	    *)
-	        # No identified
+	        # Not identified
 	        ;;
 		
 	esac
@@ -1218,6 +1238,18 @@ CheckPlatform()
 	AC_DEFINE_UNQUOTED([ARCH_LINUX],
 		[$CEYLAN_ARCH_LINUX],
 		[Define to 1 if the target platform is GNU/Linux])
+
+	AC_DEFINE_UNQUOTED([ARCH_FREEBSD],
+		[$CEYLAN_ARCH_FREEBSD],
+		[Define to 1 if the target platform is FreeBSD])
+
+	AC_DEFINE_UNQUOTED([ARCH_NETBSD],
+		[$CEYLAN_ARCH_NETBSD],
+		[Define to 1 if the target platform is NetBSD])
+
+	AC_DEFINE_UNQUOTED([ARCH_OPENBSD],
+		[$CEYLAN_ARCH_OPENBSD],
+		[Define to 1 if the target platform is OpenBSD])
 
 }
 
@@ -1239,6 +1271,34 @@ CheckEndianness()
 }
 
 
+# Some platforms have peculiar needs to set a socket to non-blocking mode.
+# For example, FreeBSD compiles '::fcntl( ..., F_SETFL,... | O_NONBLOCK )' fine
+# but issues an error at runtime (Inappropriate ioctl for device)
+CheckNonBlockingSockets()
+{
+
+	case "$target" in
+			
+		*-*-freebsd*)
+			# ioctl should be used instead :
+			CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS=0
+			;;
+	
+	    *)
+	        # fcntl works correctly here :
+			CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS=1			
+	        ;;
+
+	esac
+
+	AC_DEFINE_UNQUOTED([USES_FCNTL_FOR_NONBLOCKING_SOCKETS],
+		[$CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS],
+		[Define to 1 if fcntl is to be preferred to ioctl])
+		
+}
+
+
+
 # TODO : use CXXCOMPILE/CXXLINK to customize build output.
 
 
@@ -1248,7 +1308,7 @@ CheckEndianness()
 CheckMkdir
 CheckPlatform
 CheckEndianness
-
+CheckNonBlockingSockets
 
 # Enable/disable various features of the Ceylan library :
 
