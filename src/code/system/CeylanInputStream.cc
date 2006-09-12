@@ -468,6 +468,7 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
+
 	if ( is.empty() )
 		return 0 ;
 
