@@ -83,6 +83,20 @@ namespace Ceylan
 				virtual ~StreamSocket() throw() ;
 				
 				
+				/**
+				 * Sets the blocking mode of this stream socket.
+				 *
+				 * @param newStatus if true, sets the socket in blocking mode,
+				 * if false set to non-blocking mode. If the socket is 
+				 * already in the target state, nothing is done.
+				 *
+				 * @throw NonBlockingNotSupportedException if the operation
+				 * failed.
+				 *
+				 */
+				virtual void setBlocking( bool newStatus )
+					throw( NonBlockingNotSupportedException ) ;
+	
 		
             	/**
             	 * Returns an user-friendly description of the state of
