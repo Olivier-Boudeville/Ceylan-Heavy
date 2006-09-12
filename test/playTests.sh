@@ -256,7 +256,7 @@ for m in ${TESTED_ROOT_MODULES} ; do
 		
 			if [ "$to_be_excluded" = "0" ] ; then
 				# Skip this test, as PLAYTEST_LOCAL_FILE took care of it :
-				#echo "Skipping $t"
+				DEBUG_INTERNAL "Skipping test $t"
 				continue
 			fi
 			
