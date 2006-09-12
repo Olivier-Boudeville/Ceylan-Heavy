@@ -41,7 +41,7 @@ SequentialServerStreamSocket::SequentialServerStreamSocketException::~Sequential
 
 SequentialServerStreamSocket::SequentialServerStreamSocket( Port listeningPort, 
 		bool reuse ) throw( SocketException ):
-	ServerStreamSocket( listeningPort, reuse ),
+	ServerStreamSocket( listeningPort, reuse, /* blocking */ true ),
 	_currentConnection( 0 )
 {
 
@@ -108,6 +108,14 @@ AnonymousStreamSocket * SequentialServerStreamSocket::accept()
 	LogPlug::trace( "SequentialServerStreamSocket::accept : "
 		"will accept now connections, state is : " + toString() ) ;
 	
+	/*
+	 * One can notice that constructing next AnonymousStreamSocket implies
+	 * that the accept is blocking, i.e. the listening socket is created
+	 * as a blocking one. Otherwise a Select operating on this socket would
+	 * have to be used here.
+	 *
+	 */
+	 
 	try
 	{
 	
