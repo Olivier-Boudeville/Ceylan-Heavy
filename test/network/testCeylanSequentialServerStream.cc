@@ -246,6 +246,17 @@ int main( int argc, char * argv[] )
         LogPlug::info( "Connection terminated, current server state is : "
 			+ myServer.toString() ) ;
 			
+			
+		/*
+		 * In a test suite, we need to make the server wait a bit before
+		 * returning, so that it lets enough time for the client to stop and
+		 * then to wait for the server PID.
+		 *
+		 * @see playTests-local.sh
+		 *
+		 */
+		if ( isBatch )
+			Thread::Sleep( 0 /* second */, 500000 /* microseconds */ ) ;
 		
         LogPlug::info( "End of network stream server test." ) ;
 
