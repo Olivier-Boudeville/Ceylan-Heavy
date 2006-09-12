@@ -53,7 +53,7 @@ update-changelog:
 	@if [ "${CREATE_CHANGELOG}" = true ] ; then \
 	if [ ! -x "$(CHANGELOG_COMMAND)" ] ; then echo\
 	"@CEYLAN_WARNING_STYLE@    No ChangeLog tool\
-	available, nothing done@CEYLAN_DEFAULT_STYLE@"; \
+	available (svn2cl), nothing done@CEYLAN_DEFAULT_STYLE@"; \
 	else $(MAKE) effective-changelog-creation; fi; else\
 	echo "@CEYLAN_WARNING_STYLE@   \
 	Creation of Change Logs from SVN\
@@ -61,13 +61,12 @@ update-changelog:
 	
 
 effective-changelog-creation:
-	@echo "@CEYLAN_COMMAND_STYLE@    Recreating Change Logs from SVN\
+	@echo "@CEYLAN_COMMAND_STYLE@    Recreating ChangeLog file from SVN\
 	[takes some time]@CEYLAN_DEFAULT_STYLE@"
 	@if [ ! -x "$(CHANGELOG_COMMAND)" ] ; then echo\
 	"@CEYLAN_WARNING_STYLE@No Changelog tool\
 	available, nothing done@CEYLAN_DEFAULT_STYLE@"; else\
-	cd ${top_srcdir}; \
-	$(CHANGELOG_COMMAND) -o ${top_builddir}/ChangeLog 1>/dev/null 2>&1 ; fi
+	$(CHANGELOG_COMMAND) -o ${top_builddir}/ChangeLog ${top_srcdir} ; fi
 	-@/bin/rm -f ${top_srcdir}/ChangeLog.bak
 
 
