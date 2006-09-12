@@ -45,7 +45,7 @@ extern "C"
 
 
 #ifdef CEYLAN_USES_UNISTD_H
-#include <unistd.h>            // for fcntl
+#include <unistd.h>            // for fcntl, close
 #endif // CEYLAN_USES_UNISTD_H
 
 
