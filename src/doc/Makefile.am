@@ -218,7 +218,8 @@ check-dot:
 	@[ -x "$(DOT)" ] \
 	|| ( echo; echo "@CEYLAN_ERROR_STYLE@    Unable to generate\
 	any useful documentation from source code : \
-	dot tool not found.@CEYLAN_DEFAULT_STYLE@"; echo; false ) 
+	dot tool not found [dot homepage : \
+	http://www.graphviz.org/].@CEYLAN_DEFAULT_STYLE@"; echo; false ) 
 	
 	
 fix-dox-conf:
@@ -257,27 +258,27 @@ toSF:
 toSF-rsync: site
 	@echo
 	@echo "@CEYLAN_INSTALL_STYLE@    Updating @PROJECT_NAME@\
-	Sourceforge's website from local web repository\
+	Sourceforge's website from local web repository with rsync\
 	[@CEYLAN_LOCAL_WEB_DIR@] using rsync@CEYLAN_DEFAULT_STYLE@"
 	@echo
 	@opt=$(RSYNC_OPT); $(RSYNC) $$opt @CEYLAN_LOCAL_WEB_DIR@/* \
 	$(SF_USER)@$(SF_SHELL_SERVER):$(SF_WEB_DIR)
 	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark\
 	@PROJECT_NAME@'s website on Sourceforge at\
-	http://$(SF_WEB_URL)@CEYLAN_DEFAULT_STYLE@"
+	$(SF_WEB_URL)@CEYLAN_DEFAULT_STYLE@"
 
 
 toSF-scp: check-scp site
 	@echo
 	@echo "@CEYLAN_INSTALL_STYLE@    Updating @PROJECT_NAME@\
-	Sourceforge's website from local web repository\
+	Sourceforge's website from local web repository with scp\
 	[@CEYLAN_LOCAL_WEB_DIR@] using scp@CEYLAN_DEFAULT_STYLE@"
 	@echo
 	@opt=$(SCP_OPT); $(SCP) $$opt @CEYLAN_LOCAL_WEB_DIR@/* \
 	$(SF_USER)@$(SF_SHELL_SERVER):$(SF_WEB_DIR)
 	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark\
 	@PROJECT_NAME@'s website on Sourceforge at\
-	http://$(SF_WEB_URL)@CEYLAN_DEFAULT_STYLE@"
+	$(SF_WEB_URL)@CEYLAN_DEFAULT_STYLE@"
 
 
 toMirror:
