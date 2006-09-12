@@ -100,9 +100,16 @@ Socket::Socket( bool blocking ) throw( Socket::SocketException ) :
 	
 	_address = new SystemSpecificSocketAddress ;
 	
-	if ( blocking == false )
+	/*
+	 * @note As long as the socket is not really created (i.e. it has a
+	 * non-null file descriptor), it cannot be set really to non-blocking.
+	 *
+	 * Here the non-blocking request is recorded but not performed yet :
+	 *
+	 */	 
+	if ( ! blocking )
 		setBlocking( false ) ;
-		
+			
 #else // CEYLAN_USES_NETWORK
 
 	throw SocketException( "Socket empty constructor failed : "
@@ -129,11 +136,14 @@ Socket::Socket( Port port, bool blocking ) throw( SocketException ):
 	 * Therefore child classes (ex : CeylanStreamSocket) should call this
 	 * method in their own constructor.
 	 *
+	 * Setting the socket to non-blocking mode, if requested, should be done
+	 * there.
+	 *
 	 */
 
 	_address = new SystemSpecificSocketAddress ;
 
-	if ( blocking == false )
+	if ( ! blocking )
 		setBlocking( false ) ;
 	
 #else // CEYLAN_USES_NETWORK
@@ -501,59 +511,15 @@ void Socket::setBlocking( bool newStatus )
 	throw( NonBlockingNotSupportedException )
 {
 
-#if CEYLAN_USES_NETWORK
-
-	// Anything to do ?
-	if ( newStatus == isBlocking() )
-		return ;
-
-	// Yes, retrieve current flags :
-	int currentFDState = ::fcntl( getOriginalFileDescriptor(),
-		F_GETFL, 0 ) ;
-		
-	if ( currentFDState < 0 )
-		throw NonBlockingNotSupportedException( "Socket::setBlocking : "
-			"retrieving attributes failed : " + System::explainError() ) ;
-			
-	// Set newer flags :
-	if ( newStatus )
-	{
-
-#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS	
-		LogPlug::trace( "Socket::setBlocking : "
-			"setting a non-blocking socket to blocking." ) ;
-#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
-			
-		if ( ::fcntl( getOriginalFileDescriptor(), F_SETFL, 
-				currentFDState & (~O_NONBLOCK) ) < 0 )
-			throw NonBlockingNotSupportedException( "Socket::setBlocking : "
-				"setting to blocking failed : " + System::explainError() ) ;
-
-	}
-	else
-	{
-	
-#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS	
-		LogPlug::trace( "Socket::setBlocking : "
-			"setting a blocking socket to non-blocking." ) ;
-#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
-	
-		if ( ::fcntl( getOriginalFileDescriptor(), F_SETFL, 
-				currentFDState | O_NONBLOCK ) < 0 )
-			throw NonBlockingNotSupportedException( "Socket::setBlocking : "
-				"setting to non-blocking failed : " + System::explainError() ) ;
-	
-	}
-	
+	// Needs to be overriden, otherwise would throw an exception :
 	_isBlocking = newStatus ;
 	
-#else // CEYLAN_USES_NETWORK	
-		
-	throw NonBlockingNotSupportedException( 
-		"Socket::setBlocking failed : network support not available." ) ; 
-			
-#endif // CEYLAN_USES_NETWORK	
-
+	/*
+	 * Changing of attribute cannot be performed here, delayed to 
+	 * the createSocket method call.
+	 *
+	 */
+	
 }
 
 	
