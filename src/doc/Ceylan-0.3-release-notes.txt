@@ -1,4 +1,6 @@
 Created Saturday, March 4, 2006.
+Updated Tuesday, September 12, 2006.
+
 
 
 		Ceylan 0.3 release notes
@@ -6,7 +8,9 @@ Created Saturday, March 4, 2006.
 
 This version is a major milestone, and is very different from the 0.2 version (see Ceylan-0.3-changes.txt and ChangeLog for more details).
 
-We aimed at an increased portability and modularity. Even if they are improved, there are still some more efforts to plan before meeting our requirements.
+We aimed at an increased portability (GNU/Linux, FreeBSD, et NetBSD, 32 or 64 bit) and modularity (full autotools support added). 
+
+A lot of efforts for this version went to the networking support.
 
 		
 Support available through the ceylan-support@lists.sourceforge.net mailing list.
