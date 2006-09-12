@@ -52,7 +52,11 @@ using std::set ;
 
 
 
-
+/* 
+ * Implementation note : read http://www.kegel.com/c10k.html for optimization
+ * techniques.
+ *
+ */
 
 
 MultiplexedServerStreamSocket::MultiplexedServerStreamSocketException::MultiplexedServerStreamSocketException( const std::string & reason ) throw():
