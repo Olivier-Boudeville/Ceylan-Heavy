@@ -210,7 +210,7 @@ AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
 
 # Only headers independent from all Ceylan features are checked here : 
-AC_CHECK_HEADERS([math.h limits.h stdint.h string.h strings.h time.h sys/time.h utime.h termios.h netdb.h netinet/in.h arpa/inet.h unistd.h sys/utsname.h sys/sysinfo.h conio.h fcntl.h sys/ioctl.h errno.h sys/types.h netinet/in.h byteswap.h machine/bswap.h])
+AC_CHECK_HEADERS([math.h limits.h stdint.h string.h strings.h time.h sys/time.h utime.h termios.h netdb.h netinet/in.h arpa/inet.h unistd.h sys/utsname.h sys/sysinfo.h conio.h fcntl.h sys/ioctl.h errno.h sys/types.h netinet/in.h byteswap.h machine/bswap.h sys/byteorder.h])
 
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -236,9 +236,11 @@ AC_TYPE_SIGNAL
 AC_FUNC_STAT
 AC_FUNC_UTIME_NULL
 
+
 # Only functions independent from all Ceylan features are checked here. 
-# Following functions are not tested anymore since they must be available
-# thanks to '#include <cmath>' : 
+# Following functions were not tested anymore since they were supposed to be
+# available thanks to '#include <cmath>', they are now checked again as
+# Solaris does not define floorf, sinf, etc. : 
 #	- ceil, ceilf, ceill
 #	- cos, cosf, cosl
 #	- exp, expf, expl
@@ -251,7 +253,7 @@ AC_FUNC_UTIME_NULL
 # on some platforms (ex : OpenBSD 3.8)
 #	- round, roundf, roundl
 
-AC_CHECK_FUNCS([round roundf roundl isdigit islower isupper abs labs llabs exit putenv getenv setenv unsetenv strdup strerror sleep time ctime localtime gettimeofday utime sysinfo uname stat mkdir unlink rename rmdir getcwd gethostname sethostname getdomainname setdomainname gethostbyname gethostbyaddr memset bzero memcpy])
+AC_CHECK_FUNCS([round roundf roundl isdigit islower isupper abs fabsf labs llabs floorf ceilf expf powf sqrtf cosf sinf exit putenv getenv setenv unsetenv strdup strerror sleep time ctime localtime gettimeofday utime sysinfo uname stat mkdir unlink rename rmdir getcwd gethostname sethostname getdomainname setdomainname gethostbyname gethostbyaddr memset bzero memcpy])
 
 
 # Only symbols independent from all Ceylan features are checked here : 
