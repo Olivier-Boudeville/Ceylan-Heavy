@@ -4,6 +4,9 @@
 #include "CeylanOperators.h"   // for toString
 #include "CeylanLogPlug.h"     // for LogPlug
 #include "CeylanTypes.h"       // for Ceylan::Uint16, etc.
+#include "CeylanEndianness.h"  // for ceylan_bswap_*, etc.
+
+
 
 /*
  * Implementation note :
@@ -47,14 +50,6 @@ extern "C"
 #ifdef CEYLAN_USES_SYS_SELECT_H
 #include <sys/select.h>        // for select
 #endif // CEYLAN_USES_SYS_SELECT_H
-
-#ifdef CEYLAN_USES_BYTESWAP_H
-#include <byteswap.h>          // for bswap_16, etc.
-#endif // CEYLAN_USES_BYTESWAP_H
-
-#ifdef CEYLAN_USES_MACHINE_BSWAP_H
-#include <machine/bswap.h>     // for bswap_16, etc.
-#endif // CEYLAN_USES_MACHINE_BSWAP_H
 
 }
 
@@ -220,7 +215,7 @@ Ceylan::Sint16 InputStream::readSint16()
 	
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
-	return bswap_16( *ret ) ;
+	return ceylan_bswap_16( *ret ) ;
 	
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 	
@@ -250,7 +245,7 @@ Ceylan::Uint16 InputStream::readUint16()
 	
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
-	return bswap_16( *ret ) ;
+	return ceylan_bswap_16( *ret ) ;
 	
 	
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
@@ -281,7 +276,7 @@ Ceylan::Sint32 InputStream::readSint32()
 	
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
-	return bswap_32( *ret ) ;
+	return ceylan_bswap_32( *ret ) ;
 	
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 	
@@ -311,7 +306,7 @@ Ceylan::Uint32 InputStream::readUint32()
 	
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
-	return bswap_32( *ret ) ;
+	return ceylan_bswap_32( *ret ) ;
 	
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 	
@@ -341,7 +336,7 @@ Ceylan::Float32 InputStream::readFloat32()
 	
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
-	return bswap_32( *ret ) ;
+	return ceylan_bswap_32( *ret ) ;
 	
 	
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
@@ -372,7 +367,7 @@ Ceylan::Float64 InputStream::readFloat64()
 	
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
-	return bswap_64( *ret ) ;
+	return ceylan_bswap_64( *ret ) ;
 	
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 	
