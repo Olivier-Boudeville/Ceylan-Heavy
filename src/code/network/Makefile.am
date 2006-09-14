@@ -11,7 +11,9 @@ libCeylanNetwork_la_CPPFLAGS = -I@CEYLAN_LOGS@ -I@CEYLAN_GENERIC@ -I@CEYLAN_INTE
 libCeylanNetworkIncludedir      = $(includedir)/Ceylan
 libCeylanNetworkInclude_HEADERS = $(NETWORK_INTERFACES)
 
-noinst_HEADERS = CeylanSystemSpecificSocketAddress.h
+noinst_HEADERS = \
+	CeylanSystemSpecificSocketAddress.h
+
 
 
 NETWORK_INTERFACES = \
