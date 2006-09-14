@@ -12,6 +12,10 @@ libCeylanSystemIncludedir      = $(includedir)/Ceylan
 libCeylanSystemInclude_HEADERS = $(SYSTEM_INTERFACES)
 
 
+noinst_HEADERS = \
+	CeylanEndianness.h
+
+
 SYSTEM_INTERFACES = \
 	CeylanAnonymousInputOutputStream.h   \
 	CeylanAnonymousInputStream.h         \
