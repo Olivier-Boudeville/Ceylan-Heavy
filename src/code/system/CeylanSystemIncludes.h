@@ -28,4 +28,11 @@
 #include "CeylanUniformResourceIdentifier.h"
 
 
+/*
+ * Private non-exported non-installed headers : 
+ *   - CeylanEndianness.h : for byte-swapping 
+ *
+ */
+
+
 #endif // CEYLAN_SYSTEM_INCLUDES_H_
