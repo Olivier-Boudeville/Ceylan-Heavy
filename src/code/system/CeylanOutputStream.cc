@@ -3,6 +3,7 @@
 #include "CeylanStringUtils.h" // for StringSize
 #include "CeylanOperators.h"   // for toString
 #include "CeylanLogPlug.h"     // for LogPlug
+#include "CeylanEndianness.h"  // for ceylan_bswap_*, etc.
 
 
 #if CEYLAN_USES_CONFIG_H
@@ -11,14 +12,6 @@
 
 
 
-extern "C"
-{
-
-#ifdef CEYLAN_USES_MACHINE_BSWAP_H
-#include <machine/bswap.h>     // for bswap_16, etc.
-#endif // CEYLAN_USES_MACHINE_BSWAP_H
-
-}
 
 
 using namespace Ceylan::System ;
@@ -109,7 +102,7 @@ void OutputStream::writeSint16( Ceylan::Sint16 toWrite )
 	
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
-	toWrite = bswap_16( toWrite ) ;
+	toWrite = ceylan_bswap_16( toWrite ) ;
 	
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 			
@@ -134,7 +127,7 @@ void OutputStream::writeUint16( Ceylan::Uint16 toWrite )
 	
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
-	toWrite = bswap_16( toWrite ) ;
+	toWrite = ceylan_bswap_16( toWrite ) ;
 	
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 			
@@ -160,7 +153,7 @@ void OutputStream::writeSint32( Ceylan::Sint32 toWrite )
 	
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
-	toWrite = bswap_32( toWrite ) ;
+	toWrite = ceylan_bswap_32( toWrite ) ;
 	
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 			
@@ -185,7 +178,7 @@ void OutputStream::writeUint32( Ceylan::Uint32 toWrite )
 	
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
-	toWrite = bswap_32( toWrite ) ;
+	toWrite = ceylan_bswap_32( toWrite ) ;
 	
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 			
@@ -210,7 +203,7 @@ void OutputStream::writeFloat32( Ceylan::Float32 toWrite )
 	
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
-	toWrite = bswap_32( toWrite ) ;
+	toWrite = ceylan_bswap_32( toWrite ) ;
 	
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 			
@@ -235,7 +228,7 @@ void OutputStream::writeFloat64( Ceylan::Float64 toWrite )
 	
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
-	toWrite = bswap_64( toWrite ) ;
+	toWrite = ceylan_bswap_64( toWrite ) ;
 	
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 			
