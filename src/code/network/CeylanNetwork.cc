@@ -17,27 +17,27 @@ extern "C"
 {
 
 // for sethostname, gethostname, setdomainname, getdomainname :
-#if CEYLAN_USES_UNISTD_H
+#ifdef CEYLAN_USES_UNISTD_H
 #include <unistd.h>
 #endif // CEYLAN_USES_UNISTD_H
 
-#if CEYLAN_USES_SYS_UTSNAME_H
+#ifdef CEYLAN_USES_SYS_UTSNAME_H
 #include <sys/utsname.h>      // for uname
 #endif // CEYLAN_USES_SYS_UTSNAME_H
 
-#if CEYLAN_USES_STRING_H
+#ifdef CEYLAN_USES_STRING_H
 #include <string.h>           // for memcpy
 #endif // CEYLAN_USES_STRING_H
 
-#if CEYLAN_USES_SYS_SOCKET_H
+#ifdef CEYLAN_USES_SYS_SOCKET_H
 #include <sys/socket.h>       // for inet_ntoa
 #endif // CEYLAN_USES_SYS_SOCKET_H
 
-#if CEYLAN_USES_NETINET_IN_H
+#ifdef CEYLAN_USES_NETINET_IN_H
 #include <netinet/in.h>       // for inet_ntoa
 #endif // CEYLAN_USES_NETINET_IN_H
 
-#if CEYLAN_USES_ARPA_INET_H
+#ifdef CEYLAN_USES_ARPA_INET_H
 #include <arpa/inet.h>        // for inet_ntoa
 #endif // CEYLAN_USES_ARPA_INET_H
 
@@ -431,7 +431,7 @@ void HostDNSEntry::manageHostEntry() throw( NetworkException )
 const string Ceylan::Network::getLocalHostName() throw( NetworkException )
 {
 
-#if CEYLAN_USES_GETHOSTNAME
+#ifdef CEYLAN_USES_GETHOSTNAME
 
 	// int uname(struct utsname *buf) in sys/utsname.h coud be used as well.
 	
@@ -459,8 +459,9 @@ void Ceylan::Network::setLocalHostName( const string & newHostName )
 	throw( NetworkException )
 {
 
-#if CEYLAN_USES_SETHOSTNAME
+#ifdef CEYLAN_USES_SETHOSTNAME
 
+	// Some versions of Solaris do not declare it in the right header :
 	if ( ::sethostname( newHostName.c_str(), newHostName.size() ) )
 		throw NetworkException( "Ceylan::Network::setLocalHostName : "
 			"unable to set local host name to "
@@ -479,7 +480,7 @@ void Ceylan::Network::setLocalHostName( const string & newHostName )
 const string Ceylan::Network::getLocalHostDomainName() throw( NetworkException )
 {
 
-#if CEYLAN_USES_GETDOMAINNAME
+#ifdef CEYLAN_USES_GETDOMAINNAME
 	
 	char domainBuffer[ 256 ] ;
 
@@ -508,7 +509,7 @@ void Ceylan::Network::setLocalHostDomainName( const string & newDomainName )
 	throw( NetworkException )
 {
 
-#if CEYLAN_USES_SETDOMAINNAME
+#ifdef CEYLAN_USES_SETDOMAINNAME
 	
 	if ( ::setdomainname( newDomainName.c_str(), newDomainName.size() ) )
 		throw NetworkException( "Unable to set local host domain name to "
@@ -536,7 +537,7 @@ const string Ceylan::Network::getMostPreciseLocalHostName()
 	string guessedFullHostname ;
 	
 	
-#if CEYLAN_USES_UNAME
+#ifdef CEYLAN_USES_UNAME
 
 	struct utsname buf ;
 
@@ -697,7 +698,7 @@ const string Ceylan::Network::getFQDNFromDNSEntry( const HostDNSEntry & entry )
 bool Ceylan::Network::isAValidHostName( const string & hostnameString ) throw()
 {
 
-#if CEYLAN_USES_REGEX
+#ifdef CEYLAN_USES_REGEX
 	
 	Ceylan::RegExp target( hostnameString ) ;
 
