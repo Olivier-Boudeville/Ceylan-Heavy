@@ -66,7 +66,7 @@ effective-changelog-creation:
 	@if [ ! -x "$(CHANGELOG_COMMAND)" ] ; then echo\
 	"@CEYLAN_WARNING_STYLE@No Changelog tool\
 	available, nothing done@CEYLAN_DEFAULT_STYLE@"; else\
-	$(CHANGELOG_COMMAND) -o ${top_builddir}/ChangeLog ${top_srcdir} ; fi
+	$(CHANGELOG_COMMAND) --linelen=10000 -o ${top_builddir}/ChangeLog ${top_srcdir} ; fi
 	-@/bin/rm -f ${top_srcdir}/ChangeLog.bak
 
 
