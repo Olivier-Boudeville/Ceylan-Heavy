@@ -3,8 +3,6 @@
 #include "CeylanOperators.h"   // for string + operator
 
 
-#include <cstdlib>             // for abs, etc.
-#include <cmath>               // for fabsf, etc.
 
 #if CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"      // for configure-time feature settings
@@ -19,6 +17,10 @@ extern "C"
 #endif // CEYLAN_USES_MATH_H
 
 }
+
+
+#include <cstdlib>             // for abs, etc.
+#include <cmath>               // for fabsf, etc.
 
 
 using std::string ;
@@ -196,7 +198,17 @@ bool Ceylan::Maths::AreEqual( Ceylan::LongFloat x, Ceylan::LongFloat y,
 
 Ceylan::Float32 Ceylan::Maths::Floor( Ceylan::Float32 x ) throw()
 {
+
+#ifdef CEYLAN_USES_FLOORF
+
 	return ::floorf( x ) ;
+	
+#else // CEYLAN_USES_FLOORF
+
+	return ::floor( x ) ;
+
+#endif // CEYLAN_USES_FLOORF
+
 }
 
 
@@ -215,7 +227,17 @@ Ceylan::LongFloat Ceylan::Maths::Floor( Ceylan::LongFloat x ) throw()
 
 Ceylan::Float32 Ceylan::Maths::Ceil( Ceylan::Float32 x ) throw()
 {
+
+#ifdef CEYLAN_USES_CEILF
+
 	return ::ceilf( x ) ;
+	
+#else // CEYLAN_USES_CEILF
+
+	return ::ceil( x ) ;
+
+#endif // CEYLAN_USES_CEILF
+	
 }
 
 
@@ -357,7 +379,17 @@ long long int Ceylan::Maths::Abs( long long int x ) throw()
 
 Ceylan::Float32 Ceylan::Maths::Abs( Ceylan::Float32 x ) throw()
 {
+
+#ifdef CEYLAN_USES_FABSF
+
 	return ::fabsf( x ) ;
+	
+#else // CEYLAN_USES_FABSF
+
+	return ::fabs( x ) ;
+
+#endif // CEYLAN_USES_FABSF
+	
 }
 
 
@@ -549,7 +581,17 @@ Ceylan::LongFloat Ceylan::Maths::Max( Ceylan::LongFloat x, Ceylan::LongFloat y )
 
 Ceylan::Float32 Ceylan::Maths::Exp( Ceylan::Float32 x ) throw() 
 {
+
+#ifdef CEYLAN_USES_EXPF
+
 	return ::expf( x ) ;
+	
+#else // CEYLAN_USES_EXPF
+
+	return ::exp( x ) ;
+
+#endif // CEYLAN_USES_EXPF
+
 }
 
 
@@ -568,7 +610,17 @@ Ceylan::LongFloat Ceylan::Maths::Exp( Ceylan::LongFloat x ) throw()
 Ceylan::Float32 Ceylan::Maths::Pow( Ceylan::Float32 x, Ceylan::Float32 y )
 	throw() 
 {
+
+#ifdef CEYLAN_USES_POWF
+
 	return ::powf( x, y ) ;
+	
+#else // CEYLAN_USES_POWF
+
+	return ::pow( x, y ) ;
+
+#endif // CEYLAN_USES_POWF
+
 }
 
 
@@ -612,7 +664,17 @@ Ceylan::Float32 Ceylan::Maths::Sqrt( Ceylan::Float32 x ) throw( MathsException )
 		throw MathsException( 
 			"Sqrt( Ceylan::Float32 x ) : parameter is negative ("
 			+ Ceylan::toString( x ) + ")." ) ; 
-	return ::sqrtf( x ) ;		
+
+#ifdef CEYLAN_USES_SQRTF
+
+	return ::sqrtf( x ) ;
+	
+#else // CEYLAN_USES_SQRTF
+
+	return ::sqrt( x ) ;
+
+#endif // CEYLAN_USES_SQRTF
+
 }
 
 
@@ -640,7 +702,17 @@ Ceylan::LongFloat Ceylan::Maths::Sqrt( Ceylan::LongFloat x )
 
 Ceylan::Float32 Ceylan::Maths::Cos( Ceylan::Float32 x ) throw()
 {
+
+#ifdef CEYLAN_USES_COSF
+
 	return ::cosf( x ) ;
+	
+#else // CEYLAN_USES_COSF
+
+	return ::cos( x ) ;
+
+#endif // CEYLAN_USES_COSF
+
 }
 
 
@@ -659,7 +731,17 @@ Ceylan::LongFloat Ceylan::Maths::Cos( Ceylan::LongFloat x ) throw()
 
 Ceylan::Float32 Ceylan::Maths::Sin( Ceylan::Float32 x ) throw()
 {
+
+#ifdef CEYLAN_USES_SINF
+
 	return ::sinf( x ) ;
+	
+#else // CEYLAN_USES_SINF
+
+	return ::sin( x ) ;
+
+#endif // CEYLAN_USES_SINF
+
 }
 
 
