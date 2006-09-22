@@ -25,6 +25,7 @@ namespace Ceylan
 		typedef Ceylan::Uint32 ThreadCount ;
 		
 		
+		
 		/**
 		 * Basic abstract class for threaded objects.
 		 *
@@ -306,7 +307,7 @@ namespace Ceylan
 				 *
 				 * thread #1 :
 				 *
-				 *   // blocks the thread until ok is true.
+				 *   // Blocks the thread until ok is true.
 				 *   while( ! ok ) 
 				 *		waiter.wait() ;
 				 *
@@ -317,7 +318,7 @@ namespace Ceylan
 				 *   // Modify the shared value ok :
 				 *   ok = true ;
 				 *
-				 *   // restart the waiting thread 1
+				 *   // Restart the waiting thread 1 :
 				 *   waiter.signal() ;
 				 *
 				 * </pre>
@@ -349,9 +350,9 @@ namespace Ceylan
 
 
 						/**
-						 * Blocks for <b>sec</b> seconds the calling thread
-						 * until signal() or broadcast() is called by another
-						 * thread.
+						 * Blocks for <b>sec</b> seconds the calling thread,
+						 * until time is elapsed, or signal() or broadcast() 
+						 * is called by another thread.
 						 *
 						 * @param seconds the requested sleeping time, if null
 						 * no timeout will occur.
