@@ -80,7 +80,7 @@ namespace Ceylan
 			/**
 			 * Locks the Lockable. 
 			 *
-			 * Locking an already locked Lockable raises an exception. 
+			 * Locking an already locked Lockable may raise an exception. 
 			 * If mustBeLocked returns false, does nothing.
 			 *
 			 * This method is to be called by the user of the class 
@@ -175,11 +175,6 @@ namespace Ceylan
 		
 
 
-
-		private:
-		
-
-
 			/**
 			 * This is the actual piece of informations which is used 
 			 * to know the lock state.
@@ -187,6 +182,11 @@ namespace Ceylan
 			 */
 			bool _locked ;
 
+
+
+
+		private:
+		
 		
 			/**
 			 * Copy constructor made private to ensure that it will
