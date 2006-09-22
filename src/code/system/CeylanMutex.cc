@@ -56,7 +56,7 @@ Mutex::Mutex() throw( Features::FeatureNotAvailableException ) :
 
 	_internalMutex = new SystemSpecificMutexType() ;
 	
-	::pthread_mutex_init( & _internalMutex->_mutex, 0 ) ;
+	::pthread_mutex_init( & _internalMutex->_mutex, /* attributes */ 0 ) ;
 	
 #else // CEYLAN_USES_PTHREAD_H
 
@@ -83,6 +83,25 @@ Mutex::~Mutex() throw()
 	
 #endif // CEYLAN_USES_PTHREAD_H
 
+}
+
+
+void Mutex::lock() throw( LockException )
+{
+
+	// Must be redefined as (trying to) lock an already locked mutex is legal.
+	_locked = true ;
+	postLock() ;
+}
+
+
+void Mutex::unlock() throw( LockException )
+{
+	
+	// The mutex handles itself the lock logic and error management.
+	preUnlock() ;
+	_locked = false ;
+	
 }
 
 
