@@ -11,6 +11,7 @@ testssystem_PROGRAMS = \
 	testCeylanMemoryStream                 \
 	testCeylanSignals                      \
 	testCeylanSystemInformation            \
+	testCeylanThread                       \
 	testCeylanTime
 
 
@@ -20,5 +21,6 @@ testCeylanFileLocator_SOURCES         = testCeylanFileLocator.cc
 testCeylanMemoryStream_SOURCES        = testCeylanMemoryStream.cc
 testCeylanSignals_SOURCES             = testCeylanSignals.cc
 testCeylanSystemInformation_SOURCES   = testCeylanSystemInformation.cc
+testCeylanThread_SOURCES              = testCeylanThread.cc
 testCeylanTime_SOURCES                = testCeylanTime.cc
 
