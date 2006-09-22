@@ -94,7 +94,7 @@ namespace Ceylan
 
 
 				/// Increment operator.
-				const volatile X operator ++(   ) throw()
+				const volatile X operator ++() throw( Lockable::LockException )
 				{ 
 				
 					_mutex.lock() ; 
@@ -107,14 +107,15 @@ namespace Ceylan
 
 
 				/// Increment operator.
-				const volatile X operator ++(int) throw()
+				const volatile X operator ++(int) 
+					throw( Lockable::LockException )
 				{ 
 					return operator ++() ; 
 				}
 
 
 				/// Decrement operator.
-				const volatile X operator --(   ) throw()
+				const volatile X operator --() throw( Lockable::LockException )
 				{ 
 				
 					_mutex.lock() ; 
@@ -126,7 +127,8 @@ namespace Ceylan
 
 
 				/// Decrement operator.
-				const volatile X operator --(int) throw()
+				const volatile X operator --(int) 
+					throw( Lockable::LockException )
 				{ 
 					return operator --() ; 
 				}
