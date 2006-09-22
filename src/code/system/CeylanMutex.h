@@ -68,22 +68,36 @@ namespace Ceylan
 				virtual ~Mutex() throw() ;
 
 
+
 				/**
-				 * Effective locking of the mutex.
+				 * Locks the mutex. 
 				 *
-				 * @throw LockException if the effective locking failed.
+				 * This method is to be called by the user of the class
+				 * instances.
+				 *
+				 * It will handle the locking process and will call the
+				 * 'postLock' method afterwards.
+				 *
+				 * @see isLocked, postLock, unlock
 				 *
 				 */
-				 virtual void postLock() throw( LockException ) ;
+				virtual void lock() throw( LockException ) ;
 
 
 				/**
-				 * Effective locking of the mutex.
+				 * Unlocks the mutex.
 				 *
-				 * @throw LockException if the effective locking failed.
+				 * This method is to be called by the user of the class
+				 * instances.
+				 *
+				 * It will handle the unlocking process and will call the
+				 * 'preUnlock' method afterwards.
+				 *
+				 * @see isLocked, preUnlock, lock
 				 *
 				 */
-			 	virtual void preUnlock() throw( LockException ) ;
+				virtual void unlock() throw( LockException ) ;
+
 
 
 	            /**
@@ -104,6 +118,25 @@ namespace Ceylan
 
 
 			protected:
+
+
+
+				/**
+				 * Effective locking of the mutex.
+				 *
+				 * @throw LockException if the effective locking failed.
+				 *
+				 */
+				 virtual void postLock() throw( LockException ) ;
+
+
+				/**
+				 * Effective locking of the mutex.
+				 *
+				 * @throw LockException if the effective locking failed.
+				 *
+				 */
+			 	virtual void preUnlock() throw( LockException ) ;
 
 
 				/// Returns the reference on the mutex itself.
