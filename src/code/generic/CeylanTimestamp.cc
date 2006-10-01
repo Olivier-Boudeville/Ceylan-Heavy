@@ -23,11 +23,31 @@ Timestamp::Timestamp() throw( UtilsException )
 #if CEYLAN_USES_LOCALTIME
 
 	time_t currentMeasuredTime = System::getTime() ; 
+
+#ifdef CEYLAN_RUNS_ON_WINDOWS
+
+	struct tm currentTime ;
+
+	if ( ::localtime_s( & currentTime, & currentMeasuredTime ) != 0 )
+		throw UtilsException( 
+			"Timestamp constructor : unable to determine local time : "
+			+ System::getError() ) ;
+
+	_year   = currentTime.tm_year + 1900 ;
+	_month  = currentTime.tm_mon + 1 ;
+	_day    = currentTime.tm_mday ;
+	_hour   = currentTime.tm_hour ;
+	_minute = currentTime.tm_min ;
+	_second = currentTime.tm_sec ;
+
+#else // CEYLAN_RUNS_ON_WINDOWS
+
 	struct tm * currentTime = ::localtime( & currentMeasuredTime ) ;
-	
+
 	if ( currentTime == 0 )
-		throw UtilsException( "Ceylan::Timestamp::Timestamp() : "
-			"unable to determine local time." ) ;
+		throw UtilsException( 
+			"Timestamp constructor : unable to determine local time : "
+			+ System::getError() ) ;
 
 	_year   = currentTime->tm_year + 1900 ;
 	_month  = currentTime->tm_mon + 1 ;
@@ -35,6 +55,10 @@ Timestamp::Timestamp() throw( UtilsException )
 	_hour   = currentTime->tm_hour ;
 	_minute = currentTime->tm_min ;
 	_second = currentTime->tm_sec ;
+
+#endif // CEYLAN_RUNS_ON_WINDOWS
+
+
 
 #else // CEYLAN_USES_LOCALTIME
 

@@ -175,7 +175,7 @@ bool Ceylan::keyboardHit() throw()
 
 #elif defined(CEYLAN_USES_CONIO_H)
 
-	return static_cast<bool>( ::kbhit() ) ;
+	return ( ::_kbhit() != 0 ) ;
 
 #else // CEYLAN_USES_CONIO_H
 
@@ -228,7 +228,7 @@ KeyChar Ceylan::getChar() throw()
 	
 #elif defined(CEYLAN_USES_CONIO_H)
 
-	return ::getch() ;
+	return ::_getch() ;
 
 #else
 
