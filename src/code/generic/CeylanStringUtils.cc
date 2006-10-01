@@ -13,6 +13,18 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
+#ifdef CEYLAN_RUNS_ON_WINDOWS
+
+extern "C"
+{
+
+#include "string.h" // for strcpy_s
+
+}
+
+#endif // CEYLAN_RUNS_ON_WINDOWS
+
+
 #include <cctype>              // for isdigit, isupper, etc.
 #include <iostream>            // for cout, endl, flush.
 
@@ -89,8 +101,16 @@ char * Ceylan::getNonConstCharFrom( const std::string & source ) throw()
 	if ( res == 0 )
 		Ceylan::emergencyShutdown( 
 			"Ceylan::getNonConstCharFrom : not enough memory." ) ;
-			
+
+#ifdef CEYLAN_RUNS_ON_WINDOWS
+
+	strcpy_s( res, source.size() + 1, source.c_str() ) ;
+
+#else // CEYLAN_RUNS_ON_WINDOWS
+
 	::strcpy( res, source.c_str() ) ;
+
+#endif // CEYLAN_RUNS_ON_WINDOWS
 	
 	return res ;
 	
@@ -127,7 +147,8 @@ StringSize Ceylan::substituteInString( string & targetString,
 
 	StringSize charCount ;
 	
-	Ceylan::Sint32 lenDiff = toBeReplaced.size() - replacement.size() ;
+	Ceylan::Sint32 lenDiff = static_cast<Ceylan::Sint32>( 
+		toBeReplaced.size() - replacement.size() ) ;
 	
 	do
 	{
