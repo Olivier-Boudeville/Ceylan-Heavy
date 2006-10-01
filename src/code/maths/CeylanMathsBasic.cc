@@ -278,9 +278,9 @@ Ceylan::Float32 Ceylan::Maths::Round( Ceylan::Float32 x,
 	Ceylan::Uint8 precision ) throw()
 {
 	
-	Ceylan::Float64 offset = ::pow( 10, precision ) ;
+	Ceylan::Float64 offset = ::pow( static_cast<Ceylan::Float64>( 10 ), precision ) ;
 	
-	return Round( offset * x ) / offset ;
+	return static_cast<Ceylan::Float32>( Round( offset * x ) / offset ) ;
 }
 
 
@@ -306,7 +306,7 @@ Ceylan::Float64 Ceylan::Maths::Round( Ceylan::Float64 x,
 	Ceylan::Uint8 precision ) throw()
 {
 	
-	Ceylan::Float64 offset = ::pow( 10, precision ) ;
+	Ceylan::Float64 offset = ::pow( static_cast<Ceylan::Float64>( 10 ), precision ) ;
 	
 	return Round( offset * x ) / offset ;
 }
@@ -334,9 +334,9 @@ Ceylan::LongFloat Ceylan::Maths::Round( Ceylan::LongFloat x,
 	Ceylan::Uint8 precision ) throw()
 {
 	
-	Ceylan::LongFloat offset = ::pow( 10, precision ) ;
+	Ceylan::LongFloat offset = ::pow( static_cast<Ceylan::Float64>( 10 ), precision ) ;
 	
-	return Round( offset * x ) / offset ;
+	return static_cast<Ceylan::LongFloat>( Round( offset * x ) / offset ) ;
 }
 
 
@@ -762,7 +762,7 @@ Ceylan::LongFloat Ceylan::Maths::Sin( Ceylan::LongFloat x ) throw()
 AngleInRadians Ceylan::Maths::DegreeToRadian( 
 	AngleInDegrees angleInDegrees ) throw()
 {
-	return ( angleInDegrees * Pi / 180.0 ) ;
+	return static_cast<AngleInRadians>( angleInDegrees * Pi / 180.0 ) ;
 }
 
 

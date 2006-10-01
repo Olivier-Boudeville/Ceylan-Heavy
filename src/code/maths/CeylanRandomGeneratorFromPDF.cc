@@ -20,7 +20,10 @@
 using std::string ;
 using std::list ;
 
+using namespace Ceylan ;
 using namespace Ceylan::Log ;
+
+using namespace Ceylan::Maths ;
 using namespace Ceylan::Maths::Random ;
 
 

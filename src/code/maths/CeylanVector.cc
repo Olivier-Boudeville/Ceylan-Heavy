@@ -4,6 +4,8 @@
 using std::string ;
 
 
+using namespace Ceylan ;
+using namespace Ceylan::Maths ;
 using namespace Ceylan::Maths::Linear ;
 
 

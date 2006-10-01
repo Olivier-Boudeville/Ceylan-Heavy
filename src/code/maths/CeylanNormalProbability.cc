@@ -5,12 +5,13 @@
 
 using std::string ;
 
+using namespace Ceylan ;
+using namespace Ceylan::Maths ;
 using namespace Ceylan::Maths::Random ;
 
 
 NormalProbabilityFunction::NormalProbabilityFunction( Sample mean, 
-	Deviation sigma ) 
-		throw( MathsException ) :
+	Deviation sigma ) throw( MathsException ) :
 	ProbabilityFunction(),
 	_mean( mean ),
 	_sigma( sigma )
@@ -39,8 +40,9 @@ Probability NormalProbabilityFunction::operator() ( Sample aSample )
 	 *
 	 */
 	
-	return Exp( -0.5 * Pow( ( aSample - _mean ) / _sigma, 2 ) 
-		/ ( _sigma * Sqrt( 2 * Pi ) ) ) ;
+	return static_cast<Probability>( 
+		Exp( -0.5 * Pow( ( aSample - _mean ) / _sigma, 2 ) 
+			/ ( _sigma * Sqrt( 2 * Pi ) ) ) ) ;
 	
 }
 

@@ -24,6 +24,8 @@ using std::ostringstream ;
 using std::string ;
 
 
+using namespace Ceylan ;
+using namespace Ceylan::Maths ;
 using namespace Ceylan::Maths::Linear ;
 
 using Ceylan::Maths::Real ;
@@ -110,7 +112,7 @@ void Vector3::normalize() throw( LinearException )
 		throw LinearException( 
 			"Vector3::normalize : null vector cannot be normalized." ) ;
 	
-	Real factor = 1.0 / mag ;
+	Real factor = static_cast<Real>( 1.0 ) / mag ;
 	
 	for ( MatrixIndex i = 0 ; i < Dimensions ; i++ )
 	{	

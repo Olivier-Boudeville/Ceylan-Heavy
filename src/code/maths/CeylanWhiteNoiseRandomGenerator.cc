@@ -13,7 +13,10 @@
 using std::string ;
 
 
+using namespace Ceylan ;
 using namespace Ceylan::System ;    // for time primitives
+
+using namespace Ceylan::Maths ;
 using namespace Ceylan::Maths::Random ;
 
 

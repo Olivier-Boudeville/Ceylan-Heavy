@@ -7,10 +7,14 @@
 #include "CeylanVector2.h"    // for Vector2
 #include "CeylanVector3.h"    // for Vector3
 
+#include "CeylanMathsBasic.h" // for AngleInDegrees
+
 
 using std::string ;
 
 
+using namespace Ceylan ;
+using namespace Ceylan::Maths ;
 using namespace Ceylan::Maths::Linear ;
 
 
