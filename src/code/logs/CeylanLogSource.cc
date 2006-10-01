@@ -163,7 +163,7 @@ LogTransport * LogSource::getTransport() const throw()
 				
 bool LogSource::hasTransport() const throw() 
 {
-	return _transport ;
+	return ( _transport != 0 ) ;
 }
 
 

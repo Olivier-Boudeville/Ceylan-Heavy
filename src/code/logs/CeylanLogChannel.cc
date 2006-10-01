@@ -94,7 +94,8 @@ const string LogChannel::toString( Ceylan::VerbosityLevels level )
 	}	
 	else
 	{
-		result += " contains " + Ceylan::toString( _messages.size() ) 
+		result += " contains " + Ceylan::toString( 
+			static_cast<Ceylan::Uint32>( _messages.size() ) ) 
 			+ " messages : " ;
 	}
 	

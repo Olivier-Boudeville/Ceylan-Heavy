@@ -276,7 +276,7 @@ void LogAggregatorHTML::write( const LogChannel & channel )
 
 
 void LogAggregatorHTML::WriteChannelHeader( const LogChannel & channel,
-	System::File & targetFile ) throw()
+	Ceylan::System::File & targetFile ) throw()
 {
 
 	string newHeader = ChannelHeader ;
@@ -289,7 +289,7 @@ void LogAggregatorHTML::WriteChannelHeader( const LogChannel & channel,
 
 
 void LogAggregatorHTML::WriteChannelFooter( const LogChannel & channel,
-	System::File & targetFile ) throw()
+	Ceylan::System::File & targetFile ) throw()
 {
 	string newFooter = ChannelFooter ;
 	Ceylan::substituteInString( newFooter, "ST_AGGREGATION_DATE", 
@@ -300,7 +300,7 @@ void LogAggregatorHTML::WriteChannelFooter( const LogChannel & channel,
 
 
 void LogAggregatorHTML::write( const LogMessage & message, 
-	System::File & targetFile ) const throw()
+	Ceylan::System::File & targetFile ) const throw()
 {
 
 	CEYLAN_LOG( "Writing on disk message " + message.toString() ) ;

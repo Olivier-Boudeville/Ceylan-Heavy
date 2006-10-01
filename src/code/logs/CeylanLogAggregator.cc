@@ -12,6 +12,7 @@
 #include "CeylanLogChannel.h"
 #include "CeylanLogMessage.h"
 
+
 #if CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"           // for CEYLAN_DEBUG
 #endif // CEYLAN_USES_CONFIG_H
@@ -840,7 +841,9 @@ const string LogAggregator::toString( Ceylan::VerbosityLevels level )
 	return string( "LogAggregator is up and running, is " )
 		+ ( _beSmart ? "" : "not " )
 		+ string( "smart, and currently has " )
-		+ _channelList.size() + string( " log channel(s) created" ) ;
+		+ Ceylan::toString( 
+			static_cast<Ceylan::Uint32>( _channelList.size() ) )
+		+ " log channel(s) created" ;
 		
 }
 
