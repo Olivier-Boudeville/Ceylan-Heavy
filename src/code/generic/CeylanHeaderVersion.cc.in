@@ -6,6 +6,8 @@
  * CeylanHeaderVersion.cc.in, so that the embedded library version can be
  * automatically updated whenever appropriate.
  *
+ * @note This file is used only on UNIX platforms.
+ *
  */
 const std::string Ceylan::actualCeylanHeaderLibtoolVersion =
 	"@CEYLAN_LIBTOOL_VERSION@" ;
