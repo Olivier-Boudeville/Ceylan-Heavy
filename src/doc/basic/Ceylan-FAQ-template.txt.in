@@ -26,7 +26,11 @@
 	Q: How can I have more informations about Ceylan ?
 	A: Read the Ceylan user guide at @CEYLAN_SF_URL@
 	
+	Q: What are the supported platforms ?
+	A: Core services are available for GNU/Linux, FreeBSD, NetBSD and Windows XP.
+	   Optional features are available for GNU/Linux, FreeBSD, NetBSD, some of them for Windows XP as well
 	
+		
 * Developper FAQ
 
 	Q: How can I regenerate the build system, with regards to the Autotools ? 
