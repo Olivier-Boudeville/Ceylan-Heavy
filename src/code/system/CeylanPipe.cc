@@ -164,7 +164,8 @@ Size Pipe::read( char * buffer, Size maxLength )
 
 	setSelected( false ) ;
 	
-	SignedSize n = System::FDRead( _fd[ 0 ], buffer, maxLength ) ;
+	SignedSize n = static_cast<SignedSize>( 
+		System::FDRead( _fd[ 0 ], buffer, maxLength ) ) ;
 
 	// Actually, n should never be negative :
 	if ( n < 0 )

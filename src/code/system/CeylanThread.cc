@@ -44,6 +44,7 @@ extern "C"
 
 using std::string ;
 
+using namespace Ceylan ;
 using namespace Ceylan::System ;
 using namespace Ceylan::Log ;
 using namespace Ceylan::Features ;

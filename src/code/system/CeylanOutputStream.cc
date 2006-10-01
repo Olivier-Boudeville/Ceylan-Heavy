@@ -256,7 +256,7 @@ void OutputStream::writeString( const string & toWrite )
 		+ Ceylan::toString( stringSize ) + " characters." ) ;
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 	 	
-	writeUint16( stringSize ) ;
+	writeUint16( static_cast<Ceylan::Uint16>( stringSize ) ) ;
 	
 	Size writeCount = write( toWrite.data(), stringSize ) ;
 	

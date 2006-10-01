@@ -233,8 +233,8 @@ Size MemoryStream::write( const Ceylan::Byte * buffer, Size maxLength )
 	if ( maxLength > maxPossibleWriteSize )
 		throw WriteFailedException( "MemoryStream::write : "
 			"attempt to write more than free space in buffer (which is "
-			+ Ceylan::toString( maxPossibleWriteSize ) + " byte(s)) : "
-			+ toString() ) ;
+			+ Ceylan::toString( static_cast<Ceylan::Uint32>( maxPossibleWriteSize ) )
+			+ " byte(s)) : " + toString() ) ;
 
 	/*
 	 * Either the write index plus the requested size is before the end of 
@@ -403,7 +403,8 @@ StreamID MemoryStream::getStreamID() const throw()
 {
 
 	// Beware to 64-bit machines :
-	return reinterpret_cast<long int>( this ) ;
+	return static_cast<StreamID>( 
+			reinterpret_cast<Ceylan::Uint64>( this ) ) ;
 
 }
 
@@ -424,10 +425,13 @@ const std::string MemoryStream::toString( Ceylan::VerbosityLevels level )
 	const throw()
 {
 
-	string res = "MemoryStream object of size " + Ceylan::toString( _size )
+	string res = "MemoryStream object of size " 
+		+ Ceylan::toString( static_cast<Ceylan::Uint32>( _size ) )
 		+ " bytes, whose fill index position is " 
-		+ Ceylan::toString( _index ) + ", whose fill length is "
-		+ Ceylan::toString( _len )+ " byte(s), whose ID is " 
+		+ Ceylan::toString( static_cast<Ceylan::Uint32>( _index ) ) 
+		+ ", whose fill length is "
+		+ Ceylan::toString( static_cast<Ceylan::Uint32>( _len ) )
+		+ " byte(s), whose ID is " 
 		+ Ceylan::toString( getStreamID() ) ;
 	
 	if ( level != Ceylan::high )
