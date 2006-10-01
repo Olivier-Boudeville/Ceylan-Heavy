@@ -178,7 +178,8 @@ void UnicodeString::setFromUTF8( const std::string & utf8String,
 const string UnicodeString::toString( Ceylan::VerbosityLevels level ) 
 	const throw()
 {
-	return "Unicode string made of " + Ceylan::toString( size() ) 
+	return "Unicode string made of " + Ceylan::toString( 
+		static_cast<Ceylan::Uint32>( size() ) ) 
 		+ " characters" ;
 }
 

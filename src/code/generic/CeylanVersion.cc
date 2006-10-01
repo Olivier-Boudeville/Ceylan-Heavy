@@ -7,6 +7,7 @@
 
 // for debug purpose only : #include <iostream>
 
+
 using std::string ;
 
 using namespace Ceylan ;
@@ -55,7 +56,9 @@ Version::Version( const std::string & versionText ) throw( VersionException )
 		throw Ceylan::Exception( "Version constructor : input string '"
 			+ versionText 
 			+ "' cannot be split into three parts thanks to dots, "
-			"we have " + Ceylan::toString( numbers.size() ) + " elements : " 
+			"we have " + Ceylan::toString( 
+				static_cast<Ceylan::Uint32>( numbers.size() ) ) 
+			+ " elements : " 
 			+ Ceylan::formatStringList( numbers, 
 				/* surroundByTicks */ true ) ) ;
 	
