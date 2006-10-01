@@ -193,7 +193,7 @@ int main( int argc, char * argv[] )
 		
 		LogPlug::info( "Testing rounding function with various precisions." ) ;
 		
-		Ceylan::Float32 toRound = 1.676 ;
+		Ceylan::Float32 toRound = 1.676F ;
 		Ceylan::Uint8 precision = 2 ;
 		
 		LogPlug::info( "Rounding " + Ceylan::toString( toRound ) + " to " 
@@ -201,7 +201,7 @@ int main( int argc, char * argv[] )
 			+ " figures after the dot : "
 			+ Ceylan::toString( Round( toRound, precision ) ) ) ;
 		
-		toRound = -3.234567 ;
+		toRound = -3.234567F ;
 		precision = 3 ;
 		
 		LogPlug::info( "Rounding " + Ceylan::toString( toRound ) + " to " 
