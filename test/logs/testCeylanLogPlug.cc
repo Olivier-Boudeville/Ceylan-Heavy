@@ -31,12 +31,13 @@ int main( int argc, char * argv[] )
 
 		// To avoid writing logs alongside the test executable :
 		std::string speakerName ;
+
 		Ceylan::System::Directory::StripFilename( argv[0], 
 			/* base path */ 0, & speakerName ) ;
-				
+
         LogPlugClassical::StartService( speakerName ) ;
 
-        LogPlug::info(    "This is a info message"        ) ;
+        LogPlug::info(    "This is an info message"       ) ;
         LogPlug::trace(   "This is a trace message"       ) ;
         LogPlug::debug(   "This is a debug message"       ) ;
         LogPlug::warning( "This is a warning message"     ) ;
