@@ -28,9 +28,12 @@ namespace Ceylan
 		 * Returns the value of specified environment variable.
 		 * If the variable was not set, returns an empty string.
 		 *
+		 * @throw UtilsException if this operation is not supported or
+		 * failed.
+		 *
 		 */
 		const std::string getEnvironmentVariable( 
-			const std::string & variableName ) throw() ;
+			const std::string & variableName ) throw( UtilsException ) ;
 	
 	
 		/**

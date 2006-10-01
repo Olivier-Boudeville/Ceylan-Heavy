@@ -26,7 +26,7 @@ namespace Ceylan
 		 * beforehand : Features::areFileDescriptorsSupported
 		 *
 		 */
-		class Pipe: public InputOutputStream 
+		class CEYLAN_DLL Pipe: public InputOutputStream 
 		{
 
 	

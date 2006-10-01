@@ -34,7 +34,7 @@ namespace Ceylan
  		 * @see InputStream, Stream.
  		 *
  		 */
-		class Stream : public Ceylan::TextDisplayable
+		class CEYLAN_DLL Stream : public Ceylan::TextDisplayable
 		{
 
 

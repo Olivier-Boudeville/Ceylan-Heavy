@@ -33,7 +33,7 @@ namespace Ceylan
 		 * System::File instance (it would be allocated only once).
 		 *
  		 */
-		class InputStream : public virtual Stream
+		class CEYLAN_DLL InputStream : public virtual Stream
 		{
 
 

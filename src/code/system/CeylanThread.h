@@ -38,7 +38,7 @@ namespace Ceylan
 		 * @see Runnable, Synchronized, POSIX threads.
 		 *
 		 */
-		class Thread: public Runnable
+		class CEYLAN_DLL Thread: public Runnable
 		{
 
 
@@ -581,4 +581,3 @@ namespace Ceylan
 
 
 #endif // CEYLAN_THREAD_H_
-

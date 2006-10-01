@@ -26,7 +26,7 @@ namespace Ceylan
  		 * @see ServerStreamSocket, Socket, InputStream.
  		 *
  		 */
-		class AnonymousInputStream : public InputStream
+		class CEYLAN_DLL AnonymousInputStream : public InputStream
 		{
 
 

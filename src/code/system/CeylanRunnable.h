@@ -18,7 +18,7 @@ namespace Ceylan
 	
 	
 		/// Exception class for runnable concerns.
-		class RunnableException : public SystemException
+		class CEYLAN_DLL RunnableException : public SystemException
 		{
 		
 			public:
@@ -56,7 +56,7 @@ namespace Ceylan
 		 * @see Thread, Process.
 		 *
 		 */
-		class Runnable : public Ceylan::TextDisplayable
+		class CEYLAN_DLL Runnable : public Ceylan::TextDisplayable
 		{
 
 

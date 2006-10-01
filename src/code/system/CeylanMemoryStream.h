@@ -28,7 +28,7 @@ namespace Ceylan
 		 * Useful to test some modules like Marshaller ones.
 		 *
 		 */
-		class MemoryStream: public InputOutputStream
+		class CEYLAN_DLL MemoryStream: public InputOutputStream
 		{
 		
 

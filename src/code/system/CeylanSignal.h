@@ -31,7 +31,7 @@ namespace Ceylan
 	
 
 			/// Mother class for all signal-related exceptions.
-			class SignalException: public SystemException
+			class CEYLAN_DLL SignalException: public SystemException
 			{ 
 				public: 
 				

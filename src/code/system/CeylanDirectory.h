@@ -33,7 +33,7 @@ namespace Ceylan
 		 * @see File
 		 *
 		 */
-		class Directory : public TextDisplayable
+		class CEYLAN_DLL Directory : public TextDisplayable
 		{
 
 			public:
@@ -162,9 +162,12 @@ namespace Ceylan
 				 * @param entries the caller-provided list in which 
 				 * entries will be put.
 				 *
+				 * @throw DirectoryException if the operation failed or
+				 * is not supported.
+				 *
 				 */
 				virtual void getEntries( std::list<std::string> & entries )
-					const throw() ;
+					const throw( DirectoryException ) ;
 
 
 				/**
@@ -312,7 +315,7 @@ namespace Ceylan
 				 *
 				 * For example, this method applied to 
 				 * '/mnt/raid/md0/LOANI-0.3' returns respectively
-				 * '/mnt/raid/md0' and 'LOANI-0.3', with '/' as separator.
+				 * '/mnt/raid/md0' and 'LOANI-0.3', when the separator is '/'.
 				 *
 				 * @param path the path which is to be stripped.
 				 *
@@ -337,8 +340,12 @@ namespace Ceylan
 				 *
 				 * @see Directory member counterpart, isValid
 				 *
+				 * @throw DirectoryException if the operation failed or
+				 * is not supported.
+				 *
 				 */
-				static bool Exists( const std::string & path ) throw() ;
+				static bool Exists( const std::string & path ) 
+						throw( DirectoryException ) ;
 
 
 				/// Creates a new directory on disk.

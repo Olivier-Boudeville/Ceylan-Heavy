@@ -25,7 +25,7 @@ namespace Ceylan
 		 * System::File instance (it would be allocated only once).
 		 *
 		 */
-		class OutputStream : public virtual Stream
+		class CEYLAN_DLL OutputStream : public virtual Stream
 		{
 
 

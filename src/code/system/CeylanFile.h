@@ -87,7 +87,7 @@ namespace Ceylan
 		 * FeatureNotAvailableException.
 		 *
 		 */
-		class File: public InputOutputStream
+		class CEYLAN_DLL File: public InputOutputStream
 		{
 		
 				
@@ -111,7 +111,7 @@ namespace Ceylan
 
 
 				/// Mother class for all file-related exceptions.
-				class FileException: public SystemException
+				class CEYLAN_DLL FileException: public SystemException
 				{ 
 					public: 
 					
@@ -127,7 +127,7 @@ namespace Ceylan
 				// Full declarations preferred to preprocessor macros.
 				
 				
-				class CouldNotOpen: public FileException
+				class CEYLAN_DLL CouldNotOpen: public FileException
 				{ 
 					public: 
 					

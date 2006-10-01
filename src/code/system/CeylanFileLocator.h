@@ -44,7 +44,7 @@ namespace Ceylan
 		 * locator. 
 		 * 
 		 */
-		class FileLocator : public TextDisplayable
+		class CEYLAN_DLL FileLocator : public TextDisplayable
 		{
 		
 		
@@ -170,12 +170,22 @@ namespace Ceylan
 			
 			
 			protected:
-			
-				
+		
+
+/* 
+ * Takes care of the awful issue of Windows DLL with templates.
+ *
+ * @see Ceylan's developer guide and README-build-for-windows.txt 
+ * to understand it, and to be aware of the associated risks. 
+ * 
+ */
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 
 				/// The internal list of paths of the locator.
 				std::list<std::string> _paths ;
-			
+
+#pragma warning( pop ) 			
 			
 			
 			private:

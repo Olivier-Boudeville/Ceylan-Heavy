@@ -33,7 +33,7 @@ namespace Ceylan
 		 * @see Feature::isMultithreadingSupported
 		 *
 		 */
-		class Mutex : public Ceylan::Lockable
+		class CEYLAN_DLL Mutex : public Ceylan::Lockable
 		{
 
 

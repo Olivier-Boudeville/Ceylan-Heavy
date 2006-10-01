@@ -30,7 +30,7 @@ namespace Ceylan
 
 
 		/// Exception class for process concerns.
-		class ProcessException : public RunnableException
+		class CEYLAN_DLL ProcessException : public RunnableException
 		{
 		
 			public:
@@ -69,7 +69,7 @@ namespace Ceylan
 		 * to spot actual support beforehand.
 		 *
 		 */
-		class Process: public Runnable
+		class CEYLAN_DLL Process: public Runnable
 		{
 
 
@@ -175,16 +175,25 @@ namespace Ceylan
 				// Static section.
 				
 	
-				/// Returns the identifier (PID) of the hosting process.
-				static Pid GetHostingPID() throw() ;
+				/**
+				 * Returns the identifier (PID) of the hosting process.
+				 *
+				 * @throw ProcessException if the operation failed or is
+				 * not supported.
+				 *
+				 */
+				static Pid GetHostingPID() throw( ProcessException ) ;
 	
 	
 				/**
 				 * Returns the parent process identifier of the hosting 
 				 * process, the PPID.
 				 *
+				 * @throw ProcessException if the operation failed or is
+				 * not supported.
+				 *
 				 */
-				static Pid GetParentID() throw() ;
+				static Pid GetParentID() throw( ProcessException ) ;
 	
 	
 				/**
@@ -199,10 +208,13 @@ namespace Ceylan
 				 *
 				 * @see ExitReason
 				 *
+				 * @throw ProcessException if the operation failed or is
+				 * not supported.
+				 *
 				 */
 				static ExitReason WaitChildProcess( 
 					const Process & childProcess,
-					ErrorCode * executionInfo = 0 ) throw() ;
+					ErrorCode * executionInfo = 0 ) throw( ProcessException ) ;
 	
 	
 				/**
@@ -425,9 +437,20 @@ namespace Ceylan
 				/// The name of the executable corresponding to this process.
 				static std::string _Executable ;
 	
+/* 
+ * Takes care of the awful issue of Windows DLL with templates.
+ *
+ * @see Ceylan's developer guide and README-build-for-windows.txt 
+ * to understand it, and to be aware of the associated risks. 
+ * 
+ */
+#pragma warning( push )
+#pragma warning( disable : 4251 )
+
 				/// The argument list given to this process.
 				static std::list<std::string> _ArgumentList ;
-	
+
+#pragma warning( pop ) 	
 					
 
 		} ;

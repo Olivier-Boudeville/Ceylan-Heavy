@@ -23,6 +23,7 @@ extern "C"
 
 }
 
+#include <cstdlib>             // for bswap
 
 
 #ifdef CEYLAN_USES_BYTESWAP_H
