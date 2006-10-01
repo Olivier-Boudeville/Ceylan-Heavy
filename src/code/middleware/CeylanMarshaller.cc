@@ -15,7 +15,7 @@ using namespace Ceylan::Middleware ;
 
 
 #if CEYLAN_USES_CONFIG_H
-#include "CeylanConfig.h"      // for configure-time settings
+#include "CeylanConfig.h"             // for configure-time settings
 #endif // CEYLAN_USES_CONFIG_H
 	
 	
@@ -101,9 +101,11 @@ System::Size Marshaller::retrieveData( System::Size requestedSize )
 	if ( requestedSize > _bufferStream->getSize()  )
 		throw DecodeException( "Marshaller::retrieveData : "
 			"buffer too small, requesting " 
-			+ Ceylan::toString( requestedSize ) 
+			+ Ceylan::toString( 
+				static_cast<Ceylan::Uint32>( requestedSize ) ) 
 			+ " bytes whereas size of buffer is "
-			+ Ceylan::toString(  _bufferStream->getSize() ) ) ;
+			+ Ceylan::toString( 
+				static_cast<Ceylan::Uint32>( _bufferStream->getSize() ) ) ) ;
 
 	/*
 	 * Enough total size, but does requested size currently fit in buffer ?
@@ -114,10 +116,11 @@ System::Size Marshaller::retrieveData( System::Size requestedSize )
 			( _bufferStream->getSize() - _bufferStream->getBlockLength() ) )
 		throw DecodeException( "Marshaller::retrieveData : "
 			"no enough space left in buffer, requesting " 
-			+ Ceylan::toString( requestedSize ) 
+			+ Ceylan::toString( static_cast<Ceylan::Uint32>( requestedSize ) )
 			+ " bytes whereas free space in buffer is "
 			+ Ceylan::toString( 
-				_bufferStream->getSize() - _bufferStream->getBlockLength() ) ) ;
+				static_cast<Ceylan::Uint32>( 
+					_bufferStream->getSize() - _bufferStream->getBlockLength() ) ) ) ;
 
 	/*
 	 * Here we know there is enough free space, we have to make sure that
