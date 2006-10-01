@@ -53,7 +53,7 @@
  * 
  *
  * Look at Ceylan's website, generated locally (under 
- * $CEYLAN_ROOT/src/doc/web/index.html),or preferably at its 
+ * $CEYLAN_ROOT/src/doc/web/index.html), or preferably at its 
  * <a href="http://ceylan.sourceforge.net/" target="_blank">official site</a>.
  * A less up-to-date 
  * <a href="http://ceylan.esperide.com" target="_blank">mirror</a> is available
