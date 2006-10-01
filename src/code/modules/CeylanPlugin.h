@@ -70,7 +70,7 @@ namespace Ceylan
 
 
 	/// Raised whenever a plugin-related operation failed.
-	class PluginException : public Ceylan::ModuleException
+	class CEYLAN_DLL PluginException : public Ceylan::ModuleException
 	{
 	
 		public:
@@ -94,7 +94,7 @@ namespace Ceylan
 	 * @note Our plugin system relies on ltdl.
 	 *
 	 */
-	class Plugin : public Ceylan::Module
+	class CEYLAN_DLL Plugin : public Ceylan::Module
 	{
 
 

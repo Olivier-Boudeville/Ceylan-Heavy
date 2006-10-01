@@ -16,7 +16,7 @@ namespace Ceylan
 
 
 	/// Raised whenever a module-related operation failed.
-	class ModuleException : public Ceylan::Exception
+	class CEYLAN_DLL ModuleException : public Ceylan::Exception
 	{
 	
 		public:
@@ -37,7 +37,7 @@ namespace Ceylan
 	 * discovered implementations (a.k.a as plug-in). 
 	 *
 	 */
-    class Module : public Ceylan::Object
+    class CEYLAN_DLL Module : public Ceylan::Object
     {
 
 
@@ -72,7 +72,6 @@ namespace Ceylan
              *
 			 * A module is identified by its name and full version :
 			 * 'OSDL::Video.2.5.42' behaves as a primary key.
-             *
              *
              */
             Module( 

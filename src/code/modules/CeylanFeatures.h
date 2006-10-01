@@ -38,7 +38,7 @@ namespace Ceylan
 		 * platform for the currently linked Ceylan library.
 		 *
 		 */
-		class FeatureNotAvailableException : public Ceylan::Exception
+		class CEYLAN_DLL FeatureNotAvailableException : public Ceylan::Exception
 		{
 	
 			public:
@@ -73,7 +73,7 @@ namespace Ceylan
 		 * of the regex-provided primitives whenever needed.
 		 *
 		 */ 
-		extern const Ceylan::Flags RegularExpressions ;
+		extern CEYLAN_DLL const Ceylan::Flags RegularExpressions ;
 
 
 		/**
@@ -87,7 +87,7 @@ namespace Ceylan
 		 * accesses.
 		 *
 		 */ 
-		extern const Ceylan::Flags Multithreading ;
+		extern CEYLAN_DLL const Ceylan::Flags Multithreading ;
 
 
 		/**
@@ -100,7 +100,7 @@ namespace Ceylan
 		 * RPC-style primitives, a.k.a. Ceylan middleware.
 		 *
 		 */
-		extern const Ceylan::Flags Networking ;
+		extern CEYLAN_DLL const Ceylan::Flags Networking ;
 
 
 		/**
@@ -112,7 +112,7 @@ namespace Ceylan
 		 * etc.
 		 *
 		 */
-		extern const Ceylan::Flags FileDescriptors ;
+		extern CEYLAN_DLL const Ceylan::Flags FileDescriptors ;
 
 
 		/**
@@ -123,7 +123,7 @@ namespace Ceylan
 		 * dereferencement, etc.
 		 *
 		 */
-		extern const Ceylan::Flags SymbolicLinks ;
+		extern CEYLAN_DLL const Ceylan::Flags SymbolicLinks ;
 
 
 		/**
@@ -134,14 +134,14 @@ namespace Ceylan
 		 * and 'other').
 		 *
 		 */
-		extern const Ceylan::Flags AdvancedFileAttributes ;
+		extern CEYLAN_DLL const Ceylan::Flags AdvancedFileAttributes ;
 
 
 		/**
 		 * Designates the file lock feature, for reading and/or writing.
 		 *
 		 */
-		extern const Ceylan::Flags FileLocks ;
+		extern CEYLAN_DLL const Ceylan::Flags FileLocks ;
 
 
 		/**
@@ -149,21 +149,21 @@ namespace Ceylan
 		 * fine-grained featureful process control.
 		 *
 		 */
-		extern const Ceylan::Flags AdvancedProcessManagement ;
+		extern CEYLAN_DLL const Ceylan::Flags AdvancedProcessManagement ;
 
 
 		/**
 		 * Designates the plugin feature, for dynamic loading a shared objects.
 		 *
 		 */
-		extern const Ceylan::Flags Plugins ;
+		extern CEYLAN_DLL const Ceylan::Flags Plugins ;
 
 
 		/**
 		 * Designates the signal feature, for UNIX-style process signals.
 		 *
 		 */
-		extern const Ceylan::Flags Signals ;
+		extern CEYLAN_DLL const Ceylan::Flags Signals ;
 
 
 
@@ -179,39 +179,39 @@ namespace Ceylan
 		 * features is not supported.
 		 *
 		 */
-		void checkForSupportedFeatures( Ceylan::Flags featuresFlag ) 
+		CEYLAN_DLL void checkForSupportedFeatures( Ceylan::Flags featuresFlag ) 
 			throw( FeatureNotAvailableException ) ;
 	
 	
 		/// Tells whether regular expressions are supported.
-		bool areRegularExpressionsSupported() throw() ;
+		CEYLAN_DLL bool areRegularExpressionsSupported() throw() ;
 	
 		/// Tells whether multithreading is supported.
-		bool isMultithreadingSupported() throw() ;
+		CEYLAN_DLL bool isMultithreadingSupported() throw() ;
 	
 		/// Tells whether network operations are supported.
-		bool isNetworkingSupported() throw() ;
+		CEYLAN_DLL bool isNetworkingSupported() throw() ;
 	
 		/// Tells whether file descriptors are supported.
-		bool areFileDescriptorsSupported() throw() ;
+		CEYLAN_DLL bool areFileDescriptorsSupported() throw() ;
 	
 		/// Tells whether symbolic links are supported.
-		bool areSymbolicLinksSupported() throw() ;
+		CEYLAN_DLL bool areSymbolicLinksSupported() throw() ;
 	
 		/// Tells whether advanced file attributes are supported.
-		bool areAdvancedFileAttributesSupported() throw() ;
+		CEYLAN_DLL bool areAdvancedFileAttributesSupported() throw() ;
 	
 		/// Tells whether file locks are supported.
-		bool areFileLocksSupported() throw() ;
+		CEYLAN_DLL bool areFileLocksSupported() throw() ;
 		
 		/// Tells whether advanced process management is supported.
-		bool isAdvancedProcessManagementSupported() throw() ;
+		CEYLAN_DLL bool isAdvancedProcessManagementSupported() throw() ;
 	
 		/// Tells whether plugins are supported.
-		bool arePluginsSupported() throw() ;
+		CEYLAN_DLL bool arePluginsSupported() throw() ;
 	
 		/// Tells whether signals are supported.
-		bool areSignalsSupported() throw() ;
+		CEYLAN_DLL bool areSignalsSupported() throw() ;
 	
 	
 		/**
@@ -219,7 +219,7 @@ namespace Ceylan
 		 * with the Ceylan version currently linked.
 		 *
 		 */
-		const std::string describeAvailableFeatures() throw() ;
+		CEYLAN_DLL const std::string describeAvailableFeatures() throw() ;
 		
 		
  	}
