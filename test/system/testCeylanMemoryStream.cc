@@ -163,7 +163,7 @@ int main( int argc, char * argv[] )
 		Size wroteBytes = 10 ;
 		
 		for ( Size i = 0; i < wroteBytes; i++ )
-			myMemoryStream.writeUint8( i ) ;
+			myMemoryStream.writeUint8( static_cast<Uint8>( i ) ) ;
 		
 		// Buffer should be : 0|1|2|3|4|5|6|7|8|9|XXXXXX...	
 		
@@ -182,26 +182,34 @@ int main( int argc, char * argv[] )
 		 */
 		if ( myMemoryStream.getBlockIndex() != readBytes )
 			throw TestException( "Wrong filled index : expected to be " 
-				+ Ceylan::toString( readBytes ) + ", is "
-				+ Ceylan::toString( myMemoryStream.getBlockIndex() ) + "." ) ;
+				+ Ceylan::toString( static_cast<Ceylan::Uint32>( readBytes ) ) 
+				+ ", is "
+				+ Ceylan::toString( static_cast<Ceylan::Uint32>( 
+					myMemoryStream.getBlockIndex() ) ) + "." ) ;
 			
 		if ( myMemoryStream.getBlockLength() != remainingBytes )
 			throw TestException( "Wrong filled length : expected to be " 
-				+ Ceylan::toString( remainingBytes ) + ", is "
-				+ Ceylan::toString( myMemoryStream.getBlockLength() ) + "." ) ;
+				+ Ceylan::toString( static_cast<Ceylan::Uint32>( remainingBytes ) ) 
+				+ ", is "
+				+ Ceylan::toString( static_cast<Ceylan::Uint32>( 
+					myMemoryStream.getBlockLength() ) ) + "." ) ;
 			
 		myMemoryStream.moveFilledBlockToBufferStart() ;
 		
 		if ( myMemoryStream.getBlockIndex() != 0 )
 			throw TestException( 
 				"Wrong filled index after move : expected to be 0, is "
-				+ Ceylan::toString( myMemoryStream.getBlockIndex() ) + "." ) ;
+				+ Ceylan::toString( static_cast<Ceylan::Uint32>( 
+					myMemoryStream.getBlockIndex() ) ) + "." ) ;
 			
 		if ( myMemoryStream.getBlockLength() != remainingBytes )
 			throw TestException( 
 				"Wrong filled length after move : expected to be " 
-				+ Ceylan::toString( remainingBytes ) + ", is "
-				+ Ceylan::toString( myMemoryStream.getBlockLength() ) + "." ) ;
+				+ Ceylan::toString( 
+					static_cast<Ceylan::Uint32>( remainingBytes ) ) + ", is "
+				+ Ceylan::toString( 
+					static_cast<Ceylan::Uint32>( myMemoryStream.getBlockLength() ) ) 
+					+ "." ) ;
 		
 		
 		// We should have here : 3|4|5|6|7|8|9|XXXXXX
@@ -228,7 +236,8 @@ int main( int argc, char * argv[] )
 			if ( newRead != i )
 				throw TestException( "Wrong element read (" 
 					+ Ceylan::toNumericalString( newRead ) 
-					+ "), " + Ceylan::toNumericalString( i ) 
+					+ "), " + Ceylan::toNumericalString( 
+						static_cast<Ceylan::Uint8>( i ) ) 
 					+ " was expected." ) ;
 					
 		}
@@ -245,7 +254,8 @@ int main( int argc, char * argv[] )
 		wroteBytes = 18 ;
 		
 		for ( Size i = 0; i < wroteBytes; i++ )
-			myMemoryStream.writeUint8( i ) ;
+			myMemoryStream.writeUint8( 
+				static_cast<Ceylan::Uint8>( i ) ) ;
 		
 		// Buffer should be : 0|1|2|3|4|5|6|7|8|9|..|16|17|X|X	
 		
@@ -259,7 +269,8 @@ int main( int argc, char * argv[] )
 		
 		wroteBytes = 5 ;
 		for ( Size i = 0; i < wroteBytes; i++ )
-			myMemoryStream.writeUint8( i ) ;
+			myMemoryStream.writeUint8( 
+				static_cast<Ceylan::Uint8>( i ) ) ;
 
 						
 		/*
@@ -271,15 +282,18 @@ int main( int argc, char * argv[] )
 			throw TestException( 
 				"Wrong filled index : expected to be " 
 				+ Ceylan::toString( 14 ) + ", is "
-				+ Ceylan::toString( myMemoryStream.getBlockIndex() ) + "." ) ;
+				+ Ceylan::toString( static_cast<Ceylan::Uint32>( 
+					myMemoryStream.getBlockIndex() ) ) + "." ) ;
 		
 		remainingBytes = 8 ;
 		
 		if ( myMemoryStream.getBlockLength() != remainingBytes )
 			throw TestException( 
 				"Wrong filled length : expected to be " 
-				+ Ceylan::toString( remainingBytes ) + ", is "
-				+ Ceylan::toString( myMemoryStream.getBlockLength() ) + "." ) ;
+				+ Ceylan::toString( 
+					static_cast<Ceylan::Uint32>( remainingBytes ) ) + ", is "
+				+ Ceylan::toString( static_cast<Ceylan::Uint32>( 
+					myMemoryStream.getBlockLength() ) ) + "." ) ;
 
 			
 		myMemoryStream.moveFilledBlockToBufferStart() ;
@@ -289,13 +303,17 @@ int main( int argc, char * argv[] )
 		if ( myMemoryStream.getBlockIndex() != 0 )
 			throw TestException( 
 				"Wrong filled index after move : expected to be 0, is "
-				+ Ceylan::toString( myMemoryStream.getBlockIndex() ) + "." ) ;
+				+ Ceylan::toString( static_cast<Ceylan::Uint32>( 
+					myMemoryStream.getBlockIndex() ) ) + "." ) ;
 			
 		if ( myMemoryStream.getBlockLength() != remainingBytes )
 			throw TestException( 
 				"Wrong filled length after move : expected to be " 
-				+ Ceylan::toString( remainingBytes ) + ", is "
-				+ Ceylan::toString( myMemoryStream.getBlockLength() ) + "." ) ;
+				+ Ceylan::toString( 
+					static_cast<Ceylan::Uint32>( remainingBytes ) ) + ", is "
+				+ Ceylan::toString( 
+					static_cast<Ceylan::Uint32>( myMemoryStream.getBlockLength() ) ) 
+				+ "." ) ;
 		
 			
 		newRead = myMemoryStream.getElementAt( 0 ) ;
@@ -322,7 +340,9 @@ int main( int argc, char * argv[] )
 			if ( newRead != i )
 				throw TestException( "Wrong element read (" 
 					+ Ceylan::toNumericalString( newRead ) 
-					+ ") after move, " + Ceylan::toNumericalString( i ) 
+					+ ") after move, " 
+					+ Ceylan::toNumericalString( 
+						static_cast<Ceylan::Uint8>( i ) ) 
 					+ " was expected." ) ;
 					
 		}
@@ -334,7 +354,8 @@ int main( int argc, char * argv[] )
 			if ( newRead != i )
 				throw TestException( "Wrong element read (" 
 					+ Ceylan::toNumericalString( newRead ) 
-					+ ") after move, " + Ceylan::toNumericalString( i ) 
+					+ ") after move, " 
+					+ Ceylan::toNumericalString( static_cast<Ceylan::Uint8>( i ) ) 
 					+ " was expected." ) ;
 					
 		}
