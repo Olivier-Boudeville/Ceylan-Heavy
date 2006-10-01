@@ -36,6 +36,10 @@ extern "C"
 #include <utime.h>             // for utime     
 #endif // CEYLAN_USES_UTIME_H
 
+#ifdef CEYLAN_USES_SYS_UTIME_H
+#include <sys/utime.h>         // for utime     
+#endif // CEYLAN_USES_SYS_UTIME_H
+
 }
 
 
@@ -51,6 +55,7 @@ using std::ios_base ;
 using std::string ;
 
 
+using namespace Ceylan ;
 using namespace Ceylan::System ;
 using namespace Ceylan::Log ;
 
@@ -773,7 +778,8 @@ Size File::read( Ceylan::Byte * buffer, Size maxLength )
 
 #if CEYLAN_PREFERS_RDBUF_TO_DIRECT_FSTREAM
 
-	SignedSize n = ( _fstream.rdbuf() )->sgetn( buffer, maxLength ) ;
+	SignedSize n = ( _fstream.rdbuf() )->sgetn( buffer, 
+		static_cast<std::streamsize>( maxLength ) ) ;
 
 	if ( ! _fstream.good() )
 		throw InputStream::ReadFailedException( 
@@ -873,9 +879,10 @@ Size File::write( const Ceylan::Byte * buffer, Size maxLength )
 #if CEYLAN_PREFERS_RDBUF_TO_DIRECT_FSTREAM
 	 	
 		
-	SignedSize n = ( _fstream.rdbuf() )->sputn( buffer, maxLength ) ;
+	SignedSize n = ( _fstream.rdbuf() )->sputn( buffer, 
+		static_cast<std::streamsize>( maxLength ) ) ;
 
-	if ( n < static_cast<SignedSize>( maxLength ) )
+	if ( n < 0 )
 		throw WriteFailed( "File::write failed for file '" 
 			+ _name + "' : negative size written" ) ;
 
@@ -883,7 +890,8 @@ Size File::write( const Ceylan::Byte * buffer, Size maxLength )
 	
 	if ( realSize < maxLength )
 		throw WriteFailed( "File::write failed for file '" 
-			+ _name + "' : " + interpretState() ) ;
+			+ _name + "', fewer bytes wrote than expected : " 
+			+ interpretState() ) ;
 			
 	/*
 	 * Probably useless :
@@ -1318,7 +1326,8 @@ void File::Copy( const string & name, const string & newName )
 
 			try
 			{		
-				readCount = source.read( buf, toRead ) ;
+				readCount = static_cast<SignedSize>( 
+					source.read( buf, toRead ) ) ;
 			}
 			catch( const ReadFailed & e )
 			{
