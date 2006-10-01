@@ -23,7 +23,10 @@
 	Q: How can I report bugs ?
 	A: Send bug reports to the ceylan-bugs@lists.sourceforge.net mailing list
 	
-		
+	Q: How can I have more informations about Ceylan ?
+	A: Read the Ceylan user guide at @CEYLAN_SF_URL@
+	
+	
 * Developper FAQ
 
 	Q: How can I regenerate the build system, with regards to the Autotools ? 
