@@ -32,7 +32,7 @@ int main( int argc, char * argv[] )
 		<< " bytes, and the size of a ListSize variable is " 
 		<< sizeof( Ceylan::ListSize ) << " bytes." << std::endl ;
 	
-	return 0 ;
+	return Ceylan::ExitSuccess ;
 	
 }
 
