@@ -52,7 +52,7 @@ namespace Ceylan
 	 *
 	 * @example :
 	 * <pre>
-	 * counted_ptr<AnObjectType> p = new AnObjectType(...) ;
+	 * CountedPointer<AnObjectType> p = new AnObjectType(...) ;
 	 * p->aMethod() ;
 	 * </pre>
 	 *
@@ -60,18 +60,18 @@ namespace Ceylan
 	 * This pointer will track the references to the specified resource,
 	 * which will be deallocated only when nobody references it.
 	 *
- 	 * Original name : counted_ptr.h
+ 	 * Original name : CountedPointer.h
 	 * Original date : 07/24/99
 	 * @author Robert Di Falco (http://c2.com/cgi/wiki?RobertDiFalco)
 	 *	 
-	 * Implementation of the counted_ptr specification. Uses a 'static 
+	 * Implementation of the CountedPointer specification. Uses a 'static 
 	 * default' referent to improve the performance when being default
 	 * constructed by an array or collection.
 	 *
 	 * #define CEYLAN_COUNTED_POINTER_USE_COPY_ON_WRITE
 	 *
 	 * Define the above constant if you wish to enable the
-	 * counted_ptr::isolate member, which is useful for using counted_ptr as the
+	 * CountedPointer::isolate member, which is useful for using CountedPointer as the
 	 * base for a string class that uses copyOnWrite for its non-const members.
 	 *
 	 * @note Not for multithread use.
@@ -86,7 +86,7 @@ namespace Ceylan
 	 * <pre>
 	 * bool aMethod()
 	 * {
-	 *    counted_ptr<Mutex> p = new Mutex() ;
+	 *    CountedPointer<Mutex> p = new Mutex() ;
 	 * 
 	 *    if ( condition )
 	 *    	throw Exception() ;  // no problemo !
@@ -97,7 +97,7 @@ namespace Ceylan
 	 *
 	 */
 	template< class T >
-	class counted_ptr : public Ceylan::TextDisplayable
+	class CountedPointer : public Ceylan::TextDisplayable
 	{
 	
 	
@@ -116,7 +116,7 @@ namespace Ceylan
 			 *
 			 * Creates a counted pointer from a raw pointer.
 			 *
-			 * @example counted_ptr<Foo> foo_ref = new Foo() ;
+			 * @example CountedPointer<Foo> foo_ref = new Foo() ;
 			 *
 			 * @param resourcePointer the unique pointer to the resource that
 			 * should exist.
@@ -127,7 +127,7 @@ namespace Ceylan
 			 * there will be elements.
 			 *
 			 */
-	        counted_ptr( ElementType * resourcePointer = 0 )
+	        CountedPointer( ElementType * resourcePointer = 0 )
 	        {
 		 
 	            // Speeds default creation for arrays : (stack gets a reference)
@@ -146,7 +146,7 @@ namespace Ceylan
 			 * referent.
 			 *
 			 */
-			counted_ptr( const counted_ptr<T> & source ) :
+			CountedPointer( const CountedPointer<T> & source ) :
 				Ceylan::TextDisplayable()
 			{
 				setReferent( source._referent ) ;
@@ -157,13 +157,13 @@ namespace Ceylan
 			 * Assignment operator.
 			 *
 			 * @example :
-			 * counted_ptr<Foo> foo_ref1 = new Foo() ;
-			 * counted_ptr<Foo> foo_ref2 = new Foo() ;
+			 * CountedPointer<Foo> foo_ref1 = new Foo() ;
+			 * CountedPointer<Foo> foo_ref2 = new Foo() ;
 			 * foo_ref2 = foo_ref1 ;
 			 * which is equivalent to : foo_ref2.operator=( foo_ref1 ) ;
 			 *			
 			 */
-			counted_ptr<T> & operator=( const counted_ptr<T> & source )
+			CountedPointer<T> & operator=( const CountedPointer<T> & source )
 			{
 			
 				if ( _referent != source._referent )
@@ -190,7 +190,7 @@ namespace Ceylan
 			 * @note Should not specifically be called explicitly under normal
 			 * use.
 			 */
-			~counted_ptr() throw()
+			~CountedPointer() throw()
 			{
 				release() ;
 			}
@@ -390,7 +390,7 @@ namespace Ceylan
          } * _referent ;                
 
 
-		 /// Each counted_ptr has therefore a member : Referent * _referent ; 
+		 /// Each CountedPointer has therefore a member : Referent * _referent ; 
 
 
          // Simple methods to reference and release representations.
@@ -451,7 +451,7 @@ namespace Ceylan
 		 
 		 
 		 
-	 } ;  // Definition of counted_ptr template.
+	 } ;  // Definition of CountedPointer template.
  
  
  
