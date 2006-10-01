@@ -48,7 +48,7 @@ const Ceylan::System::Signal::SignalHandler
 #endif // CEYLAN_USES_SIGNAL_H
 
 
-/// Shortcut :
+/// Shortcut notation :
 typedef Ceylan::System::Signal::SignalNumber Sig ;
 
 
@@ -59,18 +59,53 @@ typedef Ceylan::System::Signal::SignalNumber Sig ;
  * For alpha and sparc, and for mips, there are other values.
  *
  */
- 
-const Sig Ceylan::System::Signal::HangUp				 = SIGHUP  ;
+
+
+/*
+ * The first set of signal constants is known from both the UNIX
+ * and the Windows world.
+ *
+ */
+
 const Sig Ceylan::System::Signal::InterruptFromKeyboard  = SIGINT  ;
-const Sig Ceylan::System::Signal::QuitFromKeyboard  	 = SIGQUIT ;
 const Sig Ceylan::System::Signal::IllegalInstruction	 = SIGILL  ;
 const Sig Ceylan::System::Signal::Abort 				 = SIGABRT ;
 const Sig Ceylan::System::Signal::FloatingPointException = SIGFPE  ;
-const Sig Ceylan::System::Signal::Kill  				 = SIGKILL ;
 const Sig Ceylan::System::Signal::InvalidMemoryReference = SIGSEGV ;
+const Sig Ceylan::System::Signal::Termination			 = SIGTERM ;
+
+
+/*
+ * The second set of signal constants is known from the UNIX
+ * world only (not defined on Windows).
+ *
+ */
+
+#if CEYLAN_ARCH_WINDOWS
+
+// Fake values since symbols have to be defined :
+
+const Sig Ceylan::System::Signal::HangUp                 = 1  ;
+const Sig Ceylan::System::Signal::QuitFromKeyboard  	 = 3  ;
+const Sig Ceylan::System::Signal::Kill  				 = 7  ;
+const Sig Ceylan::System::Signal::BrokenPipe			 = 9  ;
+const Sig Ceylan::System::Signal::TimerSignal			 = 10 ;
+const Sig Ceylan::System::Signal::FirstUserDefined  	 = 12 ;
+const Sig Ceylan::System::Signal::SecondUserDefined 	 = 13 ;
+const Sig Ceylan::System::Signal::ChildEnded			 = 14 ;
+const Sig Ceylan::System::Signal::Continue  			 = 15 ;
+const Sig Ceylan::System::Signal::Stop  				 = 16 ;
+const Sig Ceylan::System::Signal::TtyStopped			 = 17 ;
+const Sig Ceylan::System::Signal::TtyInput  			 = 18 ;
+const Sig Ceylan::System::Signal::TtyOutput 			 = 19 ;
+
+#else // CEYLAN_ARCH_WINDOWS
+
+const Sig Ceylan::System::Signal::HangUp				 = SIGHUP  ;
+const Sig Ceylan::System::Signal::QuitFromKeyboard  	 = SIGQUIT ;
+const Sig Ceylan::System::Signal::Kill  				 = SIGKILL ;
 const Sig Ceylan::System::Signal::BrokenPipe			 = SIGPIPE ;
 const Sig Ceylan::System::Signal::TimerSignal			 = SIGALRM ;
-const Sig Ceylan::System::Signal::Termination			 = SIGTERM ;
 const Sig Ceylan::System::Signal::FirstUserDefined  	 = SIGUSR1 ;
 const Sig Ceylan::System::Signal::SecondUserDefined 	 = SIGUSR2 ;
 const Sig Ceylan::System::Signal::ChildEnded			 = SIGCHLD ;
@@ -80,6 +115,7 @@ const Sig Ceylan::System::Signal::TtyStopped			 = SIGTSTP ;
 const Sig Ceylan::System::Signal::TtyInput  			 = SIGTTIN ;
 const Sig Ceylan::System::Signal::TtyOutput 			 = SIGTTOU ;
 
+#endif // CEYLAN_ARCH_WINDOWS
 
 #else // CEYLAN_USES_SIGNAL_H
 
@@ -88,13 +124,13 @@ const Sig Ceylan::System::Signal::TtyOutput 			 = SIGTTOU ;
 
 const Sig Ceylan::System::Signal::HangUp                 = 1  ;
 const Sig Ceylan::System::Signal::InterruptFromKeyboard  = 2  ;
-const Sig Ceylan::System::Signal::QuitFromKeyboard  	 = 3 ;
+const Sig Ceylan::System::Signal::QuitFromKeyboard  	 = 3  ;
 const Sig Ceylan::System::Signal::IllegalInstruction	 = 4  ;
-const Sig Ceylan::System::Signal::Abort 				 = 5 ;
+const Sig Ceylan::System::Signal::Abort 				 = 5  ;
 const Sig Ceylan::System::Signal::FloatingPointException = 6  ;
-const Sig Ceylan::System::Signal::Kill  				 = 7 ;
-const Sig Ceylan::System::Signal::InvalidMemoryReference = 8 ;
-const Sig Ceylan::System::Signal::BrokenPipe			 = 9 ;
+const Sig Ceylan::System::Signal::Kill  				 = 7  ;
+const Sig Ceylan::System::Signal::InvalidMemoryReference = 8  ;
+const Sig Ceylan::System::Signal::BrokenPipe			 = 9  ;
 const Sig Ceylan::System::Signal::TimerSignal			 = 10 ;
 const Sig Ceylan::System::Signal::Termination			 = 11 ;
 const Sig Ceylan::System::Signal::FirstUserDefined  	 = 12 ;
@@ -105,7 +141,6 @@ const Sig Ceylan::System::Signal::Stop  				 = 16 ;
 const Sig Ceylan::System::Signal::TtyStopped			 = 17 ;
 const Sig Ceylan::System::Signal::TtyInput  			 = 18 ;
 const Sig Ceylan::System::Signal::TtyOutput 			 = 19 ;
-
 
 #endif // CEYLAN_USES_SIGNAL_H
 
