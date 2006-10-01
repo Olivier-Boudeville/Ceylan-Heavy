@@ -1301,11 +1301,12 @@ string Ceylan::toNumericalString( Uint8 number ) throw( Ceylan::Exception )
 }
 
 
-Ceylan::UnsignedLongInteger Ceylan::stringToUnsignedLong( 
+
+int Ceylan::stringToUnsignedLong( 
 	const string & numericalString ) throw( Exception )
 {
 	
-	UnsignedLongInteger result ;
+	int result ;
 	
 	istringstream iss( numericalString ) ;
     iss >> result ;
@@ -1335,12 +1336,13 @@ void * Ceylan::stringToAddress( const string & addressString )
 
     if ( iss.fail() )
 	{
-        throw Ceylan::Exception( "Conversion error in method "
-			"Ceylan::stringToAddress, while operating on " 
-			+ addressString + "." ) ;
+		throw Ceylan::Exception( 
+			"Ceylan::stringToAddress : conversion error while operating on '" 
+			+ addressString + "'." ) ;
 	}
 	
 	return result ;
 
 }
+
 
