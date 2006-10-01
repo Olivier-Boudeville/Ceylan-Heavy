@@ -89,7 +89,7 @@ AnonymousStreamSocket::NonBlockingAcceptException::~NonBlockingAcceptException()
 
 
 AnonymousStreamSocket::AnonymousStreamSocket( 
-			System::FileDescriptor listeningFD, bool blocking ) 
+	Ceylan::System::FileDescriptor listeningFD, bool blocking ) 
 		throw( SocketException ):
 	StreamSocket( /* blocking */ true )
 {

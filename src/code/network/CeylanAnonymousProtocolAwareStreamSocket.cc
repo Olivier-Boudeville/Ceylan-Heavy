@@ -6,7 +6,8 @@
 #include "CeylanProtocolServer.h" // for ProtocolServer
 
 
-
+using namespace Ceylan ;
+using namespace Ceylan::System ;
 using namespace Ceylan::Middleware ;
 using namespace Ceylan::Network ;
 using namespace Ceylan::Log ;

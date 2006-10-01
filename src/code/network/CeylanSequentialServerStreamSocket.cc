@@ -13,7 +13,7 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
-
+using namespace Ceylan ;
 using namespace Ceylan::System ;
 using namespace Ceylan::Network ;
 using namespace Ceylan::Log ;
