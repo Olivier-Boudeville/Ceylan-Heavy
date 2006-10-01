@@ -68,6 +68,8 @@ const std::string Stream::toString( Ceylan::VerbosityLevels level )
 bool Stream::Close( FileDescriptor & fd ) throw( CloseException )
 {
 
+#if CEYLAN_USES_FILE_DESCRIPTORS
+
 	if ( fd > 0 )
 	{
 	
@@ -111,6 +113,12 @@ bool Stream::Close( FileDescriptor & fd ) throw( CloseException )
 
 	return false ;
 
+#else // CEYLAN_USES_FILE_DESCRIPTORS
+
+	throw Stream::CloseException( "Ceylan::System::close : "
+		"file descriptor feature not available" ) ;
+
+#endif // CEYLAN_USES_FILE_DESCRIPTORS
 }
 
 
