@@ -45,7 +45,7 @@ namespace Ceylan
 		 * light-weight insofar as it is just an empty "letter-box" interface.
 		 * 
 		 */
-		class LightWeightMarshaller: public Marshaller
+		class CEYLAN_DLL LightWeightMarshaller: public Marshaller
 		{
 		
 		
@@ -69,7 +69,7 @@ namespace Ceylan
 				 * hence will not deallocate it.
 				 *
 				 */
-				LightWeightMarshaller(
+				explicit LightWeightMarshaller(
 					System::InputOutputStream & lowerLevelStream,
 					System::Size bufferedSize = 0 ) throw() ;
 				
@@ -374,7 +374,6 @@ namespace Ceylan
 				 *
 				 * For buffered stream, it is the buffer, for the rest it 
 				 * is directly the lower-level stream.
-				 *
 				 *
 				 */
 				inline System::InputOutputStream & getEffectiveStream()

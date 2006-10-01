@@ -46,7 +46,7 @@ namespace Ceylan
 		 * (see Marshaller::retrieveData)
 		 *
 		 */
-		class ProtocolServer: public ProtocolEndpoint
+		class CEYLAN_DLL ProtocolServer: public ProtocolEndpoint
 		{
 		
 		

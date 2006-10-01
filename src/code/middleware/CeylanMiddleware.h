@@ -22,7 +22,7 @@ namespace Ceylan
 		 * Exception to be raised whenever a middleware issue arises.
 		 *
 		 */
-		class MiddlewareException : public Ceylan::Exception 
+		class CEYLAN_DLL MiddlewareException : public Ceylan::Exception 
 		{
 		
 			public:

@@ -39,7 +39,7 @@ namespace Ceylan
 		 * Exception to be raised whenever a protocol-related issue arises.
 		 *
 		 */
-		class MarshallException : public MiddlewareException 
+		class CEYLAN_DLL MarshallException : public MiddlewareException 
 		{
 		
 			public:
@@ -58,7 +58,7 @@ namespace Ceylan
 		 * into a higher-level construct.
 		 *
 		 */
-		class DecodeException : public MarshallException 
+		class CEYLAN_DLL DecodeException : public MarshallException 
 		{
 		
 			public:
@@ -76,7 +76,7 @@ namespace Ceylan
 		 * be encoded into a bitstream.
 		 *
 		 */
-		class EncodeException : public MarshallException 
+		class CEYLAN_DLL EncodeException : public MarshallException 
 		{
 		
 			public:
@@ -125,7 +125,7 @@ namespace Ceylan
 		 * meaningless with it.
 		 *
 		 */
-		class Marshaller: public TextDisplayable
+		class CEYLAN_DLL Marshaller: public TextDisplayable
 		{
 		
 		

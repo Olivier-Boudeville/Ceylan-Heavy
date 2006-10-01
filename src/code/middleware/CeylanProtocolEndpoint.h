@@ -24,7 +24,7 @@ namespace Ceylan
 		 * Exception to be raised whenever a protocol-related issue arises.
 		 *
 		 */
-		class ProtocolException : public MiddlewareException 
+		class CEYLAN_DLL ProtocolException : public MiddlewareException 
 		{
 		
 			public:
@@ -59,7 +59,7 @@ namespace Ceylan
 		 * from and to the stream.
 		 *
 		 */
-		class ProtocolEndpoint: public TextDisplayable
+		class CEYLAN_DLL ProtocolEndpoint: public TextDisplayable
 		{
 		
 		
