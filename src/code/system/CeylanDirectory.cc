@@ -29,6 +29,10 @@ extern "C"
 #include <sys/stat.h>          // for S_ISDIR, stat, etc.
 #endif // CEYLAN_USES_SYS_STAT_H
 
+#if CEYLAN_USES_DIRECT_H
+#include <direct.h>            // for _mkdir
+#endif // CEYLAN_USES_DIRECT_H
+
 }
 
 
@@ -49,7 +53,7 @@ using namespace Ceylan::System ;
 const string Directory::RootDirectoryPrefix   = "C:"   ;
 const string Directory::CurrentDirectoryAlias = "."  ;
 const string Directory::UpperDirectoryAlias   = ".." ;
-const char   Directory::Separator 	          = '\\'  ;
+const char   Directory::Separator             = '\\'  ;
 
 #else // CEYLAN_ARCH_WINDOWS
 
@@ -70,8 +74,12 @@ const mode_t basicDirectory =
 	
 #else // CEYLAN_USES_ADVANCED_FILE_ATTRIBUTES
 
+#ifdef CEYLAN_USES_MKDIR_TWO_ARGS
+
 // Currently not used on MinGW : 
 const mode_t basicDirectory = S_IRWXU ;
+
+#endif // CEYLAN_USES_MKDIR_TWO_ARGS
 
 #endif // CEYLAN_USES_ADVANCED_FILE_ATTRIBUTES		
 
@@ -98,7 +106,7 @@ Directory::Directory( const string & name, bool createDirectory )
 {
 
 
-#if CEYLAN_USES_MKDIR
+#ifdef CEYLAN_USES_MKDIR
 
 	CEYLAN_LOG( "Creating directory reference for " + name ) ;
 
@@ -151,13 +159,20 @@ Directory::Directory( const string & name, bool createDirectory )
 				
 #else // CEYLAN_USES_MKDIR_TWO_ARGS
 
+#ifdef CEYLAN_USES__MKDIR
+
+				if ( ::_mkdir( path.c_str() /* no basicDirectory argument */ ) 
+					== -1 )
+
+#else // CEYLAN_USES__MKDIR 
+
 				if ( ::mkdir( path.c_str() /* no basicDirectory argument */ ) 
 					== -1 )
 					
-#endif // CEYLAN_USES_MKDIR_TWO_ARGS			
-					throw CouldNotCreate( path + " : " 
-						+ explainError( getError() ) ) ;
+#endif // CEYLAN_USES__MKDIR 
 
+#endif // CEYLAN_USES_MKDIR_TWO_ARGS			
+					throw CouldNotCreate( path + " : " + explainError() ) ;
 			}
 			
 			path += Separator ;
@@ -207,13 +222,13 @@ void Directory::getSubdirectories( list<string> & subDirectories )
 	const throw( DirectoryException )
 {
 
-#if CEYLAN_USES_DIRENT_H
+#ifdef CEYLAN_USES_DIRENT_H
 
 	DIR * d = ::opendir( _path.c_str() ) ;
 
 	if ( d == 0 )
 		throw DirectoryException( "Directory::getSubdirectories : open : "
-			+ explainError( getError() ) ) ;
+			+ explainError() ) ;
 
 	struct dirent * de = 0 ;
 	struct stat buf ;
@@ -237,13 +252,13 @@ void Directory::getSubdirectories( list<string> & subDirectories )
 	 
 	if ( errno != 0 )
 		throw DirectoryException( "Directory::getSubdirectories : read : "
-			+ explainError( getError() ) ) ;
+			+ explainError() ) ;
 	 *
 	 */
 	 
 	if ( ::closedir( d ) == -1 )
 		throw DirectoryException( "Directory::getSubdirectories : close : "
-			+ explainError( getError() ) ) ;
+			+ explainError() ) ;
 
 
 #else // CEYLAN_USES_DIRENT_H
@@ -256,10 +271,11 @@ void Directory::getSubdirectories( list<string> & subDirectories )
 }
 
 
-void Directory::getEntries( list<string> & entries ) const throw()
+void Directory::getEntries( list<string> & entries ) const 
+	throw( DirectoryException )
 {
 
-#if CEYLAN_USES_DIRENT_H
+#ifdef CEYLAN_USES_DIRENT_H
 
 	DIR * d = ::opendir( _path.c_str() ) ;
 
@@ -281,13 +297,13 @@ void Directory::getEntries( list<string> & entries ) const throw()
 	 
 	if ( errno != 0 )
 		throw DirectoryException( "Directory::getEntries : read : "
-			+ explainError( getError() ) ) ;
+			+ explainError() ) ;
 	 *
 	 */
 
 	if ( ::closedir( d ) == -1 )
 		throw DirectoryException( "Directory::getEntries : close : "
-			+ explainError( getError() ) ) ;
+			+ explainError() ) ;
 	
 #else // CEYLAN_USES_DIRENT_H
 	
@@ -321,7 +337,7 @@ const string Directory::toString( Ceylan::VerbosityLevels level ) const throw()
 bool Directory::IsAValidDirectoryName( const string & directoryString ) throw()
 {
 
-#if CEYLAN_USES_REGEX
+#ifdef CEYLAN_USES_REGEX
 
 	string directoryPattern = "^[" + RootDirectoryPrefix 
 		+ Separator + "]{1,1}" ;
@@ -379,7 +395,7 @@ bool Directory::IsAbsolutePath( const string & path ) throw()
 string Directory::GetCurrentWorkingDirectoryName() throw( DirectoryException )
 {
 
-#if CEYLAN_USES_GETCWD
+#ifdef CEYLAN_USES_GETCWD
 
 	/*
 	 * With following automatic variable, frame size is deemed 
@@ -410,13 +426,52 @@ string Directory::GetCurrentWorkingDirectoryName() throw( DirectoryException )
 	
 		throw DirectoryException( "GetCurrentWorkingDirectoryName : "
 			"unable to determine current directory : "
-		 	+ explainError( getError() ) ) ;
+		 	+ explainError() ) ;
 	}		
 		 
 #else // CEYLAN_USES_GETCWD
 
+#ifdef CEYLAN_USES__GETCWD
+
+
+	/*
+	 * With following automatic variable, frame size is deemed 
+	 * 'too large for reliable stack checking' :
+	 
+	char buf[ PATH_MAX + 1 ] ;
+	 
+	 * Another solution would be to use a static string, but this method 
+	 * would not be reentrant anymore.
+	 *
+	 * Hence using dynamic allocation, even if slower :
+	 *
+	 */
+
+	char * buf = new char[ PATH_MAX + 1 ] ;
+	
+	if ( ::_getcwd( buf, PATH_MAX ) )
+	{
+		string res( buf ) ;
+		delete buf ;
+		
+		return res ;
+		
+	}
+	else
+	{
+		delete buf ;
+	
+		throw DirectoryException( "GetCurrentWorkingDirectoryName : "
+			"unable to determine current directory : "
+		 	+ explainError() ) ;
+	}		
+
+#else // CEYLAN_USES__GETCWD
+
 	throw DirectoryException( "GetCurrentWorkingDirectoryName : "
 		"not available on this platform" ) ;
+
+#endif // CEYLAN_USES__GETCWD
 
 #endif // CEYLAN_USES_GETCWD		
  
@@ -427,12 +482,28 @@ void Directory::ChangeWorkingDirectory( const string & newWorkingDirectory )
 	throw( DirectoryException )
 {
 
-	// No CEYLAN_USES_CHDIR for the moment.
+#ifdef CEYLAN_USES_CHDIR
+
 	if ( ::chdir( newWorkingDirectory.c_str() ) != 0 )
+
+#else // CEYLAN_USES_CHDIR
+
+#ifdef CEYLAN_USES__CHDIR
+
+	if ( ::_chdir( newWorkingDirectory.c_str() ) != 0 )
+
+#else // CEYLAN_USES__CHDIR
+
+	throw DirectoryException( "Ceylan::Directory::ChangeWorkingDirectory : "
+			"not supported on this platform" ) ;
+
+#endif // CEYLAN_USES__CHDIR
 		throw DirectoryException( "Ceylan::Directory::ChangeWorkingDirectory : "
 			"unable to change current working directory to "
-			+ newWorkingDirectory + " : " + explainError( getError() ) ) ;
-			
+			+ newWorkingDirectory + " : " + explainError() ) ;
+
+#endif // CEYLAN_USES_CHDIR
+
 }
 
 
@@ -530,7 +601,7 @@ void Directory::StripFilename( const string & path, string * base,
 	if ( ( p = path.rfind( Separator ) ) != string::npos )
 	{
 		// Base is the characters between begin and last separator :
-		if (  base != 0 )
+		if ( base != 0 )
 			base->assign( path, 0, p ) ;
 
 		// File is the leading part :
@@ -541,15 +612,35 @@ void Directory::StripFilename( const string & path, string * base,
 	{
 		// No separator : no path, only file.
 		if ( file != 0 )
-		*file = path ;
+			*file = path ;
 	}
 }
 
 
-bool Directory::Exists( const string & path ) throw()
+bool Directory::Exists( const string & path ) throw( DirectoryException )
 {
+
+#ifdef CEYLAN_USES_STAT
+
 	struct stat buf ;
 	return ::stat( path.c_str(), & buf ) == 0 && S_ISDIR( buf.st_mode ) ;
+
+#else // CEYLAN_USES_STAT
+
+#ifdef CEYLAN_USES__STAT
+
+	struct _stat buf ;
+	return ::_stat( path.c_str(), & buf ) == 0 && ( buf.st_mode & _S_IFDIR ) ;
+
+#else // CEYLAN_USES__STAT
+
+	throw DirectoryException( "Directory::Exists : "
+			"operation not supported on this platform." ) ;
+
+#endif // CEYLAN_USES__STAT
+
+#endif // CEYLAN_USES_STAT
+
 }
 
 
@@ -563,9 +654,20 @@ void Directory::Remove( const string & name, bool recursive )
 	throw( Directory::CouldNotRemove )
 {
 
-#if CEYLAN_USES_RMDIR
+#ifdef CEYLAN_USES_RMDIR
+
+
+// The case without stat and _stat not managed :
+
+#ifdef CEYLAN_USES_STAT
 
 	static struct stat buf ;
+
+#else // CEYLAN_USES__STAT
+
+	static struct _stat buf ;
+
+#endif // CEYLAN_USES__STAT
 
 	if ( name.empty() )
 		throw CouldNotRemove( "(void directory specified)" ) ;
@@ -589,24 +691,49 @@ void Directory::Remove( const string & name, bool recursive )
 
 			string newPath = path + Separator + *it ;
 
+#ifdef CEYLAN_USES_STAT
+
 			if ( ::stat( newPath.c_str(), & buf ) == 0 )
+
+#else // CEYLAN_USES_STAT
+
+			if ( ::_stat( newPath.c_str(), & buf ) == 0 )
+
+#endif // CEYLAN_USES_STAT
+
 			{
 			
 				// Unlinks symlinks and files :
 #if CEYLAN_USES_SYMBOLIC_LINKS
 				if ( S_ISLNK( buf.st_mode ) || ! S_ISDIR( buf.st_mode ) )
 #else // CEYLAN_USES_SYMBOLIC_LINKS
+
+#ifdef CEYLAN_ARCH_WINDOWS
+				if ( ! ( buf.st_mode & _S_IFDIR ) )
+#else // CEYLAN_ARCH_WINDOWS
 				if ( ! S_ISDIR( buf.st_mode ) )
+#endif // CEYLAN_ARCH_WINDOWS
+
 #endif // CEYLAN_USES_SYMBOLIC_LINKS
 				{
+
+
+#ifdef CEYLAN_USES_UNLINK
 					if ( ::unlink( newPath.c_str() ) )
+#else // CEYLAN_USES_UNLINK
+					if ( ::_unlink( newPath.c_str() ) )
+#endif // CEYLAN_USES_UNLINK
 						throw CouldNotRemove( newPath +  " : " 
-							+ explainError( getError() ) ) ;
+							+ explainError() ) ;
 				}
 				else
 
 				// Deletes directories :
+#ifdef CEYLAN_ARCH_WINDOWS
+				if ( buf.st_mode & _S_IFDIR )
+#else // CEYLAN_ARCH_WINDOWS
 				if ( S_ISDIR( buf.st_mode ) )
+#endif // CEYLAN_ARCH_WINDOWS
 				{
 					// Recursive call.
 					Remove( newPath ) ;
@@ -619,17 +746,17 @@ void Directory::Remove( const string & name, bool recursive )
 		}
 
 		if ( ::rmdir( path.c_str() ) )
-			throw CouldNotRemove( path +  " : " + explainError( getError() ) ) ;
+			throw CouldNotRemove( path +  " : " + explainError() ) ;
 	}
 	else // not a recursive remove
 	{
 		if ( ::rmdir( path.c_str() ) )
-			throw CouldNotRemove( path + " : " + explainError( getError() ) ) ;
+			throw CouldNotRemove( path + " : " + explainError() ) ;
 	}
 
 #else // CEYLAN_USES_RMDIR
 
-	throw CouldNotRemove( "(not available on this platform" ) ;
+	throw CouldNotRemove( "(not available on this platform)" ) ;
 
 #endif // CEYLAN_USES_RMDIR
 
