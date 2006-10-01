@@ -28,7 +28,7 @@ namespace Ceylan
 	
 	
 		/// Exception class for network services.
-		class NetworkException : public Ceylan::Exception
+		class CEYLAN_DLL NetworkException : public Ceylan::Exception
 		{
 			public:
 				explicit NetworkException( const std::string & message ) 
@@ -65,7 +65,7 @@ namespace Ceylan
 		 * @note Do not expect this class to be reentrant at all.
 		 *
 		 */
-		class HostDNSEntry : public Ceylan::TextDisplayable
+		class CEYLAN_DLL HostDNSEntry : public Ceylan::TextDisplayable
 		{
 		
 		
@@ -339,7 +339,67 @@ namespace Ceylan
 		
 		
 		// Insert here real network-specific code.
-				
+
+
+#ifdef CEYLAN_RUNS_ON_WINDOWS
+
+
+		/**
+		 * The network manager takes care of the initialization and shutdown
+		 * of the network subsystem.
+		 *
+		 * This is done automatically, thanks to a static instance.
+		 *
+		 */
+		class CEYLAN_DLL NetworkManager
+		{
+
+			public:
+
+				/// Initializes the network subsystem.
+				NetworkManager() throw( NetworkException ) ;
+
+				/// Closes the network subsystem.
+				~NetworkManager() throw() ;
+
+
+			private:
+
+
+				/// The overall singleton-like manager instance.
+				static NetworkManager _Manager ;
+
+				/**
+				 * Copy constructor made private to ensure that it will 
+				 * be never called.
+				 *
+				 * The compiler should complain whenever this undefined
+				 * constructor is called, implicitly or not.
+				 *
+				 */
+				NetworkManager( const NetworkManager & source ) 
+					throw() ;
+
+
+				/**
+				 * Assignment operator made private to ensure that it will
+				 * be never called.
+				 *
+				 * The compiler should complain whenever this undefined 
+				 * operator is called, implicitly or not.
+				 *
+				 */
+				NetworkManager & operator = ( 
+					const NetworkManager & source )	throw() ;
+
+
+		} ;
+
+		
+#endif // CEYLAN_RUNS_ON_WINDOWS
+
+
+
 		    
 	}
 	
