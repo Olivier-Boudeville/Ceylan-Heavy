@@ -34,6 +34,9 @@ extern "C"
 #include <netinet/in.h>        // for sockaddr_in
 #endif // CEYLAN_USES_NETINET_IN_H
 
+#ifdef CEYLAN_USES_WINSOCK2_H
+#include <WinSock2.h>
+#endif // CEYLAN_USES_WINSOCK2_H
 
 }
 
@@ -51,10 +54,10 @@ namespace Ceylan
 
 		/**
 		 * Avoid exposing system-dependent sockaddr_in in the headers, hence it
-		 * is defined here one for all, in this private system-specific 
+		 * is defined here one for all, in this private system-specific
 		 * non-installed header.
 		 *
-		 * No virtual cost (virtual table) should apply to this object. 
+		 * No virtual cost (virtual table) should apply to this object.
 		 *
 		 */
 		class SystemSpecificSocketAddress
@@ -62,41 +65,41 @@ namespace Ceylan
 
 
 			public:
-	
-	
+
+
 				/// Basic constructor, starts with a blank address.
 				SystemSpecificSocketAddress() throw()
 				{
 					blank() ;
 				}
-		
-		
+
+
 				// Non-virtual destructor.
 				~SystemSpecificSocketAddress() throw()
 				{
-			
+
 				}
-		
-		
+
+
 				/// Blanks this address.
 				void blank() throw()
 				{
-			
-					// Clean up this structure :
-	
-#ifdef CEYLAN_USES_MEMSET
-       
-					// System V-style :
-					::memset( & _socketAddress, 0 , 
-						sizeof( _socketAddress ) ) ; 
 
-	
+					// Clean up this structure :
+
+#ifdef CEYLAN_USES_MEMSET
+
+					// System V-style :
+					::memset( & _socketAddress, 0 ,
+						sizeof( _socketAddress ) ) ;
+
+
 #else // CEYLAN_USES_MEMSET
 
 #ifdef CEYLAN_USES_BZERO
-	
+
 					// BSD-style :
-					::bzero( & _socketAddress, sizeof( _socketAddress ) ) ; 
+					::bzero( & _socketAddress, sizeof( _socketAddress ) ) ;
 
 #else // CEYLAN_USES_BZERO
 
@@ -104,9 +107,9 @@ namespace Ceylan
 
 #endif // CEYLAN_USES_BZERO
 
-#endif // CEYLAN_USES_MEMSET		
-	
-				}	
+#endif // CEYLAN_USES_MEMSET
+
+				}
 
 
 				/// The publicly accessible system-specific internal address.
@@ -115,11 +118,11 @@ namespace Ceylan
 
 
 			private:
-	
-		
-			
+
+
+
 				/**
-				 * Copy constructor made private to ensure that it will 
+				 * Copy constructor made private to ensure that it will
 				 * be never called.
 				 *
 				 * The compiler should complain whenever this undefined
@@ -140,13 +143,13 @@ namespace Ceylan
 				 */
 				SystemSpecificSocketAddress & operator = (
 					const SystemSpecificSocketAddress & source ) throw() ;
-			
-	
+
+
 		} ;
-		
+
 	}
-	
-}		
+
+}
 
 
 #endif // CEYLAN_USES_NETWORK
