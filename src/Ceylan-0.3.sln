@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual C++ Express 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ceylan-0.3-library", "Ceylan-0.3.vcproj", "{021F8729-BF5B-4A73-B130-BEA1DDB68A89}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ceylan-0.3-tests", "..\test\Ceylan-0.3-tests.vcproj", "{BC6F5E67-EB1C-430A-85AC-928AB8F9A8E3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{021F8729-BF5B-4A73-B130-BEA1DDB68A89} = {021F8729-BF5B-4A73-B130-BEA1DDB68A89}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testCeylanWaitForKey", "..\testCeylanWaitForKey\testCeylanWaitForKey.vcproj", "{3597B1C7-27D5-4E8E-B710-78022398771B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testCeylanMostBasic", "..\testCeylanMostBasic\testCeylanMostBasic.vcproj", "{6C900EED-5F1D-4834-88C5-057393307FCE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{021F8729-BF5B-4A73-B130-BEA1DDB68A89} = {021F8729-BF5B-4A73-B130-BEA1DDB68A89}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testCeylanLogPlug", "..\testCeylanLogPlug\testCeylanLogPlug.vcproj", "{3E061211-3814-4AF6-B779-C85BADEEB277}"
+	ProjectSection(ProjectDependencies) = postProject
+		{021F8729-BF5B-4A73-B130-BEA1DDB68A89} = {021F8729-BF5B-4A73-B130-BEA1DDB68A89}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{021F8729-BF5B-4A73-B130-BEA1DDB68A89}.Debug|Win32.ActiveCfg = Debug|Win32
+		{021F8729-BF5B-4A73-B130-BEA1DDB68A89}.Debug|Win32.Build.0 = Debug|Win32
+		{021F8729-BF5B-4A73-B130-BEA1DDB68A89}.Release|Win32.ActiveCfg = Release|Win32
+		{021F8729-BF5B-4A73-B130-BEA1DDB68A89}.Release|Win32.Build.0 = Release|Win32
+		{BC6F5E67-EB1C-430A-85AC-928AB8F9A8E3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BC6F5E67-EB1C-430A-85AC-928AB8F9A8E3}.Debug|Win32.Build.0 = Debug|Win32
+		{BC6F5E67-EB1C-430A-85AC-928AB8F9A8E3}.Release|Win32.ActiveCfg = Release|Win32
+		{BC6F5E67-EB1C-430A-85AC-928AB8F9A8E3}.Release|Win32.Build.0 = Release|Win32
+		{3597B1C7-27D5-4E8E-B710-78022398771B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3597B1C7-27D5-4E8E-B710-78022398771B}.Debug|Win32.Build.0 = Debug|Win32
+		{3597B1C7-27D5-4E8E-B710-78022398771B}.Release|Win32.ActiveCfg = Release|Win32
+		{3597B1C7-27D5-4E8E-B710-78022398771B}.Release|Win32.Build.0 = Release|Win32
+		{6C900EED-5F1D-4834-88C5-057393307FCE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6C900EED-5F1D-4834-88C5-057393307FCE}.Debug|Win32.Build.0 = Debug|Win32
+		{6C900EED-5F1D-4834-88C5-057393307FCE}.Release|Win32.ActiveCfg = Release|Win32
+		{6C900EED-5F1D-4834-88C5-057393307FCE}.Release|Win32.Build.0 = Release|Win32
+		{3E061211-3814-4AF6-B779-C85BADEEB277}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3E061211-3814-4AF6-B779-C85BADEEB277}.Debug|Win32.Build.0 = Debug|Win32
+		{3E061211-3814-4AF6-B779-C85BADEEB277}.Release|Win32.ActiveCfg = Release|Win32
+		{3E061211-3814-4AF6-B779-C85BADEEB277}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
