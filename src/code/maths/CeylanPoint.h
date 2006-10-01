@@ -40,7 +40,7 @@ namespace Ceylan
 			 * their text is exactly duplicated.
 			 *
 			 */
-			class Point : public TextDisplayable
+			class CEYLAN_DLL Point : public TextDisplayable
 			{
 
 
@@ -49,7 +49,6 @@ namespace Ceylan
 				
 					/**
 					 * Constructs a new point.
-					 *
 					 *
 					 */
 					explicit Point() throw() ;

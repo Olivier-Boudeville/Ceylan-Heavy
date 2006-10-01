@@ -78,7 +78,7 @@ namespace Ceylan
 		
 		
 		/// Exception for Maths-related issues.
-		class MathsException : public Ceylan::Exception
+		class CEYLAN_DLL MathsException : public Ceylan::Exception
 		{
 		
 			public:
@@ -1335,7 +1335,7 @@ namespace Ceylan
 		 * virtual 'returned type' operator() ('parameter') throw()
 		 *
 		 */
-		class Functor : public Ceylan::TextDisplayable
+		class CEYLAN_DLL Functor : public Ceylan::TextDisplayable
 		{
 		
 		

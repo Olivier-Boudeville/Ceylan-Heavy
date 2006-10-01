@@ -39,7 +39,7 @@ namespace Ceylan
 			 * @note Beware of counter-intuitive operator priorities.
 			 *
 			 */
-			class Tripoint : public Point
+			class CEYLAN_DLL Tripoint : public Point
 			{
 
 

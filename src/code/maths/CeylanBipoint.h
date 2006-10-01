@@ -38,7 +38,7 @@ namespace Ceylan
 			 * @note Beware of counter-intuitive operator priorities.
 			 *
 			 */
-			class Bipoint : public Point
+			class CEYLAN_DLL Bipoint : public Point
 			{
 
 

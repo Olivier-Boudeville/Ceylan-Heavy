@@ -37,7 +37,7 @@ namespace Ceylan
 			 * getNewValue method.
 			 *
 			 */
-			class RandomGenerator : public Ceylan::Object
+			class CEYLAN_DLL RandomGenerator : public Ceylan::Object
 			{
 			
 			

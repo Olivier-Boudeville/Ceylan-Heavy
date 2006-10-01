@@ -46,7 +46,7 @@ namespace Ceylan
 			 * @see CeylanEndomorphism.h for most common endomorphisms.
 			 *
 			 */
-			class Matrix2 : public Matrix
+			class CEYLAN_DLL Matrix2 : public Matrix
 			{
 
 

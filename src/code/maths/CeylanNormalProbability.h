@@ -24,7 +24,7 @@ namespace Ceylan
 			 * Probability function used for gaussian (normal) distributions.
 			 *
 			 */
-			class NormalProbabilityFunction : public ProbabilityFunction
+			class CEYLAN_DLL NormalProbabilityFunction : public ProbabilityFunction
 			{
 		
 		

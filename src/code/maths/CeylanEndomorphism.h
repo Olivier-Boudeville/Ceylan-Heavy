@@ -47,7 +47,7 @@ namespace Ceylan
 			 * must be linear too.
 			 *
 			 */
-			class Endomorphism2DFunctor : public Functor
+			class CEYLAN_DLL Endomorphism2DFunctor : public Functor
 			{
 
 

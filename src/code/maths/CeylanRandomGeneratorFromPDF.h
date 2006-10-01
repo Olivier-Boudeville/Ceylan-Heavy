@@ -36,7 +36,7 @@ namespace Ceylan
 			 * distribution function. 
 			 *
 			 */
-			class RandomGeneratorFromPDF : public RandomGenerator 
+			class CEYLAN_DLL RandomGeneratorFromPDF : public RandomGenerator 
 			{
 			
 			

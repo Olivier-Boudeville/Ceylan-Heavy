@@ -53,7 +53,7 @@ namespace Ceylan
 			 * their text is exactly duplicated.
 			 * 
 			 */
-			class Matrix : public TextDisplayable
+			class CEYLAN_DLL Matrix : public TextDisplayable
 			{
 
 

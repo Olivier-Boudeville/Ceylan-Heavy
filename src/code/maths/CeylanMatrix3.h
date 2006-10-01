@@ -43,7 +43,7 @@ namespace Ceylan
 			 * @note Beware of counter-intuitive operator priorities.
 			 *
 			 */
-			class Matrix3 : public Matrix
+			class CEYLAN_DLL Matrix3 : public Matrix
 			{
 
 

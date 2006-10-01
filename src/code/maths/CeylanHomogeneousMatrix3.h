@@ -73,7 +73,7 @@ namespace Ceylan
 			 * add more complexity to the inheritance tree.
 			 *
 			 */
-			class HomogeneousMatrix3 : public Matrix3
+			class CEYLAN_DLL HomogeneousMatrix3 : public Matrix3
 			{
 
 				
@@ -156,10 +156,14 @@ namespace Ceylan
 					 * the multiply operator HomogeneousMatrix3 m = m1 * m2.
 					 * to return a HomogeneousMatrix3 on the stack.
 					 *
+					 * No need to define it since the basic compiler-generated
+					 * code is correct.
+					 *
 					 */
+					/*
 					HomogeneousMatrix3( 
 						const HomogeneousMatrix3 & source )	throw() ;
-					
+					*/
 					
 					/// Basic virtual destructor.
 					virtual ~HomogeneousMatrix3() throw() ;

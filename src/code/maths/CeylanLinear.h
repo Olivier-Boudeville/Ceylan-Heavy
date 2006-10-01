@@ -23,7 +23,7 @@ namespace Ceylan
 
 
 			/// Exception for Linear-related issues.
-			class LinearException : public MathsException
+			class CEYLAN_DLL LinearException : public MathsException
 			{
 		
 				public:

@@ -40,7 +40,7 @@ namespace Ceylan
 			 * their text is exactly duplicated.
 			 *
 			 */
-			class Vector : public TextDisplayable
+			class CEYLAN_DLL Vector : public TextDisplayable
 			{
 		
 

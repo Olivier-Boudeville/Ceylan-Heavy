@@ -31,7 +31,7 @@ namespace Ceylan
 			 * automatically from current time.
 			 *
 			 */
-			class WhiteNoiseGenerator : public RandomGenerator 
+			class CEYLAN_DLL WhiteNoiseGenerator : public RandomGenerator 
 			{
 			
 			

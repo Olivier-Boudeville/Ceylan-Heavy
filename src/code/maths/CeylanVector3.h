@@ -33,7 +33,7 @@ namespace Ceylan
 			 * @note Beware of counter-intuitive operator priorities.
 			 *
 			 */
-			class Vector3 : public Vector
+			class CEYLAN_DLL Vector3 : public Vector
 			{
 
 
