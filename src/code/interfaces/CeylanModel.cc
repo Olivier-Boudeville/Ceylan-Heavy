@@ -109,13 +109,17 @@ const string Model::toString( Ceylan::VerbosityLevels level ) const throw()
 		result = "MVC Model currently not subscribed to any controller, " ;
 	else
 		result = "MVC Model having currently subscribed to " 
-			+ Ceylan::toString( _sources.size() ) + " controller(s), " ;
+			+ Ceylan::toString( 
+				static_cast<Ceylan::Uint32>( _sources.size() ) ) 
+			+ " controller(s), " ;
 	
 	if ( _listeners.empty() )
 		result += "and having no registered view" ;
 	else
 		result += "and having " 
-			+ Ceylan::toString( _listeners.size() ) + " registered view(s)" ;
+			+ Ceylan::toString( 
+				static_cast<Ceylan::Uint32>( _listeners.size() ) ) 
+			+ " registered view(s)" ;
 	
 	return result ;
 				

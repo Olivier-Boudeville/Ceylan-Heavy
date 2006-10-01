@@ -59,7 +59,7 @@ Lockable::~Lockable() throw()
 
 		LogPlug::error( "Ceylan Lockable destructor : "
 			"unable to unlock Lockable whereas "
-			"it seemed to be locked." ) ;	
+			"it seemed to be locked : " + e.toString() ) ;	
 	}
 
 }

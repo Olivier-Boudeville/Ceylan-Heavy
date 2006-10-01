@@ -41,7 +41,7 @@ WeakHashCode Hashable::GetWeakHashCode( const std::string & stringToHash ) throw
 
 	WeakHashCode hash = 0 ;
  
-	unsigned int charCount = 0 ;
+	Ceylan::Uint32 charCount = 0 ;
 	
 	while ( stringToHash[charCount] )
 	{
@@ -62,7 +62,7 @@ StrongHashCode Hashable::GetStrongHashCode( const std::string & stringToHash ) t
 
 	StrongHashCode hash = 0 ;
  
-	unsigned int charCount = 0 ;
+	Ceylan::Uint32 charCount = 0 ;
 	
 	while ( stringToHash[charCount] )
 	{

@@ -57,6 +57,7 @@ const string Controller::toString( Ceylan::VerbosityLevels level )
 		return "MVC Controller has currently no model subscribed" ;
 	
 	return "MVC Controller has currently " 
-		+ Ceylan::toString( _listeners.size() ) + " model(s) subscribed" ;
+		+ Ceylan::toString( static_cast<Ceylan::Uint32>( _listeners.size() ) )
+		+ " model(s) subscribed" ;
 				
 }

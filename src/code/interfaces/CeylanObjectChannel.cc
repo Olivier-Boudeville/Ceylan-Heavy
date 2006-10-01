@@ -103,7 +103,9 @@ const string ObjectChannel::toString( Ceylan::VerbosityLevels level )
 	if ( _messages.size() == 1 )
 		result += " contains only one message : " ;
 	else
-		result += " contains " + Ceylan::toString( _messages.size() ) 
+		result += " contains " 
+			+ Ceylan::toString( 
+				static_cast<Ceylan::Uint32>( _messages.size() ) ) 
 			+ " messages : " ;
 	
 	list<string> messageList ;

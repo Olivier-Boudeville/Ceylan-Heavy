@@ -399,7 +399,9 @@ const string Locatable::describe( VerbosityLevels level ) const throw()
 			res += "There is exactly one referential "
 				"that is directly relative to this Locatable" ;		
 		else
-			res += "There are " + Ceylan::toString( listenersCount ) 
+			res += "There are " 
+				+ Ceylan::toString( 
+					static_cast<Ceylan::Uint32>( listenersCount ) ) 
 				+ " referentials which are directly relative "
 					"to this Locatable" ;
 	}		

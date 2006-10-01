@@ -4,6 +4,7 @@
 #include "CeylanOperators.h"    // for Ceylan::toString
 #include "CeylanEventSource.h"  // for EventSource::toString
 
+
 #ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"         // for CEYLAN_DEBUG_EVENTS
 #endif // CEYLAN_USES_CONFIG_H
@@ -97,12 +98,15 @@ void EventListener::unsubscribeFrom( EventSource & source )
 			 */
 			_sources.remove( & source ) ;
 				
+
 			// At most one pointer to this source registered !
 				
 #if CEYLAN_DEBUG_EVENTS		
+
 			LogPlug::debug( 
 				"EventListener unsubscribed from following source : " 
 				+ (*it)->toString() ) ;
+
 #endif // CEYLAN_DEBUG_EVENTS
 				
 			return ;
@@ -134,9 +138,11 @@ void EventListener::unsubscribeFromAllSources() throw()
 		 */
 		(*it)->remove( * this ) ;
 	
-#if CEYLAN_DEBUG_EVENTS		
+#if CEYLAN_DEBUG_EVENTS	
+
 		LogPlug::debug( "EventListener unsubscribed from following source : " 
 			+ (*it)->toString() ) ;
+
 #endif // CEYLAN_DEBUG_EVENTS
 										
 	}
@@ -194,7 +200,8 @@ const string EventListener::toString( Ceylan::VerbosityLevels level )
 		return "Event listener not currently subscribed to any event source" ;
 	else
 		return "Event listener subscribed currently to " 
-			+ Ceylan::toString( _sources.size() )
+			+ Ceylan::toString( 
+				static_cast<Ceylan::Uint32>( _sources.size() ) )
 			+ " different event source(s)" ; 
 }
 

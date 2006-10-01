@@ -48,7 +48,7 @@ const string ObjectIdentifier::Pattern =  "^([0-2]{0,1}[0-9]{0,1}[0-9]{1,1}"
 
 
 
-ObjectIdentifier::ObjectIdentifier( const Object & object ) 
+Ceylan::Log::ObjectIdentifier::ObjectIdentifier( const Object & object ) 
 		throw( IdentifierException ) :
 	TextIdentifier(),
 	_hostname(),
@@ -202,7 +202,8 @@ ObjectIdentifier & ObjectIdentifier::generateFromChannelName(
 	if ( subelements.size() != 4 )
 		throw IdentifierException( 
 			"ObjectIdentifier::generateFromChannelName : there are "
-			+ Ceylan::toString( subelements.size() ) 
+			+ Ceylan::toString( 
+				static_cast<Ceylan::Uint32>( subelements.size() ) ) 
 			+ " elements after having split channel name " 
 			+ channelName + " instead of four." ) ;
 	

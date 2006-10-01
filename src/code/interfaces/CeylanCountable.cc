@@ -17,10 +17,12 @@ using namespace Ceylan ;
 
 Countable::InstanceCount Countable::ReferenceCount = 0 ;
 Countable::InstanceCount Countable::MaximumReferenceCount = 0 ;
+
 const string Countable::LogPrefix = "[Instance count]" ;
 
 
-Countable::Countable::Countable( bool verbose ) throw() : _verbose( verbose ) 
+Countable::Countable( bool verbose ) throw() : 
+	_verbose( verbose ) 
 {
 
 	ReferenceCount++ ;

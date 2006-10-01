@@ -54,6 +54,8 @@ const string View::toString( Ceylan::VerbosityLevels level ) const throw()
 		return "MVC View currently not subscribed to any model" ;
 	else
 		return "MVC View currently subscribed to " 
-			+ Ceylan::toString( _sources.size() ) +	" model(s)" ;
+			+ Ceylan::toString( 
+				static_cast<Ceylan::Uint32>( _sources.size() ) )
+			+ " model(s)" ;
 				
 }

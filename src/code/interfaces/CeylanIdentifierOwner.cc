@@ -84,7 +84,7 @@ void IdentifierOwner::setIdentifier( Identifier & id )
 
 bool IdentifierOwner::hasIdentifier() const throw()
 {
-    return ( _id ) ;
+    return ( _id != 0 ) ;
 }
 
 

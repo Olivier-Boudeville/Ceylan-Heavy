@@ -44,7 +44,8 @@ EventSource::~EventSource() throw()
 	{
 	
 		LogPlug::error( "EventSource destructor : " 
-			+ Ceylan::toString( _listeners.size() )
+			+ Ceylan::toString( 
+				static_cast<Ceylan::Uint32>( _listeners.size() ) )
 			+ " listener(s) still registered : faulty life cycle, "
 			"temporary parachute deployed, "
 			"the listeners should have been unsubscribed before "
@@ -188,7 +189,8 @@ const string EventSource::toString( Ceylan::VerbosityLevels level )
 	
 		if ( level == Ceylan::low )
 			return "Event source has currently " 
-			+ Ceylan::toString( _listeners.size() )
+			+ Ceylan::toString( 
+				static_cast<Ceylan::Uint32>( _listeners.size() ) )
 			+ " registered listener(s)" ; 
 		else
 		{
@@ -200,7 +202,8 @@ const string EventSource::toString( Ceylan::VerbosityLevels level )
 				listenersDescription.push_back( (*it)->toString() ) ;
 			
 			return "Event source has currently " 
-				+ Ceylan::toString( _listeners.size() )
+				+ Ceylan::toString( 
+					static_cast<Ceylan::Uint32>( _listeners.size() ) )
 				+ " registered listener(s) : " 
 				+ Ceylan::formatStringList( listenersDescription ) ;
 	
