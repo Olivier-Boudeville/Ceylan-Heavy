@@ -126,7 +126,7 @@ int main( int argc, char * argv[] )
 		LogPlug::info( "Testing floating-point marshalling." ) ;
 				 
 		 		
-		Float32 encodedFloat32 = 1234567.1 ;
+		Float32 encodedFloat32 = 1234567.1F ;
 		myMarshaller->encodeFloat32( encodedFloat32 ) ;
 		
 		Float32 decodedFloat32 = myMarshaller->decodeFloat32() ;
