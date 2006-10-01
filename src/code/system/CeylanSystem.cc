@@ -34,6 +34,10 @@ extern "C"
 #include <sys/select.h>                   // for select
 #endif // CEYLAN_USES_SYS_SELECT_H
 
+#ifdef CEYLAN_USES_WINDOWS_H
+#include <windows.h>                      // for Sleep
+#endif //
+
 }
 
 
@@ -104,12 +108,12 @@ const string Ceylan::System::explainError() throw()
 #if CEYLAN_USES_STRERROR
 
 	return string( ::strerror( errno ) ) ;
-	
+
 #else // CEYLAN_USES_STRERROR
 
 	return "Ceylan::System::explainError not available on this platform  "
 		"(no ::strerror function found)" ;
-		
+
 #endif // CEYLAN_USES_STRERROR
 
 }
@@ -150,7 +154,7 @@ bool Ceylan::System::HasAvailableData( FileDescriptor fd ) throw()
 
 	LogPlug::error( "Ceylan::System::HasAvailableData : "
 		"file descriptor feature not available" ) ;
-		
+
 	return false ;
 
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
@@ -179,30 +183,30 @@ Size Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
 	while ( toReadBytesNumber &&
 		( readBytesNumber = ::read( fd, pos, toReadBytesNumber ) ) != 0 )
 	{
-	
-		if ( readBytesNumber < 0 ) 
+
+		if ( readBytesNumber < 0 )
 		{
-		
+
 			// Non-blocking reads return EAGAIN if there is no data :
 			if ( System::getError() == EAGAIN )
 			{
 				readBytesNumber = 0 ;
 				break ;
-			}	
+			}
 			else
-			{	
+			{
 				throw IOException( "Ceylan::System::FDRead failed : "
 					+ explainError() ) ;
 			}
-					
-		}		
+
+		}
 
 		totalReadBytesNumber += readBytesNumber ;
 		toReadBytesNumber    -= readBytesNumber ;
 		pos                  += readBytesNumber ;
 
 	}
- 
+
 	// readBytesNumber == 0 means end of file, if blocking.
 
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
@@ -217,14 +221,14 @@ Size Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
 
 	throw Features::FeatureNotAvailableException( "Ceylan::System::FDRead : "
 		"file descriptor feature not available" ) ;
-		
+
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
 
 }
 
 
-Size Ceylan::System::FDWrite( FileDescriptor fd, 
-		const Ceylan::Byte * dataBuffer, Size toWriteBytesNumber ) 
+Size Ceylan::System::FDWrite( FileDescriptor fd,
+		const Ceylan::Byte * dataBuffer, Size toWriteBytesNumber )
 	throw( IOException, Features::FeatureNotAvailableException )
 {
 
@@ -239,20 +243,20 @@ Size Ceylan::System::FDWrite( FileDescriptor fd,
 	while( toWriteBytesNumber
 		&& ( wroteBytesNumber = ::write( fd, pos, toWriteBytesNumber ) ) != 0 )
 	{
-	
+
 		if ( wroteBytesNumber < 0 )
 		{
-		
+
 			// Non-blocking write return EAGAIN if writing would block :
 			if ( System::getError() == EAGAIN )
 			{
 				wroteBytesNumber = 0 ;
 				break ;
-			
+
 			}
 			else
 			{
-			
+
 				throw IOException( "Ceylan::System::FDWrite failed : "
 					+ explainError() ) ;
 			}
@@ -261,7 +265,7 @@ Size Ceylan::System::FDWrite( FileDescriptor fd,
 		totalWroteBytesNumber += wroteBytesNumber ;
 		toWriteBytesNumber    -= wroteBytesNumber ;
 		pos                   += wroteBytesNumber ;
-		
+
 	}
 
 	return static_cast<Size>( totalWroteBytesNumber ) ;
@@ -270,7 +274,7 @@ Size Ceylan::System::FDWrite( FileDescriptor fd,
 
 	throw Features::FeatureNotAvailableException( "Ceylan::System::FDWrite : "
 		"file descriptor feature not available" ) ;
-		
+
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
 
 }
@@ -286,38 +290,39 @@ Second Ceylan::System::getTime() throw( SystemException )
 
 #if CEYLAN_USES_TIME
 
-	Ceylan::Sint32 currentTime = ::time( 0 ) ;
-	
+	Ceylan::Sint32 currentTime = static_cast<Ceylan::Sint32>(
+			::time( 0 ) ) ;
+
 	if ( currentTime == -1 )
 		throw SystemException( explainError( getError() ) ) ;
-		
-	/* 
+
+	/*
 	 * Risk of overflow due to signed 32 bit integer :
-	 * 
+	 *
 	 * 2^31/365/24/3600 = 68, 1970 + 68 = 2038, far in the future.
 	 *
 	 */
 	return static_cast<Second>( currentTime ) ;
-	
+
 #else // CEYLAN_USES_TIME
 
 	throw SystemException( "Ceylan::System::getTime : "
 		"not available on this platform (no ::time function found)." ) ;
-		
+
 #endif // CEYLAN_USES_TIME
-	
-	
+
+
 }
 
 
-string Ceylan::System::timeToString( const time_t & t ) 
+string Ceylan::System::timeToString( const time_t & t )
 	throw( SystemException )
 {
 
 #if CEYLAN_USES_CTIME
 
 	char * charTime = ::ctime( &t ) ;
-	
+
 	if ( charTime == 0 )
 		throw SystemException( "Ceylan::System::timeToString : "
 			"unable to convert time to string with ctime." ) ;
@@ -326,18 +331,18 @@ string Ceylan::System::timeToString( const time_t & t )
 	string eol = "\n" ;
 	stringTime.erase( stringTime.size() - eol.size(), eol.size() ) ;
 	return stringTime ;
-	
+
 #else // CEYLAN_USES_CTIME
 
 	throw SystemException( "Ceylan::System::timeToString : "
 		"not available on this platform (no ::ctime function found)." ) ;
-		
+
 #endif // CEYLAN_USES_CTIME
-	
+
 }
 
 
-string Ceylan::System::durationToString( 
+string Ceylan::System::durationToString(
 		Second startingSecond, Microsecond startingMicrosecond,
 		Second stoppingSecond, Microsecond stoppingMicrosecond )
 	throw( SystemException )
@@ -387,7 +392,7 @@ string Ceylan::System::durationToString(
 
 Microsecond Ceylan::System::getDurationBetween(
 		Second startingSecond, Microsecond startingMicrosecond,
-		Second stoppingSecond, Microsecond stoppingMicrosecond ) 
+		Second stoppingSecond, Microsecond stoppingMicrosecond )
 	throw( SystemException )
 {
 
@@ -425,7 +430,7 @@ Microsecond Ceylan::System::getDurationBetween(
 }
 
 
-void Ceylan::System::getPreciseTime( Second & seconds, 
+void Ceylan::System::getPreciseTime( Second & seconds,
 		Microsecond & microsec )
 	throw( SystemException )
 {
@@ -435,20 +440,20 @@ void Ceylan::System::getPreciseTime( Second & seconds,
 
 	timeval currentTime ;
 
-	if ( ::gettimeofday( & currentTime, 
+	if ( ::gettimeofday( & currentTime,
 			/* timezone must no be set */ 0 ) != 0 )
-		throw SystemException( "System::getPreciseTime : " 
+		throw SystemException( "System::getPreciseTime : "
 			+ Ceylan::System::explainError() ) ;
 
 	seconds  = static_cast<Second>( currentTime.tv_sec ) ;
 	microsec = static_cast<Microsecond>( currentTime.tv_usec ) ;
-	
+
 #else // CEYLAN_USES_GETTIMEOFDAY
 
 	throw SystemException( "System::getPreciseTime : "
 		"not available on this platform "
 		"(no ::gettimeofday function found)." ) ;
-  
+
 #endif // CEYLAN_USES_GETTIMEOFDAY
 
 }
@@ -462,7 +467,7 @@ Microsecond Ceylan::System::getAccuracyOfPreciseTime( Microsecond * minGap,
 	Ceylan::Uint32 numberOfMeasures = 100 ;
 
 	/*
-	 * 4 000 000 000 microseconds is more than hour, all accuracies 
+	 * 4 000 000 000 microseconds is more than hour, all accuracies
 	 * should be far below.
 	 *
 	 */
@@ -489,7 +494,7 @@ Microsecond Ceylan::System::getAccuracyOfPreciseTime( Microsecond * minGap,
 	 *
 	 */
 	Microsecond * durations = new Microsecond[numberOfMeasures] ;
-	
+
 #endif // CEYLAN_DEBUG_SYSTEM
 
 	getPreciseTime( lastSecond, lastMicrosecond ) ;
@@ -504,7 +509,7 @@ Microsecond Ceylan::System::getAccuracyOfPreciseTime( Microsecond * minGap,
 		else if ( currentDuration > maxDuration )
 			maxDuration = currentDuration ;
 		cumulativeDuration += currentDuration ;
-		
+
 #if CEYLAN_DEBUG_SYSTEM
 		durations[i] = currentDuration ;
 #endif // CEYLAN_DEBUG_SYSTEM
@@ -526,14 +531,14 @@ Microsecond Ceylan::System::getAccuracyOfPreciseTime( Microsecond * minGap,
 		Log::LogPlug::debug( "Duration of getPreciseTime call : "
 			+ Ceylan::toString( durations[i] ) + " microseconds." ) ;
 	Log::LogPlug::debug( "Real average duration : "
-		+ Ceylan::toString( 
+		+ Ceylan::toString(
 			static_cast<float>( cumulativeDuration ) / numberOfMeasures ) ) ;
-			
+
 	delete durations ;
-			
+
 #endif // CEYLAN_DEBUG_SYSTEM
 
-	Microsecond result = static_cast<Microsecond>( 
+	Microsecond result = static_cast<Microsecond>(
 		cumulativeDuration /  numberOfMeasures ) ;
 
 	// Null accuracy would not make sense :
@@ -580,36 +585,45 @@ Microsecond Ceylan::System::getPreciseTimeCallDuration() throw()
 }
 
 
-void Ceylan::System::sleepForSeconds( Second seconds ) 
+void Ceylan::System::sleepForSeconds( Second seconds )
 	throw( SystemException )
 {
 
 #ifdef CEYLAN_USES_SLEEP
 
 	Second stillToBeSlept = seconds ;
-	
+
 	while ( stillToBeSlept != 0 )
 	{
-	
+
 		/*
-		 * ::sleep returns zero if the requested time has elapsed, or 
+		 * ::sleep returns zero if the requested time has elapsed, or
 		 * the number of seconds left to sleep.
 		 *
 		 */
 		stillToBeSlept = ::sleep( stillToBeSlept ) ;
-		
+
 	}
 
 #else // CEYLAN_USES_SLEEP
 
+#ifdef CEYLAN_USES_WINDOWS_H
+
+	// Windows Sleep needs windows.h, hence the PSDK.
+	Sleep( 1000 * seconds /* milliseconds */ ) ;
+
+#else // CEYLAN_USES_WINDOWS_H
+
 	throw SystemException( "Ceylan::sleepForSeconds : "
 		"not available on this platform (no ::sleep function found)" ) ;
-	
+
+#endif // CEYLAN_USES_WINDOWS_H
+
 #endif // CEYLAN_USES_SLEEP
 
 }
 
-void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos ) 
+void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 	throw( SystemException )
 {
 
@@ -618,23 +632,23 @@ void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 	 Too verbose :
 
 	LogPlug::debug( "Ceylan::System::basicSleep : requested duration is "
-		+ Ceylan::toString( seconds ) + " second(s) and " 
+		+ Ceylan::toString( seconds ) + " second(s) and "
 		+ Ceylan::toString( nanos ) + " nanoseconds." ) ;
 	 */
-	 
-	 
+
+
 // Nanosleep is currently disabled :
 #define CEYLAN_USES_NANOSLEEP 0
 
 #if CEYLAN_USES_NANOSLEEP
 
 	/*
-	 * nanosleep is POSIX compliant and should be accurate, but on the two 
-	 * Linux 2.4 kernel we tried, instead of having strict 10 ms scheduling, 
+	 * nanosleep is POSIX compliant and should be accurate, but on the two
+	 * Linux 2.4 kernel we tried, instead of having strict 10 ms scheduling,
 	 * the minimum waiting time was two time slices (20 ms).
-	 * The step was then 10 ms indeed (so, with longer waiting time, the 
+	 * The step was then 10 ms indeed (so, with longer waiting time, the
 	 * actual duration was 30 ms, then 40 ms, and so on, but we were unable to
-	 * have an actual sleep duration of 10 ms, even for requested sleep 
+	 * have an actual sleep duration of 10 ms, even for requested sleep
 	 * below 1 ms).
 	 *
 	 * We therefore disabled the use of nanosleep.
@@ -656,7 +670,7 @@ void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
 	/*
-	 * Use ::select (chosen by default), which seems to be an 
+	 * Use ::select (chosen by default), which seems to be an
 	 * effective way of waiting.
 	 *
 	 * Should be portable on most UNIX systems.
@@ -671,17 +685,17 @@ void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 
 
 	// Nasty trick : select blocks waiting for the timeout to expire.
-	if ( ::select( 0, static_cast<fd_set *>( 0 ), 
-			static_cast<fd_set *>( 0 ), static_cast<fd_set *>( 0 ), 
+	if ( ::select( 0, static_cast<fd_set *>( 0 ),
+			static_cast<fd_set *>( 0 ), static_cast<fd_set *>( 0 ),
 			& timeout ) < 0 )
-		throw SystemException( "System::basicSleep with select : " 
+		throw SystemException( "System::basicSleep with select : "
 			+ Ceylan::System::explainError() ) ;
-			
+
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
 	throw SystemException( "System::basicSleep : "
 		"file descriptor feature not available" ) ;
-	
+
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
 
 
@@ -698,18 +712,18 @@ void Ceylan::System::basicSleep() throw( SystemException )
 	 * Factor of margin so that the requested waiting time will most
 	 * probably exactly trigger one time slice of waiting.
 	 *
-	 * The factor below 1.0 avoids asking for two time slices if 
+	 * The factor below 1.0 avoids asking for two time slices if
 	 * their length was surestimated a bit.
 	 *
 	 * Being conservative and having a margin is the safe way when the
 	 * hosting computer is not idle.
 	 *
 	 */
-	const Ceylan::Float32 marginDecreaseFactor = 0.8 ;
+	const Ceylan::Float32 marginDecreaseFactor = 0.8f ;
 
 	basicSleep( static_cast<Microsecond>(
-			marginDecreaseFactor * getSchedulingGranularity() ) ) ;		
-		
+			marginDecreaseFactor * getSchedulingGranularity() ) ) ;
+
 }
 
 
@@ -719,12 +733,12 @@ void Ceylan::System::basicSleep( Microsecond micros ) throw( SystemException )
 	// Split waiting time thanks to integer division :
 	basicSleep( /* seconds */ micros / 1000000,
 		/* nanoseconds */ ( micros % 1000000 ) * 1000 ) ;
-		
+
 }
 
 
 
-bool Ceylan::System::smartSleep( Second seconds, Microsecond micros ) 
+bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	throw( SystemException )
 {
 
@@ -756,7 +770,7 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	targetMicrosecond += micros - getPreciseTimeCallDuration() - 1  ;
 
 	/*
-	 * Would risk overflow : 
+	 * Would risk overflow :
 	 * Microsecond targetTime = targetSecond * 1000000 + targetMicrosecond ;
 	 *
 	 */
@@ -768,7 +782,7 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	 * margin is the safe way when the hosting computer is not idle.
 	 *
 	 */
-	const Ceylan::Float32 marginIncreaseFactor = 1.1 ;
+	const Ceylan::Float32 marginIncreaseFactor = 1.1f ;
 
 
 	/*
@@ -785,7 +799,7 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 		getSchedulingGranularity() * marginIncreaseFactor ) ;
 
 	/*
-	 * Integer divisions to compute the maximum number of time slices fitting 
+	 * Integer divisions to compute the maximum number of time slices fitting
 	 * in requested time : here lies the risk of overflow, as specified in the
 	 * method doc. Integer division means rounded down, since preferring not
 	 * enough sleeping to too much.
@@ -793,18 +807,18 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	 * usedGranularity is used so that not too many slices can be selected.
 	 *
 	 */
-	Ceylan::Uint32 fullTimeSliceCount = ( seconds * 1000000 + micros ) 
+	Ceylan::Uint32 fullTimeSliceCount = ( seconds * 1000000 + micros )
 		/ usedGranularity ;
-		
+
 #if CEYLAN_DEBUG_SYSTEM
 	LogPlug::debug( "Ceylan::System::smartSleep : will first use "
-		+ Ceylan::toString( fullTimeSliceCount ) 
+		+ Ceylan::toString( fullTimeSliceCount )
 		+ " full time slice(s) for waiting." ) ;
 #endif // CEYLAN_DEBUG_SYSTEM
 
 	/*
 	 * Sleep for the main part. Use 'basicSleep' rather than
-	 * 'getActualDurationForSleep' since the starting time might differ 
+	 * 'getActualDurationForSleep' since the starting time might differ
 	 * largely, because of the previous 'getSchedulingGranularity' call.
 	 *
 	 * Make so that the exact wanted full time slices are waited :
@@ -812,18 +826,18 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	 */
 	if ( fullTimeSliceCount != 0 )
 	{
-	
+
 #if CEYLAN_DEBUG_SYSTEM
-	
+
 		LogPlug::debug( "Ceylan::System::smartSleep : will ask basicSleep "
-			+ Ceylan::toString( fullTimeSliceCount 
+			+ Ceylan::toString( fullTimeSliceCount
 				* getSchedulingGranularity() )
 			+ " microseconds." ) ;
-			
+
 #endif // CEYLAN_DEBUG_SYSTEM
 
 		basicSleep( fullTimeSliceCount * getSchedulingGranularity() ) ;
-		
+
 	}
 
 	Second currentSecond ;
@@ -832,21 +846,21 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	getPreciseTime( currentSecond, currentMicrosecond ) ;
 
 	// Watch out the overflow on abnormal waiting conditions :
-	Ceylan::SignedLongInteger currentError 
+	Ceylan::SignedLongInteger currentError
 		= ( currentSecond - targetSecond ) * 1000000
 			+ currentMicrosecond - targetMicrosecond ;
 
 
 	while ( -currentError > static_cast<int>( 2 * usedGranularity ) )
 	{
-	
+
 		/*
-		 * Sleep for one time slice as long as there is another one 
+		 * Sleep for one time slice as long as there is another one
 		 * remaining.
 		 *
 		 */
 		basicSleep() ;
-		
+
 		getPreciseTime( currentSecond, currentMicrosecond ) ;
 		currentError = ( currentSecond - targetSecond ) * 1000000
 			+ currentMicrosecond - targetMicrosecond ;
@@ -856,21 +870,21 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	if ( currentError > 0 )
 	{
 		LogPlug::warning( "Ceylan::System::smartSleep : "
-			"sleeps waited too much, target time missed of " 
+			"sleeps waited too much, target time missed of "
 			+ Ceylan::toString( currentError )
 			+ " microseconds, because of non-precomputed "
-			"or underestimated time slices (their evaluated duration was " 
-			+ Ceylan::toString( getSchedulingGranularity() ) 
+			"or underestimated time slices (their evaluated duration was "
+			+ Ceylan::toString( getSchedulingGranularity() )
 			+ " microseconds)." ) ;
 		return false ;
 	}
 	else
 	{
 
-		
+
 #if CEYLAN_DEBUG_SYSTEM
 		Microsecond remaining = static_cast<Microsecond>( -currentError ) ;
-		
+
 		LogPlug::debug( "Ceylan::System::smartSleep : remaining time ("
 			+ Ceylan::toString( remaining ) + " microseconds)"
 			+ " will be spent in active waiting." ) ;
@@ -879,9 +893,9 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	}
 
 	bool done = false ;
-	
+
 	/*
-	 * After the full time slices have elapsed, perform active waiting for 
+	 * After the full time slices have elapsed, perform active waiting for
 	 * the remaining time :
 	 *
 	 */
@@ -892,17 +906,17 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	std::cerr << std::endl << "active waiting started -> " ;
 #endif // CEYLAN_CHECK_FOR_FREEZE
 
-	Ceylan::Sint32 preciseTimeDuration = 
+	Ceylan::Sint32 preciseTimeDuration =
 		static_cast<Sint32>( getPreciseTimeCallDuration() ) ;
 
 	while( done == false )
 	{
-	
+
 		getPreciseTime( currentSecond, currentMicrosecond ) ;
-		remainingTime = 
+		remainingTime =
 			static_cast<Sint32>( targetSecond - currentSecond ) * 1000000
 			+ targetMicrosecond - currentMicrosecond ;
-			
+
 		/*
 		 * getPreciseTime would have it own duration, and would take into
 		 * account call overhead :
@@ -912,8 +926,8 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 			done = true ;
 
 		/*
-		 * Nothing is done against the accuracy of getPreciseTime 
-		 * (see getAccuracyOfPreciseTime), since the error should be balanced 
+		 * Nothing is done against the accuracy of getPreciseTime
+		 * (see getAccuracyOfPreciseTime), since the error should be balanced
 		 * and null on average.
 		 *
 		 */
@@ -931,7 +945,7 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 
 
 
-bool Ceylan::System::smartSleepUntil( Second second, Microsecond micro ) 
+bool Ceylan::System::smartSleepUntil( Second second, Microsecond micro )
 	throw( SystemException )
 {
 
@@ -941,7 +955,7 @@ bool Ceylan::System::smartSleepUntil( Second second, Microsecond micro )
 	getPreciseTime( currentSecond, currentMicrosecond ) ;
 
 	/*
-	 * To compensate for specific smartSleepUntil overhead 
+	 * To compensate for specific smartSleepUntil overhead
 	 *(ex : getPreciseTime call) :
 	 *
 	 */
@@ -949,20 +963,20 @@ bool Ceylan::System::smartSleepUntil( Second second, Microsecond micro )
 
 	if ( currentSecond > second || currentMicrosecond > micro )
 		throw SystemException( "Ceylan::System::smartSleepUntil : "
-			"specified date (" + Ceylan::toString( second ) 
-			+ " seconds and " + Ceylan::toString( micro ) 
+			"specified date (" + Ceylan::toString( second )
+			+ " seconds and " + Ceylan::toString( micro )
 			+ " microseconds) is on the past (current date is "
 			+ Ceylan::toString( currentSecond ) + " seconds, "
 			+ Ceylan::toString( currentMicrosecond ) + " microseconds)." ) ;
 
 	return smartSleep( second - currentSecond, micro - currentMicrosecond ) ;
-	
+
 }
 
 
 
-Microsecond Ceylan::System::getActualDurationForSleep( 
-		Microsecond requestedMicroseconds, Second requestedSeconds ) 
+Microsecond Ceylan::System::getActualDurationForSleep(
+		Microsecond requestedMicroseconds, Second requestedSeconds )
 	throw( SystemException )
 {
 
@@ -990,7 +1004,7 @@ Microsecond Ceylan::System::getActualDurationForSleep(
 	 *
 	 */
 
-	return ( currentSecond - lastSecond ) * 1000000 
+	return ( currentSecond - lastSecond ) * 1000000
 		+ currentMicrosecond - lastMicrosecond ;
 
 
@@ -1007,10 +1021,10 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 	 * Requesting too low sleep durations will not trigger the time slice
 	 * waiting
 	 * (ex : on Linux 2.4, for a requested sleep of 310 microseconds, measured
-	 * time has been 3166 microseconds whereas the time slice is 
+	 * time has been 3166 microseconds whereas the time slice is
 	 * 10 000 microseconds).
 	 *
-	 * Assuming no system will have a granularity below 500 microseconds, 
+	 * Assuming no system will have a granularity below 500 microseconds,
 	 * the test of a sleep of 450 microseconds should be relevant.
 	 *
 	 */
@@ -1032,7 +1046,7 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 
 	/*
 	 * The algorithm is simple : as long as two successive small sleep values
-	 * does not result in relatively similar actual sleeping times, increase 
+	 * does not result in relatively similar actual sleeping times, increase
 	 * the requested sleeping time.
 	 *
 	 */
@@ -1045,21 +1059,21 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 	Microsecond durationStep = 250 ;
 
 	/**
-	 * Upper bound to time slice is 110 ms, to be able to catch as high as 
+	 * Upper bound to time slice is 110 ms, to be able to catch as high as
 	 * a 100 ms granularity.
 	 *
 	 */
 	Microsecond maximumPossibleDuration = 110000 ;
 
 	/*
-	 * When all measures fail, use this test duration to approximately guess 
+	 * When all measures fail, use this test duration to approximately guess
 	 * the time slice.
 	 *
 	 */
 	Microsecond testDuration = 190 ;
 
 	/*
-	 * Relative comparison : x and y are relatively equal iff 
+	 * Relative comparison : x and y are relatively equal iff
 	 * |x-y|/(x+y)< epsilon/2
 	 *
 	 * @see Ceylan::Maths::AreRelativelyEqual
@@ -1072,7 +1086,7 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 		// Increase the duration :
 		currentRequestedDuration += durationStep ;
 		lastMeasuredDuration = currentMeasuredDuration ;
-		currentMeasuredDuration = 
+		currentMeasuredDuration =
 			getActualDurationForSleep( currentRequestedDuration ) ;
 
 		// Avoid zero division :
@@ -1080,7 +1094,7 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 			break ;
 
 		// Loop until a gentle slope is found :
-		if ( Ceylan::Maths::Abs( static_cast<float>( 
+		if ( Ceylan::Maths::Abs( static_cast<float>(
 					currentMeasuredDuration - lastMeasuredDuration ) )
 				/ ( currentMeasuredDuration + lastMeasuredDuration ) < 0.005 )
 			break ;
@@ -1120,7 +1134,7 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 	granularity = 0 ;
 
 	/*
-	 * Requesting multiple times the time slice allows to measure it finely, 
+	 * Requesting multiple times the time slice allows to measure it finely,
 	 * in order to compute the average value.
 	 *
 	 */
@@ -1131,7 +1145,7 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 
 		/*
 		 * The 0.9 factor is here to ensure we do not request just more than
-		 * the time-slice, if we had surestimated ita bit, we could have had 
+		 * the time-slice, if we had surestimated ita bit, we could have had
 		 * two time slices.
 		 *
 		 */
@@ -1153,7 +1167,7 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 }
 
 
-bool Ceylan::System::setLegacyStreamSynchronization( bool synchronized ) 
+bool Ceylan::System::setLegacyStreamSynchronization( bool synchronized )
 	throw()
 {
 
@@ -1165,9 +1179,10 @@ bool Ceylan::System::setLegacyStreamSynchronization( bool synchronized )
 	 * - http://gcc.gnu.org/onlinedocs/libstdc++/27_io/howto.html#8
 	 *
 	 */
-	 
+
 	// Use only C++ streams, and only after this call :
 	return std::ios::sync_with_stdio( synchronized ) ;
-	
+
 }
+
 
