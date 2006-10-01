@@ -18,7 +18,7 @@ namespace Ceylan
      * @see Identifier.
      *
      */
-    class TextIdentifier : public Identifier
+    class CEYLAN_DLL TextIdentifier : public Identifier
     {
 
 

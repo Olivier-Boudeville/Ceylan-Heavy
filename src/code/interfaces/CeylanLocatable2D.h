@@ -27,7 +27,7 @@ namespace Ceylan
 	 * angles or vectors that indicates which orientation it has.
 	 *
 	 */
-	class Locatable2D : public Locatable
+	class CEYLAN_DLL Locatable2D : public Locatable
 	{
 	
 

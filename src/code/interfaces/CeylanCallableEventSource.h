@@ -50,7 +50,7 @@ namespace Ceylan
 	 * @see getEventFor
 	 *
      */
-    class CallableEventSource : public EventSource
+    class CEYLAN_DLL CallableEventSource : public EventSource
     {
 
 

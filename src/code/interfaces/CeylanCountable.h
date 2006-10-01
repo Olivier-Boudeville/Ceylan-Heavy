@@ -36,7 +36,7 @@ namespace Ceylan
 	 * @see http://valgrind.kde.org
 	 *
 	 */
-	class Countable
+	class CEYLAN_DLL Countable
 	{
 		
 		

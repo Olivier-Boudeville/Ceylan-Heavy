@@ -32,7 +32,7 @@ namespace Ceylan
 		 * @see Object, Loggable, LogAggregator
 		 *
 		 */
-		class ObjectIdentifier : public TextIdentifier
+		class CEYLAN_DLL ObjectIdentifier : public TextIdentifier
 		{
 		
 		

@@ -14,7 +14,7 @@ namespace Ceylan
 
 
 	/// Exception to be raised whenever cloning fails.
-	class ClonableException : public Ceylan::Exception
+	class CEYLAN_DLL ClonableException : public Ceylan::Exception
 	{
 	
 		public:
@@ -32,7 +32,7 @@ namespace Ceylan
      * Interface that every object which can be cloned should implement. 
      *
      */
-    class Clonable
+    class CEYLAN_DLL Clonable
     {
 
         public:

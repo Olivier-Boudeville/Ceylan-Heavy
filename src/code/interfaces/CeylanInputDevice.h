@@ -39,7 +39,7 @@ namespace Ceylan
 	 * @see Controller
 	 *
      */
-    class InputDevice : public TextDisplayable
+    class CEYLAN_DLL InputDevice : public TextDisplayable
     {
 
 

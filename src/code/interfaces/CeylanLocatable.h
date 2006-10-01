@@ -30,7 +30,7 @@ namespace Ceylan
 	
 	
 	/// Exception to raise when Locatables are in trouble.
-	class LocatableException : public Ceylan::Exception
+	class CEYLAN_DLL LocatableException : public Ceylan::Exception
 	{
 	
 		public:
@@ -47,7 +47,7 @@ namespace Ceylan
 	 * that its referential changed.
 	 *
 	 */
-	class ReferentialChangedEvent : public Event
+	class CEYLAN_DLL ReferentialChangedEvent : public Event
 	{
 	
 		public:
@@ -146,7 +146,7 @@ namespace Ceylan
 	 * when any change is done on the local referential.
 	 *
 	 */
-	class Locatable : public EventSource, public EventListener
+	class CEYLAN_DLL Locatable : public EventSource, public EventListener
 	{
 	
 
@@ -468,14 +468,12 @@ namespace Ceylan
 		
 		
 			/**
-			 * Copy constructor made private to ensure that it will 
-			 * be never called.
+			 * No private copy constructor could be declared, as there us
+			 * already a constructor which takes a Locatable, even though
+			 * this parameter is not 'const'.
 			 *
-			 * The compiler should complain whenever this undefined 
-			 * constructor is called, implicitly or not.
-			 * 
 			 */			 
-			Locatable( const Locatable & source ) throw() ;
+			//Locatable( const Locatable & source ) throw() ;
 			
 			
 			/**

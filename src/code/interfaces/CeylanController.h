@@ -46,7 +46,7 @@ namespace Ceylan
 	 * Models.
 	 *
      */
-    class Controller : public CallableEventSource
+    class CEYLAN_DLL Controller : public CallableEventSource
     {
 
 

@@ -10,16 +10,21 @@
 #include <list>
 
 
-
 namespace Ceylan
 {
-
 
 	// Events are sent by sources.
 	class Event ;
 
 	// Sources send events to listeners.
 	class EventListener ;
+
+}
+
+//CEYLAN_EXTERN_TEMPLATE template class CEYLAN_DLL std::list<Ceylan::EventListener *> ;
+
+namespace Ceylan
+{
 
 
     /**
@@ -41,7 +46,7 @@ namespace Ceylan
 	 * @see http://www.research.ibm.com/designpatterns/example.htm
 	 *
      */
-    class EventSource : public TextDisplayable
+    class CEYLAN_DLL EventSource : public TextDisplayable
     {
 
 
@@ -152,12 +157,23 @@ namespace Ceylan
 			virtual bool isRegistered( const EventListener & listener ) 
 				throw() ;
 			
-		
+/*
+ * Takes care of the awful issue of Windows DLL with templates.
+ *
+ * @see Ceylan's developer guide and README-build-for-windows.txt 
+ * to understand it, and to be aware of the associated risks.
+ *
+ */
+#pragma warning( push )
+#pragma warning( disable : 4251 )
+
 			/**
 			 * The registered event listeners.
 			 *
 			 */
 			std::list<EventListener *> _listeners ;
+
+#pragma warning( pop ) 
 									 	
 
 

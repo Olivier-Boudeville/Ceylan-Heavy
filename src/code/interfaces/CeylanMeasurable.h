@@ -20,7 +20,7 @@ namespace Ceylan
 	 * Measurable objects are notably able to evaluate their memory footprint.
 	 *
      */
-    class Measurable : public TextDisplayable
+    class CEYLAN_DLL Measurable : public TextDisplayable
     {
 
 

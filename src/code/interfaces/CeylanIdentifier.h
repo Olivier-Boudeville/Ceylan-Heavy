@@ -23,7 +23,7 @@ namespace Ceylan
      * @see IdentifierOwner.
      *
      */
-    class Identifier : public TextDisplayable
+    class CEYLAN_DLL Identifier : public TextDisplayable
     {
 
         public:

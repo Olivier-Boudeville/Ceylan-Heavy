@@ -33,7 +33,7 @@ namespace Ceylan
 	 * caller event listener indeed when asked for events.
 	 *
      */
-    class CallerEventListener : public EventListener
+    class CEYLAN_DLL CallerEventListener : public EventListener
     {
 
 

@@ -29,7 +29,7 @@ namespace Ceylan
      * @see Displayable.
      *
      */
-    class TextDisplayable : public Displayable
+    class CEYLAN_DLL TextDisplayable : public Displayable
     {
 
 

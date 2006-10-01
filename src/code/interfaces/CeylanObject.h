@@ -28,7 +28,7 @@ namespace Ceylan
 	 * service is actually used, apart some very minor costs.
 	 *
      */
-    class Object : public IdentifierOwner, public Log::Loggable
+    class CEYLAN_DLL Object : public IdentifierOwner, public Log::Loggable
     {
 
 

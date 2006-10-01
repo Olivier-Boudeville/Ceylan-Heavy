@@ -49,7 +49,7 @@ namespace Ceylan
      * @see Object.
      *
      */
-    class Hashable : public TextDisplayable
+    class CEYLAN_DLL Hashable : public TextDisplayable
     {
 
         public:

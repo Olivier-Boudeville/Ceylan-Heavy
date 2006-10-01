@@ -33,7 +33,7 @@ namespace Ceylan
 	 * @note Views might be shared between multiple models.
 	 *
      */
-    class View : public CallerEventListener
+    class CEYLAN_DLL View : public CallerEventListener
     {
 
 

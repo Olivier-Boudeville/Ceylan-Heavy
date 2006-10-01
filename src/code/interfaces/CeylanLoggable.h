@@ -27,7 +27,7 @@ namespace Ceylan
 		 * @see Log, LogSource
 		 *
 		 */
-		class Loggable : public LogSource
+		class CEYLAN_DLL Loggable : public LogSource
 		{
 		
 		

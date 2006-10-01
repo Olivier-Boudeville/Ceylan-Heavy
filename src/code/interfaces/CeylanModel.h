@@ -17,7 +17,7 @@ namespace Ceylan
 	 * framework.
 	 *
 	 */
-	class MVCEvent : public Event
+	class CEYLAN_DLL MVCEvent : public Event
 	{
 	
 	
@@ -93,7 +93,8 @@ namespace Ceylan
 	 * able to be triggered, notably by Views).
 	 *
      */
-    class Model : public CallableEventSource, public CallerEventListener
+    class CEYLAN_DLL Model : public CallableEventSource, 
+		public CallerEventListener
     {
 
 

@@ -19,7 +19,7 @@ namespace Ceylan
 	 * are able to be locked.
      *
      */
-    class Lockable : public Ceylan::TextDisplayable
+    class CEYLAN_DLL Lockable : public Ceylan::TextDisplayable
     {
 
 
@@ -29,7 +29,7 @@ namespace Ceylan
 		
 		
 			/// This exception is raised when lock gets misused.
-			class LockException : public Ceylan::Exception
+			class CEYLAN_DLL LockException : public Ceylan::Exception
 			{
 			
 				public :

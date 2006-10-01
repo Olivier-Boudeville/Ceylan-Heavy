@@ -35,7 +35,7 @@ namespace Ceylan
 	 * @see http://www.research.ibm.com/designpatterns/example.htm
 	 *
      */
-    class EventListener : public TextDisplayable
+    class CEYLAN_DLL EventListener : public TextDisplayable
     {
 
 
@@ -180,12 +180,23 @@ namespace Ceylan
 		
 		protected:
 	
+/*
+ * Takes care of the awful issue of Windows DLL with templates.
+ *
+ * @see Ceylan's developer guide and README-build-for-windows.txt 
+ * to understand it, and to be aware of the associated risks.
+ *
+ */
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 		
 			/**
 			 * The event sources to which this listener is subscribed to.
 			 *
 			 */
 			std::list<EventSource *> _sources ;
+
+#pragma warning( pop ) 
 
 
 

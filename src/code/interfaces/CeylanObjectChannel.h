@@ -32,7 +32,7 @@ namespace Ceylan
 	 	 * @see Object
 	 	 *
 	 	 */
-		class ObjectChannel : public LogChannel
+		class CEYLAN_DLL ObjectChannel : public LogChannel
 		{
 	
 			public:

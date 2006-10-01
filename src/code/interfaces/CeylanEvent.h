@@ -18,7 +18,7 @@ namespace Ceylan
 	 * situation.
 	 *
 	 */
-	class EventException: public Ceylan::Exception
+	class CEYLAN_DLL EventException: public Ceylan::Exception
 	{
 
 		public:
@@ -43,7 +43,7 @@ namespace Ceylan
 	 * be 'user pressed the quit button' or even 'user wants to quit'.
 	 *
      */
-    class Event : public TextDisplayable
+    class CEYLAN_DLL Event : public TextDisplayable
     {
 
 

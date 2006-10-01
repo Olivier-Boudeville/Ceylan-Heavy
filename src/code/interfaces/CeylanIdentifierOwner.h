@@ -19,7 +19,7 @@ namespace Ceylan
 
 
 	/// Exception to be raised when no identifier is available.
-	class IdentifierNotAvailableException: public Ceylan::Exception
+	class CEYLAN_DLL IdentifierNotAvailableException: public Ceylan::Exception
 	{
 
 		public:
@@ -48,7 +48,7 @@ namespace Ceylan
      * @see Identifier.
      *
      */
-    class IdentifierOwner : public TextDisplayable
+    class CEYLAN_DLL IdentifierOwner : public TextDisplayable
     {
 
 

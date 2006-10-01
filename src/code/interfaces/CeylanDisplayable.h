@@ -23,7 +23,7 @@ namespace Ceylan
 	 * constructor, for example for operators returning them by value.
 	 * 
      */
-    class Displayable
+    class CEYLAN_DLL Displayable
     {
 
         public:
