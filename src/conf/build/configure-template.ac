@@ -253,7 +253,7 @@ AC_FUNC_UTIME_NULL
 # on some platforms (ex : OpenBSD 3.8)
 #	- round, roundf, roundl
 
-AC_CHECK_FUNCS([round roundf roundl isdigit islower isupper abs fabsf labs llabs floorf ceilf expf powf sqrtf cosf sinf exit putenv getenv setenv unsetenv strdup strerror sleep time ctime localtime gettimeofday utime sysinfo uname stat mkdir unlink rename rmdir getcwd gethostname sethostname getdomainname setdomainname gethostbyname gethostbyaddr memset bzero memcpy])
+AC_CHECK_FUNCS([round roundf roundl isdigit islower isupper abs fabsf labs llabs floorf ceilf expf powf sqrtf cosf sinf exit putenv getenv setenv unsetenv strdup strerror sleep time ctime localtime gettimeofday utime sysinfo uname stat mkdir chdir unlink rename rmdir getcwd gethostname sethostname getdomainname setdomainname gethostbyname gethostbyaddr memset bzero memcpy])
 
 
 # Only symbols independent from all Ceylan features are checked here : 
