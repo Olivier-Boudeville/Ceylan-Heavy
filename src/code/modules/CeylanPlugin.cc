@@ -14,7 +14,8 @@
 
 
 /*
- * libltdl is preferred to old-school ld_*, which are not portable.
+ * Using libltdl is preferred to using old-school ld_*, which are not 
+ * portable.
  *
  * Note that libltdl is not deemed thread-safe, see : lt_dlmutex_lock, etc.
  *
