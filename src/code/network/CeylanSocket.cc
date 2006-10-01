@@ -59,12 +59,17 @@ extern "C"
 #include <sys/select.h>        // for AIX
 #endif // CEYLAN_USES_SYS_SELECT_H
 
+#ifdef CEYLAN_USES_WINSOCK2_H
+#include <winsock2.h>
+#endif // CEYLAN_USES_WINSOCK2_H
+
+#pragma comment (lib , "WS2_32.lib")
 
 }
 
  
  
-
+using namespace Ceylan ;
 using namespace Ceylan::Network ;
 using namespace Ceylan::System ;
 using namespace Ceylan::Log ;

@@ -41,8 +41,13 @@ extern "C"
 #include <arpa/inet.h>        // for inet_ntoa
 #endif // CEYLAN_USES_ARPA_INET_H
 
+#ifdef CEYLAN_USES_WINSOCK2_H
+#include <winsock2.h>
+#endif // CEYLAN_USES_WINSOCK2_H
 
 }
+
+
 
 using namespace Ceylan::Network ;
 using namespace Ceylan::System ;
@@ -50,6 +55,64 @@ using namespace Ceylan::Log ;
 
 using namespace std ;
 
+/*
+ * On Windows, error codes should be interpreted according to the 
+ * following table :
+ * http://msdn.microsoft.com/library/en-us/winsock/winsock/windows_sockets_error_codes_2.asp
+ *
+ *
+ */
+
+#ifdef CEYLAN_RUNS_ON_WINDOWS
+
+
+NetworkManager NetworkManager::_Manager ;
+
+NetworkManager::NetworkManager() throw( NetworkException ) 
+{
+
+	Ceylan::display( "NetworkManager constructor : "
+		"initializing network subsystem." ) ;
+
+	WORD requestedVersion = MAKEWORD( 2, 2 ) ;
+	WSADATA wsaData ;
+ 
+	int result = WSAStartup( requestedVersion, & wsaData ) ;
+
+	if ( result != 0 )
+		throw NetworkException( "NetworkManager constructor failed : "
+			"no usable WinSock DLL found (error code : "
+			+ Ceylan::toString( result ) + ")." ) ;
+
+	/*
+	 * Confirms that the WinSock DLL supports 2.2.
+	 *
+	 * @note If the DLL supports versions greater than 2.2 in addition to 2.2, 
+	 * it will still return 2.2 in wVersion since that is the requested version.
+	 *
+	 */
+	if ( LOBYTE( wsaData.wVersion ) != 2 || HIBYTE( wsaData.wVersion ) != 2 )
+	{
+		throw NetworkException( "NetworkManager constructor failed : "
+			"this version of WinSock DLL is not supported." ) ;
+		WSACleanup() ;
+	}
+
+}
+ 
+
+NetworkManager::~NetworkManager() throw()
+{
+
+	Ceylan::display( "NetworkManager destructor : "
+		"shutting down network subsystem." ) ;
+
+	WSACleanup() ;
+
+}
+
+
+#endif // CEYLAN_RUNS_ON_WINDOWS
 
 NetworkException::NetworkException( const string & message ) throw() :
 	Ceylan::Exception( message )
@@ -182,10 +245,14 @@ HostDNSEntry::HostDNSEntry( const IPAddress & ip ) throw( NetworkException )
 HostDNSEntry::~HostDNSEntry() throw()
 {
 
+#ifdef CEYLAN_USES_NETDB_H
+
 	// _internalEntry->_entry may point at static data, so not deallocated.
 	if ( _internalEntry != 0 )
 		delete _internalEntry ;
 		
+#endif // CEYLAN_USES_NETDB_H
+
 }	
 
 
@@ -431,6 +498,20 @@ void HostDNSEntry::manageHostEntry() throw( NetworkException )
 const string Ceylan::Network::getLocalHostName() throw( NetworkException )
 {
 
+#ifdef CEYLAN_USES_WINSOCK2_H
+
+		// HOST_NAME_MAX does not seem to be widely defined :
+	char hostBuffer[ HostDNSEntry::HostNameMaxLength  + 1 ] ;
+
+	if ( ::gethostname( hostBuffer, HostDNSEntry::HostNameMaxLength ) != 0 )
+		throw NetworkException( "Ceylan::Network::getLocalHostName : "
+			"unable to determine local host name (error code : " 
+			+ Ceylan::toString( WSAGetLastError() ) + ")." ) ;
+	
+	return string( hostBuffer ) ;
+
+#else // CEYLAN_USES_WINSOCK2_H
+
 #ifdef CEYLAN_USES_GETHOSTNAME
 
 	// int uname(struct utsname *buf) in sys/utsname.h coud be used as well.
@@ -438,10 +519,9 @@ const string Ceylan::Network::getLocalHostName() throw( NetworkException )
 	// HOST_NAME_MAX does not seem to be widely defined :
 	char hostBuffer[ HostDNSEntry::HostNameMaxLength  + 1 ] ;
 
-	if ( ::gethostname( hostBuffer, HostDNSEntry::HostNameMaxLength ) )
-	throw NetworkException( "Ceylan::Network::getLocalHostName : "
-		"unable to determine local host name : "
-		+ explainError( getError() ) ) ;
+	if ( ::gethostname( hostBuffer, HostDNSEntry::HostNameMaxLength ) != 0 )
+		throw NetworkException( "Ceylan::Network::getLocalHostName : "
+			"unable to determine local host name : " + explainError() ) ;
 
 	return string( hostBuffer ) ;
 
@@ -451,6 +531,8 @@ const string Ceylan::Network::getLocalHostName() throw( NetworkException )
 		"not available on this platform." ) ;
 		
 #endif // CEYLAN_USES_GETHOSTNAME
+
+#endif // CEYLAN_USES_WINSOCK2_H
 
 }
 
@@ -698,7 +780,7 @@ const string Ceylan::Network::getFQDNFromDNSEntry( const HostDNSEntry & entry )
 bool Ceylan::Network::isAValidHostName( const string & hostnameString ) throw()
 {
 
-#ifdef CEYLAN_USES_REGEX
+#if CEYLAN_USES_REGEX
 	
 	Ceylan::RegExp target( hostnameString ) ;
 
