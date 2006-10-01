@@ -26,7 +26,7 @@ namespace Ceylan
 	
 	
 	/// Returns the version of the Ceylan library currently linked.
-	const Ceylan::LibtoolVersion & GetVersion() throw() ;
+	CEYLAN_DLL const Ceylan::LibtoolVersion & GetVersion() throw() ;
 	
 	
 	/** 
@@ -76,7 +76,7 @@ namespace Ceylan
 	
 	
 	/// Exception raised by common utils services. 
-	class UtilsException : public Exception
+	class CEYLAN_DLL UtilsException : public Exception
 	{
 	
 		public:
@@ -104,7 +104,7 @@ namespace Ceylan
 	 * @see testCeylanCommandLineOptions.cc
 	 *
 	 */
-	class CommandLineParseException : public UtilsException
+	class CEYLAN_DLL CommandLineParseException : public UtilsException
 	{
 	
 		public:
@@ -144,18 +144,18 @@ namespace Ceylan
 	 * @see testCeylanCommandLineOptions.cc
 	 *
 	 */
-	void parseCommandLineOptions( std::string & readExecutableName ,
+	CEYLAN_DLL void parseCommandLineOptions( std::string & readExecutableName ,
 		std::list<std::string> & readOptions, 
 		Ceylan::Uint16 argumentCount, char ** argumentVector ) throw() ;
 		
 	
 
 	/// Return value to be used on success.
-	extern const Ceylan::Sint16 ExitSuccess ;
+	extern CEYLAN_DLL const Ceylan::Sint16 ExitSuccess ;
 
 
 	/// Return value to be used on failure (any non zero value could be used).
-	extern const Ceylan::Sint16 ExitFailure ;
+	extern CEYLAN_DLL const Ceylan::Sint16 ExitFailure ;
 
 
 	/**
@@ -166,7 +166,7 @@ namespace Ceylan
 	 * a real basic assumption was unexpectedly not met.
 	 *
 	 */
-	extern const Ceylan::Sint16 ExitDebugFailure ;
+	extern CEYLAN_DLL const Ceylan::Sint16 ExitDebugFailure ;
 	
 	
 	/**
@@ -181,9 +181,20 @@ namespace Ceylan
 	 * done only in debug mode.
 	 *
 	 */
-	void emergencyShutdown( const std::string & message ) throw()
-		__attribute__ ((noreturn)) ; 
-	
+	CEYLAN_DLL void emergencyShutdown( const std::string & message ) throw()
+
+#if !defined(CEYLAN_RUNS_ON_WINDOWS)
+		/*
+		 * g++ (gcc) needs this __attribute__ (otherwise a blocking 
+		 * warning is issued), but Visual C++ does not understand it.
+		 * As we are in a header file, only the CEYLAN_RUNS_ON_WINDOWS
+		 * can be available here.
+		 *
+		 */
+		__attribute__ ((noreturn))  
+
+#endif // CEYLAN_RUNS_ON_WINDOWS
+	;
 
 
 	// Some keyboard events facilities.
@@ -197,7 +208,7 @@ namespace Ceylan
 	 * Thanks Petey Leinonen !
 	 *
 	 */
-	bool keyboardHit() throw() ;
+	CEYLAN_DLL bool keyboardHit() throw() ;
 
 
 	/// Corresponds to a read character.
@@ -213,7 +224,7 @@ namespace Ceylan
 	 * Thanks Petey Leinonen !
 	 *
 	 */
-	KeyChar getChar() throw() ;
+	CEYLAN_DLL KeyChar getChar() throw() ;
 
 
 	/**
@@ -222,7 +233,7 @@ namespace Ceylan
 	 * Ex : "Press any key to continue".
 	 *
 	 */
-	extern const std::string DefaultWaitForKeyMessage ;
+	extern CEYLAN_DLL const std::string DefaultWaitForKeyMessage ;
 
 
 	/**
@@ -236,7 +247,7 @@ namespace Ceylan
 	 * <code>"Hit key is : " + toString( waitForKey() )</code>
 	 *
 	 */
-	KeyChar waitForKey( const std::string & message = DefaultWaitForKeyMessage )
+	CEYLAN_DLL KeyChar waitForKey( const std::string & message = DefaultWaitForKeyMessage )
 		throw() ;
 
 	
@@ -366,7 +377,7 @@ namespace Ceylan
 	 * @note Might be useful for light debugging.
 	 *
 	 */
-	void checkpoint( const std::string & message = "" ) throw() ;
+	CEYLAN_DLL void checkpoint( const std::string & message = "" ) throw() ;
 	
 	
 	/**
@@ -377,7 +388,7 @@ namespace Ceylan
 	 * @note Might be useful for light debugging.
 	 *
 	 */
-	void breakpoint( const std::string & message = "" ) throw() ;
+	CEYLAN_DLL void breakpoint( const std::string & message = "" ) throw() ;
 	
 			 
 }

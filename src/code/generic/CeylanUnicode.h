@@ -39,7 +39,7 @@ namespace Ceylan
 	 * @note Unicode services still have to be tested.
 	 *
 	 */
-	class UnicodeString : public Ceylan::TextDisplayable
+	class CEYLAN_DLL UnicodeString : public Ceylan::TextDisplayable
 	{
 	
 	

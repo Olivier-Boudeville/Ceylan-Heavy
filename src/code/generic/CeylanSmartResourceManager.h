@@ -115,6 +115,8 @@ namespace Ceylan
 	 * However its 'NeverDrop' policy results in a behaviour very similar to
 	 * the one of a basic Resource manager.
 	 *
+	 * @note No CEYLAN_DLL declaration for templates.
+	 *
 	 */
 	template <class Key>
 	class SmartResourceManager : public Ceylan::ResourceManager<Key>
@@ -587,10 +589,21 @@ namespace Ceylan
 			
 			} ;	
 			
-			
+
+/* 
+ * Takes care of the awful issue of Windows DLL with templates.
+ *
+ * @see Ceylan's developer guide and README-build-for-windows.txt 
+ * to understand it, and to be aware of the associated risks. 
+ * 
+ */
+#pragma warning( push )
+#pragma warning( disable : 4251 )
+
 			// The cache itself.
 			std::map<Key, CacheEntry *> _entries ;
-			
+
+#pragma warning( pop ) 			
 			
 			
 		
@@ -657,7 +670,7 @@ namespace Ceylan
 		
 		
 	template <class Key>
-	SmartResourceManager<Key>::~SmartResourceManager<Key>() throw()
+	SmartResourceManager<Key>::~SmartResourceManager() throw()
 	{
 	
 		/**

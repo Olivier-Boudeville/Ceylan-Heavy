@@ -33,7 +33,7 @@ namespace Ceylan
 	 * waiting.
 	 *
 	 */
-	class Timestamp : public TextDisplayable
+	class CEYLAN_DLL Timestamp : public TextDisplayable
 	{
 	
 	

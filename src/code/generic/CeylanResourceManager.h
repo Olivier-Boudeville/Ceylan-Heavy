@@ -22,7 +22,7 @@ namespace Ceylan
 	 * situation.
 	 *
 	 */
-	class ResourceManagerException : public Ceylan::Exception
+	class CEYLAN_DLL ResourceManagerException : public Ceylan::Exception
 	{
 	
 		public:
@@ -47,6 +47,8 @@ namespace Ceylan
 	 *
 	 * Such managers are especially designed to facilitate the memory 
 	 * management of static resources.
+	 *
+	 * This abstract manager is the mother class of all resource managers.
 	 *
 	 * A Resource manager handles the life cycle of its resources : it takes
 	 * their ownership, which means it will delete them when itself deleted or
@@ -98,6 +100,8 @@ namespace Ceylan
 	 * would not search for these member names in this mother class : it may
 	 * not contain a '_cacheHits' member for all 'Key' choice, because of
 	 * template specialization that may occur.
+	 *
+	 * @note No CEYLAN_DLL declaration for templates.
 	 *
 	 */
 	template <class Key>
@@ -245,7 +249,7 @@ namespace Ceylan
 
 				
 	template <class Key>
-	ResourceManager<Key>::~ResourceManager<Key>() throw()
+	ResourceManager<Key>::~ResourceManager() throw()
 	{
 		/*
 		 * Cannot be called at this level since 'flush()' is

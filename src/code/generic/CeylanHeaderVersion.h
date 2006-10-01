@@ -17,7 +17,7 @@ namespace Ceylan
 	 * it is then linked to.
 	 *
 	 */
-	extern const std::string actualCeylanHeaderLibtoolVersion ;
+	extern CEYLAN_DLL const std::string actualCeylanHeaderLibtoolVersion ;
 		
 }
 

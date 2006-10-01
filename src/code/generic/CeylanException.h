@@ -26,7 +26,7 @@ namespace Ceylan
 	 * unexpected exceptions occur.
 	 *
      */
-    class Exception : public std::exception, public TextDisplayable
+    class CEYLAN_DLL Exception : public std::exception, public TextDisplayable
     {
 
 

@@ -36,47 +36,47 @@
  *
  */
 
-std::string operator + ( const std::string & s, Ceylan::Sint8 i ) 
+CEYLAN_DLL std::string operator + ( const std::string & s, Ceylan::Sint8 i ) 
 	throw( Ceylan::Exception ) ;
 	
-std::string operator + ( Ceylan::Sint8 i, const std::string & s ) 
+CEYLAN_DLL std::string operator + ( Ceylan::Sint8 i, const std::string & s ) 
 	throw( Ceylan::Exception ) ;
 
 
-std::string operator + ( const std::string & s, Ceylan::Uint8 i ) 
+CEYLAN_DLL std::string operator + ( const std::string & s, Ceylan::Uint8 i ) 
 	throw ( Ceylan::Exception ) ;
 	
-std::string operator + ( Ceylan::Uint8 i, const std::string & s ) 
+CEYLAN_DLL std::string operator + ( Ceylan::Uint8 i, const std::string & s ) 
 	throw( Ceylan::Exception ) ;
 
 
 
-std::string operator + ( const std::string & s, Ceylan::Sint16 i ) 
-	throw( Ceylan::Exception ) ;
-	
-std::string operator + ( Ceylan::Sint16 i, const std::string & s ) 
-	throw( Ceylan::Exception ) ;
-
-
-std::string operator + ( const std::string & s, Ceylan::Uint16 i ) 
+CEYLAN_DLL std::string operator + ( const std::string & s, Ceylan::Sint16 i ) 
 	throw( Ceylan::Exception ) ;
 	
-std::string operator + ( Ceylan::Uint16 i, const std::string & s ) 
+CEYLAN_DLL std::string operator + ( Ceylan::Sint16 i, const std::string & s ) 
 	throw( Ceylan::Exception ) ;
 
 
-
-std::string operator + ( const std::string & s, Ceylan::Sint32 i ) 
-	throw( Ceylan::Exception ) ;
-	
-std::string operator + ( Ceylan::Sint32 i, const std::string & s ) 
-	throw( Ceylan::Exception ) ;
-
-
-std::string operator + ( const std::string & s, Ceylan::Uint32 i ) 
+CEYLAN_DLL std::string operator + ( const std::string & s, Ceylan::Uint16 i ) 
 	throw( Ceylan::Exception ) ;
 	
-std::string operator + ( Ceylan::Uint32 i, const std::string & s ) 
+CEYLAN_DLL std::string operator + ( Ceylan::Uint16 i, const std::string & s ) 
+	throw( Ceylan::Exception ) ;
+
+
+
+CEYLAN_DLL std::string operator + ( const std::string & s, Ceylan::Sint32 i ) 
+	throw( Ceylan::Exception ) ;
+	
+CEYLAN_DLL std::string operator + ( Ceylan::Sint32 i, const std::string & s ) 
+	throw( Ceylan::Exception ) ;
+
+
+CEYLAN_DLL std::string operator + ( const std::string & s, Ceylan::Uint32 i ) 
+	throw( Ceylan::Exception ) ;
+	
+CEYLAN_DLL std::string operator + ( Ceylan::Uint32 i, const std::string & s ) 
 	throw( Ceylan::Exception ) ;
 
 
@@ -84,17 +84,17 @@ std::string operator + ( Ceylan::Uint32 i, const std::string & s )
  * No serialization of Uint64 and Sint64 for the moment, since
  * in some cases they are just fake datatypes.
  
-std::string operator + ( const std::string & s, Ceylan::Sint64 i ) 
+CEYLAN_DLL std::string operator + ( const std::string & s, Ceylan::Sint64 i ) 
 	throw( Ceylan::Exception ) ;
 	
-std::string operator + ( Ceylan::Sint64 i, const std::string & s ) 
+CEYLAN_DLL std::string operator + ( Ceylan::Sint64 i, const std::string & s ) 
 	throw( Ceylan::Exception ) ;
 
 
-std::string operator + ( const std::string & s, Ceylan::Uint64 i ) 
+CEYLAN_DLL std::string operator + ( const std::string & s, Ceylan::Uint64 i ) 
 	throw( Ceylan::Exception ) ;
 	
-std::string operator + ( Ceylan::Uint64 i, const std::string & s ) 
+CEYLAN_DLL std::string operator + ( Ceylan::Uint64 i, const std::string & s ) 
 	throw( Ceylan::Exception ) ;
  
  
@@ -103,32 +103,32 @@ std::string operator + ( Ceylan::Uint64 i, const std::string & s )
 
 
 
-std::string operator + ( const std::string & s, Ceylan::SignedLongInteger i ) 
+CEYLAN_DLL std::string operator + ( const std::string & s, Ceylan::SignedLongInteger i ) 
 	throw( Ceylan::Exception ) ;
 	
-std::string operator + ( Ceylan::SignedLongInteger i, const std::string & s ) 
+CEYLAN_DLL std::string operator + ( Ceylan::SignedLongInteger i, const std::string & s ) 
 	throw( Ceylan::Exception ) ;
 
 
-std::string operator + ( const std::string & s, Ceylan::UnsignedLongInteger i ) 
-	throw( Ceylan::Exception ) ;
-	
-std::string operator + ( Ceylan::UnsignedLongInteger i, const std::string & s ) 
-	throw( Ceylan::Exception ) ;
-
-
-
-std::string operator + ( const std::string & s, Ceylan::Float32 i ) 
+CEYLAN_DLL std::string operator + ( const std::string & s, Ceylan::UnsignedLongInteger i ) 
 	throw( Ceylan::Exception ) ;
 	
-std::string operator + ( Ceylan::Float32 i, const std::string & s ) 
+CEYLAN_DLL std::string operator + ( Ceylan::UnsignedLongInteger i, const std::string & s ) 
 	throw( Ceylan::Exception ) ;
 
 
-std::string operator + ( const std::string & s, Ceylan::Float64 i ) 
+
+CEYLAN_DLL std::string operator + ( const std::string & s, Ceylan::Float32 i ) 
 	throw( Ceylan::Exception ) ;
 	
-std::string operator + ( Ceylan::Float64 i, const std::string & s ) 
+CEYLAN_DLL std::string operator + ( Ceylan::Float32 i, const std::string & s ) 
+	throw( Ceylan::Exception ) ;
+
+
+CEYLAN_DLL std::string operator + ( const std::string & s, Ceylan::Float64 i ) 
+	throw( Ceylan::Exception ) ;
+	
+CEYLAN_DLL std::string operator + ( Ceylan::Float64 i, const std::string & s ) 
 	throw( Ceylan::Exception ) ;
 
 
@@ -137,26 +137,26 @@ std::string operator + ( Ceylan::Float64 i, const std::string & s )
  *
  */
   
-std::string operator + ( const std::string & s, Ceylan::LongFloat i ) 
+CEYLAN_DLL std::string operator + ( const std::string & s, Ceylan::LongFloat i ) 
 	throw( Ceylan::Exception ) ;
 	
-std::string operator + ( Ceylan::LongFloat i, const std::string & s ) 
+CEYLAN_DLL std::string operator + ( Ceylan::LongFloat i, const std::string & s ) 
 	throw( Ceylan::Exception ) ;
 
 
 
 // Pointer size depends on the platform.
 
-std::string operator + ( const std::string & s, const void * p ) 
+CEYLAN_DLL std::string operator + ( const std::string & s, const void * p ) 
 	throw( Ceylan::Exception ) ;
 	
-std::string operator + ( const void * p, const std::string & s ) 
+CEYLAN_DLL std::string operator + ( const void * p, const std::string & s ) 
 	throw( Ceylan::Exception ) ;
 
 
-std::string operator + ( const std::string & a, const char * b ) ;
+CEYLAN_DLL std::string operator + ( const std::string & a, const char * b ) ;
 
-std::string operator + ( const char * a, const std::string & b ) ;
+CEYLAN_DLL std::string operator + ( const char * a, const std::string & b ) ;
 
 
 
@@ -181,11 +181,11 @@ namespace Ceylan
 	 * Ceylan::Float64.
 	 *
 	 */
-	extern const Ceylan::Uint16 DigitOutputPrecision ;
+	extern CEYLAN_DLL const Ceylan::Uint16 DigitOutputPrecision ;
 	
 	
     /// Returns a user-friendly representation of a pointer.
-    std::string toString( const void * pointer ) throw( Exception ) ;
+    CEYLAN_DLL std::string toString( const void * pointer ) throw( Exception ) ;
 
 
     /**
@@ -193,7 +193,7 @@ namespace Ceylan
 	 * ("true" or "false").
 	 *
 	 */
-    std::string toString( bool value ) throw() ;
+    CEYLAN_DLL std::string toString( bool value ) throw() ;
 
 
 
@@ -204,7 +204,7 @@ namespace Ceylan
 	 * specified value, prefixed by '0b'.
 	 *
 	 */
-    std::string toString( Ceylan::Sint8 value, bool bitField = false ) 
+    CEYLAN_DLL std::string toString( Ceylan::Sint8 value, bool bitField = false ) 
 		throw( Exception ) ;
 	
 	
@@ -215,7 +215,7 @@ namespace Ceylan
 	 * specified value, prefixed by '0b'.
 	 *
 	 */
-    std::string toString( Ceylan::Uint8 value, bool bitField = false ) 
+    CEYLAN_DLL std::string toString( Ceylan::Uint8 value, bool bitField = false ) 
 		throw( Exception ) ;
 	
 	
@@ -227,7 +227,7 @@ namespace Ceylan
 	 * specified value, prefixed by '0b'.
 	 *
 	 */
-    std::string toString( Ceylan::Sint16 value, bool bitField = false ) 
+    CEYLAN_DLL std::string toString( Ceylan::Sint16 value, bool bitField = false ) 
 		throw( Exception ) ;
 	
 	
@@ -238,7 +238,7 @@ namespace Ceylan
 	 * specified value, prefixed by '0b'.
 	 *
 	 */
-    std::string toString( Ceylan::Uint16 value, bool bitField = false ) 
+    CEYLAN_DLL std::string toString( Ceylan::Uint16 value, bool bitField = false ) 
 		throw( Exception ) ;
 	
 	
@@ -249,7 +249,7 @@ namespace Ceylan
 	 * specified value, prefixed by '0b'.
 	 *
 	 */
-    std::string toString( Ceylan::Sint32 value, bool bitField = false ) 
+    CEYLAN_DLL std::string toString( Ceylan::Sint32 value, bool bitField = false ) 
 		throw( Exception ) ;
 	
 	
@@ -260,7 +260,7 @@ namespace Ceylan
 	 * specified value, prefixed by '0b'.
 	 *
 	 */
-    std::string toString( Ceylan::Uint32 value, bool bitField = false ) 
+    CEYLAN_DLL std::string toString( Ceylan::Uint32 value, bool bitField = false ) 
 		throw( Exception ) ;
 	
 	
@@ -271,7 +271,7 @@ namespace Ceylan
 	 * specified value prefixed by '0b'.
 	 *
 	 */
-    std::string toString( Ceylan::UnsignedLongInteger value, 
+    CEYLAN_DLL std::string toString( Ceylan::UnsignedLongInteger value, 
 		bool bitField = false ) throw( Exception ) ;
 		
 		
@@ -282,13 +282,13 @@ namespace Ceylan
 	 * specified value prefixed by '0b'.
 	 *
 	 */
-    std::string toString( Ceylan::SignedLongInteger value, 
+    CEYLAN_DLL std::string toString( Ceylan::SignedLongInteger value, 
 		bool bitField = false ) throw( Exception ) ;
 		
 	
 	
 	/// The hexadecimal digits : 0123456789ABCDEF.
-	extern const std::string HexDigits ;
+	extern CEYLAN_DLL const std::string HexDigits ;
 	
 	
 	/**
@@ -305,7 +305,7 @@ namespace Ceylan
 	 * added to reach that number.
 	 *
 	 */
-	std::string toHexString( Ceylan::UnsignedLongInteger value, 
+	CEYLAN_DLL std::string toHexString( Ceylan::UnsignedLongInteger value, 
 		bool prefix = true, Ceylan::Uint8 minDigits = 1 ) throw() ;	
 	
 	
@@ -325,7 +325,7 @@ namespace Ceylan
 	 * @throw Exception if the conversion failed.
 	 *
 	 */
-    std::string toString( Ceylan::Float32 value, 
+    CEYLAN_DLL std::string toString( Ceylan::Float32 value, 
 			Ceylan::Uint8 precision = Ceylan::DigitOutputPrecision ) 
 		throw( Exception ) ;
 		
@@ -342,7 +342,7 @@ namespace Ceylan
 	 * @throw Exception if the conversion failed.
 	 *
 	 */
-    std::string toString( Ceylan::Float64 value,
+    CEYLAN_DLL std::string toString( Ceylan::Float64 value,
 			Ceylan::Uint8 precision = Ceylan::DigitOutputPrecision ) 
 		throw( Exception ) ;
 
@@ -362,7 +362,7 @@ namespace Ceylan
 	 * anymore.
 	 *
 	 */
-    std::string toString( Ceylan::LongFloat value, 
+    CEYLAN_DLL std::string toString( Ceylan::LongFloat value, 
 			Ceylan::Uint8 precision = Ceylan::DigitOutputPrecision ) 
 		throw( Exception ) ;
 		
@@ -373,7 +373,7 @@ namespace Ceylan
 	 * @see Displayable
 	 *
 	 */
-    std::string toString( Ceylan::VerbosityLevels level ) throw( Exception ) ;
+    CEYLAN_DLL std::string toString( Ceylan::VerbosityLevels level ) throw( Exception ) ;
 	
 		 
 	/**
@@ -387,7 +387,7 @@ namespace Ceylan
 	 * character.
 	 *
 	 */
-	std::string toNumericalString( Uint8 number ) throw( Exception ) ;
+	CEYLAN_DLL std::string toNumericalString( Uint8 number ) throw( Exception ) ;
 	
 	
 	
@@ -403,12 +403,12 @@ namespace Ceylan
 	 * that number.
 	 *
 	 */
-    UnsignedLongInteger stringToUnsignedLong( 
+    CEYLAN_DLL int stringToUnsignedLong( 
 		const std::string & numericalString ) throw( Exception ) ;
 		
 		
     /// Converts, if possible, a string containing a pointer into that pointer.
-    void * stringToAddress( const std::string & addressString ) 
+    CEYLAN_DLL void * stringToAddress( const std::string & addressString ) 
 		throw( Exception ) ;
 
 

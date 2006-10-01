@@ -13,7 +13,7 @@ namespace Ceylan
 	 * This Exception subclass is to be used only for test results.
 	 *
 	 */
-    class TestException : public Ceylan::Exception
+    class CEYLAN_DLL TestException : public Ceylan::Exception
     {
 
 

@@ -85,8 +85,8 @@ namespace Ceylan
 	 */
 	typedef signed char	Sint8 ;
 
-	extern Ceylan::Sint8 Sint8Min /* = -128 */  ;
-	extern Ceylan::Sint8 Sint8Max /* =  127 */  ;
+	extern CEYLAN_DLL Ceylan::Sint8 Sint8Min /* = -128 */  ;
+	extern CEYLAN_DLL Ceylan::Sint8 Sint8Max /* =  127 */  ;
 
 
 	/**
@@ -99,8 +99,8 @@ namespace Ceylan
 	 */
 	typedef unsigned char Uint8 ;
 	
-	extern Ceylan::Uint8 Uint8Min /* =   0 */ ;
-	extern Ceylan::Uint8 Uint8Max /* = 255 */ ;
+	extern CEYLAN_DLL Ceylan::Uint8 Uint8Min /* =   0 */ ;
+	extern CEYLAN_DLL Ceylan::Uint8 Uint8Max /* = 255 */ ;
 
 
 	/**
@@ -140,8 +140,8 @@ namespace Ceylan
 	 */
 	typedef signed short Sint16 ;
 
-	extern Ceylan::Sint16 Sint16Min /* = -32768  */ ;
-	extern Ceylan::Sint16 Sint16Max /* =  32767  */ ;
+	extern CEYLAN_DLL Ceylan::Sint16 Sint16Min /* = -32768  */ ;
+	extern CEYLAN_DLL Ceylan::Sint16 Sint16Max /* =  32767  */ ;
 
 
 	/**
@@ -154,8 +154,8 @@ namespace Ceylan
 	 */
 	typedef unsigned short Uint16 ;
 	
-	extern Ceylan::Uint16 Uint16Min /* =     0 */ ;
-	extern Ceylan::Uint16 Uint16Max /* = 65535 */ ;
+	extern CEYLAN_DLL Ceylan::Uint16 Uint16Min /* =     0 */ ;
+	extern CEYLAN_DLL Ceylan::Uint16 Uint16Max /* = 65535 */ ;
 	
 
 
@@ -176,8 +176,8 @@ namespace Ceylan
 	 * 'this decimal constant is unsigned only in ISO C90'.
 	 *
 	 */
-	extern Ceylan::Sint32 Sint32Min /* = -2147483647  */ ;
-	extern Ceylan::Sint32 Sint32Max /* =  2147483647  */ ;
+	extern CEYLAN_DLL Ceylan::Sint32 Sint32Min /* = -2147483647  */ ;
+	extern CEYLAN_DLL Ceylan::Sint32 Sint32Max /* =  2147483647  */ ;
 	
 	
 	/**
@@ -190,7 +190,7 @@ namespace Ceylan
 	 */
 	typedef unsigned int Uint32 ;
 
-	extern Ceylan::Uint32 Uint32Min /* = 0  */ ;
+	extern CEYLAN_DLL Ceylan::Uint32 Uint32Min /* = 0  */ ;
 	
 	
 	/*
@@ -198,7 +198,7 @@ namespace Ceylan
 	 * possible one) since 'this decimal constant is unsigned only in ISO C90'.
 	 *
 	 */
-	extern Ceylan::Uint32 Uint32Max 
+	extern CEYLAN_DLL Ceylan::Uint32 Uint32Max 
 		/* = 4294967294 in theory, 2147483647 actually */ ;
 	
 
@@ -345,8 +345,8 @@ namespace Ceylan
 	 */
 	typedef float Float32 ;
 	
-	extern Ceylan::Float32 Float32Min /* = -3.4E-38 */ ;
-	extern Ceylan::Float32 Float32Max /* =  3.4E38  */ ;
+	extern CEYLAN_DLL Ceylan::Float32 Float32Min /* = -3.4E-38 */ ;
+	extern CEYLAN_DLL Ceylan::Float32 Float32Max /* =  3.4E38  */ ;
 	
 	
 	/**
@@ -361,8 +361,8 @@ namespace Ceylan
 	 */
 	typedef double Float64 ;
 	
-	extern Ceylan::Float64 Float64Min /* = -1.7E-308 */ ;
-	extern Ceylan::Float64 Float64Max /* =  1.7E308  */ ;
+	extern CEYLAN_DLL Ceylan::Float64 Float64Min /* = -1.7E-308 */ ;
+	extern CEYLAN_DLL Ceylan::Float64 Float64Max /* =  1.7E308  */ ;
 	
 
 
@@ -405,14 +405,14 @@ namespace Ceylan
 	 */
 	//typedef long double Float80 ;
 	
-	//extern Ceylan::Float80 Float80Min /* = -3.4E-4932 */ ;
+	//extern CEYLAN_DLL Ceylan::Float80 Float80Min /* = -3.4E-4932 */ ;
 
 	/*
 	 * Actually is 3.4E4932 but is set to a lower value (the highest 
 	 * possible one) since 'floating constant exceeds range of double'.
 	 *
 	 */
-	//extern Ceylan::Float80 Float80Max 
+	//extern CEYLAN_DLL Ceylan::Float80 Float80Max 
 	//	/*= 3.4E4932 in theory, 1.7E308 actually */ ;
 	
 	
@@ -424,14 +424,14 @@ namespace Ceylan
 	//typedef long double Float96 ;
 
 	
-	//extern Ceylan::Float96 Float96Min /* = -3.4E-4932 */ ;
+	//extern CEYLAN_DLL Ceylan::Float96 Float96Min /* = -3.4E-4932 */ ;
 
 	/*
 	 * Actually is 3.4E4932 but is set to a lower value (the highest 
 	 * possible one) since 'floating constant exceeds range of double'.
 	 *
 	 */
-	//extern Ceylan::Float96 Float96Max 
+	//extern CEYLAN_DLL Ceylan::Float96 Float96Max 
 	//	/*= 3.4E4932 in theory, 1.7E308 actually */ ;
 	
 	

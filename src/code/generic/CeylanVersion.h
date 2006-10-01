@@ -15,7 +15,7 @@ namespace Ceylan
 
 
 
-	class VersionException : public Ceylan::Exception
+	class CEYLAN_DLL VersionException : public Ceylan::Exception
 	{
 	
 		public:
@@ -35,7 +35,7 @@ namespace Ceylan
 	 * automated checking on loading.
 	 *
      */
-    class Version : public TextDisplayable
+    class CEYLAN_DLL Version : public TextDisplayable
     {
 	
 		

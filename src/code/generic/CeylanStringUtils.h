@@ -55,7 +55,7 @@ namespace Ceylan
 	 * @see playTests.sh
 	 *
 	 */
-	extern const std::string BatchTestOption ;
+	extern CEYLAN_DLL const std::string BatchTestOption ;
 
 	
 	
@@ -80,7 +80,8 @@ namespace Ceylan
 	 * hence 'std::list<const X>' cannot be used.
 	 *
 	 */	
-	std::string formatStringList( const std::list<std::string> & stringList, 
+	CEYLAN_DLL std::string formatStringList( 
+		const std::list<std::string> & stringList,
 		bool surroundByTicks = false ) throw() ;
 	
 	
@@ -92,7 +93,7 @@ namespace Ceylan
 	 * Displays the specified message to the user, on his console, if any.
 	 *
 	 */
-	void display( const std::string & message ) throw() ;
+	CEYLAN_DLL void display( const std::string & message ) throw() ;
 
 
 	/**
@@ -100,8 +101,8 @@ namespace Ceylan
 	 * <b>aString</b>.
 	 *
 	 */
-	StringSize countChars( const std::string & aString, char targetChar )
-		throw() ;
+	CEYLAN_DLL StringSize countChars( 
+		const std::string & aString, char targetChar ) throw() ;
 
 
 	/**
@@ -110,7 +111,7 @@ namespace Ceylan
 	 * Example : "Ceylan" becomes "nalyeC"
 	 *
 	 */
-	std::string reverse( const std::string & source ) throw() ;
+	CEYLAN_DLL std::string reverse( const std::string & source ) throw() ;
 
 
 	/**
@@ -150,7 +151,8 @@ namespace Ceylan
 	 * </pre>
 	 *
 	 */
-	 char * getNonConstCharFrom( const std::string & source ) throw() ;
+	 CEYLAN_DLL char * getNonConstCharFrom( const std::string & source ) 
+		throw() ;
 	 
 	 
 	/**
@@ -160,9 +162,10 @@ namespace Ceylan
 	 * @return the number of substitutions performed.
 	 *
 	 */
-	StringSize substituteInString( std::string & targetString, 
-			const std::string & toBeReplaced, const std::string & replacement )
-		throw() ;
+	CEYLAN_DLL StringSize substituteInString( 
+			std::string & targetString, 
+			const std::string & toBeReplaced, 
+			const std::string & replacement ) throw() ;
 		
 	
 	/**
@@ -170,7 +173,7 @@ namespace Ceylan
 	 * other characters being left untouched. 
 	 *
 	 */
-	std::string toUppercase( const std::string & text ) throw() ;
+	CEYLAN_DLL std::string toUppercase( const std::string & text ) throw() ;
 		
 		
 	/**
@@ -179,7 +182,7 @@ namespace Ceylan
 	 * corresponding HTML codes.
 	 *
 	 */	
-	std::string encodeToHTML( const std::string & message ) throw() ;
+	CEYLAN_DLL std::string encodeToHTML( const std::string & message ) throw() ;
 	
 	
 	/**
@@ -193,7 +196,8 @@ namespace Ceylan
 	 * in uppercase and lowercase.
 	 *
 	 */
-	std::string encodeToPhonetic( const std::string & message ) throw() ;
+	CEYLAN_DLL std::string encodeToPhonetic( const std::string & message ) 
+		throw() ;
 		
 		
 	/**
@@ -206,7 +210,8 @@ namespace Ceylan
 	 * version 3.x or higher. The mangling can be changed is newer g++ versions.
 	 *
 	 */	
-	std::string demangleSymbol( const std::string & symbol ) throw() ;
+	CEYLAN_DLL std::string demangleSymbol( const std::string & symbol ) 
+		throw() ;
 			 	
 		
 	/**
@@ -218,7 +223,7 @@ namespace Ceylan
 	 * @see join
 	 *
 	 */
-	std::list<std::string> split( const std::string & stringToSplit, 
+	CEYLAN_DLL std::list<std::string> split( const std::string & stringToSplit, 
 		char splittingChar ) throw() ;
 
 
@@ -246,7 +251,7 @@ namespace Ceylan
 	 * @see split
 	 *
 	 */
-	std::string join( const std::list<std::string> & toJoin, 
+	CEYLAN_DLL std::string join( const std::list<std::string> & toJoin, 
 		const std::string & joiningString ) throw() ;
 	
 
@@ -266,8 +271,8 @@ namespace Ceylan
 	 * in a row).
 	 * 
 	 */
-	std::list<std::string> splitIntoWords( const std::string & sentenceToSplit )
-		throw() ;
+	CEYLAN_DLL std::list<std::string> splitIntoWords( 
+		const std::string & sentenceToSplit ) throw() ;
 
 
 	/**
@@ -282,12 +287,17 @@ namespace Ceylan
 	 * in a row).
 	 * 
 	 */
-	std::list<std::string> splitIntoParagraphs( 
+	CEYLAN_DLL std::list<std::string> splitIntoParagraphs( 
 		const std::string & textToSplit ) throw() ;
 	
 	
 	
-	/// String to object (deserialization).
+	/**
+	 * String to object (deserialization).
+	 *
+	 * @note No CEYLAN_DLL for templates.
+	 *
+	 */
 	template <class T>
 	void stringToObject( const std::string & source, T & object )
 	{

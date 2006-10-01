@@ -14,7 +14,7 @@ namespace Ceylan
 
 
 	/// Exception raised by the Singleton class.
-	class SingletonException: public Ceylan::Exception
+	class CEYLAN_DLL SingletonException: public Ceylan::Exception
 	{
 
 		public:
@@ -45,7 +45,7 @@ namespace Ceylan
 	 * @note This implementation is mainly for explanation purpose.
 	 *
 	 */
-	class Singleton
+	class CEYLAN_DLL Singleton
 	{
 
 

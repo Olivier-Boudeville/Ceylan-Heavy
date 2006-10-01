@@ -35,7 +35,7 @@ namespace Ceylan
 	 * @see http://www.mkssoftware.com/docs/man1/re_syntax.1t.asp
 	 *
 	 */
-	class RegExp
+	class CEYLAN_DLL RegExp
 	{
 
 

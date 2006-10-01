@@ -22,7 +22,6 @@ namespace Ceylan
 
 
 	
-	
 	/**
 	 * Manages basically a set of Resource instances : the basic Resource
 	 * manager can store and afterwards retrieve resources on behalf of the
@@ -74,6 +73,8 @@ namespace Ceylan
 	 *
 	 * This will work as long as the user ensures that none of these 'const'
 	 * resources is used after the manager is deleted. 
+	 *
+	 * @note No CEYLAN_DLL declaration for templates.
 	 *
 	 */
 	template <class Key>
@@ -189,10 +190,20 @@ namespace Ceylan
 		protected:
 		
 					
+/* 
+ * Takes care of the awful issue of Windows DLL with templates.
+ *
+ * @see Ceylan's developer guide and README-build-for-windows.txt 
+ * to understand it, and to be aware of the associated risks. 
+ * 
+ */
+#pragma warning( push )
+#pragma warning( disable : 4251 )
+
 			/// Stores the association between a key and a resource.			
 			std::map<Key, const Resource *> _entries ;
-			
-			
+
+#pragma warning( pop ) 			
 		
 		private:
 		
@@ -204,7 +215,6 @@ namespace Ceylan
 			 * The compiler should complain whenever this undefined constructor
 			 * is called, implicitly or not.
 			 * 
-			 *
 			 */			 
 			BasicResourceManager( const BasicResourceManager & source ) 
 				throw() ;
@@ -341,7 +351,9 @@ namespace Ceylan
 		if ( resourceCount == 0 )
 			res += "no resource" ;
 		else	
-			res += Ceylan::toString( resourceCount ) + " resource(s)" ;
+			res += Ceylan::toString( 
+				static_cast<Ceylan::Uint32>( resourceCount ) ) 
+				+ " resource(s)" ;
 				
 		if ( level == Ceylan::low )	
 			return res ;

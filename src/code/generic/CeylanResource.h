@@ -14,7 +14,7 @@ namespace Ceylan
 
 
 	/// Exception to be raised when a Resource encounters an abnormal situation.
-	class ResourceException : public Ceylan::Exception
+	class CEYLAN_DLL ResourceException : public Ceylan::Exception
 	{
 	
 		public:
@@ -34,7 +34,7 @@ namespace Ceylan
 	 * (toString method).
 	 *
 	 */
-	class Resource : public Ceylan::TextDisplayable
+	class CEYLAN_DLL Resource : public Ceylan::TextDisplayable
 	{
 	
 	

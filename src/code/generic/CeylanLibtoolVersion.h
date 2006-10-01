@@ -20,7 +20,7 @@ namespace Ceylan
 	 * @see http://www.gnu.org/software/libtool/manual.html#Libtool-versioning
 	 *
      */
-    class LibtoolVersion : public Version
+    class CEYLAN_DLL LibtoolVersion : public Version
     {
 	
 	
