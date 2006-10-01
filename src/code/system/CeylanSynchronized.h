@@ -15,11 +15,11 @@ namespace Ceylan
 
 
 		/**
-		 * Template defining generically objects (notably numerical 
+		 * Template defining generically objects (notably numerical
 		 * datatypes) protected by a mutex.
 		 *
-		 * Any write operation first obtains a lock, then modifies 
-		 * the value, and unlocks the mutex, thus synchronizing the 
+		 * Any write operation first obtains a lock, then modifies
+		 * the value, and unlocks the mutex, thus synchronizing the
 		 * access to the value.
 		 *
 		 * @note This template still ought to be thoroughfully tested.
@@ -35,10 +35,10 @@ namespace Ceylan
 
 
 				/// Default constructor.
-				Synchronized() throw() : 
-					_value() 
+				Synchronized() throw() :
+					_value()
 				{
-				
+
 				}
 
 
@@ -50,87 +50,86 @@ namespace Ceylan
 				 *
 				 */
 				Synchronized( X value ) throw() :
-					_value( value ) 
+					_value( value )
 				{
-				
+
 				}
 
 
 
 				/// Sets value.
-				Synchronized & set( const volatile X & value ) 
+				Synchronized & set( const volatile X & value )
 					throw( Lockable::LockException )
 				{
-				
-					 _mutex.lock() ; 
-					 _value = value ; 
-					 _mutex.unlock() ; 
-					 
-					 return *this ; 
-					 
+
+					 _mutex.lock() ;
+					 _value = value ;
+					 _mutex.unlock() ;
+
+					 return *this ;
+
 				}
 
 
 				/// Gets value.
 				const volatile X & get() const volatile throw()
-				{ 
-					return _value ; 
+				{
+					return _value ;
 				}
 
 
 				/// Assignment operator.
 				Synchronized & operator = ( const X & value )
 					throw( Lockable::LockException )
-				{ 
-					return set( value ) ; 
+				{
+					return set( value ) ;
 				}
 
 
 				/// Conversion operator.
-				operator const volatile X () const volatile throw()
-				{ 
-					return _value ; 
+				operator X () const volatile throw()
+				{
+					return _value ;
 				}
 
 
-				/// Increment operator.
-				const volatile X operator ++() throw( Lockable::LockException )
-				{ 
-				
-					_mutex.lock() ; 
-					++_value ; 
-					_mutex.unlock() ; 
-					
-					return _value ; 
-					
+				/// Prefixed increment operator  (ex : ++x).
+				X operator ++() throw( Lockable::LockException )
+				{
+
+					_mutex.lock() ;
+					++_value ;
+					_mutex.unlock() ;
+
+					return _value ;
+
 				}
 
 
-				/// Increment operator.
-				const volatile X operator ++(int) 
+				/// Postfixed increment operator (ex : x++).
+				X operator ++(int) throw( Lockable::LockException )
+				{
+					return operator ++() ;
+				}
+
+
+				/// Prefixed decrement operator (ex : --x).
+				X operator --() throw( Lockable::LockException )
+				{
+
+					_mutex.lock() ;
+					--_value ;
+					_mutex.unlock() ;
+					return _value ;
+
+				}
+
+
+				/// Postfixed decrement operator (ex : x--).
+				X operator --(int)
 					throw( Lockable::LockException )
-				{ 
-					return operator ++() ; 
-				}
-
-
-				/// Decrement operator.
-				const volatile X operator --() throw( Lockable::LockException )
-				{ 
-				
-					_mutex.lock() ; 
-					--_value ; 
-					_mutex.unlock() ; 
-					return _value ; 
-					
-				}
-
-
-				/// Decrement operator.
-				const volatile X operator --(int) 
-					throw( Lockable::LockException )
-				{ 
-					return operator --() ; 
+				{
+					return operator --() ;
 				}
 
 
@@ -140,11 +139,11 @@ namespace Ceylan
 
 
 				/**
-				 * Copy constructor made private to ensure that it 
+				 * Copy constructor made private to ensure that it
 				 * will be never called.
 				 *
 				 * Calls such as : <code>Synchronized<int> number = 0 ;</code>
-				 * should be rewritten in : 
+				 * should be rewritten in :
 				 * <code>Synchronized<int> number( 0 ) ;</code> otherwise
 				 * a copy constructor would be needed.
 				 *
@@ -153,7 +152,7 @@ namespace Ceylan
 
 
 				/**
-				 * Assignment operator made private to ensure that it 
+				 * Assignment operator made private to ensure that it
 				 * will be never called.
 				 *
 				 * The compiler should complain whenever this undefined
@@ -170,7 +169,7 @@ namespace Ceylan
 
 				/// The protecting mutex.
 				Mutex _mutex ;
-				
+
 
 		} ;
 
