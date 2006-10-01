@@ -13,8 +13,7 @@
 
 <head>
   <title>Ceylan - Library's user's guide for the 0.3 version</title>
-  <meta http-equiv="Content-Type" content=
-  "text/html; charset=iso-8859-1">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="description" content="Ceylan">
   <meta name="keywords" content="Ceylan, library, manual, guide">
   <link rel="stylesheet" type="text/css" href="../../common/css/Ceylan.css">
@@ -30,23 +29,221 @@
 
 
 
-<h1>User's Guide of Ceylan, version 0.3</h1>
+<h1>Micro Ceylan User's Guide for the 0.3 version</h1>
 
 <h2>Overview</h2>
 
-<p>This user's guide is still to be written, however here are a few hints about Ceylan features.</p>
+<p>
+	
+<dl>
 
-<p>See also : 
+<!--
+
+<dt></dt>
+<dd></dd>
+
+-->
+
+<dt>What is Ceylan ?</dt>
+
+<dd>
+<p>Ceylan is a <b>C++ open-source (LGPL) library</b> which provides basic core functionalities, listed below, and a set of optional features. 
+</p>
+
+<p>
+Services integrated in the Ceylan library are the ones that should be useful to most applications and that do not depend on any third-party library.
+</p>
+
+</dd>
+
+
+<dt>What is its goal ?</dt>
+
+<dd>
+
+<p>Ceylan aims at <b>simplifying</b> C++ software development by providing basic services that encapsulates lower-level concerns.</p>
+
+<p>The Ceylan API offers various primitives that perform usual actions in a portable way that should be somewhat shorter, simpler and safer to use than the old-school platform-specific C approach.
+</p>
+
+<p>Although the comparison is a bit far-fetched, we would have liked that the C++ came with services such as the ones provided by the Java runtime or the standard Python modules. Hence Ceylan does its best to provide services that we deemed lacking to the C++.</p>
+
+</dd>
+
+
+<dt>What is the current state of Ceylan development ?</dt>
+
+<dd>
+
+<p>
+Ceylan has been existing since the end of 2003, and was seldom under heavy development. However newer code has been integrated on a steady pace, mostly by one developer (me). Ceylan has not been used by many projects, only <a href="http://osdl.sourceforge.net" target="_blank">OSDL</a> used it as a foundation layer.
+</p>
+
+<p>Currently Ceylan does its best to respect its promises thanks to a simple and straightforward code that everybody should understand, both as a library end user and as a library developer, on the contrary of complex developments, such as Boost (no offence).
+</p>
+
+<dd>
+
+
+<dt>What are the major core services that are provided by Ceylan ?</dt>
+
+<dd>
+These core services are available in all Ceylan-supported platforms :
 
 <ul>
-    <li><a href="CodingConventions.html" target="_blank">Ceylan coding conventions</a></li>
-    <li><a href="CodingGoodPractises.html" target="_blank">Ceylan coding good practises</a></li>
+
 <!--
-    <li><a href="" target="_blank"></a></li>
+
+	<li></li>
+
 -->
+	<li>various <b>resource managers</b> which drive the life cycle of their resources (see <code>Ceylan::BasicResourceManager</code>). Including policy-based caches, quota-driven managers for resources that know their size and are able to be cloned (see <code>Ceylan::SmartResourceManager</code>)
+	</li>	
+	
+	<li><b>counted pointer</b>, which is a basic shared pointer (see <code>Ceylan::CountedPointer</code>)
+	</li>
+	
+	<li><b>singleton</b>, to ensure a class is instanciated no more than once (see <code>Ceylan::Singleton</code>)
+	</li>
+	
+	<li><b>time management</b>, including timestamps (see <code>Ceylan::Timestamp</code>), time fine reading and measurement
+	</li>
+	
+	<li>automatic checking of <b>compatibility</b> for Ceylan library version being linked against an executable
+	</li>
+	
+	<li><b>source/listener pattern</b> implemented (see <code>Ceylan::EventSource, Ceylan::EventListener and their callable counterpart</code>)
+	</li>
+	
+	<li>full <b>MVC</b> (Model-View-Controller) pattern, implemented using source/listener, with various flavours such as event notifications being either synchronous or not (see <code>Ceylan::Model, Ceylan::View, Ceylan::Controller, Ceylan::InputDevice</code>)
+	</li>
+	
+	<li><b>maths</b> services, including :
+	
+		<ul>
+		
+			<li>basic <b>constants</b> (e, pi, sqrt(2), etc.) defined in various bases and with various precomputed versions (1/sqrt(2), pi/4, etc.), various epsilons defined for different floating-point datatypes (<code>see Ceylan::MathsBasic.h</code>)
+			</li>
+			
+			<li>numerous <b>basic operations</b> : nullity and comparisons for floating point values, floor, ceil, round, abs, min, max, exp, pow, etc.; trigonometric operations, conversions, etc. (<code>see Ceylan::MathsBasic.h</code>)
+			</li> 
+			
+			<li><b>linear algebra</b> : point, vector and matrices (2D,3D), classical and homogeneous, endormorphisms and related operations (comatrix, trace, determinant, adjoint, identity, diagonal, cofactor, projection, rotation, translation, automatic creation from endomorphism, etc.) with dedicated operators defined (with scalar, vector or matrices : equality, add, substract, multiply, transpose, inverse, dot-product, cross-product, magnitude, normalization, etc.). See : <code>Ceylan::Maths::Linear classes</code>
+			</li>
+			
+			<li><b>random</b> support : white noise generator, generator from user-defined probability density function, gaussian (normal) distribution, etc. with time-based seeding and optional precomputation of random value set (see <code>Ceylan::Maths::Random classes</code>)
+			</li>
+			
+		</ul>	
+	</li>
+	
+	<li>full <b>log system</b> whose lifecycle can be automatically managed (see <code>Ceylan::Log::LogHolder</code>), with default channels (fatal, error, warning, debug and info, see <code>Ceylan::Log::LogPlug</code>) and dynamic ones, levels of details, timestamped network-ready (see <code>Ceylan::Log::LogTransport</code>) log messages (see <code>Ceylan::Log::LogMessage</code>), and various log aggregators (console, raw text file, HTML website, see <code>Ceylan::Log::Aggregator</code> and child classes) that can be chosen at runtime, with immediate or defered aggregation. Ceylan::Object instances have automatically their own channel, with identifiers created from automated C++ name demangling, PID and hostname
+	</li>
+	
+	<li>tree-like hierarchy of <b>composed referentials</b> for 2D and 3D objects, using source/listener pattern with local/global cached transformations (see <code>Ceylan::Maths::Linear::Locatable</code>)
+	</li>
+	
+	<li>basic command-line and keyboard management (see <code>CeylanUtils.h</code>)
+	</li>
+	
+	<li>set of <b>generic interfaces</b>, such as Displayable, Loggable, Measurable, Clonable, Countable, Lockable, Hashable, etc.
+	</li>
+	
+	<li>encapsulations :
+		<ul>
+			<li><b>basic datatypes</b>, including numerical ones, integer or floating-point, signed or not, with various explicit and checked sizes and ranges, including Ceylan::Uint64 (see <code>CeylanTypes.h</code>)
+			</li>
+			
+			<li>exceptions (see <code>Ceylan::Exception</code>)</li>
+			
+			<li>version numbers :
+				<ul>
+					<li>three number scheme (see <code>Ceylan::Version</code>)</li>
+					<li>Libtool scheme (see <code>Ceylan::LibtoolVersion</code>)</li>
+				</ul>	
+			</li>
+			
+			<li><b>string operations</b>, including direct concatenation of numerical datatypes with std::string, conversions, (de)serializations (see <code>CeylanOperators.h</code>), manipulations (split, join, substitutions, etc.), conversions to HTML (see <code>CeylanStringUtils.h</code>) or to basic UNICODE (see <code>CeylanUnicode.h</code>)</li>
+		
+		</ul>
+	</li>
+	
+	<li><b>middleware support</b>, including medium-independent protocol servers and clients and custom lightweight optionally-buffered platform-independent optimized marshaller/demarshaller (see <code>Ceylan::Middleware classes</code>)
+	</li>
+	
+	<li><b>feature management</b> with detection and request API (see </code>Ceylan::Features</code> namespace), module management with associated static metadata (see <code>Ceylan::Module</code>)
+	</li>
+	
+</ul>
+</dd>
+
+
+
+<dt>What are the major optional services ("features") that are provided by Ceylan ?</dt>
+
+<dd>Not all Ceylan-supported platforms support these specific features :
+<ul>
+
+	<li><b>regular expressions</b> (see <code>Ceylan::RegExp</code>) [GNU/Linux, FreeBSD, NetBSD only]
+	</li>
+		
+	<li><b>plugin</b>, which have static metadata and are libltdl-based (see <code>Ceylan::Plugin</code>) [GNU/Linux, FreeBSD, NetBSD only]
+	</li>
+
+</ul>	
+</dd>
+	
+<dt>What are the supported platforms ?</dt>
+<dd>
+Ceylan has been ported and tested on following platforms :
+<ul>
+
+	<li><b>GNU/Linux</b> (various distributions) [with gcc4.x]
+	</li>	
+	
+	<li><b>NetBSD</b>, <b>FreeBSD</b> [with gcc4.x]
+	</li>	
+	
+	<li><b>Windows XP</b> [with Visual Express 2005]
+	</li>
+
+</ul>		
+Not all features are available on all platforms.
+</dd>
+
+
+
+
+<dt>What is the current stable version ?</dt>
+<dd>At the time of this writing (october 2006), this is the <b>0.3.0</b> version that should be used.</dd>
+
+
+<dt>How stable is Ceylan ?</dt>
+<dd>
+We do our best to track bugs and to ensure quality by :
+<ul>
+
+	<li>writing safe code, with real C++ constructs (ex : C++ casts, assignment and copy operators private by default, etc.)
+	</li>
+	
+	<li>using an exception hierarchy with explicit throw statements in signatures
+	</li>
+	
+	<li>running regularly on each supported platform a full test chain, with 60+ sets of unit tests
+	</li>
+	
+	<li>trying to bring fast and effective support to the Ceylan users, notably for bug tracking
+	</li>
+
 </ul>
 
+</dd>
+
+</dl>	
 </p>
+
+
+<h3>A few hints</h3>
 
 <p>
 <a name="toc"></a>
@@ -550,7 +747,22 @@ The core file will be dumped in the current directory. Then run :
 <p>
 If an error occurs while executing <code>make api</code> under <code>src/doc</code>, please ensure that <code>LOANI-installations/OSDL-environment.sh</code> has already been sourced : this script sets notably the library paths for any LOANI-installed doxygen.
 </p>
- 
+
+
+<h3>See also</h3>
+
+<p>
+
+<ul>
+    <li><a href="CodingConventions.html" target="_blank">Ceylan coding conventions</a></li>
+    <li><a href="CodingGoodPractises.html" target="_blank">Ceylan coding good practises</a></li>
+<!--
+    <li><a href="" target="_blank"></a></li>
+-->
+</ul>
+
+</p>
+
 <br>
 <br>
 <br>
@@ -571,7 +783,7 @@ insufficiently discussed, or if you would like to contribute and help us, even a
   [<a href="#_top_">Top</a>]
   <br>
   <br>
-  <em>Last update : 2006, February 3, Friday</em>
+  <em>Last update : 2006, October 3, Tuesday</em>
 </center>
 
 </body>
