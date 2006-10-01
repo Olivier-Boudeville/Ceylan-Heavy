@@ -21,8 +21,8 @@ Ceylan::Uint32 Ceylan::Uint32Min =          0 ;
 // Should have been 4294967294 :
 Ceylan::Uint32 Ceylan::Uint32Max = 2147483647 ; 
 
-Ceylan::Float32 Ceylan::Float32Min = -3.4E-38 ;
-Ceylan::Float32 Ceylan::Float32Max =  3.4E38  ;
+Ceylan::Float32 Ceylan::Float32Min = -3.4E-38f ;
+Ceylan::Float32 Ceylan::Float32Max =  3.4E38f  ;
 
 Ceylan::Float64 Ceylan::Float64Min = -1.7E-308 ;
 Ceylan::Float64 Ceylan::Float64Max =  1.7E308  ;
