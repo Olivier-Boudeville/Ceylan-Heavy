@@ -46,7 +46,7 @@ namespace Ceylan
 		 * @see MultiplexedProtocolBasedServer
 		 *
 		 */
-		class AnonymousProtocolAwareStreamSocket: public AnonymousStreamSocket
+		class CEYLAN_DLL AnonymousProtocolAwareStreamSocket: public AnonymousStreamSocket
 		{
 		
 			

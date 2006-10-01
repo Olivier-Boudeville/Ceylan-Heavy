@@ -57,7 +57,7 @@ namespace Ceylan
 		 * @see DatagramSocket when available
 		 *
 		 */
-		class Socket: public System::InputOutputStream
+		class CEYLAN_DLL Socket: public System::InputOutputStream
 		{			
 			
 			public:

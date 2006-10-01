@@ -19,7 +19,7 @@ namespace Ceylan
 
 
 		/// Exception dedicated to the IP addressing.
-		class IPAddressException : public NetworkException
+		class CEYLAN_DLL IPAddressException : public NetworkException
 		{
 		
 			public:
@@ -41,7 +41,7 @@ namespace Ceylan
 		 * @todo Add informations from netinet/in.h (ex : IN_CLASSA).
 		 *
 		 */		
-		class IPAddress : public TextDisplayable
+		class CEYLAN_DLL IPAddress : public TextDisplayable
 		{
 
 			public:

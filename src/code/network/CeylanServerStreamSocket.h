@@ -46,7 +46,7 @@ namespace Ceylan
 		 * @see SequentialServerStreamSocket, MultiplexedServerStreamSocket
 		 *
 		 */
-		class ServerStreamSocket: public StreamSocket
+		class CEYLAN_DLL ServerStreamSocket: public StreamSocket
 		{
 		
 

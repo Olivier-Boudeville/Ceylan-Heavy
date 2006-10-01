@@ -28,7 +28,7 @@ namespace Ceylan
 		 * @see SequentialServerStreamSocket, MultiplexedServerStreamSocket
 		 *
 		 */
-		class AnonymousStreamSocket: public StreamSocket
+		class CEYLAN_DLL AnonymousStreamSocket: public StreamSocket
 		{
 		
 			

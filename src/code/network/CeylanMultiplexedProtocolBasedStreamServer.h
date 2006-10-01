@@ -44,7 +44,7 @@ namespace Ceylan
 		 * @see testCeylanMultiLwProtocolServer.cc
 		 *
 		 */
-		class MultiplexedProtocolBasedStreamServer: 
+		class CEYLAN_DLL MultiplexedProtocolBasedStreamServer: 
 			public MultiplexedServerStreamSocket
 		{
 		

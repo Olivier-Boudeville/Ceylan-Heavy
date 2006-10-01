@@ -19,7 +19,7 @@ namespace Ceylan
 
 
 		/// Handles IPv4 addresses.
-		class IPAddressvFour : public IPAddress
+		class CEYLAN_DLL IPAddressvFour : public IPAddress
 		{
 
 

@@ -61,7 +61,7 @@ namespace Ceylan
 		 * requests. 
 		 *
 		 */
-		class MultiplexedServerStreamSocket: public ServerStreamSocket
+		class CEYLAN_DLL MultiplexedServerStreamSocket: public ServerStreamSocket
 		{
 		
 
@@ -280,7 +280,17 @@ namespace Ceylan
 				virtual bool closeAcceptedConnections() 
 					throw( Stream::CloseException ) ;
 				 
-				
+
+/* 
+ * Takes care of the awful issue of Windows DLL with templates.
+ *
+ * @see Ceylan's developer guide and README-build-for-windows.txt 
+ * to understand it, and to be aware of the associated risks. 
+ * 
+ */
+#pragma warning( push )
+#pragma warning( disable : 4251 )
+
 				/**
 				 * The list of current accepted connection-based anonymous 
 				 * sockets.
@@ -291,6 +301,8 @@ namespace Ceylan
 				 *
 				 */
 				std::set<AnonymousStreamSocket *> _currentConnections ;
+
+#pragma warning( pop )				
 
 
 

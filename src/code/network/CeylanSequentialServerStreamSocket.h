@@ -66,7 +66,7 @@ namespace Ceylan
 		 * listening socket.
 		 * 
 		 */
-		class SequentialServerStreamSocket: public ServerStreamSocket
+		class CEYLAN_DLL SequentialServerStreamSocket: public ServerStreamSocket
 		{
 		
 

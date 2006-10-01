@@ -29,7 +29,7 @@ namespace Ceylan
 		 * @see StreamServer
 		 *
 		 */
-		class StreamSocket: public Socket 
+		class CEYLAN_DLL StreamSocket: public Socket 
 		{
 
 			
