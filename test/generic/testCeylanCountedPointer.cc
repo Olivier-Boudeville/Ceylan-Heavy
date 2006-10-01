@@ -50,7 +50,7 @@ class TestCountedPointer : public Ceylan::Object
 
 
 /// Pass by value.
-Ceylan::ReferenceCount aFunction( counted_ptr<TestCountedPointer> counted )
+Ceylan::ReferenceCount aFunction( CountedPointer<TestCountedPointer> counted )
 {
 
 	LogPlug::info( "aFunction : argument reference count is : " 
@@ -68,7 +68,7 @@ Ceylan::ReferenceCount aFunction( counted_ptr<TestCountedPointer> counted )
 /**
  * Test of counted pointer facility.
  *
- * @see CeylanCountedPointer.h (counted_ptr)
+ * @see CeylanCountedPointer.h (CountedPointer)
  *	
  */
 int main( int argc, char * argv[] )
@@ -86,7 +86,7 @@ int main( int argc, char * argv[] )
 		LogPlug::info( "Normally, exactly one TestCountedPointer "
 			"instance should be created." ) ;
 
-		counted_ptr<TestCountedPointer> myCounted = new TestCountedPointer() ;
+		CountedPointer<TestCountedPointer> myCounted = new TestCountedPointer() ;
 		LogPlug::info( "Displaying first counted pointer : " 
 			+ myCounted.toString() ) ;
 
@@ -98,7 +98,7 @@ int main( int argc, char * argv[] )
 		// This block will force myOtherCounted deallocation.
 		{
 		
-			counted_ptr<TestCountedPointer> myOtherCounted = myCounted ;
+			CountedPointer<TestCountedPointer> myOtherCounted = myCounted ;
 		
 			LogPlug::info( 
 				"Displaying first counted pointer after assignment : " 
