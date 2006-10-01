@@ -28,7 +28,7 @@ namespace Ceylan
 		 *
 		 */
 		template <class X>
-		class Synchronized
+		class CEYLAN_DLL Synchronized
 		{
 
 			public:
