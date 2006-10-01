@@ -42,6 +42,10 @@ extern "C"
 #include <signal.h>                  // for kill
 #endif // CEYLAN_USES_SIGNAL_H
 
+#ifdef CEYLAN_USES_PROCESS_H
+#include <process.h>                  // for _getpid
+#endif // CEYLAN_USES_PROCESS_H
+	
 }
 
 #include <csignal>
@@ -51,7 +55,7 @@ extern "C"
 using std::string ;
 using std::list ;
 
-
+using namespace Ceylan ;
 using namespace Ceylan::System ;
 using namespace Ceylan::Log ;
 
@@ -218,21 +222,52 @@ const string Process::toString( Ceylan::VerbosityLevels level )
 // Static section.
 
 
-Pid Process::GetHostingPID() throw()
+Pid Process::GetHostingPID() throw( ProcessException )
 {
+
+#ifdef CEYLAN_USES_PROCESS_H
+
+	return ::_getpid() ;
+
+#else // CEYLAN_USES_PROCESS_H
+
+#ifdef CEYLAN_USES_GETPID
+
 	return ::getpid() ;
+
+#else // CEYLAN_USES_GETPID
+
+	throw ProcessException( "Process::GetHostingPID : "
+		"not supported on this platform" ) ;
+
+#endif // CEYLAN_USES_GETPID
+
+#endif // CEYLAN_USES_PROCESS_H
+
 }
 
 
-Pid Process::GetParentID() throw()
+Pid Process::GetParentID() throw( ProcessException )
 {
+
+#ifdef CEYLAN_USES_GETPID
+
 	return ::getpid() ;
+
+#else // CEYLAN_USES_GETPID
+
+	throw ProcessException( "Process::GetParentID : "
+		"not supported on this platform" ) ;
+
+#endif // CEYLAN_USES_GETPID
 }
 
 
 Process::ExitReason Process::WaitChildProcess( const Process & childProcess,
-	ErrorCode * executionInfo ) throw()
+	ErrorCode * executionInfo ) throw( ProcessException )
 {
+
+#ifdef CEYLAN_USES_WAITPID
 
 	int status = 0 ;
 	ExitReason ret = BadChildPid ;
@@ -271,7 +306,15 @@ Process::ExitReason Process::WaitChildProcess( const Process & childProcess,
 	}
 
 	return ret ;
-	
+
+
+#else // CEYLAN_USES_WAITPID
+
+	throw ProcessException( "Process::WaitChildProcess : "
+		"not supported on this platform" ) ;
+
+#endif // CEYLAN_USES_WAITPID
+
 }
 
 
