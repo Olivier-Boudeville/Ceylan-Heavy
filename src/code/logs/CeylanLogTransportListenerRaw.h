@@ -33,7 +33,7 @@ namespace Ceylan
 		 * source and gives it to the aggragator : this is the most basic communication bus.
 		 *
 		 */
-		class LogTransportListenerRaw : public LogTransport, public LogListener
+		class CEYLAN_DLL LogTransportListenerRaw : public LogTransport, public LogListener
 		{
 
 			public:

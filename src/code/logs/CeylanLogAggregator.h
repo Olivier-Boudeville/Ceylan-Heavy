@@ -53,7 +53,7 @@ namespace Ceylan
 		 * @see LogSource, LogListener, LogTransport
 		 *
 		 */
-		class LogAggregator : public TextDisplayable
+		class CEYLAN_DLL LogAggregator : public TextDisplayable
 		{
 		
 		
@@ -353,8 +353,13 @@ namespace Ceylan
 						LevelOfDetail level ) throw() ; 
 				
 				
+#pragma warning( push )
+#pragma warning( disable : 4251 )
+
 				/// List of all known Log channels.
 				std::list<LogChannel *> _channelList ;
+
+#pragma warning( pop ) 
 				
 				
 				/**

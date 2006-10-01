@@ -44,7 +44,7 @@ namespace Ceylan
 		 * @see LogAggregator
 		 *
 		 */
-		class LogAggregatorConsole : public LogAggregator
+		class CEYLAN_DLL LogAggregatorConsole : public LogAggregator
 		{
 		
 		

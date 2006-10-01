@@ -32,7 +32,7 @@ namespace Ceylan
 		 * @see Log, LogTransport
 		 *
 		 */
-		class LogSource : public TextDisplayable
+		class CEYLAN_DLL LogSource : public TextDisplayable
 		{
 		
 			public:

@@ -28,7 +28,7 @@ namespace Ceylan
 	 	 * @see LogAggregator
 	 	 *
 	 	 */
-		class LogChannel : public TextDisplayable
+		class CEYLAN_DLL LogChannel : public TextDisplayable
 		{
 	
 	
@@ -116,14 +116,26 @@ namespace Ceylan
 
 				/// This channel's name.
 				std::string _name ;
-								
-								
+			
+
+/* 
+ * Takes care of the awful issue of Windows DLL with templates.
+ *
+ * @see Ceylan's developer guide and README-build-for-windows.txt 
+ * to understand it, and to be aware of the associated risks. 
+ * 
+ */
+#pragma warning( push )
+#pragma warning( disable : 4251 )
+
 				/**
 				 * Chronologically-ordered set of messages for this
 				 * Log channel.
 				 *
 				 */
 				std::list<LogMessage *> _messages ;
+
+#pragma warning( pop ) 								
 
 
 

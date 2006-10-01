@@ -54,7 +54,7 @@ namespace Ceylan
 		 * @see LogPlug
 		 *
 		 */
-		class LogPlugClassical : public LogPlug
+		class CEYLAN_DLL LogPlugClassical : public LogPlug
 		{
 		
 			public:

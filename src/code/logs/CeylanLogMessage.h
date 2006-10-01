@@ -29,7 +29,7 @@ namespace Ceylan
 		 * Ceylan::Log::LogContent.
 		 *
 		 */
-		class LogMessage : public TextDisplayable
+		class CEYLAN_DLL LogMessage : public TextDisplayable
 		{
 			
 			

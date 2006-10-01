@@ -92,14 +92,14 @@ namespace Ceylan
 
 
  		/// The default level of detail for a Log message (5).
- 		extern const LevelOfDetail DefaultLevelOfDetailForMessage ;
+ 		extern CEYLAN_DLL const LevelOfDetail DefaultLevelOfDetailForMessage ;
 
 		// The maximum level of detail for a Log message (0).
- 		extern const LevelOfDetail MaximumLevelOfDetailForMessage ;
+ 		extern CEYLAN_DLL const LevelOfDetail MaximumLevelOfDetailForMessage ;
 
 
 		/// The default level of detail of a Log listener (10).
- 		extern const LevelOfDetail DefaultLevelOfDetailForListener ;
+ 		extern CEYLAN_DLL const LevelOfDetail DefaultLevelOfDetailForListener ;
 
 		/**
 		 * The maximum level of detail for a Log Listener (0).
@@ -108,12 +108,12 @@ namespace Ceylan
 		 * messages.
 		 * 
 		 */
- 		extern const LevelOfDetail MaximumLevelOfDetailForListener ;
+ 		extern CEYLAN_DLL const LevelOfDetail MaximumLevelOfDetailForListener ;
 
 
 
 		/// Exception by all actors of the log service.
-	    class LogException: public Ceylan::Exception
+	    class CEYLAN_DLL LogException: public Ceylan::Exception
 		{
 
 			public:

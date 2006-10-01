@@ -88,7 +88,7 @@ namespace Ceylan
 	 	 *
 		 *
 	 	 */
-		class LogHolder : public TextDisplayable
+		class CEYLAN_DLL LogHolder : public TextDisplayable
 		{
 	
 				

@@ -49,7 +49,7 @@ namespace Ceylan
 		 * @see LogAggregator
 		 *
 		 */
-		class LogAggregatorHTML : public LogAggregator
+		class CEYLAN_DLL LogAggregatorHTML : public LogAggregator
 		{
 		
 			public:

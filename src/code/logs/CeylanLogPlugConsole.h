@@ -54,7 +54,7 @@ namespace Ceylan
 		 * @see LogPlug
 		 *
 		 */
-		class LogPlugConsole : public LogPlug
+		class CEYLAN_DLL LogPlugConsole : public LogPlug
 		{
 		
 			public:
@@ -115,7 +115,8 @@ namespace Ceylan
 				virtual ~LogPlugConsole() throw() ;
 			
 				*/
-			
+
+
 				/**
 				 * Copy constructor made private to ensure that it will 
 				 * be never called.

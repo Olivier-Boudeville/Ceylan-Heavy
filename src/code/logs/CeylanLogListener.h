@@ -40,7 +40,7 @@ namespace Ceylan
 		 * class would be required.
 		 *
 		 */
-		class LogListener : public virtual TextDisplayable
+		class CEYLAN_DLL LogListener : public virtual TextDisplayable
 		{
 
 
