@@ -36,7 +36,8 @@ int main( int argc,  char * argv[] )
 		Ceylan::parseCommandLineOptions( executableName, options, argc, argv ) ;
 		
 		LogPlug::info( "Executable name is : '" + executableName 
-			+ "', option count is " + Ceylan::toString( options.size() ) 
+			+ "', option count is " 
+			+ Ceylan::toString( static_cast<Ceylan::Uint32>( options.size() ) )
 			+ ", option list is " 
 			+ formatStringList( options, /* surroundByTicks */ true ) ) ;
 		
