@@ -91,7 +91,9 @@ System::Size Marshaller::retrieveData( System::Size requestedSize )
 
 #if CEYLAN_DEBUG_MARSHALLERS			
 	LogPlug::trace( "Marshaller::retrieveData : " 
-		+ Ceylan::toString( requestedSize ) + " byte(s) requested." ) ;
+		+ Ceylan::toString( 
+			static_cast<Ceylan::Uint32>( requestedSize ) ) 
+		+ " byte(s) requested." ) ;
 #endif // CEYLAN_DEBUG_MARSHALLERS
 	
 	if ( ! isBuffered() )
@@ -154,7 +156,9 @@ System::Size Marshaller::retrieveData( System::Size requestedSize )
 	
 #if CEYLAN_DEBUG_MARSHALLERS			
 		LogPlug::debug( "Marshaller::retrieveData : will try to read " 
-			+ Ceylan::toString( targetFreeSize ) + " actual byte(s)." ) ;
+			+ Ceylan::toString( 
+				static_cast<Ceylan::Uint32>( targetFreeSize ) ) 
+			+ " actual byte(s)." ) ;
 #endif // CEYLAN_DEBUG_MARSHALLERS
 			
 		// Avoid useless buffer copy thanks to in-place writing :	
@@ -163,7 +167,9 @@ System::Size Marshaller::retrieveData( System::Size requestedSize )
 
 #if CEYLAN_DEBUG_MARSHALLERS			
 		LogPlug::debug( "Marshaller::retrieveData : read " 
-			+ Ceylan::toString( readSize ) + " actual byte(s)." ) ;
+			+ Ceylan::toString( 
+				static_cast<Ceylan::Uint32>( readSize ) )
+			+ " actual byte(s)." ) ;
 #endif // CEYLAN_DEBUG_MARSHALLERS
 			
 	}
@@ -192,8 +198,9 @@ System::Size Marshaller::retrieveData( System::Size requestedSize )
 	
 #if CEYLAN_DEBUG_MARSHALLERS			
 	LogPlug::trace( "Marshaller::retrieveData : " 
-		+ Ceylan::toString( readSize ) + " byte(s) read, "
-		+ Ceylan::toString(  _bufferStream->getBlockLength() ) 
+		+ Ceylan::toString( static_cast<Ceylan::Uint32>( readSize ) )
+		+ " byte(s) read, "	+ Ceylan::toString( 
+			static_cast<Ceylan::Uint32>( _bufferStream->getBlockLength() ) ) 
 		+ " byte(s) available now." ) ;
 #endif // CEYLAN_DEBUG_MARSHALLERS
 		
