@@ -57,9 +57,10 @@ int main( int argc, char * argv[] )
 		RandomGeneratorFromPDF myGaussianGenerator( myGaussian, 
 			sampleStart, sampleStop, seed ) ;
 		
-		
+		LogPlug::info( "Random generator created." ) ;
+
 		/*
-		 * A Gaussion generator embeds a WhiteNoiseGenerator, which is the
+		 * A Gaussian generator embeds a WhiteNoiseGenerator, which is the
 		 * second object to have a dedicated channel in logs :
 		 *
 		 */
