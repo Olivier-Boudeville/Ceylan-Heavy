@@ -82,7 +82,7 @@ namespace Ceylan
 				 * HomogeneousMatrix3 result = m1 * m2.
 				 *
 				 */
-				friend HomogeneousMatrix3 operator * ( 
+				CEYLAN_DLL friend HomogeneousMatrix3 operator * ( 
 					const HomogeneousMatrix3 & hm1, 
 					const HomogeneousMatrix3 & hm2 ) throw() ;
 				
@@ -96,8 +96,8 @@ namespace Ceylan
 				 * matrices.
 				 *
 				 */
-				friend Vector2 operator * ( const HomogeneousMatrix3 & hm, 
-					const Vector2 & v ) throw() ;
+				CEYLAN_DLL friend Vector2 operator * ( 
+					const HomogeneousMatrix3 & hm, const Vector2 & v ) throw() ;
 				
 
 				public:

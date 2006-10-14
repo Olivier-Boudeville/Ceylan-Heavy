@@ -55,7 +55,7 @@ namespace Ceylan
 				 * Tells whether the two vectors have the same elements.
 				 *
 				 */
-				friend bool operator == ( const Vector2 & v1, 
+				CEYLAN_DLL friend bool operator == ( const Vector2 & v1, 
 					const Vector2 & v2 ) throw() ;
 						
 						
@@ -64,7 +64,7 @@ namespace Ceylan
 				 * same elements.
 				 *
 				 */
-				friend bool operator != ( const Vector2 & v1, 
+				CEYLAN_DLL friend bool operator != ( const Vector2 & v1, 
 					const Vector2 & v2 ) throw() ;
 
 
@@ -73,7 +73,7 @@ namespace Ceylan
 				 * result = t + v.
 				 *
 				 */
-				friend Bipoint operator + ( const Bipoint & t, 
+				CEYLAN_DLL friend Bipoint operator + ( const Bipoint & t, 
 					const Vector2 & v ) throw() ;
 				
 				
@@ -82,7 +82,7 @@ namespace Ceylan
 				 * result = t - v.
 				 *
 				 */
-				friend Bipoint operator - ( const Bipoint & t, 
+				CEYLAN_DLL friend Bipoint operator - ( const Bipoint & t, 
 					const Vector2 & v ) throw();
 	
 				
@@ -91,7 +91,8 @@ namespace Ceylan
 				 * have the same coordinates.
 				 *
 				 */
-				friend Vector2 vectorize( const Bipoint & t ) throw() ;
+				CEYLAN_DLL friend Vector2 vectorize( const Bipoint & t ) 
+					throw() ;
 				
 				
 				/** 
@@ -99,7 +100,7 @@ namespace Ceylan
 				 * result = t1 - t2.
 				 *
 				 */
-				friend Vector2 vectorize( const Bipoint & t1, 
+				CEYLAN_DLL friend Vector2 vectorize( const Bipoint & t1, 
 					const Bipoint & t2 ) throw() ;
 
 
@@ -107,7 +108,7 @@ namespace Ceylan
 				 * Adds two vectors : result = v1 + v2.
 				 *
 				 */
-				friend Vector2 operator + ( const Vector2 & v1, 
+				CEYLAN_DLL friend Vector2 operator + ( const Vector2 & v1, 
 					const Vector2 & v2 ) throw() ;
 
 
@@ -115,7 +116,7 @@ namespace Ceylan
 				 * Substracts two vectors : result = v1 - v2.
 				 *
 				 */			
-				friend Vector2 operator - ( const Vector2 & v1, 
+				CEYLAN_DLL friend Vector2 operator - ( const Vector2 & v1, 
 					const Vector2 & v2 ) throw() ;
 	
 				
@@ -124,7 +125,7 @@ namespace Ceylan
 				 * result = lamba.v.
 				 *
 				 */
-				friend Vector2 operator * ( Real lambda, 
+				CEYLAN_DLL friend Vector2 operator * ( Real lambda, 
 					const Vector2 & v ) throw()  ;
 				
 				
@@ -133,15 +134,16 @@ namespace Ceylan
 				 * result = m.v
 				 *
 				 */
-				friend Vector2 operator * ( const Matrix2 & m, 
+				CEYLAN_DLL friend Vector2 operator * ( const Matrix2 & m, 
 					const Vector2 & v ) throw() ;
 	
 	
-				/** Applies vector v to homogeneous matrix hm : 
+				/** 
+				 * Applies vector v to homogeneous matrix hm : 
 				 * result = hm.v
 				 *
 				 */
-				friend Vector2 operator * ( const HomogeneousMatrix3 & m, 
+				CEYLAN_DLL friend Vector2 operator * ( const HomogeneousMatrix3 & m, 
 					const Vector2 & v )	throw() ;
 
 
@@ -150,13 +152,13 @@ namespace Ceylan
 				 * result = v1 (dotproduct) v2.
 				 *
 				 */
-				friend Real operator | ( const Vector2 & v1, 
+				CEYLAN_DLL friend Real operator | ( const Vector2 & v1, 
 					const Vector2 & v2 ) throw()  ;
 
 				// Cross product is a non-sense in 2D.
 				
 				/// Returns the magnitude of specified vector.
-				friend Real operator ~ ( const Vector2 & v ) throw() ;
+				CEYLAN_DLL friend Real operator ~ ( const Vector2 & v ) throw() ;
 				
 				
 				

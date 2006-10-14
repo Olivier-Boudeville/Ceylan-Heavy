@@ -68,7 +68,7 @@ namespace Ceylan
 				 * @see Maths::AreRelativelyEqual.
 				 *
 				 */
-				friend bool operator == ( const Matrix3 & m1, 
+				CEYLAN_DLL friend bool operator == ( const Matrix3 & m1, 
 					const Matrix3 & m2 ) throw() ;
 								
 								
@@ -82,7 +82,7 @@ namespace Ceylan
 				 * @see Maths::AreRelativelyEqual.
 				 *
 				 */
-				friend bool operator != ( const Matrix3 & m1, 
+				CEYLAN_DLL friend bool operator != ( const Matrix3 & m1, 
 					const Matrix3 & m2 ) throw() ;
 
 
@@ -90,7 +90,7 @@ namespace Ceylan
 				 * Adds two matrices : result = m1 + m2.
 				 *
 				 */
-				friend Matrix3 operator + ( const Matrix3 & m1, 
+				CEYLAN_DLL friend Matrix3 operator + ( const Matrix3 & m1, 
 					const Matrix3 & m2 ) throw() ;
 				
 				
@@ -98,7 +98,7 @@ namespace Ceylan
 				 * Substracts two matrices : result = m1 - m2.
 				 *
 				 */					
-				friend Matrix3 operator - ( const Matrix3 & m1, 
+				CEYLAN_DLL friend Matrix3 operator - ( const Matrix3 & m1, 
 					const Matrix3 & m2 ) throw() ;
 				
 				
@@ -106,7 +106,7 @@ namespace Ceylan
 				 * Multiplies two matrices : result = m1 * m2.
 				 *
 				 */									
-				friend Matrix3 operator * ( const Matrix3 & m1, 
+				CEYLAN_DLL friend Matrix3 operator * ( const Matrix3 & m1, 
 					const Matrix3 & m2 ) throw() ;
 				
 				
@@ -114,7 +114,7 @@ namespace Ceylan
 				 * Multiplies a matrix by a scalar : result = lambda * m.
 				 *
 				 */							
-				friend Matrix3 operator * ( Real lambda, 
+				CEYLAN_DLL friend Matrix3 operator * ( Real lambda, 
 					const Matrix3 & m ) throw() ;
 				
 				
@@ -125,7 +125,7 @@ namespace Ceylan
 				 * @throw LinearException if the matrix is singuler.
 				 *
 				 */
-				friend Matrix3 operator ! ( const Matrix3 & m ) 
+				CEYLAN_DLL friend Matrix3 operator ! ( const Matrix3 & m ) 
 					throw( LinearException ) ;
 				
 				
@@ -134,14 +134,14 @@ namespace Ceylan
 				 * to this matrix.
 				 *
 				 */
-				friend Matrix3 operator ~ ( const Matrix3 & m ) throw() ;
+				CEYLAN_DLL friend Matrix3 operator ~ ( const Matrix3 & m ) throw() ;
 
 
 				/** 	
 				 * Multiplies a matrix by a vector : result = m * v
 				 *
 				 */
-				friend Vector3 operator * ( const Matrix3 & m , 
+				CEYLAN_DLL friend Vector3 operator * ( const Matrix3 & m , 
 					const Vector3 & v ) throw() ;
 
 

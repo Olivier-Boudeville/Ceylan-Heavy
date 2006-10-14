@@ -63,7 +63,7 @@ namespace Ceylan
 				 * @see Maths::AreRelativelyEqual.
 				 *
 				 */
-				friend bool operator == ( const Bipoint & t1, 
+				CEYLAN_DLL friend bool operator == ( const Bipoint & t1, 
 					const Bipoint & t2 ) throw() ;
 				
 				
@@ -77,7 +77,7 @@ namespace Ceylan
 				 * @see Maths::AreRelativelyEqual.
 				 *
 				 */
-				friend bool operator != ( const Bipoint & t1, 
+				CEYLAN_DLL friend bool operator != ( const Bipoint & t1, 
 					const Bipoint & t2 ) throw() ;
 				
 				
@@ -86,7 +86,7 @@ namespace Ceylan
 				 * result = t + v.
 				 *
 				 */
-				friend Bipoint operator + ( const Bipoint & t, 
+				CEYLAN_DLL friend Bipoint operator + ( const Bipoint & t, 
 					const Vector2 & v ) throw() ;
 				
 				
@@ -95,7 +95,7 @@ namespace Ceylan
 				 * result = t - v.
 				 *
 				 */
-				friend Bipoint operator - ( const Bipoint & t, 
+				CEYLAN_DLL friend Bipoint operator - ( const Bipoint & t, 
 					const Vector2 & v ) throw();
 				
 				/**
@@ -103,7 +103,7 @@ namespace Ceylan
 				 * have the same coordinates.
 				 *
 				 */
-				friend Vector2 vectorize( const Bipoint & t ) throw() ;
+				CEYLAN_DLL friend Vector2 vectorize( const Bipoint & t ) throw() ;
 				
 				
 				/**
@@ -111,7 +111,7 @@ namespace Ceylan
 				 * result = t2 - t1.
 				 *
 				 */
-				friend Vector2 vectorize( const Bipoint & t1, 
+				CEYLAN_DLL friend Vector2 vectorize( const Bipoint & t1, 
 					const Bipoint & t2 ) throw() ;
 
 				

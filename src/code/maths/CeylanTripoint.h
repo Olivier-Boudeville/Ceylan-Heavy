@@ -63,7 +63,7 @@ namespace Ceylan
 				 *
 				 * @see Maths::AreRelativelyEqual.
 				 */
-				friend bool operator == ( const Tripoint & t1, 
+				CEYLAN_DLL friend bool operator == ( const Tripoint & t1, 
 					const Tripoint & t2 ) throw() ;
 				
 				
@@ -71,7 +71,7 @@ namespace Ceylan
 				 * Tells whether the two tripoints have the same elements.
 				 *
 				 */
-				friend bool operator != ( const Tripoint & t1, 
+				CEYLAN_DLL friend bool operator != ( const Tripoint & t1, 
 					const Tripoint & t2 ) throw() ;
 				
 				/** 
@@ -79,7 +79,7 @@ namespace Ceylan
 				 * result = t + v.
 				 *
 				 */
-				friend Tripoint operator + ( const Tripoint & t, 
+				CEYLAN_DLL friend Tripoint operator + ( const Tripoint & t, 
 					const Vector3 & v ) throw() ;
 					
 				
@@ -88,7 +88,7 @@ namespace Ceylan
 				 * result = t - v.
 				 *
 				 */
-				friend Tripoint operator - ( const Tripoint & t, 
+				CEYLAN_DLL friend Tripoint operator - ( const Tripoint & t, 
 					const Vector3 & v ) throw();
 				
 				
@@ -97,7 +97,7 @@ namespace Ceylan
 				 * have exactly the same coordinates.
 				 *
 				 */
-				friend Vector3 vectorize( const Tripoint & t ) throw() ;
+				CEYLAN_DLL friend Vector3 vectorize( const Tripoint & t ) throw() ;
 				
 				
 				/** 
@@ -105,7 +105,7 @@ namespace Ceylan
 				 * result = t2 - t1.
 				 *
 				 */
-				friend Vector3 vectorize( const Tripoint & t1, 
+				CEYLAN_DLL friend Vector3 vectorize( const Tripoint & t1, 
 					const Tripoint & t2 ) throw() ;
 
 

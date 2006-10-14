@@ -51,7 +51,7 @@ namespace Ceylan
 				 * Tells whether the two vectors have the same elements.
 				 *
 				 */
-				friend bool operator == ( const Vector3 & v1, 
+				CEYLAN_DLL friend bool operator == ( const Vector3 & v1, 
 					const Vector3 & v2 ) throw() ;
 						
 						
@@ -59,7 +59,7 @@ namespace Ceylan
 				 * Tells whether the two vectors have the same elements.
 				 *
 				 */
-				friend bool operator != ( const Vector3 & v1, 
+				CEYLAN_DLL friend bool operator != ( const Vector3 & v1, 
 					const Vector3 & v2 ) throw() ;
 
 
@@ -67,7 +67,7 @@ namespace Ceylan
 				 * result = t + v.
 				 *
 				 */
-				friend Tripoint operator + ( const Tripoint & t, 
+				CEYLAN_DLL friend Tripoint operator + ( const Tripoint & t, 
 					const Vector3 & v ) throw() ;
 				
 				
@@ -76,7 +76,7 @@ namespace Ceylan
 				 * result = t - v.
 				 *
 				 */
-				friend Tripoint operator - ( const Tripoint & t, 
+				CEYLAN_DLL friend Tripoint operator - ( const Tripoint & t, 
 					const Vector3 & v ) throw();
 	
 				
@@ -85,7 +85,7 @@ namespace Ceylan
 				 * have the same coordinates.
 				 *
 				 */
-				friend Vector3 vectorize( const Tripoint & t ) throw() ;
+				CEYLAN_DLL friend Vector3 vectorize( const Tripoint & t ) throw() ;
 				
 				
 				/** 
@@ -93,7 +93,7 @@ namespace Ceylan
 				 * result = t1 - t2.
 				 *
 				 */
-				friend Vector3 vectorize( const Tripoint & t1, 
+				CEYLAN_DLL friend Vector3 vectorize( const Tripoint & t1, 
 					const Tripoint & t2 ) throw() ;
 
 
@@ -101,7 +101,7 @@ namespace Ceylan
 				 * Adds two vectors : result = v1 + v2.
 				 *
 				 */
-				friend Vector3 operator + ( const Vector3 & v1, 
+				CEYLAN_DLL friend Vector3 operator + ( const Vector3 & v1, 
 					const Vector3 & v2 ) throw() ;
 					
 
@@ -109,7 +109,7 @@ namespace Ceylan
 				 * Substracts two vectors : result = v1 - v2.	
 				 *
 				 */			
-				friend Vector3 operator - ( const Vector3 & v1, 
+				CEYLAN_DLL friend Vector3 operator - ( const Vector3 & v1, 
 					const Vector3 & v2 ) throw() ;
 	
 				
@@ -117,7 +117,7 @@ namespace Ceylan
 				 * Multiplies v by coefficient lambda : result = lamba.v.
 				 *
 				 */
-				friend Vector3 operator * ( Real lambda, 
+				CEYLAN_DLL friend Vector3 operator * ( Real lambda, 
 					const Vector3 & v ) throw()  ;
 				
 				
@@ -125,7 +125,7 @@ namespace Ceylan
 				 * Applies vector v to matrix m : result = m.v
 				 *
 				 */
-				friend Vector3 operator * ( const Matrix3 & m, 
+				CEYLAN_DLL friend Vector3 operator * ( const Matrix3 & m, 
 					const Vector3 & v ) throw() ;
 	
 				
@@ -134,7 +134,7 @@ namespace Ceylan
 				 * result = v1 (dotproduct) v2.
 				 *
 				 */
-				friend Real operator | ( const Vector3 & v1, 
+				CEYLAN_DLL friend Real operator | ( const Vector3 & v1, 
 					const Vector3 & v2 ) throw()  ;
 
 
@@ -143,7 +143,7 @@ namespace Ceylan
 				 * result = v1 (crossproduct) v2.
 				 *
 				 */
-				friend Vector3 operator ^ ( const Vector3 & v1, 
+				CEYLAN_DLL friend Vector3 operator ^ ( const Vector3 & v1, 
 					const Vector3 & v2 ) throw() ;
 				
 				
@@ -151,7 +151,7 @@ namespace Ceylan
 				 * Returns the magnitude of specified vector.
 				 *
 				 */
-				friend Real operator ~ ( const Vector3 & v ) throw() ;
+				CEYLAN_DLL friend Real operator ~ ( const Vector3 & v ) throw() ;
 				
 				
 				
