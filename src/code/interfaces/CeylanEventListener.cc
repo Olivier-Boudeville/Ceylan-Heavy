@@ -40,7 +40,8 @@ EventListener::~EventListener() throw()
 	if ( ! _sources.empty() )		
 		LogPlug::debug( "EventListener destructor : "
 			"listener was still registered to " 
-			+ Ceylan::toString( _sources.size() )
+			+ Ceylan::toString( 
+				static_cast<Ceylan::Uint32>( _sources.size() ) )
 			+ " source(s), unsubscribing it." ) ;
 #endif // CEYLAN_DEBUG_EVENTS
 
@@ -90,7 +91,15 @@ void EventListener::unsubscribeFrom( EventSource & source )
 			
 			// Ensure that the source forgot this listener :
 			(*it)->remove( * this ) ;
-			
+
+#if CEYLAN_DEBUG_EVENTS		
+
+			LogPlug::debug( 
+				"EventListener unsubscribed from following source : " 
+				+ (*it)->toString() ) ;
+
+#endif // CEYLAN_DEBUG_EVENTS
+
 			/*
 			 * Removes the source, invalidates the iterator but it will 
 			 * not be used any more :
@@ -101,13 +110,7 @@ void EventListener::unsubscribeFrom( EventSource & source )
 
 			// At most one pointer to this source registered !
 				
-#if CEYLAN_DEBUG_EVENTS		
 
-			LogPlug::debug( 
-				"EventListener unsubscribed from following source : " 
-				+ (*it)->toString() ) ;
-
-#endif // CEYLAN_DEBUG_EVENTS
 				
 			return ;
 		}	
