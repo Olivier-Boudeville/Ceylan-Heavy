@@ -19,6 +19,8 @@
  * This part of the Ceylan namespace gathers some convenient string
  * manipulation facilities to be widely used.
  *
+ * The system default locale is the one being used.
+ *
  * @see CeylanOperators.h for operators appending numerical values to 
  * strings.
  *
@@ -167,7 +169,53 @@ namespace Ceylan
 			const std::string & toBeReplaced, 
 			const std::string & replacement ) throw() ;
 		
-	
+
+	/**
+	 * Returns whether specified character is a letter, i.e. is in [a-z] or [A-Z]. 
+	 *
+	 * @param targetChar the character to test.
+	 *
+	 * @return true iff targetChar is a letter.
+	 *
+	 */
+	CEYLAN_DLL bool isLetter( char targetChar ) throw() ;
+
+
+	/**
+	 * Returns whether specified character is a figure, i.e. is in [0-9]. 
+	 *
+	 * @param targetChar the character to test.
+	 *
+	 * @return true iff targetChar is a figure.
+	 *
+	 */
+	CEYLAN_DLL bool isFigure( char targetChar ) throw() ;
+
+
+	/**
+	 * Returns whether specified character is a punctuation character, i.e. is not a letter,
+	 * not a figure, not a whitespace. 
+	 *
+	 * @param targetChar the character to test.
+	 *
+	 * @return true iff targetChar is a punctuation character.
+	 *
+	 */
+	CEYLAN_DLL bool isPunctuation( char targetChar ) throw() ;
+
+
+	/**
+	 * Returns whether specified character is a whitespace character, i.e. is in [0x09;0x0D;0x20]. 
+	 *
+	 * @param targetChar the character to test.
+	 *
+	 * @return true iff targetChar is a whitespace character.
+	 *
+	 */
+	CEYLAN_DLL bool isWhitespace( char targetChar ) throw() ;
+
+
+
 	/**
 	 * Returns specified text with all the letters translated to uppercase,
 	 * other characters being left untouched. 
