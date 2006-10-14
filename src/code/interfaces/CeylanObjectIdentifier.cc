@@ -56,7 +56,8 @@ Ceylan::Log::ObjectIdentifier::ObjectIdentifier( const Object & object )
 	_address( 0 ) 
 {
 
-	CEYLAN_LOG( "Creating a new identifier for " 
+	CEYLAN_LOG( "Log::ObjectIdentifier constructor : "
+		"creating a new identifier for " 
 		+ object.getClassName() + " instance." ) ;
 	
 	try 
@@ -87,7 +88,7 @@ Ceylan::Log::ObjectIdentifier::ObjectIdentifier( const Object & object )
 	
 	_address = static_cast<const void *>( & object ) ;
 	
-	// CEYLAN_LOG( "Newly created identifier is " + toString() ) ;
+	CEYLAN_LOG( "Newly created identifier is " + toString() ) ;
 	
 }
 
