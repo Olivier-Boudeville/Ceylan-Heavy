@@ -41,22 +41,29 @@ int main( int argc, char * argv[] )
         LogPlug::info( "Creating a new file locator : " 
 			+ myLocator.toString() ) ;
 		
+		LogPlug::info( "Current working directory is " 
+			+ Directory::GetCurrentWorkingDirectoryName() ) ;
+
 		// When run from build tree :
 		string firstPath  = "../src/code" ;
 		
 		myLocator.addPath( firstPath ) ;
-        LogPlug::info( "Adding a first path : " + myLocator.toString() ) ;
+        LogPlug::info( "Adding a first UNIX path : " + myLocator.toString() ) ;
 		
 		// When run against an install :		
 		string secondPath = "/usr/local/include/Ceylan" ;
 
 		myLocator.addPath( secondPath ) ;
-        LogPlug::info( "Adding a second path : " + myLocator.toString() ) ;
+        LogPlug::info( "Adding a second UNIX path : " + myLocator.toString() ) ;
 		
 		myLocator.addPath( secondPath ) ;
         LogPlug::info( "Adding this second path twice : " 
 			+ myLocator.toString() ) ;
-				
+
+		string thirdPath = "../code" ;
+		myLocator.addPath( thirdPath ) ;
+        LogPlug::info( "Adding a path for Windows tests : " + myLocator.toString() ) ;
+
 		string toFind = "Ceylan.h" ;
 		string found  ;
 		
