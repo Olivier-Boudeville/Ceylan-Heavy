@@ -36,7 +36,7 @@ namespace Ceylan
 		 * for this platform.
 		 *
 		 */
-		UnsignedLongInteger getSecondsSinceSystemBoot() 
+		CEYLAN_DLL UnsignedLongInteger getSecondsSinceSystemBoot() 
 			throw( SystemException ) ; 
 
 
@@ -48,7 +48,7 @@ namespace Ceylan
 		 * for this platform.
 		 *
 		 */
-		Ceylan::Uint32 getTotalProcessCount() 
+		CEYLAN_DLL Ceylan::Uint32 getTotalProcessCount() 
 			throw( SystemException ) ; 
 
 
@@ -61,7 +61,7 @@ namespace Ceylan
 		 * for this platform.
 		 *
 		 */
-		UnsignedLongInteger getTotalSystemMemorySize() 
+		CEYLAN_DLL UnsignedLongInteger getTotalSystemMemorySize() 
 			throw( SystemException ) ; 
 
 
@@ -73,7 +73,7 @@ namespace Ceylan
 		 * for this platform.
 		 *
 		 */
-		UnsignedLongInteger getFreeSystemMemorySize() 
+		CEYLAN_DLL UnsignedLongInteger getFreeSystemMemorySize() 
 			throw( SystemException ) ; 
 
 
@@ -85,7 +85,7 @@ namespace Ceylan
 		 * for this platform.
 		 *
 		 */
-		UnsignedLongInteger getTotalSwapMemorySize() 
+		CEYLAN_DLL UnsignedLongInteger getTotalSwapMemorySize() 
 			throw( SystemException ) ; 
 
 
@@ -97,7 +97,7 @@ namespace Ceylan
 		 * for this platform.
 		 *
 		 */
-		UnsignedLongInteger getFreeSwapMemorySize() 
+		CEYLAN_DLL UnsignedLongInteger getFreeSwapMemorySize() 
 			throw( SystemException ) ; 
 
 
@@ -109,7 +109,7 @@ namespace Ceylan
 		 * for this platform.
 		 *
 		 */
-		UnsignedLongInteger getTotalHighMemorySize() 
+		CEYLAN_DLL UnsignedLongInteger getTotalHighMemorySize() 
 			throw( SystemException ) ; 
 
 
@@ -121,7 +121,7 @@ namespace Ceylan
 		 * for this platform.
 		 *
 		 */
-		UnsignedLongInteger getFreeHighMemorySize() 
+		CEYLAN_DLL UnsignedLongInteger getFreeHighMemorySize() 
 			throw( SystemException ) ; 
 
 
@@ -133,7 +133,7 @@ namespace Ceylan
 		 * for this platform.
 		 *
 		 */
-		UnsignedLongInteger getSharedMemorySize() 
+		CEYLAN_DLL UnsignedLongInteger getSharedMemorySize() 
 			throw( SystemException ) ; 
 
 
@@ -145,7 +145,7 @@ namespace Ceylan
 		 * for this platform.
 		 *
 		 */
-		UnsignedLongInteger getBuffersMemorySize() 
+		CEYLAN_DLL UnsignedLongInteger getBuffersMemorySize() 
 			throw( SystemException ) ; 
 
 				

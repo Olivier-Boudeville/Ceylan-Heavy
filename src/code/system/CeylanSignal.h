@@ -49,7 +49,7 @@ namespace Ceylan
 		
 		
 			/// Pre-defined handler which ignores signals.
-			extern const SignalHandler IgnoringHandler ;
+			extern CEYLAN_DLL const SignalHandler IgnoringHandler ;
 		
 		
 			/**
@@ -58,7 +58,7 @@ namespace Ceylan
 			 * etc.).
 			 *
 			 */
-			extern const SignalHandler DefaultHandler ;
+			extern CEYLAN_DLL const SignalHandler DefaultHandler ;
 		
 		
 		
@@ -73,7 +73,7 @@ namespace Ceylan
 			 * Default action is to terminate the process.
 			 *
 			 */
-			extern const SignalNumber HangUp ;
+			extern CEYLAN_DLL const SignalNumber HangUp ;
 	
 	
 			/**
@@ -82,7 +82,7 @@ namespace Ceylan
 			 * Default action is to terminate the process.
 			 *
 			 */
-			extern const SignalNumber InterruptFromKeyboard ;
+			extern CEYLAN_DLL const SignalNumber InterruptFromKeyboard ;
 	
 	
 			/**
@@ -91,7 +91,7 @@ namespace Ceylan
 			 * Default action is to terminate the process and dump core.
 			 *
 			 */
-			extern const SignalNumber QuitFromKeyboard ;
+			extern CEYLAN_DLL const SignalNumber QuitFromKeyboard ;
 	
 	
 			/**
@@ -100,7 +100,7 @@ namespace Ceylan
 			 * Default action is to terminate the process and dump core.
 			 *
 			 */
-			extern const SignalNumber IllegalInstruction ;
+			extern CEYLAN_DLL const SignalNumber IllegalInstruction ;
 	
 	
 			/**
@@ -109,7 +109,7 @@ namespace Ceylan
 			 * Default action is to terminate the process and dump core.
 			 *
 			 */
-			extern const SignalNumber Abort ;
+			extern CEYLAN_DLL const SignalNumber Abort ;
 	
 	
 			/**
@@ -118,7 +118,7 @@ namespace Ceylan
 			 * Default action is to terminate the process and dump core.
 			 *
 			 */
-			extern const SignalNumber FloatingPointException ;
+			extern CEYLAN_DLL const SignalNumber FloatingPointException ;
 	
 	
 			/**
@@ -129,7 +129,7 @@ namespace Ceylan
 			 * @note This signal cannot be caught, blocked, or ignored.
 			 *
 			 */
-			extern const SignalNumber Kill ;
+			extern CEYLAN_DLL const SignalNumber Kill ;
 	
 	
 			/**
@@ -138,7 +138,7 @@ namespace Ceylan
 			 * Default action is to terminate the process and dump core.
 			 *
 			 */
-			extern const SignalNumber InvalidMemoryReference ;
+			extern CEYLAN_DLL const SignalNumber InvalidMemoryReference ;
 	
 	
 			/**
@@ -147,7 +147,7 @@ namespace Ceylan
 			 * Default action is to terminate the process.
 			 *
 			 */
-			extern const SignalNumber BrokenPipe ;
+			extern CEYLAN_DLL const SignalNumber BrokenPipe ;
 	
 	
 			/**
@@ -156,7 +156,7 @@ namespace Ceylan
 			 * Default action is to terminate the process.
 			 *
 			 */
-			extern const SignalNumber TimerSignal ;
+			extern CEYLAN_DLL const SignalNumber TimerSignal ;
 	
 	
 			/**
@@ -165,7 +165,7 @@ namespace Ceylan
 			 * Default action is to terminate the process.
 			 *
 			 */
-			extern const SignalNumber Termination ;
+			extern CEYLAN_DLL const SignalNumber Termination ;
 	
 	
 			/**
@@ -174,7 +174,7 @@ namespace Ceylan
 			 * Default action is to terminate the process.
 			 *
 			 */
-			extern const SignalNumber FirstUserDefined ;
+			extern CEYLAN_DLL const SignalNumber FirstUserDefined ;
 	
 	
 			/**
@@ -183,7 +183,7 @@ namespace Ceylan
 			 * Default action is to terminate the process.
 			 *
 			 */
-			extern const SignalNumber SecondUserDefined ;
+			extern CEYLAN_DLL const SignalNumber SecondUserDefined ;
 	
 	
 			/**
@@ -192,7 +192,7 @@ namespace Ceylan
 			 * Default action is to ignore the signal.
 			 *
 			 */
-			extern const SignalNumber ChildEnded ;
+			extern CEYLAN_DLL const SignalNumber ChildEnded ;
 	
 	
 			/**
@@ -201,7 +201,7 @@ namespace Ceylan
 			 * No default action.
 			 *
 			 */
-			extern const SignalNumber Continue ;
+			extern CEYLAN_DLL const SignalNumber Continue ;
 	
 	
 			/**
@@ -212,7 +212,7 @@ namespace Ceylan
 			 * @note This signal cannot be caught, blocked, or ignored.
 			 *
 			 */
-			extern const SignalNumber Stop ;
+			extern CEYLAN_DLL const SignalNumber Stop ;
 	
 	
 			/**
@@ -221,7 +221,7 @@ namespace Ceylan
 			 * Default action is to stop the process.
 			 *
 			 */
-			extern const SignalNumber TtyStopped ;
+			extern CEYLAN_DLL const SignalNumber TtyStopped ;
 	
 	
 			/**
@@ -230,7 +230,7 @@ namespace Ceylan
 			 * Default action is to stop the process.
 			 *
 			 */
-			extern const SignalNumber TtyInput ;
+			extern CEYLAN_DLL const SignalNumber TtyInput ;
 	
 	
 			/**
@@ -239,7 +239,7 @@ namespace Ceylan
 			 * Default action is to stop the process.
 			 *
 			 */
-			extern const SignalNumber TtyOutput ;
+			extern CEYLAN_DLL const SignalNumber TtyOutput ;
 	
 	
 	
@@ -250,7 +250,7 @@ namespace Ceylan
 			 * if signal support is not available.
 			 *
 			 */
-			void setToDefaultHandler( SignalNumber signalNumber )
+			CEYLAN_DLL void setToDefaultHandler( SignalNumber signalNumber )
 				throw( SignalException ) ;
 	
 
@@ -261,7 +261,8 @@ namespace Ceylan
 			 * if signal support is not available.
 			 *
 			 */
-			void ignore( SignalNumber signalNumber ) throw( SignalException ) ;
+			CEYLAN_DLL void ignore( SignalNumber signalNumber ) 
+				throw( SignalException ) ;
 
 	
 			/**
@@ -271,7 +272,7 @@ namespace Ceylan
 			 * if signal support is not available.
 			 *
 			 */
-			void setHandler( SignalNumber signalNumber, 
+			CEYLAN_DLL void setHandler( SignalNumber signalNumber, 
 				SignalHandler newHandler ) throw( SignalException ) ;
 	
 	
@@ -283,7 +284,8 @@ namespace Ceylan
 			 * if signal support is not available.
 			 *
 			 */
-			void raise( SignalNumber signalNumber ) throw( SignalException ) ;
+			CEYLAN_DLL void raise( SignalNumber signalNumber ) 
+				throw( SignalException ) ;
 
 	
             /**
@@ -292,7 +294,7 @@ namespace Ceylan
 			 * @param signal the signal to describe.
 			 *
 			 */
-			const std::string toString( SignalNumber signalNumber ) 
+			CEYLAN_DLL const std::string toString( SignalNumber signalNumber ) 
 				throw() ;
 
 
