@@ -81,6 +81,26 @@ int main( int argc, char * argv[] )
         LogPlug::info( "By default a directory points towards "
 			"current working directory : " + d.toString() ) ;
 		
+		if ( ! Directory::Exists( d.getPath() ) )
+			throw Ceylan::TestException( "Current directory (" + d.toString() 
+				+ ") is reported not to exist." ) ; 
+		else
+			LogPlug::info( "Current directory exists indeed." ) ;
+
+		string testDir( Directory::RootDirectoryPrefix ) ;
+		LogPlug::info( "Does '" + testDir + "' exist ? " 
+			+ Ceylan::toString( Directory::Exists( testDir ) ) ) ;
+
+		testDir = Directory::RootDirectoryPrefix + Directory::Separator ;
+		LogPlug::info( "Does '" + testDir + "' exist ? " 
+			+ Ceylan::toString( Directory::Exists( testDir ) ) ) ;
+
+		// Test for english-based Windows systems :
+		testDir = "c:\\Documents and Settings" ;
+		LogPlug::info( "Does '" + testDir + "' exist ? " 
+			+ Ceylan::toString( Directory::Exists( testDir ) ) ) ;
+
+
 		// One may disable the directory removing at the end and run it again :
 		string newDir = d.getPath() + Directory::Separator + "tmp" ;
 		LogPlug::info( "Testing whether '" + newDir + "' exists..." ) ;
@@ -122,9 +142,9 @@ int main( int argc, char * argv[] )
 		File newFile( targetFile ) ;
 		
 		LogPlug::info( "Updating thanks to touch the last "
-			"access and modification times of " + newDir ) ;
+			"access and modification times of file " + targetFile ) ;
 			
-		File::Touch( newDir	) ;
+		File::Touch( targetFile	) ;
 		
 		LogPlug::info( "Cleaning up : deleting file " + targetFile ) ;
 		newFile.remove() ;
