@@ -151,11 +151,14 @@ void EventSource::remove( const EventListener & listener )
 				"unsubscription from listener " + (*it)->toString() ) ;
 #endif // CEYLAN_DEBUG_EVENTS
 
+			// Directly points to the next element :
 			it = _listeners.erase( it ) ;
 						
 		}	
-			
-		it++ ;	
+		else
+		{
+			++it ;	
+		}
 		
 	}
 
