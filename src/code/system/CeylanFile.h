@@ -896,10 +896,12 @@ namespace Ceylan
 
 
 				/**
-				 * Tells whether the entry <b>name</b> exists.
+				 * Tells whether the regular file or symbolic link 
+				 * <b>name</b> exists.
 				 *
-				 * This entry will be deemed existing, even if it is a 
-				 * directory and not a file.
+				 * Will return false if this entry exists but is a directory.
+				 *
+				 * @see Directory::Exists.
 				 *
 				 * @throw CouldNotStatFile if the existence test failed
 				 * with no answer.
@@ -962,7 +964,7 @@ namespace Ceylan
 
 				/**
 				 * Updates the last access and modification times of 
-				 * specified file.
+				 * specified file. This is not expected to work for directories.
 				 *
 				 * @note On contrary to the UNIX command touch, if the
 				 * specified file does not exist, it will not be created.
