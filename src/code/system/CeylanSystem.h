@@ -277,7 +277,9 @@ namespace Ceylan
 		 * Returns the time since the Epoch (00:00:00 UTC, January 1, 1970),
 		 * with up to a one microsecond accuracy, expressed as a pair
 		 * containing the number of seconds and the number of microseconds
-		 * elapsed.
+		 * elapsed. 
+		 *
+		 * On some platforms (Windows XP), accuracy is worse than 1 millisecond.
 		 *
 		 * @param seconds the variable which will be updated with the number
 		 * of seconds elapsed.
@@ -294,7 +296,7 @@ namespace Ceylan
 		 * For Pentiums, the rdtsc code fragment is accurate to one clock cycle.
 		 *
 		 * @note Expect this call to last for about 3 microseconds on 2.6
-		 * kernels.
+		 * Linux kernels.
 		 *
 		 * @throw SystemException should a problem occur.
 		 *
