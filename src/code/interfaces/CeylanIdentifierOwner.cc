@@ -4,6 +4,8 @@
 
 #include "CeylanUtils.h"             // for emergencyShutdown
 
+#include "CeylanLogLight.h"          // for CEYLAN_LOG
+
 
 #if CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"            // for CEYLAN_DEBUG
@@ -33,7 +35,7 @@ IdentifierNotAvailableException::~IdentifierNotAvailableException() throw()
 IdentifierOwner::IdentifierOwner() throw() :
 	_id( 0 )
 {
-
+	CEYLAN_LOG( "IdentifierOwner constructor" ) ;
 }
 
 
