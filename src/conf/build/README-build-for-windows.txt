@@ -59,19 +59,26 @@ This led us to define pragmas around some template constructs in header files, e
 
 #pragma warning( pop ) 
 """
-"CEYLAN_DLL=__declspec( dllexport )"
-"CEYLAN_DLL=__declspec( dllimport )"
 
-CEYLAN_EXTERN_TEMPLATE template class CEYLAN_DLL std::list<Ceylan::EventListener *> ;
+During the build on Windows of the Ceylan library, CEYLAN_DLL is expected to 
+be equal to "__declspec( dllexport )" 
+(ex : "CEYLAN_DLL=__declspec( dllexport )").
+
+During the build on Windows of code using the Ceylan library, CEYLAN_DLL is 
+expected to be equal to "__declspec( dllimport )" 
+(ex : "CEYLAN_DLL=__declspec( dllimport )"
+
+Special management for the "extern" keyword, with for example :
+"CEYLAN_EXTERN_TEMPLATE template class CEYLAN_DLL std::list<Ceylan::EventListener *> ;"
+does not seem necessary.
 
 Each test must define :
 	- that it references the Ceylan library : in 'Project Dependencies', check Ceylan-x.y-library
-	- in 'Configuration Properties'-> C++ -> 'Preprocessor Definitions' : "CEYLAN_DLL=__declspec( dllimport )";
 	- in 'Configuration Properties'-> C++ -> General -> 'Additional include directories': "$(ProjectDir)../src/code";"$(ProjectDir)../src/code/generic";"$(ProjectDir)../src/code/interfaces";"$(ProjectDir)../src/code/logs";"$(ProjectDir)../src/code/maths";"$(ProjectDir)../src/code/middleware";"$(ProjectDir)../src/code/modules";"$(ProjectDir)../src/code/network";"$(ProjectDir)../src/code/system"
+	- in 'Configuration Properties'-> C++ -> 'Preprocessor Definitions' : "CEYLAN_DLL=__declspec( dllimport )";
 
 In the linker settings, 'Generate Debug informations' may be set to yes.  
 
-"CEYLAN_DLL=__declspec( dllimport )";
 
 For numerous functions (such as gethostname), specific headers are required (ex : winsock2.h), 
 they are provided with a SDK (Software Development Kit) that has to be installed separatly from the IDE (Visual Express).
@@ -103,6 +110,32 @@ A windows executable needs some preprocessor symbols defined so that it can be b
 "CEYLAN_DLL=__declspec( dllimport )";"CEYLAN_RUNS_ON_WINDOWS=1"
 This can be pasted in C/C++ -> Preprocessor -> Preprocessor Definitions.
 
+To add a new test :
+	- open the Ceylan solution
+	- add a new project to it
+	- choose project type : Visual C++ -> General -> Empty Project
+	- choose project name (ex : testCeylanBasicResourceManager for source testCeylanBasicResourceManager.cc)
+	- choose project location in the relevant module (ex : trunk/test/generic for testCeylanBasicResourceManager)
+	- remove default directories (Header, Resource, Source Files)
+	- add in project an existing element (ex : testCeylanBasicResourceManager.cc)
+	- go to the project properties, in Common Properties -> References, 
+click on 'Add New Reference' and select 'Ceylan-x.y library'
+	- in 'configuration properties' :
+		* add in C/C++ -> General -> Additional Include Directories :
+"$(SolutionDir)code";"$(SolutionDir)code/generic";"$(SolutionDir)code/interfaces";"$(SolutionDir)code/logs";"$(SolutionDir)code/maths";"$(SolutionDir)code/middleware";"$(SolutionDir)code/modules";"$(SolutionDir)code/network";"$(SolutionDir)code/system"
+		* add in C/C++ -> Preprocessor -> Preprocessor Definitions :
+"CEYLAN_DLL=__declspec( dllimport )";"CEYLAN_RUNS_ON_WINDOWS=1"
+		* choose in C/C++ -> Code Generation -> Runtime Library :
+"Multi-threaded Debug DLL (/MDd)". Selecting "Multi-threaded DLL (/MD)", "Multi-threaded Debug (/MTd)" or "Multi-thread (/MT)" leads to a direct crash.
+		* choose in Linker -> Debugging :
+"Generate Debug Info : Yes (/DEBUG)"
+	- build the project
+	- from a cygwin terminal, go to C:\Documents and Settings\sye\Mes documents\Ceylan\trunk\src\Debug\ for example, 
+and run testCeylanBasicResourceManager.exe; echo $?
+	
+
+test*.vcproj files could be generated automatically, but it would not be far more convenient (generate a GUID, register to the solution, etc.)
+ 
 
 [1]  http://msdn.microsoft.com/vstudio/express/
 [2]  for example, trunk/src/Ceylan-0.3.sln
@@ -116,4 +149,11 @@ This can be pasted in C/C++ -> Preprocessor -> Preprocessor Definitions.
 [10] C:\Documents and Settings\sye\Application Data\Microsoft\VCExpress
 [11] http://community.vietfun.com/printthread.php?t=279103
 [12] ms-help://MS.VSExpressCC.v80/dv_vsexpcc/local/CollectionManagerExpress.htm
-[13] see Tools -> Options -> Help -> Online).
+[13] see Tools -> Options -> Help -> Online
+
+More directory tests, touch used on a file rather than on a directory.
+Notes :
+
+The solution and the main projects could not be stored in the expected trunk/src/conf/build directory, as it leads 
+to having all imported files in the same virtual directory, whereas we want to keep the original module-based 
+directory structure.
