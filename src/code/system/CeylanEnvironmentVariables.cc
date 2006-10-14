@@ -53,10 +53,19 @@ const string Ceylan::System::getEnvironmentVariable(
 		throw UtilsException( 
 			"Ceylan::System::getEnvironmentVariable failed : "
 			+ System::explainError() ) ;
+	if ( returnedString == 0 )
+	{
+		// Not found :
+		return "" ;
+	}
+	else
+	{
 
-	string res( returnedString ) ;
-	::free( returnedString ) ;
-	return res ;
+		string res( returnedString ) ;
+		::free( returnedString ) ;
+		return res ;
+
+	}
 
 #else // CEYLAN_USES__DUPENV_S
 
@@ -110,38 +119,24 @@ void Ceylan::System::setEnvironmentVariable( const string & variableName,
 
 #else // CEYLAN_USES_PUTENV
 
-#ifdef CEYLAN_USES__PUTENV
+#ifdef CEYLAN_USES__PUTENV_S
 
-	// No putenv_s defined for the moment, apparently.
 
-	const string envString = variableName + "=" + variableValue ;
-	char * newEnv = new char[ envString.size() + 1 ] ;
-	
-	/*
-	 * Maybe to be preferred for C-style compliance : 
-	 * char * newEnv = static_cast<char *>( ::malloc( envString.size() + 1 ) ) ;
-	 *
-	 */
-	
-	// @fixme Is it envString.size()+1 ?
-	::strcpy_s( newEnv, envString.size(), envString.c_str() ) ;
-	
-	if ( ::_putenv( newEnv ) != 0 )
+	if ( ::_putenv_s( variableName.c_str(), variableValue.c_str() ) != 0 )
 	{
-		// Maybe newEnv should be freed.
 		throw Ceylan::UtilsException( "Ceylan::SetEnvironmentVariable : "
 			"unable to set the value of environment variable [" 
 			+ variableName + "] to [" + variableValue + "] : "
 			+ System::explainError() ) ;
 	}
 	
-#else // CEYLAN_USES__PUTENV
+#else // CEYLAN_USES__PUTENV_S
 
 
 	throw UtilsException( "Ceylan::System::setEnvironmentVariable : "
 		"not available on this platform." ) ;
 
-#endif // CEYLAN_USES__PUTENV
+#endif // CEYLAN_USES__PUTENV_S
 		
 #endif // CEYLAN_USES_PUTENV
 			
