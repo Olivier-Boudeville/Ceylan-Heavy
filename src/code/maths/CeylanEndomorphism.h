@@ -92,7 +92,7 @@ namespace Ceylan
 			 *
 			 *
 			 */
-			class Rotation2DFunctor : public Endomorphism2DFunctor
+			class CEYLAN_DLL Rotation2DFunctor : public Endomorphism2DFunctor
 			{
 			
 				public:
@@ -157,7 +157,7 @@ namespace Ceylan
 			 * must be linear too.
 			 *
 			 */
-			class Endomorphism3DFunctor : public Functor
+			class CEYLAN_DLL Endomorphism3DFunctor : public Functor
 			{
 
 
@@ -202,7 +202,8 @@ namespace Ceylan
 			 *
 			 *
 			 */
-			class LineProjection3DFunctor : public Endomorphism3DFunctor
+			class CEYLAN_DLL LineProjection3DFunctor : 
+				public Endomorphism3DFunctor
 			{
 			
 				public:
@@ -254,7 +255,7 @@ namespace Ceylan
 			 *
 			 *
 			 */
-			class Rotation3DFunctor : public Endomorphism3DFunctor
+			class CEYLAN_DLL Rotation3DFunctor : public Endomorphism3DFunctor
 			{
 			
 				public:
