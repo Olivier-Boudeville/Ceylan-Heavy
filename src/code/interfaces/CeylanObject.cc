@@ -6,6 +6,7 @@
 #include "CeylanLogLight.h"            // for CEYLAN_LOG
 #include "CeylanLogPlug.h"             // for LogPlug
 #include "CeylanObjectIdentifier.h"    // for constructor
+#include "CeylanIdentifier.h"          // for IdentifierException
 
 
 #ifdef CEYLAN_USES_CONFIG_H
@@ -32,7 +33,7 @@ Object::Object( bool trackInstance, bool dropIdentifierOnExit )
 	_trackInstance( trackInstance ) 
 {
 
-	CEYLAN_LOG( "Object entering constructor" ) ; 
+	CEYLAN_LOG( "Ceylan::Object entering constructor" ) ; 
 	
 	if ( _trackInstance )
 	{
@@ -122,10 +123,23 @@ void Object::send( const string & message, LevelOfDetail levelOfDetail )
 	
 	if ( _id == 0 )
 	{
-		forgeIdentifier() ;
+
+		try
+		{
+			forgeIdentifier() ;
+		}
+		catch( const Identifier::IdentifierException & e )
+		{
+			throw LogException( "Object::send failed : "
+				+ e.toString() ) ;
+
+		}
+
 		CEYLAN_LOG( "Object::send : channel name set to " 
 			+ _id->toString() ) ;
+
 		setChannelName( _id->toString() ) ;
+
 	}	
 	
 	CEYLAN_LOG( "Object::send : effective sending of message " 
@@ -157,7 +171,7 @@ const string Object::toString( Ceylan::VerbosityLevels level )
 }
 	
 	
-void Object::forgeIdentifier() throw()
+void Object::forgeIdentifier() throw( Log::LogException )
 {
 	
 	CEYLAN_LOG( "Object::forgeIdentifier : new identifier required." ) ;
@@ -175,8 +189,18 @@ void Object::forgeIdentifier() throw()
 	 * had not the explicit keyword).
 	 *
 	 */
-	 _id = new ObjectIdentifier( * this ) ;
-		
+	try
+	{
+
+		_id = new ObjectIdentifier( * this ) ;
+
+	}
+	catch( const Identifier::IdentifierException & e ) 
+	{
+		throw Log::LogException( "Object::forgeIdentifier : "
+			+ e.toString() ) ;
+	}
+
 	CEYLAN_LOG( "Object::forgeIdentifier : new ID is " 
 		+ _id->toString() ) ;
 
