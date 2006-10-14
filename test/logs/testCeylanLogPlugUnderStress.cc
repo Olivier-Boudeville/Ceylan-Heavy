@@ -26,7 +26,7 @@ int main( int argc, char * argv[] )
     try
     {
 	
-		Ceylan::Uint32 messageCount = 100000 ;
+		Ceylan::Uint32 messageCount = 10000 ;
 		bool beFast = false ; 
 		
 		
