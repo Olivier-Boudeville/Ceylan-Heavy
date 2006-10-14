@@ -324,7 +324,7 @@ namespace Ceylan
 				 * </pre>
 				 *
 				 */
-				class Waiter: protected Mutex
+				class CEYLAN_DLL Waiter: protected Mutex
 				{
 
 
@@ -531,8 +531,19 @@ namespace Ceylan
 				 * accesses thanks to the Synchronized template.
 				 * 
 				 */
-				
-				
+
+/*
+ * Takes care of the awful issue of Windows DLL with templates.
+ *
+ * @see Ceylan's developer guide and README-build-for-windows.txt 
+ * to understand it, and to be aware of the associated risks.
+ *
+ */
+#pragma warning( push )
+#pragma warning( disable : 4251 )
+
+				//template class CEYLAN_DLL Ceylan::System::Synchronized<bool> ;
+
 				/**
 				 * Tells whether this thread has terminated, i.e. if its
 				 * <code>cancel</code> method has already been called.
@@ -563,6 +574,7 @@ namespace Ceylan
 				 */
 				Ceylan::System::Synchronized<bool> _mustStop ;
 
+#pragma warning( pop ) 
 
 
 				/**
