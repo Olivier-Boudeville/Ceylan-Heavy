@@ -27,9 +27,35 @@
 #define CEYLAN_ARCH_OPENBSD  0 
 #endif
 
+/* Define to 1 if the target platform is a BSD one */
+#if CEYLAN_ARCH_FREEBSD ||  CEYLAN_ARCH_NETBSD || CEYLAN_ARCH_OPENBSD
+#define CEYLAN_ARCH_BSD 1
+#endif
+
+// By default, not BSD :
+#ifndef CEYLAN_ARCH_BSD 
+#define CEYLAN_ARCH_BSD  0 
+#endif
+
+
+/* Define to 1 if the target platform is a UNIX one */
+#if CEYLAN_ARCH_BSD || CEYLAN_ARCH_LINUX
+#define CEYLAN_ARCH_UNIX 1
+#endif
+
+// By default, not UNIX :
+#ifndef CEYLAN_ARCH_UNIX 
+#define CEYLAN_ARCH_UNIX  0 
+#endif
+
 /* Define to 1 if the target platform is a Windows one */
 #ifndef CEYLAN_ARCH_WINDOWS 
 #define CEYLAN_ARCH_WINDOWS  1 
+#endif
+
+// By default, not UNIX :
+#ifndef CEYLAN_ARCH_UNIX 
+#define CEYLAN_ARCH_UNIX  0 
 #endif
 
 /* Define to 1 if the `closedir' function returns void instead of `int'. */
@@ -37,57 +63,57 @@
 
 /* Define to 1 if generic debug mode is to be enabled */
 #ifndef CEYLAN_DEBUG 
-#define CEYLAN_DEBUG  0 
+#define CEYLAN_DEBUG  1
 #endif
 
 /* Define to 1 if debug mode for name mangling is to be enabled */
 #ifndef CEYLAN_DEBUG_DEMANGLE 
-#define CEYLAN_DEBUG_DEMANGLE  0 
+#define CEYLAN_DEBUG_DEMANGLE  1
 #endif
 
 /* Define to 1 if debug mode for events is to be enabled */
 #ifndef CEYLAN_DEBUG_EVENTS 
-#define CEYLAN_DEBUG_EVENTS  0 
+#define CEYLAN_DEBUG_EVENTS  0
 #endif
 
 /* Define to 1 if debug mode for log system is to be enabled */
 #ifndef CEYLAN_DEBUG_LOG 
-#define CEYLAN_DEBUG_LOG  0 
+#define CEYLAN_DEBUG_LOG  0
 #endif
 
 /* Define to 1 if debug mode for low-level streams is to be enabled */
 #ifndef CEYLAN_DEBUG_LOW_LEVEL_STREAMS 
-#define CEYLAN_DEBUG_LOW_LEVEL_STREAMS  0 
+#define CEYLAN_DEBUG_LOW_LEVEL_STREAMS  1 
 #endif
 
 /* Define to 1 if debug mode for marshallers is to be enabled */
 #ifndef CEYLAN_DEBUG_MARSHALLERS 
-#define CEYLAN_DEBUG_MARSHALLERS  0 
+#define CEYLAN_DEBUG_MARSHALLERS  1 
 #endif
 
 /* Define to 1 if debug mode for network clients is to be enabled */
 #ifndef CEYLAN_DEBUG_NETWORK_CLIENTS 
-#define CEYLAN_DEBUG_NETWORK_CLIENTS  0 
+#define CEYLAN_DEBUG_NETWORK_CLIENTS  1 
 #endif
 
 /* Define to 1 if debug mode for network servers is to be enabled */
 #ifndef CEYLAN_DEBUG_NETWORK_SERVERS 
-#define CEYLAN_DEBUG_NETWORK_SERVERS  0 
+#define CEYLAN_DEBUG_NETWORK_SERVERS  1 
 #endif
 
 /* Define to 1 if debug mode for protocol servers is to be enabled */
 #ifndef CEYLAN_DEBUG_PROTOCOL_SERVERS 
-#define CEYLAN_DEBUG_PROTOCOL_SERVERS  0 
+#define CEYLAN_DEBUG_PROTOCOL_SERVERS  1 
 #endif
 
 /* Define to 1 if debug mode for system layer is to be enabled */
 #ifndef CEYLAN_DEBUG_SYSTEM 
-#define CEYLAN_DEBUG_SYSTEM  0 
+#define CEYLAN_DEBUG_SYSTEM  1 
 #endif
 
 /* Define to 1 if debug mode for threads is to be enabled */
 #ifndef CEYLAN_DEBUG_THREADS 
-#define CEYLAN_DEBUG_THREADS  0 
+#define CEYLAN_DEBUG_THREADS  1
 #endif
 
 /* Define to 1 if you have the `abs' function. */
@@ -555,6 +581,11 @@
 /* Define to 1 if you have the <sys/time.h> header file. */
 /* #undef CEYLAN_USES_SYS_TIME_H */
 
+/* Define to 1 if you have the <sys/timeb.h> header file. */
+#ifndef CEYLAN_USES_SYS_TIMEB_H 
+#define CEYLAN_USES_SYS_TIMEB_H  1 
+#endif
+
 /* Define to 1 if you have the <sys/types.h> header file. */
 #ifndef CEYLAN_USES_SYS_TYPES_H 
 #define CEYLAN_USES_SYS_TYPES_H  1 
@@ -602,9 +633,7 @@
 /* #undef CEYLAN_USES_UNSETENV */
 
 /* Define to 1 if you have the `utime' function. */
-#ifndef CEYLAN_USES_UTIME 
-#define CEYLAN_USES_UTIME  1 
-#endif
+/* #undef CEYLAN_USES_UTIME */
 
 /* Define to 1 if you have the <utime.h> header file. */
 /* #undef CEYLAN_USES_UTIME_H */
@@ -661,14 +690,19 @@
 #define CEYLAN_USES__DUPENV_S  1 
 #endif
 
+/* Define to 1 if you have the `_ftime_s' function. */
+#ifndef CEYLAN_USES__FTIME_S 
+#define CEYLAN_USES__FTIME_S  1 
+#endif
+
 /* Define to 1 if you have the `_getcwd' function. */
 #ifndef CEYLAN_USES__GETCWD
 #define CEYLAN_USES__GETCWD  1 
 #endif
 
-/* Define to 1 if you have the `_putenv' function. */
-#ifndef CEYLAN_USES__PUTENV
-#define CEYLAN_USES__PUTENV  1 
+/* Define to 1 if you have the `_putenv_s' function. */
+#ifndef CEYLAN_USES__PUTENV_S
+#define CEYLAN_USES__PUTENV_S  1 
 #endif
 
 /* Define to 1 if you have the `_mkdir' function. */
@@ -689,6 +723,11 @@
 /* Define to 1 if you have the `_unlink' function. */
 #ifndef CEYLAN_USES__UNLINK
 #define CEYLAN_USES__UNLINK  1 
+#endif
+
+/* Define to 1 if you have the `_utime' function. */
+#ifndef CEYLAN_USES__UTIME 
+#define CEYLAN_USES__UTIME  1 
 #endif
 
 /* Current Libtool version for the Ceylan library */
