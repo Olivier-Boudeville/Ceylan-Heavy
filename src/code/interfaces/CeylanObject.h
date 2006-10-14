@@ -171,8 +171,11 @@ namespace Ceylan
 			 *		 
 			 * @see TextIdentifier
 			 *
+			 * @throw Log::LogException if the identifier could
+			 * not be forged.
+			 *
 			 */
-            virtual void forgeIdentifier() throw() ;	
+            virtual void forgeIdentifier() throw( Log::LogException ) ;	
 
 
             /**
