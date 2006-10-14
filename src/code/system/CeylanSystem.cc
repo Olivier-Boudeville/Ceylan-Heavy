@@ -36,7 +36,15 @@ extern "C"
 
 #ifdef CEYLAN_USES_WINDOWS_H
 #include <windows.h>                      // for Sleep
-#endif //
+#endif // CEYLAN_USES_WINDOWS_H
+
+#ifdef CEYLAN_USES_SYS_TYPES_H
+#include <sys/types.h>                    // for _ftime_s
+#endif // CEYLAN_USES_SYS_TYPES_H
+
+#ifdef CEYLAN_USES_SYS_TIMEB_H
+#include <sys/timeb.h>                    // for _ftime_s
+#endif // CEYLAN_USES_SYS_TIMEB_H
 
 }
 
@@ -450,9 +458,26 @@ void Ceylan::System::getPreciseTime( Second & seconds,
 
 #else // CEYLAN_USES_GETTIMEOFDAY
 
+
+#if CEYLAN_USES__FTIME_S
+
+    struct _timeb timeBuffer ;
+
+	if( ::_ftime_s( & timeBuffer ) != 0 )
+		throw SystemException( "System::getPreciseTime : "
+			"_ftime_s failed." ) ;
+
+    seconds  = static_cast<Second>( timeBuffer.time ) ;
+	microsec = static_cast<Microsecond>( timeBuffer.millitm * 1000 ) ;
+
+
+#else CEYLAN_USES__FTIME_S
+
 	throw SystemException( "System::getPreciseTime : "
 		"not available on this platform "
 		"(no ::gettimeofday function found)." ) ;
+
+#endif // CEYLAN_USES__FTIME_S
 
 #endif // CEYLAN_USES_GETTIMEOFDAY
 
