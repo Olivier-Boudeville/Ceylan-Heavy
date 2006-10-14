@@ -48,7 +48,8 @@ namespace Ceylan
 				 * on the client side.
 				 *
 				 */
-				class ClientStreamSocketException: public StreamSocketException
+				class CEYLAN_DLL ClientStreamSocketException: 
+					public StreamSocketException
 				{ 
 					public: 
 					

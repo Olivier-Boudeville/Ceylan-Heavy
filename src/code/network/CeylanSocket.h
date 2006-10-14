@@ -65,7 +65,8 @@ namespace Ceylan
 		
 		
 				/// Mother class for all socket-related exceptions.
-				class SocketException: public System::SystemException
+				class CEYLAN_DLL SocketException: 
+					public System::SystemException
 				{ 
 					public: 
 					

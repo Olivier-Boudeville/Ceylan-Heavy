@@ -64,7 +64,8 @@ namespace Ceylan
 				 * on the server side.
 				 *
 				 */
-				class ServerStreamSocketException: public StreamSocketException
+				class CEYLAN_DLL ServerStreamSocketException: 
+					public StreamSocketException
 				{ 
 					public: 
 					

@@ -38,7 +38,8 @@ namespace Ceylan
 		
 				
 				/// Mother class for all stream socket-related exceptions.
-				class StreamSocketException: public SocketException
+				class CEYLAN_DLL StreamSocketException: 
+					public SocketException
 				{ 
 					public: 
 					
