@@ -1192,6 +1192,9 @@ CheckPlatform()
 	CEYLAN_ARCH_NETBSD=0
 	CEYLAN_ARCH_OPENBSD=0
 	
+	CEYLAN_ARCH_BSD=0
+	CEYLAN_ARCH_UNIX=0
+	
 	case "$target" in
 	
 		*-*-win32*) 
@@ -1210,19 +1213,26 @@ CheckPlatform()
 			;;
 				
 	    *-*-linux*) 
-			CEYLAN_ARCH_LINUX=1 
+			CEYLAN_ARCH_LINUX=1
+			CEYLAN_ARCH_UNIX=1
 			;;
 			
 		*-*-freebsd*)
-			CEYLAN_ARCH_FREEBSD=1 
+			CEYLAN_ARCH_FREEBSD=1
+			CEYLAN_ARCH_BSD=1
+			CEYLAN_ARCH_UNIX=1
 			;;
 			
 		*-*-netbsd*) 
-			CEYLAN_ARCH_NETBSD=1 
+			CEYLAN_ARCH_NETBSD=1
+			CEYLAN_ARCH_BSD=1
+			CEYLAN_ARCH_UNIX=1
 			;;
 
 		*-*-openbsd*) 
-			CEYLAN_ARCH_OPENBSD=1 
+			CEYLAN_ARCH_OPENBSD=1
+			CEYLAN_ARCH_BSD=1
+			CEYLAN_ARCH_UNIX=1
 			;;
 							
 	    *)
@@ -1251,6 +1261,16 @@ CheckPlatform()
 	AC_DEFINE_UNQUOTED([ARCH_OPENBSD],
 		[$CEYLAN_ARCH_OPENBSD],
 		[Define to 1 if the target platform is OpenBSD])
+
+
+	AC_DEFINE_UNQUOTED([ARCH_BSD],
+		[$CEYLAN_ARCH_BSD],
+		[Define to 1 if the target platform is a BSD one])
+
+	AC_DEFINE_UNQUOTED([ARCH_UNIX],
+		[$CEYLAN_ARCH_UNIX],
+		[Define to 1 if the target platform is a UNIX one])
+
 
 }
 
