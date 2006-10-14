@@ -43,9 +43,9 @@ extern "C"
 }
 
 
-#include <cerrno>
-#include <cstdio>
-#include <fstream>
+//#include <cerrno>    //
+#include <cstdio>    // for unlink
+#include <fstream>   // for this class
 
 
 using std::fstream ;
@@ -465,17 +465,16 @@ void File::remove() throw( RemoveFailed )
 		throw RemoveFailed( "File::remove failed : " + e.toString() ) ;
 	}
 
-#ifdef CEYLAN_USES_UNLINK	
 
-	if ( ::unlink( _name.c_str() ) != 0 )
-		throw RemoveFailed( "File::remove failed : file '" + _name 
-			+ "' : " + System::explainError() ) ;
-		
-#else // CEYLAN_USES_UNLINK
-
-	throw RemoveFailed( "File::remove : not available on this platform." ) ;
+	try
+	{
+		Unlink( _name ) ;
+	}
+	catch( const UnlinkFailed & e )
+	{
+		throw RemoveFailed( "File::remove failed : " + e.toString() ) ;
+	}
 	
-#endif // CEYLAN_USES_UNLINK	
 	
 }
 
@@ -1093,13 +1092,23 @@ bool File::Exists( const string & name ) throw( CouldNotStatFile )
 #ifdef CEYLAN_USES_STAT
 
 	struct stat buf ;
-	return ( ::stat( name.c_str(), & buf ) == 0 ) ;
+	return ( ::stat( name.c_str(), & buf ) == 0 
+		&& ( S_ISLNK( buf ) || S_ISREG( buf ) ) ) ;
 	
 #else // CEYLAN_USES_STAT
+
+	struct _stat buf ;
+	return ( ( ::_stat( name.c_str(), & buf ) == 0 )
+		&& ( buf.st_mode & _S_IFREG ) ) ;
+
+#ifdef CEYLAN_USES__STAT
+
+#else // CEYLAN_USES__STAT
 
 	throw CouldNotStatFile( 
 		"File::Exists : not available on this platform." ) ;
 
+#endif // CEYLAN_USES__STAT
 #endif // CEYLAN_USES_STAT
 	
 }
@@ -1170,9 +1179,19 @@ bool File::ExistsAsFileOrSymbolicLink( const string & name )
 
 #else // CEYLAN_USES_STAT
 
+#ifdef CEYLAN_USES__STAT
+	
+	struct _stat buf ;
+
+	return ( ::_stat( name.c_str(), & buf ) == 0 && ( buf.st_mode & _S_IFREG ) ) ;
+
+#else CEYLAN_USES__STAT
+
 	throw CouldNotStatFile( "File::ExistsAsFileOrSymbolicLink : "
 		"not available on this platform." ) ;
-	 
+
+#endif CEYLAN_USES__STAT
+
 #endif // CEYLAN_USES_STAT
 	 	 
 	 
@@ -1205,7 +1224,7 @@ void File::MakeSymbolicLink( const string & path, const string & linkname )
 void File::Unlink( const string & name ) throw( UnlinkFailed )
 {
 
-#ifdef CEYLAN_USES_UNLINK
+#ifdef CEYLAN_USES_UNLINK	
 
 	if ( ::unlink( name.c_str() ) != 0 )
 		throw UnlinkFailed( "File::Unlink failed for '"
@@ -1213,9 +1232,20 @@ void File::Unlink( const string & name ) throw( UnlinkFailed )
 		
 #else // CEYLAN_USES_UNLINK
 
-	throw UnlinkFailed( "File::Unlink : not available on this platform." ) ;
-	 
-#endif // CEYLAN_USES_UNLINK
+#ifdef CEYLAN_USES__UNLINK	
+
+	if ( ::_unlink( name.c_str() ) != 0 )
+		throw RemoveFailed( "File::Unlink failed : file '" + name 
+			+ "' : " + System::explainError() ) ;
+
+#else // CEYLAN_USES__UNLINK
+
+	throw RemoveFailed( "File::Unlink : not available on this platform." ) ;
+
+#endif // CEYLAN_USES__UNLINK
+
+#endif // CEYLAN_USES_UNLINK	
+
 		
 }
 
@@ -1429,8 +1459,18 @@ void File::Touch( const string & name ) throw( File::TouchFailed )
 		
 #else // CEYLAN_USES_UTIME
 
+#ifdef CEYLAN_USES__UTIME
+
+	if ( ::_utime( name.c_str(), 0 ) == -1 )
+		throw TouchFailed( "File::Touch failed for '" + name 
+			+ "' : " + System::explainError() ) ;
+
+#else // CEYLAN_USES__UTIME
+
 	throw TouchFailed( "File::Touch : not available on this platform." ) ;
 	
+#endif // CEYLAN_USES__UTIME
+
 #endif // CEYLAN_USES_UTIME
 
 }
