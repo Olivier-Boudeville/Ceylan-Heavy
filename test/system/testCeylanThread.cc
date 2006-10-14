@@ -46,6 +46,8 @@ class TestThread : public Ceylan::System::Thread
 			while ( ! stopDemanded() )
 			{
 			
+				// In interactive mode ? Run like hell ! Otherwise :
+
 				if ( ! _interactiveMode )
 				{
 				
@@ -62,7 +64,6 @@ class TestThread : public Ceylan::System::Thread
 				
 				}
 				
-				// In interactive mode ? Run like hell !
 				
 				try
 				{
@@ -80,7 +81,7 @@ class TestThread : public Ceylan::System::Thread
 				if ( *_sharedCounter % 100000 == 0 )
 				{
 					cout << getName() << " [" << *_privateCounter << " / " 
-						<< _sharedCounter->get() << "]" << endl ;
+						<< _sharedCounter->getValue() << "]" << endl ;
 				}
 									
 			}
@@ -94,7 +95,7 @@ class TestThread : public Ceylan::System::Thread
 		private:
 		
 			/// A counter shared by all threads.
-			Synchronized<Ceylan::UnsignedLongInteger> * _sharedCounter ;
+			Ceylan::System::Synchronized<Ceylan::UnsignedLongInteger> * _sharedCounter ;
 			
 			/// The counter specific for this thread.
 			Ceylan::Uint32 * _privateCounter ;
@@ -261,16 +262,16 @@ int main( int argc, char * argv[] )
 				+ Ceylan::toString( t5Counter ) ) ;
 			
 			LogPlug::debug( "Shared counter is " 
-				+ Ceylan::toString( sharedCounter.get() ) ) ;
+				+ Ceylan::toString( sharedCounter.getValue() ) ) ;
 			
 			Ceylan::UnsignedLongInteger	localTotal = t1Counter + t2Counter 
 				+ t3Counter + t4Counter + t5Counter ;
 
-			if ( localTotal != sharedCounter.get() )
+			if ( localTotal != sharedCounter.getValue() )
 				throw TestException( "Total of local counters (" 
 					+ Ceylan::toString( localTotal ) 
 					+ ") is not equal to shared counter ("	
-					+ Ceylan::toString( sharedCounter.get() )
+					+ Ceylan::toString( sharedCounter.getValue() )
 					+ ")." ) ;
 			
 			LogPlug::info( "Shared and local match, both are equal to "
