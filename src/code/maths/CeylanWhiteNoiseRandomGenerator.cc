@@ -1,6 +1,7 @@
 #include "CeylanWhiteNoiseRandomGenerator.h"
 
 #include "CeylanOperators.h"
+#include "CeylanLogPlug.h"
 #include "CeylanSystem.h"         // for getPreciseTime
 
 
@@ -19,6 +20,7 @@ using namespace Ceylan::System ;    // for time primitives
 using namespace Ceylan::Maths ;
 using namespace Ceylan::Maths::Random ;
 
+using namespace Ceylan::Log ;
 
 
 WhiteNoiseGenerator::WhiteNoiseGenerator( Sample lowerLimit, 
@@ -27,9 +29,13 @@ WhiteNoiseGenerator::WhiteNoiseGenerator( Sample lowerLimit,
 	RandomGenerator( lowerLimit, upperLimit ) 
 {
 
+	LogPlug::trace( "WhiteNoiseGenerator constructor called." ) ;
+
 	generateSeedFromCurrentTime() ;	
 	preCompute() ;
 	
+	LogPlug::trace( "WhiteNoiseGenerator constructor ended." ) ;
+
 }
 
 

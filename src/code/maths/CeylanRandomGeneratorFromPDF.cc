@@ -37,7 +37,11 @@ RandomGeneratorFromPDF::RandomGeneratorFromPDF(
 	_whiteNoiseGenerator( 0 ),
 	_probabilitiesTable( 0 ) 
 {
+	
+	LogPlug::trace( "Maths::RandomGeneratorFromPDF constructor called." ) ;
+
 	preCompute() ;
+
 }
 
 
@@ -130,7 +134,7 @@ const string RandomGeneratorFromPDF::displayProbabilities()
 	for ( Sample sample = _lowerLimit; sample < _upperLimit; sample++ )
 	{
 	
-		currentProbability =  _probabilitiesTable[ sample - _lowerLimit ] ;
+		currentProbability = _probabilitiesTable[ sample - _lowerLimit ] ;
 		
 		l.push_back( "Probability to realize sample " 
 			+ Ceylan::toString( sample )
@@ -204,7 +208,7 @@ const string RandomGeneratorFromPDF::toString( VerbosityLevels level )
 void RandomGeneratorFromPDF::preCompute() throw( MathsException ) 
 {
 	
-	//LogPlug::trace( "RandomGeneratorFromPDF::preCompute called." ) ;
+	LogPlug::trace( "RandomGeneratorFromPDF::preCompute called." ) ;
 	
 	/*
 	 * Creates internally-used white noise generator, with 
@@ -221,6 +225,7 @@ void RandomGeneratorFromPDF::preCompute() throw( MathsException )
 		throw MathsException( "RandomGeneratorFromPDF::preCompute : "
 			"no probability density function available" ) ;
 			
+	LogPlug::trace( "Creating probability table." ) ;
 
 	/*
 	 * We have to populate the uniform (white noise) sample space 
@@ -276,6 +281,8 @@ void RandomGeneratorFromPDF::preCompute() throw( MathsException )
 	delete _probabilitiesTable ;
 	_probabilitiesTable = 0 ;
 	*/
-		
+	
+	LogPlug::trace( "RandomGeneratorFromPDF::preCompute ended." ) ;
+
 }
 

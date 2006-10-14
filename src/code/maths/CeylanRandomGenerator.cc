@@ -2,6 +2,7 @@
 
 #include "CeylanObject.h"           // for Ceylan::Object
 #include "CeylanOperators.h"
+#include "CeylanLogPlug.h"           // for LogPlug
 
 #include <limits.h>                 // for INT_MIN, INT_MAX
 
@@ -27,6 +28,8 @@ RandomGenerator::RandomGenerator( Sample lowerLimit, Sample upperLimit,
 	_upperLimit( upperLimit ), 
 	_seed( aSeed ) 
 {
+
+	LogPlug::trace( "Maths::RandomGenerator constructor called." ) ;
 
 	if ( _lowerLimit >= _upperLimit )
 		throw MathsException( "RandomGenerator : lower limit (" 
