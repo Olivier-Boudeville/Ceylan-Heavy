@@ -312,13 +312,13 @@ Thread::SystemSpecificThreadIdentifier & Thread::id() const throw()
 
 bool Thread::isClean() const
 { 
-	return _clean ;  
+	return _clean.getValue() ;  
 }
 
 
 bool Thread::isRunning() const throw()
 { 
-	return _running ; 
+	return _running.getValue() ; 
 }
 
 
