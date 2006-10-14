@@ -1,7 +1,11 @@
 #include "CeylanDirectory.h"
 
 #include "CeylanRegularExpression.h" // for RegExp
+#undef CEYLAN_DEBUG_LOG
+#define CEYLAN_DEBUG_LOG 1
 #include "CeylanLogLight.h"          // for CEYLAN_LOG
+#include "CeylanOperators.h"         // for toString
+#include "CeylanStringUtils.h"       // for isLetter
 
 
 #if CEYLAN_USES_CONFIG_H
@@ -50,7 +54,8 @@ using namespace Ceylan::System ;
 
 #if CEYLAN_ARCH_WINDOWS
 
-const string Directory::RootDirectoryPrefix   = "C:"   ;
+// "c:" is a drive, "c:\\" is a directory.
+const string Directory::RootDirectoryPrefix   = "c:"   ;
 const string Directory::CurrentDirectoryAlias = "."  ;
 const string Directory::UpperDirectoryAlias   = ".." ;
 const char   Directory::Separator             = '\\'  ;
@@ -105,7 +110,6 @@ Directory::Directory( const string & name, bool createDirectory )
 	throw( Directory::DirectoryException )
 {
 
-
 #ifdef CEYLAN_USES_MKDIR
 
 	CEYLAN_LOG( "Creating directory reference for " + name ) ;
@@ -128,11 +132,28 @@ Directory::Directory( const string & name, bool createDirectory )
 		 *
 		 */
 
-
 		string path ;
 
+#if CEYLAN_ARCH_UNIX
+
+		// Next split will eat leading '/' :
 		if ( IsAbsolutePath( _path ) )
 			path = RootDirectoryPrefix + Separator ;
+
+#endif // CEYLAN_ARCH_UNIX
+
+#if CEYLAN_ARCH_WINDOWS
+
+		/*
+		 * For Windows, for example we have to evaluate first 'c:\' 
+		 * (not 'c:' which would never be found existing), then 
+		 * 'c:\Documents and Settings' 
+		 * (not 'c:\Documents and Settings\' which would never be found existing)
+		 *
+		 */
+		bool firstPathElement = true ;
+
+#endif // CEYLAN_ARCH_WINDOWS
 
 		list<string> nodes = SplitPath( _path ) ;
 
@@ -143,13 +164,24 @@ Directory::Directory( const string & name, bool createDirectory )
 		{
 		
 			path += *it ;
+			
+#if CEYLAN_ARCH_WINDOWS
+			if ( firstPathElement )
+			{
+
+				// 'c:' is never a directory, whereas 'C:\' is.
+				path += Directory::Separator ;
+				firstPathElement = false ;
+			}
+#endif // CEYLAN_ARCH_WINDOWS
+
 
 			CEYLAN_LOG( "Directory::Directory : examining " + path ) ;
 
 			if ( ! Exists( path ) )
 			{
 
-				CEYLAN_LOG( "Directory::Directory : examining " + path ) ;
+				CEYLAN_LOG( "Directory::Directory : creating " + path ) ;
 
 				// Mingw's mkdir takes only parameter :
 								
@@ -174,9 +206,9 @@ Directory::Directory( const string & name, bool createDirectory )
 #endif // CEYLAN_USES_MKDIR_TWO_ARGS			
 					throw CouldNotCreate( path + " : " + explainError() ) ;
 			}
-			
+
 			path += Separator ;
-			
+
 		}
 
 	}
@@ -211,9 +243,19 @@ bool Directory::isValid() const throw()
 bool Directory::hasEntry( const string & name ) const throw()
 {
 
+#ifdef CEYLAN_USES_STAT
+
 	struct stat buf ;
 	string tmp = _path + Separator + name ;
 	return ::stat( tmp.c_str(), & buf ) == 0 ;
+
+#else // CEYLAN_USES_STAT
+
+	struct _stat buf ;
+	string tmp = _path + Separator + name ;
+	return ::_stat( tmp.c_str(), & buf ) == 0 ;
+
+#endif // CEYLAN_USES_STAT
 	
 }
 
@@ -262,7 +304,9 @@ void Directory::getSubdirectories( list<string> & subDirectories )
 
 
 #else // CEYLAN_USES_DIRENT_H
-	
+
+	// @portme Use FindFirstFile(), FindNextFile(), and FindClose() Win32 API functions.
+
 	throw DirectoryException( "Directory::getSubdirectories : "
 		"not available on this platform." ) ;
 	
@@ -307,6 +351,8 @@ void Directory::getEntries( list<string> & entries ) const
 	
 #else // CEYLAN_USES_DIRENT_H
 	
+	// @portme Use FindFirstFile(), FindNextFile(), and FindClose() Win32 API functions.
+
 	throw DirectoryException( "Directory::getEntries : "
 		"not available on this platform." ) ;
 	
@@ -337,7 +383,7 @@ const string Directory::toString( Ceylan::VerbosityLevels level ) const throw()
 bool Directory::IsAValidDirectoryName( const string & directoryString ) throw()
 {
 
-#ifdef CEYLAN_USES_REGEX
+#if CEYLAN_USES_REGEX
 
 	string directoryPattern = "^[" + RootDirectoryPrefix 
 		+ Separator + "]{1,1}" ;
@@ -380,14 +426,31 @@ bool Directory::IsAbsolutePath( const string & path ) throw()
 	 * absolute path.
 	 *
 	 */
-	if ( path[0] == Separator )
-		return true ;
+#if CEYLAN_RUNS_ON_WINDOWS
+
+	/* Was :
 
 	if ( ! RootDirectoryPrefix.empty() )
 		if ( path.find( RootDirectoryPrefix, 0 ) == 0 )
 			return true ;
+	 */
+
+	// Prefix is : a drive letter + ':\', ex : 'c:\'
+	if ( ( Ceylan::isLetter( path[0] ) ) && path[1] == ':' )
+		return true ;
 
 	return false ;
+
+#else // CEYLAN_RUNS_ON_WINDOWS
+
+
+	if ( path[0] == Separator )
+		return true ;
+
+
+	return false ;
+
+#endif // CEYLAN_RUNS_ON_WINDOWS
 
 }
 
@@ -620,6 +683,8 @@ void Directory::StripFilename( const string & path, string * base,
 bool Directory::Exists( const string & path ) throw( DirectoryException )
 {
 
+	CEYLAN_LOG( "Directory::Exists called for " + path ) ;
+
 #ifdef CEYLAN_USES_STAT
 
 	struct stat buf ;
@@ -630,7 +695,34 @@ bool Directory::Exists( const string & path ) throw( DirectoryException )
 #ifdef CEYLAN_USES__STAT
 
 	struct _stat buf ;
-	return ::_stat( path.c_str(), & buf ) == 0 && ( buf.st_mode & _S_IFDIR ) ;
+
+	if ( ::_stat( path.c_str(), & buf ) == 0 )
+	{
+
+		CEYLAN_LOG( "Directory::Exists : " + path + " is a directory entry" ) ;
+
+		if ( buf.st_mode & _S_IFDIR )
+		{
+
+			CEYLAN_LOG( "Directory::Exists : " + path + " exists and is a directory" ) ;
+			return true ;
+
+		}
+		else
+		{
+
+			CEYLAN_LOG( "Directory::Exists : " + path + " exists but is not a directory" ) ;
+			return false ;
+
+		}
+	}
+	else
+	{
+
+		CEYLAN_LOG( "Directory::Exists : " + path + " is not a directory entry" ) ;
+		return false ;
+
+	}
 
 #else // CEYLAN_USES__STAT
 
@@ -768,10 +860,31 @@ time_t Directory::GetEntryChangeTime( const string & name )
 	throw( DirectoryException )
 {
 
+
+#ifdef CEYLAN_USES_STAT
+	
 	struct stat buf ;
 
 	if ( ::stat( name.c_str(), & buf ) == 0 )
 		return buf.st_ctime ;
+
+#else // CEYLAN_USES_STAT
+
+#if CEYLAN_USES__STAT
+
+	struct _stat buf ;
+
+	if ( ::_stat( name.c_str(), & buf ) == 0 )
+		return buf.st_ctime ;
+
+#else // CEYLAN_USES__STAT
+
+	throw DirectoryException( "Directory::GetEntryChangeTime : "
+		"not available on this platform." ) ;
+
+#endif // CEYLAN_USES__STAT
+
+#endif // CEYLAN_USES_STAT
 
 	throw DirectoryException( "Directory::GetEntryChangeTime : "
 		"unable to get last change time for entry " + name + "." ) ;
