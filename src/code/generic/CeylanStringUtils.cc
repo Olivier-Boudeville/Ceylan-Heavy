@@ -29,8 +29,6 @@ extern "C"
 #include <iostream>            // for cout, endl, flush.
 
 
-
-
 using std::string ;
 using std::list ;
 
@@ -187,7 +185,50 @@ StringSize Ceylan::substituteInString( string & targetString,
 	
 }
 
-		
+bool Ceylan::isLetter( char targetChar ) throw()
+{
+
+	if ( ::isalpha( targetChar ) ) 
+		return true ;
+
+	return false ;
+
+}
+
+
+bool Ceylan::isFigure( char targetChar ) throw()
+{
+
+	if ( ::isalpha( targetChar ) ) 
+		return true ;
+
+	return false ;
+
+}
+
+
+bool Ceylan::isPunctuation( char targetChar ) throw()
+{
+
+	if ( ::ispunct( targetChar ) )
+		return true ;
+
+	return false ;
+
+}
+
+
+bool Ceylan::isWhitespace( char targetChar ) throw()
+{
+
+	if ( ::iswspace( targetChar ) ) 
+		return true ;
+
+	return false ;
+
+}
+
+
 string Ceylan::toUppercase( const std::string & text ) throw()
 {
 
@@ -353,8 +394,13 @@ string Ceylan::demangleSymbol( const std::string & symbol ) throw()
 	while ( count < shortenSize )
 	{
 	
-		DISPLAY_DEBUG_DEMANGLE( "Count is " + Ceylan::toString( count ) 
-			+ ", extracted is " + extracted + ", shorten is " + shorten ) ;
+		DISPLAY_DEBUG_DEMANGLE( "Count is " 
+			+ Ceylan::toString( 
+				static_cast<Ceylan::Uint32>( count ) )
+			+ ", extracted is "
+			+ extracted
+			+ ", shorten is "
+			+ shorten ) ;
 	
 		while ( ::isdigit( shorten[count] ) )
 		{
@@ -377,8 +423,11 @@ string Ceylan::demangleSymbol( const std::string & symbol ) throw()
 			return symbol ;			
 		} 
 		
-		DISPLAY_DEBUG_DEMANGLE( "Count is " + Ceylan::toString( count ) 
-			+ ", extracted is " + extracted + ", shorten is " + shorten ) ;
+		DISPLAY_DEBUG_DEMANGLE( "Count is " 
+			+ Ceylan::toString( 
+				static_cast<Ceylan::Uint32>( count ) )
+			+ ", extracted is " + extracted 
+			+ ", shorten is " + shorten ) ;
 			
 		DISPLAY_DEBUG_DEMANGLE( "Jumping " + numString + " (" 
 			+ Ceylan::toString( static_cast<long>( num ) ) 
@@ -387,8 +436,10 @@ string Ceylan::demangleSymbol( const std::string & symbol ) throw()
 
 		extracted += shorten.substr( count, num ) + "::" ;
 
-		DISPLAY_DEBUG_DEMANGLE( "Count is " + Ceylan::toString( count ) 
-			+ ", extracted is " + extracted + ", shorten is " + shorten ) ;
+		DISPLAY_DEBUG_DEMANGLE( "Count is " 
+			+ Ceylan::toString( static_cast<Ceylan::Uint32>( count ) )
+			+ ", extracted is " + extracted
+			+ ", shorten is " + shorten ) ;
 
 		count += num ;
 
