@@ -2,9 +2,7 @@
 #define CEYLAN_LIBTOOL_VERSION_H_
 
 
-
 #include "CeylanVersion.h"        // for inheritance
-
 
 
 
