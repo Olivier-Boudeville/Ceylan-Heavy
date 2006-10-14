@@ -253,7 +253,8 @@ void OutputStream::writeString( const string & toWrite )
 	
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 	Log::LogPlug::debug( "OutputStream::writeString : string size is "
-		+ Ceylan::toString( stringSize ) + " characters." ) ;
+		+ Ceylan::toString( static_cast<Ceylan::Uint32>( stringSize ) )
+		+ " characters." ) ;
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 	 	
 	writeUint16( static_cast<Ceylan::Uint16>( stringSize ) ) ;
@@ -262,7 +263,8 @@ void OutputStream::writeString( const string & toWrite )
 	
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 	LogPlug::debug( "OutputStream::writeString : wrote "
-		+ Ceylan::toString( writeCount ) + " bytes." ) ;
+		+ Ceylan::toString( static_cast<Ceylan::Uint32>( writeCount ) ) 
+		+ " bytes." ) ;
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 		
 	if ( writeCount < stringSize ) 
