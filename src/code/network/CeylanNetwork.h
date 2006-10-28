@@ -232,10 +232,11 @@ namespace Ceylan
 		
 		
 		/// Returns local host's name, not including the domain name.
-		const std::string getLocalHostName() throw( NetworkException ) ;
+		CEYLAN_DLL const std::string getLocalHostName() 
+			throw( NetworkException ) ;
 		
 		/// Sets local host's name.
-		void setLocalHostName( const std::string & newHostName ) 
+		CEYLAN_DLL void setLocalHostName( const std::string & newHostName )
 			throw( NetworkException ) ;
 			
 		
@@ -251,11 +252,12 @@ namespace Ceylan
 		 * @throw NetworkException if the operation failed.
 		 *
 		 */
-		const std::string getLocalHostDomainName() throw( NetworkException ) ;
+		CEYLAN_DLL const std::string getLocalHostDomainName() 
+			throw( NetworkException ) ;
 		
 		
 		/// Sets local host's domain name.
-		void setLocalHostDomainName( const std::string & newHostName ) 
+		CEYLAN_DLL void setLocalHostDomainName( const std::string & newHostName ) 
 			throw( NetworkException ) ;
 					
 
@@ -269,7 +271,7 @@ namespace Ceylan
 		 * performed too.
 		 *
 		 */
-		const std::string getMostPreciseLocalHostName() 
+		CEYLAN_DLL const std::string getMostPreciseLocalHostName() 
 			throw( NetworkException ) ;
 
 
@@ -287,7 +289,7 @@ namespace Ceylan
 		 * @throw NetworkException if the search or the conversion failed.
 		 *
 		 */
-		const std::string getFQDNFromIP( const IPAddress & ip )
+		CEYLAN_DLL const std::string getFQDNFromIP( const IPAddress & ip )
 			throw( NetworkException ) ;
 
 
@@ -298,8 +300,8 @@ namespace Ceylan
 		 * "82.225.152.215".
 		 *
 		 */
-		const std::string getFQDNFromIPv4( const std::string & ipString )
-			throw( NetworkException ) ;
+		CEYLAN_DLL const std::string getFQDNFromIPv4( 
+			const std::string & ipString ) throw( NetworkException ) ;
 
 
 		/**
@@ -310,8 +312,8 @@ namespace Ceylan
 		 * address.
 		 *
 		 */
-		const std::string getFQDNFromHostname( const std::string & hostname )
-			throw( NetworkException ) ;
+		CEYLAN_DLL const std::string getFQDNFromHostname( 
+			const std::string & hostname ) throw( NetworkException ) ;
 
 
 		/**
@@ -321,7 +323,7 @@ namespace Ceylan
 		 * @param entry a previously created HostDNSEntry.
 		 *
 		 */
-		const std::string getFQDNFromDNSEntry( 
+		CEYLAN_DLL const std::string getFQDNFromDNSEntry( 
 			const HostDNSEntry & entry ) throw( NetworkException ) ;
 
 
@@ -335,9 +337,32 @@ namespace Ceylan
 		 * @see Ceylan::Features::RegularExpressions
 		 *
 		 */
-		bool isAValidHostName( const std::string & hostnameString ) throw() ;
+		CEYLAN_DLL bool isAValidHostName( const std::string & hostnameString ) 
+			throw() ;
 		
+
+		/**
+		 * The numerical error code that may be returned by specific
+		 * network primitives, namely Windows socket ones.
+		 *
+		 */
+		typedef int SocketError ;
+
 		
+		/**
+		 * Returns a string describing the error associated with the
+		 * specified error code.
+		 *
+		 * @param errorCode the socket error that should be translated.
+		 *
+		 */
+		CEYLAN_DLL std::string interpretSocketError( SocketError errorCode ) 
+			throw() ;
+
+		/// Returns the diagnosis string corresponding to latest socket error.
+		CEYLAN_DLL std::string explainSocketError() throw() ;
+
+
 		// Insert here real network-specific code.
 
 
