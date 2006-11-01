@@ -43,8 +43,8 @@ namespace Ceylan
 		 * @see getEmbeddedURI, ProtocolSeparator
 		 *
 		 */
-		const std::string getProtocolName( const std::string & fullURI ) 
-			throw() ;  
+		CEYLAN_DLL const std::string getProtocolName( 
+			const std::string & fullURI ) throw() ;  
 
 		 
 		/**
@@ -57,7 +57,8 @@ namespace Ceylan
 		 * @see getEmbeddedURI, ProtocolSeparator
 		 *
 		 */
-		const std::string getProtocolName( const std::string & fullURI, 
+		CEYLAN_DLL const std::string getProtocolName( 
+				const std::string & fullURI, 
 		 		const std::string & protocolSeparator ) 
 			throw() ;  
 
@@ -73,8 +74,8 @@ namespace Ceylan
 		 * @see getProtocolName, ProtocolSeparator
 		 *
 		 */
-		const std::string getEmbeddedURI( const std::string & fullURI ) 
-			throw() ;  
+		CEYLAN_DLL const std::string getEmbeddedURI( 
+			const std::string & fullURI ) throw() ;  
 	
 	
 		/**
@@ -87,14 +88,13 @@ namespace Ceylan
 		 * @see getProtocolName, ProtocolSeparator
 		 *
 		 */
-		const std::string getEmbeddedURI( const std::string & fullURI,
+		CEYLAN_DLL const std::string getEmbeddedURI( 
+				const std::string & fullURI,
 		 		const std::string & protocolSeparator ) 
 			throw() ;  
-	
 	
 	}
 	
-
 }	
 
 
