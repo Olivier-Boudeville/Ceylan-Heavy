@@ -99,8 +99,25 @@ display_test_result()
 			echo
 			printColor "${term_offset}$t seems to be failed (exit status $return_code)     " $white_text $red_back
 		else
-			echo "$t failed, whose shared library dependencies are : " >>${TESTLOGFILE}
-			ldd $t >>${TESTLOGFILE}
+		
+			if [ "$check_dependency" -eq "0" ] ; then
+			
+				if [ "$on_cygwin" -eq "0" ] ; then
+					# See also : http://www.dependencywalker.com/
+					PATH="/cygdrive/c/Program Files/Microsoft Platform SDK for Windows Server 2003 R2/bin:$PATH"
+					depend_tool="Depends.exe"
+					if which $depend_tool 1>/dev/null 2>&1; then
+						depends_exe=`which $depend_tool`
+						"$depends_exe" $t >> ${TESTLOGFILE}
+					else
+						echo "No $depend_tool available, no dependency displayed."  >> ${TESTLOGFILE}
+					fi
+				else
+					echo "$t failed, whose shared library dependencies are : " >> ${TESTLOGFILE}
+					ldd $t >>${TESTLOGFILE}
+				fi
+			fi
+			
 			printf "[${white_text}m[[${red_text}mKO[${white_text}m]\n"
 		fi	
 	fi
@@ -119,9 +136,9 @@ run_test()
 	# (ex : stress tests) are shorten.
 	if [ "$is_batch" = "0" ] ; then
 		echo -e "\n\n########### Running now $t" >>${TESTLOGFILE}
-		$t --batch 1>>${TESTLOGFILE} 2>&1
+		$t --batch ${network_option} 1>>${TESTLOGFILE} 2>&1
 	else
-		$t --interactive
+		$t --interactive ${network_option}
 	fi			
 		
 	return_code="$?"
@@ -137,6 +154,25 @@ run_test()
 			
 }
 
+
+display_final_stats()
+{
+	echo 
+
+	if [ "$error_count" -eq "0" ] ; then
+		echo "   Test result : [${green_text}m all $test_count tests succeeded[${white_text}m"
+	else
+		echo "   Test result : [${red_text}m $error_count out of $test_count tests failed[${white_text}m"
+		echo "   (see ${TESTLOGFILE} for more details)"
+	fi
+}
+
+get_logical_test_name()
+# Converts executables names on Cygwin to the usual names
+# 'system-testCeylanX.exe' should become 'testCeylanX'
+{
+	returned_string=`basename $t | sed 's|^.*-test|test|1' | sed 's|.exe$||1'`
+}
 
 
 # Try to find term utilities :
@@ -165,9 +201,40 @@ else
 	echo -e "\nInteractive tests will only need the enter key to be pressed one or more times. Be warned though that some tests might take a long time, and that some of them have no special output except a test result."
 fi
 
+# Test whether we are online (needed for DNS queries) :
+if ping google.com ; then
+	is_online=0
+	network_option="--online"
+	echo -e "\nRunning in online mode, in-depth network testing enabled."
+else	
+	is_online=1
+	network_option=""
+	echo -e "\nNo Internet connection detected, some network tests will be disabled."
+fi
+
+
+test_count=0
+error_count=0
+
+# Not using Cygwin by default to chain the tests :
+on_cygwin=1
+
+# Tells whether link dependencies should be checked in case a test fails :
+check_dependency=1
+
+# Special case for tests generated on Windows :
+if [ `uname -o` = "Cygwin" ] ; then
+	
+	on_cygwin=0
+	DEBUG_INTERNAL "Running tests in the Windows (Cygwin) context."
+	
+	# Updated PATH needed to find the Ceylan DLL :
+	export PATH="../src/Debug:$PATH"
+	
+fi	
 
 # This script will automatically run each test of each selected Ceylan module.
-TESTED_ROOT_MODULES=`cd ${TEST_ROOT}; find . -mindepth 1 -type d | grep -v autom4te.cache | grep -v .svn | grep -v '.deps' | grep -v '.libs' | grep -v 'testCeylan' `
+TESTED_ROOT_MODULES=`cd ${TEST_ROOT}; find . -mindepth 1 -type d | grep -v tmp | grep -v Debug | grep -v autom4te.cache | grep -v .svn | grep -v '.deps' | grep -v '.libs' | grep -v 'testCeylan' `
 
 # For debug purpose :
 #TESTED_ROOT_MODULES="generic logs interfaces modules system maths network middleware"
@@ -189,14 +256,16 @@ DEBUG_INTERNAL "Columns = ${COLUMNS}"
 space_for_test_name=`echo $(( ${COLUMNS} - 5 ))`
 DEBUG_INTERNAL "Space for test names = ${space_for_test_name}"	
 
-test_count=0
-error_count=0
 
 if [ "$is_batch" = "0" ] ; then
 	echo -e "\n\tTest results established at "`date '+%A, %B %-e, %Y'`"\n\n" > ${TESTLOGFILE}
 fi
 
-echo -e "\n\nLibrary search path is : LD_LIBRARY_PATH='$LD_LIBRARY_PATH'" >> ${TESTLOGFILE}
+if [ "$on_cygwin" -eq "0" ] ; then
+	echo -e "\n\nLibrary search path is : PATH='$PATH'" >> ${TESTLOGFILE}
+else
+	echo -e "\n\nLibrary search path is : LD_LIBRARY_PATH='$LD_LIBRARY_PATH'" >> ${TESTLOGFILE}
+fi
 
 # So that test plugin can be found :
 saved_LTDL_LIBRARY_PATH="$LTDL_LIBRARY_PATH"
@@ -214,9 +283,7 @@ for m in ${TESTED_ROOT_MODULES} ; do
 	
 	PLAYTEST_LOCAL="${TEST_ROOT}/$m/${PLAYTEST_LOCAL_FILE}"
 	
-	
 	printColor "\n${term_offset}${term_primary_marker}Playing all tests of module '"`echo $m | sed 's|^./||1'`"' : " $magenta_text $black_back
-
 	
 	if [ -f "${PLAYTEST_LOCAL}" ] ; then
 		EXCLUDED_TESTS=""
@@ -224,9 +291,12 @@ for m in ${TESTED_ROOT_MODULES} ; do
 		. ${PLAYTEST_LOCAL}
 	fi
 		
+	if [ "$on_cygwin" -eq "0" ] ; then
+		TESTS=`ls ${TEST_ROOT}/$m/*-testCeylan*.exe 2>/dev/null`
+	else	
+		TESTS=`find ${TEST_ROOT}/$m -mindepth 1 -maxdepth 1 -perm -o+x,g+x -a -type f -a -name 'testCeylan*' `
+	fi
 	
-	TESTS=`find ${TEST_ROOT}/$m -mindepth 1 -maxdepth 1 -perm -o+x,g+x -a -type f -a -name 'testCeylan*' `
-
 	DEBUG_INTERNAL "Tests in module ${m} are : '${TESTS}'"
 	
 	if [ "$is_batch" = "1" ] ; then
@@ -247,9 +317,16 @@ for m in ${TESTED_ROOT_MODULES} ; do
 	
 		if [ -x "$t" -a -f "$t" ] ; then
 
+			if [ "$on_cygwin" -eq "0" ] ; then
+				get_logical_test_name $t
+				logical_test_name=$returned_string
+			else
+				logical_test_name=`basename "$t"`
+			fi
+			
 			to_be_excluded=1
 			for excluded in ${EXCLUDED_TESTS} ; do
-				if [ `basename "$t"` = "$excluded" ] ; then
+				if [ "$logical_test_name" = "$excluded" ] ; then
 					to_be_excluded=0
 				fi	
 			done	
@@ -261,7 +338,13 @@ for m in ${TESTED_ROOT_MODULES} ; do
 			fi
 			
 			test_count=$(($test_count+1))
-			test_name=`basename $t`
+			
+			if [ "$on_cygwin" -eq "0" ]; then
+				get_logical_test_name $t
+				test_name="$returned_string"
+			else	
+				test_name=`basename $t`
+			fi
 			
 			display_launching $test_name
 			
@@ -273,15 +356,8 @@ for m in ${TESTED_ROOT_MODULES} ; do
 		
 done 
 
+display_final_stats
 
-echo 
-
-if [ "$error_count" -eq "0" ] ; then
-	echo "   Test result : [${green_text}m all $test_count tests succeeded[${white_text}m"
-else
-	echo "   Test result : [${red_text}m $error_count out of $test_count tests failed[${white_text}m"
-	echo "   (see ${TESTLOGFILE} for more details)"
-fi	
 
 echo -e "\nEnd of tests"
 
