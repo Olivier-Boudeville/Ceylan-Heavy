@@ -96,7 +96,13 @@ ServerStreamSocket::ServerStreamSocket( Port serverPort, bool reuse,
 		// Reuse option set to non-zero to enable option :
 		int reuseOption = 1 ;
 		
-		// See : man 7 socket or man 7 ip
+		/*
+		 * See : man 7 socket or man 7 ip.
+		 *
+		 * The SO_REUSEADDR socket option must be set prior to executing bind,
+		 * to have any effect.
+		 *
+		 */
 		if ( ::setsockopt( getOriginalFileDescriptor(), 
 			/* socket level */ SOL_SOCKET, 
 			/* option name */ SO_REUSEADDR, 
@@ -248,7 +254,17 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 				
 	_address->_socketAddress.sin_addr.s_addr = htonl( 
 		/* Address to accept any incoming connection */ INADDR_ANY ) ;
- 
+
+	/*
+	 * Could be instead : 
+	 *
+	 * hostent * localHost = gethostbyname( "" ) ;
+	 * char* localIP = inet_ntoa( *(struct in_addr *)*localHost->h_addr_list ) ;
+	 * sockaddr_in myServer ;
+	 * myServer.sin_addr.s_addr = inet_addr( localIP ) ;
+	 *
+	 */
+
  	Ceylan::Uint8 bindAttemptCount = 0 ;
 	const Ceylan::Uint8 maxBindAttemptCount = 5 ;
 	
@@ -271,11 +287,13 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 	
 	}
 	
-	
 	if ( bindAttemptCount == maxBindAttemptCount )
 		throw ServerStreamSocketException(
 			"ServerStreamSocket::prepareToAccept : bind attempts failed : "
 			+ System::explainError() ) ;
+
+	if ( _nagleAlgorithmDeactivated )
+		setNagleAlgorithmTo( false ) ; 
 
  	_bound = true ;
 				
