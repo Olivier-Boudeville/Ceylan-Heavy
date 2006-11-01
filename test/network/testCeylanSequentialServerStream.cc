@@ -105,7 +105,7 @@ class MyTestSequentialStreamServer :
 				if ( readCount == 0 )
 				{
 				
-					LogPlug::debug( "MyTestSequentialStreamServer::accepted :"
+					LogPlug::debug( "MyTestSequentialStreamServer::accepted : "
 						"no byte could be read." ) ;
 
 					return ;
