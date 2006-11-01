@@ -14,21 +14,28 @@
 DEBUG_INTERNAL "middleware/playTests-local.sh sourced"
 
 
-
+# The classical network client 'testCeylanClientStream' will do the job :
 
 marshalled_server_test_name="testCeylanMultiLwMarshalledServer"
-marshalled_server_test_exec="${TEST_ROOT}/$m/${marshalled_server_test_name}"
-
-# The classical network client does the job :
 marshalled_client_test_name="testCeylanClientStream"
-marshalled_client_test_exec="${TEST_ROOT}/network/${marshalled_client_test_name}"
-
-
 multiplexed_lw_protocol_server_test_name="testCeylanMultiLwProtocolServer"
-multiplexed_lw_protocol_server_test_exec="${TEST_ROOT}/$m/${multiplexed_lw_protocol_server_test_name}"
-
 multiplexed_lw_protocol_client_test_name="testCeylanProtocolClient"
+
+if [ "$on_cygwin" -eq "0" ] ; then
+
+marshalled_server_test_exec="${TEST_ROOT}/$m/$m-${marshalled_server_test_name}.exe"
+marshalled_client_test_exec="${TEST_ROOT}/network/network-${marshalled_client_test_name}.exe"
+multiplexed_lw_protocol_server_test_exec="${TEST_ROOT}/$m/$m-${multiplexed_lw_protocol_server_test_name}.exe"
+multiplexed_lw_protocol_client_test_exec="${TEST_ROOT}/$m/$m-${multiplexed_lw_protocol_client_test_name}.exe"
+
+else
+
+marshalled_server_test_exec="${TEST_ROOT}/$m/${marshalled_server_test_name}"
+marshalled_client_test_exec="${TEST_ROOT}/network/${marshalled_client_test_name}"
+multiplexed_lw_protocol_server_test_exec="${TEST_ROOT}/$m/${multiplexed_lw_protocol_server_test_name}"
 multiplexed_lw_protocol_client_test_exec="${TEST_ROOT}/$m/${multiplexed_lw_protocol_client_test_name}"
+
+fi
 
 
 # Have to be excluded from automatic selection since must be managed
