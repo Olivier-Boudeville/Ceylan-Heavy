@@ -121,6 +121,7 @@ To add a new test :
 	- go to the project properties, in Common Properties -> References, 
 click on 'Add New Reference' and select 'Ceylan-x.y library'
 	- in 'configuration properties' :
+		* set in General -> Output Directory : ".."
 		* add in C/C++ -> General -> Additional Include Directories :
 "$(SolutionDir)code";"$(SolutionDir)code/generic";"$(SolutionDir)code/interfaces";"$(SolutionDir)code/logs";"$(SolutionDir)code/maths";"$(SolutionDir)code/middleware";"$(SolutionDir)code/modules";"$(SolutionDir)code/network";"$(SolutionDir)code/system"
 		* add in C/C++ -> Preprocessor -> Preprocessor Definitions :
@@ -136,6 +137,21 @@ and run testCeylanBasicResourceManager.exe; echo $?
 
 test*.vcproj files could be generated automatically, but it would not be far more convenient (generate a GUID, register to the solution, etc.)
  
+To run a test, the Ceylan DLL file (Ceylan-x.y.dll) must be found, the safest 
+solution is to add the directory in which the DLL is generated (trunk/src/Debug)
+in the PATH environment variable, or to run the test from this directory 
+(ex : ../../test/network/network-testCeylanSequentialServerStream --consolePlug)
+
+The recommended way of testing the Ceylan library is to run the testing suite 
+for a Cygwin terminal, since the script playTests.sh can be run on all supported
+platforms, including Cygwin-based Windows (note that Cygwin is used for the 
+shell and UNIX commands it provides, none of its libraries is used by Ceylan) :
+"""
+cd trunk/test
+./playTests.sh
+"""
+
+The ldd tool is lacking on the Windows platform, one may use [14] instead.
 
 [1]  http://msdn.microsoft.com/vstudio/express/
 [2]  for example, trunk/src/Ceylan-0.3.sln
@@ -150,9 +166,10 @@ test*.vcproj files could be generated automatically, but it would not be far mor
 [11] http://community.vietfun.com/printthread.php?t=279103
 [12] ms-help://MS.VSExpressCC.v80/dv_vsexpcc/local/CollectionManagerExpress.htm
 [13] see Tools -> Options -> Help -> Online
+[14] http://www.dependencywalker.com/
 
-More directory tests, touch used on a file rather than on a directory.
-Notes :
+
+
 
 The solution and the main projects could not be stored in the expected trunk/src/conf/build directory, as it leads 
 to having all imported files in the same virtual directory, whereas we want to keep the original module-based 
