@@ -7,6 +7,7 @@
 #include "CeylanFeatures.h"     // for FeatureNotAvailableException
 
 
+
 #include <ctime>
 #include <string>
 #include <iosfwd>
@@ -107,8 +108,20 @@ namespace Ceylan
 		 * UNIX File descriptor type, they have to be transformed into
 		 * the StreamID datatype to comply with the Stream interface.
 		 *
+		 * Also needed on Windows for socket handles (SOCKET datatype),
+		 * whose type is UINT_PTR.
+		 *
 		 */
+		
+#ifdef CEYLAN_RUNS_ON_WINDOWS
+
+		typedef unsigned int FileDescriptor ;
+
+#else // CEYLAN_RUNS_ON_WINDOWS
+
 		typedef int FileDescriptor ;
+
+#endif // CEYLAN_RUNS_ON_WINDOWS
 
 
 
