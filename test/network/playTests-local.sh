@@ -20,9 +20,18 @@ sequential_server_test_name="testCeylanSequentialServerStream"
 multiplexed_server_test_name="testCeylanMultiplexedServerStream"
 client_test_name="testCeylanClientStream"
 
+if [ "$on_cygwin" -eq "0" ] ; then
+
+sequential_server_test_exec="${TEST_ROOT}/$m/$m-${sequential_server_test_name}.exe"
+multiplexed_server_test_exec="${TEST_ROOT}/$m/$m-${multiplexed_server_test_name}.exe"
+client_test_exec="${TEST_ROOT}/$m/$m-${client_test_name}.exe"
+
+else
+
 sequential_server_test_exec="${TEST_ROOT}/$m/${sequential_server_test_name}"
 multiplexed_server_test_exec="${TEST_ROOT}/$m/${multiplexed_server_test_name}"
 client_test_exec="${TEST_ROOT}/$m/${client_test_name}"
+fi
 
 
 # Have to be excluded from automatic selection since must be managed
@@ -74,10 +83,6 @@ test_count=$(($test_count+2))
 
 
 ### Testing multiplexed server :
-
-
-multiplexed_server_test_exec="${TEST_ROOT}/$m/${multiplexed_server_test_name}"
-client_test_exec="${TEST_ROOT}/$m/${client_test_name}"
 
 
 # First, launch the server :
