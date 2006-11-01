@@ -746,7 +746,7 @@ void Directory::Remove( const string & name, bool recursive )
 	throw( Directory::CouldNotRemove )
 {
 
-#ifdef CEYLAN_USES_RMDIR
+#if defined(CEYLAN_USES_RMDIR) || defined(CEYLAN_USES__RMDIR)
 
 
 // The case without stat and _stat not managed :
@@ -837,14 +837,25 @@ void Directory::Remove( const string & name, bool recursive )
 			}
 		}
 
-		if ( ::rmdir( path.c_str() ) )
-			throw CouldNotRemove( path +  " : " + explainError() ) ;
 	}
-	else // not a recursive remove
-	{
-		if ( ::rmdir( path.c_str() ) )
-			throw CouldNotRemove( path + " : " + explainError() ) ;
-	}
+
+#ifdef CEYLAN_USES_RMDIR
+
+	if ( ::rmdir( path.c_str() ) )
+		throw CouldNotRemove( path +  " : " + explainError() ) ;
+
+#elif defined(CEYLAN_USES__RMDIR) // CEYLAN_USES_RMDIR
+
+	if ( ::_rmdir( path.c_str() ) )
+		throw CouldNotRemove( path +  " : " + explainError() ) ;
+
+#else // CEYLAN_USES_RMDIR
+
+	throw CouldNotRemove( "(not available on this platform)" ) ;
+
+#endif // CEYLAN_USES_RMDIR
+
+
 
 #else // CEYLAN_USES_RMDIR
 
