@@ -3,6 +3,8 @@
 #include "CeylanLogPlug.h"                      // for LogPlug
 #include "CeylanOperators.h"                    // for toString
 #include "CeylanStringUtils.h"                  // for StringSize
+#include "CeylanNetwork.h"                      // for explainSocketError
+
 
 // for SystemSpecificSocketAddress :
 #include "CeylanSystemSpecificSocketAddress.h"  
@@ -63,7 +65,8 @@ extern "C"
 #include <winsock2.h>
 #endif // CEYLAN_USES_WINSOCK2_H
 
-#pragma comment (lib , "WS2_32.lib")
+// We need to link to the Winsock2 library :
+#pragma comment (lib , "ws2_32.lib")
 
 }
 
@@ -95,7 +98,8 @@ Socket::SocketException::~SocketException() throw()
 
 	
 // Is protected :
-Socket::Socket( bool blocking ) throw( Socket::SocketException ) :
+Socket::Socket( bool blocking ) 
+		throw( Socket::SocketException ) :
 	InputOutputStream( true ),
 	_port( 0 ),
 	_address( 0 ),
@@ -115,6 +119,7 @@ Socket::Socket( bool blocking ) throw( Socket::SocketException ) :
 	 */	 
 	if ( ! blocking )
 		setBlocking( false ) ;
+
 			
 #else // CEYLAN_USES_NETWORK
 
@@ -231,7 +236,6 @@ Size Socket::read( char * buffer, Size maxLength )
 		LogPlug::debug( "Socket::read : using file descriptor "
 			+ Ceylan::toString( getFileDescriptorForTransport() ) ) ;
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
-			
 			
 		// FDRead can throw IOException and FeatureNotAvailableException :
 		return System::FDRead( getFileDescriptorForTransport(), 
@@ -477,7 +481,15 @@ const std::string Socket::toString( Ceylan::VerbosityLevels level )
 	{
 		return "Socket::toString failed (abnormal)" ;
 	}
-		
+	
+	if ( level == Ceylan::low )
+		return res ;
+
+	if ( isBlocking() )
+		res += ". This is a blocking socket" ;
+	else
+		res += ". This is a non-blocking socket" ;
+
 	// Add _address interpretation here.
 	
 	return res ;
@@ -499,8 +511,32 @@ bool Socket::close() throw( Stream::CloseException )
 
 #if CEYLAN_USES_NETWORK
 
-	return Stream::Close( _originalFD ) ;
+	// Maybe use shutdown first.
+
+#if CEYLAN_RUNS_ON_WINDOWS
+
+	if ( _originalFD == 0 )
+		return false ;
+
+	if ( ::closesocket( _originalFD ) == SOCKET_ERROR )
+		throw Stream::CloseException( "Socket::close failed : " 
+			+ Network::explainSocketError() ) ;
 	
+	_originalFD = 0 ;
+
+	return true ;
+
+#else // CEYLAN_RUNS_ON_WINDOWS
+
+	bool res = Stream::Close( _originalFD ) ;
+
+	_originalFD = 0 ;
+
+	return res ;
+
+#endif // CEYLAN_RUNS_ON_WINDOWS
+
+
 #else // CEYLAN_USES_NETWORK	
 
 	LogPlug::error( "Socket::close failed : "
