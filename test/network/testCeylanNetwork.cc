@@ -22,7 +22,6 @@ const string invalidHostname2 = "192.110.0.4" ;
 const string invalidHostname3 = "ceylan/sourceforge/net" ;
 
 
-// FIXME : add ping to avoid failure if network not here
 
 /**
  * Test of Ceylan Network utilities.
@@ -37,16 +36,57 @@ int main( int argc, char * argv[] )
 	LogHolder logger( argc, argv ) ;
 
 
-    try
-    {
+	try
+	{
+		
+		bool onlineMode = false ;
 
+		std::string executableName ;
+		std::list<std::string> options ;
+		
+		Ceylan::parseCommandLineOptions( executableName, options, argc, argv ) ;
+				
+		std::string token ;
+		bool tokenEaten ;
+		
+		while ( ! options.empty() )
+		{
+		
+			token = options.front() ;
+			options.pop_front() ;
+
+			tokenEaten = false ;
+		
+			if ( token == "--online" )
+			{
+				LogPlug::info( "Online mode selected, "
+					"in-depth network testing will be performed" ) ;
+				onlineMode = true ;
+				tokenEaten = true ;
+			} else
+			if ( LogHolder::IsAKnownPlugOption( token ) )
+			{
+				// Ignores log-related (argument-less) options.
+				tokenEaten = true ;
+			}
+			
+			if ( ! tokenEaten )
+			{
+				throw CommandLineParseException( 
+					"Unexpected command line argument : " + token ) ;
+			}
+		
+		}
 
         LogPlug::info( "Testing Ceylan's network implementation." ) ;
 
 
-		// FIXME avoids waiting if not network :
-		return Ceylan::ExitSuccess ;
-		
+		if ( ! onlineMode )
+		{
+			LogPlug::warning( "Not in online mode, test stops here." ) ;
+			return Ceylan::ExitSuccess ;
+		}
+
 		/*
 		 * We have to create HostDNSEntry instances in a try/catch pair
 		 * since this test can be run on a computer with no availabe DNS
@@ -90,7 +130,6 @@ int main( int argc, char * argv[] )
 			LogPlug::warning( "Resolving the DNS for '" 
 				+ ceylanSecondHost + "' failed : " + e.toString() ) ;
 		}
-		
 
 
 		string googleHost = "google.fr" ;
@@ -128,15 +167,37 @@ int main( int argc, char * argv[] )
 				+ wikipediaHost + "' failed : " + e.toString() ) ;
 		}
 
-		
-		string numericalAddress = "82.225.152.215" ;
-				
-		IPAddressvFour tempv4( numericalAddress ) ;
-		LogPlug::info( "FQDN for " + tempv4.toString() + " is : '"
-			+ getFQDNFromIP( tempv4 ) + "'." ) ;
+		LogPlug::info( "Resolving now names from (numerical) IP addresses." ) ;
 
-		LogPlug::info( "FQDN for " + numericalAddress + " is : '"
-			+ getFQDNFromIPv4( numericalAddress ) + "'." ) ;
+		string numericalAddress = "82.225.152.215" ;
+		
+		// Reverse look-up may fail :
+
+		try
+		{
+
+			IPAddressvFour tempv4( numericalAddress ) ;
+			LogPlug::info( "FQDN for " + tempv4.toString() + " is : '"
+				+ getFQDNFromIP( tempv4 ) + "'." ) ;
+
+		}
+		catch( const NetworkException & e )
+		{
+			LogPlug::error( "Unable to perform a reverse look-up for "
+				+ numericalAddress ) ;
+		}
+
+
+		try
+		{
+			LogPlug::info( "FQDN for " + numericalAddress + " is : '"
+				+ getFQDNFromIPv4( numericalAddress ) + "'." ) ;
+		}
+		catch( const NetworkException & e )
+		{
+			LogPlug::error( "Unable to perform a reverse look-up for "
+				+ numericalAddress ) ;
+		}
 
 		LogPlug::info( "FQDN for " + wikipediaHost + " is : '"
 			+ getFQDNFromHostname( wikipediaHost ) + "'." ) ;
@@ -186,9 +247,18 @@ int main( int argc, char * argv[] )
 		LogPlug::info( "The local host name is : '" + getLocalHostName()
 			+ "'." ) ;
 		
-		LogPlug::info( "The local domain name is : '" 
-			+ getLocalHostDomainName() + "'." ) ;
-		
+		// Not available on all platforms :
+		try
+		{
+			LogPlug::info( "The local domain name is : '" 
+				+ getLocalHostDomainName() + "'." ) ;
+		}
+		catch( const NetworkException & e )
+		{
+			LogPlug::error( "Unable to retrieve the domaine name : "
+				+ e.toString() ) ;
+		}
+
 		LogPlug::info( "The most precise host name (aiming FQDN) is : '" 
 			+ getMostPreciseLocalHostName() + "'." ) ;	
 
