@@ -87,7 +87,19 @@ const std::string Object::getClassName() const throw()
 	 
 	while ( ::isdigit( className[ i ] ) ) 
 		i++ ;
-	
+
+	/*
+	 * With Visual C++ 2005 compiler, class names start with 'class ', 
+	 * we remove this mostly useless prefix.
+	 *
+	 */
+	const string toRemove = "class " ;
+	string::size_type pos = className.find( toRemove, 
+		/* starting position */ 0) ;
+
+	if ( pos != string::npos && pos == 0 )
+		className = className.substr( toRemove.size() ) ;
+
 #if CEYLAN_DEBUG
 
 	string result = className.substr( i ) ;	 
