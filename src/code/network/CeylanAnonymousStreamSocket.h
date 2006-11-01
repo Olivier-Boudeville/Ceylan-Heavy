@@ -90,12 +90,22 @@ namespace Ceylan
 				 * created in blocking mode (the default) or in non-blocking
 				 * mode.
 				 *
+				 * @param sacrificeThroughputToPacketTiming tells whether
+				 * the snappiest possible response (packet timing) should be
+				 * searched for (if true), even though it would be obtained at 
+				 * the expense of usable network bandwidth. This would be done
+				 * by deactivating the Nagle algorithm, which is seldom
+				 * recommended except for remote GUI or multiplayer network games.
+				 * Hence the default is false, and the Nagle algorithm is used.
+				 *
+				 * @see http://tangentsoft.net/wskfaq/intermediate.html#nagle-desc
 				 * @throw SocketException if socket creation failed.
 				 *
 				 */
 				explicit AnonymousStreamSocket( 
 						System::FileDescriptor listeningFD,
-						bool blocking = true ) 
+						bool blocking = true,
+						bool sacrificeThroughputToPacketTiming = false ) 
 					throw( SocketException ) ;
 	
 				
