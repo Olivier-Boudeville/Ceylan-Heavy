@@ -429,16 +429,15 @@ void Thread::Sleep( System::Second seconds,	System::Microsecond microseconds )
 {
 
 #if CEYLAN_DEBUG_THREADS
- 
 	LogPlug::debug( "Thread::Sleep : current thread will be sleeping for "
 		+ Ceylan::toString( seconds  ) + " second(s) and "
 		+ Ceylan::toString( microseconds ) + " microsecond(s)." ) ;
-
 #endif // CEYLAN_DEBUG_THREADS
 
 	try
 	{
-		System::basicSleep( seconds, 1000 * microseconds ) ;
+		System::basicSleep( seconds, 
+			/* nanoseconds */ 1000 * microseconds ) ;
 	}
 	catch( const SystemException & e )
 	{
