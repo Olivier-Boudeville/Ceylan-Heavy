@@ -171,14 +171,26 @@ HostDNSEntry::HostDNSEntry( const std::string & hostName )
 	// Prepare hints about the type of socket the caller supports :
 	struct addrinfo callerHints ;
 	::memset( &callerHints, 0, sizeof(callerHints) ) ;
-	callerHints.ai_family   = AF_INET ;
+	callerHints.ai_family   =  PF_UNSPEC /* IPv4 only : PF_INET */ ;
 	callerHints.ai_socktype = /* any socket type */ 0 ;
 	callerHints.ai_protocol = /* any protocol */    0 ;
+	callerHints.ai_flags    = AI_CANONNAME ;
+
+#if CEYLAN_DEBUG_NETWORK
+	LogPlug::debug( "HostDNSEntry constructor : "
+			"running getaddrinfo for '" + hostName + "'." ) ;
+#endif // CEYLAN_DEBUG_NETWORK
 
 	if ( ::getaddrinfo( hostName.c_str(), /* port */ 0, 
-			&callerHints, &_internalEntry->_entryList ) != 0 ) 
+			&callerHints, &_internalEntry->_entryList ) != 0 )
+	{
+		LogPlug::error( "HostDNSEntry constructor failed : "
+			+ Network::explainSocketError() ) ;
+
 		throw NetworkException( "HostDNSEntry constructor failed : "
 			+ Network::explainSocketError() ) ;
+
+	}
 
 	// Here _entryList should be correctly set.
 
@@ -230,6 +242,7 @@ HostDNSEntry::HostDNSEntry( const IPAddress & ip ) throw( NetworkException )
 	callerHints.ai_family   = AF_INET ;
 	callerHints.ai_socktype = /* any socket type */ 0 ;
 	callerHints.ai_protocol = /* any protocol    */ 0 ;
+	callerHints.ai_flags    = AI_NUMERICHOST ;
 
 	if ( ::getaddrinfo( ip.toString().c_str(), /* port */ 0, 
 			&callerHints, &_internalEntry->_entryList ) != 0 ) 
@@ -314,6 +327,10 @@ string HostDNSEntry::getOfficialHostName() const
 
 #ifdef CEYLAN_USES_WS2TCPIP_H
 
+	if ( _internalEntry->_entryList->ai_canonname == 0 )
+		throw NetworkException( "HostDNSEntry::getOfficialHostName : "
+			"no available canonical name." ) ;
+
 	return string( _internalEntry->_entryList->ai_canonname ) ;
 
 #else // CEYLAN_USES_WS2TCPIP_H
@@ -345,7 +362,17 @@ list<string> & HostDNSEntry::getAliasList() const throw()
 
 	while ( currentAlias != 0 )
 	{
-		res.push_back( string( currentAlias->ai_canonname ) ) ;
+		if ( currentAlias->ai_canonname == 0 )
+		{
+
+			// Do not know what to do when this happen :
+			LogPlug::warning( "HostDNSEntry::getAliasList : "
+				"an alias had not canonical name, "
+				"it has been skipped." ) ;
+		}
+		else
+			res.push_back( string( currentAlias->ai_canonname ) ) ;
+
 		currentAlias = currentAlias->ai_next ;
 	}
 
@@ -467,10 +494,10 @@ list<IPAddress *> & HostDNSEntry::getAddresses() const throw()
 
 		char * decodedAddress ;
 
-		switch( currentAddressInfo->ai_family  )		
+		switch( currentAddressInfo->ai_family )		
 		{
 	
-			case IPv4:
+			case PF_INET:
 				currentEffectiveAddress = & currentAddressStruct->sin_addr ;			
 				decodedAddress = ::inet_ntoa( *currentEffectiveAddress ) ;
 				if ( decodedAddress != 0 )
@@ -481,14 +508,16 @@ list<IPAddress *> & HostDNSEntry::getAddresses() const throw()
 						"unable to decode address, skipping it." ) ;
 				break ;	
 						
-			case IPv6:
+			case PF_INET6:
 				LogPlug::error( "HostDNSEntry::getAddresses : "
 					"IPv6 not supported yet, skipping address entry." ) ;
 			break ;
 					
 			default:
 				LogPlug::error( "HostDNSEntry::getAddresses : "
-					"unsupported address type, skipping address entry." ) ;
+					"unsupported address type (" 
+					+ Ceylan::toString( currentAddressInfo->ai_family )
+					+ "), skipping address entry." ) ;
 			break ;
 					
 		}
@@ -578,7 +607,7 @@ const string HostDNSEntry::toString( Ceylan::VerbosityLevels level )
 		LogPlug::error( res ) ;
 		return res ;
 	}
-	
+
 	list<string> * alias = & getAliasList() ;
 	
 	if ( alias->empty() )
@@ -590,8 +619,8 @@ const string HostDNSEntry::toString( Ceylan::VerbosityLevels level )
 		res += "following name alias : " + formatStringList( *alias ) ;
 		
 	}	
-	delete alias ;
-	
+	delete alias ;	
+
 	res += "Its address type is " ;
 	
 	switch( getAddressType() ) 
@@ -610,7 +639,7 @@ const string HostDNSEntry::toString( Ceylan::VerbosityLevels level )
 			break ;
 		
 	}
-	
+
 	res += ". Its known network addresses are : " ;
 	
 	list<IPAddress *> * addresses = & getAddresses() ;
@@ -622,7 +651,7 @@ const string HostDNSEntry::toString( Ceylan::VerbosityLevels level )
 		addressDescriptions.push_back( (*it)->toString( level ) ) ;
 	
 	delete addresses ;
-		
+
 	return res + formatStringList( addressDescriptions ) ;
 	
 }
@@ -947,7 +976,17 @@ const string Ceylan::Network::getFQDNFromDNSEntry( const HostDNSEntry & entry )
 	throw( NetworkException ) 
 {
 
-	string current = entry.getOfficialHostName() ;
+	string current ;
+
+	try
+	{
+		current = entry.getOfficialHostName() ;
+	}
+	catch( const NetworkException & e )
+	{
+		LogPlug::debug( "Ceylan::Network::getFQDNFromDNSEntry : "
+			"no official name found." ) ;
+	}
 	
 	// Try the official name as FQDN :
 	if ( Ceylan::countChars( current, '.' ) != 0 )
@@ -968,6 +1007,11 @@ const string Ceylan::Network::getFQDNFromDNSEntry( const HostDNSEntry & entry )
 	
 	delete alias ;
 	
+	if ( current.empty() )
+		throw NetworkException( "Ceylan::Network::getFQDNFromDNSEntry "
+			"failed to find any FQDN from following entry : " 
+			+ entry.toString() ) ;
+
 	return current ;	
 		
 }
