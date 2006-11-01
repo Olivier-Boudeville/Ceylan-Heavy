@@ -125,8 +125,11 @@ namespace Ceylan
 				/**
 				 * Returns the official name of this host.
 				 *
+				 * @throw NetworkException if the operation failed.
+				 *
 				 */
-				std::string getOfficialHostName() const throw() ;
+				std::string getOfficialHostName() const 
+					throw( NetworkException ) ;
 				
 				
 				/**
@@ -141,6 +144,10 @@ namespace Ceylan
 				
 				/**
 				 * Returns the type of the network address of this entry. 
+				 *
+				 * @note It is actually the type of the official address,
+				 * since there can be several addresses of several types
+				 * in the address (alias) list.
 				 *
 				 */
 				NetworkAddressType getAddressType() const throw() ;
@@ -359,6 +366,9 @@ namespace Ceylan
 		CEYLAN_DLL std::string interpretSocketError( SocketError errorCode ) 
 			throw() ;
 
+		/// Returns the latest socket error.
+		CEYLAN_DLL SocketError getSocketError() throw() ;
+
 		/// Returns the diagnosis string corresponding to latest socket error.
 		CEYLAN_DLL std::string explainSocketError() throw() ;
 
@@ -425,11 +435,9 @@ namespace Ceylan
 
 
 
-		    
 	}
 	
 }	
-
 
 
 
