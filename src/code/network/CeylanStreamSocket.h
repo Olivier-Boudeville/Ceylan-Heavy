@@ -59,10 +59,21 @@ namespace Ceylan
 				 * created in blocking mode (the default) or in non-blocking
 				 * mode.
 				 *
+				 * @param sacrificeThroughputToPacketTiming tells whether
+				 * the snappiest possible response (packet timing) should be
+				 * searched for (if true), even though it would be obtained at 
+				 * the expense of usable network bandwidth. This would be done
+				 * by deactivating the Nagle algorithm, which is seldom
+				 * recommended except for remote GUI or multiplayer network games.
+				 * Hence the default is false, and the Nagle algorithm is used.
+				 *
+				 * @see http://tangentsoft.net/wskfaq/intermediate.html#nagle-desc
+				 *
 				 * @throw SocketException if the operation failed.
 				 *
 				 */
-				explicit StreamSocket( bool blocking = true ) 
+				explicit StreamSocket( bool blocking = true, 
+						bool sacrificeThroughputToPacketTiming = false ) 
 					throw( SocketException ) ; 
 		
 
@@ -73,10 +84,21 @@ namespace Ceylan
 				 * created in blocking mode (the default) or in non-blocking
 				 * mode.
 				 *
+				 * @param sacrificeThroughputToPacketTiming tells whether
+				 * the snappiest possible response (packet timing) should be
+				 * searched for (if true), even though it would be obtained at 
+				 * the expense of usable network bandwidth. This would be done
+				 * by deactivating the Nagle algorithm, which is seldom
+				 * recommended except for remote GUI or multiplayer network games.
+				 * Hence the default is false, and the Nagle algorithm is used.
+				 *
+				 * @see http://tangentsoft.net/wskfaq/intermediate.html#nagle-desc
+				 *
 				 * @throw SocketException if the operation failed.
 				 *
 				 */
-				StreamSocket( Port localPort, bool blocking = true  ) 
+				StreamSocket( Port localPort, bool blocking = true,
+						bool sacrificeThroughputToPacketTiming = false ) 
 					throw( SocketException ) ;
 		
 
@@ -129,7 +151,42 @@ namespace Ceylan
 				 */
 				virtual void createSocket( Port port ) 
 					throw( SocketException )  ;
-						
+					
+
+				/**
+				 * Enables or disables the Nagle algorithm for this
+				 * socket.
+				 *
+				 * @param activated if true, activates the algorithm,
+				 * if false, deactivates it.
+				 *
+				 * By default the Nagle algorithm is activated, as it
+				 * should be used on most situations.
+				 *
+				 */
+				virtual void setNagleAlgorithmTo( bool activated ) 
+					throw( StreamSocketException ) ;
+
+
+				/**
+				 * Tells whether the Nagle algorithm is requested to be
+				 * deactivated, so that the snappiest possible response 
+				 * (packet timing) is searched for (if true), even though 
+				 * it would be obtained at the expense of usable network 
+				 * bandwidth. 
+				 *
+				 * This is seldom recommended except for remote GUI or multiplayer
+				 * network games.
+				 *
+				 * Hence the default is false, and the Nagle algorithm is used.
+				 *
+				 * @see http://tangentsoft.net/wskfaq/intermediate.html#nagle-desc
+				 *
+				 * Deactivating the Nagle algorithm is to be performed in socket
+				 * child classes.
+				 *
+				 */
+				bool _nagleAlgorithmDeactivated ;
 				
 		
 			private:
