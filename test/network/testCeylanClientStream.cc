@@ -47,7 +47,7 @@ class MyTestStreamClient : public Ceylan::Network::ClientStreamSocket
 
 		void connected() throw( ClientStreamSocketException )
 		{
-		
+			
 			LogPlug::info( "Client connected ! New state is : "
 				+ toString() ) ;
 			
