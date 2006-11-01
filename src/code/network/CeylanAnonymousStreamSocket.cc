@@ -3,6 +3,7 @@
 
 #include "CeylanLogPlug.h"       // for LogPlug
 #include "CeylanOperators.h"     // for toString
+#include "CeylanNetwork.h"       // for getSocketError
 
 // for SystemSpecificSocketAddress :
 #include "CeylanSystemSpecificSocketAddress.h"  
@@ -22,11 +23,11 @@ extern "C"
 #endif // CEYLAN_USES_UNISTD_H
 
 #ifdef CEYLAN_USES_SYS_TYPES_H
-#include <sys/types.h>         // for setsockopt, bind, accept
+#include <sys/types.h>         // for bind, accept
 #endif // CEYLAN_USES_SYS_TYPES_H
 
 #ifdef CEYLAN_USES_SYS_SOCKET_H
-#include <sys/socket.h>        // for setsockopt, bind, listen, accept
+#include <sys/socket.h>        // for bind, listen, accept
 #endif // CEYLAN_USES_SYS_SOCKET_H
 
 #ifdef CEYLAN_USES_ARPA_INET_H
@@ -89,9 +90,11 @@ AnonymousStreamSocket::NonBlockingAcceptException::~NonBlockingAcceptException()
 
 
 AnonymousStreamSocket::AnonymousStreamSocket( 
-	Ceylan::System::FileDescriptor listeningFD, bool blocking ) 
+	Ceylan::System::FileDescriptor listeningFD, 
+	bool blocking, bool sacrificeThroughputToPacketTiming ) 
 		throw( SocketException ):
-	StreamSocket( /* blocking */ true )
+	StreamSocket( /* blocking */ true,
+		sacrificeThroughputToPacketTiming )
 {
 
 #if CEYLAN_USES_NETWORK
@@ -100,9 +103,18 @@ AnonymousStreamSocket::AnonymousStreamSocket(
 	LogPlug::debug( "AnonymousStreamSocket constructor : "
 		"ready to accept a new connection using listening file descriptor " 
 		+ Ceylan::toString( listeningFD ) + "." ) ;
-		 
+
+#if CEYLAN_ARCH_WINDOWS
+
+	// socklen_t is lacking :
+	int addressSize = sizeof( _address->_socketAddress ) ;
+
+#else // CEYLAN_ARCH_WINDOWS
+
 	socklen_t addressSize = static_cast<socklen_t>( 
 		sizeof( _address->_socketAddress ) ) ;
+
+#endif // CEYLAN_ARCH_WINDOWS
 
 	/*
 	 * A time-out could be added, in case the connection request was cancelled
@@ -110,14 +122,21 @@ AnonymousStreamSocket::AnonymousStreamSocket(
 	 * were chosen (non-blocking are to be preferred anyway) :
 	 *
 	 */
-	_originalFD = ::accept( listeningFD, 
+	_originalFD = static_cast<System::FileDescriptor>( ::accept( listeningFD, 
 		reinterpret_cast<sockaddr *>( & _address->_socketAddress ),
-		& addressSize ) ;
+		& addressSize ) ) ;
 
+#if CEYLAN_ARCH_WINDOWS
+	if ( _originalFD == INVALID_SOCKET )
+	{
+
+		if ( Network::getSocketError() == WSAEWOULDBLOCK )
+#else // CEYLAN_ARCH_WINDOWS
 	if ( _originalFD == -1 )
 	{
 	
 		if ( System::getError() == EAGAIN )
+#endif // CEYLAN_ARCH_WINDOWS
 		{
 			
 			/*
@@ -147,7 +166,10 @@ AnonymousStreamSocket::AnonymousStreamSocket(
 	// This new file descriptor comes blocking :
 	if ( blocking == false )
 		setBlocking( false ) ;
-		
+	
+	if ( _nagleAlgorithmDeactivated )
+		setNagleAlgorithmTo( false ) ; 
+
 		
 #else // CEYLAN_USES_NETWORK
 
