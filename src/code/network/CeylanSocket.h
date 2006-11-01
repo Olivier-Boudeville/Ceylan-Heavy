@@ -423,16 +423,18 @@ namespace Ceylan
 				 * or may not be the file descriptor that is used for
 				 * transport.
 				 *
+				 * @note The Windows SOCKET datatype is mapped here to
+				 * a file descriptor.
+				 *
 				 */
 				System::FileDescriptor _originalFD ;
 			
-		
-		
-		
+
+
+
 			private:
 
 	
-
 				/**
 				 * Copy constructor made private to ensure that it will 
 				 * be never called.
