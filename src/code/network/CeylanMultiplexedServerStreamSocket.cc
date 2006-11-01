@@ -23,11 +23,11 @@ extern "C"
 #endif // CEYLAN_USES_UNISTD_H
 
 #ifdef CEYLAN_USES_SYS_TYPES_H
-#include <sys/types.h>         // for setsockopt, bind, accept
+#include <sys/types.h>         // for bind, accept
 #endif // CEYLAN_USES_SYS_TYPES_H
 
 #ifdef CEYLAN_USES_SYS_SOCKET_H
-#include <sys/socket.h>        // for setsockopt, bind, listen, accept
+#include <sys/socket.h>        // for bind, listen, accept
 #endif // CEYLAN_USES_SYS_SOCKET_H
 
 #ifdef CEYLAN_USES_ARPA_INET_H
