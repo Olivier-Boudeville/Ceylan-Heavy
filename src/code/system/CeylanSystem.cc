@@ -11,6 +11,9 @@
 #include "CeylanConfig.h"                 // for configure-time settings
 #endif // CEYLAN_USES_CONFIG_H
 
+#ifdef CEYLAN_ARCH_WINDOWS
+#include "CeylanNetwork.h"                // for explainSocketError, etc.
+#endif // CEYLAN_ARCH_WINDOWS
 
 
 // <cstring> is not enough for Sun CC.
@@ -45,6 +48,10 @@ extern "C"
 #ifdef CEYLAN_USES_SYS_TIMEB_H
 #include <sys/timeb.h>                    // for _ftime_s
 #endif // CEYLAN_USES_SYS_TIMEB_H
+
+#ifdef CEYLAN_USES_WINSOCK2_H
+#include <winsock2.h>					  // for Windows read/write operations
+#endif // CEYLAN_USES_WINSOCK2_H
 
 }
 
@@ -175,19 +182,90 @@ Size Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
 	throw( IOException, Features::FeatureNotAvailableException )
 {
 
-
-#if CEYLAN_USES_FILE_DESCRIPTORS
-
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
  	LogPlug::trace( "Ceylan::System::FDRead : will try to read "
-		+ Ceylan::toString( toReadBytesNumber ) + " byte(s)." ) ;
+		+ Ceylan::toString( 
+			static_cast<Ceylan::Uint32>( toReadBytesNumber ) ) + " byte(s)." ) ;
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+
+
+	SignedSize totalReadBytesNumber = 0 ;
+
+#ifdef CEYLAN_ARCH_WINDOWS
+
+	// On Windows, such IO are only used for sockets.
+
+#if CEYLAN_USES_NETWORK
 
 	char * pos = dataBuffer ;
 
  	SignedSize readBytesNumber ;
-	SignedSize totalReadBytesNumber = 0 ;
+	
 
+	while ( toReadBytesNumber &&
+		( readBytesNumber = ::recv( fd, pos, 
+			static_cast<int>( toReadBytesNumber ), 
+			/* flags */ 0 ) ) != 0 )
+	{
+
+#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+ 				LogPlug::trace( "Ceylan::System::FDRead : recv returned "
+					+ Ceylan::toString( readBytesNumber ) + "." ) ;
+#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+
+
+		if ( readBytesNumber == SOCKET_ERROR )
+		{
+
+			// Non-blocking reads return WSAEWOULDBLOCK if there is no data :
+			if ( Network::getSocketError() == WSAEWOULDBLOCK )
+			{
+
+#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+ 				LogPlug::trace( "Ceylan::System::FDRead : operation would block." ) ;
+#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+
+				readBytesNumber = 0 ;
+				break ;
+			}
+			else
+			{
+
+#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+ 				LogPlug::trace( "Ceylan::System::FDRead : operation failed." ) ;
+#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+
+				throw IOException( "Ceylan::System::FDRead failed : "
+					+ Network::explainSocketError() ) ;
+			}
+
+		}
+
+		totalReadBytesNumber += readBytesNumber ;
+		toReadBytesNumber    -= readBytesNumber ;
+		pos                  += readBytesNumber ;
+
+	}
+
+	// readBytesNumber == 0 means end of file, if blocking.
+
+
+#else // CEYLAN_USES_NETWORK
+
+	throw Features::FeatureNotAvailableException( "Ceylan::System::FDRead : "
+		"network feature not available" ) ;
+
+#endif // CEYLAN_USES_NETWORK
+
+#else // CEYLAN_ARCH_WINDOWS
+
+#if CEYLAN_USES_FILE_DESCRIPTORS
+
+
+	char * pos = dataBuffer ;
+
+ 	SignedSize readBytesNumber ;
+	
 	while ( toReadBytesNumber &&
 		( readBytesNumber = ::read( fd, pos, toReadBytesNumber ) ) != 0 )
 	{
@@ -217,13 +295,6 @@ Size Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
 
 	// readBytesNumber == 0 means end of file, if blocking.
 
-#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
- 	LogPlug::trace( "Ceylan::System::FDRead : read "
-		+ Ceylan::toString( totalReadBytesNumber ) + " byte(s)." ) ;
-#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
-
-
-	return static_cast<Size>( totalReadBytesNumber ) ;
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
@@ -231,6 +302,16 @@ Size Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
 		"file descriptor feature not available" ) ;
 
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
+
+#endif // CEYLAN_ARCH_WINDOWS
+
+
+#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+ 	LogPlug::trace( "Ceylan::System::FDRead : read "
+		+ Ceylan::toString( totalReadBytesNumber ) + " byte(s)." ) ;
+#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+
+	return static_cast<Size>( totalReadBytesNumber ) ;
 
 }
 
@@ -240,13 +321,75 @@ Size Ceylan::System::FDWrite( FileDescriptor fd,
 	throw( IOException, Features::FeatureNotAvailableException )
 {
 
+#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+ 	LogPlug::trace( "Ceylan::System::FDWrite : will try to write "
+		+ Ceylan::toString( 
+			static_cast<Ceylan::Uint32>( toWriteBytesNumber ) ) 
+		+ " byte(s)." ) ;
+#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+
+
+	SignedSize totalWroteBytesNumber = 0 ;
+
+#ifdef CEYLAN_ARCH_WINDOWS
+
+	// On Windows, such IO are only used for sockets.
+
+#if CEYLAN_USES_NETWORK
+
+	const char * pos = dataBuffer ;
+
+ 	SignedSize wroteBytesNumber ;
+
+	while( toWriteBytesNumber
+		&& ( wroteBytesNumber = ::send( fd, pos, 
+			static_cast<int>( toWriteBytesNumber ), 
+			/* flags */ 0 ) ) != 0 )
+	{
+
+		if ( wroteBytesNumber < 0 )
+		{
+
+			/*
+			 * Non-blocking write return WSAEWOULDBLOCK if writing 
+			 * would block :
+			 *
+			 */
+			if ( Network::getSocketError() == WSAEWOULDBLOCK )
+			{
+				wroteBytesNumber = 0 ;
+				break ;
+
+			}
+			else
+			{
+
+				throw IOException( "Ceylan::System::FDWrite failed : "
+					+ Network::explainSocketError() ) ;
+			}
+		}
+
+		totalWroteBytesNumber += wroteBytesNumber ;
+		toWriteBytesNumber    -= wroteBytesNumber ;
+		pos                   += wroteBytesNumber ;
+
+	}
+
+#else // CEYLAN_USES_NETWORK
+
+	throw Features::FeatureNotAvailableException( "Ceylan::System::FDWrite : "
+		"network feature not available" ) ;
+
+#endif // CEYLAN_USES_NETWORK
+
+#else // CEYLAN_ARCH_WINDOWS
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
 
 	const char * pos = dataBuffer ;
 
- 	SignedSize wroteBytesNumber, totalWroteBytesNumber = 0 ;
+ 	SignedSize wroteBytesNumber ;
 
 	while( toWriteBytesNumber
 		&& ( wroteBytesNumber = ::write( fd, pos, toWriteBytesNumber ) ) != 0 )
@@ -276,7 +419,6 @@ Size Ceylan::System::FDWrite( FileDescriptor fd,
 
 	}
 
-	return static_cast<Size>( totalWroteBytesNumber ) ;
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
@@ -284,6 +426,15 @@ Size Ceylan::System::FDWrite( FileDescriptor fd,
 		"file descriptor feature not available" ) ;
 
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
+
+#endif // CEYLAN_ARCH_WINDOWS
+
+#if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+ 	LogPlug::trace( "Ceylan::System::FDWrite : wrote "
+		+ Ceylan::toString( totalWroteBytesNumber ) + " byte(s)." ) ;
+#endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
+
+	return static_cast<Size>( totalWroteBytesNumber ) ;
 
 }
 
@@ -635,7 +786,7 @@ void Ceylan::System::sleepForSeconds( Second seconds )
 #ifdef CEYLAN_USES_WINDOWS_H
 
 	// Windows Sleep needs windows.h, hence the PSDK.
-	Sleep( 1000 * seconds /* milliseconds */ ) ;
+	::Sleep( 1000 * seconds /* milliseconds */ ) ;
 
 #else // CEYLAN_USES_WINDOWS_H
 
@@ -652,15 +803,19 @@ void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 	throw( SystemException )
 {
 
-	/*
-
-	 Too verbose :
-
+#if CEYLAN_DEBUG_SYSTEM
 	LogPlug::debug( "Ceylan::System::basicSleep : requested duration is "
 		+ Ceylan::toString( seconds ) + " second(s) and "
-		+ Ceylan::toString( nanos ) + " nanoseconds." ) ;
-	 */
+		+ Ceylan::toString( nanos ) + " nanosecond(s)." ) ;
+#endif // CEYLAN_DEBUG_SYSTEM
 
+
+#ifdef CEYLAN_ARCH_WINDOWS
+
+	// Expressed in milliseconds :
+	::Sleep( seconds * 1000 + nanos / 1000000 ) ;
+
+#else // CEYLAN_ARCH_WINDOWS
 
 // Nanosleep is currently disabled :
 #define CEYLAN_USES_NANOSLEEP 0
@@ -725,6 +880,12 @@ void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 
 
 #endif // CEYLAN_USES_NANOSLEEP
+
+#endif // CEYLAN_ARCH_WINDOWS
+
+#if CEYLAN_DEBUG_SYSTEM
+	LogPlug::debug( "Ceylan::System::basicSleep : awoken now." ) ;
+#endif // CEYLAN_DEBUG_SYSTEM
 
 }
 
