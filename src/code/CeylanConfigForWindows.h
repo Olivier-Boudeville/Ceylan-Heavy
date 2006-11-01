@@ -6,6 +6,20 @@
 /* src/code/CeylanTemporaryConfig.h.in.  Generated from configure.ac by autoheader.  */
 
 
+/* Windows specific section */
+
+/* Define the maximum number of sockets supported */
+/* see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winsock/winsock/porting_socket_applications_to_winsock.asp */
+#define FD_SETSIZE 128
+
+/* For faster Builds and Smaller Header Files */
+/* (beware to compile errors that it might generate ) */
+#define VC_EXTRALEAN
+#define WIN32_LEAN_AND_MEAN
+
+
+
+/* General section */
 
 /* Define to 1 if the target platform is FreeBSD */
 #ifndef CEYLAN_ARCH_FREEBSD 
@@ -664,6 +678,12 @@
 #define CEYLAN_USES_WINSOCK2_H  1 
 #endif
 
+/* Define to 1 if you have the <ws2tcpip.h> header file (hence the PSDK). */
+#ifndef CEYLAN_USES_WS2TCPIP_H 
+#define CEYLAN_USES_WS2TCPIP_H  1 
+#endif
+
+
 /* Define to 1 if `fork' works. */
 #ifndef CEYLAN_USES_WORKING_FORK 
 #define CEYLAN_USES_WORKING_FORK  1 
@@ -821,7 +841,7 @@
 
 /* Define to 1 if fcntl is to be preferred to ioctl */
 #ifndef CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS 
-#define CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS  1 
+#define CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS  0
 #endif
 
 /* Define to 1 if Ceylan is to provide file descriptor support */
@@ -836,7 +856,7 @@
 
 /* Define to 1 if Ceylan is to provide network support */
 #ifndef CEYLAN_USES_NETWORK 
-#define CEYLAN_USES_NETWORK  0
+#define CEYLAN_USES_NETWORK  1
 #endif
 
 
