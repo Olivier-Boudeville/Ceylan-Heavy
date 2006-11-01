@@ -156,20 +156,21 @@ void ClientStreamSocket::connect( const string & serverHostname,
 	// It is actually something like an unsigned long (see man inet_ntoa) :
 	struct in_addr binaryIP ;
 		
-	
-	/*
-	 * Also possible : 
-	 * binaryIP.sin_addr.s_addr = inet_addr( "129.199.129.1" ) ;
-	 *
-	 */
-	if ( ::inet_aton( serverIP->toString().c_str(), & binaryIP ) == 0 )
+#if CEYLAN_ARCH_WINDOWS
+	binaryIP.s_addr = ::inet_addr( serverIP->toString().c_str() ) ;
+	if ( binaryIP.s_addr == INADDR_NONE )
+#else // CEYLAN_ARCH_WINDOWS
+	if ( ::inet_aton( serverIP->toString().c_str(), &binaryIP ) == 0 )
+#endif // CEYLAN_ARCH_WINDOWS
 		throw ClientStreamSocketException( "ClientStreamSocket::connect : "
 			"could not forge a network address from IP " 
 			+ serverIP->toString() + " of host '" 
 				+ _serverHostName + "'." ) ;
-	
+
 	_address->_socketAddress.sin_addr = binaryIP ;
 
+	if ( _nagleAlgorithmDeactivated )
+		setNagleAlgorithmTo( false ) ; 
 
 #if CEYLAN_DEBUG_NETWORK_CLIENTS
 	LogPlug::trace( "ClientStreamSocket::connect : connecting to "
@@ -178,7 +179,7 @@ void ClientStreamSocket::connect( const string & serverHostname,
 		+ Ceylan::toString( getOriginalFileDescriptor() ) ) ;
 #endif // CEYLAN_DEBUG_NETWORK_CLIENTS
 
-		
+	// No need for a ::bind call before a connect :	
 	if ( ::connect( getOriginalFileDescriptor(),
 			reinterpret_cast<sockaddr *>( & _address->_socketAddress ),
 			sizeof( sockaddr_in ) ) < 0 )
