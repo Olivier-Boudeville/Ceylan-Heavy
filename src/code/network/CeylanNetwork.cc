@@ -45,7 +45,6 @@ extern "C"
 #include <winsock2.h>  // for network errors
 #endif // CEYLAN_USES_WINSOCK2_H
 
-
 }
 
 // Templates cannot be declared to have 'C' linkage :
