@@ -72,7 +72,7 @@ int main( int argc, char * argv[] )
 			
 			if ( ! tokenEaten )
 			{
-				throw CommandLineParseException( 
+				LogPlug::error( 
 					"Unexpected command line argument : " + token ) ;
 			}
 		
