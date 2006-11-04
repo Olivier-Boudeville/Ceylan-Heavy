@@ -16,7 +16,6 @@ namespace Ceylan
     /**
 	 * Mother class of all identifiers.
 	 *
-	 * 
 	 * @note Non-abstract child classes should implement :
 	 * bool operator==( const ChildIdentifier & otherIdentifier ) throw() ; 
 	 *
