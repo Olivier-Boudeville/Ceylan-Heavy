@@ -73,6 +73,11 @@ int main( int argc,  char * argv[] )
 				LogPlug::info( "Interactive mode selected (but ignored)" ) ;
 				tokenEaten = true ;
 			} else		
+			if ( token == "--online" )
+			{
+				LogPlug::info( "Online mode selected (but ignored)" ) ;
+				tokenEaten = true ;
+			} else		
 			if ( token == "--countedOption" )
 			{
 				if ( options.empty() )
