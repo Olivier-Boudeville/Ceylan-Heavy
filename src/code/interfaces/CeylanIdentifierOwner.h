@@ -119,15 +119,11 @@ namespace Ceylan
 
 	
 
-        protected:
+		private:
 
 
 			/// The owned identifier.
             Identifier * _id ;
-
-
-
-		private:
 		
 		
 			/**
