@@ -5,6 +5,7 @@
 #include "CeylanLogPlug.h"     // for LogPlug
 #include "CeylanTypes.h"       // for Ceylan::Uint16, etc.
 #include "CeylanEndianness.h"  // for ceylan_bswap_*, etc.
+#include "CeylanNetwork.h"     // for Windows getSocketError
 
 
 
@@ -51,11 +52,15 @@ extern "C"
 #include <sys/select.h>        // for select
 #endif // CEYLAN_USES_SYS_SELECT_H
 
+#ifdef CEYLAN_USES_WINSOCK2_H
+#include <winsock2.h>          // for select
+#endif // CEYLAN_USES_WINSOCK2_H
+
 }
+
 
 #include <ctime>
 #include <cerrno>  // for EBADF
-
 
 
 
@@ -460,6 +465,168 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 	throw( InputStream::SelectFailedException )
 {
 
+#ifdef CEYLAN_ARCH_WINDOWS
+
+#if CEYLAN_USES_NETWORK
+
+	// Used only for sockets :
+	if ( is.empty() )
+		return 0 ;
+
+	// Creates the set of waiting file descriptors.
+	fd_set waitFDSet ;
+	FD_ZERO( & waitFDSet ) ;
+
+	// Aggregates them and blanks their selected status.
+	FileDescriptor maxFD = /* unsigned, on Windows */ 0 ;
+
+	for ( list<InputStream*>::iterator it = is.begin(); it != is.end(); it++ )
+	{
+		if ( *it )
+		{
+			FileDescriptor fd = (*it)->getInputStreamID() ;
+			FD_SET( fd, & waitFDSet ) ;
+			(*it)->setSelected( false ) ;
+			if ( fd > maxFD )
+				maxFD = fd ;
+		}
+	}
+
+	/// Maximum number of select attempts.
+	const int selectAttemptCount = 5 ;
+
+	
+	/// Maximum number of select attempts.
+
+	/**
+	 * Each thread will wait for selectWaitingTime seconds before 
+	 * retrying a blocking select.
+	 *
+	 */
+	const Ceylan::Uint8 selectWaitingTime = 2 ;
+
+	Ceylan::Uint8 attemptCount = selectAttemptCount ;
+
+	int selectedCount ;
+	
+	for ( ; attemptCount; attemptCount-- )
+	{
+		
+			
+		// Will block for ever until an error or some data is coming :
+		selectedCount = ::select( 
+			/* number of FD */ maxFD + 1, 
+			/* for reading  */ & waitFDSet, 
+			/* for writing  */ 0, 
+			/* for errors   */ 0, 
+			/* for time-out */ 0 ) ;
+		
+		if ( selectedCount == SOCKET_ERROR )
+		{
+	
+			// Error :
+			Network::SocketError error = Network::getSocketError() ;
+			if ( error == WSAEBADF || error == WSAENOTSOCK )
+			{
+			
+				LogPlug::error( "InputStream::Select : there seems to be "
+					"at least one bad file descriptor in the list, "
+					"checking them to flag them as faulty ("
+					+ ( ( error == WSAEBADF ) ? 
+						string( "WSAEBADF" ) : string( "WSAENOTSOCK" ) )
+					+ ")." ) ;
+				
+				for ( list<InputStream*>::iterator it = is.begin(); 
+					it != is.end(); it++ )
+				{
+				
+					fd_set testFDSet ;
+					FD_ZERO( & testFDSet ) ;
+					
+					FileDescriptor testedFD = (*it)->getInputStreamID() ;
+					FD_SET( testedFD, & testFDSet ) ;
+					
+					// No waiting desired :
+					struct timeval timeout ;
+					timeout.tv_sec  = 0 ;
+           			timeout.tv_usec = 0 ;
+					
+					if ( ::select( 
+						/* number of FD */ testedFD + 1, 
+						/* for reading  */ &testFDSet, 
+						/* for writing  */ 0, 
+						/* for errors   */ 0, 
+						/* for time-out */ &timeout ) == SOCKET_ERROR )
+					{
+
+						error = Network::getSocketError() ;
+						if ( error == WSAEBADF || error == WSAENOTSOCK )
+						{
+					
+							LogPlug::error( "InputStream::Select : "
+								"following stream is faulty : " + (*it)->toString()
+								+ ", flagging it as such ("	
+								+ ( ( error == WSAEBADF ) ? 
+									string( "WSAEBADF" ) : string( "WSAENOTSOCK" ) )
+								+ ")." ) ;
+							(*it)->setFaulty( true ) ;
+						
+						}
+							
+					}
+				
+				}
+			}
+			else
+			{
+			
+				LogPlug::error( "InputStream::Select : "
+					"no InputStream selected ("	+ Network::explainSocketError()
+					+ "), retrying in " + Ceylan::toString( selectWaitingTime )
+					+ " second(s) ..." ) ;
+					
+				Thread::Sleep( selectWaitingTime ) ;
+					
+			}
+				
+			
+		}
+		else
+		{
+			if ( selectedCount > 0 )
+				break ;
+		}
+		
+	} // for : more select attempts left ?
+
+	if ( attemptCount == 0 )
+		throw SelectFailedException( string( "After " )
+			+ selectAttemptCount
+			+ " attempts, still no InputStream selected." ) ;
+
+
+	selectedCount = 0 ;
+	for ( list<InputStream*>::iterator it = is.begin(); it != is.end(); it++ )
+	{
+		if ( *it && ( FD_ISSET( (*it)->getInputStreamID(), & waitFDSet ) ) )
+		{
+			selectedCount++ ;
+			(*it)->setSelected( true ) ;
+		}
+	}
+
+	return selectedCount ;
+
+
+#else // CEYLAN_USES_NETWORK
+
+	throw InputStream::SelectFailedException( 
+		"InputStream::Select operation not supported on Windows "
+		"when the network feature is disabled." ) ;
+
+#endif // CEYLAN_USES_NETWORK
+
+#else // CEYLAN_ARCH_WINDOWS
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
@@ -508,7 +675,12 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 		
 			
 		// Will block for ever until an error or some data is coming :
-		selectedCount = ::select( maxFD + 1, & waitFDSet, 0, 0, 0 ) ;
+		selectedCount = ::select( 
+			/* number of FD */ maxFD + 1, 
+			/* for reading  */ & waitFDSet, 
+			/* for writing  */ 0, 
+			/* for errors   */ 0, 
+			/* for time-out */ 0 ) ;
 		
 		if ( selectedCount < 0 )
 		{
@@ -555,7 +727,7 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 			{
 			
 				LogPlug::error( "InputStream::Select : "
-					"no InputStream selected ("	+ explainError( getError() )
+					"no InputStream selected ("	+ explainError()
 					+ "), retrying in " + Ceylan::toString( selectWaitingTime )
 					+ " second(s) ..." ) ;
 					
@@ -599,7 +771,9 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 		"File descriptor feature not available on this platform." ) ;
 	
 #endif // CEYLAN_USES_FILE_DESCRIPTORS	
-	
+
+#endif // CEYLAN_ARCH_WINDOWS
+
 }
 
 
