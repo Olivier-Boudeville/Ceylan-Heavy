@@ -17,10 +17,20 @@ using namespace std ;
 
 
 /**
- * This test server is multiplexed and uses light-weight marshalling
- * thanks to a protocol server.
+ * This test server uses light-weight marshalling.
+ *
+ * It is not really a multiplexed server though, as it manages at
+ * most one marshaller at a time, and there is one connection
+ * per marshaller.
  *
  * @see testCeylanClientStream.cc for test client.
+ *
+ * @see testCeylanSequentialServerStream.cc for a similar server with
+ * no embedded marshaller.
+ *
+ * @see testCeylanMultiLwProtocolServer.cc for a full-blown server,
+ * featuring multiplexed connections which are protocol-driven and
+ * lightweight-marshaller-based.
  *
  */
 class MyTestMultiLwMarshalledServer : 
@@ -35,7 +45,7 @@ class MyTestMultiLwMarshalledServer :
 				Ceylan::Uint32 targetConnectionCount ):
 			MultiplexedServerStreamSocket( 6969, /* reuse */ true ),
 			_batch( isBatch ),
-			_marshaller()
+			_marshaller( 0 )
 		{
 		
 			LogPlug::info( "MyTestMultiLwMarshalledServer created : "
@@ -43,7 +53,16 @@ class MyTestMultiLwMarshalledServer :
 				
 		}
 		
-					
+
+		~MyTestMultiLwMarshalledServer() throw()
+		{
+
+			if ( _marshaller != 0 )
+				delete _marshaller ;
+
+		}
+
+
 		bool handleConnection( AnonymousStreamSocket & connection )
 			throw( MultiplexedServerStreamSocketException )		
 		{
@@ -51,7 +70,10 @@ class MyTestMultiLwMarshalledServer :
 		
 			LogPlug::info( "MyTestMultiLwMarshalledServer::handleConnection : "
 				"will read from connection " + connection.toString() ) ;
-		       
+
+			if ( _marshaller == 0 )
+				_marshaller = new Middleware::LightWeightMarshaller( connection, 
+					/* no buffer wanted */ 0 ) ;
 
 			if ( ! _batch )
 			{ 
@@ -59,49 +81,11 @@ class MyTestMultiLwMarshalledServer :
 				Thread::Sleep( 0, /* microseconds */ 100000 ) ;
 			}
 				
-			char buffer[ 2 ] ;
-			buffer[1] = 0 ;
-				
-			System::Size readCount ;
-				
-			try
-			{
-					
-				readCount = connection.read( buffer, 1 ) ;
-				
-			}
-			catch( const InputStream::ReadFailedException & e )
-			{
-				
-				LogPlug::error( 
-					"MyTestMultiLwMarshalledServer::handleConnection "
-					"failed : " + e.toString() ) ;
-					
-				// Kills that faulty connection :
-				return false ;	
-					
-			}
-				
-				 
-			LogPlug::trace( 
-				"MyTestMultiLwMarshalledServer::handleConnection : read "
-				+ Ceylan::toString( readCount ) + " byte(s)." ) ;
-				
-				
-			if ( readCount == 0 )
-			{
 			
-				LogPlug::error( 
-					"MyTestMultiLwMarshalledServer::handleConnection : "
-					"connection awoken but no data to read." ) ;
-						
-				return false ;
-					
-			}
-
 			// 1 byte read here :
-			
-			if ( buffer[0] == 'X' )
+			Ceylan::Uint8 readByte = _marshaller->decodeUint8() ;
+
+			if ( readByte == 'X' )
 			{
 					
 				LogPlug::trace(
@@ -109,30 +93,31 @@ class MyTestMultiLwMarshalledServer :
 					"acknowledging successful reception of end marker."	) ;
 							
 				cout << endl ;
-				connection.write( "+", 2 ) ;
+				_marshaller->encodeUint8( '+' ) ;
 						
 				// Connection terminated according to protocol :
 				return false ;
 				
 			}
-			else if ( buffer[0] == 'Q' )
+			else if ( readByte == 'Q' )
 			{
 			
 				LogPlug::debug( 
 					"MyTestMultiLwMarshalledServer::handleConnection : "
-					"received 'X', stopping server." ) ;
+					"received 'Q', stopping server." ) ;
 					
 				cout << endl ;
-				connection.write( "+", 2 ) ;
-					
+				_marshaller->encodeUint8( '+' ) ;				
+
 				requestToStop() ;
+
 				return false ;
 				
 			}
 			else
 			{
 					
-				cout << buffer ;
+				cout << readByte ;
 				cout.flush() ;
 				
 				return true ;									
@@ -147,23 +132,28 @@ class MyTestMultiLwMarshalledServer :
 	
 		bool _batch ;
 				
+
 		/*
 		 * The internal marshaller.
 		 *
-		 * As it is a state-less marshaller, only one instance can be used
+		 * As it is a state-less marshaller, the same instance could be used
 		 * by a set of connections. If it was stateful, then each connection
-		 * would have to be associated with its o
+		 * would have to be associated with its own marshaller instance.
+		 *
+		 * However a marshaller depends on a specific I/O stream (connection),
+		 * hence as there is only one marshaller here, at most one connection
+		 * at a time can exist.
 		 *
 		 */
 		Ceylan::Middleware::LightWeightMarshaller * _marshaller ;
 		
+
 } ;
 
 
 
 /**
- * Test of Ceylan light-weight marshalling in the context of a 
- * multiplexed server.
+ * Test of Ceylan light-weight marshalling in the context of a server.
  *
  * @see MultiplexedServerStreamSocket
  * @see LightWeightMarshaller
@@ -180,8 +170,8 @@ int main( int argc, char * argv[] )
     {
 
 
-        LogPlug::info( "Testing Ceylan's network implementation "
-			"of stream socket for servers." ) ;
+        LogPlug::info( "Testing Ceylan's implementation "
+			"of multiplexed server using lightweight marshalling." ) ;
 
 
 		if ( ! Features::isNetworkingSupported() )
@@ -272,11 +262,8 @@ int main( int argc, char * argv[] )
 			Thread::Sleep( 0 /* second */, 500000 /* microseconds */ ) ;
 		
 			
-        LogPlug::info( "End of network stream server test." ) ;
-
-		
-        LogPlug::info( "End of network stream server test." ) ;
-
+        LogPlug::info( "End of test for multiplexed server "
+			"using lightweight marshalling." ) ;
 
 	}
 	
