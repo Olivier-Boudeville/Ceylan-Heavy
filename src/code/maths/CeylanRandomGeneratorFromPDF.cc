@@ -50,12 +50,15 @@ RandomGeneratorFromPDF::~RandomGeneratorFromPDF() throw()
 
 	// Not owning _pdf, not destroying it.
 	
-	if ( _whiteNoiseGenerator )
+	if ( _whiteNoiseGenerator != 0 )
 		delete _whiteNoiseGenerator ;
 	
-	if ( _probabilitiesTable )
-		delete _probabilitiesTable ;
-		
+	if ( _probabilitiesTable != 0 )
+		delete [] _probabilitiesTable ;
+	
+	if ( _sampleRangesTable != 0 )
+		delete [] _sampleRangesTable ;
+
 }
 
 
@@ -79,7 +82,7 @@ RandomValue RandomGeneratorFromPDF::getNewValue() throw()
 		+ Ceylan::toString( uniformRandomValue ) ) ;
 	*/
 	
-	unsigned int count = 0 ;
+	Ceylan::Uint32 count = 0 ;
 	
 	/*
 	LogPlug::debug( "Comparing " + Ceylan::toString( uniformRandomValue )
@@ -89,7 +92,37 @@ RandomValue RandomGeneratorFromPDF::getNewValue() throw()
 	while ( uniformRandomValue > _sampleRangesTable[ count ] )
 		count++ ;
 
-	return count + _lowerLimit ;
+	RandomValue res = count + _lowerLimit ;
+
+#if CEYLAN_DEBUG
+
+	if ( static_cast<Sample>( res ) >= _upperLimit )
+	{
+
+		LogPlug::error( "RandomGeneratorFromPDF::getNewValue : value "
+			+ Ceylan::toString( res ) 
+			+ " was drawn, whereas upper excluded limit is " 
+			+ Ceylan::toString( _upperLimit ) ) ;
+
+		try
+		{
+			displayProbabilities() ;
+		}
+		catch ( const Ceylan::Exception & e )
+		{
+			LogPlug::error( "RandomGeneratorFromPDF::getNewValue : "
+				"additional error : " + e.toString() ) ;
+		}
+		
+
+		Ceylan::emergencyShutdown( "RandomGeneratorFromPDF::getNewValue : "
+			"incorrect random value returned : " 
+			+ Ceylan::toString( res ) + "." ) ;
+
+	}
+#endif // CEYLAN_DEBUG
+
+	return res ;
 
 }
 
@@ -167,6 +200,9 @@ const string RandomGeneratorFromPDF::displayProbabilities()
 			+ " stops at " + _sampleRangesTable[ sample - _lowerLimit ] ) ;
 	}
 	
+	LogPlug::debug( "Upper bound to White noise random values is " 
+		+ Ceylan::toString( RAND_MAX ) ) ;
+
 	return result + Ceylan::formatStringList( l ) 
 		+ "Probabilities sum up to "
 		+ Ceylan::toString( 100 * sum ) 
@@ -217,7 +253,7 @@ void RandomGeneratorFromPDF::preCompute() throw( MathsException )
 	 */
 	_whiteNoiseGenerator = new WhiteNoiseGenerator( 0, RAND_MAX ) ;
 	
-	if	( _whiteNoiseGenerator == 0 )
+	if ( _whiteNoiseGenerator == 0 )
 		throw MathsException( "RandomGeneratorFromPDF::preCompute : "
 			"allocation of internal white noise generator failed." ) ;
 		
@@ -277,6 +313,14 @@ void RandomGeneratorFromPDF::preCompute() throw( MathsException )
 		_sampleRangesTable[ sample - _lowerLimit ] = sampleIndex ;
 	}	
 	
+	/*
+	 * Ensures that rounding does not cause latest sample range to be
+	 * lower than the maximum value that the white noise generator can
+	 * draw (RAND_MAX) :
+	 *
+	 */
+	_sampleRangesTable[ _upperLimit - _lowerLimit - 1 ] = RAND_MAX ;
+
 	/*
 	delete _probabilitiesTable ;
 	_probabilitiesTable = 0 ;
