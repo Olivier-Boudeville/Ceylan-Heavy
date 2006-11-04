@@ -133,7 +133,7 @@ void Object::send( const string & message, LevelOfDetail levelOfDetail )
 
 	CEYLAN_LOG( "Object::send : will send message " + message ) ;
 	
-	if ( _id == 0 )
+	if ( ! hasIdentifier() )
 	{
 
 		try
@@ -148,9 +148,9 @@ void Object::send( const string & message, LevelOfDetail levelOfDetail )
 		}
 
 		CEYLAN_LOG( "Object::send : channel name set to " 
-			+ _id->toString() ) ;
+			+ getIdentifier().toString() ) ;
 
-		setChannelName( _id->toString() ) ;
+		setChannelName( getIdentifier().toString() ) ;
 
 	}	
 	
@@ -188,12 +188,14 @@ void Object::forgeIdentifier() throw( Log::LogException )
 	
 	CEYLAN_LOG( "Object::forgeIdentifier : new identifier required." ) ;
 	
-	if ( _id != 0 )
+	if ( hasIdentifier() )
 		dropIdentifier() ;
 		
 	CEYLAN_LOG( "Object::forgeIdentifier : "
 		"creating new object identifier." ) ;
-	
+
+	ObjectIdentifier * newID ;
+
 	/*
 	 * This was the place where using this instead of *this caused 
 	 * the object constructor to be mistakenly called 
@@ -204,7 +206,7 @@ void Object::forgeIdentifier() throw( Log::LogException )
 	try
 	{
 
-		_id = new ObjectIdentifier( * this ) ;
+		newID = new ObjectIdentifier( * this ) ;
 
 	}
 	catch( const Identifier::IdentifierException & e ) 
@@ -213,8 +215,21 @@ void Object::forgeIdentifier() throw( Log::LogException )
 			+ e.toString() ) ;
 	}
 
+	try
+	{
+
+		setIdentifier( *newID ) ;
+
+	}
+	catch( const IdentifierNotAvailableException & e )
+	{
+		throw Log::LogException( "Object::forgeIdentifier : "
+			+ e.toString() ) ;
+	}
+
+
 	CEYLAN_LOG( "Object::forgeIdentifier : new ID is " 
-		+ _id->toString() ) ;
+		+ getIdentifier().toString() ) ;
 
 }	
 
@@ -222,10 +237,6 @@ void Object::forgeIdentifier() throw( Log::LogException )
 void Object::dropIdentifier() throw()
 {
 
-	CEYLAN_LOG( "Object dropIdentifier : "
-		"getting rid of mangled identifier." ) ;
-		
-	delete _id ;
-	_id = 0 ;	
-		
+	deleteIdentifier() ;
+
 }
