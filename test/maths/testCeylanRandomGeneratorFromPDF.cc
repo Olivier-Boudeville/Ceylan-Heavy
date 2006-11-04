@@ -49,8 +49,8 @@ int main( int argc, char * argv[] )
 		RandomValue sampleStart = 50 ;
 		RandomValue sampleStop  = 120 ;
 		 		
-		LogPlug::info( "Creating a random generator whose PDF is : " 
-			+ myGaussian.toString() + " Samples will range from "
+		LogPlug::info( "Creating a random generator, whose PDF is : " 
+			+ myGaussian.toString() + ". Samples will range from "
 			+ Ceylan::toString( sampleStart ) + " (included) to " 
 			+ Ceylan::toString( sampleStop )  + " (excluded)." ) ;
 		
@@ -70,10 +70,10 @@ int main( int argc, char * argv[] )
 			+ myGaussianGenerator.displayProbabilities() ) ;
 			
 		
-		Ceylan::Uint16 sample_count = 500 ;
+		Ceylan::Uint16 sampleCount = 500 ;
 		
 		LogPlug::info( "Generating a series of " 
-			+ Ceylan::toString( sample_count ) + " random samples." ) ;
+			+ Ceylan::toString( sampleCount ) + " random samples." ) ;
 		
 		RandomValue newValue ;
 		
@@ -92,14 +92,14 @@ int main( int argc, char * argv[] )
 			
 		LogPlug::info( "Throwing dice (one out of ten displayed)..." ) ;
 		
-		for ( Ceylan::Uint32 draw_count = 0; draw_count < sample_count;
-			draw_count++ )
+		for ( Ceylan::Uint32 drawCount = 0; drawCount < sampleCount;
+			drawCount++ )
 		{
 		
 			newValue = myGaussianGenerator.getNewValue() ;
 			
 			// Avoid too many useless logs :
-			if ( draw_count % 10 == 0 )
+			if ( drawCount % 10 == 0 )
 				LogPlug::info( "Drawing value " 
 					+ Ceylan::toString( newValue ) + "." ) ;
 			
