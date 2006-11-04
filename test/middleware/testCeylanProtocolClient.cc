@@ -193,6 +193,9 @@ class MyTestProtocolClient : public Ceylan::Network::ClientStreamSocket
 			
 			LogPlug::info( "MyTestProtocolClient::sendPing : "
 				"correct pong received." ) ;
+
+			cout << "Pong OK !" ;
+
 					
 		}
 		
@@ -240,6 +243,8 @@ class MyTestProtocolClient : public Ceylan::Network::ClientStreamSocket
 			LogPlug::info( "MyTestProtocolClient::sendSum : "
 				"local and server-side sums match ("
 				+ Ceylan::toNumericalString( receivedSum ) + ")." ) ;
+			
+			cout << "Sum OK !" ;
 					
 		}
 		
@@ -272,7 +277,9 @@ class MyTestProtocolClient : public Ceylan::Network::ClientStreamSocket
 			LogPlug::info( "MyTestProtocolClient::sendToEcho : "
 				"local and server-side reversed echo match ("
 				+ receivedEcho + ")." ) ;
-								
+
+			cout << "Echo OK !" ;
+
 		}
 		
 		
