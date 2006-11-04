@@ -143,12 +143,15 @@ namespace Ceylan
 				 * Finds, if any, a channel in LogAggregator's list of 
 				 * channels whose name is <b>channelName</b>.
 				 *
+				 * @return the channel, if found, otherwise a null 
+				 * pointer.
+				 *
 				 * @note if the specified channel name is an object 
 				 * channel name (typically starting by 'loggable://'), 
 				 * search will be only performed on object channels.
 				 *
 				 */
-				virtual LogChannel & findChannel( 
+				virtual LogChannel * findChannel( 
 						const std::string & channelName ) 
 					const throw( LogException ) ;
 				 
@@ -215,11 +218,14 @@ namespace Ceylan
 				 * Finds, if any, a Log channel in LogAggregator's list of
 				 * channels whose name is <b>channelName</b>.
 				 *
+				 * @return the basic channel, if found, otherwise a null 
+				 * pointer.
+				 *
 				 * @note this method is dedicated to find basic log 
 				 * channels, not object ones.
 				 *
 				 */
-				virtual LogChannel & findBasicChannel( 
+				virtual LogChannel * findBasicChannel( 
 						const std::string & basicChannelName ) 
 					const throw( LogException ) ;
 			
@@ -230,11 +236,14 @@ namespace Ceylan
 				 * <b>channelName</b> (no protocol prefix or separator
 				 * allowed).
 				 *
+				 * @return the object channel, if found, otherwise a null 
+				 * pointer.
+				 *
 				 * @note this method is dedicated to find object log 
 				 * channels, not basic ones.
 				 *
 				 */
-				virtual ObjectChannel & findObjectChannel( 
+				virtual ObjectChannel * findObjectChannel( 
 						const std::string & nonPrefixedChannelName ) 
 					const throw( LogException ) ;
 			

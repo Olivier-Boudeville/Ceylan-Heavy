@@ -128,25 +128,14 @@ bool LogAggregator::hasChannel( const std::string & channelName ) const
 	throw( LogException )
 {
 
-	try 
-	{ 
-	
-		findChannel( channelName ) ;
-	
-	} 
-	catch( const LogAggregatorException & e )
-	{
-		CEYLAN_LOG( "LogAggregator::hasChannel : " + e.toString() ) ;
-		return false ;
-	}
-	
-	return true ;
+	return ( findChannel( channelName ) != 0 ) ;
+
 }
 
 
 
 
-LogChannel & LogAggregator::findChannel( const string & channelName ) 
+LogChannel * LogAggregator::findChannel( const string & channelName ) 
 	const throw( LogException )
 {
 
@@ -262,7 +251,7 @@ void LogAggregator::store( LogMessage & message ) throw( LogException )
 }		
 
 				
-LogChannel & LogAggregator::findBasicChannel( 
+LogChannel * LogAggregator::findBasicChannel( 
 	const string & basicChannelName ) const throw( LogException )
 {
 
@@ -284,24 +273,31 @@ LogChannel & LogAggregator::findBasicChannel(
 		ObjectChannel * objChannel = 
 			dynamic_cast<ObjectChannel *>( (*it) ) ;			
 		
-		if ( ! objChannel )
+		if ( objChannel == 0 )
 		{
 		
 			CEYLAN_LOG( (*it)->getName() 
 				+ " is a basic log channel." ) ;
 			
 			if ( (*it)->getName() == basicChannelName )
-				return * (*it) ;
+				return (*it) ;
 		}
 	}
 	
+	/*
+	 * Better raise an exception on abnormal conditions :
+	 * 
+
 	throw LogAggregatorException( "No basic channel named " 
 		+ basicChannelName + " found." ) ;
+
+	*/
+	return 0 ;
 		
 }
 	
 					
-ObjectChannel & LogAggregator::findObjectChannel( 
+ObjectChannel * LogAggregator::findObjectChannel( 
 		const string & nonPrefixedChannelName ) 
 	const throw( LogException )					
 {
@@ -331,12 +327,19 @@ ObjectChannel & LogAggregator::findObjectChannel(
 			CEYLAN_LOG( objChannel->getName() + " is an Object log channel." ) ;
 			
 			if ( objChannel->getName() == nonPrefixedChannelName )
-				return * objChannel ;
+				return objChannel ;
 		}
 	}
 	
+	/*
+	 * Better raise an exception on abnormal conditions :
+	 * 
+
 	throw LogAggregatorException( "No object channel named " 
 		+ nonPrefixedChannelName + " found." ) ;
+
+	*/
+	return 0 ;
 		
 }
 
@@ -550,15 +553,9 @@ void LogAggregator::storeBasicMessage( LogMessage & basicLogMessage )
 
 	// Maybe the relevant basic channel already exists ?
 
-	LogChannel * channel ;
+	LogChannel * channel = findBasicChannel( basicLogMessage.getChannelName() ) ;
 	
-	try 
-	{
-		
-		channel = & findBasicChannel( basicLogMessage.getChannelName() ) ;
-		
-	} 
-	catch( const LogAggregatorException & e )
+	if ( channel == 0 )
 	{
 	
 		CEYLAN_LOG( "LogAggregator::storeBasicMessage : Channel " 
@@ -584,7 +581,6 @@ void LogAggregator::storeObjectMessage(
 	
 	// Maybe the relevant object channel already exists ?
 	
-	ObjectChannel * channel ;
 	
 	// First, auto-correct any mangled class name :
 	demangle( objectLogMessage ) ;
@@ -596,13 +592,9 @@ void LogAggregator::storeObjectMessage(
 		"LogAggregator::storeObjectMessage : message aimed at " 
 		+ targetChannelName ) ;
 	
-	try 
-	{
+	ObjectChannel * channel = findObjectChannel( targetChannelName ) ;
 		
-		channel = & findObjectChannel( targetChannelName ) ;
-		
-	} 
-	catch( const LogAggregatorException & e )
+	if ( channel == 0 )
 	{
 	
 		CEYLAN_LOG( "LogAggregator::storeObjectMessage : Channel " 
