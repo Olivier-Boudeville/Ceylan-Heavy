@@ -73,7 +73,7 @@ namespace Ceylan
 				 * on the multiplexed server side.
 				 *
 				 */
-				class MultiplexedServerStreamSocketException: 
+				class CEYLAN_DLL MultiplexedServerStreamSocketException: 
 					public ServerStreamSocketException
 				{ 
 					public: 
