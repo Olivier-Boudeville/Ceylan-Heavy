@@ -202,7 +202,7 @@ else
 fi
 
 # Test whether we are online (needed for DNS queries) :
-if ping google.com ; then
+if ping google.com -c 2 1>/dev/null 2>&1; then
 	is_online=0
 	network_option="--online"
 	echo -e "\nRunning in online mode, in-depth network testing enabled."
