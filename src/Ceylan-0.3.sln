@@ -107,21 +107,23 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "network-testCeylanNetwork",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "network-testCeylanSequentialServerStream", "..\test\network\testCeylanSequentialServerStream\testCeylanSequentialServerStream.vcproj", "{B69D645F-484F-48E6-815D-A9E4E428C48B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testCeylanFileAndDirectories", "..\test\system\testCeylanFileAndDirectories\testCeylanFileAndDirectories.vcproj", "{DCE46AF0-8D63-4488-A25F-BE1282FF328E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "system-testCeylanFileAndDirectories", "..\test\system\testCeylanFileAndDirectories\testCeylanFileAndDirectories.vcproj", "{DCE46AF0-8D63-4488-A25F-BE1282FF328E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testCeylanEnvironmentVariable", "..\test\system\testCeylanEnvironmentVariable\testCeylanEnvironmentVariable.vcproj", "{88A8F75A-584A-4D97-ADF1-9DB341262940}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "system-testCeylanEnvironmentVariable", "..\test\system\testCeylanEnvironmentVariable\testCeylanEnvironmentVariable.vcproj", "{88A8F75A-584A-4D97-ADF1-9DB341262940}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testCeylanFileLocator", "..\test\system\testCeylanFileLocator\testCeylanFileLocator.vcproj", "{6F4A754C-421C-4CE7-8336-82D7D07DBFC0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "system-testCeylanFileLocator", "..\test\system\testCeylanFileLocator\testCeylanFileLocator.vcproj", "{6F4A754C-421C-4CE7-8336-82D7D07DBFC0}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testCeylanMemoryStream", "..\test\system\testCeylanMemoryStream\testCeylanMemoryStream.vcproj", "{847C4E21-139B-494C-87E0-C2D2C22EEC81}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "system-testCeylanMemoryStream", "..\test\system\testCeylanMemoryStream\testCeylanMemoryStream.vcproj", "{847C4E21-139B-494C-87E0-C2D2C22EEC81}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testCeylanSignals", "..\test\system\testCeylanSignals\testCeylanSignals.vcproj", "{A5F18698-9E6E-485A-9B6A-445F2BF26EB1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "system-testCeylanSignals", "..\test\system\testCeylanSignals\testCeylanSignals.vcproj", "{A5F18698-9E6E-485A-9B6A-445F2BF26EB1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testCeylanSystemInformation", "..\test\system\testCeylanSystemInformation\testCeylanSystemInformation.vcproj", "{E0A9612C-B718-46C3-BD96-BBABAB5AEFDD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "system-testCeylanSystemInformation", "..\test\system\testCeylanSystemInformation\testCeylanSystemInformation.vcproj", "{E0A9612C-B718-46C3-BD96-BBABAB5AEFDD}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testCeylanThread", "..\test\system\testCeylanThread\testCeylanThread.vcproj", "{2D344BC0-580B-4B42-A756-61B61231AD34}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "system-testCeylanThread", "..\test\system\testCeylanThread\testCeylanThread.vcproj", "{2D344BC0-580B-4B42-A756-61B61231AD34}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testCeylanTime", "..\test\system\testCeylanTime\testCeylanTime.vcproj", "{F39D335A-CB80-463C-A1EB-B62613FC9947}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "system-testCeylanTime", "..\test\system\testCeylanTime\testCeylanTime.vcproj", "{F39D335A-CB80-463C-A1EB-B62613FC9947}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "generic-testCeylanTree", "..\test\generic\generic-testCeylanTree\generic-testCeylanTree.vcproj", "{90753D1B-B007-4D8E-B82F-F67A6644F76C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -373,6 +375,10 @@ Global
 		{F39D335A-CB80-463C-A1EB-B62613FC9947}.Debug|Win32.Build.0 = Debug|Win32
 		{F39D335A-CB80-463C-A1EB-B62613FC9947}.Release|Win32.ActiveCfg = Release|Win32
 		{F39D335A-CB80-463C-A1EB-B62613FC9947}.Release|Win32.Build.0 = Release|Win32
+		{90753D1B-B007-4D8E-B82F-F67A6644F76C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{90753D1B-B007-4D8E-B82F-F67A6644F76C}.Debug|Win32.Build.0 = Debug|Win32
+		{90753D1B-B007-4D8E-B82F-F67A6644F76C}.Release|Win32.ActiveCfg = Release|Win32
+		{90753D1B-B007-4D8E-B82F-F67A6644F76C}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
