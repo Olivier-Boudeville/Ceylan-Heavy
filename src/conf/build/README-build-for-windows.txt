@@ -114,7 +114,7 @@ To add a new test :
 	- open the Ceylan solution
 	- add a new project to it
 	- choose project type : Visual C++ -> General -> Empty Project
-	- choose project name (ex : testCeylanBasicResourceManager for source testCeylanBasicResourceManager.cc)
+	- choose project name (ex : generic-testCeylanBasicResourceManager for source in generic/testCeylanBasicResourceManager.cc)
 	- choose project location in the relevant module (ex : trunk/test/generic for testCeylanBasicResourceManager)
 	- remove default directories (Header, Resource, Source Files)
 	- add in project an existing element (ex : testCeylanBasicResourceManager.cc)
