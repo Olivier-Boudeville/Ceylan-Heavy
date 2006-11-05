@@ -677,6 +677,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\code\generic\CeylanTree.h"
+				>
+			</File>
+			<File
 				RelativePath=".\code\maths\CeylanTripoint.h"
 				>
 			</File>
@@ -1153,6 +1157,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\code\generic\CeylanTree.cc"
+				>
+			</File>
+			<File
 				RelativePath=".\code\maths\CeylanTripoint.cc"
 				>
 			</File>
@@ -1298,11 +1306,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\index.html"
+			RelativePath=".\doc\web\main\documentation\log\testlogplughtml.exe-logs\index.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\log\testlogplughtml.exe-logs\index.html"
+			RelativePath=".\doc\web\index.html"
 			>
 		</File>
 		<File
