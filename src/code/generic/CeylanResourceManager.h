@@ -104,7 +104,7 @@ namespace Ceylan
 	 * @note No CEYLAN_DLL declaration for templates.
 	 *
 	 */
-	template <class Key>
+	template <typename Key>
 	class ResourceManager : public Ceylan::TextDisplayable
 	{
 	
@@ -239,7 +239,7 @@ namespace Ceylan
 	/// Public section : implementation.
 
 
-	template <class Key>
+	template <typename Key>
 	ResourceManager<Key>::ResourceManager() throw() :
 		_cacheHits( 0 ),
 		_cacheMisses( 0 )
@@ -248,7 +248,7 @@ namespace Ceylan
 	}	
 
 				
-	template <class Key>
+	template <typename Key>
 	ResourceManager<Key>::~ResourceManager() throw()
 	{
 		/*
@@ -259,7 +259,7 @@ namespace Ceylan
 	}	
 			
 			
-	template <class Key>
+	template <typename Key>
 	const std::string ResourceManager<Key>::toString( VerbosityLevels level )
 		const throw()
 	{
