@@ -15,6 +15,7 @@ class TestTreeStringContent : Ceylan::TextDisplayable
 	
 	public:
 
+
 		TestTreeStringContent( const std::string & content ) throw() :
 			_content( content )
 		{
@@ -22,15 +23,47 @@ class TestTreeStringContent : Ceylan::TextDisplayable
 		}
 		
 
-		const std::string toString( Ceylan::VerbosityLevels level )
-			const throw()
+			const std::string toString( 
+				Ceylan::VerbosityLevels level = Ceylan::high ) const throw()
 		{
 			return "'" + _content + "'" ;
 		}
 
+
 	private:
 
 		std::string _content ;
+
+} ;
+
+
+class TestTreeVisitor : public Ceylan::TreeVisitor<TestTreeStringContent>
+{
+	
+	public:
+
+		TestTreeVisitor() throw() 
+		{
+
+		}
+
+		virtual ~TestTreeVisitor() throw() 
+		{
+
+		}
+
+		void visit( Tree<TestTreeStringContent> & tree ) throw( VisitException )
+		{
+			LogPlug::info( "TestTreeVisitor::visit( Tree<Content> ) : "
+				"traversing " + tree.toString() ) ;
+		}
+		
+		void visit( TestTreeStringContent & content ) throw( VisitException )
+		{
+			LogPlug::info( "TestTreeVisitor::visit( Content ) : "
+				"traversing " + content.toString() ) ;
+
+		}
 
 } ;
 
@@ -96,6 +129,20 @@ int main( int argc, char * argv[] )
 
 		LogPlug::info( "After a subtree was add to second subtree : " 
 			+ testTree.toString() ) ;
+
+		LogPlug::info( "Creating a tree visitor now." ) ;
+		
+		TestTreeVisitor testTreeVisitor ;
+
+		LogPlug::info( "Applying this visitor to the tree, depth-first : "
+			"order should be : first, third, second then root." ) ;
+		testTree.traverseDepthFirst( testTreeVisitor,
+			/* visitContent */ true ) ;
+
+		LogPlug::info( "Applying the same visitor to the tree, breadth-first : "
+			"order should be : root, first, second, third." ) ;
+		testTree.traverseBreadthFirst( testTreeVisitor,
+			/* visitContent */ true ) ;
 
         LogPlug::info( "End of templated Tree test." ) ;
 
