@@ -2,9 +2,10 @@
 #define CEYLAN_MATHS_BASIC_H_
 
 
-#include "CeylanTextDisplayable.h"  // for TextDisplayable
+
 #include "CeylanException.h"        // for Exception
 #include "CeylanTypes.h"            // for Float32, etc.
+#include "CeylanFunctor.h"          // for functor, etc.
 
 
 #include <string>
@@ -1319,97 +1320,14 @@ namespace Ceylan
 		CEYLAN_DLL bool IsAPowerOfTwo( Uint16 value ) throw() ;	
 		
 		
-		
-		/**
-		 * A functor is an object that behaves as a function, thanks 
-		 * to the overloading of operator (). 
-		 *
-		 * This allows the encapsulated function to have a state.
-		 *
-		 * @note It is especially useful when one has to specify a 
-		 * function A as a parameter for another function B. If B is set
-		 * so that its argument shall be a functor, then it can take
-		 * indifferently a simple function or a functor as parameter. The
-		 * reciprocal would not be true.
-		 *
-		 * @note Functors are great when one wants to make use of 
-		 * parametrized functions : thanks to the functor's constructor,
-		 * one can generate numerous different functions at runtime.
-		 *
-		 * @example addFunctor( int myAdd ) could be constructed as :
-		 * <code>Functor * myAdd = new addFunctor( 5 )</code> : myAdd 
-		 * is a dynamically created function.
-		 * 
-		 * @see IntToIntFunctor for a complete example.
-		 *
-		 * @note Each child should define following operator :
-		 * virtual 'returned type' operator() ('parameter') throw()
-		 *
-		 */
-		class CEYLAN_DLL Functor : public Ceylan::TextDisplayable
-		{
-		
-		
-			public:
-			
-			
-				/// Do-nothing constructor.
-				Functor() throw() ;
-				
-				/// Basic virtual destructor;
-				virtual ~Functor() throw() ;
-				
-								 
-	            /**
-	             * Returns a user-friendly description of the state of 
-				 * this object.
-	             *
-				 * @param level the requested verbosity level.
-				 *
-				 * @note Text output format is determined from overall
-				 * settings.
-				 *
-				 * @see TextDisplayable
-				 *
-	             */
-		 		virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
- 
- 
-			private:
-			
-			
-				/**
-				 * Copy constructor cannot be private since would 
-				 * prevent calls such as :
-				 * 'CreateFrom( Linear::Rotation2DFunctor( angle )'.
-				 *
-				 *	Functor( const Functor & source ) throw() ;
-				 *
-				 */
-			
-			
-				/**
-				 * Assignment operator made private to ensure that it 
-				 * will be never called.
-				 *
-				 * The compiler should complain whenever this undefined
-				 * operator is called, implicitly or not.
-				 * 
-				 */			 
-				Functor & operator = ( const Functor & source ) throw() ;
-							
-		} ;
-		
-		
+
 		
 		/**
 		 * A functor dealing with integers (one integer as parameter, 
 		 * returns integer).
 		 *
 		 */
-		class CEYLAN_DLL IntToIntFunctor : public Functor
+		class CEYLAN_DLL IntToIntFunctor : public Ceylan::Functor
 		{
 		
 		

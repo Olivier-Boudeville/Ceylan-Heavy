@@ -42,7 +42,7 @@ namespace Ceylan
 			 * distribution function.
 			 *
 			 */
-			class CEYLAN_DLL ProbabilityFunction : public Maths::Functor
+			class CEYLAN_DLL ProbabilityFunction : public Ceylan::Functor
 			{
 		
 				public:

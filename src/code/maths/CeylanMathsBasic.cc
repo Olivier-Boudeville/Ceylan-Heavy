@@ -787,27 +787,6 @@ bool Ceylan::Maths::IsAPowerOfTwo( Ceylan::Uint16 value ) throw()
 }
 
 
-
-Ceylan::Maths::Functor::Functor() throw()
-{
-
-}
-
-
-Ceylan::Maths::Functor::~Functor() throw()
-{
-
-}
-
-
-const string Ceylan::Maths::Functor::toString( 
-	Ceylan::VerbosityLevels level ) const throw()
-{
-	return "Basic functor" ;
-}
-
-
-
 Ceylan::Maths::IntToIntFunctor::IntToIntFunctor( 
 		Ceylan::Sint32 creationParameter ) throw() :
 	Functor(),	 
