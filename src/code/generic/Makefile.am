@@ -17,6 +17,7 @@ GENERIC_INTERFACES = \
 	CeylanCountedPointer.h               \
 	CeylanDocMainPage.h                  \
 	CeylanException.h                    \
+	CeylanFunctor.h                      \
 	CeylanGenericIncludes.h              \
 	CeylanHeaderVersion.h                \
 	CeylanLibtoolVersion.h               \
@@ -39,6 +40,7 @@ GENERIC_INTERFACES = \
 
 GENERIC_IMPLEMENTATIONS = \
 	CeylanException.cc                   \
+	CeylanFunctor.cc                     \
 	CeylanHeaderVersion.cc               \
 	CeylanLibtoolVersion.cc              \
 	CeylanOperators.cc                   \
