@@ -118,7 +118,7 @@ namespace Ceylan
 	 * @note No CEYLAN_DLL declaration for templates.
 	 *
 	 */
-	template <class Key>
+	template <typename Key>
 	class SmartResourceManager : public Ceylan::ResourceManager<Key>
 	{
 	
@@ -641,7 +641,7 @@ namespace Ceylan
 	// Public section : implementation.
 
 
-	template <class Key>
+	template <typename Key>
 	SmartResourceManager<Key>::SmartResourceManager() throw() :
 		ResourceManager<Key>(),
 		_quota( 0 ),
@@ -654,7 +654,7 @@ namespace Ceylan
 	}	
 
 		
-	template <class Key>
+	template <typename Key>
 	SmartResourceManager<Key>::SmartResourceManager( System::Size quota,
 		CachePolicy policy )
 			throw() :
@@ -669,7 +669,7 @@ namespace Ceylan
 	}	
 		
 		
-	template <class Key>
+	template <typename Key>
 	SmartResourceManager<Key>::~SmartResourceManager() throw()
 	{
 	
@@ -687,14 +687,14 @@ namespace Ceylan
 	// New methods provided by the smart Resource manager.
 	
 	
-	template <class Key>
+	template <typename Key>
 	System::Size SmartResourceManager<Key>::getQuota() const throw()
 	{
 		return _quota ;
 	}	
 
 
-	template <class Key>
+	template <typename Key>
 	typename Ceylan::SmartResourceManager<Key>::CachePolicy 
 		SmartResourceManager<Key>::getCachePolicy() const throw()
 	{
@@ -702,7 +702,7 @@ namespace Ceylan
 	}	
 					
 					
-	template <class Key>
+	template <typename Key>
 	System::Size SmartResourceManager<Key>::getFootprint() const throw()
 	{
 	
@@ -717,7 +717,7 @@ namespace Ceylan
 	}
 	
 
-	template <class Key>
+	template <typename Key>
 	bool SmartResourceManager<Key>::scanForAddition( const Key & key, 
 		const SmartResource & smartResource ) throw()
 	{
@@ -779,7 +779,7 @@ namespace Ceylan
 	}
 
 
-	template <class Key>
+	template <typename Key>
 	bool SmartResourceManager<Key>::takeOwnershipOf( const Key & key, 
 		const SmartResource & smartResource ) throw( ResourceManagerException )
 	{
@@ -821,7 +821,7 @@ namespace Ceylan
 	}
 		
 
-	template <class Key>
+	template <typename Key>
 	SmartResource * SmartResourceManager<Key>::getClone( const Key & key )
 		throw()
 	{
@@ -864,7 +864,7 @@ namespace Ceylan
 	
 
 	
-	template <class Key>
+	template <typename Key>
 	void SmartResourceManager<Key>::update() throw()
 	{
 		updateSizes() ;
@@ -872,7 +872,7 @@ namespace Ceylan
 	}
 
 	
-	template <class Key>
+	template <typename Key>
 	void SmartResourceManager<Key>::updateSizes() throw()
 	{
 	
@@ -891,7 +891,7 @@ namespace Ceylan
 	}
 	
 		
-	template <class Key>
+	template <typename Key>
 	void SmartResourceManager<Key>::applyPolicy() throw()
 	{
 		applyPolicy( /* no newcomer in cache */ 0 ) ;
@@ -903,7 +903,7 @@ namespace Ceylan
 	// Section of overriding methods inherited from ResourceManager.	
 
 
-	template <class Key>
+	template <typename Key>
 	bool SmartResourceManager<Key>::isKeyAlreadyAssociated( const Key & key )
 		const throw()
 	{
@@ -914,7 +914,7 @@ namespace Ceylan
 	}
 
 
-	template <class Key>
+	template <typename Key>
 	const Resource * SmartResourceManager<Key>::get( const Key & key ) throw()
 	{
 	
@@ -938,7 +938,7 @@ namespace Ceylan
 
 	
 	
-	template <class Key>
+	template <typename Key>
 	void SmartResourceManager<Key>::flush() throw()
 	{
 	
@@ -965,7 +965,7 @@ namespace Ceylan
 	}
 	
 
-	template <class Key>
+	template <typename Key>
 	const std::string SmartResourceManager<Key>::toString( 
 		VerbosityLevels level ) const throw()
 	{
@@ -1063,7 +1063,7 @@ namespace Ceylan
 
 
 
-	template <class Key>
+	template <typename Key>
 	void SmartResourceManager<Key>::applyPolicy( 
 		const SmartResource * lastCached ) throw()
 	{
@@ -1089,7 +1089,7 @@ namespace Ceylan
 	}
 
 
-	template <class Key>	
+	template <typename Key>	
 	void SmartResourceManager<Key>::applyDropLessRequestedFirst( 
 		const SmartResource * lastCached ) throw()
 	{
@@ -1179,7 +1179,7 @@ namespace Ceylan
 	}
 	
 	
-	template <class Key>	
+	template <typename Key>	
 	void SmartResourceManager<Key>::addEntry( const Key & key, 
 			const SmartResource & newResource, Ceylan::System::Size size ) 
 		throw( ResourceManagerException )	
@@ -1234,7 +1234,7 @@ namespace Ceylan
 	}
 		
 	
-	template <class Key>	
+	template <typename Key>	
 	void SmartResourceManager<Key>::dropEntryDueToPolicy( 
 		typename std::map<Key, CacheEntry *>::iterator pos ) throw()
 	{	
@@ -1245,7 +1245,7 @@ namespace Ceylan
 	}		
 
 
-	template <class Key>	
+	template <typename Key>	
 	void SmartResourceManager<Key>::dropEntry( 
 		typename std::map<Key, CacheEntry *>::iterator pos ) 
 		throw()
