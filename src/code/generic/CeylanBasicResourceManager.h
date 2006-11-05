@@ -77,7 +77,7 @@ namespace Ceylan
 	 * @note No CEYLAN_DLL declaration for templates.
 	 *
 	 */
-	template <class Key>
+	template <typename Key>
 	class BasicResourceManager : public Ceylan::ResourceManager<Key>
 	{
 	
@@ -239,7 +239,7 @@ namespace Ceylan
 	// Public section : implementation.
 
 
-	template <class Key>
+	template <typename Key>
 	BasicResourceManager<Key>::BasicResourceManager() throw() :
 		ResourceManager<Key>(),
 		_entries()
@@ -248,7 +248,7 @@ namespace Ceylan
 	}	
 
 				
-	template <class Key>
+	template <typename Key>
 	BasicResourceManager<Key>::~BasicResourceManager() throw()
 	{
 	
@@ -262,7 +262,7 @@ namespace Ceylan
 	}	
 			
 		
-	template <class Key>
+	template <typename Key>
 	void BasicResourceManager<Key>::takeOwnershipOf( const Key & key, 
 			const Resource & resource ) 
 		throw( ResourceManagerException )	
@@ -292,7 +292,7 @@ namespace Ceylan
 	}
 
 
-	template <class Key>
+	template <typename Key>
 	bool BasicResourceManager<Key>::isKeyAlreadyAssociated( const Key & key )
 		const throw()
 	{
@@ -303,7 +303,7 @@ namespace Ceylan
 	}
 	
 
-	template <class Key>
+	template <typename Key>
 	const Resource * BasicResourceManager<Key>::get( const Key & key ) throw()
 	{
 	
@@ -324,7 +324,7 @@ namespace Ceylan
 	}
 
 	
-	template <class Key>
+	template <typename Key>
 	void BasicResourceManager<Key>::flush() throw()
 	{
 	
@@ -339,7 +339,7 @@ namespace Ceylan
 	}
 	
 
-	template <class Key>
+	template <typename Key>
 	const std::string BasicResourceManager<Key>::toString( 
 		VerbosityLevels level ) const throw()
 	{
