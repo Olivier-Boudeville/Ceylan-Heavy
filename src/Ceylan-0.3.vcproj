@@ -293,6 +293,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\code\generic\CeylanFunctor.h"
+				>
+			</File>
+			<File
 				RelativePath=".\code\generic\CeylanGenericIncludes.h"
 				>
 			</File>
@@ -721,6 +725,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\code\interfaces\CeylanVisitable.h"
+				>
+			</File>
+			<File
+				RelativePath=".\code\interfaces\CeylanVisitor.h"
+				>
+			</File>
+			<File
 				RelativePath=".\code\maths\CeylanWhiteNoiseRandomGenerator.h"
 				>
 			</File>
@@ -826,6 +838,10 @@
 			</File>
 			<File
 				RelativePath=".\code\system\CeylanFileLocator.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\code\generic\CeylanFunctor.cc"
 				>
 			</File>
 			<File
@@ -1198,6 +1214,14 @@
 			</File>
 			<File
 				RelativePath=".\code\interfaces\CeylanView.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\code\interfaces\CeylanVisitable.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\code\interfaces\CeylanVisitor.cc"
 				>
 			</File>
 			<File
