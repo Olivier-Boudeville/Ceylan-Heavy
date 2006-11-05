@@ -21,6 +21,7 @@
 #include "CeylanStringUtils.h"
 #include "CeylanTestException.h"
 #include "CeylanTimestamp.h"
+#include "CeylanTree.h"
 #include "CeylanTypes.h"
 #include "CeylanUnicode.h"
 #include "CeylanUtils.h"
