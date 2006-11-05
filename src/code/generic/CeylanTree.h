@@ -2,8 +2,9 @@
 #define CEYLAN_TREE_H_
 
 
-#include "CeylanTextDisplayable.h"  // for TextDisplayable
+#include "CeylanVisitable.h"        // for Visitable
 #include "CeylanException.h"        // for Ceylan::Exception
+#include "CeylanFunctor.h"          // for Ceylan::Functor
 
 
 #include <string>
@@ -33,6 +34,49 @@ namespace Ceylan
 	} ;
 
 
+	// Forward-declaration.
+	template <typename Content>	class Tree ;
+
+
+	/**
+	 * Tree-dedicated visitor.
+	 *
+	 */
+	template <typename Content>
+	class /* CEYLAN_DLL */ TreeVisitor : public Ceylan::Visitor
+	{
+	
+		public:
+		
+			explicit TreeVisitor() throw() ;
+
+			virtual ~TreeVisitor() throw() ;
+
+
+			/// Action to perform when visiting a tree node.
+			virtual void visit( Tree<Content> & tree ) 
+				throw( VisitException ) = 0 ;
+
+			/// Action to perform when visiting the content of a tree node.
+			virtual void visit( Content & content ) 
+				throw( VisitException ) = 0 ;
+
+	
+	} ;
+
+
+	template <typename Content>
+	TreeVisitor<Content>::TreeVisitor() throw()
+	{
+
+	}
+
+	template <typename Content>
+	TreeVisitor<Content>::~TreeVisitor() throw()
+	{
+
+	}
+
 
 	/**
 	 * Template defining generically trees, parametrized by a
@@ -49,7 +93,7 @@ namespace Ceylan
 	 *
 	 */
 	template <typename Content>
-	class /* CEYLAN_DLL */ Tree : public Ceylan::TextDisplayable
+	class /* CEYLAN_DLL */ Tree : public Ceylan::Visitable
 	{
 
 		public:
@@ -107,6 +151,54 @@ namespace Ceylan
 			 *
 			 */
 			virtual void addSon( Tree & subtree ) throw( TreeException ) ;
+
+
+			/**
+			 * Traverses this tree depth-first, and applies specified
+			 * processing to each node being selected on this path,
+			 * in the path order.
+			 *
+			 * @param treeVisitor the actual tree visitor that will
+			 * visit the tree.
+			 *
+			 * @param visitContent tells whether the visitor the tree
+			 * nodes and their content, if true, or only the tree nodes,
+			 * if false.
+			 *
+			 * @note Content, if visited, will be visited just after its
+			 * associated node is visited. If a given node has no content,
+			 * then the visitor will only be called for the node, even if
+			 * visitContent is true.
+			 *
+			 * @throw TreeException if the visit failed.
+			 *
+			 */
+			virtual void traverseDepthFirst( TreeVisitor<Content> & treeVisitor,
+				bool visitContent = true ) throw( TreeException ) ;
+
+
+			/**
+			 * Traverses this tree breadth-first, and applies specified
+			 * processing to each node being selected on this path,
+			 * in the path order.
+			 *
+			 * @param treeVisitor the actual tree visitor that will
+			 * visit the tree.
+			 *
+			 * @param visitContent tells whether the visitor the tree
+			 * nodes and their content, if true, or only the tree nodes,
+			 * if false.
+			 *
+			 * @note Content, if visited, will be visited just after its
+			 * associated node is visited. If a given node has no content,
+			 * then the visitor will only be called for the node, even if
+			 * visitContent is true.
+			 *
+			 * @throw TreeException if the visit failed.
+			 *
+			 */
+			virtual void traverseBreadthFirst( TreeVisitor<Content> & treeVisitor,
+				bool visitContent = true ) throw( TreeException ) ;
 
 
 			/**
@@ -239,6 +331,44 @@ namespace Ceylan
 					+ subtree.toString() ) ;
 
 		_sons.push_back( &subtree ) ;
+
+	}
+
+
+	template <typename Content>
+	void Tree<Content>::traverseDepthFirst( TreeVisitor<Content> & treeVisitor,
+		bool visitContent ) throw( TreeException )
+	{
+	
+		// First recurse :
+		for ( SubTreeList::iterator it = _sons.begin();
+				it != _sons.end(); it++ )
+			(*it)->traverseDepthFirst( treeVisitor, visitContent ) ;
+
+		// Then apply :
+		treeVisitor.visit( *this ) ;
+
+		if ( visitContent && _content != 0 )
+			treeVisitor.visit( *_content ) ;
+
+	}
+
+
+	template <typename Content>
+	void Tree<Content>::traverseBreadthFirst( TreeVisitor<Content> & treeVisitor,
+		bool visitContent ) throw( TreeException )
+	{
+	
+		// Apply :
+		treeVisitor.visit( *this ) ;
+
+		if ( visitContent && _content != 0 )
+			treeVisitor.visit( *_content ) ;
+
+		// Then recurse :
+		for ( SubTreeList::iterator it = _sons.begin();
+				it != _sons.end(); it++ )
+			(*it)->traverseBreadthFirst( treeVisitor, visitContent ) ;
 
 	}
 
