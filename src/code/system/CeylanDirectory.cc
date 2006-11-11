@@ -426,7 +426,7 @@ bool Directory::IsAbsolutePath( const string & path ) throw()
 	 * absolute path.
 	 *
 	 */
-#if CEYLAN_RUNS_ON_WINDOWS
+#if CEYLAN_ARCH_WINDOWS
 
 	/* Was :
 
@@ -441,7 +441,7 @@ bool Directory::IsAbsolutePath( const string & path ) throw()
 
 	return false ;
 
-#else // CEYLAN_RUNS_ON_WINDOWS
+#else // CEYLAN_ARCH_WINDOWS
 
 
 	if ( path[0] == Separator )
@@ -450,7 +450,7 @@ bool Directory::IsAbsolutePath( const string & path ) throw()
 
 	return false ;
 
-#endif // CEYLAN_RUNS_ON_WINDOWS
+#endif // CEYLAN_ARCH_WINDOWS
 
 }
 
@@ -800,7 +800,7 @@ void Directory::Remove( const string & name, bool recursive )
 				if ( S_ISLNK( buf.st_mode ) || ! S_ISDIR( buf.st_mode ) )
 #else // CEYLAN_USES_SYMBOLIC_LINKS
 
-#ifdef CEYLAN_ARCH_WINDOWS
+#if CEYLAN_ARCH_WINDOWS
 				if ( ! ( buf.st_mode & _S_IFDIR ) )
 #else // CEYLAN_ARCH_WINDOWS
 				if ( ! S_ISDIR( buf.st_mode ) )
@@ -821,7 +821,7 @@ void Directory::Remove( const string & name, bool recursive )
 				else
 
 				// Deletes directories :
-#ifdef CEYLAN_ARCH_WINDOWS
+#if CEYLAN_ARCH_WINDOWS
 				if ( buf.st_mode & _S_IFDIR )
 #else // CEYLAN_ARCH_WINDOWS
 				if ( S_ISDIR( buf.st_mode ) )
