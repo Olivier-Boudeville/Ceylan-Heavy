@@ -264,8 +264,8 @@ namespace Ceylan
 		
 		
 		/// Sets local host's domain name.
-		CEYLAN_DLL void setLocalHostDomainName( const std::string & newHostName ) 
-			throw( NetworkException ) ;
+		CEYLAN_DLL void setLocalHostDomainName( 
+			const std::string & newHostName ) throw( NetworkException ) ;
 					
 
 		/**
@@ -373,9 +373,15 @@ namespace Ceylan
 		CEYLAN_DLL std::string explainSocketError() throw() ;
 
 
+
 		// Insert here real network-specific code.
 
-
+		
+		/*
+		 * Using here the only configuration-specific preprocessor symbol that
+		 * may exist in Ceylan public headers :
+		 *
+		 */
 #ifdef CEYLAN_RUNS_ON_WINDOWS
 
 
