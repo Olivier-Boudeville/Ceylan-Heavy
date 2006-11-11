@@ -465,7 +465,7 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 	throw( InputStream::SelectFailedException )
 {
 
-#ifdef CEYLAN_ARCH_WINDOWS
+#if CEYLAN_ARCH_WINDOWS
 
 #if CEYLAN_USES_NETWORK
 
