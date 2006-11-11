@@ -1049,7 +1049,7 @@ string Ceylan::Network::interpretSocketError( SocketError errorCode )
 	throw()
 {
 
-#if CEYLAN_RUNS_ON_WINDOWS
+#if CEYLAN_ARCH_WINDOWS
 
 	switch( errorCode )
 	{
@@ -1334,12 +1334,12 @@ string Ceylan::Network::interpretSocketError( SocketError errorCode )
 
 	}
 
-#else // CEYLAN_RUNS_ON_WINDOWS
+#else // CEYLAN_ARCH_WINDOWS
 
 	return "nothing appropriate for the current platform "
 		"(abnormal)" ;
 
-#endif // CEYLAN_RUNS_ON_WINDOWS
+#endif // CEYLAN_ARCH_WINDOWS
 
 }
 
@@ -1353,16 +1353,16 @@ SocketError Ceylan::Network::getSocketError() throw()
 std::string Ceylan::Network::explainSocketError() throw()
 {
 
-#if CEYLAN_RUNS_ON_WINDOWS
+#if CEYLAN_ARCH_WINDOWS
 
 	return interpretSocketError( getSocketError() ) ;
 
-#else // CEYLAN_RUNS_ON_WINDOWS
+#else // CEYLAN_ARCH_WINDOWS
 
 	return "Ceylan::Network::explainSocketError should not be "
 		"used on this platform" ;
 
-#endif // CEYLAN_RUNS_ON_WINDOWS
+#endif // CEYLAN_ARCH_WINDOWS
 
 }
 
@@ -1371,7 +1371,7 @@ std::string Ceylan::Network::explainSocketError() throw()
 // NetworkManager section.
 
 
-#if CEYLAN_RUNS_ON_WINDOWS
+#if CEYLAN_ARCH_WINDOWS
 
 NetworkManager NetworkManager::_Manager ;
 
@@ -1427,4 +1427,4 @@ NetworkManager::~NetworkManager() throw()
 }
 
 
-#endif // CEYLAN_RUNS_ON_WINDOWS
+#endif // CEYLAN_ARCH_WINDOWS
