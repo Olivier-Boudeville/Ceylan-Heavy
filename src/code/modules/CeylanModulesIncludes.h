@@ -8,6 +8,6 @@
 #include "CeylanFeatures.h"
 #include "CeylanModule.h"
 #include "CeylanPlugin.h"
-
+#include "CeylanXMLParser.h"
 
 #endif // CEYLAN_MODULES_INCLUDES_H_

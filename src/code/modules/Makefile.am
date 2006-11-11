@@ -19,12 +19,14 @@ MODULES_INTERFACES = \
 	CeylanFeatures.h                          \
 	CeylanModule.h                            \
 	CeylanModulesIncludes.h                   \
-	CeylanPlugin.h
+	CeylanPlugin.h                            \
+	CeylanXMLParser.h
 
 
 MODULES_IMPLEMENTATIONS = \
 	CeylanFeatures.cc                         \
 	CeylanModule.cc                           \
-	CeylanPlugin.cc
+	CeylanPlugin.cc                           \
+	CeylanXMLParser.cc
 
 	
