@@ -159,7 +159,7 @@ void StreamSocket::createSocket( Port port ) throw( SocketException )
 
 	_port = port ;
 
-#ifdef CEYLAN_ARCH_WINDOWS
+#if CEYLAN_ARCH_WINDOWS
 
 	_originalFD = static_cast<System::FileDescriptor>(
 		::socket( 
@@ -247,7 +247,7 @@ void StreamSocket::setNagleAlgorithmTo( bool activated )
 		"setting the algorithm to " 
 		+ Ceylan::toString( activated ) ) ;
 
-#ifdef CEYLAN_ARCH_WINDOWS
+#if CEYLAN_ARCH_WINDOWS
 
 	int optionValue ;
 
@@ -374,7 +374,7 @@ void StreamSocket::setBlocking( bool newStatus )
 
 #else // CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS
 
-#ifdef CEYLAN_ARCH_WINDOWS
+#if CEYLAN_ARCH_WINDOWS
 
 		unsigned long nonBlockingMode = 0 ;
 
@@ -427,7 +427,7 @@ void StreamSocket::setBlocking( bool newStatus )
 
 #else // CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS
 
-#ifdef CEYLAN_ARCH_WINDOWS
+#if CEYLAN_ARCH_WINDOWS
 
 		unsigned long nonBlockingMode = 1 ;
 
