@@ -126,7 +126,7 @@ To test the result, search for gethostname, the one defined by winsock should be
 	- open the Ceylan solution
 	- add a new project to it
 	- choose project type : Visual C++ -> General -> Empty Project
-	- choose project name (ex : generic-testCeylanBasicResourceManager for source in generic/testCeylanBasicResourceManager.cc)
+	- choose project name (ex : testCeylanBasicResourceManager for source in generic/testCeylanBasicResourceManager.cc). Note that the initial project name is not 'generic-testCeylanBasicResourceManager', so that the associated files and directory names remain short.
 	- choose project location in the relevant module (ex : trunk/test/generic for testCeylanBasicResourceManager)
 	- remove default directories (Header, Resource, Source Files)
 	- add in project an existing element (ex : testCeylanBasicResourceManager.cc)
@@ -142,6 +142,7 @@ click on 'Add New Reference' and select 'Ceylan-x.y library'
 "Multi-threaded Debug DLL (/MDd)". Selecting "Multi-threaded DLL (/MD)", "Multi-threaded Debug (/MTd)" or "Multi-thread (/MT)" leads to a direct crash.
 		* choose in Linker -> Debugging :
 "Generate Debug Info : Yes (/DEBUG)"
+	- rename in the IDE the project so that it is prefixed by its module (ex : testCeylanBasicResourceManager becomes generic-testCeylanBasicResourceManager). It allows to sort the projects in the IDE panel without having the long names in the filesystem.
 	- build the project
 	- from a cygwin terminal, go to C:\Documents and Settings\sye\Mes documents\Ceylan\trunk\src\Debug\ for example, and run for example (check the logs and the return code):
 
@@ -163,6 +164,8 @@ shell and UNIX commands it provides, none of its libraries is used by Ceylan) :
 cd trunk/test
 ./playTests.sh
 """
+
+Beware to your firewall, that should detect that the tests use the network and that they change at each new build : you must use your firewall (ex : ZoneAlarm) to authorize these tests, so that the test suite can run fine. Or you may modify playTests.sh so that, even when it detects network availability, it does not pass the --online option to the tests : doing so will prevent the tests from using the Internet, with DNS queries for example (however local client/server instances will still be created and be detected by your firewall).
 
 The ldd tool is lacking on the Windows platform, one may use [14] instead.
 
