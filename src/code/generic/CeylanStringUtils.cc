@@ -13,7 +13,7 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
-#ifdef CEYLAN_RUNS_ON_WINDOWS
+#if CEYLAN_ARCH_WINDOWS
 
 extern "C"
 {
@@ -22,7 +22,7 @@ extern "C"
 
 }
 
-#endif // CEYLAN_RUNS_ON_WINDOWS
+#endif // CEYLAN_ARCH_WINDOWS
 
 
 #include <cctype>              // for isdigit, isupper, etc.
@@ -100,15 +100,15 @@ char * Ceylan::getNonConstCharFrom( const std::string & source ) throw()
 		Ceylan::emergencyShutdown( 
 			"Ceylan::getNonConstCharFrom : not enough memory." ) ;
 
-#ifdef CEYLAN_RUNS_ON_WINDOWS
+#if CEYLAN_ARCH_WINDOWS
 
 	strcpy_s( res, source.size() + 1, source.c_str() ) ;
 
-#else // CEYLAN_RUNS_ON_WINDOWS
+#else // CEYLAN_ARCH_WINDOWS
 
 	::strcpy( res, source.c_str() ) ;
 
-#endif // CEYLAN_RUNS_ON_WINDOWS
+#endif // CEYLAN_ARCH_WINDOWS
 	
 	return res ;
 	
