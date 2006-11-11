@@ -2,8 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="testCeylanTree"
+	Name="generic-testCeylanTree"
 	ProjectGUID="{91244C07-41CC-428A-9809-D4EB717A072F}"
+	RootNamespace="generic-testCeylanTree"
 	>
 	<Platforms>
 		<Platform
@@ -15,6 +16,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
+			OutputDirectory=".."
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			>
 			<Tool
@@ -34,6 +37,9 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)code&quot;;&quot;$(SolutionDir)code/generic&quot;;&quot;$(SolutionDir)code/interfaces&quot;;&quot;$(SolutionDir)code/logs&quot;;&quot;$(SolutionDir)code/maths&quot;;&quot;$(SolutionDir)code/middleware&quot;;&quot;$(SolutionDir)code/modules&quot;;&quot;$(SolutionDir)code/network&quot;;&quot;$(SolutionDir)code/system&quot;"
+				PreprocessorDefinitions="&quot;CEYLAN_DLL=__declspec( dllimport )&quot;;&quot;CEYLAN_RUNS_ON_WINDOWS=1&quot;"
+				RuntimeLibrary="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -46,6 +52,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				GenerateDebugInformation="true"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -74,6 +81,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			>
 			<Tool
@@ -133,26 +141,16 @@
 		</Configuration>
 	</Configurations>
 	<References>
+		<ProjectReference
+			ReferencedProjectIdentifier="{021F8729-BF5B-4A73-B130-BEA1DDB68A89}"
+			RelativePathToProject=".\Ceylan-0.3.vcproj"
+		/>
 	</References>
 	<Files>
-		<Filter
-			Name="Source Files"
-			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+		<File
+			RelativePath="..\testCeylanTree.cc"
 			>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
-			>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
-			>
-		</Filter>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
