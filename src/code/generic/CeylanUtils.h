@@ -183,14 +183,16 @@ namespace Ceylan
 	 */
 	CEYLAN_DLL void emergencyShutdown( const std::string & message ) throw()
 
-#if !defined(CEYLAN_RUNS_ON_WINDOWS)
-		/*
-		 * g++ (gcc) needs this __attribute__ (otherwise a blocking 
-		 * warning is issued), but Visual C++ does not understand it.
-		 * As we are in a header file, only the CEYLAN_RUNS_ON_WINDOWS
-		 * can be available here.
-		 *
-		 */
+#ifndef CEYLAN_RUNS_ON_WINDOWS
+				/*
+				 * g++ (gcc) needs this __attribute__ (otherwise a blocking 
+				 * warning is issued), but Visual C++ does not understand it.
+				 *
+				 * As we are here in a public header file, only the
+				 * CEYLAN_RUNS_ON_WINDOWS configuration-specific preprocessor
+				 * symbol is available here.
+				 *
+				 */
 		__attribute__ ((noreturn))  
 
 #endif // CEYLAN_RUNS_ON_WINDOWS
