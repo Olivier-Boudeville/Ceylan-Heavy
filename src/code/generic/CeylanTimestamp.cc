@@ -24,7 +24,7 @@ Timestamp::Timestamp() throw( UtilsException )
 
 	time_t currentMeasuredTime = System::getTime() ; 
 
-#ifdef CEYLAN_RUNS_ON_WINDOWS
+#if CEYLAN_ARCH_WINDOWS
 
 	struct tm currentTime ;
 
@@ -40,7 +40,7 @@ Timestamp::Timestamp() throw( UtilsException )
 	_minute = currentTime.tm_min ;
 	_second = currentTime.tm_sec ;
 
-#else // CEYLAN_RUNS_ON_WINDOWS
+#else // CEYLAN_ARCH_WINDOWS
 
 	struct tm * currentTime = ::localtime( & currentMeasuredTime ) ;
 
@@ -56,7 +56,7 @@ Timestamp::Timestamp() throw( UtilsException )
 	_minute = currentTime->tm_min ;
 	_second = currentTime->tm_sec ;
 
-#endif // CEYLAN_RUNS_ON_WINDOWS
+#endif // CEYLAN_ARCH_WINDOWS
 
 
 
