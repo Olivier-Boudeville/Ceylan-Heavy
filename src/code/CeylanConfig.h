@@ -8,6 +8,9 @@
  * On UNIX platforms, this file will be overwritten by the configure-generated
  * CeylanConfig.h
  *
+ * @note Do not check-in this file if replaced by its UNIX configure-generated
+ * counterpart.
+ *
  */
 
 #ifdef CEYLAN_RUNS_ON_WINDOWS
