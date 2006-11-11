@@ -13,8 +13,10 @@
 #include <iosfwd>
 
 
+
 namespace Ceylan
 {
+
 
 
 	/**
@@ -38,6 +40,12 @@ namespace Ceylan
 		 * Signed size, in bytes, for example for file operations.
 		 *
 		 */
+		 
+		/*
+		 * Using here the only configuration-specific preprocessor symbol that
+		 * may exist in Ceylan public headers :
+		 *
+		 */
 #ifdef CEYLAN_RUNS_ON_WINDOWS
 
 		typedef signed int SignedSize ;
@@ -47,6 +55,7 @@ namespace Ceylan
 		typedef ssize_t SignedSize ;
 
 #endif // CEYLAN_RUNS_ON_WINDOWS
+
 
 
 		/**
@@ -113,6 +122,11 @@ namespace Ceylan
 		 *
 		 */
 		
+		/*
+		 * Using here the only configuration-specific preprocessor symbol that
+		 * may exist in Ceylan public headers :
+		 *
+		 */
 #ifdef CEYLAN_RUNS_ON_WINDOWS
 
 		typedef unsigned int FileDescriptor ;
@@ -197,8 +211,8 @@ namespace Ceylan
 		 * occurred.
 		 *
 		 */
-		CEYLAN_DLL Size FDWrite( FileDescriptor fd, const Ceylan::Byte * dataBuffer,
-				Size toWriteBytesNumber )
+		CEYLAN_DLL Size FDWrite( FileDescriptor fd, 
+				const Ceylan::Byte * dataBuffer, Size toWriteBytesNumber )
 			throw( IOException, Features::FeatureNotAvailableException ) ;
 
 
@@ -314,8 +328,8 @@ namespace Ceylan
 		 * @throw SystemException should a problem occur.
 		 *
 		 */
-		CEYLAN_DLL void getPreciseTime( Second & seconds, Microsecond & microsec )
-			throw( SystemException ) ;
+		CEYLAN_DLL void getPreciseTime( Second & seconds, 
+			Microsecond & microsec ) throw( SystemException ) ;
 
 
 		/**
@@ -351,7 +365,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL Microsecond getAccuracyOfPreciseTime( 
-				Microsecond * minGap = 0 , Microsecond * maxGap = 0 ) 
+				Microsecond * minGap = 0, Microsecond * maxGap = 0 ) 
 			throw( SystemException ) ;
 
 
@@ -380,7 +394,8 @@ namespace Ceylan
 		 * @see basicSleep methods for far better accuracy.
 		 *
 		 */
-		CEYLAN_DLL void sleepForSeconds( Second seconds ) throw( SystemException ) ;
+		CEYLAN_DLL void sleepForSeconds( Second seconds ) 
+			throw( SystemException ) ;
 
 
 		/**
@@ -444,7 +459,8 @@ namespace Ceylan
 		 * @see basicSleep( Second seconds, Nanosecond nanos )
 		 *
 		 */
-		CEYLAN_DLL void basicSleep( Microsecond micros ) throw( SystemException ) ;
+		CEYLAN_DLL void basicSleep( Microsecond micros ) 
+			throw( SystemException ) ;
 
 
 		/**
@@ -605,7 +621,9 @@ namespace Ceylan
 			throw() ;
 
 
+
 	}
+	
 
 }
 
