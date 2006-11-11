@@ -11,7 +11,7 @@
 #include "CeylanConfig.h"                 // for configure-time settings
 #endif // CEYLAN_USES_CONFIG_H
 
-#ifdef CEYLAN_ARCH_WINDOWS
+#if CEYLAN_ARCH_WINDOWS
 #include "CeylanNetwork.h"                // for explainSocketError, etc.
 #endif // CEYLAN_ARCH_WINDOWS
 
@@ -191,7 +191,7 @@ Size Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
 
 	SignedSize totalReadBytesNumber = 0 ;
 
-#ifdef CEYLAN_ARCH_WINDOWS
+#if CEYLAN_ARCH_WINDOWS
 
 	// On Windows, such IO are only used for sockets.
 
@@ -331,7 +331,7 @@ Size Ceylan::System::FDWrite( FileDescriptor fd,
 
 	SignedSize totalWroteBytesNumber = 0 ;
 
-#ifdef CEYLAN_ARCH_WINDOWS
+#if CEYLAN_ARCH_WINDOWS
 
 	// On Windows, such IO are only used for sockets.
 
@@ -810,7 +810,7 @@ void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 #endif // CEYLAN_DEBUG_SYSTEM
 
 
-#ifdef CEYLAN_ARCH_WINDOWS
+#if CEYLAN_ARCH_WINDOWS
 
 	// Expressed in milliseconds :
 	::Sleep( seconds * 1000 + nanos / 1000000 ) ;
