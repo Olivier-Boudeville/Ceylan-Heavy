@@ -109,5 +109,4 @@ namespace Ceylan
 }
 
 
-#endif // CEYLAN_FUNCTOR_H_
-		
+#endif // CEYLAN_FUNCTOR_H_		
