@@ -4,7 +4,7 @@
 
 #include "CeylanVisitable.h"        // for Visitable
 #include "CeylanException.h"        // for Ceylan::Exception
-#include "CeylanFunctor.h"          // for Ceylan::Functor
+#include "CeylanStringUtils.h"      // for formatStringList
 
 
 #include <string>
@@ -224,6 +224,7 @@ namespace Ceylan
 			 */
 			Content * _content ;
 
+
 /* 
  * Takes care of the awful issue of Windows DLL with templates.
  *
@@ -399,7 +400,7 @@ namespace Ceylan
 			subtrees.push_back( (*it)->toString( level ) ) ;
 		}
 
-		return res + formatStringList( subtrees ) ;
+		return res + Ceylan::formatStringList( subtrees ) ;
 
 
 	}
