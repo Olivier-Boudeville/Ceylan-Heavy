@@ -737,6 +737,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\code\modules\CeylanXMLParser.h"
+				>
+			</File>
+			<File
 				RelativePath=".\conf\MakeColors.inc"
 				>
 			</File>
@@ -1226,6 +1230,10 @@
 			</File>
 			<File
 				RelativePath=".\code\maths\CeylanWhiteNoiseRandomGenerator.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\code\modules\CeylanXMLParser.cc"
 				>
 			</File>
 		</Filter>
