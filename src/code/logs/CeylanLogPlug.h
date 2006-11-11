@@ -7,11 +7,13 @@
 #include <string>
 
 
+
 namespace Ceylan
 {
 
 	namespace Log
 	{
+
 
 
 		/// Used as plug endpoints, the Log messages come through them.
@@ -428,13 +430,15 @@ namespace Ceylan
 							
 				/// LogPlug should not instanciated, even as a mother class.
 				LogPlug() throw ( LogException )
-
+				
 #ifndef CEYLAN_RUNS_ON_WINDOWS
 				/*
 				 * g++ (gcc) needs this __attribute__ (otherwise a blocking 
 				 * warning is issued), but Visual C++ does not understand it.
-				 * As we are in a header file, only the CEYLAN_RUNS_ON_WINDOWS
-				 * can be available here.
+				 *
+				 * As we are here in a public header file, only the
+				 * CEYLAN_RUNS_ON_WINDOWS configuration-specific preprocessor
+				 * symbol is available here.
 				 *
 				 */
 					__attribute__ ((noreturn))  
