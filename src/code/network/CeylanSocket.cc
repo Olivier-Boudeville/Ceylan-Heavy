@@ -513,7 +513,7 @@ bool Socket::close() throw( Stream::CloseException )
 
 	// Maybe use shutdown first.
 
-#if CEYLAN_RUNS_ON_WINDOWS
+#if CEYLAN_ARCH_WINDOWS
 
 	if ( _originalFD == 0 )
 		return false ;
@@ -526,7 +526,7 @@ bool Socket::close() throw( Stream::CloseException )
 
 	return true ;
 
-#else // CEYLAN_RUNS_ON_WINDOWS
+#else // CEYLAN_ARCH_WINDOWS
 
 	bool res = Stream::Close( _originalFD ) ;
 
@@ -534,7 +534,7 @@ bool Socket::close() throw( Stream::CloseException )
 
 	return res ;
 
-#endif // CEYLAN_RUNS_ON_WINDOWS
+#endif // CEYLAN_ARCH_WINDOWS
 
 
 #else // CEYLAN_USES_NETWORK	
