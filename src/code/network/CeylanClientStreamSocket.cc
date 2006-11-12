@@ -186,7 +186,8 @@ void ClientStreamSocket::connect( const string & serverHostname,
 		throw ClientStreamSocketException( "ClientStreamSocket::connect : "
 			"could not connect to IP " 
 			+ serverIP->toString() + " for host '" 
-			+ _serverHostName + "' : " + System::explainError() ) ;
+			+ _serverHostName + "' on port " + Ceylan::toString( serverPort )
+			+ " : " + System::explainError() ) ;
 
 #if CEYLAN_DEBUG_NETWORK_CLIENTS
 	LogPlug::trace( "ClientStreamSocket::connect : successfully connected." ) ;
