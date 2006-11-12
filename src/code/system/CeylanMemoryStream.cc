@@ -402,9 +402,15 @@ void MemoryStream::moveFilledBlockToBufferStart() throw( MemoryStreamException )
 StreamID MemoryStream::getStreamID() const throw()
 {
 
-	// Beware to 64-bit machines :
+	/*
+	 * Beware to 64-bit machines.
+	 *
+	 * Basically we are trying to convert a pointer to an int, gcc on
+	 * Linux will not accept Ceylan::Uint32 to become Ceylan::Uint64 :
+	 *
+	 */
 	return static_cast<StreamID>( 
-			reinterpret_cast<Ceylan::Uint64>( this ) ) ;
+			reinterpret_cast<Ceylan::Uint32>( this ) ) ;
 
 }
 
