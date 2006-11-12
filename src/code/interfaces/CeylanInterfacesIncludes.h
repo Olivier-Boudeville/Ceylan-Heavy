@@ -28,6 +28,7 @@
 #include "CeylanObject.h"
 #include "CeylanObjectChannel.h"
 #include "CeylanObjectIdentifier.h"
+#include "CeylanSerializable.h"
 #include "CeylanTextDisplayable.h"
 #include "CeylanTextIdentifier.h"
 #include "CeylanView.h"

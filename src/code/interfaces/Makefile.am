@@ -36,6 +36,7 @@ INTERFACES_INTERFACES = \
 	CeylanObject.h                                \
 	CeylanObjectChannel.h                         \
 	CeylanObjectIdentifier.h                      \
+	CeylanSerializable.h                          \
 	CeylanTextDisplayable.h                       \
 	CeylanTextIdentifier.h                        \
 	CeylanView.h                                  \
@@ -65,6 +66,7 @@ INTERFACES_IMPLEMENTATIONS = \
 	CeylanObject.cc                               \
 	CeylanObjectChannel.cc                        \
 	CeylanObjectIdentifier.cc                     \
+	CeylanSerializable.cc                         \
 	CeylanTextDisplayable.cc                      \
 	CeylanTextIdentifier.cc                       \
 	CeylanView.cc                                 \
