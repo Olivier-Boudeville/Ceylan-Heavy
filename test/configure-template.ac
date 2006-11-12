@@ -78,6 +78,7 @@ else
 	
 	AM_LDFLAGS="$AM_LDFLAGS --strip-all"
 	
+	
     case "$target" in
         i486-*-*)
             if test x$ac_cv_cxx_compiler_gnu = xyes; then
@@ -96,6 +97,9 @@ else
             ;;
     esac
 fi
+
+
+
 
 if test x$ac_cv_cxx_compiler_gnu = xyes; then
 	# Path to the static archive for the Standard Library needed for plugins :
@@ -128,7 +132,7 @@ if test x$ac_cv_cxx_compiler_gnu = xyes; then
 	# incorrecly complaining : 'warning: will never be executed' in
 	# TestResourceException constructor
 	#
-    AM_CXXFLAGS="$AM_CXXFLAGS -Wall -Werror -Woverloaded-virtual -W -Wfloat-equal -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-format-attribute -Wpacked -Wredundant-decls -Wno-unused-parameter"
+    AM_CXXFLAGS="$AM_CXXFLAGS -Wall -Werror -Woverloaded-virtual -W -Wfloat-equal -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-format-attribute -Wpacked -Wredundant-decls -Wno-unused-parameter -Wno-unknown-pragmas"
     if test x$enable_strict_ansi = xyes; then
 		# Do not know what "-D_XOPEN_SOURCE" would change.
         AM_CXXFLAGS="$AM_CXXFLAGS -ansi -pedantic-errors"
