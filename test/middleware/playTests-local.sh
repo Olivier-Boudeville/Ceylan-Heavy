@@ -30,10 +30,10 @@ multiplexed_lw_protocol_client_test_exec="${TEST_ROOT}/$m/$m-${multiplexed_lw_pr
 
 else
 
-marshalled_server_test_exec="${TEST_ROOT}/$m/${marshalled_server_test_name}"
-marshalled_client_test_exec="${TEST_ROOT}/network/${marshalled_client_test_name}"
-multiplexed_lw_protocol_server_test_exec="${TEST_ROOT}/$m/${multiplexed_lw_protocol_server_test_name}"
-multiplexed_lw_protocol_client_test_exec="${TEST_ROOT}/$m/${multiplexed_lw_protocol_client_test_name}"
+marshalled_server_test_exec="${TEST_ROOT}/$m/${marshalled_server_test_name}.exe"
+marshalled_client_test_exec="${TEST_ROOT}/network/${marshalled_client_test_name}.exe"
+multiplexed_lw_protocol_server_test_exec="${TEST_ROOT}/$m/${multiplexed_lw_protocol_server_test_name}.exe"
+multiplexed_lw_protocol_client_test_exec="${TEST_ROOT}/$m/${multiplexed_lw_protocol_client_test_name}.exe"
 
 fi
 
