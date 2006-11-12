@@ -20,3 +20,4 @@ const std::string Visitable::toString( Ceylan::VerbosityLevels level )
 {
 	return "Visitable instance" ;
 }
+
