@@ -162,9 +162,53 @@ AC_DEFUN([CEYLAN_PATH],
     	  pthread_lib="-lpthread"
     	  ;;
   esac
+  
+  if test x$ac_cv_cxx_compiler_gnu = xyes; then
+    # Needed to avoid gcc warning triggered by a needed Visual C++ pragma :
+    CEYLAN_CPPFLAGS="$CEYLAN_CPPFLAGS -Wno-unknown-pragmas"
+  fi
+   
+  # CEYLAN_DLL section.
+
+
+  # For all builds, CEYLAN_DLL will be actually defined
+  # thanks to command-line preprocessor options (-DCEYLAN_DLL="...")
+  # so that headers can avoid #including platform-specific configuration
+  # files.
+
+  # Needed when building a library on Windows platforms :
+  CEYLAN_DLL_IMPORT_WINDOWS="__declspec( dllimport )"
+
+  CEYLAN_DLL=
+
+  case "$target" in
+	
+    *-*-win32*) 
+        CEYLAN_DLL="${CEYLAN_DLL_IMPORT_WINDOWS}"
+        ;;
+
+	*-*-cygwin*)
+        CFLAGS="$CFLAGS -I/usr/include/mingw -DWIN32 -Uunix -mno-cygwin"
+        LIBS="$LIBS -mno-cygwin"
+        CEYLAN_DLL="${CEYLAN_DLL_IMPORT_WINDOWS}"
+        ;;
+		
+	*-*-mingw32*)
+        LIBS="-lmingw32 $LIBS -mwindows"
+        CEYLAN_DLL="${CEYLAN_DLL_IMPORT_WINDOWS}"
+        ;;
+													
+  esac
 	  
-  # Updating the overall build flags :
-  CPPFLAGS="$CPPFLAGS $CEYLAN_CPPFLAGS $pthread_cflags"
+
+  # Wanting CEYLAN_DLL to be replaced by nothing, not "", on UNIX :	  
+  if test "${CEYLAN_DLL}" = "" ; then
+ 	 CPPFLAGS="$CPPFLAGS $CEYLAN_CPPFLAGS $pthread_cflags -DCEYLAN_DLL="
+  else	 
+ 	 CPPFLAGS="$CPPFLAGS $CEYLAN_CPPFLAGS $pthread_cflags -DCEYLAN_DLL=\"${CEYLAN_DLL}\""
+  fi
+
+   
   LIBS="$LIBS $CEYLAN_LIBS $pthread_lib"
   # Uncomment to debug :
   #AC_MSG_NOTICE([Ceylan guessed CPPFLAGS = $CPPFLAGS])
