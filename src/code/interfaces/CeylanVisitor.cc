@@ -14,3 +14,4 @@ const std::string Visitor::toString( Ceylan::VerbosityLevels level )
 {
 	return "Visitor instance" ;
 }
+
