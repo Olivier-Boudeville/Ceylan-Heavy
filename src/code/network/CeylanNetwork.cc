@@ -1346,7 +1346,20 @@ string Ceylan::Network::interpretSocketError( SocketError errorCode )
 
 SocketError Ceylan::Network::getSocketError() throw()
 {
+
+#if CEYLAN_ARCH_WINDOWS
+
 	return WSAGetLastError() ;
+	
+#else // CEYLAN_ARCH_WINDOWS
+
+	LogPlug::error( "Ceylan::Network::getSocketError called "
+		"whereas not on Windows." ) ;
+		
+	return 0 ;
+
+#endif // CEYLAN_ARCH_WINDOWS
+	
 }
 
 
