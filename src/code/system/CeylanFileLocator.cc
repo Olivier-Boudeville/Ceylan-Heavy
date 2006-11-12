@@ -13,6 +13,10 @@ using namespace Ceylan::System ;
 using namespace Ceylan::Log ;
 
 
+/*
+ * UNIX path separator is ':', Windows one is ';'.
+ *
+ */
 
 
 FileLocatorException::FileLocatorException( const std::string & message )
