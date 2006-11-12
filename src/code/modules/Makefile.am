@@ -20,6 +20,8 @@ MODULES_INTERFACES = \
 	CeylanModule.h                            \
 	CeylanModulesIncludes.h                   \
 	CeylanPlugin.h                            \
+	CeylanXML.h                               \
+	CeylanXMLElement.h                        \
 	CeylanXMLParser.h
 
 
@@ -27,6 +29,8 @@ MODULES_IMPLEMENTATIONS = \
 	CeylanFeatures.cc                         \
 	CeylanModule.cc                           \
 	CeylanPlugin.cc                           \
+	CeylanXML.cc                              \
+	CeylanXMLElement.cc                       \
 	CeylanXMLParser.cc
 
 	

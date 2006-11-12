@@ -1,15 +1,20 @@
 #include "CeylanXMLParser.h"
 
 #include "CeylanTree.h"         // for Tree
+#include "CeylanXMLElement.h"   // for XMLElement
 
 
 using namespace Ceylan ;
+using namespace Ceylan::XML ;
 
 using std::string ;
 
 
+
+
+
 XMLParserException::XMLParserException( const std::string & reason ) throw() : 
-	Ceylan::Exception( reason )
+	XMLException( reason )
 {
 
 }
@@ -22,9 +27,11 @@ XMLParserException::~XMLParserException() throw()
 
 
 
+
 XMLParser::XMLParser( const std::string & filename ) throw() :
 	_filename( filename ),
-	_parsedTree( 0 )
+	_parsedTree( 0 ),
+	_markupStack()
 {
 
 }
@@ -36,6 +43,37 @@ XMLParser::~XMLParser() throw()
 	if ( _parsedTree != 0 )
 		delete _parsedTree ;
 
+}
+
+
+bool XMLParser::hasXMLTree() const throw()
+{
+
+	return ( _parsedTree != 0 ) ;
+	
+}
+
+
+XMLParser::XMLTree & XMLParser::getXMLTree() const throw( XMLParserException )
+{
+
+	if ( _parsedTree == 0 )
+		throw XMLParserException( "XMLParser::getXMLTree : "
+			"no available tree" ) ;
+		
+	return *_parsedTree	;
+	
+}
+
+
+void XMLParser::setXMLTree( XMLTree & newTree ) throw()
+{
+
+	if ( _parsedTree != 0 )
+		delete _parsedTree ;
+	
+	_parsedTree = &newTree ;
+		
 }
 
 
