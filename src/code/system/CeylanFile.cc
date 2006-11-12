@@ -29,7 +29,7 @@ extern "C"
 #endif // CEYLAN_USES_FCNTL_H
 
 #ifdef CEYLAN_USES_UNISTD_H
-#include <unistd.h>            // for FIXME
+#include <unistd.h>            // for stat
 #endif // CEYLAN_USES_UNISTD_H
 
 #ifdef CEYLAN_USES_UTIME_H
@@ -43,7 +43,7 @@ extern "C"
 }
 
 
-//#include <cerrno>    //
+#include <cerrno>    // for EINTR, ENOLCK, etc.
 #include <cstdio>    // for unlink
 #include <fstream>   // for this class
 
@@ -546,10 +546,13 @@ void File::lockForReading() const throw( ReadLockingFailed,
 	{
 		if ( ::fcntl( _fdes, F_SETLKW, &lk ) == - 1 )
 		{
-			if ( errno == EINTR  )
+		
+			ErrorCode error = getError() ;
+			
+			if ( error == EINTR  )
 				continue ;
 
-			if ( errno != ENOLCK )
+			if ( error != ENOLCK )
 				throw ReadLockingFailed( 
 					"File::lockForReading : locking failed for '" 
 						+ _name + "' : " + System::explainError() ) ;
@@ -1092,8 +1095,9 @@ bool File::Exists( const string & name ) throw( CouldNotStatFile )
 #ifdef CEYLAN_USES_STAT
 
 	struct stat buf ;
+	
 	return ( ::stat( name.c_str(), & buf ) == 0 
-		&& ( S_ISLNK( buf ) || S_ISREG( buf ) ) ) ;
+		&& ( S_ISLNK( buf.st_mode ) || S_ISREG( buf.st_mode ) ) ) ;
 	
 #else // CEYLAN_USES_STAT
 
