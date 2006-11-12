@@ -167,11 +167,18 @@ display_final_stats()
 	fi
 }
 
+
 get_logical_test_name()
 # Converts executables names on Cygwin to the usual names
 # 'system-testCeylanX.exe' should become 'testCeylanX'
 {
-	returned_string=`basename $t | sed 's|^.*-test|test|1' | sed 's|.exe$||1'`
+	
+	if [ "$on_cygwin" -eq "0" ] ; then
+		returned_string=`basename $t |sed 's|^.*-test|test|1' |sed 's|.exe$||1'`
+	else
+		returned_string=`basename $t |sed 's|.exe$||1'`
+	fi
+		
 }
 
 
@@ -294,7 +301,7 @@ for m in ${TESTED_ROOT_MODULES} ; do
 	if [ "$on_cygwin" -eq "0" ] ; then
 		TESTS=`ls ${TEST_ROOT}/$m/*-testCeylan*.exe 2>/dev/null`
 	else	
-		TESTS=`find ${TEST_ROOT}/$m -mindepth 1 -maxdepth 1 -perm -o+x,g+x -a -type f -a -name 'testCeylan*' `
+		TESTS=`find ${TEST_ROOT}/$m -mindepth 1 -maxdepth 1 -perm -o+x,g+x -a -type f -a -name 'testCeylan*.exe' `
 	fi
 	
 	DEBUG_INTERNAL "Tests in module ${m} are : '${TESTS}'"
@@ -317,12 +324,8 @@ for m in ${TESTED_ROOT_MODULES} ; do
 	
 		if [ -x "$t" -a -f "$t" ] ; then
 
-			if [ "$on_cygwin" -eq "0" ] ; then
-				get_logical_test_name $t
-				logical_test_name=$returned_string
-			else
-				logical_test_name=`basename "$t"`
-			fi
+			get_logical_test_name $t
+			logical_test_name=$returned_string
 			
 			to_be_excluded=1
 			for excluded in ${EXCLUDED_TESTS} ; do
@@ -339,12 +342,8 @@ for m in ${TESTED_ROOT_MODULES} ; do
 			
 			test_count=$(($test_count+1))
 			
-			if [ "$on_cygwin" -eq "0" ]; then
-				get_logical_test_name $t
-				test_name="$returned_string"
-			else	
-				test_name=`basename $t`
-			fi
+			get_logical_test_name $t
+			test_name="$returned_string"
 			
 			display_launching $test_name
 			
