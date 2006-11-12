@@ -62,3 +62,4 @@ const string XMLParser::toString( Ceylan::VerbosityLevels level )
 	return res ;
 
 }
+
