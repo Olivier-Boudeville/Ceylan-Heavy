@@ -38,7 +38,9 @@ INTERFACES_INTERFACES = \
 	CeylanObjectIdentifier.h                      \
 	CeylanTextDisplayable.h                       \
 	CeylanTextIdentifier.h                        \
-	CeylanView.h
+	CeylanView.h                                  \
+	CeylanVisitable.h                             \
+	CeylanVisitor.h
 
 
 INTERFACES_IMPLEMENTATIONS = \
@@ -65,5 +67,7 @@ INTERFACES_IMPLEMENTATIONS = \
 	CeylanObjectIdentifier.cc                     \
 	CeylanTextDisplayable.cc                      \
 	CeylanTextIdentifier.cc                       \
-	CeylanView.cc
+	CeylanView.cc                                 \
+	CeylanVisitable.cc                            \
+	CeylanVisitor.cc
 
