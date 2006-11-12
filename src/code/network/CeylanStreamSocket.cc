@@ -20,6 +20,16 @@ extern "C"
 {
 
 
+#ifdef CEYLAN_USES_XTI_H
+#include <xti.h>               // for TCP_NODELAY
+#endif // CEYLAN_USES_XTI_H
+
+
+#ifdef CEYLAN_USES_NETINET_TCP_H
+#include <netinet/tcp.h>       // for TCP_NODELAY
+#endif // CEYLAN_USES_NETINET_TCP_H
+
+
 #ifdef CEYLAN_USES_SYS_SOCKET_H
 #include <sys/socket.h>        // for socket
 #endif // CEYLAN_USES_SYS_SOCKET_H
@@ -59,9 +69,11 @@ extern "C"
 #include <sys/ioctl.h>        // for FreeBSD ioctl
 #endif // CEYLAN_USES_SYS_IOCTL_H
 
+
 #ifdef CEYLAN_USES_WINSOCK2_H
 #include <winsock2.h>         // for IPPROTO_TCP, etc.
 #endif // CEYLAN_USES_WINSOCK2_H
+
 
 }
 
@@ -241,13 +253,18 @@ void StreamSocket::setNagleAlgorithmTo( bool activated )
 	throw( StreamSocketException )
 {
 
+
+	/*
+	 * Maybe, in the future, the TCP_CORK, TCP_NOPUSH etc. options could
+	 * be managed.
+	 *
+	 */
+	
 #if CEYLAN_USES_NETWORK
 
 	LogPlug::debug( "StreamSocket::setNagleAlgorithmTo : "
 		"setting the algorithm to " 
 		+ Ceylan::toString( activated ) ) ;
-
-#if CEYLAN_ARCH_WINDOWS
 
 	int optionValue ;
 
@@ -255,6 +272,10 @@ void StreamSocket::setNagleAlgorithmTo( bool activated )
 		optionValue = 0 ;
 	else
 		optionValue = 1 ;
+
+
+#if CEYLAN_ARCH_WINDOWS
+
 
 	// Sets the Nagle algorithm for send coalescing :
 
@@ -281,7 +302,15 @@ void StreamSocket::setNagleAlgorithmTo( bool activated )
 
 #else // CEYLAN_ARCH_WINDOWS
 
-#error "Not implemented yet !"
+	if ( ::setsockopt( 
+			/* target socket */ getFileDescriptorForTransport(), 
+			/* level */ SOL_SOCKET,
+			/* option name */ TCP_NODELAY,
+			/* option value */ reinterpret_cast<const char *>( optionValue ),
+			/* option length */ sizeof( int ) ) == -1 )
+		throw StreamSocketException( 
+			"StreamSocket::setNagleAlgorithmTo failed : "
+			+ explainError() ) ;
 
 #endif // CEYLAN_ARCH_WINDOWS
 
