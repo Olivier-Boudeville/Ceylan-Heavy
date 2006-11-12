@@ -5,15 +5,21 @@ testsnetworkdir=@CEYLAN_TEST_DIR@/network
 
 
 testsnetwork_PROGRAMS = \
-	testCeylanClientStream                 \
-	testCeylanIPAddressvFour               \
-	testCeylanMultiplexedServerStream      \
-	testCeylanNetwork                      \
-	testCeylanSequentialServerStream
+	testCeylanClientStream.exe                 \
+	testCeylanIPAddressvFour.exe               \
+	testCeylanMultiplexedServerStream.exe      \
+	testCeylanNetwork.exe                      \
+	testCeylanSequentialServerStream.exe
 
 
-testCeylanClientStream_SOURCES            = testCeylanClientStream.cc
-testCeylanIPAddressvFour_SOURCES          = testCeylanIPAddressvFour.cc
-testCeylanMultiplexedServerStream_SOURCES = testCeylanMultiplexedServerStream.cc
-testCeylanNetwork_SOURCES                 = testCeylanNetwork.cc
-testCeylanSequentialServerStream_SOURCES  = testCeylanSequentialServerStream.cc
+testCeylanClientStream_exe_SOURCES            = testCeylanClientStream.cc
+
+testCeylanIPAddressvFour_exe_SOURCES          = testCeylanIPAddressvFour.cc
+
+testCeylanMultiplexedServerStream_exe_SOURCES = \
+	testCeylanMultiplexedServerStream.cc
+	
+testCeylanNetwork_exe_SOURCES                 = testCeylanNetwork.cc
+
+testCeylanSequentialServerStream_exe_SOURCES  = \
+	testCeylanSequentialServerStream.cc
