@@ -34,8 +34,10 @@ namespace Ceylan
 	} ;
 
 
+
 	// Forward-declaration.
 	template <typename Content>	class Tree ;
+
 
 
 	/**
@@ -197,7 +199,8 @@ namespace Ceylan
 			 * @throw TreeException if the visit failed.
 			 *
 			 */
-			virtual void traverseBreadthFirst( TreeVisitor<Content> & treeVisitor,
+			virtual void traverseBreadthFirst( 
+				TreeVisitor<Content> & treeVisitor,
 				bool visitContent = true ) throw( TreeException ) ;
 
 
@@ -213,6 +216,7 @@ namespace Ceylan
 			 */
 			 virtual const std::string toString( 
 			 	Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
+
 
 
 		protected:
@@ -300,8 +304,8 @@ namespace Ceylan
 		if ( _content != 0 )
 			delete _content ;
 
-		for ( SubTreeList::iterator it =
-			_sons.begin(); it != _sons.end(); it++ )
+		for ( typename SubTreeList::iterator it = _sons.begin(); 
+			it != _sons.end(); it++ )
 		{
 			delete (*it) ;
 		}
@@ -324,7 +328,7 @@ namespace Ceylan
 		throw( Ceylan::TreeException )
 	{
 		
-		for ( SubTreeList::const_iterator it = _sons.begin();
+		for ( typename SubTreeList::const_iterator it = _sons.begin();
 				it != _sons.end(); it++ )
 			if ( *it == &subtree )
 				throw Ceylan::TreeException( "Tree<Content>::addSon : "
@@ -342,7 +346,7 @@ namespace Ceylan
 	{
 	
 		// First recurse :
-		for ( SubTreeList::iterator it = _sons.begin();
+		for ( typename SubTreeList::iterator it = _sons.begin();
 				it != _sons.end(); it++ )
 			(*it)->traverseDepthFirst( treeVisitor, visitContent ) ;
 
@@ -356,8 +360,9 @@ namespace Ceylan
 
 
 	template <typename Content>
-	void Tree<Content>::traverseBreadthFirst( TreeVisitor<Content> & treeVisitor,
-		bool visitContent ) throw( TreeException )
+	void Tree<Content>::traverseBreadthFirst( 
+			TreeVisitor<Content> & treeVisitor,	bool visitContent ) 
+		throw( TreeException )
 	{
 	
 		// Apply :
@@ -367,7 +372,7 @@ namespace Ceylan
 			treeVisitor.visit( *_content ) ;
 
 		// Then recurse :
-		for ( SubTreeList::iterator it = _sons.begin();
+		for ( typename SubTreeList::iterator it = _sons.begin();
 				it != _sons.end(); it++ )
 			(*it)->traverseBreadthFirst( treeVisitor, visitContent ) ;
 
@@ -394,7 +399,7 @@ namespace Ceylan
 
 		std::list<std::string> subtrees ;
 
-		for ( SubTreeList::const_iterator it =
+		for ( typename SubTreeList::const_iterator it =
 				_sons.begin(); it != _sons.end(); it++ )
 		{
 			subtrees.push_back( (*it)->toString( level ) ) ;
