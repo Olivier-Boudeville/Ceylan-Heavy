@@ -71,9 +71,22 @@ class MyTestMultiLwMarshalledServer :
 			LogPlug::info( "MyTestMultiLwMarshalledServer::handleConnection : "
 				"will read from connection " + connection.toString() ) ;
 
-			if ( _marshaller == 0 )
-				_marshaller = new Middleware::LightWeightMarshaller( connection, 
-					/* no buffer wanted */ 0 ) ;
+			
+			/**
+			 * Not really proper design : a marshaller is created each time
+			 * a connection has available data !
+			 *
+			 * What should be done is a connection-tracking, so that one and
+			 * only one marshaller is associated with each selected connection,
+			 * i.e. an AnonymousProtocolAwareStreamSocket should be used here.
+			 *
+			 * @see testCeylanMultiLwProtocolServer that implements that and
+			 * more.
+			 *
+			 *
+			 */
+			_marshaller = new Middleware::LightWeightMarshaller( 
+					connection, /* no buffer wanted */ 0 ) ;
 
 			if ( ! _batch )
 			{ 
@@ -94,6 +107,7 @@ class MyTestMultiLwMarshalledServer :
 							
 				cout << endl ;
 				_marshaller->encodeUint8( '+' ) ;
+				_marshaller->encodeUint8( 0 ) ;				
 						
 				// Connection terminated according to protocol :
 				return false ;
@@ -108,6 +122,7 @@ class MyTestMultiLwMarshalledServer :
 					
 				cout << endl ;
 				_marshaller->encodeUint8( '+' ) ;				
+				_marshaller->encodeUint8( 0 ) ;				
 
 				requestToStop() ;
 
