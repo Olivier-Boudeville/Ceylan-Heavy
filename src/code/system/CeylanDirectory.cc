@@ -17,23 +17,23 @@
 extern "C"
 {
 
-#if CEYLAN_USES_UNISTD_H
+#ifdef CEYLAN_USES_UNISTD_H
 #include <unistd.h>
 #endif // CEYLAN_USES_UNISTD_H
 
-#if CEYLAN_USES_DIRENT_H
+#ifdef CEYLAN_USES_DIRENT_H
 #include <dirent.h>
 #endif // CEYLAN_USES_DIRENT_H
 
-#if CEYLAN_USES_SYS_TYPES_H
+#ifdef CEYLAN_USES_SYS_TYPES_H
 #include <sys/types.h>         // for S_IRWXU
 #endif // CEYLAN_USES_SYS_TYPES_H
 
-#if CEYLAN_USES_SYS_STAT_H
+#ifdef CEYLAN_USES_SYS_STAT_H
 #include <sys/stat.h>          // for S_ISDIR, stat, etc.
 #endif // CEYLAN_USES_SYS_STAT_H
 
-#if CEYLAN_USES_DIRECT_H
+#ifdef CEYLAN_USES_DIRECT_H
 #include <direct.h>            // for _mkdir
 #endif // CEYLAN_USES_DIRECT_H
 
@@ -561,11 +561,12 @@ void Directory::ChangeWorkingDirectory( const string & newWorkingDirectory )
 			"not supported on this platform" ) ;
 
 #endif // CEYLAN_USES__CHDIR
+
+#endif // CEYLAN_USES_CHDIR
+
 		throw DirectoryException( "Ceylan::Directory::ChangeWorkingDirectory : "
 			"unable to change current working directory to "
 			+ newWorkingDirectory + " : " + explainError() ) ;
-
-#endif // CEYLAN_USES_CHDIR
 
 }
 
