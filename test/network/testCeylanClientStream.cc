@@ -34,9 +34,10 @@ class MyTestStreamClient : public Ceylan::Network::ClientStreamSocket
 	public:
 	
 	
-		MyTestStreamClient( bool interactiveMode ): 
+		MyTestStreamClient( bool interactiveMode, bool keepServerAlive ): 
 			ClientStreamSocket(),
-			_interactiveMode( interactiveMode )
+			_interactiveMode( interactiveMode ),
+			_keepServerAlive( keepServerAlive )
 		{
 		
 			LogPlug::info( "MyTestStreamClient created : "
@@ -47,6 +48,7 @@ class MyTestStreamClient : public Ceylan::Network::ClientStreamSocket
 
 		void connected() throw( ClientStreamSocketException )
 		{
+		
 			
 			LogPlug::info( "Client connected ! New state is : "
 				+ toString() ) ;
@@ -79,7 +81,13 @@ class MyTestStreamClient : public Ceylan::Network::ClientStreamSocket
 			{
 			
 				string toSend = "This is a test line from client, "
-					"stopping connection now ! Q\n" ;
+					"stopping connection now ! " ;
+					
+				if ( _keepServerAlive )
+					toSend += "X" ;
+				else	
+					toSend += "Q" ;
+						
 				
 				bool beSlow = false ;
 				
@@ -130,6 +138,13 @@ class MyTestStreamClient : public Ceylan::Network::ClientStreamSocket
 		/// Tells whether the user is expected to type messages. 
 		bool _interactiveMode ;
 		
+		
+		/**
+		 * Tells whether the client should request the server to shutdown
+		 * after connection (Q is sent) or to stay alive (X is sent).
+		 *
+		 */
+		bool _keepServerAlive ;
 
 } ;
 
@@ -172,7 +187,8 @@ int main( int argc, char * argv[] )
 		std::string executableName ;
 		std::list<std::string> options ;
 		
-		bool interactiveMode = false ;
+		bool interactiveMode     = false ;
+		bool keepServerAliveMode = false ;
 		
 		Ceylan::parseCommandLineOptions( executableName, options, argc, argv ) ;
 	
@@ -200,6 +216,12 @@ int main( int argc, char * argv[] )
 				interactiveMode = true ;
 				tokenEaten = true ;
 			} else		
+			if ( token == "--keep-alive" )
+			{
+				LogPlug::info( "Running in keep-alive mode." ) ;
+				keepServerAliveMode = true ;
+				tokenEaten = true ;
+			} else		
 			if ( token == "--server" )
 			{
 				targetServer = options.front() ;
@@ -223,7 +245,7 @@ int main( int argc, char * argv[] )
 		}
 	
 	
-		MyTestStreamClient myClient( interactiveMode ) ;
+		MyTestStreamClient myClient( interactiveMode, keepServerAliveMode ) ;
 
 	
 		if ( targetServer.empty() )
