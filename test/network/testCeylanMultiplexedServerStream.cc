@@ -113,7 +113,7 @@ class MyTestMultiplexedStreamServer :
 			
 				LogPlug::debug( 
 					"MyTestMultiplexedStreamServer::handleConnection : "
-					"received 'X', stopping server." ) ;
+					"received 'Q', stopping server." ) ;
 					
 				cout << endl ;
 				connection.write( "+", 2 ) ;
