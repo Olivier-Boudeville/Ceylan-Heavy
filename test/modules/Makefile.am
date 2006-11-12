@@ -5,17 +5,17 @@ testsmodulesdir=@CEYLAN_TEST_DIR@/modules
 
 
 testsmodules_PROGRAMS = \
-	testCeylanFeatures \
-	testCeylanModule   \
-	testCeylanPlugin
+	testCeylanFeatures.exe \
+	testCeylanModule.exe   \
+	testCeylanPlugin.exe
 
 
-testCeylanFeatures_SOURCES = testCeylanFeatures.cc
-testCeylanModule_SOURCES   = testCeylanModule.cc
+testCeylanFeatures_exe_SOURCES = testCeylanFeatures.cc
+testCeylanModule_exe_SOURCES   = testCeylanModule.cc
 
 INCLUDES = $(LTDLINCL)
 
-testCeylanPlugin_SOURCES   = testCeylanPlugin.cc
+testCeylanPlugin_exe_SOURCES   = testCeylanPlugin.cc
 
 
 # If symbols from your executable are needed to satisfy unresolved 
