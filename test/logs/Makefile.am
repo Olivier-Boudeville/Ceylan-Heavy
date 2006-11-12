@@ -5,33 +5,49 @@ testslogsdir=@CEYLAN_TEST_DIR@/logs
 
 
 testslogs_PROGRAMS = \
-	testCeylanChannel                         \
-	testCeylanFullLogSystem                   \
-	testCeylanLogAggregatorHTML               \
-	testCeylanLogAggregatorRaw                \
-	testCeylanLogAggregatorRawNonImmediate    \
-	testCeylanLogHolder                       \
-	testCeylanLogMessage                      \
-	testCeylanLogPlug                         \
-	testCeylanLogPlugClassical                \
-	testCeylanLogPlugHTML                     \
-	testCeylanLogPlugUnderStress              \
-	testCeylanLogSource                       \
-	testCeylanLogTransportListenerRaw
+	testCeylanChannel.exe                         \
+	testCeylanFullLogSystem.exe                   \
+	testCeylanLogAggregatorHTML.exe               \
+	testCeylanLogAggregatorRaw.exe                \
+	testCeylanLogAggregatorRawNonImmediate.exe    \
+	testCeylanLogHolder.exe                       \
+	testCeylanLogMessage.exe                      \
+	testCeylanLogPlug.exe                         \
+	testCeylanLogPlugClassical.exe                \
+	testCeylanLogPlugHTML.exe                     \
+	testCeylanLogPlugUnderStress.exe              \
+	testCeylanLogSource.exe                       \
+	testCeylanLogTransportListenerRaw.exe
 
 
-testCeylanChannel_SOURCES                      = testCeylanChannel.cc
-testCeylanFullLogSystem_SOURCES                = testCeylanFullLogSystem.cc
-testCeylanLogAggregatorHTML_SOURCES            = testCeylanLogAggregatorHTML.cc
-testCeylanLogAggregatorRaw_SOURCES             = testCeylanLogAggregatorRaw.cc
-testCeylanLogAggregatorRawNonImmediate_SOURCES = \
+testCeylanChannel_exe_SOURCES                      = testCeylanChannel.cc
+
+testCeylanFullLogSystem_exe_SOURCES                = testCeylanFullLogSystem.cc
+
+testCeylanLogAggregatorHTML_exe_SOURCES            = \
+	testCeylanLogAggregatorHTML.cc
+	
+testCeylanLogAggregatorRaw_exe_SOURCES             = \
+	testCeylanLogAggregatorRaw.cc
+	
+testCeylanLogAggregatorRawNonImmediate_exe_SOURCES = \
 	testCeylanLogAggregatorRawNonImmediate.cc
-testCeylanLogHolder_SOURCES                    = testCeylanLogHolder.cc
-testCeylanLogMessage_SOURCES                   = testCeylanLogMessage.cc
-testCeylanLogPlug_SOURCES                      = testCeylanLogPlug.cc
-testCeylanLogPlugClassical_SOURCES             = testCeylanLogPlugClassical.cc
-testCeylanLogPlugHTML_SOURCES                  = testCeylanLogPlugHTML.cc
-testCeylanLogPlugUnderStress_SOURCES           = testCeylanLogPlugUnderStress.cc
-testCeylanLogSource_SOURCES                    = testCeylanLogSource.cc
-testCeylanLogTransportListenerRaw_SOURCES      = \
+	
+testCeylanLogHolder_exe_SOURCES                    = testCeylanLogHolder.cc
+
+testCeylanLogMessage_exe_SOURCES                   = testCeylanLogMessage.cc
+
+testCeylanLogPlug_exe_SOURCES                      = testCeylanLogPlug.cc
+
+testCeylanLogPlugClassical_exe_SOURCES             = \
+	testCeylanLogPlugClassical.cc
+	
+testCeylanLogPlugHTML_exe_SOURCES                  = testCeylanLogPlugHTML.cc
+
+testCeylanLogPlugUnderStress_exe_SOURCES           = \
+	testCeylanLogPlugUnderStress.cc
+	
+testCeylanLogSource_exe_SOURCES                    = testCeylanLogSource.cc
+
+testCeylanLogTransportListenerRaw_exe_SOURCES      = \
 	testCeylanLogTransportListenerRaw.cc
