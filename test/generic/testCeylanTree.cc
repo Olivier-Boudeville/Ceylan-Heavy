@@ -5,12 +5,14 @@
 #include <string>
 using std::string ;
 
+
 using namespace Ceylan ;
 using namespace Ceylan::Log ;
 
 
+
 /// Test content, eligible for a tree, that contains a simple string.
-class TestTreeStringContent : Ceylan::TextDisplayable
+class TestTreeStringContent : public Ceylan::TextDisplayable
 {
 	
 	public:
@@ -22,9 +24,15 @@ class TestTreeStringContent : Ceylan::TextDisplayable
 
 		}
 		
-
-			const std::string toString( 
-				Ceylan::VerbosityLevels level = Ceylan::high ) const throw()
+		
+		virtual ~TestTreeStringContent() throw()
+		{
+		
+		}
+		
+		
+		const std::string toString( 
+			Ceylan::VerbosityLevels level = Ceylan::high ) const throw()
 		{
 			return "'" + _content + "'" ;
 		}
@@ -34,13 +42,16 @@ class TestTreeStringContent : Ceylan::TextDisplayable
 
 		std::string _content ;
 
+
 } ;
+
 
 
 class TestTreeVisitor : public Ceylan::TreeVisitor<TestTreeStringContent>
 {
 	
 	public:
+
 
 		TestTreeVisitor() throw() 
 		{
@@ -64,8 +75,10 @@ class TestTreeVisitor : public Ceylan::TreeVisitor<TestTreeStringContent>
 				"traversing " + content.toString() ) ;
 
 		}
+		
 
 } ;
+
 
 
 /**
