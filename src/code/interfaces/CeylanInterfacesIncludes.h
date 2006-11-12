@@ -31,6 +31,8 @@
 #include "CeylanTextDisplayable.h"
 #include "CeylanTextIdentifier.h"
 #include "CeylanView.h"
+#include "CeylanVisitable.h"
+#include "CeylanVisitor.h"
 
 
 #endif // CEYLAN_INTERFACES_INCLUDES_H_
