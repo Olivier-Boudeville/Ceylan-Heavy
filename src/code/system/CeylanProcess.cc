@@ -70,6 +70,16 @@ list<string> Process::_ArgumentList ;
 bool Process::_Saved = false ;
 
 
+/* 
+ * Fork is the function that implements subprocesses on Unix. 
+ * It does not exist on MS-Windows, and has to be replaced by a series of
+ * different API calls, such as spawn or CreateProcess. 
+ *
+ * @see http://msdn.microsoft.com/library/en-us/dnucmg/html/UCMGch09.asp
+ *
+ */
+
+
 
 ProcessException::ProcessException( const string message ) throw() :
 	RunnableException( message )
