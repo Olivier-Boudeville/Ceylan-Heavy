@@ -5,17 +5,17 @@ testsmodulesdir=@CEYLAN_TEST_DIR@/modules
 
 
 testsmodules_PROGRAMS = \
-	testCeylanFeatures.exe \
-	testCeylanModule.exe   \
-	testCeylanPlugin.exe
+	testCeylanFeatures.exe   \
+	testCeylanModule.exe     \
+	testCeylanPlugin.exe     \
+	testCeylanXMLParser.exe
 
-
-testCeylanFeatures_exe_SOURCES = testCeylanFeatures.cc
-testCeylanModule_exe_SOURCES   = testCeylanModule.cc
+testCeylanFeatures_exe_SOURCES    = testCeylanFeatures.cc
+testCeylanModule_exe_SOURCES      = testCeylanModule.cc
 
 INCLUDES = $(LTDLINCL)
 
-testCeylanPlugin_exe_SOURCES   = testCeylanPlugin.cc
+testCeylanPlugin_exe_SOURCES      = testCeylanPlugin.cc
 
 
 # If symbols from your executable are needed to satisfy unresolved 
@@ -40,3 +40,8 @@ ceylan_test_unknown_plugin_la_LDFLAGS = -no-undefined -module -avoid-version
 # The unknown plugin must be in the same directory as the test loading it
 # to be easily found :
 testsmodules_LTLIBRARIES = ceylan-test-plugin.la ceylan-test-unknown-plugin.la
+
+
+testCeylanXMLParser_exe_SOURCES   = testCeylanXMLParser.cc
+
+
