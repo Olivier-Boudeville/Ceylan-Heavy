@@ -28,9 +28,10 @@ client_test_exec="${TEST_ROOT}/$m/$m-${client_test_name}.exe"
 
 else
 
-sequential_server_test_exec="${TEST_ROOT}/$m/${sequential_server_test_name}"
-multiplexed_server_test_exec="${TEST_ROOT}/$m/${multiplexed_server_test_name}"
-client_test_exec="${TEST_ROOT}/$m/${client_test_name}"
+sequential_server_test_exec="${TEST_ROOT}/$m/${sequential_server_test_name}.exe"
+multiplexed_server_test_exec="${TEST_ROOT}/$m/${multiplexed_server_test_name}.exe"
+client_test_exec="${TEST_ROOT}/$m/${client_test_name}.exe"
+
 fi
 
 
