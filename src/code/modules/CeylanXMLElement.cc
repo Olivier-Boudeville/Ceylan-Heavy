@@ -2,7 +2,7 @@
 
 #include "CeylanInputStream.h"    // for InputStream
 #include "CeylanOutputStream.h"   // for OutputStream
-
+#include "CeylanXMLVisitor.h"     // for (XML) Visitor
 
 
 using namespace Ceylan ;
@@ -13,6 +13,13 @@ using std::map ;
 
 
 
+/*
+ * To add in future releases, if necessary :
+ *  XMLBinary, with Ceylan::Byte * _data and Ceylan::Uint32 _size
+ *
+ */
+ 
+ 
 // Exception section.
 
 
@@ -46,6 +53,7 @@ XMLElement::~XMLElement() throw()
 
 
 
+
 // XMLMarkup section.
 
 
@@ -66,6 +74,22 @@ XMLMarkup::XMLMarkup( const std::string & name ) throw():
 XMLMarkup::~XMLMarkup() throw()
 {
 
+}
+
+
+string XMLMarkup::getMarkupName() const throw()
+{
+
+	return _name ;
+	
+}
+
+
+string XMLMarkup::getClosingMarkup() const throw()
+{
+
+	return "</" + _name + '>' ;
+	
 }
 
 
@@ -110,6 +134,20 @@ void XMLMarkup::loadFrom( System::InputStream & input )
 
 }
 
+
+void XMLMarkup::accept( Visitor & visitor ) throw( VisitException )
+{
+
+	XMLVisitor * actualVisitor = dynamic_cast<XMLVisitor *>( & visitor ) ;
+	
+	if ( actualVisitor == 0 )
+		throw VisitException( "XMLMarkup::accept failed : "
+			"specified visitor (" + visitor.toString() 
+			+ ") is not a XML-enabled visitor." ) ;
+			
+	actualVisitor->visit( *this ) ;
+	
+}
 
 const string XMLMarkup::toString( Ceylan::VerbosityLevels level ) const throw()
 {
@@ -175,6 +213,21 @@ void XMLText::loadFrom( System::InputStream & input )
 	throw( SerializationException )
 {
 
+}
+
+
+void XMLText::accept( Visitor & visitor ) throw( VisitException )
+{
+
+	XMLVisitor * actualVisitor = dynamic_cast<XMLVisitor *>( & visitor ) ;
+	
+	if ( actualVisitor == 0 )
+		throw VisitException( "XMLMarkup::accept failed : "
+			"specified visitor (" + visitor.toString() 
+			+ ") is not a XML-enabled visitor." ) ;
+			
+	actualVisitor->visit( *this ) ;
+	
 }
 
 
