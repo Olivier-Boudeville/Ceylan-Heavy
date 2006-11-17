@@ -222,7 +222,7 @@ void XMLText::accept( Visitor & visitor ) throw( VisitException )
 	XMLVisitor * actualVisitor = dynamic_cast<XMLVisitor *>( & visitor ) ;
 	
 	if ( actualVisitor == 0 )
-		throw VisitException( "XMLMarkup::accept failed : "
+		throw VisitException( "XMLText::accept failed : "
 			"specified visitor (" + visitor.toString() 
 			+ ") is not a XML-enabled visitor." ) ;
 			
