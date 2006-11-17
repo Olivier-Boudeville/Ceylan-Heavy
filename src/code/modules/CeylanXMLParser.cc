@@ -2,9 +2,13 @@
 
 #include "CeylanTree.h"         // for Tree
 #include "CeylanXMLElement.h"   // for XMLElement
+#include "CeylanFile.h"         // for File
+#include "CeylanXMLVisitor.h"   // for XMLVisitor types
+
 
 
 using namespace Ceylan ;
+using namespace Ceylan::System ;
 using namespace Ceylan::XML ;
 
 using std::string ;
@@ -28,10 +32,19 @@ XMLParserException::~XMLParserException() throw()
 
 
 
+
+// XMLParser section.
+
+
+
+std::string XMLParser::DefaultEncoding = "ISO-8859-15" ;
+
+
+
 XMLParser::XMLParser( const std::string & filename ) throw() :
 	_filename( filename ),
 	_parsedTree( 0 ),
-	_markupStack()
+	_encoding( DefaultEncoding )
 {
 
 }
@@ -74,6 +87,37 @@ void XMLParser::setXMLTree( XMLTree & newTree ) throw()
 	
 	_parsedTree = &newTree ;
 		
+}
+
+
+void XMLParser::saveToFile() const throw( XMLParserException )
+{
+
+
+	if ( _parsedTree == 0 )
+		throw XMLParserException( "XMLParser::saveToFile : "
+			"no parsed tree to serialize." ) ;
+			
+
+	File xmlFile( _filename ) ; 
+
+	// Prepare header : 
+	string header = "<?xml version=\"1.0\" encoding=\""
+		+ _encoding + "\"?>\n" ;
+		
+	xmlFile.write( header ) ;
+	
+	
+	// Then 'SavingVisitor'.
+	
+	XMLSavingVisitor myVisitor( xmlFile ) ;
+	
+	//myVisitor.visit( *_parsedTree ) ;
+	_parsedTree->accept( myVisitor ) ;
+	
+	xmlFile.close() ;
+	
+	
 }
 
 
