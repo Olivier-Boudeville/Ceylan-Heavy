@@ -2,15 +2,14 @@
 #define CEYLAN_VISITABLE_H_
 
 
-#include "CeylanTextDisplayable.h"  // for TextDisplayable
 #include "CeylanException.h"        // for Ceylan::Exception
-#include "CeylanVisitor.h"          // for Visitor definition
 
 #include <string>
 
 
 namespace Ceylan
 {
+
 
 
 	/**
@@ -23,12 +22,17 @@ namespace Ceylan
 		public:
 		
 			explicit VisitException( const std::string & reason ) throw() ;
-	
+			
+			virtual ~VisitException() throw() ;
+			
 	} ;
+
+
 
 
 	// A Visitable is visited by Visitor instances.
 	class Visitor ;
+
 
 
 	/**
@@ -38,7 +42,7 @@ namespace Ceylan
 	 * @see http://en.wikipedia.org/wiki/Visitor_pattern
 	 *
 	 */
-	class CEYLAN_DLL Visitable : public Ceylan::TextDisplayable
+	class CEYLAN_DLL Visitable
 	{
 		
 		public:
@@ -47,33 +51,30 @@ namespace Ceylan
 			/// Default empty constructor.
 			Visitable() throw() ;
 
+
+			/// Virtual destructor.
+			virtual ~Visitable() throw() ;
+
+
 			/**
 			 * Allows given visitor to visit this object, thanks to a 
 			 * callback : 'visitor.visit( *this ) ;'
 			 *
-			 */
-			void accept( Visitor & visitor ) throw( VisitException ) ;
-
-
-
-			/**
-			 * Returns a user-friendly description of the state of this object.
-			 *
-			 * @param level the requested verbosity level.
-			 *
-			 * @note Text output format is determined from overall settings.
-			 *
-			 * @see TextDisplayable
+			 * @note This method cannot be implemented here, as the visitor 
+			 * must declare its 'visit' method which must accept a specific 
+			 * datatype, not a generic one such as Visitable. 
+			 * Otherwise, there would be ambiguous calls. 
 			 *
 			 */
-			 virtual const std::string toString( 
-			 	Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
+			virtual void accept( Visitor & visitor ) 
+				throw( VisitException ) = 0 ;
 
 
-		protected:
+
 
 
 		private:
+
 
 			/**
 			 * Copy constructor made private to ensure that it will never be 
@@ -95,6 +96,7 @@ namespace Ceylan
 			 * 
 			 */			 
 			Visitable & operator = ( const Visitable & source ) throw() ;
+
 
 	} ;
 
