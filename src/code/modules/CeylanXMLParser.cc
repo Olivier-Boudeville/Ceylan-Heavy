@@ -112,7 +112,6 @@ void XMLParser::saveToFile() const throw( XMLParserException )
 	
 	XMLSavingVisitor myVisitor( xmlFile ) ;
 	
-	//myVisitor.visit( *_parsedTree ) ;
 	_parsedTree->accept( myVisitor ) ;
 	
 	xmlFile.close() ;
