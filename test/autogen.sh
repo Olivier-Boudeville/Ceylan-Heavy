@@ -186,6 +186,9 @@ execute()
 			echo "Error while executing '$*', see $log_filename" 1>&2
 		else
 			echo "Error while executing '$*'" 1>&2
+			if [ "$1" == "./configure" ]; then
+				echo -e "\nNote : check the following log :" test/config.log	
+  			fi
 		fi
 			
 		exit $RES
