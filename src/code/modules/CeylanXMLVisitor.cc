@@ -2,6 +2,8 @@
 
 #include "CeylanOutputStream.h"     // for OutputStream
 #include "CeylanXMLElement.h"       // for XLMMarkup, etc.
+#include "CeylanOperators.h"        // for toString
+#include "CeylanLogPlug.h"          // for LogPlug
 
 
 
@@ -63,6 +65,9 @@ const string XMLVisitor::toString( Ceylan::VerbosityLevels level )
 // XMLSavingVisitor section.
 
 
+string XMLSavingVisitor::OffsetForMarkup = "\t" ;
+
+
 XMLSavingVisitor::XMLSavingVisitor( System::OutputStream & output ) throw():
 	_output( &output )
 {
@@ -81,6 +86,7 @@ XMLSavingVisitor::~XMLSavingVisitor() throw()
 void XMLSavingVisitor::incrementHeight() throw()
 {
 
+	//Log::LogPlug::trace( "XMLSavingVisitor::incrementHeight" ) ;
 
 	/*
 	 * Does nothing, as the information is already stored in the markup stack,
@@ -101,30 +107,97 @@ Ceylan::Height XMLSavingVisitor::getHeight() const throw()
 void XMLSavingVisitor::decrementHeight() throw()
 {
 	
+	//Log::LogPlug::trace( "XMLSavingVisitor::decrementHeight" ) ;
+
+	ClosingMarkup popped = _markupsToClose.top() ;
+	_markupsToClose.pop() ;
+	
+	if ( popped.empty() )
+		return ;
+		
 	Height offset = getHeight() ;
 	
 	for ( Size s = 0; s < offset; s++ )
-		_output->write( /* no char accepted */ "\t" ) ;
+		_output->write( OffsetForMarkup ) ;
 	
-	_output->write( _markupsToClose.top() ) ;
+	_output->write( popped + '\n') ;
 
-	_markupsToClose.pop() ;
 	
 }
 
 
 void XMLSavingVisitor::visit( const XMLMarkup & xmlMarkup ) 
-					throw( VisitException )
+	throw( VisitException )
 {
 	
+	/*
+	Log::LogPlug::trace( "XMLSavingVisitor::visiting markup " 
+		+ xmlMarkup.toString() ) ;
+	*/
+	
+	Height offset = getHeight() ;
+
 	_markupsToClose.push( xmlMarkup.getClosingMarkup() ) ;
 
-	Height offset = _markupsToClose.size() ;
 		
 	for ( Size s = 0; s < offset; s++ )
-		_output->write( /* no char accepted */ "\t" ) ;
+		_output->write( OffsetForMarkup ) ;
 	
-	_output->write( xmlMarkup.toString() ) ;
+	_output->write( xmlMarkup.toString() + '\n' ) ;
 	
 		
-}					
+}	
+
+
+void XMLSavingVisitor::visit( const XMLText & xmlText ) 
+	throw( VisitException )
+{
+	
+	/*
+	Log::LogPlug::trace( "XMLSavingVisitor::visiting text " 
+		+ xmlText.toString() ) ;
+	*/
+
+	Height offset = getHeight() ;
+
+	_markupsToClose.push( "" ) ;
+
+		
+	for ( Size s = 0; s < offset; s++ )
+		_output->write( OffsetForMarkup ) ;
+	
+	_output->write( xmlText.toString() + '\n' ) ;
+	
+		
+}	
+
+				
+const string XMLSavingVisitor::toString( Ceylan::VerbosityLevels level ) 
+	const throw()
+{
+
+	string res = "XML saving visitor, " ;
+	
+	if ( _output != 0 )
+		res += "using as output stream " + _output->toString( level ) ;
+	else
+		res += " with no specific output stream registered" ;
+		
+	if ( level == Ceylan::low )
+		return res ;
+	
+	res += ". Markup stack " ;
+	
+	if ( _markupsToClose.empty() )
+	{
+		res += "is empty" ; 
+	}
+	else
+	{
+		res += "has " + Ceylan::toString( _markupsToClose.size() )
+			+ " element(s)" ;
+	}
+		
+	return res ;
+
+}
