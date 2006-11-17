@@ -2,8 +2,10 @@
 #define CEYLAN_TREE_H_
 
 
-#include "CeylanVisitable.h"        // for Visitable
+#include "CeylanVisitable.h"        // for inheritance
+#include "CeylanVisitor.h"          // for inheritance
 #include "CeylanException.h"        // for Ceylan::Exception
+#include "CeylanLogPlug.h"          // for LogPlug
 #include "CeylanStringUtils.h"      // for formatStringList
 
 
@@ -80,6 +82,100 @@ namespace Ceylan
 	}
 
 
+	/// The height of a node, measured from its root.
+	typedef Ceylan::Uint32 Height ;
+
+
+	/**
+	 * Tree-dedicated visitor, which may use the distance from the current
+	 * node to the real root of the tree.
+	 *
+	 */
+	template <typename Content>
+	class /* CEYLAN_DLL */ TreeHeightAwareVisitor : public Ceylan::Visitor
+	{
+	
+		public:
+		
+		
+			
+			
+			
+			/**
+			 * Creates a tree visitor that knows the height of the visited
+			 * node.
+			 *
+			 */
+			explicit TreeHeightAwareVisitor() 
+				throw() ;
+
+
+			/// Virtual destructor.
+			virtual ~TreeHeightAwareVisitor() throw() ;
+
+
+
+			/// Returns current height.
+			virtual Height getHeight() const throw() = 0 ;
+
+
+			/// Increments current height.
+			virtual void incrementHeight() throw() = 0 ;
+			
+			/// Decrements current height.
+			virtual void decrementHeight() throw() = 0 ;
+			
+			
+			/** 
+			 * Action to perform when visiting a tree node.
+			 *
+			 * @param tree the tree node to visit.
+			 *
+			 * @note This declaration is commented out, so that multiple 
+			 * Content child classes can be visited : otherwise their visit
+			 * method would clash with this one, and hide it.
+			 *
+			 *
+			 
+			virtual void visit( Tree<Content> & tree ) 
+				throw( VisitException ) = 0 ;
+
+			 */
+
+
+			/**
+			 * Action to perform when visiting the content of a tree node.
+			 *
+			 * @note This declaration is commented out, so that multiple 
+			 * Content child classes can be visited : otherwise their visit
+			 * method would clash with this one, and hide it.
+			 *
+			 * 
+			 
+			virtual void visit( Content & content ) 
+				throw( VisitException ) = 0 ;
+			
+			 */
+			 
+			 
+	} ;
+	
+
+
+	template <typename Content>
+	TreeHeightAwareVisitor<Content>::TreeHeightAwareVisitor() throw()
+	{
+
+	}
+
+
+	template <typename Content>
+	TreeHeightAwareVisitor<Content>::~TreeHeightAwareVisitor() throw()
+	{
+
+	}
+
+
 	/**
 	 * Template defining generically trees, parametrized by a
 	 * content datatype (typename Content) : each tree node will
@@ -133,6 +229,60 @@ namespace Ceylan
 			 */
 			virtual ~Tree() throw() ;
 
+
+
+			/**
+			 * Allows given visitor to visit this object, thanks to a 
+			 * callback : 'visitor.visit( *this ) ;'
+			 *
+			 * Implements the Visitable interface.
+			 *
+			 * @throw VisitException if the operation failed, including if
+			 * the specified visitor is no a tree height-aware visitor.
+			 *
+			 */
+			virtual void accept( Visitor & visitor ) 
+				throw( VisitException ) ;
+
+
+
+			/**
+			 * Tells whether this tree node (i.e. the root of this tree) has
+			 * a content.
+			 *
+			 * @return true iff this node owns a content instance.
+			 *
+			 */
+			virtual bool hasContent() const throw() ;
+			
+			 
+			/**
+			 * Returns the content that this root node of the tree owns.
+			 *
+			 * @throw TreeException if no content is registered in this
+			 * node.
+			 *
+			 * @see hasContent
+			 *
+			 */ 
+			virtual Content & getContent() throw( TreeException ) ;  
+			 
+			 
+			/**
+			 * Sets a new content for this root node of the tree.
+			 *
+			 * @note The node takes ownership of the content, and any 
+			 * previously owned content is deallocated first.
+			 *
+			 * @throw TreeException if the operation failed.
+			 *
+			 * @see hasContent
+			 *
+			 */ 
+			virtual void setContent( Content & newContent ) 
+				throw( TreeException ) ;  
+			 
+			 
 
 			/**
 			 * Returns the list of sons (subtrees) of this tree.
@@ -288,6 +438,7 @@ namespace Ceylan
 	
 	}	
 
+
 	template <typename Content>
 	Tree<Content>::Tree( Content & content ) throw() :
 		_content( &content ),
@@ -323,6 +474,105 @@ namespace Ceylan
 	}
 
 
+	template <typename Content>
+	void Tree<Content>::accept( Visitor & visitor ) 
+		throw( VisitException )
+	{
+		
+		Ceylan::Log::LogPlug::trace( "Tree<Content>::accept" ) ;
+		
+		TreeHeightAwareVisitor<Content> * actualVisitor = 
+			dynamic_cast<TreeHeightAwareVisitor<Content> *>( &visitor ) ;
+			
+		if ( actualVisitor == 0 )
+			throw VisitException( "Tree<Content>::accept failed : "
+				"the visitor (" + visitor.toString() + ") is not a "
+				"TreeHeightAwareVisitor." ) ;
+				
+				
+		if ( _content != 0 )
+			_content->accept( *actualVisitor ) ;
+					
+		/*
+		 * When the height-aware visitor will visit a content that may
+		 * enclose other contents (ex : for XML, a XML markup), it will
+		 * call its incrementHeight method, which may push an information
+		 * that identifies this content, so that the next call to
+		 * decrementHeight will pop it and handle the closing (ex : add
+		 * the closing XML markup).
+		 *
+		 * That same information can be pushed on a stack directly when the
+		 * content is accepted (a few lines before), if what is pushed 
+		 * depends on the content.
+		 *
+		 * As it can only by popped later at the decrementHeight call, which
+		 * does not depend on the content and thus will pop it in all cases,
+		 * in the cases where nothing special is to be saved when height is
+		 * decremented, a blank element (ex : string) could be pushed on
+		 * that stack and ignored later when popped.
+		 *
+		 * This way each content can be visited only once, and with no special
+		 * behaviour towards the visitor, such as returning a special value.
+		 *
+		 * Note that a stack is useful as soon as we are in such recursive
+		 * patterns, as nested calls should not prevent from :
+		 *   - closing back what has be opened when going deeper in the tree, 
+		 * notably if the closing depends on the opened element 
+		 *	 - keeping track of the height, as some algorithm depends not only
+		 * on the last level, but also needs to global level they are in
+		 *
+		 * @see XMLVisitor for such cases.
+		 *
+		 */
+		 
+		actualVisitor->incrementHeight() ;
+
+		// Then recurse :
+		for ( typename SubTreeList::iterator it = _sons.begin();
+				it != _sons.end(); it++ )
+			(*it)->accept( *actualVisitor ) ;
+		
+		actualVisitor->decrementHeight() ;
+			
+	}
+	
+	
+	template <typename Content>
+	bool Tree<Content>::hasContent() const throw()
+	{
+	
+		return ( _content != 0 ) ;
+	
+	}
+			
+			 
+	template <typename Content>
+	Content & Tree<Content>::getContent() throw( TreeException )
+	{
+	
+		if ( _content == 0 )
+			throw TreeException( "Tree<Content>::getContent : "
+				"no available content to return." ) ;
+		
+		return *_content ;		
+	
+	}
+			 
+			 
+	template <typename Content>
+	void Tree<Content>::setContent( Content & newContent ) 
+		throw( TreeException )
+	{
+	
+		if ( _content != 0 )
+			delete _content ;
+	
+		_content = & newContent ;
+		
+	}
+	
+	
+	
 	template <typename Content>
 	void Tree<Content>::addSon( Tree<Content> & subtree ) 
 		throw( Ceylan::TreeException )
