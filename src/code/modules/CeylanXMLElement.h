@@ -2,8 +2,9 @@
 #define CEYLAN_XML_ELEMENT_H_
 
 
-#include "CeylanTextDisplayable.h"  // for inheritance
+#include "CeylanVisitable.h" 	    // for inheritance
 #include "CeylanSerializable.h"     // for inheritance
+#include "CeylanTextDisplayable.h"  // for inheritance
 #include "CeylanXML.h"              // for XML general operations
 
 
@@ -19,7 +20,6 @@ namespace Ceylan
 	namespace XML
 	{
 	
-
 
 		/**
 		 * Exception to be raised when an operation on an XML element 
@@ -47,7 +47,7 @@ namespace Ceylan
 		 *
 		 */
 		class CEYLAN_DLL XMLElement : public TextDisplayable, 
-			public Serializable
+			public Serializable, public Visitable
 		{
 
 
@@ -65,7 +65,13 @@ namespace Ceylan
 				virtual ~XMLElement() throw() ;
 
 
-
+				/*
+				 * The accept method, inherited from Visitable, remains 
+				 * pure virtual here.
+				 *
+				 */
+				 
+				 
 			private:
 			
 			
@@ -96,6 +102,10 @@ namespace Ceylan
 		
 		
 		
+		/// Various XML elements accept XML visitors.
+		class XMLVisitor ;
+		
+		
 		/**
 		 * Describes a XML markup.
 		 *
@@ -110,6 +120,14 @@ namespace Ceylan
 		{
 
 			public:
+
+
+				/// Name of an XML attribute.
+				typedef std::string AttributeName ;
+				
+				/// Value of an XML attribute.
+				typedef std::string AttributeValue ;
+
 
 
 				/**
@@ -132,6 +150,27 @@ namespace Ceylan
 
 
 				/**
+				 * Returns the markup name.
+				 *
+				 * @example if '<ul>' is an opening markup, then 'ul' is
+				 * the returned name.
+				 *
+				 */
+				virtual std::string getMarkupName() const throw() ; 
+
+
+				/**
+				 * Return the markup that closes the opening markup.
+				 *
+				 * @example if '<ul>' is an opening markup, then '</ul>' is
+				 * the closing one.
+				 *
+				 */
+				virtual std::string getClosingMarkup() const throw() ; 
+				
+				
+				 
+				/**
 				 * Returns whether this attribute, specified by its name, is
 				 * defined in this markup.
 				 *
@@ -141,7 +180,7 @@ namespace Ceylan
 				 * for this markup.
 				 *
 				 */
-				virtual bool hasAttribute( const std::string & name ) 
+				virtual bool hasAttribute( const AttributeName & name ) 
 					const throw() ;
 					
 					
@@ -155,8 +194,8 @@ namespace Ceylan
 				 * markup.
 				 *
 				 */
-				virtual std::string getAttribute( const std::string & name ) 
-					const throw() ;
+				virtual AttributeValue getAttribute( 
+					const AttributeName & name ) const throw() ;
 					
 				
 				/**
@@ -172,8 +211,8 @@ namespace Ceylan
 				 *
 				 *
 				 */
-				virtual void setAttribute( const std::string & name,
-					const std::string & value ) throw() ;
+				virtual void setAttribute( const AttributeName & name,
+					const AttributeValue & value ) throw() ;
 					
 					
 					
@@ -207,6 +246,19 @@ namespace Ceylan
 					throw( SerializationException ) ;
 
 
+				/**
+				 * Allows given visitor to visit this object, thanks to a 
+				 * callback : 'visitor.visit( *this ) ;'
+				 *
+				 * Implements the Visitable interface.
+				 *
+				 * @note The specified visitor must be a XML visitor, 
+				 * otherwise a VisitException is thrown.
+				 *
+				 */
+				virtual void accept( Visitor & visitor ) 
+					throw( VisitException ) ;
+
 
 				/**
 				 * Returns a user-friendly description of the state of this
@@ -238,7 +290,7 @@ namespace Ceylan
 				 *
 				 *
 				 */
-				std::map<std::string,std::string> _attributes ;
+				std::map<AttributeName,AttributeValue> _attributes ;
 
 
 
@@ -284,6 +336,7 @@ namespace Ceylan
 
 			public:
 
+						
 
 				/**
 				 * Creates an empty XML text.
@@ -302,6 +355,21 @@ namespace Ceylan
 				
 				/// Virtual destructor.
 				virtual ~XMLText() throw() ;
+
+
+	
+				/**
+				 * Allows given visitor to visit this object, thanks to a 
+				 * callback : 'visitor.visit( *this ) ;'
+				 *
+				 * Implements the Visitable interface.
+				 *
+				 * @note The specified visitor must be a XML visitor, 
+				 * otherwise a VisitException is thrown.
+				 *
+				 */
+				virtual void accept( Visitor & visitor ) 
+					throw( VisitException ) ;
 
 
 				
@@ -378,6 +446,7 @@ namespace Ceylan
 			
 
 			private:
+			
 			
 			
 				/**
