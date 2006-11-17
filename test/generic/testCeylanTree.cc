@@ -10,6 +10,52 @@ using namespace Ceylan ;
 using namespace Ceylan::Log ;
 
 
+class TestTreeStringContent ;
+
+
+class TestTreeVisitor : public Ceylan::TreeVisitor<TestTreeStringContent>
+{
+	
+	public:
+
+
+		TestTreeVisitor() throw() 
+		{
+
+		}
+
+
+		virtual ~TestTreeVisitor() throw() 
+		{
+
+		}
+
+
+		void visit( Tree<TestTreeStringContent> & tree ) throw( VisitException )
+		{
+			LogPlug::info( "TestTreeVisitor::visit( Tree<Content> ) : "
+				"traversing " + tree.toString() ) ;
+		}
+		
+		
+		void visit( TestTreeStringContent & content ) throw( VisitException )
+		{
+		
+			/*
+			 * Commented so that it avoids a double-dependence between
+			 * TestTreeVisitor and TestTreeStringContent !
+			 * 
+			 
+			LogPlug::info( "TestTreeVisitor::visit( Content ) : "
+				"traversing " + content.toString() ) ;
+				
+			*/
+		}
+		
+
+} ;
+
+
 
 /// Test content, eligible for a tree, that contains a simple string.
 class TestTreeStringContent : public Ceylan::TextDisplayable
@@ -31,51 +77,37 @@ class TestTreeStringContent : public Ceylan::TextDisplayable
 		}
 		
 		
+		virtual void accept( Visitor & visitor ) throw( VisitException )
+		{
+		
+			TestTreeVisitor * actualVisitor = 
+				dynamic_cast<TestTreeVisitor *>( & visitor ) ;
+	
+			if ( actualVisitor == 0 )
+				throw VisitException( "TestTreeStringContent::accept failed : "
+					"specified visitor (" + visitor.toString() 
+					+ ") is not a test tree-enabled visitor." ) ;
+			
+			actualVisitor->visit( *this ) ;
+			
+		}
+		
+		
 		const std::string toString( 
 			Ceylan::VerbosityLevels level = Ceylan::high ) const throw()
 		{
+		
 			return "'" + _content + "'" ;
+			
 		}
+
 
 
 	private:
+	
 
 		std::string _content ;
 
-
-} ;
-
-
-
-class TestTreeVisitor : public Ceylan::TreeVisitor<TestTreeStringContent>
-{
-	
-	public:
-
-
-		TestTreeVisitor() throw() 
-		{
-
-		}
-
-		virtual ~TestTreeVisitor() throw() 
-		{
-
-		}
-
-		void visit( Tree<TestTreeStringContent> & tree ) throw( VisitException )
-		{
-			LogPlug::info( "TestTreeVisitor::visit( Tree<Content> ) : "
-				"traversing " + tree.toString() ) ;
-		}
-		
-		void visit( TestTreeStringContent & content ) throw( VisitException )
-		{
-			LogPlug::info( "TestTreeVisitor::visit( Content ) : "
-				"traversing " + content.toString() ) ;
-
-		}
-		
 
 } ;
 
