@@ -22,8 +22,10 @@ MODULES_INTERFACES = \
 	CeylanPlugin.h                            \
 	CeylanXML.h                               \
 	CeylanXMLElement.h                        \
-	CeylanXMLParser.h
-
+	CeylanXMLParser.h                         \
+	CeylanXMLVisitor.h
+	
+	
 
 MODULES_IMPLEMENTATIONS = \
 	CeylanFeatures.cc                         \
@@ -31,6 +33,6 @@ MODULES_IMPLEMENTATIONS = \
 	CeylanPlugin.cc                           \
 	CeylanXML.cc                              \
 	CeylanXMLElement.cc                       \
-	CeylanXMLParser.cc
-
+	CeylanXMLParser.cc                        \
+	CeylanXMLVisitor.cc
 	
