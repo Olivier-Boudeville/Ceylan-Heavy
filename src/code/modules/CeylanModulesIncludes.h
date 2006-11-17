@@ -11,6 +11,7 @@
 #include "CeylanXML.h"
 #include "CeylanXMLElement.h"
 #include "CeylanXMLParser.h"
+#include "CeylanXMLVisitor.h"
 
 
 #endif // CEYLAN_MODULES_INCLUDES_H_
