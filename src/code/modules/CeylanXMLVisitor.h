@@ -263,6 +263,10 @@ namespace Ceylan
 			 			Ceylan::VerbosityLevels level = Ceylan::high ) 
 					const throw() ;
 		
+				
+				/// The offset for serialized XLM elements.
+				static std::string OffsetForMarkup ;
+				
 						
 				typedef std::string ClosingMarkup ;
 				
