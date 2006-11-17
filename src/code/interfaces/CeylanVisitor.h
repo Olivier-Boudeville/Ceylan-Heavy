@@ -4,7 +4,6 @@
 
 #include "CeylanTextDisplayable.h"  // for TextDisplayable
 #include "CeylanException.h"        // for Ceylan::Exception
-#include "CeylanVisitor.h"          // for Visitor definition
 
 #include <string>
 
@@ -30,7 +29,7 @@ namespace Ceylan
 	 *
 	 * @note This code is less meant for code reuse than for
 	 * didactic purpose, as seldom any generic code can be 
-	 * shared.
+	 * shared for visitors.
 	 *
 	 */
 	class CEYLAN_DLL Visitor : public Ceylan::TextDisplayable
@@ -46,9 +45,17 @@ namespace Ceylan
 			/**
 			 * Visits a concrete Visitable.
 			 *
-			 */
-			//void visit( MyFirstConcreteVisitable & concreteVisitable ) throw( VisitException ) ;
+			 * @note Should be declared on the actual visitor (ex : a 
+			 * XMLVisitor) as it must specify the actual visitables it can
+			 * visit (ex : XML markup, XML text, etc.), and not a more generic
+			 * type.
+			 *
+			 
+			virtual void visit( MyFirstConcreteVisitable & concreteVisitable ) 
+				throw( VisitException ) ;
 	
+			 */
+
 
 			/**
 			 * Returns a user-friendly description of the state of this object.
@@ -64,7 +71,7 @@ namespace Ceylan
 			 	Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
 
 
-		protected:
+
 
 
 		private:
@@ -79,7 +86,7 @@ namespace Ceylan
 			 * @note Made to avoid unwanted hidden clone of the Singleton.
 			 *
 			 */			 
-			Visitor( const Visitable & source ) throw() ;
+			Visitor( const Visitor & source ) throw() ;
 			
 			
 			/**
@@ -89,7 +96,8 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			Visitor & operator = ( const Visitable & source ) throw() ;
+			Visitor & operator = ( const Visitor & source ) throw() ;
+			
 
 	} ;
 
