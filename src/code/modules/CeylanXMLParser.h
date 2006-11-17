@@ -157,6 +157,11 @@ namespace Ceylan
 
 
 
+				/// Default XML encoding is ISO-8859-15 (Latin-1 with euro).
+				static std::string DefaultEncoding ;
+				
+				
+
 			protected:
 
 
@@ -170,12 +175,18 @@ namespace Ceylan
 
 				/// The tree corresponding to an XML document.
 				XMLTree * _parsedTree ;
-
-
-				/// The stack in which opening markups are stored.
-				std::stack<Ceylan::XML::XMLElement *> _markupStack ;
 			
 			
+				/**
+				 * The current encoding for the XML document.
+				 *
+				 * Example : ISO-8859-15.
+				 *
+				 */
+				std::string _encoding ;
+				
+				
+
 
 			private:
 
