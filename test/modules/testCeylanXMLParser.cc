@@ -41,7 +41,7 @@ int main( int argc, char * argv[] )
 			+ xmlFilename + "'." ) ;
 			
 		/*
-		 * The file content is :
+		 * The file content should be :
 		 
 <para width="100" height="200" color="brown">
 	<b city="London">Hello world !
@@ -71,7 +71,7 @@ int main( int argc, char * argv[] )
 			* new XMLParser::XMLTree( myFirstMarkup ) ;
 
 		XMLMarkup & mySecondMarkup = * new XMLMarkup( "b" ) ;	
-		mySecondMarkup.setAttribute( "city" , "London"   ) ;
+		mySecondMarkup.setAttribute( "city", "London" ) ;
 			
 		XMLParser::XMLTree & myBTree = 
 			*new XMLParser::XMLTree( mySecondMarkup ) ;
@@ -88,7 +88,7 @@ int main( int argc, char * argv[] )
 		myBTree.addSon( myFirstTextTree ) ;
 		
 		XMLMarkup & myThirdMarkup = * new XMLMarkup( "c" ) ;	
-		mySecondMarkup.setAttribute( "length" , "14.1"   ) ;
+		myThirdMarkup.setAttribute( "length", "14.1" ) ;
 
 		XMLParser::XMLTree & myCTree = 
 			*new XMLParser::XMLTree( myThirdMarkup ) ;
@@ -125,7 +125,12 @@ int main( int argc, char * argv[] )
 		LogPlug::info( "Parser recorded tree : " + myTestParser.toString() ) ;
 		
 		
+		// Storing the result in a XML file :
+		myTestParser.saveToFile() ;
+		
+		
 		LogPlug::info( "End of XML parser test." ) ;
+		
 		
 	}
 	
