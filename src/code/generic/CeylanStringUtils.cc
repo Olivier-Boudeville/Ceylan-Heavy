@@ -31,6 +31,7 @@ extern "C"
 
 using std::string ;
 using std::list ;
+using std::map ;
 
 using namespace Ceylan ;
 using namespace Ceylan::Log ;
@@ -200,6 +201,17 @@ bool Ceylan::isFigure( char targetChar ) throw()
 {
 
 	if ( ::isalpha( targetChar ) ) 
+		return true ;
+
+	return false ;
+
+}
+
+
+bool Ceylan::isAlphanumeric( char targetChar ) throw()
+{
+
+	if ( ::isalnum( targetChar ) ) 
 		return true ;
 
 	return false ;
@@ -660,11 +672,60 @@ string Ceylan::formatStringList( const list<string> & stringList,
 		
 		res = '\n' ;  
 		for ( list<string>::const_iterator it = stringList.begin(); 
-			it != stringList.end();	it++ )
+				it != stringList.end();	it++ )
 			if ( surroundByTicks )	
 				res += "\t+ '" + ( *it ) + "'\n" ; 	
 			else		
 				res += "\t+ " + ( *it ) + '\n' ; 		
+	
+	}
+
+	return res ;
+	
+}
+
+
+string Ceylan::formatStringMap( 
+	const std::map<std::string, std::string> & stringMap, 
+	bool surroundByTicks ) throw()
+{
+
+	if ( stringMap.empty() )
+		return "(empty map)" ;
+		
+	string res ;
+	
+	if ( TextDisplayable::GetOutputFormat() == TextDisplayable::html )
+	{
+	
+		res = "<ul>" ; 
+		
+		for ( map<string,string>::const_iterator it = stringMap.begin(); 
+				it != stringMap.end();	it++ )
+			if ( surroundByTicks )	
+				res += "<li>'" + (*it).first + "' = '" 
+					+ (*it).second + "'</li>" ; 
+			else			
+				res += "<li>" + (*it).first + " = " 
+					+ (*it).second  + "</li>" ; 	
+		
+		res += "</ul>" ;
+		
+	}
+	else
+	{
+
+		// Raw text :
+		
+		res = '\n' ;  
+		for ( map<string,string>::const_iterator it = stringMap.begin(); 
+				it != stringMap.end();	it++ )
+			if ( surroundByTicks )	
+				res += "\t+ '" + (*it).first + "' = '" 
+					+ (*it).second + "'\n" ; 	
+			else		
+				res += "\t+ " + (*it).first + " = " 
+					+ (*it).second + '\n' ; 		
 	
 	}
 
