@@ -1,8 +1,6 @@
 #include "CeylanDirectory.h"
 
 #include "CeylanRegularExpression.h" // for RegExp
-#undef CEYLAN_DEBUG_LOG
-#define CEYLAN_DEBUG_LOG 1
 #include "CeylanLogLight.h"          // for CEYLAN_LOG
 #include "CeylanOperators.h"         // for toString
 #include "CeylanStringUtils.h"       // for isLetter
