@@ -60,10 +60,26 @@ namespace Ceylan
 				
 				
 		/// The '<' character.
-		CEYLAN_DLL const char LowerThan = '<' ;
+		CEYLAN_DLL const char LowerThan       = '<' ;
 				
 		/// The '>' character.
-		CEYLAN_DLL const char HigherThan = '>' ;
+		CEYLAN_DLL const char HigherThan      = '>' ;
+			
+		/// The '"' character.
+		CEYLAN_DLL const char DoubleQuote     = '"' ;
+			
+		/// The '=' character.
+		CEYLAN_DLL const char Equal           = '=' ;
+			
+		/// The '?' character.
+		CEYLAN_DLL const char QuestionMark    = '?' ;
+			
+		/// The '!' character.
+		CEYLAN_DLL const char ExclamationMark = '!' ;
+			
+		/// The '/' character.
+		CEYLAN_DLL const char Slash           = '/' ;
+			
 			
 				
 		/**

@@ -9,6 +9,8 @@
 #include "CeylanOperators.h"    // for toString
 
 
+#include <stack>   // for stack
+
 
 using namespace Ceylan ;
 using namespace Ceylan::Log ;
@@ -16,6 +18,7 @@ using namespace Ceylan::System ;
 using namespace Ceylan::XML ;
 
 using std::string ;
+using std::stack ;
 
 
 
@@ -162,9 +165,24 @@ void XMLParser::loadFromFile() throw( XMLParserException )
 		
 	// Read : '[whitespaces]<?', in readChar there is '?', which is dropped.
 	InterpretXMLDeclaration( input ) ;
+
+	Ceylan::Uint8 remainder ;
+
+	input.skipWhitespaces( remainder ) ;
 	
 	// Read : '[whitespaces]<?xml version="1.0" [encoding..]?>[whitespaces]'.
 
+	if ( remainder != XML::LowerThan )
+		throw XMLParserException( "XMLParser::loadFromFile failed : "
+			"after declaration first non-whitespace character is not '<'." ) ;
+			
+	// Now reading the main part of the XML file :
+	stack<string> markupStack ;
+		
+	// Parse until root markup is closed :
+	handleNextElement( input, markupStack, _parsedTree, 
+		remainder ) ;
+	
 	// Closing the file is automatic.
 		
 }
@@ -181,15 +199,15 @@ XMLParser::LowerThanSequence XMLParser::InterpretLowerThanSequence(
 	switch( readChar )
 	{
 	
-		case '?':
+		case XML::QuestionMark:
 			return XMLParser::Declaration ;
 			break ;
 			
-		case '!':
+		case XML::ExclamationMark:
 			return XMLParser::Comment ;
 			break ;
 			
-		case '/':
+		case XML::Slash:
 			return XMLParser::ClosingMarkup ;
 			break ;
 			
@@ -255,10 +273,8 @@ void XMLParser::InterpretXMLDeclaration( InputStream & input )
 	Ceylan::Uint8 readChar ;
 	
 	// Reads the full declaration in 'res', until second '?' :
-	while ( ( readChar = input.readUint8() ) != '?' ) 
-	{
+	while ( ( readChar = input.readUint8() ) != XML::QuestionMark ) 
 		res += readChar ;
-	}	
 	
 	// Final '>' :
 	readChar = input.readUint8() ;
@@ -266,7 +282,7 @@ void XMLParser::InterpretXMLDeclaration( InputStream & input )
 	if ( readChar != XML::HigherThan )
 		throw XMLParserException( "XMLParser::InterpretXMLDeclaration : "
 			"expected to finish XML declaration with '?>', read '" 
-			+ res + Ceylan::toString( '?' ) 
+			+ res + Ceylan::toString( XML::QuestionMark ) 
 			+ Ceylan::toString( readChar ) + "'." ) ;
 	
 	// res should contain now something like : 'xml version="1.0" ...'.
@@ -276,7 +292,7 @@ void XMLParser::InterpretXMLDeclaration( InputStream & input )
 			"expected to find 'xml', read '" + res + "'." ) ;
 	
 	// Read '[?]xml', suppressing it :
-	res = res.substr( 0, 3 ) ;
+	res = res.substr( 3 ) ;
 	
 	
 	/*
@@ -289,11 +305,33 @@ void XMLParser::InterpretXMLDeclaration( InputStream & input )
 	
 	ParseAttributeSequence( res, declarationMap ) ;
 	
+	LogPlug::debug( "XMLParser::InterpretXMLDeclaration parsed : "
+		+ Ceylan::formatStringMap( declarationMap ) ) ;
 	
-	//ReadXMLName( input, res ) ;
+	AttributeMap::const_iterator it = declarationMap.find( "version" ) ;
 	
-	// Read '[?]xml [a name][whitespaces]'.	
+	if ( it == declarationMap.end() )
+		throw XMLParserException( "XMLParser::InterpretXMLDeclaration : "
+			"no XML 'version' attribute found." ) ;
+
+	if ( (*it).second != "1.0" )
+		throw XMLParserException( "XMLParser::InterpretXMLDeclaration : "
+			"only the 1.0 version of XML is supported, whereas the "
+			+ (*it).second + " version was specified." ) ;
 	
+	it = declarationMap.find( "encoding" ) ;
+	if ( it == declarationMap.end() )
+		LogPlug::warning( "XMLParser::InterpretXMLDeclaration : "
+			"no XML encoding attribute found in declaration, "
+			"falling back to default one, " 
+			+ XML::Latin1WithEuroEncoding + "." ) ;
+	
+	if ( (*it).second != XML::Latin1WithEuroEncoding )
+		throw XMLParserException( 
+			"XMLParser::InterpretXMLDeclaration : only the " 
+			+ XML::Latin1WithEuroEncoding 
+			+" encoding is supported, whereas the "
+			+ (*it).second + " encoding was specified." ) ;		
 			
 }
 
@@ -330,11 +368,15 @@ void XMLParser::ParseAttributeSequence( const string & toBeParsed,
 		attributeName = toBeParsed[index] ;
 		index++ ;
 		
-		if ( index >= size )
-			return ;
+		
+		/*
+		 * No 'if ( index >= size ) return ;' as a value-less one-letter 
+		 * attribute can exist.
+		 *
+		 */
 		
 		while ( index < size && ( ! Ceylan::isWhitespace( toBeParsed[index] ) ) 
-			&& toBeParsed[index] != '=' )
+			&& toBeParsed[index] != XML::Equal )
 		{
 			attributeName += toBeParsed[index] ;
 			index++ ;
@@ -356,7 +398,7 @@ void XMLParser::ParseAttributeSequence( const string & toBeParsed,
 		if ( index >= size )
 			return ;
 		
-		if ( toBeParsed[index] == '=' )
+		if ( toBeParsed[index] == XML::Equal )
 		{
 		
 			index++ ;
@@ -368,7 +410,7 @@ void XMLParser::ParseAttributeSequence( const string & toBeParsed,
 				return ;
 			
 			// Let's retrieve the attribute value :
-			if ( toBeParsed[index] != '"' )
+			if ( toBeParsed[index] != XML::DoubleQuote )
 				throw XMLParserException( "XMLParser::ParseAttributeSequence : "
 					"expecting double quotes to begin attribute value, read '"
 					+ Ceylan::toString( toBeParsed[index] ) + "' instead." ) ;
@@ -376,7 +418,7 @@ void XMLParser::ParseAttributeSequence( const string & toBeParsed,
 			if ( index >= size )
 				return ;
 			
-			while ( index < size && toBeParsed[index] != '"' )
+			while ( index < size && toBeParsed[index] != XML::DoubleQuote )
 			{
 				attributeValue += toBeParsed[index] ;
 				index++ ;
@@ -401,28 +443,7 @@ void XMLParser::ParseAttributeSequence( const string & toBeParsed,
 		attributeValue.clear() ;
 		
 	}
-	
-	
-	
-}
-
-	
-void XMLParser::ReadXMLName( InputStream & input, string & name,
-		Ceylan::Uint8 & readChar ) 
-	throw( InputStream::InputStreamException, XMLParserException )
-{
-	
-	do
-	{
-		readChar = input.readUint8() ;
-		if ( readChar == '=' || Ceylan::isWhitespace( readChar ) )
-			break ;
 		
-		name += readChar ;
-		
-	}	
-	while ( true ) ;
-	
 }
 
 		
@@ -450,3 +471,165 @@ const string XMLParser::toString( Ceylan::VerbosityLevels level )
 
 }
 
+
+void XMLParser::handleNextElement( System::InputStream & input,
+		stack<string> & markupStack, XMLTree * currentTree, 
+		Ceylan::Uint8 & remainder )
+	throw( System::InputStream::InputStreamException, XMLParserException )
+{
+
+	/*
+	 * When this method is called, leading whitespaces should have been
+	 * eaten, and first non-whitespace character should be already read and
+	 * stored in 'remainder' variable.
+	 *
+	 */
+	
+	if ( remainder != XML::LowerThan )
+	{
+	
+		// Should be a XML text element :
+		string text ;
+		text +=  static_cast<char>( remainder ) ;
+		
+		// Reads everything from the beginning of text to first '<' :
+		while ( ( remainder = input.readUint8() ) != XML::LowerThan )
+			text += remainder ;
+		
+		LogPlug::debug( "XMLParser::handleNextElement : "
+			"creating XML text element from '" + text + "'." ) ;
+			
+		XMLText * newText = new XMLText( text ) ;
+		
+		XMLParser::XMLTree * newNode = new XMLParser::XMLTree( *newText ) ;
+		
+		if ( currentTree == 0 )
+			throw XMLParserException( "XMLParser::handleNextElement : "
+				"text '" + text + "' must be enclosed in markups." ) ;
+		
+		currentTree->addSon( *newNode ) ;
+		
+		handleNextElement( input, markupStack, currentTree, remainder ) ;
+		
+		return ;
+		
+	}
+	
+	
+	// Here, we have either an opening or closing markup.
+	
+	LowerThanSequence seq = InterpretLowerThanSequence( input, remainder ) ;
+	
+	if ( seq != OpeningMarkup && seq != ClosingMarkup )
+		throw XMLParserException( "XMLParser::handleNextElement : "
+			"expecting opening or closing markup, found "
+			+ DescribeLowerThanSequence( seq ) + "." ) ;
+	
+	// A opening or closing markup ! (common section)
+	string markupName ;
+	
+	// If opening, first letter was already eaten, otherwise was '/' if closing.
+	if ( seq == OpeningMarkup )
+		markupName = remainder ;
+	
+	remainder = input.readUint8() ;
+	
+	while ( ! Ceylan::isWhitespace( remainder ) 
+		&& remainder != XML::HigherThan )
+	{
+		markupName += remainder ;
+		remainder = input.readUint8() ;	
+	}
+		
+	LogPlug::debug( "XMLParser::handleNextElement : read markup '" 
+		+ markupName + "'." ) ;
+	
+	if ( seq == OpeningMarkup )
+	{
+		
+		XMLMarkup * newMarkup = new XMLMarkup( markupName ) ;
+		markupStack.push( markupName ) ;
+		
+		// Did we stop on a '>' ?
+		if ( remainder != XML::HigherThan )
+		{
+			
+			// No, it was a whitespace, looking for any markup attributes :
+			string restOfMarkup ;
+			while ( ( remainder = input.readUint8() ) != XML::HigherThan )
+				restOfMarkup += remainder ;
+			
+			ParseAttributeSequence( restOfMarkup, newMarkup->getAttributes() ) ;
+			
+			LogPlug::debug( "XMLParser::handleNextElement : "
+				"read markup is now '"
+				+ encodeToHTML( newMarkup->toString() ) + "'." ) ;
+			
+		} // else : we stop on a '>' : no attribute to retrieve.
+		
+		// Creating now the tree node containing that markup :
+		XMLParser::XMLTree * newNode = new XMLParser::XMLTree( *newMarkup ) ;
+		
+		// Either a son of an already existing node, or the root :
+		if ( currentTree != 0 )
+		{
+			LogPlug::debug( "XMLParser::handleNextElement : "
+				"adding son to current parsed tree." ) ;
+			currentTree->addSon( *newNode ) ;
+			currentTree = newNode ;
+		}	
+		else
+		{
+			LogPlug::debug( "XMLParser::handleNextElement : "
+				"creating a new parsed tree." ) ;
+			setXMLTree( *newNode ) ;
+			currentTree = _parsedTree ;
+		}	
+			
+	}
+	else 
+	{
+	
+		// We have here a ClosingMarkup :
+		string toBeClosed = markupStack.top() ;
+		
+		if ( toBeClosed != markupName )
+			throw XMLParserException( "XMLParser::handleNextElement : "
+				"expecting closing markup for '" + toBeClosed 
+				+ "', found closing markup for '" + markupName + "'." ) ;
+		
+		LogPlug::debug( "XMLParser::handleNextElement : closing markup '"
+			+ markupName + "' as expected." ) ;
+			
+		markupStack.pop() ;
+
+		// Everything is parsed ?
+		if ( markupStack.empty() )
+			return ;
+		
+		// New current tree is the father :
+		XMLTree * tempTree = _parsedTree->getFather( *currentTree ) ;
+		
+		if ( tempTree == 0 )
+			throw XMLParserException( "XMLParser::handleNextElement : "
+				"no father found for current tree '" + currentTree->toString()
+				+ "' in parsed tree : '" + _parsedTree->toString() + "'." ) ;
+		
+		currentTree = tempTree	;
+		
+		// Go to the end of this markup : 
+		if ( remainder != XML::HigherThan )
+			while ( input.readUint8() != XML::HigherThan )
+				;
+				
+	}
+
+
+	input.skipWhitespaces( remainder ) ;
+	
+	handleNextElement( input, markupStack, currentTree, remainder ) ;
+	
+	
+}
+
+	

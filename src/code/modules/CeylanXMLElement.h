@@ -224,6 +224,15 @@ namespace Ceylan
 					const AttributeValue & value ) throw() ;
 					
 					
+				/**
+				 * Returns a reference to the internal attribute map.
+				 *
+				 * This method may be used to manage the attributes of a 
+				 * markup from outside, for example when reading an XML file.
+				 *
+				 */
+				virtual AttributeMap & getAttributes() throw() ;
+				 	
 					
 				
 				// Serializable section.

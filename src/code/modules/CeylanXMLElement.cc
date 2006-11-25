@@ -130,6 +130,13 @@ void XMLMarkup::setAttribute( const string & name,
 }
 
 
+AttributeMap & XMLMarkup::getAttributes() throw()
+{
+
+	return _attributes ;
+	
+}
+
 
 void XMLMarkup::loadFrom( System::InputStream & input ) 
 	throw( SerializationException )

@@ -8,7 +8,7 @@
 #include "CeylanInputStream.h"      // for InputStream::InputStreamException
 
 #include <string>
-#include <stack>   // for stack
+#include <stack>
 
 
 
@@ -228,7 +228,7 @@ namespace Ceylan
 				 * @param input the stream to read from.
 				 *
 				 * @param readChar the variable in which the read variable will
-				 * be put once interpreted.
+				 * be put once interpreted (one too many read).
 				 *
 				 * @return the identifier of the interpreted sequence.
 				 *
@@ -287,41 +287,39 @@ namespace Ceylan
 					throw( XMLParserException )  ;
 					
 					
-				/**
-				 * Reads from specified input stream a full XML name 
-				 * (ex : 'version'), appends it to the specified string
-				 * (which may already contain some characters), skip next
-				 * whitespace and put the first character read after in
-				 * specified char.
-				 *
-				 * @note The first character of the name is supposed to have
-				 * been already read and checked, and preferably put in the
-				 * specified string.
-				 *				  
-				 * @param input the stream to read from.
-				 *
-				 * @param name the string in which the read name will be
-				 * added.
-				 *
-				 * @param readChar the variable in which the additional read
-				 * character will be put (one too many is read).
-				 *
-				 * @throw InputStreamException if an I/O operation failed, or
-				 * XMLParserException if an incorrect name was found.
-				 *
-				 */
-				static void ReadXMLName( System::InputStream & input,
-						std::string & name,	Ceylan::Uint8 & readChar ) 
-					throw( System::InputStream::InputStreamException, 
-						XMLParserException ) ;
-					
 				
-	
+				
 
 			protected:
-
-					
-					
+	
+				
+				/**
+				 * Reads from specified input stream until a text, an opening or
+				 * a closing markup is found, manages it and continue
+				 * recursively until the first open markup is closed : the 
+				 * XML document is then fully parsed.
+				 *
+				 * @param input the stream from which XML data is to be read.
+				 *
+				 * @param markupStack an internal stack used to determine the
+				 * relationships between tree nodes.
+				 *
+				 * @param currentNode the current node being considered. Either
+				 * this markup is an opening one, and it will lead to add a 
+				 * son to current node, or it is a closing one, that will lead
+				 * the new current node to be the father of this current node.
+				 *
+				 * @return true if the document is fully parsed, i.e. if the
+				 * root markup hit its closing mark.
+				 *
+				 */
+				virtual void handleNextElement( 
+						System::InputStream & input,
+						std::stack<std::string> & markupStack, 
+						XMLTree * currentNode, 
+						Ceylan::Uint8 & remainder )
+					throw( System::InputStream::InputStreamException, 
+						XMLParserException )  ;
 				
 
 				/**
