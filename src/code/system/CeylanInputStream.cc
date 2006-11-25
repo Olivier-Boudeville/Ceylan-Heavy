@@ -1,11 +1,12 @@
 #include "CeylanInputStream.h"
 
-#include "CeylanThread.h"      // for Sleep
-#include "CeylanOperators.h"   // for toString
-#include "CeylanLogPlug.h"     // for LogPlug
-#include "CeylanTypes.h"       // for Ceylan::Uint16, etc.
-#include "CeylanEndianness.h"  // for ceylan_bswap_*, etc.
-#include "CeylanNetwork.h"     // for Windows getSocketError
+#include "CeylanThread.h"        // for Sleep
+#include "CeylanOperators.h"     // for toString
+#include "CeylanLogPlug.h"       // for LogPlug
+#include "CeylanTypes.h"         // for Ceylan::Uint16, etc.
+#include "CeylanStringUtils.h"   // for isWhitespace
+#include "CeylanEndianness.h"    // for ceylan_bswap_*, etc.
+#include "CeylanNetwork.h"       // for Windows getSocketError
 
 
 
@@ -457,6 +458,24 @@ void InputStream::readString( std::string & result )
 		
 	}
 	
+	
+}
+
+
+void InputStream::skipWhitespaces( Ceylan::Uint8 & firstNonSpace )
+	throw( ReadFailedException, EOFException )
+{
+
+	Ceylan::Uint8 readChar ;
+	
+	do
+	{
+	
+		readChar = readUint8() ;
+		
+	} while ( Ceylan::isWhitespace( static_cast<char>( readChar ) ) ) ;
+	
+	firstNonSpace = readChar ;
 	
 }
 
