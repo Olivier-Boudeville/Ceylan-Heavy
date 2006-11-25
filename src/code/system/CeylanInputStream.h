@@ -354,6 +354,18 @@ namespace Ceylan
 					throw( ReadFailedException, EOFException ) ;
 
 
+				/**
+				 * Reads from this input stream as long as there are 
+				 * whitespaces to be read.
+				 *
+				 * @param firstNonSpace the variable which will be set by this
+				 * method to the value of the first non-whitespace character 
+				 * that is read.
+				 *
+				 */
+				virtual void skipWhitespaces( Ceylan::Uint8 & firstNonSpace )
+					throw( ReadFailedException, EOFException ) ;
+
 
 
 				// Static section.
