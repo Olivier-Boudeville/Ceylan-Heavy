@@ -79,7 +79,7 @@ namespace Ceylan
 			 *
 			 */
 			virtual void saveTo( System::OutputStream & output ) 
-				throw( SerializationException ) = 0 ;
+				const throw( SerializationException ) = 0 ;
 				
 			
 			/**
