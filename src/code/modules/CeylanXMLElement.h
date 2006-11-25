@@ -9,7 +9,6 @@
 
 
 #include <string>
-#include <map>
 
 
 
@@ -70,6 +69,20 @@ namespace Ceylan
 				 * pure virtual here.
 				 *
 				 */
+				
+				
+				/**
+				 * Saves the instance state to specified stream.
+				 *
+				 * @param output the output stream to which the state will be
+				 * written.
+				 *
+				 * @throw SerializationException if the operation failed.
+				 *
+				 */
+				virtual void saveTo( System::OutputStream & output ) 
+					const throw( SerializationException ) ;
+				
 				 
 				 
 			private:
@@ -121,15 +134,8 @@ namespace Ceylan
 
 			public:
 
-
-				/// Name of an XML attribute.
-				typedef std::string AttributeName ;
 				
-				/// Value of an XML attribute.
-				typedef std::string AttributeValue ;
-
-
-
+				
 				/**
 				 * Creates an empty XML markup.
 				 *
@@ -138,10 +144,13 @@ namespace Ceylan
 				
 
 				/**
-				 * Creates a namedXML markup.
+				 * Creates a named XML markup.
+				 *
+				 * @param name the markup name, for example 'para' for 
+				 * markup <para>.
 				 *
 				 */
-				explicit XMLMarkup( const std::string & name ) throw() ;
+				explicit XMLMarkup( const MarkupName & name ) throw() ;
 				
 				
 				
@@ -156,7 +165,7 @@ namespace Ceylan
 				 * the returned name.
 				 *
 				 */
-				virtual std::string getMarkupName() const throw() ; 
+				virtual MarkupName getMarkupName() const throw() ; 
 
 
 				/**
@@ -220,18 +229,8 @@ namespace Ceylan
 				// Serializable section.
 
 
-				/**
-				 * Saves the instance state to specified stream.
-				 *
-				 * @param output the output stream to which the state will be
-				 * written.
-				 *
-				 * @throw SerializationException if the operation failed.
-				 *
-				 */
-				virtual void saveTo( System::OutputStream & output ) 
-					throw( SerializationException ) ;
-				
+				// The saveTo method is inherited from XMLElement as is .
+
 			
 				/**
 				 * Loads a new instance state from specified stream.
@@ -281,16 +280,15 @@ namespace Ceylan
 			
 			
 				/// Name of the markup.
-				std::string _name ;
+				MarkupName _name ;
 				
 			
 				/**
 				 * Attributes of a XML markup, sort of tagged values, i.e. 
 				 * pair of name-value.
 				 *
-				 *
 				 */
-				std::map<AttributeName,AttributeValue> _attributes ;
+				AttributeMap _attributes ;
 
 
 
@@ -393,17 +391,7 @@ namespace Ceylan
 				// Serializable section.
 
 
-				/**
-				 * Saves the instance state to specified stream.
-				 *
-				 * @param output the output stream to which the state will be
-				 * written.
-				 *
-				 * @throw SerializationException if the operation failed.
-				 *
-				 */
-				virtual void saveTo( System::OutputStream & output ) 
-					throw( SerializationException ) ;
+				// The saveTo method is inherited from XMLElement as is .
 				
 			
 				/**
