@@ -103,18 +103,18 @@ CEYLAN_DLL std::string operator + ( Ceylan::Uint64 i, const std::string & s )
 
 
 
-CEYLAN_DLL std::string operator + ( const std::string & s, Ceylan::SignedLongInteger i ) 
-	throw( Ceylan::Exception ) ;
+CEYLAN_DLL std::string operator + ( const std::string & s,
+	Ceylan::SignedLongInteger i ) throw( Ceylan::Exception ) ;
 	
-CEYLAN_DLL std::string operator + ( Ceylan::SignedLongInteger i, const std::string & s ) 
-	throw( Ceylan::Exception ) ;
+CEYLAN_DLL std::string operator + ( Ceylan::SignedLongInteger i, 
+	const std::string & s ) throw( Ceylan::Exception ) ;
 
 
-CEYLAN_DLL std::string operator + ( const std::string & s, Ceylan::UnsignedLongInteger i ) 
-	throw( Ceylan::Exception ) ;
+CEYLAN_DLL std::string operator + ( const std::string & s,
+	Ceylan::UnsignedLongInteger i ) throw( Ceylan::Exception ) ;
 	
-CEYLAN_DLL std::string operator + ( Ceylan::UnsignedLongInteger i, const std::string & s ) 
-	throw( Ceylan::Exception ) ;
+CEYLAN_DLL std::string operator + ( Ceylan::UnsignedLongInteger i,
+	const std::string & s ) throw( Ceylan::Exception ) ;
 
 
 
@@ -137,11 +137,11 @@ CEYLAN_DLL std::string operator + ( Ceylan::Float64 i, const std::string & s )
  *
  */
   
-CEYLAN_DLL std::string operator + ( const std::string & s, Ceylan::LongFloat i ) 
-	throw( Ceylan::Exception ) ;
+CEYLAN_DLL std::string operator + ( const std::string & s, 
+	Ceylan::LongFloat i ) throw( Ceylan::Exception ) ;
 	
-CEYLAN_DLL std::string operator + ( Ceylan::LongFloat i, const std::string & s ) 
-	throw( Ceylan::Exception ) ;
+CEYLAN_DLL std::string operator + ( Ceylan::LongFloat i, 
+	const std::string & s ) throw( Ceylan::Exception ) ;
 
 
 
@@ -204,8 +204,8 @@ namespace Ceylan
 	 * specified value, prefixed by '0b'.
 	 *
 	 */
-    CEYLAN_DLL std::string toString( Ceylan::Sint8 value, bool bitField = false ) 
-		throw( Exception ) ;
+    CEYLAN_DLL std::string toString( Ceylan::Sint8 value, 
+		bool bitField = false ) throw( Exception ) ;
 	
 	
 	/**
@@ -215,8 +215,8 @@ namespace Ceylan
 	 * specified value, prefixed by '0b'.
 	 *
 	 */
-    CEYLAN_DLL std::string toString( Ceylan::Uint8 value, bool bitField = false ) 
-		throw( Exception ) ;
+    CEYLAN_DLL std::string toString( Ceylan::Uint8 value, 
+		bool bitField = false ) throw( Exception ) ;
 	
 	
 	
@@ -227,8 +227,8 @@ namespace Ceylan
 	 * specified value, prefixed by '0b'.
 	 *
 	 */
-    CEYLAN_DLL std::string toString( Ceylan::Sint16 value, bool bitField = false ) 
-		throw( Exception ) ;
+    CEYLAN_DLL std::string toString( Ceylan::Sint16 value, 
+		bool bitField = false ) throw( Exception ) ;
 	
 	
 	/**
@@ -238,8 +238,8 @@ namespace Ceylan
 	 * specified value, prefixed by '0b'.
 	 *
 	 */
-    CEYLAN_DLL std::string toString( Ceylan::Uint16 value, bool bitField = false ) 
-		throw( Exception ) ;
+    CEYLAN_DLL std::string toString( Ceylan::Uint16 value, 
+		bool bitField = false ) throw( Exception ) ;
 	
 	
 	/**
@@ -249,8 +249,8 @@ namespace Ceylan
 	 * specified value, prefixed by '0b'.
 	 *
 	 */
-    CEYLAN_DLL std::string toString( Ceylan::Sint32 value, bool bitField = false ) 
-		throw( Exception ) ;
+    CEYLAN_DLL std::string toString( Ceylan::Sint32 value, 
+		bool bitField = false ) throw( Exception ) ;
 	
 	
 	/**
@@ -260,8 +260,8 @@ namespace Ceylan
 	 * specified value, prefixed by '0b'.
 	 *
 	 */
-    CEYLAN_DLL std::string toString( Ceylan::Uint32 value, bool bitField = false ) 
-		throw( Exception ) ;
+    CEYLAN_DLL std::string toString( Ceylan::Uint32 value, 
+		bool bitField = false ) throw( Exception ) ;
 	
 	
 	/**
@@ -373,7 +373,8 @@ namespace Ceylan
 	 * @see Displayable
 	 *
 	 */
-    CEYLAN_DLL std::string toString( Ceylan::VerbosityLevels level ) throw( Exception ) ;
+    CEYLAN_DLL std::string toString( Ceylan::VerbosityLevels level ) 
+		throw( Exception ) ;
 	
 		 
 	/**
@@ -387,7 +388,16 @@ namespace Ceylan
 	 * character.
 	 *
 	 */
-	CEYLAN_DLL std::string toNumericalString( Uint8 number ) throw( Exception ) ;
+	CEYLAN_DLL std::string toNumericalString( Uint8 number ) 
+		throw( Exception ) ;
+	
+	
+	/**
+	 * Constructs a string from a single char.
+	 *
+	 * @example converts 'a' into "a".
+	 */
+	CEYLAN_DLL std::string toString( char character ) throw( Exception ) ;
 	
 	
 	
