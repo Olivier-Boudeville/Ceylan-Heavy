@@ -52,6 +52,15 @@ XMLElement::~XMLElement() throw()
 }
 
 
+void XMLElement::saveTo( System::OutputStream & output ) const
+	throw( SerializationException )
+{
+
+	output.write( toString() ) ;
+
+}
+
+
 
 
 // XMLMarkup section.
@@ -64,7 +73,7 @@ XMLMarkup::XMLMarkup() throw():
 }
 
 
-XMLMarkup::XMLMarkup( const std::string & name ) throw():
+XMLMarkup::XMLMarkup( const MarkupName & name ) throw():
 	_name( name )
 {
 
@@ -77,7 +86,7 @@ XMLMarkup::~XMLMarkup() throw()
 }
 
 
-string XMLMarkup::getMarkupName() const throw()
+MarkupName XMLMarkup::getMarkupName() const throw()
 {
 
 	return _name ;
@@ -121,12 +130,6 @@ void XMLMarkup::setAttribute( const string & name,
 }
 
 
-void XMLMarkup::saveTo( System::OutputStream & output ) 
-	throw( SerializationException )
-{
-
-}
-
 
 void XMLMarkup::loadFrom( System::InputStream & input ) 
 	throw( SerializationException )
@@ -148,6 +151,7 @@ void XMLMarkup::accept( Visitor & visitor ) throw( VisitException )
 	actualVisitor->visit( *this ) ;
 	
 }
+
 
 const string XMLMarkup::toString( Ceylan::VerbosityLevels level ) const throw()
 {
@@ -199,13 +203,6 @@ void XMLText::setText( const string & newText ) throw()
 
 	_text = newText ;
 	
-}
-
-
-void XMLText::saveTo( System::OutputStream & output ) 
-	throw( SerializationException )
-{
-
 }
 
 
