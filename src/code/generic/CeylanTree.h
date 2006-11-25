@@ -86,6 +86,7 @@ namespace Ceylan
 	typedef Ceylan::Uint32 Height ;
 
 
+
 	/**
 	 * Tree-dedicated visitor, which may use the distance from the current
 	 * node to the real root of the tree.
@@ -115,15 +116,37 @@ namespace Ceylan
 
 
 
-			/// Returns current height.
-			virtual Height getHeight() const throw() = 0 ;
+			/**
+			 * Returns current height.
+			 *
+			 * @note A default do-nothing implementation is provided here,
+			 * it is made to be overriden by the actual algorithm, which may
+			 * use a single variable, or a stack, etc.
+			 *
+			 */
+			virtual Height getHeight() const throw() ;
 
 
-			/// Increments current height.
-			virtual void incrementHeight() throw() = 0 ;
+			/**
+			 * Increments current height.
+			 *
+			 * @note A default do-nothing implementation is provided here,
+			 * it is made to be overriden by the actual algorithm, which may
+			 * use a single variable, or a stack, etc.
+			 *
+			 */
+			virtual void incrementHeight() throw() ;
 			
-			/// Decrements current height.
-			virtual void decrementHeight() throw() = 0 ;
+			
+			/**
+			 * Decrements current height.
+			 *
+			 * @note A default do-nothing implementation is provided here,
+			 * it is made to be overriden by the actual algorithm, which may
+			 * use a single variable, or a stack, etc.
+			 *
+			 */
+			virtual void decrementHeight() throw() ;
 			
 			
 			/** 
@@ -176,6 +199,35 @@ namespace Ceylan
 	}
 
 
+	template <typename Content>
+	Height TreeHeightAwareVisitor<Content>::getHeight() const throw()
+	{
+	
+		// Override me !
+		return 0 ;
+	}
+
+
+	template <typename Content>
+	void TreeHeightAwareVisitor<Content>::incrementHeight() throw()
+	{
+	
+		// Override me !
+
+	}
+
+
+	template <typename Content>
+	void TreeHeightAwareVisitor<Content>::decrementHeight() throw()
+	{
+	
+		// Override me !
+
+	}
+
+
+
+
 	/**
 	 * Template defining generically trees, parametrized by a
 	 * content datatype (typename Content) : each tree node will
@@ -199,6 +251,10 @@ namespace Ceylan
 
 			/// Shortcut for the list of sons of a Tree.
 			typedef std::list< Tree<Content>* > SubTreeList ;
+
+
+
+			// Life-cycle section.
 
 
 			/**
@@ -230,6 +286,9 @@ namespace Ceylan
 			virtual ~Tree() throw() ;
 
 
+			
+			// Visitor section.
+			
 
 			/**
 			 * Allows given visitor to visit this object, thanks to a 
@@ -244,6 +303,9 @@ namespace Ceylan
 			virtual void accept( Visitor & visitor ) 
 				throw( VisitException ) ;
 
+
+
+			// Content management section.
 
 
 			/**
@@ -283,6 +345,9 @@ namespace Ceylan
 				throw( TreeException ) ;  
 			 
 			 
+			
+			// Tree-based navigation section.
+			
 
 			/**
 			 * Returns the list of sons (subtrees) of this tree.
@@ -353,6 +418,73 @@ namespace Ceylan
 				TreeVisitor<Content> & treeVisitor,
 				bool visitContent = true ) throw( TreeException ) ;
 
+
+
+			/**
+			 * Adds in specified list the content of all direct child nodes.
+			 *
+			 * @param toBeAugmented the list to which contents will be added.
+			 *
+			 */
+			virtual void appendSonsContents( 
+				std::list<Content *> & toBeAugmented ) throw() ;
+				
+
+
+			// Content-based navigation section.
+			
+			
+			/**
+			 * Returns the tree node that references specified content, if
+			 * any.
+			 *
+			 * @param content the content associated with the searched node.
+			 *
+			 * @return the (supposed) only one node that is associated with
+			 * specified content, or a null pointer if no corresponding node
+			 * was found.
+			 *
+			 */
+			virtual Tree * getNodeOf( const Content & content ) throw() ;
+			
+			
+			/**
+			 * Returns the content associated with the father node of the node
+			 * associated with specified content. 
+			 *
+			 * The ownership of any returned content is kept by the tree.
+			 *
+			 * @return A pointer to the father content, if any, otherwise a 
+			 * null pointer if this node has no father (root node) or if it
+			 * has a father but it is not associated with any content.
+			 *
+			 * @note This is an expensive method, as it may traverse the full
+			 * tree : this kind of tree has nodes that are not required to
+			 * keep track of their father. Hence needing to use this method
+			 * might be the sign of a poor design.
+			 *
+			 * This search could be provided by a dedicated visitor, but it
+			 * would result in a rather complex visitor with no real added
+			 * value.
+			 *
+			 */
+			virtual Content * getFatherContent( const Content & content )
+				throw() ;
+				
+
+
+			/**
+			 * Adds in specified list the content of all direct child nodes.
+			 *
+			 * @param content the content whose sons will be searched for
+			 * content to append.
+			 *
+			 * @param toBeAugmented the list to which contents will be added.
+			 *
+			 */
+			virtual void appendSonsContentsOf( const Content & content,
+				std::list<Content *> & toBeAugmented ) throw() ;
+				
 
 			/**
 			 * Returns a user-friendly description of the state of this object.
@@ -465,6 +597,7 @@ namespace Ceylan
 		_sons.clear() ;
 	
 	}
+	
 
 
 	template <typename Content>
@@ -474,12 +607,13 @@ namespace Ceylan
 	}
 
 
+
 	template <typename Content>
 	void Tree<Content>::accept( Visitor & visitor ) 
 		throw( VisitException )
 	{
 		
-		Ceylan::Log::LogPlug::trace( "Tree<Content>::accept" ) ;
+		//Ceylan::Log::LogPlug::trace( "Tree<Content>::accept" ) ;
 		
 		TreeHeightAwareVisitor<Content> * actualVisitor = 
 			dynamic_cast<TreeHeightAwareVisitor<Content> *>( &visitor ) ;
@@ -537,6 +671,7 @@ namespace Ceylan
 	}
 	
 	
+	
 	template <typename Content>
 	bool Tree<Content>::hasContent() const throw()
 	{
@@ -570,6 +705,7 @@ namespace Ceylan
 		_content = & newContent ;
 		
 	}
+	
 	
 	
 	
@@ -629,6 +765,97 @@ namespace Ceylan
 	}
 
 
+	template <typename Content>
+	void Tree<Content>::appendSonsContents( 
+		std::list<Content *> & toBeAugmented ) throw()
+	{
+	
+		for ( typename SubTreeList::iterator it = _sons.begin();
+				it != _sons.end(); it++ )
+		{
+		
+			Content * retrieved = (*it)->_content ;
+			if ( retrieved != 0 )
+				toBeAugmented.push_back( retrieved ) ;
+		
+		}		
+		
+	}
+
+
+	template <typename Content>
+	Tree<Content> * Tree<Content>::getNodeOf( const Content & content ) throw()
+	{
+	
+		// Found at this level ?
+		if ( this->_content == & content )
+			return this ;
+		
+		// Otherwise recurse to next level :
+		for ( typename SubTreeList::iterator it = _sons.begin();
+				it != _sons.end(); it++ )
+		{		
+			Tree<Content> * returned = (*it)->getNodeOf( content ) ;
+			if ( returned != 0 )
+				return returned ;
+		}  
+		
+		return 0 ;
+			
+	}
+	
+	
+	template <typename Content>
+	Content * Tree<Content>::getFatherContent( const Content & content )
+		throw()
+	{
+	
+		/*
+		 * Algorithm : 
+		 *  - traverse the tree from the root
+		 *  - from a given node, look at the sons
+		 *  - if specified content is found, return the current content
+		 *	- else recurse
+		 *
+		 */
+		
+		for ( typename SubTreeList::iterator it = _sons.begin();
+				it != _sons.end(); it++ )
+			if ( (*it)->_content == & content )
+				return /* might be null */ this->_content ;
+		
+		
+		// Recurse if next level had not that content :
+		for ( typename SubTreeList::iterator it = _sons.begin();
+				it != _sons.end(); it++ )
+		{		
+			Content * returned = (*it)->getFatherContent( content ) ;
+			if ( returned != 0 )
+				return returned ;
+		}  
+		
+		return 0 ;
+		  
+	}
+	
+	
+	template <typename Content>
+	void Tree<Content>::appendSonsContentsOf( const Content & content,
+		std::list<Content *> & toBeAugmented ) throw()
+	{
+	
+		Tree<Content> * father = this->getNodeOf( content ) ;
+		
+		// Associated node found ?
+		if ( father == 0 )
+			return ;
+			
+		// Yes, let's return its son contents :
+		father->appendSonsContents( toBeAugmented ) ;
+			
+	}	
+			
+			
 	template <typename Content>
 	const std::string Tree<Content>::toString( Ceylan::VerbosityLevels level )
 		const throw()
