@@ -1301,6 +1301,18 @@ string Ceylan::toNumericalString( Uint8 number ) throw( Ceylan::Exception )
 }
 
 
+string Ceylan::toString( char character ) throw( Exception )
+{
+
+	string res ;
+	
+	res += character ;
+	
+	return res ;
+	
+}
+
+
 
 int Ceylan::stringToUnsignedLong( 
 	const string & numericalString ) throw( Exception )
