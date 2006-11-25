@@ -5,6 +5,7 @@
 #include "CeylanException.h"        // for Ceylan::Exception
 
 #include <string>
+#include <map>
 
 
 
@@ -36,6 +37,42 @@ namespace Ceylan
 
 		} ;
 		
+		
+		/// Name of an XML markup.
+		typedef std::string MarkupName ;
+
+
+		/// Name of an XML attribute.
+		typedef std::string AttributeName ;
+		
+		/// Value of an XML attribute.
+		typedef std::string AttributeValue ;
+
+
+		/// Dictionary of name/value pairs.
+		typedef std::map<AttributeName,AttributeValue> AttributeMap ;
+				
+		
+		
+		/// ISO-8859-15 is the 'Latin-1 with euro' encoding.
+		CEYLAN_DLL const std::string Latin1WithEuroEncoding = "ISO-8859-15" ;
+				
+				
+				
+		/// The '<' character.
+		CEYLAN_DLL const char LowerThan = '<' ;
+				
+		/// The '>' character.
+		CEYLAN_DLL const char HigherThan = '>' ;
+			
+				
+		/**
+		 * In XML, ends of line are always coded with only the 
+		 * LF (0x0A) character, even on platforms such as Windows
+		 * where it is usually CR-LF.
+		 *
+		 */
+		CEYLAN_DLL const char EndOfLine = 0x0A ;
 		
 	
 	}
