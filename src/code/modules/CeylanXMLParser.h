@@ -5,7 +5,7 @@
 #include "CeylanTextDisplayable.h"  // for TextDisplayable
 #include "CeylanTree.h"             // for Ceylan::Tree
 #include "CeylanXML.h"              // for XML general operations
-
+#include "CeylanInputStream.h"      // for InputStream::InputStreamException
 
 #include <string>
 #include <stack>   // for stack
@@ -16,6 +16,15 @@ namespace Ceylan
 {
 
 
+	namespace System
+	{
+	
+		// Some XML operations reads from such streams :
+		class InputStream ;
+		
+	}
+	
+	
 	namespace XML
 	{
 	
@@ -77,7 +86,10 @@ namespace Ceylan
 				 * extract relevant informations from it.
 				 *
 				 * @param filename the file whose content is formatted in
-				 * XML.
+				 * XML. Depending on which methods will be called, the filename
+				 * will be used to saved an internal tree to the corresponding
+				 * file, or to load an internal tree from an already existing
+				 * file with that filename.
 				 *
 				 */
 				explicit XMLParser( const std::string & filename ) throw() ;
@@ -90,6 +102,9 @@ namespace Ceylan
 				virtual ~XMLParser() throw() ;
 	
 	
+	
+				
+				// Internal XML tree management.
 				
 				 
 				/**
@@ -129,6 +144,10 @@ namespace Ceylan
 				virtual void setXMLTree( XMLTree & newTree ) throw() ;
 	
 	
+				
+				// Serializarion section.
+				
+	
 				/**
 				 * Saves the internal tree into an XML file, whose filename
 				 * was specified in the constructor.
@@ -138,6 +157,20 @@ namespace Ceylan
 				 *
 				 */
 				virtual void saveToFile() const throw( XMLParserException ) ;
+	
+	
+				/**
+				 * Loads from an XML file, whose filename
+				 * was specified in the constructor, a new internal XML tree.
+				 *
+				 * @note Any already existing tree will be deleted first.
+				 *
+				 * The parser does its best to be robust and overcome
+				 * incorrect XML syntaxes.
+				 *
+				 */
+				virtual void loadFromFile() throw( XMLParserException ) ;
+	
 	
 	
 				/**
@@ -157,13 +190,139 @@ namespace Ceylan
 
 
 
+				// Static section.
+				
+
 				/// Default XML encoding is ISO-8859-15 (Latin-1 with euro).
 				static std::string DefaultEncoding ;
+
+
+				/// All sequences that begin with a '<'.	
+				enum LowerThanSequence
+				{
+				
+					/// XML declaration, for example : '<?xml version="1.0"?>'.
+					Declaration,
+					
+					/// XML comment, for example : '<!-- This is a comment -->'.
+					Comment,
+					
+					/// XML opening Markup, for example : '<para>'
+					OpeningMarkup,
+				
+					/// XML closing Markup, for example : '</para>'
+					ClosingMarkup,
+					
+					/// Unexpected XML element :
+					UnexpectedElement
+				
+				} ;
 				
 				
+
+				/**
+				 * Reads a character from input stream, whereas previous read
+				 * character is supposed to be '<', and interprets the kind of 
+				 * sequence it begins.
+				 *
+				 * @param input the stream to read from.
+				 *
+				 * @param readChar the variable in which the read variable will
+				 * be put once interpreted.
+				 *
+				 * @return the identifier of the interpreted sequence.
+				 *
+				 * @throw InputStreamException if the operation failed.
+				 *
+				 */
+				static LowerThanSequence InterpretLowerThanSequence( 
+						System::InputStream & input, Ceylan::Uint8 & readChar )
+					throw( System::InputStream::InputStreamException ) ;
+					
+
+				/**
+				 * Returns a string describing the specified sequence.
+				 *
+				 * @param the sequence type to describe.
+				 *
+				 */
+				static const std::string DescribeLowerThanSequence(
+					LowerThanSequence sequence ) throw() ;
+					
+					
+				/**
+				 * Reads from specified input stream a full XML declaration 
+				 * (ex : [<?]xml version="1.0"...?>), whereas previous read
+				 * characters are supposed to be '<?', interprets the
+				 * declaration, skips next whitespace and put the first
+				 * character read after in specified char.
+				 *
+				 * @param input the stream to read from.
+				 *
+				 * @throw InputStreamException if an I/O operation failed, or
+				 * XMLParserException if an incorrect declaration is found.
+				 *
+				 */
+				static void InterpretXMLDeclaration( 
+						System::InputStream & input ) 
+					throw( System::InputStream::InputStreamException, 
+						XMLParserException ) ;
+					
+					
+				/**
+				 * Reads from specified string a sequence of attributes 
+				 * (ex : version="1.0"), and store them in specified map. 
+				 *
+				 * @param toBeParsed the string to read the attributes from.
+				 *
+				 * @param attributeMap the map in which the read attributes
+				 * (name/value pairs) will be stored once interpreted.
+				 *
+				 * @throw XMLParserException if an incorrect syntax is found.
+				 *
+				 */
+				static void ParseAttributeSequence( 
+						const std::string & toBeParsed,
+						AttributeMap & attributeMap ) 
+					throw( XMLParserException )  ;
+					
+					
+				/**
+				 * Reads from specified input stream a full XML name 
+				 * (ex : 'version'), appends it to the specified string
+				 * (which may already contain some characters), skip next
+				 * whitespace and put the first character read after in
+				 * specified char.
+				 *
+				 * @note The first character of the name is supposed to have
+				 * been already read and checked, and preferably put in the
+				 * specified string.
+				 *				  
+				 * @param input the stream to read from.
+				 *
+				 * @param name the string in which the read name will be
+				 * added.
+				 *
+				 * @param readChar the variable in which the additional read
+				 * character will be put (one too many is read).
+				 *
+				 * @throw InputStreamException if an I/O operation failed, or
+				 * XMLParserException if an incorrect name was found.
+				 *
+				 */
+				static void ReadXMLName( System::InputStream & input,
+						std::string & name,	Ceylan::Uint8 & readChar ) 
+					throw( System::InputStream::InputStreamException, 
+						XMLParserException ) ;
+					
+				
+	
 
 			protected:
 
+					
+					
+				
 
 				/**
 				 * The filename of the file where the XML document can be
@@ -185,7 +344,7 @@ namespace Ceylan
 				 */
 				std::string _encoding ;
 				
-				
+
 
 
 			private:
