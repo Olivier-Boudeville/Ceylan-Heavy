@@ -601,6 +601,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\code\interfaces\CeylanSerializable.h"
+				>
+			</File>
+			<File
 				RelativePath=".\code\network\CeylanServerStreamSocket.h"
 				>
 			</File>
@@ -737,7 +741,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\code\modules\CeylanXML.h"
+				>
+			</File>
+			<File
+				RelativePath=".\code\modules\ceylanxmlelement.h"
+				>
+			</File>
+			<File
 				RelativePath=".\code\modules\CeylanXMLParser.h"
+				>
+			</File>
+			<File
+				RelativePath=".\code\modules\ceylanxmlvisitor.h"
 				>
 			</File>
 			<File
@@ -1117,6 +1133,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\code\interfaces\CeylanSerializable.cc"
+				>
+			</File>
+			<File
 				RelativePath=".\code\network\CeylanServerStreamSocket.cc"
 				>
 			</File>
@@ -1233,7 +1253,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\code\modules\CeylanXML.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\code\modules\CeylanXMLElement.cc"
+				>
+			</File>
+			<File
 				RelativePath=".\code\modules\CeylanXMLParser.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\code\modules\CeylanXMLVisitor.cc"
 				>
 			</File>
 		</Filter>
@@ -1338,11 +1370,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\log\testlogplughtml.exe-logs\index.html"
+			RelativePath=".\doc\web\index.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\index.html"
+			RelativePath=".\doc\web\main\documentation\log\testlogplughtml.exe-logs\index.html"
 			>
 		</File>
 		<File
