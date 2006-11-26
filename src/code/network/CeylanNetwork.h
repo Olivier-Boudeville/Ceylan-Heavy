@@ -242,7 +242,17 @@ namespace Ceylan
 		CEYLAN_DLL const std::string getLocalHostName() 
 			throw( NetworkException ) ;
 		
-		/// Sets local host's name.
+		
+		/**
+		 * Sets local host's name.
+		 *
+		 * @note The user needs to have special permissions to change the
+		 * host name.
+		 *
+		 * @throw NetworkException if the renaming failed, including if
+		 * the operation is not supported on the running platform.
+		 *
+		 */
 		CEYLAN_DLL void setLocalHostName( const std::string & newHostName )
 			throw( NetworkException ) ;
 			
