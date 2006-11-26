@@ -1,0 +1,19 @@
+Created on Sunday, November 26, 2006.
+
+
+
+		Ceylan 0.4 release notes
+		
+
+This version is built on top of the 0.3 version (see Ceylan-0.4-changes.txt and ChangeLog for more details).
+
+We aimed at an increased portability (Solaris and Windows XP platforms added).
+
+Other efforts for this version went to the XML read/write support, with a dedicated light-weight parser.
+
+		
+Support available through the ceylan-support@lists.sourceforge.net mailing list.
+
+Report Ceylan bugs to the ceylan-bugs@lists.sourceforge.net mailing list.
+
+
