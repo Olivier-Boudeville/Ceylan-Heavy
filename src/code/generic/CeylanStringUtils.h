@@ -8,6 +8,7 @@
 #include <sstream>                // for istringstream
 #include <string>
 #include <list>                   // for string, string::size_type
+#include <map>                    // for map
 
 
 
@@ -61,7 +62,7 @@ namespace Ceylan
 
 	
 	
-	// List formatting section.
+	// Container formatting section.
 
 	
 	/**
@@ -84,6 +85,27 @@ namespace Ceylan
 	 */	
 	CEYLAN_DLL std::string formatStringList( 
 		const std::list<std::string> & stringList,
+		bool surroundByTicks = false ) throw() ;
+	
+	
+	/**
+	 * Formats the specified map whose keys and values are strings, according
+	 * to the specified format.
+	 *
+	 * Text output format is determined from overall settings : the map will
+	 * be output with HTML tags, or use raw formatting, accordingly.
+	 *
+	 * @param stringMap the map of strings to format.
+	 *
+	 * @param surroundByTicks tells whether each entry of the list should be
+	 * surrounded by ticks on output.
+	 *
+	 * @note if the STL was smarter, it would have allowed both const and
+	 * non-const arguments.
+	 *
+	 */	
+	CEYLAN_DLL std::string formatStringMap( 
+		const std::map<std::string, std::string> & stringMap,
 		bool surroundByTicks = false ) throw() ;
 	
 	
@@ -171,7 +193,8 @@ namespace Ceylan
 		
 
 	/**
-	 * Returns whether specified character is a letter, i.e. is in [a-z] or [A-Z]. 
+	 * Returns whether specified character is a letter, 
+	 * i.e. is in [a-z] or [A-Z]. 
 	 *
 	 * @param targetChar the character to test.
 	 *
@@ -193,7 +216,20 @@ namespace Ceylan
 
 
 	/**
-	 * Returns whether specified character is a punctuation character, i.e. is not a letter,
+	 * Returns whether specified character is a letter or a figure, i.e. 
+	 * is in [a-z], [A-Z] or [0-9]. 
+	 *
+	 * @param targetChar the character to test.
+	 *
+	 * @return true iff targetChar is a letter or a figure.
+	 *
+	 */
+	CEYLAN_DLL bool isAlphanumeric( char targetChar ) throw() ;
+
+
+	/**
+	 * Returns whether specified character is a punctuation character, 
+	 * i.e. is not a letter,
 	 * not a figure, not a whitespace. 
 	 *
 	 * @param targetChar the character to test.
@@ -205,7 +241,8 @@ namespace Ceylan
 
 
 	/**
-	 * Returns whether specified character is a whitespace character, i.e. is in [0x09;0x0D;0x20]. 
+	 * Returns whether specified character is a whitespace character, 
+	 * i.e. is in [0x09;0x0D;0x20]. 
 	 *
 	 * @param targetChar the character to test.
 	 *
