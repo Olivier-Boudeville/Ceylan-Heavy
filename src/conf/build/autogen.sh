@@ -449,10 +449,10 @@ generateCustom()
 		echo
 		echo " - generating configure for test suite"
 		cd test
-	 	execute ./autogen.sh --only-prepare-dist --ceylan-install-prefix $PREFIX
+	 	execute ./autogen.sh --only-prepare-dist
 		cd .. 
 		echo " - making distribution package"
-		execute make dist 
+		execute make dist-bzip2 
 	fi
 		
 		
