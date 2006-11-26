@@ -97,16 +97,22 @@ void XMLParser::setXMLTree( XMLTree & newTree ) throw()
 }
 
 
-void XMLParser::saveToFile() const throw( XMLParserException )
+void XMLParser::saveToFile( const std::string & filename ) const 
+	throw( XMLParserException )
 {
-
 
 	if ( _parsedTree == 0 )
 		throw XMLParserException( "XMLParser::saveToFile : "
 			"no parsed tree to serialize." ) ;
 			
-
-	File xmlFile( _filename ) ; 
+	string actualFileName ;
+	
+	if ( filename.empty() )
+		actualFileName = _filename ;
+	else
+		actualFileName = filename ;
+		
+	File xmlFile( actualFileName ) ; 
 
 	// Prepare header : 
 	string header = "<?xml version=\"1.0\" encoding=\""
@@ -490,12 +496,26 @@ void XMLParser::handleNextElement( System::InputStream & input,
 	
 		// Should be a XML text element :
 		string text ;
-		text +=  static_cast<char>( remainder ) ;
+		text += static_cast<char>( remainder ) ;
 		
 		// Reads everything from the beginning of text to first '<' :
 		while ( ( remainder = input.readUint8() ) != XML::LowerThan )
 			text += remainder ;
 		
+		/*
+		 * Removes any trailing whitespace so that writing an
+		 * XML file, then reading it, then writing it leads to the same exact
+		 * file (when there is no XML text ending with whitespaces).
+		 *
+		 */
+		StringSize index = text.size() - 1 ;
+		
+		while ( index > 0 && Ceylan::isWhitespace( text[index] ) )
+			index-- ;
+		
+		if ( index < text.size() - 1 )	
+			text = text.substr( 0, index + 1 ) ;
+			
 		LogPlug::debug( "XMLParser::handleNextElement : "
 			"creating XML text element from '" + text + "'." ) ;
 			
