@@ -150,13 +150,19 @@ namespace Ceylan
 	
 				/**
 				 * Saves the internal tree into an XML file, whose filename
-				 * was specified in the constructor.
+				 * was specified in the constructor. It becomes the new
+				 * default filename.
+				 *
+				 * @param filename the file where the XML tree should be 
+				 * saved. If an empty string is specified, then the filename
+				 * given to the constructor is used instead.
 				 *
 				 * @note If the file is already existing, its content will be
 				 * lost and replaced by this new content.
 				 *
 				 */
-				virtual void saveToFile() const throw( XMLParserException ) ;
+				virtual void saveToFile( const std::string & filename = "" )
+					const throw( XMLParserException ) ;
 	
 	
 				/**
