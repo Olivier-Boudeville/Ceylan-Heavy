@@ -205,7 +205,17 @@ Ceylan::Float32 Ceylan::Maths::Floor( Ceylan::Float32 x ) throw()
 	
 #else // CEYLAN_USES_FLOORF
 
+#ifdef CEYLAN_USES_FLOORF
+
+	// Use floorf if roundf is not available :
+	return ::floorf( x ) ;
+	
+#else // CEYLAN_USES_FLOORF
+
+	// Use floor if neither roundf nor floorf is available (ex : Solaris) :
 	return ::floor( x ) ;
+
+#endif // CEYLAN_USES_FLOORF
 
 #endif // CEYLAN_USES_FLOORF
 
@@ -266,8 +276,17 @@ Ceylan::Float32 Ceylan::Maths::Round( Ceylan::Float32 x ) throw()
 	
 #else // CEYLAN_USES_ROUNDF
 
-	// Use floor if floor is not available :
+#ifdef CEYLAN_USES_FLOORF
+
+	// Use floorf if roundf is not available :
 	return ::floorf( x ) ;
+	
+#else // CEYLAN_USES_FLOORF
+
+	// Use floor if neither roundf nor floorf is available (ex : Solaris) :
+	return ::floor( x ) ;
+
+#endif // CEYLAN_USES_FLOORF
 
 #endif // CEYLAN_USES_ROUNDF
 	
@@ -278,9 +297,11 @@ Ceylan::Float32 Ceylan::Maths::Round( Ceylan::Float32 x,
 	Ceylan::Uint8 precision ) throw()
 {
 	
-	Ceylan::Float64 offset = ::pow( static_cast<Ceylan::Float64>( 10 ), precision ) ;
+	Ceylan::Float64 offset = ::pow( static_cast<Ceylan::Float64>( 10 ),
+		precision ) ;
 	
 	return static_cast<Ceylan::Float32>( Round( offset * x ) / offset ) ;
+	
 }
 
 
@@ -294,8 +315,17 @@ Ceylan::Float64 Ceylan::Maths::Round( Ceylan::Float64 x ) throw()
 	
 #else // CEYLAN_USES_ROUND
 
-	// Use floor if round is not available :
+#ifdef CEYLAN_USES_FLOORF
+
+	// Use floorf if roundf is not available :
+	return ::floorf( x ) ;
+	
+#else // CEYLAN_USES_FLOORF
+
+	// Use floor if neither roundf nor floorf is available (ex : Solaris) :
 	return ::floor( x ) ;
+
+#endif // CEYLAN_USES_FLOORF
 
 #endif // CEYLAN_USES_ROUND
 
@@ -306,7 +336,8 @@ Ceylan::Float64 Ceylan::Maths::Round( Ceylan::Float64 x,
 	Ceylan::Uint8 precision ) throw()
 {
 	
-	Ceylan::Float64 offset = ::pow( static_cast<Ceylan::Float64>( 10 ), precision ) ;
+	Ceylan::Float64 offset = ::pow( static_cast<Ceylan::Float64>( 10 ),
+		precision ) ;
 	
 	return Round( offset * x ) / offset ;
 }
@@ -322,8 +353,17 @@ Ceylan::LongFloat Ceylan::Maths::Round( Ceylan::LongFloat x ) throw()
 	
 #else // CEYLAN_USES_ROUND
 
-	// Use floor if round is not available :
+#ifdef CEYLAN_USES_FLOORF
+
+	// Use floorf if roundf is not available :
+	return ::floorf( x ) ;
+	
+#else // CEYLAN_USES_FLOORF
+
+	// Use floor if neither roundf nor floorf is available (ex : Solaris) :
 	return ::floor( x ) ;
+
+#endif // CEYLAN_USES_FLOORF
 
 #endif // CEYLAN_USES_ROUND
 
@@ -334,7 +374,8 @@ Ceylan::LongFloat Ceylan::Maths::Round( Ceylan::LongFloat x,
 	Ceylan::Uint8 precision ) throw()
 {
 	
-	Ceylan::LongFloat offset = ::pow( static_cast<Ceylan::Float64>( 10 ), precision ) ;
+	Ceylan::LongFloat offset = ::pow( static_cast<Ceylan::Float64>( 10 ),
+		precision ) ;
 	
 	return static_cast<Ceylan::LongFloat>( Round( offset * x ) / offset ) ;
 }
@@ -778,6 +819,7 @@ Ceylan::Uint16 Ceylan::Maths::NextPowerOfTwo( Ceylan::Uint16 value ) throw()
 		result *= 2 ;
 	
 	return result ;		
+	
 }
 
 
