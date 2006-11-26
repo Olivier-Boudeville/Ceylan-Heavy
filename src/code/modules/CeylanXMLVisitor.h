@@ -294,9 +294,21 @@ namespace Ceylan
 				
 				/// The OutputStream where XML trees will be written.
 				System::OutputStream * _output ;
+
+/* 
+ * Takes care of the awful issue of Windows DLL with templates.
+ *
+ * @see Ceylan's developer guide and README-build-for-windows.txt 
+ * to understand it, and to be aware of the associated risks. 
+ * 
+ */
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 				
 				std::stack<ClosingMarkup> _markupsToClose ;
-				
+
+#pragma warning( pop ) 			
+			
 
 			private:
 
@@ -451,9 +463,22 @@ namespace Ceylan
 			
 				/// The markup that is searched for.
 				MarkupName _searchedMarkup ;
-				
+
+
+/* 
+ * Takes care of the awful issue of Windows DLL with templates.
+ *
+ * @see Ceylan's developer guide and README-build-for-windows.txt 
+ * to understand it, and to be aware of the associated risks. 
+ * 
+ */
+#pragma warning( push )
+#pragma warning( disable : 4251 )
+
 				/// The list that will contain all nodes whose content matches.
 				std::list<XMLMarkup *> _matchingNodes ;
+
+#pragma warning( pop ) 			
 				
 
 			private:

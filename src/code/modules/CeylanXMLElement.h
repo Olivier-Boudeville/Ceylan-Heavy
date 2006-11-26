@@ -286,11 +286,21 @@ namespace Ceylan
 
 
 			protected:
-			
-			
+		
+
 				/// Name of the markup.
 				MarkupName _name ;
-				
+
+
+/* 
+ * Takes care of the awful issue of Windows DLL with templates.
+ *
+ * @see Ceylan's developer guide and README-build-for-windows.txt 
+ * to understand it, and to be aware of the associated risks. 
+ * 
+ */
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 			
 				/**
 				 * Attributes of a XML markup, sort of tagged values, i.e. 
@@ -299,6 +309,7 @@ namespace Ceylan
 				 */
 				AttributeMap _attributes ;
 
+#pragma warning( pop ) 			
 
 
 			private:
