@@ -125,6 +125,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "system-testCeylanTime", "..
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "generic-testCeylanTree", "..\test\generic\testCeylanTree\testCeylanTree.vcproj", "{91244C07-41CC-428A-9809-D4EB717A072F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "modules-testCeylanXMLParser", "..\test\modules\testCeylanXMLParser\testCeylanXMLParser.vcproj", "{5785F5F9-88CF-4D28-A9B7-A7FBFF071916}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -379,6 +381,10 @@ Global
 		{91244C07-41CC-428A-9809-D4EB717A072F}.Debug|Win32.Build.0 = Debug|Win32
 		{91244C07-41CC-428A-9809-D4EB717A072F}.Release|Win32.ActiveCfg = Release|Win32
 		{91244C07-41CC-428A-9809-D4EB717A072F}.Release|Win32.Build.0 = Release|Win32
+		{5785F5F9-88CF-4D28-A9B7-A7FBFF071916}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5785F5F9-88CF-4D28-A9B7-A7FBFF071916}.Debug|Win32.Build.0 = Debug|Win32
+		{5785F5F9-88CF-4D28-A9B7-A7FBFF071916}.Release|Win32.ActiveCfg = Release|Win32
+		{5785F5F9-88CF-4D28-A9B7-A7FBFF071916}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
