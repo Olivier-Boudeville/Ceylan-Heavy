@@ -769,11 +769,26 @@ void Ceylan::Network::setLocalHostName( const string & newHostName )
 
 #ifdef CEYLAN_USES_SETHOSTNAME
 
-	// Some versions of Solaris do not declare it in the right header :
+	/*
+	 * Some versions of Solaris do not declare it in the right header, or
+	 * do not seem to have it :
+	 *
+	 */
+
+#if CEYLAN_ARCH_SOLARIS
+
+	throw NetworkException( "Ceylan::Network::setLocalHostName : "
+		"operation not supported on Solaris." ) ;
+
+#else // CEYLAN_ARCH_SOLARIS
+		
 	if ( ::sethostname( newHostName.c_str(), newHostName.size() ) )
 		throw NetworkException( "Ceylan::Network::setLocalHostName : "
 			"unable to set local host name to "
 			+ newHostName + " : " + explainError( getError() ) ) ;
+
+#endif // CEYLAN_ARCH_SOLARIS
+
 			
 #else // CEYLAN_USES_SETHOSTNAME
 
