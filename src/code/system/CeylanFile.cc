@@ -1480,6 +1480,55 @@ void File::Touch( const string & name ) throw( File::TouchFailed )
 }
 
 
+bool File::Diff( const std::string & firstFilename,
+	const std::string & secondFilename ) throw( FileException )
+{
+
+	if ( ! Exists( firstFilename ) )
+	{
+		LogPlug::warning( "File::Diff : first file '" + firstFilename
+			+ "' does not exist." ) ;
+		
+		return false ;	
+	}
+	
+	
+	if ( ! Exists( secondFilename ) )
+	{
+		LogPlug::warning( "File::Diff : second file '" + secondFilename
+			+ "' does not exist." ) ;
+		
+		return false ;	
+	}
+	
+	Size commonSize = GetSize( firstFilename ) ;
+	
+	if ( commonSize != GetSize( secondFilename ) )
+	{
+	
+		LogPlug::debug( "File::Diff : "
+			"the two files do not have the same size." ) ;
+		
+		return false ;	
+	}
+	
+	LogPlug::debug( "Common size is " + 
+		Ceylan::toString( commonSize ) + " bytes." ) ;
+	
+	File first(  firstFilename,  File::Read ) ;
+	File second( secondFilename, File::Read ) ;
+	
+	for ( Size i = 0; i < commonSize; i++ )
+	{
+		if ( first.readUint8() != second.readUint8() )
+			return false ;
+	}
+	
+	return true ;
+		
+}
+
+	
 const string File::TransformIntoValidFilename( const string & name ) throw()
 {
 
