@@ -735,7 +735,7 @@ namespace Ceylan
 				/**
 				 * Returns the file size.
 				 *
-				 * @see getSize
+				 * @see GetSize
 				 *
 				 */
 				virtual Size size() const throw( CouldNotStatFile ) ;
@@ -975,6 +975,25 @@ namespace Ceylan
 				 */
 				static void Touch( const std::string & name ) 
 					throw( TouchFailed ) ;
+
+
+				/**
+				 * Tells whether the two specified files have exactly the same
+				 * content.
+				 *
+				 * @param firstFilename the filename of the first file to
+				 * compare.
+				 *
+				 * @param secondFilename the filename of the second file to
+				 * compare.
+				 *
+				 * @return true iff these files exists and have exactly the 
+				 * same content.
+				 *
+				 */
+				static bool Diff( const std::string & firstFilename,
+						const std::string & secondFilename ) 
+					throw( FileException ) ;
 
 
 				/**
