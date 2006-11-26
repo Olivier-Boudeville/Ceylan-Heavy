@@ -406,11 +406,22 @@ StreamID MemoryStream::getStreamID() const throw()
 	 * Beware to 64-bit machines.
 	 *
 	 * Basically we are trying to convert a pointer to an int, gcc on
-	 * Linux will not accept Ceylan::Uint32 to become Ceylan::Uint64 :
+	 * Linux will not accept Ceylan::Uint32 to become Ceylan::Uint64,
+	 * whereas Visual C++ on 32 bit will find a pointer truncation
+	 * from 'const MemoryStream * const' to Ceylan::Uint32 :
 	 *
 	 */
+#if CEYLAN_ARCH_WINDOWS
+
 	return static_cast<StreamID>( 
-			reinterpret_cast<Ceylan::Uint32>( this ) ) ;
+		reinterpret_cast<Ceylan::Uint64>( this ) ) ;
+
+#else // CEYLAN_ARCH_WINDOWS
+
+	return static_cast<StreamID>( 
+		reinterpret_cast<Ceylan::Uint32>( this ) ) ;
+
+#endif // CEYLAN_ARCH_WINDOWS
 
 }
 
