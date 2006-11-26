@@ -22,7 +22,7 @@ EXTRA_DIST     = \
 noinst_SCRIPTS = $(BUILD_SCRIPTS_SET)
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = ceylan-0.3.pc
+pkgconfig_DATA = @CEYLAN_PKGCONFIG_FILE@
 
 DIFF_TOOL    = `which tkdiff 2>/dev/null`
 
