@@ -204,7 +204,8 @@ namespace Ceylan
 			std::map<Key, const Resource *> _entries ;
 
 #pragma warning( pop ) 			
-		
+
+
 		private:
 		
 		
