@@ -101,8 +101,7 @@ void XMLSavingVisitor::incrementHeight() throw()
 
 Ceylan::Height XMLSavingVisitor::getHeight() const throw()
 {
-
-	return _markupsToClose.size() ;
+	return static_cast<Ceylan::Height>( _markupsToClose.size() ) ;
 }
 
 
@@ -200,7 +199,9 @@ const string XMLSavingVisitor::toString( Ceylan::VerbosityLevels level )
 	}
 	else
 	{
-		res += "has " + Ceylan::toString( _markupsToClose.size() )
+		res += "has " 
+			+ Ceylan::toString( 
+				static_cast<Ceylan::Uint32>( _markupsToClose.size() ) )
 			+ " element(s)" ;
 	}
 		
