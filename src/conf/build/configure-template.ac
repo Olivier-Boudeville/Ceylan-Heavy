@@ -118,6 +118,10 @@ AC_DEFINE_UNQUOTED([LIBTOOL_VERSION],
 	["$CEYLAN_LIBTOOL_VERSION"],
 	[Current Libtool version for the Ceylan library])
 
+# pkgconfig .pc file.
+CEYLAN_PKGCONFIG_FILE="ceylan-${CEYLAN_VERSION}.pc"
+AC_SUBST(CEYLAN_PKGCONFIG_FILE)
+
 
 # Archive base directory. 
 CEYLAN_ARCHIVE_DIR="\${HOME}/Archive/${PROJECT_NAME}"
@@ -1191,6 +1195,7 @@ CheckPlatform()
 	CEYLAN_ARCH_FREEBSD=0
 	CEYLAN_ARCH_NETBSD=0
 	CEYLAN_ARCH_OPENBSD=0
+	CEYLAN_ARCH_SOLARIS=0
 	
 	CEYLAN_ARCH_BSD=0
 	CEYLAN_ARCH_UNIX=0
@@ -1244,7 +1249,12 @@ CheckPlatform()
 			CEYLAN_ARCH_BSD=1
 			CEYLAN_ARCH_UNIX=1
 			;;
-							
+		
+		*-*-solaris*)	
+			CEYLAN_ARCH_SOLARIS=1
+			CEYLAN_ARCH_UNIX=1
+			;;
+					
 	    *)
 	        # Not identified
 	        ;;
@@ -1271,6 +1281,10 @@ CheckPlatform()
 	AC_DEFINE_UNQUOTED([ARCH_OPENBSD],
 		[$CEYLAN_ARCH_OPENBSD],
 		[Define to 1 if the target platform is OpenBSD])
+
+	AC_DEFINE_UNQUOTED([ARCH_SOLARIS],
+		[$CEYLAN_ARCH_SOLARIS],
+		[Define to 1 if the target platform is Solaris])
 
 
 	AC_DEFINE_UNQUOTED([ARCH_BSD],
@@ -1403,7 +1417,7 @@ AC_CONFIG_FILES([
 	src/conf/Makefile
 	src/conf/MakeColors.inc
 	src/conf/build/Makefile
-	src/conf/build/ceylan-0.3.pc
+	src/conf/build/ceylan-ST_VERSION.pc
 	src/conf/build/m4/Makefile
 	src/conf/doc/doxygen.conf
 	src/conf/environment/Makefile
