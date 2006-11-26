@@ -189,10 +189,11 @@ int main( int argc, char * argv[] )
 			
 		if ( myMemoryStream.getBlockLength() != remainingBytes )
 			throw TestException( "Wrong filled length : expected to be " 
-				+ Ceylan::toString( static_cast<Ceylan::Uint32>( remainingBytes ) ) 
-				+ ", is "
+				+ Ceylan::toString( 
+					static_cast<Ceylan::Uint32>( remainingBytes ) )	+ ", is "
 				+ Ceylan::toString( static_cast<Ceylan::Uint32>( 
-					myMemoryStream.getBlockLength() ) ) + "." ) ;
+					myMemoryStream.getBlockLength() ) )
+				+ "." ) ;
 			
 		myMemoryStream.moveFilledBlockToBufferStart() ;
 		
@@ -207,9 +208,9 @@ int main( int argc, char * argv[] )
 				"Wrong filled length after move : expected to be " 
 				+ Ceylan::toString( 
 					static_cast<Ceylan::Uint32>( remainingBytes ) ) + ", is "
-				+ Ceylan::toString( 
-					static_cast<Ceylan::Uint32>( myMemoryStream.getBlockLength() ) ) 
-					+ "." ) ;
+				+ Ceylan::toString( static_cast<Ceylan::Uint32>( 
+						myMemoryStream.getBlockLength() ) ) 
+				+ "." ) ;
 		
 		
 		// We should have here : 3|4|5|6|7|8|9|XXXXXX
@@ -310,9 +311,10 @@ int main( int argc, char * argv[] )
 			throw TestException( 
 				"Wrong filled length after move : expected to be " 
 				+ Ceylan::toString( 
-					static_cast<Ceylan::Uint32>( remainingBytes ) ) + ", is "
-				+ Ceylan::toString( 
-					static_cast<Ceylan::Uint32>( myMemoryStream.getBlockLength() ) ) 
+					static_cast<Ceylan::Uint32>( remainingBytes ) ) 
+				+ ", is "
+				+ Ceylan::toString( static_cast<Ceylan::Uint32>(
+					myMemoryStream.getBlockLength() ) ) 
 				+ "." ) ;
 		
 			
@@ -355,7 +357,8 @@ int main( int argc, char * argv[] )
 				throw TestException( "Wrong element read (" 
 					+ Ceylan::toNumericalString( newRead ) 
 					+ ") after move, " 
-					+ Ceylan::toNumericalString( static_cast<Ceylan::Uint8>( i ) ) 
+					+ Ceylan::toNumericalString( 
+						static_cast<Ceylan::Uint8>( i ) ) 
 					+ " was expected." ) ;
 					
 		}
