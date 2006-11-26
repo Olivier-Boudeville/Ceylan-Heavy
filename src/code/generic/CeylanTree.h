@@ -357,6 +357,18 @@ namespace Ceylan
 
 
 			/**
+			 * Returns the father of the specified node, which is searched in
+			 * specified tree.
+			 *
+			 * @param child the node whose father is searched in this tree.
+			 *
+			 * @return the father tree, if found, otherwise a null pointer.
+			 *
+			 */
+			virtual Tree * getFather( Tree & child ) throw() ;
+
+
+			/**
 			 * Adds specified son to the list of sons of this tree.
 			 *
 			 * @note A subtree cannot be registered more than once.
@@ -605,9 +617,44 @@ namespace Ceylan
 	{
 		return _sons ;
 	}
+	
 
-
-
+	template <typename Content>
+	Tree<Content> * Tree<Content>::getFather( Tree<Content> & child ) 
+		throw()
+	{
+	
+	
+		/*
+		 * Algorithm : 
+		 *  - traverse the tree from the root
+		 *  - from a given node, look at the sons
+		 *  - if specified child is found, return it
+		 *	- else recurse
+		 *
+		 */
+		
+		for ( typename SubTreeList::iterator it = _sons.begin();
+				it != _sons.end(); it++ )
+			if ( *it == & child )
+				return this ;
+		
+		
+		// Recurse if next level had not that content :
+		for ( typename SubTreeList::iterator it = _sons.begin();
+				it != _sons.end(); it++ )
+		{		
+			Tree * returned = (*it)->getFather( child ) ;
+			if ( returned != 0 )
+				return returned ;
+		}  
+		
+		return 0 ;
+		  
+	
+	}
+	
+	
 	template <typename Content>
 	void Tree<Content>::accept( Visitor & visitor ) 
 		throw( VisitException )
