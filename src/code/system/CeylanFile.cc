@@ -1512,9 +1512,12 @@ bool File::Diff( const std::string & firstFilename,
 		return false ;	
 	}
 	
-	LogPlug::debug( "Common size is " + 
-		Ceylan::toString( commonSize ) + " bytes." ) ;
-	
+	/*
+	LogPlug::debug( "Common size is " 
+		+ Ceylan::toString( static_cast<Ceylan::Uint32>( commonSize ) )
+		+ " bytes." ) ;
+	 */
+
 	File first(  firstFilename,  File::Read ) ;
 	File second( secondFilename, File::Read ) ;
 	
