@@ -15,3 +15,9 @@
 const std::string Ceylan::actualCeylanHeaderLibtoolVersion =
 	"@CEYLAN_LIBTOOL_VERSION@" ;
 
+
+/*
+ * @note NEVER ckeck-in this file if there is no '@' in the variable value, 
+ * as in this case it is a generated file !
+ *
+ */
