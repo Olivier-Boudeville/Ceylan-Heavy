@@ -521,6 +521,7 @@ Ceylan::Float32 Ceylan::Maths::Min( Ceylan::Float32 x, Ceylan::Float32 y )
 	return ( x < y ) ? x : y ;
 }
 
+
 Ceylan::Float64 Ceylan::Maths::Min( Ceylan::Float64 x, Ceylan::Float64 y )
 	throw()
 {
