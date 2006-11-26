@@ -55,30 +55,30 @@ namespace Ceylan
 		
 		
 		/// ISO-8859-15 is the 'Latin-1 with euro' encoding.
-		CEYLAN_DLL const std::string Latin1WithEuroEncoding = "ISO-8859-15" ;
+		const std::string Latin1WithEuroEncoding = "ISO-8859-15" ;
 				
 				
 				
 		/// The '<' character.
-		CEYLAN_DLL const char LowerThan       = '<' ;
+		const char LowerThan       = '<' ;
 				
 		/// The '>' character.
-		CEYLAN_DLL const char HigherThan      = '>' ;
+		const char HigherThan      = '>' ;
 			
 		/// The '"' character.
-		CEYLAN_DLL const char DoubleQuote     = '"' ;
+		const char DoubleQuote     = '"' ;
 			
 		/// The '=' character.
-		CEYLAN_DLL const char Equal           = '=' ;
+		const char Equal           = '=' ;
 			
 		/// The '?' character.
-		CEYLAN_DLL const char QuestionMark    = '?' ;
+		const char QuestionMark    = '?' ;
 			
 		/// The '!' character.
-		CEYLAN_DLL const char ExclamationMark = '!' ;
+		const char ExclamationMark = '!' ;
 			
 		/// The '/' character.
-		CEYLAN_DLL const char Slash           = '/' ;
+		const char Slash           = '/' ;
 			
 			
 				
@@ -88,7 +88,7 @@ namespace Ceylan
 		 * where it is usually CR-LF.
 		 *
 		 */
-		CEYLAN_DLL const char EndOfLine = 0x0A ;
+		const char EndOfLine = 0x0A ;
 		
 	
 	}
