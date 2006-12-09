@@ -132,7 +132,7 @@ void MultiplexedServerStreamSocket::run() throw( ServerStreamSocketException )
 			"MultiplexedServerStreamSocket::run failed : "
 			"there are already living connections." ) ; 
 
-#ifndef CEYLAN_ARCH_WINDOWS		
+#if CEYLAN_ARCH_WINDOWS	== 0	
 	// On UNIX loosing a client should not stop the server :
 	Signal::ignore( Signal::BrokenPipe ) ;
 #endif // CEYLAN_ARCH_WINDOWS
