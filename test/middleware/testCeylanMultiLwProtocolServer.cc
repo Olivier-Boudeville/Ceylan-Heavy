@@ -249,15 +249,30 @@ class MyProtocolServer : public Ceylan::Middleware::ProtocolServer
 					"having enough data now (got " 
 					+ Ceylan::toString( availableReadSize ) + "/80 bytes)." ) ;
 			
-			Ceylan::Uint8 sum = 0 ;
+			// Let's try a real 32-bit variable for endianess testing :
+			Ceylan::Uint32 localSum = 0 ;
+			Ceylan::Uint32 localValue ;
+			Ceylan::Uint8  toAdd ;
 			
 			for ( Size i = 0; i < 80; i++ )
-				sum += marshaller.decodeUint8() ;
+			{
+				toAdd = marshaller.decodeUint8() ;
+				localValue = static_cast<Ceylan::Uint32>(
+					Maths::Pow( static_cast<Ceylan::Float32>( toAdd ), 3 ) * 
+					( i + 1 ) ) ;
+
+				LogPlug::debug( "Adding randomized value " 
+					+ Ceylan::toString( localSum ) ) ;
+					
+				localSum += localValue ;
+					
+			}
+			
 				
 			LogPlug::info( "MyProtocolServer::handleSum : "
-					"returning sum : " + Ceylan::toNumericalString( sum ) ) ;
+					"returning sum : " + Ceylan::toString( localSum ) ) ;
 								
-			marshaller.encodeUint8( sum ) ;	
+			marshaller.encodeUint32( localSum ) ;	
 			_currentState = 0 ;
 			
 			return true ;	
