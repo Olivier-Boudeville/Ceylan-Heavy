@@ -77,7 +77,7 @@ DEBUG_INTERNAL "Server return code is $return_code"
 display_launching ${sequential_server_test_name}
 display_test_result "${sequential_server_test_name}" "${sequential_server_test_exec}" "$return_code"
 
-test_count=$(($test_count+2))
+test_count=`expr $test_count + 2`
 
 
 
@@ -119,6 +119,6 @@ display_launching ${multiplexed_server_test_name}
 display_test_result "${multiplexed_server_test_name}" "${multiplexed_server_test_exec}" "$return_code"
 
 # test client already counted :
-test_count=$(($test_count+1))
+test_count=`expr $test_count + 1`
 
 
