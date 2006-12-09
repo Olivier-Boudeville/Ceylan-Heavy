@@ -3,8 +3,8 @@ SUBDIRS = basic
 
 # Whole website will be distributed :
 EXTRA_DIST = \
-	Ceylan-0.3-release-notes.txt \
-	Ceylan-0.3-changes.txt       \
+	Ceylan-@CEYLAN_VERSION@-release-notes.txt \
+	Ceylan-@CEYLAN_VERSION@-changes.txt       \
 	web
 
 
