@@ -21,7 +21,10 @@ AC_CONFIG_AUX_DIR([src/conf/build])
 # Detects the canonical host and target build environment :
 AC_CANONICAL_TARGET
 
-AM_INIT_AUTOMAKE
+# 'tar-ustar' selects the ustar format defined by POSIX 1003.1-1988. 
+# This format is believed to be old enough to be portable, and allows
+# for paths longer than 99 characters :
+AM_INIT_AUTOMAKE([tar-ustar])
 
 # CeylanTemporaryConfig.h is the first basic config file to be generated,
 # it contains what classically is in a usual config.h.
@@ -214,7 +217,7 @@ AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
 
 # Only headers independent from all Ceylan features are checked here : 
-AC_CHECK_HEADERS([math.h limits.h stdint.h string.h strings.h time.h sys/time.h utime.h termios.h netdb.h netinet/in.h arpa/inet.h unistd.h sys/utsname.h sys/sysinfo.h conio.h fcntl.h sys/ioctl.h errno.h sys/types.h netinet/in.h netinet/tcp.h xti.h byteswap.h machine/bswap.h sys/byteorder.h])
+AC_CHECK_HEADERS([math.h limits.h stdint.h string.h strings.h time.h sys/time.h utime.h termios.h netdb.h netinet/in.h arpa/inet.h unistd.h sys/utsname.h sys/sysinfo.h sys/systeminfo.h conio.h fcntl.h sys/ioctl.h errno.h sys/types.h netinet/in.h netinet/tcp.h xti.h byteswap.h machine/bswap.h sys/byteorder.h])
 
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -451,7 +454,7 @@ if test x$ac_cv_cxx_compiler_gnu = xyes; then
 	# incorrecly complaining : 'warning: will never be executed' in Exception
 	# constructor
 	#
-    AM_CXXFLAGS="$AM_CXXFLAGS -Wall -Werror -Woverloaded-virtual -W -Wfloat-equal -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-format-attribute -Wpacked -Wredundant-decls -Wno-unused-parameter -Wno-unknown-pragmas"
+    AM_CXXFLAGS="$AM_CXXFLAGS -Wall -Werror -Woverloaded-virtual -W -Wfloat-equal -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-format-attribute -Wpacked -Wredundant-decls -Wno-unused-parameter -Wno-unknown-pragmas -Wno-long-long"
     if test x$enable_strict_ansi = xyes; then
 		# Do not know what "-D_XOPEN_SOURCE" would change.
         AM_CXXFLAGS="$AM_CXXFLAGS -ansi -pedantic-errors"
@@ -759,6 +762,12 @@ CheckNetworkFeature()
 	if test x$network = xyes; then
 		AC_MSG_RESULT([yes])
 		have_network=yes
+		if test $CEYLAN_ARCH_SOLARIS = 1; then
+        	# Saves the original compiler library flags : 
+			ac_save_libs="$LIBS"
+        	# Adds (for the tests) the pthread compiler flags and libraries :
+			LIBS="$LIBS -lresolv -lsocket -lnsl"
+		fi
 		AC_CHECK_HEADERS([sys/socket.h],[],[have_network=no])
 		if test x$have_network = xyes; then
 			AC_CHECK_FUNCS([socket],[],[have_network=no])
@@ -766,6 +775,10 @@ CheckNetworkFeature()
 		if test x$have_network = xyes; then
 			CEYLAN_USES_NETWORK=1
 		else	
+			if test $CEYLAN_ARCH_SOLARIS = 1; then
+				# Restores previous settings :
+				LIBS=$ac_save_libs
+			fi	
 			AC_MSG_WARN([Network support requested but not available, disabling it])
 		fi
 		AC_MSG_CHECKING([whether Ceylan network support feature is enabled])
