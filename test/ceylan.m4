@@ -127,7 +127,8 @@ AC_DEFUN([CEYLAN_PATH],
     	  ;;
       *-*-solaris*)
     	  pthread_cflags="-D_REENTRANT"
-    	  pthread_lib="-lpthread -lposix4"
+		  # Network is managed here as well :
+    	  pthread_lib="-lpthread -lposix4 -lresolv -lsocket -lnsl"
     	  ;;
       *-*-sysv5*)
     	  pthread_cflags="-D_REENTRANT -Kthread"
