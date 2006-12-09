@@ -332,17 +332,23 @@ Ceylan::Float32 InputStream::readFloat32()
 	
 	if ( readCount < TypeSize ) 
 		throw EOFException( "InputStream::readFloat32" ) ;
-	
-	Ceylan::Float32 * ret = reinterpret_cast<Ceylan::Float32 *>( tempBuffer ) ;
-	
+		
 
 #if CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
+	Ceylan::Float32 * ret = reinterpret_cast<Ceylan::Float32 *>( tempBuffer ) ;
 	return *ret ;
 	
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
-	return ceylan_bswap_32( *ret ) ;
+	Ceylan::Uint32 * tmp = reinterpret_cast<Ceylan::Uint32 *>( tempBuffer ) ;
+
+	// Updates 'tempBuffer' :
+	*tmp = ceylan_bswap_32( *tmp ) ;
+	
+	Ceylan::Float32 * ret = reinterpret_cast<Ceylan::Float32 *>( tmp ) ;
+	
+	return *ret ;
 	
 	
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
@@ -364,16 +370,33 @@ Ceylan::Float64 InputStream::readFloat64()
 	if ( readCount < TypeSize ) 
 		throw EOFException( "InputStream::readFloat64" ) ;
 	
-	Ceylan::Float64 * ret = reinterpret_cast<Ceylan::Float64 *>( tempBuffer ) ;
 	
 
 #if CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
+	Ceylan::Float64 * ret = reinterpret_cast<Ceylan::Float64 *>( tempBuffer ) ;
 	return *ret ;
 	
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
-	return ceylan_bswap_64( *ret ) ;
+	Ceylan::Uint64 * tmp = reinterpret_cast<Ceylan::Uint64 *>( tempBuffer ) ;
+
+	// Updates 'tempBuffer' :
+
+#ifdef CEYLAN_FAKES_64_BIT_TYPE
+
+	Ceylan::byteswap( *tmp ) ;
+		
+#else // CEYLAN_FAKES_64_BIT_TYPE
+
+	*tmp = ceylan_bswap_64( *tmp ) ;
+	
+#endif // CEYLAN_FAKES_64_BIT_TYPE
+
+
+	Ceylan::Float64 * ret = reinterpret_cast<Ceylan::Float64 *>( tmp ) ;
+
+	return *ret ;
 	
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 	
