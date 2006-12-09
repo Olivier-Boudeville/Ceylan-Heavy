@@ -1,9 +1,0 @@
-* TO-DO
-
-	- add PER ASN.1-based marshaller (see esnacc)
-
-
-* Already done :
-
-	- add XML parser
-	- add Windows XP, Solaris and OpenBSD support
