@@ -266,7 +266,8 @@ namespace Ceylan
 		 * | x | < epsilon.
 		 *
 		 */
-		CEYLAN_DLL bool IsNull( Ceylan::Float32 x, Ceylan::Float32 epsilon ) throw() ;
+		CEYLAN_DLL bool IsNull( Ceylan::Float32 x, Ceylan::Float32 epsilon )
+			throw() ;
 		
 		
 		
@@ -301,8 +302,8 @@ namespace Ceylan
 		 * | x | < epsilon.
 		 *
 		 */
-		CEYLAN_DLL bool IsNull( Ceylan::LongFloat x, Ceylan::LongFloat epsilon ) 
-			throw() ;
+		CEYLAN_DLL bool IsNull( Ceylan::LongFloat x, 
+			Ceylan::LongFloat epsilon ) throw() ;
 		
 		
 		
@@ -316,7 +317,8 @@ namespace Ceylan
 		 * | x - y | < EpsilonFloat32.
 		 *
 		 */
-		CEYLAN_DLL bool AreEqual( Ceylan::Float32 x, Ceylan::Float32 y ) throw() ;
+		CEYLAN_DLL bool AreEqual( Ceylan::Float32 x, Ceylan::Float32 y ) 
+			throw() ;
 		
 		
 		/** 
@@ -334,7 +336,8 @@ namespace Ceylan
 		 * | x - y | < EpsilonFloat64.
 		 *
 		 */
-		CEYLAN_DLL bool AreEqual( Ceylan::Float64 x, Ceylan::Float64 y ) throw() ;
+		CEYLAN_DLL bool AreEqual( Ceylan::Float64 x, Ceylan::Float64 y ) 
+			throw() ;
 		
 		
 		/** 
@@ -366,7 +369,8 @@ namespace Ceylan
 		 * | x - y | < EpsilonLongFloat.
 		 *
 		 */
-		CEYLAN_DLL bool AreEqual( Ceylan::LongFloat x, Ceylan::LongFloat y ) throw() ;
+		CEYLAN_DLL bool AreEqual( Ceylan::LongFloat x, Ceylan::LongFloat y )
+			throw() ;
 
 		
 		/** 
@@ -673,8 +677,8 @@ namespace Ceylan
 		 * is not available, floor will be used instead.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float32 Round( Ceylan::Float32 x, Ceylan::Uint8 precision )
-			throw() ;
+		CEYLAN_DLL Ceylan::Float32 Round( Ceylan::Float32 x, 
+			Ceylan::Uint8 precision ) throw() ;
 
 		
 		
@@ -740,8 +744,8 @@ namespace Ceylan
 		 * is not available, floor will be used instead.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float64 Round( Ceylan::Float64 x, Ceylan::Uint8 precision )
-			throw() ;
+		CEYLAN_DLL Ceylan::Float64 Round( Ceylan::Float64 x, 
+			Ceylan::Uint8 precision ) throw() ;
 				
 				
 		
@@ -807,8 +811,8 @@ namespace Ceylan
 		 * is not available, floor will be used instead.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::LongFloat Round( Ceylan::LongFloat x, Ceylan::Uint8 precision )
-			throw() ;
+		CEYLAN_DLL Ceylan::LongFloat Round( Ceylan::LongFloat x, 
+			Ceylan::Uint8 precision ) throw() ;
 	
 			
 				
@@ -827,7 +831,8 @@ namespace Ceylan
 		CEYLAN_DLL Ceylan::Sint32 Abs( Ceylan::Sint32 x ) throw() ;
 				
 		/// Computes the absolute value of specified argument.
-		CEYLAN_DLL Ceylan::SignedLongInteger Abs( Ceylan::SignedLongInteger x ) throw() ;
+		CEYLAN_DLL Ceylan::SignedLongInteger Abs( 
+			Ceylan::SignedLongInteger x ) throw() ;
 		
 		
 		/**
@@ -876,7 +881,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Sint8 Min( Ceylan::Sint8 x, Ceylan::Sint8 y ) throw() ;		
+		CEYLAN_DLL Ceylan::Sint8 Min( Ceylan::Sint8 x, Ceylan::Sint8 y ) 
+			throw() ;		
 
 		
 		/**
@@ -885,7 +891,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Uint8 Min( Ceylan::Uint8 x, Ceylan::Uint8 y ) throw() ;		
+		CEYLAN_DLL Ceylan::Uint8 Min( Ceylan::Uint8 x, Ceylan::Uint8 y ) 
+			throw() ;		
 		
 		
 		/**
@@ -914,7 +921,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Sint32 Min( Ceylan::Sint32 x, Ceylan::Sint32 y ) throw() ;
+		CEYLAN_DLL Ceylan::Sint32 Min( Ceylan::Sint32 x, Ceylan::Sint32 y )
+			throw() ;
 	
 		
 		/**
@@ -923,7 +931,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Uint32 Min( Ceylan::Uint32 x, Ceylan::Uint32 y ) throw() ;
+		CEYLAN_DLL Ceylan::Uint32 Min( Ceylan::Uint32 x, Ceylan::Uint32 y )
+			throw() ;
 		
 				
 		/**
@@ -942,7 +951,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::UnsignedLongInteger Min( Ceylan::UnsignedLongInteger x,
+		CEYLAN_DLL Ceylan::UnsignedLongInteger Min( 
+			Ceylan::UnsignedLongInteger x,
 			Ceylan::UnsignedLongInteger y ) throw() ;
 	
 		
@@ -987,8 +997,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::LongFloat Min( Ceylan::LongFloat x, Ceylan::LongFloat y )
-			throw() ;
+		CEYLAN_DLL Ceylan::LongFloat Min( Ceylan::LongFloat x, 
+			Ceylan::LongFloat y ) throw() ;
 		
 		
 		
@@ -1019,7 +1029,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Sint8 Max( Ceylan::Sint8 x, Ceylan::Sint8 y ) throw() ;		
+		CEYLAN_DLL Ceylan::Sint8 Max( Ceylan::Sint8 x, Ceylan::Sint8 y ) 
+			throw() ;		
 
 		
 		/**
@@ -1028,7 +1039,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Uint8 Max( Ceylan::Uint8 x, Ceylan::Uint8 y ) throw() ;		
+		CEYLAN_DLL Ceylan::Uint8 Max( Ceylan::Uint8 x, Ceylan::Uint8 y ) 
+			throw() ;		
 		
 		
 		/**
@@ -1037,7 +1049,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Sint16 Max( Ceylan::Sint16 x, Ceylan::Sint16 y ) throw() ;
+		CEYLAN_DLL Ceylan::Sint16 Max( Ceylan::Sint16 x, Ceylan::Sint16 y )
+			throw() ;
 			
 			
 		/**
@@ -1046,7 +1059,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Uint16 Max( Ceylan::Uint16 x, Ceylan::Uint16 y ) throw() ;
+		CEYLAN_DLL Ceylan::Uint16 Max( Ceylan::Uint16 x, Ceylan::Uint16 y )
+			throw() ;
 				
 				
 		/**
@@ -1055,7 +1069,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Sint32 Max( Ceylan::Sint32 x, Ceylan::Sint32 y ) throw() ;
+		CEYLAN_DLL Ceylan::Sint32 Max( Ceylan::Sint32 x, Ceylan::Sint32 y )
+			throw() ;
 	
 		
 		/**
@@ -1064,7 +1079,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Uint32 Max( Ceylan::Uint32 x, Ceylan::Uint32 y ) throw() ;
+		CEYLAN_DLL Ceylan::Uint32 Max( Ceylan::Uint32 x, Ceylan::Uint32 y )
+			throw() ;
 		
 				
 		/**
@@ -1083,7 +1099,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::UnsignedLongInteger Max( Ceylan::UnsignedLongInteger x,
+		CEYLAN_DLL Ceylan::UnsignedLongInteger Max( 
+			Ceylan::UnsignedLongInteger x,
 			Ceylan::UnsignedLongInteger y ) throw() ;
 	
 		
@@ -1128,8 +1145,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::LongFloat Max( Ceylan::LongFloat x, Ceylan::LongFloat y )
-			throw() ;
+		CEYLAN_DLL Ceylan::LongFloat Max( Ceylan::LongFloat x, 
+			Ceylan::LongFloat y ) throw() ;
 		
 			
 
@@ -1169,11 +1186,12 @@ namespace Ceylan
 			throw() ;
 		
 		/// Computes the value of x raised to the power of y.		
-		CEYLAN_DLL Ceylan::Float64 Pow( Ceylan::Float64 x, Ceylan::Float64 y ) throw() ;
+		CEYLAN_DLL Ceylan::Float64 Pow( Ceylan::Float64 x, 
+			Ceylan::Float64 y ) throw() ;
 		
 		/// Computes the value of x raised to the power of y.		
-		CEYLAN_DLL Ceylan::LongFloat Pow( Ceylan::LongFloat x, Ceylan::LongFloat y )
-			throw() ;
+		CEYLAN_DLL Ceylan::LongFloat Pow( Ceylan::LongFloat x, 
+			Ceylan::LongFloat y ) throw() ;
 		
 		
 		
@@ -1198,7 +1216,8 @@ namespace Ceylan
 		 * exception if x is negative.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float32 Sqrt( Ceylan::Float32 x ) throw( MathsException ) ;
+		CEYLAN_DLL Ceylan::Float32 Sqrt( Ceylan::Float32 x ) 
+			throw( MathsException ) ;
 		
 		
 		/**
@@ -1215,7 +1234,8 @@ namespace Ceylan
 		 * exception if x is negative.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::LongFloat Sqrt( Ceylan::LongFloat x ) throw( MathsException ) ;
+		CEYLAN_DLL Ceylan::LongFloat Sqrt( Ceylan::LongFloat x ) 
+			throw( MathsException ) ;
 			
 			
 		
@@ -1290,8 +1310,8 @@ namespace Ceylan
 		 * expressed in radians.
 		 *
 		 */		
-		CEYLAN_DLL AngleInRadians DegreeToRadian( AngleInDegrees angleInDegrees ) 
-			throw() ;
+		CEYLAN_DLL AngleInRadians DegreeToRadian( 
+			AngleInDegrees angleInDegrees ) throw() ;
 		
 		
 		/**
@@ -1372,6 +1392,7 @@ namespace Ceylan
 				 *
 				 */
 				Ceylan::Sint32 _creationParameter ;
+				
 			
  		} ;
 				
