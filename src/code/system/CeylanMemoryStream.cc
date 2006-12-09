@@ -418,8 +418,13 @@ StreamID MemoryStream::getStreamID() const throw()
 
 #else // CEYLAN_ARCH_WINDOWS
 
+	/*
+	 * long and void * have the same size in 32 bit-platforms (4 bytes)
+	 * and on 64 bit ones (8 bytes).
+	 *
+	 */ 
 	return static_cast<StreamID>( 
-		reinterpret_cast<Ceylan::Uint32>( this ) ) ;
+		reinterpret_cast<long>( this ) ) ;
 
 #endif // CEYLAN_ARCH_WINDOWS
 
