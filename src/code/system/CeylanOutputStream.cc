@@ -202,9 +202,12 @@ void OutputStream::writeFloat32( Ceylan::Float32 toWrite )
 	// Nothing to do.
 	
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
-
-	toWrite = ceylan_bswap_32( toWrite ) ;
 	
+	Ceylan::Uint32 * tmp = reinterpret_cast<Ceylan::Uint32 *>( &toWrite ) ;
+	
+	// Updates 'toWrite' :
+	*tmp = ceylan_bswap_32( *tmp ) ;
+		
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 			
 	Size writeCount = write( 
@@ -228,7 +231,21 @@ void OutputStream::writeFloat64( Ceylan::Float64 toWrite )
 	
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
-	toWrite = ceylan_bswap_64( toWrite ) ;
+
+	Ceylan::Uint64 * tmp = reinterpret_cast<Ceylan::Uint64 *>( & toWrite ) ;
+
+	// Updates 'toWrite' :
+
+#ifdef CEYLAN_FAKES_64_BIT_TYPE
+	
+	Ceylan::byteswap( *tmp ) ;		
+	
+#else // CEYLAN_FAKES_64_BIT_TYPE
+
+	*tmp = ceylan_bswap_64( *tmp ) ;
+
+#endif // CEYLAN_FAKES_64_BIT_TYPE
+	
 	
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 			
