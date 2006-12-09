@@ -13,14 +13,16 @@ is_batch=0
 
 
 if [ "$#" -ge "2" ] ; then
-	echo -e "Usage : $USAGE" 1>&2
+	echo "
+	Usage : $USAGE" 1>&2
 	exit 1
 fi	
 
 if [ "$#" = "1" ] ; then
 	if [ "$1" != "--interactive" ] ; then
 		echo "$1 : unknown option." 1>&2
-		echo -e "Usage : $USAGE" 1>&2
+		echo "
+		Usage : $USAGE" 1>&2
 		exit 2
 	else
 		is_batch=1	
@@ -94,7 +96,7 @@ display_test_result()
 	else
 			
 		# Test failed :
-		error_count=$(($error_count+1))
+		error_count=`expr $error_count + 1`
 		if [ "$is_batch" = "1" ] ; then
 			echo
 			printColor "${term_offset}$t seems to be failed (exit status $return_code)     " $white_text $red_back
@@ -135,7 +137,9 @@ run_test()
 	# run in interactive mode, so that those which are long 
 	# (ex : stress tests) are shorten.
 	if [ "$is_batch" = "0" ] ; then
-		echo -e "\n\n########### Running now $t" >>${TESTLOGFILE}
+		echo "
+		
+		########### Running now $t" >>${TESTLOGFILE}
 		$t --batch ${network_option} 1>>${TESTLOGFILE} 2>&1
 	else
 		$t --interactive ${network_option}
@@ -195,7 +199,7 @@ else
 fi	
 
 # For testCeylanFileLocator and others that need to search relative paths :
-# (do not know why shell fails when doing a 'cd test' when run from trunk)
+# (do not know why shell fails when doing a 'cd test' when run from trunk)
 cd ${TEST_ROOT}
 
 # Creates a test directory to avoid polluting other directories :
@@ -203,20 +207,24 @@ TEST_DIR="tests-results-"`date '+%Y%m%d'`
 
 
 if [ "$is_batch" = "0" ] ; then
-	echo -e "\nRunning in batch mode, tests will be short and silent, only results are to be output."
+	echo "
+	Running in batch mode, tests will be short and silent, only results are to be output."
 else	
-	echo -e "\nInteractive tests will only need the enter key to be pressed one or more times. Be warned though that some tests might take a long time, and that some of them have no special output except a test result."
+	echo "
+	Interactive tests will only need the enter key to be pressed one or more times. Be warned though that some tests might take a long time, and that some of them have no special output except a test result."
 fi
 
 # Test whether we are online (needed for DNS queries) :
 if ping google.com -c 2 1>/dev/null 2>&1; then
 	is_online=0
 	network_option="--online"
-	echo -e "\nRunning in online mode, in-depth network testing enabled."
+	echo "
+	Running in online mode, in-depth network testing enabled."
 else	
 	is_online=1
 	network_option=""
-	echo -e "\nNo Internet connection detected, some network tests will be disabled."
+	echo "
+	No Internet connection detected, some network tests will be disabled."
 fi
 
 
@@ -230,7 +238,7 @@ on_cygwin=1
 check_dependency=1
 
 # Special case for tests generated on Windows :
-if [ `uname -o` = "Cygwin" ] ; then
+if [ `uname -s` = "Cygwin" ] ; then
 	
 	on_cygwin=0
 	DEBUG_INTERNAL "Running tests in the Windows (Cygwin) context."
@@ -241,7 +249,7 @@ if [ `uname -o` = "Cygwin" ] ; then
 fi	
 
 # This script will automatically run each test of each selected Ceylan module.
-TESTED_ROOT_MODULES=`cd ${TEST_ROOT}; find . -mindepth 1 -type d | grep -v tmp | grep -v Debug | grep -v autom4te.cache | grep -v .svn | grep -v '.deps' | grep -v '.libs' | grep -v 'testCeylan' `
+TESTED_ROOT_MODULES=`cd ${TEST_ROOT}; find . -type d | grep -v tmp | grep -v Debug | grep -v autom4te.cache | grep -v .svn | grep -v '.deps' | grep -v '.libs' | grep -v 'testCeylan'| grep -v '^\.$'`
 
 # For debug purpose :
 #TESTED_ROOT_MODULES="generic logs interfaces modules system maths network middleware"
@@ -260,18 +268,23 @@ if [ -z "${COLUMNS}" ] ; then
 fi
 DEBUG_INTERNAL "Columns = ${COLUMNS}"	
 
-space_for_test_name=`echo $(( ${COLUMNS} - 5 ))`
+space_for_test_name=`expr ${COLUMNS} - 5`
 DEBUG_INTERNAL "Space for test names = ${space_for_test_name}"	
 
 
 if [ "$is_batch" = "0" ] ; then
-	echo -e "\n\tTest results established at "`date '+%A, %B %-e, %Y'`"\n\n" > ${TESTLOGFILE}
+	echo "
+		Test results established at "`date '+%A, %B %-e, %Y'`"\n\n" > ${TESTLOGFILE}
 fi
 
 if [ "$on_cygwin" -eq "0" ] ; then
-	echo -e "\n\nLibrary search path is : PATH='$PATH'" >> ${TESTLOGFILE}
+	echo "
+	
+	Library search path is : PATH='$PATH'" >> ${TESTLOGFILE}
 else
-	echo -e "\n\nLibrary search path is : LD_LIBRARY_PATH='$LD_LIBRARY_PATH'" >> ${TESTLOGFILE}
+	echo "
+	
+	Library search path is : LD_LIBRARY_PATH='$LD_LIBRARY_PATH'" >> ${TESTLOGFILE}
 fi
 
 # So that test plugin can be found :
@@ -290,7 +303,8 @@ for m in ${TESTED_ROOT_MODULES} ; do
 	
 	PLAYTEST_LOCAL="${TEST_ROOT}/$m/${PLAYTEST_LOCAL_FILE}"
 	
-	printColor "\n${term_offset}${term_primary_marker}Playing all tests of module '"`echo $m | sed 's|^./||1'`"' : " $magenta_text $black_back
+	printColor "
+	${term_offset}${term_primary_marker}Playing all tests of module '"`echo $m | sed 's|^./||1'`"' : " $magenta_text $black_back
 	
 	if [ -f "${PLAYTEST_LOCAL}" ] ; then
 		EXCLUDED_TESTS=""
@@ -301,7 +315,7 @@ for m in ${TESTED_ROOT_MODULES} ; do
 	if [ "$on_cygwin" -eq "0" ] ; then
 		TESTS=`ls ${TEST_ROOT}/$m/*-testCeylan*.exe 2>/dev/null`
 	else	
-		TESTS=`find ${TEST_ROOT}/$m -mindepth 1 -maxdepth 1 -perm -o+x,g+x -a -type f -a -name 'testCeylan*.exe' `
+		TESTS=`ls ${TEST_ROOT}/$m/testCeylan*.exe 2>/dev/null`	
 	fi
 	
 	DEBUG_INTERNAL "Tests in module ${m} are : '${TESTS}'"
@@ -315,7 +329,8 @@ for m in ${TESTED_ROOT_MODULES} ; do
 			fi
 		done
 
-		echo -e "\n   <Press enter to start testing module '"`echo $m | sed 's|./||'`"'>"
+		echo "
+		<Press enter to start testing module '"`echo $m | sed 's|./||'`"'>"
 		read $dummy
 		clear
 	fi
@@ -340,7 +355,7 @@ for m in ${TESTED_ROOT_MODULES} ; do
 				continue
 			fi
 			
-			test_count=$(($test_count+1))
+			test_count=`expr $test_count + 1`
 			
 			get_logical_test_name $t
 			test_name="$returned_string"
@@ -358,7 +373,8 @@ done
 display_final_stats
 
 
-echo -e "\nEnd of tests"
+echo "
+End of tests"
 
 LTDL_LIBRARY_PATH="$saved_LTDL_LIBRARY_PATH"
 
