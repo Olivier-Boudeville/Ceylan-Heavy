@@ -210,7 +210,8 @@ class MyTestProtocolClient : public Ceylan::Network::ClientStreamSocket
 			// Generates random bytes (in [0;255]) :
 			Ceylan::Maths::Random::WhiteNoiseGenerator myRandomGen( 0, 256 ) ;
 			
-			Ceylan::Uint8 localSum = 0 ;
+			Ceylan::Uint32 localSum = 0 ;
+			Ceylan::Uint32 localValue ;
 			
 			Ceylan::Uint8 toAdd ;
 			
@@ -221,8 +222,17 @@ class MyTestProtocolClient : public Ceylan::Network::ClientStreamSocket
 				toAdd = static_cast<Ceylan::Uint8>( 
 				  	myRandomGen.getNewValue() ) ;
 				
-				writeUint8( toAdd ) ;	
-				localSum += toAdd ;
+				writeUint8( toAdd ) ;
+				
+				// To use the full 32-bit range (hopefully) :	
+				localValue = static_cast<Ceylan::Uint32>(
+					Maths::Pow( static_cast<Ceylan::Float32>( toAdd ), 3 ) * 
+					( i + 1 ) ) ;
+									
+				LogPlug::debug( "Adding randomized value " 
+					+ Ceylan::toString( localSum ) ) ;
+					
+				localSum += localValue ;
 				
 				if ( _interactiveMode )
 				{
@@ -232,7 +242,7 @@ class MyTestProtocolClient : public Ceylan::Network::ClientStreamSocket
 					
 			}
 			
-			Ceylan::Uint8 receivedSum = readUint8() ; 
+			Ceylan::Uint32 receivedSum = readUint32() ; 
 			
 			if ( receivedSum != localSum )
 				throw TestException( "MyTestProtocolClient::sendSum received "
@@ -242,7 +252,7 @@ class MyTestProtocolClient : public Ceylan::Network::ClientStreamSocket
 	
 			LogPlug::info( "MyTestProtocolClient::sendSum : "
 				"local and server-side sums match ("
-				+ Ceylan::toNumericalString( receivedSum ) + ")." ) ;
+				+ Ceylan::toString( receivedSum ) + ")." ) ;
 			
 			cout << "Sum OK !" ;
 					
