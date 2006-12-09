@@ -156,10 +156,9 @@ The test*.vcproj files could be generated automatically, but it would not be far
 The solution and the main projects could not be stored in the expected trunk/src/conf/build directory, as it leads to having all imported files in the same virtual directory, whereas we want to keep the original module-based directory structure.
 
 
-The recommended way of testing the Ceylan library is to run the testing suite 
-for a Cygwin terminal, since the script playTests.sh can be run on all supported
-platforms, including Cygwin-based Windows (note that Cygwin is used for the 
-shell and UNIX commands it provides, none of its libraries is used by Ceylan) :
+The recommended way of retrieving the Ceylan library on Windows is to check-out a stable SVN tree : the source archive is a tar.bz2, which is not very convenient.
+
+The recommended way of testing the Ceylan library is to check-out a stable SVN treeand to run the testing suite from a Cygwin terminal, since the script playTests.sh can be run on all supported platforms, including Cygwin-based Windows (note that Cygwin is used for the shell and UNIX commands it provides, none of its libraries is used by Ceylan) :
 """
 cd trunk/test
 ./playTests.sh
