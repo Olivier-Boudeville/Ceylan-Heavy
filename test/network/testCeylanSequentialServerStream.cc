@@ -173,7 +173,7 @@ int main( int argc, char * argv[] )
 		if ( ! Features::isNetworkingSupported() )
 		{
 			LogPlug::info( 
-				"No network support available, no test performed." ) ;
+				"No network feature available, no test performed." ) ;
 			return Ceylan::ExitSuccess ;
 		}
 		
