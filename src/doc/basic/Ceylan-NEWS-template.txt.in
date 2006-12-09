@@ -2,15 +2,28 @@
 			  
 			     What has changed in Ceylan ?
          
-	(Organized release by release, from the latest to the oldest)
-			 
+		 
+	Organized release by release, from the latest to the oldest.
+	See ChangeLog file for more detailed informations.
+
 
 			 
-*** Main changes in Ceylan 0.3 [released in 2006] :
+*** Main changes in Ceylan 0.4 [released on Saturday, December 9, 2006] :
+	
+	* light-weight XML template-based parser added, able to read/write XML files and recreating a DOM-like tree structure in memory for easier management of structured data  	
+	
+	* three additional platforms are supported : Windows XP, Sun Solaris 9, OpenBSD 3.8. Network interoperability has been successfully checked with 32/64 bit platforms, big/little endian, Intel/AMD/Sparc  
+		
+			 
+			 
+*** Main changes in Ceylan 0.3 [released on Tuesday, September 12, 2006] :
 
 	* custom-made GNU makefiles replaced by fully autotool-based build system (automake, autoconf, libtool)
+	
 	* Ceylan platform-related feature system added, with eight first features available on the GNU/Linux platform, namely the support of : regular expressions, multithread, network, file descriptors, symbolic links, advanced file attribute, file locks and advanced process management
+	
 	* migration from CVS to SVN
+	
 	* having now a dedicated official website (http://ceylan.sourceforge.net) and mirror site (http://ceylan.esperide.com), instead of using OSDL's ones
 
 
@@ -18,6 +31,7 @@
 *** Main changes in Ceylan 0.2 [released in 2004] :
 
 	* a lot more modules added
+	
 	* ChangeLog system added, along with auto-generated README and INSTALL files
 
 
