@@ -238,7 +238,7 @@ on_cygwin=1
 check_dependency=1
 
 # Special case for tests generated on Windows :
-if [ `uname -s | head -c 6` = "CYGWIN" ] ; then
+if [ `uname -s | cut -b1-6` = "CYGWIN" ] ; then
 	
 	on_cygwin=0
 	DEBUG_INTERNAL "Running tests in the Windows (Cygwin) context."
