@@ -132,8 +132,13 @@ Before reporting an error, please check you have upgraded following tools with t
     </table>
 </center>
 	</li>
+	
+	<li>create two distribution archives : <code>ceylan-x.y.tar.bz2</code> thanks to <code>cd trunk/src/conf/build; autogen.sh -o</code> and <code>ceylan-x.y.tar.gz</code> thanks to <code>make dist</code> from <code>trunk</code>
+</li>
 		
-	<li>upload a distribution archive to <a href="http://sourceforge.net/projects/ceylan" target="_blank">Sourceforge</a>, and paste the previous ChangeLog. Add the relevant release notes</li>
+	<li>upload both distribution archives to <a href="http://sourceforge.net/projects/ceylan" target="_blank">Sourceforge</a> : select in the admin tab <code>File releases</code>, add a release to the <code>Ceylan</code> package (not the hidden <code>ceylan</code> package), name that release <code>Ceylan-x.y</code>, create it. Upload both release notes and ChangeLog from local tree (respectively from <code>trunk/src/doc/Ceylan-x.y-release-notes.txt</code> and from <code>trunk/ChangeLog</code>). Upload by anonymous FTP both archives to
+<code>upload.sourceforge.net</code> in the <code>incoming</code> directory. Add the archives from the web interface (Processor : <code>Platform-Independent)</code>, File Type : <code>Source .bz2</code> or <code>Source .gz</code>). Send a notice. Check everything from a non-logged browser. 
+</li>
 	
 	<li>send a release notice to <code>ceylan-announces@lists.sourceforge.net</code></li>
 	
@@ -210,7 +215,7 @@ For client/server model :
       <center>
         [<a href="#_top_">Top</a>]<br>
         <br>
-        <em>Last update : Sunday, November 26, 2006</em>
+        <em>Last update : Saturday, December 9, 2006</em>
       </center>
   
 </body>
