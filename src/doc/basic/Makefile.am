@@ -18,7 +18,8 @@ CURRENT_DATE= `LANG=; date $(DATE_FORMAT)`
 CREATE_CHANGELOG=false
 
 
-EXTRA_DIST = $(RAW_DOC_FILES)
+EXTRA_DIST = $(RAW_DOC_FILES) ${top_builddir}/ChangeLog
+
 
 RAW_DOC_FILES = ${top_builddir}/AUTHORS ${top_builddir}/COPYING.LIB        \
 	${top_builddir}/FAQ ${top_builddir}/INSTALL ${top_builddir}/MAINTENERS \
@@ -69,6 +70,18 @@ effective-changelog-creation:
 	$(CHANGELOG_COMMAND) --linelen=10000 -o ${top_builddir}/ChangeLog ${top_srcdir} ; fi
 	-@/bin/rm -f ${top_srcdir}/ChangeLog.bak
 
+
+html-changelog:
+	@echo "@CEYLAN_COMMAND_STYLE@    Recreating HTML ChangeLog page from SVN\
+	[takes some time]@CEYLAN_DEFAULT_STYLE@"
+	@if [ ! -x "$(CHANGELOG_COMMAND)" ] ; then echo\
+	"@CEYLAN_WARNING_STYLE@No Changelog tool\
+	available, nothing done@CEYLAN_DEFAULT_STYLE@"; else\
+	$(CHANGELOG_COMMAND) --html -o \
+	${top_srcdir}/src/doc/web/Ceylan-@CEYLAN_VERSION@/ChangeLog.html \
+	${top_srcdir} ; fi
+	-@/bin/rm -f ${top_srcdir}/ChangeLog.bak
+	
 
 
 # The various basic documentation files have to be modified here despite
@@ -158,3 +171,4 @@ real-clean:
 	Ceylan-README-template.txt Ceylan-THANKS-template.txt               \
 	Ceylan-TODO-template.txt Makefile.in
 	
+${top_builddir}/ChangeLog: effective-changelog-creation
