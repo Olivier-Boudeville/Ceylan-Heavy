@@ -300,6 +300,7 @@ namespace Ceylan
 	
 #else // CEYLAN_64_BIT_TYPE
 
+#define CEYLAN_FAKES_64_BIT_TYPE
 
 	/// This is really just a hack to prevent the compiler from complaining :
 	typedef struct 
