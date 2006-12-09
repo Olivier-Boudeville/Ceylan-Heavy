@@ -24,9 +24,17 @@ using namespace Ceylan::System ;   // for SystemException
 extern "C" 
 {
 
+
 #ifdef CEYLAN_USES_SYS_SYSINFO_H
+
+// Solaris sysinfo.h does not even compile out-of-the-box (uint64_t not known).
+#if CEYLAN_ARCH_SOLARIS == 0
 #include <sys/sysinfo.h>           // for GNU/Linux sysinfo
+#endif // CEYLAN_ARCH_SOLARIS
+
 #endif // CEYLAN_USES_SYS_SYSINFO_H
+
+// On Solaris sys/systeminfo.h provides only an unrelated sysinfo.
 
 }
 
@@ -37,7 +45,15 @@ UnsignedLongInteger Ceylan::System::getSecondsSinceSystemBoot()
 { 
 	
 #ifdef CEYLAN_USES_SYSINFO
-	
+
+#if CEYLAN_ARCH_SOLARIS
+
+	throw SystemException( 
+		"Ceylan::System::getSecondsSinceSystemBoot : "
+		"not available on Solaris platform." ) ;	
+
+#else // CEYLAN_ARCH_SOLARIS
+
 	struct sysinfo sysinfoStruct ;
 	
 	if ( ::sysinfo( & sysinfoStruct ) != 0 )
@@ -46,7 +62,9 @@ UnsignedLongInteger Ceylan::System::getSecondsSinceSystemBoot()
 			"unable to query system : "	+ explainError() ) ;
 	
 	return static_cast<UnsignedLongInteger>( sysinfoStruct.uptime ) ;
-	
+
+#endif // CEYLAN_ARCH_SOLARIS
+
 #else // CEYLAN_USES_SYSINFO
 
 	throw SystemException( 
@@ -64,6 +82,14 @@ Ceylan::Uint32 Ceylan::System::getTotalProcessCount()
 { 
 
 #ifdef CEYLAN_USES_SYSINFO
+
+#if CEYLAN_ARCH_SOLARIS
+
+	throw SystemException( 
+		"Ceylan::System::getTotalProcessCount : "
+		"not available on Solaris platform." ) ;	
+
+#else // CEYLAN_ARCH_SOLARIS
 	
 	struct sysinfo sysinfoStruct ;
 	
@@ -73,6 +99,8 @@ Ceylan::Uint32 Ceylan::System::getTotalProcessCount()
 			"unable to query system : "	+ explainError() ) ;
 	
 	return static_cast<Ceylan::Uint32>( sysinfoStruct.procs ) ;
+
+#endif // CEYLAN_ARCH_SOLARIS
 	
 #else // CEYLAN_USES_SYSINFO
 
@@ -93,6 +121,14 @@ UnsignedLongInteger Ceylan::System::getTotalSystemMemorySize()
 	
 #ifdef CEYLAN_USES_SYSINFO
 
+#if CEYLAN_ARCH_SOLARIS
+
+	throw SystemException( 
+		"Ceylan::System::getTotalSystemMemorySize : "
+		"not available on Solaris platform." ) ;	
+
+#else // CEYLAN_ARCH_SOLARIS
+
 	struct sysinfo sysinfoStruct ;
 	
 	if ( ::sysinfo( & sysinfoStruct ) != 0 )
@@ -102,6 +138,8 @@ UnsignedLongInteger Ceylan::System::getTotalSystemMemorySize()
 	
 	return static_cast<UnsignedLongInteger>( 
 		sysinfoStruct.mem_unit * sysinfoStruct.totalram ) ;
+
+#endif // CEYLAN_ARCH_SOLARIS
 	
 #else // CEYLAN_USES_SYSINFO
 
@@ -121,6 +159,14 @@ UnsignedLongInteger Ceylan::System::getFreeSystemMemorySize()
 	
 #ifdef CEYLAN_USES_SYSINFO
 
+#if CEYLAN_ARCH_SOLARIS
+
+	throw SystemException( 
+		"Ceylan::System::getFreeSystemMemorySize : "
+		"not available on Solaris platform." ) ;	
+
+#else // CEYLAN_ARCH_SOLARIS
+
 	struct sysinfo sysinfoStruct ;
 	
 	if ( ::sysinfo( & sysinfoStruct ) != 0 )
@@ -130,6 +176,8 @@ UnsignedLongInteger Ceylan::System::getFreeSystemMemorySize()
 	
 	return static_cast<UnsignedLongInteger>( 
 		sysinfoStruct.mem_unit * sysinfoStruct.freeram ) ;
+
+#endif // CEYLAN_ARCH_SOLARIS
 	
 #else // CEYLAN_USES_SYSINFO
 
@@ -149,6 +197,14 @@ UnsignedLongInteger Ceylan::System::getTotalSwapMemorySize()
 	
 #ifdef CEYLAN_USES_SYSINFO
 
+#if CEYLAN_ARCH_SOLARIS
+
+	throw SystemException( 
+		"Ceylan::System::getTotalSwapMemorySize : "
+		"not available on Solaris platform." ) ;	
+
+#else // CEYLAN_ARCH_SOLARIS
+
 	struct sysinfo sysinfoStruct ;
 	
 	if ( ::sysinfo( & sysinfoStruct ) != 0 )
@@ -159,6 +215,8 @@ UnsignedLongInteger Ceylan::System::getTotalSwapMemorySize()
 	return static_cast<UnsignedLongInteger>( 
 		sysinfoStruct.mem_unit * sysinfoStruct.totalswap ) ;
 	
+#endif // CEYLAN_ARCH_SOLARIS
+
 #else // CEYLAN_USES_SYSINFO
 
 	throw SystemException( 
@@ -177,6 +235,14 @@ UnsignedLongInteger Ceylan::System::getFreeSwapMemorySize()
 	
 #ifdef CEYLAN_USES_SYSINFO
 
+#if CEYLAN_ARCH_SOLARIS
+
+	throw SystemException( 
+		"Ceylan::System::getFreeSwapMemorySize : "
+		"not available on Solaris platform." ) ;	
+
+#else // CEYLAN_ARCH_SOLARIS
+
 	struct sysinfo sysinfoStruct ;
 	
 	if ( ::sysinfo( & sysinfoStruct ) != 0 )
@@ -186,6 +252,8 @@ UnsignedLongInteger Ceylan::System::getFreeSwapMemorySize()
 	
 	return static_cast<UnsignedLongInteger>( 
 		sysinfoStruct.mem_unit * sysinfoStruct.freeswap ) ;
+
+#endif // CEYLAN_ARCH_SOLARIS
 	
 #else // CEYLAN_USES_SYSINFO
 
@@ -207,6 +275,14 @@ UnsignedLongInteger Ceylan::System::getTotalHighMemorySize()
 	
 #ifdef CEYLAN_USES_SYSINFO
 
+#if CEYLAN_ARCH_SOLARIS
+
+	throw SystemException( 
+		"Ceylan::System::getTotalHighMemorySize : "
+		"not available on Solaris platform." ) ;	
+
+#else // CEYLAN_ARCH_SOLARIS
+
 	struct sysinfo sysinfoStruct ;
 	
 	if ( ::sysinfo( & sysinfoStruct ) != 0 )
@@ -216,6 +292,8 @@ UnsignedLongInteger Ceylan::System::getTotalHighMemorySize()
 	
 	return static_cast<UnsignedLongInteger>( 
 		sysinfoStruct.mem_unit * sysinfoStruct.totalhigh ) ;
+
+#endif // CEYLAN_ARCH_SOLARIS
 	
 #else // CEYLAN_USES_SYSINFO
 
@@ -235,6 +313,14 @@ UnsignedLongInteger Ceylan::System::getFreeHighMemorySize()
 	
 #ifdef CEYLAN_USES_SYSINFO
 
+#if CEYLAN_ARCH_SOLARIS
+
+	throw SystemException( 
+		"Ceylan::System::getFreeHighMemorySize : "
+		"not available on Solaris platform." ) ;	
+
+#else // CEYLAN_ARCH_SOLARIS
+
 	struct sysinfo sysinfoStruct ;
 	
 	if ( ::sysinfo( & sysinfoStruct ) != 0 )
@@ -244,6 +330,8 @@ UnsignedLongInteger Ceylan::System::getFreeHighMemorySize()
 	
 	return static_cast<UnsignedLongInteger>( 
 		sysinfoStruct.mem_unit * sysinfoStruct.freehigh ) ;
+
+#endif // CEYLAN_ARCH_SOLARIS
 	
 #else // CEYLAN_USES_SYSINFO
 
@@ -264,6 +352,14 @@ UnsignedLongInteger Ceylan::System::getSharedMemorySize()
 	
 #ifdef CEYLAN_USES_SYSINFO
 
+#if CEYLAN_ARCH_SOLARIS
+
+	throw SystemException( 
+		"Ceylan::System::getSharedMemorySize : "
+		"not available on Solaris platform." ) ;	
+
+#else // CEYLAN_ARCH_SOLARIS
+
 	struct sysinfo sysinfoStruct ;
 	
 	if ( ::sysinfo( & sysinfoStruct ) != 0 )
@@ -273,6 +369,8 @@ UnsignedLongInteger Ceylan::System::getSharedMemorySize()
 	
 	return static_cast<UnsignedLongInteger>( 
 		sysinfoStruct.mem_unit * sysinfoStruct.sharedram ) ;
+
+#endif // CEYLAN_ARCH_SOLARIS
 	
 #else // CEYLAN_USES_SYSINFO
 
@@ -292,6 +390,14 @@ UnsignedLongInteger Ceylan::System::getBuffersMemorySize()
 	
 #ifdef CEYLAN_USES_SYSINFO
 
+#if CEYLAN_ARCH_SOLARIS
+
+	throw SystemException( 
+		"Ceylan::System::getBuffersMemorySize : "
+		"not available on Solaris platform." ) ;	
+
+#else // CEYLAN_ARCH_SOLARIS
+
 	struct sysinfo sysinfoStruct ;
 	
 	if ( ::sysinfo( & sysinfoStruct ) != 0 )
@@ -301,6 +407,8 @@ UnsignedLongInteger Ceylan::System::getBuffersMemorySize()
 	
 	return static_cast<UnsignedLongInteger>( 
 		sysinfoStruct.mem_unit * sysinfoStruct.bufferram ) ;
+
+#endif // CEYLAN_ARCH_SOLARIS
 
 #else // CEYLAN_USES_SYSINFO
 
