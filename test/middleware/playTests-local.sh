@@ -81,7 +81,7 @@ display_launching ${marshalled_server_test_name}
 display_test_result "${marshalled_server_test_name}" "${marshalled_server_test_exec}" "$return_code"
 
 # Client already tested :
-test_count=$(($test_count+1))
+test_count=`expr $test_count + 1`
 
 
 
@@ -123,6 +123,6 @@ display_launching ${multiplexed_lw_protocol_server_test_name}
 display_test_result "${multiplexed_lw_protocol_server_test_name}" "${multiplexed_server_test_exec}" "$return_code"
 
 # test client not already counted :
-test_count=$(($test_count+2))
+test_count=`expr $test_count + 2`
 
 
