@@ -42,10 +42,15 @@ extern "C"
 #endif // CEYLAN_USES_ARPA_INET_H
 
 #ifdef CEYLAN_USES_WINSOCK2_H
-#include <winsock2.h>  // for network errors
+#include <winsock2.h>         // for network errors
 #endif // CEYLAN_USES_WINSOCK2_H
 
+#ifdef CEYLAN_USES_SYS_SYSTEMINFO_H
+#include <sys/systeminfo.h>   // for Solaris sysinfo
+#endif // CEYLAN_USES_SYS_SYSTEMINFO_H
+
 }
+
 
 // Templates cannot be declared to have 'C' linkage :
 #ifdef CEYLAN_USES_WS2TCPIP_H
@@ -769,23 +774,26 @@ void Ceylan::Network::setLocalHostName( const string & newHostName )
 
 #ifdef CEYLAN_USES_SETHOSTNAME
 
-	/*
-	 * Some versions of Solaris do not declare it in the right header, or
-	 * do not seem to have it :
-	 *
-	 */
-
 #if CEYLAN_ARCH_SOLARIS
 
-	throw NetworkException( "Ceylan::Network::setLocalHostName : "
-		"operation not supported on Solaris." ) ;
+	/*
+	 * Some versions of Solaris do not declare sethostname in the right <
+	 * header, or do not seem to have it, using sysinfo instead :
+	 *
+	 */
+	const char * buf = newHostName.c_str() ;
+	if ( ::sysinfo( SI_SET_HOSTNAME, const_cast<char *>( buf ),
+			newHostName.size() /* + 1 ? */ ) == -1 )
+		throw NetworkException( "Ceylan::Network::setLocalHostName : "
+			"unable to set local host name on Solaris to "
+			+ newHostName + " : " + explainError() ) ;
 
 #else // CEYLAN_ARCH_SOLARIS
 		
 	if ( ::sethostname( newHostName.c_str(), newHostName.size() ) )
 		throw NetworkException( "Ceylan::Network::setLocalHostName : "
 			"unable to set local host name to "
-			+ newHostName + " : " + explainError( getError() ) ) ;
+			+ newHostName + " : " + explainError() ) ;
 
 #endif // CEYLAN_ARCH_SOLARIS
 
@@ -809,7 +817,7 @@ const string Ceylan::Network::getLocalHostDomainName() throw( NetworkException )
 
 	if ( ::getdomainname( domainBuffer, 255 ) != 0 )
 		throw NetworkException( "Unable to determine local host domain name : "
-			+ explainError( getError() ) ) ;
+			+ explainError() ) ;
 
 	string res( domainBuffer ) ;
 	
@@ -837,7 +845,7 @@ void Ceylan::Network::setLocalHostDomainName( const string & newDomainName )
 	if ( ::setdomainname( newDomainName.c_str(), newDomainName.size() ) )
 		throw NetworkException( "Unable to set local host domain name to "
 			+ newDomainName + " : "
-			+ explainError( getError() ) ) ;
+			+ explainError() ) ;
 			
 #else // CEYLAN_USES_SETDOMAINNAME
 
@@ -865,8 +873,7 @@ const string Ceylan::Network::getMostPreciseLocalHostName()
 	if ( ::uname( & buf ) != 0 )
 	{		
 		LogPlug::error( "Ceylan::Network::getMostPreciseLocalHostName : "
-			"unable to determine name of local host : " 
-			+ explainError( getError() ) ) ;
+			"unable to determine name of local host : " + explainError() ) ;
 	}		
 	else
 	{		
