@@ -31,6 +31,11 @@
 
 <h3>Developer guide for the Ceylan 0.4 version</h3>
 
+<p>
+See the <a href="ChangeLog.html" target="_blank">ChangeLog</a> corresponding to this release.
+</p>
+
+
 <h4>Rules &amp; good practises</h4>
 <p>
 Some developing rules are to be enforced :
@@ -92,6 +97,7 @@ Before reporting an error, please check you have upgraded following tools with t
 <p>
 
 <ol>
+
 <!--
 	<li></li>
 -->
@@ -99,9 +105,17 @@ Before reporting an error, please check you have upgraded following tools with t
 	<li>increment the version number in <code>trunk/src/conf/CeylanSettings.inc</code> (see <code>CEYLAN_*_VERSION</code>), and create a new <code>trunk/src/conf/build/ceylan-x.y.pc.in</code> file, possibly from the one of the previous version. Once updated if needed, register it in SVN (<code>svn add ... && svn ci ...</code>)
 	</li>
 
+	<li>update the various version-related files and directories : <code>src/doc/basic/Ceylan-*-template.txt.in</code> (including Ceylan-NEWS-template.txt.in), <code>src/doc/web/Ceylan-x.y</code>, under <code>trunk/src/conf/build</code> execute <code>make download-config-scripts</code>, etc.
+</li>
+
 	<li>under <code>trunk/src/conf/build</code>, use <code>autogen.sh --chain-test</code> to check everything is working as expected : all the tests must always succeed, not depending on how many times they are run</li>
 	
 	<li>create a distribution with <code>./autogen.sh --only-prepare-dist</code> : it should produce an archive named <code>trunk/ceylan-x.y.tar.bz2</code> (note : filenames too long are skipped, as long as they are only *.vcproj that is not too serious). Build that package on as many other hosts as possible, at least one time on each supported platform. For example, <code>scp ceylan-x.y.tar.bz2 $TOSFCF && sfcf</code> to transfer the archive to Sourceforge's compile farm and to log to their platform chooser</li>
+	
+	<li>extract the source archive in a temporary, and check that there are no useless elements (generated files, deprecated content, etc.), and that all files are up-to-date</li>
+
+	<li>regenerate the Sourceforge website, including the Ceylan API (update <code>trunk/src/doc/web/main/documentation/DocMenu.html</code> as well)
+</li>
 	
 	<li>when satisfied with the result, ensure the version control system is up-to-date with the <code>trunk/src/code/scripts/shell/toci</code> script</li>
 	
@@ -118,9 +132,7 @@ Before reporting an error, please check you have upgraded following tools with t
     </table>
 </center>
 	</li>
-	
-	<li>generate a ChangeLog thanks to <code>make effective-changelog-creation</code> in <code>trunk/src/doc/basic</code></li>
-	
+		
 	<li>upload a distribution archive to <a href="http://sourceforge.net/projects/ceylan" target="_blank">Sourceforge</a>, and paste the previous ChangeLog. Add the relevant release notes</li>
 	
 	<li>send a release notice to <code>ceylan-announces@lists.sourceforge.net</code></li>
