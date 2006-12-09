@@ -1,12 +1,14 @@
 Created on Sunday, November 26, 2006.
+Updated on Saturday, December 9, 2006.
 
 
 		Ceylan 0.4 main changes, compared to the 0.3 version
 	
 	
+- full light-weight XML module added, including a parser, for the reading and the writing of XML files	
 - Windows XP (Home Edition) support added
 - Solaris/SPARC (SunOS 5.9) support added
-- full light-weight XML module added, including a parser, for the reading and the writing of XML files
+- OpenBSD (3.8) support added (plug-in feature not supported)
 
 For more details, see the ChangeLog file.
 
