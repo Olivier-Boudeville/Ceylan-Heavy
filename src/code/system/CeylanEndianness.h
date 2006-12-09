@@ -131,9 +131,14 @@ namespace Ceylan
 		 
 #else // CEYLAN_FAKES_64_BIT_TYPE
 
-		// Should not be called in this case, as totally useless :
-		return toSwap ;
-		
+		/*
+		 * Should not be called in this case, as this work is already
+		 * done by the ceylan_bswap_64 macro which should be
+		 * be used instead.
+		 * However calling it here to avoid mistakes.
+		 */
+		toSwap = ceylan_bswap_64( toSwap ) ;
+
 #endif // CEYLAN_FAKES_64_BIT_TYPE
 		 
 	}
