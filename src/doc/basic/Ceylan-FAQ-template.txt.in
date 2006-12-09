@@ -5,10 +5,10 @@
 			
 * General FAQ
 
-	Q: How to have more information about Ceylan in general ?
+	Q: How can I have more information about Ceylan in general ?
 	A: See @CEYLAN_SF_URL@
 
-	Q: How to have more information about this version of Ceylan ?
+	Q:How can I have more information about this version of Ceylan ?
 	A: This is the @CEYLAN_FULL_VERSION@ version of the Ceylan library, corresponding to the dedicated documentation section at @CEYLAN_SF_VERSION_URL@
 
 	Q: What licence applies to the Ceylan library ? 
@@ -27,13 +27,15 @@
 	A: Read the Ceylan user guide at @CEYLAN_SF_URL@
 	
 	Q: What are the supported platforms ?
-	A: Core services are available for GNU/Linux, FreeBSD, NetBSD and Windows XP.
-	   Optional features are available for GNU/Linux, FreeBSD, NetBSD, some of them for Windows XP as well
+	A: Core services are available for GNU/Linux, Solaris, FreeBSD, NetBSD, OpenBSD and Windows XP.
+	   Optional features are available for GNU/Linux, Solaris, FreeBSD, NetBSD, OpenBSD and some of them for Windows XP as well. Although networking is an optional feature, it is available for all supported platforms.
 	
 		
 * Developper FAQ
 
 	Q: How can I regenerate the build system, with regards to the Autotools ? 
-	A: See the conf/build directory, notably autogen.sh
+	A: See the src/conf/build directory, notably autogen.sh
 	
+	Q: How can I have more developer informations ?
+	A: See our online developer guide for this version, located at @CEYLAN_SF_VERSION_URL@
 	
