@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01//EN'
+'http://www.w3.org/TR/html4/strict.dtd'>
+<!--    This document is a part of the Ceylan project 
+        For any comment, please mail to olivier.boudeville@online.fr
+-->
+<!--    
+        Creation date : 2004, February 13.
+        Author : Olivier Boudeville (olivier.boudeville@online.fr)
+        Update made by :  the author
+        Version number : 0.1
+        Adapted from : http://www.w3.org/Style/Examples/007/maps.html
+-->
+
+<html lang="EN">
+<head>
+  <title>Ceylan - Developer Guide for the Ceylan 0.4 version</title>
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=iso-8859-1">
+  <meta name="description" content="Ceylan Project">
+  <meta name="keywords" content="library, generic, GPL, developer, guide">
+  <link href="../images/Ceylan-icon.png" rel="Ceylan icon">
+  <link rel="stylesheet" type="text/css" href="../common/css/Ceylan.css" media="screen, print, projection, tv">
+</head>
+
+<body>
+  <div class="banner">
+    <p><em>General</em> <a href="../common/black.html" onclick="parent.toolbar.location=&#39;MainMenu.html&#39;">home page</a>
+    <a href="Map.html">site map</a> <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20Developer%20Guide">mail  us</a></p>
+  </div><a name="_top_"></a>
+
+
+<h3>Developer guide for the Ceylan 0.5 version</h3>
+
+<p>
+See the <a href="ChangeLog.html" target="_blank">ChangeLog</a> corresponding to this release.
+</p>
+
+
+<h4>Rules &amp; good practises</h4>
+<p>
+Some developing rules are to be enforced :
+<ol>
+<!--
+	<li><b></b> : </li>
+-->
+	<li>no <b>system header</b> mentioned in Ceylan installed headers (hence no system-specific types such as mode_t in our headers) : otherwise the API exposed by Ceylan would depend on these system headers, then on a config.h that should
+be installed to select them but may clash with others, and so on. This implies using opaque handle for forward-declared but undefined struct pointer such as <code>struct ceylan_mode_t ;</code></li>
+	<li>all <b>header include guards</b> are designed to not collide with other non-Ceylan headers : for example, <code>HAVE_CTIME</code> is to be replaced by <code>CEYLAN_USES_CTIME</code></li>
+	<li><b>pkg-config</b> should be used whenever available</li>
+	<li>in each module, <b>public headers</b> should be listed alphabetically (<code>use /bin/ls -1 *.h</code>) in CeylanMODULE_NAMEIncludes.h (ex : CeylanMathsIncludes.h)</li>
+	<li>no <b>inferior to (&lt;)</b> nor  <b>superior to (&gt;)</b> symbols in log messages if not used to specify HTML tags. Otherwise they would be interpreted as mark-up elements. So to delimit precisely strings, prefer using <code>'A specific message'</code> to <code>&lt;A specific message&gt;</code>
+
+</li>
+	<li>use <b>--consolePlug</b> if you are debugging the file layer, since <code>--classicalPlug</code> would use that layer for logging purpose otherwise. Use this latter classical plug to debug the log system, including the HTML aggregator. Finally, use <code>--HTMLPlug</code> for all other needs.</li>
+	<li>to better understand <b>Locatable referentials</b>, see : <code>test/interface/testCeylanLocatable.cc</code></li>
+</ol>
+</p>
+
+
+<h4>Using SVN (Subversion) for Ceylan</h4>
+
+<p>
+<ul>
+
+<!--
+	<li><b></b> : </li>
+-->
+
+	<li><b>Anonymous check-out</b> : svn co https://svn.sourceforge.net/svnroot/ceylan ceylan</li>
+
+	<li><b>User-based check-out</b> : svn co --username MyUserName https://svn.sourceforge.net/svnroot/ceylan ceylan</li>
+	
+	<li>See <b>test/logs/testCeylanFullLogSystem.cc</b> for more informations about the robustness of the log system, depending on its settings (the chosen log plug) and the error cases (normal return, ::exit, uncaught exception, division by zero, etc.)</li>
+</ul>
+</p>
+
+
+<h3>Tools needed to build the Ceylan library</h3>
+<p>
+Before reporting an error, please check you have upgraded following tools with their latest stable version available :
+<ul>
+
+<!--
+	<li></li>
+-->
+	<li>automake</li>
+	<li>autoconf</li>
+	<li>make</li>
+	<li>gcc</li>
+	<li>g++</li>
+</ul>
+ 
+</p>
+
+
+<h3>Releasing a new Ceylan x.y version</h3>
+<p>
+
+<ol>
+
+<!--
+	<li></li>
+-->
+
+	<li>increment the version number in <code>trunk/src/conf/CeylanSettings.inc</code> (see <code>CEYLAN_*_VERSION</code>), and create a new <code>trunk/src/conf/build/ceylan-x.y.pc.in</code> file, possibly from the one of the previous version. Once updated if needed, register it in SVN (<code>svn add ... && svn ci ...</code>)
+	</li>
+
+	<li>update the various version-related files and directories : <code>src/doc/basic/Ceylan-*-template.txt.in</code> (including Ceylan-NEWS-template.txt.in), <code>src/doc/web/Ceylan-x.y</code>, under <code>trunk/src/conf/build</code> execute <code>make download-config-scripts</code>, etc.
+</li>
+
+	<li>under <code>trunk/src/conf/build</code>, use <code>autogen.sh --chain-test</code> to check everything is working as expected : all the tests must always succeed, not depending on how many times they are run</li>
+	
+	<li>create a distribution with <code>./autogen.sh --only-prepare-dist</code> : it should produce an archive named <code>trunk/ceylan-x.y.tar.bz2</code> (note : filenames too long are skipped, as long as they are only *.vcproj that is not too serious). Build that package on as many other hosts as possible, at least one time on each supported platform. For example, <code>scp ceylan-x.y.tar.bz2 $TOSFCF && sfcf</code> to transfer the archive to Sourceforge's compile farm and to log to their platform chooser</li>
+	
+	<li>extract the source archive in a temporary, and check that there are no useless elements (generated files, deprecated content, etc.), and that all files are up-to-date</li>
+
+	<li>regenerate the Sourceforge website, including the Ceylan API (update <code>trunk/src/doc/web/main/documentation/DocMenu.html</code> as well)
+</li>
+	
+	<li>when satisfied with the result, ensure the version control system is up-to-date with the <code>trunk/src/code/scripts/shell/toci</code> script</li>
+	
+	<li>create a tag for this new release (ensure you will specify the right UNIX Sourceforge user), for example : 
+	<center>
+    <table summary="a box" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+				<code>svn copy https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/tags/release-0.4.0 -m "First release of the 0.4 series, with XML parser added and three newly supported platforms : Windows XP, Sun Solaris, OpenBSD."</code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+	</li>
+	
+	<li>create two distribution archives : <code>ceylan-x.y.tar.bz2</code> thanks to <code>cd trunk/src/conf/build; autogen.sh -o</code> and <code>ceylan-x.y.tar.gz</code> thanks to <code>make dist</code> from <code>trunk</code>
+</li>
+		
+	<li>upload both distribution archives to <a href="http://sourceforge.net/projects/ceylan" target="_blank">Sourceforge</a> : select in the admin tab <code>File releases</code>, add a release to the <code>Ceylan</code> package (not the hidden <code>ceylan</code> package), name that release <code>Ceylan-x.y</code>, create it. Upload both release notes and ChangeLog from local tree (respectively from <code>trunk/src/doc/Ceylan-x.y-release-notes.txt</code> and from <code>trunk/ChangeLog</code>). Upload by anonymous FTP both archives to
+<code>upload.sourceforge.net</code> in the <code>incoming</code> directory. Add the archives from the web interface (Processor : <code>Platform-Independent)</code>, File Type : <code>Source .bz2</code> or <code>Source .gz</code>). Send a notice. Check everything from a non-logged browser. 
+</li>
+	
+	<li>send a release notice to <code>ceylan-announces@lists.sourceforge.net</code></li>
+	
+	<li>write a corresponding news item</li>
+	
+	<li>to prepare the next version/release candidate, one can already update the release numbers for the next verion in <code>trunk/src/conf/CeylanSettings.inc</code> : <code>CEYLAN_MAJOR_VERSION</code> and/or <code>CEYLAN_MINOR_VERSION</code> and/or <code>CEYLAN_RELEASE</code></li>
+	
+</ol>
+
+</p>
+
+
+<h3>How does the middleware layer works ?</h3>
+
+<p>
+A multiplexed server stream spawns a connection whenever a client connects to the listening socket.
+<p>
+This connection lives on top on a dedicated socket, which gets selected on the server side whenever they are bytes to be read.
+</p>
+
+
+<p>
+The multiplexed server detects it (at least one file descriptor is selected), awakes the corresponding anonymous protocol-aware socket, which is turn trigger its protocol server (by calling its notifyDataAvailability method). The protocol server determines how may bytes it needs to decode the next chunk of informations from the client, and asks it to its marshaller, thanks to its retrieveData method. This marshaller uses its internal buffer (memory stream instance) to read the incoming bytes, and will returned the bytes available for reading in its buffer. 
+</p>
+
+
+<p>
+
+For client/server model :
+
+<ul>
+
+<!--
+	<li><b></b> : </li>
+-->
+
+	<li>Each <b>client</b> can, by default, call any method of any object of any ActiveObject subclass on the server</li>
+	<li>To do so, the client must <b>specify</b> to the server : a class identifier, an instance identifier, a method identifier, and the list of its arguments</li>
+	<li>On the <b>server-side</b>, first there is a dictionnary whose keys are class identifiers, and whose values are classes (actually, their dictionary of instances). It is known as <em>the class dictionnary</em></li>
+	<li>Second, on a per-class basis, there is an <b>instance dictionnary</b> : for this given class, its keys are instance identifiers, and its values are pointer to instances of this class</li>
+
+</ul>
+
+</p>
+
+
+<h4>Some developing hints</h4>
+<p>
+<ul>
+
+<!--
+    <li><a href="" target="_blank"></a></li>
+-->
+    <li>In case of trouble, run <code>trunk/src/conf/generateBugReport.sh</code>, it will generate a text file containing the report, and tell you what to do with it</li>
+    <li><a href="http://gcc.gnu.org/onlinedocs/libstdc++/27_io/howto.html" target="_blank">Using I/O with the STL</a></li>
+</ul>
+
+</p>
+
+  <br>
+  <br>
+  <br>
+
+  <h3>Please react !</h3>
+
+  <p>If you have information more detailed or more recent than those
+  presented in this document, if you noticed errors, neglects or points
+  insufficiently discussed, <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20Developer%20Guide">drop us a line</a>!</p><br>
+  <br>
+  <hr>
+  
+  <br>
+  
+      <center>
+        [<a href="#_top_">Top</a>]<br>
+        <br>
+        <em>Last update : Sunday, December 10, 2006</em>
+      </center>
+  
+</body>
+</html>
