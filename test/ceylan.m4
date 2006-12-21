@@ -36,12 +36,17 @@
 #
 # CEYLAN_PATH( ac,rev,anc )
 #
-# Example : in configure.ac, CEYLAN_PATH( 0,3,0 )
+# Checks that the Ceylan library can be used, stops with AC_MSG_ERROR if 
+# it failed, otherwise updates the LIBS variable accordingly.
+#
+# Example : in configure.ac, CEYLAN_PATH( 0,4,0 )
 #
 AC_DEFUN([CEYLAN_PATH],
 [
+  # Here is specified for each given Ceylan release what are the most ancient
+  # versions that are still compatible with this current version :
   CEYLAN_OLDEST_SUPPORTED_MAJOR=0
-  CEYLAN_OLDEST_SUPPORTED_MINOR=3  
+  CEYLAN_OLDEST_SUPPORTED_MINOR=4  
   # Setting the install path of the Ceylan library :
   CEYLAN_LIBS=" -lCeylan "
   AC_ARG_WITH(libCeylan,
@@ -96,7 +101,7 @@ AC_DEFUN([CEYLAN_PATH],
 			fi
 		fi			
      	])
-  # Add pthread flags in case the Ceylan multithreading feature is enabled :
+  # Select relevant system libraries needed by Ceylan (pthread, network, etc.) :
   case "$target" in
       *-*-bsdi*)
     	  pthread_cflags="-D_REENTRANT -D_THREAD_SAFE"
