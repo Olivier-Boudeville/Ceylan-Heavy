@@ -8,7 +8,7 @@ The installation of Ceylan @CEYLAN_FULL_VERSION@ is detailed on the website, ple
 The installation procedure is very close to the GNU standard one. 
 
 It is mainly a matter of :
-	bunzip2 -f ceylan-@CEYLAN_FULL_VERSION@.tar.bz2 && tar -xvf ceylan-@CEYLAN_FULL_VERSION@.tar
+	bunzip2 -f ceylan-@CEYLAN_VERSION@.tar.bz2 && tar -xvf ceylan-@CEYLAN_VERSION@.tar
 	cd ceylan-@CEYLAN_VERSION@
 	./configure
 	make
@@ -18,3 +18,5 @@ It is mainly a matter of :
 
 With future releases, one may then enter :
 	make installcheck
+
+The Ceylan mailing list dedicated to bug reports is not specified here, please read the documentation first !
