@@ -5,6 +5,8 @@
 
 #include "CeylanConfigForWindows.h"    // for CEYLAN_LIBTOOL_VERSION
 
+#include <string> 
+
 /*
  * This is the CeylanHeaderVersion.cc version for Windows.
  *
