@@ -25,7 +25,7 @@
 # correct values by the configuration process.   
 
 
-# Filenames are relative to the 'src' directory.
+# Filenames are relative to the 'trunk/src' directory.
 
 
 # Naming section.
@@ -89,6 +89,8 @@ CEYLAN_MAJOR_ANCESTOR=0
 
 # Backward compatibility section.
 
+# Build section.
+
 # As long as the Ceylan library is not almost frozen, managing age is
 # cumbersome, the usual major.minor versioning is preferred.
 
@@ -101,7 +103,6 @@ CEYLAN_OLDEST_SUPPORTED_MAJOR=0
 CEYLAN_OLDEST_SUPPORTED_MINOR=4
 
 
-# Build section 
 
 # (tag : ST_CONFIG_HEADER).
 CEYLAN_CONFIG_HEADER="src/code/CeylanTemporaryConfig.h"
