@@ -53,6 +53,9 @@ CEYLAN_MINOR_VERSION=4
 # (tag : ST_RELEASE)
 CEYLAN_RELEASE=0
 
+# Full actual release date (not generated for better control).
+# (tag : ST_RELEASE_DATE)
+CEYLAN_RELEASE_DATE="Saturday, December 9, 2006"
 
 # (tag : ST_VERSION)
 CEYLAN_VERSION=$(CEYLAN_MAJOR_VERSION).$(CEYLAN_MINOR_VERSION)
@@ -83,6 +86,19 @@ CEYLAN_FULL_VERSION=$(CEYLAN_VERSION).$(CEYLAN_RELEASE)
 # (tag : ST_MAJOR_ANCESTOR)
 CEYLAN_MAJOR_ANCESTOR=0
 
+
+# Backward compatibility section.
+
+# As long as the Ceylan library is not almost frozen, managing age is
+# cumbersome, the usual major.minor versioning is preferred.
+
+# The major version of the most ancient Ceylan version compatible with this one.
+# (tag : ST_OLDEST_SUPPORTED_MAJOR)
+CEYLAN_OLDEST_SUPPORTED_MAJOR=0
+
+# The minor version of the most ancient Ceylan version compatible with this one.
+# (tag : ST_OLDEST_SUPPORTED_MINOR)
+CEYLAN_OLDEST_SUPPORTED_MINOR=4
 
 
 # Build section 
