@@ -208,9 +208,17 @@ For client/server model :
 	Ex : 
 		* activate SVN access for the Sourceforge project
 		* wait until the alias is created (ex : ping osdl.svn.sourceforge.net)
-		* svn import OSDL https://osdl.svn.sourceforge.net/svnroot/osdl --username=wondersye
-		where OSDL is a directory containing branches, tags, trunk
+		* svn import osdl https://osdl.svn.sourceforge.net/svnroot/osdl --username=wondersye
+		where osdl is a directory containing only one directory, OSDL,
+		that itself contains the branches, tags, trunk directories.
 
+	Deleting a full subtree :
+	svn rm https://osdl.svn.sourceforge.net/svnroot/osdl/branches --username=wondersye
+	
+	Check-out :
+	svn co https://osdl.svn.sourceforge.net/svnroot/osdl --username=wondersye
+	
+	
 -->
   <br>
   <br>
