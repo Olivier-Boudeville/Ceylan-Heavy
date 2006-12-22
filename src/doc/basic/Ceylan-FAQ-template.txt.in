@@ -14,6 +14,9 @@
 	Q: What licence applies to the Ceylan library ? 
 	A: See the COPYING.LIB file
 	
+	Q: When was released this Ceylan version ?
+	A: It has been released on @CEYLAN_RELEASE_DATE@
+
 	
 * User FAQ
 
@@ -24,7 +27,7 @@
 	A: Send bug reports to the ceylan-bugs@lists.sourceforge.net mailing list
 	
 	Q: How can I have more informations about Ceylan ?
-	A: Read the Ceylan user guide at @CEYLAN_SF_URL@
+	A: For general informations, visit @CEYLAN_SF_URL@. For in-depth version-related content, read the Ceylan user guide at @CEYLAN_SF_VERSION_URL@
 	
 	Q: What are the supported platforms ?
 	A: Core services are available for GNU/Linux, Solaris, FreeBSD, NetBSD, OpenBSD and Windows XP.
