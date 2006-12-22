@@ -27,7 +27,7 @@ AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([tar-ustar])
 
 # CeylanTemporaryConfig.h is the first basic config file to be generated,
-# it contains what classically is in a usual config.h.
+# it contains what classically is in an usual config.h.
 # It is then transformed by AX_PREFIX_CONFIG_H into CeylanConfig.h, whose
 # defines are prefixed and have include guards.
 # Finally AC_CONFIG_COMMANDS updates CeylanConfig.h so that symbols
