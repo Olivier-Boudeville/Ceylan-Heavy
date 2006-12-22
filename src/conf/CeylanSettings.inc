@@ -46,7 +46,7 @@ UNIX_PROJECT_NAME=ceylan
 CEYLAN_MAJOR_VERSION=0
 
 # (tag : ST_MINOR_VERSION)
-CEYLAN_MINOR_VERSION=4
+CEYLAN_MINOR_VERSION=5
 
 # Release number is only for project fine grain milestone,
 # for a given major.minor version (ex : release candidate).
