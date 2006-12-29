@@ -5,8 +5,13 @@
 USAGE="Usage : "`basename $0`" [<install root>] [ -d | --debug ] [ --checkout | -c ] [ -p | --preclean ] [ -h | --help ]\n Settles down the developer environment, from environment already described in <install root>, if specified, otherwise from environment defined in the source tree of this script. If --checkout is set, will install modules from SVN.\nExample : `basename $0` $HOME/Projects/ceylan, or simply `basename $0` (recommended)"
 
 # Other install roots could be : 
-#   - /mnt/raid/md0/LOANI-0.3/LOANI-installations
+#   - /mnt/raid/md0/LOANI-0.4/LOANI-installations
 #   - $HOME/Projects/OSDL-loanized/LOANI-installations
+#   - $HOME/Projects/LOANI-0.4/LOANI-installations
+
+# To create new links, the back-ups must have been cleaned before :
+#srm *.previous .*.previous */*.previous .*/*.previous
+
 
 # Default settings.
 
@@ -181,6 +186,7 @@ preClean()
 	
 
 }
+
 
 prepareDeveloperEnvironment()
 {
