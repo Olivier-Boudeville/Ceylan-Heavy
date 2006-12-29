@@ -11,29 +11,30 @@ BUILD_SCRIPTS_SET = \
 	build-and-test-package.sh
 
 
-
-EXTRA_DIST     = \
-	$(BUILD_SCRIPTS_SET)   \
-	Ceylan.cbp             \
-	MakeConfigure          \
-	ToolsSettings.inc      \
+EXTRA_DIST = \
+	$(BUILD_SCRIPTS_SET)           \
+	Ceylan.cbp                     \
+	MakeConfigure                  \
+	CeylanToolsSettings.inc        \
 	configure-template.ac
+	
 	
 noinst_SCRIPTS = $(BUILD_SCRIPTS_SET)
 
-pkgconfigdir = $(libdir)/pkgconfig
+pkgconfigdir   = $(libdir)/pkgconfig
 pkgconfig_DATA = @CEYLAN_PKGCONFIG_FILE@
 
-DIFF_TOOL    = `which tkdiff 2>/dev/null`
+DIFF_TOOL      = `which tkdiff 2>/dev/null`
 
 CONFIGURE_FILE = configure.ac
 
-CONFIGURE_SCRIPTS_BASE_URL = http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/config/config
 # Was/will be : ftp://ftp.gnu.org/gnu/config
+CONFIGURE_SCRIPTS_BASE_URL = \
+	http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/config/config
 
 DOWNLOADED_HELPERS = config.guess config.sub
 
-CONFIG_FILES = $(DOWNLOADED_HELPERS)
+CONFIG_FILES       = $(DOWNLOADED_HELPERS)
 
 
 all:
@@ -55,6 +56,10 @@ download-config-scripts: clean-download
 	@chmod +x $(DOWNLOADED_HELPERS)
 
 
+install-data-local:
+	@cp $(srcdir)/CeylanToolsSettings.inc @CEYLAN_INSTALL_SHARED_DIR@
+	
+	
 dist-hook:
 	@cp $(srcdir)/build-and-test-package.sh $(top_distdir)
 	
