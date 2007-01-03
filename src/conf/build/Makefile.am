@@ -2,7 +2,8 @@
 SUBDIRS=m4
 
 .PHONY: all check-configure download-config-scripts \
-	clean clean-download real-clean
+	blank-MD5 install-data-local dist-hook clean clean-download real-clean
+
 
 BUILD_SCRIPTS_SET = \
 	autogen.sh                     \
@@ -39,11 +40,12 @@ CONFIG_FILES       = $(DOWNLOADED_HELPERS)
 
 all:
 	
+
 		
 check-configure: 
 	@echo "@CEYLAN_MAKE_STYLE@    Comparing configure\
 	files@CEYLAN_DEFAULT_STYLE@"
-	@./checkConfigure.sh $(DIFF_TOOL)
+	@$(srcdir)/checkConfigure.sh $(DIFF_TOOL)
 	@echo "@CEYLAN_COMMAND_STYLE@    Comparison finished,\
 	$(CONFIGURE_FILE) may be updated now."
 
@@ -54,6 +56,13 @@ download-config-scripts: clean-download
 	@for f in $(DOWNLOADED_HELPERS); do \
 	wget --quiet $(CONFIGURE_SCRIPTS_BASE_URL)/$$f ; done
 	@chmod +x $(DOWNLOADED_HELPERS)
+
+
+blank-MD5:
+	@echo "@CEYLAN_INSTALL_STYLE@    Blanking MD5 sum of Ceylan release\
+	to avoid MD5 recursive dependency of archive@CEYLAN_DEFAULT_STYLE@"
+	@$(srcdir)/../../code/scripts/shell/replaceLineStartingBy.sh Ceylan_MD5\
+	'Ceylan_MD5="(blanked)"' $(srcdir)/CeylanToolsSettings.inc
 
 
 install-data-local:
