@@ -52,18 +52,16 @@ win_pthread_MD5="xx"
 
 
 
-# Ceylan (libCeylan.so) : http://osdl.sourceforge.net/Ceylan-${Ceylan_VERSION}
+# Ceylan (libCeylan.so) : http://ceylan.sourceforge.net
 
 Ceylan_VERSION="0.4"
 Ceylan_RELEASE=0
-Ceylan_ARCHIVE="Ceylan-${Ceylan_VERSION}.${Ceylan_RELEASE}.tar.bz2"
-Ceylan_DOWNLOAD_LOCATION="http://osdn.dl.sourceforge.net/sourceforge/osdl"
-Ceylan_ALTERNATE_DOWNLOAD_LOCATION="http://easynews.dl.sourceforge.net/sourceforge/osdl"
+Ceylan_ARCHIVE="ceylan-${Ceylan_VERSION}.tar.bz2"
+Ceylan_DOWNLOAD_LOCATION="http://osdn.dl.sourceforge.net/sourceforge/ceylan"
+Ceylan_ALTERNATE_DOWNLOAD_LOCATION="http://switch.dl.sourceforge.net/sourceforge/ceylan"
 Ceylan_MD5="(blanked)"
-
-Ceylan_ROOT="Ceylan/Ceylan-${Ceylan_VERSION}"
-Ceylan_CVS_SERVER=cvs.sourceforge.net
-
+Ceylan_ROOT="ceylan/Ceylan/trunk"
+Ceylan_SVN_SERVER=ceylan.svn.sourceforge.net
 
 
 
