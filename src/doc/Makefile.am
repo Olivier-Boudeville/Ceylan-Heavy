@@ -120,11 +120,6 @@ RSYNC_OPT    = "-pg -e ssh -vcrlz --cvs-exclude"
 SCP          = `which scp 2>/dev/null`
 SCP_OPT      = "-p -r"
 
-
-
-# For various tools such as doxygen and al :
-include $(top_srcdir)/src/conf/build/ToolsSettings.inc
-
 		
 .PHONY: all install doc build inc web links site common api check-dot  \
 	fix-dox-conf tidy transfer toSF toSF-rsync toSF-scp                \
