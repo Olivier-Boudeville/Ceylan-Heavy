@@ -29,9 +29,9 @@ while [ "$#" -gt "0" ] ; do
 	
 	if [ "$1" == "--ceylan-install-prefix" ] ; then
 		shift
-		library_location="$1"
-		if [ ! -d "$library_location" ] ; then
-			echo -e "Error, specified prefix for Ceylan install ($library_location) does not exist.\n$USAGE" 1>&2
+		ceylan_install_prefix="$1"
+		if [ ! -d "$ceylan_install_prefix" ] ; then
+			echo -e "Error, specified prefix for Ceylan install ($ceylan_install_prefix) does not exist.\n$USAGE" 1>&2
 			exit 10
 		fi
 		token_eaten=0
@@ -64,13 +64,13 @@ debug()
 
 # Where the Ceylan library should be found :
 
-if [ -n "$library_location" ] ; then
-	library_location_opt="--with-libCeylan=$library_location"
+if [ -n "$ceylan_install_prefix" ] ; then
+	ceylan_install_prefix_opt="--with-libCeylan=$ceylan_install_prefix"
 fi
 
 
 # Where these tests should be installed :
-test_install_location="$library_location"
+test_install_location="$ceylan_install_prefix"
 
 if [ -n "$test_install_location" ] ; then
 	test_install_location_opt="--prefix=$test_install_location"
@@ -83,7 +83,7 @@ fi
 #test_overriden_options="CPPFLAGS=\"-DTEST_CPPFLAGS\" LDFLAGS=\"-LTEST_LDFLAGS\""
 test_overriden_options=""
 
-configure_opt="-enable-strict-ansi --enable-debug $library_location_opt $test_install_location_opt $test_overriden_options"
+configure_opt="-enable-strict-ansi --enable-debug $ceylan_install_prefix_opt $test_install_location_opt $test_overriden_options"
 
 
 RM="/bin/rm -f"
@@ -260,12 +260,13 @@ generateCustom()
 		exit 22
 	}
 
-	M4_DIR=. 
+	# Where ceylan.m4, pkg.m4, etc. should be found : 
+	CEYLAN_M4_DIR=$ceylan_install_prefix/share/Ceylan
 	
 	ACLOCAL_OUTPUT=aclocal.m4
 	
 	# Do not use '--acdir=.' since it prevents aclocal from writing its file :
-	execute aclocal -I $M4_DIR --output=$ACLOCAL_OUTPUT $force $verbose
+	execute aclocal -I $CEYLAN_M4_DIR --output=$ACLOCAL_OUTPUT $force $verbose
 	
 	echo
 	echo " - generating '.in' files from '.am' files with automake"
@@ -313,9 +314,9 @@ generateCustom()
 	}
 	
 
-	if [ -n "$library_location_opt" ] ; then
-		echo "(updating, for this script only, library search path with ${library_location}/lib)"
-		LD_LIBRARY_PATH=$library_location/lib:$LD_LIBRARY_PATH
+	if [ -n "$ceylan_install_prefix_opt" ] ; then
+		echo "(updating, for this script only, library search path with ${ceylan_install_prefix}/lib)"
+		LD_LIBRARY_PATH=$ceylan_install_prefix/lib:$LD_LIBRARY_PATH
 	fi
 	
  	execute ./configure $configure_opt
@@ -341,16 +342,16 @@ generateCustom()
 	 	execute make install
 	else
 	
-		if [ -n "$library_location_opt" ] ; then
+		if [ -n "$ceylan_install_prefix_opt" ] ; then
 			echo 1>&2
-			echo "Warning : not installing tests and using $library_location_opt implies updating library search paths to select the correct library, for example one may enter : " 1>&2
-			echo "export LD_LIBRARY_PATH=$library_location/lib:\$LD_LIBRARY_PATH" 1>&2
+			echo "Warning : not installing tests and using $ceylan_install_prefix_opt implies updating library search paths to select the correct library, for example one may enter : " 1>&2
+			echo "export LD_LIBRARY_PATH=$ceylan_install_prefix/lib:\$LD_LIBRARY_PATH" 1>&2
 		fi
 		
 	fi
 
 	if [ "$do_test" -eq 0 ] ; then
-		export LD_LIBRARY_PATH=$library_location/lib:$LD_LIBRARY_PATH
+		export LD_LIBRARY_PATH=$ceylan_install_prefix/lib:$LD_LIBRARY_PATH
 		echo
 		echo " - running unit tests"
 	 	execute make check
