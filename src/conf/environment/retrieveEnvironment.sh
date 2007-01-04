@@ -10,7 +10,7 @@ USAGE="Usage : "`basename $0`" [<install root>] [ -d | --debug ] [ --checkout | 
 #   - $HOME/Projects/LOANI-0.4/LOANI-installations
 
 # To create new links, the back-ups must have been cleaned before :
-#srm *.previous .*.previous */*.previous .*/*.previous
+# (...)/LOANI-repository/ceylan/Ceylan/trunk/src/code/scripts/shell/srm *.previous .*.previous */*.previous .*/*.previous
 
 
 # Default settings.
