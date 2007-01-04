@@ -1,8 +1,9 @@
+
 # Centralized version and release informations about tools being used for 
 # Ceylan. 
 
 # This file is intended to be both included in Makefiles and sourced 
-# in shell (sh) scripts.
+# in Bourne shell (sh) scripts.
 
 
 
