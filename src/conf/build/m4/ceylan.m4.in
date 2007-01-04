@@ -31,7 +31,7 @@
 # same directory).
 
 # This macro will take advantage of locations specified to the configure
-# script, ex : ./configure --with-libCeylan=~/myPrefixedCeylanInstall
+# script, ex : ./configure --with-ceylan-prefix=~/myPrefixedCeylanInstall
 
 #
 # CEYLAN_PATH( ac,rev,anc )
@@ -49,8 +49,8 @@ AC_DEFUN([CEYLAN_PATH],
   CEYLAN_OLDEST_SUPPORTED_MINOR=@CEYLAN_OLDEST_SUPPORTED_MINOR@  
   # Setting the install path of the Ceylan library :
   CEYLAN_LIBS=" -lCeylan "
-  AC_ARG_WITH(libCeylan,
-    AS_HELP_STRING([--with-libCeylan],[path to the Ceylan library (prefix)]),
+  AC_ARG_WITH(ceylan-prefix,
+    AS_HELP_STRING([--with-ceylan-prefix],[path to the Ceylan library (prefix)]),
       [
         CEYLAN_CPPFLAGS="-I${withval}/include/Ceylan"
         CEYLAN_LIBS="-L${withval}/lib -lCeylan"
@@ -229,7 +229,7 @@ AC_DEFUN([CEYLAN_PATH],
   AC_LANG_PUSH([C++]) 
   AC_CHECK_HEADERS([Ceylan.h],[],[have_ceylan=no])
   if test x$have_ceylan = xno; then
-    AC_MSG_ERROR([No usable Ceylan header file (Ceylan.h) found. If the Ceylan library has been installed in a non-standard location (ex : when configuring it, --prefix=$HOME/myCeylanInstall was added), use the --with-libCeylan option, ex : --with-libCeylan=$HOME/myCeylanInstall.])
+    AC_MSG_ERROR([No usable Ceylan header file (Ceylan.h) found. If the Ceylan library has been installed in a non-standard location (ex : when configuring it, --prefix=$HOME/myCeylanInstall was added), use the --with-ceylan-prefix option, ex : --with-ceylan-prefix=$HOME/myCeylanInstall.])
   fi
   # Now we must check that we will link indeed to the expected version
   # of Ceylan library, as specified by CEYLAN_PATH arguments :
