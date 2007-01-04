@@ -69,7 +69,7 @@ $(CONFIGURE_GENERATED_FILE): $(CONFIGURE_SOURCE_FILE) $(SETTINGS_FILE)
 check-configure: 
 	@$(MAKE) -s $(CONFIGURE_GENERATED_FILE)
 	@echo "$(make_style)    Comparing configure files$(default_style)"
-	@./checkConfigure.sh $(DIFF_TOOL)
+	@$(srcdir)/checkConfigure.sh $(DIFF_TOOL)
 	@echo "$(command_style)    Comparison finished,\
 	$(CONFIGURE_SOURCE_FILE) may be updated now."
 
