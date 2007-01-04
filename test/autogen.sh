@@ -116,14 +116,12 @@ if [ ! -x "${CEYLAN_SUBSTITUTE_SCRIPT}" ] ; then
 	fi
 fi
 
-# Searches for the Ceylan settings file, both in SVN installs and releases :
+
+# Searches for the Ceylan settings file :
 CEYLAN_SETTINGS_FILE="../src/conf/CeylanSettings.inc"
 if [ ! -f "${CEYLAN_SETTINGS_FILE}" ] ; then
-	CEYLAN_SETTINGS_FILE="../conf/CeylanSettings.inc"
-	if [ ! -f "${CEYLAN_SETTINGS_FILE}" ] ; then
-		echo "Error, no Ceylan settings file found." 1>&2
+	echo "Error, no Ceylan settings file found (${CEYLAN_SETTINGS_FILE})." 1>&2
 	exit 2
-	fi
 fi
 
 
