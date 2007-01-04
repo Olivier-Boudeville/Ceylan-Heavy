@@ -156,18 +156,18 @@ fi
 
 #debug "Prefix = ${PREFIX}"
  
-mkdir -p ${PREFIX}
 
 
 if [ -n "${PREFIX}" ] ; then
 	PREFIX_OPT="--prefix=$PREFIX"
+	mkdir -p ${PREFIX}
 else
 	PREFIX_OPT=""
 fi
 
 
 if [ -z "${configure_opt}" ] ; then
-	configure_opt="$ceylan_features_opt -enable-strict-ansi --enable-debug $PREFIX_OPT $test_overriden_options"
+	configure_opt="$ceylan_features_opt --enable-strict-ansi --enable-debug $PREFIX_OPT $test_overriden_options"
 fi
 
 
