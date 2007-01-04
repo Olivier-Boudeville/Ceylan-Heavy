@@ -38,9 +38,9 @@ libCeylan_la_SOURCES = $(GENERAL_SRCS)
 
 # Linker flag for the library :
 libCeylan_la_LDFLAGS = \
-	-no-undefined                                                             \
-	-release $(CEYLAN_LT_RELEASE)                                             \
-	-version-info $(CEYLAN_LT_CURRENT):$(CEYLAN_LT_REVISION):$(CEYLAN_LT_AGE) 
+	-no-undefined                                                            \
+	-release @CEYLAN_LT_RELEASE@                                             \
+	-version-info @CEYLAN_LT_CURRENT@:@CEYLAN_LT_REVISION@:@CEYLAN_LT_AGE@ 
 
 				
 # Submodule convenience libraries :	
