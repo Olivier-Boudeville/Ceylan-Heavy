@@ -84,7 +84,7 @@ CEYLAN_FULL_VERSION=$(CEYLAN_VERSION).$(CEYLAN_RELEASE)
 # current one, i.e. starting from this major version, any later one can be used
 # instead. Libtool age corresponds to : major minus ancestor.
 # (tag : ST_MAJOR_ANCESTOR)
-CEYLAN_MAJOR_ANCESTOR=0
+CEYLAN_MAJOR_ANCESTOR=4
 
 
 # Backward compatibility section.
