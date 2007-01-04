@@ -275,17 +275,17 @@ generateCustom()
 		else	
 			returnedChar="y"
 			if [ "$PREFIX" != "$PREFIX_DEFAULT" ] ; then
-				read -p "Do you really want to erase the whole $PREFIX tree ? (y/n) [n] " returnedChar 
+				read -p "Do you really want to erase the whole Ceylan tree in $PREFIX ? (y/n) [n] " returnedChar 
 			fi
 			
 			if [ "$returnedChar" == "y" ] ; then
 				echo " - cleaning PREFIX = $PREFIX"
-				${RM} -r $PREFIX
+				${RM} -rf $PREFIX/include/Ceylan $PREFIX/lib/libCeylan* $PREFIX/lib/pkgconfig/ceylan* $PREFIX/share/Ceylan*
 				echo "(prefix cleaned)"
 			fi
 		fi	
 	fi
-	
+
 
 	# Update timestamps since SVN may mess them up :
 	CONFIG_SOURCE=configure-template.ac
