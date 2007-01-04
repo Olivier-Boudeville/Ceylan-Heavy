@@ -59,7 +59,7 @@ rpm: tgz
 	@rpm -ta $(PACKAGE)-$(VERSION).tar.gz
 
 
-# Here there will bea rule to rebuild the export lists for BeOS, MacOS 
+# Here there will be rules to rebuild the export lists for BeOS, MacOS 
 # and Win32.
 
 
@@ -147,7 +147,7 @@ tgz:
 
 
 ASTYLE      = `which astyle 2>/dev/null`
-ASTYLE_CONF = ${top_srcdir}/conf/doc/astyle.conf
+ASTYLE_CONF = ${top_srcdir}/src/conf/doc/astyle.conf
 
 
 style: 
@@ -169,11 +169,11 @@ style:
 
 
 doc:
-	cd src/doc; $(MAKE) site  
+	cd $(top_srcdir)/src/doc && $(MAKE) site  
 	
 	
 api:
-	cd src/doc; $(MAKE) api  
+	cd $(top_srcdir)/src/doc && $(MAKE) api  
 
 
 stat:
