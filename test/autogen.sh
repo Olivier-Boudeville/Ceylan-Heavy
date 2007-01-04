@@ -65,7 +65,7 @@ debug()
 # Where the Ceylan library should be found :
 
 if [ -n "$ceylan_install_prefix" ] ; then
-	ceylan_install_prefix_opt="--with-libCeylan=$ceylan_install_prefix"
+	ceylan_install_prefix_opt="--with-ceylan-prefix=$ceylan_install_prefix"
 fi
 
 
