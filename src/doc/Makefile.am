@@ -99,19 +99,19 @@ HTML_FILES           = `find . -name '*.html' -a -type f`
 
 # Tools section
 
-DOXYGEN_ROOT = @top_srcdir@/../../../doxygen-$(doxygen_VERSION)
+DOXYGEN_ROOT = @CEYLAN_LOANI_INSTALLATIONS@/doxygen-$(doxygen_VERSION)
 DOXYGEN      = `PATH=$(DOXYGEN_ROOT)/bin:$$PATH which doxygen 2>/dev/null`
 
 DOXYGEN_GENERATED_CONF = @top_builddir@/src/conf/doc/doxygen.conf
 
 
-DOT_ROOT     = @top_srcdir@/../../../dot-graphviz-$(dot_VERSION)
+DOT_ROOT     = @CEYLAN_LOANI_INSTALLATIONS@/dot-graphviz-$(dot_VERSION)
 DOT          = `PATH=$(DOT_ROOT)/bin:$$PATH which dot 2>/dev/null`
 
 ASTYLE       = `which astyle 2>/dev/null`
 ASTYLE_CONF  = @top_srcdir@/conf/astyle.conf
 
-TIDY_ROOT    = @top_srcdir@/../../../tidy
+TIDY_ROOT    = @CEYLAN_LOANI_INSTALLATIONS@/tidy
 TIDY	     = `PATH=$(TIDY_ROOT)/bin:$$PATH which tidy 2>/dev/null`
 
 RSYNC	     = `which rsync 2>/dev/null`
