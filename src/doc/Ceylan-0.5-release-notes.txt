@@ -1,0 +1,15 @@
+Created on Thursday, January 4, 2007.
+Updated on 
+
+
+		Ceylan 0.5 release notes
+		
+
+This is mostly a BFO (bug-fixes-only) version for the 0.4 version (see Ceylan-0.5-changes.txt and ChangeLog for more details).
+
+		
+Support available through the ceylan-support@lists.sourceforge.net mailing list.
+
+Report Ceylan bugs to the ceylan-bugs@lists.sourceforge.net mailing list.
+
+
