@@ -65,7 +65,8 @@ while [ "$#" -gt "0" ] ; do
 	if [ "$1" == "-o" ] || [ "$1" == "--only-prepare-dist" ] ; then
 		do_build=1
 		do_check=1
-		do_install=1
+		# Install needed to have *.m4 files for aclocal of test ;
+		do_install=0
 		do_installcheck=1
 		do_distcheck=1
 		do_chain_tests=1
@@ -474,7 +475,7 @@ generateCustom()
 		echo
 		echo " - generating configure for test suite"
 		cd test
-	 	execute ./autogen.sh --only-prepare-dist
+	 	execute ./autogen.sh --ceylan-install-prefix $PREFIX --only-prepare-dist
 		cd .. 
 		echo " - making distribution package"
 		execute make dist-bzip2 
