@@ -1471,6 +1471,7 @@ AC_CONFIG_FILES([
 	src/code/system/Makefile
 	src/conf/doc/Makefile
 	src/conf/Makefile
+	src/conf/build/CeylanToolsSettings.inc
 	src/conf/build/Makefile
 	src/conf/build/ceylan-ST_VERSION.pc
 	src/conf/build/m4/Makefile
