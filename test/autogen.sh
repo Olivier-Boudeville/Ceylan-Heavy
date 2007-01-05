@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-USAGE="Usage : "`basename $0`" [--only-prepare-dist] [--ceylan-install-prefix <a prefix>] : (re)generates all the autotools-based build system for Ceylan tests.\n\t--only-prepare-dist : perform only necessary operations so that the test directory can be distributed afterwards\n\t--ceylan-install-prefix <a prefix> : use the specified prefix to find the Ceylan library installation. Ex : --ceylan-install-prefix $HOME/tmp-Ceylan-test-install"
+USAGE="Usage : "`basename $0`" [ -n | --no-build ] [ -o | --only-prepare-dist] [--ceylan-install-prefix <a prefix>] : (re)generates all the autotools-based build system for Ceylan tests.\n\t--only-prepare-dist : perform only necessary operations so that the test directory can be distributed afterwards\n\t--ceylan-install-prefix <a prefix> : use the specified prefix to find the Ceylan library installation. Ex : --ceylan-install-prefix $HOME/tmp-Ceylan-test-install"
 
 # These tests must rely on a related Ceylan source directory, since they :
 #	- need to know which Ceylan version is to be tested
@@ -22,6 +22,11 @@ do_test=0
 while [ "$#" -gt "0" ] ; do
 	token_eaten=1
 		
+	if [ "$1" == "-n" ] || [ "$1" == "--no-build" ] ; then
+		do_stop_after_configure_generation=0
+		token_eaten=0
+	fi
+
 	if [ "$1" == "-o" ] || [ "$1" == "--only-prepare-dist" ] ; then
 		do_stop_after_configure=0
 		token_eaten=0
