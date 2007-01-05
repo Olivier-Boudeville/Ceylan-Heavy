@@ -1,0 +1,12 @@
+Created on Thursday, January 4, 2007.
+Updated on 
+
+
+		Ceylan 0.5 main changes, compared to the 0.4 version
+	
+	
+- autotools support improved (installation,package-config, etc.)
+- LOANI support integrated, to comply with OSDL needs 
+
+For more details, see the ChangeLog file.
+
