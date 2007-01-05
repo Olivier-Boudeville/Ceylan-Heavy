@@ -55,13 +55,12 @@ win_pthread_MD5="xx"
 
 # Ceylan (libCeylan.so) : http://ceylan.sourceforge.net
 
-Ceylan_VERSION="0.4"
-Ceylan_RELEASE=0
+Ceylan_VERSION="@CEYLAN_VERSION@"
+Ceylan_RELEASE="@CEYLAN_RELEASE@"
 Ceylan_ARCHIVE="ceylan-${Ceylan_VERSION}.tar.bz2"
 Ceylan_DOWNLOAD_LOCATION="http://osdn.dl.sourceforge.net/sourceforge/ceylan"
 Ceylan_ALTERNATE_DOWNLOAD_LOCATION="http://switch.dl.sourceforge.net/sourceforge/ceylan"
 Ceylan_MD5="(blanked)"
-Ceylan_ROOT="ceylan/Ceylan/trunk"
 Ceylan_SVN_SERVER=ceylan.svn.sourceforge.net
 
 
@@ -85,7 +84,7 @@ gcc_SOURCE_TREE="gcc-${gcc_VERSION}-sourceTree"
 # binutils : http://www.gnu.org/software/binutils/
 
 binutils_VERSION="2.17"
-binutils_ARCHIVE="binutils-${binutils_VERSION}.tar.gz"
+binutils_ARCHIVE="binutils-${binutils_VERSION}.tar.bz2"
 binutils_DOWNLOAD_LOCATION="ftp://ftp.cs.tu-berlin.de/pub/gnu/binutils"
 binutils_ALTERNATE_DOWNLOAD_LOCATION="http://ftp.gnu.org/gnu/binutils"
 binutils_MD5="e26e2e06b6e4bf3acf1dc8688a94c0d1"
