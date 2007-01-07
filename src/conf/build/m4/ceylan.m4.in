@@ -34,7 +34,18 @@
 # script, ex : ./configure --with-ceylan-prefix=~/myPrefixedCeylanInstall
 
 #
-# CEYLAN_PATH( ac,rev,anc )
+# CEYLAN_PATH( major, revision, age, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]] )
+# 
+# The three arguments designate the minimum Ceylan version to be searched for,
+# according to libtool conventions :
+# 	major    : the major number for this version 
+#	revision : the revision number for this version 
+#   age      : the interface age for this version 
+# Note : age should not be needed if the libtool numbering scheme was really
+# used.
+#
+# A Ceylan library will be searched for, and its version will be checked 
+# against specified minimum version.
 #
 # Checks that the Ceylan library can be used, stops with AC_MSG_ERROR if 
 # it failed, otherwise defines the CEYLAN_CPPFLAGS and CEYLAN_LIBS variables
@@ -43,7 +54,8 @@
 # The CEYLAN_PREFIX variable will contain the actual prefix of Ceylan
 # installation.
 #
-# Example : in configure.ac, CEYLAN_PATH( 0,4,0 )
+# Example : in configure.ac, searching for Ceylan 0.4.0 is :
+# CEYLAN_PATH( 0,4,0 )
 #
 AC_DEFUN([CEYLAN_PATH],
 [
