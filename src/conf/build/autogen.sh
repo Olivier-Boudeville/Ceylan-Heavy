@@ -1,7 +1,7 @@
 #!/bin/sh
 
 USAGE="
-Usage : "`basename $0`" [ -h | --help ] [ -d | --disable-all-features ] [ -n | --no-build ] [ -c | --chain-test ] [ -f | --full-test ] [ -o | --only-prepare-dist ] [ --configure-options [option 1] [option 2] [...] ] : (re)generates all the autotools-based build system.
+Usage : "`basename $0`" [ -h | --help ] [ -d | --disable-all-features ] [ -n | --no-build ] [ -c | --chain-test ] [ -f | --full-test ] [ -o | --only-prepare-dist ] [ --configure-options [option 1] [option 2] [...] ] : (re)generates all the autotools-based build system.
 
 	--no-build : stop just after having generated the configure script
 	--chain-test : build and install the library, build the test suite and run it against the installation
@@ -98,14 +98,15 @@ while [ $# -gt 0 ] ; do
 	fi
 
 	if [ $token_eaten -eq 1 ] ; then
-		echo "Error, unknown argument ($1).\n$USAGE" 1>&2
+		echo "Error, unknown argument ($1).
+$USAGE" 1>&2
 		exit 4
 	fi	
 	shift
 done
 
 
-# debug mode activated iff equal to true (0) :
+# debug mode activated iff equal to true (0) :
 debug_mode=1
 
 debug()
@@ -149,7 +150,7 @@ SOURCE_OFFSET="../../.."
 
 
 
-# Prefix section.
+# Prefix section.
 
 PREFIX_DEFAULT=`pwd | sed 's|LOANI-repository/ceylan/Ceylan/trunk/src/conf/build||1'`LOANI-installations
 debug "Default prefix = ${PREFIX_DEFAULT}"
@@ -197,11 +198,11 @@ debug "RUNNING_DIR = $RUNNING_DIR"
 
 # Overall autotools settings :
 
-# Be verbose for debug purpose :
+# Be verbose for debug purpose :
 #verbose="--verbose"
 verbose=""
 
-# Copy files instead of using symbolic link :
+# Copy files instead of using symbolic link :
 copy="--copy"
 #copy=""
 
@@ -209,7 +210,7 @@ copy="--copy"
 #force="--force"
 force=""
 
-# Warning selection : 
+# Warning selection : 
 warnings="--warnings=all"
 #warnings=""
 
@@ -244,14 +245,24 @@ execute()
 		else
 			echo "Error while executing '$*'" 1>&2
 			
-			AUTOMAKE_HINT="\nTo upgrade automake and aclocal from Debian-based distributions, do the following as root : 'apt-get install automake1.9' which updates aclocal too. One has nonetheless to update the symbolic links /etc/alternatives/aclocal so that it points to /usr/bin/aclocal-1.9, and /etc/alternatives/automake so that it points to /usr/bin/automake-1.9"
+			AUTOMAKE_HINT="
+To upgrade automake and aclocal from Debian-based distributions, do the following as root : 'apt-get install automake1.9' which updates aclocal too. One has nonetheless to update the symbolic links /etc/alternatives/aclocal so that it points to /usr/bin/aclocal-1.9, and /etc/alternatives/automake so that it points to /usr/bin/automake-1.9"
 			
 			if [ "$1" = "aclocal" ]; then
-				echo "\nNote : if aclocal is failing since AM_CXXFLAGS (used in configure.ac) 'cannot be found in library', then check that your aclocal version is indeed 1.9 or newer. For example, with Debian-based distributions, /usr/bin/aclocal is a symbolic link to /etc/alternatives/aclocal, which itself is a symbolic link which may or may not point to the expected aclocal version. Your version of $1 is :\n\t" `$1 --version` "\n\n\t" `/bin/ls -l --color $(type -p $1)` "${AUTOMAKE_HINT}"
+				echo "
+Note : if aclocal is failing since AM_CXXFLAGS (used in configure.ac) 'cannot be found in library', then check that your aclocal version is indeed 1.9 or newer. For example, with Debian-based distributions, /usr/bin/aclocal is a symbolic link to /etc/alternatives/aclocal, which itself is a symbolic link which may or may not point to the expected aclocal version. Your version of $1 is :
+	" `$1 --version` "
+	
+	" `/bin/ls -l --color $(type -p $1)` "${AUTOMAKE_HINT}"
 			elif [ "$1" = "automake" ]; then
-				echo "\nNote : check that your automake version is indeed 1.9 or newer. For example, with Debian-based distributions, /usr/bin/automake is a symbolic link to /etc/alternatives/automake, which itself is a symbolic link which may or may not point to the expected automake version. Your version of $1 is :\n\t" `$1 --version` "\n\n\t" `/bin/ls -l --color $(type -p $1)` "${AUTOMAKE_HINT}"
+				echo "
+Note : check that your automake version is indeed 1.9 or newer. For example, with Debian-based distributions, /usr/bin/automake is a symbolic link to /etc/alternatives/automake, which itself is a symbolic link which may or may not point to the expected automake version. Your version of $1 is :
+	" `$1 --version` "
+	
+	" `/bin/ls -l --color $(type -p $1)` "${AUTOMAKE_HINT}"
 			elif [ "$1" = "./configure" ]; then
-				echo "\nNote : check the following log :" `pwd`/config.log
+				echo "
+Note : check the following log :" `pwd`/config.log
   			fi
 			
 		fi
@@ -302,7 +313,7 @@ generateCustom()
 
 	CONFIG_TARGET=configure.ac
 	
-	# Config files are to lie in 'src/conf/build' directory :
+	# Config files are to lie in 'src/conf/build' directory :
 	CONFIG_DIR=$RUNNING_DIR
 	
 	SETTINGS_FILE="CeylanSettings.inc"
@@ -313,13 +324,13 @@ generateCustom()
 	# Generates 'configure.ac' with an already cooked dedicated Makefile :
 	execute make -f MakeConfigure clean config-files
 	
-	# Prepare to run everything from the root directory (containing 'src'
+	# Prepare to run everything from the root directory (containing 'src'
 	# and 'test').
 	# This is because automake and al *must* be run from that directory
-	# and that configure.ac has a hardcoded AC_CONFIG_AUX_DIR
+	# and that configure.ac has a hardcoded AC_CONFIG_AUX_DIR
 	
 	
-	# Go to the top directory of the sources :
+	# Go to the top directory of the sources :
 	cd $SOURCE_OFFSET
 		
 	echo
@@ -363,7 +374,7 @@ generateCustom()
 	
 	ACLOCAL_OUTPUT=src/conf/build/m4/aclocal.m4
 	
-	# Do not use '--acdir=.' since it prevents aclocal from writing its file :
+	# Do not use '--acdir=.' since it prevents aclocal from writing its file :
 	execute aclocal -I $M4_DIR --output=$ACLOCAL_OUTPUT $force $verbose
 
 	# automake wants absolutely to find aclocal.m4 in the top-level directory :
