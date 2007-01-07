@@ -1,9 +1,14 @@
-#!/bin/bash
+#!/bin/sh
 
 
-USAGE="Usage : "`basename $0`" [ -n | --no-build ] [ -o | --only-prepare-dist] [--ceylan-install-prefix <a prefix>] : (re)generates all the autotools-based build system for Ceylan tests.\n\t--no-build : stop just after having generated the configure script\n\t--only-prepare-dist : perform only necessary operations so that the test directory can be distributed afterwards\n\t--ceylan-install-prefix <a prefix> : use the specified prefix to find the Ceylan library installation. Ex : --ceylan-install-prefix $HOME/tmp-Ceylan-test-install"
+USAGE="
+Usage : "`basename $0`" [ -n | --no-build ] [ -o | --only-prepare-dist] [--ceylan-install-prefix <a prefix>] : (re)generates all the autotools-based build system for Ceylan tests.
 
-# These tests must rely on a related Ceylan source directory, since they :
+	--no-build : stop just after having generated the configure script
+	--only-prepare-dist : perform only necessary operations so that the test directory can be distributed afterwards
+	--ceylan-install-prefix <a prefix> : use the specified prefix to find the Ceylan library installation. Example : --ceylan-install-prefix $HOME/tmp-Ceylan-test-install"
+
+# These tests must rely on a related Ceylan source directory, since they :
 #	- need to know which Ceylan version is to be tested
 #	- use some Ceylan facilities (ex : Ceylan substitute script)
 
@@ -19,36 +24,36 @@ do_install=0
 do_test=0
 
 
-while [ "$#" -gt "0" ] ; do
+while [ $# -gt 0 ] ; do
 	token_eaten=1
 		
-	if [ "$1" == "-n" ] || [ "$1" == "--no-build" ] ; then
+	if [ "$1" = "-n" -o "$1" = "--no-build" ] ; then
 		do_stop_after_configure=0
 		token_eaten=0
 	fi
 
-	if [ "$1" == "-o" ] || [ "$1" == "--only-prepare-dist" ] ; then
+	if [ "$1" = "-o" -o "$1" = "--only-prepare-dist" ] ; then
 		do_stop_after_configure=0
 		token_eaten=0
 	fi
 	
-	if [ "$1" == "--ceylan-install-prefix" ] ; then
+	if [ "$1" = "--ceylan-install-prefix" ] ; then
 		shift
 		ceylan_install_prefix="$1"
 		if [ ! -d "$ceylan_install_prefix" ] ; then
-			echo -e "Error, specified prefix for Ceylan install ($ceylan_install_prefix) does not exist.\n$USAGE" 1>&2
+			echo "Error, specified prefix for Ceylan install ($ceylan_install_prefix) does not exist.\n$USAGE" 1>&2
 			exit 10
 		fi
 		token_eaten=0
 	fi
 	
-	if [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then
+	if [ "$1" = "-h" -o "$1" = "--help" ] ; then
 		echo -e "$USAGE"
 		exit
 		token_eaten=0
 	fi
 
-	if [ "$token_eaten" == "1" ] ; then
+	if [ $token_eaten -eq 1 ] ; then
 		echo -e "Error, unknown argument ($1).\n$USAGE" 1>&2
 		exit 4
 	fi	
@@ -56,7 +61,7 @@ while [ "$#" -gt "0" ] ; do
 done
 
 
-# debug mode activated iff equal to true (0) :
+# debug mode activated iff equal to true (0) :
 debug_mode=1
 
 debug()
@@ -67,14 +72,14 @@ debug()
 }
 
 
-# Where the Ceylan library should be found :
+# Where the Ceylan library should be found :
 
 if [ -n "$ceylan_install_prefix" ] ; then
 	ceylan_install_prefix_opt="--with-ceylan-prefix=$ceylan_install_prefix"
 fi
 
 
-# Where these tests should be installed :
+# Where these tests should be installed :
 test_install_location="$ceylan_install_prefix"
 
 if [ -n "$test_install_location" ] ; then
@@ -111,7 +116,7 @@ wait()
 
 cd `dirname $0`
 
-# Searches for the Ceylan substitute script :
+# Searches for the Ceylan substitute script :
 CEYLAN_SUBSTITUTE_SCRIPT="../src/code/scripts/shell/substitute.sh"
 if [ ! -x "${CEYLAN_SUBSTITUTE_SCRIPT}" ] ; then
 	CEYLAN_SUBSTITUTE_SCRIPT="../code/scripts/shell/substitute.sh"
@@ -122,7 +127,7 @@ if [ ! -x "${CEYLAN_SUBSTITUTE_SCRIPT}" ] ; then
 fi
 
 
-# Searches for the Ceylan settings file :
+# Searches for the Ceylan settings file :
 CEYLAN_SETTINGS_FILE="../src/conf/CeylanSettings.inc"
 if [ ! -f "${CEYLAN_SETTINGS_FILE}" ] ; then
 	echo "Error, no Ceylan settings file found (${CEYLAN_SETTINGS_FILE})." 1>&2
@@ -143,11 +148,11 @@ fi
 
 # Overall autotools settings :
 
-# Be verbose for debug purpose :
+# Be verbose for debug purpose :
 #verbose="--verbose"
 verbose=""
 
-# Copy files instead of using symbolic link :
+# Copy files instead of using symbolic link :
 copy="--copy"
 #copy=""
 
@@ -155,7 +160,7 @@ copy="--copy"
 #force="--force"
 force=""
 
-# Warning selection : 
+# Warning selection : 
 warnings="--warnings=all"
 #warnings=""
 
@@ -172,7 +177,7 @@ execute()
 
 	echo "    Executing $*"
 	
-	if [ "$log_on_file" -eq 0 ] ; then
+	if [ $log_on_file -eq 0 ] ; then
 		echo "    Executing $* from "`pwd` >>"$log_filename"
 		eval $* >>"$log_filename" 2>&1
 		RES=$?
@@ -185,11 +190,11 @@ execute()
 
 	if [ ! $RES -eq 0 ] ; then
 		echo 1>&2
-		if [ "$log_on_file" -eq 0 ] ; then
+		if [ $log_on_file -eq 0 ] ; then
 			echo "Error while executing '$*', see $log_filename" 1>&2
 		else
 			echo "Error while executing '$*'" 1>&2
-			if [ "$1" == "./configure" ]; then
+			if [ "$1" = "./configure" ]; then
 				echo -e "\nNote : check the following log :" test/config.log	
   			fi
 		fi
@@ -265,12 +270,12 @@ generateCustom()
 		exit 22
 	}
 
-	# Where ceylan.m4, pkg.m4, etc. should be found : 
+	# Where ceylan.m4, pkg.m4, etc. should be found : 
 	CEYLAN_M4_DIR=$ceylan_install_prefix/share/Ceylan
 	
 	ACLOCAL_OUTPUT=aclocal.m4
 	
-	# Do not use '--acdir=.' since it prevents aclocal from writing its file :
+	# Do not use '--acdir=.' since it prevents aclocal from writing its file :
 	execute aclocal -I $CEYLAN_M4_DIR --output=$ACLOCAL_OUTPUT $force $verbose
 	
 	echo
@@ -327,21 +332,21 @@ generateCustom()
  	execute ./configure $configure_opt
 	
 
-	if [ "$do_clean" -eq 0 ] ; then
+	if [ $do_clean -eq 0 ] ; then
 		echo
 		echo " - cleaning all"
 	 	execute make clean
 	fi
 	
 	
-	if [ "$do_build" -eq 0 ] ; then
+	if [ $do_build -eq 0 ] ; then
 		echo
 		echo " - building all"
 	 	execute make
 	fi
 	
 	
-	if [ "$do_install" -eq 0 ] ; then
+	if [ $do_install -eq 0 ] ; then
 		echo
 		echo " - installing"
 	 	execute make install
@@ -355,7 +360,7 @@ generateCustom()
 		
 	fi
 
-	if [ "$do_test" -eq 0 ] ; then
+	if [ $do_test -eq 0 ] ; then
 		export LD_LIBRARY_PATH=$ceylan_install_prefix/lib:$LD_LIBRARY_PATH
 		echo
 		echo " - running unit tests"
