@@ -41,20 +41,20 @@ while [ $# -gt 0 ] ; do
 		shift
 		ceylan_install_prefix="$1"
 		if [ ! -d "$ceylan_install_prefix" ] ; then
-			echo "Error, specified prefix for Ceylan install ($ceylan_install_prefix) does not exist.\n$USAGE" 1>&2
+			echo "Error, specified prefix for Ceylan install ($ceylan_install_prefix) does not exist.$USAGE" 1>&2
 			exit 10
 		fi
 		token_eaten=0
 	fi
 	
 	if [ "$1" = "-h" -o "$1" = "--help" ] ; then
-		echo -e "$USAGE"
+		echo "$USAGE"
 		exit
 		token_eaten=0
 	fi
 
 	if [ $token_eaten -eq 1 ] ; then
-		echo -e "Error, unknown argument ($1).\n$USAGE" 1>&2
+		echo "Error, unknown argument ($1).$USAGE" 1>&2
 		exit 4
 	fi	
 	shift
@@ -195,7 +195,8 @@ execute()
 		else
 			echo "Error while executing '$*'" 1>&2
 			if [ "$1" = "./configure" ]; then
-				echo -e "\nNote : check the following log :" test/config.log	
+				echo "
+Note : check the following log :" test/config.log	
   			fi
 		fi
 			
