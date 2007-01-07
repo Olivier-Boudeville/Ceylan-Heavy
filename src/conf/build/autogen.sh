@@ -1,6 +1,14 @@
-#!/bin/bash
+#!/bin/sh
 
-USAGE="Usage : "`basename $0`" [ -h | --help ] [ -d | --disable-all-features ] [ -n | --no-build ] [ -c | --chain-test ] [ -f | --full-test ] [ -o | --only-prepare-dist ] [ --configure-options [option 1] [option 2] [...] ] : (re)generates all the autotools-based build system.\n\t --disable-all-features : build a library with none of the optional features\n\t --no-build : stop just after having generated the configure script\n\t --chain-test : build and install the library, build the test suite and run it against the installation\n\t --full-test : build and install the library, perform all available tests, including 'make distcheck' and the full test suite\n\t --only-prepare-dist : configure all but do not build anything\n\t --configure-options : all following options will be directly passed whenever configure is run"
+USAGE="
+Usage : "`basename $0`" [ -h | --help ] [ -d | --disable-all-features ] [ -n | --no-build ] [ -c | --chain-test ] [ -f | --full-test ] [ -o | --only-prepare-dist ] [ --configure-options [option 1] [option 2] [...] ] : (re)generates all the autotools-based build system.
+
+	--no-build : stop just after having generated the configure script
+	--chain-test : build and install the library, build the test suite and run it against the installation
+	--full-test : build and install the library, perform all available tests, including 'make distcheck' and the full test suite
+	--only-prepare-dist : configure all but do not build anything
+	--disable-all-features : build the Ceylan library with none of its optional features
+	--configure-options : all following options will be directly passed whenever configure is run"
 
 
 # Main settings section.
@@ -28,41 +36,41 @@ do_chain_tests=1
 do_only_prepare_dist=1
 
 
-while [ "$#" -gt "0" ] ; do
+while [ $# -gt 0 ] ; do
 	token_eaten=1
 	
-	if [ "$1" == "-v" ] || [ "$1" == "--verbose" ] ; then
+	if [ "$1" = "-v" -o "$1" = "--verbose" ] ; then
 		be_verbose=0
 		token_eaten=0
 	fi
 	
-	if [ "$1" == "-q" ] || [ "$1" == "--quiet" ] ; then
+	if [ "$1" = "-q" -o "$1" = "--quiet" ] ; then
 		be_quiet=0
 		token_eaten=0
 	fi
 	
-	if [ "$1" == "-d" ] || [ "$1" == "--disable-all-features" ] ; then
+	if [ "$1" = "-d" -o "$1" = "--disable-all-features" ] ; then
 		ceylan_features_opt="$ceylan_features_disable_opt"
 		token_eaten=0
 	fi
 
-	if [ "$1" == "-n" ] || [ "$1" == "--no-build" ] ; then
+	if [ "$1" = "-n" -o "$1" = "--no-build" ] ; then
 		do_stop_after_configure_generation=0
 		token_eaten=0
 	fi
 	
-	if [ "$1" == "-c" ] || [ "$1" == "--chain-test" ] ; then
+	if [ "$1" = "-c" -o "$1" = "--chain-test" ] ; then
 		do_chain_tests=0		
 		token_eaten=0
 	fi
 	
-	if [ "$1" == "-f" ] || [ "$1" == "--full-test" ] ; then
+	if [ "$1" = "-f" -o "$1" = "--full-test" ] ; then
 		do_chain_tests=0	
 		do_distcheck=1	
 		token_eaten=0
 	fi
 	
-	if [ "$1" == "-o" ] || [ "$1" == "--only-prepare-dist" ] ; then
+	if [ "$1" = "-o" -o "$1" = "--only-prepare-dist" ] ; then
 		do_build=1
 		do_check=1
 		# Install needed to have *.m4 files for aclocal of test ;
@@ -74,7 +82,7 @@ while [ "$#" -gt "0" ] ; do
 		token_eaten=0
 	fi
 	
-	if [ "$1" == "--configure-options" ] ; then
+	if [ "$1" = "--configure-options" ] ; then
 		shift
 		configure_opt="$*"
 		while [ "$#" -gt "0" ] ; do
@@ -83,14 +91,14 @@ while [ "$#" -gt "0" ] ; do
 		token_eaten=0
 	fi
 	
-	if [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then
-		echo -e "$USAGE"
+	if [ "$1" = "-h" -o "$1" = "--help" ] ; then
+		echo "$USAGE"
 		exit
 		token_eaten=0
 	fi
 
-	if [ "$token_eaten" == "1" ] ; then
-		echo -e "Error, unknown argument ($1).\n$USAGE" 1>&2
+	if [ $token_eaten -eq 1 ] ; then
+		echo "Error, unknown argument ($1).\n$USAGE" 1>&2
 		exit 4
 	fi	
 	shift
@@ -218,7 +226,7 @@ execute()
 
 	echo "    Executing $*"
 	
-	if [ "$log_on_file" -eq 0 ] ; then
+	if [ $log_on_file -eq 0 ] ; then
 		echo "    Executing $* from "`pwd` >>"$log_filename"
 		eval $* >>"$log_filename" 2>&1
 		RES=$?
@@ -229,21 +237,21 @@ execute()
 		RES=$?
 	fi
 
-	if [ ! $RES -eq 0 ] ; then
+	if [ $RES -ne 0 ] ; then
 		echo 1>&2
-		if [ "$log_on_file" -eq 0 ] ; then
+		if [ $log_on_file -eq 0 ] ; then
 			echo "Error while executing '$*', see $log_filename" 1>&2
 		else
 			echo "Error while executing '$*'" 1>&2
 			
 			AUTOMAKE_HINT="\nTo upgrade automake and aclocal from Debian-based distributions, do the following as root : 'apt-get install automake1.9' which updates aclocal too. One has nonetheless to update the symbolic links /etc/alternatives/aclocal so that it points to /usr/bin/aclocal-1.9, and /etc/alternatives/automake so that it points to /usr/bin/automake-1.9"
 			
-			if [ "$1" == "aclocal" ]; then
-				echo -e "\nNote : if aclocal is failing since AM_CXXFLAGS (used in configure.ac) 'cannot be found in library', then check that your aclocal version is indeed 1.9 or newer. For example, with Debian-based distributions, /usr/bin/aclocal is a symbolic link to /etc/alternatives/aclocal, which itself is a symbolic link which may or may not point to the expected aclocal version. Your version of $1 is :\n\t" `$1 --version` "\n\n\t" `/bin/ls -l --color $(type -p $1)` "${AUTOMAKE_HINT}"
-			elif [ "$1" == "automake" ]; then
-				echo -e "\nNote : check that your automake version is indeed 1.9 or newer. For example, with Debian-based distributions, /usr/bin/automake is a symbolic link to /etc/alternatives/automake, which itself is a symbolic link which may or may not point to the expected automake version. Your version of $1 is :\n\t" `$1 --version` "\n\n\t" `/bin/ls -l --color $(type -p $1)` "${AUTOMAKE_HINT}"
-			elif [ "$1" == "./configure" ]; then
-				echo -e "\nNote : check the following log :" `pwd`/config.log
+			if [ "$1" = "aclocal" ]; then
+				echo "\nNote : if aclocal is failing since AM_CXXFLAGS (used in configure.ac) 'cannot be found in library', then check that your aclocal version is indeed 1.9 or newer. For example, with Debian-based distributions, /usr/bin/aclocal is a symbolic link to /etc/alternatives/aclocal, which itself is a symbolic link which may or may not point to the expected aclocal version. Your version of $1 is :\n\t" `$1 --version` "\n\n\t" `/bin/ls -l --color $(type -p $1)` "${AUTOMAKE_HINT}"
+			elif [ "$1" = "automake" ]; then
+				echo "\nNote : check that your automake version is indeed 1.9 or newer. For example, with Debian-based distributions, /usr/bin/automake is a symbolic link to /etc/alternatives/automake, which itself is a symbolic link which may or may not point to the expected automake version. Your version of $1 is :\n\t" `$1 --version` "\n\n\t" `/bin/ls -l --color $(type -p $1)` "${AUTOMAKE_HINT}"
+			elif [ "$1" = "./configure" ]; then
+				echo "\nNote : check the following log :" `pwd`/config.log
   			fi
 			
 		fi
@@ -269,9 +277,9 @@ generateCustom()
 	fi
 	
 	
-	if [ "$do_clean_prefix" -eq 0 ] ; then
+	if [ $do_clean_prefix -eq 0 ] ; then
 		echo
-		if [ -z "$PREFIX" -o "$PREFIX" == "$HOME" ] ; then
+		if [ -z "$PREFIX" -o "$PREFIX" = "$HOME" ] ; then
 			echo "(no PREFIX=$PREFIX removed)"
 		else	
 			returnedChar="y"
@@ -279,7 +287,7 @@ generateCustom()
 				read -p "Do you really want to erase the whole Ceylan tree in $PREFIX ? (y/n) [n] " returnedChar 
 			fi
 			
-			if [ "$returnedChar" == "y" ] ; then
+			if [ "$returnedChar" = "y" ] ; then
 				echo " - cleaning PREFIX = $PREFIX"
 				${RM} -rf $PREFIX/include/Ceylan $PREFIX/lib/libCeylan* $PREFIX/lib/pkgconfig/ceylan* $PREFIX/share/Ceylan*
 				echo "(prefix cleaned)"
@@ -424,54 +432,54 @@ generateCustom()
  	execute ./configure $configure_opt
 	
 
-	if [ "$do_clean" -eq 0 ] ; then
+	if [ $do_clean -eq 0 ] ; then
 		echo
 		echo " - cleaning all"
 	 	execute make clean
 	fi
 	
 	
-	if [ "$do_build" -eq 0 ] ; then
+	if [ $do_build -eq 0 ] ; then
 		echo
 		echo " - building all"
 	 	execute make
 	fi
 	
 	
-	if [ "$do_check" -eq 0 ] ; then
+	if [ $do_check -eq 0 ] ; then
 		echo
 		echo " - checking all"
 	 	execute make check
 	fi
 	
 	
-	if [ "$do_install" -eq 0 ] ; then
+	if [ $do_install -eq 0 ] ; then
 		echo
 		echo " - installing"
 	 	execute make install
 	fi
 	
 	
-	if [ "$do_installcheck" -eq 0 ] ; then
+	if [ $do_installcheck -eq 0 ] ; then
 		echo
 		echo " - checking install"
 	 	execute make installcheck
 	fi
 	
 	
-	if [ "$do_distcheck" -eq 0 ] ; then
+	if [ $do_distcheck -eq 0 ] ; then
 		echo
 		echo " - making distcheck"
 	 	execute make distcheck
 	fi
 	
 	
-	if [ "$do_chain_tests" -eq 0 ] ; then
+	if [ $do_chain_tests -eq 0 ] ; then
 		echo
 		echo " - building and running test suite"
 		cd test
 	 	execute ./autogen.sh --ceylan-install-prefix $PREFIX
-	elif [ "$do_only_prepare_dist" -eq 0 ] ; then
+	elif [ $do_only_prepare_dist -eq 0 ] ; then
 		echo
 		echo " - generating configure for test suite"
 		cd test
