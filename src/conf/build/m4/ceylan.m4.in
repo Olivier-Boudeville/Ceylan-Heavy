@@ -37,7 +37,11 @@
 # CEYLAN_PATH( ac,rev,anc )
 #
 # Checks that the Ceylan library can be used, stops with AC_MSG_ERROR if 
-# it failed, otherwise updates the LIBS variable accordingly.
+# it failed, otherwise defines the CEYLAN_CPPFLAGS and CEYLAN_LIBS variables
+# accordingly.
+#
+# The CEYLAN_PREFIX variable will contain the actual prefix of Ceylan
+# installation.
 #
 # Example : in configure.ac, CEYLAN_PATH( 0,4,0 )
 #
@@ -46,14 +50,16 @@ AC_DEFUN([CEYLAN_PATH],
   # Here is specified for each given Ceylan release what are the most ancient
   # versions that are still compatible with this current version :
   CEYLAN_OLDEST_SUPPORTED_MAJOR=@CEYLAN_OLDEST_SUPPORTED_MAJOR@
-  CEYLAN_OLDEST_SUPPORTED_MINOR=@CEYLAN_OLDEST_SUPPORTED_MINOR@  
+  CEYLAN_OLDEST_SUPPORTED_MINOR=@CEYLAN_OLDEST_SUPPORTED_MINOR@
+  
   # Setting the install path of the Ceylan library :
   CEYLAN_LIBS=" -lCeylan "
   AC_ARG_WITH(ceylan-prefix,
-    AS_HELP_STRING([--with-ceylan-prefix],[path to the Ceylan library (prefix)]),
+    AS_HELP_STRING([--with-ceylan-prefix],[path to the Ceylan installation (prefix)]),
       [
         CEYLAN_CPPFLAGS="-I${withval}/include/Ceylan"
         CEYLAN_LIBS="-L${withval}/lib -lCeylan"
+		CEYLAN_PREFIX="${withval}"
 		# Get ready for configure tests :
 		LD_LIBRARY_PATH="${withval}/lib:$LD_LIBRARY_PATH"
 		export LD_LIBRARY_PATH
@@ -70,6 +76,7 @@ AC_DEFUN([CEYLAN_PATH],
 			AC_MSG_WARN([pkg-config tool not found, using default install path ${default_install_path}])
         	CEYLAN_CPPFLAGS="-I${default_install_path}/include/Ceylan"
         	CEYLAN_LIBS="-L${default_install_path}/lib -lCeylan"
+			CEYLAN_PREFIX="${default_install_path}"
 		else 
 			# Here pkg-config is available.
 			# Use it if possible, otherwise choose default values :
@@ -84,7 +91,8 @@ AC_DEFUN([CEYLAN_PATH],
 					# pkg-config succeeded and set CEYLAN_CFLAGS and 
 					# CEYLAN_LIBS :
 					CEYLAN_CPPFLAGS="${CEYLAN_CFLAGS} ${CEYLAN_CPPFLAGS}"
-					# CEYLAN_LIBS left as set
+					# CEYLAN_LIBS left as set (overwritten but was empty here)
+					CEYLAN_PREFIX=`$PKG_CONFIG ceylan-$1.$2 --variable=prefix`
 					# Get ready for configure tests :
 					LD_LIBRARY_PATH=`$PKG_CONFIG ceylan-$1.$2 --variable=libdir`:$LD_LIBRARY_PATH
 					export LD_LIBRARY_PATH
@@ -93,11 +101,13 @@ AC_DEFUN([CEYLAN_PATH],
 					AC_MSG_WARN([pkg-config failed for ceylan-$1.$2, defaulting to install path $default_install_path])
         			CEYLAN_CPPFLAGS="-I${default_install_path}/include/Ceylan"
         			CEYLAN_LIBS="-L${default_install_path}/lib -lCeylan"
+					CEYLAN_PREFIX="${default_install_path}"
 				])
 			else
 				AC_MSG_WARN([pkg-config did not find ceylan-$1.$2.pc, using default install path ${default_install_path}])
         		CEYLAN_CPPFLAGS="-I${default_install_path}/include/Ceylan"
         		CEYLAN_LIBS="-L${default_install_path}/lib -lCeylan"
+				CEYLAN_PREFIX="${default_install_path}"
 			fi
 		fi			
      	])
@@ -194,13 +204,13 @@ AC_DEFUN([CEYLAN_PATH],
         ;;
 
 	*-*-cygwin*)
-        CFLAGS="$CFLAGS -I/usr/include/mingw -DWIN32 -Uunix -mno-cygwin"
-        LIBS="$LIBS -mno-cygwin"
+        CEYLAN_CPPFLAGS="$CEYLAN_CPPFLAGS -I/usr/include/mingw -DWIN32 -Uunix -mno-cygwin"
+        CEYLAN_LIBS="$CEYLAN_LIBS -mno-cygwin"
         CEYLAN_DLL="${CEYLAN_DLL_IMPORT_WINDOWS}"
         ;;
 		
 	*-*-mingw32*)
-        LIBS="-lmingw32 $LIBS -mwindows"
+        CEYLAN_LIBS="-lmingw32 $CEYLAN_LIBS -mwindows"
         CEYLAN_DLL="${CEYLAN_DLL_IMPORT_WINDOWS}"
         ;;
 													
@@ -209,24 +219,30 @@ AC_DEFUN([CEYLAN_PATH],
 
   # Wanting CEYLAN_DLL to be replaced by nothing, not "", on UNIX :	  
   if test "${CEYLAN_DLL}" = "" ; then
- 	 CPPFLAGS="$CPPFLAGS $CEYLAN_CPPFLAGS $pthread_cflags -DCEYLAN_DLL="
+ 	 CEYLAN_CPPFLAGS="$CEYLAN_CPPFLAGS $pthread_cflags -DCEYLAN_DLL="
   else	 
- 	 CPPFLAGS="$CPPFLAGS $CEYLAN_CPPFLAGS $pthread_cflags -DCEYLAN_DLL=\"${CEYLAN_DLL}\""
+ 	 CEYLAN_CPPFLAGS="$CEYLAN_CPPFLAGS $pthread_cflags -DCEYLAN_DLL=\"${CEYLAN_DLL}\""
   fi
 
-   
-  LIBS="$LIBS $CEYLAN_LIBS $pthread_lib"
+  CEYLAN_LIBS="$CEYLAN_LIBS $pthread_lib"
+  
   # Uncomment to debug :
-  #AC_MSG_NOTICE([Ceylan guessed CPPFLAGS = $CPPFLAGS])
-  #AC_MSG_NOTICE([Ceylan guessed LIBS = $LIBS])  
-  AC_SUBST(CPPFLAGS)
-  AC_SUBST(LIBS)
+  #AC_MSG_NOTICE([CEYLAN_CPPFLAGS = $CEYLAN_CPPFLAGS])
+  #AC_MSG_NOTICE([CEYLAN_LIBS = $CEYLAN_LIBS])  
+
   # Checking for Ceylan header files :
   have_ceylan=yes
   AC_MSG_NOTICE([checking for the Ceylan library])
   # AC_CHECK_HEADERS checks better than AC_PREPROC_IFELSE :
   # (compilable more interesting than only preprocessable)
-  AC_LANG_PUSH([C++]) 
+  AC_LANG_PUSH([C++])
+  
+  # Update the build flags for testing :
+  ac_save_CPPFLAGS="$CPPFLAGS"
+  ac_save_LIBS="$LIBS"
+  CPPFLAGS="$CPPFLAGS $CEYLAN_CPPFLAGS"
+  LIBS="$LIBS $CEYLAN_LIBS"
+  
   AC_CHECK_HEADERS([Ceylan.h],[],[have_ceylan=no])
   if test x$have_ceylan = xno; then
     AC_MSG_ERROR([No usable Ceylan header file (Ceylan.h) found. If the Ceylan library has been installed in a non-standard location (ex : when configuring it, --prefix=$HOME/myCeylanInstall was added), use the --with-ceylan-prefix option, ex : --with-ceylan-prefix=$HOME/myCeylanInstall.])
@@ -274,6 +290,11 @@ AC_DEFUN([CEYLAN_PATH],
   else
     AC_MSG_RESULT([no])
     AC_MSG_ERROR([The Ceylan library we would link to is not compatible with the one expected by the program being configured])  
-  fi
+  fi  
+  
+  # Restore original settings, now that CEYLAN_* counterparts are validated :
+  CPPFLAGS="$ac_save_CPPFLAGS"
+  LIBS="$ac_save_LIBS"
+
   AC_LANG_POP([C++]) 
 ])
