@@ -6,7 +6,7 @@
 
 
 #if CEYLAN_USES_CONFIG_H
-#include "CeylanConfig.h"               // for configure-time settings
+#include "CeylanConfig.h"      // for configure-time settings
 #endif // CEYLAN_USES_CONFIG_H
 
 
@@ -14,7 +14,7 @@ extern "C"
 {
 
 #if CEYLAN_USES_STRING_H
-#include <string.h>           // for memcpy
+#include <string.h>            // for memcpy
 #endif // CEYLAN_USES_STRING_H
 
 
@@ -233,7 +233,8 @@ Size MemoryStream::write( const Ceylan::Byte * buffer, Size maxLength )
 	if ( maxLength > maxPossibleWriteSize )
 		throw WriteFailedException( "MemoryStream::write : "
 			"attempt to write more than free space in buffer (which is "
-			+ Ceylan::toString( static_cast<Ceylan::Uint32>( maxPossibleWriteSize ) )
+			+ Ceylan::toString( 
+				static_cast<Ceylan::Uint32>( maxPossibleWriteSize ) )
 			+ " byte(s)) : " + toString() ) ;
 
 	/*
@@ -472,4 +473,3 @@ const std::string MemoryStream::toString( Ceylan::VerbosityLevels level )
 	
 }
 
- 

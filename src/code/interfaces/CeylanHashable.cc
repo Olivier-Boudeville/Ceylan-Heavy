@@ -33,10 +33,12 @@ const string Hashable::toString( VerbosityLevels level ) const throw()
 	
 	return "Hashable object whose strong hash code is " 
 			+ Ceylan::toString( getStrongHashCode() ) ; 
+			
 }	
 		
 
-WeakHashCode Hashable::GetWeakHashCode( const std::string & stringToHash ) throw()
+WeakHashCode Hashable::GetWeakHashCode( const std::string & stringToHash )
+	throw()
 {
 
 	WeakHashCode hash = 0 ;
@@ -57,7 +59,8 @@ WeakHashCode Hashable::GetWeakHashCode( const std::string & stringToHash ) throw
 }
 
 
-StrongHashCode Hashable::GetStrongHashCode( const std::string & stringToHash ) throw()
+StrongHashCode Hashable::GetStrongHashCode( const std::string & stringToHash )
+	throw()
 {
 
 	StrongHashCode hash = 0 ;

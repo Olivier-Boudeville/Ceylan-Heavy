@@ -316,5 +316,3 @@ void LogAggregatorHTML::write( const LogMessage & message,
 	
 }
 
-
-

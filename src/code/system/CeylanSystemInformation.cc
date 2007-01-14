@@ -267,8 +267,6 @@ UnsignedLongInteger Ceylan::System::getFreeSwapMemorySize()
 
 
 
-
-
 UnsignedLongInteger Ceylan::System::getTotalHighMemorySize() 
 	throw( SystemException )
 { 
@@ -345,7 +343,6 @@ UnsignedLongInteger Ceylan::System::getFreeHighMemorySize()
 
 
 
-
 UnsignedLongInteger Ceylan::System::getSharedMemorySize() 
 	throw( SystemException )
 { 
@@ -419,5 +416,4 @@ UnsignedLongInteger Ceylan::System::getBuffersMemorySize()
 #endif // CEYLAN_USES_SYSINFO
 	
 } 
-
 

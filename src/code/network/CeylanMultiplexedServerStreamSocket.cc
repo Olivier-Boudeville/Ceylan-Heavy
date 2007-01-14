@@ -18,9 +18,6 @@
 extern "C"
 {
 
-#ifdef CEYLAN_USES_UNISTD_H
-//#include <unistd.h>            // for FIXME
-#endif // CEYLAN_USES_UNISTD_H
 
 #ifdef CEYLAN_USES_SYS_TYPES_H
 #include <sys/types.h>         // for bind, accept

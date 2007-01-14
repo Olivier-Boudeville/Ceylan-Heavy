@@ -1187,7 +1187,8 @@ bool File::ExistsAsFileOrSymbolicLink( const string & name )
 	
 	struct _stat buf ;
 
-	return ( ::_stat( name.c_str(), & buf ) == 0 && ( buf.st_mode & _S_IFREG ) ) ;
+	return ( ::_stat( name.c_str(), & buf ) == 0 
+		&& ( buf.st_mode & _S_IFREG ) ) ;
 
 #else CEYLAN_USES__STAT
 
@@ -1965,5 +1966,4 @@ void File::FromFDtoFD( FileDescriptor from, FileDescriptor to, Size length )
 	
 }
 
- 
  

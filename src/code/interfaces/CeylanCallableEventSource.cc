@@ -41,7 +41,8 @@ const string CallableEventSource::toString( Ceylan::VerbosityLevels level )
 {
 
 	// The sentence makes sense :
-	return "Callable Event Source. This specialized " + EventSource::toString( level ) ;
+	return "Callable Event Source. This specialized " 
+		+ EventSource::toString( level ) ;
 
 }
 

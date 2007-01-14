@@ -64,10 +64,12 @@ namespace Ceylan
 				 * searched for (if true), even though it would be obtained at 
 				 * the expense of usable network bandwidth. This would be done
 				 * by deactivating the Nagle algorithm, which is seldom
-				 * recommended except for remote GUI or multiplayer network games.
+				 * recommended except for remote GUI or multiplayer 
+				 * network games.
 				 * Hence the default is false, and the Nagle algorithm is used.
 				 *
-				 * @see http://tangentsoft.net/wskfaq/intermediate.html#nagle-desc
+				 * @see
+				 * http://tangentsoft.net/wskfaq/intermediate.html#nagle-desc
 				 *
 				 * @throw SocketException if the operation failed.
 				 *
@@ -89,10 +91,12 @@ namespace Ceylan
 				 * searched for (if true), even though it would be obtained at 
 				 * the expense of usable network bandwidth. This would be done
 				 * by deactivating the Nagle algorithm, which is seldom
-				 * recommended except for remote GUI or multiplayer network games.
+				 * recommended except for remote GUI or multiplayer 
+				 * network games.
 				 * Hence the default is false, and the Nagle algorithm is used.
 				 *
-				 * @see http://tangentsoft.net/wskfaq/intermediate.html#nagle-desc
+				 * @see
+				 * http://tangentsoft.net/wskfaq/intermediate.html#nagle-desc
 				 *
 				 * @throw SocketException if the operation failed.
 				 *
@@ -175,12 +179,13 @@ namespace Ceylan
 				 * it would be obtained at the expense of usable network 
 				 * bandwidth. 
 				 *
-				 * This is seldom recommended except for remote GUI or multiplayer
-				 * network games.
+				 * This is seldom recommended except for remote GUI or
+				 * multiplayer network games.
 				 *
 				 * Hence the default is false, and the Nagle algorithm is used.
 				 *
-				 * @see http://tangentsoft.net/wskfaq/intermediate.html#nagle-desc
+				 * @see
+				 * http://tangentsoft.net/wskfaq/intermediate.html#nagle-desc
 				 *
 				 * Deactivating the Nagle algorithm is to be performed in socket
 				 * child classes.

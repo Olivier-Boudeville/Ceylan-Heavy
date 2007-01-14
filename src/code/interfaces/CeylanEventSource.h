@@ -21,7 +21,6 @@ namespace Ceylan
 
 }
 
-//CEYLAN_EXTERN_TEMPLATE template class CEYLAN_DLL std::list<Ceylan::EventListener *> ;
 
 namespace Ceylan
 {

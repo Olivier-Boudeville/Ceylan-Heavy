@@ -292,3 +292,4 @@ void Ceylan::breakpoint( const std::string & message ) throw()
 	 waitForKey() ;
  
 }
+

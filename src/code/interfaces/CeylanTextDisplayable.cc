@@ -14,6 +14,7 @@ using namespace Ceylan ;
 TextDisplayable::TextOutputFormat TextDisplayable::_OutputFormat = rawText ;
 
 
+
 const std::string TextDisplayable::ToString( 
 		list<TextDisplayable*> displayables, Ceylan::VerbosityLevels level ) 
 	throw()
@@ -38,14 +39,15 @@ TextDisplayable::TextOutputFormat TextDisplayable::GetOutputFormat() throw()
 }
 
 
-void TextDisplayable::SetOutputFormat( TextOutputFormat newOutputFormat ) throw()
+void TextDisplayable::SetOutputFormat( TextOutputFormat newOutputFormat )
+	throw()
 {
 	_OutputFormat = newOutputFormat ;
 }
 
 
-std::ostream & operator << ( std::ostream & os, const Ceylan::TextDisplayable & textDisplayable )
-	throw() 
+std::ostream & operator << ( std::ostream & os, 
+	const Ceylan::TextDisplayable & textDisplayable ) throw() 
 {
     return os << textDisplayable.toString( high ) ;
 }

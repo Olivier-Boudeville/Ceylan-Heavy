@@ -10,6 +10,7 @@ using namespace Ceylan::Maths ;
 using namespace Ceylan::Maths::Random ;
 
 
+
 NormalProbabilityFunction::NormalProbabilityFunction( Sample mean, 
 	Deviation sigma ) throw( MathsException ) :
 	ProbabilityFunction(),

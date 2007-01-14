@@ -163,10 +163,10 @@ namespace Ceylan
 				bool _shutdownRequested ;
 
 
+
 			private:
 	
 	
-			
 				/**
 				 * Copy constructor made private to ensure that it will 
 				 * be never called.
@@ -189,7 +189,6 @@ namespace Ceylan
 				ProtocolServer & operator = ( const ProtocolServer & source )
 					throw() ;
 
-			
 		
 		
 		} ;

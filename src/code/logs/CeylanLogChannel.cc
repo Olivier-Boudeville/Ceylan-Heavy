@@ -64,7 +64,7 @@ const string LogChannel::getName() const throw()
 }
 
 
-unsigned int LogChannel::getMessageCount() const throw()
+LogChannel::MessageCount LogChannel::getMessageCount() const throw()
 {
 
 	/*

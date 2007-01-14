@@ -157,8 +157,7 @@ void LightWeightMarshaller::decodeString( std::string & result )
 }
 
 					
-				
-				
+						
 				
 /*
  * Encoding (write) basic datatypes section.
@@ -168,7 +167,6 @@ void LightWeightMarshaller::decodeString( std::string & result )
  * @see Ceylan::System::OutputStream
  *
  */
-
 
 
 // Encode integer types subsection.
@@ -204,7 +202,6 @@ void LightWeightMarshaller::encodeSint16( Ceylan::Sint16 toEncode )
 	// We let IOException instances propagate.
 	
 }
-
 					
 					
 void LightWeightMarshaller::encodeUint16( Ceylan::Uint16 toEncode ) 
@@ -227,8 +224,7 @@ void LightWeightMarshaller::encodeSint32( Ceylan::Sint32 toEncode )
 	// We let IOException instances propagate.
 	
 }
-
-					
+			
 					
 void LightWeightMarshaller::encodeUint32( Ceylan::Uint32 toEncode ) 
 	throw( EncodeException, System::IOException )
@@ -239,7 +235,6 @@ void LightWeightMarshaller::encodeUint32( Ceylan::Uint32 toEncode )
 	// We let IOException instances propagate.
 	
 }
-
 					
 					
 void LightWeightMarshaller::encodeFloat32( Ceylan::Float32 toEncode ) 
@@ -251,7 +246,6 @@ void LightWeightMarshaller::encodeFloat32( Ceylan::Float32 toEncode )
 	// We let IOException instances propagate.
 	
 }
-
 					
 										
 void LightWeightMarshaller::encodeFloat64( Ceylan::Float64 toEncode ) 
@@ -264,8 +258,7 @@ void LightWeightMarshaller::encodeFloat64( Ceylan::Float64 toEncode )
 	
 }
 
-					
-															
+																				
 void LightWeightMarshaller::encodeString( std::string & toEncode ) 
 	throw( EncodeException, System::IOException )
 {
@@ -275,8 +268,6 @@ void LightWeightMarshaller::encodeString( std::string & toEncode )
 	// We let IOException instances propagate.
 	
 }
-
-					
 					
 																				
 			
@@ -287,5 +278,4 @@ const string LightWeightMarshaller::toString( Ceylan::VerbosityLevels level )
 	return "LightWeight" + Marshaller::toString( level ) ;
 	
 }
-
 

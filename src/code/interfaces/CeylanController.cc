@@ -7,7 +7,7 @@
 #include "CeylanOperators.h"    // for Ceylan::toString
 
 #ifdef CEYLAN_USES_CONFIG_H
-#include "CeylanConfig.h"         // for CEYLAN_DEBUG_EVENTS
+#include "CeylanConfig.h"       // for CEYLAN_DEBUG_EVENTS
 #endif // CEYLAN_USES_CONFIG_H
 
 #include <list>

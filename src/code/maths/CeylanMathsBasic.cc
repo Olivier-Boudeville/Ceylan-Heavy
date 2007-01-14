@@ -77,7 +77,7 @@ const Ceylan::LongFloat Ceylan::Maths::One_div_Pi =
 const Ceylan::LongFloat Ceylan::Maths::Two_div_Pi = 
 	0.6366197723675813430755350534900574L ;
 	
-const Ceylan::LongFloat Ceylan::Maths::Two_div_sqrt_Pi	= 
+const Ceylan::LongFloat Ceylan::Maths::Two_div_sqrt_Pi = 
 	1.1283791670955125738961589031215452L ;
 			
 			
@@ -850,5 +850,4 @@ const string Ceylan::Maths::IntToIntFunctor::toString(
 {
 	return "IntToIntFunctor functor" ;
 }
-
 

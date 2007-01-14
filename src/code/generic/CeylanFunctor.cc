@@ -5,6 +5,7 @@ using std::string ;
 using namespace Ceylan ;
 
 
+
 Functor::Functor() throw()
 {
 
@@ -22,3 +23,4 @@ const string Functor::toString(
 {
 	return "Basic functor" ;
 }
+

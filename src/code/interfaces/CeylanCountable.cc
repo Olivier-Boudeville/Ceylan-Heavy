@@ -32,7 +32,8 @@ Countable::Countable( bool verbose ) throw() :
 		
 	if ( _verbose )
 	{
-		CEYLAN_LOG( LogPrefix + " one more : " + Ceylan::toString( ReferenceCount )
+		CEYLAN_LOG( LogPrefix + " one more : " 
+			+ Ceylan::toString( ReferenceCount )
 			+ "/" + Ceylan::toString( MaximumReferenceCount ) ) ;
 	}
 			
@@ -43,13 +44,15 @@ Countable::~Countable() throw()
 {
 
 	if ( ReferenceCount == 0 )
-		Ceylan::emergencyShutdown( "Countable destructor : negative reference count detected." ) ;
+		Ceylan::emergencyShutdown( 
+			"Countable destructor : negative reference count detected." ) ;
 		
 	ReferenceCount-- ;
 	
 	if ( _verbose )
 	{
-		CEYLAN_LOG( LogPrefix + " one less : " + Ceylan::toString( ReferenceCount )
+		CEYLAN_LOG( LogPrefix + " one less : " 
+			+ Ceylan::toString( ReferenceCount )
 			+ "/" + Ceylan::toString( MaximumReferenceCount ) ) ;
 	}
 	

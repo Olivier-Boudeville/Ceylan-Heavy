@@ -137,7 +137,8 @@ namespace Ceylan
 				 * this matrix.
 				 *
 				 */
-				CEYLAN_DLL friend Matrix2 operator ~ ( const Matrix2 & m ) throw() ;
+				CEYLAN_DLL friend Matrix2 operator ~ ( const Matrix2 & m )
+					throw() ;
 
 
 				/** 	

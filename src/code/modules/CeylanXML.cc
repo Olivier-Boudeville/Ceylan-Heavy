@@ -8,7 +8,7 @@ using std::string ;
 
 
 
-XMLException::XMLException( const std::string & reason ) throw() :
+XMLException::XMLException( const std::string & reason ) throw():
 	Ceylan::Exception( reason )
 {
 
@@ -19,5 +19,4 @@ XMLException::~XMLException() throw()
 {
 
 }
-
 

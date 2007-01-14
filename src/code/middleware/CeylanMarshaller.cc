@@ -122,7 +122,8 @@ System::Size Marshaller::retrieveData( System::Size requestedSize )
 			+ " bytes whereas free space in buffer is "
 			+ Ceylan::toString( 
 				static_cast<Ceylan::Uint32>( 
-					_bufferStream->getSize() - _bufferStream->getBlockLength() ) ) ) ;
+					_bufferStream->getSize() 
+						- _bufferStream->getBlockLength() ) ) ) ;
 
 	/*
 	 * Here we know there is enough free space, we have to make sure that
@@ -225,5 +226,4 @@ const string Marshaller::toString( Ceylan::VerbosityLevels level )
 	return res ;	
 	
 }
-
 

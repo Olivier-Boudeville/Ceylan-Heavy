@@ -151,7 +151,6 @@ bool Timestamp::operator < (Timestamp & second ) throw()
 	if ( _second > second._second )
 		return false ;
 		
-		
 	return false ;
 		
 }

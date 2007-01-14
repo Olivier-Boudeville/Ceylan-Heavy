@@ -649,7 +649,5 @@ void XMLParser::handleNextElement( System::InputStream & input,
 	
 	handleNextElement( input, markupStack, currentTree, remainder ) ;
 	
-	
 }
-
 	

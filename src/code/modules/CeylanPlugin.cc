@@ -32,6 +32,7 @@ extern "C"
 #ifdef CEYLAN_USES_STRING_H
 #include <string.h>             // for memcpy
 #endif // CEYLAN_USES_STRING_H
+
 }
 
 
@@ -489,7 +490,6 @@ const string Plugin::toString( VerbosityLevels level ) const throw()
 	res += ". " ;
 	
 	
-	
 	if ( _autoPrefix )	
 		res += "The plugin loader expects symbols to be prefixed "
 			"according to module conventions" ;
@@ -538,5 +538,5 @@ void Plugin::retrieveMetadata() throw( PluginException )
 	setLicence(  * static_cast<const std::string *>( 
 		getDataSymbol( "Licence" ) ) ) ;
 		
-		
 }
+

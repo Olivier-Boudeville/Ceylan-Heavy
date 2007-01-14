@@ -49,7 +49,7 @@ namespace Ceylan
 				/// Must access to each other's coordinates.				
 				friend class Vector3 ;
 
-				/// Must access to each other's coordinates.								
+				/// Must access to each other's coordinates.
 				friend class Matrix3 ;
 				
 				
@@ -97,7 +97,8 @@ namespace Ceylan
 				 * have exactly the same coordinates.
 				 *
 				 */
-				CEYLAN_DLL friend Vector3 vectorize( const Tripoint & t ) throw() ;
+				CEYLAN_DLL friend Vector3 vectorize( 
+					const Tripoint & t ) throw() ;
 				
 				
 				/** 

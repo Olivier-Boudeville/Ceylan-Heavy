@@ -36,7 +36,8 @@ CallerEventListener::~CallerEventListener() throw()
 }
 
 
-const string CallerEventListener::toString( Ceylan::VerbosityLevels level ) const throw() 
+const string CallerEventListener::toString( Ceylan::VerbosityLevels level )
+	const throw() 
 {
 	return "Caller " + EventListener::toString( level ) ;
 }

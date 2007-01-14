@@ -71,8 +71,9 @@ namespace Ceylan
 	 * #define CEYLAN_COUNTED_POINTER_USE_COPY_ON_WRITE
 	 *
 	 * Define the above constant if you wish to enable the
-	 * CountedPointer::isolate member, which is useful for using CountedPointer as the
-	 * base for a string class that uses copyOnWrite for its non-const members.
+	 * CountedPointer::isolate member, which is useful for using 
+	 * CountedPointer as the base for a string class that uses copyOnWrite
+	 * for its non-const members.
 	 *
 	 * @note Not for multithread use.
 	 *
@@ -390,7 +391,11 @@ namespace Ceylan
          } * _referent ;                
 
 
-		 /// Each CountedPointer has therefore a member : Referent * _referent ; 
+		 /**
+		  * Each CountedPointer has therefore a member : 
+		  * Referent * _referent ; 
+		  *
+		  */
 
 
          // Simple methods to reference and release representations.

@@ -8,6 +8,7 @@ using namespace Ceylan ;
 using std::string ;
 
 
+
 SmartResource::SmartResource() throw()
 {
 
@@ -26,3 +27,4 @@ const string SmartResource::toString( Ceylan::VerbosityLevels level )
 	return "Smart Ressource at '" 
 		+ Ceylan::toString( static_cast<const void *>( this ) ) + "'" ;
 }
+

@@ -13,7 +13,7 @@
 #include "CeylanTextDisplayable.h"  // for SetOutputFormat
 
 
-#include <iostream>           // for cerr, if abnormal situation occurs
+#include <iostream>                 // for cerr, if abnormal situation occurs
 
 
 
@@ -83,8 +83,10 @@ LogHolder::LogHolder( Ceylan::Uint16 argCount,
 	 *
 	 */
 	string speakerName ;
+	
 	Ceylan::System::Directory::StripFilename( arguments[0], 
 		/* base path */ 0, & speakerName ) ;
+		
 	CEYLAN_LOG( "LogHolder : speaker name for logs will be " 
 		+ speakerName ) ;
 	

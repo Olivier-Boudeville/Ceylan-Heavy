@@ -858,8 +858,6 @@ void Ceylan::Network::setLocalHostDomainName( const string & newDomainName )
 }
 
 
-
-
 const string Ceylan::Network::getMostPreciseLocalHostName() 
 	throw( NetworkException )
 {
@@ -1463,3 +1461,4 @@ NetworkManager::~NetworkManager() throw()
 
 
 #endif // CEYLAN_ARCH_WINDOWS
+

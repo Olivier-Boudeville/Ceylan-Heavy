@@ -454,7 +454,6 @@ void InputStream::readString( std::string & result )
 	else
 	{
 	
-	
 		/*
 		 * Use a dedicated dynamically created buffer :
 		 *
@@ -480,7 +479,6 @@ void InputStream::readString( std::string & result )
 		
 		
 	}
-	
 	
 }
 
@@ -606,10 +604,12 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 						{
 					
 							LogPlug::error( "InputStream::Select : "
-								"following stream is faulty : " + (*it)->toString()
+								"following stream is faulty : " 
+								+ (*it)->toString()
 								+ ", flagging it as such ("	
 								+ ( ( error == WSAEBADF ) ? 
-									string( "WSAEBADF" ) : string( "WSAENOTSOCK" ) )
+									string( "WSAEBADF" ) : 
+									string( "WSAENOTSOCK" ) )
 								+ ")." ) ;
 							(*it)->setFaulty( true ) ;
 						
@@ -757,7 +757,8 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 					{
 					
 						LogPlug::error( "InputStream::Select : "
-							"following stream is faulty : " + (*it)->toString()
+							"following stream is faulty : " 
+							+ (*it)->toString()
 							+ ", flagging it as such." ) ;
 						(*it)->setFaulty( true ) ;
 							
@@ -932,7 +933,7 @@ Ceylan::Uint16 InputStream::Test( list<InputStream*> & is )
 
 
 
-// protected section.
+// Protected section.
 
 
 void InputStream::setSelected( bool newStatus ) throw()

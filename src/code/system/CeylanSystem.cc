@@ -222,7 +222,8 @@ Size Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
 			{
 
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
- 				LogPlug::trace( "Ceylan::System::FDRead : operation would block." ) ;
+ 				LogPlug::trace( "Ceylan::System::FDRead : "
+					"operation would block." ) ;
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 
 				readBytesNumber = 0 ;
@@ -1370,5 +1371,4 @@ bool Ceylan::System::setLegacyStreamSynchronization( bool synchronized )
 	return std::ios::sync_with_stdio( synchronized ) ;
 
 }
-
 

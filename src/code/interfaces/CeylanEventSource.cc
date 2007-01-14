@@ -8,7 +8,7 @@
 
 
 #ifdef CEYLAN_USES_CONFIG_H
-#include "CeylanConfig.h"       // for configure-time settings
+#include "CeylanConfig.h"          // for configure-time settings
 #endif // CEYLAN_USES_CONFIG_H
 
 

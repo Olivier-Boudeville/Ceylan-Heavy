@@ -174,6 +174,7 @@ const string XMLMarkup::toString( Ceylan::VerbosityLevels level ) const throw()
 }
 
 
+
 // XMLText section.
 
 
@@ -241,3 +242,4 @@ const string XMLText::toString( Ceylan::VerbosityLevels level ) const throw()
 	return _text ;
 	
 }
+

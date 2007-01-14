@@ -205,9 +205,6 @@ namespace Ceylan
 					Ceylan::VerbosityLevels level = Ceylan::high ) 
 						const throw() ;
 	
-	
-	
-			protected:
 
 
 			private:

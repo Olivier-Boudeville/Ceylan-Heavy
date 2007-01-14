@@ -148,8 +148,6 @@ namespace Ceylan
 					const ProtocolEndpoint & source ) throw() ;
 
 			
-		
-		
 		} ;
 		
 	}

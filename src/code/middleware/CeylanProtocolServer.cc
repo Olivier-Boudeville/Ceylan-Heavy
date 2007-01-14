@@ -10,6 +10,7 @@ using namespace Ceylan::Log ;
 using namespace Ceylan::Middleware ;
 
 
+
 ProtocolServer::ProtocolServer( Marshaller & marshaller ) throw() :
 	ProtocolEndpoint( marshaller ),
 	_shutdownRequested( false )
@@ -57,3 +58,4 @@ void ProtocolServer::askForShutdown() throw()
 	_shutdownRequested = true ;
 	
 }
+

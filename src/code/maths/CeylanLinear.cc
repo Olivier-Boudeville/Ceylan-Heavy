@@ -15,3 +15,4 @@ LinearException::~LinearException() throw()
 {
 
 }
+

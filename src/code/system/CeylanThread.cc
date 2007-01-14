@@ -410,6 +410,7 @@ const string Thread::toString( Ceylan::VerbosityLevels level )
 }
 
 
+
 // Static section.
 
 
@@ -719,6 +720,4 @@ void Thread::threadCreationFailed( ErrorCode error ) throw( ThreadException )
 		"Thread::run call failed : " + System::explainError() ) ;
 		
 }
-
-
 

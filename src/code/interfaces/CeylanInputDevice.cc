@@ -1,6 +1,6 @@
 #include "CeylanInputDevice.h"   
 
-#include "CeylanController.h"  // for Controller 
+#include "CeylanController.h"   // for Controller 
 
 #include "CeylanLogPlug.h"      // for LogPlug
 #include "CeylanOperators.h"    // for Ceylan::toString
@@ -50,14 +50,16 @@ Controller & InputDevice::getController() const throw( EventException )
 {
 
 	if ( _controller == 0 )
-		throw EventException( "InputDevice::getController : not linked to any controller." ) ;
+		throw EventException( 
+			"InputDevice::getController : not linked to any controller." ) ;
 	
 	return * _controller ;
 		
 }
 
 
-void InputDevice::setController( Controller & controller ) throw( EventException )
+void InputDevice::setController( Controller & controller ) 
+	throw( EventException )
 {
 
 	if ( _controller != 0 )
@@ -83,7 +85,8 @@ bool InputDevice::dropController() throw()
 }
 
 
-const string InputDevice::toString( Ceylan::VerbosityLevels level ) const throw() 
+const string InputDevice::toString( Ceylan::VerbosityLevels level ) 
+	const throw() 
 {
 	
 	if ( _controller == 0 )

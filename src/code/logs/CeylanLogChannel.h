@@ -1,7 +1,7 @@
 #ifndef CEYLAN_LOG_CHANNEL_H_
 #define CEYLAN_LOG_CHANNEL_H_
 
-
+#include "CeylanTypes.h"           // for Ceylan::Uint32
 #include "CeylanLog.h"             // for LogException
 #include "CeylanTextDisplayable.h" // for inheritance
 
@@ -48,6 +48,10 @@ namespace Ceylan
 			friend class LogAggregatorHTML ;
 			
 			
+			/// Designates a number of log messages.
+			typedef Ceylan::Uint32 MessageCount ;
+			
+			
 			public:
 			
 			
@@ -90,7 +94,7 @@ namespace Ceylan
 				 * currently gathered.
 				 *
 				 */
-				virtual unsigned int getMessageCount() const throw() ;
+				virtual MessageCount getMessageCount() const throw() ;
 					
 											
 	            /**

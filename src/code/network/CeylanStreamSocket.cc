@@ -493,4 +493,3 @@ void StreamSocket::setBlocking( bool newStatus )
 
 }
 
-	

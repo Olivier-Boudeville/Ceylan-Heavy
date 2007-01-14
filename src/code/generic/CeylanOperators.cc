@@ -1357,4 +1357,3 @@ void * Ceylan::stringToAddress( const string & addressString )
 
 }
 
-

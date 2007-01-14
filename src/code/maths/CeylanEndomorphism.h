@@ -9,6 +9,7 @@
 #include <string>
 
 
+
 namespace Ceylan
 {
 
@@ -23,9 +24,8 @@ namespace Ceylan
 
 
 			/*
-			 * Here are declared various 2D and 3D endomorphisms which are all functors, including 
-			 * rotations and line projections.
-			 *
+			 * Here are declared various 2D and 3D endomorphisms which 
+			 * are all functors, including rotations and line projections.
 			 *
 			 */
 
@@ -36,15 +36,18 @@ namespace Ceylan
 
 			/**
 			 * Functor encapsulating a 2D endomorphism.
-			 * Functors are especially useful when the endomorphism can be parametrized. 
+			 * Functors are especially useful when the endomorphism can be
+			 * parametrized. 
 			 *
-			 * For example, a rotation needs an angle and an axis to be specified, which a simple
-			 * pointer to function would not allow nicely, since its only argument should be the
-			 * vector to transform, not the rotation settings.
+			 * For example, a rotation needs an angle and an axis to be
+			 * specified, which a simple pointer to function would not allow
+			 * nicely, since its only argument should be the vector to
+			 * transform, not the rotation settings.
 			 * 
-			 * @note These endomorphisms are in the Linear namespace since they are mostly used
-			 * with linear matrix-based algrebra, but it does not imply that the endomorphisms
-			 * must be linear too.
+			 * @note These endomorphisms are in the Linear namespace
+			 * since they are mostly used with linear matrix-based algrebra,
+			 * but it does not imply that all the endomorphisms must be 
+			 * linear too.
 			 *
 			 */
 			class CEYLAN_DLL Endomorphism2DFunctor : public Functor
@@ -65,22 +68,29 @@ namespace Ceylan
 					virtual ~Endomorphism2DFunctor() throw() ;
 					
 					
-					/// The callable method, returning the endomorphism's value corresponding to v.
-					virtual Vector2 operator() ( const Vector2 & v ) throw() = 0 ;
+					/**
+					 * The callable method, returning the endomorphism's 
+					 * value corresponding to v.
+					 *
+					 */
+					virtual Vector2 operator() ( const Vector2 & v ) 
+						throw() = 0 ;
 												
 								
 					/**
-					 * Returns a user-friendly description of the state of this object.
+					 * Returns a user-friendly description of the state 
+					 * of this object.
 					 *
 					 * @param level the requested verbosity level.
 					 *
-					 * @note Text output format is determined from overall settings.
+					 * @note Text output format is determined from 
+					 * overall settings.
 					 *
 					 * @see TextDisplayable
 					 *
 					 */
-             		virtual const std::string toString( VerbosityLevels level = high ) 
-						const throw() ;
+             		virtual const std::string toString( 
+						VerbosityLevels level = high ) const throw() ;
 					 
 
 			} ;
@@ -90,7 +100,6 @@ namespace Ceylan
 			/**
 			 * Functor of 2D rotation of specified angle.
 			 *
-			 *
 			 */
 			class CEYLAN_DLL Rotation2DFunctor : public Endomorphism2DFunctor
 			{
@@ -99,14 +108,15 @@ namespace Ceylan
 				
 				
 					/**
-					 * Creates the endomorphism corresponding to the 2D rotation of specified
-					 * angle.
+					 * Creates the endomorphism corresponding to the 2D 
+					 * rotation of specified angle.
 				 	 *
 					 * @param axis The axis of this rotation.
 					 *
 					 * @param angle The axis, in degrees, of this rotation.
 					 *
-				 	 * @note axis does not need to be normalized, the constructor will do it.
+				 	 * @note axis does not need to be normalized, the
+					 * constructor will do it.
 				 	 *
 				 	 */
 					explicit Rotation2DFunctor( AngleInDegrees angle ) throw() ;
@@ -116,22 +126,28 @@ namespace Ceylan
 					virtual ~Rotation2DFunctor() throw() ;
 					
 			
-					/// The callable method, returning the projection of v on the axis.
+					/**
+					 * The callable method, returning the projection of v 
+					 * on the axis.
+					 *
+					 */
 					virtual Vector2 operator() ( const Vector2 & v ) throw()  ;
 			
 			
 					/**
-					 * Returns a user-friendly description of the state of this object.
+					 * Returns a user-friendly description of the state 
+					 * of this object.
 					 *
 					 * @param level the requested verbosity level.
 					 *
-					 * @note Text output format is determined from overall settings.
+					 * @note Text output format is determined from 
+					 * overall settings.
 					 *
 					 * @see TextDisplayable
 					 *
 					 */
-             		virtual const std::string toString( VerbosityLevels level = high ) 
-						const throw() ;
+             		virtual const std::string toString( 
+						VerbosityLevels level = high ) const throw() ;
 						
 						
 				protected:
@@ -146,15 +162,18 @@ namespace Ceylan
 			
 			/**
 			 * Functor encapsulating a 3D endomorphism.
-			 * Functors are especially useful when the endomorphism can be parametrized. 
+			 * Functors are especially useful when the endomorphism can 
+			 * be parametrized. 
 			 *
-			 * For example, a rotation needs an angle and an axis to be specified, which a simple
-			 * pointer to function would not allow nicely, since its only argument should be the
+			 * For example, a rotation needs an angle and an axis to be
+			 * specified, which a simple pointer to function would not 
+			 * allow nicely, since its only argument should be the
 			 * vector to transform, not the rotation settings.
 			 * 
-			 * @note These endomorphisms are in the Linear namespace since they are mostly used
-			 * with linear matrix-based algrebra, but it does not imply that the endomorphisms
-			 * must be linear too.
+			 * @note These endomorphisms are in the Linear namespace 
+			 * since they are mostly used
+			 * with linear matrix-based algrebra, but it does not imply
+			 * that the endomorphisms must be linear too.
 			 *
 			 */
 			class CEYLAN_DLL Endomorphism3DFunctor : public Functor
@@ -175,22 +194,29 @@ namespace Ceylan
 					virtual ~Endomorphism3DFunctor() throw() ;
 					
 					
-					/// The callable method, returning the endomorphism's value corresponding to v.
-					virtual Vector3 operator() ( const Vector3 & v ) throw() = 0 ;
+					/**
+					 * The callable method, returning the endomorphism's
+					 * value corresponding to v.
+					 *
+					 */
+					virtual Vector3 operator() ( 
+						const Vector3 & v ) throw() = 0 ;
 												
 								
 					/**
-					 * Returns a user-friendly description of the state of this object.
+					 * Returns a user-friendly description of the state
+					 * of this object.
 					 *
 					 * @param level the requested verbosity level.
 					 *
-					 * @note Text output format is determined from overall settings.
+					 * @note Text output format is determined from 
+					 * overall settings.
 					 *
 					 * @see TextDisplayable
 					 *
 					 */
-             		virtual const std::string toString( VerbosityLevels level = high ) 
-						const throw() ;
+             		virtual const std::string toString( 
+						VerbosityLevels level = high ) const throw() ;
 					 
 
 			} ;
@@ -199,7 +225,6 @@ namespace Ceylan
 			
 			/**
 			 * Functor of a line projection on specified axis.
-			 *
 			 *
 			 */
 			class CEYLAN_DLL LineProjection3DFunctor : 
@@ -210,35 +235,43 @@ namespace Ceylan
 				
 				
 					/**
-					 * Creates the endomorphism corresponding to the line projection of specified
-					 * axis.
+					 * Creates the endomorphism corresponding to the line
+					 * projection of specified axis.
 					 *
-				 	 * @note axis does not need to be normalized, the constructor will do it.
+				 	 * @note axis does not need to be normalized, the
+					 * constructor will do it.
 				 	 *
 				 	 */
-					explicit LineProjection3DFunctor( const Vector3 & axis ) throw() ;
+					explicit LineProjection3DFunctor( 
+						const Vector3 & axis ) throw() ;
 			
 			
 					/// Virtual destructor.
 					~LineProjection3DFunctor() throw() ;
 					
 			
-					/// The callable method, returning the projection of v on the axis.
+					/**
+					 * The callable method, returning the projection of 
+					 * v on the axis.
+					 *
+					 */
 					virtual Vector3 operator() ( const Vector3 & v ) throw()  ;
 			
 			
 					/**
-					 * Returns a user-friendly description of the state of this object.
+					 * Returns a user-friendly description of the state
+					 * of this object.
 					 *
 					 * @param level the requested verbosity level.
 					 *
-					 * @note Text output format is determined from overall settings.
+					 * @note Text output format is determined from 
+					 * overall settings.
 					 *
 					 * @see TextDisplayable
 					 *
 					 */
-             		virtual const std::string toString( VerbosityLevels level = high ) 
-						const throw() ;
+             		virtual const std::string toString( 
+						VerbosityLevels level = high ) const throw() ;
 						
 						
 				protected:
@@ -251,8 +284,8 @@ namespace Ceylan
 			
 			
 			/**
-			 * Functor for 3D rotation relative to specified axis, of specified angle.
-			 *
+			 * Functor for 3D rotation relative to specified axis, of 
+			 * specified angle.
 			 *
 			 */
 			class CEYLAN_DLL Rotation3DFunctor : public Endomorphism3DFunctor
@@ -262,14 +295,15 @@ namespace Ceylan
 				
 				
 					/**
-					 * Creates the endomorphism corresponding to the 3D rotation of specified
-					 * axis and angle.
+					 * Creates the endomorphism corresponding to the
+					 * 3D rotation of specified axis and angle.
 					 *
 					 * @param axis The axis of this rotation.
 					 *
 					 * @param angle The axis, in degrees, of this rotation.
 					 *
-				 	 * @note axis does not need to be normalized, the constructor will do it.
+				 	 * @note axis does not need to be normalized, the
+					 * constructor will do it.
 				 	 *
 				 	 */
 					explicit Rotation3DFunctor( const Vector3 & axis, 
@@ -280,22 +314,29 @@ namespace Ceylan
 					virtual ~Rotation3DFunctor() throw() ;
 					
 			
-					/// The callable method, returning the projection of v on the axis.
+					/**
+					 * The callable method, returning the projection of 
+					 * v on the axis.
+					 *
+					 */
 					virtual Vector3 operator() ( const Vector3 & v ) throw()  ;
 			
 			
 					/**
-					 * Returns a user-friendly description of the state of this object.
+					 * Returns a user-friendly description of the state
+					 * of this object.
 					 *
 					 * @param level the requested verbosity level.
 					 *
-					 * @note Text output format is determined from overall settings.
+					 * @note Text output format is determined from overall
+					 * settings.
 					 *
 					 * @see TextDisplayable
 					 *
 					 */
-             		virtual const std::string toString( VerbosityLevels level = high ) 
-						const throw() ;
+             		virtual const std::string toString( 
+						VerbosityLevels level = high ) const throw() ;
+						
 						
 						
 				protected:
@@ -305,6 +346,7 @@ namespace Ceylan
 					
 					/// The rotation angle, in radians.
 					AngleInRadians _angle ;	
+					
 						
 			} ;
 			

@@ -17,6 +17,7 @@ using namespace Ceylan ;
  */
  
  
+ 
 UnicodeString::UnicodeString() throw() :
 	_buffer( 0 )
 {

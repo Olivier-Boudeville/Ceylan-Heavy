@@ -4,14 +4,13 @@
 #include "CeylanLogPlug.h"
 
 
-
-
 using std::string ;
 using std::list ;
 
 
 using namespace Ceylan::System ;
 using namespace Ceylan::Log ;
+
 
 
 AnonymousInputOutputStream::AnonymousInputOutputStream()

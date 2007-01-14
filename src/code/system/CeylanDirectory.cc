@@ -7,7 +7,7 @@
 
 
 #if CEYLAN_USES_CONFIG_H
-#include "CeylanConfig.h"      // for configure-time feature settings
+#include "CeylanConfig.h"            // for configure-time feature settings
 #endif // CEYLAN_USES_CONFIG_H
 
 
@@ -53,10 +53,10 @@ using namespace Ceylan::System ;
 #if CEYLAN_ARCH_WINDOWS
 
 // "c:" is a drive, "c:\\" is a directory.
-const string Directory::RootDirectoryPrefix   = "c:"   ;
+const string Directory::RootDirectoryPrefix   = "c:" ;
 const string Directory::CurrentDirectoryAlias = "."  ;
 const string Directory::UpperDirectoryAlias   = ".." ;
-const char   Directory::Separator             = '\\'  ;
+const char   Directory::Separator             = '\\' ;
 
 #else // CEYLAN_ARCH_WINDOWS
 
@@ -146,7 +146,8 @@ Directory::Directory( const string & name, bool createDirectory )
 		 * For Windows, for example we have to evaluate first 'c:\' 
 		 * (not 'c:' which would never be found existing), then 
 		 * 'c:\Documents and Settings' 
-		 * (not 'c:\Documents and Settings\' which would never be found existing)
+		 * (not 'c:\Documents and Settings\' which would never be found
+		 * existing)
 		 *
 		 */
 		bool firstPathElement = true ;
@@ -303,7 +304,11 @@ void Directory::getSubdirectories( list<string> & subDirectories )
 
 #else // CEYLAN_USES_DIRENT_H
 
-	// @portme Use FindFirstFile(), FindNextFile(), and FindClose() Win32 API functions.
+	/*
+	 * @portme Use FindFirstFile(), FindNextFile(), and FindClose() Win32 API
+	 * functions.
+	 *
+	 */
 
 	throw DirectoryException( "Directory::getSubdirectories : "
 		"not available on this platform." ) ;
@@ -349,7 +354,11 @@ void Directory::getEntries( list<string> & entries ) const
 	
 #else // CEYLAN_USES_DIRENT_H
 	
-	// @portme Use FindFirstFile(), FindNextFile(), and FindClose() Win32 API functions.
+	/*
+	 * @portme Use FindFirstFile(), FindNextFile(), and FindClose() Win32 API
+	 * functions.
+	 *
+	 */
 
 	throw DirectoryException( "Directory::getEntries : "
 		"not available on this platform." ) ;
@@ -703,14 +712,16 @@ bool Directory::Exists( const string & path ) throw( DirectoryException )
 		if ( buf.st_mode & _S_IFDIR )
 		{
 
-			CEYLAN_LOG( "Directory::Exists : " + path + " exists and is a directory" ) ;
+			CEYLAN_LOG( "Directory::Exists : " + path 
+				+ " exists and is a directory" ) ;
 			return true ;
 
 		}
 		else
 		{
 
-			CEYLAN_LOG( "Directory::Exists : " + path + " exists but is not a directory" ) ;
+			CEYLAN_LOG( "Directory::Exists : " + path 
+				+ " exists but is not a directory" ) ;
 			return false ;
 
 		}
@@ -718,7 +729,8 @@ bool Directory::Exists( const string & path ) throw( DirectoryException )
 	else
 	{
 
-		CEYLAN_LOG( "Directory::Exists : " + path + " is not a directory entry" ) ;
+		CEYLAN_LOG( "Directory::Exists : " + path 
+			+ " is not a directory entry" ) ;
 		return false ;
 
 	}
@@ -735,7 +747,8 @@ bool Directory::Exists( const string & path ) throw( DirectoryException )
 }
 
 
-void Directory::Create( const string & name ) throw( Directory::CouldNotCreate )
+void Directory::Create( const string & name ) 
+	throw( Directory::CouldNotCreate )
 {
 	Directory d( name ) ;
 }

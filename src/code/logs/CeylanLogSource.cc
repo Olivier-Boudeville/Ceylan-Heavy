@@ -80,8 +80,6 @@ LevelOfDetail LogSource::getLevelOfDetail() const throw()
 }
 
 
-
-
 void LogSource::send( const string & message, 
 	LevelOfDetail levelOfDetail ) throw( LogException ) 
 {

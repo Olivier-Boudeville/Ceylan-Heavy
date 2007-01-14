@@ -103,7 +103,8 @@ namespace Ceylan
 				 * have the same coordinates.
 				 *
 				 */
-				CEYLAN_DLL friend Vector2 vectorize( const Bipoint & t ) throw() ;
+				CEYLAN_DLL friend Vector2 vectorize( const Bipoint & t ) 
+					throw() ;
 				
 				
 				/**

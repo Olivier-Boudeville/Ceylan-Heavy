@@ -161,7 +161,7 @@ namespace Ceylan
 
 
 
-		protected:
+			protected:
 		
 		
 		

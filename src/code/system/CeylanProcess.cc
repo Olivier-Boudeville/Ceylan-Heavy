@@ -43,7 +43,7 @@ extern "C"
 #endif // CEYLAN_USES_SIGNAL_H
 
 #ifdef CEYLAN_USES_PROCESS_H
-#include <process.h>                  // for _getpid
+#include <process.h>                 // for _getpid
 #endif // CEYLAN_USES_PROCESS_H
 	
 }

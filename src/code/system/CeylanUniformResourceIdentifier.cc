@@ -11,6 +11,7 @@ using std::string ;
 const std::string Ceylan::URI::ProtocolSeparator( "://" ) ;
 
 
+
 const string Ceylan::URI::getProtocolName( const string & fullURI ) throw()
 {
 

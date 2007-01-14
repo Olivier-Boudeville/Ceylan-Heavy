@@ -29,3 +29,4 @@ const string Point::toString( VerbosityLevels level ) const throw()
 {
 	return "Abstract point" ;
 }
+

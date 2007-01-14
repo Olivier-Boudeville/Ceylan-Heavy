@@ -249,8 +249,8 @@ namespace Ceylan
 	 * <code>"Hit key is : " + toString( waitForKey() )</code>
 	 *
 	 */
-	CEYLAN_DLL KeyChar waitForKey( const std::string & message = DefaultWaitForKeyMessage )
-		throw() ;
+	CEYLAN_DLL KeyChar waitForKey( const std::string & message 
+		= DefaultWaitForKeyMessage ) throw() ;
 
 	
 	/**

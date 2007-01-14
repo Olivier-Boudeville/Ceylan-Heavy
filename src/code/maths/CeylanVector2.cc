@@ -377,4 +377,3 @@ Real Ceylan::Maths::Linear::operator | ( const Vector2 & v1 ,
 
 }
 
-

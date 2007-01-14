@@ -32,3 +32,4 @@ const string Vector::toString( VerbosityLevels level ) const throw()
 	return "Abstract vector" ;
 				
 }
+

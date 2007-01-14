@@ -27,7 +27,6 @@ ProtocolException::~ProtocolException() throw()
 
 
 
-
 				
 ProtocolEndpoint::ProtocolEndpoint( Marshaller & marshaller ) throw() :
 	TextDisplayable(),

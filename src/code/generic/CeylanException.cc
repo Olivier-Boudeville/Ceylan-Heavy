@@ -35,3 +35,4 @@ std::ostream & operator << ( std::ostream & os, const Exception & e ) throw()
 {
     return os << e.toString( Ceylan::high ) ;
 }
+

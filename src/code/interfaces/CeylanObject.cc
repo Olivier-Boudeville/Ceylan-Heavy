@@ -14,8 +14,8 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
-#include <typeinfo>   // for typeid
-#include <cctype>     // for isdigit
+#include <typeinfo>                    // for typeid
+#include <cctype>                      // for isdigit
 
 
 using std::string ;

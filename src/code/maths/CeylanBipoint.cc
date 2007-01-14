@@ -296,3 +296,4 @@ Vector2 Ceylan::Maths::Linear::vectorize( const Bipoint & t1,
 	return result ;
 
 }
+

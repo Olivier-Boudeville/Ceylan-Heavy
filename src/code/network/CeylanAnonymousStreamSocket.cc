@@ -75,14 +75,16 @@ AnonymousStreamSocket::AnonymousStreamSocketException::~AnonymousStreamSocketExc
 
 
 
-AnonymousStreamSocket::NonBlockingAcceptException::NonBlockingAcceptException( const std::string & reason ) throw():
+AnonymousStreamSocket::NonBlockingAcceptException::NonBlockingAcceptException(
+		const std::string & reason ) throw():
 	AnonymousStreamSocketException( reason )
 {
 
 }
 
 
-AnonymousStreamSocket::NonBlockingAcceptException::~NonBlockingAcceptException() throw()
+AnonymousStreamSocket::NonBlockingAcceptException::~NonBlockingAcceptException()
+	throw()
 {
 
 }
@@ -194,8 +196,6 @@ bool AnonymousStreamSocket::isConnected() const throw()
 {
 	return true ;
 }
-
-
 
 
 const std::string AnonymousStreamSocket::toString( 

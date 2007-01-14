@@ -325,6 +325,7 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 }
 
 
+
 void ServerStreamSocket::cleanAfterAccept() throw( ServerStreamSocketException )
 {
 
@@ -347,8 +348,7 @@ void ServerStreamSocket::cleanAfterAccept() throw( ServerStreamSocketException )
 }
 
 
-
-					
+			
 void ServerStreamSocket::accepted( AnonymousStreamSocket & newConnection )
 	throw( ServerStreamSocketException )
 {
@@ -378,4 +378,5 @@ void ServerStreamSocket::requestToStop() throw()
 
 	_stopRequested = true ;
 	
-}			
+}		
+	

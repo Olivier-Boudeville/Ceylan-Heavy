@@ -143,8 +143,8 @@ namespace Ceylan
 				 * result = hm.v
 				 *
 				 */
-				CEYLAN_DLL friend Vector2 operator * ( const HomogeneousMatrix3 & m, 
-					const Vector2 & v )	throw() ;
+				CEYLAN_DLL friend Vector2 operator * ( 
+					const HomogeneousMatrix3 & m, const Vector2 & v ) throw() ;
 
 
 				/** 
@@ -158,7 +158,8 @@ namespace Ceylan
 				// Cross product is a non-sense in 2D.
 				
 				/// Returns the magnitude of specified vector.
-				CEYLAN_DLL friend Real operator ~ ( const Vector2 & v ) throw() ;
+				CEYLAN_DLL friend Real operator ~ ( 
+					const Vector2 & v ) throw() ;
 				
 				
 				

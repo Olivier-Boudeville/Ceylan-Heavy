@@ -1,10 +1,10 @@
 #include "CeylanRandomGenerator.h"
 
-#include "CeylanObject.h"           // for Ceylan::Object
+#include "CeylanObject.h"            // for Ceylan::Object
 #include "CeylanOperators.h"
 #include "CeylanLogPlug.h"           // for LogPlug
 
-#include <limits.h>                 // for INT_MIN, INT_MAX
+#include <limits.h>                  // for INT_MIN, INT_MAX
 
 
 

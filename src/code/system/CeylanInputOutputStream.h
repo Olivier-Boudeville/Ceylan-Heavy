@@ -28,7 +28,8 @@ namespace Ceylan
 		 * System::File instance (it would be allocated only once).
 		 *
  		 */
-		class CEYLAN_DLL InputOutputStream : public InputStream, public OutputStream
+		class CEYLAN_DLL InputOutputStream : 
+			public InputStream, public OutputStream
 		{
 
 
@@ -96,6 +97,6 @@ namespace Ceylan
 }
 
 
-	
+
 
 #endif // CEYLAN_INPUT_OUTPUT_STREAM_H_

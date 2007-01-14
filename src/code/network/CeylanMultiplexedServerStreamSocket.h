@@ -61,7 +61,8 @@ namespace Ceylan
 		 * requests. 
 		 *
 		 */
-		class CEYLAN_DLL MultiplexedServerStreamSocket: public ServerStreamSocket
+		class CEYLAN_DLL MultiplexedServerStreamSocket: 
+			public ServerStreamSocket
 		{
 		
 

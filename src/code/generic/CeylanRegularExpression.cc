@@ -4,16 +4,12 @@
 
 
 #ifdef CEYLAN_USES_CONFIG_H
-#include "CeylanConfig.h"      // for CEYLAN_USES_REGEX
+#include "CeylanConfig.h"            // for CEYLAN_USES_REGEX
 #endif // CEYLAN_USES_CONFIG_H
 
 
 extern "C"
 {
-
-#ifdef CEYLAN_USES_SYS_TYPES_H
-//#include <sys/types.h>               // for nothing ? FIXME
-#endif // CEYLAN_USES_SYS_TYPES_H
 
 #ifdef CEYLAN_USES_REGEX_H
 #include <regex.h>                   // for regex_t, regcomp, etc.

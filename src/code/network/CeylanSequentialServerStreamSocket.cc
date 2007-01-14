@@ -38,6 +38,8 @@ SequentialServerStreamSocket::SequentialServerStreamSocketException::~Sequential
 
 
 
+// SequentialServerStreamSocket class.
+
 
 SequentialServerStreamSocket::SequentialServerStreamSocket( Port listeningPort, 
 		bool reuse ) throw( SocketException ):
@@ -229,4 +231,4 @@ bool SequentialServerStreamSocket::closeAcceptedConnections()
 
 }
 	
-					
+				

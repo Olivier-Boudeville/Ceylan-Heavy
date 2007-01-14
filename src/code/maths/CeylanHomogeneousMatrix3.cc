@@ -247,3 +247,4 @@ HomogeneousMatrix3 Ceylan::Maths::Linear::operator * (
 	return result ;
 
 }
+

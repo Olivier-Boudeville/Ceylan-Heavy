@@ -21,15 +21,18 @@ using namespace Ceylan::Maths::Linear ;
 
 Endomorphism2DFunctor::Endomorphism2DFunctor() throw() 
 {	
+
 }
 
 
 Endomorphism2DFunctor::~Endomorphism2DFunctor() throw() 
 {
+
 }
 
 
-const string Endomorphism2DFunctor::toString( VerbosityLevels level ) const throw()
+const string Endomorphism2DFunctor::toString( VerbosityLevels level ) 
+	const throw()
 {
 	return "Functor encapsulating a 2D endomorphism" ;
 }
@@ -45,6 +48,7 @@ Rotation2DFunctor::Rotation2DFunctor( AngleInDegrees angle ) throw() :
 
 Rotation2DFunctor::~Rotation2DFunctor() throw()
 {
+
 }
 
 
@@ -54,8 +58,10 @@ Vector2 Rotation2DFunctor::operator() ( const Vector2 & v ) throw()
 	// Hardcoded 2x2 rotation :
 	
     return Vector2( 
-		Cos( _angle ) * v.getElementAt( 0 ) - Sin( _angle) * v.getElementAt( 1 ),
-		Sin( _angle ) * v.getElementAt( 0 ) + Cos( _angle) * v.getElementAt( 1 )
+		Cos( _angle ) * v.getElementAt( 0 ) 
+			- Sin( _angle) * v.getElementAt( 1 ),
+		Sin( _angle ) * v.getElementAt( 0 ) 
+			+ Cos( _angle) * v.getElementAt( 1 )
 	) ;
 		
 }
@@ -82,14 +88,16 @@ Endomorphism3DFunctor::~Endomorphism3DFunctor() throw()
 
 
 
-const string Endomorphism3DFunctor::toString( VerbosityLevels level ) const throw()
+const string Endomorphism3DFunctor::toString( VerbosityLevels level ) 
+	const throw()
 {
 	return "Functor encapsulating a 3D endomorphism" ;
 }
 
 
 
-LineProjection3DFunctor::LineProjection3DFunctor( const Vector3 & axis ) throw() :
+LineProjection3DFunctor::LineProjection3DFunctor( const Vector3 & axis ) 
+		throw() :
 	_axis( axis ) 
 {
 	_axis.normalize() ;
@@ -107,7 +115,8 @@ Vector3 LineProjection3DFunctor::operator() ( const Vector3 & v ) throw()
 }
 
 
-const string LineProjection3DFunctor::toString( VerbosityLevels level ) const throw()
+const string LineProjection3DFunctor::toString( VerbosityLevels level ) 
+	const throw()
 {
 	return Endomorphism3DFunctor::toString() + " : line projection on axis " 
 		+ _axis.toString() ;
@@ -115,7 +124,8 @@ const string LineProjection3DFunctor::toString( VerbosityLevels level ) const th
 
 
 
-Rotation3DFunctor::Rotation3DFunctor( const Vector3 & axis, AngleInDegrees angle ) throw() :
+Rotation3DFunctor::Rotation3DFunctor( const Vector3 & axis, 
+		AngleInDegrees angle ) throw() :
 	_axis( axis ),
 	_angle( 0 ) 
 {
@@ -140,6 +150,7 @@ Vector3 Rotation3DFunctor::operator() ( const Vector3 & v ) throw()
 const string Rotation3DFunctor::toString( VerbosityLevels level ) const throw()
 {
 	return Endomorphism3DFunctor::toString() + " : rotation around axis " 
-		+ _axis.toString() + " of angle " + Ceylan::toString( _angle ) + " radians" ;
+		+ _axis.toString() + " of angle " 
+		+ Ceylan::toString( _angle ) + " radians" ;
 }
 

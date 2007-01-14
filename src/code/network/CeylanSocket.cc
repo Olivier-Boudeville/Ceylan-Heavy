@@ -564,4 +564,3 @@ void Socket::setBlocking( bool newStatus )
 	
 }
 
-	

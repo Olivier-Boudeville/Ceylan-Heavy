@@ -298,8 +298,8 @@ LogChannel * LogAggregator::findBasicChannel(
 	
 					
 ObjectChannel * LogAggregator::findObjectChannel( 
-		const string & nonPrefixedChannelName ) 
-	const throw( LogException )					
+	const string & nonPrefixedChannelName ) const throw( LogException )			
+	
 {
 
 
@@ -553,7 +553,8 @@ void LogAggregator::storeBasicMessage( LogMessage & basicLogMessage )
 
 	// Maybe the relevant basic channel already exists ?
 
-	LogChannel * channel = findBasicChannel( basicLogMessage.getChannelName() ) ;
+	LogChannel * channel = findBasicChannel( 
+		basicLogMessage.getChannelName() ) ;
 	
 	if ( channel == 0 )
 	{
@@ -826,6 +827,7 @@ Ceylan::VerbosityLevels
 		
 }
 
+
 const string LogAggregator::toString( Ceylan::VerbosityLevels level ) 
 	const throw()
 {
@@ -838,5 +840,4 @@ const string LogAggregator::toString( Ceylan::VerbosityLevels level )
 		+ " log channel(s) created" ;
 		
 }
-
 

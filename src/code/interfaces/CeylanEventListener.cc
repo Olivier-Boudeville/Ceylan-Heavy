@@ -6,7 +6,7 @@
 
 
 #ifdef CEYLAN_USES_CONFIG_H
-#include "CeylanConfig.h"         // for CEYLAN_DEBUG_EVENTS
+#include "CeylanConfig.h"       // for CEYLAN_DEBUG_EVENTS
 #endif // CEYLAN_USES_CONFIG_H
 
 
@@ -155,7 +155,8 @@ void EventListener::unsubscribeFromAllSources() throw()
 }
 
 
-void EventListener::forgetSource( EventSource & source ) throw( EventException )
+void EventListener::forgetSource( EventSource & source ) 
+	throw( EventException )
 {
 
 

@@ -340,9 +340,9 @@ namespace Ceylan
 				 *
 				 * @see Directory member counterpart, isValid
 				 *
-				 * @note On Windows, files and directories are case-insensitive, and
-				 * 'c:' is not a directory (it is seen as a drive), whereas 'c:\' is a
-				 * directory.
+				 * @note On Windows, files and directories are 
+				 * case-insensitive, and 'c:' is not a directory 
+				 * (it is seen as a drive), whereas 'c:\' is a directory.
 				 *
 				 * @throw DirectoryException if the operation failed or
 				 * is not supported.
@@ -449,6 +449,7 @@ namespace Ceylan
 		{
 			return _path ;
 		}
+
 
 	}
 
