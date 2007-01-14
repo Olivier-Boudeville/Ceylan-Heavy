@@ -152,13 +152,24 @@ SOURCE_OFFSET="../../.."
 
 # Prefix section.
 
-PREFIX_DEFAULT=`pwd | sed 's|LOANI-repository/ceylan/Ceylan/trunk/src/conf/build||1'`LOANI-installations
+# To guess the prefix, we need the current Ceylan version :
+VERSION_FILE="../CeylanSettings.inc"
+
+if [ ! -f "${VERSION_FILE}" ] ; then
+	echo"Error, unable to find version file (${VERSION_FILE})." 1>&2
+	exit 5
+fi
+
+. ${VERSION_FILE} 2>/dev/null
+ 
+PREFIX_DEFAULT=`pwd | sed 's|LOANI-repository/ceylan/Ceylan/trunk/src/conf/build||1'`LOANI-installations/Ceylan-${CEYLAN_MAJOR_VERSION}.${CEYLAN_MINOR_VERSION}
+
 debug "Default prefix = ${PREFIX_DEFAULT}"
 
 PREFIX_SECOND_DEFAULT="$HOME/tmp-Ceylan-test-install"
 
 if [ ! -d `dirname ${PREFIX_DEFAULT}` ] ; then
-	echo "Base of first default install directory (${PREFIX_DEFAULT}) not existing, switching to second default directory (${PREFIX_SECOND_DEFAULT})"
+	echo "Warning : base of first default install directory (${PREFIX_DEFAULT}) not existing, switching to second default directory (${PREFIX_SECOND_DEFAULT})"
 	PREFIX="${PREFIX_SECOND_DEFAULT}"
 else
 	PREFIX="${PREFIX_DEFAULT}"
