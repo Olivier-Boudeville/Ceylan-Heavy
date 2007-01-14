@@ -17,7 +17,7 @@ if [ -z "${LOANI_BASE}" ] ; then
 	LOANI_BASE=/mnt/raid/md0/LOANI-${LOANI_VERSION}/LOANI-repository
 fi
 
-export CEYLAN_VERSION=0.3
+export CEYLAN_VERSION=0.5
 export CEYLAN_ROOT=${LOANI_BASE}/ceylan/Ceylan
 export CEYLAN_SRC=${CEYLAN_ROOT}/trunk/src
 export CEYLAN_DOC=${CEYLAN_SRC}/doc/web/main/documentation
