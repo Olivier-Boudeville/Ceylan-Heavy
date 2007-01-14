@@ -5,6 +5,8 @@
 #include "CeylanLibtoolVersion.h"  // for LibtoolVersion
 #include "CeylanException.h"       // for inheritance
 #include "CeylanTypes.h"           // for Ceylan::Uint16, Ceylan::Sint16
+#include "CeylanHeaderVersion.h"   // for actualCeylanHeaderLibtoolVersion
+
 
 #include <string>
 #include <list>
@@ -52,7 +54,8 @@ namespace Ceylan
 	 *
 	 */
 	#define CHECK_CEYLAN_VERSIONS()                                            \
-        Ceylan::LibtoolVersion headerVersion( CEYLAN_LIBTOOL_VERSION ) ;       \
+        Ceylan::LibtoolVersion headerVersion(                                  \
+			Ceylan::actualCeylanHeaderLibtoolVersion ) ;                       \
         if ( ! /* library version */                                           \
                 Ceylan::GetVersion().isCompatibleWith( headerVersion ) )       \
             Ceylan::emergencyShutdown(                                         \
