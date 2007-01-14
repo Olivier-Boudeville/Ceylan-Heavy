@@ -70,7 +70,7 @@ libCeylan_la_DEPENDENCIES = \
 
 	
 libCeylanIncludedir      = $(includedir)/Ceylan
-libCeylanInclude_HEADERS = Ceylan.h CeylanConfig.h
+libCeylanInclude_HEADERS = Ceylan.h
 
 DISTCLEANFILES = CeylanConfig.h
 	
