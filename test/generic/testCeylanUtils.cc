@@ -49,7 +49,8 @@ int main( int argc, char * argv[] )
         	+ Ceylan::GetVersion().toString() + "." ) ; 
 
         LogPlug::info( "This test has been compiled against the "
-        	+ Ceylan::LibtoolVersion( CEYLAN_LIBTOOL_VERSION ).toString() 
+        	+ Ceylan::LibtoolVersion( 
+				Ceylan::actualCeylanHeaderLibtoolVersion ).toString() 
         	+ " version of the Ceylan header files." ) ;
 		
 		LogPlug::info( "Let's now check for particular compatibilities "
