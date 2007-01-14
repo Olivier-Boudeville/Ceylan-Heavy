@@ -10,7 +10,6 @@
 #include "CeylanDocMainPage.h"
 #include "CeylanException.h"
 #include "CeylanFunctor.h"
-#include "CeylanHeaderVersion.h"
 #include "CeylanLibtoolVersion.h"
 #include "CeylanOperators.h"
 #include "CeylanRegularExpression.h"
