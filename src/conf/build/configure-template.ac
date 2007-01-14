@@ -1455,7 +1455,6 @@ AC_CONFIG_FILES([
     Makefile
     src/Makefile
 	src/code/Makefile
-	src/code/generic/CeylanHeaderVersion.cc
 	src/code/generic/Makefile
 	src/code/interfaces/Makefile
 	src/code/logs/Makefile
