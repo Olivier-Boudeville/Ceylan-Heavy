@@ -16,9 +16,12 @@ using namespace Ceylan::Log ;
 
 
 /**
- * Test of Ceylan versions.
+ * Test of Ceylan management of version information.
  *
- * @see CeylanUtils.h.
+ * @see CeylanUtils.h for CHECK_CEYLAN_VERSIONS definition
+ *
+ * @see testCeylanUtils.cc for the test of actual header/library versions.
+ *
  *
  */
 int main( int argc, char * argv[] )
