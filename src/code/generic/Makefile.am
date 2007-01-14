@@ -19,6 +19,7 @@ GENERIC_INTERFACES = \
 	CeylanException.h                    \
 	CeylanFunctor.h                      \
 	CeylanGenericIncludes.h              \
+	CeylanHeaderVersion.h                \
 	CeylanLibtoolVersion.h               \
 	CeylanOperators.h                    \
 	CeylanRegularExpression.h            \
