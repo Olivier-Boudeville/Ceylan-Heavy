@@ -5,7 +5,6 @@
 #include "CeylanLibtoolVersion.h"  // for LibtoolVersion
 #include "CeylanException.h"       // for inheritance
 #include "CeylanTypes.h"           // for Ceylan::Uint16, Ceylan::Sint16
-#include "CeylanHeaderVersion.h"   // for actual header-embedded libtool version
 
 #include <string>
 #include <list>
@@ -47,11 +46,13 @@ namespace Ceylan
 	 * This is a macro since it has to be evaluated within the user code 
 	 * environment, not when the Ceylan library is built.
 	 *
-	 * 
+	 * Just including Ceylan.h is enough to include this macro and 
+	 * CeylanConfig.h, hence to have CEYLAN_LIBTOOL_VERSION defined from the
+	 * headers.
+	 *
 	 */
 	#define CHECK_CEYLAN_VERSIONS()                                            \
-        Ceylan::LibtoolVersion headerVersion(                                  \
-			Ceylan::actualCeylanHeaderLibtoolVersion ) ;                       \
+        Ceylan::LibtoolVersion headerVersion( CEYLAN_LIBTOOL_VERSION ) ;       \
         if ( ! /* library version */                                           \
                 Ceylan::GetVersion().isCompatibleWith( headerVersion ) )       \
             Ceylan::emergencyShutdown(                                         \
