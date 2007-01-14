@@ -69,6 +69,8 @@ be installed to select them but may clash with others, and so on. This implies u
 	<li><b>Anonymous check-out</b> : svn co https://svn.sourceforge.net/svnroot/ceylan ceylan</li>
 
 	<li><b>User-based check-out</b> : svn co --username MyUserName https://svn.sourceforge.net/svnroot/ceylan ceylan</li>
+
+	<li>Make SVN <b>ignore</b> a file or a pattern of files : <code>svn propset svn:ignore myFile .</code> or <code>svn propset svn:ignore "*.log" logs/</code></li>
 	
 	<li>See <b>test/logs/testCeylanFullLogSystem.cc</b> for more informations about the robustness of the log system, depending on its settings (the chosen log plug) and the error cases (normal return, ::exit, uncaught exception, division by zero, etc.)</li>
 </ul>
@@ -237,7 +239,7 @@ For client/server model :
       <center>
         [<a href="#_top_">Top</a>]<br>
         <br>
-        <em>Last update : Wednesday, January 3, 2007</em>
+        <em>Last update : Sunday, January 14, 2007</em>
       </center>
   
 </body>
