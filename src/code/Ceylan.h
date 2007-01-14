@@ -53,9 +53,12 @@
  * versions and ages, according to Libtool conventions.
  *
  * To know to which Ceylan version a set of installed headers corresponds, 
- * the CeylanConfig.h file (generated at configure time) should be read, 
- * for the CEYLAN_LIBTOOL_VERSION define. Including only Ceylan.h is enough to
- * have everything available.
+ * the CeylanHeaderVersion.h file (generated at configure time) should be read, 
+ * for the actualCeylanHeaderLibtoolVersion variable. Including only Ceylan.h 
+ * is enough to have everything available. 
+ *
+ * The CeylanConfig.h file (generated at configure time) cannot be read for
+ * version informations, as it is on purpose not installed, to avoid clashes. 
  *
  * To know to which Ceylan version an installed library corresponds, 
  * its Ceylan::GetVersion function should be called. It is defined in
@@ -67,7 +70,7 @@
  * in turn CeylanConfigForWindows.h which have hardcoded version values.
  *
  * On UNIX, CeylanConfig.h is generated at configure time and overwrites the
- * default CeylanHeaderVersion.cc file in the sources.
+ * default CeylanHeaderVersion.h file in the sources.
  *
  * A Ceylan-using program can make use of the CHECK_CEYLAN_VERSIONS (defined in
  * trunk/src/code/generic/CeylanUtils.h) to check automatically whether
@@ -94,8 +97,6 @@
 
 
 // Please include below all header files to be exported for Ceylan users.
-
-#include "CeylanConfig.h"
 
 #include "CeylanGenericIncludes.h"
 #include "CeylanInterfacesIncludes.h"
