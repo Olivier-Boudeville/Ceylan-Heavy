@@ -104,7 +104,7 @@ Before reporting an error, please check you have upgraded following tools with t
 	<li></li>
 -->
 
-	<li>increment the version number in <code>trunk/src/conf/CeylanSettings.inc</code> (see <code>CEYLAN_*_VERSION</code>), and create a new <code>trunk/src/conf/build/ceylan-x.y.pc.in</code> file, possibly from the one of the previous version. Once updated if needed, register it in SVN (<code>svn add ... && svn ci ...</code>)
+	<li>increment the version number in <code>trunk/src/conf/CeylanSettings.inc</code> (see <code>CEYLAN_*_VERSION</code>) and in trunk/src/code/CeylanConfigForWindows.h<code></code>, and create a new <code>trunk/src/conf/build/ceylan-x.y.pc.in</code> file, possibly from the one of the previous version. Once updated if needed, register it in SVN (<code>svn add ... && svn ci ...</code>)
 	</li>
 
 	<li>update the various version-related files and directories : <code>src/doc/basic/Ceylan-*-template.txt.in</code> (including Ceylan-NEWS-template.txt.in), <code>src/doc/web/Ceylan-x.y</code>, under <code>trunk/src/conf/build</code> execute <code>make download-config-scripts</code>, etc.
