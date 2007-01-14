@@ -4,6 +4,19 @@
 #include <string>
 
 
+
+/*
+ * This file is dedicated to the Windows version, as on UNIX it is overwritten
+ * by the configure-time generated one.
+ *
+ */
+ 
+ 
+
+// Allowed because on Windows (hence not installed) :
+#include "CeylanConfig.h"  // for  CEYLAN_LIBTOOL_VERSION
+
+ 
 namespace Ceylan
 {
 
@@ -17,7 +30,8 @@ namespace Ceylan
 	 * it is then linked to.
 	 *
 	 */
-	extern CEYLAN_DLL const std::string actualCeylanHeaderLibtoolVersion ;
+	CEYLAN_DLL const std::string actualCeylanHeaderLibtoolVersion 
+		= CEYLAN_LIBTOOL_VERSION ;
 		
 }
 
