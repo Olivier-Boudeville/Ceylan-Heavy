@@ -24,6 +24,7 @@ using std::list ;
 int main( int argc, char * argv[] )
 {
 	
+	
 
 	/*
 	 * Verifies that the versions of the Ceylan header files used to 
@@ -48,8 +49,7 @@ int main( int argc, char * argv[] )
         	+ Ceylan::GetVersion().toString() + "." ) ; 
 
         LogPlug::info( "This test has been compiled against the "
-        	+ Ceylan::Version( 
-				Ceylan::actualCeylanHeaderLibtoolVersion ).toString() 
+        	+ Ceylan::LibtoolVersion( CEYLAN_LIBTOOL_VERSION ).toString() 
         	+ " version of the Ceylan header files." ) ;
 		
 		LogPlug::info( "Let's now check for particular compatibilities "
