@@ -12,6 +12,15 @@
 #include <iosfwd>
 
 
+/*
+ * Some Ceylan-using libraries or programs have to know the endianess :
+ * 
+ * @note Defined to 1 if the platform is little endian, 0 otherwise.
+ *
+ */
+#define CEYLAN_DETECTED_LITTLE_ENDIAN @CEYLAN_RUNS_ON_LITTLE_ENDIAN@
+
+
 namespace Ceylan
 {
 
