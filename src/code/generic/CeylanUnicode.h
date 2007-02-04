@@ -146,6 +146,7 @@ namespace Ceylan
 			/**
 			 * Copy constructor made private to ensure that it will never be
 			 * called.
+			 *
 			 * The compiler should complain whenever this undefined 
 			 * constructor is called, implicitly or not.
 			 * 
@@ -156,6 +157,7 @@ namespace Ceylan
 			/**
 			 * Assignment operator made private to ensure that it will never be
 			 * called.
+			 *
 			 * The compiler should complain whenever this undefined operator 
 			 * is called, implicitly or not.
 			 * 
