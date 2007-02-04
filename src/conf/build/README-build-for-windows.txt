@@ -79,6 +79,21 @@ During the build on Windows of the Ceylan library, CEYLAN_DLL is expected to be 
 
 During the build on Windows of code using the Ceylan library, CEYLAN_DLL is expected to be equal to "__declspec( dllimport )" (ex : "CEYLAN_DLL=__declspec( dllimport )"
 
+CEYLAN_DLL is to be specified on :
+
+	- exported class declarations, ex : 
+
+'class CEYLAN_DLL WhiteNoiseGenerator : public RandomGenerator'
+
+	- exported non-method functions, ex :
+
+'CEYLAN_DLL Ceylan::Float32 Sqrt( Ceylan::Float32 x )'
+	
+	- exported symbols, ex :
+	
+'extern CEYLAN_DLL const SignalNumber BrokenPipe ;'
+
+	
 Special management for the "extern" keyword, with for example : "CEYLAN_EXTERN_TEMPLATE template class CEYLAN_DLL std::list<Ceylan::EventListener *> ;" does not seem necessary, according to our tests.
 
 
