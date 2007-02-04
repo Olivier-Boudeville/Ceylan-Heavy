@@ -13,15 +13,15 @@ EXTRA_DIST = \
  
 # What is expected from the html documentation for the Ceylan x.y version : 
 # 	- be accessible from '$BASE_URL' 
-# (ex : BASE_URL=http://ceylan.sourceforge.net), under '$BASE_URL/Ceylan-x.y'
-# 	- if x.y is the latest stable version, then it should be accessible
+# (ex : BASE_URL=http://ceylan.sourceforge.net), under '$BASE_URL/Ceylan-x.y'
+# 	- if x.y is the latest stable version, then it should be accessible
 # from '$BASE_URL/Ceylan-latest' as well
 # 
 # The general documentation (not specific to any given version) should 
 # be found directly from '$BASE_URL'.
 #
 # The full website must be set to any given ROOT 
-# (ex : ROOT=/home/groups/c/ce/ceylan/htdocs), 
+# (ex : ROOT=/home/groups/c/ce/ceylan/htdocs), 
 
 
 # This documentation generation has been a pain and a mess for months. 
@@ -76,9 +76,9 @@ MIRROR_WEB_DIR       = /var/www/@PROJECT_NAME@
 # Web content should not contain 'common' section, since both doc and api 
 # need it.
 
-# A lot of complication (the creation of directories then the installation
+# A lot of complication (the creation of directories then the installation
 # of files) comes from distcheck and its setting the whole source tree
-# (including the directories) in read-only : it is a mess to handle with
+# (including the directories) in read-only : it is a mess to handle with
 # cp --parents and/or /bin/install.
 
 # These variable are made to be evaluated from $(srcdir)/web :
