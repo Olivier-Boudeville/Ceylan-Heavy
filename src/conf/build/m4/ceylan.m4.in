@@ -23,7 +23,7 @@
 # downward-compatibility).
 
 
-# Ceylan users can execute 'aclocal' (ex : 'aclocal -I . --output=aclocal.m4)
+# Ceylan users can execute 'aclocal' (ex : 'aclocal -I . --output=aclocal.m4')
 # to have our macros added to their 'aclocal.m4', provided that 
 # CEYLAN_PATH is called from the user configure.ac.
 
@@ -62,12 +62,12 @@ AC_DEFUN([CEYLAN_PATH],
   # Here is specified for each given Ceylan release what are the most ancient
   # versions that are still compatible with this current version :
   CEYLAN_OLDEST_SUPPORTED_MAJOR=@CEYLAN_OLDEST_SUPPORTED_MAJOR@
-  CEYLAN_OLDEST_SUPPORTED_MINOR=@CEYLAN_OLDEST_SUPPORTED_MINOR@
+  CEYLAN_OLDEST_SUPPORTED_MINOR=@CEYLAN_OLDEST_SUPPORTED_MINOR@  
   
   # Setting the install path of the Ceylan library :
   CEYLAN_LIBS=" -lCeylan "
   AC_ARG_WITH(ceylan-prefix,
-    AS_HELP_STRING([--with-ceylan-prefix],[path to the Ceylan installation (prefix)]),
+    AS_HELP_STRING([--with-ceylan-prefix=PFX],[Prefix where Ceylan is installed (optional)]),
       [
         CEYLAN_CPPFLAGS="-I${withval}/include/Ceylan"
         CEYLAN_LIBS="-L${withval}/lib -lCeylan"
