@@ -78,6 +78,13 @@ namespace Ceylan
 		typedef Ceylan::Uint8 Percentage ;
 		
 		
+		/**
+		 * Ratio unit, should store floating point values between 0 and 1.
+		 *
+		 */
+		typedef Ceylan::Float32 Ratio ;
+		
+		
 		/// Exception for Maths-related issues.
 		class CEYLAN_DLL MathsException : public Ceylan::Exception
 		{
