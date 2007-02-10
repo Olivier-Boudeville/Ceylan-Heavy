@@ -38,6 +38,9 @@
 
 	Q: How can I regenerate the build system, with regards to the Autotools ? 
 	A: See the src/conf/build directory, notably autogen.sh
+
+	Q: When I use autogen.sh, I have following error : "libtoolize: cannot list files in `/usr/share/libtool/libltdl'"
+	A: libltdl-specific files have to be installed. For Debian-based distributions, use : 'apt-get install libltdl3-dev'.
 	
 	Q: How can I have more developer informations ?
 	A: See our online developer guide for this version, located at @CEYLAN_SF_VERSION_URL@
