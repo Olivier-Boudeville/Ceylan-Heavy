@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 USAGE="Usage :"`basename $0`"[diff tool] : compares current configure.ac with the ones suggested first by autoscan, then by autoupdate."
 
