@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
 
-USAGE="Usage : "`basename $0`" : cleans the test repository by removing all files generated for the build system. Useful while debugging the autotools."
+USAGE="Usage : "`basename $0`" : cleans the Ceylan test repository by removing all files generated for the build system. Useful while debugging the autotools."
 
 FIND=`which find 2>/dev/null`
 #echo "FIND = $FIND"
