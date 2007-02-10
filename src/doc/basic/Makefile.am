@@ -89,67 +89,59 @@ html-changelog:
 
 
 update-authors:
-	@echo "@CEYLAN_COMMAND_STYLE@    Generating AUTHORS\
+	@echo "@CEYLAN_COMMAND_STYLE@    Generating AUTHORS \
 	file@CEYLAN_DEFAULT_STYLE@"
-	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-AUTHORS-template.txt\
-	${top_builddir}/AUTHORS
+	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-AUTHORS-template.txt ${top_builddir}/AUTHORS
 
 
 update-copying:
-	@echo "@CEYLAN_COMMAND_STYLE@    Generating COPYING.LIB\
+	@echo "@CEYLAN_COMMAND_STYLE@    Generating COPYING.LIB \
 	file@CEYLAN_DEFAULT_STYLE@"
-	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-COPYING.LIB-template.txt\
-	${top_builddir}/COPYING.LIB
+	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-COPYING.LIB-template.txt 	${top_builddir}/COPYING.LIB
 	
 	
 update-faq:
-	@echo "@CEYLAN_COMMAND_STYLE@    Generating FAQ file\
+	@echo "@CEYLAN_COMMAND_STYLE@    Generating FAQ file \
 	@CEYLAN_DEFAULT_STYLE@"
-	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-FAQ-template.txt\
-	${top_builddir}/FAQ
+	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-FAQ-template.txt ${top_builddir}/FAQ
 	
 	
 update-install:
-	@echo "@CEYLAN_COMMAND_STYLE@    Generating INSTALL file\
+	@echo "@CEYLAN_COMMAND_STYLE@    Generating INSTALL file \
 	@CEYLAN_DEFAULT_STYLE@"
-	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-INSTALL-template.txt\
-	${top_builddir}/INSTALL 
+	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-INSTALL-template.txt ${top_builddir}/INSTALL 
 	 
 	 
 update-maint:
-	@echo "@CEYLAN_COMMAND_STYLE@    Generating MAINTENERS file\
+	@echo "@CEYLAN_COMMAND_STYLE@    Generating MAINTENERS file \
 	@CEYLAN_DEFAULT_STYLE@"
-	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-MAINTENERS-template.txt\
-	${top_builddir}/MAINTENERS
+	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-MAINTENERS-template.txt ${top_builddir}/MAINTENERS
  
  
 update-news:
-	@echo "@CEYLAN_COMMAND_STYLE@    Generating NEWS file\
+	@echo "@CEYLAN_COMMAND_STYLE@    Generating NEWS file \
 	@CEYLAN_DEFAULT_STYLE@"
-	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-NEWS-template.txt\
-	${top_builddir}/NEWS
+	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-NEWS-template.txt ${top_builddir}/NEWS
  
  
 update-readme:
-	@echo "@CEYLAN_COMMAND_STYLE@    Generating README file\
+	@echo "@CEYLAN_COMMAND_STYLE@    Generating README file \
 	@CEYLAN_DEFAULT_STYLE@"
-	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-README-template.txt\
-	${top_builddir}/README
+	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-README-template.txt ${top_builddir}/README
 	-@@CEYLAN_SUBSTITUTE@ ST_DATE "$(CURRENT_DATE)" ${top_builddir}/README
 
 
 update-thanks:
-	@echo "@CEYLAN_COMMAND_STYLE@    Generating THANKS file\
+	@echo "@CEYLAN_COMMAND_STYLE@    Generating THANKS file \
 	@CEYLAN_DEFAULT_STYLE@"
-	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-THANKS-template.txt\
-	 ${top_builddir}/THANKS 
+	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-THANKS-template.txt ${top_builddir}/THANKS 
 	 
 	 
 update-todo: 	
-	@echo "@CEYLAN_COMMAND_STYLE@    Generating TODO file\
+	@echo "@CEYLAN_COMMAND_STYLE@    Generating TODO file \
 	@CEYLAN_DEFAULT_STYLE@"
-	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-TODO-template.txt\
-	${top_builddir}/TODO 
+	-@cp -f ${top_builddir}/src/doc/basic/Ceylan-TODO-template.txt ${top_builddir}/TODO 
+		
 		
 		
 info-local:
@@ -157,13 +149,13 @@ info-local:
 	
 	
 clean-local:
-	@echo "@CEYLAN_CLEAN_STYLE@    Cleaning basic doc repository\
+	@echo "@CEYLAN_CLEAN_STYLE@    Cleaning basic doc repository \
 	@CEYLAN_DEFAULT_STYLE@"
 	-@rm -f $(RAW_DOC_FILES)
 
 
 real-clean:
-	@echo "@CEYLAN_CLEAN_STYLE@    Real cleaning basic doc repository\
+	@echo "@CEYLAN_CLEAN_STYLE@    Real cleaning basic doc repository \
 	@CEYLAN_DEFAULT_STYLE@"
 	-@rm -f Ceylan-AUTHORS-template.txt Ceylan-COPYING.LIB-template.txt \
 	Ceylan-FAQ-template.txt	Ceylan-INSTALL-template.txt                 \
