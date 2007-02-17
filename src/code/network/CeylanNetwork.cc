@@ -154,7 +154,7 @@ struct HostDNSEntry::SystemSpecificHostEntry
 /*
  * Some of HostDNSEntry methods will return bogus values 
  * (ex : empty structures) whenever called whereas system-specific 
- * headers (ex : netdb.h or ws2tcpip.h) not available.
+ * headers (ex : netdb.h or ws2tcpip.h) are not available.
  *
  * This should not hurt, since the instances these methods should apply to 
  * cannot exist, since their constructors raise an exception in this context.
@@ -879,7 +879,8 @@ const string Ceylan::Network::getMostPreciseLocalHostName()
 		guessedFullHostname = buf.nodename ;
 
 		// Needing a FQDN, checking for dots in the host name :
-		if ( Ceylan::countChars( guessedFullHostname, '.' ) != 0 )
+		if ( Ceylan::countChars( guessedFullHostname, '.' ) != 0 
+				&& guessedFullHostname != "localhost.localdomain" )
 			return guessedFullHostname ;
 			
 	}
@@ -914,7 +915,7 @@ const string Ceylan::Network::getMostPreciseLocalHostName()
 			"FQDN not available : " + e.toString() ) ;
 	}
 
-	if ( found )
+	if ( found && guessedFullHostname != "localhost.localdomain" )
 		return guessedFullHostname ;
 
 	/*
