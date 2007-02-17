@@ -18,7 +18,7 @@ namespace Ceylan
 	/**
 	 * Basic network management, which is an optional Ceylan feature.
 	 *
-	 * @see Ceylan::URI for Uniform Resource Identifiers facilities.
+	 * @see Ceylan::URI for Uniform Resource Identifier facilities.
 	 *
 	 * @note IPv6 is currently not supported.
 	 *
@@ -282,7 +282,12 @@ namespace Ceylan
 		 * Returns most precise available local host name.
 		 *
 		 * Tries to gather most useful information about host name, 
-		 * including FQDN.
+		 * including FQDN. 
+		 *
+		 * If the FQDN does not teach anything (ex : 'localhost.localdomain'),
+		 * the local host name will be returned, and the domain name, if 
+		 * relevant, will be appended to it, after a dot (hence may return
+		 * 'rainbow', or 'rainbow.esperide.com' for example).
 		 *
 		 * @note Reverse name look-up thanks to IP address could be
 		 * performed too.
