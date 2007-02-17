@@ -177,7 +177,8 @@ int main( int argc, char * argv[] )
 		{
 
 			IPAddressvFour tempv4( numericalAddress ) ;
-			LogPlug::info( "FQDN for " + tempv4.toString() + " is : '"
+			LogPlug::info( "FQDN for IPAddressvFour instance " 
+				+ tempv4.toString() + " is : '"
 				+ getFQDNFromIP( tempv4 ) + "'." ) ;
 
 		}
@@ -190,8 +191,8 @@ int main( int argc, char * argv[] )
 
 		try
 		{
-			LogPlug::info( "FQDN for " + numericalAddress + " is : '"
-				+ getFQDNFromIPv4( numericalAddress ) + "'." ) ;
+			LogPlug::info( "FQDN for numerical address " + numericalAddress 
+				+ " is : '"	+ getFQDNFromIPv4( numericalAddress ) + "'." ) ;
 		}
 		catch( const NetworkException & e )
 		{
@@ -244,14 +245,20 @@ int main( int argc, char * argv[] )
 			
 
 
-		LogPlug::info( "The local host name is : '" + getLocalHostName()
-			+ "'." ) ;
+		string savedLocalHostName = getLocalHostName() ;
+		
+		LogPlug::info( "The local host name is : '" 
+			+ savedLocalHostName + "'." ) ;
+		
+		string savedLocalHostDomainName ;
 		
 		// Not available on all platforms :
 		try
 		{
+		
+			savedLocalHostDomainName = getLocalHostDomainName() ;
 			LogPlug::info( "The local domain name is : '" 
-				+ getLocalHostDomainName() + "'." ) ;
+				+ savedLocalHostDomainName + "'." ) ;
 		}
 		catch( const NetworkException & e )
 		{
@@ -269,6 +276,15 @@ int main( int argc, char * argv[] )
 		{	
 		
 			setLocalHostName( newHostname ) ;
+		
+			LogPlug::info( "The local host name is now : '" 
+				+ getLocalHostName() + "'." ) ;
+				
+			setLocalHostName( savedLocalHostName ) ;	
+
+			LogPlug::info( "The local host name once restored is : '" 
+				+ getLocalHostName() + "'." ) ;
+			
 			
 		} 
 		catch( const NetworkException & e ) 
@@ -282,7 +298,17 @@ int main( int argc, char * argv[] )
 			
 		try 
 		{	
+		
 			setLocalHostDomainName( newDomainname ) ;
+
+			LogPlug::info( "The local host domain name is now : '" 
+				+ getLocalHostDomainName() + "'." ) ;
+				
+			setLocalHostName( savedLocalHostDomainName ) ;	
+
+			LogPlug::info( "The local host domain name once restored is : '" 
+				+ getLocalHostDomainName() + "'." ) ;
+			
 		} 
 		catch( const NetworkException & e ) 
 		{
