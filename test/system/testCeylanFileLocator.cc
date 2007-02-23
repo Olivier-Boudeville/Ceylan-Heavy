@@ -62,7 +62,8 @@ int main( int argc, char * argv[] )
 
 		string thirdPath = "../code" ;
 		myLocator.addPath( thirdPath ) ;
-        LogPlug::info( "Adding a path for Windows tests : " + myLocator.toString() ) ;
+        LogPlug::info( "Adding a path for Windows tests : " 
+			+ myLocator.toString() ) ;
 
 		string toFind = "Ceylan.h" ;
 		string found  ;
