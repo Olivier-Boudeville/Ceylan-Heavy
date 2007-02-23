@@ -240,8 +240,11 @@ AC_DEFUN([CEYLAN_PATH],
   
   # Uncomment to debug :
   #AC_MSG_NOTICE([CEYLAN_CPPFLAGS = $CEYLAN_CPPFLAGS])
-  #AC_MSG_NOTICE([CEYLAN_LIBS = $CEYLAN_LIBS])  
+  #AC_MSG_NOTICE([CEYLAN_LIBS     = $CEYLAN_LIBS])  
 
+  AC_SUBST(CEYLAN_CPPFLAGS)
+  AC_SUBST(CEYLAN_LIBS)
+  
   # Checking for Ceylan header files :
   have_ceylan=yes
   AC_MSG_NOTICE([checking for the Ceylan library])
@@ -278,6 +281,8 @@ AC_DEFUN([CEYLAN_PATH],
     AC_MSG_RESULT([no])
     AC_MSG_ERROR([The Ceylan library could not be successfully linked to.])  
   fi
+  # We can link to the Ceylan library, but do the headers we see can work
+  # with the library we link to ?
   have_ceylan_headers_matching_library_version=yes
   AC_RUN_IFELSE([
   	AC_LANG_PROGRAM(
@@ -291,6 +296,9 @@ AC_DEFUN([CEYLAN_PATH],
     AC_MSG_RESULT([no])
     AC_MSG_ERROR([The Ceylan installation does not seem to be clean, since headers did not match the library version.])  
   fi
+  # We can link to the library, and it is compatible with the Ceylan headers
+  # being used, but is this pack compatible with the Ceylan version the user
+  # specified ? 
   have_compatible_ceylan_version=yes
   AC_RUN_IFELSE([
   	AC_LANG_PROGRAM(
