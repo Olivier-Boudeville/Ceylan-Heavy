@@ -4,7 +4,9 @@ TESTLOGFILE=`pwd`"/testsOutcome.txt"
 PLAYTEST_LOCAL_FILE="playTests-local.sh"
 
 
-USAGE="`basename $0` [--interactive] : executes all tests for Ceylan in a row.\n\tIf the --interactive option is used, tests will not be run in batch mode, and will prompt the user for various inputs. Otherwise only their final result will be output. In all cases their messages will be stored in file ${TESTLOGFILE}. The return code of this script will be the number of failed tests (beware to overflow of the return code)"
+USAGE="`basename $0` [--interactive] : executes all tests for Ceylan in a row.
+	
+	If the --interactive option is used, tests will not be run in batch mode, and will prompt the user for various inputs. Otherwise only their final result will be output. In all cases their messages will be stored in file ${TESTLOGFILE}. The return code of this script will be the number of failed tests (beware to overflow of the return code)"
  
  
 # In batch (non-interactive) mode by default (0) :
@@ -195,7 +197,7 @@ if [ -f "$TERM_PATH" ] ; then
 	. $TERM_PATH
 else
 	ERROR_INTERNAL "terminal utilities not found (was expecting : $TERM_PATH)"
-	exit
+	exit 1
 fi	
 
 # For testCeylanFileLocator and others that need to search relative paths :
