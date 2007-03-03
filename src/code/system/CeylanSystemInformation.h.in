@@ -158,7 +158,11 @@ namespace Ceylan
 		CEYLAN_DLL UnsignedLongInteger getBuffersMemorySize() 
 			throw( SystemException ) ; 
 
-				
+
+
+		// OpenGL-related section.
+
+
 		/**
 		 * Tells whether the OpenGL contexts can be lost (and 
 		 * therefore may have to be reloaded) under certain unexpected
@@ -176,6 +180,41 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL bool openGLContextsCanBeLost() throw( SystemException ) ; 
+
+
+
+		/**
+		 * Tells whether the OpenGL contexts are lost (and 
+		 * therefore may have to be reloaded) when the window application is
+		 * resized (resolution changed).
+		 *
+		 * @throw SystemException on error, or if not known for this platform.
+		 *
+		 */
+		CEYLAN_DLL bool openGLContextsLostOnResize() throw( SystemException ) ; 
+
+
+		/**
+		 * Tells whether the OpenGL contexts are lost (and 
+		 * therefore may have to be reloaded) when switching to another
+		 * application.
+		 *
+		 * @throw SystemException on error, or if not known for this platform.
+		 *
+		 */
+		CEYLAN_DLL bool openGLContextsLostOnApplicationSwitch() 
+			throw( SystemException ) ; 
+
+
+		/**
+		 * Tells whether the OpenGL contexts are lost (and 
+		 * therefore may have to be reloaded) when changing the color depth.
+		 *
+		 * @throw SystemException on error, or if not known for this platform.
+		 *
+		 */
+		CEYLAN_DLL bool openGLContextsLostOnColorDepthChange() 
+			throw( SystemException ) ; 
 
 
 	}
