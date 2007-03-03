@@ -418,6 +418,12 @@ UnsignedLongInteger Ceylan::System::getBuffersMemorySize()
 } 
 
 
+
+
+// OpenGL-related section.
+
+
+
 bool Ceylan::System::openGLContextsCanBeLost() throw( SystemException )
 {
 
@@ -469,6 +475,99 @@ bool Ceylan::System::openGLContextsCanBeLost() throw( SystemException )
 
 	 
 #endif // CEYLAN_ARCH_WINDOWS
+
+
+}
+
+
+
+bool Ceylan::System::openGLContextsLostOnResize() throw( SystemException )
+{
+
+ 
+#if CEYLAN_ARCH_WINDOWS
+
+	return true ;
+
+#else // CEYLAN_ARCH_WINDOWS
+
+
+
+#if CEYLAN_ARCH_MACOSX
+
+	return true ;
+
+#else // CEYLAN_ARCH_MACOSX
+
+	return false ;
+	
+#endif // CEYLAN_ARCH_MACOSX
+
+ 
+#endif // CEYLAN_ARCH_WINDOWS
+
+
+}
+
+
+
+bool Ceylan::System::openGLContextsLostOnApplicationSwitch() 
+	throw( SystemException )
+{
+
+	 
+#if CEYLAN_ARCH_WINDOWS
+
+	return true ;
+
+#else // CEYLAN_ARCH_WINDOWS
+
+
+
+#if CEYLAN_ARCH_MACOSX
+
+	return true ;
+
+#else // CEYLAN_ARCH_MACOSX
+
+	return false ;
+	
+#endif // CEYLAN_ARCH_MACOSX
+
+ 
+#endif // CEYLAN_ARCH_WINDOWS
+
+
+}
+
+
+
+bool Ceylan::System::openGLContextsLostOnColorDepthChange() 
+	throw( SystemException )
+{
+
+
+#if CEYLAN_ARCH_WINDOWS
+
+	return true ;
+
+#else // CEYLAN_ARCH_WINDOWS
+
+
+
+#if CEYLAN_ARCH_MACOSX
+
+	return true ;
+
+#else // CEYLAN_ARCH_MACOSX
+
+	return false ;
+	
+#endif // CEYLAN_ARCH_MACOSX
+
+ 
+#endif // CEYLAN_ARCH_WINDOWS
+
 
 }
 
