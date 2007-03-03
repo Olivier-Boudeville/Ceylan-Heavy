@@ -15,7 +15,8 @@
 /*
  * Some Ceylan-using libraries or programs have to know the endianess :
  * 
- * @note Defined to 1 if the platform is little endian, 0 otherwise.
+ * @note Defined automatically (at configure-time) to 1 if the platform is
+ * little endian, 0 otherwise (big endian).
  *
  */
 #define CEYLAN_DETECTED_LITTLE_ENDIAN @CEYLAN_RUNS_ON_LITTLE_ENDIAN@
@@ -158,6 +159,25 @@ namespace Ceylan
 			throw( SystemException ) ; 
 
 				
+		/**
+		 * Tells whether the OpenGL contexts can be lost (and 
+		 * therefore may have to be reloaded) under certain unexpected
+		 * circumstances (ex : window resize, going to fullscreen,
+		 * switching to another application, etc.) on the current platform,
+		 * without specific notice.
+		 *
+		 * On some platforms, the OpenGL contexts can be lost when :
+		 *  - window resizing/changing resolutions, including going to
+		 * fullscreen
+		 *  - switching to another application
+		 *  - changing color depth
+		 *
+		 * @throw SystemException on error, or if not known for this platform.
+		 *
+		 */
+		CEYLAN_DLL bool openGLContextsCanBeLost() throw( SystemException ) ; 
+
+
 	}
 	
 	
