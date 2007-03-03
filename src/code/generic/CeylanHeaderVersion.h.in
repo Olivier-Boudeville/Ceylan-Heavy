@@ -19,8 +19,16 @@ namespace Ceylan
 	 */
 	CEYLAN_DLL const std::string actualCeylanHeaderLibtoolVersion 
 		= "@CEYLAN_LIBTOOL_VERSION@" ;
-		
+
+	
+	/*
+	 * NEVER check-in this file if above you do not see 
+	 * CEYLAN_LIBTOOL_VERSION surrounded by '@' !
+	 *
+	 */
+	 		
 }
 
 
 #endif // CEYLAN_HEADER_VERSION_H_
+
