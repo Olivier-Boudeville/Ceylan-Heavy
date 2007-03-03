@@ -1,11 +1,11 @@
 #include "CeylanSystemInformation.h"
 
-#include "CeylanLogPlug.h"         // for LogPlug
-#include "CeylanOperators.h"       // for toString
+#include "CeylanLogPlug.h"              // for LogPlug
+#include "CeylanOperators.h"            // for toString
 
 
 #if CEYLAN_USES_CONFIG_H
-#include "CeylanConfig.h"          // for configure-time settings
+#include "CeylanConfig.h"               // for configure-time settings
 #endif // CEYLAN_USES_CONFIG_H
 
 
@@ -15,9 +15,9 @@
 using std::string ;
 
 
-using namespace Ceylan ;           // for UnsignedLongInteger
-using namespace Ceylan::Log ;      // for LogPlug
-using namespace Ceylan::System ;   // for SystemException
+using namespace Ceylan ;                // for UnsignedLongInteger
+using namespace Ceylan::Log ;           // for LogPlug
+using namespace Ceylan::System ;        // for SystemException
 
 
 
@@ -416,4 +416,59 @@ UnsignedLongInteger Ceylan::System::getBuffersMemorySize()
 #endif // CEYLAN_USES_SYSINFO
 	
 } 
+
+
+bool Ceylan::System::openGLContextsCanBeLost() throw( SystemException )
+{
+
+
+	/*
+	 * OpenGL contexts should never be lost, but it happens with buggy
+	 * vendor-specific OpenGL implementations (on purpose ?).
+	 *
+	 */
+	 
+#if CEYLAN_ARCH_WINDOWS
+
+	/*
+	 * On Windows, the OpenGL contexts can be lost when :
+	 *   - window resizing/changing resolutions, including going to fullscreen
+	 *   - switching to another application
+	 *	 - changing color depth
+	 *
+	 */
+	return true ;
+
+#else // CEYLAN_ARCH_WINDOWS
+
+
+
+#if CEYLAN_ARCH_MACOSX
+
+	/*
+	 * On Mac OS X, the OpenGL contexts may (not sure) be lost when :
+	 *   - window resizing/changing resolutions, including going to fullscreen
+	 *   - switching to another application
+	 *	 - changing color depth
+	 */
+	return true ;
+
+#else // CEYLAN_ARCH_MACOSX
+
+
+	/*
+	 * On GNU/Linux and an, the contexts are not lost at random :
+	 *
+	 * (this is the default setting)
+	 *
+	 */
+	return false ;
+	
+#endif // CEYLAN_ARCH_MACOSX
+
+
+	 
+#endif // CEYLAN_ARCH_WINDOWS
+
+}
 
