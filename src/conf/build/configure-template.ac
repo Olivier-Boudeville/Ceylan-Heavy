@@ -1254,6 +1254,7 @@ CheckPlatform()
 	CEYLAN_ARCH_NETBSD=0
 	CEYLAN_ARCH_OPENBSD=0
 	CEYLAN_ARCH_SOLARIS=0
+	CEYLAN_ARCH_MACOSX=0
 	
 	CEYLAN_ARCH_BSD=0
 	CEYLAN_ARCH_UNIX=0
@@ -1312,7 +1313,20 @@ CheckPlatform()
 			CEYLAN_ARCH_SOLARIS=1
 			CEYLAN_ARCH_UNIX=1
 			;;
-					
+
+		*-*-rhapsody* )
+			# Mac OS X Server :
+			CEYLAN_ARCH_MACOSX=1
+			CEYLAN_ARCH_BSD=1
+			CEYLAN_ARCH_UNIX=1
+			;;
+
+		*-*-darwin* )
+			CEYLAN_ARCH_MACOSX=1
+			CEYLAN_ARCH_BSD=1
+			CEYLAN_ARCH_UNIX=1
+			;;
+						
 	    *)
 	        # Not identified
 	        ;;
@@ -1343,6 +1357,10 @@ CheckPlatform()
 	AC_DEFINE_UNQUOTED([ARCH_SOLARIS],
 		[$CEYLAN_ARCH_SOLARIS],
 		[Define to 1 if the target platform is Solaris])
+
+	AC_DEFINE_UNQUOTED([ARCH_MACOSX],
+		[$CEYLAN_ARCH_MACOSX],
+		[Define to 1 if the target platform is Mac OS X])
 
 
 	AC_DEFINE_UNQUOTED([ARCH_BSD],
