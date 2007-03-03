@@ -1,6 +1,7 @@
 #ifndef CEYLAN_HEADER_VERSION_H_
 #define CEYLAN_HEADER_VERSION_H_
 
+
 #include <string>
 
 
@@ -22,8 +23,8 @@ namespace Ceylan
 
 	
 	/*
-	 * NEVER check-in this file if above you do not see 
-	 * CEYLAN_LIBTOOL_VERSION surrounded by '@' !
+	 * NEVER check-in this file if there is no more CEYLAN_LIBTOOL_VERSION 
+	 * above !
 	 *
 	 */
 	 		
