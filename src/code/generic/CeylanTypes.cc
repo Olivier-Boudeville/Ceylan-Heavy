@@ -1,31 +1,122 @@
 #include "CeylanTypes.h"
 
 
-Ceylan::Sint8 Ceylan::Sint8Min     =        -128 ;
-Ceylan::Sint8 Ceylan::Sint8Max     =         127 ;
+#include <limits>    // for numeric_limits
 
-Ceylan::Uint8 Ceylan::Uint8Min     =           0 ;
-Ceylan::Uint8 Ceylan::Uint8Max     =         255 ;
 
-Ceylan::Sint16 Ceylan::Sint16Min   =      -32768 ;
-Ceylan::Sint16 Ceylan::Sint16Max   =       32767 ;
+using namespace std ;
 
-Ceylan::Uint16 Ceylan::Uint16Min   =           0 ;
-Ceylan::Uint16 Ceylan::Uint16Max   =       65535 ;
 
-Ceylan::Sint32 Ceylan::Sint32Min   = -2147483647 ;
-Ceylan::Sint32 Ceylan::Sint32Max   =  2147483647 ;
 
-Ceylan::Uint32 Ceylan::Uint32Min   =           0 ;
+// Must be -128 :
+Ceylan::Sint8 Ceylan::Sint8Min     = numeric_limits<Ceylan::Sint8>::min() ;
 
-// Should have been 4294967294 :
-Ceylan::Uint32 Ceylan::Uint32Max   =  2147483647 ; 
+// Must be 127 :
+Ceylan::Sint8 Ceylan::Sint8Max     = numeric_limits<Ceylan::Sint8>::max() ;
 
-Ceylan::Float32 Ceylan::Float32Min =   -3.4E-38f ;
-Ceylan::Float32 Ceylan::Float32Max =     3.4E38f ;
 
-Ceylan::Float64 Ceylan::Float64Min =   -1.7E-308 ;
-Ceylan::Float64 Ceylan::Float64Max =     1.7E308 ;
+
+// Must be 0 :
+Ceylan::Uint8 Ceylan::Uint8Min     = numeric_limits<Ceylan::Uint8>::min() ;
+
+// Must be 255 :	
+Ceylan::Uint8 Ceylan::Uint8Max     = numeric_limits<Ceylan::Uint8>::max() ;
+
+
+
+// Should be -128 :
+Ceylan::Byte Ceylan::ByteMin       = numeric_limits<Ceylan::Byte>::min() ;
+
+// Should be 127 :	
+Ceylan::Byte Ceylan::ByteMax       = numeric_limits<Ceylan::Byte>::max() ;
+
+
+
+
+// Must be -32768 :
+Ceylan::Sint16 Ceylan::Sint16Min   = numeric_limits<Ceylan::Sint16>::min() ;
+
+// Must be 32767 :
+Ceylan::Sint16 Ceylan::Sint16Max   = numeric_limits<Ceylan::Sint16>::max() ;
+
+
+// Must be 0 :
+Ceylan::Uint16 Ceylan::Uint16Min   = numeric_limits<Ceylan::Uint16>::min() ;
+
+// Must be 65535 :	
+Ceylan::Uint16 Ceylan::Uint16Max   = numeric_limits<Ceylan::Uint16>::max() ;
+
+
+
+// Must be -2147483648 :
+Ceylan::Sint32 Ceylan::Sint32Min   = numeric_limits<Ceylan::Sint32>::min() ;
+
+// Must be 2147483647 :
+Ceylan::Sint32 Ceylan::Sint32Max   = numeric_limits<Ceylan::Sint32>::max() ;
+
+
+// Must be 0 :
+Ceylan::Uint32 Ceylan::Uint32Min   = numeric_limits<Ceylan::Uint32>::min() ;
+
+// Must be 4294967294 :
+Ceylan::Uint32 Ceylan::Uint32Max   = numeric_limits<Ceylan::Uint32>::max() ;
+
+
+
+
+// Depends on the platform :
+Ceylan::SignedLongInteger Ceylan::SignedLongIntegerMin
+	= numeric_limits<Ceylan::SignedLongInteger>::min() ;
+
+// Depends on the platform :
+Ceylan::SignedLongInteger Ceylan::SignedLongIntegerMax
+	= numeric_limits<Ceylan::SignedLongInteger>::max() ;
+
+
+
+// Depends on the platform :
+Ceylan::UnsignedLongInteger Ceylan::UnsignedLongIntegerMin
+	= numeric_limits<Ceylan::UnsignedLongInteger>::min() ;
+
+// Depends on the platform :
+Ceylan::UnsignedLongInteger Ceylan::UnsignedLongIntegerMax
+	= numeric_limits<Ceylan::UnsignedLongInteger>::max() ;
+
+
+/*
+ * Actually with the STL, for floating-point values the min returns something
+ * like epsilon (the smallest value that can be added to 1.0 to yield a
+ * different value), whereas we want the lower bound.
+ *
+ * Hence min is deduced from max instead.
+ *
+ */
+ 
+
+// Must be -3.4E-38f :
+Ceylan::Float32 Ceylan::Float32Min = -numeric_limits<Ceylan::Float32>::max() ;
+
+// Must be 3.4E38f :
+Ceylan::Float32 Ceylan::Float32Max = numeric_limits<Ceylan::Float32>::max() ;
+
+
+
+// Must be -1.7E-308 :
+Ceylan::Float64 Ceylan::Float64Min = -numeric_limits<Ceylan::Float64>::max() ;
+
+// Must be 1.7E308 :
+Ceylan::Float64 Ceylan::Float64Max = numeric_limits<Ceylan::Float64>::max() ;
+
+
+
+// Depends on the platform :
+Ceylan::LongFloat Ceylan::LongFloatMin 
+	= -numeric_limits<Ceylan::LongFloat>::max() ;
+
+// Depends on the platform :
+Ceylan::LongFloat Ceylan::LongFloatMax
+	= numeric_limits<Ceylan::LongFloat>::max() ;
+
 
 
 //Ceylan::Float80 Ceylan::Float80Min = -3.4E-4932 ;
