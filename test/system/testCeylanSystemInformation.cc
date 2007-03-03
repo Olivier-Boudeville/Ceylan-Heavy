@@ -80,12 +80,41 @@ int main( int argc, char * argv[] )
 				+ Ceylan::toString( getBuffersMemorySize() ) + "." ) ;
 			
 			
+			
+			// OpenGL section.
+			
+			
 			if ( openGLContextsCanBeLost() )
 				LogPlug::info( "The OpenGL context can be lost "
 					"without notice on this platform." ) ;
 			else
 				LogPlug::info( "The OpenGL context cannot be lost "
 					"without notice on this platform." ) ;
+
+
+			if ( openGLContextsLostOnResize() )
+				LogPlug::info( "The OpenGL context is lost when the window "
+					"application is resized on this platform." ) ;
+			else
+				LogPlug::info( "The OpenGL context is not lost when the window "
+					"application is resized on this platform." ) ;
+
+
+			if ( openGLContextsLostOnApplicationSwitch() )
+				LogPlug::info( "The OpenGL context is lost when "
+					"switching to another application on this platform." ) ;
+			else
+				LogPlug::info( "The OpenGL context is not lost when "
+					"switching to another application on this platform." ) ;
+
+
+			if ( openGLContextsLostOnColorDepthChange() )
+				LogPlug::info( "The OpenGL context is lost when "
+					"changing the color depth on this platform." ) ;
+			else
+				LogPlug::info( "The OpenGL context is not lost when "
+					"changing the color depth on this platform." ) ;
+
 
 			
 		}
