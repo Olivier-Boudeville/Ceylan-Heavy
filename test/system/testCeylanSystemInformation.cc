@@ -79,6 +79,15 @@ int main( int argc, char * argv[] )
 				"Size of memory currently used by buffers, in bytes : " 
 				+ Ceylan::toString( getBuffersMemorySize() ) + "." ) ;
 			
+			
+			if ( openGLContextsCanBeLost() )
+				LogPlug::info( "The OpenGL context can be lost "
+					"without notice on this platform." ) ;
+			else
+				LogPlug::info( "The OpenGL context cannot be lost "
+					"without notice on this platform." ) ;
+
+			
 		}
 		catch ( const SystemException & e )
 		{
