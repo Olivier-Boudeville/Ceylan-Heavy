@@ -5,6 +5,7 @@ testsgenericdir=@CEYLAN_TEST_DIR@/generic
 testsgeneric_CXXFLAGS = @AM_CXXFLAGS@
 
 testsgeneric_PROGRAMS = \
+	testCeylanBasicDatatypes.exe                  \
 	testCeylanBasicResourceManager.exe            \
 	testCeylanCommandLineOptions.exe              \
 	testCeylanCountedPointer.exe                  \
@@ -21,6 +22,7 @@ testsgeneric_PROGRAMS = \
 	testCeylanWaitForKey.exe             
 
 
+testCeylanBasicDatatypes_exe_SOURCES       = testCeylanBasicDatatypes.cc
 testCeylanBasicResourceManager_exe_SOURCES = testCeylanBasicResourceManager.cc
 testCeylanCommandLineOptions_exe_SOURCES   = testCeylanCommandLineOptions.cc
 testCeylanCountedPointer_exe_SOURCES       = testCeylanCountedPointer.cc
