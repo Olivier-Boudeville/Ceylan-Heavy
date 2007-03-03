@@ -59,10 +59,12 @@ namespace Ceylan
 	 *
 	 * For each Ceylan basic numerical datatype, its lower and higher accepted
 	 * values are specified. For example, if x is a Uint8, then :
-	 * Uint8Min <= x <= Uint8Max.
+	 * Uint8Min <= x <= Uint8Max (hence Min and Max bounds are included).
 	 *
 	 * @note Depending on the platform and the compiler, size of C types may
-	 * differ. All sizes are therefore checked at compile time. 
+	 * differ. All sizes are therefore checked at compile time (see
+	 * CEYLAN_COMPILE_TIME_ASSERT) and at run-time (see
+	 * testCeylanBasicDatatypes.cc). 
 	 *
 	 * @note For example, int (signed or not) is 4 bytes (32 bits) on 32-bit
 	 * processors, and 2 bytes (16 bits) on 16-bit processors. With 4-bit
@@ -126,9 +128,15 @@ namespace Ceylan
 	 * without knowing whether it is signed or not, hence without being able
 	 * to specify Ceylan::Uint8 or Ceylan::Sint8.
 	 *
+	 * At least under 32-bit GNU/Linux, Ceylan::Byte is like a signed char.
+	 *
 	 */
 	typedef char Byte ;
 	 
+	extern CEYLAN_DLL Ceylan::Byte ByteMin /* should be -128 */ ;
+	extern CEYLAN_DLL Ceylan::Byte ByteMax /* should be 127 */ ;
+
+
 
 	/**
 	 * Signed 16-bit int (signed short, GLshort). 
@@ -176,7 +184,7 @@ namespace Ceylan
 	 * 'this decimal constant is unsigned only in ISO C90'.
 	 *
 	 */
-	extern CEYLAN_DLL Ceylan::Sint32 Sint32Min /* = -2147483647  */ ;
+	extern CEYLAN_DLL Ceylan::Sint32 Sint32Min /* = -2147483648  */ ;
 	extern CEYLAN_DLL Ceylan::Sint32 Sint32Max /* =  2147483647  */ ;
 	
 	
@@ -191,15 +199,7 @@ namespace Ceylan
 	typedef unsigned int Uint32 ;
 
 	extern CEYLAN_DLL Ceylan::Uint32 Uint32Min /* = 0  */ ;
-	
-	
-	/*
-	 * Actually is 4294967294 but is set to a lower value (the highest 
-	 * possible one) since 'this decimal constant is unsigned only in ISO C90'.
-	 *
-	 */
-	extern CEYLAN_DLL Ceylan::Uint32 Uint32Max 
-		/* = 4294967294 in theory, 2147483647 actually */ ;
+	extern CEYLAN_DLL Ceylan::Uint32 Uint32Max /* = 4294967295 */ ;
 	
 
 
@@ -207,20 +207,34 @@ namespace Ceylan
 	/**
 	 * Variable able to store very large signed integer values.
 	 *
-	 * Actual ranges depend on the platform.
+	 * Actual Min/Max ranges depend on the platform.
+	 *
+	 * @see testCeylanBasicDatatypes.cc
+	 *
+	 * At least under 32-bit GNU/Linux, Ceylan::SignedLongInteger uses 4 bytes.
 	 *
 	 */
 	typedef signed long SignedLongInteger ;
+	
+	extern CEYLAN_DLL Ceylan::SignedLongInteger SignedLongIntegerMin ;
+	extern CEYLAN_DLL Ceylan::SignedLongInteger SignedLongIntegerMax ;
 	
 	
 	/**
 	 * Variable able to store very large positive integer values.
 	 *
-	 * Actual ranges depend on the platform.
+	 * Actual Min/Max ranges depend on the platform.
+	 *
+	 * @see testCeylanBasicDatatypes.cc
+	 *
+	 * At least under 32-bit GNU/Linux, Ceylan::UnsignedLongIntegerMin uses 
+	 * 4 bytes.
 	 *
 	 */
 	typedef unsigned long UnsignedLongInteger ;
 	
+	extern CEYLAN_DLL Ceylan::UnsignedLongInteger UnsignedLongIntegerMin ;
+	extern CEYLAN_DLL Ceylan::UnsignedLongInteger UnsignedLongIntegerMax ;
 	
 	
 
@@ -290,7 +304,7 @@ namespace Ceylan
 	/**
 	 * Signed 64-bit int.	
 	 *
-	 * Ranges from  (both included).
+	 * Ranges not specified for the moment. 
 	 *
 	 * Could be as well, if inttypes.h was used : typedef int64_t Sint64 ;
 	 *
@@ -387,12 +401,19 @@ namespace Ceylan
 	/**
 	 * Variable able to store very large (signed) floating-point values.
 	 *
-	 * Actual ranges depend on the platform.
+	 * Actual Min/Max ranges depend on the platform.
+	 *
+	 * @see testCeylanBasicDatatypes.cc
+	 *
+	 * At least under 32-bit GNU/Linux, Ceylan::LongFloat uses 12 bytes.
 	 *
 	 */
 	typedef long double LongFloat ;
 	
+	extern CEYLAN_DLL Ceylan::LongFloat LongFloatMin ;
+	extern CEYLAN_DLL Ceylan::LongFloat LongFloatMax ;
 		
+	
 	
 	/**
 	 * 80-bit long double are non standard.
