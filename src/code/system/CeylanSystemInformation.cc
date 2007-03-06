@@ -4,13 +4,8 @@
 #include "CeylanOperators.h"            // for toString
 
 
-#if CEYLAN_USES_CONFIG_H
-#include "CeylanConfig.h"               // for configure-time settings
-#endif // CEYLAN_USES_CONFIG_H
-
-
-
 #include <string>
+
 
 using std::string ;
 
@@ -18,6 +13,11 @@ using std::string ;
 using namespace Ceylan ;                // for UnsignedLongInteger
 using namespace Ceylan::Log ;           // for LogPlug
 using namespace Ceylan::System ;        // for SystemException
+
+
+#if CEYLAN_USES_CONFIG_H
+#include "CeylanConfig.h"               // for configure-time settings
+#endif // CEYLAN_USES_CONFIG_H
 
 
 
@@ -423,59 +423,32 @@ UnsignedLongInteger Ceylan::System::getBuffersMemorySize()
 // OpenGL-related section.
 
 
+/*
+ * OpenGL contexts should never be lost, but it happens with buggy
+ * vendor-specific OpenGL implementations (on purpose ?).
+ *
+ * On Windows, the OpenGL contexts can be lost when :
+ *   - window resizing/changing resolutions, including going to fullscreen
+ *   - switching to another application
+ *	 - changing color depth
+ *
+ * On Mac OS X, the OpenGL contexts may (not sure) be lost when :
+ *   - window resizing/changing resolutions, including going to fullscreen
+ *   - switching to another application
+ *	 - changing color depth
+ *
+ * On GNU/Linux and other platforms, the contexts are not lost at random.
+ * This is the default setting.
+ *
+ */
+
 
 bool Ceylan::System::openGLContextsCanBeLost() throw( SystemException )
 {
 
-
-	/*
-	 * OpenGL contexts should never be lost, but it happens with buggy
-	 * vendor-specific OpenGL implementations (on purpose ?).
-	 *
-	 */
-	 
-#if CEYLAN_ARCH_WINDOWS
-
-	/*
-	 * On Windows, the OpenGL contexts can be lost when :
-	 *   - window resizing/changing resolutions, including going to fullscreen
-	 *   - switching to another application
-	 *	 - changing color depth
-	 *
-	 */
-	return true ;
-
-#else // CEYLAN_ARCH_WINDOWS
-
-
-
-#if CEYLAN_ARCH_MACOSX
-
-	/*
-	 * On Mac OS X, the OpenGL contexts may (not sure) be lost when :
-	 *   - window resizing/changing resolutions, including going to fullscreen
-	 *   - switching to another application
-	 *	 - changing color depth
-	 */
-	return true ;
-
-#else // CEYLAN_ARCH_MACOSX
-
-
-	/*
-	 * On GNU/Linux and an, the contexts are not lost at random :
-	 *
-	 * (this is the default setting)
-	 *
-	 */
-	return false ;
-	
-#endif // CEYLAN_ARCH_MACOSX
-
-
-	 
-#endif // CEYLAN_ARCH_WINDOWS
-
+	return openGLContextsLostOnResize() 
+		|| openGLContextsLostOnApplicationSwitch()
+		|| openGLContextsLostOnColorDepthChange() ;
 
 }
 
