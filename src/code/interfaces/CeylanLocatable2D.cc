@@ -1,12 +1,12 @@
 #include "CeylanLocatable2D.h"
 
 
-#include "CeylanMatrix3.h"          // for Matrix3
-#include "CeylanMathsBasic.h"       // for Real, Abs, EpsilonDouble, etc.
+#include "CeylanHomogeneousMatrix3.h"   // for HomogeneousMatrix3
+#include "CeylanMathsBasic.h"           // for Real, Abs, EpsilonDouble, etc.
 
-#include "CeylanLogPlug.h"          // for LogPlug
-#include "CeylanUtils.h"            // for emergencyShutdown
-#include "CeylanOperators.h"        // for toString
+#include "CeylanLogPlug.h"              // for LogPlug
+#include "CeylanUtils.h"                // for emergencyShutdown
+#include "CeylanOperators.h"            // for toString
 
 
 
@@ -24,14 +24,18 @@ using Ceylan::Maths::Real ;
 Locatable2D::Locatable2D( Locatable2D & fatherLocatable ) throw() :
 	Locatable( fatherLocatable )
 {
+
 	blankLocalReferential() ;
+	
 }
 
 
 Locatable2D::Locatable2D() throw() :
 	Locatable()
 {
+
 	blankLocalReferential() ;
+	
 }
 
 
@@ -52,7 +56,9 @@ Locatable2D::Locatable2D( Matrix & localReferential ) throw() :
 
 Locatable2D::~Locatable2D() throw()
 {
+
 	// Owned referentials are deleted on parent destructor (~Locatable).
+	
 }
 
 
@@ -65,8 +71,8 @@ Matrix & Locatable2D::getLocalReferential() const throw( LocatableException )
 
 	/*
 	 * disabled : 
-	 * return * dynamic_cast<Ceylan::Maths::Linear::Matrix3 *>(
-	 * _localReferential ) ;
+	 * return * dynamic_cast<Ceylan::Maths::Linear::HomogeneousMatrix3 *>(
+	 *	_localReferential ) ;
 	 *
 	 */
 	
@@ -80,7 +86,7 @@ void Locatable2D::blankLocalReferential() throw()
 
 	// Inefficient but cleaner (could be directly created as the identity).
 	if ( _localReferential == 0 )
-		_localReferential = new Matrix3() ;
+		_localReferential = new HomogeneousMatrix3() ;
 		
 	_localReferential->setToIdentity() ;
 		
@@ -90,7 +96,7 @@ void Locatable2D::blankLocalReferential() throw()
 Bipoint Locatable2D::getCenter() const throw( LocatableException )
 {
 
-	Matrix3 & localMatrix = getLocalMatrix() ;
+	HomogeneousMatrix3 & localMatrix = getLocalMatrix() ;
 	
 	Real factor = localMatrix.getElementAt( 2, 2 ) ;
 	
@@ -114,7 +120,7 @@ void Locatable2D::setCenter( const Bipoint & newCenter )
 		throw LocatableException( 
 			"Locatable2D::setCenter : no local referential available." ) ;
 	
-	Matrix3 & localMatrix = getLocalMatrix() ;
+	HomogeneousMatrix3 & localMatrix = getLocalMatrix() ;
 	
 	localMatrix.setElementAt( 2, 0, newCenter.getX() ) ;
 	localMatrix.setElementAt( 2, 1, newCenter.getY() ) ;
@@ -137,7 +143,7 @@ void Locatable2D::setCenter( Real newX, Real newY ) throw( LocatableException )
 			"Locatable2D::setCenter : no local referential available." ) ;
 	
 	// Avoid typing the dynamic_cast :
-	Matrix3 & localMatrix = getLocalMatrix() ;
+	HomogeneousMatrix3 & localMatrix = getLocalMatrix() ;
 	
 	localMatrix.setElementAt( 2, 0, newX ) ;
 	localMatrix.setElementAt( 2, 1, newY ) ;
@@ -176,8 +182,8 @@ void Locatable2D::updateFromFather( const Matrix & upToDateFatherReferential )
 		emergencyShutdown( "Locatable2D::updateFromFather : "
 			"no local referential available." ) ;
 
-	const Matrix3 * m = 
-		dynamic_cast<const Matrix3*>( & upToDateFatherReferential ) ;
+	const HomogeneousMatrix3 * m = 
+		dynamic_cast<const HomogeneousMatrix3*>( & upToDateFatherReferential ) ;
 
 	if ( m == 0 )
 		emergencyShutdown( 
@@ -192,7 +198,9 @@ void Locatable2D::updateFromFather( const Matrix & upToDateFatherReferential )
 	 *
 	 */
 	 
-	_globalReferential = new Matrix3( (*m) 
-		* ( * dynamic_cast<const Matrix3*>( _localReferential ) ) ) ;		
+	_globalReferential = new HomogeneousMatrix3( (*m) 
+		* ( * dynamic_cast<const HomogeneousMatrix3*>( 
+			_localReferential ) ) ) ;		
 
 }
+
