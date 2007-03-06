@@ -1,14 +1,14 @@
 #include "CeylanLocatable.h"
 
-#include "CeylanMatrix.h"          // for Matrix
-#include "CeylanLogPlug.h"         // for LogPlug
-#include "CeylanUtils.h"           // for emergencyShutdown
-#include "CeylanOperators.h"       // for toString
-#include "CeylanTypes.h"           // for ListSize
+#include "CeylanMatrix.h"       // for Matrix
+#include "CeylanLogPlug.h"      // for LogPlug
+#include "CeylanUtils.h"        // for emergencyShutdown
+#include "CeylanOperators.h"    // for toString
+#include "CeylanTypes.h"        // for ListSize
 
 
 #if CEYLAN_USES_CONFIG_H
-#include "CeylanConfig.h"          // for configure-time settings
+#include "CeylanConfig.h"       // for configure-time settings
 #endif // CEYLAN_USES_CONFIG_H
 
 
@@ -27,8 +27,10 @@ LocatableException::LocatableException( const string & message ) throw() :
 
 }
 
+
 LocatableException::~LocatableException() throw()
 {
+
 }
 
 
@@ -71,11 +73,15 @@ Locatable::Locatable( Locatable & fatherLocatable ) throw() :
 	 
 	try
 	{
+	
 		subscribeTo( * _father ) ;
+		
 	}
 	catch( const EventException	& e )
 	{
+	
 		LogPlug::error( "Locatable constructor : " + e.toString() ) ;	
+		
 	}
 	
 }
@@ -169,13 +175,17 @@ Locatable::~Locatable() throw()
 
 bool Locatable::isAbsolute() const throw()
 {
+
 	return ( _father == 0 ) ;
+	
 }
 
 
 bool Locatable::hasLocalReferential() const throw()
 {
+
 	return ( _localReferential != 0 ) ;
+	
 }
 
 
@@ -193,13 +203,17 @@ Matrix & Locatable::getLocalReferential() const throw( LocatableException )
 
 void Locatable::setLocalReferential( Matrix & newGlobalReferential ) throw() 
 {
+
 	_localReferential = & newGlobalReferential ;
+	
 }
 
 
 bool Locatable::hasGlobalReferential() const throw()
 {
+
 	return _globalReferential != 0 ; 
+	
 }
 
 
@@ -266,7 +280,9 @@ Matrix & Locatable::getGlobalReferential() throw( LocatableException )
 
 bool Locatable::isUpToDate() const throw()
 {
+
 	return _isUpToDate ;
+	
 }
 
 
