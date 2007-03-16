@@ -186,6 +186,57 @@ For client/server model :
 
 </p>
 
+<h3>Understanding atomic sleeps and scheduling granularity</h3>
+<p>
+Being able to sleep the shortest amount of time is useful in different contexts, to lighten busy loops or to prevent the operating system from considering the application to be CPU-hungry, which would lead to make it starve on purpose.
+</p>
+
+<p>
+To provide these atomic sleeps, one has to guess what is the smallest predictable sleep time. In general it corresponds to an OS time slice for light to average system loads, or to a few of them whenever the load gets high. To compute the time slice, the algorithm is to request finely increasing sleeps, and to detect thresholds, since sleeps are made of a certain number of OS time slices, as shown here for a GNU/Linux 2.6.17 laptop :
+
+<center>
+<img src="schedulingGranularity-steps.png" alt="Steps"></img>
+</center>
+
+</p>
+
+<p>
+If we zoom we realize that the very first threshold is not as constant as hoped (see the three thresholds, the first one having a huge peak) :
+<center>   
+    <img src="schedulingGranularity-steps-zoomed.png" alt="Steps"></img>
+</center>
+</p>
+
+<p>
+Hence we prefer retaining the first next stable threshold, the second one, for our granularity basis : one would not like to be unlucky and land onto the huge reproducible peak at 0.5 or 1 ms (curiously enough, it is the real actual time slice, which nevertheless leads to more than 25 times longer sleeps). 
+</p>
+
+<p>
+With an almost null load, the second step is remarkably stable :
+<center>   
+    <img src="schedulingGranularity-steps-threshold.png" alt="Steps"></img>
+</center>
+</p>
+
+<p>
+With a small load, it remains quite stable as well (the drawing stopped as soon as our algorithm decided it had found a stable threshold) :	
+<center>   
+    <img src="schedulingGranularity-with-small-load.png" alt="Steps"></img>
+</center>
+</p>
+
+<p>
+With an heavy load, the stability is still sufficient for our algorithm to select that same second time-slice :
+<center>   
+    <img src="schedulingGranularity-with-heavy-load.png" alt="Steps"></img>
+</center>
+
+</p>
+
+<p>
+Finally, in all these cases our algorithm always chose to report an effective scheduling granularity of 8 ms (the second threshold). Therefore the atomic sleeps will managed to obtain it reliably.
+</p>
+
 
 <h4>Some developing hints</h4>
 <p>
@@ -239,7 +290,8 @@ For client/server model :
       <center>
         [<a href="#_top_">Top</a>]<br>
         <br>
-        <em>Last update : Sunday, January 14, 2007</em>
+        <em>Last update : Friday, March 16, 2007
+</em>
       </center>
   
 </body>
