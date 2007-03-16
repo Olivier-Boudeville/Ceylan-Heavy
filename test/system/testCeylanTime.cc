@@ -141,15 +141,16 @@ int main( int argc, char * argv[] )
 		register Microsecond waitingMicroTime ;
 
 		
-		for ( Ceylan::Uint32 i = 0 ; i < durationStepsCount; i++ )
+		for ( Ceylan::Uint32 i = 0; i < durationStepsCount; i++ )
 		{
 
-			waitingMicroTime = ( shortestMicroDuration + i * microDuration ) ;
+			waitingMicroTime = shortestMicroDuration + i * microDuration ;
 
 			LogPlug::debug( "For a requested wait of " 
 				+ Ceylan::toString( waitingMicroTime ) 
 				+ " microseconds, measured time has been "  
 				+ Ceylan::toString( durations[i] ) + " microseconds." ) ;
+				
 		}
 						
 		
