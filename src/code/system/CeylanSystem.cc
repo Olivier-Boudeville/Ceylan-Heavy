@@ -5,6 +5,7 @@
 #include "CeylanOperators.h"              // for toString
 #include "CeylanMathsBasic.h"             // for Abs
 #include "CeylanEnvironmentVariables.h"   // for getEnvironmentVariable
+#include "CeylanFile.h"                   // for File
 
 
 #ifdef CEYLAN_USES_CONFIG_H
@@ -859,7 +860,7 @@ void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 	 */
 
     timeval timeout ;
-	timeout.tv_sec  = seconds ;
+	timeout.tv_sec = seconds ;
 
 	// Rounded to microseconds :
 	timeout.tv_usec = static_cast<long>( nanos / 1000 ) ;
@@ -891,7 +892,7 @@ void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 }
 
 
-void Ceylan::System::basicSleep() throw( SystemException )
+void Ceylan::System::atomicSleep() throw( SystemException )
 {
 
 
@@ -909,7 +910,7 @@ void Ceylan::System::basicSleep() throw( SystemException )
 	const Ceylan::Float32 marginDecreaseFactor = 0.8f ;
 
 	basicSleep( static_cast<Microsecond>(
-			marginDecreaseFactor * getSchedulingGranularity() ) ) ;
+		marginDecreaseFactor * getSchedulingGranularity() ) ) ;
 
 }
 
@@ -1046,7 +1047,7 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 		 * remaining.
 		 *
 		 */
-		basicSleep() ;
+		atomicSleep() ;
 
 		getPreciseTime( currentSecond, currentMicrosecond ) ;
 		currentError = ( currentSecond - targetSecond ) * 1000000
@@ -1206,9 +1207,8 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 
 	/*
 	 * Requesting too low sleep durations will not trigger the time slice
-	 * waiting
-	 * (ex : on Linux 2.4, for a requested sleep of 310 microseconds, measured
-	 * time has been 3166 microseconds whereas the time slice is
+	 * waiting (ex : on Linux 2.4, for a requested sleep of 310 microseconds,
+	 * measured time has been 3166 microseconds whereas the time slice is
 	 * 10 000 microseconds).
 	 *
 	 * Assuming no system will have a granularity below 500 microseconds,
@@ -1223,8 +1223,39 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 		return granularity ;
 
 #if CEYLAN_DEBUG_SYSTEM
-	LogPlug::trace( "Ceylan::System::getSchedulingGranularity : "
-		"computing granularity now." ) ;
+
+	bool logMeasures = true ;
+	
+	/*
+	 * Logs can been interpreted thanks to gnuplot, see comment in 
+	 * test/system/testCeylanTime.cc for more detailed explanations.
+	 *
+	 */
+	 
+	const string logFilename = "granularity.dat" ;
+	
+	File * logFile = 0 ;
+	
+	if ( logMeasures )
+	{
+		logFile = new File( logFilename ) ;
+		logFile->write( 
+			"# This file records the requested sleep durations (first column)"
+			"and the corresponding actual sleep durations (second column).\n"
+			"# The scheduling granularity can be usually guessed from it.\n"
+			"# One may use gnuplot to analyze the result.\n\n"   ) ;
+			
+		LogPlug::trace( "Ceylan::System::getSchedulingGranularity : "
+			"computing granularity now, and logging the result in the '"
+			+ logFilename + "' file." ) ;
+
+	}	
+	else
+	{
+		LogPlug::trace( "Ceylan::System::getSchedulingGranularity : "
+			"computing granularity now (now file logging requested)." ) ;
+	}
+		
 #endif // CEYLAN_DEBUG_SYSTEM
 
 
@@ -1241,9 +1272,8 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 	Microsecond lastMeasuredDuration = 0 ;
 	Microsecond currentMeasuredDuration = 0 ;
 
-	Microsecond currentRequestedDuration = 0 ;
 
-	Microsecond durationStep = 250 ;
+	const Microsecond durationStep = 250 ;
 
 	/**
 	 * Upper bound to time slice is 110 ms, to be able to catch as high as
@@ -1257,7 +1287,7 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 	 * the time slice.
 	 *
 	 */
-	Microsecond testDuration = 190 ;
+	Microsecond testDuration = 900 ;
 
 	/*
 	 * Relative comparison : x and y are relatively equal iff
@@ -1267,23 +1297,33 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 	 *
 	 */
 
+	Microsecond currentRequestedDuration = 0 ;
+
 	while ( currentRequestedDuration < maximumPossibleDuration )
 	{
 
 		// Increase the duration :
 		currentRequestedDuration += durationStep ;
+		
 		lastMeasuredDuration = currentMeasuredDuration ;
+		
 		currentMeasuredDuration =
 			getActualDurationForSleep( currentRequestedDuration ) ;
+
+#if CEYLAN_DEBUG_SYSTEM
+		logFile->write( Ceylan::toString( currentRequestedDuration ) 
+			+ " \t " + Ceylan::toString( currentMeasuredDuration ) 
+			+ " \n" ) ;
+#endif // CEYLAN_DEBUG_SYSTEM
 
 		// Avoid zero division :
 		if ( currentMeasuredDuration == lastMeasuredDuration )
 			break ;
 
-		// Loop until a gentle slope is found :
-		if ( Ceylan::Maths::Abs( static_cast<float>(
+		// Loop until a gentle slope is found (1%) :
+		if ( Ceylan::Maths::Abs( static_cast<Ceylan::Float32>(
 					currentMeasuredDuration - lastMeasuredDuration ) )
-				/ ( currentMeasuredDuration + lastMeasuredDuration ) < 0.005 )
+				/ ( currentMeasuredDuration + lastMeasuredDuration ) < 0.005f )
 			break ;
 
 #if CEYLAN_DEBUG_SYSTEM
@@ -1317,22 +1357,23 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 
 	}
 
-	// Useless but careful :
-	granularity = 0 ;
 
 	/*
 	 * Requesting multiple times the time slice allows to measure it finely,
 	 * in order to compute the average value.
 	 *
 	 */
-	Ceylan::Uint8 sampleCount = 20 ;
+	const Ceylan::Uint8 sampleCount = 20 ;
 
-	for ( Ceylan::Uint8 i = 0 ; i < sampleCount; i++ )
+	// Useless but careful :
+	granularity = 0 ;
+
+	for ( Ceylan::Uint8 i = 0; i < sampleCount; i++ )
 	{
 
 		/*
 		 * The 0.9 factor is here to ensure we do not request just more than
-		 * the time-slice, if we had surestimated ita bit, we could have had
+		 * the time-slice, if we had surestimated it a bit, we could have 
 		 * two time slices.
 		 *
 		 */
@@ -1347,6 +1388,13 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 #if CEYLAN_DEBUG_SYSTEM
 	LogPlug::debug( "Final returned scheduling granularity is "
 		+ Ceylan::toString( granularity ) + " microseconds." ) ;
+		
+	if ( logFile != 0 )
+	{
+		logFile->close() ;
+		delete logFile ;
+		logFile = 0 ;
+	}	
 #endif // CEYLAN_DEBUG_SYSTEM
 
 	return granularity ;
