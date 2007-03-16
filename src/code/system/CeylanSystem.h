@@ -399,14 +399,14 @@ namespace Ceylan
 
 
 		/**
-		 * Makes the process basically sleep for a small duration,
-		 * which is probably the smallest possible duration on the system,
+		 * Makes the process sleep for a quite small duration, which is 
+		 * probably the smallest possible duration on the system,
 		 * scheduler-wise, i.e. exactly one time slice.
 		 *
 		 * This is useful to spare CPU time/battery life by avoiding
 		 * busy loops, without needing fine-grained timing : it is just
 		 * a convenient way of adding a delay in a busy loop so that
-		 * it becomes more resource-friendly.
+		 * it becomes more resource-friendly, while minimizing the delay.
 		 *
 		 * @note The first call to this method may trigger the computing
 		 * of the scheduling granularity, which takes some time.
@@ -418,7 +418,7 @@ namespace Ceylan
 		 * prior to calling this sleep method.
 		 *
 		 */
-		CEYLAN_DLL void basicSleep() throw( SystemException ) ;
+		CEYLAN_DLL void atomicSleep() throw( SystemException ) ;
 
 
 		/**
@@ -557,19 +557,18 @@ namespace Ceylan
 
 		/**
 		 * Returns the run-time computed scheduling granularity of the time
-		 * slice.
+		 * slice enforced by the operating system.
 		 *
-		 * Sleeping for smaller durations will result in sleeping the duration
-		 * corresponding to the granularity.
+		 * Sleeping for smaller durations will in general result in sleeping 
+		 * the duration corresponding to the granularity.
 		 *
 		 * For example, with a scheduling granularity of 10 ms, sleeping for
-		 * durations between 0 (excluded) and 10 ms (excluded) will result on
-		 * an idle computer exactly in a 10 ms sleep.
+		 * durations between 0 (excluded) and 10 ms (excluded) would result on
+		 * an idle computer in a 10 ms sleep.
 		 *
 		 * @note The computation is done one time for all. It may last up to
-		 * a few seconds.
-		 * Next calls to this method will return almost immediatly this
-		 * precomputed value.
+		 * a few seconds. Next calls to this method will return almost
+		 * immediatly this precomputed value.
 		 *
 		 * @note If the computer is loaded with other demanding processes,
 		 * then the computed time slice will not be the kernel basic time
@@ -582,6 +581,14 @@ namespace Ceylan
 		 *
 		 * Typically, on Linux 2.4 kernels, the returned value on idle
 		 * computers should be about 10 000 (microseconds), i.e. 10 ms.
+		 *
+		 * On Linux 2.6 kernels, the expected result (1 ms) is seldom found,
+		 * the measures show on some computers a first stage, quite irregular,
+		 * at 4 ms, with next stages at 8, 12, 16 ms etc., which are quite
+		 * stable. The algorithm detects then a 8 ms granularity, which is 
+		 * recommended, as in the 4 ms stage (reached for requests between 0
+		 * and 4 ms), there is often a peak : asking for 0.5 ms yields a 
+		 * reproducible 25 ms sleep !
 		 *
 		 * @note One may force a first call to this method to have the
 		 * granularity precomputed one time for all.
