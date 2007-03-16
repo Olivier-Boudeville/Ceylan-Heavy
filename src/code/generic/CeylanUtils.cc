@@ -50,6 +50,7 @@ using std::list ;
 
 
 using namespace Ceylan ;
+using namespace Ceylan::Log ;
 
 
 
@@ -249,11 +250,29 @@ KeyChar Ceylan::waitForKey( const string & message ) throw()
 		display( message ) ;
 	}
 	
+	bool sleepFailed = false ;
+	
 	while ( ! Ceylan::keyboardHit() )
 	{
+	
 		// Wait a bit if possible, to save CPU time and laptop batteries : 
-		if ( Features::areFileDescriptorsSupported() )
-			Ceylan::System::basicSleep() ;
+		if ( Features::areFileDescriptorsSupported() && ! sleepFailed )
+		{
+			try
+			{
+				Ceylan::System::atomicSleep() ;
+			}
+			catch( const System::SystemException & e )
+			{
+				LogPlug::error( "Ceylan::waitForKey : sleep failed : "
+					+ e.toString() ) ;
+				
+				// Avoids saturating logs, switch to busy waiting :	
+				sleepFailed = true ;
+					
+			}
+			
+		}		
 	}
 	
 	return Ceylan::getChar() ;	
