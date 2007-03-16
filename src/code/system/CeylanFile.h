@@ -615,6 +615,8 @@ namespace Ceylan
 				 * Destroys the file reference object, does not remove the
 				 * file itself.
 				 *
+				 * @note Will close automatically the file if needed.
+				 *
 				 * To remove the file from disk, use remove().
 				 *
 				 * @see remove
