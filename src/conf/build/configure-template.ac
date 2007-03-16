@@ -148,7 +148,7 @@ CEYLAN_ARCHIVE_DIR="\${HOME}/Archive/${PROJECT_NAME}"
 AC_SUBST(CEYLAN_ARCHIVE_DIR)
 
 # LOANI installations default base directory (to find tools such as doxygen).
-CEYLAN_LOANI_INSTALLATIONS="\${prefix}"
+CEYLAN_LOANI_INSTALLATIONS="\${prefix}/.."
 AC_SUBST(CEYLAN_LOANI_INSTALLATIONS)
 
 
