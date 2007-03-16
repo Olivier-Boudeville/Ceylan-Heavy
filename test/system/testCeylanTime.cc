@@ -92,6 +92,17 @@ int main( int argc, char * argv[] )
 			return Ceylan::ExitSuccess ;
 			
 		}	
+
+
+		/*
+		 * Logs can been interpreted thanks to gnuplot, ex : 
+		 *   - set DEBUG_SYSTEM=1 in src/conf/build/configure-template.ac
+		 *   - rebuilds all (use autogen.sh)
+		 *   - run 'testCeylanTime.exe' from the build tree
+		 *   - run 'gnuplot plotSchedulingGranularity.p'
+		 *   - look at schedulingGranularity.png
+		 *
+		 */
 		
 		Microsecond granularity = getSchedulingGranularity() ;
 		LogPlug::info( "Measured scheduling granularity is " 
