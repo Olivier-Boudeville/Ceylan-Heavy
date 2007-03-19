@@ -283,6 +283,15 @@ namespace Ceylan
 			throw( SystemException ) ;
 
 
+
+		/**
+		 * The maximum number of seconds for durations to be evaluated with
+		 * a microsecond accuracy, before an overflow may occur.
+		 *
+		 */
+		extern CEYLAN_DLL const Second MaximumDurationWithMicrosecondAccuracy ; 
+		
+		
 		/**
 		 * Returns the duration, in microseconds, between the two specified
 		 * times, i.e. duration = (stopping time) - (starting time).
@@ -291,7 +300,10 @@ namespace Ceylan
 		 * storage type, i.e. about 4 200 seconds, a little more than one hour.
 		 *
 		 * @throw SystemException if the duration is strictly negative, or
-		 * if duration is above 4 200 seconds, to prevent overflow.
+		 * if duration is above MaximumDurationWithMicrosecondAccuracy, to
+		 * prevent overflow.
+		 *
+		 * @see MaximumDurationWithMicrosecondAccuracy
 		 *
 		 */
 		CEYLAN_DLL Microsecond getDurationBetween(
