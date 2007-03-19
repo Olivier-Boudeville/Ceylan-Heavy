@@ -872,11 +872,31 @@ namespace Ceylan
 		 * several uneasy static_cast.
 		 *
 		 */
-		template<class T>
+		template<typename T>
 		T Min( T x, T y ) throw()
 		{
 			return ( ( x < y ) ? x : y ) ;
 				
+		}
+
+
+		/**
+		 * Three-argument Min operator.
+		 *
+		 * Available as a template, since using only specialized
+		 * Min functions lead to way too many ambiguities and implies 
+		 * several uneasy static_cast.
+		 *
+		 */
+		template<typename T>
+		T Min( T x, T y, T z ) throw()
+		{
+		
+			if ( x < y ) 
+				return Min( x, z ) ;
+			else
+				return Min( y, z ) ;
+								
 		}
 
 		
@@ -1019,7 +1039,7 @@ namespace Ceylan
 		 * and implies several uneasy static_cast.
 		 *
 		 */
-		template<class T>
+		template<typename T>
 		T Max( T x, T y ) throw()
 		{
 			return ( ( x > y ) ? x : y ) ;
@@ -1214,6 +1234,37 @@ namespace Ceylan
 		CEYLAN_DLL Ceylan::LongFloat Pow2( Ceylan::LongFloat x ) throw() ;
 		
 			
+			
+		// Logarithm :
+		
+		
+		/**
+		 * Computes the value of the natural logarithm of argument x.
+		 *
+		 * @note The argument must be strictly positive.
+		 *
+		 */
+		CEYLAN_DLL Ceylan::Float32 Log( Ceylan::Float32 x ) throw() ;
+		
+		
+		/**
+		 * Computes the value of the natural logarithm of argument x.
+		 *
+		 * @note The argument must be strictly positive.
+		 *
+		 */
+		CEYLAN_DLL Ceylan::Float64 Log( Ceylan::Float64 x ) throw() ;
+		
+		
+		/**
+		 * Computes the value of the natural logarithm of argument x.
+		 *
+		 * @note The argument must be strictly positive.
+		 *
+		 */
+		CEYLAN_DLL Ceylan::LongFloat Log( Ceylan::LongFloat x ) throw() ;
+		
+		
 				
 		// Square root :
 		
