@@ -190,6 +190,8 @@ int main( int argc, char * argv[] )
 					
 		}
 		
+		LogPlug::info( "Testing Log(20) = " 
+			+ Ceylan::toString( Log( 20.0f ) ) ) ;
 		
 		LogPlug::info( "Testing rounding function with various precisions." ) ;
 		
@@ -229,7 +231,49 @@ int main( int argc, char * argv[] )
 			throw Ceylan::TestException( "Functor returned " 
 				+ Ceylan::toString( aFunctor( 20 ) ) 
 				+ " instead of 25 !" ) ;
-				  
+		
+		
+		
+		// Min section.
+		
+		Ceylan::Uint32 minRes ;
+		
+		minRes = Min( 1, 2, 3 ) ;
+		LogPlug::info( "Testing Min operator : Min( 1, 2, 3 ) = "
+			+ Ceylan::toString( minRes ) ) ;
+		if ( minRes != 1 )
+			throw Ceylan::TestException( "Three-argument Min failed" ) ;
+		
+		minRes = Min( 2, 2, 3 ) ;
+		LogPlug::info( "Testing Min operator : Min( 2, 2, 3 ) = "
+			+ Ceylan::toString( minRes ) ) ;
+		if ( minRes != 2 )
+			throw Ceylan::TestException( "Three-argument Min failed" ) ;
+		
+		minRes = Min( 3, 2, 3 ) ;	
+		LogPlug::info( "Testing Min operator : Min( 3, 2, 3 ) = "
+			+ Ceylan::toString( minRes ) ) ;
+		if ( minRes != 2 )
+			throw Ceylan::TestException( "Three-argument Min failed" ) ;
+			
+		minRes = Min( 3, 1, 2 ) ;
+		LogPlug::info( "Testing Min operator : Min( 3, 1, 2 ) = "
+			+ Ceylan::toString( minRes ) ) ;
+		if ( minRes != 1 )
+			throw Ceylan::TestException( "Three-argument Min failed" ) ;
+
+		minRes = Min( 2, 3, 1 ) ;
+		LogPlug::info( "Testing Min operator : Min( 2, 3, 1 ) = "
+			+ Ceylan::toString( minRes ) ) ;
+		if ( minRes != 1 )
+			throw Ceylan::TestException( "Three-argument Min failed" ) ;
+			
+		minRes = Min( 3, 3, 3 ) ;
+		LogPlug::info( "Testing Min operator : Min( 3, 3, 3 ) = "
+			+ Ceylan::toString( minRes ) ) ;
+		if ( minRes != 3 )
+			throw Ceylan::TestException( "Three-argument Min failed" ) ;
+			
 		
 		LogPlug::info( "End of maths basic test." ) ;
 			
