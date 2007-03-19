@@ -700,6 +700,35 @@ Ceylan::LongFloat Ceylan::Maths::Pow2( Ceylan::LongFloat x ) throw()
 
 
 
+Ceylan::Float32 Ceylan::Maths::Log( Ceylan::Float32 x ) throw() 
+{
+
+#ifdef CEYLAN_USES_LOGF
+
+	return ::logf( x ) ;
+	
+#else // CEYLAN_USES_LOGF
+
+	return ::log( x ) ;
+
+#endif // CEYLAN_USES_LOGF
+
+}
+
+
+Ceylan::Float64 Ceylan::Maths::Log( Ceylan::Float64 x ) throw()
+{
+	return ::log( x ) ;
+}
+
+
+Ceylan::LongFloat Ceylan::Maths::Log( Ceylan::LongFloat x ) throw()
+{
+	return ::log( x ) ;
+}
+
+
+
 Ceylan::Float32 Ceylan::Maths::Sqrt( Ceylan::Float32 x ) throw( MathsException )
 {
 	if ( x < 0 )
