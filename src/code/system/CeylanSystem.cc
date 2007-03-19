@@ -106,15 +106,23 @@ Ceylan::System::IOException::~IOException() throw()
 }
 
 
+const Second Ceylan::System::MaximumDurationWithMicrosecondAccuracy = 4100 ;
+
+
+
 ErrorCode Ceylan::System::getError() throw()
 {
+
 	return errno ;
+	
 }
 
 
 const string Ceylan::System::explainError( ErrorCode errorID ) throw()
 {
+
 	return string( ::strerror( errorID ) ) ;
+	
 }
 
 
@@ -137,7 +145,9 @@ const string Ceylan::System::explainError() throw()
 
 string Ceylan::System::getShellName() throw()
 {
+
 	return Ceylan::System::getEnvironmentVariable( "SHELL" ) ;
+	
 }
 
 
@@ -582,9 +592,11 @@ Microsecond Ceylan::System::getDurationBetween(
 
 	// Duration is non-negative here.
 
-	if ( ( s2 - s1 ) > 4200 )
+	if ( ( s2 - s1 ) > MaximumDurationWithMicrosecondAccuracy )
 		throw SystemException( "Ceylan::System::getDurationBetween : "
-				"specified duration should not exceed 4200 seconds." ) ;
+				"specified duration should not exceed "
+				+ Ceylan::toString( MaximumDurationWithMicrosecondAccuracy ) 
+				+ " seconds." ) ;
 
 	return ( ( s2 - s1 ) * oneMillion + r2 -r1 ) ;
 
