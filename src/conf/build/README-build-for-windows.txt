@@ -6,9 +6,47 @@ Created on 2006, September 22.
 
 
 
-Here the target platform is Windows XP Home edition.
+Here the target platform is Windows XP, Home or Preedition.
 
-The recommended build tool chain is Visual Studio 2005, Express edition. It can be downloaded free of charge from [1]. It can be used freely, including for commercial use.
+The recommended build tool chain is Visual Studio 2005, Express edition. It can be downloaded free of charge from [1], including Visual C++ 2005 Express, which is the IDE and compiler toolchain that we want (we will have anything to do with the .NET framework). Downloading as well the full MSDN documentation would be a good idea (just select the relevant check-box). Note that you will have to register your copy, otherwise it will cease to work after 30 days, at least if you do not use the procedure to burn an ISO. If you want to install these products on multiple computers, you will have to register them on each computer.
+
+All these packages can be used freely, including for commercial use, and they are fully functional for our needs.
+
+One may install them with default settings, including paths.
+
+The platform SDK is then needed so that applications using the Win32 runtime (as opposed to the .NET runtime) can be built, since additional header files are required. This is the case for Ceylan.
+ 
+To retrieve Ceylan sources, one needs a SVN client, we recommend Tortoise SVN (http://tortoisesvn.net/downloads).
+
+To download the Ceylan sources once Tortoise SVN is installed, right-click in a window showing the content of the folder in which the sources should be transfered to, choose 'SVN Checkout', and enter the URL of Ceylan repository : 'https://ceylan.svn.sourceforge.net/svnroot/ceylan'.
+
+It is in no way necessary but Cygwin (http://www.cygwin.com) can provide a basic UNIX-like environment, that can be used for example to automate the running of the test suite. If not too resource-limited, one can select 'All install' to retrieve all Cygwin packages. 
+
+
+* Platform SDK (PSDK)
+
+For numerous functions (such as gethostname), specific headers are required (ex : winsock2.h). These headers are provided with a SDK (Software Development Kit) that has to be installed separatly from the IDE (Visual Express). The goal here is to be able to build Win32 applications, not only .NET ones. 
+ 
+In the Visual Express start page, there is a link to install automatically this PSDK (Platform-SDK) [8]. An error occurred when I clicked it, but it displayed the correct web page nevertheless,  
+
+ that explains what is to be done to complete the installation. I preferred to update the configuration file which in my case was located at [9]. I searched [10] for vccomponents.dat but did not find any.
+  
+An alternate method is to download the PSDK by yourself. See [5] and [6], most recent SDK at the time of this writing is 'Windows Server 2003 R2 Platform SDK Full Download', see [7] and choose to download the 'PSDK-x86.exe' file. Execute it and select the 'typical' installation, which will last for a long time.
+
+
+After having applied all the steps, there is still a trap : as soon as you include for example winsock2.h in an extern "C" clause, you encounter numerous errors about anonymous structs in winnt.h. According to [11], you need to enable the Microsoft-specific language extensions, in C/C++ -> Language. It worked for me, even if it is a pity one could not stick with real ANSI/C.
+
+Last thing that should be done is to make sure that the help for the PSDK is
+available from the general Visual Express help, as by default it will be not
+be automatically integrated. One just has to enter in the help browser URL line
+the following one [12], select the appropriate PSDK documentation and restart its IDE once again. 
+
+To test the result, search for gethostname, the one defined by winsock should be found, whereas without the PSDK help one the .Net-defined GetHostName is referenced. Another useful tip is to select other help sources than the local one : local, then online for example [13].
+
+
+
+
+
 
 To load the project in this editor, just double-click on the Ceylan-x.y.sln file [2].
 
@@ -117,22 +155,6 @@ In the linker settings, 'Generate Debug informations' may be set to yes, accordi
 
 
 
-* Platform SDK
-
-For numerous functions (such as gethostname), specific headers are required (ex : winsock2.h). These headers are provided with a SDK (Software Development Kit) that has to be installed separatly from the IDE (Visual Express). The goal here is to be able to build Win32 applications, not only .Net ones. 
-  
-See [5] and [6], most recent SDK at the time of this writing is 'Windows Server 2003 R2 Platform SDK Full Download', see [7] and choose to download the 'PSDK-x86.exe' file. Execute it and select the 'typical' installation, which will last for a long time.
-
-After having installing this PSDK (Platform-SDK), I noticed a link in the Visual Express start page [8] that explains what is to be done to complete the installation. I preferred to update the configuration file which in my case was located at [9]. I searched [10] for vccomponents.dat but did not find any.
-
-After having applied all the steps, there is still a trap : as soon as you include for example winsock2.h in an extern "C" clause, you encounter numerous errors about anonymous structs in winnt.h. According to [11], you need to enable the Microsoft-specific language extensions, in C/C++ -> Language. It worked for me, even if it is a pity one could not stick with real ANSI/C.
-
-Last thing that should be done is to make sure that the help for the PSDK is
-available from the general Visual Express help, as by default it will be not
-be automatically integrated. One just has to enter in the help browser URL line
-the following one [12], select the appropriate PSDK documentation and restart its IDE once again. 
-
-To test the result, search for gethostname, the one defined by winsock should be found, whereas without the PSDK help one the .Net-defined GetHostName is referenced. Another useful tip is to select other help sources than the local one : local, then online for example [13].
 
 
 
