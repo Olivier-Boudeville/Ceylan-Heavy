@@ -637,7 +637,9 @@ list<string> Ceylan::splitIntoWords( const string & sentenceToSplit ) throw()
 
 list<string> Ceylan::splitIntoParagraphs( const string & textToSplit ) throw()
 {
+
 	return Ceylan::split( textToSplit, '\n' ) ;
+	
 }
 
 
