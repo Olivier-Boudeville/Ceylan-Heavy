@@ -23,18 +23,28 @@ using namespace Ceylan::Maths::Random ;
 using namespace Ceylan::Log ;
 
 
+#ifdef CEYLAN_USES_CONFIG_H
+#include "CeylanConfig.h"         // for CEYLAN_DEBUG_RANDOM and al
+#endif // CEYLAN_USES_CONFIG_H
+
+
+
 WhiteNoiseGenerator::WhiteNoiseGenerator( Sample lowerLimit, 
 	Sample upperLimit ) 
 		throw( MathsException ) :
 	RandomGenerator( lowerLimit, upperLimit ) 
 {
 
-	LogPlug::trace( "WhiteNoiseGenerator constructor called." ) ;
+#if CEYLAN_DEBUG_RANDOM
+	LogPlug::trace( "Maths::WhiteNoiseGenerator constructor called." ) ;
+#endif // CEYLAN_DEBUG_RANDOM
 
 	generateSeedFromCurrentTime() ;	
 	preCompute() ;
 	
-	LogPlug::trace( "WhiteNoiseGenerator constructor ended." ) ;
+#if CEYLAN_DEBUG_RANDOM
+	LogPlug::trace( "Maths::WhiteNoiseGenerator constructor ended." ) ;
+#endif // CEYLAN_DEBUG_RANDOM
 
 }
 
@@ -54,6 +64,10 @@ WhiteNoiseGenerator::WhiteNoiseGenerator( Sample lowerLimit,
 
 WhiteNoiseGenerator::~WhiteNoiseGenerator() throw()
 {
+
+#if CEYLAN_DEBUG_RANDOM
+	LogPlug::trace( "Maths::WhiteNoiseGenerator destructor called." ) ;
+#endif // CEYLAN_DEBUG_RANDOM
 
 }
 
@@ -90,27 +104,34 @@ RandomValue WhiteNoiseGenerator::getNewValue() throw()
 	return static_cast<RandomValue>( _lowerLimit +
 		static_cast<double>( ::rand() ) * 
 			( _upperLimit - _lowerLimit )/ RAND_MAX ) ; 
+			
 }
 
 
 void WhiteNoiseGenerator::reset( Seed newSeed ) throw() 
 {
+
 	_seed = newSeed ;
 	::srand( _seed ) ;
+	
 }
 
 
 const string WhiteNoiseGenerator::toString( VerbosityLevels level ) 
 	const throw()
 {
+
 	return "White noise generator. " 
 		+ RandomGenerator::toString( level ) ;
+		
 }
 
 
 void WhiteNoiseGenerator::preCompute() throw( MathsException ) 
 {
+
 	// Initialize new sequence with seed.
 	::srand( _seed ) ;
+	
 }
 
