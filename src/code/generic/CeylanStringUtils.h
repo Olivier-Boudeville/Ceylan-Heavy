@@ -1,6 +1,7 @@
 #ifndef CEYLAN_STRING_UTILS_H_
 #define CEYLAN_STRING_UTILS_H_
 
+
 #include "CeylanTypes.h"          // for Ceylan::Uint16
 #include "CeylanException.h"      // for Ceylan::Exception
 
@@ -407,3 +408,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_STRING_UTILS_H_
+
