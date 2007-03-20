@@ -7,6 +7,8 @@ EXTRA_DIST = \
 	Ceylan-@CEYLAN_VERSION@-changes.txt       \
 	web
 
+# For tool versions :
+include $(srcdir)/../conf/build/CeylanToolsSettings.inc
 
 # This section takes care of the web documentation.
 
@@ -144,13 +146,13 @@ local-web: site api
 # The 'site' target takes automatically care of both shared tree and
 # of the tree specific to this version :
 site: common 
-	@echo; echo "@CEYLAN_INSTALL_STYLE@    Copying web source tree to\
+	@echo; echo "@CEYLAN_INSTALL_STYLE@    Copying web source tree to \
 	local web repository [@CEYLAN_LOCAL_WEB_DIR@]@CEYLAN_DEFAULT_STYLE@"
 	@cd $(srcdir)/web; for d in $(WEB_CONTENT_DIRS); do \
 	mkdir -p @CEYLAN_LOCAL_WEB_SHARED_DIR@/$$d ; done ;  \
 	for f in $(WEB_CONTENT_FILES); do \
 	cp -f $$f @CEYLAN_LOCAL_WEB_SHARED_DIR@/$$f; done
-	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark local doc site,\
+	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark local doc site, \
 	which is to be found in :"
 	@echo "      file://@CEYLAN_LOCAL_WEB_DIR@/index.html@CEYLAN_DEFAULT_STYLE@"
 	@cd @CEYLAN_LOCAL_WEB_DIR@; \
@@ -158,7 +160,7 @@ site: common
 
 
 common: 
-	@echo; echo "@CEYLAN_INSTALL_STYLE@    Copying common web files to\
+	@echo; echo "@CEYLAN_INSTALL_STYLE@    Copying common web files to \
 	local doc repository\
 	[@CEYLAN_LOCAL_WEB_SHARED_DIR@]@CEYLAN_DEFAULT_STYLE@"
 	@if [ -d "@CEYLAN_LOCAL_DOC_DIR@" ] ; then \
@@ -187,33 +189,33 @@ uninstall-hook:
 api: check-dot fix-dox-conf
 	@[ -x "$(DOXYGEN)" ] || \
 	( echo; echo "@CEYLAN_ERROR_STYLE@    \
-	Unable to create source documentation : doxygen tool not found\
+	Unable to create source documentation : doxygen tool not found \
 	[doxygen homepage : http://www.doxygen.org].@CEYLAN_DEFAULT_STYLE@"; \
 	echo; false )
-	@echo; echo "@CEYLAN_COMMAND_STYLE@    Generating API\
-	(doxygen configuration taken from $(DOXYGEN_GENERATED_CONF))\
+	@echo; echo "@CEYLAN_COMMAND_STYLE@    Generating API \
+	(doxygen configuration taken from $(DOXYGEN_GENERATED_CONF)) \
 	@CEYLAN_DEFAULT_STYLE@"
 	@echo
 	@mkdir -p @CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@
-	-@PATH=`pwd`/$(DOT_ROOT)/bin:$$PATH\
+	-@PATH=`pwd`/$(DOT_ROOT)/bin:$$PATH \
 	LD_LIBRARY_PATH=`pwd`/$(GCC_ROOT)/lib:$$LD_LIBRARY_PATH \
 	$(DOXYGEN) $(DOXYGEN_GENERATED_CONF)
 	@rm -f @CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/doxygen.css
 	@cp -f $(srcdir)/web/common/css/doxygen-@PROJECT_NAME@.css \
 	@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/doxygen.css 
-	@cp -f $(srcdir)/web/common/doxygen/*.png\
+	@cp -f $(srcdir)/web/common/doxygen/*.png \
 	@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html
 	@echo
 	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark\
-	@CEYLAN_CURRENT_VERSION_PREFIX@ API, which is located in :\
+	@CEYLAN_CURRENT_VERSION_PREFIX@ API, which is located in : \
 file://@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/index.html@CEYLAN_DEFAULT_STYLE@"
 	
 			
 check-dot:
 	@[ -x "$(DOT)" ] \
-	|| ( echo; echo "@CEYLAN_ERROR_STYLE@    Unable to generate\
+	|| ( echo; echo "@CEYLAN_ERROR_STYLE@    Unable to generate \
 	any useful documentation from source code : \
-	dot tool not found [dot homepage : \
+	dot tool not found (checked dot root was $(DOT_ROOT) [dot homepage : \
 	http://www.graphviz.org/].@CEYLAN_DEFAULT_STYLE@"; echo; false ) 
 	
 	
@@ -223,13 +225,13 @@ fix-dox-conf:
 		
 tidy:	
 	@[ -x "$(TIDY)" ] \
-	|| ( echo; echo "@CEYLAN_ERROR_STYLE@    Unable to enforce\
-	W3C compliance and formatting of html documentation files\
-	according to @PROJECT_NAME@'s conventions :\
+	|| ( echo; echo "@CEYLAN_ERROR_STYLE@    Unable to enforce \
+	W3C compliance and formatting of html documentation files \
+	according to @PROJECT_NAME@'s conventions : \
 	tidy tool not found.@CEYLAN_DEFAULT_STYLE@"; echo; false ) 
-	@echo "@CEYLAN_COMMAND_STYLE@    Tidying all html\
+	@echo "@CEYLAN_COMMAND_STYLE@    Tidying all html \
 	files@CEYLAN_DEFAULT_STYLE@"
-	@for f in $(HTML_FILES); do ( echo "  + tidying $$f";\
+	@for f in $(HTML_FILES); do ( echo "  + tidying $$f"; \
 	$(TIDY) -config @top_srcdir@/src/conf/doc/tidy.conf -m $$f ); done
 
 
@@ -246,38 +248,38 @@ transfer: toSF toMirror
 # Updating doc manually is notably useful to instantaneously update
 # the website.
 toSF: 
-	@if [ -x "$(RSYNC)" ]; then $(MAKE) toSF-rsync;\
+	@if [ -x "$(RSYNC)" ]; then $(MAKE) toSF-rsync; \
 	else $(MAKE) toSF-scp; fi 
 	
 
 toSF-rsync: site
 	@echo
-	@echo "@CEYLAN_INSTALL_STYLE@    Updating @PROJECT_NAME@\
-	Sourceforge's website from local web repository with rsync\
+	@echo "@CEYLAN_INSTALL_STYLE@    Updating @PROJECT_NAME@ \
+	Sourceforge's website from local web repository with rsync \
 	[@CEYLAN_LOCAL_WEB_DIR@] using rsync@CEYLAN_DEFAULT_STYLE@"
 	@echo
 	@opt=$(RSYNC_OPT); $(RSYNC) $$opt @CEYLAN_LOCAL_WEB_DIR@/* \
 	$(SF_USER)@$(SF_SHELL_SERVER):$(SF_WEB_DIR)
-	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark\
-	@PROJECT_NAME@'s website on Sourceforge at\
+	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark \
+	@PROJECT_NAME@'s website on Sourceforge at \
 	$(SF_WEB_URL)@CEYLAN_DEFAULT_STYLE@"
 
 
 toSF-scp: check-scp site
 	@echo
-	@echo "@CEYLAN_INSTALL_STYLE@    Updating @PROJECT_NAME@\
-	Sourceforge's website from local web repository with scp\
+	@echo "@CEYLAN_INSTALL_STYLE@    Updating @PROJECT_NAME@ \
+	Sourceforge's website from local web repository with scp \
 	[@CEYLAN_LOCAL_WEB_DIR@] using scp@CEYLAN_DEFAULT_STYLE@"
 	@echo
 	@opt=$(SCP_OPT); $(SCP) $$opt @CEYLAN_LOCAL_WEB_DIR@/* \
 	$(SF_USER)@$(SF_SHELL_SERVER):$(SF_WEB_DIR)
-	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark\
-	@PROJECT_NAME@'s website on Sourceforge at\
+	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark \
+	@PROJECT_NAME@'s website on Sourceforge at \
 	$(SF_WEB_URL)@CEYLAN_DEFAULT_STYLE@"
 
 
 toMirror:
-	@if [ -x "$(RSYNC)" ]; then $(MAKE) toMirror-rsync;\
+	@if [ -x "$(RSYNC)" ]; then $(MAKE) toMirror-rsync; \
 	else $(MAKE) toMirror-scp; fi 
 
 
@@ -289,21 +291,21 @@ toMirror-rsync: site
 	@echo
 	@opt=$(RSYNC_OPT); $(RSYNC) $$opt @CEYLAN_LOCAL_WEB_DIR@/* \
 	$(MIRROR_WEB_USER)@$(MIRROR_HOSTNAME):$(MIRROR_WEB_DIR)
-	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark\
-	@PROJECT_NAME@'s website on $(MIRROR_HOSTNAME) at\
+	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark \
+	@PROJECT_NAME@'s website on $(MIRROR_HOSTNAME) at \
 	$(MIRROR_WEB_URL)@CEYLAN_DEFAULT_STYLE@"
 
 
 toMirror-scp: check-scp site
 	@echo
-	@echo; echo "@CEYLAN_INSTALL_STYLE@    Updating @PROJECT_NAME@\
-	$(MIRROR_HOSTNAME)'s website from local web repository\
+	@echo; echo "@CEYLAN_INSTALL_STYLE@    Updating @PROJECT_NAME@ \
+	$(MIRROR_HOSTNAME)'s website from local web repository \
 	[@CEYLAN_LOCAL_WEB_DIR@] using scp@CEYLAN_DEFAULT_STYLE@"
 	@echo
 	@opt=$(SCP_OPT); $(SCP) $$opt @CEYLAN_LOCAL_WEB_DIR@/* _
 	$(MIRROR_WEB_USER)@$(MIRROR_HOSTNAME):$(MIRROR_WEB_DIR)
-	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark\
-	@PROJECT_NAME@'s website on $(MIRROR_HOSTNAME) at\
+	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark \
+	@PROJECT_NAME@'s website on $(MIRROR_HOSTNAME) at \
 	$(MIRROR_WEB_URL)@CEYLAN_DEFAULT_STYLE@"
 
 
@@ -330,12 +332,12 @@ remind-locations:
 
 		
 show-found-tools:
-	@echo; echo "@CEYLAN_INSTALL_STYLE@    Listing found tools\
+	@echo; echo "@CEYLAN_INSTALL_STYLE@    Listing found tools \
 	@CEYLAN_DEFAULT_STYLE@"; echo
-	@if [ -x "$(DOXYGEN)" ]; then echo "  + doxygen found, using <$(DOXYGEN)>\
+	@if [ -x "$(DOXYGEN)" ]; then echo "  + doxygen found, using <$(DOXYGEN)> \
 	with configuration file <$(DOXYGEN_CONF)>"; fi
 	@if [ -x "$(DOT)" ]; then  echo "  + dot found, using <$(DOT)>"; fi
-	@if [ -x "$(ASTYLE)" ]; then echo "  + astyle found, using <$(ASTYLE)>\
+	@if [ -x "$(ASTYLE)" ]; then echo "  + astyle found, using <$(ASTYLE)> \
 	with configuration file <$(ASTYLE_CONF)>"; fi
 	@if [ -x "$(TIDY)" ]; then echo "  + tidy found, using <$(TIDY)>"; fi
 	@if [ -x "$(RSYNC)" ]; then echo "  + rsync found, using <$(RSYNC)>"; fi
@@ -354,11 +356,11 @@ info-dirs:
 	
 	
 info-files: info-html
-	@echo; echo "    + web documentation files are   : ";\
+	@echo; echo "    + web documentation files are   : "; \
 	echo "$(WEB_CONTENT_FILES)"
-	@echo; echo "    + common web files are          : ";\
+	@echo; echo "    + common web files are          : "; \
 	echo "$(COMMON_WEB_FILES)"
-	@echo; echo "    + doxygen configuration file is :\
+	@echo; echo "    + doxygen configuration file is : \
 	$(DOXYGEN_GENERATED_CONF)"
 
 	
@@ -394,12 +396,13 @@ clean-local: clean-web
 
 
 clean-web:
-	@echo "@CEYLAN_CLEAN_STYLE@    Cleaning local doc repository [@CEYLAN_LOCAL_WEB_DIR@]@CEYLAN_DEFAULT_STYLE@"
+	@echo "@CEYLAN_CLEAN_STYLE@    Cleaning local doc repository \
+	[@CEYLAN_LOCAL_WEB_DIR@]@CEYLAN_DEFAULT_STYLE@"
 	-@rm -rf @CEYLAN_LOCAL_WEB_DIR@
 
 
 clean-install: clean-web
-	@echo "@CEYLAN_CLEAN_STYLE@    Cleaning installed doc repository\
+	@echo "@CEYLAN_CLEAN_STYLE@    Cleaning installed doc repository \
 	[@CEYLAN_LOCAL_DOC_DIR@]@CEYLAN_DEFAULT_STYLE@"
 	-@rm -rf @CEYLAN_LOCAL_DOC_DIR@
 
