@@ -364,16 +364,17 @@ if test x$enable_debug = xyes; then
 
 	# Debug requested :
 	DEBUG=0
-	DEBUG_EVENTS=0
 	DEBUG_DEMANGLE=0
+	DEBUG_EVENTS=0
 	DEBUG_LOG=0
-	DEBUG_SYSTEM=0
-	DEBUG_THREADS=0
 	DEBUG_LOW_LEVEL_STREAMS=0
+	DEBUG_MARSHALLERS=0
 	DEBUG_NETWORK_CLIENTS=0
 	DEBUG_NETWORK_SERVERS=0
 	DEBUG_PROTOCOL_SERVERS=0
-	DEBUG_MARSHALLERS=0
+	DEBUG_RANDOM=0
+	DEBUG_SYSTEM=0
+	DEBUG_THREADS=0
 	
 	AM_CXXFLAGS="$AM_CXXFLAGS -g" 
     if test x$ac_cv_cxx_compiler_gnu = xyes; then
@@ -388,16 +389,17 @@ else
 
 	# Aggressive optimizations :
 	DEBUG=0
-	DEBUG_EVENTS=0
 	DEBUG_DEMANGLE=0	
+	DEBUG_EVENTS=0
 	DEBUG_LOG=0
-	DEBUG_SYSTEM=0
-	DEBUG_THREADS=0
 	DEBUG_LOW_LEVEL_STREAMS=0
+	DEBUG_MARSHALLERS=0
 	DEBUG_NETWORK_CLIENTS=0
 	DEBUG_NETWORK_SERVERS=0
 	DEBUG_PROTOCOL_SERVERS=0
-	DEBUG_MARSHALLERS=0
+	DEBUG_RANDOM=0
+	DEBUG_SYSTEM=0
+	DEBUG_THREADS=0
 	
     if test x$ac_cv_cxx_compiler_gnu = xyes; then
 		# -fomit-frame-pointer : may prevent debugging on some platforms
@@ -427,36 +429,34 @@ else
     esac
 fi
 
+
+
 AC_DEFINE_UNQUOTED([DEBUG],
 	[$DEBUG],
 	[Define to 1 if generic debug mode is to be enabled])
+
+AC_DEFINE_UNQUOTED([DEBUG_DEMANGLE],
+	[$DEBUG_DEMANGLE],
+	[Define to 1 if debug mode for name mangling is to be enabled])
 
 AC_DEFINE_UNQUOTED([DEBUG_EVENTS],
 	[$DEBUG_EVENTS],
 	[Define to 1 if debug mode for events is to be enabled])
 	
-AC_DEFINE_UNQUOTED([DEBUG_DEMANGLE],
-	[$DEBUG_DEMANGLE],
-	[Define to 1 if debug mode for name mangling is to be enabled])
-
 AC_DEFINE_UNQUOTED([DEBUG_LOG],
 	[$DEBUG_LOG],
 	[Define to 1 if debug mode for log system is to be enabled])
-
-AC_DEFINE_UNQUOTED([DEBUG_SYSTEM],
-	[$DEBUG_SYSTEM],
-	[Define to 1 if debug mode for system layer is to be enabled])
-
-AC_DEFINE_UNQUOTED([DEBUG_THREADS],
-	[$DEBUG_THREADS],
-	[Define to 1 if debug mode for threads is to be enabled])
 
 AC_DEFINE_UNQUOTED([DEBUG_LOW_LEVEL_STREAMS],
 	[$DEBUG_LOW_LEVEL_STREAMS],
 	[Define to 1 if debug mode for low-level streams is to be enabled])
 
+AC_DEFINE_UNQUOTED([DEBUG_MARSHALLERS],
+	[$DEBUG_MARSHALLERS],
+	[Define to 1 if debug mode for marshallers is to be enabled])
+
 AC_DEFINE_UNQUOTED([DEBUG_NETWORK_CLIENTS],
-	[$DEBUG_NETWORK_SERVERS],
+	[$DEBUG_NETWORK_CLIENTS],
 	[Define to 1 if debug mode for network clients is to be enabled])
 
 AC_DEFINE_UNQUOTED([DEBUG_NETWORK_SERVERS],
@@ -467,9 +467,17 @@ AC_DEFINE_UNQUOTED([DEBUG_PROTOCOL_SERVERS],
 	[$DEBUG_PROTOCOL_SERVERS],
 	[Define to 1 if debug mode for protocol servers is to be enabled])
 
-AC_DEFINE_UNQUOTED([DEBUG_MARSHALLERS],
-	[$DEBUG_MARSHALLERS],
-	[Define to 1 if debug mode for marshallers is to be enabled])
+AC_DEFINE_UNQUOTED([DEBUG_RANDOM],
+	[$DEBUG_RANDOM],
+	[Define to 1 if debug mode for random generation is to be enabled])
+
+AC_DEFINE_UNQUOTED([DEBUG_SYSTEM],
+	[$DEBUG_SYSTEM],
+	[Define to 1 if debug mode for system layer is to be enabled])
+
+AC_DEFINE_UNQUOTED([DEBUG_THREADS],
+	[$DEBUG_THREADS],
+	[Define to 1 if debug mode for threads is to be enabled])
 
 
 
