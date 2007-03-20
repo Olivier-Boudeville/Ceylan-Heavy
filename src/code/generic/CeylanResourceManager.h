@@ -276,7 +276,7 @@ namespace Ceylan
 					static_cast<Ceylan::Uint8>( 
 						( 100.0f * _cacheHits ) / total ) )
 				+ "% (" + Ceylan::toString( _cacheHits ) + " cache hit(s) for " 
-				+ Ceylan::toString( _cacheMisses ) + " cache misse(s))" ;
+				+ Ceylan::toString( _cacheMisses ) + " cache miss(es))" ;
 	}
 	
 	
