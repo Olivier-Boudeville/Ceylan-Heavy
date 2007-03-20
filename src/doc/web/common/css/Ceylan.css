@@ -76,6 +76,7 @@ h1.Big {
 }
 
 
+/* needs to leave room at the top for shortcut panel */
 h1 {
   color: #000000;
   font-size: 35px;
@@ -83,7 +84,7 @@ h1 {
   font-weight: bold;
   font-family: "Lucida Sans Unicode", Verdana, "MS Sans Serif", serif;
   text-align: center;
-  margin-top: 5%;
+  margin-top: 9%;
   margin-bottom: 5%;
   margin-left: 2%;
   margin-right: 2%;
