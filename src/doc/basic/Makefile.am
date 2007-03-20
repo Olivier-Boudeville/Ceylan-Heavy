@@ -1,5 +1,5 @@
 
-.PHONY: all update-basic-doc-files update-changelog                           \
+.PHONY: all update-basic-doc-files update-changelog                       \
 	effective-changelog-creation update-authors update-copying update-faq \
 	update-install update-maint update-news update-readme update-thanks   \
 	update-todo info-local clean-local real-clean
@@ -29,7 +29,7 @@ RAW_DOC_FILES = ${top_builddir}/AUTHORS ${top_builddir}/COPYING.LIB        \
 $(RAW_DOC_FILES): update-basic-doc-files
 
 update-basic-doc-files: update-changelog update-authors update-copying  \
-	update-faq update-install update-maint update-news update-readme \
+	update-faq update-install update-maint update-news update-readme    \
 	update-thanks update-todo 
 
 
@@ -52,31 +52,32 @@ CHANGELOG_COMMAND   = "$(CHANGELOG_GENERATOR)"
 
 update-changelog: 
 	@if [ "${CREATE_CHANGELOG}" = true ] ; then \
-	if [ ! -x "$(CHANGELOG_COMMAND)" ] ; then echo\
-	"@CEYLAN_WARNING_STYLE@    No ChangeLog tool\
+	if [ ! -x "$(CHANGELOG_COMMAND)" ] ; then echo \
+	"@CEYLAN_WARNING_STYLE@    No ChangeLog tool \
 	available (svn2cl), nothing done@CEYLAN_DEFAULT_STYLE@"; \
-	else $(MAKE) effective-changelog-creation; fi; else\
-	echo "@CEYLAN_WARNING_STYLE@   \
-	Creation of Change Logs from SVN\
+	else $(MAKE) effective-changelog-creation; fi; else \
+	echo "@CEYLAN_WARNING_STYLE@ \
+	Creation of Change Logs from SVN \
 	is deactivated@CEYLAN_DEFAULT_STYLE@";  fi
 	
 
 effective-changelog-creation:
-	@echo "@CEYLAN_COMMAND_STYLE@    Recreating ChangeLog file from SVN\
+	@echo "@CEYLAN_COMMAND_STYLE@    Recreating ChangeLog file from SVN \
 	[takes some time]@CEYLAN_DEFAULT_STYLE@"
-	@if [ ! -x "$(CHANGELOG_COMMAND)" ] ; then echo\
-	"@CEYLAN_WARNING_STYLE@No Changelog tool\
-	available, nothing done@CEYLAN_DEFAULT_STYLE@"; else\
-	$(CHANGELOG_COMMAND) --linelen=10000 -o ${top_builddir}/ChangeLog ${top_srcdir} ; fi
+	@if [ ! -x "$(CHANGELOG_COMMAND)" ] ; then echo \
+	"@CEYLAN_WARNING_STYLE@No Changelog tool \
+	available, nothing done@CEYLAN_DEFAULT_STYLE@"; else \
+	$(CHANGELOG_COMMAND) --linelen=10000 -o ${top_builddir}/ChangeLog \
+	${top_srcdir} ; fi
 	-@/bin/rm -f ${top_srcdir}/ChangeLog.bak
 
 
 html-changelog:
-	@echo "@CEYLAN_COMMAND_STYLE@    Recreating HTML ChangeLog page from SVN\
+	@echo "@CEYLAN_COMMAND_STYLE@    Recreating HTML ChangeLog page from SVN \
 	[takes some time]@CEYLAN_DEFAULT_STYLE@"
-	@if [ ! -x "$(CHANGELOG_COMMAND)" ] ; then echo\
-	"@CEYLAN_WARNING_STYLE@No Changelog tool\
-	available, nothing done@CEYLAN_DEFAULT_STYLE@"; else\
+	@if [ ! -x "$(CHANGELOG_COMMAND)" ] ; then echo \
+	"@CEYLAN_WARNING_STYLE@No Changelog tool \
+	available, nothing done@CEYLAN_DEFAULT_STYLE@"; else \
 	$(CHANGELOG_COMMAND) --html -o \
 	${top_srcdir}/src/doc/web/Ceylan-@CEYLAN_VERSION@/ChangeLog.html \
 	${top_srcdir} ; fi
