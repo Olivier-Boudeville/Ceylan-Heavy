@@ -2,18 +2,24 @@
 
 
 #include "CeylanSystem.h"      // for explainError
+#include "CeylanStringUtils.h" // for join
 #include "CeylanOperators.h"
+
+
+#include <ctime>
+
+#include <list> 
+using std::list ;
+
+using std::string ;
+
+using namespace Ceylan ;
+using namespace Ceylan::System ;
 
 
 #ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"       // for configure-time settings
 #endif // CEYLAN_USES_CONFIG_H
-
-#include <ctime>
-
-using std::string ;
-
-using namespace Ceylan ;
 
 
 
@@ -31,7 +37,7 @@ Timestamp::Timestamp() throw( UtilsException )
 	if ( ::localtime_s( & currentTime, & currentMeasuredTime ) != 0 )
 		throw UtilsException( 
 			"Timestamp constructor : unable to determine local time : "
-			+ System::getError() ) ;
+			+ System::explainError() ) ;
 
 	_year   = currentTime.tm_year + 1900 ;
 	_month  = currentTime.tm_mon + 1 ;
@@ -47,7 +53,7 @@ Timestamp::Timestamp() throw( UtilsException )
 	if ( currentTime == 0 )
 		throw UtilsException( 
 			"Timestamp constructor : unable to determine local time : "
-			+ System::getError() ) ;
+			+ System::explainError() ) ;
 
 	_year   = currentTime->tm_year + 1900 ;
 	_month  = currentTime->tm_mon + 1 ;
@@ -100,6 +106,102 @@ const string Timestamp::toString( Ceylan::VerbosityLevels level ) const throw()
 	return result ;
 	
 }	
+
+
+string Timestamp::DescribeDuration( Second duration ) throw()
+{
+
+	
+	/* 
+	 * Seconds are Uint32, 4294967295 is their maximum value, it is more than
+	 * 136 years...
+	 *
+	 */
+	 
+	
+	const Second aMinute = 60 ;
+	const Second anHour  = 60  * aMinute ;
+	const Second aDay    = 24  * anHour  ;
+	const Second aYear   = 365 * aDay    ;
+	
+	list<string> res ;
+	
+	if ( duration >= aYear )
+	{
+	
+		Ceylan::Uint32 years = duration / aYear ;
+		
+		if ( years == 1 )
+			res.push_back( "1 year" ) ;
+		else	
+			res.push_back( Ceylan::toString( duration / aYear ) + " years" ) ;
+					
+	}
+	
+	duration = duration % aYear ;
+	
+	
+	if ( duration >= aDay )
+	{
+	
+		Ceylan::Uint32 days = duration / aDay ;
+		
+		if ( days == 1 )
+			res.push_back( "1 day" ) ;
+		else	
+			res.push_back( Ceylan::toString( duration / aDay ) + " days" ) ;
+					
+	}
+
+	duration = duration % aDay ;
+	
+	
+	if ( duration >= anHour )
+	{
+	
+		Ceylan::Uint32 hours = duration / anHour ;
+		
+		if ( hours == 1 )
+			res.push_back( "1 hour" ) ;
+		else	
+			res.push_back( Ceylan::toString( duration / anHour ) + " hours" ) ;
+					
+	}
+
+	duration = duration % anHour ;
+	
+	
+	if ( duration >= aMinute )
+	{
+	
+		Ceylan::Uint32 minutes = duration / aMinute ;
+		
+		if ( minutes == 1 )
+			res.push_back( "1 minute" ) ;
+		else	
+			res.push_back( 
+				Ceylan::toString( duration / aMinute ) + " minutes" ) ;
+					
+	}
+
+	duration = duration % aMinute ;
+	
+	
+	if ( duration >= 1 )
+	{
+			
+		if ( duration == 1 )
+			res.push_back( "1 second" ) ;
+		else	
+			res.push_back( Ceylan::toString( duration ) + " seconds" ) ;
+					
+	}
+	else if ( res.empty() )
+		res.push_back( "0 second" ) ;
+		
+	return join( res, ", " ) ;
+	
+}
 
 
 bool Timestamp::operator < (Timestamp & second ) throw() 
