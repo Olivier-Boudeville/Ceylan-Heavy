@@ -5,6 +5,8 @@
 #include "CeylanTextDisplayable.h"  // for inheritance
 #include "CeylanUtils.h"            // for UtilsException
 #include "CeylanTypes.h"            // for Ceylan::Sint16 etc.
+#include "CeylanSystem.h"           // for Second
+
 
 #include <string>
 
@@ -74,6 +76,20 @@ namespace Ceylan
 		    virtual const std::string toString( 
 				Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
 	
+	
+			/**
+			 * Returns a string describing litterally the specied duration.
+			 *
+			 * @param duration the duration, in seconds, to describe.
+			 *
+			 * @return the textual description of the duration.
+			 *
+			 * @note For this evaluation, years all have exactly 365 days.
+			 *
+			 */
+			static std::string DescribeDuration( 
+				Ceylan::System::Second duration ) throw() ;
+			
 	
 			/**
 			 * Tells whether this Timestamp's recorded time is strictly
