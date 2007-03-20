@@ -106,8 +106,8 @@ Ceylan::System::IOException::~IOException() throw()
 }
 
 
-const Second Ceylan::System::MaximumDurationWithMicrosecondAccuracy = 4100 ;
 
+const Second Ceylan::System::MaximumDurationWithMicrosecondAccuracy = 4100 ;
 
 
 ErrorCode Ceylan::System::getError() throw()
@@ -567,6 +567,13 @@ Microsecond Ceylan::System::getDurationBetween(
 	throw( SystemException )
 {
 
+
+	/*
+	 * Microsecond is Uint32, hence its maximum value is 4 294 967 295, it 
+	 * corresponds to 4294 seconds, i.e. about 1 hour and 11 minutes.
+	 *
+	 */
+	 	 
 	const Microsecond oneMillion = 1000000 ;
 
 	// These are <b>integer</b> divisions :
@@ -639,8 +646,7 @@ void Ceylan::System::getPreciseTime( Second & seconds,
 #else CEYLAN_USES__FTIME_S
 
 	throw SystemException( "System::getPreciseTime : "
-		"not available on this platform "
-		"(no ::gettimeofday function found)." ) ;
+		"not available on this platform." ) ;
 
 #endif // CEYLAN_USES__FTIME_S
 
