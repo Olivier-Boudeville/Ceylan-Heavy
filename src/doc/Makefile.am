@@ -7,7 +7,7 @@ EXTRA_DIST = \
 	Ceylan-@CEYLAN_VERSION@-changes.txt       \
 	web
 
-# For tool versions :
+# For doxygen and dot tool versions :
 include $(srcdir)/../conf/build/CeylanToolsSettings.inc
 
 # This section takes care of the web documentation.
@@ -161,7 +161,7 @@ site: common
 
 common: 
 	@echo; echo "@CEYLAN_INSTALL_STYLE@    Copying common web files to \
-	local doc repository\
+	local doc repository \
 	[@CEYLAN_LOCAL_WEB_SHARED_DIR@]@CEYLAN_DEFAULT_STYLE@"
 	@if [ -d "@CEYLAN_LOCAL_DOC_DIR@" ] ; then \
 	chmod a+w @CEYLAN_LOCAL_DOC_DIR@; else \
@@ -206,7 +206,7 @@ api: check-dot fix-dox-conf
 	@cp -f $(srcdir)/web/common/doxygen/*.png \
 	@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html
 	@echo
-	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark\
+	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark \
 	@CEYLAN_CURRENT_VERSION_PREFIX@ API, which is located in : \
 file://@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/index.html@CEYLAN_DEFAULT_STYLE@"
 	
@@ -286,7 +286,7 @@ toMirror:
 toMirror-rsync: site
 	@echo
 	@echo; echo "@CEYLAN_INSTALL_STYLE@    Updating @PROJECT_NAME@\
-	$(MIRROR_HOSTNAME)'s website from local web repository\
+	$(MIRROR_HOSTNAME)'s website from local web repository \
 	[@CEYLAN_LOCAL_WEB_DIR@] using rsync@CEYLAN_DEFAULT_STYLE@"
 	@echo
 	@opt=$(RSYNC_OPT); $(RSYNC) $$opt @CEYLAN_LOCAL_WEB_DIR@/* \
@@ -321,11 +321,11 @@ check-scp:
 		
 		
 remind-locations:
-	@echo; echo "@CEYLAN_INSTALL_STYLE@    + the following\
+	@echo; echo "@CEYLAN_INSTALL_STYLE@    + the following \
 	documentation repositories are available :"
 	@echo "      * local doc directory : @CEYLAN_LOCAL_DOC_DIR@"
 	@echo "      * local web site      : @CEYLAN_LOCAL_WEB_DIR@/main/index.html"
-	@echo "      * local web API       :\
+	@echo "      * local web API       : \
 	@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/index.html"
 	@echo "      * official website    : @CEYLAN_SF_VERSION_URL@"
 	@echo "@CEYLAN_DEFAULT_STYLE@"		
