@@ -17,6 +17,11 @@ using namespace Ceylan::Maths ;
 using namespace Ceylan::Maths::Random ;
 
 
+#ifdef CEYLAN_USES_CONFIG_H
+#include "CeylanConfig.h"            // for CEYLAN_DEBUG_RANDOM and al
+#endif // CEYLAN_USES_CONFIG_H
+
+
 /// Default seed for random generators.
 const Seed RandomGenerator::DefaultSeed = 1 ;
 
@@ -29,7 +34,9 @@ RandomGenerator::RandomGenerator( Sample lowerLimit, Sample upperLimit,
 	_seed( aSeed ) 
 {
 
+#if CEYLAN_DEBUG_RANDOM
 	LogPlug::trace( "Maths::RandomGenerator constructor called." ) ;
+#endif // CEYLAN_DEBUG_RANDOM
 
 	if ( _lowerLimit >= _upperLimit )
 		throw MathsException( "RandomGenerator : lower limit (" 
@@ -51,15 +58,21 @@ RandomGenerator::RandomGenerator( Sample lowerLimit, Sample upperLimit,
 RandomGenerator::~RandomGenerator() throw()  
 {
 
+#if CEYLAN_DEBUG_RANDOM
+	LogPlug::trace( "Maths::RandomGenerator destructor called." ) ;
+#endif // CEYLAN_DEBUG_RANDOM
+
 }
 
 
 const string RandomGenerator::toString( VerbosityLevels level ) const throw()
 {
+
 	return "Random generator output ranging from "
 		+ Ceylan::toString( _lowerLimit ) + " to " 
 		+ Ceylan::toString( _upperLimit ) 
 		+ ", with initial seed being " + Ceylan::toString( _seed ) ;
+		
 }
 
 
