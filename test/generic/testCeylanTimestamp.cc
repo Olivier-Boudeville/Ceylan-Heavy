@@ -6,6 +6,7 @@
 
 using namespace Ceylan ;
 using namespace Ceylan::Log ;
+using namespace Ceylan::System ;
 
 
 /**
@@ -85,6 +86,56 @@ int main( int argc, char * argv[] )
 		else
 			LogPlug::info( "Third timestamp is superior "
 				"or equal to first." ) ;
+		
+		LogPlug::info( "Testing now duration descriptions." ) ;
+		
+		Second duration = 0 ;
+		
+		LogPlug::info( "A duration of " + Ceylan::toString( duration ) 
+			+ " second is described as : " 
+			+ Timestamp::DescribeDuration( duration ) + "." ) ;
+		
+		duration = 1 ;
+		
+		LogPlug::info( "A duration of " + Ceylan::toString( duration ) 
+			+ " second is described as : " 
+			+ Timestamp::DescribeDuration( duration ) + "." ) ;
+
+		duration = 60 ;
+		
+		LogPlug::info( "A duration of " + Ceylan::toString( duration ) 
+			+ " seconds is described as : " 
+			+ Timestamp::DescribeDuration( duration ) + "." ) ;
+			
+		duration = 188 ;
+		
+		LogPlug::info( "A duration of " + Ceylan::toString( duration ) 
+			+ " seconds is described as : " 
+			+ Timestamp::DescribeDuration( duration ) + "." ) ;
+		
+		duration = 8000 ;
+		
+		LogPlug::info( "A duration of " + Ceylan::toString( duration ) 
+			+ " seconds is described as : " 
+			+ Timestamp::DescribeDuration( duration ) + "." ) ;
+		
+		duration = 1036827 ;
+		
+		LogPlug::info( "A duration of " + Ceylan::toString( duration ) 
+			+ " seconds is described as : " 
+			+ Timestamp::DescribeDuration( duration ) + "." ) ;
+		
+		duration = 157681234 ;
+		
+		LogPlug::info( "A duration of " + Ceylan::toString( duration ) 
+			+ " seconds is described as : " 
+			+ Timestamp::DescribeDuration( duration ) + "." ) ;
+		
+		duration = 1892160000 ;
+		
+		LogPlug::info( "A duration of " + Ceylan::toString( duration ) 
+			+ " seconds is described as : " 
+			+ Timestamp::DescribeDuration( duration ) + "." ) ;
 		
 		
         LogPlug::info( "End of Timestamp test." ) ;
