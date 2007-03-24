@@ -58,12 +58,12 @@ win_pthread_MD5="xx"
 
 # gcc : http://www.gnu.org/software/gcc/gcc.html
 
-gcc_VERSION="4.1.1"
+gcc_VERSION="4.1.2"
 
 gcc_ARCHIVE="gcc-${gcc_VERSION}.tar.bz2"
 gcc_DOWNLOAD_LOCATION="ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/gcc-${gcc_VERSION}"
 gcc_ALTERNATE_DOWNLOAD_LOCATION="ftp://ftp.uvsq.fr/pub/gcc/releases/gcc-${gcc_VERSION}"
-gcc_MD5="ad9f97a4d04982ccf4fd67cb464879f3"
+gcc_MD5="a4a3eb15c96030906d8494959eeda23c"
 gcc_BUILD_TREE="gcc-${gcc_VERSION}-buildTree"
 gcc_SOURCE_TREE="gcc-${gcc_VERSION}-sourceTree"
 
@@ -96,7 +96,7 @@ gdb_MD5="a4df41d28dd514d64e8ccbfe125fd9a6"
 
 # dot : http://www.research.att.com/sw/tools/graphviz/
 
-dot_VERSION="2.12"
+dot_VERSION="@DOT_VERSION@"
 dot_ARCHIVE="graphviz-${dot_VERSION}.tar.gz"
 dot_DOWNLOAD_LOCATION="http://www.graphviz.org/pub/graphviz/ARCHIVE"
 dot_ALTERNATE_DOWNLOAD_LOCATION=""
@@ -106,7 +106,7 @@ dot_MD5="e5547bc0ec47943c72f5c3e2b5dff58f"
 
 # doxygen : http://www.stack.nl/~dimitri/doxygen/
 
-doxygen_VERSION="1.5.1"
+doxygen_VERSION="@DOXYGEN_VERSION@"
 doxygen_ARCHIVE="doxygen-${doxygen_VERSION}.src.tar.gz"
 doxygen_DOWNLOAD_LOCATION="ftp://ftp.stack.nl/pub/users/dimitri"
 doxygen_ALTERNATE_DOWNLOAD_LOCATION=""
