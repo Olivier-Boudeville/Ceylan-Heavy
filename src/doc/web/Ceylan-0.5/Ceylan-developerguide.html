@@ -143,6 +143,10 @@ be installed to select them but may clash with others, and so on. This implies u
 	<li>update the various version-related files and directories : <code>src/doc/basic/Ceylan-*-template.txt.in</code> (including Ceylan-NEWS-template.txt.in), <code>src/doc/web/Ceylan-x.y</code>, under <code>trunk/src/conf/build</code> execute <code>make download-config-scripts</code>, etc.
 </li>
 
+	<li>on Windows, update the check-out, load the previous solution (<code>trunk/src/Ceylan-x.y.sln</code>), rename it (right-click) with newer version, do the same for the library in solution (<code></code>
+
+</li>
+
 	<li>under <code>trunk/src/conf/build</code>, use <code>autogen.sh --chain-test</code> to check everything is working as expected : all the tests must always succeed, not depending on how many times they are run</li>
 	
 	<li>create a distribution with <code>./autogen.sh --only-prepare-dist</code> : it should produce an archive named <code>trunk/ceylan-x.y.tar.bz2</code> (note : filenames too long are skipped, as long as they are only *.vcproj that is not too serious). Build that package on as many other hosts as possible, at least one time on each supported platform. For example, <code>scp ceylan-x.y.tar.bz2 $TOSFCF && sfcf</code> to transfer the archive to Sourceforge's compile farm and to log to their platform chooser</li>

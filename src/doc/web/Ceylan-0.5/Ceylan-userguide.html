@@ -1,0 +1,687 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01//EN'
+'http://www.w3.org/TR/html4/strict.dtd'>
+<!--    This document is a part of the Ceylan project 
+        For any comment, please mail to olivier.boudeville@online.fr
+-->
+<!--    
+        Creation date : 2004, February 13.
+        Author : Olivier Boudeville (olivier.boudeville@online.fr)
+        Update made by :  the author
+        Version number : 0.1
+        Adapted from : http://www.w3.org/Style/Examples/007/maps.html
+-->
+
+<html lang="EN">
+<head>
+  <title>Ceylan - User Guide for the Ceylan 0.5 version</title>
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=iso-8859-1">
+  <meta name="description" content="Ceylan Project">
+  <meta name="keywords" content="library, generic, GPL, developer, guide">
+  <link href="../images/Ceylan-icon.png" rel="Ceylan icon">
+  <link rel="stylesheet" type="text/css" href="../common/css/Ceylan.css" media="screen, print, projection, tv">
+</head>
+
+<body>
+
+  <div class="banner">
+    <p><em>General</em> <a href="../common/black.html" onclick="parent.toolbar.location=&#39;../main/MainMenu.html&#39;">home page</a>
+    <a href="../main/Map.html">site map</a> <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan-0.5]%20User%20Guide">mail  us</a></p>
+  </div><br>
+  <a name="_top_"></a>
+
+
+<h1>User Guide for the Ceylan 0.5 version</h1>
+
+<p>
+This user guide is not yet written. There are some informations here though, and one may refer to the <a href="../main/documentation/MiniFAQ.html" target="_blank">Ceylan Mini-FAQ</a> and to the
+<a href="Ceylan-developerguide.html" target="_blank">Ceylan Developer guide</a> for further informations.
+</p>
+
+
+
+
+<h3>How does the middleware layer works ?</h3>
+
+<p>
+A multiplexed server stream spawns a connection whenever a client connects to the listening socket.
+<p>
+This connection lives on top on a dedicated socket, which gets selected on the server side whenever they are bytes to be read.
+</p>
+
+
+<p>
+The multiplexed server detects it (at least one file descriptor is selected), awakes the corresponding anonymous protocol-aware socket, which is turn trigger its protocol server (by calling its notifyDataAvailability method). The protocol server determines how may bytes it needs to decode the next chunk of informations from the client, and asks it to its marshaller, thanks to its retrieveData method. This marshaller uses its internal buffer (memory stream instance) to read the incoming bytes, and will returned the bytes available for reading in its buffer. 
+</p>
+
+
+<p>
+
+For client/server model :
+
+<ul>
+
+<!--
+	<li><b></b> : </li>
+-->
+
+	<li>Each <b>client</b> can, by default, call any method of any object of any ActiveObject subclass on the server</li>
+	<li>To do so, the client must <b>specify</b> to the server : a class identifier, an instance identifier, a method identifier, and the list of its arguments</li>
+	<li>On the <b>server-side</b>, first there is a dictionnary whose keys are class identifiers, and whose values are classes (actually, their dictionary of instances). It is known as <em>the class dictionnary</em></li>
+	<li>Second, on a per-class basis, there is an <b>instance dictionnary</b> : for this given class, its keys are instance identifiers, and its values are pointer to instances of this class</li>
+
+</ul>
+
+</p>
+
+<h3>Understanding atomic sleeps and scheduling granularity</h3>
+<p>
+Being able to sleep the shortest amount of time is useful in different contexts, to lighten busy loops or to prevent the operating system from considering the application to be CPU-hungry, which would lead to make it starve on purpose.
+</p>
+
+<p>
+To provide these atomic sleeps, one has to guess what is the smallest predictable sleep time. In general it corresponds to an OS time slice for light to average system loads, or to a few of them whenever the load gets high. To compute the time slice, the algorithm is to request finely increasing sleeps, and to detect thresholds, since sleeps are made of a certain number of OS time slices, as shown here for a GNU/Linux 2.6.17 laptop :
+
+<center>
+<img src="schedulingGranularity-steps.png" alt="Steps"></img>
+</center>
+
+</p>
+
+<p>
+If we zoom we realize that the very first threshold is not as constant as hoped (see the three thresholds, the first one having a huge peak) :
+<center>   
+    <img src="schedulingGranularity-steps-zoomed.png" alt="Steps"></img>
+</center>
+</p>
+
+<p>
+Hence we prefer retaining the first next stable threshold, the second one, for our granularity basis : one would not like to be unlucky and land onto the huge reproducible peak at 0.5 or 1 ms (curiously enough, it is the real actual time slice, which nevertheless leads to more than 25 times longer sleeps). 
+</p>
+
+<p>
+With an almost null load, the second step is remarkably stable :
+<center>   
+    <img src="schedulingGranularity-steps-threshold.png" alt="Steps"></img>
+</center>
+</p>
+
+<p>
+With a small load, it remains quite stable as well (the drawing stopped as soon as our algorithm decided it had found a stable threshold) :	
+<center>   
+    <img src="schedulingGranularity-with-small-load.png" alt="Steps"></img>
+</center>
+</p>
+
+<p>
+With an heavy load, the stability is still sufficient for our algorithm to select that same second time-slice :
+<center>   
+    <img src="schedulingGranularity-with-heavy-load.png" alt="Steps"></img>
+</center>
+
+</p>
+
+<p>
+Finally, in all these cases our algorithm always chose to report an effective scheduling granularity of 8 ms (the second threshold). Therefore the atomic sleeps will managed to obtain it reliably.
+</p>
+
+
+
+<h3>A few hints</h3>
+
+<p>
+<a name="toc"></a>
+  <center>
+  	<table style="border: none">
+  	<tr>
+		<td>
+			<div class="box" summary="Table of contents" style="padding: 8px">
+  				<a href="#event">Event system</a><br>
+  				<a href="#MVC">Model-View-Controller framework</a><br>
+  				<a href="#locatables">Locatables and referential compositions</a><br>
+  				<a href="#cubbyhole">Cubbyhole and random notes</a><br>
+  				<a href="#troubleshooting">Hints &amp; troubleshooting</a><br>
+    		</div>
+		</td>
+	</tr>
+  	</table>
+  </center>
+</p>
+ 
+
+<a name="event"></a> 
+<h2>Event system</h2>
+<p>
+It is based on a base framework of three actors :
+<ul>
+	<li><b>Events</b> (Events class), which encapsulates the concept of high-level events</li>
+	<li><b>Event sources</b> (EventSource class), which keep track of registered event listeners, and send them new events as they are generated</li>
+	<li><b>Event listeners</b> (EventListener class), which subscribe to one or more event sources from whom they receive next generated events as long as they do not unsubscribe</li>
+</ul>
+
+</p>
+
+<p>
+Sources send events to listeners according to the <b>Observer-Subject</b> (EventListener-EventSource) design pattern [More infos : <a href="http://sern.ucalgary.ca/courses/SENG/609.04/W98/lamsh/observerLib.html" target="_blank">1</a>, <a href="http://www.research.ibm.com/designpatterns/example.htm" target="_blank">2</a>]. 
+</p>
+
+
+<p>
+On a sidenote, events are not stored by their source, so if a listener has to keep track of them it has to make a copy of these incoming events.
+</p>
+
+<h3>Inner working of the event system</h3>
+
+<p>
+Since listeners subscribe to their source(s), each listener <b>can</b> know the sources it is subscribed to. <code>EventListener</code> instances keep automatically track of the sources they are linked to.
+</p>
+
+<p>
+Reciprocally, event sources <b>have to</b> know their listeners, therefore <code>EventSource</code> instances have a list of the currently subscribed listeners.
+</p>
+
+<p>
+Therefore there is a reciprocal link between sources and listeners. However, there is a strong and necessary link (sources to listeners) and a weak and accidental one (listeners to sources).
+</p>
+
+<p>
+The reason for this difference is that the event framework is built not only so that information go from sources to listeners, but also so that <b>the event propagation is normally triggered by the sources, not the listeners</b> : as soon as the source has new events to send, it send them to all its listeners.
+</p>
+
+
+<h4>Callable sources &amp; caller listeners</h4>
+
+<p>
+The previously discussed solution is convenient as long as the receiver (here, the listener) is to be activated by incoming events. If, on the contrary, the listener has to be activated on its own, i.e. independently of its sources (there are many cases where listeners cannot have their activation cycle managed by the sources), it becomes a problem : either the listener is to be called at random times by its sources, and it has to cope with maybe superfluous incoming events that moreover should stored for later reading, or the listener has to trigger itself its sources to have them deliver their events, if any, when this listener is ready.
+</p>
+
+<p>
+We deemed the later solution was smarter than the former, so, thanks to our double-link, listeners may ask special sources for their latest event. That is, <code>CallableEventSource</code> instances may be asked by already registered <b>CallerEventListener</b> instances to notify their state to the calling listener, thanks to an event. This event should be self-sufficient and autonomous, so that it fulfills all needs of the listener for informations coming from this event source.
+</p>
+
+<p>
+The event is actually sent when the <code>getSourceEvent</code> method of the callable source is called by one of its already registered caller listeners. It returns the corresponding event state event.
+</p>
+
+<p>
+Note that listeners will get only exactly one event (maybe the latest, in all cases sources have to answer, and answer once), i.e. listeners may not get all the events that occured since the last time they talked to the event source. Therefore each event of these sources should be autonomous and describe the full state of the source. We will see that this way of driving the communication is very useful in the case of the MVC framework.
+</p>
+
+<p>
+As events are objects, they benefit from the inheritance scheme, so application developers using the event framework ought to create their own event child class to specialize it according to their needs. Dealing with objects has however a cost, a slight performance overhead, so these events are better used for higher level needs than, for example, mouve motion recording, since there might be far too many raw events to handle efficiently. 
+</p>
+
+ <br><br>
+ <center>[<a href="#toc">Back to table of contents</a>]</center>
+ <br><br><br>
+
+<a name="MVC"></a> 
+<h2>Model-View-Controller (MVC) framework</h2>
+
+<p>
+Most interactive objects can benefit from a decoupling of :
+<ul>
+	<li>their <b>logic</b> (the way they behave)</li>
+	<li>the <b>informations they can send to their environment</b> (such as their appearance)</li>
+	<li>the <b>informations their environment can send to them</b> (such as incoming events)</li>
+</ul>
+
+</p>
+  
+<p>
+With the MVC framework, the previous split items are respectively described as :
+<ul>
+	<li>the <b>model</b> : the state of the object itself</li>
+	<li>its <b>views</b> (if any) : what can be perceived of the object's state from the outside</li>
+	<li>its <b>controllers</b> (if any) : what might change the object's state from the outside</li>
+</ul>
+
+</p>
+  
+<p>
+For example, in a game, the main character could have :
+<ul>
+	<li>a <b>model</b> describing his current strength, health, equipments, etc.</li>
+	<li>three <b>views</b> which are reflects of his state, such a 3D model of the character walking, a point in a radar map to spot him, and an audio channel dedicated to the sounds it generates while speaking, walking, fighting, etc.</li>
+	<li>two <b>controllers</b> changing its state, such as the keyboard to move him in the world, and the mouse to choose where he should look at</li>
+</ul>
+
+</p>
+  
+<p>
+In terms of dependence, the model is autonomous, whereas both view and controller depends on it. 
+</p>
+
+
+<h3>Inner working of the MVC framework</h3>
+
+
+<h4>Event-driven MVC framework</h4>
+
+<p>
+In this pattern, activation of the MVC trio is based on the asynchronous surge of events.
+</p>
+
+<h3>From controller to model</h3>
+<p>
+The controller is an event source, and models are its event listeners : multiple models can be linked to one controller instance. To notify its models, maybe after having been updated from various input devices, a controller just has to use the <code>notifyAllListeners</code> method it inherited from <code>EventSource</code>. To do so, it may just forge an MVCEvent instance (probably a direct or indirect child class of it), feed it with all the necessary data, and call its <code>notifyAllListeners</code> protected method.
+</p>
+
+<p>
+This method will call in turn all its listeners, i.e. the linked models, and notify them with this MVC event, thanks to their overriden <code>beNotifiedOf</code> method.
+</p>
+
+<h3>From model to views</h3>
+<p>
+From a model point of view, informations are coming partly from its controllers, if any : a model can have zero, one or more controllers. When a model is notified by a controller, its <code>beNotifiedOf</code> method is called and it can update its state accordingly.
+</p>
+
+
+<h4>Schedule-friendly MVC framework</h4>
+
+<p>
+If more complex cases, one cannot rely on incoming events to give the pace of the application, because events might be too numerous, occur at variable rate, or because an application clock is desired.
+</p>
+  
+<p>
+This is the case when the MVC framework is to work with the scheduler/renderer couple. The former triggers the update of the input devices, feeds the registered models with the processing power they requested, either periodically and/or at specific simulation ticks, and activates the later, during a scheduled rendering tick, which has to take care of the registered views and renders them appropriatly.
+</p>
+
+<p>
+All three main tasks (updating the inputs, simulating the models, rendering the views) are uncoupled and scheduled independently at their own frequency. Therefore, if a controller was to send events to its model(s), it would lead to activate the model(s) when calling their <code>beNotifiedOf</code> method, which would link their activation and bypass the scheduler. In this case, the general guideline is therefore that every time an event source is to send events to a listener, actually it is the listener that will ask the source for information. 
+</p>
+
+<p>
+For example, the model will ask its controllers about their states, and the views will ask their models about their states. Thus controllers will not flood their models with events, the information has not to be stored, and is collected only when fresh and needed. On the source side, be it controller (for model) or model (for view), one has to deal with <code>CeylanCallableEventSource</code> which, on every call to their <code>getSourceEvent</code> method, have to return an event which describes their exported state. For a controller, it would be the aggregation of all commands deduced from the various linked input devices. For a model, it would be all the exported variables that allows the views to render of this model.
+</p>
+
+<p>
+Reciprocally, the <code>CeylanCallerEventListener</code> instance can solicit the callable event source at its own pace. The call to <code>getSourceEvent</code> will cause the source to return an event describing its exact current state, so that the listener has the relevant information at the appropriate time.
+</p>
+
+<p>
+This new <code>CeylanCallableEventSource/CeylanCallerEventListener</code> pair specializes the <code>CeylanEventSource/CeylanEventListener</code> pair by adding a way for the communication to go the other way round, but still the specialized pair is able to braodcast the traditional way. For example, in the MVC framework, controllers can trigger calls to the models, and models can trigger calls to the view, thanks to the <code>beNotifiedOf</code> listener method.
+</p>
+
+
+<h4>Process-based synergy</h4>    
+<p>
+The scheduler manages the clock, and the simulation objects, which can be seen as models, behave like autonomous processes. A good design pattern, inspired from <a href="http://www.erlang.org" target="_blank">Erlang</a>, is to have them communicate only by message passing or, similarly, method calls. Global variables and all other ways of sharing contexts and side-effects should be avoided, to keep the interactions clear and to ease the distributed behaviour of the application. 
+</p>
+
+<p>
+To avoid these shared informations, one just has to have them owned exclusively by a dedicated model. Instead of accessing directly these variables, the other processes-objects will therefore just have to send messages to the object owning the data.
+</p>
+  
+ <br><br>
+ <center>[<a href="#toc">Back to table of contents</a>]</center>
+ <br><br><br>
+
+
+
+
+
+<a name="locatables"></a> 
+<h2>Locatables and referential compositions</h2>
+
+<p>
+When dealing with objects in space (most often, 2D or 3D space), one has to keep track of where they are, and on what position. For example, a spaceship in 3D can be located in [ 30, 20, 50 ] and it can be oriented towards a distant star located at [ 30 000, 15 000, 1 000 ]. Usually, the location of a rigid-body object applies to its supposed center of gravity. This object is generally defined in its own local referential, the origin of which being its center of gravity, and its orientation is set so that the referential axis correspond to the object's main axis, for example its axis of symetry. Speaking of 3D orthonormal basis, our spaceship would therefore have its nose lined up with, say, the y=0 axis, whereas its wing (if any !) would be parallel to the x=0 axis.
+</p>
+  
+<p>
+When wanting the spaceship to be moved in world space, we just have to define the transformation matrix which converts its local referential to the global (world) one. The role of this transformation matrix is to first rotate the spaceship around its center of gravity so that it is pointed to the right direction, and then to translate it so that the spaceship is in the correct location.
+</p>
+
+<p>
+The first task, rotating, is making so that the main axis of the object, let's say y=0, is rotated so that it passes through the point defining with the origin the desired line of sight. It can be done thanks to one complete rotation or, in 3D, two rotations around the axis of the local referential. It all cases, it results into a rotation matrix.
+</p>
+
+<p>
+The final step, putting the object in its right location, can be performed thanks to a translation of its already rotated local referential to the point of world-space where the spaceship's center of gravity should reside. This translation can be achieved thanks to the homogeneous matrices, which are able to store both the initial rotation and the translation.
+</p>
+
+
+<p>
+Let, in 3D-space, X being a point in local referential Rl to be transformed into a point X' in global (world) referential Rg. 
+<code>X = 
+<table>
+	<tr><td>x</td></tr>
+	<tr><td>y</td></tr>
+	<tr><td>z</td></tr>
+</table></code>
+
+<code>X' =
+<table>
+	<tr><td>x'</td></tr>
+	<tr><td>y'</td></tr>
+	<tr><td>z'</td></tr>
+</table></code>
+</p>
+
+<p>
+To save time-consuming operations, the vast majority of 3D computing is performed thanks to homogeneous matrices. These matrices have one more dimension than the space they are applied to (example : for 3D, they are 4x4 matrices), and in one operation they are able compute a complex transformation mixing translations and rotations. One has therefore to convert all 3D vectors into 4D vectors, the last coordinate being a non-null number for points which are not located at the infinite. As for all number a non-null 
+
+<code>
+<table>
+	<tr><td>x</td></tr>
+	<tr><td>y</td></tr>
+	<tr><td>z</td></tr>
+	<tr><td>a</td></tr>
+</table>
+</code>
+and
+<code>
+<table>
+	<tr><td>x/a</td></tr>
+	<tr><td>y/a</td></tr>
+	<tr><td>z/a</td></tr>
+	<tr><td>1</td></tr>
+</table>
+</code>
+represents the same point in 3D space, a is often choosen equal to 1 to simplify computations. We call the a coordinate the <em>homogeneous factor</em> (or scale factor).
+</p>
+
+<p>
+<code>X = 
+<table>
+	<tr><td>x</td></tr>
+	<tr><td>y</td></tr>
+	<tr><td>z</td></tr>
+</table></code>
+
+<code>X' =
+<table>
+	<tr><td>x'</td></tr>
+	<tr><td>y'</td></tr>
+	<tr><td>z'</td></tr>
+</table></code>
+</p>
+
+
+<p>
+ Let's search the 4x4 homogeneous matrix Hlg which transforms a point in Rl into a point in Rg :<br>
+<code> X' = Hlg. X</code>
+Homogeneous matrix theory teaches us that these matrices looks like :
+<table>
+	<tr><td rowspan="3" colspan="3">R3x3</td><td>Tx</td></tr>
+	<tr><td>Ty</td></tr>
+	<tr><td>Tz</td></tr>
+	<tr><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+</table></code>
+ 
+</p>
+
+<p>
+The block multiplication matrix shows us that :
+<code>T = 
+<table>
+	<tr><td>Tx</td></tr>
+	<tr><td>Ty</td></tr>
+	<tr><td>Tz</td></tr>
+</table></code>
+is the translation vector, which is applied after the R3x3 matrix rotated the object so that its line of sight points to the right direction. One way to determine v', the image of a vector v through rotation matrix, is to describe it thanks to an axis of rotation <code>axis</code>
+ and an angle <code>a</code>, which results in following endormorphism <code>e</code> :
+<code>v' = e(v) = cos(a)*v + ( ( v | axis ) * ( 1 - cos(angle) ) ) * axis + sin(a) * ( axis ^ v )</code>, with <code>(v1|v2)</code> meaning the dot product of v1 and v2, and <code>v1 ^ v2</code> their cross product.
+</p>
+
+<p>
+We can therefore deduce the rotation matrix from the endomormorphism, by evaluating <code>e</code> when axis vectors are applied.
+</p>
+
+<p>
+Finally, each object which has to be locatable (for example, a MVC-model of a rigid-body object) can inherit from Locatable.   
+</p>
+
+
+<h3>Using a tree allows to compute only once a given global referential</h3>
+
+<p>
+When dealing with multiple referential compositions (ex : a robot whose finger is defined relatively to its hand, which is relative to its arm), one has just to multiply successive transformation matrices to convert referentials. Finger movement is most easily expressed in hand space, hand movement is easily defined in arm space, and so on.</p>
+
+<p>If we call Rfh the transformation matrix from finger space to hand space, Rha from hand to arm, then the transformation matrix from finger to arm Rfa is : <code>Rfa = Rha.Rfh</code>. As, on a referential (say, the robot's torso Rt) can depend multiple referentials (say, the robot's left and right arms, Rla and Rra, and legs, Rll and Rlr), the relationship between composed referentials can be modelled as a tree : the root is the father referential (ex : the world space), and all its children are defined relatively to their own father. Note that when going down through the tree, we <code>right-</code>multiply the current global matrix by the next local matrix. 
+</p>
+
+<p>
+<center>
+    <img src="Referentials-tree.png" alt="Referentials tree"></img>
+</center>
+</p>
+
+<p>
+Therefore, to convert a movement of the robot thumb expressed in its hand referential (where determining it is obvious) to a movement expressed in world (global) coordinates, each vector Vh becomes <code>Vw = R(house to world).R(torso to house).R(arm to torso).R(hand to arm).Vh</code>
+</p>
+
+<p>
+Note that <code>[ R(a to b ) ^-1] = R(b to a)</code>, the matrices behave as their corresponding transformation suggest.  
+</p>
+
+
+<p>
+Not only each node of the tree can contain its local referential (say, at the torso level, the transformation matrix from torso to house), but they can also contain premultiplied matrices, from the root to the node's level. In our example, at the torso level, besides the local "torso to house" matrix, there could be a "torso to world" matrix which would be the result of the right-multiplication of all local matrices, from the root to the node's level : the transformation matrix from torso to global would be : <code> R(torso to world) = R(house to world).R(torso to house)</code>. That way, to compute movements relative to arms and legs, this torso to global matrix could be used, and be computed one time for all.</p>
+
+<p>Besides, a propagation mechanism for up-to-date state can be added : starting from a situation where all referentials are up-to-date, if the robot's right arm moves (probably relatively to the torso), then the robot's right hand and fingers referentials have to be recomputed too. It is done by changing the local right arm referential according to the movement, recomputing the global referential for the right arm by multiplying the unchanged global matrix of the torso by the new local matrix of the right arm. Then all the subtree whose root is the robot's right hand have to be recomputed before use.
+</p>
+
+<p>To avoid many useless computations, the global referential for each node is linked to an up-to-date status. When a node is changed, then all its subtree including itself is marked as "not up-to-date". Any access to a node's subtree would lead to the recomputing of all transformation matrices, starting from the root, from the last unchanged matrix to the node whose global refential is wanted.
+
+</p>
+
+<p>
+To test thoroughfully Ceylan, one should use <a href="http://valgrind.org/" target="_blank">Valgrind</a> (on x86-Linux). To do so, the recommended way is to make use of our script <code>valgrindTest.sh</code> (<code>${CEYLAN_ROOT}/src/code/scripts/shell</code>) : in order to execute the test, for instance <code>testOSDLPolygon</code>, one just has to enter <code>valgrindTest.sh testOSDLPolygon</code>. Then the memory checker messages will be output, and a tedious task will have to be achieved.
+</p>
+
+ <br><br>
+ <center>[<a href="#toc">Back to table of contents</a>]</center>
+ <br><br><br>
+
+
+<a name="cubbyhole"></a>
+<h2>Cubbyhole and random notes</h2>
+
+<h3>TextDisplayable and toString method</h3>
+<p>
+Most objects should be able to output a textual representation of their state, notably for the sake of debugging. They all should implement the <code>Ceylan::TextDisplayable</code> which enforces that the standard <code>virtual const std::string toString( Ceylan::VerbosityLevels level = Ceylan::high ) const throw()</code> method is defined. The verbosity level allows to select one of the three possible levels of detail ( <code>Ceylan::low</code>, <code>Ceylan::medium</code> or <code>Ceylan::high</code>). 
+</p>
+
+<p>
+All <code>tostring</code> methods should be able to output their messages in raw text. However, for complex objects, a better presentation can be achieved by offering the choice of an HTML input. To know which text mode was chosen (see <code>CeylanLogHolder.h</code>), the toString method just has to call the static method <code>TextDisplayable::GetOutputFormat()</code> which returns a <code>TextOutputFormat</code>. The value can be either <code>TextDisplayable::rawText</code> or <code>TextDisplayable::html</code>.
+</p>
+
+<p>
+Depending on the returned value, the toString method can construct a raw string (<code>Ceylan is a good library</code>) or a string that contains some mark-up information (<code>Ceylan is a &lt;b&gt;good&lt;/b&gt; library</code>. This is especially useful when used in conjonction with <code>formatStringList</code> (see <code>CeylanStringUtils.h</code>) so that lists of strings are displayed accordingly.
+</p>
+
+<p>
+Finally, at the end of each toString result, one should not finish its sentences with a dot (<code>An incredibly amazing library</code>, not <code>An incredibly amazing library.</code>) to allow better toString composition : when an object displays its state, it might call this method on its sub-objects to account for their own part of the overall object state.
+</p>
+
+
+
+</p>
+
+<a name="troubleshooting"></a>  
+<h2>Hints &amp; troubleshooting for library users</h2>
+
+<p>
+For all internal issues about the Ceylan library, not related to the way it is used but to the way it behaves, please refer to our general Ceylan <a href="Troubleshooting.html">troubleshooting section</a>. For application-specific questions, as a library user, read below.
+</p>
+
+<dl>
+
+	<dt>After having installed Ceylan thanks to LOANI, none of the HTML helper script is available</dt>
+	
+	<dd>
+	<p>
+	For example, one wants to use the <code>linked</code> micro-script to generate automatically a bullet list with HTML links in an HTML file (nedit users : Alt-x then type the script name), but the script is not found.
+	</p>
+	
+	<p>First, one has to ensure one's PATH environment variable lists the relevant directory, which is <code>[...]Ceylan/Ceylan-x.y/src/code/scripts/shell</code>. Then all the scripts such as <code>putLinkList.sh</code> will be available.
+	</p>
+	
+	<p>If one wants to be able to access them with their short name (<code>linked</code>), then one should execute <code>makeHTMLLinks.sh</code> in the directory of this script. It will create symbolic links with short names (<code>linked</code>) that point to scripts whose names are not shrinked (<code>putLinkList.sh</code>). This is not done automatically since it might pollute the user environment with short executable names.
+ 	</p>
+	
+
+	</dd>
+
+	<dt>After having moved a directory containing Ceylan and/or libtool, the link stage fails with <code>libtool: link: cannot find the library XXX</code> (often : <code>libstdc++.la</code>)</dt>
+	
+	<dd>This seems to be one of the way too many limitations of libtool : this wonderful tool manages, in some cases, to store in its scripts hardcoded full paths to other tools, which prevents from moving nearly anything afterwards. Rule of thumb : think carefully before choosing the directory where LOANI is to be run, so that nothing has to be moved afterwards.</dd>
+ 
+ 
+	<dt>My program crashes or never terminates, how can I see its logs nevertheless ?</dt>
+	<dd>
+	<p>
+First, avoid using the HTML plug (do not execute <code>myOSDLProgram --HTMLPlug</code>, execute simply <code>myOSDLProgram</code>), because HTML plug needs a special final phase in order to gather all logs and generate the HTML set of pages accordingly. In both cases, crash or never-ending program, this phase would not take place and the log would not be available.
+	</p>
+	<p> 
+Not specifying any plug defaults to the classical plug, which writes logs directly into a file (ex : <code>myOSDLProgram.log</code>). As this plug does not store messages but writes them as soon as they arrive, they cannot be sorted into channels. They however are written in chronological order, and all of them will be available even though your program crashes or does not terminate. To watch these logs in pseudo-real time, one can execute on another terminal, <code>tail -f myOSDLProgram.log</code>.
+	</p>  
+	<p>Example of log-safe command, for a program sending logs and messages on the console too (using <code>std::cout</code> and/or <code>std::cerr</code>) : <code>bin/engine/testOSDLSchedulerNoDeadline $PLUG  2>&1 | tee run.txt</code>. Console messages will be both displayed on real-time and stored in <code>run.txt</code> file for later use.</p>
+	<p>The <code>PLUG</code> environment can be left undefined to benefit from classical real-time basic logs. For more stable programs, terminating gracefully, one can use <code>export PLUG='--HTMLPlug'</code> to benefit from user-friendly logs, very useful when numerous messages are to be analyzed (a very common case, where critical messages are often missed).
+	</p>
+	<p>
+	On some crashes, even the raw log file (with default plug) cannot be updated. Apparently, executing the same program from gdb allows the log file to be written nevertheless.
+	</p>
+	
+	</dd>
+
+
+	<dt>The log of my program shows as last message : <code>Unknown exception caught</code></dt>
+	<dd>
+	<p>
+	Most of the time, it corresponds to a <code>try/catch</code> clause as defined in the <code>testOSDL*.cc</code> (ex : see <code>testOSDLScheduler.cc</code>), which caught an unexpected exception. The reason for that is often that a method had an explicit declaration for thrown exceptions (ex : <code>throw()</code>) whereas other exceptions might propagate to this method as well (ex : a function called into that method raising some other exception). The compiler relied on the declaration, and the unexpected exception caught at runtime could not be planned, causing the program to fail. The best solution is either to declare all relevant exceptions (recommended), or to not use explicit <code>throw()</code> declarations.
+	</p>
+	</dd>
+ 
+ 
+ 	<dt>It seems that my program crashes because of Ceylan log system !</dt>
+	<dd>
+	<p>One can experiment a crash of his program, run it through a debugger, and see that the crash happens in Ceylan's code, for example a segmentation fault or an abort in : 
+<code>Ceylan::Log::LogMessage::getChannelName() const (this=0x80606c4) at CeylanLogMessage.cc:63</code>. On all the cases we studied, it was due to a faulty life cycle of the user code.</p>
+
+<p>For example, this error can happen when the user provides an object <code>a</code> to an object <code>b</code>, which takes ownership of <code>a</code>, and manages its life cycle. When <code>b</code> is destroyed, then it will destroy <code>a</code> too. If the user provides an automatic variable to <code>b</code> (say, <code>a</code>, defined as <code>A a ;</code>) instead of a specifically dynamically allocated object (say, <code>A & a = new A()</code>), then such crashes may happen. In most cases, the Ceylan log system, which has been stable and unchanged for months, is not guilty !
+	</p>
+
+
+
+	</dd>
+
+</dl>
+
+
+
+<h2>Some general advices</h2>
+
+<h3>Building</h3>
+<dl>
+
+    <dt><code>X.so: undefined reference to `vtable for Y'</code></dt>
+    <dd>Check that you did not forget to define your virtual destructor in class Y. To know whether the symbol exists or lacks, use for instance <code>nm --demangle &lt;your binary&gt;</code>, where your binary is an executable, a library (.so or .a) or a .o.
+	</dd>
+	
+	<dt>I got : <code>*** glibc detected *** corrupted double-linked list: 0x(a number) ***</code> or <code>*** glibc detected *** double free or corruption (!prev): (a number) ***</code></dt>
+	
+	<dd>
+	It seems to happen in some cases where a library has been updated whereas an application using it has not, even when, apparently, no API change occured. Rebuilding correctly (from scratch) the library and then the application should make the issue vanish. See also : next item.
+	</dd>
+	
+	
+	<dt>Some code does not do anything, or does not seem to be called, or program acts weirdly</dt>
+	<dd>
+		<p>On a few cases, one should issue a <code>make clean all</code> and test again to be sure nothing went wrong with dependencies and build.
+		</p>
+		
+		<p>For example, if, in Ceylan source, one has changed a templated implementation, then only a Ceylan header file may have be modified (*.h). In this special case, compiled tests may actually depend on this header file (since they may use the template from the .h to generate their own code), even if the build system does not enforce this dependency (the only dependency for tests is against the library they will be linked to, see <code>GNUmaketests.inc</code>). Therefore, to spare a 'make clean all', the developer might remove both the object file and the executable corresponding to the test, so that they are rebuilt with the new version of the template.</p>
+		
+		<p>Similarly, if a changed test cannot compile anymore, no new executable can be copied to the installation location, whereas a previous version of this test, which used to compile, may still be there. It may confuse the user if he did not notice that one test could not be built.</p>
+		
+		<p>There are a few other reasons (ex : a debugger being used lock a test executable which could not be overwritten with its updated version, etc.) that make the <code>make clean all</code> worth a try.</p>
+		
+   </dd>
+	
+</dl>
+
+ 
+<h3>Debugging under GNU/Linux</h3>
+
+<p>Be it after a crash or an assert, one wanting to have core files on Linux, in order to inspect them post-mortem thanks to gdb, should use <code>ulimit</code>. Example : 
+
+  <center>
+  	<table style="border: none">
+  	<tr>
+		<td>
+			<div class="box" summary="ulimit -c" style="padding: 8px">
+ulimit -c &lt;size of corefile in bytes&gt;<br>
+./yourProgram
+    		</div>
+		</td>
+	</tr>
+  	</table>
+  </center>
+
+<p>
+The core file will be dumped in the current directory. Then run :
+<code>gdb yourProgram core.11341</code> (if the PID of your program was 11341). Once in gdb use the "up" and "down" commands to see the area where the code crashes. Also, if you used gcc to compile your programs, make sure the -g option is included. 
+ </p>
+
+
+<h3>Generating the documentation</h3>
+
+<p>
+If an error occurs while executing <code>make api</code> under <code>src/doc</code>, please ensure that <code>LOANI-installations/OSDL-environment.sh</code> has already been sourced : this script sets notably the library paths for any LOANI-installed doxygen.
+</p>
+
+
+<h3>See also</h3>
+
+<p>
+
+<ul>
+    <li><a href="../main/documentation/CodingConventions.html" target="_blank">Ceylan coding conventions</a></li>
+    <li><a href="../main/documentation/CodingGoodPractises.html" target="_blank">Ceylan coding good practises</a></li>
+<!--
+    <li><a href="" target="_blank"></a></li>
+-->
+</ul>
+
+</p>
+
+
+
+<h4>Some user-related hints</h4>
+<p>
+<ul>
+
+<!--
+    <li><a href="" target="_blank"></a></li>
+-->
+    <li>In case of trouble, run <code>trunk/src/conf/generateBugReport.sh</code>, it will generate a text file containing the report, and tell you what to do with it</li>
+
+</ul>
+
+</p>
+
+  <br>
+  <br>
+
+  <h3>Please react !</h3>
+
+  <p>If you have information more detailed or more recent than those
+  presented in this document, if you noticed errors, neglects or points
+  insufficiently discussed, <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan-0.5]%20User%20Guide">drop us a line</a>!</p><br>
+  <br>
+  <hr>
+  
+  <br>
+  
+      <center>
+        [<a href="#_top_">Top</a>]<br>
+        <br>
+        <em>Last update : Tuesday, March 20, 2007
+
+</em>
+      </center>
+  
+</body>
+</html>
