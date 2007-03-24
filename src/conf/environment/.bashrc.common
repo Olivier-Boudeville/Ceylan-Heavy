@@ -62,7 +62,7 @@ export SF_SHELL="${SF}:/home/users/"`echo "${SF_USER}" | head -c 1`"/"`echo "${S
 
 # Compile farm :
 
-alias sfcf='ssh ${SF_USER}@cf.sourceforge.net'
+alias sfcf='ssh ${SF_USER}@cf-shell.sourceforge.net'
 alias sfshell='ssh ${SF_USER}@shell.sourceforge.net'
 
 
