@@ -66,12 +66,15 @@ while [ $# -gt 0 ] ; do
 	
 	if [ "$1" = "-f" -o "$1" = "--full-test" ] ; then
 		do_chain_tests=0	
-		do_distcheck=1	
+		do_distcheck=0	
 		token_eaten=0
 	fi
 	
 	if [ "$1" = "-o" -o "$1" = "--only-prepare-dist" ] ; then
-		do_build=1
+		# We need to have the library built (do_build=0) even only when only
+		# preparing a distribution package, as the test/autogen.sh needs
+		# Ceylan-0.5/share/Ceylan/*.m4 installed files :
+		do_build=0
 		do_check=1
 		# Install needed to have *.m4 files for aclocal of test ;
 		do_install=0
@@ -152,7 +155,7 @@ SOURCE_OFFSET="../../.."
 
 # Prefix section.
 
-# To guess the prefix, we need the current Ceylan version :
+# To guess the prefix, we need the current Ceylan version :
 VERSION_FILE="../CeylanSettings.inc"
 
 if [ ! -f "${VERSION_FILE}" ] ; then
