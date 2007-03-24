@@ -7,8 +7,6 @@ EXTRA_DIST = \
 	Ceylan-@CEYLAN_VERSION@-changes.txt       \
 	web
 
-# For doxygen and dot tool versions :
-include $(srcdir)/../conf/build/CeylanToolsSettings.inc
 
 # This section takes care of the web documentation.
 
@@ -101,13 +99,13 @@ HTML_FILES           = `find . -name '*.html' -a -type f`
 
 # Tools section
 
-DOXYGEN_ROOT = @CEYLAN_LOANI_INSTALLATIONS@/doxygen-$(doxygen_VERSION)
+DOXYGEN_ROOT = @CEYLAN_LOANI_INSTALLATIONS@/doxygen-@DOXYGEN_VERSION@
 DOXYGEN      = `PATH=$(DOXYGEN_ROOT)/bin:$$PATH which doxygen 2>/dev/null`
 
 DOXYGEN_GENERATED_CONF = @top_builddir@/src/conf/doc/doxygen.conf
 
 
-DOT_ROOT     = @CEYLAN_LOANI_INSTALLATIONS@/dot-graphviz-$(dot_VERSION)
+DOT_ROOT     = @CEYLAN_LOANI_INSTALLATIONS@/dot-graphviz-@DOT_VERSION@
 DOT          = `PATH=$(DOT_ROOT)/bin:$$PATH which dot 2>/dev/null`
 
 ASTYLE       = `which astyle 2>/dev/null`
