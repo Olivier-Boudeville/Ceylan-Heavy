@@ -143,7 +143,7 @@
 	<References>
 		<ProjectReference
 			ReferencedProjectIdentifier="{021F8729-BF5B-4A73-B130-BEA1DDB68A89}"
-			RelativePathToProject=".\Ceylan-0.3.vcproj"
+			RelativePathToProject=".\Ceylan-0.4.vcproj"
 		/>
 	</References>
 	<Files>
