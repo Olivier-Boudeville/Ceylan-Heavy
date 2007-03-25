@@ -33,11 +33,11 @@
 <h1>Developer Guide for the Ceylan 0.5 version</h1>
 
 <p>
-The intended public for this document is Ceylan <b>developers</b>, i.e. working on the library itself : Ceylan <b>users</b> ought to refer to the <a href="Ceylan-userguide.html" target="_blank">Ceylan User Guide</a>.
+The intended public for this document is Ceylan <b>developers</b>, i.e. working on the library itself : Ceylan <b>users</b> ought to refer to the <a href="Ceylan-userguide.html">Ceylan User Guide</a>.
 </p>
 
 <p>
-See the <a href="ChangeLog.html" target="_blank">ChangeLog</a> corresponding to this release. Besides this document, Windows users should refer as well to our <a href="BuildForWindows.html" target="_blank">guide for Windows build</a>.
+See the <a href="ChangeLog.html" target="_blank">ChangeLog</a> corresponding to this release. Besides this document, Windows users should refer as well to our <a href="BuildForWindows.html">guide for Windows build</a>.
 </p>
 
 
@@ -149,7 +149,7 @@ be installed to select them but may clash with others, and so on. This implies u
 
 	<li>under <code>trunk/src/conf/build</code>, use <code>autogen.sh --chain-test</code> to check everything is working as expected : all the tests must always succeed, not depending on how many times they are run</li>
 	
-	<li>create a distribution with <code>./autogen.sh --only-prepare-dist</code> : it should produce an archive named <code>trunk/ceylan-x.y.tar.bz2</code> (note : filenames too long are skipped, as long as they are only *.vcproj that is not too serious). Build that package on as many other hosts as possible, at least one time on each supported platform. For example, <code>scp ceylan-x.y.tar.bz2 $TOSFCF && sfcf</code> to transfer the archive to Sourceforge's compile farm and to log to their platform chooser</li>
+	<li>create a distribution with <code>./autogen.sh --only-prepare-dist</code> : it should produce an archive named <code>trunk/ceylan-x.y.tar.bz2</code>. Build that package on as many other hosts as possible, at least one time on each supported platform. For example, <code>scp ceylan-x.y.tar.bz2 $TOSFCF && sfcf</code> to transfer the archive to Sourceforge's compile farm and to log to their platform chooser</li>
 	
 	<li>extract the source archive in a temporary, and check that there are no useless elements (generated files, deprecated content, etc.), and that all files are up-to-date</li>
 
@@ -172,7 +172,7 @@ be installed to select them but may clash with others, and so on. This implies u
 </center>
 	</li>
 	
-	<li>create two distribution archives : <code>ceylan-x.y.tar.bz2</code> thanks to <code>cd trunk/src/conf/build; autogen.sh -o</code> and <code>ceylan-x.y.tar.gz</code> thanks to <code>make dist</code> from <code>trunk</code>
+	<li>create two distribution archives : <code>ceylan-x.y.tar.bz2</code> thanks to <code>cd trunk/src/conf/build; autogen.sh --only-prepare-dist</code> and <code>ceylan-x.y.tar.gz</code> thanks to <code>make dist</code> from <code>trunk</code>
 </li>
 		
 	<li>upload both distribution archives to <a href="http://sourceforge.net/projects/ceylan" target="_blank">Sourceforge</a> : select in the admin tab <code>File releases</code>, add a release to the <code>Ceylan</code> package (not the hidden <code>ceylan</code> package), name that release <code>Ceylan-x.y</code>, create it. Upload both release notes and ChangeLog from local tree (respectively from <code>trunk/src/doc/Ceylan-x.y-release-notes.txt</code> and from <code>trunk/ChangeLog</code>). Upload by anonymous FTP both archives to
@@ -183,7 +183,7 @@ be installed to select them but may clash with others, and so on. This implies u
 	
 	<li>write a corresponding news item</li>
 	
-	<li>to prepare the next version/release candidate, one can already update the release numbers for the next verion in <code>trunk/src/conf/CeylanSettings.inc</code> : <code>CEYLAN_MAJOR_VERSION</code> and/or <code>CEYLAN_MINOR_VERSION</code> and/or <code>CEYLAN_RELEASE</code></li>
+	<li>to prepare the next version/release candidate, one can already update the release numbers for the next version in <code>trunk/src/conf/CeylanSettings.inc</code> : <code>CEYLAN_MAJOR_VERSION</code> and/or <code>CEYLAN_MINOR_VERSION</code> and/or <code>CEYLAN_RELEASE</code></li>
 	
 </ol>
 
@@ -200,6 +200,8 @@ be installed to select them but may clash with others, and so on. This implies u
 -->
     <li>In case of trouble, run <code>trunk/src/conf/generateBugReport.sh</code>, it will generate a text file containing the report, and tell you what to do with it</li>
     <li><a href="http://gcc.gnu.org/onlinedocs/libstdc++/27_io/howto.html" target="_blank">Using I/O with the STL</a></li>
+    <li>How to make a source archive for the testing of Ceylan ? From the trunk, use <code>make dist</code> or, preferably, <code>make dist-bzip2</code>.
+</li>
 </ul>
 
 </p>
@@ -221,7 +223,8 @@ be installed to select them but may clash with others, and so on. This implies u
       <center>
         [<a href="#_top_">Top</a>]<br>
         <br>
-        <em>Last update : Tuesday, March 20, 2007
+        <em>Last update : Saturday, March 24, 2007
+
 
 </em>
       </center>
