@@ -140,43 +140,45 @@ doc: local-web remind-locations
 
 local-web: site api
 
+# Automake DESTDIR not supported for optional make targets :
 
 # The 'site' target takes automatically care of both shared tree and
 # of the tree specific to this version :
 site: common 
 	@echo; echo "@CEYLAN_INSTALL_STYLE@    Copying web source tree to \
-	local web repository [@CEYLAN_LOCAL_WEB_DIR@]@CEYLAN_DEFAULT_STYLE@"
+	local web repository \
+	[$(DESTDIR)@CEYLAN_LOCAL_WEB_DIR@]@CEYLAN_DEFAULT_STYLE@"
 	@cd $(srcdir)/web; for d in $(WEB_CONTENT_DIRS); do \
-	mkdir -p @CEYLAN_LOCAL_WEB_SHARED_DIR@/$$d ; done ;  \
+	mkdir -p $(DESTDIR)@CEYLAN_LOCAL_WEB_SHARED_DIR@/$$d ; done ;  \
 	for f in $(WEB_CONTENT_FILES); do \
-	cp -f $$f @CEYLAN_LOCAL_WEB_SHARED_DIR@/$$f; done
+	cp -f $$f $(DESTDIR)@CEYLAN_LOCAL_WEB_SHARED_DIR@/$$f; done
 	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark local doc site, \
 	which is to be found in :"
-	@echo "      file://@CEYLAN_LOCAL_WEB_DIR@/index.html@CEYLAN_DEFAULT_STYLE@"
-	@cd @CEYLAN_LOCAL_WEB_DIR@; \
+	@echo "      file://$(DESTDIR)@CEYLAN_LOCAL_WEB_DIR@/index.html@CEYLAN_DEFAULT_STYLE@"
+	@cd $(DESTDIR)@CEYLAN_LOCAL_WEB_DIR@; \
 	ln -sf @CEYLAN_CURRENT_VERSION_PREFIX@ Ceylan-latest
 
 
 common: 
 	@echo; echo "@CEYLAN_INSTALL_STYLE@    Copying common web files to \
 	local doc repository \
-	[@CEYLAN_LOCAL_WEB_SHARED_DIR@]@CEYLAN_DEFAULT_STYLE@"
-	@if [ -d "@CEYLAN_LOCAL_DOC_DIR@" ] ; then \
-	chmod a+w @CEYLAN_LOCAL_DOC_DIR@; else \
-	chmod a+w `dirname @CEYLAN_LOCAL_DOC_DIR@`; \
-	mkdir -p @CEYLAN_LOCAL_DOC_DIR@ ; fi
-	@mkdir -p @CEYLAN_LOCAL_WEB_DIR@
-	@mkdir -p @CEYLAN_LOCAL_WEB_SHARED_DIR@
+	$(DESTDIR)@CEYLAN_LOCAL_WEB_SHARED_DIR@ @CEYLAN_DEFAULT_STYLE@"
+	@if [ -d "$(DESTDIR)@CEYLAN_LOCAL_DOC_DIR@" ] ; then \
+	chmod a+w $(DESTDIR)@CEYLAN_LOCAL_DOC_DIR@; else \
+	chmod a+w `dirname $(DESTDIR)@CEYLAN_LOCAL_DOC_DIR@`; \
+	mkdir -p$(DESTDIR) @CEYLAN_LOCAL_DOC_DIR@ ; fi
+	@mkdir -p $(DESTDIR)@CEYLAN_LOCAL_WEB_DIR@
+	@mkdir -p $(DESTDIR)@CEYLAN_LOCAL_WEB_SHARED_DIR@
 	@cd $(srcdir)/web; for d in $(COMMON_WEB_DIRS); do \
-	mkdir -p @CEYLAN_LOCAL_WEB_SHARED_DIR@/$$d ; done ; \
+	mkdir -p $(DESTDIR)@CEYLAN_LOCAL_WEB_SHARED_DIR@/$$d ; done ; \
 	for f in $(COMMON_WEB_FILES); do \
-	cp -f $$f @CEYLAN_LOCAL_WEB_SHARED_DIR@/$$f; done
+	cp -f $$f $(DESTDIR)@CEYLAN_LOCAL_WEB_SHARED_DIR@/$$f; done
 
 
 uninstall-hook:
 	@echo; echo "@CEYLAN_INSTALL_STYLE@    Uninstalling documentation from \
-	@CEYLAN_LOCAL_DOC_SHARED_DIR@ @CEYLAN_DEFAULT_STYLE@"
-	-@rm -rf @CEYLAN_LOCAL_DOC_DIR@
+	$(DESTDIR)@CEYLAN_LOCAL_WEB_SHARED_DIR@ @CEYLAN_DEFAULT_STYLE@"
+	-@rm -rf $(DESTDIR)@CEYLAN_LOCAL_DOC_DIR@
 	
 	
 # One must prevent doxygen from overwriting the master 
@@ -194,19 +196,19 @@ api: check-dot fix-dox-conf
 	(doxygen configuration taken from $(DOXYGEN_GENERATED_CONF)) \
 	@CEYLAN_DEFAULT_STYLE@"
 	@echo
-	@mkdir -p @CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@
+	@mkdir -p $(DESTDIR)@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@
 	-@PATH=`pwd`/$(DOT_ROOT)/bin:$$PATH \
 	LD_LIBRARY_PATH=`pwd`/$(GCC_ROOT)/lib:$$LD_LIBRARY_PATH \
 	$(DOXYGEN) $(DOXYGEN_GENERATED_CONF)
-	@rm -f @CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/doxygen.css
+	@rm -f $(DESTDIR)@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/doxygen.css
 	@cp -f $(srcdir)/web/common/css/doxygen-@PROJECT_NAME@.css \
-	@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/doxygen.css 
+	$(DESTDIR)@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/doxygen.css 
 	@cp -f $(srcdir)/web/common/doxygen/*.png \
-	@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html
+	$(DESTDIR)@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html
 	@echo
 	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark \
 	@CEYLAN_CURRENT_VERSION_PREFIX@ API, which is located in : \
-file://@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/index.html@CEYLAN_DEFAULT_STYLE@"
+file://$(DESTDIR)@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/index.html@CEYLAN_DEFAULT_STYLE@"
 	
 			
 check-dot:
@@ -321,10 +323,12 @@ check-scp:
 remind-locations:
 	@echo; echo "@CEYLAN_INSTALL_STYLE@    + the following \
 	documentation repositories are available :"
-	@echo "      * local doc directory : @CEYLAN_LOCAL_DOC_DIR@"
-	@echo "      * local web site      : @CEYLAN_LOCAL_WEB_DIR@/main/index.html"
+	@echo "      * local doc directory : \
+	$(DESTDIR)@CEYLAN_LOCAL_DOC_DIR@"
+	@echo "      * local web site      : \
+	$(DESTDIR)@CEYLAN_LOCAL_WEB_DIR@/main/index.html"
 	@echo "      * local web API       : \
-	@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/index.html"
+	$(DESTDIR)@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/index.html"
 	@echo "      * official website    : @CEYLAN_SF_VERSION_URL@"
 	@echo "@CEYLAN_DEFAULT_STYLE@"		
 
