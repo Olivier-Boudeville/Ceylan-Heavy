@@ -17,4 +17,5 @@ clean-local:
 	@echo " Cleaning all test logs"	
 	-@/bin/rm -f  `find . -name 'testsOutcome.txt'`
 	-@/bin/rm -f  `find . -name 'test*.log'`
+	-@/bin/rm -f  `find . -name 'test*.xml'`
 	-@/bin/rm -rf `find . -name 'testCeylan*-logs'`
