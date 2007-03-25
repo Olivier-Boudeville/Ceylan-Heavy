@@ -140,7 +140,7 @@ be installed to select them but may clash with others, and so on. This implies u
 	<li>increment the version number in <code>trunk/src/conf/CeylanSettings.inc</code> (see <code>CEYLAN_*_VERSION</code>) and in trunk/src/code/CeylanConfigForWindows.h<code></code>, and create a new <code>trunk/src/conf/build/ceylan-x.y.pc.in</code> file, possibly from the one of the previous version. Once updated if needed, register it in SVN (<code>svn add ... && svn ci ...</code>)
 	</li>
 
-	<li>update the various version-related files and directories : <code>src/doc/basic/Ceylan-*-template.txt.in</code> (including Ceylan-NEWS-template.txt.in), <code>src/doc/web/Ceylan-x.y</code>, under <code>trunk/src/conf/build</code> execute <code>make download-config-scripts</code>, etc.
+	<li>update the various version-related files and directories : <code>src/doc/basic/Ceylan-*-template.txt.in</code> (including Ceylan-NEWS-template.txt.in), use <code>make effective-changelog-creation html-changelog</code>, create thanks to a copy and a SVN add <code>src/doc/web/Ceylan-x.y</code>, under <code>trunk/src/conf/build</code> execute <code>make download-config-scripts</code>, etc.
 </li>
 
 	<li>on Windows, update the check-out, load the previous solution (<code>trunk/src/Ceylan-x.y.sln</code>), rename it (right-click) with newer version, do the same for the library in solution (<code>trunk/src/Ceylan-x.y.vcproj</code>), save all and stop Visual Express, then add these two files to SVN repository and check them in</li>
