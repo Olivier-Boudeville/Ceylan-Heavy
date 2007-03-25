@@ -308,10 +308,14 @@ distclean-local: real-clean
 
 # Grab the test programs for the distribution :
 # (the touch for both m4 is due to a libltdl bug with dist automake target)
+# Problem : to generate the distribution package, we need to have the test
+# configure script generated, but to do so we need an installed Ceylan tree
+# (for example for Ceylan installed *.m4 files).
+# Here we would like to write './autogen.sh --ceylan-install-prefix APrefix'
+# but we have not that prefix. Hence the 'configure' script is required.
 dist-hook:
 	@if ! test -f $(srcdir)/test/configure; then \
-	echo "Test configure script not available, generating it." ; \
-	cd $(srcdir)/test ; ./autogen.sh --only-prepare-dist; fi
+	echo "Test configure script not available, generate it first." ; exit 1 ; fi
 	@if test -f $(srcdir)/test/Makefile; then \
 	(cd $(srcdir)/test; make distclean); fi	
 	-@rm -rf $(srcdir)/test/autom4te* $(srcdir)/test/testsOutcome.txt
@@ -320,3 +324,10 @@ dist-hook:
 	-@cd $(distdir); rm -f config.log config.status libtool \
 	code/CeylanConfig.h
 	-@touch $(srcdir)/libtool.m4 $(srcdir)/ltdl.m4
+
+
+uninstall-hook:
+	@echo; echo "@CEYLAN_INSTALL_STYLE@    Uninstalling all Ceylan shared \
+	files from $(DESTDIR)@CEYLAN_INSTALL_SHARED_DIR@ @CEYLAN_DEFAULT_STYLE@"
+	-@rm -rf $(DESTDIR)@CEYLAN_INSTALL_SHARED_DIR@
+
