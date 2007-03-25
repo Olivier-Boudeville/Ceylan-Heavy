@@ -35,12 +35,12 @@ update-basic-doc-files: update-changelog update-authors update-copying  \
 
 
 install-data-local: $(RAW_DOC_FILES) # update-changelog
-	@if [ -d "@CEYLAN_LOCAL_DOC_DIR@" ] ; then \
-	chmod a+w @CEYLAN_LOCAL_DOC_DIR@; else \
-	chmod a+w `dirname @CEYLAN_LOCAL_DOC_DIR@`; \
-	mkdir -p @CEYLAN_LOCAL_DOC_DIR@ ; fi
+	@if [ -d "$(DESTDIR)@CEYLAN_LOCAL_DOC_DIR@" ] ; then \
+	chmod a+w $(DESTDIR)@CEYLAN_LOCAL_DOC_DIR@; else \
+	chmod a+w `dirname $(DESTDIR)@CEYLAN_LOCAL_DOC_DIR@`; \
+	mkdir -p $(DESTDIR)@CEYLAN_LOCAL_DOC_DIR@ ; fi
 	@cd ${top_builddir}; cp -f AUTHORS COPYING.LIB FAQ INSTALL MAINTENERS \
-	NEWS README THANKS TODO @CEYLAN_LOCAL_DOC_DIR@
+	NEWS README THANKS TODO $(DESTDIR)@CEYLAN_LOCAL_DOC_DIR@
  
  
 # Creates automatically a standard ChangeLog file from SVN logs :
@@ -52,7 +52,7 @@ CHANGELOG_COMMAND   = "$(CHANGELOG_GENERATOR)"
 
 
 update-changelog: 
-	@if [ "${CREATE_CHANGELOG}" = true ] ; then \
+	@if [ "${CREATE_CHANGELOG}" = true -a -z "$(DESTDIR)" ] ; then \
 	if [ ! -x "$(CHANGELOG_COMMAND)" ] ; then echo \
 	"@CEYLAN_WARNING_STYLE@    No ChangeLog tool \
 	available (svn2cl), nothing done@CEYLAN_DEFAULT_STYLE@"; \
@@ -68,9 +68,11 @@ effective-changelog-creation:
 	@if [ ! -x "$(CHANGELOG_COMMAND)" ] ; then echo \
 	"@CEYLAN_WARNING_STYLE@No Changelog tool \
 	available, nothing done@CEYLAN_DEFAULT_STYLE@"; else \
-	$(CHANGELOG_COMMAND) --linelen=10000 -o ${top_builddir}/ChangeLog \
-	${top_srcdir} ; fi
-	-@/bin/rm -f ${top_srcdir}/ChangeLog.bak
+	if [ -f "${top_srcdir}/.svn" ] ; then cd ${top_srcdir} && \
+	$(CHANGELOG_COMMAND) --linelen=10000 -o ${top_builddir}/ChangeLog ; else \
+	echo "@CEYLAN_WARNING_STYLE@ No ChangeLog created as not in a SVN \
+	tree@CEYLAN_DEFAULT_STYLE@"; touch ${top_builddir}/ChangeLog ; fi ; fi
+	-@/bin/rm -f ${top_builddir}/ChangeLog.bak
 
 
 html-changelog:
