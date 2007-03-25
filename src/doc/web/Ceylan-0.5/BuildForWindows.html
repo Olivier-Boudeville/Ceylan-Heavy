@@ -50,7 +50,7 @@ Here the target platform is Windows XP, be it Home or Professional edition. Note
 
 <h4>Visual Studio 2005</h4>
 <p>
-On Windows, for the sake of simplicity, no MSYS/MinGW/Cygwin-based approach is recommended by this Ceylan guide, instead of which the proposed method uses <em>Visual Studio 2005</em>, Express edition. It can be <a href="http://msdn.microsoft.com/vstudio/express/" target="_blank">downloaded</a> free of charge, including <em>Visual C++ 2005 Express</em>, which is the IDE and compiler toolchain that we will use here. All these packages can be used freely, including for commercial use, and they are fully functional for our needs. One may install them with default settings, including paths, for increased safety.
+On Windows, for the sake of simplicity, no MSYS/MinGW/Cygwin-based approach is recommended by this Ceylan guide, instead of which the proposed method uses <em>Visual Studio 2005</em>, Express edition. It can be <a href="http://msdn.microsoft.com/vstudio/express/" target="_blank">downloaded</a> free of charge, including <em>Visual C++ 2005 Express</em>, which is the IDE and compiler toolchain that we will use here. All these packages can be used freely, including for commercial use, and they are fully functional for our needs. One may install them with default settings (including default paths), for increased safety.
 </p>
 
 <p>
@@ -69,59 +69,123 @@ Once <em>Visual Studio 2005</em> is installed, the platform SDK is needed so tha
 </p>
 
 <p>
-More precisely, for numerous functions (such as <code>gethostname</code>), specific headers are required (ex : <code>winsock2.h</code>). These headers are provided with a SDK (<em>Software Development Kit</em>) that has to be installed separatly from the IDE (Visual Express). The goal here is to be able to build Win32 applications, not only .NET ones. 
+More precisely, for numerous functions (such as <code>gethostname</code>), specific headers are required, for example <code>Winsock2.h</code>, which is the file the build will stop at if you try to compile Ceylan without a Platform SDK being correctly installed. These headers are provided with a SDK (<em>Software Development Kit</em>) that has to be installed separatly from the IDE (Visual Express). The goal here is to be able to build Win32 applications, not only .NET ones. 
 </p>
- 
+
+
+<h5>Installing the PSDK</h5> 
+
+<h6>Method #1</h6>
 <p>
-In the Visual Express start page (just launch the executable), there is a link to install automatically this PSDK (Platform-SDK). An error occurred when I clicked it, but it displayed the <a href="http://msdn.microsoft.com/vstudio/express/visualc/usingpsdk/default.aspx" target="_blank"></a> correct web page nevertheless. It explains what should be done to complete the installation, which will last for a long time. 
+In the Visual Express start page (just launch the executable), there is a link to install automatically this PSDK (Platform-SDK). An error occurred when I clicked on it, but it displayed finally the <a href="http://msdn.microsoft.com/vstudio/express/visualc/usingpsdk/default.aspx" target="_blank"></a> correct web page nevertheless. It explains what should be done to complete the installation, their <code>Step 2</code> will last for a long time. 
+</p>
+
+<h6>Method #2</h6>
+<p>
+An alternate method is to download the PSDK by yourself. See these links : [<a href="http://msdn2.microsoft.com/en-us/visualc/aa336404.aspx" target="_blank">1</a>] and [<a href="http://www.microsoft.com/downloads/details.aspx?familyid=EBA0128F-A770-45F1-86F3-7AB010B398A3&displaylang=en" target="_blank">2</a>].
 </p>
 
 <p>
-Another way of having this PSDK is to update the configuration file which in my case was located at
-C:\Program Files\Microsoft Visual Studio 8\VC\vcpackages\VCProjectEngine.Dll.Express.Config
+At the time of this writing, most recent SDK is <code>Windows Server 2003 R2 Platform SDK Full Download</code>, see <a href="http://www.microsoft.com/downloads/details.aspx?FamilyId=0BAF2B35-C656-4969-ACE8-E4C0C0716ADB&displaylang=en" target="_blank">here</a>
+ and choose to download the <code>PSDK-x86.exe</code> file. Execute it and select the <code>typical</code> installation, which will last for a long time.
+</p>
 
-I preferred to update the configuration file which in my case was located at [9]. I searched [10] for vccomponents.dat but did not find any.
+
+<h5>Configuring Visual Express to use the PSDK</h5> 
+
+<p>
+On the Visual Express start page, two methods are explained to update the Visual Express configuration, both seem to work, despite they are not really clear. 
+</p>
+
+<p>
+One may select, in <code>Tools -&gt; Options</code>, the <code>Projects and solutions</code> panel, in which there is a tab named <code>VC++ directories</code>. Thanks to the drop box, add the suggested path for executables, includes and libraries.
+</p>
+
+
+<p>
+Another way of having this PSDK integrated in Visual Express is to update its configuration file, which in my case was located at <code>C:\Program Files\Microsoft Visual Studio 8\VC\vcpackages\VCProjectEngine.Dll.Express.Config</code>. I searched <code>C:\Documents and Settings\&lt;MyUserName&gt;\Application Data\Microsoft\VCExpress</code> for <code>vccomponents.dat</code> but did not find any.
+</p>
+
+
+<h5>Checking the PSDK and its help are available indeed</h5> 
+
+<p>
+One just has to enter, in the help browser URL line, for example <code>ms-help://MS.VSExpressCC.v80/dv_vsexpcc/local/CollectionManagerExpress.htm</code>, select the appropriate PSDK documentation and restart its IDE once again. 
+</p>
+
+<p>
+To test the result, search for gethostname, the one defined by winsock should be found, whereas without the PSDK help one the .NET-defined GetHostName is referenced. Another useful tip is to select other help sources than the local one : local, then online for example (see <code>Tools -&gt; Options &gt; Help &gt; Online</code>.
+</p>
+
   
-An alternate method is to download the PSDK by yourself. See [5] and [6], most recent SDK at the time of this writing is 'Windows Server 2003 R2 Platform SDK Full Download', see [7] and choose to download the 'PSDK-x86.exe' file. Execute it and select the 'typical' installation, which will last for a long time.
+
+<h5>Parametrizing your projects accordingly</h5> 
+
+<p>
+Even though the pre-cooked Ceylan project file comes with the right settings already, one should know that there is still a trap with the PSDK : as soon as one includes for example <code>winsock2.h</code> in an extern "C" clause, one encounters numerous errors about anonymous structs in <code>winnt.h</code>.
+</p>
+
+<p>
+According to <a href="http://community.vietfun.com/printthread.php?t=279103" target="_blank">this page</a>, you need to enable the Microsoft-specific language extensions in your project settings, in <code>C/C++ -&gt; Language</code>. It worked for me, even if it is a pity one could not stick with real ANSI/C.
+</p>
 
 
-After having applied all the steps, there is still a trap : as soon as you include for example winsock2.h in an extern "C" clause, you encounter numerous errors about anonymous structs in winnt.h. According to [11], you need to enable the Microsoft-specific language extensions, in C/C++ -> Language. It worked for me, even if it is a pity one could not stick with real ANSI/C.
+<h3>Source control : Subversion (SVN)</h3>
 
-Last thing that should be done is to make sure that the help for the PSDK is
-available from the general Visual Express help, as by default it will be not
-be automatically integrated. One just has to enter in the help browser URL line
-the following one [12], select the appropriate PSDK documentation and restart its IDE once again. 
-
-To test the result, search for gethostname, the one defined by winsock should be found, whereas without the PSDK help one the .Net-defined GetHostName is referenced. Another useful tip is to select other help sources than the local one : local, then online for example [13].
+<p> 
+To retrieve Ceylan sources, one needs a SVN client, we recommend <a href="http://tortoisesvn.net/downloads" target="_blank">Tortoise SVN</a>.
+</p>
 
 
+<h3>Basic shell and terminal : Cygwin (and MSYS)</h3>
+
+<p>
+It is in no way necessary, but amon others <a href="http://www.cygwin.com" target="_blank">Cygwin</a> can provide a basic UNIX-like environment, that can be used for example to automate the running of the Ceylan test suite. If not too resource-limited, one can click on the package setup window to replace <code>All Default</code> by <code>All install</code> to retrieve all Cygwin packages.
+</p>
+
+<p>
+Note that in no way the user application, by using Ceylan, will depend on Cygwin DLL (whose licence would not comply with open-source distribution), we are using Cygwin only for their shell and terminal. MSYS could be used as well.
+</p>
 
 
+<h3>Text editor : </h3>
+
+<p> 
+</p>
+
+
+<h2>Getting the Ceylan sources</h2>
+
+<p>
+To download the Ceylan sources once Tortoise SVN is installed, right-click in a window showing the content of the folder in which the sources should be transfered to, choose in the menu <code>SVN Checkout</code>, and enter the URL of Ceylan SVN repository : <code>https://ceylan.svn.sourceforge.net/svnroot/ceylan</code>.
+</p>
+
+
+<h2>Configuring the Ceylan library being built</h2>
+
+<p> 
+To load the Ceylan project in Visual Express editor, just double-click on the latest <code>Ceylan-x.y.sln</code> file, for example, click on <code>trunk/src/Ceylan-0.5.sln</code>.
+</p>
 
 
 <p> 
-To retrieve Ceylan sources, one needs a SVN client, we recommend Tortoise SVN (http://tortoisesvn.net/downloads).
+Each Ceylan version comes with a configuration file dedicated to Windows, <code>trunk/src/code/CeylanConfigForWindows.h</code>, which enables only the basic features provided by Ceylan, i.e. the core features (ex : file management), and the ones that are available under all Windows platforms (ex : networking).
+</p>
 
-To download the Ceylan sources once Tortoise SVN is installed, right-click in a window showing the content of the folder in which the sources should be transfered to, choose 'SVN Checkout', and enter the URL of Ceylan repository : 'https://ceylan.svn.sourceforge.net/svnroot/ceylan'.
-
-It is in no way necessary but Cygwin (http://www.cygwin.com) can provide a basic UNIX-like environment, that can be used for example to automate the running of the test suite. If not too resource-limited, one can click to replace 'All Default' by 'All install' to retrieve all Cygwin packages. 
-
-
-
-
-
-
-
-
-To load the project in this editor, just double-click on the Ceylan-x.y.sln file [2].
-
-The Ceylan version comes with a configuration file dedicated to Windows [3] which enables only the basic features provided by Ceylan : the core features (ex : file management), and the ones that are available under all Windows platforms (ex : networking).
-
+<p>
 Some other features, such as multithreading, plugin support, etc. are not readily available on a vanilla Windows installation, they are therefore initially deactivated. Not all of them have been ported to Windows, hence some of them cannot be available in this platform for the moment.
+</p>
+
+<p>
 
 To activate a ported feature, one has first to declare it is requested, by specifying in [3] the relevant symbol (ex : #define CEYLAN_USES_THREADS 1).
+</p>
 
+<p>
 Then the relevant additional packages, if any, have to be installed and declared to the IDE. For example, activating the multithreading support would require to have the Windows pthread emulation layer installed beforehand.
+</p>
+
+<p>
 
 Beyond the Ceylan core, following features are readily available in vanilla Windows builds :
 	- network support [CEYLAN_USES_NETWORK] : it however requires that the Winsock2 headers are available. They can be obtained by installing the Windows PSDK (Platform SDK, see the dedicated section).
@@ -277,22 +341,21 @@ Bibliography
 
 
 [1]  
-[2]  For example, trunk/src/Ceylan-0.3.sln
-[3]  trunk/src/code/CeylanConfigForWindows.h
+[2]  
+[3]  
 [4]  http://sources.redhat.com/pthreads-win32/
-[5]  http://msdn2.microsoft.com/en-us/visualc/aa336404.aspx
-[6]  http://www.microsoft.com/downloads/details.aspx?familyid=EBA0128F-A770-45F1-86F3-7AB010B398A3&displaylang=en
 [7]  http://www.microsoft.com/downloads/details.aspx?FamilyId=0BAF2B35-C656-4969-ACE8-E4C0C0716ADB&displaylang=en
 [8]  
 [9]  
-[10] C:\Documents and Settings\sye\Application Data\Microsoft\VCExpress
-[11] http://community.vietfun.com/printthread.php?t=279103
-[12] ms-help://MS.VSExpressCC.v80/dv_vsexpcc/local/CollectionManagerExpress.htm
-[13] see Tools -> Options -> Help -> Online
+[10] 
+[11] 
+[12] 
+[13] 
 [14] http://www.dependencywalker.com/
 [15] http://www.unknownroad.com/rtfm/VisualStudio/warningC4251.html
 [16] http://support.microsoft.com/kb/q168958/
 
+</pre>
 
   <br>
   <br>
@@ -311,7 +374,8 @@ Bibliography
       <center>
         [<a href="#_top_">Top</a>]<br>
         <br>
-        <em>Last update : Sunday, March 18, 2007
+        <em>Last update : Saturday, March 24, 2007
+
 </em>
       </center>
   
