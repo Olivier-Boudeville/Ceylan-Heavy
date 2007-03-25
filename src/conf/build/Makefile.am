@@ -43,15 +43,15 @@ all:
 
 		
 check-configure: 
-	@echo "@CEYLAN_MAKE_STYLE@    Comparing configure\
+	@echo "@CEYLAN_MAKE_STYLE@    Comparing configure \
 	files@CEYLAN_DEFAULT_STYLE@"
 	@$(srcdir)/checkConfigure.sh $(DIFF_TOOL)
-	@echo "@CEYLAN_COMMAND_STYLE@    Comparison finished,\
+	@echo "@CEYLAN_COMMAND_STYLE@    Comparison finished, \
 	$(CONFIGURE_FILE) may be updated now."
 
 
 download-config-scripts: clean-download
-	@echo "@CEYLAN_MAKE_STYLE@    Downloading latest\
+	@echo "@CEYLAN_MAKE_STYLE@    Downloading latest \
 	configure helper scripts@CEYLAN_DEFAULT_STYLE@"
 	@for f in $(DOWNLOADED_HELPERS); do \
 	wget --quiet $(CONFIGURE_SCRIPTS_BASE_URL)/$$f ; done
@@ -59,14 +59,14 @@ download-config-scripts: clean-download
 
 
 blank-MD5:
-	@echo "@CEYLAN_INSTALL_STYLE@    Blanking MD5 sum of Ceylan release\
+	@echo "@CEYLAN_INSTALL_STYLE@    Blanking MD5 sum of Ceylan release \
 	to avoid MD5 recursive dependency of archive@CEYLAN_DEFAULT_STYLE@"
-	@$(srcdir)/../../code/scripts/shell/replaceLineStartingBy.sh Ceylan_MD5\
+	@$(srcdir)/../../code/scripts/shell/replaceLineStartingBy.sh Ceylan_MD5 \
 	'Ceylan_MD5="(blanked)"' $(srcdir)/CeylanToolsSettings.inc
 
 
 install-data-local:
-	@cp $(srcdir)/CeylanToolsSettings.inc @CEYLAN_INSTALL_SHARED_DIR@
+	@cp $(srcdir)/CeylanToolsSettings.inc $(DESTDIR)@CEYLAN_INSTALL_SHARED_DIR@
 	
 	
 dist-hook:
@@ -74,13 +74,13 @@ dist-hook:
 	
 	
 clean-local:
-	@echo "@CEYLAN_CLEAN_STYLE@    Cleaning generated config\
+	@echo "@CEYLAN_CLEAN_STYLE@    Cleaning generated config \
 	files@CEYLAN_DEFAULT_STYLE@"
 	-@rm -f autoscan*.log autoscan.err configure.scan
 	
 	
 clean-download:
-	@echo "@CEYLAN_CLEAN_STYLE@    Cleaning downloaded config\
+	@echo "@CEYLAN_CLEAN_STYLE@    Cleaning downloaded config \
 	files@CEYLAN_DEFAULT_STYLE@"
 	-@rm -f $(DOWNLOADED_HELPERS)
 	
