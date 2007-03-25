@@ -7,6 +7,20 @@
 	See ChangeLog file for more detailed informations.
 
 
+
+*** Main changes in Ceylan 0.5 [released on Sunday, March 25, 2007] :
+	
+	* new code base enriched for the needs  of the upcoming OSDL 0.4
+	
+	* ported again to Windows XP, tested again
+	
+	* upgraded autotools support
+	
+	* improved documentation and version-specific website 
+	
+	* a lot of reformatting has been done, notably 80 character width has been enforced
+		
+			 
 			 
 *** Main changes in Ceylan 0.4 [released on Saturday, December 9, 2006] :
 	
