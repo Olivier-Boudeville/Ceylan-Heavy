@@ -38,7 +38,7 @@ The goal here is to explain to developers how to build the Ceylan library for Wi
 </p>
 
 <p>
-Here the target platform is Windows XP, be it Home or Professional edition. Note that we will have anything to do with the .NET framework.
+Here the target platform is Windows XP, be it Home or Professional edition. Note that we will not have any link with the .NET framework.
 </p>
 
 
@@ -77,16 +77,16 @@ More precisely, for numerous functions (such as <code>gethostname</code>), speci
 
 <h6>Method #1</h6>
 <p>
-In the Visual Express start page (just launch the executable), there is a link to install automatically this PSDK (Platform-SDK). An error occurred when I clicked on it, but it displayed finally the <a href="http://msdn.microsoft.com/vstudio/express/visualc/usingpsdk/default.aspx" target="_blank"></a> correct web page nevertheless. It explains what should be done to complete the installation, their <code>Step 2</code> will last for a long time. 
+In the Visual Express start page (just launch the executable), there is a link to install "automatically" this PSDK (Platform-SDK). An error occurred when I clicked on it, but it displayed finally the <a href="http://msdn.microsoft.com/vstudio/express/visualc/usingpsdk/default.aspx" target="_blank"></a> correct web page nevertheless. It explains what should be done to complete the installation, their <code>Step 2</code> will last for a long time. 
 </p>
 
 <h6>Method #2</h6>
 <p>
-An alternate method is to download the PSDK by yourself. See these links : [<a href="http://msdn2.microsoft.com/en-us/visualc/aa336404.aspx" target="_blank">1</a>] and [<a href="http://www.microsoft.com/downloads/details.aspx?familyid=EBA0128F-A770-45F1-86F3-7AB010B398A3&displaylang=en" target="_blank">2</a>].
+An alternate method is to download the PSDK by yourself. See [<a href="http://msdn2.microsoft.com/en-us/visualc/aa336404.aspx" target="_blank">1</a>] and [<a href="http://www.microsoft.com/downloads/details.aspx?familyid=EBA0128F-A770-45F1-86F3-7AB010B398A3&displaylang=en" target="_blank">2</a>].
 </p>
 
 <p>
-At the time of this writing, most recent SDK is <code>Windows Server 2003 R2 Platform SDK Full Download</code>, see <a href="http://www.microsoft.com/downloads/details.aspx?FamilyId=0BAF2B35-C656-4969-ACE8-E4C0C0716ADB&displaylang=en" target="_blank">here</a>
+At the time of this writing, most recent SDK is <code>Windows Server 2003 R2 Platform SDK Full Download</code>, go to <a href="http://www.microsoft.com/downloads/details.aspx?FamilyId=0BAF2B35-C656-4969-ACE8-E4C0C0716ADB&displaylang=en" target="_blank">this page</a>
  and choose to download the <code>PSDK-x86.exe</code> file. Execute it and select the <code>typical</code> installation, which will last for a long time.
 </p>
 
@@ -98,23 +98,27 @@ On the Visual Express start page, two methods are explained to update the Visual
 </p>
 
 <p>
-One may select, in <code>Tools -&gt; Options</code>, the <code>Projects and solutions</code> panel, in which there is a tab named <code>VC++ directories</code>. Thanks to the drop box, add the suggested path for executables, includes and libraries.
+One may select, in <code>Tools -&gt; Options</code>, the <code>Projects and solutions</code> panel, in which there is a tab named <code>VC++ directories</code>. Thanks to the drop box, add the suggested paths for executables, includes and libraries.
 </p>
-
 
 <p>
 Another way of having this PSDK integrated in Visual Express is to update its configuration file, which in my case was located at <code>C:\Program Files\Microsoft Visual Studio 8\VC\vcpackages\VCProjectEngine.Dll.Express.Config</code>. I searched <code>C:\Documents and Settings\&lt;MyUserName&gt;\Application Data\Microsoft\VCExpress</code> for <code>vccomponents.dat</code> but did not find any.
 </p>
 
 
-<h5>Checking the PSDK and its help are available indeed</h5> 
+<h5>Configuring the MSDN Help to manage the PSDK documentation too</h5> 
 
 <p>
 One just has to enter, in the help browser URL line, for example <code>ms-help://MS.VSExpressCC.v80/dv_vsexpcc/local/CollectionManagerExpress.htm</code>, select the appropriate PSDK documentation and restart its IDE once again. 
 </p>
 
 <p>
-To test the result, search for gethostname, the one defined by winsock should be found, whereas without the PSDK help one the .NET-defined GetHostName is referenced. Another useful tip is to select other help sources than the local one : local, then online for example (see <code>Tools -&gt; Options &gt; Help &gt; Online</code>.
+To test the result, search for gethostname, the one defined by winsock should be found, whereas without the PSDK help, one the .NET-defined GetHostName or BufferedStream is referenced.
+
+</p>
+
+<p>
+Another useful tip is to select other help sources than the local one : local, then online for example (see <code>Tools -&gt; Options -&gt; Help -&gt; Online</code>).
 </p>
 
   
@@ -148,9 +152,10 @@ Note that in no way the user application, by using Ceylan, will depend on Cygwin
 </p>
 
 
-<h3>Text editor : </h3>
+<h3>Text editor : Syn or others</h3>
 
-<p> 
+<p>
+There are plenty of them that are well-designed and in open source, for example one may use <a href="http://syn.sourceforge.net/" target="_blank">Syn</a>.
 </p>
 
 
@@ -168,65 +173,109 @@ To load the Ceylan project in Visual Express editor, just double-click on the la
 </p>
 
 
+<h3>Ceylan Core</h3>
 <p> 
 Each Ceylan version comes with a configuration file dedicated to Windows, <code>trunk/src/code/CeylanConfigForWindows.h</code>, which enables only the basic features provided by Ceylan, i.e. the core features (ex : file management), and the ones that are available under all Windows platforms (ex : networking).
 </p>
 
+
+<h3>Ceylan Features</h3>
+
+<h4>How to activate a ported feature</h4>
 <p>
 Some other features, such as multithreading, plugin support, etc. are not readily available on a vanilla Windows installation, they are therefore initially deactivated. Not all of them have been ported to Windows, hence some of them cannot be available in this platform for the moment.
 </p>
 
 <p>
-
-To activate a ported feature, one has first to declare it is requested, by specifying in [3] the relevant symbol (ex : #define CEYLAN_USES_THREADS 1).
+To activate a ported feature, one has first to declare it is requested, by specifying in <code>trunk/src/code/CeylanConfigForWindows.h</code> the relevant symbol (ex : <code>#define CEYLAN_USES_THREADS 1</code>).
 </p>
 
 <p>
-Then the relevant additional packages, if any, have to be installed and declared to the IDE. For example, activating the multithreading support would require to have the Windows pthread emulation layer installed beforehand.
+Then the relevant additional packages, if any, have to be installed and declared to the IDE. For example, activating the multithreading support would require to have the <a href="http://sources.redhat.com/pthreads-win32/" target="_blank">Windows pthread emulation layer</a> installed beforehand. This feature is currently not ported yet. 
 </p>
 
 <p>
+More generally, there is currently no feature ported to Windows that is not activated by default on Windows builds.
+</p>
 
-Beyond the Ceylan core, following features are readily available in vanilla Windows builds :
-	- network support [CEYLAN_USES_NETWORK] : it however requires that the Winsock2 headers are available. They can be obtained by installing the Windows PSDK (Platform SDK, see the dedicated section).
+
+<h4>Available ported features</h4>
+
+<p>
+So, beyond the Ceylan core, following features are readily available in vanilla Windows builds :
+<ul>
+
+<!--
+	<li><b></b> : </li>
+-->
+
+	<li><b>network support</b> [<code>CEYLAN_USES_NETWORK</code>] : it requires that the Winsock2 headers are available, but they should already be obtained by installing the Windows PSDK.</li>
+</ul>
+</p>
+
+
+<h4>Features that are currently not available</h4>
+<p>
+Other features are currently not ported to Windows, either :
+<ul>
+
+<!--
+	<li><b></b> : </li>
+-->
+
+	<li>because they do not apply to this platform: 
+	  <ul>
+
+		<!--
+		<li> [<code></code>]</li>
+<	-->
+
+		<li>file descriptor support for non-socket streams [<code>CEYLAN_USES_FILE_DESCRIPTORS]</code></li>
+		<li>symbolic links support [<code>CEYLAN_USES_SYMBOLIC_LINKS</code>]</li>
+		<li>advanced file attribute support [<code>CEYLAN_USES_ADVANCED_FILE_ATTRIBUTES</code>]</li>
+		<li>file lock support<code>[CEYLAN_USES_FILE_LOCKS]</code>]</li>
+		<li>advanced process management support [<code>CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT</code>]</li>
+		<li>signal support [<code>CEYLAN_USES_SIGNALS</code>]</li>
+	  </ul>
+	</li>
+
+	<li>or because they could be ported, but have not been ported yet :
+	  <ul>
+		<li>regular expression support [<code>CEYLAN_USES_REGEX</code>]</li>
+		<li>multithreading support [<code>CEYLAN_USES_THREADS</code>]</li>
+		<li>plugin support [<code>CEYLAN_USES_PLUGINS</code>]</li>
+	  </ul>
+	</li>
 	
-There is currently no feature ported to Windows that is not activated by default on Windows builds.
+</ul>
 
-Hence all other features are currently not ported to Windows, either :
-
-	- because they do not apply to this platform :
-		* file descriptor support for non-socket streams [CEYLAN_USES_FILE_DESCRIPTORS]
-		* symbolic links support [CEYLAN_USES_SYMBOLIC_LINKS]
-		* advanced file attribute support [CEYLAN_USES_ADVANCED_FILE_ATTRIBUTES]
-		* file lock support [CEYLAN_USES_FILE_LOCKS]
-		* advanced process management support [CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT]
-		* signal support [CEYLAN_USES_SIGNALS]
-
-	- or because they could be ported but have not been ported yet :	
-		* regular expression support [CEYLAN_USES_REGEX]
-		* multithreading support [CEYLAN_USES_THREADS]
-		* plugin support [CEYLAN_USES_PLUGINS]
+</p>
 
 
 
+<h2>Solving other Windows-specific pitfalls</h2>
 
 
-Windows-specific issues
+<h3>Template support with Visual Express</h3>
+
+<p>
+There is an issue with Windows DLL and templates, notably STL ones. See this remarkable <a href=" http://www.unknownroad.com/rtfm/VisualStudio/warningC4251.html" target="_blank">article</a> and the advice in the Microsoft <a href="http://support.microsoft.com/kb/q168958/" target="_blank">knowledge base</a>. 
+</p>
 
 
-
-* Template support
-
-There is an issue with Windows DLL and templates, notably STL ones. See [15] and [16]. 
-
+<p> 
 This led us to define pragmas around some template constructs in header files, ex :
 
-"""
-
+<center>
+    <table summary="Code" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
 /* 
  * Takes care of the awful issue of Windows DLL with templates.
  *
- * @see Ceylan's developer guide and README-build-for-windows.txt 
+ * @see http://ceylan.sourceforge.net/Ceylan-latest/BuildForWindows.html
  * to understand it, and to be aware of the associated risks. 
  * 
  */
@@ -236,124 +285,282 @@ This led us to define pragmas around some template constructs in header files, e
 	std::list<MyClass *> _instances ;
 
 #pragma warning( pop ) 
-"""
+
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
 
 
+<h3>Exporting symbols from DLL</h3>
 
-* Symbol export
+<p>
+During the build on Windows of <b>the Ceylan library</b>, CEYLAN_DLL is expected to be equal to <code>__declspec( dllexport )</code>, ex : <code>CEYLAN_DLL=__declspec( dllexport )</code>.
+</p>
 
-During the build on Windows of the Ceylan library, CEYLAN_DLL is expected to be equal to "__declspec( dllexport )" (ex : "CEYLAN_DLL=__declspec( dllexport )").
+<p>
+During the build on Windows of <b>code using</b> the Ceylan library, CEYLAN_DLL is expected to be equal to <code>__declspec( dllimport )</code>, ex : <code>CEYLAN_DLL=__declspec( dllimport )"</code>.
+</p>
 
-During the build on Windows of code using the Ceylan library, CEYLAN_DLL is expected to be equal to "__declspec( dllimport )" (ex : "CEYLAN_DLL=__declspec( dllimport )"
+<p>
+These CEYLAN_DLL symbols are defined accordingly on Windows in the C/C++ preprocessor defines panel (library properties), and on UNIX they are replaced by an empty value, thanks to <code>-D</code> command-line preprocessor defines set at configure-time.
+</p>
 
-CEYLAN_DLL is to be specified on :
+<p>When writing code, CEYLAN_DLL is to be specified on :
+<ul>
 
-	- exported class declarations, ex : 
+<!--
+	<li><b></b> : </li>
+-->
 
-'class CEYLAN_DLL WhiteNoiseGenerator : public RandomGenerator'
+	<li>exported <b>class declarations</b>, ex :
+	<center>
+    <table summary="Code" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+class CEYLAN_DLL WhiteNoiseGenerator : public RandomGenerator { ...
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
 
-	- exported non-method functions, ex :
-
-'CEYLAN_DLL Ceylan::Float32 Sqrt( Ceylan::Float32 x )'
+	</li>
 	
-	- exported symbols, ex :
+	<li>exported <b>non-method functions</b>, ex :
+<center>
+    <table summary="Code" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+CEYLAN_DLL Ceylan::Float32 Sqrt( Ceylan::Float32 x ) ;
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
 	
-'extern CEYLAN_DLL const SignalNumber BrokenPipe ;'
-
+	</li>
 	
-Special management for the "extern" keyword, with for example : "CEYLAN_EXTERN_TEMPLATE template class CEYLAN_DLL std::list<Ceylan::EventListener *> ;" does not seem necessary, according to our tests.
+	<li>exported <b>symbols</b>, ex : 
+<center>
+    <table summary="Code" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+extern CEYLAN_DLL const SignalNumber BrokenPipe ;
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+	
+	</li>
+	
+</ul>
+
+</p>
+
+<p>	
+Special management for the <code>extern</code> keyword, with for example :
+<center>
+    <table summary="Code" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+CEYLAN_EXTERN_TEMPLATE template class CEYLAN_DLL std::list<Ceylan::EventListener *> ;
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+does not seem necessary, according to our tests.
+</p>
 
 
+<h3>Understanding preprocessor symbols used to detect the Windows platform</h3>
 
-* Preprocessor symbols used to detect the Windows platform
-
+<p>
 There are two of them :
-	- CEYLAN_RUNS_ON_WINDOWS : this symbol is to be used in Ceylan public headers only, both by the Ceylan library itself and by libraries and executables using it, so that compiler-specific and platform-specific issues can be solved (ex : Windows socket descriptors cannot be directly mapped to UNIX file descriptors). This is the only case where total encapsulation of specific datatypes was not enforced, for the sake of simplicity and efficiency; all other cases that would impact the UNIX build have been encapsulated, see Ceylan::System::Thread::SystemSpecificThreadIdentifier for instance
-	- CEYLAN_ARCH_WINDOWS : this is a usual CEYLAN_ARCH_* symbols, only used for the Ceylan internal implementation (*.cc), user code does not need to know it.
+
+<ul>
+
+<!--
+	<li><b></b> : </li>
+-->
+
+	<li><code>CEYLAN_RUNS_ON_WINDOWS</code> : this symbol is to be used in Ceylan public headers only, both by the Ceylan library itself and by libraries and executables using it, so that compiler-specific and platform-specific issues can be solved (ex : Windows socket descriptors cannot be directly mapped to UNIX file descriptors). This is the only case where total encapsulation of specific datatypes was not enforced, for the sake of simplicity and efficiency. All other cases that would impact the UNIX build have been encapsulated, see <code>Ceylan::System::Thread::SystemSpecificThreadIdentifier</code> for instance. As <code>CEYLAN_RUNS_ON_WINDOWS</code> is not defined on UNIX, on these platforms installed headers are indeed free from configuration-specific informations</li>
 	
+	<li><code>CEYLAN_ARCH_WINDOWS</code> : this is a usual CEYLAN_ARCH_* symbols, only used for the Ceylan internal implementation (*.cc), user code does not need to know it</li>
+	
+</ul>	
+</p>
 	
 
-* Executables or libraries using the Ceylan library
+<h3>Setup of executables or libraries using the Ceylan library</h3>
 
+<p>
 Each of those Ceylan-dependent binaries must define :
-	- in 'Configuration Properties'-> C++ -> General -> 'Additional include directories': "$(ProjectDir)../src/code";"$(ProjectDir)../src/code/generic";"$(ProjectDir)../src/code/interfaces";"$(ProjectDir)../src/code/logs";"$(ProjectDir)../src/code/maths";"$(ProjectDir)../src/code/middleware";"$(ProjectDir)../src/code/modules";"$(ProjectDir)../src/code/network";"$(ProjectDir)../src/code/system" (needed for compiling)
-	- in 'Configuration Properties'-> C++ -> 'Preprocessor Definitions' : "CEYLAN_DLL=__declspec( dllimport )";"CEYLAN_RUNS_ON_WINDOWS=1" (needed for compiling). 
-	- that it references the Ceylan library : in 'Project Dependencies', check Ceylan-x.y-library (needed for linking)
+<ul>
 
-In the linker settings, 'Generate Debug informations' may be set to yes, according to the user needs.  
+<!--
+	<li></li>
+-->
+
+	<li>in <code>Configuration Properties -&gt; C++ -&gt; General -&gt; Additional include directories</code> :
+	<center>
+    <table summary="Code" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+$(ProjectDir)../src/code";"$(ProjectDir)../src/code/generic";"$(ProjectDir)../src/code/interfaces";"$(ProjectDir)../src/code/logs";"$(ProjectDir)../src/code/maths";"$(ProjectDir)../src/code/middleware";"$(ProjectDir)../src/code/modules";"$(ProjectDir)../src/code/network";"$(ProjectDir)../src/code/system
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+This is needed for compiling.</li>
+	<li>in <code>Configuration Properties-&gt; C++ -&gt; Preprocessor Definitions</code> : <code>"CEYLAN_DLL=__declspec( dllimport )";"CEYLAN_RUNS_ON_WINDOWS=1"</code>. This is needed for compiling.</li>
+	<li>that it references the Ceylan library : in <code>Project Dependencies</code>, check Ceylan-x.y-library. This is needed for linking.</li>
+</ul>
+</p>
+
+<p>
+In the linker settings, <code>Generate Debug informations</code> may be set to yes, according to the user needs.  
+</p>
 
 
 
+<h3>Manifests</h3>
+<p> 
+We do not know for the moment whether manifests solve or are another form of DLL hell, so we keep them on with default settings.
+</p>
+
+
+<p> 
+Some informations are available here :
+<ul>
+
+<!--
+    <li><a href="" target="_blank"></a></li>
+-->
+
+    <li><a href="http://msdn2.microsoft.com/en-us/library/ms235542.aspx" target="_blank">Understanding Manifest Generation for C/C++ Programs</a></li>
+    <li><a href="http://msdn2.microsoft.com/en-us/library/ms235532.aspx" target="_blank">Building C/C++ Isolated Applications and Side-by-side Assemblies </a></li>
+    <li><a href="http://msdn2.microsoft.com/en-us/library/ms235531.aspx" target="_blank">Concepts of Isolated Applications and Side-by-side Assemblies</a></li>
+    <li><a href="http://msdn2.microsoft.com/en-us/library/ms235342.aspx" target="_blank">Troubleshooting C/C++ Isolated Applications and Side-by-side Assemblies</a></li>
+</ul>
+</p>
 
 
 
-* How to add a new Ceylan unit test
+<h2>How to add a new Ceylan unit test</h2>
 
-	- open the Ceylan solution
-	- add a new project to it
-	- choose project type : Visual C++ -> General -> Empty Project
-	- choose project name (ex : testCeylanBasicResourceManager for source in generic/testCeylanBasicResourceManager.cc). Note that the initial project name is not 'generic-testCeylanBasicResourceManager', so that the associated files and directory names remain short.
-	- choose project location in the relevant module (ex : trunk/test/generic for testCeylanBasicResourceManager)
-	- remove default directories (Header, Resource, Source Files)
-	- add in project an existing element (ex : testCeylanBasicResourceManager.cc)
-	- go to the project properties, in Common Properties -> References, 
-click on 'Add New Reference' and select 'Ceylan-x.y library'
-	- in 'configuration properties' :
-		* set in General -> Output Directory : ".."
-		* add in C/C++ -> General -> Additional Include Directories :
-"$(SolutionDir)code";"$(SolutionDir)code/generic";"$(SolutionDir)code/interfaces";"$(SolutionDir)code/logs";"$(SolutionDir)code/maths";"$(SolutionDir)code/middleware";"$(SolutionDir)code/modules";"$(SolutionDir)code/network";"$(SolutionDir)code/system"
-		* add in C/C++ -> Preprocessor -> Preprocessor Definitions :
-"CEYLAN_DLL=__declspec( dllimport )";"CEYLAN_RUNS_ON_WINDOWS=1"
-		* choose in C/C++ -> Code Generation -> Runtime Library :
-"Multi-threaded Debug DLL (/MDd)". Selecting "Multi-threaded DLL (/MD)", "Multi-threaded Debug (/MTd)" or "Multi-thread (/MT)" leads to a direct crash.
-		* choose in Linker -> Debugging :
-"Generate Debug Info : Yes (/DEBUG)"
-	- rename in the IDE the project so that it is prefixed by its module (ex : testCeylanBasicResourceManager becomes generic-testCeylanBasicResourceManager). It allows to sort the projects in the IDE panel without having the long names in the filesystem.
-	- build the project
-	- from a cygwin terminal, go to C:\Documents and Settings\sye\Mes documents\Ceylan\trunk\src\Debug\ for example, and run for example (check the logs and the return code):
+<ol>
 
-../../test/genetic/generic-testCeylanBasicResourceManager.exe --consolePlug; echo $?
+<!--
+	<li><b></b></li>
+-->
 
-Doing so allows to use the latest Ceylan DLL file (Ceylan-x.y.dll), that is generated in src\Debug. Another solution to find the Ceylan library is to add the directory in which the DLL is generated (trunk/src/Debug).
-
+	<li>open the Ceylan <b>solution</b></li>
+	<li><b>add</b> a new project to it</li>
+	<li>choose project <b>type</b> : <code>Visual C++ -&gt; General -&gt; Empty Project</code>
+</li>
+	<li>choose project <b>name</b>, ex : <code>testCeylanBasicResourceManager</code> for source in <code>generic/testCeylanBasicResourceManager.cc</code>. Note that the initial project name is not <code>generic-testCeylanBasicResourceManager</code>, so that the associated files and directory names remain short
+	</li>
+	<li>choose project <b>location</b> in the relevant module, ex : <code>trunk/test/generic</code> for <code>testCeylanBasicResourceManager</code>
+</li>
+	<li>remove <b>default</b> directories : Header, Resource, Source Files</li>
+	<li>add in project an <b>existing element</b>, ex : <code>testCeylanBasicResourceManager.cc</code>
+</li>
+	<li>go to the project <b>properties,</b>, in <code>Common Properties -&gt; References</code>, click on <code>Add New Reference</code> and select <code>Ceylan-x.y library</code>
+	</li>
 	
-The test*.vcproj files could be generated automatically, but it would not be far more convenient (generate a GUID, register to the solution, etc.)
+	<li>In <b>configuration properties</b>,
+	  <ul>
 
+	<!--
+		<li></li>
+	-->
+
+		<li>set <code>General -&gt; Output Directory</code> to ".."</li>
+		<li>add in <code>C/C++ -&gt; General -&gt; Additional Include Directories</code> :
+		<center>
+    <table summary="Code" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+"$(SolutionDir)code";"$(SolutionDir)code/generic";"$(SolutionDir)code/interfaces";"$(SolutionDir)code/logs";"$(SolutionDir)code/maths";"$(SolutionDir)code/middleware";"$(SolutionDir)code/modules";"$(SolutionDir)code/network";"$(SolutionDir)code/system"
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+		</li>
+		
+		<li>add in <code>C/C++ -&gt; Preprocessor -&gt; Preprocessor Definitions</code> : <code>"CEYLAN_DLL=__declspec( dllimport )"; "CEYLAN_RUNS_ON_WINDOWS=1"</code></li>
+
+		<li>choose in <code>C/C++ -&gt; Code Generation -&gt; Runtime Library</code> : <code>"Multi-threaded Debug DLL (/MDd)"</code>. Selecting "Multi-threaded DLL (/MD)", "Multi-threaded Debug (/MTd)" or "Multi-thread (/MT)" leads to a direct crash.</li>
+		
+		<li>choose in <code>Linker -&gt; Debugging</code> :
+<code>"Generate Debug Info : Yes (/DEBUG)"</code></li>
+
+		
+	  </ul>
+	</li>
+	
+	<li><b>rename</b> in the IDE the project, so that it is prefixed by its module. Ex : <code>testCeylanBasicResourceManager</code> becomes <code>generic-testCeylanBasicResourceManager</code>. It allows to sort the projects in the IDE panel without having the long names in the filesystem</li>
+	<li><b>build</b> the project</li>
+	<li>from a cygwin terminal, go to <code>C:\Documents and Settings\&lt;MyUserName&gt;\My Documents\Ceylan\trunk\src\Debug\</code> for example (a symbolic link is useful here), and run for example (check the logs and the return code) : <code>../../test/generic/generic-testCeylanBasicResourceManager.exe --consolePlug; echo $?</code>. Doing so allows to use the latest Ceylan DLL file (<code>Ceylan-x.y.dll</code>), that is generated in <code>src\Debug</code>
+. Another solution to find the Ceylan library is to copy the test executable to the directory in which the DLL is generated (<code>trunk/src/Debug</code>)</li>
+	<li><b>add</b> the project file to SVN repository : for example, right-click on the <code>trunk/test/generic/testCeylanBasicResourceManager</code> directory, and select only <code>testCeylanBasicResourceManager.vcproj</code></li>
+
+</ol>
+
+<p>
+The <code>test*.vcproj</code> files could be generated automatically, but it would not be far more convenient (generate a GUID, register to the solution, etc.).
+</p>
+	
+<p>
 The solution and the main projects could not be stored in the expected trunk/src/conf/build directory, as it leads to having all imported files in the same virtual directory, whereas we want to keep the original module-based directory structure.
-
-
+</p>
+	
+<p>
 The recommended way of retrieving the Ceylan library on Windows is to check-out a stable SVN tree : the source archive is a tar.bz2, which is not very convenient.
-
-The recommended way of testing the Ceylan library is to check-out a stable SVN treeand to run the testing suite from a Cygwin terminal, since the script playTests.sh can be run on all supported platforms, including Cygwin-based Windows (note that Cygwin is used for the shell and UNIX commands it provides, none of its libraries is used by Ceylan) :
-"""
-cd trunk/test
-./playTests.sh
-"""
-
+</p>
+	
+<p>
+The recommended way of testing the Ceylan library is to check-out a stable SVN treeand to run the testing suite from a Cygwin terminal, since the script playTests.sh can be run on all supported platforms, including Cygwin-based Windows (note that Cygwin is used for the shell and UNIX commands it provides, none of its libraries is used by Ceylan) : <code>cd trunk/test && ./playTests.sh</code>.
+</p>
+	
+<p>
 Beware to your firewall, that should detect that the tests use the network and that they change at each new build : you must use your firewall (ex : ZoneAlarm) to authorize these tests, so that the test suite can run fine. Or you may modify playTests.sh so that, even when it detects network availability, it does not pass the --online option to the tests : doing so will prevent the tests from using the Internet, with DNS queries for example (however local client/server instances will still be created and be detected by your firewall).
+</p>
+	
+<p>
+Note also that if your firewall pops up a window asking the user whether a test executable can access a network interface, then most probably the test will fail because of a time-out : the time needed for the user to answer will be fatal. One thus has to re-run the test suite and acknowlege the related firewall requests until all needed executables have been granted the right to access the network, so that the test suite is non-interactive once again.
+</p>
+	
+<p>
+The <code>ldd</code> tool is lacking on the Windows platform, one may use <a href="http://www.dependencywalker.com/" target="_blank">Dependency Walker</a> instead.
+</p>
 
-The ldd tool is lacking on the Windows platform, one may use [14] instead.
-
-
-
-
-Bibliography
-
-
-[1]  
-[2]  
-[3]  
-[4]  http://sources.redhat.com/pthreads-win32/
-[7]  http://www.microsoft.com/downloads/details.aspx?FamilyId=0BAF2B35-C656-4969-ACE8-E4C0C0716ADB&displaylang=en
-[8]  
-[9]  
-[10] 
-[11] 
-[12] 
-[13] 
-[14] http://www.dependencywalker.com/
-[15] http://www.unknownroad.com/rtfm/VisualStudio/warningC4251.html
-[16] http://support.microsoft.com/kb/q168958/
 
 </pre>
 
@@ -374,7 +581,8 @@ Bibliography
       <center>
         [<a href="#_top_">Top</a>]<br>
         <br>
-        <em>Last update : Saturday, March 24, 2007
+        <em>Last update : Sunday, March 25, 2007
+
 
 </em>
       </center>
