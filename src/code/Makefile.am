@@ -53,7 +53,7 @@ SUBLIBS = \
 	modules/libCeylanModules.la       \
 	network/libCeylanNetwork.la       \
 	system/libCeylanSystem.la
-	         	
+	
 
 EXTRA_SUBLIBS = @CEYLAN_EXTRA_LIBLTDL_SUBLIB@	
 	
