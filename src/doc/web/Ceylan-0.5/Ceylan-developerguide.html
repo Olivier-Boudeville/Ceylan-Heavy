@@ -143,13 +143,11 @@ be installed to select them but may clash with others, and so on. This implies u
 	<li>update the various version-related files and directories : <code>src/doc/basic/Ceylan-*-template.txt.in</code> (including Ceylan-NEWS-template.txt.in), <code>src/doc/web/Ceylan-x.y</code>, under <code>trunk/src/conf/build</code> execute <code>make download-config-scripts</code>, etc.
 </li>
 
-	<li>on Windows, update the check-out, load the previous solution (<code>trunk/src/Ceylan-x.y.sln</code>), rename it (right-click) with newer version, do the same for the library in solution (<code></code>
-
-</li>
+	<li>on Windows, update the check-out, load the previous solution (<code>trunk/src/Ceylan-x.y.sln</code>), rename it (right-click) with newer version, do the same for the library in solution (<code>trunk/src/Ceylan-x.y.vcproj</code>), save all and stop Visual Express, then add these two files to SVN repository and check them in</li>
 
 	<li>under <code>trunk/src/conf/build</code>, use <code>autogen.sh --chain-test</code> to check everything is working as expected : all the tests must always succeed, not depending on how many times they are run</li>
 	
-	<li>create a distribution with <code>./autogen.sh --only-prepare-dist</code> : it should produce an archive named <code>trunk/ceylan-x.y.tar.bz2</code>. Build that package on as many other hosts as possible, at least one time on each supported platform. For example, <code>scp ceylan-x.y.tar.bz2 $TOSFCF && sfcf</code> to transfer the archive to Sourceforge's compile farm and to log to their platform chooser</li>
+	<li>create a distribution with <code>./autogen.sh --only-prepare-dist</code> : it should produce an archive named <code>trunk/ceylan-x.y.tar.bz2</code>. Another approach is to use an already built Ceylan tree, and from the trunk to issue <code>make dist-bzip2</code>. Build the resulting package on as many other hosts as possible, at least one time on each supported platform. For example, <code>scp ceylan-x.y.tar.bz2 $TOSFCF && sfcf</code> to transfer the archive to Sourceforge's compile farm and to log to their platform chooser</li>
 	
 	<li>extract the source archive in a temporary, and check that there are no useless elements (generated files, deprecated content, etc.), and that all files are up-to-date</li>
 
@@ -223,9 +221,7 @@ be installed to select them but may clash with others, and so on. This implies u
       <center>
         [<a href="#_top_">Top</a>]<br>
         <br>
-        <em>Last update : Saturday, March 24, 2007
-
-
+        <em>Last update : Sunday, March 25, 2007
 </em>
       </center>
   
