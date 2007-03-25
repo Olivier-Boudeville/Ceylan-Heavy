@@ -54,7 +54,7 @@ CEYLAN_LIBRARY_SOURCE_FILES = `cd $(top_srcdir); find src/code -path '*.svn*' -p
 
 # Builds RPM distribution package from archive :
 rpm: tgz
-	@echo; echo "@CEYLAN_COMMAND_STYLE@    Making rpm package\
+	@echo; echo "@CEYLAN_COMMAND_STYLE@    Making rpm package \ 
 	@CEYLAN_DEFAULT_STYLE@"; echo
 	@rpm -ta $(PACKAGE)-$(VERSION).tar.gz
 
@@ -77,7 +77,7 @@ update-basic-doc-files:
 
 
 source-release: update-basic-doc-files
-	@echo; echo "@CEYLAN_COMMAND_STYLE@    Making source release\
+	@echo; echo "@CEYLAN_COMMAND_STYLE@    Making source release \ 
 	$(SRC_RELEASE_ARCHIVE_NAME) :@CEYLAN_DEFAULT_STYLE@"; echo
 	-@cd test; if [ -f Makefile ] ; then make clean; fi
 	@mkdir -p $(SRC_RELEASE_ARCHIVE_DIR); \
@@ -85,9 +85,9 @@ source-release: update-basic-doc-files
 	tar cvf - $$files | \
 	bzip2 > "$(SRC_RELEASE_ARCHIVE_DIR)/$(SRC_RELEASE_ARCHIVE_NAME)" \
 	&& echo \
-	&& echo "@CEYLAN_COMMAND_STYLE@    + Source release for @PROJECT_NAME@\
+	&& echo "@CEYLAN_COMMAND_STYLE@    + Source release for @PROJECT_NAME@ \
 	version @CEYLAN_FULL_VERSION@ available at :" \
-	&& echo "      $(SRC_RELEASE_ARCHIVE_DIR)/$(SRC_RELEASE_ARCHIVE_NAME)\
+	&& echo "      $(SRC_RELEASE_ARCHIVE_DIR)/$(SRC_RELEASE_ARCHIVE_NAME) \
 	@CEYLAN_DEFAULT_STYLE@" \
 	&& echo
 
@@ -95,7 +95,7 @@ source-release: update-basic-doc-files
 # Creates a SVN snapshot one can run 'svn update' on :
 # (note : seems to delete as well generated file in the current source base)
 snapshot:
-	@echo; echo "@CEYLAN_COMMAND_STYLE@    Creating a SVN Ceylan snapshot\
+	@echo; echo "@CEYLAN_COMMAND_STYLE@    Creating a SVN Ceylan snapshot \
 	@CEYLAN_DEFAULT_STYLE@"; echo
 	@svn co https://svn.sourceforge.net/svnroot/ceylan ceylan
 	@(cd ceylan/Ceylan/trunk/src/conf/build && ./autogen.sh --no-build \
@@ -103,9 +103,9 @@ snapshot:
 	@cd ceylan && tar cvhf - Ceylan | \
 	bzip2 > $(HOME)/Ceylan-@CEYLAN_VERSION@-svn-snapshot.tar.bz2 \
 	&& echo \
-	&& echo "@CEYLAN_COMMAND_STYLE@    + SVN snapshot for @PROJECT_NAME@\
+	&& echo "@CEYLAN_COMMAND_STYLE@    + SVN snapshot for @PROJECT_NAME@ \
 	available at :" \
-	&& echo "      $(HOME)/Ceylan-@CEYLAN_VERSION@-svn-snapshot.tar.bz2\
+	&& echo "      $(HOME)/Ceylan-@CEYLAN_VERSION@-svn-snapshot.tar.bz2 \
 	@CEYLAN_DEFAULT_STYLE@" && echo
 	-@rm -rf ceylan
 	
@@ -116,15 +116,15 @@ snapshot:
 # to be done, but using cleanGeneratedConfigFiles.sh removes the 
 # Makefile being used itself.	
 bz2:
-	@echo; echo "@CEYLAN_COMMAND_STYLE@    Saving all\
-	@PROJECT_NAME@-@CEYLAN_VERSION@ project\
+	@echo; echo "@CEYLAN_COMMAND_STYLE@    Saving all \
+	@PROJECT_NAME@-@CEYLAN_VERSION@ project \
 	in a bz2 archive@CEYLAN_DEFAULT_STYLE@"; echo
-	@mkdir -p $(SRC_SNAPSHOT_ARCHIVE_DIR); files=$(CEYLAN_PROJECT_FILES);\
+	@mkdir -p $(SRC_SNAPSHOT_ARCHIVE_DIR); files=$(CEYLAN_PROJECT_FILES); \
 	cd $(top_srcdir)/.. ; tar cvf - $$files | bzip2 > \
 	"$(SRC_SNAPSHOT_ARCHIVE_DIR)/$(SRC_SNAPSHOT_ARCHIVE_NAME).tar.bz2" \
-	&& echo && echo "@CEYLAN_COMMAND_STYLE@    + whole @PROJECT_NAME@\
+	&& echo && echo "@CEYLAN_COMMAND_STYLE@    + whole @PROJECT_NAME@ \
 	project has been saved in file"	&& echo \
-	"      $(SRC_SNAPSHOT_ARCHIVE_DIR)/$(SRC_SNAPSHOT_ARCHIVE_NAME).tar.bz2\
+	"      $(SRC_SNAPSHOT_ARCHIVE_DIR)/$(SRC_SNAPSHOT_ARCHIVE_NAME).tar.bz2 \
 	@CEYLAN_DEFAULT_STYLE@" \
 	&& echo
 	
@@ -132,15 +132,15 @@ bz2:
 # Brute-force archiving with gzip, see also the 'source-release' target.
 # clean required not to archive test* executables :			
 tgz:
-	@echo; echo "@CEYLAN_COMMAND_STYLE@    Saving all\
-	@PROJECT_NAME@-@CEYLAN_VERSION@ project\
+	@echo; echo "@CEYLAN_COMMAND_STYLE@    Saving all \
+	@PROJECT_NAME@-@CEYLAN_VERSION@ project \
 	in a tgz archive@CEYLAN_DEFAULT_STYLE@"; echo
-	@mkdir -p $(SRC_SNAPSHOT_ARCHIVE_DIR); files=$(CEYLAN_PROJECT_FILES);\
+	@mkdir -p $(SRC_SNAPSHOT_ARCHIVE_DIR); files=$(CEYLAN_PROJECT_FILES); \
 	cd $(top_srcdir)/.. ; tar cvf - $$files | gzip > \
 	"$(SRC_SNAPSHOT_ARCHIVE_DIR)/$(SRC_SNAPSHOT_ARCHIVE_NAME).tar.gz" \
-	&& echo	&& echo "@CEYLAN_COMMAND_STYLE@    + whole @PROJECT_NAME@\
+	&& echo	&& echo "@CEYLAN_COMMAND_STYLE@    + whole @PROJECT_NAME@ \
 	project has been saved in file"	&& echo \
-	"      $(SRC_SNAPSHOT_ARCHIVE_DIR)/$(SRC_SNAPSHOT_ARCHIVE_NAME).tar.gz\
+	"      $(SRC_SNAPSHOT_ARCHIVE_DIR)/$(SRC_SNAPSHOT_ARCHIVE_NAME).tar.gz \
 	@CEYLAN_DEFAULT_STYLE@" \
 	&& echo
 
@@ -152,18 +152,18 @@ ASTYLE_CONF = ${top_srcdir}/src/conf/doc/astyle.conf
 
 style: 
 	@[ -x "$(ASTYLE)" ] \
-	|| ( echo "@CEYLAN_ERROR_STYLE@    Unable to format source code\
-	according to @PROJECT_NAME@'s conventions :\
+	|| ( echo "@CEYLAN_ERROR_STYLE@    Unable to format source code \
+	according to @PROJECT_NAME@'s conventions : \
 	astyle tool not found.@CEYLAN_DEFAULT_STYLE@"; false ) 
 	@echo
-	@echo "    Do you really want to use astyle on each of\
+	@echo "    Do you really want to use astyle on each of \
 	the project files ? (y/n) [n]"; \
 	read value; if [ "$$value" == "y" ]; then \
-	echo; echo "@CEYLAN_COMMAND_STYLE@    Enforcing standard project style\
-	defined in $(ASTYLE_CONF) in source files :@CEYLAN_DEFAULT_STYLE@ ";\
-	stylefile=$(ASTYLE_CONF); cd $(top_srcdir)/.. ;\
-	for f in $(CEYLAN_LIBRARY_SOURCE_FILES); do ( echo "    Processing $$f";\
-	$(ASTYLE) `cat $$stylefile` < $$f > $$f.tmp;\
+	echo; echo "@CEYLAN_COMMAND_STYLE@    Enforcing standard project style \
+	defined in $(ASTYLE_CONF) in source files :@CEYLAN_DEFAULT_STYLE@ "; \
+	stylefile=$(ASTYLE_CONF); cd $(top_srcdir)/.. ; \
+	for f in $(CEYLAN_LIBRARY_SOURCE_FILES); do ( echo "    Processing $$f"; \
+	$(ASTYLE) `cat $$stylefile` < $$f > $$f.tmp; \
 	mv $$f.tmp $$f ); done; else echo \
 	"@CEYLAN_ERROR_STYLE@astyle aborted.@CEYLAN_DEFAULT_STYLE@"; fi
 
@@ -182,56 +182,56 @@ stat:
 	do ( cat $$f >> .wholeSrcContent.txt; \
 	echo $$f >> .srcFileList.txt ); done
 	@s=`cat .wholeSrcContent.txt | wc`; \
-	echo "@CEYLAN_COMMAND_STYLE@    In\
-	@PROJECT_NAME@-@CEYLAN_FULL_VERSION@'s source code, there are :\
+	echo "@CEYLAN_COMMAND_STYLE@    In \
+	@PROJECT_NAME@-@CEYLAN_FULL_VERSION@'s source code, there are : \
 	"; echo ; \
 	echo "    "`cat .srcFileList.txt | wc -w`  files; \
 	echo "    "`echo $$s | awk '{print $$1}'` lines; \
 	echo "    "`echo $$s | awk '{print $$2}'` words; \
-	echo "    "`echo $$s | awk '{print $$3}'` characters\
+	echo "    "`echo $$s | awk '{print $$3}'` characters \
 	"@CEYLAN_DEFAULT_STYLE@"; 
 	-@rm -f .wholeSrcContent.txt .srcFileList.txt
 
 
 help:
 	@echo; echo "@CEYLAN_DEFAULT_STYLE@  Main make targets are :"; echo 
-	@echo "    @CEYLAN_ITEM_STYLE@all @CEYLAN_DEFAULT_STYLE@           \
-	- builds and installs a full ready-to-use\
+	@echo "    @CEYLAN_ITEM_STYLE@all @CEYLAN_DEFAULT_STYLE@            \
+	- builds and installs a full ready-to-use                           \
 	@PROJECT_NAME@-$(VERSION) release"
-	@echo "    @CEYLAN_ITEM_STYLE@install @CEYLAN_DEFAULT_STYLE@       \
+	@echo "    @CEYLAN_ITEM_STYLE@install @CEYLAN_DEFAULT_STYLE@        \
 	- installs an already built @PROJECT_NAME@ release in PREFIX"
 	@echo "                 [currently PREFIX=$(prefix)]"	
-	@echo "    @CEYLAN_ITEM_STYLE@tests @CEYLAN_DEFAULT_STYLE@         \
+	@echo "    @CEYLAN_ITEM_STYLE@tests @CEYLAN_DEFAULT_STYLE@          \
 	- generates all tests for built libraries"		
-	@echo "    @CEYLAN_ITEM_STYLE@source-release @CEYLAN_DEFAULT_STYLE@\
+	@echo "    @CEYLAN_ITEM_STYLE@source-release @CEYLAN_DEFAULT_STYLE@ \
 	- creates a new source release archive"	
-	@echo "    @CEYLAN_ITEM_STYLE@bz2 @CEYLAN_DEFAULT_STYLE@           \
+	@echo "    @CEYLAN_ITEM_STYLE@bz2 @CEYLAN_DEFAULT_STYLE@            \
 	- creates @PROJECT_NAME@ bz2 archive in @CEYLAN_ARCHIVE_DIR@"
-	@echo "    @CEYLAN_ITEM_STYLE@tgz @CEYLAN_DEFAULT_STYLE@           \
+	@echo "    @CEYLAN_ITEM_STYLE@tgz @CEYLAN_DEFAULT_STYLE@            \
 	- creates @PROJECT_NAME@ tgz archive in @CEYLAN_ARCHIVE_DIR@"
-	@echo "    @CEYLAN_ITEM_STYLE@style @CEYLAN_DEFAULT_STYLE@         \
+	@echo "    @CEYLAN_ITEM_STYLE@style @CEYLAN_DEFAULT_STYLE@          \
 	- format source code according to @PROJECT_NAME@'s conventions"
-	@echo "    @CEYLAN_ITEM_STYLE@doc @CEYLAN_DEFAULT_STYLE@           \
+	@echo "    @CEYLAN_ITEM_STYLE@doc @CEYLAN_DEFAULT_STYLE@            \
 	- builds @PROJECT_NAME@'s documentation, API excluded"
-	@echo "    @CEYLAN_ITEM_STYLE@api @CEYLAN_DEFAULT_STYLE@           \
+	@echo "    @CEYLAN_ITEM_STYLE@api @CEYLAN_DEFAULT_STYLE@            \
 	- builds @PROJECT_NAME@'s API pages"	
-	@echo "    @CEYLAN_ITEM_STYLE@stat @CEYLAN_DEFAULT_STYLE@          \
+	@echo "    @CEYLAN_ITEM_STYLE@stat @CEYLAN_DEFAULT_STYLE@           \
 	- prints statistics about @PROJECT_NAME@'s source code"
-	@echo "    @CEYLAN_ITEM_STYLE@info @CEYLAN_DEFAULT_STYLE@          \
+	@echo "    @CEYLAN_ITEM_STYLE@info @CEYLAN_DEFAULT_STYLE@           \
 	- displays some project-related variables"
-	@echo "    @CEYLAN_ITEM_STYLE@rm-svn @CEYLAN_DEFAULT_STYLE@        \
+	@echo "    @CEYLAN_ITEM_STYLE@rm-svn @CEYLAN_DEFAULT_STYLE@         \
 	- removes SVN-related files and directories"
-	@echo "    @CEYLAN_ITEM_STYLE@clean @CEYLAN_DEFAULT_STYLE@         \
+	@echo "    @CEYLAN_ITEM_STYLE@clean @CEYLAN_DEFAULT_STYLE@          \
 	- removes all generated files"
-	@echo "    @CEYLAN_ITEM_STYLE@help @CEYLAN_DEFAULT_STYLE@          \
+	@echo "    @CEYLAN_ITEM_STYLE@help @CEYLAN_DEFAULT_STYLE@           \
 	- displays this message"	
-	@echo "    @CEYLAN_ITEM_STYLE@hints @CEYLAN_DEFAULT_STYLE@         \
-	- shows how to overcome build errors and redefine output\
+	@echo "    @CEYLAN_ITEM_STYLE@hints @CEYLAN_DEFAULT_STYLE@          \
+	- shows how to overcome build errors and redefine output \
 	directories"	
 	@echo
-	@echo "Other @CEYLAN_ITEM_STYLE@GNU standard targets\
+	@echo "Other @CEYLAN_ITEM_STYLE@GNU standard targets \
 	@CEYLAN_DEFAULT_STYLE@ also available with their usual meaning :"
-	@echo "  install-strip, uninstall, distclean, check, installcheck\
+	@echo "  install-strip, uninstall, distclean, check, installcheck \
 	and dist"
 	@echo
 	@echo "You can find detailed informations and support at @CEYLAN_SF_URL@"
@@ -239,27 +239,27 @@ help:
 
 hints: 
 	@echo
-	@echo "Stable versions of @PROJECT_NAME@ should compile fine\
+	@echo "Stable versions of @PROJECT_NAME@ should compile fine \
 	out-of-the-box on all supported platforms."
 	@echo
-	@echo "The most common source of build failure is when the\
-	build system detects a tool's availability (for instance, libtool)\
-	whereas the found tool is in a too old version to be used by\
+	@echo "The most common source of build failure is when the \
+	build system detects a tool's availability (for instance, libtool) \
+	whereas the found tool is in a too old version to be used by \
 	@PROJECT_NAME@." 
 	@echo
 	@echo 
 	@echo "Following settings are set :"
 	@echo
-	@echo " + where most of @PROJECT_NAME@ is to be installed :\
+	@echo " + where most of @PROJECT_NAME@ is to be installed : \
 	currently $(prefix)"
 	@echo
-	@echo " + where all the @PROJECT_NAME@'s executables are to be\
+	@echo " + where all the @PROJECT_NAME@'s executables are to be \
 	installed : currently $(exec_prefix)"
 	@echo
-	@echo " + where @PROJECT_NAME@'s html documentation is to be\
+	@echo " + where @PROJECT_NAME@'s html documentation is to be \
 	installed, useful to feed a web server : @CEYLAN_LOCAL_WEB_DIR@"
 	@echo
-	@echo " + base directory where @PROJECT_NAME@ archives\
+	@echo " + base directory where @PROJECT_NAME@ archives \
 	(source release, bz2 or tgz) are to be put : @CEYLAN_ARCHIVE_DIR@"
 	@echo 
 	
@@ -277,16 +277,16 @@ info-library-sources:
 
 rm-svn:
 	@echo
-	@echo "@CEYLAN_CLEAN_STYLE@    Removing all SVN-related files from\
+	@echo "@CEYLAN_CLEAN_STYLE@    Removing all SVN-related files from \
 	top source directory@CEYLAN_DEFAULT_STYLE@"
-	-@echo "    Do you really want to remove all SVN-related files,\
-	hence possibly loosing modifications not already checked-in ? (y/n) [n]";\
+	-@echo "    Do you really want to remove all SVN-related files, \
+	hence possibly loosing modifications not already checked-in ? (y/n) [n]"; \
 	read value; if [ "$$value" == "y" ]; then \
 	rm -rf `find ${top_srcdir} -name .svn -print 2>/dev/null`
 
 
 clean-local:
-	@echo "@CEYLAN_CLEAN_STYLE@    Cleaning all from top build\
+	@echo "@CEYLAN_CLEAN_STYLE@    Cleaning all from top build \
 	directory@CEYLAN_DEFAULT_STYLE@" 
 	-@cd ${top_builddir}; rm -f AUTHORS COPYING.LIB ChangeLog FAQ \
 	INSTALL MAINTENERS NEWS	README THANKS TODO ceylan-?.?.tar.gz
