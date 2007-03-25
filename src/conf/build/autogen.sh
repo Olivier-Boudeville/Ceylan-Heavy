@@ -492,13 +492,6 @@ generateCustom()
 	fi
 	
 	
-	if [ $do_distcheck -eq 0 ] ; then
-		echo
-		echo " - making distcheck"
-	 	execute make distcheck
-	fi
-	
-	
 	if [ $do_chain_tests -eq 0 ] ; then
 		echo
 		echo " - building and running test suite"
@@ -513,7 +506,13 @@ generateCustom()
 		echo " - making distribution package"
 		execute make dist-bzip2 
 	fi
+	
 		
+	if [ $do_distcheck -eq 0 ] ; then
+		echo
+		echo " - making distcheck"
+	 	execute make distcheck
+	fi
 		
 }
 
