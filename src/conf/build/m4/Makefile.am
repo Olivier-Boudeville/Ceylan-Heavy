@@ -5,7 +5,8 @@ m4dir=${datadir}/@PROJECT_NAME@/aclocal
 dist_m4_DATA=acinclude-ceylan.m4
 
 install-data-local:
-	@cp -f $(srcdir)/ceylan.m4 $(srcdir)/pkg.m4 @CEYLAN_INSTALL_SHARED_DIR@
+	@cp -f $(srcdir)/ceylan.m4 $(srcdir)/pkg.m4 \
+	$(DESTDIR)@CEYLAN_INSTALL_SHARED_DIR@
 		
 	
 EXTRA_DIST = \
