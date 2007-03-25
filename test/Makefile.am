@@ -2,7 +2,8 @@ SUBDIRS = generic interfaces logs maths middleware modules network system
 
 # All programs using the Ceylan library should use in their 
 # configure.ac the CEYLAN_PATH macro defined in ceylan.m4 :
-EXTRA_DIST = ceylan.m4 playTests.sh
+EXTRA_DIST = \
+	playTests.sh
 
 # Disabled since this script is not to be run from an installed tree :
 #bin_SCRIPTS = playTests.sh
