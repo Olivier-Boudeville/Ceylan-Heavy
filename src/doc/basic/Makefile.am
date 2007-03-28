@@ -68,8 +68,9 @@ effective-changelog-creation:
 	@if [ ! -x "$(CHANGELOG_COMMAND)" ] ; then echo \
 	"@CEYLAN_WARNING_STYLE@No Changelog tool \
 	available, nothing done@CEYLAN_DEFAULT_STYLE@"; else \
-	if [ -d "${top_srcdir}/.svn" ] ; then cd ${top_srcdir} && \
-	$(CHANGELOG_COMMAND) --linelen=10000 -o ${top_builddir}/ChangeLog ; else \
+	if [ -d "${top_srcdir}/.svn" ] ; then \
+	$(CHANGELOG_COMMAND) ${top_srcdir} --linelen=10000 \
+	-o ${top_builddir}/ChangeLog ; else \
 	echo "@CEYLAN_WARNING_STYLE@ No ChangeLog created as not in a SVN \
 	tree@CEYLAN_DEFAULT_STYLE@"; touch ${top_builddir}/ChangeLog ; fi ; fi
 	-@/bin/rm -f ${top_builddir}/ChangeLog.bak
