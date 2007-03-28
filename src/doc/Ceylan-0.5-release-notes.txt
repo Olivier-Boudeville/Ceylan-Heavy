@@ -1,6 +1,6 @@
 Created on Thursday, January 4, 2007.
-Updated on 
-
+Updated on Monday, March 26, 2007.
+ 
 
 		Ceylan 0.5 release notes
 		
