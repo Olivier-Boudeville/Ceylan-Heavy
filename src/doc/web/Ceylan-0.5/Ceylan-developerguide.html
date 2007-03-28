@@ -129,7 +129,19 @@ be installed to select them but may clash with others, and so on. This implies u
 
 
 <h2>Releasing a new Ceylan x.y version</h2>
+
 <p>
+We suppose here that, with the previous version, the current version has been setup, hence we will create a release for current version and then prepare the setup for the next one.
+</p>
+
+<p>
+
+
+<h3>Release the current version</h3>
+
+<p>
+<code>x.y</code> designates here the version to release.
+</p>
 
 <ol>
 
@@ -137,21 +149,23 @@ be installed to select them but may clash with others, and so on. This implies u
 	<li></li>
 -->
 
-	<li>increment the version number in <code>trunk/src/conf/CeylanSettings.inc</code> (see <code>CEYLAN_*_VERSION</code>) and in trunk/src/code/CeylanConfigForWindows.h<code></code>, and create a new <code>trunk/src/conf/build/ceylan-x.y.pc.in</code> file, possibly from the one of the previous version. Once updated if needed, register it in SVN (<code>svn add ... && svn ci ...</code>)
-	</li>
+	<li>freeze the developments on UNIX, ensure all the tests run fine with playTests.sh on UNIX, and check-in everything</li>
 
-	<li>update the various version-related files and directories : <code>src/doc/basic/Ceylan-*-template.txt.in</code> (including Ceylan-NEWS-template.txt.in), use <code>make effective-changelog-creation html-changelog</code>, create thanks to a copy and a SVN add <code>src/doc/web/Ceylan-x.y</code>, under <code>trunk/src/conf/build</code> execute <code>make download-config-scripts</code>, etc.
-</li>
 
-	<li>on Windows, update the check-out, load the previous solution (<code>trunk/src/Ceylan-x.y.sln</code>), rename it (right-click) with newer version, do the same for the library in solution (<code>trunk/src/Ceylan-x.y.vcproj</code>), save all and stop Visual Express, then add these two files to SVN repository and check them in</li>
+	<li>on Windows, update the check-out, load the previous solution (ex : <code>trunk/src/Ceylan-x.(y-1).sln</code>), rename it (right-click) with newer version, do the same for the library in solution (<code>trunk/src/Ceylan-x.y.vcproj</code>), save all and stop Visual Express, then add these two files to SVN repository and check them in. Rebuild everything and check with cygwin that the test suite runs fine</li>
 
-	<li>under <code>trunk/src/conf/build</code>, use <code>autogen.sh --chain-test</code> to check everything is working as expected : all the tests must always succeed, not depending on how many times they are run</li>
+	<li>update, preferably on UNIX, the various version-related files and directories : <code>src/doc/basic/Ceylan-*-template.txt.in</code> (including Ceylan-NEWS-template.txt.in) and <code>trunk/src/doc/web/main/News.html</code> </li>
+
+	<li>use <code>make effective-changelog-creation html-changelog</code>, under <code>trunk/src/conf/build</code> execute <code>make download-config-scripts</code>, create  <code>Ceylan-x.y-release-notes.txt</code> and <code>Ceylan-x.y-changes.txt</code>, etc.</li>
+
+
+	<li>under <code>trunk/src/conf/build</code>, use <code>autogen.sh --chain-test</code> to check everything is still working as expected : all the tests must always succeed, not depending on how many times they are run</li>
 	
-	<li>create a distribution with <code>./autogen.sh --only-prepare-dist</code> : it should produce an archive named <code>trunk/ceylan-x.y.tar.bz2</code>. Another approach is to use an already built Ceylan tree, and from the trunk to issue <code>make dist-bzip2</code>. Build the resulting package on as many other hosts as possible, at least one time on each supported platform. For example, <code>scp ceylan-x.y.tar.bz2 $TOSFCF && sfcf</code> to transfer the archive to Sourceforge's compile farm and to log to their platform chooser</li>
+	<li>create a distribution with <code>./autogen.sh --only-prepare-dist</code> : it should produce an archive named <code>trunk/ceylan-x.y.tar.bz2</code>. Another approach is to use an already built Ceylan tree, and from the trunk to issue <code>make dist-bzip2</code> and  <code>make dist</code> (for tar.gz archive). Build the resulting package on as many other hosts as possible, at least one time on each supported platform. For example, <code>scp ceylan-x.y.tar.bz2 $TOSFCF && sfcf</code> to transfer the archive to Sourceforge's compile farm (if one day it comes back) and to log to their platform chooser</li>
 	
-	<li>extract the source archive in a temporary, and check that there are no useless elements (generated files, deprecated content, etc.), and that all files are up-to-date</li>
+	<li>extract both source archives in separate temporary directories, and check that there are no useless elements (generated files, deprecated content, etc.), and that all files are expected and up-to-date, and they have the same exact content</li>
 
-	<li>regenerate the Sourceforge website, including the Ceylan API (update <code>trunk/src/doc/web/main/documentation/DocMenu.html</code> as well)
+	<li>regenerate the Sourceforge website, including the Ceylan API (under <code>src/doc</code>, <code>make api toSF</code>
 </li>
 	
 	<li>when satisfied with the result, ensure the version control system is up-to-date with the <code>trunk/src/code/scripts/shell/toci</code> script</li>
@@ -174,15 +188,41 @@ be installed to select them but may clash with others, and so on. This implies u
 </li>
 		
 	<li>upload both distribution archives to <a href="http://sourceforge.net/projects/ceylan" target="_blank">Sourceforge</a> : select in the admin tab <code>File releases</code>, add a release to the <code>Ceylan</code> package (not the hidden <code>ceylan</code> package), name that release <code>Ceylan-x.y</code>, create it. Upload both release notes and ChangeLog from local tree (respectively from <code>trunk/src/doc/Ceylan-x.y-release-notes.txt</code> and from <code>trunk/ChangeLog</code>). Upload by anonymous FTP both archives to
-<code>upload.sourceforge.net</code> in the <code>incoming</code> directory. Add the archives from the web interface (Processor : <code>Platform-Independent)</code>, File Type : <code>Source .bz2</code> or <code>Source .gz</code>). Send a notice. Check everything from a non-logged browser. 
+<code>upload.sourceforge.net</code> in the <code>incoming</code> directory (delete first through the web form any alreay hidden release with the same name). Add the archives from the web interface (Processor : <code>Platform-Independent)</code>, File Type : <code>Source .bz2</code> or <code>Source .gz</code>). Send a notice. Check everything from a non-logged browser. 
 </li>
+	
+	<li>wait of few hours so that Sourceforge mirrors for file releases are updated, then download both archives, check their content and build and run them with the tests, with <code>build-and-test-package.sh</code></li>
 	
 	<li>send a release notice to <code>ceylan-announces@lists.sourceforge.net</code></li>
 	
 	<li>write a corresponding news item</li>
+		
+</ol>
+
+</p>
+
+
+<h3>Prepare for the next version</h3>
+
+<p>
+Now <code>x'.y'</code> designates the next version.
+</p>
+
+<p>
+
+<ol>
+
+<!--
+	<li></li>
+-->
+	<li>to prepare the next version/release candidate, one can already update the release numbers for the next version in <code>trunk/src/conf/CeylanSettings.inc</code> : <code>CEYLAN_MAJOR_VERSION</code> and/or <code>CEYLAN_MINOR_VERSION</code> and/or <code>CEYLAN_RELEASE</code>, and in trunk/src/code/CeylanConfigForWindows.h<code></code>. Create a new <code>trunk/src/conf/build/ceylan-x'.y'.pc.in</code> file, possibly from the one of the previous version. Once updated if needed, register it in SVN (<code>svn add ... && svn ci ...</code>)</li>
+
+	<li>create, thanks to a copy and a SVN add, a <code>src/doc/web/Ceylan-x'.y'</code> directory</li>
+
+	<li>update <code>trunk/src/doc/web/main/documentation/DocMenu.html</code> so that this new version is referenced</li>
 	
-	<li>to prepare the next version/release candidate, one can already update the release numbers for the next version in <code>trunk/src/conf/CeylanSettings.inc</code> : <code>CEYLAN_MAJOR_VERSION</code> and/or <code>CEYLAN_MINOR_VERSION</code> and/or <code>CEYLAN_RELEASE</code></li>
-	
+	<li>update <code>trunk/src/doc/web/main/New.html</code> with the starting date of this new release</li>
+
 </ol>
 
 </p>
