@@ -27,23 +27,23 @@
 
 /* Version number of package */
 #ifndef CEYLAN_VERSION 
-#define CEYLAN_VERSION  "0.5" 
+#define CEYLAN_VERSION  "0.6" 
 #endif
 
 
 /* Current Libtool version for the Ceylan library */
 #ifndef CEYLAN_LIBTOOL_VERSION 
-#define CEYLAN_LIBTOOL_VERSION  "0.5.0" 
+#define CEYLAN_LIBTOOL_VERSION  "0.6.0" 
 #endif
 
 /* Define to the full name and version of this package. */
 #ifndef CEYLAN_PACKAGE_STRING 
-#define CEYLAN_PACKAGE_STRING  "Ceylan 0.5" 
+#define CEYLAN_PACKAGE_STRING  "Ceylan 0.6" 
 #endif
 
 /* Define to the version of this package. */
 #ifndef CEYLAN_PACKAGE_VERSION 
-#define CEYLAN_PACKAGE_VERSION  "0.5" 
+#define CEYLAN_PACKAGE_VERSION  "0.6" 
 #endif
 
 
