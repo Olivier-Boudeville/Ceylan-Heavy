@@ -225,6 +225,12 @@ int main( int argc, char * argv[] )
 				tokenEaten = true ;
 			}
 			
+			if ( token == "--online" )
+			{
+				// Ignored :
+				tokenEaten = true ;
+			}
+			
 			if ( token == "--connection-count" )
 			{
 				if ( options.empty() )
