@@ -50,11 +50,13 @@ EXCLUDED_TESTS="${sequential_server_test_name} ${multiplexed_server_test_name} $
 DEBUG_INTERNAL "Will launch the server"
 t=${sequential_server_test_exec}
 if [ "$is_batch" = "0" ] ; then
-	echo -e "\n\n########### Running now $t" >>${TESTLOGFILE}
-	$t --batch 1>>${TESTLOGFILE} 2>&1 &
+	echo "
+	
+	########### Running now $t" >>${TESTLOGFILE}
+	$t --batch ${network_option} 1>>${TESTLOGFILE} 2>&1 &
 	SERVER_PID="$!"
 else
-	$t --interactive &
+	$t --interactive ${network_option} &
 	SERVER_PID="$!"
 fi			
 
@@ -91,11 +93,13 @@ test_count=`expr $test_count + 2`
 DEBUG_INTERNAL "Will launch the server"
 t=${multiplexed_server_test_exec}
 if [ "$is_batch" = "0" ] ; then
-	echo -e "\n\n########### Running now $t" >>${TESTLOGFILE}
-	$t --batch 1>>${TESTLOGFILE} 2>&1 &
+	echo "
+	
+	########### Running now $t" >>${TESTLOGFILE}
+	$t --batch ${network_option} 1>>${TESTLOGFILE} 2>&1 &
 	SERVER_PID="$!"
 else
-	$t --interactive &
+	$t --interactive ${network_option} &
 	SERVER_PID="$!"
 fi			
 
