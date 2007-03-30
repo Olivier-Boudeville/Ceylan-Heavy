@@ -210,6 +210,11 @@ int main( int argc, char * argv[] )
 				interactiveMode = false ;
 				tokenEaten = true ;
 			} else
+			if ( token == "--online" )
+			{
+				// Ignored :
+				tokenEaten = true ;
+			} else
 			if ( token == "--interactive" )
 			{
 				LogPlug::info( "Running in interactive mode." ) ;
