@@ -203,6 +203,12 @@ int main( int argc, char * argv[] )
 				isBatch = true ;
 				tokenEaten = true ;
 			}
+
+			if ( token == "--online" )
+			{
+				// Ignored :
+				tokenEaten = true ;
+			}
 			
 			if ( token == "--connection-count" )
 			{
