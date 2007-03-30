@@ -51,7 +51,7 @@ int main( int argc, char * argv[] )
         LogPlug::info( "Adding a first UNIX path : " + myLocator.toString() ) ;
 		
 		// When run against an install :		
-		string secondPath = "/usr/local/include/Ceylan" ;
+		string secondPath = "../../include/Ceylan" ;
 
 		myLocator.addPath( secondPath ) ;
         LogPlug::info( "Adding a second UNIX path : " + myLocator.toString() ) ;
