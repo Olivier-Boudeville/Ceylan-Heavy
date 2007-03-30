@@ -1,6 +1,12 @@
 SUFFIXES = .cc .h
 
 
+install-data-local:
+	@echo; echo " Installing playTests-local.sh"
+	@mkdir -p $(DESTDIR)@CEYLAN_TEST_DIR@/network
+	@cp -f $(srcdir)/playTests-local.sh $(DESTDIR)@CEYLAN_TEST_DIR@/network
+
+
 testsnetworkdir=@CEYLAN_TEST_DIR@/network
 
 
