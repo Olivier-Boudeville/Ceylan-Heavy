@@ -140,7 +140,6 @@ doc: local-web remind-locations
 
 local-web: site api
 
-# Automake DESTDIR not supported for optional make targets :
 
 # The 'site' target takes automatically care of both shared tree and
 # of the tree specific to this version :
