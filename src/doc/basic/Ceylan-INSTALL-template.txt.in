@@ -19,4 +19,4 @@ It is mainly a matter of :
 With future releases, one may then enter :
 	make installcheck
 
-The Ceylan mailing list dedicated to bug reports is not specified here, please read the documentation first !
+The Ceylan mailing list dedicated to bug reports is not specified here on purpose, please read the documentation first !
