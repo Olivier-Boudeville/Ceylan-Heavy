@@ -203,8 +203,17 @@ DEFAULT_LOCATIONS_PATH="$SHELLS_LOCATION/defaultLocations.sh"
 if [ -f "$DEFAULT_LOCATIONS_PATH" ] ; then
 	. $DEFAULT_LOCATIONS_PATH
 else
-	ERROR_INTERNAL "default location script not found (tried $DEFAULT_LOCATIONS_PATH)"
-	exit 3
+
+	SHELLS_LOCATION="${TEST_ROOT}/../Ceylan/scripts/shell"
+	DEFAULT_LOCATIONS_PATH="$SHELLS_LOCATION/defaultLocations.sh"
+
+	if [ -f "$DEFAULT_LOCATIONS_PATH" ] ; then
+		. $DEFAULT_LOCATIONS_PATH
+	else
+
+		ERROR_INTERNAL "default location script not found (tried finally $DEFAULT_LOCATIONS_PATH)"
+		exit 3
+	fi
 fi	
 
 # For ping :
