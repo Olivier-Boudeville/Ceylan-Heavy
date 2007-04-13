@@ -992,7 +992,8 @@ namespace Ceylan
 		
 		if ( _policy != NeverDrop )
 			res += ", with a memory size quota of " 
-				+ Ceylan::toString( _quota ) + " bytes" ;
+			+ Ceylan::toString( static_cast<Ceylan::Uint32>( _quota ) ) 
+			+ " bytes" ;
 		
 		if ( level == Ceylan::low )
 			return res ;
@@ -1004,9 +1005,10 @@ namespace Ceylan
 		if ( resourceCount == 0 )
 			res += "no resource" ;
 		else	
-			res += Ceylan::toString( resourceCount ) + " resource(s), "
-				"for a total estimated size of "
-				+ Ceylan::toString( _totalSize ) + " bytes" ;
+			res += Ceylan::toString( static_cast<Ceylan::Uint32>( resourceCount ) ) 
+				+ " resource(s), for a total estimated size of "
+				+ Ceylan::toString( static_cast<Ceylan::Uint32>( _totalSize ) ) 
+				+ " bytes" ;
 				
 		if ( _droppedByPolicy == 0 )
 			res += ". No resource dropped because of cache policy" ;
@@ -1045,7 +1047,9 @@ namespace Ceylan
 		
 			count++ ;
 			entries.push_back( "[Entry #" + Ceylan::toString( count ) 
-				+ "] : size = "	+ Ceylan::toString( (*it).second->_size ) 
+				+ "] : size = "	
+				+ Ceylan::toString( 
+					static_cast<Ceylan::Uint32>( (*it).second->_size ) ) 
 				+ ", request count = "	
 				+ Ceylan::toString( (*it).second->_requestCount ) 
 				+ ", resource description = '"	
