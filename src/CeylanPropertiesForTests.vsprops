@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="CeylanPropertiesForTests"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="&quot;$(SolutionDir)code&quot;;&quot;$(SolutionDir)code/generic&quot;;&quot;$(SolutionDir)code/interfaces&quot;;&quot;$(SolutionDir)code/logs&quot;;&quot;$(SolutionDir)code/maths&quot;;&quot;$(SolutionDir)code/middleware&quot;;&quot;$(SolutionDir)code/modules&quot;;&quot;$(SolutionDir)code/network&quot;;&quot;$(SolutionDir)code/system&quot;"
+		PreprocessorDefinitions="&quot;CEYLAN_DLL=__declspec( dllimport )&quot;; &quot;CEYLAN_RUNS_ON_WINDOWS=1&quot;"
+	/>
+</VisualStudioPropertySheet>
