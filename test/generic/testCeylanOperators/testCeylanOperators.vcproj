@@ -18,6 +18,7 @@
 			OutputDirectory=".."
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			InheritedPropertySheets="..\..\..\src\CeylanPropertiesForTests.vsprops"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -36,9 +37,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)code&quot;;&quot;$(SolutionDir)code/generic&quot;;&quot;$(SolutionDir)code/interfaces&quot;;&quot;$(SolutionDir)code/logs&quot;;&quot;$(SolutionDir)code/maths&quot;;&quot;$(SolutionDir)code/middleware&quot;;&quot;$(SolutionDir)code/modules&quot;;&quot;$(SolutionDir)code/network&quot;;&quot;$(SolutionDir)code/system&quot;"
-				PreprocessorDefinitions="&quot;CEYLAN_DLL=__declspec( dllimport )&quot;;&quot;CEYLAN_RUNS_ON_WINDOWS=1&quot;"
-				RuntimeLibrary="3"
+				AdditionalIncludeDirectories=""
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -51,7 +50,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				GenerateDebugInformation="true"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -82,6 +80,7 @@
 			Name="Release|Win32"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			InheritedPropertySheets="..\..\..\src\CeylanPropertiesForTests.vsprops"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -142,7 +141,7 @@
 	<References>
 		<ProjectReference
 			ReferencedProjectIdentifier="{021F8729-BF5B-4A73-B130-BEA1DDB68A89}"
-			RelativePathToProject=".\Ceylan-0.3.vcproj"
+			RelativePathToProject=".\Ceylan-0.6.vcproj"
 		/>
 	</References>
 	<Files>
