@@ -6,7 +6,14 @@
 	>
 	<Tool
 		Name="VCCLCompilerTool"
-		AdditionalIncludeDirectories="&quot;$(SolutionDir)code&quot;;&quot;$(SolutionDir)code/generic&quot;;&quot;$(SolutionDir)code/interfaces&quot;;&quot;$(SolutionDir)code/logs&quot;;&quot;$(SolutionDir)code/maths&quot;;&quot;$(SolutionDir)code/middleware&quot;;&quot;$(SolutionDir)code/modules&quot;;&quot;$(SolutionDir)code/network&quot;;&quot;$(SolutionDir)code/system&quot;"
+		AdditionalIncludeDirectories="&quot;$(CodeRootFromTests)&quot;;&quot;$(CodeRootFromTests)\generic&quot;;&quot;$(CodeRootFromTests)\interfaces&quot;;&quot;$(CodeRootFromTests)\logs&quot;;&quot;$(CodeRootFromTests)\maths&quot;;&quot;$(CodeRootFromTests)\middleware&quot;;&quot;$(CodeRootFromTests)\modules&quot;;&quot;$(CodeRootFromTests)\network&quot;;&quot;$(CodeRootFromTests)\system&quot;"
 		PreprocessorDefinitions="&quot;CEYLAN_DLL=__declspec( dllimport )&quot;; &quot;CEYLAN_RUNS_ON_WINDOWS=1&quot;"
+	/>
+	<UserMacro
+		Name="CodeRootFromTests"
+		Value="..\..\..\src\code"
+		InheritsFromParent="true"
+		Delimiter=";"
+		PerformEnvironmentSet="true"
 	/>
 </VisualStudioPropertySheet>
