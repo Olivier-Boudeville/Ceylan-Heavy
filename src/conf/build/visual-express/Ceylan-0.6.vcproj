@@ -17,9 +17,10 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="Debug"
-			IntermediateDirectory="Debug"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
+			InheritedPropertySheets=".\CeylanProperties.vsprops"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -38,19 +39,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)code&quot;;&quot;$(ProjectDir)code\generic&quot;;&quot;$(ProjectDir)code\interfaces&quot;;&quot;$(ProjectDir)code\logs&quot;;&quot;$(ProjectDir)code\maths&quot;;&quot;$(ProjectDir)code\middleware&quot;;&quot;$(ProjectDir)code\modules&quot;;&quot;$(ProjectDir)code\network&quot;;&quot;$(ProjectDir)code\system&quot;"
-				PreprocessorDefinitions="CEYLAN_RUNS_ON_WINDOWS=1;CEYLAN_USES_CONFIG_H=1;&quot;CEYLAN_DLL=__declspec( dllexport )&quot;;&quot;CEYLAN_EXTERN_TEMPLATE=&quot;;WIN32;_DEBUG;_WINDOWS;_USRDLL;CEYLAN03_EXPORTS"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				DisableLanguageExtensions="false"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				WarnAsError="true"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="4"
-				DisableSpecificWarnings="4290;4101;4996"
+				AdditionalIncludeDirectories=""
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -63,11 +52,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\$(SolutionName).dll"
-				LinkIncremental="2"
-				GenerateDebugInformation="true"
-				SubSystem="2"
-				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -99,6 +83,7 @@
 			OutputDirectory="Release"
 			IntermediateDirectory="Release"
 			ConfigurationType="2"
+			InheritedPropertySheets=".\CeylanProperties.vsprops"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
