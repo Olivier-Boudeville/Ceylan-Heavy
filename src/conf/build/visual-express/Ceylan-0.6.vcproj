@@ -52,7 +52,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\$(SolutionName)-debug-multithread.dll"
 			/>
 			<Tool
 				Name="VCALinkTool"
