@@ -21,7 +21,7 @@
 	/>
 	<Tool
 		Name="VCLinkerTool"
-		OutputFile="$(OutDir)\$(ProjectName)-debug-multithread.dll"
+		OutputFile="$(OutDir)\$(SolutionName)-debug-multithread.dll"
 		GenerateDebugInformation="true"
 	/>
 	<UserMacro
