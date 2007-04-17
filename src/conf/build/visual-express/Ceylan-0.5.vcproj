@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)code&quot;;&quot;$(ProjectDir)code\generic&quot;;&quot;$(ProjectDir)code\interfaces&quot;;&quot;$(ProjectDir)code\logs&quot;;&quot;$(ProjectDir)code\maths&quot;;&quot;$(ProjectDir)code\middleware&quot;;&quot;$(ProjectDir)code\modules&quot;;&quot;$(ProjectDir)code\network&quot;;&quot;$(ProjectDir)code\system&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)\..\..\..\code&quot;;&quot;$(ProjectDir)\..\..\..\code\generic&quot;;&quot;$(ProjectDir)\..\..\..\code\interfaces&quot;;&quot;$(ProjectDir)\..\..\..\code\logs&quot;;&quot;$(ProjectDir)\..\..\..\code\maths&quot;;&quot;$(ProjectDir)\..\..\..\code\middleware&quot;;&quot;$(ProjectDir)\..\..\..\code\modules&quot;;&quot;$(ProjectDir)\..\..\..\code\network&quot;;&quot;$(ProjectDir)\..\..\..\code\system&quot;"
 				PreprocessorDefinitions="CEYLAN_RUNS_ON_WINDOWS=1;CEYLAN_USES_CONFIG_H=1;&quot;CEYLAN_DLL=__declspec( dllexport )&quot;;&quot;CEYLAN_EXTERN_TEMPLATE=&quot;;WIN32;_DEBUG;_WINDOWS;_USRDLL;CEYLAN03_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -177,591 +177,591 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\code\Ceylan.h"
+				RelativePath="..\..\..\code\Ceylan.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanAnonymousInputOutputStream.h"
+				RelativePath="..\..\..\code\system\CeylanAnonymousInputOutputStream.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanAnonymousInputStream.h"
+				RelativePath="..\..\..\code\system\CeylanAnonymousInputStream.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanAnonymousProtocolAwareStreamSocket.h"
+				RelativePath="..\..\..\code\network\CeylanAnonymousProtocolAwareStreamSocket.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanAnonymousStreamSocket.h"
+				RelativePath="..\..\..\code\network\CeylanAnonymousStreamSocket.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanBasicResourceManager.h"
+				RelativePath="..\..\..\code\generic\CeylanBasicResourceManager.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanBipoint.h"
+				RelativePath="..\..\..\code\maths\CeylanBipoint.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanCallableEventSource.h"
+				RelativePath="..\..\..\code\interfaces\CeylanCallableEventSource.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanCallerEventListener.h"
+				RelativePath="..\..\..\code\interfaces\CeylanCallerEventListener.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanClientStreamSocket.h"
+				RelativePath="..\..\..\code\network\CeylanClientStreamSocket.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanClonable.h"
+				RelativePath="..\..\..\code\interfaces\CeylanClonable.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\CeylanConfig.h"
+				RelativePath="..\..\..\code\CeylanConfig.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\CeylanConfigForWindows.h"
+				RelativePath="..\..\..\code\CeylanConfigForWindows.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanController.h"
+				RelativePath="..\..\..\code\interfaces\CeylanController.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanCountable.h"
+				RelativePath="..\..\..\code\interfaces\CeylanCountable.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanCountedPointer.h"
+				RelativePath="..\..\..\code\generic\CeylanCountedPointer.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanDirectory.h"
+				RelativePath="..\..\..\code\system\CeylanDirectory.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanDisplayable.h"
+				RelativePath="..\..\..\code\interfaces\CeylanDisplayable.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanDocMainPage.h"
+				RelativePath="..\..\..\code\generic\CeylanDocMainPage.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanEndianness.h"
+				RelativePath="..\..\..\code\system\CeylanEndianness.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanEndomorphism.h"
+				RelativePath="..\..\..\code\maths\CeylanEndomorphism.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanEnvironmentVariables.h"
+				RelativePath="..\..\..\code\system\CeylanEnvironmentVariables.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanEvent.h"
+				RelativePath="..\..\..\code\interfaces\CeylanEvent.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanEventListener.h"
+				RelativePath="..\..\..\code\interfaces\CeylanEventListener.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanEventSource.h"
+				RelativePath="..\..\..\code\interfaces\CeylanEventSource.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanException.h"
+				RelativePath="..\..\..\code\generic\CeylanException.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\modules\CeylanFeatures.h"
+				RelativePath="..\..\..\code\modules\CeylanFeatures.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanFile.h"
+				RelativePath="..\..\..\code\system\CeylanFile.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanFileLocator.h"
+				RelativePath="..\..\..\code\system\CeylanFileLocator.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanFunctor.h"
+				RelativePath="..\..\..\code\generic\CeylanFunctor.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanGenericIncludes.h"
+				RelativePath="..\..\..\code\generic\CeylanGenericIncludes.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanHashable.h"
+				RelativePath="..\..\..\code\interfaces\CeylanHashable.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanHeaderVersion.h"
+				RelativePath="..\..\..\code\generic\CeylanHeaderVersion.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanHomogeneousMatrix3.h"
+				RelativePath="..\..\..\code\maths\CeylanHomogeneousMatrix3.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanIdentifier.h"
+				RelativePath="..\..\..\code\interfaces\CeylanIdentifier.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanIdentifierOwner.h"
+				RelativePath="..\..\..\code\interfaces\CeylanIdentifierOwner.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanInputDevice.h"
+				RelativePath="..\..\..\code\interfaces\CeylanInputDevice.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanInputOutputStream.h"
+				RelativePath="..\..\..\code\system\CeylanInputOutputStream.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanInputStream.h"
+				RelativePath="..\..\..\code\system\CeylanInputStream.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanInterfacesIncludes.h"
+				RelativePath="..\..\..\code\interfaces\CeylanInterfacesIncludes.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanIPAddress.h"
+				RelativePath="..\..\..\code\network\CeylanIPAddress.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanIPAddressvFour.h"
+				RelativePath="..\..\..\code\network\CeylanIPAddressvFour.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanLibtoolVersion.h"
+				RelativePath="..\..\..\code\generic\CeylanLibtoolVersion.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\middleware\CeylanLightWeightMarshaller.h"
+				RelativePath="..\..\..\code\middleware\CeylanLightWeightMarshaller.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanLinear.h"
+				RelativePath="..\..\..\code\maths\CeylanLinear.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanLocatable.h"
+				RelativePath="..\..\..\code\interfaces\CeylanLocatable.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanLocatable2D.h"
+				RelativePath="..\..\..\code\interfaces\CeylanLocatable2D.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanLockable.h"
+				RelativePath="..\..\..\code\interfaces\CeylanLockable.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLog.h"
+				RelativePath="..\..\..\code\logs\CeylanLog.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogAggregator.h"
+				RelativePath="..\..\..\code\logs\CeylanLogAggregator.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogAggregatorConsole.h"
+				RelativePath="..\..\..\code\logs\CeylanLogAggregatorConsole.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogAggregatorHTML.h"
+				RelativePath="..\..\..\code\logs\CeylanLogAggregatorHTML.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogAggregatorHTMLFragments.h"
+				RelativePath="..\..\..\code\logs\CeylanLogAggregatorHTMLFragments.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogAggregatorRaw.h"
+				RelativePath="..\..\..\code\logs\CeylanLogAggregatorRaw.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogChannel.h"
+				RelativePath="..\..\..\code\logs\CeylanLogChannel.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanLoggable.h"
+				RelativePath="..\..\..\code\interfaces\CeylanLoggable.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogHolder.h"
+				RelativePath="..\..\..\code\logs\CeylanLogHolder.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogIncludes.h"
+				RelativePath="..\..\..\code\logs\CeylanLogIncludes.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogLight.h"
+				RelativePath="..\..\..\code\logs\CeylanLogLight.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogListener.h"
+				RelativePath="..\..\..\code\logs\CeylanLogListener.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogMessage.h"
+				RelativePath="..\..\..\code\logs\CeylanLogMessage.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogPlug.h"
+				RelativePath="..\..\..\code\logs\CeylanLogPlug.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogPlugClassical.h"
+				RelativePath="..\..\..\code\logs\CeylanLogPlugClassical.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogPlugConsole.h"
+				RelativePath="..\..\..\code\logs\CeylanLogPlugConsole.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogPlugHTML.h"
+				RelativePath="..\..\..\code\logs\CeylanLogPlugHTML.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogSource.h"
+				RelativePath="..\..\..\code\logs\CeylanLogSource.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogTransport.h"
+				RelativePath="..\..\..\code\logs\CeylanLogTransport.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogTransportListenerRaw.h"
+				RelativePath="..\..\..\code\logs\CeylanLogTransportListenerRaw.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\middleware\CeylanMarshaller.h"
+				RelativePath="..\..\..\code\middleware\CeylanMarshaller.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanMathsBasic.h"
+				RelativePath="..\..\..\code\maths\CeylanMathsBasic.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanMathsIncludes.h"
+				RelativePath="..\..\..\code\maths\CeylanMathsIncludes.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanMatrix.h"
+				RelativePath="..\..\..\code\maths\CeylanMatrix.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanMatrix2.h"
+				RelativePath="..\..\..\code\maths\CeylanMatrix2.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanMatrix3.h"
+				RelativePath="..\..\..\code\maths\CeylanMatrix3.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanMeasurable.h"
+				RelativePath="..\..\..\code\interfaces\CeylanMeasurable.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanMemoryStream.h"
+				RelativePath="..\..\..\code\system\CeylanMemoryStream.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\middleware\CeylanMiddleware.h"
+				RelativePath="..\..\..\code\middleware\CeylanMiddleware.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\middleware\CeylanMiddlewareIncludes.h"
+				RelativePath="..\..\..\code\middleware\CeylanMiddlewareIncludes.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanModel.h"
+				RelativePath="..\..\..\code\interfaces\CeylanModel.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\modules\CeylanModule.h"
+				RelativePath="..\..\..\code\modules\CeylanModule.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\modules\CeylanModulesIncludes.h"
+				RelativePath="..\..\..\code\modules\CeylanModulesIncludes.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanMultiplexedProtocolBasedStreamServer.h"
+				RelativePath="..\..\..\code\network\CeylanMultiplexedProtocolBasedStreamServer.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanMultiplexedServerStreamSocket.h"
+				RelativePath="..\..\..\code\network\CeylanMultiplexedServerStreamSocket.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanMutex.h"
+				RelativePath="..\..\..\code\system\CeylanMutex.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanNetwork.h"
+				RelativePath="..\..\..\code\network\CeylanNetwork.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanNetworkIncludes.h"
+				RelativePath="..\..\..\code\network\CeylanNetworkIncludes.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanNormalProbability.h"
+				RelativePath="..\..\..\code\maths\CeylanNormalProbability.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanObject.h"
+				RelativePath="..\..\..\code\interfaces\CeylanObject.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanObjectChannel.h"
+				RelativePath="..\..\..\code\interfaces\CeylanObjectChannel.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanObjectIdentifier.h"
+				RelativePath="..\..\..\code\interfaces\CeylanObjectIdentifier.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanOperators.h"
+				RelativePath="..\..\..\code\generic\CeylanOperators.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanOutputStream.h"
+				RelativePath="..\..\..\code\system\CeylanOutputStream.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanPipe.h"
+				RelativePath="..\..\..\code\system\CeylanPipe.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\modules\CeylanPlugin.h"
+				RelativePath="..\..\..\code\modules\CeylanPlugin.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanPoint.h"
+				RelativePath="..\..\..\code\maths\CeylanPoint.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanProbability.h"
+				RelativePath="..\..\..\code\maths\CeylanProbability.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanProcess.h"
+				RelativePath="..\..\..\code\system\CeylanProcess.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\middleware\CeylanProtocolEndpoint.h"
+				RelativePath="..\..\..\code\middleware\CeylanProtocolEndpoint.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\middleware\CeylanProtocolServer.h"
+				RelativePath="..\..\..\code\middleware\CeylanProtocolServer.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanRandomGenerator.h"
+				RelativePath="..\..\..\code\maths\CeylanRandomGenerator.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanRandomGeneratorFromPDF.h"
+				RelativePath="..\..\..\code\maths\CeylanRandomGeneratorFromPDF.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanRegularExpression.h"
+				RelativePath="..\..\..\code\generic\CeylanRegularExpression.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanResource.h"
+				RelativePath="..\..\..\code\generic\CeylanResource.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanResourceManager.h"
+				RelativePath="..\..\..\code\generic\CeylanResourceManager.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanRunnable.h"
+				RelativePath="..\..\..\code\system\CeylanRunnable.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanSequentialServerStreamSocket.h"
+				RelativePath="..\..\..\code\network\CeylanSequentialServerStreamSocket.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanSerializable.h"
+				RelativePath="..\..\..\code\interfaces\CeylanSerializable.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanServerStreamSocket.h"
+				RelativePath="..\..\..\code\network\CeylanServerStreamSocket.h"
 				>
 			</File>
 			<File
-				RelativePath=".\conf\CeylanSettings.inc"
+				RelativePath="..\..\..\conf\CeylanSettings.inc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanSignal.h"
+				RelativePath="..\..\..\code\system\CeylanSignal.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanSingleton.h"
+				RelativePath="..\..\..\code\generic\CeylanSingleton.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanSmartResource.h"
+				RelativePath="..\..\..\code\generic\CeylanSmartResource.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanSmartResourceManager.h"
+				RelativePath="..\..\..\code\generic\CeylanSmartResourceManager.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanSocket.h"
+				RelativePath="..\..\..\code\network\CeylanSocket.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanStream.h"
+				RelativePath="..\..\..\code\system\CeylanStream.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanStreamSocket.h"
+				RelativePath="..\..\..\code\network\CeylanStreamSocket.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanStringUtils.h"
+				RelativePath="..\..\..\code\generic\CeylanStringUtils.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanSynchronized.h"
+				RelativePath="..\..\..\code\system\CeylanSynchronized.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanSystem.h"
+				RelativePath="..\..\..\code\system\CeylanSystem.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanSystemIncludes.h"
+				RelativePath="..\..\..\code\system\CeylanSystemIncludes.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanSystemInformation.h"
+				RelativePath="..\..\..\code\system\CeylanSystemInformation.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanSystemSpecificSocketAddress.h"
+				RelativePath="..\..\..\code\network\CeylanSystemSpecificSocketAddress.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanTestException.h"
+				RelativePath="..\..\..\code\generic\CeylanTestException.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanTextDisplayable.h"
+				RelativePath="..\..\..\code\interfaces\CeylanTextDisplayable.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanTextIdentifier.h"
+				RelativePath="..\..\..\code\interfaces\CeylanTextIdentifier.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanThread.h"
+				RelativePath="..\..\..\code\system\CeylanThread.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanTimestamp.h"
+				RelativePath="..\..\..\code\generic\CeylanTimestamp.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanTree.h"
+				RelativePath="..\..\..\code\generic\CeylanTree.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanTripoint.h"
+				RelativePath="..\..\..\code\maths\CeylanTripoint.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanTypes.h"
+				RelativePath="..\..\..\code\generic\CeylanTypes.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanUnicode.h"
+				RelativePath="..\..\..\code\generic\CeylanUnicode.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanUniformResourceIdentifier.h"
+				RelativePath="..\..\..\code\system\CeylanUniformResourceIdentifier.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanUtils.h"
+				RelativePath="..\..\..\code\generic\CeylanUtils.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanVector.h"
+				RelativePath="..\..\..\code\maths\CeylanVector.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanVector2.h"
+				RelativePath="..\..\..\code\maths\CeylanVector2.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanVector3.h"
+				RelativePath="..\..\..\code\maths\CeylanVector3.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanVersion.h"
+				RelativePath="..\..\..\code\generic\CeylanVersion.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanView.h"
+				RelativePath="..\..\..\code\interfaces\CeylanView.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanVisitable.h"
+				RelativePath="..\..\..\code\interfaces\CeylanVisitable.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanVisitor.h"
+				RelativePath="..\..\..\code\interfaces\CeylanVisitor.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanWhiteNoiseRandomGenerator.h"
+				RelativePath="..\..\..\code\maths\CeylanWhiteNoiseRandomGenerator.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\modules\CeylanXML.h"
+				RelativePath="..\..\..\code\modules\CeylanXML.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\modules\ceylanxmlelement.h"
+				RelativePath="..\..\..\code\modules\ceylanxmlelement.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\modules\CeylanXMLParser.h"
+				RelativePath="..\..\..\code\modules\CeylanXMLParser.h"
 				>
 			</File>
 			<File
-				RelativePath=".\code\modules\ceylanxmlvisitor.h"
+				RelativePath="..\..\..\code\modules\ceylanxmlvisitor.h"
 				>
 			</File>
 			<File
-				RelativePath=".\conf\MakeColors.inc"
+				RelativePath="..\..\..\conf\MakeColors.inc"
 				>
 			</File>
 			<File
-				RelativePath=".\conf\build\ToolsSettings.inc"
+				RelativePath="..\..\..\conf\build\ToolsSettings.inc"
 				>
 			</File>
 		</Filter>
@@ -771,684 +771,684 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\code\system\CeylanAnonymousInputOutputStream.cc"
+				RelativePath="..\..\..\code\system\CeylanAnonymousInputOutputStream.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanAnonymousInputStream.cc"
+				RelativePath="..\..\..\code\system\CeylanAnonymousInputStream.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanAnonymousProtocolAwareStreamSocket.cc"
+				RelativePath="..\..\..\code\network\CeylanAnonymousProtocolAwareStreamSocket.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanAnonymousStreamSocket.cc"
+				RelativePath="..\..\..\code\network\CeylanAnonymousStreamSocket.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanBipoint.cc"
+				RelativePath="..\..\..\code\maths\CeylanBipoint.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanCallableEventSource.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanCallableEventSource.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanCallerEventListener.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanCallerEventListener.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanClientStreamSocket.cc"
+				RelativePath="..\..\..\code\network\CeylanClientStreamSocket.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanClonable.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanClonable.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanController.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanController.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanCountable.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanCountable.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanDirectory.cc"
+				RelativePath="..\..\..\code\system\CeylanDirectory.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanEndomorphism.cc"
+				RelativePath="..\..\..\code\maths\CeylanEndomorphism.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanEnvironmentVariables.cc"
+				RelativePath="..\..\..\code\system\CeylanEnvironmentVariables.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanEvent.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanEvent.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanEventListener.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanEventListener.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanEventSource.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanEventSource.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanException.cc"
+				RelativePath="..\..\..\code\generic\CeylanException.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\modules\CeylanFeatures.cc"
+				RelativePath="..\..\..\code\modules\CeylanFeatures.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanFile.cc"
+				RelativePath="..\..\..\code\system\CeylanFile.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanFileLocator.cc"
+				RelativePath="..\..\..\code\system\CeylanFileLocator.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanFunctor.cc"
+				RelativePath="..\..\..\code\generic\CeylanFunctor.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanHashable.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanHashable.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanHeaderVersion.cc"
+				RelativePath="..\..\..\code\generic\CeylanHeaderVersion.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanHomogeneousMatrix3.cc"
+				RelativePath="..\..\..\code\maths\CeylanHomogeneousMatrix3.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanIdentifier.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanIdentifier.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanIdentifierOwner.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanIdentifierOwner.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanInputDevice.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanInputDevice.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanInputOutputStream.cc"
+				RelativePath="..\..\..\code\system\CeylanInputOutputStream.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanInputStream.cc"
+				RelativePath="..\..\..\code\system\CeylanInputStream.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanIPAddress.cc"
+				RelativePath="..\..\..\code\network\CeylanIPAddress.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanIPAddressvFour.cc"
+				RelativePath="..\..\..\code\network\CeylanIPAddressvFour.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanLibtoolVersion.cc"
+				RelativePath="..\..\..\code\generic\CeylanLibtoolVersion.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\middleware\CeylanLightWeightMarshaller.cc"
+				RelativePath="..\..\..\code\middleware\CeylanLightWeightMarshaller.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanLinear.cc"
+				RelativePath="..\..\..\code\maths\CeylanLinear.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanLocatable.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanLocatable.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanLocatable2D.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanLocatable2D.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanLockable.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanLockable.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLog.cc"
+				RelativePath="..\..\..\code\logs\CeylanLog.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogAggregator.cc"
+				RelativePath="..\..\..\code\logs\CeylanLogAggregator.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogAggregatorConsole.cc"
+				RelativePath="..\..\..\code\logs\CeylanLogAggregatorConsole.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogAggregatorHTML.cc"
+				RelativePath="..\..\..\code\logs\CeylanLogAggregatorHTML.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogAggregatorRaw.cc"
+				RelativePath="..\..\..\code\logs\CeylanLogAggregatorRaw.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogChannel.cc"
+				RelativePath="..\..\..\code\logs\CeylanLogChannel.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanLoggable.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanLoggable.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogHolder.cc"
+				RelativePath="..\..\..\code\logs\CeylanLogHolder.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogListener.cc"
+				RelativePath="..\..\..\code\logs\CeylanLogListener.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogMessage.cc"
+				RelativePath="..\..\..\code\logs\CeylanLogMessage.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogPlug.cc"
+				RelativePath="..\..\..\code\logs\CeylanLogPlug.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogPlugClassical.cc"
+				RelativePath="..\..\..\code\logs\CeylanLogPlugClassical.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogPlugConsole.cc"
+				RelativePath="..\..\..\code\logs\CeylanLogPlugConsole.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogPlugHTML.cc"
+				RelativePath="..\..\..\code\logs\CeylanLogPlugHTML.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogSource.cc"
+				RelativePath="..\..\..\code\logs\CeylanLogSource.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogTransport.cc"
+				RelativePath="..\..\..\code\logs\CeylanLogTransport.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\logs\CeylanLogTransportListenerRaw.cc"
+				RelativePath="..\..\..\code\logs\CeylanLogTransportListenerRaw.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\middleware\CeylanMarshaller.cc"
+				RelativePath="..\..\..\code\middleware\CeylanMarshaller.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanMathsBasic.cc"
+				RelativePath="..\..\..\code\maths\CeylanMathsBasic.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanMatrix.cc"
+				RelativePath="..\..\..\code\maths\CeylanMatrix.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanMatrix2.cc"
+				RelativePath="..\..\..\code\maths\CeylanMatrix2.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanMatrix3.cc"
+				RelativePath="..\..\..\code\maths\CeylanMatrix3.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanMeasurable.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanMeasurable.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanMemoryStream.cc"
+				RelativePath="..\..\..\code\system\CeylanMemoryStream.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\middleware\CeylanMiddleware.cc"
+				RelativePath="..\..\..\code\middleware\CeylanMiddleware.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanModel.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanModel.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\modules\CeylanModule.cc"
+				RelativePath="..\..\..\code\modules\CeylanModule.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanMultiplexedProtocolBasedStreamServer.cc"
+				RelativePath="..\..\..\code\network\CeylanMultiplexedProtocolBasedStreamServer.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanMultiplexedServerStreamSocket.cc"
+				RelativePath="..\..\..\code\network\CeylanMultiplexedServerStreamSocket.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanMutex.cc"
+				RelativePath="..\..\..\code\system\CeylanMutex.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanNetwork.cc"
+				RelativePath="..\..\..\code\network\CeylanNetwork.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanNormalProbability.cc"
+				RelativePath="..\..\..\code\maths\CeylanNormalProbability.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanObject.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanObject.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanObjectChannel.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanObjectChannel.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanObjectIdentifier.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanObjectIdentifier.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanOperators.cc"
+				RelativePath="..\..\..\code\generic\CeylanOperators.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanOutputStream.cc"
+				RelativePath="..\..\..\code\system\CeylanOutputStream.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanPipe.cc"
+				RelativePath="..\..\..\code\system\CeylanPipe.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\modules\CeylanPlugin.cc"
+				RelativePath="..\..\..\code\modules\CeylanPlugin.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanPoint.cc"
+				RelativePath="..\..\..\code\maths\CeylanPoint.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanProbability.cc"
+				RelativePath="..\..\..\code\maths\CeylanProbability.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanProcess.cc"
+				RelativePath="..\..\..\code\system\CeylanProcess.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\middleware\CeylanProtocolEndpoint.cc"
+				RelativePath="..\..\..\code\middleware\CeylanProtocolEndpoint.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\middleware\CeylanProtocolServer.cc"
+				RelativePath="..\..\..\code\middleware\CeylanProtocolServer.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanRandomGenerator.cc"
+				RelativePath="..\..\..\code\maths\CeylanRandomGenerator.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanRandomGeneratorFromPDF.cc"
+				RelativePath="..\..\..\code\maths\CeylanRandomGeneratorFromPDF.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanRegularExpression.cc"
+				RelativePath="..\..\..\code\generic\CeylanRegularExpression.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanResource.cc"
+				RelativePath="..\..\..\code\generic\CeylanResource.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanResourceManager.cc"
+				RelativePath="..\..\..\code\generic\CeylanResourceManager.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanRunnable.cc"
+				RelativePath="..\..\..\code\system\CeylanRunnable.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanSequentialServerStreamSocket.cc"
+				RelativePath="..\..\..\code\network\CeylanSequentialServerStreamSocket.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanSerializable.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanSerializable.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanServerStreamSocket.cc"
+				RelativePath="..\..\..\code\network\CeylanServerStreamSocket.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanSignal.cc"
+				RelativePath="..\..\..\code\system\CeylanSignal.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanSingleton.cc"
+				RelativePath="..\..\..\code\generic\CeylanSingleton.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanSmartResource.cc"
+				RelativePath="..\..\..\code\generic\CeylanSmartResource.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanSocket.cc"
+				RelativePath="..\..\..\code\network\CeylanSocket.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanStream.cc"
+				RelativePath="..\..\..\code\system\CeylanStream.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\network\CeylanStreamSocket.cc"
+				RelativePath="..\..\..\code\network\CeylanStreamSocket.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanStringUtils.cc"
+				RelativePath="..\..\..\code\generic\CeylanStringUtils.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanSystem.cc"
+				RelativePath="..\..\..\code\system\CeylanSystem.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanSystemInformation.cc"
+				RelativePath="..\..\..\code\system\CeylanSystemInformation.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanTestException.cc"
+				RelativePath="..\..\..\code\generic\CeylanTestException.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanTextDisplayable.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanTextDisplayable.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanTextIdentifier.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanTextIdentifier.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanThread.cc"
+				RelativePath="..\..\..\code\system\CeylanThread.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanTimestamp.cc"
+				RelativePath="..\..\..\code\generic\CeylanTimestamp.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanTree.cc"
+				RelativePath="..\..\..\code\generic\CeylanTree.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanTripoint.cc"
+				RelativePath="..\..\..\code\maths\CeylanTripoint.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanTypes.cc"
+				RelativePath="..\..\..\code\generic\CeylanTypes.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanUnicode.cc"
+				RelativePath="..\..\..\code\generic\CeylanUnicode.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\system\CeylanUniformResourceIdentifier.cc"
+				RelativePath="..\..\..\code\system\CeylanUniformResourceIdentifier.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanUtils.cc"
+				RelativePath="..\..\..\code\generic\CeylanUtils.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanVector.cc"
+				RelativePath="..\..\..\code\maths\CeylanVector.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanVector2.cc"
+				RelativePath="..\..\..\code\maths\CeylanVector2.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanVector3.cc"
+				RelativePath="..\..\..\code\maths\CeylanVector3.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\generic\CeylanVersion.cc"
+				RelativePath="..\..\..\code\generic\CeylanVersion.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanView.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanView.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanVisitable.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanVisitable.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\interfaces\CeylanVisitor.cc"
+				RelativePath="..\..\..\code\interfaces\CeylanVisitor.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\maths\CeylanWhiteNoiseRandomGenerator.cc"
+				RelativePath="..\..\..\code\maths\CeylanWhiteNoiseRandomGenerator.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\modules\CeylanXML.cc"
+				RelativePath="..\..\..\code\modules\CeylanXML.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\modules\CeylanXMLElement.cc"
+				RelativePath="..\..\..\code\modules\CeylanXMLElement.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\modules\CeylanXMLParser.cc"
+				RelativePath="..\..\..\code\modules\CeylanXMLParser.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\code\modules\CeylanXMLVisitor.cc"
+				RelativePath="..\..\..\code\modules\CeylanXMLVisitor.cc"
 				>
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\doc\web\main\documentation\Architecture.html"
+			RelativePath="..\..\..\doc\web\main\documentation\Architecture.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\common\black.html"
+			RelativePath="..\..\..\doc\web\common\black.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\Bugs.html"
+			RelativePath="..\..\..\doc\web\main\documentation\Bugs.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\ceylan-0.3\Ceylan-0.3.html"
+			RelativePath="..\..\..\doc\web\ceylan-0.3\Ceylan-0.3.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\Ceylan-usersguide.html"
+			RelativePath="..\..\..\doc\web\main\documentation\Ceylan-usersguide.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\Ceylan.html"
+			RelativePath="..\..\..\doc\web\main\Ceylan.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\Changes.html"
+			RelativePath="..\..\..\doc\web\main\documentation\Changes.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\CodingConventions.html"
+			RelativePath="..\..\..\doc\web\main\documentation\CodingConventions.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\CodingGoodPractises.html"
+			RelativePath="..\..\..\doc\web\main\documentation\CodingGoodPractises.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\Confetti.html"
+			RelativePath="..\..\..\doc\web\main\Confetti.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\log\testlogplughtml.exe-logs\Debug.html"
+			RelativePath="..\..\..\doc\web\main\documentation\log\testlogplughtml.exe-logs\Debug.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\DocMenu.html"
+			RelativePath="..\..\..\doc\web\main\documentation\DocMenu.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\Documentation.html"
+			RelativePath="..\..\..\doc\web\main\documentation\Documentation.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\log\testlogplughtml.exe-logs\Error.html"
+			RelativePath="..\..\..\doc\web\main\documentation\log\testlogplughtml.exe-logs\Error.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\log\testlogplughtml.exe-logs\ExampleOne-0x8053910.html"
+			RelativePath="..\..\..\doc\web\main\documentation\log\testlogplughtml.exe-logs\ExampleOne-0x8053910.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\log\testlogplughtml.exe-logs\ExampleOne-0x8056570.html"
+			RelativePath="..\..\..\doc\web\main\documentation\log\testlogplughtml.exe-logs\ExampleOne-0x8056570.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\log\testlogplughtml.exe-logs\ExampleOne-0xbffff050.html"
+			RelativePath="..\..\..\doc\web\main\documentation\log\testlogplughtml.exe-logs\ExampleOne-0xbffff050.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\log\testlogplughtml.exe-logs\ExampleTwo-0x8054200.html"
+			RelativePath="..\..\..\doc\web\main\documentation\log\testlogplughtml.exe-logs\ExampleTwo-0x8054200.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\log\testlogplughtml.exe-logs\ExampleTwo-0xbffff080.html"
+			RelativePath="..\..\..\doc\web\main\documentation\log\testlogplughtml.exe-logs\ExampleTwo-0xbffff080.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\log\testlogplughtml.exe-logs\Fatal.html"
+			RelativePath="..\..\..\doc\web\main\documentation\log\testlogplughtml.exe-logs\Fatal.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\common\FullGlossaryTemplate.html"
+			RelativePath="..\..\..\doc\web\common\FullGlossaryTemplate.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\common\Glossary.html"
+			RelativePath="..\..\..\doc\web\common\Glossary.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\common\GraphicalCharter.html"
+			RelativePath="..\..\..\doc\web\common\GraphicalCharter.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\Hints.html"
+			RelativePath="..\..\..\doc\web\main\documentation\Hints.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\index-SF-latest.html"
+			RelativePath="..\..\..\doc\web\main\index-SF-latest.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\index.html"
+			RelativePath="..\..\..\doc\web\main\documentation\log\testlogplughtml.exe-logs\index.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\log\testlogplughtml.exe-logs\index.html"
+			RelativePath="..\..\..\doc\web\index.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\log\testlogplughtml.exe-logs\Info.html"
+			RelativePath="..\..\..\doc\web\main\documentation\log\testlogplughtml.exe-logs\Info.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\log\testlogplughtml.exe-logs\Log-root.html"
+			RelativePath="..\..\..\doc\web\main\documentation\log\testlogplughtml.exe-logs\Log-root.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\log\testlogplughtml.exe-logs\LogSystem.html"
+			RelativePath="..\..\..\doc\web\main\documentation\log\testlogplughtml.exe-logs\LogSystem.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\LogSystem.html"
+			RelativePath="..\..\..\doc\web\main\documentation\LogSystem.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\MainCeylan.html"
+			RelativePath="..\..\..\doc\web\main\MainCeylan.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\log\testlogplughtml.exe-logs\MainLog.html"
+			RelativePath="..\..\..\doc\web\main\documentation\log\testlogplughtml.exe-logs\MainLog.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\MainMenu.html"
+			RelativePath="..\..\..\doc\web\main\MainMenu.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\Map.html"
+			RelativePath="..\..\..\doc\web\main\Map.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\NewRelease.html"
+			RelativePath="..\..\..\doc\web\main\documentation\NewRelease.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\News.html"
+			RelativePath="..\..\..\doc\web\main\News.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\Search.html"
+			RelativePath="..\..\..\doc\web\main\Search.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\common\Template-en.html"
+			RelativePath="..\..\..\doc\web\common\Template-en.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\common\Template-fr.html"
+			RelativePath="..\..\..\doc\web\common\Template-fr.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\ToDo.html"
+			RelativePath="..\..\..\doc\web\main\documentation\ToDo.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\Tools.html"
+			RelativePath="..\..\..\doc\web\main\documentation\Tools.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\log\testlogplughtml.exe-logs\Trace.html"
+			RelativePath="..\..\..\doc\web\main\documentation\log\testlogplughtml.exe-logs\Trace.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\Troubleshooting.html"
+			RelativePath="..\..\..\doc\web\main\documentation\Troubleshooting.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\UnderstandingPatterns.html"
+			RelativePath="..\..\..\doc\web\main\documentation\UnderstandingPatterns.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\VersionControl.html"
+			RelativePath="..\..\..\doc\web\main\documentation\VersionControl.html"
 			>
 		</File>
 		<File
-			RelativePath=".\doc\web\main\documentation\log\testlogplughtml.exe-logs\Warning.html"
+			RelativePath="..\..\..\doc\web\main\documentation\log\testlogplughtml.exe-logs\Warning.html"
 			>
 		</File>
 	</Files>
