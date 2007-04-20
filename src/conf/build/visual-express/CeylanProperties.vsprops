@@ -7,17 +7,9 @@
 	<Tool
 		Name="VCCLCompilerTool"
 		Optimization="0"
-		AdditionalIncludeDirectories="&quot;$(CodeRoot)&quot;;&quot;$(CodeRoot)\generic&quot;;&quot;$(CodeRoot)\interfaces&quot;;&quot;$(CodeRoot)\logs&quot;;&quot;$(CodeRoot)\maths&quot;;&quot;$(CodeRoot)\middleware&quot;;&quot;$(CodeRoot)\modules&quot;;&quot;$(CodeRoot)\network&quot;;&quot;$(CodeRoot)\system&quot;"
-		PreprocessorDefinitions="CEYLAN_RUNS_ON_WINDOWS=1;CEYLAN_USES_CONFIG_H=1;&quot;CEYLAN_DLL=__declspec( dllexport )&quot;;&quot;CEYLAN_EXTERN_TEMPLATE=&quot;;WIN32;_DEBUG;_WINDOWS;_USRDLL;CEYLAN03_EXPORTS"
-		MinimalRebuild="true"
+		AdditionalIncludeDirectories=""
 		BasicRuntimeChecks="3"
 		RuntimeLibrary="3"
-		DisableLanguageExtensions="false"
-		WarningLevel="3"
-		WarnAsError="true"
-		Detect64BitPortabilityProblems="true"
-		DebugInformationFormat="3"
-		DisableSpecificWarnings="4290;4101;4996"
 	/>
 	<Tool
 		Name="VCLinkerTool"
@@ -25,8 +17,22 @@
 		GenerateDebugInformation="true"
 	/>
 	<UserMacro
-		Name="CodeRoot"
+		Name="CeylanCodeRoot"
 		Value="$(ProjectDir)..\..\..\code"
+		InheritsFromParent="true"
+		Delimiter=";"
+		PerformEnvironmentSet="true"
+	/>
+	<UserMacro
+		Name="CeylanDLLName"
+		Value="$(CeylanCodeRoot)\$(SolutionName)-debug-multithread.dll"
+		InheritsFromParent="true"
+		Delimiter=";"
+		PerformEnvironmentSet="true"
+	/>
+	<UserMacro
+		Name="CeylanLIBName"
+		Value="$(CeylanCodeRoot)\$(SolutionName)-debug-multithread.lib"
 		InheritsFromParent="true"
 		Delimiter=";"
 		PerformEnvironmentSet="true"
