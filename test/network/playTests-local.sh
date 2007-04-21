@@ -16,8 +16,8 @@ DEBUG_INTERNAL "playTests-local.sh sourced"
 
 
 
-sequential_server_test_name="testCeylanSequentialServerStream"
-multiplexed_server_test_name="testCeylanMultiplexedServerStream"
+sequential_server_test_name="testCeylanSequentialSrvStream"
+multiplexed_server_test_name="testCeylanMultiplexedSrvStream"
 client_test_name="testCeylanClientStream"
 
 if [ "$on_cygwin" -eq "0" ] ; then
@@ -124,5 +124,4 @@ display_test_result "${multiplexed_server_test_name}" "${multiplexed_server_test
 
 # test client already counted :
 test_count=`expr $test_count + 1`
-
 
