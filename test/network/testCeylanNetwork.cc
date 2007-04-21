@@ -182,7 +182,7 @@ int main( int argc, char * argv[] )
 				+ getFQDNFromIP( tempv4 ) + "'." ) ;
 
 		}
-		catch( const NetworkException & e )
+		catch( const NetworkException )
 		{
 			LogPlug::error( "Unable to perform a reverse look-up for "
 				+ numericalAddress ) ;
@@ -194,7 +194,7 @@ int main( int argc, char * argv[] )
 			LogPlug::info( "FQDN for numerical address " + numericalAddress 
 				+ " is : '"	+ getFQDNFromIPv4( numericalAddress ) + "'." ) ;
 		}
-		catch( const NetworkException & e )
+		catch( const NetworkException )
 		{
 			LogPlug::error( "Unable to perform a reverse look-up for "
 				+ numericalAddress ) ;
