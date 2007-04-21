@@ -272,7 +272,9 @@ class MyTestProtocolClient : public Ceylan::Network::ClientStreamSocket
 				"will request '" + toBeEchoed 
 				+ "' to be mirrored, it should result in '" 
 				+ mirrored + "' (string length is " 
-				+ Ceylan::toString( toBeEchoed.size() ) + " bytes)." ) ;
+				+ Ceylan::toString( 
+						static_cast<Ceylan::Uint32>( toBeEchoed.size() ) ) 
+					+ " bytes)." ) ;
 			
 			string receivedEcho ;
 			readString( receivedEcho ) ;
