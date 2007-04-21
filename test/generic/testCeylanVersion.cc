@@ -120,7 +120,7 @@ int main( int argc, char * argv[] )
 		{
 			Ceylan::LibtoolVersion lv3( 1, 2, 3 ) ;
 		}
-		catch( const Ceylan::VersionException & e )
+		catch( const Ceylan::VersionException )
 		{
 			raised = true ;
 		}
@@ -137,7 +137,7 @@ int main( int argc, char * argv[] )
 		{
 			v1.isCompatibleWith( lv1 ) ;
 		}
-		catch( const Ceylan::VersionException & e )
+		catch( const Ceylan::VersionException )
 		{
 			raised = true ;
 		}
@@ -156,7 +156,7 @@ int main( int argc, char * argv[] )
 		{
 			lv1.isCompatibleWith( v1 ) ;
 		}
-		catch( const Ceylan::VersionException & e )
+		catch( const Ceylan::VersionException )
 		{
 			raised = true ;
 		}
