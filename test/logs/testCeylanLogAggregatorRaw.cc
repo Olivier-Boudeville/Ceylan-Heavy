@@ -42,7 +42,7 @@ int main( int argc, char * argv[] )
 			rawAggregator.createBasicChannel( "FirstChannel" ) ;
 			
 		} 
-		catch( const LogException & e )
+		catch( const LogException )
 		{
 			cout << "OK, creating an already created channel "
 				"raises an exception." << endl ;
