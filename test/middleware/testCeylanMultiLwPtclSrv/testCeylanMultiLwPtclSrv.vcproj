@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="middleware-testCeylanLightWeightMarshaller"
-	ProjectGUID="{84B9499D-10E9-4F89-8717-E18A50731EA1}"
-	RootNamespace="middleware-testCeylanLightWeightMarshaller"
+	Name="middleware-testCeylanMultiLwPtclSrv"
+	ProjectGUID="{C0CABA39-5884-4A57-9D1A-94012C66BABA}"
+	RootNamespace="middleware-testCeylanMultiLwPtclSrv"
 	>
 	<Platforms>
 		<Platform
@@ -147,7 +147,7 @@
 	</References>
 	<Files>
 		<File
-			RelativePath="..\testCeylanLightWeightMarshaller.cc"
+			RelativePath="..\testCeylanMultiLwPtclSrv.cc"
 			>
 		</File>
 	</Files>

@@ -79,7 +79,9 @@ class MyProtocolServer : public Ceylan::Middleware::ProtocolServer
 
 			LogPlug::info( "MyProtocolServer::notifyDataAvailability : "
 				"server fed with " 
-				+ Ceylan::toString( availableReadSize) + " byte(s)." ) ;
+				+ Ceylan::toString( 
+						static_cast<Ceylan::Uint32>( availableReadSize ) ) 
+					+ " byte(s)." ) ;
 			
 			if ( availableReadSize == 0 )
 			{
@@ -241,13 +243,17 @@ class MyProtocolServer : public Ceylan::Middleware::ProtocolServer
 			{
 				LogPlug::info( "MyProtocolServer::handleSum : "
 					"waiting for more data (got " 
-					+ Ceylan::toString( availableReadSize ) + "/80 bytes)." ) ;
+					+ Ceylan::toString( 
+							static_cast<Ceylan::Uint32>( availableReadSize ) ) 
+						+ "/80 bytes)." ) ;
 				return true ;
 			}	
 			
 			LogPlug::info( "MyProtocolServer::handleSum : "
 					"having enough data now (got " 
-					+ Ceylan::toString( availableReadSize ) + "/80 bytes)." ) ;
+					+ Ceylan::toString( 
+							static_cast<Ceylan::Uint32>( availableReadSize ) ) 
+						+ "/80 bytes)." ) ;
 			
 			// Let's try a real 32-bit variable for endianess testing :
 			Ceylan::Uint32 localSum = 0 ;
@@ -331,7 +337,9 @@ class MyProtocolServer : public Ceylan::Middleware::ProtocolServer
 					
 					LogPlug::info( "MyProtocolServer::handleReversedEcho : "
 						"string length being read is " 
-						+ Ceylan::toString( targetLength ) + "." ) ;
+						+ Ceylan::toString( 
+							static_cast<Ceylan::Uint32>( targetLength ) ) 
+							+ "." ) ;
 					
 				}
 				else
@@ -346,15 +354,19 @@ class MyProtocolServer : public Ceylan::Middleware::ProtocolServer
 			
 			}
 			
-			Size toReadCount = Ceylan::Maths::Min( availableReadSize,
-				targetLength ) ;
+			Size toReadCount = Ceylan::Maths::Min<Size>( 
+				availableReadSize, targetLength ) ;
 			
 			LogPlug::info( "MyProtocolServer::handleReversedEcho : "
 				"continuing operation, having " 
-				+ Ceylan::toString( availableReadSize ) 
+				+ Ceylan::toString( 
+					static_cast<Ceylan::Uint32>( availableReadSize ) ) 
 				+ " byte(s) in buffer, aiming at " 
-				+ Ceylan::toString( targetLength ) + " byte(s), requesting "
-				+ Ceylan::toString( toReadCount ) 
+				+ Ceylan::toString( 
+					static_cast<Ceylan::Uint32>( targetLength ) ) 
+				+ " byte(s), requesting "
+				+ Ceylan::toString( 
+					static_cast<Ceylan::Uint32>( toReadCount ) )
 				+ " byte(s), pre-accumulated string is '" 
 				+ stringToEcho + "'." ) ;
 				
@@ -381,7 +393,9 @@ class MyProtocolServer : public Ceylan::Middleware::ProtocolServer
 				
 				LogPlug::info( "MyProtocolServer::handleReversedEcho over, "
 					"request completed, with total string length being " 
-					+ Ceylan::toString( stringToEcho.size() ) + "." ) ;
+					+ Ceylan::toString( 
+						static_cast<Ceylan::Uint32>( stringToEcho.size() ) ) 
+					+ "." ) ;
 					
 				string reversed = Ceylan::reverse( stringToEcho ) ;
 					

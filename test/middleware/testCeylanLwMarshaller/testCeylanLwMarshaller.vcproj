@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="middleware-testCeylanMultiLwProtocolServer"
-	ProjectGUID="{C0CABA39-5884-4A57-9D1A-94012C66BABA}"
-	RootNamespace="middleware-testCeylanMultiLwProtocolServer"
+	Name="middleware-testCeylanLwMarshaller"
+	ProjectGUID="{84B9499D-10E9-4F89-8717-E18A50731EA1}"
+	RootNamespace="middleware-testCeylanLwMarshaller"
 	>
 	<Platforms>
 		<Platform
@@ -147,7 +147,7 @@
 	</References>
 	<Files>
 		<File
-			RelativePath="..\testCeylanMultiLwProtocolServer.cc"
+			RelativePath="..\testCeylanLwMarshaller.cc"
 			>
 		</File>
 	</Files>

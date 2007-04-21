@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="middleware-testCeylanMultiLwMarshalledServer"
+	Name="middleware-testCeylanMultiLwMrshSrv"
 	ProjectGUID="{E680D7C8-479C-4C67-A423-E25BCEE250C0}"
-	RootNamespace="middleware-testCeylanMultiLwMarshalledServer"
+	RootNamespace="middleware-testCeylanMultiLwMrshSrv"
 	>
 	<Platforms>
 		<Platform
@@ -147,7 +147,7 @@
 	</References>
 	<Files>
 		<File
-			RelativePath="..\testCeylanMultiLwMarshalledServer.cc"
+			RelativePath="..\testCeylanMultiLwMrshSrv.cc"
 			>
 		</File>
 	</Files>
