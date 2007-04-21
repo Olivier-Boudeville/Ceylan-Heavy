@@ -276,7 +276,8 @@ int main( int argc, char * argv[] )
 			
 			if ( attributeMap.size() != 5 )
 				throw Ceylan::TestException( "Parsed map has " 
-					+ Ceylan::toString( attributeMap.size() ) 
+					+ Ceylan::toString( 
+						static_cast<Ceylan::Uint32>( attributeMap.size() ) )
 					+ " elements, instead of 5." ) ;
 							
 			XMLParser myTestParser( generatedFilename ) ;
