@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="logs-testCeylanLogAggregatorRawNonImmediate"
+	Name="logs-testCeylanLogAggregatorRawCached"
 	ProjectGUID="{4752926C-275C-4C8D-A79C-A737165C706A}"
-	RootNamespace="logs-testCeylanLogAggregatorRawNonImmediate"
+	RootNamespace="logs-testCeylanLogAggregatorRawCached"
 	>
 	<Platforms>
 		<Platform
@@ -147,7 +147,7 @@
 	</References>
 	<Files>
 		<File
-			RelativePath="..\testCeylanLogAggregatorRawNonImmediate.cc"
+			RelativePath="..\testCeylanLogAggregatorRawCached.cc"
 			>
 		</File>
 	</Files>
