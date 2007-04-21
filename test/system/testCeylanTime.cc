@@ -397,7 +397,7 @@ int main( int argc, char * argv[] )
 			Ceylan::System::durationToString( startingSecond,
 				startingMicrosecond, stoppingSecond, stoppingMicrosecond ) ;
 		}
-		catch ( const Ceylan::System::SystemException & e )
+		catch ( const Ceylan::System::SystemException )
 		{
 			LogPlug::info( "Negative durations are correctly detected "
 				"(simple case)." ) ;
@@ -438,7 +438,7 @@ int main( int argc, char * argv[] )
 				startingMicrosecond, stoppingSecond, stoppingMicrosecond ) ;
 
 		}
-		catch ( const Ceylan::System::SystemException & e )
+		catch ( const Ceylan::System::SystemException )
 		{
 			LogPlug::info( "Negative durations are correctly detected." ) ;
 			detected = true ;
