@@ -112,14 +112,14 @@ int main( int argc, char * argv[] )
 			+  myLocator.toString() ) ;
 	
 	
-		// Just a test, does not indicates whether 
+		// Just a test, does not indicates anything : 
 		try
 		{
 			found = myLocator.find( toFind ) ;
 		}
-		catch( const FileLocatorException & e )
+		catch( const FileLocatorException )
 		{
-		
+			// Not found.
 		}
 			
 		if ( found.empty() )
