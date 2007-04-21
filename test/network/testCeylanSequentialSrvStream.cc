@@ -16,120 +16,123 @@ using namespace std ;
 
 
 
-class MyTestMultiplexedStreamServer : 
-	public Ceylan::Network::MultiplexedServerStreamSocket
+class MyTestSequentialStreamServer : 
+	public Ceylan::Network::SequentialServerStreamSocket
 {
 
 
 	public:
 	
 	
-		MyTestMultiplexedStreamServer( bool isBatch, 
+		MyTestSequentialStreamServer( bool isBatch, 
 				Ceylan::Uint32 targetConnectionCount ):
-			MultiplexedServerStreamSocket( 6969, /* reuse */ true ),
+			SequentialServerStreamSocket( 6969, /* reuse */ true ),
 			_batch( isBatch ),
 			_targetConnectionCount( targetConnectionCount )
 		{
 		
-			LogPlug::info( "MyTestMultiplexedStreamServer created : "
+			LogPlug::info( "MyTestSequentialStreamServer created : "
 				+ toString() ) ;
 				
 		}
 		
-					
-		bool handleConnection( AnonymousStreamSocket & connection )
-			throw( MultiplexedServerStreamSocketException )		
+		
+		void run() throw( ServerStreamSocketException )
+		{
+
+			/*
+			 * Instead of relying on a connection count to know when to stop,
+			 * the order could come from the network as well, with for
+			 * example a bool _requestedToStop :
+			 *
+			 * while ( ! _requestedToStop )
+			 *		accept() ;
+			 *
+			 */
+			 
+			for ( Ceylan::Uint32 i = 0; i < _targetConnectionCount; i++ )
+			{	
+				LogPlug::info( "Waiting for connection #" 
+					+ Ceylan::toString( i+1 ) ) ;
+				accept() ;
+			}	
+		
+		}
+			
+		
+		void accepted( AnonymousStreamSocket & newConnection ) 
+			throw( ServerStreamSocketException )
 		{
 		
+			/*
+			 * newConnection does not have to be used, since read/write
+			 * methods are also available for sequential servers
+			 * (only one client can exist, these methods are linked to it)
+			 *
+			 */
 		
-			LogPlug::info( "MyTestMultiplexedStreamServer::handleConnection : "
-				"will read from connection " + connection.toString() ) ;
+			LogPlug::info( "MyTestSequentialStreamServer : "
+				"connection accepted : " + toString() ) ;
 		       
-
-			if ( ! _batch )
-			{ 
-				// Sleep for 0.1 second :	
-				Thread::Sleep( 0, /* microseconds */ 100000 ) ;
-			}
-				
 			char buffer[ 2 ] ;
 			buffer[1] = 0 ;
-				
-			System::Size readCount ;
-				
-			try
+			
+			while( true )
 			{
-					
-				readCount = connection.read( buffer, 1 ) ;
+			
+				LogPlug::trace( "MyTestSequentialStreamServer::accepted : "
+					"will read from socket now." ) ;
 				
-			}
-			catch( const InputStream::ReadFailedException & e )
-			{
+				System::Size readCount ;
 				
-				LogPlug::error( 
-					"MyTestMultiplexedStreamServer::handleConnection "
-					"failed : " + e.toString() ) ;
+				try
+				{
 					
-				// Kills that faulty connection :
-				return false ;	
-					
-			}
+					readCount = read( buffer, 1 ) ;
+				
+				}
+				catch( const InputStream::ReadFailedException & e )
+				{
+					throw ServerStreamSocketException( 
+						"MyTestSequentialStreamServer::accepted failed : " 
+						+ e.toString() ) ;
+				}
 				
 				 
-			LogPlug::trace( 
-				"MyTestMultiplexedStreamServer::handleConnection : read "
-				+ Ceylan::toString( readCount ) + " byte(s)." ) ;
+				LogPlug::trace( "MyTestSequentialStreamServer : read "
+					+ Ceylan::toString( static_cast<Ceylan::Uint32>( readCount ) ) 
+					+ " byte(s)." ) ;
 				
+				if ( readCount == 0 )
+				{
 				
-			if ( readCount == 0 )
-			{
-			
-				LogPlug::error( 
-					"MyTestMultiplexedStreamServer::handleConnection : "
-					"connection awoken but no data to read." ) ;
-						
-				return false ;
-					
-			}
+					LogPlug::debug( "MyTestSequentialStreamServer::accepted : "
+						"no byte could be read." ) ;
 
-			// 1 byte read here :
-			
-			if ( buffer[0] == 'X' )
-			{
-					
-				LogPlug::trace(
-					"MyTestMultiplexedStreamServer::handleConnection : "
-					"acknowledging successful reception of end marker."	) ;
-							
-				cout << endl ;
-				connection.write( "+", 2 ) ;
-						
-				// Connection terminated according to protocol :
-				return false ;
+					return ;
 				
-			}
-			else if ( buffer[0] == 'Q' )
-			{
-			
-				LogPlug::debug( 
-					"MyTestMultiplexedStreamServer::handleConnection : "
-					"received 'Q', stopping server." ) ;
+				}
 					
-				cout << endl ;
-				connection.write( "+", 2 ) ;
+				if ( buffer[0] == 'Q' )
+				{
+					cout << endl ;
+					write( "+", 2 ) ;
+					return ;
+				}
+				else
+				{
 					
-				requestToStop() ;
-				return false ;
-				
-			}
-			else
-			{
+					cout << buffer ;
+					cout.flush() ;
 					
-				cout << buffer ;
-				cout.flush() ;
-				
-				return true ;									
-				
+					if ( ! _batch )
+					{	
+						// Sleep for 0.1 second :	
+						Thread::Sleep( 0, /* microseconds */ 100000 ) ;
+					}
+													
+				}
+									
 			}
 			
 		}
@@ -171,7 +174,7 @@ int main( int argc, char * argv[] )
 		if ( ! Features::isNetworkingSupported() )
 		{
 			LogPlug::info( 
-				"No network support available, no test performed." ) ;
+				"No network feature available, no test performed." ) ;
 			return Ceylan::ExitSuccess ;
 		}
 		
@@ -203,7 +206,7 @@ int main( int argc, char * argv[] )
 				isBatch = true ;
 				tokenEaten = true ;
 			}
-
+			
 			if ( token == "--online" )
 			{
 				// Ignored :
@@ -239,7 +242,7 @@ int main( int argc, char * argv[] )
 		
 		}
 		
-		MyTestMultiplexedStreamServer myServer( isBatch, 
+		MyTestSequentialStreamServer myServer( isBatch, 
 			targetConnectionCount ) ;
 	
         LogPlug::info( "Server created, waiting for connections : "
@@ -261,7 +264,7 @@ int main( int argc, char * argv[] )
 		 */
 		if ( isBatch )
 			Thread::Sleep( 0 /* second */, 500000 /* microseconds */ ) ;
-			
+		
         LogPlug::info( "End of network stream server test." ) ;
 
 

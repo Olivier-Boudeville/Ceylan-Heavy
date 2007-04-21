@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="network-testCeylanMultiplexedServerStream"
-	ProjectGUID="{EDC75139-7338-4C64-B8E2-FEB41ED1F0C7}"
-	RootNamespace="network-testCeylanMultiplexedServerStream"
+	Name="network-testCeylanSequentialSrvStream"
+	ProjectGUID="{B69D645F-484F-48E6-815D-A9E4E428C48B}"
+	RootNamespace="network-testCeylanSequentialSrvStream"
 	>
 	<Platforms>
 		<Platform
@@ -147,7 +147,7 @@
 	</References>
 	<Files>
 		<File
-			RelativePath="..\testCeylanMultiplexedServerStream.cc"
+			RelativePath="..\testCeylanSequentialSrvStream.cc"
 			>
 		</File>
 	</Files>
