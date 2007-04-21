@@ -114,7 +114,7 @@ int main( int argc, char * argv[] )
 		// Floating-point datatypes.
 		
 		
-		Ceylan::Float32 float32 = -12.342 ;
+		Ceylan::Float32 float32 = -12.342f ;
         s = string( "Ceylan::Float32 : -12.342 ---> " ) + float32 ;
         LogPlug::info( s ) ;
 		
