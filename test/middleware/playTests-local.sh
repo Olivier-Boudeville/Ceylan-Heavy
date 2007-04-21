@@ -16,9 +16,9 @@ DEBUG_INTERNAL "middleware/playTests-local.sh sourced"
 
 # The classical network client 'testCeylanClientStream' will do the job :
 
-marshalled_server_test_name="testCeylanMultiLwMarshalledServer"
+marshalled_server_test_name="testCeylanMultiLwMrshSrv"
 marshalled_client_test_name="testCeylanClientStream"
-multiplexed_lw_protocol_server_test_name="testCeylanMultiLwProtocolServer"
+multiplexed_lw_protocol_server_test_name="testCeylanMultiLwPtclSrv"
 multiplexed_lw_protocol_client_test_name="testCeylanProtocolClient"
 
 if [ "$on_cygwin" -eq "0" ] ; then
@@ -128,5 +128,4 @@ display_test_result "${multiplexed_lw_protocol_server_test_name}" "${multiplexed
 
 # test client not already counted :
 test_count=`expr $test_count + 2`
-
 
