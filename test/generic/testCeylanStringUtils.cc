@@ -83,12 +83,14 @@ int main( int argc, char * argv[] )
 		Ceylan::StringSize count = Ceylan::substituteInString( tester,
 			tobeReplaced, replacement )  ;
 		 	
-		LogPlug::info( Ceylan::toString( count )
+		LogPlug::info( Ceylan::toString( 
+			static_cast<Ceylan::Uint32>( count ) )
 			+ " substitutions made, result is : " + tester ) ;
 		
 		if ( count != 2 )
 			throw TestException( "Test for Ceylan::substituteInString failed, " 
-				+ Ceylan::toString( count ) 
+				+ Ceylan::toString( 
+					static_cast<Ceylan::Uint32>( count ) ) 
 				+ " occurences changed instead of 2, in phase one." ) ;
 		
 		LogPlug::info( "Doing the reverse should result in "
@@ -97,12 +99,14 @@ int main( int argc, char * argv[] )
 		count = Ceylan::substituteInString( tester, replacement, 
 			tobeReplaced )  ;
 		
-		LogPlug::info( Ceylan::toString( count )
+		LogPlug::info( Ceylan::toString( 
+				static_cast<Ceylan::Uint32>( count ) )
 			+ " substitutions made, result is : " + tester ) ;
 		
 		if ( count != 2 )
 			throw TestException( "Test for Ceylan::substituteInString failed, " 
-				+ Ceylan::toString( count ) 
+				+ Ceylan::toString( 
+					static_cast<Ceylan::Uint32>( count ) ) 
 				+ " occurences changed instead of 2, in phase two." ) ;
 		
 		if ( testerCopy != tester )
