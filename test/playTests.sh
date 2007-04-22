@@ -8,7 +8,12 @@ USAGE="`basename $0` [--interactive] : executes all tests for Ceylan in a row.
 	
 	If the --interactive option is used, tests will not be run in batch mode, and will prompt the user for various inputs. Otherwise only their final result will be output. In all cases their messages will be stored in file ${TESTLOGFILE}. The return code of this script will be the number of failed tests (beware to overflow of the return code)"
  
- 
+	
+# Please remember, when debugging on UNIX playTests.sh, to execute it from
+# *installed* version, but to modify the playTests.sh from *source* code, 
+# and to copy back the latter to the former.
+  
+
 # In batch (non-interactive) mode by default (0) :
 is_batch=0
 
@@ -20,7 +25,7 @@ if [ "$#" -ge "2" ] ; then
 	exit 1
 fi	
 
-if [ "$#" = "1" ] ; then
+if [ "$#" -eq 1 ] ; then
 	if [ "$1" != "--interactive" ] ; then
 		echo "$1 : unknown option." 1>&2
 		echo "
@@ -69,7 +74,7 @@ display_launching()
 
 	test_name="$1"
 	
-	if [ "$is_batch" = "1" ] ; then
+	if [ $is_batch -eq 1 ] ; then
 		printColor "${term_primary_marker}Launching $test_name" $cyan_text $blue_back
 	else
 		printf "[${cyan_text}m%-${space_for_test_name}s" `echo $test_name|sed 's|^./||'`
@@ -88,7 +93,7 @@ display_test_result()
 	
 	if [ "$return_code" = 0 ] ; then
 		# Test succeeded :
-		if [ "$is_batch" = "1" ] ; then
+		if [ $is_batch -eq 1 ] ; then
 			echo
 			printColor "${term_offset}$test_name seems to be successful     " $green_text $black_back
 		else
@@ -99,14 +104,14 @@ display_test_result()
 			
 		# Test failed :
 		error_count=`expr $error_count + 1`
-		if [ "$is_batch" = "1" ] ; then
+		if [ $is_batch -eq 1 ] ; then
 			echo
 			printColor "${term_offset}$t seems to be failed (exit status $return_code)     " $white_text $red_back
 		else
 		
-			if [ "$check_dependency" -eq "0" ] ; then
+			if [ "$check_dependency" -eq 0 ] ; then
 			
-				if [ "$on_cygwin" -eq "0" ] ; then
+				if [ "$on_cygwin" -eq 0 ] ; then
 					# See also : http://www.dependencywalker.com/
 					PATH="/cygdrive/c/Program Files/Microsoft Platform SDK for Windows Server 2003 R2/bin:$PATH"
 					depend_tool="Depends.exe"
@@ -117,8 +122,12 @@ display_test_result()
 						echo "No $depend_tool available, no dependency displayed."  >> ${TESTLOGFILE}
 					fi
 				else
-					echo "$t failed, whose shared library dependencies are : " >> ${TESTLOGFILE}
-					ldd $t >>${TESTLOGFILE}
+					if [ $has_ldd -eq 0 ] ; then
+						echo "$t failed, whose shared library dependencies are : " >> ${TESTLOGFILE}
+						${ldd_tool} $t >>${TESTLOGFILE}
+					else
+						echo "$t failed." >> ${TESTLOGFILE}
+					fi
 				fi
 			fi
 			
@@ -138,13 +147,20 @@ run_test()
 	# The --interactive parameter is used to tell the test it is 
 	# run in interactive mode, so that those which are long 
 	# (ex : stress tests) are shorten.
-	if [ "$is_batch" = "0" ] ; then
+	if [ $is_batch -eq 0 ] ; then
 		echo "
 		
 		########### Running now $t" >>${TESTLOGFILE}
-		$t --batch ${network_option} 1>>${TESTLOGFILE} 2>&1
+		
+		if [ $has_ldd -eq 0 ] ; then
+			echo "Library dependenies : " >>${TESTLOGFILE}
+			${ldd_tool} $t >>${TESTLOGFILE}
+		fi
+		
+		echo "Command line : $t --batch ${network_option} ${log_plug_option}" >>${TESTLOGFILE}
+		$t --batch ${network_option} ${log_plug_option} 1>>${TESTLOGFILE} 2>&1
 	else
-		$t --interactive ${network_option}
+		$t --interactive ${network_option} ${log_plug_option}
 	fi			
 		
 	return_code="$?"
@@ -152,7 +168,7 @@ run_test()
 	display_test_result "$test_name" "$t" "$return_code"
 	
 		
-	if [ "$is_batch" = "1" ] ; then
+	if [ $is_batch -eq 1 ] ; then
 		printColor "${term_primary_marker}End of $test_name, press enter to continue" $cyan_text $blue_back
 		read 
 		clear
@@ -165,7 +181,7 @@ display_final_stats()
 {
 	echo 
 
-	if [ "$error_count" -eq "0" ] ; then
+	if [ "$error_count" -eq 0 ] ; then
 		echo "   Test result : [${green_text}m all $test_count tests succeeded[${white_text}m"
 	else
 		echo "   Test result : [${red_text}m $error_count out of $test_count tests failed[${white_text}m"
@@ -179,7 +195,7 @@ get_logical_test_name()
 # 'system-testCeylanX.exe' should become 'testCeylanX'
 {
 	
-	if [ "$on_cygwin" -eq "0" ] ; then
+	if [ "$on_cygwin" -eq 0 ] ; then
 		returned_string=`basename $t |sed 's|^.*-test|test|1' |sed 's|.exe$||1'`
 	else
 		returned_string=`basename $t |sed 's|.exe$||1'`
@@ -220,12 +236,18 @@ fi
 findSupplementaryShellTools
 
 
-
 # Creates a test directory to avoid polluting other directories :
 TEST_DIR="tests-results-"`date '+%Y%m%d'`
 
 
-if [ "$is_batch" = "0" ] ; then
+# Specifies the log plug the tests should be run with. 
+# Note : avoid using the classical plug because it may cause scheduling 
+# failures (ex : with testOSDLScheduler) because of its default synchronous 
+# file I/O). 
+log_plug_option="--HTMLPlug"
+
+
+if [ $is_batch -eq 0 ] ; then
 	echo "
 	Running in batch mode, tests will be short and silent, only results are to be output."
 else	
@@ -262,14 +284,14 @@ if [ `uname -s | cut -b1-6` = "CYGWIN" ] ; then
 	on_cygwin=0
 	DEBUG_INTERNAL "Running tests in the Windows (Cygwin) context."
 
-  # The tests and the Ceylan library they use will match if and only if they
-  # all come from a vanilla Ceylan install or a LOANI-based one :
-  # in the two cases the Ceylan library will have a specific name (either
-  # with 'from-LOANI' or not), and the tests will expect that DLL name too.
-  # Hence the order of following two paths does not matter :
+	# The tests and the Ceylan library they use will match if and only if they
+	# all come from a vanilla Ceylan install or a LOANI-based one :
+	# in the two cases the Ceylan library will have a specific name (either
+	# with 'from-LOANI' or not), and the tests will expect that DLL name too.
+	# Hence the order of following two paths does not matter :
   
-  # Tests with LOANI are by default run against the debug multithread Ceylan library :
-  ceylan_library_from_loani_tested_flavour="debug-mt"
+	# Tests with LOANI are by default run against the debug multithread Ceylan library :
+	ceylan_library_from_loani_tested_flavour="debug-mt"
   
 	# Updated PATH needed to find the Ceylan DLL in LOANI install tree :
 	export PATH="../../../../../LOANI-installations/OSDL-libraries/${ceylan_library_from_loani_tested_flavour}/dll:$PATH"
@@ -281,9 +303,6 @@ fi
 
 # This script will automatically run each test of each selected Ceylan module.
 TESTED_ROOT_MODULES=`cd ${TEST_ROOT}; find . -type d | grep -v tmp | grep -v Debug | grep -v autom4te.cache | grep -v .svn | grep -v '.deps' | grep -v '.libs' | grep -v 'testCeylan'| grep -v '^\.$'`
-
-# For debug purpose :
-#TESTED_ROOT_MODULES="generic logs interfaces modules system maths network middleware"
 
 DEBUG_INTERNAL "Tested modules are : ${TESTED_ROOT_MODULES}"
 
@@ -303,12 +322,12 @@ space_for_test_name=`expr ${COLUMNS} - 5`
 DEBUG_INTERNAL "Space for test names = ${space_for_test_name}"	
 
 
-if [ "$is_batch" = "0" ] ; then
+if [ $is_batch -eq 0 ] ; then
 	echo "
 		Test results established at "`date '+%A, %B %-e, %Y'`"\n\n" > ${TESTLOGFILE}
 fi
 
-if [ "$on_cygwin" -eq "0" ] ; then
+if [ "$on_cygwin" -eq 0 ] ; then
 	echo "
 	
 	Library search path is : PATH='$PATH'" >> ${TESTLOGFILE}
@@ -316,6 +335,13 @@ else
 	echo "
 	
 	Library search path is : LD_LIBRARY_PATH='$LD_LIBRARY_PATH'" >> ${TESTLOGFILE}
+fi
+
+has_ldd=1
+ldd_tool=`which ldd 2>/dev/null`
+
+if [ -x "${ldd_tool}" ] ; then
+	has_ldd=0
 fi
 
 # So that test plugin can be found :
@@ -343,7 +369,7 @@ for m in ${TESTED_ROOT_MODULES} ; do
 		. ${PLAYTEST_LOCAL}
 	fi
 		
-	if [ "$on_cygwin" -eq "0" ] ; then
+	if [ "$on_cygwin" -eq 0 ] ; then
 		TESTS=`ls ${TEST_ROOT}/$m/*-testCeylan*.exe 2>/dev/null`
 	else	
 		TESTS=`ls ${TEST_ROOT}/$m/testCeylan*.exe 2>/dev/null`	
@@ -351,7 +377,7 @@ for m in ${TESTED_ROOT_MODULES} ; do
 	
 	DEBUG_INTERNAL "Tests in module ${m} are : '${TESTS}'"
 	
-	if [ "$is_batch" = "1" ] ; then
+	if [ $is_batch -eq 1 ] ; then
 	
 		# Lists all tests that are to be run :
 		for t in $TESTS ; do
@@ -380,7 +406,7 @@ for m in ${TESTED_ROOT_MODULES} ; do
 				fi	
 			done	
 		
-			if [ "$to_be_excluded" = "0" ] ; then
+			if [ "$to_be_excluded" -eq 0 ] ; then
 				# Skip this test, as PLAYTEST_LOCAL_FILE took care of it :
 				DEBUG_INTERNAL "Skipping test $t"
 				continue
@@ -410,3 +436,4 @@ End of tests"
 LTDL_LIBRARY_PATH="$saved_LTDL_LIBRARY_PATH"
 
 exit $error_count
+
