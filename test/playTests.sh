@@ -261,9 +261,21 @@ if [ `uname -s | cut -b1-6` = "CYGWIN" ] ; then
 	
 	on_cygwin=0
 	DEBUG_INTERNAL "Running tests in the Windows (Cygwin) context."
-	
-	# Updated PATH needed to find the Ceylan DLL :
-	export PATH="../src/Debug:$PATH"
+
+  # The tests and the Ceylan library they use will match if and only if they
+  # all come from a vanilla Ceylan install or a LOANI-based one :
+  # in the two cases the Ceylan library will have a specific name (either
+  # with 'from-LOANI' or not), and the tests will expect that DLL name too.
+  # Hence the order of following two paths does not matter :
+  
+  # Tests with LOANI are by default run against the debug multithread Ceylan library :
+  ceylan_library_from_loani_tested_flavour="debug-mt"
+  
+	# Updated PATH needed to find the Ceylan DLL in LOANI install tree :
+	export PATH="../../../../../LOANI-installations/OSDL-libraries/${ceylan_library_from_loani_tested_flavour}/dll:$PATH"
+
+	# Updated PATH needed to find the Ceylan DLL in Ceylan build tree :
+	export PATH="../src/code:$PATH"
 	
 fi	
 
@@ -398,4 +410,3 @@ End of tests"
 LTDL_LIBRARY_PATH="$saved_LTDL_LIBRARY_PATH"
 
 exit $error_count
-
