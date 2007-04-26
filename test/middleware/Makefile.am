@@ -11,21 +11,21 @@ testsmiddlewaredir=@CEYLAN_TEST_DIR@/middleware
 
 
 testsmiddleware_PROGRAMS = \
-	testCeylanLightWeightMarshaller.exe        \
-	testCeylanMultiLwMarshalledServer.exe      \
-	testCeylanMultiLwProtocolServer.exe        \
+	testCeylanLwMarshaller.exe        \
+	testCeylanMultiLwMrshSrv.exe      \
+	testCeylanMultiLwPtclSrv.exe      \
 	testCeylanProtocolClient.exe
 	
 
-testCeylanLightWeightMarshaller_exe_SOURCES       = \
-	testCeylanLightWeightMarshaller.cc
+testCeylanLwMarshaller_exe_SOURCES       = \
+	testCeylanLwMarshaller.cc
 	
-testCeylanMultiLwMarshalledServer_exe_SOURCES     = \
-	testCeylanMultiLwMarshalledServer.cc
+testCeylanMultiLwMrshSrv_exe_SOURCES     = \
+	testCeylanMultiLwMrshSrv.cc
 	
-testCeylanMultiLwProtocolServer_exe_SOURCES       = \
-	testCeylanMultiLwProtocolServer.cc
+testCeylanMultiLwPtclSrv_exe_SOURCES     = \
+	testCeylanMultiLwPtclSrv.cc
 
-testCeylanProtocolClient_exe_SOURCES              = \
+testCeylanProtocolClient_exe_SOURCES     = \
 	testCeylanProtocolClient.cc
 	

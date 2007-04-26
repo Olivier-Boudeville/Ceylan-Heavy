@@ -13,19 +13,19 @@ testsnetworkdir=@CEYLAN_TEST_DIR@/network
 testsnetwork_PROGRAMS = \
 	testCeylanClientStream.exe                 \
 	testCeylanIPAddressvFour.exe               \
-	testCeylanMultiplexedServerStream.exe      \
+	testCeylanMultiplexedSrvStream.exe         \
 	testCeylanNetwork.exe                      \
-	testCeylanSequentialServerStream.exe
+	testCeylanSequentialSrvStream.exe
 
 
-testCeylanClientStream_exe_SOURCES            = testCeylanClientStream.cc
+testCeylanClientStream_exe_SOURCES         = testCeylanClientStream.cc
 
-testCeylanIPAddressvFour_exe_SOURCES          = testCeylanIPAddressvFour.cc
+testCeylanIPAddressvFour_exe_SOURCES       = testCeylanIPAddressvFour.cc
 
-testCeylanMultiplexedServerStream_exe_SOURCES = \
-	testCeylanMultiplexedServerStream.cc
+testCeylanMultiplexedSrvStream_exe_SOURCES = \
+	testCeylanMultiplexedSrvStream.cc
 	
-testCeylanNetwork_exe_SOURCES                 = testCeylanNetwork.cc
+testCeylanNetwork_exe_SOURCES              = testCeylanNetwork.cc
 
-testCeylanSequentialServerStream_exe_SOURCES  = \
-	testCeylanSequentialServerStream.cc
+testCeylanSequentialSrvStream_exe_SOURCES  = \
+	testCeylanSequentialSrvStream.cc

@@ -9,7 +9,7 @@ testslogs_PROGRAMS = \
 	testCeylanFullLogSystem.exe                   \
 	testCeylanLogAggregatorHTML.exe               \
 	testCeylanLogAggregatorRaw.exe                \
-	testCeylanLogAggregatorRawNonImmediate.exe    \
+	testCeylanLogAggregatorRawCached.exe          \
 	testCeylanLogHolder.exe                       \
 	testCeylanLogMessage.exe                      \
 	testCeylanLogPlug.exe                         \
@@ -30,8 +30,8 @@ testCeylanLogAggregatorHTML_exe_SOURCES            = \
 testCeylanLogAggregatorRaw_exe_SOURCES             = \
 	testCeylanLogAggregatorRaw.cc
 	
-testCeylanLogAggregatorRawNonImmediate_exe_SOURCES = \
-	testCeylanLogAggregatorRawNonImmediate.cc
+testCeylanLogAggregatorRawCached_exe_SOURCES       = \
+	testCeylanLogAggregatorRawCached.cc
 	
 testCeylanLogHolder_exe_SOURCES                    = testCeylanLogHolder.cc
 
