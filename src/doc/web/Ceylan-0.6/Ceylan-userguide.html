@@ -13,7 +13,7 @@
 
 <html lang="EN">
 <head>
-  <title>Ceylan - User Guide for the Ceylan 0.5 version</title>
+  <title>Ceylan - User Guide for the Ceylan 0.6 version</title>
   <meta http-equiv="Content-Type" content=
   "text/html; charset=iso-8859-1">
   <meta name="description" content="Ceylan Project">
@@ -26,12 +26,12 @@
 
   <div class="banner">
     <p><em>General</em> <a href="../common/black.html" onclick="parent.toolbar.location=&#39;../main/MainMenu.html&#39;">home page</a>
-    <a href="../main/Map.html">site map</a> <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan-0.5]%20User%20Guide">mail  us</a></p>
+    <a href="../main/Map.html">site map</a> <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan-0.6]%20User%20Guide">mail  us</a></p>
   </div><br>
   <a name="_top_"></a>
 
 
-<h1>User Guide for the Ceylan 0.5 version</h1>
+<h1>User Guide for the Ceylan 0.6 version</h1>
 
 <p>
 This user guide is not yet written. There are some informations here though, and one may refer to the <a href="../main/documentation/MiniFAQ.html" target="_blank">Ceylan Mini-FAQ</a> and to the
@@ -123,6 +123,19 @@ With an heavy load, the stability is still sufficient for our algorithm to selec
 
 <p>
 Finally, in all these cases our algorithm always chose to report an effective scheduling granularity of 8 ms (the second threshold). Therefore the atomic sleeps will managed to obtain it reliably.
+</p>
+
+<p>
+As a side note, one can compare these results with the ones obtained on a laptop running Windows XP Professional :
+
+<center>
+    <img src="schedulingGranularity-win-xp.png" alt="Windows XP"></img>
+</center>
+
+</p>
+
+<p>
+One can see a schedule granularity of 16 ms. One remarkable fact is that, whereas the delay accuracy is below 1 microsecond, the measured delays are always multiples of 1000 microseconds (ex : either 15000 or 16000, never other numbers). 
 </p>
 
 
@@ -669,7 +682,7 @@ If an error occurs while executing <code>make api</code> under <code>src/doc</co
 
   <p>If you have information more detailed or more recent than those
   presented in this document, if you noticed errors, neglects or points
-  insufficiently discussed, <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan-0.5]%20User%20Guide">drop us a line</a>!</p><br>
+  insufficiently discussed, <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan-0.6]%20User%20Guide">drop us a line</a>!</p><br>
   <br>
   <hr>
   
