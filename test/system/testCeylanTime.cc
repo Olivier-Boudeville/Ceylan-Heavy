@@ -37,6 +37,54 @@ int main( int argc, char * argv[] )
     {
 
 
+		bool isBatch = false ;
+
+		std::string executableName ;
+		std::list<std::string> options ;
+		
+		Ceylan::parseCommandLineOptions( executableName, options, argc, argv ) ;
+		
+		std::string token ;
+		bool tokenEaten ;
+		
+		
+		while ( ! options.empty() )
+		{
+		
+			token = options.front() ;
+			options.pop_front() ;
+
+			tokenEaten = false ;
+						
+			if ( token == "--batch" )
+			{
+				LogPlug::info( "Batch mode selected" ) ;
+				isBatch = true ;
+				tokenEaten = true ;
+			}
+			
+			if ( token == "--online" )
+			{
+				// Ignored :
+				tokenEaten = true ;
+			}
+						
+			if ( LogHolder::IsAKnownPlugOption( token ) )
+			{
+				// Ignores log-related (argument-less) options.
+				tokenEaten = true ;
+			}
+			
+			
+			if ( ! tokenEaten )
+			{
+				throw Ceylan::CommandLineParseException( 
+					"Unexpected command line argument : " + token ) ;
+			}
+		
+		}
+		
+
 		std::cout << "(Beware, this test might be very long : "
 			"it can last up to a few minutes)" << std::endl ;
 		
@@ -71,28 +119,7 @@ int main( int argc, char * argv[] )
 		LogPlug::info( "A call to getPreciseTime lasts roughly for " 
 			+ Ceylan::toString( preciseTimeDuration ) + " microsecond(s)." ) ;
 
-
-		if ( ! Ceylan::Features::areFileDescriptorsSupported() )
-		{
 		
-			LogPlug::warning( 
-				"As the file descriptor feature is not available, the test "
-				"stopped before computing the scheduling granularity." ) ;
-			
-			return Ceylan::ExitSuccess ;
-			
-		}
-		
-		if ( argc > 1 && argv[1] == Ceylan::BatchTestOption )
-		{
-		
-			LogPlug::info( "Non-interactive test mode, "
-				"no scheduling granularity computed." ) ;
-				
-			return Ceylan::ExitSuccess ;
-			
-		}	
-
 
 		/*
 		 * Logs can been interpreted thanks to gnuplot, ex : 
@@ -170,6 +197,9 @@ int main( int argc, char * argv[] )
 		
 		// Would be preferably 30, but would be very long : 
 		Ceylan::Uint32 sampleCount = 5 ;
+		
+		if ( ! isBatch )
+			sampleCount = 50 ;
 		
 		Second drawnSecond ;
 		Microsecond drawnMicrosecond ;
@@ -404,7 +434,7 @@ int main( int argc, char * argv[] )
 			detected = true ;
 		}	
 			
-		if ( detected == false )
+		if ( ! detected )
 			throw Ceylan::TestException( "Ceylan::System::durationToString "
 				"failed to detect negative duration (simple case)." ) ;
 		
