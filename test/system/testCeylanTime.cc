@@ -195,8 +195,8 @@ int main( int argc, char * argv[] )
 		
 		LogPlug::info( "Testing smartSleep with random sleep durations." ) ;
 		
-		// Would be preferably 30, but would be very long : 
-		Ceylan::Uint32 sampleCount = 5 ;
+		// Can easily be very long : 
+		Ceylan::Uint32 sampleCount = 1 ;
 		
 		if ( ! isBatch )
 			sampleCount = 50 ;
