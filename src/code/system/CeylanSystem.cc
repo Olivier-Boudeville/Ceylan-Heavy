@@ -776,6 +776,9 @@ Microsecond Ceylan::System::getPreciseTimeCallDuration() throw()
 	// Integer division is enough :
 	duration = totalTime / calls ;
 
+	if ( duration == 0 )
+		duration = 1 ;
+		
 	return duration ;
 
 }
@@ -925,7 +928,14 @@ void Ceylan::System::atomicSleep() throw( SystemException )
 	 * hosting computer is not idle.
 	 *
 	 */
-	const Ceylan::Float32 marginDecreaseFactor = 0.8f ;
+	const Ceylan::Float32 marginDecreaseFactor = 0.75f ;
+
+#if CEYLAN_DEBUG_SYSTEM
+
+		LogPlug::debug( "Ceylan::System::atomicSleep triggered." ) ;
+
+#endif // CEYLAN_DEBUG_SYSTEM
+
 
 	basicSleep( static_cast<Microsecond>(
 		marginDecreaseFactor * getSchedulingGranularity() ) ) ;
@@ -988,7 +998,7 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	 * margin is the safe way when the hosting computer is not idle.
 	 *
 	 */
-	const Ceylan::Float32 marginIncreaseFactor = 1.1f ;
+	const Ceylan::Float32 marginIncreaseFactor = 1.2f ;
 
 
 	/*
@@ -1115,7 +1125,7 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	Ceylan::Sint32 preciseTimeDuration =
 		static_cast<Sint32>( getPreciseTimeCallDuration() ) ;
 
-	while( done == false )
+	while( ! done )
 	{
 
 		getPreciseTime( currentSecond, currentMicrosecond ) ;
@@ -1147,6 +1157,7 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	// We should be almost just-in-time here !
 
 	return true ;
+	
 }
 
 
@@ -1162,7 +1173,7 @@ bool Ceylan::System::smartSleepUntil( Second second, Microsecond micro )
 
 	/*
 	 * To compensate for specific smartSleepUntil overhead
-	 *(ex : getPreciseTime call) :
+	 * (ex : getPreciseTime call) :
 	 *
 	 */
 	currentMicrosecond++ ;
