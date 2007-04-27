@@ -100,7 +100,8 @@ class MyTestSequentialStreamServer :
 				
 				 
 				LogPlug::trace( "MyTestSequentialStreamServer : read "
-					+ Ceylan::toString( static_cast<Ceylan::Uint32>( readCount ) ) 
+					+ Ceylan::toString( 
+						static_cast<Ceylan::Uint32>( readCount ) ) 
 					+ " byte(s)." ) ;
 				
 				if ( readCount == 0 )
