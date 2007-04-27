@@ -54,7 +54,7 @@ CEYLAN_LIBRARY_SOURCE_FILES = `cd $(top_srcdir); find src/code -path '*.svn*' -p
 
 # Builds RPM distribution package from archive :
 rpm: tgz
-	@echo; echo "@CEYLAN_COMMAND_STYLE@    Making rpm package \ 
+	@echo; echo "@CEYLAN_COMMAND_STYLE@    Making rpm package \
 	@CEYLAN_DEFAULT_STYLE@"; echo
 	@rpm -ta $(PACKAGE)-$(VERSION).tar.gz
 
@@ -77,7 +77,7 @@ update-basic-doc-files:
 
 
 source-release: update-basic-doc-files
-	@echo; echo "@CEYLAN_COMMAND_STYLE@    Making source release \ 
+	@echo; echo "@CEYLAN_COMMAND_STYLE@    Making source release \
 	$(SRC_RELEASE_ARCHIVE_NAME) :@CEYLAN_DEFAULT_STYLE@"; echo
 	-@cd test; if [ -f Makefile ] ; then make clean; fi
 	@mkdir -p $(SRC_RELEASE_ARCHIVE_DIR); \
