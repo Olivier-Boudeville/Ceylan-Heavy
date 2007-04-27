@@ -13,7 +13,7 @@
 
 <html lang="EN">
 <head>
-  <title>Ceylan - How to build Ceylan on Windows</title>
+  <title>Ceylan - How to build Ceylan 0.6 on Windows</title>
   <meta http-equiv="Content-Type" content=
   "text/html; charset=iso-8859-1">
   <meta name="description" content="Ceylan Project">
@@ -25,34 +25,34 @@
 <body>
   <div class="banner">
     <p><em>General</em> <a href="../common/black.html" onclick="parent.toolbar.location=&#39;MainMenu.html&#39;">home page</a>
-    <a href="Map.html">site map</a> <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan-0.5]%20Windows%20Build%20Guide">mail  us</a></p>
+    <a href="Map.html">site map</a> <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan-0.6]%20Windows%20Build%20Guide">mail  us</a></p>
   </div><a name="_top_"></a>
 
 
-<h1>How to build Ceylan on Windows</h1>
+<h1>How to build Ceylan 0.6 on Windows</h1>
 
 <h2>Objective</h2>
 
 <p>
-The goal here is to explain to developers how to <b>build</b> the Ceylan library for Windows, on Windows (no cross-compilation).
+The goal here is to explain to developers how to <b>build</b> the 0.6 version of the Ceylan library for Windows, on Windows (no cross-compilation).
 </p>
 
 <p>
-If a user just needs the Ceylan DLL so that she can <b>run</b> an executable depending on the Ceylan library (only <code>Ceylan-x.y-release-multithread.dll</code>
+If a user just needs the Ceylan DLL so that she can <b>run</b> an executable depending on the Ceylan library (only <code>Ceylan-0.6-release-multithread.dll</code>
  is required), then she can download, if available, a <strong>Ceylan prebuilt user package</strong> from 
 <a href="http://sourceforge.net/project/showfiles.php?group_id=158516" target="_blank">Ceylan File Releases</a> on Sourceforge. If an up-to-date archive is not available, please
-<a href="mailto:ceylan@esperide.com?subject=[Ceylan-0.5]%20Windows%20User%20Build%20needed" target="_blank">ask us</a> and we will add it quickly.
+<a href="mailto:ceylan@esperide.com?subject=[Ceylan-0.6]%20Windows%20User%20Build%20needed" target="_blank">ask us</a> and we will add it quickly.
 </p>
 
 <p>
-If a user just want to <b>develop</b> a program or a library depending on the Ceylan library (hence needing Ceylan installed headers, <code>Ceylan-x.y-debug-multithread.dll</code> and <code>Ceylan-x.y-debug-multithread.lib</code>) and does not wish to build Ceylan by herself, then she can download, if available, a <strong>Ceylan prebuilt developer package</strong> from 
+If a user just want to <b>develop</b> a program or a library depending on the Ceylan library (hence needing Ceylan installed headers, and preferably <code>Ceylan-0.6-debug-multithread.dll</code> and <code>Ceylan-0.6-debug-multithread.lib</code>) and does not wish to build Ceylan by herself, then she can download, if available, a <strong>Ceylan prebuilt developer package</strong> from 
 <a href="http://sourceforge.net/project/showfiles.php?group_id=158516" target="_blank">Ceylan File Releases</a> on Sourceforge. If an up-to-date archive is not available, please
-<a href="mailto:ceylan@esperide.com?subject=[Ceylan-0.5]%20Windows%20Developer%20Build%20needed" target="_blank">ask us</a> and we will add it quickly.
+<a href="mailto:ceylan@esperide.com?subject=[Ceylan-0.6]%20Windows%20Developer%20Build%20needed" target="_blank">ask us</a> and we will add it quickly.
 </ul>
 </p>
 
 <p>
-If you are still reading, then it is that you really want to build the Ceylan library by yourself. This is the recommended way. 
+If you are still reading, then it is that you really want to build the Ceylan library <b>by yourself</b>. This is the recommended way. 
 </p>
 
 <p>
@@ -60,6 +60,7 @@ Here the target platform is Windows XP, be it Home or Professional edition. Note
 </p>
 
 
+<a name="toolchain"></a>
 <h2>Getting the recommended build toolchain</h2>
 
 
@@ -162,7 +163,7 @@ To retrieve Ceylan sources, one needs a SVN client, we recommend <a href="http:/
 <h3>Basic shell and terminal : Cygwin (and MSYS)</h3>
 
 <p>
-It is in no way necessary, but, among others, <a href="http://www.cygwin.com" target="_blank">Cygwin</a> can provide a basic UNIX-like environment, that can be used for example to automate the running of the Ceylan test suite. If not too limited in disk space, one may click on the package setup window to replace <code>All Default</code> by <code>All install</code> to retrieve all Cygwin packages.
+It is in no way necessary, but, among others, <a href="http://www.cygwin.com" target="_blank">Cygwin</a> can provide a basic UNIX-like environment, that can be used for example to automate the running of the Ceylan test suite. If not too limited in disk space, one may click on the package setup window to replace <code>All Default</code> by <code>All install</code> to retrieve all Cygwin packages. Numerous packages can be needed, for example by playTests.sh or the LOANI scripts : md5sum, unzip, wget, ping, tar, gunzip, bzip2, svn, etc..
 </p>
 
 <p>
@@ -183,11 +184,15 @@ There are plenty of them that are well-designed and open source, for example one
 To download the Ceylan sources once Tortoise SVN is installed, right-click in a window showing the content of the folder in which the sources should be transfered to, choose in the menu <code>SVN Checkout</code>, and enter the URL of Ceylan SVN repository : <code>https://ceylan.svn.sourceforge.net/svnroot/ceylan</code>.
 </p>
 
+<p>
+Prefer performing your check-outs in an absolute path rather close to the root of the filesystem (avoid long pathnames), as various Windows tools are surprisingly limited when dealing with long paths.
+</p>
+
 
 <h2>Configuring the Ceylan library being built</h2>
 
 <p> 
-To load the Ceylan project in Visual Express editor, just double-click on the latest <code>Ceylan-x.y.sln</code> file, for example, click on <code>trunk/src/conf/build/visual-express/Ceylan-0.5.sln</code>. Basic settings should be fined for most users, power-users can read the following advanced settings.
+To load the Ceylan project in Visual Express editor, just double-click on the latest <code>Ceylan-0.6.sln</code> file, for example, click on <code>trunk/src/conf/build/visual-express/Ceylan-0.6.sln</code>. Basic settings should be fined for most users, power-users can read the following advanced settings.
 </p>
 
 
@@ -273,13 +278,13 @@ Other features are currently not ported to Windows, either :
 <h2>Generating the Ceylan library</h2>
 
 <p>
-One just has to right-click, in the Solution Explorer panel, on <code>Ceylan-x.y-library</code>, select preferably <code>Regenerate</code> and wait for the termination of the build process. That's it. The operation should notably produce, with no warning nor error, <code>Ceylan-x.y-debug-multithread.dll</code> and <code>Ceylan-x.y-debug-multithread.lib</code>, in <code>trunk/src/code</code>.
+One just has to right-click, in the Solution Explorer panel, on <code>Ceylan-0.6-library</code>, select preferably <code>Regenerate</code> and wait for the termination of the build process. That's it. The operation should notably produce, with no warning nor error, <code>Ceylan-0.6-debug-multithread.dll</code> and <code>Ceylan-0.6-debug-multithread.lib</code>, in <code>trunk/src/code</code>.
 </p>
 
 <h2>Generating the Ceylan tests</h2>
 
 <p>
-One just has to right-click, in the Solution Explorer panel, on the  <code>Ceylan-x.y</code> solution itself, select preferably <code>Generate</code> and wait for the termination of the build process. That's it. It should notably produce, with no warning nor error, the library, if not done already (both .dll and .lib), and the numerous tests, in <code>trunk/test</code>. They can be easily run in a test suite tracking automatically test successes and failures : from a Cygwin terminal, just run <code>playTests.sh</code>, from <code>trunk/test</code>.
+One just has to right-click, in the Solution Explorer panel, on the  <code>Ceylan-0.6</code> solution itself, select preferably <code>Generate</code> and wait for the termination of the build process. That's it. It should notably produce, with no warning nor error, the library, if not done already (both .dll and .lib), and the numerous tests, in <code>trunk/test</code>. They can be easily run in a test suite tracking automatically test successes and failures : from a Cygwin terminal, just run <code>playTests.sh</code>, from <code>trunk/test</code>.
 </p>
 
 <center>
@@ -288,7 +293,7 @@ One just has to right-click, in the Solution Explorer panel, on the  <code>Ceyla
           <td>
             <div class="box">
 That's it ! You should have here everything needed to make good use of the Ceylan library. 
-In case of problem, re-read everything carefully and <a href="mailto:ceylan@esperide.com?subject=[Ceylan-0.5]%20Windows%20Build%20Problem" target="_blank">send us a mail</a>. 
+In case of problem, re-read everything carefully and <a href="mailto:ceylan@esperide.com?subject=[Ceylan-0.6]%20Windows%20Build%20Problem" target="_blank">send us a mail</a>. 
 For in-depth technical details about Windows-specific inner workings of Ceylan, one may continue the reading. 
 Most people will stop and continue by using by themselves the library.
             </div>
@@ -471,7 +476,7 @@ Each of those Ceylan-dependent binaries must define :
   </li>
 	<li>in <code>Configuration Properties-&gt; C++ -&gt; Preprocessor Definitions</code> : <code>"CEYLAN_DLL=__declspec( dllimport )";"CEYLAN_RUNS_ON_WINDOWS=1"</code>. This is needed for compiling.</li>
 	
-	<li>that it references the Ceylan library : in <code>Project Dependencies</code>, check Ceylan-x.y-library. This is needed for linking. Alternately, one can just specify, in the linker settings, an additional dependency, <code>Ceylan-x.y-{debug|release}-mt.lib</code>, and adjust the additional library directories accordingly.</li>
+	<li>that it references the Ceylan library : in <code>Project Dependencies</code>, check Ceylan-0.6-library. This is needed for linking. Alternately, one can just specify, in the linker settings, an additional dependency, <code>Ceylan-0.6-{debug|release}-mt.lib</code>, and adjust the additional library directories accordingly.</li>
 	
 </ul>
 </p>
@@ -533,7 +538,7 @@ Some informations are available here :
 	<li>set all the test settings. Now the method is utterly simple, it just involves to add to the test project a property sheet, namely <code>trunk/src/conf/build/visual-express/CeylanPropertiesForTests.vsprops</code> from the property manager. Previous actions used to be (there are deprecated now, as not centralized in a shared property sheet and hardcoding debug/release settings for example)  :
 	<ul>
 	
-		<li>go to the project <b>properties,</b>, in <code>Common Properties -&gt; References</code>, click on <code>Add New Reference</code> and select <code>Ceylan-x.y library</code>
+		<li>go to the project <b>properties,</b>, in <code>Common Properties -&gt; References</code>, click on <code>Add New Reference</code> and select <code>Ceylan-0.6 library</code>
 		</li>
 	
 		<li>In <b>configuration properties</b>,
@@ -578,7 +583,7 @@ Some informations are available here :
 	
 	<li><b>build</b> the project</li>
 	
-	<li>from a cygwin terminal, go to <code>C:\Documents and Settings\&lt;MyUserName&gt;\My Documents\Ceylan\trunk\src\code\</code> for example (a symbolic link is useful here), and run for example (check the logs and the return code) : <code>../../test/generic/generic-testCeylanBasicResourceManager.exe --consolePlug; echo $?</code>. Doing so allows to use the latest Ceylan DLL file (<code>Ceylan-x.y-debug-multithread.dll</code>), that is generated in <code>src/code</code>. Another solution to find the Ceylan library is to copy the test executable to the directory in which the DLL is generated (<code>trunk/src/code</code>)</li>
+	<li>from a cygwin terminal, go to <code>C:\Documents and Settings\&lt;MyUserName&gt;\My Documents\Ceylan\trunk\src\code\</code> for example (a symbolic link is useful here), and run for example (check the logs and the return code) : <code>../../test/generic/generic-testCeylanBasicResourceManager.exe --consolePlug; echo $?</code>. Doing so allows to use the latest Ceylan DLL file (<code>Ceylan-0.6-debug-multithread.dll</code>), that is generated in <code>src/code</code>. Another solution to find the Ceylan library is to copy the test executable to the directory in which the DLL is generated (<code>trunk/src/code</code>)</li>
 
 	<li><b>add</b> the project file to SVN repository : for example, right-click on the <code>trunk/test/generic/testCeylanBasicResourceManager</code> directory, and select only <code>testCeylanBasicResourceManager.vcproj</code></li>
 
@@ -622,7 +627,7 @@ The <code>ldd</code> tool is lacking on the Windows platform, one may use <a hre
 
   <p>If you have information more detailed or more recent than those
   presented in this document, if you noticed errors, neglects or points
-  insufficiently discussed, <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan-0.5]%20Windows%20Build%20Guide">drop us a line</a>!</p><br>
+  insufficiently discussed, <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan-0.6]%20Windows%20Build%20Guide">drop us a line</a>!</p><br>
   <br>
   <hr>
   
