@@ -822,6 +822,7 @@ void Ceylan::System::sleepForSeconds( Second seconds )
 
 }
 
+
 void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 	throw( SystemException )
 {
@@ -1066,16 +1067,14 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 		= ( currentSecond - targetSecond ) * 1000000
 			+ currentMicrosecond - targetMicrosecond ;
 
-#if CEYLAN_DEBUG_SYSTEM
+	LogPlug::debug( "Ceylan::System::smartSleep : "
+		"after having waited the big chunk, we are at "
+		+ Ceylan::toString( -currentError ) 
+		+ " microseconds before deadline." ) ;
+		
+	Ceylan::Uint32 atomicCount = 0 ;
+			
 
-		LogPlug::debug( "Ceylan::System::smartSleep : "
-			"after having waited the big chunk, we are at "
-			+ Ceylan::toString( -currentError )
-			+ " microseconds before deadline." ) ;
-
-		Ceylan::Uint32 atomicCount = 0 ;
-
-#endif // CEYLAN_DEBUG_SYSTEM
 
 	while ( -currentError > static_cast<int>( 2 * usedGranularity ) )
 	{
@@ -1161,15 +1160,17 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 			+ targetMicrosecond - currentMicrosecond ;
 
 #if CEYLAN_DEBUG_SYSTEM
-
+		
 		logCount++ ;
-
+		
 		if ( ( logCount % 50 ) == 0 )
 			LogPlug::debug( "Ceylan::System::smartSleep : "
 				"remaining time in active waiting is "
 				+ Ceylan::toString( remainingTime ) + " microseconds." ) ;
-
+			
+		
 #endif // CEYLAN_DEBUG_SYSTEM
+
 
 #if CEYLAN_ARCH_WINDOWS
 
@@ -1204,8 +1205,8 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 				+ Ceylan::toString( remaining ) + " microseconds)"
 				+ " smaller than half of a time slice ("
 				+ Ceylan::toString( usedGranularity ) 
-				+ " microseconds) and we are on Windows, we prefer to finish earlier"
-				" than later." ) ;
+				+ " microseconds) and we are on Windows, "
+				"we prefer to finish earlier than later." ) ;
 #endif // CEYLAN_DEBUG_SYSTEM
 
 			return false ;
