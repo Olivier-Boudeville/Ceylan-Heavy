@@ -118,8 +118,16 @@ int main( int argc, char * argv[] )
 		
 		LogPlug::info( "A call to getPreciseTime lasts roughly for " 
 			+ Ceylan::toString( preciseTimeDuration ) + " microsecond(s)." ) ;
-
 		
+		if ( argc > 1 && argv[1] == Ceylan::BatchTestOption )
+		{
+		
+			LogPlug::info( "Non-interactive test mode, "
+				"no scheduling granularity computed." ) ;
+				
+			return Ceylan::ExitSuccess ;
+			
+		}	
 
 		/*
 		 * Logs can been interpreted thanks to gnuplot, ex : 
@@ -361,7 +369,7 @@ int main( int argc, char * argv[] )
 		}
 		
 		
-		// Testing 	durationToString now :
+		// Testing durationToString now :
 			
 		Second startingSecond ;
 		Microsecond startingMicrosecond ;
