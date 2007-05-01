@@ -960,12 +960,12 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 
 
 	/*
-	 * Warning : this piece of code is especially sensitive with overflows,
+	 * Warning : this piece of code is especially sensitive to overflows,
 	 * since very high numbers of microseconds are to be handled. Beware !
 	 *
-	 * Please test it toroughfully thanks to testTime utility.
+	 * Please test it thoroughfully thanks to testCeylanTime utility.
 	 *
-	 * @see testTime.cc
+	 * @see testCeylanTime.cc
 	 *
 	 */
 
@@ -998,7 +998,7 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	 * margin is the safe way when the hosting computer is not idle.
 	 *
 	 */
-	const Ceylan::Float32 marginIncreaseFactor = 1.2f ;
+	const Ceylan::Float32 marginIncreaseFactor = 1.1f ;
 
 
 	/*
@@ -1011,7 +1011,7 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	 *
 	 *
 	 */
-	Microsecond usedGranularity = static_cast<Microsecond>(
+	const Microsecond usedGranularity = static_cast<Microsecond>(
 		getSchedulingGranularity() * marginIncreaseFactor ) ;
 
 	/*
@@ -1066,9 +1066,23 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 		= ( currentSecond - targetSecond ) * 1000000
 			+ currentMicrosecond - targetMicrosecond ;
 
+#if CEYLAN_DEBUG_SYSTEM
+
+		LogPlug::debug( "Ceylan::System::smartSleep : "
+			"after having waited the big chunk, we are at "
+			+ Ceylan::toString( -currentError )
+			+ " microseconds before deadline." ) ;
+
+		Ceylan::Uint32 atomicCount = 0 ;
+
+#endif // CEYLAN_DEBUG_SYSTEM
 
 	while ( -currentError > static_cast<int>( 2 * usedGranularity ) )
 	{
+
+#if CEYLAN_DEBUG_SYSTEM
+		atomicCount++ ;
+#endif // CEYLAN_DEBUG_SYSTEM
 
 		/*
 		 * Sleep for one time slice as long as there is another one
@@ -1082,6 +1096,14 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 			+ currentMicrosecond - targetMicrosecond ;
 	}
 
+#if CEYLAN_DEBUG_SYSTEM
+
+		LogPlug::debug( "Ceylan::System::smartSleep : used "
+			+ Ceylan::toString( atomicCount )
+			+ " atomic waitings." ) ;
+
+#endif // CEYLAN_DEBUG_SYSTEM
+
 	// Check we are still before target time :
 	if ( currentError > 0 )
 	{
@@ -1094,19 +1116,17 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 			+ " microseconds)." ) ;
 		return false ;
 	}
-	else
-	{
 
+	// Yes, still early.
+
+	Microsecond remaining = static_cast<Microsecond>( -currentError ) ;
 
 #if CEYLAN_DEBUG_SYSTEM
-		Microsecond remaining = static_cast<Microsecond>( -currentError ) ;
-
-		LogPlug::debug( "Ceylan::System::smartSleep : remaining time ("
-			+ Ceylan::toString( remaining ) + " microseconds)"
+	LogPlug::debug( "Ceylan::System::smartSleep : remaining time ("
+		+ Ceylan::toString( remaining ) + " microseconds)"
 			+ " will be spent in active waiting." ) ;
 #endif // CEYLAN_DEBUG_SYSTEM
 
-	}
 
 	bool done = false ;
 
@@ -1125,6 +1145,13 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	Ceylan::Sint32 preciseTimeDuration =
 		static_cast<Sint32>( getPreciseTimeCallDuration() ) ;
 
+#if CEYLAN_DEBUG_SYSTEM
+
+	Ceylan::Uint32 logCount = 0 ;
+
+#endif // CEYLAN_DEBUG_SYSTEM
+
+
 	while( ! done )
 	{
 
@@ -1132,6 +1159,60 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 		remainingTime =
 			static_cast<Sint32>( targetSecond - currentSecond ) * 1000000
 			+ targetMicrosecond - currentMicrosecond ;
+
+#if CEYLAN_DEBUG_SYSTEM
+
+		logCount++ ;
+
+		if ( ( logCount % 50 ) == 0 )
+			LogPlug::debug( "Ceylan::System::smartSleep : "
+				"remaining time in active waiting is "
+				+ Ceylan::toString( remainingTime ) + " microseconds." ) ;
+
+#endif // CEYLAN_DEBUG_SYSTEM
+
+#if CEYLAN_ARCH_WINDOWS
+
+		/*
+		 * On Windows (at least XP), we have a high scheduling granularity 
+		 * (we measured 16 ms) and, worse, as soon as we perform busy
+		 * waiting (because remaining time is too low to take the risk of
+		 * requesting a waiting of one time slice), we observed it led to
+		 * the OS perfoming a context switch (hence even with busy waiting
+		 * we end up with a full time slice penalty, and we would be always
+		 * late, of up to one time slice. Bad performance).
+		 * Let Ts be the time slice duration (16 ms for example).
+		 * Thus at this point if remaining time tr is between 0 and Ts / 2,
+		 * we have the choice to be early of tr, or to be late of 
+		 * Ts / 2 - tr > tr.
+		 * We prefer the former to the latter (earlier better than later, and
+		 * error is smaller).
+		 * Hence on average we will be waiting the right duration, even 
+		 * though we will be most of the time either too early or too
+		 * late. 
+		 * On GNU/Linux the busy waiting does not trigger such context changes
+		 * and we just have to wait the deadline as expected, with pretty
+		 * good results.
+		 *
+		 */
+		
+		if ( remaining  < 1.5 * usedGranularity )
+		{
+
+#if CEYLAN_DEBUG_SYSTEM
+			LogPlug::debug( "Ceylan::System::smartSleep : remaining time ("
+				+ Ceylan::toString( remaining ) + " microseconds)"
+				+ " smaller than half of a time slice ("
+				+ Ceylan::toString( usedGranularity ) 
+				+ " microseconds) and we are on Windows, we prefer to finish earlier"
+				" than later." ) ;
+#endif // CEYLAN_DEBUG_SYSTEM
+
+			return false ;
+
+		}
+
+#endif // CEYLAN_ARCH_WINDOWS
 
 		/*
 		 * getPreciseTime would have it own duration, and would take into
@@ -1185,7 +1266,12 @@ bool Ceylan::System::smartSleepUntil( Second second, Microsecond micro )
 			+ " microseconds) is on the past (current date is "
 			+ Ceylan::toString( currentSecond ) + " seconds, "
 			+ Ceylan::toString( currentMicrosecond ) + " microseconds)." ) ;
-
+	 
+	if ( micro < currentMicrosecond )
+	{
+		second-- ;
+		micro += 1000000 ;
+	}
 	return smartSleep( second - currentSecond, micro - currentMicrosecond ) ;
 
 }
@@ -1269,7 +1355,7 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 	{
 		logFile = new File( logFilename ) ;
 		logFile->write( 
-			"# This file records the requested sleep durations (first column)"
+			"# This file records the requested sleep durations (first column) "
 			"and the corresponding actual sleep durations (second column).\n"
 			"# The scheduling granularity can be usually guessed from it.\n"
 			"# One may use gnuplot to analyze the result.\n\n"   ) ;
@@ -1282,7 +1368,7 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 	else
 	{
 		LogPlug::trace( "Ceylan::System::getSchedulingGranularity : "
-			"computing granularity now (now file logging requested)." ) ;
+			"computing granularity now (no file logging requested)." ) ;
 	}
 		
 #endif // CEYLAN_DEBUG_SYSTEM
@@ -1345,9 +1431,13 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 			+ " \n" ) ;
 #endif // CEYLAN_DEBUG_SYSTEM
 
-		// Avoid zero division :
+
+		// Avoid zero division and do not stop at zero :
 		if ( currentMeasuredDuration == lastMeasuredDuration )
-			break ;
+			if ( currentMeasuredDuration == 0 )
+				continue ;
+			else
+				break ;
 
 		// Loop until a gentle slope is found (1%) :
 		if ( Ceylan::Maths::Abs( static_cast<Ceylan::Float32>(
