@@ -207,7 +207,7 @@ int main( int argc, char * argv[] )
 		Ceylan::Uint32 sampleCount = 1 ;
 		
 		if ( ! isBatch )
-			sampleCount = 50 ;
+			sampleCount = 1 ;
 		
 		Second drawnSecond ;
 		Microsecond drawnMicrosecond ;
