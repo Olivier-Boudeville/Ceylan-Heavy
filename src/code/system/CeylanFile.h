@@ -567,11 +567,17 @@ namespace Ceylan
 				 *
 				 * @example :
 				 * <pre>
-				 * File f( "myfilename", Read ) ;
+				 * File f( "myfilename", Read | Binary ) ;
 				 * ...
 				 * f.read( buf, 100 ) ;
 				 * ...
 				 * </pre>
+				 *
+				 * @note If not specifically set, the file is
+				 * open in text mode : one should not forget to
+				 * add the Binary flag. The mistake can be detected
+				 * when basic read() returns less than the requested
+				 * size, or when readExactLength() never terminates.
 				 *
 				 */
 				explicit File( const std::string & name, 
@@ -758,9 +764,42 @@ namespace Ceylan
 				 *
 				 * @throw ReadFailed if a read error occurred.
 				 *
+				 * @note May be unable to read the full content of a file 
+				 * if the file was open without the 'Binary' flag (hence
+				 * in text mode) and if in the file content it occurs
+				 * that accidentally some bytes form an 'end of file'
+				 * marker (despite some bytes remain to be read past
+				 * this marker).
+				 *
 				 */
 		 		virtual Size read( Ceylan::Byte * buffer, Size maxLength ) 
 					throw( InputStream::ReadFailedException ) ;
+
+
+				/**
+				 * Reads exactly exactLength bytes from this file to specified
+				 * buffer.
+				 *
+				 * @param buffer the buffer where to store read bytes. 
+				 * Its size must be at least maxLength bytes.
+				 *
+				 * @param maxLength the maximum number of bytes that should 
+				 * be read.
+				 *
+				 * @return The number of bytes actually read, which should
+				 * be maxLength or lower.
+				 *
+				 * @throw ReadFailed if a read error occurred.
+				 *
+				 * @note May never terminate if the file was open without
+				 * the 'Binary' flag (hence in text mode) and if in the 
+				 * file content it occurs that accidentally some bytes 
+				 * form an 'end of file' marker (despite some bytes remain
+				 * to be read past this marker).
+				 *
+				 */
+		 		virtual void readExactLength( Ceylan::Byte * buffer, 
+					Size exactLength ) throw( InputStream::ReadFailedException ) ;
 
 
 				/**
