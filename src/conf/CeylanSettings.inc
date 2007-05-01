@@ -100,7 +100,7 @@ CEYLAN_OLDEST_SUPPORTED_MAJOR=0
 
 # The minor version of the most ancient Ceylan version compatible with this one.
 # (tag : ST_OLDEST_SUPPORTED_MINOR)
-CEYLAN_OLDEST_SUPPORTED_MINOR=4
+CEYLAN_OLDEST_SUPPORTED_MINOR=6
 
 
 
