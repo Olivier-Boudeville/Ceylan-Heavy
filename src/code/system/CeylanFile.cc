@@ -386,9 +386,18 @@ File::File( const string & name,
 File::~File() throw()
 {
 
+#if CEYLAN_USES_FILE_DESCRIPTORS
+
 	if ( _fdes <= 0 )
 		return ;
-		
+
+#else // CEYLAN_USES_FILE_DESCRIPTORS
+
+	if ( ! _fstream.is_open() )
+		return ;
+
+#endif // CEYLAN_USES_FILE_DESCRIPTORS
+
 	try
 	{
 		close() ;
@@ -414,7 +423,7 @@ bool File::close() throw( Stream::CloseException )
 
 	/*
 	 * Exception and returned boolean are both needed :
-	 *  - all close files should have been opened previously
+	 *  - all closed files should have been opened previously
 	 *  - returned boolean comes from the Stream-inherited signature
 	 *
 	 */
@@ -822,6 +831,54 @@ Size File::read( Ceylan::Byte * buffer, Size maxLength )
 
 }
 
+void File::readExactLength( Ceylan::Byte * buffer, Size exactLength ) 
+	throw( InputStream::ReadFailedException )
+{
+
+	Size remainder = exactLength ;
+	Size readCount ;
+
+	Ceylan::Uint32 readFailures = 0 ;
+	const Ceylan::Uint32 maxReadFailures = 10000 ;
+
+	try
+	{
+		
+		do
+		{
+
+			readCount = read( buffer, remainder ) ;
+			
+			remainder -= readCount ;
+
+			if ( readCount == 0 )
+				readFailures++ ;
+			else
+				readFailures = 0 ;
+				
+		}
+		while( remainder > 0 && readFailures < maxReadFailures ) ;
+
+
+	} 
+	catch ( const InputStream::ReadFailedException  & e )
+	{
+		throw InputStream::ReadFailedException( 
+			"File::readExactLength : trying to read "
+			+ Ceylan::toString( static_cast<Ceylan::Uint32>( exactLength ) ) 
+			+ " bytes, actually read "
+			+ Ceylan::toString( static_cast<Ceylan::Uint32>( 
+					exactLength - remainder ) )
+			+ " bytes before following error : " + e.toString() ) ;
+
+	}
+
+	if ( readFailures == maxReadFailures )
+		throw InputStream::ReadFailedException( 
+			"File::readExactLength : unable to read requested bytes, maybe "
+			"trying to read a binary file not opened in Binary mode ?" ) ;
+
+}
 
 bool File::hasAvailableData() const throw()
 {
