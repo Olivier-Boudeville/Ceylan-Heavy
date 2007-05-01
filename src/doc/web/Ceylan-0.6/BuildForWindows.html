@@ -609,7 +609,7 @@ Beware to your firewall, that should detect that the tests use the network and t
 </p>
 	
 <p>
-Note also that if your firewall pops up a window asking the user whether a test executable can access a network interface, then most probably the test will fail because of a time-out : the time needed for the user to answer will be fatal, the test manager will believe that such long durations are abnormal. One thus has to re-run the test suite and acknowledge the related firewall requests until all needed executables have been granted the right to access the network, so that the test suite can be non-interactive once again.
+Note also that if your firewall pops up a window asking the user whether a test executable can access a network interface, then most probably the test will fail because of a time-out : the time needed for the user to answer will be fatal, the test manager will believe that such long durations are abnormal. One thus has to stop and re-run the test suite, and acknowledge the related firewall requests until all needed executables have been granted the right to access the network, so that the test suite can be non-interactive once again.
 </p>
 	
 <p>
@@ -636,7 +636,8 @@ The <code>ldd</code> tool is lacking on the Windows platform, one may use <a hre
       <center>
         [<a href="#_top_">Top</a>]<br>
         <br>
-        <em>Last update : Friday, April 27, 2007</em>
+        <em>Last update : Tuesday, May 1, 2007
+</em>
       </center>
   
 </body>
