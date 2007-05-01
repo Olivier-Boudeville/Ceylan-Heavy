@@ -1072,7 +1072,9 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 		+ Ceylan::toString( -currentError ) 
 		+ " microseconds before deadline." ) ;
 		
+#if CEYLAN_DEBUG_SYSTEM
 	Ceylan::Uint32 atomicCount = 0 ;
+#endif // CEYLAN_DEBUG_SYSTEM
 			
 
 
@@ -1118,12 +1120,15 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 
 	// Yes, still early.
 
-	Microsecond remaining = static_cast<Microsecond>( -currentError ) ;
 
 #if CEYLAN_DEBUG_SYSTEM
+
+	Microsecond remaining = static_cast<Microsecond>( -currentError ) ;
+
 	LogPlug::debug( "Ceylan::System::smartSleep : remaining time ("
 		+ Ceylan::toString( remaining ) + " microseconds)"
 			+ " will be spent in active waiting." ) ;
+
 #endif // CEYLAN_DEBUG_SYSTEM
 
 
