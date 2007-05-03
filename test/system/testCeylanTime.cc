@@ -14,6 +14,26 @@ using namespace Ceylan::Log ;
 
 
 
+/*
+ * Burns thanks to a busy loop some CPU, to create an offset to the
+ * beginning of a time slice.
+ *
+ * On the test laptop, it last for 1,9 ms.
+ *
+ */
+Ceylan::Float32 activeWaiting() throw()
+{
+
+	Ceylan::Float32 f = 0 ;
+	
+	for ( Ceylan::Uint32 i = 0 ; i < 10000 ; i++ )
+		f += 3 * Ceylan::Maths::Sin( static_cast<Ceylan::Float32>( i ) ) ;
+	
+	return f ;	
+		
+}
+
+
 
 /**
  * Test of Ceylan time utilities.
@@ -24,6 +44,9 @@ using namespace Ceylan::Log ;
  *
  * Ceylan numerical datatypes (ex : Ceylan::Uint64) could be used instead
  * of long long, etc.
+ *
+ * @note Beware to the classical log plug that may cause wrong timings due
+ * to immediate I/O.
  *
  */
 int main( int argc, char * argv[] )
@@ -140,65 +163,135 @@ int main( int argc, char * argv[] )
 		 */
 		
 		Microsecond granularity = getSchedulingGranularity() ;
+		
 		LogPlug::info( "Measured scheduling granularity is " 
 			+ Ceylan::toString( granularity ) + " microseconds." ) ;
+		
 			
-					
 		// First wait duration, in microsecond :
-		Microsecond shortestMicroDuration = 10 ;  	
+		Microsecond shortestMicroDuration = 0 ;  	
 		
 		// Last wait duration, in microsecond (stops immediatly after 20 ms) :
-		Microsecond longestMicroDuration = 21000 ;  	
+		Microsecond longestMicroDuration = /* 5000 */ 21000 ;  	
 				
 		// Number of steps :
-		Ceylan::Uint32 durationStepsCount = 50 ;
+		Ceylan::Uint32 durationStepsCount = /* 1000 */ 2000 ;
 		
 		// Micro duration step :
 		Microsecond microDuration = static_cast<Microsecond>( 
 			( longestMicroDuration - shortestMicroDuration ) 
 				/ durationStepsCount ) ;  	
 		
+		if ( microDuration == 0 )
+			microDuration = 1 ;
+			
 		Microsecond * durations = new Microsecond[ durationStepsCount ] ;
 				
 		LogPlug::info( "Testing basicSleep with wait ticks incrementing by "
 			+ Ceylan::toString( microDuration ) +  " microsecond steps." ) ;
 				
-		register Nanosecond waitingNanoTime ;
 		
 		// Avoid to distort measures, by doing only the strict necessary :
 		
+				
 		Second lastSecond ;
 		Microsecond lastMicrosecond ;
+
+
+		getPreciseTime( lastSecond, lastMicrosecond ) ;
 		
+		activeWaiting() ;
+		
+		getPreciseTime( currentSecond, currentMicrosecond ) ;
+		
+		
+		LogPlug::debug( "Active waiting last for "  
+				+ durationToString( lastSecond, lastMicrosecond,
+					 currentSecond, currentMicrosecond ) ) ;
+
+		/*
+		 * Perform between 0 to 10 waiting loops to avoid being sync'ed 
+		 * with the beginning of time slices :
+		 *
+		 */
+		Ceylan::Maths::Random::WhiteNoiseGenerator activeWaitingRand( 0, 10 ) ;
+		
+		Ceylan::Uint32 waitCount ;
+		
+		for ( Ceylan::Uint32 i = 0 ; i < 10; i ++ )
+		{
+		
+			waitCount = activeWaitingRand.getNewValue() ;
+		
+			// Do not get aligned with beginning of time slices :
+			for ( Ceylan::Uint32 w = 0; w < waitCount; w++ )
+				activeWaiting() ;
+				
+			getPreciseTime( lastSecond, lastMicrosecond ) ;
+			
+			Ceylan::System::basicSleep( 0 /* second */, 0 /* nanoseconds */ ) ;
+				
+			getPreciseTime( currentSecond, currentMicrosecond ) ;
+			
+			LogPlug::debug( "For a null requested duration, waited for "
+				+ durationToString( lastSecond, lastMicrosecond,
+					 currentSecond, currentMicrosecond ) ) ;	
+		
+		}
+		
+		
+		const string logFilename = "testCeylanTime-granularity.dat" ;
+		File * logFile = new File( logFilename ) ;
+		
+		logFile->write( 
+			"# This file records the requested sleep durations (first column) "
+			"and the corresponding actual sleep durations (second column).\n"
+			"# The scheduling granularity can be usually guessed from it.\n"
+			"# One may use gnuplot to analyze the result.\n\n"   ) ;
+	
+	
+		Microsecond currentRequestedDuration ; 
+		 
 		for ( Ceylan::Uint32 i = 0 ; i < durationStepsCount; i++ )
 		{
-			waitingNanoTime = 1000 * 
-				( shortestMicroDuration + i * microDuration ) ;
-			
-			getPreciseTime( lastSecond, lastMicrosecond ) ;
-			Ceylan::System::basicSleep( 0 /* second */, 
-				waitingNanoTime /* nanoseconds */ ) ;
-			getPreciseTime( currentSecond, currentMicrosecond ) ;
-			durations[i] =  ( currentSecond - lastSecond ) * 1000000 
-				+ currentMicrosecond - lastMicrosecond ;
-		}
-
-
-		register Microsecond waitingMicroTime ;
-
 		
-		for ( Ceylan::Uint32 i = 0; i < durationStepsCount; i++ )
-		{
-
-			waitingMicroTime = shortestMicroDuration + i * microDuration ;
+			// Do not get aligned with beginning of time slices :
+			for ( Ceylan::Uint32 w = 0; w < waitCount; w++ )
+		
+			waitCount = activeWaitingRand.getNewValue() ;
+		
+			// Do not get aligned with beginning of time slices :
+			for ( Ceylan::Uint32 w = 0; w < waitCount; w++ )
+				activeWaiting() ;
+				
+			currentRequestedDuration = 
+				shortestMicroDuration + i * microDuration ;
+							
+			getPreciseTime( lastSecond, lastMicrosecond ) ;
+			
+			Ceylan::System::basicSleep( 0 /* second */, 
+				currentRequestedDuration * 1000 /* nanoseconds */ ) ;
+				
+			getPreciseTime( currentSecond, currentMicrosecond ) ;
+		
+			// Do not use durationToString, it would create english text :
+			logFile->write( Ceylan::toString( currentRequestedDuration ) 
+				+ " \t " 
+				+ Ceylan::toString( getDurationBetween( 
+					lastSecond, lastMicrosecond,
+					currentSecond, currentMicrosecond ) )
+				+ " \n" ) ;
 
 			LogPlug::debug( "For a requested wait of " 
-				+ Ceylan::toString( waitingMicroTime ) 
+				+ Ceylan::toString( shortestMicroDuration + i * microDuration ) 
 				+ " microseconds, measured time has been "  
-				+ Ceylan::toString( durations[i] ) + " microseconds." ) ;
+				+ durationToString( lastSecond, lastMicrosecond,
+					 currentSecond, currentMicrosecond )
+				+ " microseconds." ) ;
 				
 		}
-						
+
+		delete logFile ;
 		
 		
 		LogPlug::info( "Testing smartSleep with random sleep durations." ) ;
@@ -239,9 +332,12 @@ int main( int argc, char * argv[] )
 		
 			drawnSecond = secondRand.getNewValue() ;
 			drawnMicrosecond = microsecondRand.getNewValue() ;
+			
 			getPreciseTime( lastSecond, lastMicrosecond ) ;
+			
 			Ceylan::System::smartSleep( drawnSecond /* seconds */, 
 				drawnMicrosecond /* microsecond */ ) ;
+				
 			getPreciseTime( currentSecond, currentMicrosecond ) ;
 
 			/*
