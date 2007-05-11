@@ -61,7 +61,8 @@ int main( int argc, char * argv[] )
 
 
 		bool isBatch = false ;
-
+		bool burnCPUCycles = false ;
+		
 		std::string executableName ;
 		std::list<std::string> options ;
 		
@@ -92,6 +93,12 @@ int main( int argc, char * argv[] )
 				tokenEaten = true ;
 			}
 						
+			if ( token == "--burnCPUCycles" )
+			{
+				burnCPUCycles = true ;
+				tokenEaten = true ;
+			}
+						
 			if ( LogHolder::IsAKnownPlugOption( token ) )
 			{
 				// Ignores log-related (argument-less) options.
@@ -108,6 +115,24 @@ int main( int argc, char * argv[] )
 		}
 		
 
+		if ( burnCPUCycles )
+		{
+		
+			std::cout << "Will burn now as many CPU cycles as possible "
+				"(useful to test other modules on heavy loads). "
+				"Use CTRL-C to stop." << std::endl ;
+				
+			Ceylan::Float32 a = 1 ;
+				
+			while ( 1 )
+			{
+				a += Ceylan::Maths::Sin( a ) * 5.1 ;
+			}
+			
+			return Ceylan::ExitSuccess ;
+		
+		}
+		
 		std::cout << "(Beware, this test might be very long : "
 			"it can last up to a few minutes)" << std::endl ;
 		
