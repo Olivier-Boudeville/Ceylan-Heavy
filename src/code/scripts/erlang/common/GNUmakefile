@@ -1,7 +1,8 @@
 TOP = ..
 
+
+.PHONY: 
+
+
 include $(TOP)/GNUmakerules.inc
 
-.PHONY: all
-
-all: 
