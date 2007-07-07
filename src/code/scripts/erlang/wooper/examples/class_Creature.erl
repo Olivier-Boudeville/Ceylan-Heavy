@@ -5,22 +5,36 @@
 -define(superclasses,[]).
 
 % isHotBlooded/1 and canEat/2 are abstract hence not mentioned here :
--define(wooper_export,construct/3,getAge/1,setAge/2,declareBirthday/1,
-	getGender/1).
+-define(wooper_export,new/2,construct/3,getAge/1,setAge/2,declareBirthday/1,
+	getGender/1,listen/3).
 
+
+-define(wooper_construct_attributes,Age,Gender).
 
 % Allows to define WOOPER base variables and methods for that class :
 -include("wooper_class_root.hrl").
 
+	
 
 % Constructs a new Creature.
-construct(State,Age,Gender) ->
+construct(State,?wooper_construct_attributes) ->
 	% No mother class.
 	% Sanity checks could be implemented here.
 	AgeState = setAttribute(State,age,Age),
-	setAttribute(AgeState,gender,Gender),
+	wooper_main_loop( setAttribute(AgeState,gender,Gender)).
 	
 
+listen(Pid,Action,Arguments) ->
+	Pid ! {Action,Arguments,self()},
+	receive
+	
+		Anything ->
+			io:format("Answer to call to ~w with arguments ~w : ~w~n",
+				 [Action,Arguments,Anything])
+	
+	end.
+	
+		
 % Method implementations.
 
 % Returns the age of this creature.
