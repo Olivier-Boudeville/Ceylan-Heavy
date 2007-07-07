@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/REC-html40/loose.dtd">
+<!--    This document is a part of the Ceylan project. 
+        For any comment, please mail to olivier.boudeville@online.fr
+-->
+<!--    
+        Creation date : Saturday, July 7, 2007.
+        Author : Olivier Boudeville (olivier.boudeville@online.fr)
+        Update made by :  the author
+        Version number : 0.1
+-->
+
+<html lang="EN">
+<head>
+  <title>Ceylan - Documentation</title>
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=iso-8859-1">
+  <meta name="description" content="Ceylan">
+  <meta name="keywords" content="Ceylan, generic, GPL">
+  <link href="../../../images/Ceylan-icon.png" rel="Ceylan icon">
+  <link rel="STYLESHEET" type="text/css" href="../../../common/css/Ceylan.css">
+</head>
+
+<body>
+  <div class="banner">
+    <p><em>General</em> <a href="../../../common/black.html" onclick= 
+    "parent.toolbar.location='../../MainMenu.html'">home page</a>
+    <a href="../../Map.html">site map</a> <a href=
+    "mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20WOOPER">
+    mail us</a></p>
+  </div><a name="_top_"></a></span> 
+
+
+
+<h1>WOOPER : <em>Wrapper for OOP in Erlang</em></h1>
+
+<p>
+WOOPER is a lightweight layer on top of the <a href="http://erlang.org" target="_blank">Erlang</a> language offering constructs dedicated to <a href="http://en.wikipedia.org/wiki/Object-oriented_programming" target="_blank">Object-Oriented Programing</a>. 
+</p>
+
+
+<p>
+
+<a name="maintoc"></a>
+<center>
+        <table summary="Table of contents" style="border: none">
+        <tr>
+          <td>
+<!--
+                       <a href="#"></a><br>
+-->
+
+                   <div class="box">
+                       <a href="#usage">Usage</a><br>
+                       <a href="#example">Example</a><br>
+                       <a href="#inner">Inner workings</a>
+          </div>
+
+          </td>
+        </tr>
+      </table>
+</center>
+
+</p>
+
+<!--
+<br><p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br><br>
+-->
+
+<a name="usage"></a>
+<h2>WOOPER usage</h2>
+
+<p>
+Although applying blindly OOP with languages based on other paragdims (Erlang ones are functional and concurrent, and it is not specifically targeting OOP) is a common mistake, there are some problems that may be deemed inherently "object-oriented", i.e. that cannot be effectively modelled without encapsulated abstractions sharing behaviours. 
+</p>
+
+<p>
+Examples of this kind of systems are multi-agent simulations. If they often need massive concurrency, robustness, distribution, etc. (Erlang is particularly suited for that), the various actor types have also often to share numerous states and behaviours, while being able to specialize them on a per-type basis.
+</p>
+
+<p>
+The <a href="#example">example</a> chosen here is a simulation of the interacting lives of numerous animals from various species. Obviously, they have to share behaviours (ex : all ovoviviparous beings may lay eggs, all creatures can live and die, all have an age, etc.), which cannot be mapped easily to Erlang concepts without some generic constructs being added.
+</p>
+
+<p>
+WOOPER is a means of making these constructs available, notably with regard to state management and multiple inheritance. The same simulations could be achieved without such OOP constructs, but at the expense of way too much manually-crafted specific (per-class) code. This process would be tedious, error-prone, and the result most often could be hardly maintained.
+</p>
+
+<p>
+Needed files are :
+
+<ul>
+
+<!--
+    <li><a href="" target="_blank"></a></li>
+-->
+
+    <li><a href="" target="_blank">wooper_class_root.hrl</a></li>
+    <li><a href="" target="_blank">hashtable.erl</a></li>
+    <li><a href="" target="_blank"></a></li>
+    <li><a href="" target="_blank"></a></li>
+</ul>
+</p>
+
+
+<p>
+The hashtable module must be compiled beforehand : 
+<center>
+    <table summary="Code" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+1> c(hashtable).
+{ok,hashtable}
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+</p>
+
+<p>
+WOOPER is in some ways adding features very similar to the ones of python (simple multiple inheritance, <code>self</code> parameter, attribute dictionaries, etc.; with less syntatic sugar available though) while still offering the major strengths of Erlang (concurrency, distribution, functional paradigm) and not hurting too much overall performances (mainly thanks to the prebuilt attribute and method hashtables).
+</p>
+
+<br><p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br><br>
+
+
+
+
+<a name="example"></a>
+<h2>WOOPER example</h2>
+<p>
+<center>
+    <img src="wooper-example.png" alt="WOOPER example" width="95%"></img>
+</center>
+</p>
+
+
+<br><p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br><br>
+
+
+
+
+<a name="inner"></a>
+<h2>WOOPER inner workings</h2>
+<p>
+</p>
+
+<p>
+As Burkhard Neppert suggested, an alternative way of implementing OOP here could be to use Erlang behaviours. This is the way OTP handles generic functionalities that can be specialized (e.g. <code>gen_server</code>). One approach could be to map each objet-oriented base class to an Erlang behaviour. 
+</p>
+
+<p>
+See some guidelines about <a href="http://wiki.trapexit.org/index.php/Defining_Your_Own_Behaviour" target="_blank">defining</a> your own behaviours and making them <a href="http://wiki.trapexit.org/index.php/Cascading_Behaviours" target="_blank">cascade</a>.
+</p>
+
+
+<br><p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br><br>
+
+ <br>
+  <br>
+  <br>
+  <br>
+
+  <h3>Please react !</h3>
+
+  <p>If you have information more detailed or more recent than those
+  presented in this document, if you noticed errors, neglects or points
+  insufficiently discussed, <a href=
+  "mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20WOOPER">
+  drop us a line</a>!</p><br>
+  <br>
+  <hr>
+
+  <center>
+    [<a href="#_top_">Top</a>]
+    <br>
+    <br>
+    <em>Last update : Saturday, July 7, 2007</em>
+  </center>
+</body>
+</html>
+
