@@ -1,4 +1,7 @@
--module(ceylan_utils).
+% Gathering of various convenient facilities.
+% See utils_test.erl for the corresponding test.
+
+-module(utils).
 
 -export([get_timestamp/0,get_image_file_gif/1,term_toString/1]).
 
