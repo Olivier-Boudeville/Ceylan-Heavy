@@ -143,8 +143,14 @@ get_superclasses() ->
 
 % WOOPER internal functions.
 
-wooper_create_method_table() ->
-	wooper_create_method_table_for(?MODULE).
+
+% Spawns a new instance for this class, using specified parameters to
+% construct it.
+new(?wooper_construct_attributes) ->
+	spawn(?MODULE, construct,
+			[wooper_create_blank_state(),?wooper_construct_attributes]).
+
+
 
 
 % Sets specified attribute of the instance to the specified value, thanks to
@@ -173,67 +179,94 @@ getAttribute(State,AttributeName) ->
 		undefined ->
 			{ attribute_not_found, AttributeName, get_class_name() } ;
 			
-		Other ->
-			Other
+		{value,Value} ->
+			Value
 			
 	end.			
+
+wooper_create_method_table() ->
+	wooper_create_method_table_for(?MODULE).
+
 
 
 % FIXME next should be in .erl maybe
 
+
+% Returns a textual representation of the specified state.
 wooper_state_toString(State) ->
 	Attributes = hashtable:enumerate(State#state_holder.attribute_table),
 	lists:foldl(
 		fun({AttName,AttrValue},Acc) ->
 			Acc ++ io_lib:format( 
-				"     * attribute ~s = ~s~n", 
+				"     * ~s = ~s~n", 
 				[
 					utils:term_toString(AttName),
 					utils:term_toString(AttrValue)
 				])
 			
 		end,
-		io_lib:format( "Instance of ~ with ~ attribute(s) :~n",
+		io_lib:format( "Instance of ~s with ~B attribute(s) :~n",
 			[get_class_name(),length(Attributes)]),
-		Attributes)	
+		Attributes).	
 
 
-
+% Waits for incoming requests and serves them.
 wooper_main_loop(State) ->
 
+	io:format( "State of ~w : ~s~n", [self(),wooper_state_toString(State)] ),
+	
 	receive
 	
+			
+			
+		% Request with response :
+		% Server PID could be sent back as well to discriminate 
+		% received answers on the client side.
+		{ MethodAtom, ArgumentList, SenderPID } 
+				when is_pid(SenderPID) and is_list(ArgumentList) ->
+			{ NewState, Result } = 
+				wooper_execute_method(MethodAtom, State, ArgumentList ), 
+			%SenderPID ! { self(), Result }
+			SenderPID ! Result,
+			wooper_main_loop(NewState);
+				
+		{ MethodAtom, Argument, SenderPID } when is_pid(SenderPID) ->
+			{ NewState, Result } = 
+				wooper_execute_method(MethodAtom, State, [ Argument ] ), 
+			%SenderPID ! { self(), Result }
+			SenderPID ! Result,
+			wooper_main_loop(NewState);
+
 		% Oneway calls (no client PID sent, no answer sent back) :
 		% (either this method does not return anything, or the sender is not
 		% interested in the result)
-		{ MethodAtom, ArgumentList } ->
+		
+
+		{ MethodAtom, ArgumentList } when is_list(ArgumentList) ->
 			% Any result would be ignored, only the update state is kept :
 			{ NewState, _ } = wooper_execute_method( 
 				MethodAtom, State, ArgumentList ),
 			wooper_main_loop(NewState);
 			
-		% Request with response :
-		% Server PID could be sent back as well to discriminate 
-		% received answers on the client side.
-		{ MethodAtom, ArgumentList, SenderPID } where pid(SenderPID) ->
-			{ NewState, Result } = 
-				wooper_execute_method(MethodAtom, State, ArgumentList ), 
-			SenderPID ! { 
-				%self(),
-				Result
-			},
+		{ MethodAtom, Argument } ->
+			% Any result would be ignored, only the update state is kept :
+			{ NewState, _ } = wooper_execute_method( 
+				MethodAtom, State, [ Argument ] ),
+			wooper_main_loop(NewState);
+			
+		MethodAtom when is_atom(MethodAtom) ->
+			{ NewState, _ } = wooper_execute_method( 
+				MethodAtom, State, [] ),
 			wooper_main_loop(NewState)
-				
+
 	end.
 
-
-
+	
 wooper_create_blank_state() ->
-	#state_holder(
+	#state_holder{
 		virtual_table   = wooper_create_method_table(),
-		attribute_table = 
-			hashtable:new(?WooperAttributeCountUpperBound)
-	).
+		attribute_table = hashtable:new(?WooperAttributeCountUpperBound)
+	}.
 
 
 % Returns a Hashtable appropriate for method look-up, for the specified module.
@@ -263,8 +296,6 @@ wooper_create_method_table_for(TargetModule) ->
 		wooper_create_local_method_table_for(TargetModule),
 		apply(TargetModule,get_superclasses,[])).
 
-
-	
 	
 % Returns the virtual table corresponding to this class.
 wooper_get_virtual_table() ->
@@ -278,7 +309,6 @@ wooper_get_virtual_table() ->
 % Note : uses the pre-built virtual table for this class.
 wooper_lookupMethod(MethodAtom,Arity) ->
 	hashtable:lookupEntry({MethodAtom,Arity},wooper_get_virtual_table()).
-
 
  
 % Executes the specified method, designated by its atom, with specified 
@@ -332,5 +362,4 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 		% No other term can be returned.
 		
 	end.		
-
 
