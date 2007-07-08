@@ -96,11 +96,13 @@
 	}).
 
 
+
+
+
 % These methods are defined for all classes :
-%-define(WooperBaseMethods,get_class_name/0,get_superclasses/0).
-% For debugging purpose :
 -define(WooperBaseMethods,get_class_name/0,get_superclasses/0,
-	wooper_execute_method/3,wooper_main_loop/1).
+	is_wooper_debug/0).
+	
 
 % A list could be managed that would allow to discriminate the methods from
 % the other exported functions. As macros cannot be substitued in strings
@@ -142,6 +144,33 @@ get_superclasses() ->
 
 
 % WOOPER internal functions.
+
+% Comment/uncomment to activate debug mode :
+-define(wooper_debug,).
+
+
+% On debug mode, methods will have to return an atom to ensure they
+% respect the right format :
+-ifdef(wooper_debug).
+
+is_wooper_debug() ->
+	true.
+	
+	-define(wooper_return_state_result(State,Result),{result,State,Result}).
+	-define(wooper_return_state_only(State)       ,{result,State}).
+	
+-else.
+
+is_wooper_debug() ->
+	false.
+	
+
+	-define(wooper_return_state_result(State,Result),{State,Result}).
+	-define(wooper_return_state_only(State),        State).
+	
+-endif.
+
+
 
 
 % Spawns a new instance for this class, using specified parameters to
@@ -229,7 +258,9 @@ wooper_main_loop(State) ->
 			%SenderPID ! { self(), Result }
 			SenderPID ! Result,
 			wooper_main_loop(NewState);
-				
+		
+		% Auto-wrapping single arguments implies putting lists between
+		% double-brackets		
 		{ MethodAtom, Argument, SenderPID } when is_pid(SenderPID) ->
 			{ NewState, Result } = 
 				wooper_execute_method(MethodAtom, State, [ Argument ] ), 
@@ -237,11 +268,10 @@ wooper_main_loop(State) ->
 			SenderPID ! Result,
 			wooper_main_loop(NewState);
 
+
 		% Oneway calls (no client PID sent, no answer sent back) :
 		% (either this method does not return anything, or the sender is not
 		% interested in the result)
-		
-
 		{ MethodAtom, ArgumentList } when is_list(ArgumentList) ->
 			% Any result would be ignored, only the update state is kept :
 			{ NewState, _ } = wooper_execute_method( 
@@ -310,6 +340,14 @@ wooper_get_virtual_table() ->
 wooper_lookupMethod(MethodAtom,Arity) ->
 	hashtable:lookupEntry({MethodAtom,Arity},wooper_get_virtual_table()).
 
+
+
+% Following code is duplicated because no '-ifdef' clause can be defined in
+% case clauses :
+
+
+-ifdef(wooper_debug).	
+ 
  
 % Executes the specified method, designated by its atom, with specified 
 % instance state and parameters.
@@ -334,27 +372,48 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 			% The 'return' atom is a safety guard against incorrect method
 			% implementations :
 			case apply(LocatedModule,MethodAtom,[State|Parameters]) of
-			
-				% Void method (nothing returned) :
-				{return,NewState} ->  
-					{NewState,method_returns_void};
 
-				{return,NewState,Result} ->  
+				% Matched expressions have to be reordered depending on the
+				% debug mode : 
+
+
+				% Void method (no result returned, only a state) :
+				% ?wooper_return_state_only :
+				{result,NewState} ->  
+					{NewState,method_returns_void};
+				
+				% Method returning a result (and a state of course) :
+				% ?wooper_return_state_result :
+				{result,NewState,Result} ->  			
 					{NewState,{result,Result}};
+				
+
 				
 				{'EXIT',ErrorTerm} ->
 					{State,
-						{method_failed, ?MODULE, MethodAtom,
-							length(Parameters)+1, ErrorTerm} } ;
-					
+						{method_failed, self(), ?MODULE, MethodAtom,
+							length(Parameters)+1, 
+							Parameters, ErrorTerm} } ;
+
+				{'EXIT',Pid,ErrorTerm} ->
+					{State,
+						{method_failed, self(), ?MODULE, MethodAtom,
+							length(Parameters)+1, 
+							Parameters, [Pid,ErrorTerm]} } ;
+
+
 				Other ->
 					{State, 
-						{method_faulty_return, ?MODULE, MethodAtom,
-							length(Parameters)+1, Other} }
+						{method_faulty_return, self(), ?MODULE, MethodAtom,
+							length(Parameters)+1, 
+							Parameters, Other} }
+							
 						
 			end;
 			
 		undefined ->
+			% Method name and arity returned as separate tuple elements, as
+			% if in a single string ("M/A"), the result is displayed as a list :
 			{State, {method_not_found, ?MODULE, MethodAtom,
 				length(Parameters)+1 } }
 				
@@ -363,3 +422,74 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 		
 	end.		
 
+
+
+-else.
+% Not in debug mode here :
+
+
+% Executes the specified method, designated by its atom, with specified 
+% instance state and parameters.
+% If the method is not found (either in the class module or in its
+% ancester trees), an error tuple beginning with the atom 'method_not_found'
+% is returned with an unchanged state.
+% If the method is found, if its execution fails, an error tuple beginning 
+% with the atom 'method_failed' is returned with an unchanged state.
+% If it does not fail but returns an unexpected result (i.e. not a tuple 
+% beginning with the atom 'return'), an error tuple beginning with the atom
+% 'method_faulty_return' is returned with an unchanged state.
+% If its execution succeeds, then {result,Result} is returned, with R being 
+% the actual result of the method call, with an updated state.
+% Finally, if the method does not return any result, the atom
+% 'method_returns_void' is returns, which allows a client that sent his
+% PID to be warned it is useless, as no answer should be expected.
+wooper_execute_method(MethodAtom,State,Parameters) ->
+	% +1 : take into account the State additional parameter :
+	case wooper_lookupMethod(MethodAtom,length(Parameters)+1) of
+	
+		{ value, LocatedModule } -> 
+			% The 'return' atom is a safety guard against incorrect method
+			% implementations :
+			case apply(LocatedModule,MethodAtom,[State|Parameters]) of
+
+				% Matched expressions have to be reordered depending on the
+				% debug mode : 
+
+
+				
+				{'EXIT',ErrorTerm} ->
+					{State,
+						{method_failed, self(), ?MODULE, MethodAtom,
+							length(Parameters)+1, 
+							Parameters, ErrorTerm} } ;
+
+				{'EXIT',Pid,ErrorTerm} ->
+					{State,
+						{method_failed, self(), ?MODULE, MethodAtom,
+							length(Parameters)+1, 
+							Parameters, [Pid,ErrorTerm]} } ;
+
+
+				{NewState,Result} ->  
+					{NewState,{result,Result}};
+							
+							
+				% Void method (no result returned, only a state) :
+				NewState ->  
+					{NewState,method_returns_void}
+						
+			end;
+			
+		undefined ->
+			% Method name and arity returned as separate tuple elements, as
+			% if in a single string ("M/A"), the result is displayed as a list :
+			{State, {method_not_found, ?MODULE, MethodAtom,
+				length(Parameters)+1 } }
+				
+					
+		% No other term can be returned.
+		
+	end.	
+	
+		
+-endif.
