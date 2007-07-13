@@ -41,6 +41,29 @@ See the <a href="ChangeLog.html" target="_blank">ChangeLog</a> corresponding to 
 </p>
 
 
+<h2>Build process</h2>
+
+<h3>For all non-Windows platforms</h3>
+<p>
+Sources, retrieved from <a href="#ceylansvn">SVN</a>, are to be built on UNIX thanks to the Autotools, not depending on the actual runtime platform being targeted : either Ceylan is built here on UNIX for the same UNIX platform, or it is built on UNIX (actually GNU/Linux in that case) for the Nintendo DS (cross-compilation).
+</p>
+
+<p>
+For a clean and complete build, one should execute <code>trunk/src/conf/build/autogen.sh</code>, preferably run with the <code>-f</code> / <code>--full-test</code> option, as it builds and installs the library, and performs all available tests.
+</p>
+
+<p>
+To request a cross-compilation targeting the Nintendo DS, the <code>--nds</code> switch should be added.
+</p>
+
+
+<h3>For Windows platforms</h3>
+<p>
+In that case the fresh <a href="#ceylansvn">SVN</a> sources are expected to be used with the Visual C++ 2005 Express toolchain.
+</p>
+
+
+<a name="ceylansvn"></a>
 <h2>Using SVN (Subversion) for Ceylan</h2>
 
 <p>
@@ -264,8 +287,7 @@ Now <code>x'.y'</code> designates the next version.
       <center>
         [<a href="#_top_">Top</a>]<br>
         <br>
-        <em>Last update : Sunday, March 25, 2007
-</em>
+        <em>Last update : Friday, July 13, 2007</em>
       </center>
   
 </body>
