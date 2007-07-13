@@ -171,12 +171,23 @@ int main( int argc, char * argv[] )
 		{
 		
 			LogPlug::info( "Non-interactive test mode, "
-				"no scheduling granularity computed." ) ;
+				"no scheduling granularity computed, test finished." ) ;
 				
 			return Ceylan::ExitSuccess ;
 			
 		}	
 
+		if ( ! areSubSecondSleepsAvailable() )
+		{
+		
+			LogPlug::info( "No subsecond sleeps available, "
+				"no scheduling granularity computed, test finished." ) ;
+				
+			return Ceylan::ExitSuccess ;
+		
+		}
+		
+		
 		/*
 		 * Logs can been interpreted thanks to gnuplot, ex : 
 		 *   - set DEBUG_SYSTEM=1 in src/conf/build/configure-template.ac
