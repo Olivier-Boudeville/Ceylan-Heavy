@@ -10,6 +10,8 @@
 % buckets specified at the hashtable creation.
 % Each tuple element (hence each bucket) is a list of key/value pairs.
 
+% Maybe the ets module could/should be used instead.
+
 
 -export([new/0,new/1,addEntry/3,removeEntry/2,lookupEntry/2,enumerate/1,
 	merge/2,toString/1,display/1]).
