@@ -7,6 +7,7 @@
 #include "CeylanStringUtils.h"        // for countChars
 #include "CeylanObject.h"
 #include "CeylanLogLight.h"           // for CEYLAN_LOG (most basic logging)
+#include "CeylanLogPlug.h"            // for LogPlug::warning
 #include "CeylanNetwork.h"            // for getMostPreciseLocalHostName
 
 
@@ -80,8 +81,12 @@ Ceylan::Log::ObjectIdentifier::ObjectIdentifier( const Object & object )
 	} 
 	catch( const ProcessException & e )
 	{
-		throw IdentifierException( "ObjectIdentifier constructor : "
-			"unable to get hosting PID : " + e.toString() ) ;			
+	
+		LogPlug::warning( "ObjectIdentifier constructor : "
+			"unable to get hosting PID : " + e.toString()
+			+ ", defaulting to null PID" ) ;	
+		_pid = 0 ;
+					
 	}
 			
 	_className = object.getClassName() ;	
