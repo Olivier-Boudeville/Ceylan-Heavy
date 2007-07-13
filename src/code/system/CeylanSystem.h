@@ -395,6 +395,9 @@ namespace Ceylan
 		CEYLAN_DLL Microsecond getPreciseTimeCallDuration() throw() ;
 
 
+
+
+
 		/**
 		 * Sleeps for the specified number of seconds.
 		 *
@@ -408,6 +411,20 @@ namespace Ceylan
 		 */
 		CEYLAN_DLL void sleepForSeconds( Second seconds ) 
 			throw( SystemException ) ;
+
+
+		/**
+		 * Tells whether sub-second sleeps can be performed.
+		 *
+		 * On some platforms (UNIX) it requires the file descriptor feature
+		 * to be activated.
+		 *
+		 * @note Should be checked before calling notably atomicSleep,
+		 * basicSleep, smartSleep, smartSleepUntil, getSchedulingGranularity,
+		 * etc., as otherwise a System exception might be thrown.
+		 *
+		 */
+		CEYLAN_DLL bool areSubSecondSleepsAvailable() throw() ;
 
 
 		/**
@@ -458,7 +475,6 @@ namespace Ceylan
 		 *
 		 * @see Ceylan::Features::areFileDescriptorsSupported to check it
 		 * prior to calling this sleep method.
-		 *
 		 *
 		 */
 		CEYLAN_DLL void basicSleep( Second seconds, Nanosecond nanos )
@@ -545,6 +561,7 @@ namespace Ceylan
 		 */
 		CEYLAN_DLL bool smartSleepUntil( Second second, Microsecond micro )
 			throw( SystemException ) ;
+
 
 
 		/**
