@@ -41,6 +41,7 @@ help:
 	
 
 clean: clean-database
+	@echo "  Cleaning all in "`basename $(PWD)`
 	-@rm -f *.beam *.jam erl_crash.dump		
 
 
