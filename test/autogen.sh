@@ -23,6 +23,9 @@ do_build=0
 do_install=0
 do_test=0
 
+# Default install prefix :
+ceylan_install_prefix="/usr/local"
+
 
 while [ $# -gt 0 ] ; do
 	token_eaten=1
@@ -198,6 +201,12 @@ execute()
 				echo "
 Note : check the following log :" test/config.log	
   			fi
+			
+			if [ "$1" = "aclocal" ]; then
+				echo "
+Hint : look at the --ceylan-install-prefix option, with a parameter that could be similar to $HOME/Projects/LOANI-x.y/LOANI-installations/Ceylan-p.q"
+  			fi
+			
 		fi
 			
 		exit $RES
