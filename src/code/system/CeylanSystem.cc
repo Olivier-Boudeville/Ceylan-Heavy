@@ -861,6 +861,27 @@ void Ceylan::System::sleepForSeconds( Second seconds )
 }
 
 
+bool Ceylan::System::areSubSecondSleepsAvailable() throw()
+{
+
+#if CEYLAN_ARCH_WINDOWS
+
+	return true ;
+	
+#else // CEYLAN_ARCH_WINDOWS
+
+
+#if CEYLAN_USES_FILE_DESCRIPTORS
+	return true ;
+#else // CEYLAN_USES_FILE_DESCRIPTORS
+	return false ;
+#endif // CEYLAN_USES_FILE_DESCRIPTORS
+	
+	
+#endif // CEYLAN_ARCH_WINDOWS
+		
+}
+
 
 
 void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
