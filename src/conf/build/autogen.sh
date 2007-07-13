@@ -1,8 +1,10 @@
 #!/bin/sh
 
 USAGE="
-Usage : "`basename $0`" [ -h | --help ] [ -d | --disable-all-features ] [ -n | --no-build ] [ -c | --chain-test ] [ -f | --full-test ] [ -o | --only-prepare-dist ] [ --configure-options [option 1] [option 2] [...] ] : (re)generates all the autotools-based build system.
-
+Usage : "`basename $0`" [ -h | --help ] [ --nds ] [ -d | --disable-all-features ] [ -n | --no-build ] [ -c | --chain-test ] [ -f | --full-test ] [ -o | --only-prepare-dist ] [ --configure-options [option 1] [option 2] [...] ] : (re)generates all the autotools-based build system.
+	
+	--nds : cross-compile the Ceylan library so that it can be run on the Nintendo DS
+	--disable-all-features : just build the core of the Ceylan library
 	--no-build : stop just after having generated the configure script
 	--chain-test : build and install the library, build the test suite and run it against the installation
 	--full-test : build and install the library, perform all available tests, including 'make distcheck' and the full test suite
@@ -34,6 +36,7 @@ do_installcheck=0
 do_distcheck=1
 do_chain_tests=1
 do_only_prepare_dist=1
+do_target_nds=1
 
 
 while [ $# -gt 0 ] ; do
@@ -46,6 +49,12 @@ while [ $# -gt 0 ] ; do
 	
 	if [ "$1" = "-q" -o "$1" = "--quiet" ] ; then
 		be_quiet=0
+		token_eaten=0
+	fi
+	
+	if [ "$1" = "--nds" ] ; then
+		# Cross-compilation for the Nintendo DS requested :
+		do_target_nds=0
 		token_eaten=0
 	fi
 	
@@ -133,6 +142,11 @@ wait()
 	fi	
 	
 }
+
+if [ $do_target_nds -eq 0 ] ; then
+	echo "Preparing to cross-compile for the Nintendo DS."
+	ceylan_features_opt="$ceylan_features_disable_opt"
+fi
 
 
 RM="/bin/rm -f"
