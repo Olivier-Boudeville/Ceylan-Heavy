@@ -14,16 +14,24 @@ export LOANI_VERSION=0.4
 # LOANI_BASE may have been set before by .bashrc.local :
 if [ -z "${LOANI_BASE}" ] ; then
 	# Defaults to :
-	LOANI_BASE=/mnt/raid/md0/LOANI-${LOANI_VERSION}/LOANI-repository
+	export LOANI_BASE=/mnt/raid/md0/LOANI-${LOANI_VERSION}
 fi
 
+export LOANI_REPOSITORY=${LOANI_BASE}/LOANI-repository
+export LOANI_INSTALLATIONS=${LOANI_BASE}/LOANI-installations
+
+export DS_DEV=${LOANI_INSTALLATIONS}/Nintendo-DS-development
+
+export DS_TRANSFER=${DS_DEV}/ds-transfer-repository
+
+
 export CEYLAN_VERSION=0.5
-export CEYLAN_ROOT=${LOANI_BASE}/ceylan/Ceylan
+export CEYLAN_ROOT=${LOANI_REPOSITORY}/ceylan/Ceylan
 export CEYLAN_SRC=${CEYLAN_ROOT}/trunk/src
 export CEYLAN_DOC=${CEYLAN_SRC}/doc/web/main/documentation
 
 export OSDL_VERSION=0.4
-export OSDL_ROOT=${LOANI_BASE}/osdl/OSDL
+export OSDL_ROOT=${LOANI_REPOSITORY}/osdl/OSDL
 # Do not interfere with LOANI : export OSDL=${OSDL_ROOT}/src
 export OSDL_SRC=${OSDL_ROOT}/trunk/src
 export OSDL_DOC=${OSDL_SRC}/doc/web/main/documentation
