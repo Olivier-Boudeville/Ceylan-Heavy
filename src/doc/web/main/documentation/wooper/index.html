@@ -86,6 +86,30 @@ The <a href="#example">example</a> chosen here is a simulation of the interactin
 WOOPER is a means of making these constructs available, notably with regard to state management and multiple inheritance. The same simulations could be achieved without such OOP constructs, but at the expense of way too much manually-crafted specific (per-class) code. This process would be tedious, error-prone, and the result most often could be hardly maintained.
 </p>
 
+declarations :
+
+-module(class_XXX).
+
+% Determines what are the mother classes of this class (if any) :
+-define(superclasses,[]).
+
+% Constructor will need two actual attributes here (age and gender), so
+% new/2 and construct/3 will have to be exported :
+-define(wooper_construct_attributes,Age,Gender).
+
+% isHotBlooded/1 and canEat/2 are abstract hence not mentioned here :
+-define(wooper_export,new/2,construct/3,getAge/1,setAge/2,declareBirthday/1,
+	getGender/1,listen/3).
+
+
+
+% Allows to define WOOPER base variables and methods for that class :
+-include("wooper_class_root.hrl").
+
+
+
+GPL mailing list
+
 <p>
 Needed files are :
 
@@ -135,7 +159,8 @@ WOOPER is in some ways adding features very similar to the ones of python (simpl
 <h2>WOOPER example</h2>
 <p>
 <center>
-    <img src="wooper-example.png" alt="WOOPER example" width="95%"></img>
+    <a href="wooper-example.png" target=_blank"><img src="wooper-example.png" alt="WOOPER example" width="95%"></img></a><br>
+(click to enlarge)
 </center>
 </p>
 
@@ -148,6 +173,73 @@ WOOPER is in some ways adding features very similar to the ones of python (simpl
 <a name="inner"></a>
 <h2>WOOPER inner workings</h2>
 <p>
+A method signature has always for first parameter the state of the instance (ex : getAge(State)).
+It must always return at least the new state (even if it did not change the state it received as a parameter).
+Depending on its returning a specific result, its signature will be either :
+
+	{return,Newstate,Result} 
+
+or 
+	{return,Newstate} 
+
+Ex : 
+
+getAge(State) ->
+	{return,State,getAttribute(State,age)}.
+A result and state is unchanged.
+
+setAge(State,NewAge) ->
+	{return,setAttribute(State,age,NewAge)}.
+No result and the state changed.
+
+displayAge(State) ->
+	io:format("My age is ~w~n.",[getAttribute(State,age)]),
+	{return,State}.
+No result and the state is unchanged (only a side-effect here).
+
+
+
+When a method F/n is called, WOOPER tries to find F(State,arg1,..,argn-1).
+It may or may not be found : name and arity must match.
+If it is not found, the method_not_found atom is returned, and the object state did not change.
+If it is found, the method must return to WOOPER (directly) {return,NewState,Result}. 
+NewState is reused by WOOPER to update the object state, whereas Result (in the form {result,Result}) will be sent to the caller.
+
+Oneway :
+
+MyPoint ! {setXY,[1,2]}
+
+
+Request :
+
+MyPoint ! {get_coordinates,[],self()},
+receive
+
+	{result,[X,Y]} ->
+		[...];
+	
+	% Can be left out (let it crash) :
+	Error ->
+		[...]
+end,
+
+Errors can be better discriminated if needed ;
+
+	{method_not_found,Module,Method,Arity} ->
+		[...];
+
+	{method_failed,Module,Method,Arity,Message} ->
+		[...];
+
+	{method_faulty_return,Module,Method,Arity} ->
+		[...];
+
+	{method_returns_void} ->
+
+	OtherError ->
+		% Should never happen :
+		[...]
+
 </p>
 
 <p>
@@ -185,3 +277,131 @@ See some guidelines about <a href="http://wiki.trapexit.org/index.php/Defining_Y
 </body>
 </html>
 
+<html>
+
+<h1>WOOPER : Wrapper for OOP in ERlang</h1>
+
+<h2>Understanding this object-oriented support added on top of Erlang</h2>
+<p>
+Polymorphism and inheritance are very convenient ways of modeling. The set of
+conventions proposed here allows to have them available with Erlang, so that
+object-oriented approach at the implementation-level can be easily achieved, for the case where it makes sense.
+</p>
+
+
+<h2>Conventions</h2>
+
+
+<h3>Classes</h3>
+<p>
+A class is a common scheme describing the behaviour and the internal data of its instances.
+</p>
+
+<p>
+A class can inherit from another class, in this case the behaviour and the internal data of the mother class are available by default to the child class. Each class has a unique name.
+</p>
+
+<p>
+Here a class is mapped to an Erlang module, whose name is made from the <code>class_</code> prefix followed by the class name, in lowercase. For example, a class named <code>Car</code> should translate into an Erlang module named <code>class_car</code>, thus in a file named <code>class_car.erl</code>
+</p>
+
+<p>
+The class name can be obtained through its <code>get_class_name</code> method :
+
+<center>
+    <table summary="Code" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+&gt; class_car:get_class_name().
+"Car"
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+</p>
+
+
+
+<h3>Instances, a.k.a. Objects</h3>
+<p>
+An object (which is an instance of a class, with its own execution thread, active object in UML language) is able to expose a public interface (a kind of API for a server) that can be used by clients to trigger RMI-like calls.
+</p>
+
+<p>
+An object must be created through a special function defined by its class, the operator <code>new</code>, that will call a constructor. Example : <code>My_car = class_car:new("Dodge","Viper").</code>. 
+</p>
+
+<p>
+Example : <code>-module(my_class)...</code> in my_class.erl defines a class <code>my_class</code>.
+</p>
+
+
+<p>
+An interface is a set of public methods. Interfaces are inherited between classes.
+</p>
+
+
+
+<h3>Methods</h3>
+<p>
+There are two kinds of possible methods to an object : requests and oneways.
+Requests are supposed to send back an answer to the caller (the client), whereas oneways are just handled by the server, with no answer to expect from the client side. Both can be either with or without arguments.
+</p>
+
+
+<h3>Requests</h3>
+<p>
+To send an answer to the client, the server needs to know its PID, hence requests have to specify it.
+</p>
+
+<p>
+Moreover the client needs to be able to sort out multiple asynchronous answers to requests it may have sent to different (server) objects, so the answer to requests have to send back the PID of the server as well.
+</p>
+
+
+
+<h3>Oneways</h3>
+<p>
+
+</p>
+
+
+<h3>Sources</h3>
+
+<p>
+<!--
+    <li><a href="" target="_blank"></a></li>
+-->
+
+    <li>Chris Rathman 's <a href="http://www.angelfire.com/tx4/cus/shapes/erlang.html" target="_blank">approach</a>to polymorphism</li> 
+    <li><b>Concurrent Programming in Erlang</b>, Joe Armstrong, Robert Virding, Claes Wikström et Mike Williams. Chapitre 18, p.299 : Object-oriented Programming</li>
+</ul>
+
+</p>
+
+Constructors must be designed to be called by the ones of child classes, and they must call themselves the constructors of their mother classes, if any. Hence they always take the current state of the instance being created as a starting base, and returns it once updated, first from the mother classes, then by this class itself.
+
+Ensure that in constructors, the successive states are always built from the last updated one : 
+
+WRONG, age update lost :
+construct(State,Age,Sex) ->
+	AgeState = setAttribute(State,age,Age),
+	setAttribute(State,sex,Sex),
+
+RIGHT
+construct(State,Age,Sex) ->
+	AgeState = setAttribute(State,age,Age),
+	setAttribute(AgeState,sex,Sex),
+
+Calls with only one parameter do not need to put it in a list : 
+Z ! {setAge,30} works as well as Z ! {setAge,[30]}.
+
+
+If an error occurs with a oneway call, the sender (the client) will never be notified.
+
+</html>
