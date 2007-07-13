@@ -9,7 +9,15 @@ ERLANG_ROOT         := /usr
 
 ERLANG_COMPILER     := $(ERLANG_ROOT)/bin/erlc
 
-INC += -I.
+
+COMMON     = $(TOP)/common
+WOOPER     = $(TOP)/wooper
+WOOPER_SRC = $(WOOPER)/src
+
+COMMON_INC = -I$(COMMON)
+WOOPER_INC = -I$(WOOPER_SRC)
+
+INC += -I. $(COMMON_INC) $(WOOPER_INC)
 
 
 ERLANG_COMPILER_OPT_DEBUG := 
@@ -25,16 +33,15 @@ FQDN    := `host \`hostname\` | awk '{ print $$1 }'`
 VM_NAME := debug
 
 
-COMMON = $(TOP)/common
 
 
 # +v (verbose) option removed, as only active in the interpreter has been
 # compiled in debug mode (otherwise a warning is displayed at each execution).
 ERLANG_INTERPRETER_OPT := $(MOD) -name $(VM_NAME)@$(FQDN) \
-	-pa $(COMMON) -run 
+	-pa $(COMMON) $(WOOPER_SRC) $(INC) #-run 
 
 
-ERLANG_STARTUP_FUNCTION := run
+#ERLANG_STARTUP_FUNCTION := run
 
 
 
