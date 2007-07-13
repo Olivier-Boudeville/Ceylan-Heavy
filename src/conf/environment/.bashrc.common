@@ -163,9 +163,10 @@ export TOARANOR="sye@aranor:/home/sye"
 export TOETURANIS="sye@eturanis:/home/sye"
 export TOSONATA="sye@sonata:/home/sye"
 export TORAINBOW="sye@rainbow:/home/sye"
+export TOWATT="sye@watt:/home/sye"
 
 export TOARANOR_FTP="www-data@aranor:/home/ftp/LOANI-archive-repository"
-
+  
 
 # Cubbyhole section :
 
