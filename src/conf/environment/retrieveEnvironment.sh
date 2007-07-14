@@ -1,8 +1,13 @@
-#!/bin/bash
+#!/bin/sh
 
 
 
-USAGE="Usage : "`basename $0`" [<install root>] [ -d | --debug ] [ --checkout | -c ] [ -p | --preclean ] [ -h | --help ]\n Settles down the developer environment, from environment already described in <install root>, if specified, otherwise from environment defined in the source tree of this script. If --checkout is set, will install modules from SVN.\nExample : `basename $0` $HOME/Projects/ceylan, or simply `basename $0` (recommended)"
+USAGE="
+Usage : "`basename $0`" [<install root>] [ -d | --debug ] [ --checkout | -c ] [ -p | --preclean ] [ -h | --help ]
+
+Settles down the developer environment, from environment already described in <install root>, if specified, otherwise from environment defined in the source tree of this script. If --checkout is set, will install modules from SVN.
+
+Example : `basename $0` $HOME/Projects/ceylan, or simply `basename $0` (recommended)"
 
 # Other install roots could be : 
 #   - /mnt/raid/md0/LOANI-0.4/LOANI-installations
@@ -15,7 +20,7 @@ USAGE="Usage : "`basename $0`" [<install root>] [ -d | --debug ] [ --checkout | 
 
 # Default settings.
 
-SVN_PARAMETER="https://svn.sourceforge.net/svnroot/ceylan"
+SVN_PARAMETER="https://ceylan.svn.sourceforge.net/svnroot/ceylan"
 
 BACKUP_SUFFIX="previous"
 
@@ -32,8 +37,9 @@ do_clean_previous=1
 
 DEBUG()
 {
-	[ "$do_debug" == 1 ] || echo "Debug : $*"
+	[ $do_debug -eq 1 ] || echo "Debug : $*"
 }
+
 
 ERROR()
 {
@@ -43,8 +49,8 @@ ERROR()
 
 
 # Assume -h or --help will never be install roots !
-if [ "$1" == "-h" -o "$1" == "--help" ] ; then
-	echo -e "$USAGE"
+if [ "$1" = "-h" -o "$1" = "--help" ] ; then
+	echo "$USAGE"
 	exit 0
 fi	
 
@@ -57,32 +63,32 @@ while [ $# -gt 0 ] ; do
 
 	token_eaten=1
 	
-	DEBUG  "Evaluating argument $1."
+	DEBUG "Evaluating argument $1."
 
-	if [ "$1" == "-d" -o "$1" == "--debug" ] ; then
+	if [ "$1" = "-d" -o "$1" = "--debug" ] ; then
 		DEBUG "Debug mode activated."
 		do_debug=0
 		token_eaten=0
 	fi
 	
-	if [ "$1" == "-c" -o "$1" == "--checkout" ] ; then
+	if [ "$1" = "-c" -o "$1" = "--checkout" ] ; then
 		DEBUG "SVN checkout mode activated"
 		do_link=1
 		token_eaten=0		
 	fi
 	
-	if [ "$1" == "-p" -o "$1" == "--preclean" ] ; then
+	if [ "$1" = "-p" -o "$1" = "--preclean" ] ; then
 		DEBUG "Will preclean any previously existing back-up file"
 		do_clean_previous=1
 		token_eaten=0		
 	fi
 	
-	if [ "$1" == "-h" -o "$1" == "--help" ] ; then
+	if [ "$1" = "-h" -o "$1" = "--help" ] ; then
 		echo -e "Help requested : $USAGE"
 		exit 0
 	fi
 	
-	if [ "$token_eaten" == "1" ] ; then
+	if [ "$token_eaten" = "1" ] ; then
 		INSTALL_ROOT="$1"
 	fi
 	
@@ -107,7 +113,7 @@ cd $CURRENT_DIR
 
 if [ ! -d "$INSTALL_ROOT" ]; then
 	echo "Error, install root directory <$INSTALL_ROOT> does not exist, create it first." 
-	echo -e "$USAGE"
+	echo "$USAGE"
 	exit 2
 fi
 
@@ -235,19 +241,20 @@ echo
 echo "(if not done already, consider publishing your SSH public key to Sourceforge to avoid typing your password multiple times)" 
 echo
 
-if [ "$do_clean_previous" == "1" ] ; then
+if [ $do_clean_previous -eq 1 ] ; then
 	preClean
 fi
 
-if [ "$do_link" == "1" ] ; then
+if [ $do_link -eq 1 ] ; then
 	retrieveProjects
 fi
 
 prepareDeveloperEnvironment
 
 echo
-if [ "$do_link" == "1" ] ; then
+if [ $do_link -eq 1 ] ; then
 	echo "End of links creation. Maybe the LOANI_BASE variable in ~/.bashrc.local should be updated."
 else
 	echo "End of retrieval, projects files should be found in $INSTALL_ROOT."
 fi
+
