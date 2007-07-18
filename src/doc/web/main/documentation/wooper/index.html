@@ -12,7 +12,7 @@
 
 <html lang="EN">
 <head>
-  <title>Ceylan - Documentation</title>
+  <title>Ceylan - WOOPER documentation</title>
   <meta http-equiv="Content-Type" content=
   "text/html; charset=iso-8859-1">
   <meta name="description" content="Ceylan">
@@ -35,8 +35,27 @@
 <h1>WOOPER : <em>Wrapper for OOP in Erlang</em></h1>
 
 <p>
-WOOPER is a lightweight layer on top of the <a href="http://erlang.org" target="_blank">Erlang</a> language offering constructs dedicated to <a href="http://en.wikipedia.org/wiki/Object-oriented_programming" target="_blank">Object-Oriented Programing</a>. 
+WOOPER is a lightweight layer on top of the <a href="http://erlang.org" target="_blank">Erlang</a> language offering constructs dedicated to <a href="http://en.wikipedia.org/wiki/Object-oriented_programming" target="_blank">Object-Oriented Programing</a>. It is released through the <a href="http://en.wikipedia.org/wiki/GNU_Lesser_General_Public_License" target="_blank">LGPL</a> license version 3 (programs making use of WOOPER are not considered as derivative works, hence fall outside the scope of this license and need not being free nor open-source).
 </p>
+
+<p>
+To reassure the reader about the ease of development with WOOPER, here is an example of what a class may look like :
+<center>
+    <table summary="Code" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+Straightforward, isn't it ? We will discuss it in-depth though.
+</p>
+
 
 
 <p>
@@ -70,8 +89,11 @@ WOOPER is a lightweight layer on top of the <a href="http://erlang.org" target="
 <a name="usage"></a>
 <h2>WOOPER usage</h2>
 
+
+<h3>Why adding Object-oriented elements to Erlang ?</h3>
+
 <p>
-Although applying blindly OOP with languages based on other paragdims (Erlang ones are functional and concurrent, and it is not specifically targeting OOP) is a common mistake, there are some problems that may be deemed inherently "object-oriented", i.e. that cannot be effectively modelled without encapsulated abstractions sharing behaviours. 
+Although applying blindly OOP with languages based on other paragdims (Erlang ones are functional and concurrent, it is not specifically targeting OOP) is a common mistake, there are some problems that may be deemed inherently "object-oriented", i.e. that cannot be effectively modelled without encapsulated abstractions sharing behaviours. 
 </p>
 
 <p>
@@ -79,19 +101,150 @@ Examples of this kind of systems are multi-agent simulations. If they often need
 </p>
 
 <p>
-The <a href="#example">example</a> chosen here is a simulation of the interacting lives of numerous animals from various species. Obviously, they have to share behaviours (ex : all ovoviviparous beings may lay eggs, all creatures can live and die, all have an age, etc.), which cannot be mapped easily to Erlang concepts without some generic constructs being added.
+The <a href="#example">example</a> chosen here is a simulation of the interacting lives of numerous animals from various species. Obviously, they have to share behaviours (ex : all ovoviviparous beings may lay eggs, all creatures can live and die, all have an age, etc.), which cannot be mapped easily (read: automatically) to Erlang concepts without some generic constructs being added.
 </p>
 
 <p>
-WOOPER is a means of making these constructs available, notably with regard to state management and multiple inheritance. The same simulations could be achieved without such OOP constructs, but at the expense of way too much manually-crafted specific (per-class) code. This process would be tedious, error-prone, and the result most often could be hardly maintained.
+WOOPER, which stands for <em>Wrapper for OOP in Erlang</em>, is a lightweight yet effective (performance-wise, but also regarding developing efforts) means of making these constructs available, notably with regard to state management and multiple inheritance. The same simulations could be achieved without such OOP constructs, but at the expense of way too much manually-crafted specific (per-class) code. This process would be tedious, error-prone, and the result most often could be hardly maintained. 
 </p>
 
-declarations :
 
--module(class_XXX).
+<h3>How to use it ?</h3>
 
-% Determines what are the mother classes of this class (if any) :
--define(superclasses,[]).
+
+<h4>Concept mappings</h4>
+
+
+<p>
+<b>Encapsulation</b> is based into classes being defined as Erlang modules. A convention is to prefix the class name by <code>class_</code> to form the module name. So a class modelling a cat would be defined in a module named <code>class_Cat</code>, defined in a file named <code>class_Cat.erl</code>. At the top of this file, the corresponding module would be therefore declared with: <code>-module(class_Cat).</code>
+</p>
+
+<p>
+Being in a <b>multiple inheritance</b> context, a given class can have any number ([0..n]) of direct mother classes (which themselves may have mother classes, and so on). This is declared in WOOPER thanks to the <code>superclass</code> define. For example, a class with no mother class should have, once its module is declared, <code>-define(superclasses,[]).</code>. As for our cat, this animal could be considered both as a mammal and a viviparous being (neither of them is a subset of the other, these are mostly unrelated concepts; at least for that example !). Hence its mother classes could be described as : <code>-define(superclasses,[class_Mammal, class_ViviparousBeing]).</code>
+</p>
+
+<p>
+With WOOPER, which focuses on multi-agent systems, all <b>instances</b> of a class are mapped to Erlang processes. They are therefore, in UML language, <em>active objects</em> (each has its own thread of execution, they apparently "live" simultaneously).
+</p>
+
+<p>
+Another part of encapsulation is state management : each instance should be stateful, and able to inherit the data members defined by its mother classes. In WOOPER, this is obtained thanks to a per-instance associative table. Methods
+</p>
+
+
+<p>
+Instances may offer methods that can be publicly called, including remotely (RMI : <em>Remote Method Invocation</em>). Methods are mapped to specific Erlang functions, triggered by messages. For example, our cat may define following methodq :
+<ul>
+
+<!--
+	<li></li>
+-->
+	<li><code>canEat</code>, taking one parameter describing the type of food, and returning whether the cat can eat or not</li>
+	<li><code>getWhiskersColor</code>, returning the color of its whiskers</li>
+	<li><code>declareBirthday</code>, incrementing the age of our cat, not taking any parameter nor returning anything. This is therefore a one-way call only interesting for its side-effect : changing the state of the cat</li>
+
+</ul>
+ We will see their definition later, but for the moment let's determine their signatures and declarations, and how we are expected to call them.
+</p>
+
+<p>
+Such methods are to be declared in a <code>wooper_method_export</code> clause, with an arity being equal to the number of parameters they should be given plus one (the implicit first parameter corresponding to the state of the instance). In our example, it would result in : <code>-define(wooper_method_export,canEat/2,getWhiskersColor/1).</code>. If MyCat is an instance of <code>class_Cat</code>, these methods could be called this way :
+<center>
+    <table summary="Code" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+MyCat ! {canEat,soup,self()},
+receive
+
+	{result,true} ->
+		io:format( "This cat likes soup !!!" )
+
+	{result,_} ->
+		io:format( "This cat does not seem omnivorous." )
+		
+end,
+
+MyCat ! {getWhiskersColor,[],self()},
+receive
+		
+	{result,white} ->
+		io:format( "This cat has normal whiskers." ) ;
+		
+	{result,blue} ->
+		io:format( "Are you sure it is a cat ?" )
+
+end,
+
+MyCat ! declareBirthday,	
+end.	
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+</p>
+
+<p>
+Some information must be given here : methods are designated by their atom name (as declared in <code>wooper_method_export</code>), which is always the first information given. There are requests (that return a result) and one-way calls. Both can take any number of parameters, including none. They are to be specified in a (possibly empty) list; if only one parameter is needed, the list can be omitted, and the parameter can be directly specified.
+</p>
+
+<p>
+Requests have to specify an additional information, the PID to which the answer should be sent, almost always the caller (hence the <code>self()</code>). Finally these three potential information (method name, parameter, sender, i.e. an atom, a list and a PID) are gathered in a tuple sent as a message : <code>{method_name,[Arg1,Arg2,..],self()}</code>
+. One-ways do not have to specify a sender (if ever they send one nevertheless, a warning will be sent to them, the atom <code>FIXME</code>). Hence they may be 2-element tuples (<code>{method_name,[Arg1,Arg2,..]}</code> or, if they do not take parameters, <code>method_name</code>.
+</p>
+
+<p>
+As for the result, if the method execution succeeded, <code>{result,ActualResult}</code> will be sent back, otherwise one of the following error messages will be emitted :
+<ul>
+
+<!--
+	<li><b></b> : </li>
+-->
+
+	<li><b>FIXMEmethod_not_found</b> : </li>
+</ul>
+Marshalling of parameters and return value is made automatically by Erlang.  
+</p>
+
+
+<p>
+Inheritance and polymorphism are managed by WOOPER : even if our cat class does not define a <code>getAge</code> method, it can be readily be used thanks to inheritance from its mother classes (here from Creature, an indirect mother class), and all Creature instances can be handled the same :
+
+<code><pre>
+% Inherited methods work exactly the same as methods defined directly 
+% in the class:
+MyCat ! {getAge,[],self()},
+receive
+		
+	{result,Age} ->
+		io:format( "This is a ~B year old cat.", [Age] ) ;
+
+end,
+
+% Polymorphism is immediate:
+% (class_Platypus inheriting too from class_Creature)
+MyPetList = [ MyCat, MyPlatypus ],
+foreach( 
+	fun(AnyCreature) ->
+		AnyCreature ! {getAge,[],self()},
+		receive
+		
+			{result,Age} ->
+				io:format( "This is a ~B year old creature.", [Age] ) ;
+
+		end,
+	MyPetList).
+</pre></code>
+
+</p>
+
+
+
+life-cycle
+
 
 % Constructor will need two actual attributes here (age and gender), so
 % new/2 and construct/3 will have to be exported :
@@ -108,7 +261,7 @@ declarations :
 
 
 
-GPL mailing list
+GPL mailing list : 
 
 <p>
 Needed files are :
@@ -404,4 +557,25 @@ Z ! {setAge,30} works as well as Z ! {setAge,[30]}.
 
 If an error occurs with a oneway call, the sender (the client) will never be notified.
 
+
+  <br>
+  <br>
+  <br>
+
+  <h3>Please react !</h3>
+
+  <p>If you have information more detailed or more recent than those
+  presented in this document, if you noticed errors, neglects or points
+  insufficiently discussed, <a href=
+  "mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20WOOPER">
+  drop us a line</a>!</p><br>
+  <br>
+  <hr>
+
+  <center>
+    <a href="#_top_">Top</a><br>
+    <br>
+    <em>Last update : Wednesday, July 18, 2007</em>
+  </center>
+</body>
 </html>
