@@ -27,6 +27,13 @@ testFinished() ->
 -endif.
 
 
+testFailed(Reason) ->
+	% For some reason erlang:error is unable to interpret strings as strings,
+	% they are always output as unreadable list.
+	io:format( "~n!!!! Test failed for module ~s, reason : ~s~n~n",
+		[ ?Tested_module, Reason ] ),
+	erlang:error( "Test failed" ).	
+
 
 run() ->
 	io:format( ?Prefix "Testing module ~s.~n", [ ?Tested_module ] ),
@@ -42,8 +49,9 @@ run() ->
 			io:format( ?Prefix 
 				"After constructor, getAge returned 30 as expected.~n");
 
-		_ -> 
-			erlang:exit("Test failed.")
+		{result,UnexpectedAge} -> 
+			testFailed( io_lib:format( "wrong age : ~p", 
+				[ UnexpectedAge ] ) )
 	
 	end,
 	MyC ! {getGender,[],self()},
@@ -53,8 +61,9 @@ run() ->
 			io:format( ?Prefix 
 				"After constructor, getGender returned male as expected.~n");
 
-		_ -> 
-			erlang:exit("Test failed.")
+		{result,UnexpectedGender} -> 
+			testFailed( io_lib:format( "wrong gender : ~p", 
+				[ UnexpectedGender ] ) )
 	
 	end,
 	MyC ! {setAge,5},
@@ -65,9 +74,10 @@ run() ->
 			io:format(?Prefix 
 				"After setAge, getAge returned 5 as expected.~n");
 
-		_ -> 
-			erlang:exit("Test failed.")
-	
+		{result,UnexpectedNewAge} -> 
+			testFailed( io_lib:format( "wrong age : ~p", 
+				[ UnexpectedNewAge ] ) )
+				
 	end,	
 	MyC ! declareBirthday,
 	MyC ! {getAge,[],self()},
@@ -77,8 +87,9 @@ run() ->
 			io:format(?Prefix 
 				"After declareBirthday, getAge returned 6 as expected.~n");
 
-		_ -> 
-			erlang:exit("Test failed.")
+		{result,UnexpectedLastAge} -> 
+			testFailed( io_lib:format( "wrong age : ~p", 
+				[ UnexpectedLastAge ] ) )	
 	
 	end,	
 	MyC ! declareBirthday,
