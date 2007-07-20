@@ -1,7 +1,13 @@
 % Generic hash table implementation.
 % See hashtable_test.erl for the corresponding test.
 
+% An hashtable is basically a tuple whose size (number of elements) is the
+% number of buckets in the hashtable. Each element of the tuple is a list
+% containing key/value pairs.
+
 -module(hashtable).
+% Directly depends on : utils module.
+
 
 % Heavily inspired of the tupleStore example from 
 % 'Concurrent Programming in Erlang', section 9.8.
@@ -14,7 +20,7 @@
 
 
 -export([new/0,new/1,addEntry/3,removeEntry/2,lookupEntry/2,enumerate/1,
-	merge/2,toString/1,display/1]).
+	getEntryCount/1,merge/2,toString/1,display/1]).
 
 
 % The default number of hash buckets :
@@ -64,6 +70,12 @@ lookupEntry(Key,HashTable) ->
 % hashtable.
 enumerate(Hashtable) ->
 	lists:flatten(tuple_to_list(Hashtable)).
+
+
+% Returns the number of entries (key/value pairs) stored in specified
+% hashtable.
+getEntryCount(Hashtable) ->
+	erlang:length( enumerate(Hashtable) ).
 	
 
 % Returns a new hashtable, which started from HashTableBase and was enriched
@@ -84,8 +96,8 @@ toString(HashTable) when size(HashTable) > 0 ->
 			Acc ++ io_lib:format(
 				"  + ~s~n",[bucket_toString(Bucket)])
 		end,
-		io_lib:format( "Hashtable with ~B buckets : ~n",
-			[size(HashTable)]), 
+		io_lib:format( "Hashtable with ~B bucket(s) and ~B entry(ies) : ~n",
+			[ size(HashTable), hashtable:getEntryCount(HashTable) ]), 
 		tuple_to_list(HashTable));
 
 toString(_) ->
