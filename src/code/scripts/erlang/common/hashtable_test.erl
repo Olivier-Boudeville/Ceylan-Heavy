@@ -2,13 +2,14 @@
 % See the hashtable.erl tested module.
 
 -module(hashtable_test).
+% Directly depends on hashtable module.
 
 -export([run/0]).
 
 -define(Tested_module,hashtable).
 
 run() ->
-	io:format( "Testing module ~s.~n", [ ?Tested_module ] ),
+	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
 	MyH1=hashtable:new(0),
 	hashtable:display(MyH1),
 	MyH2=hashtable:new(4),
@@ -31,5 +32,5 @@ run() ->
 	% MyH8 should have {AnotherKey,[1,2,3]} and {"Third key",3} :
 	MyH8=hashtable:merge(MyH4,MyH7),
 	io:format( "   Merged table : ~s~n", [hashtable:toString(MyH8)]),
-	io:format( "End of test for module ~s.~n", [ ?Tested_module ] ),
+	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),	
 	erlang:halt().
