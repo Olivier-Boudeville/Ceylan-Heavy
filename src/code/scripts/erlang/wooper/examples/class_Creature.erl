@@ -4,58 +4,67 @@
 % Determines what are the mother classes of this class (if any) :
 -define(superclasses,[]).
 
+
+% Parameters taken by the constructor ('construct') :
 -define(wooper_construct_attributes,Age,Gender).
 
-% isHotBlooded/1 and canEat/2 are abstract hence not mentioned here :
--define(wooper_export,new/2,construct/3,getAge/1,setAge/2,declareBirthday/1,
-	getGender/1,listen/3).
+% Non-method exported helper functions :
+-define(wooper_helper_export,new/2,construct/3,toString/1).
 
+
+% Method declarations.
+% isHotBlooded/1 and canEat/2 are abstract here, hence not mentioned :
+-define(wooper_method_export,getAge/1,setAge/2,declareBirthday/1,getGender/1).
+
+
+% Other non-method exported functions :
+-export([example_fun/0]).
 
 
 % Allows to define WOOPER base variables and methods for that class :
--include("wooper_class_root.hrl").
-
+-include("wooper.hrl").
 	
 
 % Constructs a new Creature.
 construct(State,?wooper_construct_attributes) ->
 	% No mother class.
 	% Sanity checks could be implemented here.
-	AgeState = setAttribute(State,age,Age),
-	wooper_main_loop( setAttribute(AgeState,gender,Gender)).
+	AgeState = ?setAttribute(State,age,Age),
+	?setAttribute(AgeState,gender,Gender).
 	
 
-listen(Pid,Action,Arguments) ->
-	Pid ! {Action,Arguments,self()},
-	receive
+% This looks like a method, but it is not (returning only a string):	
+toString(State) ->
+	hashtable:toString( State#state_holder.attribute_table ).
+
 	
-		Anything ->
-			io:format("Answer to call to ~w with arguments ~w : ~w~n",
-				 [Action,Arguments,Anything])
-	
-	end.
-	
-		
+
 % Method implementations.
+
 
 % Returns the age of this creature.
 getAge(State) ->
-	?wooper_return_state_result(State,getAttribute(State,age)).
+	?wooper_return_state_result(State,?getAttribute(State,age)).
 	
 	
 % Sets the age of this creature.
 setAge(State,NewAge) ->
-	?wooper_return_state_only(setAttribute(State,age,NewAge)).
+	?wooper_return_state_only(?setAttribute(State,age,NewAge)).
 
 
 % Increments the age of this creature.
 declareBirthday(State) ->
 	?wooper_return_state_only(
-		setAttribute(State,age,getAttribute(State,age)+1)).
+		?setAttribute(State,age,?getAttribute(State,age)+1)).
 	
 	
 % Returns the gender of this creature.
 getGender(State) ->
-	?wooper_return_state_result(State,getAttribute(State,gender)).
-	
+	?wooper_return_state_result(State,?getAttribute(State,gender)).
 
+
+% Just to show it can exist :	
+example_fun() ->
+	ok.
+	
+	
