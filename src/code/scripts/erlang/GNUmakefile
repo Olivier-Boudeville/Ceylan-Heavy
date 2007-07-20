@@ -18,10 +18,5 @@ bz2: clean
 	@echo "  Archive for $(PROJECT_NAME) is available at : "\
 		"$(ARCHIVE_FILE)"
 
-	
-clean:
-	@echo "Cleaning all"
-	@for m in $(MODULES_DIRS); do ( cd $$m; $(MAKE) -s clean ); done
-
-	
-include $(TOP)/GNUmakevars.inc
+		
+include $(TOP)/GNUmakerules.inc
