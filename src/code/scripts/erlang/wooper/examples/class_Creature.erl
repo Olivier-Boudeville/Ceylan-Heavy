@@ -1,27 +1,27 @@
 -module(class_Creature).
 
 
-% Determines what are the mother classes of this class (if any) :
--define(superclasses,[]).
+% Determines what are the mother classes of this class (if any):
+-define(wooper_superclasses,[]).
 
 
-% Parameters taken by the constructor ('construct') :
+% Parameters taken by the constructor ('construct'):
 -define(wooper_construct_attributes,Age,Gender).
 
-% Non-method exported helper functions :
--define(wooper_helper_export,new/2,construct/3,toString/1).
+% Construction-related exported operators:
+-define(wooper_construct_export,new/2,construct/3,toString/1).
 
 
-% Method declarations.
-% isHotBlooded/1 and canEat/2 are abstract here, hence not mentioned :
+% Declarations of class-specific methods (besides inherited ones).
+% isHotBlooded/1 and canEat/2 are abstract here, hence not mentioned:
 -define(wooper_method_export,getAge/1,setAge/2,declareBirthday/1,getGender/1).
 
 
-% Other non-method exported functions :
+% Non-method exported functions:
 -export([example_fun/0]).
 
 
-% Allows to define WOOPER base variables and methods for that class :
+% Allows to define WOOPER base variables and methods for that class:
 -include("wooper.hrl").
 	
 
@@ -63,7 +63,7 @@ getGender(State) ->
 	?wooper_return_state_result(State,?getAttribute(State,gender)).
 
 
-% Just to show it can exist :	
+% Just to show it can exist:	
 example_fun() ->
 	ok.
 	
