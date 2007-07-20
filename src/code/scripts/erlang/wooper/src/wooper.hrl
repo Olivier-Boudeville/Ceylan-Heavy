@@ -123,8 +123,9 @@
 -define(WooperAttributeCountUpperBound,5).
 
 
-% The name of the registered process that keeps per-class method hashtables :
--define(WooperClassManagerName,wooper_class_manager).
+% For the name of the registered process that keeps the per-class method 
+% hashtables :
+-include("wooper_class_manager.hrl").
 
 
 % WOOPER internal functions.
@@ -139,9 +140,12 @@
 
 	% These methods are defined for all classes :
 	-define(WooperBaseMethods,get_class_name/0,get_class_name/1,
-		get_superclasses/0,get_superclasses/1,
-		is_wooper_debug/0,wooper_debug_listen/3,wooper_display_state/1,
-		wooper_construct_and_run/1).
+		get_superclasses/0,get_superclasses/1,wooper_construct_and_run/1,
+		is_wooper_debug/0,wooper_debug_listen/3, 
+		wooper_display_state/1,wooper_display_virtual_table/1,
+		wooper_display_instance/1,
+		wooper_get_state_description/1,wooper_get_virtual_table_description/1,
+		wooper_get_instance_description/1).
 
 	% Actual '-export' clause, created from statically WOOPER-defined methods 
 	% (WooperBaseMethods) and from user-supplied class-specific exports
@@ -183,6 +187,8 @@
 	
 -else.
 
+	% Not in debug mode here :
+	
 	% Actual '-export' clause, created from statically WOOPER-defined methods 
 	% (WooperBaseMethods) and from user-supplied class-specific exports
 	% (wooper_export).
@@ -197,8 +203,9 @@
 	
 	% These methods are defined for all classes :
 	-define(WooperBaseMethods,get_class_name/0,get_class_name/1,
-		get_superclasses/0,get_superclasses/1,
-		is_wooper_debug/0,wooper_display_state/1,wooper_construct_and_run/1).
+		get_superclasses/0,get_superclasses/1,wooper_construct_and_run/1,
+		is_wooper_debug/0,wooper_display_state/1,
+		wooper_display_virtual_table/1,wooper_display_instance/1).
 
 	-define(wooper_return_state_result(State,Result),{State,Result}).
 	-define(wooper_return_state_only(State),        State).
@@ -207,11 +214,12 @@
 
 
 
-% Static method which returns the name of the class.
+% "Static method" (only a function) which returns the name of the class.
 get_class_name() ->
 	?className.
 
-% Static method which returns the list of the superclasses for that class.
+% "Static method" (only a function) which returns the list of the 
+% superclasses for that class.
 get_superclasses() ->
 	?superclasses.
 
@@ -316,21 +324,43 @@ wooper_construct_and_run(ParameterList) ->
 
 % Returns the Wooper Class Manager.
 % If if it is already running, find it and returns its atom, otherwise launch
-% it and returns its PID (both can be used identically to send it messages).
+% it and returns that same atom as well.
 wooper_get_class_manager() ->
 	case lists:member( ?WooperClassManagerName, registered() ) of
 		true ->
 			?WooperClassManagerName;
 		
 		_ ->
-			spawn(?WooperClassManagerName,start,[])
+			spawn(?WooperClassManagerName,start,[self()]),
+			% Only dealing with registered managers (instead of through their
+			% PID) allows to be sure only one instance (singleton) is being
+			% used, to avoid the case of two managers being launched at the
+			% same time (the second will then terminate immediately).
+			receive
+			
+				class_manager_registered ->
+					?WooperClassManagerName
+			
+			% 10-second time-out :
+			after 10000	->
+				io:format( "wooper_get_class_manager : unable to find "
+					"class manager after 10s." ),
+				undefined
+					
+			end
+			
 	end.		
 
 
 % Most functions below could be encapsulated in a WOOPER-dedicated module
 % (in a .erl instead of a .hrl), but in this case calls may be less efficient.
 
-% Returns a textual representation of the specified state.
+
+
+% Methods for getting informations about an instance.
+
+
+% Returns a textual representation of the attributes of the specified state.
 wooper_state_toString(State) ->
 	Attributes = hashtable:enumerate(State#state_holder.attribute_table),
 	lists:foldl(
@@ -342,21 +372,71 @@ wooper_state_toString(State) ->
 					utils:term_toString(AttrValue)
 				])
 			
-		end,
-		io_lib:format( "Instance of ~s with ~B attribute(s) :~n",
-			[get_class_name(),length(Attributes)]),
+		end, 
+		io_lib:format( "State of ~w :~nInstance of ~s with ~B attribute(s) :~n",
+			[self(),get_class_name(),length(Attributes)]),
 		Attributes).	
+
+
+% Returns a textual representation of the virtual table corresponding to
+% specified state.
+wooper_virtual_table_toString(State) ->
+	lists:foldl(
+		fun( {{Name,Arity},Module}, String ) ->
+			String ++ io_lib:format( "     * ~s/~B -> ~s~n",
+				[Name,Arity,Module] )
+		end,
+		io_lib:format( "Virtual table of ~w :~n(method name/arity -> module defining that method)~n", [self()] ),
+		hashtable:enumerate( State#state_holder.virtual_table )). 
+
+
+% Returns a textual representation of this instance, including its state and
+% virtual table.
+wooper_instance_toString(State) ->
+	io_lib:format( "Inpection of instance ~w:~n~n  + ~s~n  + ~s",
+		[ self(), wooper_state_toString(State),
+			wooper_virtual_table_toString(State) ]).
+
+
+
+% Displays the inner state of this instance.
+% This is not a method.
+wooper_display_state(State) ->
+	io:format( "~s~n", [wooper_state_toString(State)] ).
+
+
+% Displays the inner state of this instance.
+% This is not a method.
+wooper_display_virtual_table(State) ->
+	io:format( "~s~n", [wooper_virtual_table_toString(State)] ).
+
+
+% Displays the inner state of this instance.
+% This is not a method.
+wooper_display_instance(State) ->
+	io:format( "~s~n", [wooper_instance_toString(State)] ).
 
 
 -ifdef(wooper_debug).
 
-wooper_display_state(State) ->
-	io:format("State of ~w : ~s~n", [self(),wooper_state_toString(State)]).
-	
--else.
-	
-wooper_display_state(_) ->
-	debug_not_activated.
+
+% Returns a textual description of the inner state of this instance.
+% This is a method for debug-purpose, only activated if wooper_debug is defined.
+wooper_get_state_description(State) ->
+	?wooper_return_state_result( State, wooper_state_toString(State) ).
+
+
+% Returns a textual description of the virtual table used by this instance.
+% This is a method for debug-purpose, only activated if wooper_debug is defined.
+wooper_get_virtual_table_description(State) ->
+	?wooper_return_state_result( State,	wooper_virtual_table_toString(State) ).
+		
+		
+% Returns a full textual description of this instance, including its state and
+% virtual table.
+% This is a method for debug-purpose, only activated if wooper_debug is defined.
+wooper_get_instance_description(State) ->
+	?wooper_return_state_result( State, wooper_instance_toString(State) ).
 	
 -endif.
 	
@@ -420,6 +500,7 @@ wooper_retrieve_virtual_table() ->
 	receive
 	
 		{ virtual_table, ?MODULE, Table } ->
+			%hashtable:display(Table),
 			Table
 	
 	end.
