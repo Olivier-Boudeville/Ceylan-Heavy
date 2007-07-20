@@ -1,18 +1,20 @@
+% Module of the WOOPER class manager.
+-module(wooper_class_manager).
+
 % The purpose of this process is, on a per-node basis, to create and notably
 % to serve to instances the virtual table corresponding to the actual class
 % they are corresponding to.
+
 % This way each virtual table is computed only once per node, and no significant
 % per-instance memory is used for the virtual table : all the instances of a 
 % given class just refer to a common virtual table stored by this manager.
--module(wooper_class_manager).
 
--export([start/0]).
+-export([start/1]).
+
 
 % For WooperClassManagerName :
-%-include("wooper_class_root.hrl").
+-include("wooper_class_manager.hrl").
 
-% Currently duplicated :
--define(WooperClassManagerName,wooper_class_manager).
 
 % Approximate average method count for a given class, including inherited ones.
 % (ideally should be slightly above the maximum number of actual methods)
@@ -22,42 +24,86 @@
 % Approximate average class count for the program.
 % (ideally should be slightly above the maximum number of actual classes being
 % instanciated)
--define(ClassCountUpperBound,200).
+-define(WooperClassCountUpperBound,5).
+
+
+% Uncomment to be in debug mode :
+-define(debug,).
+ 
+ 
+-ifdef(debug).
+
+	-define(Log_prefix, "[WOOPER Class manager] ").
+	
+	display_state(Tables) ->
+		io:format( ?Log_prefix "Storing now ~B table(s).~n",
+			[ hashtable:getEntryCount(Tables) ] ).
+
+	display_table_creation(Module) ->
+		io:format( ?Log_prefix "Creating a virtual table "
+			"for module ~s.~n", [ Module ] ).
+			
+	display(String) ->
+		io:format( ?Log_prefix "~s.~n", [ String ] ).
+			
+-else.
+
+	display_state(Tables) ->
+		ok.
+
+	display_table_creation(Module) ->
+		ok.
+		
+	display(String) ->
+		ok.
+		
+-endif.		
+
 
 
 % Starts a new blank class manager.
-start() ->
-	io:format("Starting WOOPER class manager.~n"),
-	% Two instances being created nearly at the same time might trigger the
-	% creation of two class managers, if the second instance detects no manager
-	% is registered while the first manager is created but not registered yet.
+start(ClientPID) ->
+	io:format( ?Log_prefix "Starting on node ~s (PID : ~w).~n",
+		 [ node(), self() ] ),
+	% Two first instances being created nearly at the same time might trigger
+	% the creation of two class managers, if the second instance detects no
+	% manager is registered while the first manager is created but not
+	% registered yet. That would
 	case catch register( ?WooperClassManagerName, self() ) of
 	
-		true -> 
-			loop( hashtable:new( ?ClassCountUpperBound ) );
+		true ->
+			ClientPID ! class_manager_registered,
+			loop( hashtable:new( ?WooperClassCountUpperBound ) );
 		
-		% A manager is already registered, let it be the only one:
+		% A manager is already registered, let it be the only one and stop:
 		{ 'EXIT', {badarg,_} } ->
-			io:format( "wooper_class_manager : already a manager available." ),
-			ok
+			display( ?Log_prefix "Already a manager available, terminating" )
+			% The instances should use the first manager only.
+			% (no looping performed, terminating this second manager).
 		
 	end.
+
 
 
 % Manager main loop, serves virtual tables on request (mostly on instances
 % creation).	
 loop(Tables) ->
-	io:format("Class manager storing ~B table(s).~n",
-		[ hashtable:getEntryCount(Tables) ] ),
+	display_state(Tables),
 	receive
 	
 		{ get_table, Module, Pid } ->
 			{ NewTables, TargetTable } = get_virtual_table_for(Module,Tables),
-			Pid ! { virtual_table, Module, TargetTable},
+			Pid ! { virtual_table, Module, TargetTable },
 			loop( NewTables );
 		
+		display ->
+			io:format( ?Log_prefix "Internal state is : ~s~n.",
+				[ hashtable:toString(Tables) ] ),
+			loop( Tables );
+				
 		stop ->
-			io:format( "Class manager stopping.~n" )	
+			unregister( ?WooperClassManagerName ),
+			io:format( ?Log_prefix "Stopped on request.~n" )	
 			
 	end.
 	
@@ -72,8 +118,7 @@ get_virtual_table_for(Module,Tables) ->
 	
 		undefined ->
 			% Time to create this virtual table and to store it :
-			io:format( "Creating a virtual table for module ~s.~n", 
-				[ Module ] ),
+			display_table_creation( Module ),
 			ModuleTable = create_method_table_for( Module ),
 			{ hashtable:addEntry( Module, ModuleTable, Tables ), ModuleTable };
 				
@@ -102,15 +147,35 @@ create_method_table_for(TargetModule) ->
 % priority over the ones relative to Module. Hence methods redefined in child
 % classes are selected, rather than the ones of the mother class.
 update_method_table_with(Module,HashTable) ->
-	hashtable:merge(HashTable,create_method_table_for(Module)).
+	hashtable:merge( HashTable,create_method_table_for(Module) ).
+
+
+% Tells whether the function Name/Arity should be registered into the method
+% virtual table.
+select_function(_,0)                          -> false ;
+select_function(new,_)                        -> false ;
+select_function(construct,_)                  -> false ;
+select_function(wooper_construct_and_run,_)   -> false ;
+select_function(wooper_debug_listen,_)        -> false ;
+select_function(module_info,1)                -> false ;
+select_function(_,_)                          -> true.
 
 
 % Returns a Hashtable appropriate for method look-up, for the specified module.
-% Constructors (construct) could be ignored.
 create_local_method_table_for(Module) ->
+	% Filter-out functions that should not be callable via RMI :
 	lists:foldl(
-		fun(FunNameArityPair,HashTable) ->
-			hashtable:addEntry(FunNameArityPair,Module,HashTable)
+		% Filter-out functions that should not be callable via RMI :
+		fun({Name,Arity}, HashTable) ->
+			case select_function(Name,Arity) of 
+				
+				true -> 
+					hashtable:addEntry({Name,Arity},Module,HashTable);
+				
+				false -> 	
+					HashTable
+					
+			end
 		end,
 		hashtable:new(?WooperMethodCountUpperBound),
 		Module:module_info(exports)).
