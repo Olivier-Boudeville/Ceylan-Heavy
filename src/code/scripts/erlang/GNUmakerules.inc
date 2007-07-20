@@ -13,9 +13,13 @@ TESTS   = $(wildcard *_test.erl)
 TEST_TARGETS = $(patsubst %.erl,%,$(TESTS))
 
 
+class_%.beam: class_%.erl $(WOOPER_SRC)/wooper.hrl
+	@echo "    Compiling class $<"
+	@$(ERLANG_COMPILER) $(ERLANG_COMPILER_OPT) -o $@ $< 
+
 
 %.beam: %.erl
-	@echo "    Compiling $<"
+	@echo "    Compiling module $<"
 	@$(ERLANG_COMPILER) $(ERLANG_COMPILER_OPT) -o $@ $< 
 
 
