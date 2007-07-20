@@ -19,10 +19,12 @@ TEST_TARGETS = $(patsubst %.erl,%,$(TESTS))
 	@$(ERLANG_COMPILER) $(ERLANG_COMPILER_OPT) -o $@ $< 
 
 
-%: %.beam
-	@echo "    Executing function $(ERLANG_STARTUP_FUNCTION) in module $@"
-	@$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT) \
-		$@ $(ERLANG_STARTUP_FUNCTION)
+%_test: %.beam %_test.beam
+	@echo "    Executing test function $(STARTUP_FUNCTION) in module $@"
+	@$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT) -run $@ $(STARTUP_FUNCTION)
+
+
+%:%.beam
 
 	
 test: $(BEAMS)
@@ -32,21 +34,21 @@ test: $(BEAMS)
 launch:
 	@$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT)
 
-	
-	
 			
 help:
 	@echo "To test hello.erl : 'erl', then 'c(hello).'," \
 		"then 'hello:world().', then CTRL-C CTRL-C"
-	
 
-clean: clean-database
+	
+clean: clean-database clean-subdirs
 	@echo "  Cleaning all in "`basename $(PWD)`
 	-@rm -f *.beam *.jam erl_crash.dump		
 
-
 clean-database:
 	-@rm -rf Mnesia.*@*
+
+clean-subdirs:
+	@for m in $(MODULES_DIRS); do ( cd $$m; $(MAKE) -s clean ); done
 
 
 info: info-files
