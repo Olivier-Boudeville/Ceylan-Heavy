@@ -25,7 +25,7 @@ term_toString(Term) ->
 	
 		true -> io_lib:format("~s",[Term]);
 		
-		_    -> io_lib:format("~w",[Term])
+		_    -> io_lib:format("~p",[Term])
 		
 	end.	
 		
