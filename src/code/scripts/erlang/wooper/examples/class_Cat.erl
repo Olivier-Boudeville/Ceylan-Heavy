@@ -1,62 +1,60 @@
 -module(class_Cat).
 
 
-% Determines what are the mother classes of this class (if any) :
--define(superclasses,[class_Mammal,class_ViviparousBeing]).
+% Determines what are the mother classes of this class (if any):
+-define(wooper_superclasses,[class_Mammal,class_ViviparousBeing]).
 
 
-% Parameters taken by the constructor. They are here the ones of the mammal
-% mother class (the viviparous being class do not need any parameter) plus 
-% fur color (class-specific data needing to be set in the constructor) :
--define(wooper_construct_attributes,Age,Gender,FurColor).
+% Parameters taken by the constructor ('construct'). 
+% They are here the ones of the Mammal mother class (the viviparous being 
+% class does not need any parameter) plus whisker color.
+% These are class-specific data needing to be set in the constructor:
+-define(wooper_construct_attributes,Age,Gender,FurColor,WhiskerColor).
 
--define(wooper_export,new/4,getTeatCount/1,canEat/2).
+% Construction-related exported operators:
+-define(wooper_construct_export,new/4,construct/5).
+
+% Method declarations.
+-define(wooper_method_export,getTeatCount/1,canEat/2,getWhiskerColor/1).
+
+% Allows to define WOOPER base variables and methods for that class:
+-include("wooper.hrl").
 
 
-% Allows to define WOOPER base variables and methods for that class :
--include("wooper_class_root.hrl").
+% Constructs a new Cat.
+construct(State,?wooper_construct_attributes) ->
 
+	% First the direct mother classes:
+	MamalState = class_Mammal:construct( State, Age, Gender, FurColor ),
+	ViviparousMamalState = class_ViviparousBeing:construct( MamalState ),
+	
+	% Then the class-specific attributes:
+	?setAttribute( ViviparousMamalState, whisker_color, WhiskerColor ).
+	
+
+% No guarantee on biological fidelity:	
+getTeatCount(State) ->
+	?wooper_return_state_result( State, 6 ).
 
 	
-% Cats are carnivorous though :	
-canEat(_,soup) ->	
-	true;
+% Cats are supposed carnivorous though:
+canEat(State,soup) ->	
+	?wooper_return_state_result( State, true );
 	
-canEat(_,chocolate) ->	
-	true;
+canEat(State,chocolate) ->	
+	?wooper_return_state_result( State, true );
 	
-canEat(_,croquette) ->	
-	true;
+canEat(State,croquette) ->	
+	?wooper_return_state_result( State, true );
 
-canEat(_,_) ->
-	false.	
+canEat(State,meat) ->	
+	?wooper_return_state_result( State, true );
 
-
-
-% Creates a new process that will start by constructing itself.	
-new(FurColor) ->
-	% spawn if needed wooper_class_manager
-	% For the moment, the instance state is created from the launching
-	% process, it allows to avoid the need for the developer to define
-	% another class-specific intermediary function to call the constructor
-	% (with class-specific parameters) and then to run the main loop.
-	BlankState = wooper_create_blank_state(),
-	
-	% Spawns a new instance :
-	spawn(?MODULE,[construct(BlankState,FurColor) ])
+canEat(State,_) ->
+	?wooper_return_state_result( State, false ).
 
 
-% Actual constructor, set the instance initial state.
-% Must call the constructor of each direct superclass with the 
-% relevant parameters before updating itself the resulting state and 
-% returning it.
-construct(State,Age,Sex,FurColor,WhiskerColor) ->
-	% First the direct mother classes :
-	MamalState = class_Mammal:construct(State,Age,Sex,FurColor),
-	ViviparousMamalState = class_ViviparousBeing:construct(
-		MamalState,false),
-	% Then the class-specific attributes :
-	setAttribute(ViviparousMamalState,whisker_color,WhiskerColor).
-	
-	
+getWhiskerColor(State)->
+	?wooper_return_state_result( State, ?getAttribute(State,whisker_color) ).
+
 
