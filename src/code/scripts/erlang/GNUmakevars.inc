@@ -45,5 +45,5 @@ STARTUP_FUNCTION := run
 
 # +v (verbose) option removed, as only active in the interpreter has been
 # compiled in debug mode (otherwise a warning is displayed at each execution).
-ERLANG_INTERPRETER_OPT := -pa $(COMMON) $(WOOPER_SRC) $(INC) \
+ERLANG_INTERPRETER_OPT := -pz . $(COMMON) $(WOOPER_SRC) $(INC) \
 	$(DISTRIBUTED_NODE_OPT)
