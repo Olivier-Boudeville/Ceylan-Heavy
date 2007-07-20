@@ -10,6 +10,24 @@
 -define(Prefix,"--> ").
 
 
+% Comment out to be able to use the interpreter after the test :
+-define(ExitAfterTest,).
+
+-ifdef(ExitAfterTest).
+
+testFinished() ->
+	erlang:halt().
+	
+-else.
+
+testFinished() ->
+	io:format( "(interpreter still running)~n" ),
+	test_success.
+	
+-endif.
+
+
+
 run() ->
 	io:format( ?Prefix "Testing module ~s.~n", [ ?Tested_module ] ),
 	io:format( ?Prefix "Debug mode : ~s.~n", 
@@ -111,8 +129,18 @@ run() ->
 		_ -> 
 			erlang:exit("Test failed.")
 	
-	end,	
-	
+	end,
+	case class_Mammal:is_wooper_debug() of 
+		true ->
+			MyM ! { wooper_get_instance_description,[], self() },
+			receive
+			
+				{result,InspectString} ->
+					io:format( "~s~n", [ InspectString ] )
+			end ;		
+		false ->
+			ok	
+	end,				
 	io:format( ?Prefix "End of test for module ~s.~n", [ ?Tested_module ] ),
-	%erlang:halt(),
-	test_success.
+	testFinished().
+
