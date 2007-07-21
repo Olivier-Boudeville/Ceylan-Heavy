@@ -9,8 +9,8 @@
 % They are here the ones of the mother class (creature) plus fur color:
 -define(wooper_construct_attributes,Age,Gender,FurColor).
 
-% Construction-related exported operators:
--define(wooper_construct_export,new/3,construct/4).
+% Life cycle-related exported operators:
+-define(wooper_construct_export,new/3,construct/4,delete/1).
 
 % Declarations of class-specific methods (besides inherited ones).
 -define(wooper_method_export,isHotBlooded/1,getFurColor/1).
@@ -41,5 +41,13 @@ isHotBlooded(State) ->
 % to ensure consistency.
 getFurColor(State) ->
 	?wooper_return_state_result( State, ?getAttribute(State,fur_color) ).
+	
+
+% Overriding default destructor :	
+% State should be returned, and destructors should be called in leaf-to-root
+% order in inheritance tree.
+delete(State) ->
+	io:format( "Destructing a Mammal (overriden destructor).~n" ),
+	State.
 	
 	
