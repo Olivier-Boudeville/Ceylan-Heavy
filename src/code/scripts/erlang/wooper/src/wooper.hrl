@@ -6,7 +6,10 @@
 
 % Creation date: Friday, July 6, 2007.
 % Author: Olivier Boudeville (olivier.boudeville@esperide.com).
-% Released under GPL.
+
+% Licensed under a disjunctive tri-license: MPL/GPL/LGPL, see:
+% http://ceylan.sourceforge.net/main/documentation/wooper/index.html#license
+
 
 % Provides most classical constructs: new/delete operators, remote method 
 % invocation (RMI), polymorphism and multiple inheritance, all with state
@@ -89,6 +92,7 @@
 % -define(wooper_construct_export,new/3,construct/4).
 % -include("wooper.hrl").
 % [...]
+% See also: class_Template.erl
 
 
 
@@ -125,8 +129,8 @@
 
 % Approximate average attribute count for a given class instance, including
 % inherited ones (ideally should be slightly above the maximum number of
-% actual methods)
--define(WooperAttributeCountUpperBound,5).
+% actual attributes for a given class)
+-define(WooperAttributeCountUpperBound,32).
 
 
 % For the name of the registered process that keeps the per-class method 
@@ -137,7 +141,7 @@
 % WOOPER internal functions.
 
 % Comment/uncomment to activate debug mode:
--define(wooper_debug,).
+%-define(wooper_debug,).
 
 
 % On debug mode, methods will have to return an atom to ensure they
@@ -168,8 +172,13 @@
 	is_wooper_debug() ->
 		true.
 	
-	-define(wooper_return_state_result(State,Result),{result,State,Result}).
-	-define(wooper_return_state_only(State)         ,{result,State}).
+	% In debug mode, method results are checked thanks to an additional atom:
+	-define(wooper_return_state_result(State,Result),
+		{wooper_result,State,Result}).
+		
+	-define(wooper_return_state_only(State),
+		{wooper_result,State}).
+
 
 	wooper_display_loop_state(State) ->
 		wooper_display_state(State).
@@ -212,6 +221,7 @@
 	is_wooper_debug() ->
 		false.
 
+	% In release mode, method results are sent directly (no atom added):
 	-define(wooper_return_state_result(State,Result),{State,Result}).
 	-define(wooper_return_state_only(State),        State).
 	
@@ -315,7 +325,7 @@ wooper_construct_and_run(ParameterList) ->
 
 % Returns the value associated to specified named-designated attribute, if 
 % found, otherwise returns '{ attribute_not_found, AttributeName, ClassName }'.
-% See also: the similarly named function.
+% See also: the similarly named function and getAttr/1
 -define(getAttribute(State,AttributeName),
 	case hashtable:lookupEntry( AttributeName,
 			State#state_holder.attribute_table ) of
@@ -328,6 +338,13 @@ wooper_construct_and_run(ParameterList) ->
 			
 	end			
 ).
+
+
+% Returns the value associated to specified named-designated attribute, if 
+% found, otherwise returns '{ attribute_not_found, AttributeName, ClassName }'.
+% Beware to the implicit use of the 'State' variable: in some cases other
+% states should be used. See the getAttribute/2 macro.
+-define(getAttr(AttributeName),?getAttribute(State,AttributeName)).
 
 
 % Returns the Wooper Class Manager.
@@ -488,16 +505,32 @@ wooper_main_loop(State) ->
 		{ MethodAtom, Argument } ->
 			% Any result would be ignored, only the update state is kept:
 			{ NewState, _ } = wooper_execute_method( 
-				MethodAtom, State, [ Argument ] ),
+				MethodAtom, State, [ Argument ] ), 
 			wooper_main_loop(NewState);
 			
+		delete ->
+			case hashtable:lookupEntry({delete,1},
+					State#state_holder.virtual_table) of 
+				
+				undefined ->
+					% Destructor not overriden, using default one:
+					%io:format( "Deleting ~w (default destructor).~n", 
+					%	[ self() ]),
+					deleted;
+				
+				{ value, LocatedModule } -> 
+					apply( LocatedModule, delete, [ State ] )
+				
+			% (do nothing, loop ended).		
+			end;
+			
 		MethodAtom when is_atom(MethodAtom) ->
-			{ NewState, _ } = wooper_execute_method( 
-				MethodAtom, State, [] ),
+			{ NewState, _ } = wooper_execute_method( MethodAtom, State, [] ),
 			wooper_main_loop(NewState)
 
-	end,
-	io:format( "wooper_main_loop exited.~n" ).
+	end.
+	% Commented out to preserve tail-recursion :
+	% io:format( "wooper_main_loop exited.~n" ).
 
 	
 	
@@ -537,28 +570,28 @@ wooper_lookupMethod(State,MethodAtom,Arity) ->
 % Executes the specified method, designated by its atom, with specified 
 % instance state and parameters.
 % If the method is not found (either in the class module or in its
-% ancester trees), an error tuple beginning with the atom 'method_not_found'
-% is returned with an unchanged state.
+% ancester trees), an error tuple beginning with the atom
+% 'wooper_method_not_found' is returned with an unchanged state.
 % If the method is found, if its execution fails, an error tuple beginning 
-% with the atom 'method_failed' is returned with an unchanged state.
+% with the atom 'wooper_method_failed' is returned with an unchanged state.
 % If it does not fail but returns an unexpected result (i.e. not a tuple 
 % beginning with the atom 'return'), an error tuple beginning with the atom
-% 'method_faulty_return' is returned with an unchanged state.
+% 'wooper_method_faulty_return' is returned with an unchanged state.
 % If its execution succeeds, then {result,Result} is returned, with R being 
 % the actual result of the method call, with an updated state.
 % Finally, if the method does not return any result, the atom
-% 'method_returns_void' is returns, which allows a client that sent his
+% 'wooper_method_returns_void' is returns, which allows a client that sent his
 % PID to be warned it is useless, as no answer should be expected.
 wooper_execute_method(MethodAtom,State,Parameters) ->	
 	%io:format("wooper_execute_method: executing ~s:~s(~w).~n",
 	%	[ ?MODULE, MethodAtom, Parameters ]), 	
 	% +1: take into account the State additional parameter:
-	case wooper_lookupMethod(State, MethodAtom,length(Parameters)+1) of
+	case wooper_lookupMethod( State, MethodAtom, length(Parameters)+1 ) of
 	
 		{ value, LocatedModule } -> 
 			% The 'return' atom is a safety guard against incorrect method
 			% implementations:
-			case apply(LocatedModule,MethodAtom,[State|Parameters]) of
+			case catch apply(LocatedModule,MethodAtom,[State|Parameters]) of
 
 				% Matched expressions have to be reordered depending on the
 				% debug mode: 
@@ -566,32 +599,31 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 
 				% Void method (no result returned, only a state):
 				% ?wooper_return_state_only:
-				{result,NewState} ->  
-					{NewState,method_returns_void};
+				{wooper_result,NewState} ->  
+					{NewState,wooper_method_returns_void};
 				
 				% Method returning a result (and a state of course):
 				% ?wooper_return_state_result:
-				{result,NewState,Result} ->  			
-					{NewState,{result,Result}};
+				{wooper_result,NewState,Result} ->  			
+					{NewState,{wooper_result,Result}};
 				
-
 				
 				{'EXIT',ErrorTerm} ->
 					{State,
-						{method_failed, self(), ?MODULE, MethodAtom,
+						{wooper_method_failed, self(), ?MODULE, MethodAtom,
 							length(Parameters)+1, 
 							Parameters, ErrorTerm} } ;
 
 				{'EXIT',Pid,ErrorTerm} ->
 					{State,
-						{method_failed, self(), ?MODULE, MethodAtom,
+						{wooper_method_failed, self(), ?MODULE, MethodAtom,
 							length(Parameters)+1, 
 							Parameters, [Pid,ErrorTerm]} } ;
 
 				Other ->
 					{State, 
-						{method_faulty_return, self(), ?MODULE, MethodAtom,
-							length(Parameters)+1, 
+						{wooper_method_faulty_return, self(), ?MODULE,
+							MethodAtom,	length(Parameters)+1, 
 							Parameters, Other} }	
 						
 			end;
@@ -599,7 +631,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 		undefined ->
 			% Method name and arity returned as separate tuple elements, as
 			% if in a single string ("M/A"), the result is displayed as a list:
-			{State, {method_not_found, ?MODULE, MethodAtom,
+			{State, {wooper_method_not_found, ?MODULE, MethodAtom,
 				length(Parameters)+1 } }
 				
 					
@@ -617,17 +649,17 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 % Executes the specified method, designated by its atom, with specified 
 % instance state and parameters.
 % If the method is not found (either in the class module or in its
-% ancester trees), an error tuple beginning with the atom 'method_not_found'
-% is returned with an unchanged state.
+% ancester trees), an error tuple beginning with the atom
+% 'wooper_method_not_found' is returned with an unchanged state.
 % If the method is found, if its execution fails, an error tuple beginning 
-% with the atom 'method_failed' is returned with an unchanged state.
+% with the atom 'wooper_method_failed' is returned with an unchanged state.
 % If it does not fail but returns an unexpected result (i.e. not a tuple 
 % beginning with the atom 'return'), an error tuple beginning with the atom
-% 'method_faulty_return' is returned with an unchanged state.
-% If its execution succeeds, then {result,Result} is returned, with R being 
-% the actual result of the method call, with an updated state.
+% 'wooper_method_faulty_return' is returned with an unchanged state.
+% If its execution succeeds, then {wooper_result,Result} is returned (with 
+% Result being the actual result of the method call) with an updated state.
 % Finally, if the method does not return any result, the atom
-% 'method_returns_void' is returns, which allows a client that sent his
+% 'wooper_method_returns_void' is returns, which allows a client that sent his
 % PID to be warned it is useless, as no answer should be expected.
 wooper_execute_method(MethodAtom,State,Parameters) ->
 	% +1: take into account the State additional parameter:
@@ -636,40 +668,38 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 		{ value, LocatedModule } -> 
 			% The 'return' atom is a safety guard against incorrect method
 			% implementations:
-			case apply(LocatedModule,MethodAtom,[State|Parameters]) of
+			case catch apply(LocatedModule,MethodAtom,[State|Parameters]) of
 
 				% Matched expressions have to be reordered depending on the
 				% debug mode: 
-
-
 				
 				{'EXIT',ErrorTerm} ->
 					{State,
-						{method_failed, self(), ?MODULE, MethodAtom,
+						{wooper_method_failed, self(), ?MODULE, MethodAtom,
 							length(Parameters)+1, 
 							Parameters, ErrorTerm} } ;
 
 				{'EXIT',Pid,ErrorTerm} ->
 					{State,
-						{method_failed, self(), ?MODULE, MethodAtom,
+						{wooper_method_failed, self(), ?MODULE, MethodAtom,
 							length(Parameters)+1, 
 							Parameters, [Pid,ErrorTerm]} } ;
 
 
 				{NewState,Result} ->  
-					{NewState,{result,Result}};
+					{NewState,{wooper_result,Result}};
 							
 							
 				% Void method (no result returned, only a state):
 				NewState ->  
-					{NewState,method_returns_void}
+					{NewState,wooper_method_returns_void}
 						
 			end;
 			
 		undefined ->
 			% Method name and arity returned as separate tuple elements, as
 			% if in a single string ("M/A"), the result is displayed as a list:
-			{State, {method_not_found, ?MODULE, MethodAtom,
+			{State, {wooper_method_not_found, ?MODULE, MethodAtom,
 				length(Parameters)+1 } }
 				
 					
