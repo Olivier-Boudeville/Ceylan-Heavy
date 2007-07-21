@@ -52,12 +52,12 @@ run() ->
 	MyP ! {get_class_name,[],self()},
 	receive
 	
-		{result,class_Platypus} ->
+		{wooper_result,class_Platypus} ->
 			io:format( ?Prefix 
 				"After constructor, get_class_name returned 'class_Platypus' "
 				"as expected.~n");
 				
-		{result,UnexpectedClass} -> 
+		{wooper_result,UnexpectedClass} -> 
 			testFailed( io_lib:format( "wrong class : ~p",
 				[ UnexpectedClass ] ) )
 			
@@ -65,12 +65,12 @@ run() ->
 	MyP ! {get_superclasses,[],self()},
 	receive
 	
-		{result, [class_Mammal,class_OvoviviparousBeing]} ->
+		{wooper_result, [class_Mammal,class_OvoviviparousBeing]} ->
 			io:format( ?Prefix 
 				"After constructor, get_superclasses returned "
 				"[class_Creature,class_OvoviviparousBeing] as expected.~n");
 				
-		{result,UnexpectedSuperclasses} -> 
+		{wooper_result,UnexpectedSuperclasses} -> 
 			testFailed( io_lib:format( "wrong superclasses : ~p", 
 				[ UnexpectedSuperclasses ] ) )
 	
@@ -82,11 +82,11 @@ run() ->
 	MyP ! {getAge,[],self()},
 	receive
 	
-		{result,4} ->
+		{wooper_result,4} ->
 			io:format( ?Prefix 
 				"After constructor, getAge returned 4 as expected.~n");
 
-		{result,UnexpectedAge} -> 
+		{wooper_result,UnexpectedAge} -> 
 			testFailed( io_lib:format( "wrong age : ~p", 
 				[ UnexpectedAge ] ) )
 		
@@ -94,11 +94,11 @@ run() ->
 	MyP ! {getGender,[],self()},
 	receive
 	
-		{result,male} ->
+		{wooper_result,male} ->
 			io:format( ?Prefix 
 				"After constructor, getGender returned male as expected.~n");
 	
-		{result,UnexpectedGender} -> 
+		{wooper_result,UnexpectedGender} -> 
 			testFailed( io_lib:format( "wrong gender : ~p", 
 				[ UnexpectedGender ] ) )
 			
@@ -107,11 +107,11 @@ run() ->
 	MyP ! {getAge,[],self()},
 	receive
 	
-		 {result,5}->
+		{wooper_result,5}->
 			io:format(?Prefix 
 				"After setAge, getAge returned 5 as expected.~n");
 	
-		{result,UnexpectedNewAge} -> 
+		{wooper_result,UnexpectedNewAge} -> 
 			testFailed( io_lib:format( "wrong age : ~p", 
 				[ UnexpectedNewAge ] ) )
 			
@@ -120,11 +120,11 @@ run() ->
 	MyP ! {getAge,[],self()},
 	receive
 	
-		{result,6}->
+		{wooper_result,6}->
 			io:format(?Prefix 
 				"After declareBirthday, getAge returned 6 as expected.~n");
 
-		{result,UnexpectedLastAge} -> 
+		{wooper_result,UnexpectedLastAge} -> 
 			testFailed( io_lib:format( "wrong age : ~p", 
 				[ UnexpectedLastAge ] ) )
 	
@@ -133,11 +133,11 @@ run() ->
 	MyP ! {isHotBlooded,[],self()},
 	receive
 	
-		{result,true}->
+		{wooper_result,true}->
 			io:format(?Prefix 
 				"isHotBlooded returned true as expected.~n");
 
-		{result,UnexpectedBlood} -> 
+		{wooper_result,UnexpectedBlood} -> 
 			testFailed( io_lib:format( "wrong blood type : ~p", 
 				[ UnexpectedBlood ] ) )
 	
@@ -145,11 +145,11 @@ run() ->
 	MyP ! {getFurColor,[],self()},
 	receive
 	
-		 {result,brown}->
+		{wooper_result,brown}->
 			io:format(?Prefix 
 				"getFurColor returned brown as expected.~n");
 
-		{result,UnexpectedFurColor} -> 
+		{wooper_result,UnexpectedFurColor} -> 
 			testFailed( io_lib:format( "wrong fur color : ~p", 
 				[ UnexpectedFurColor ] ) )
 	
@@ -161,12 +161,12 @@ run() ->
 	MyP ! {getMeanEggsCount,[],self()},
 	receive
 	
-		{result,2} ->
+		{wooper_result,2} ->
 			io:format( ?Prefix 
 				"After constructor, getMeanEggsCount returned 2 "
 				"as expected.~n");
 
-		{result,UnexpectedMeanCount} -> 
+		{wooper_result,UnexpectedMeanCount} -> 
 			testFailed( io_lib:format( "wrong mean egg count : ~p", 
 				[ UnexpectedMeanCount ] ) )
 	
@@ -175,12 +175,12 @@ run() ->
 	MyP ! {getEggsLaidCount,[],self()},
 	receive
 	
-		{result,0} ->
+		{wooper_result,0} ->
 			io:format( ?Prefix 
 				"After constructor, getEggsLaidCount returned 0 "
 				"as expected.~n");
 	
-		{result,UnexpectedFirstCount} -> 
+		{wooper_result,UnexpectedFirstCount} -> 
 			testFailed( io_lib:format( "wrong first egg count : ~p", 
 				[ UnexpectedFirstCount ] ) )
 			
@@ -189,12 +189,12 @@ run() ->
 	MyP ! {getEggsLaidCount,[],self()},
 	receive
 	
-		 {result,1}->
+		{wooper_result,1}->
 			io:format(?Prefix 
 				"After giveBirth, getEggsLaidCount returned 1 "
 				"as expected.~n");
 	
-		{result,UnexpectedSecondCount} -> 
+		{wooper_result,UnexpectedSecondCount} -> 
 			testFailed( io_lib:format( "wrong second egg count : ~p", 
 				[ UnexpectedSecondCount ] ) )
 				
@@ -206,11 +206,11 @@ run() ->
 	MyP ! {getTeatCount,[],self()},
 	receive
 	
-		 {result,0}->
+		{wooper_result,0}->
 			io:format(?Prefix 
 				"getTeatCount returned 0 as expected.~n");
 	
-		{result,UnexpectedTeatCount} -> 
+		{wooper_result,UnexpectedTeatCount} -> 
 			testFailed( io_lib:format( "wrong teat count : ~p", 
 				[ UnexpectedTeatCount ] ) )
 				
@@ -219,11 +219,11 @@ run() ->
 	MyP ! {canEat,weed,self()},
 	receive
 	
-		 {result,true}->
+		{wooper_result,true}->
 			io:format(?Prefix 
 				"This Platypus can eat weed, as expected.~n");
 	
-		{result,UnexpectedFoodPreference} -> 
+		{wooper_result,UnexpectedFoodPreference} -> 
 			testFailed( io_lib:format( "wrong food preference : ~p", 
 				[ UnexpectedFoodPreference ] ) )
 				
@@ -232,11 +232,11 @@ run() ->
 	MyP ! {canEat,mammoth,self()},
 	receive
 	
-		 {result,false}->
+		{wooper_result,false}->
 			io:format(?Prefix 
 				"This Platypus cannot eat mammoth, as expected.~n");
 	
-		{result,UnexpectedOtherFoodPreference} -> 
+		{wooper_result,UnexpectedOtherFoodPreference} -> 
 			testFailed( io_lib:format( "wrong food preference : ~p", 
 				[ UnexpectedOtherFoodPreference ] ) )
 				
@@ -245,11 +245,11 @@ run() ->
 	MyP ! {getNozzleColor,[],self()},
 	receive
 	
-		 {result,black}->
+		 {wooper_result,black}->
 			io:format(?Prefix 
 				"This Platypus has a black nozzle, as expected.~n");
 	
-		{result,UnexpectedNozzleColor} -> 
+		{wooper_result,UnexpectedNozzleColor} -> 
 			testFailed( io_lib:format( "wrong nozzle color : ~p", 
 				[ UnexpectedNozzleColor ] ) )
 				
@@ -260,12 +260,13 @@ run() ->
 			MyP ! { wooper_get_instance_description,[], self() },
 			receive
 			
-				{result,InspectString} ->
+				{wooper_result,InspectString} ->
 					io:format( "~s~n", [ InspectString ] )
 			end ;		
 		false ->
 			ok	
-	end,				
+	end,
+	MyP ! delete,			
 	io:format( ?Prefix "End of test for module ~s.~n", [ ?Tested_module ] ),
 	testFinished().
 
