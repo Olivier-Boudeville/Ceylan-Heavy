@@ -47,12 +47,12 @@ run() ->
 	MyR ! {get_class_name,[],self()},
 	receive
 	
-		{result,class_Reptile} ->
+		{wooper_result,class_Reptile} ->
 			io:format( ?Prefix 
 				"After constructor, get_class_name returned 'class_Reptile' "
 				"as expected.~n");
 				
-		{result,UnexpectedClass} -> 
+		{wooper_result,UnexpectedClass} -> 
 			testFailed( io_lib:format( "wrong class: ~p",
 				[ UnexpectedClass ] ) )
 			
@@ -60,12 +60,12 @@ run() ->
 	MyR ! {get_superclasses,[],self()},
 	receive
 	
-		{result, [class_Creature]} ->
+		{wooper_result, [class_Creature]} ->
 			io:format( ?Prefix 
 				"After constructor, get_superclasses returned [class_Creature] "
 				"as expected.~n");
 
-		{result,UnexpectedSuperclasses} -> 
+		{wooper_result,UnexpectedSuperclasses} -> 
 			testFailed( io_lib:format( "wrong superclasses: ~p", 
 				[ UnexpectedSuperclasses ] ) )
 	
@@ -73,11 +73,11 @@ run() ->
 	MyR ! {getAge,[],self()},
 	receive
 	
-		{result,1} ->
+		{wooper_result,1} ->
 			io:format( ?Prefix 
 				"After constructor, getAge returned 1 as expected.~n");
 
-		{result,UnexpectedAge} -> 
+		{wooper_result,UnexpectedAge} -> 
 			testFailed( io_lib:format( "wrong age: ~p", 
 				[ UnexpectedAge ] ) )
 		
@@ -85,11 +85,11 @@ run() ->
 	MyR ! {getGender,[],self()},
 	receive
 	
-		{result,male} ->
+		{wooper_result,male} ->
 			io:format( ?Prefix 
 				"After constructor, getGender returned male as expected.~n");
 	
-		{result,UnexpectedGender} -> 
+		{wooper_result,UnexpectedGender} -> 
 			testFailed( io_lib:format( "wrong gender: ~p", 
 				[ UnexpectedGender ] ) )
 			
@@ -98,11 +98,11 @@ run() ->
 	MyR ! {getAge,[],self()},
 	receive
 	
-		 {result,2}->
+		{wooper_result,2}->
 			io:format(?Prefix 
 				"After setAge, getAge returned 2 as expected.~n");
 	
-		{result,UnexpectedNewAge} -> 
+		{wooper_result,UnexpectedNewAge} -> 
 			testFailed( io_lib:format( "wrong age: ~p", 
 				[ UnexpectedNewAge ] ) )
 			
@@ -111,11 +111,11 @@ run() ->
 	MyR ! {getAge,[],self()},
 	receive
 	
-		 {result,3}->
+		 {wooper_result,3}->
 			io:format(?Prefix 
 				"After declareBirthday, getAge returned 3 as expected.~n");
 
-		{result,UnexpectedLastAge} -> 
+		{wooper_result,UnexpectedLastAge} -> 
 			testFailed( io_lib:format( "wrong age: ~p", 
 				[ UnexpectedLastAge ] ) )
 	
@@ -124,11 +124,11 @@ run() ->
 	MyR ! {isHotBlooded,[],self()},
 	receive
 	
-		 {result,false}->
+		{wooper_result,false}->
 			io:format(?Prefix 
 				"isHotBlooded returned false as expected.~n");
 
-		{result,UnexpectedBlood} -> 
+		{wooper_result,UnexpectedBlood} -> 
 			testFailed( io_lib:format( "wrong blood type: ~p", 
 				[ UnexpectedBlood ] ) )
 	
@@ -136,11 +136,11 @@ run() ->
 	MyR ! {canMoult,[],self()},
 	receive
 	
-		 {result,true}->
+		{wooper_result,true}->
 			io:format(?Prefix 
 				"canMoult returned true as expected.~n");
 
-		{result,UnexpectedMoultType} -> 
+		{wooper_result,UnexpectedMoultType} -> 
 			testFailed( io_lib:format( "wrong moult type: ~p", 
 				[ UnexpectedMoultType ] ) )
 	
@@ -150,12 +150,13 @@ run() ->
 			MyR ! { wooper_get_instance_description,[], self() },
 			receive
 			
-				{result,InspectString} ->
+				{wooper_result,InspectString} ->
 					io:format( "~s~n", [ InspectString ] )
 			end ;		
 		false ->
 			ok	
-	end,				
+	end,	
+	MyR ! delete,			
 	io:format( ?Prefix "End of test for module ~s.~n", [ ?Tested_module ] ),
 	testFinished().
 
