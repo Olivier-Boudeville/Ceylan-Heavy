@@ -45,11 +45,11 @@ run() ->
 	MyC ! {getAge,[],self()},
 	receive
 	
-		{result,30} ->
+		{wooper_result,30} ->
 			io:format( ?Prefix 
 				"After constructor, getAge returned 30 as expected.~n");
 
-		{result,UnexpectedAge} -> 
+		{wooper_result,UnexpectedAge} -> 
 			testFailed( io_lib:format( "wrong age : ~p", 
 				[ UnexpectedAge ] ) )
 	
@@ -57,11 +57,11 @@ run() ->
 	MyC ! {getGender,[],self()},
 	receive
 	
-		{result,male} ->
+		{wooper_result,male} ->
 			io:format( ?Prefix 
 				"After constructor, getGender returned male as expected.~n");
 
-		{result,UnexpectedGender} -> 
+		{wooper_result,UnexpectedGender} -> 
 			testFailed( io_lib:format( "wrong gender : ~p", 
 				[ UnexpectedGender ] ) )
 	
@@ -70,11 +70,11 @@ run() ->
 	MyC ! {getAge,[],self()},
 	receive
 	
-		{result,5}->
+		{wooper_result,5}->
 			io:format(?Prefix 
 				"After setAge, getAge returned 5 as expected.~n");
 
-		{result,UnexpectedNewAge} -> 
+		{wooper_result,UnexpectedNewAge} -> 
 			testFailed( io_lib:format( "wrong age : ~p", 
 				[ UnexpectedNewAge ] ) )
 				
@@ -83,17 +83,17 @@ run() ->
 	MyC ! {getAge,[],self()},
 	receive
 	
-		 {result,6}->
+		 {wooper_result,6}->
 			io:format(?Prefix 
 				"After declareBirthday, getAge returned 6 as expected.~n");
 
-		{result,UnexpectedLastAge} -> 
+		{wooper_result,UnexpectedLastAge} -> 
 			testFailed( io_lib:format( "wrong age : ~p", 
 				[ UnexpectedLastAge ] ) )	
 	
 	end,	
 	MyC ! declareBirthday,
-	
+	MyC ! delete,	
 	io:format( ?Prefix "End of test for module ~s.~n", [ ?Tested_module ] ),
 	testFinished().
 
