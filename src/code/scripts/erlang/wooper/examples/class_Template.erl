@@ -8,7 +8,7 @@
 % Parameters taken by the constructor ('construct'). 
 -define(wooper_construct_attributes,ATTR1,ATTR2).
 
-% Construction-related exported operators:
+% Life-cycle related exported operators:
 -define(wooper_construct_export,new/P,construct/P+1).
 
 % Method declarations.
