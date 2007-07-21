@@ -44,7 +44,7 @@ toString(State) ->
 
 % Returns the age of this creature.
 getAge(State) ->
-	?wooper_return_state_result(State,?getAttribute(State,age)).
+	?wooper_return_state_result(State,?getAttr(age)).
 	
 	
 % Sets the age of this creature.
@@ -55,12 +55,12 @@ setAge(State,NewAge) ->
 % Increments the age of this creature.
 declareBirthday(State) ->
 	?wooper_return_state_only(
-		?setAttribute(State,age,?getAttribute(State,age)+1)).
+		?setAttribute(State,age,?getAttr(age)+1)).
 	
 	
 % Returns the gender of this creature.
 getGender(State) ->
-	?wooper_return_state_result(State,?getAttribute(State,gender)).
+	?wooper_return_state_result(State,?getAttr(gender)).
 
 
 % Just to show it can exist:	
