@@ -1,20 +1,43 @@
 -module(class_Reptile).
 
 
-% Determines what are the mother classes of this class (if any) :
--define(superclasses,[class_Creature]).
-
--define(wooper_export,isHotBlooded/0,canMoult/0).
-
-% Allows to define WOOPER base variables and methods for that class :
--include("wooper_class_root.hrl").
+% Determines what are the mother classes of this class (if any):
+-define(wooper_superclasses,[class_Creature]).
 
 
-% Implement your methods here once listed in wooper_export.
+% Parameters taken by the constructor ('construct'). 
+% They are here the ones of the mother class (creature):
+-define(wooper_construct_attributes,Age,Gender).
+
+% Construction-related exported operators:
+-define(wooper_construct_export,new/2,construct/3).
+
+% Declarations of class-specific methods (besides inherited ones).
+-define(wooper_method_export,isHotBlooded/1,canMoult/1).
+
+
+
+% Allows to define WOOPER base variables and methods for that class:
+-include("wooper.hrl").
+
+
+% Constructs a new Reptile.
+construct(State,?wooper_construct_attributes) ->
+	class_Creature:construct(State,Age,Gender).
 	
-isHotBlooded() ->
-	false.
 	
-canMoult() ->
-	true.
+	
+	
+% Method implementations.
+
+
+% All reptiles are cold-blooded:
+isHotBlooded(State) ->
+	?wooper_return_state_result(State,false).
+
+
+% All reptiles can moult:
+canMoult(State) ->
+	?wooper_return_state_result(State,true).
+	
 	
