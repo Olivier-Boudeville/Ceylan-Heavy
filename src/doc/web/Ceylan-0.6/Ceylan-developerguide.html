@@ -45,7 +45,7 @@ See the <a href="ChangeLog.html" target="_blank">ChangeLog</a> corresponding to 
 
 <h3>For all non-Windows platforms</h3>
 <p>
-Sources, retrieved from <a href="#ceylansvn">SVN</a>, are to be built on UNIX thanks to the Autotools, not depending on the actual runtime platform being targeted : either Ceylan is built here on UNIX for the same UNIX platform, or it is built on UNIX (actually GNU/Linux in that case) for the <a href="http://osdl.sourceforge.net/main/documentation/misc/nintendo-DS/HomebrewForDS.html" target="_blank">Nintendo DS</a> (cross-compilation).
+Sources, retrieved from <a href="#ceylansvn">SVN</a>, are to be built on UNIX thanks to the Autotools, not depending on the actual runtime platform being targeted : either Ceylan is built here on UNIX for the same UNIX platform, or it is built on UNIX (actually GNU/Linux in that case) for the <a href="http://osdl.sourceforge.net/main/documentation/misc/nintendo-DS/HomebrewForDS.html" target="_blank">Nintendo DS</a> (see our <a href="#cross" target="_blank">cross-compilation</a> section).
 </p>
 
 <p>
@@ -60,6 +60,15 @@ To request a cross-compilation targeting the Nintendo DS, the <code>--nds</code>
 <h3>For Windows platforms</h3>
 <p>
 In that case the fresh <a href="#ceylansvn">SVN</a> sources are expected to be used with the Visual C++ 2005 Express toolchain.
+</p>
+
+
+
+<a name="cross"></a>
+<h3>Cross-compilation to the Nintendo DS</h3>
+
+<p>
+The <code>trunk/src/conf/build/autogen.sh</code> script should be used with the <code>--nds</code> switch. This will pass to configure the relevant <code>--host=arm-nintendo-ds</code> specification and select the cross-compilation tools accordingly. For that the automatically downloaded <code>config.sub</code> is automatically patched to recognize the DS.
 </p>
 
 
@@ -181,7 +190,7 @@ We suppose here that, with the previous version, the current version has been se
 
 	<li>update, preferably on UNIX, the various version-related files and directories : <code>src/doc/basic/Ceylan-*-template.txt.in</code> (including Ceylan-NEWS-template.txt.in) and <code>trunk/src/doc/web/main/News.html</code> </li>
 
-	<li>use <code>make effective-changelog-creation html-changelog</code>, under <code>trunk/src/conf/build</code> execute <code>make download-config-scripts</code>, create  <code>trunk/src/doc/Ceylan-x.y-release-notes.txt</code> and <code>trunk/src/doc/Ceylan-x.y-changes.txt</code>, etc.</li>
+	<li>use <code>make effective-changelog-creation html-changelog</code>, under <code>trunk/src/conf/build</code> execute <code>make -f MakeConfigure get-config-scripts</code>, create  <code>trunk/src/doc/Ceylan-x.y-release-notes.txt</code> and <code>trunk/src/doc/Ceylan-x.y-changes.txt</code>, etc.</li>
 
 
 	<li>under <code>trunk/src/conf/build</code>, use <code>autogen.sh --chain-test</code> to check everything is still working as expected : all the tests must always succeed, not depending on how many times they are run</li>
@@ -287,7 +296,7 @@ Now <code>x'.y'</code> designates the next version.
       <center>
         [<a href="#_top_">Top</a>]<br>
         <br>
-        <em>Last update : Friday, July 13, 2007</em>
+        <em>Last update : Saturday, July 14, 2007</em>
       </center>
   
 </body>
