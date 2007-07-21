@@ -3,6 +3,12 @@
 
 -module(utils).
 
+% Creation date: July 1, 2007.
+% Author: Olivier Boudeville (olivier.boudeville@esperide.com).
+
+% Licensed under a disjunctive tri-license: MPL/GPL/LGPL.
+
+
 -export([get_timestamp/0,get_image_file_gif/1,term_toString/1]).
 
 
