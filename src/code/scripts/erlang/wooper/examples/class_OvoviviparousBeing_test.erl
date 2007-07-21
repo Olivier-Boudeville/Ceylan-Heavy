@@ -47,12 +47,12 @@ run() ->
 	MyV ! {get_class_name,[],self()},
 	receive
 	
-		{result,class_OvoviviparousBeing} ->
+		{wooper_result,class_OvoviviparousBeing} ->
 			io:format( ?Prefix 
 				"After constructor, get_class_name returned "
 				"'class_OvoviviparousBeing' as expected.~n");
 				
-		{result,UnexpectedClass} -> 
+		{wooper_result,UnexpectedClass} -> 
 			testFailed( io_lib:format( "wrong class : ~p",
 				[ UnexpectedClass ] ) )
 			
@@ -60,12 +60,12 @@ run() ->
 	MyV ! {get_superclasses,[],self()},
 	receive
 	
-		{result, []} ->
+		{wooper_result, []} ->
 			io:format( ?Prefix 
 				"After constructor, get_superclasses returned [] "
 				"as expected.~n");
 
-		{result,UnexpectedSuperclasses} -> 
+		{wooper_result,UnexpectedSuperclasses} -> 
 			testFailed( io_lib:format( "wrong superclasses : ~p", 
 				[ UnexpectedSuperclasses ] ) )
 		
@@ -73,12 +73,12 @@ run() ->
 	MyV ! {getMeanEggsCount,[],self()},
 	receive
 	
-		{result,1000} ->
+		{wooper_result,1000} ->
 			io:format( ?Prefix 
 				"After constructor, getMeanEggsCount returned 1000 "
 				"as expected.~n");
 
-		{result,UnexpectedMeanCount} -> 
+		{wooper_result,UnexpectedMeanCount} -> 
 			testFailed( io_lib:format( "wrong mean egg count : ~p", 
 				[ UnexpectedMeanCount ] ) )
 	
@@ -87,12 +87,12 @@ run() ->
 	MyV ! {getEggsLaidCount,[],self()},
 	receive
 	
-		{result,0} ->
+		{wooper_result,0} ->
 			io:format( ?Prefix 
 				"After constructor, getEggsLaidCount returned 0 "
 				"as expected.~n");
 	
-		{result,UnexpectedFirstCount} -> 
+		{wooper_result,UnexpectedFirstCount} -> 
 			testFailed( io_lib:format( "wrong first egg count : ~p", 
 				[ UnexpectedFirstCount ] ) )
 			
@@ -101,12 +101,12 @@ run() ->
 	MyV ! {getEggsLaidCount,[],self()},
 	receive
 	
-		 {result,747}->
+		 {wooper_result,747}->
 			io:format(?Prefix 
 				"After giveBirth, getEggsLaidCount returned 747 "
 				"as expected.~n");
 	
-		{result,UnexpectedSecondCount} -> 
+		{wooper_result,UnexpectedSecondCount} -> 
 			testFailed( io_lib:format( "wrong second egg count : ~p", 
 				[ UnexpectedSecondCount ] ) )
 				
@@ -116,12 +116,13 @@ run() ->
 			MyV ! { wooper_get_instance_description,[], self() },
 			receive
 			
-				{result,InspectString} ->
+				{wooper_result,InspectString} ->
 					io:format( "~s~n", [ InspectString ] )
 			end ;		
 		false ->
 			ok	
-	end,				
+	end,
+	MyV ! delete,				
 	io:format( ?Prefix "End of test for module ~s.~n", [ ?Tested_module ] ),
 	testFinished().
 
