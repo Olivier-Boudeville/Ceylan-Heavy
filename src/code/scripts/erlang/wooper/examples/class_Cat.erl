@@ -55,6 +55,6 @@ canEat(State,_) ->
 
 
 getWhiskerColor(State)->
-	?wooper_return_state_result( State, ?getAttribute(State,whisker_color) ).
+	?wooper_return_state_result( State, ?getAttr(whisker_color) ).
 
 
