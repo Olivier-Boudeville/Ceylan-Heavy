@@ -10,7 +10,7 @@
 -define(Prefix,"--> ").
 
 
-% Comment out to be able to use the interpreter after the test :
+% Comment out to be able to use the interpreter after the test:
 -define(ExitAfterTest,).
 
 -ifdef(ExitAfterTest).
@@ -30,14 +30,14 @@ testFinished() ->
 testFailed(Reason) ->
 	% For some reason erlang:error is unable to interpret strings as strings,
 	% they are always output as unreadable list.
-	io:format( "~n!!!! Test failed for module ~s, reason : ~s~n~n",
+	io:format( "~n!!!! Test failed for module ~s, reason: ~s~n~n",
 		[ ?Tested_module, Reason ] ),
 	erlang:error( "Test failed" ).	
 
 
 run() ->
 	io:format( ?Prefix "Testing module ~s.~n", [ ?Tested_module ] ),
-	io:format( ?Prefix "Debug mode : ~s.~n", 
+	io:format( ?Prefix "Debug mode: ~s.~n", 
 		[ class_Mammal:is_wooper_debug() ] ),	
 	io:format( ?Prefix "Statically, class name is ~s, superclasses are ~w.~n", 
 		[
@@ -53,7 +53,7 @@ run() ->
 				"as expected.~n");
 				
 		{result,UnexpectedClass} -> 
-			testFailed( io_lib:format( "wrong class : ~p",
+			testFailed( io_lib:format( "wrong class: ~p",
 				[ UnexpectedClass ] ) )
 			
 	end,
@@ -66,7 +66,7 @@ run() ->
 				"as expected.~n");
 
 		{result,UnexpectedSuperclasses} -> 
-			testFailed( io_lib:format( "wrong superclasses : ~p", 
+			testFailed( io_lib:format( "wrong superclasses: ~p", 
 				[ UnexpectedSuperclasses ] ) )
 	
 	end,
@@ -78,7 +78,7 @@ run() ->
 				"After constructor, getAge returned 30 as expected.~n");
 
 		{result,UnexpectedAge} -> 
-			testFailed( io_lib:format( "wrong age : ~p", 
+			testFailed( io_lib:format( "wrong age: ~p", 
 				[ UnexpectedAge ] ) )
 		
 	end,
@@ -90,7 +90,7 @@ run() ->
 				"After constructor, getGender returned male as expected.~n");
 	
 		{result,UnexpectedGender} -> 
-			testFailed( io_lib:format( "wrong gender : ~p", 
+			testFailed( io_lib:format( "wrong gender: ~p", 
 				[ UnexpectedGender ] ) )
 			
 	end,
@@ -103,7 +103,7 @@ run() ->
 				"After setAge, getAge returned 5 as expected.~n");
 	
 		{result,UnexpectedNewAge} -> 
-			testFailed( io_lib:format( "wrong age : ~p", 
+			testFailed( io_lib:format( "wrong age: ~p", 
 				[ UnexpectedNewAge ] ) )
 			
 	end,	
@@ -116,7 +116,7 @@ run() ->
 				"After declareBirthday, getAge returned 6 as expected.~n");
 
 		{result,UnexpectedLastAge} -> 
-			testFailed( io_lib:format( "wrong age : ~p", 
+			testFailed( io_lib:format( "wrong age: ~p", 
 				[ UnexpectedLastAge ] ) )
 	
 	end,	
@@ -128,8 +128,9 @@ run() ->
 			io:format(?Prefix 
 				"isHotBlooded returned true as expected.~n");
 
-		_ -> 
-			erlang:exit("Test failed.")				
+		{result,UnexpectedBlood} -> 
+			testFailed( io_lib:format( "wrong blood type: ~p", 
+				[ UnexpectedBlood ] ) )
 	
 	end,	
 	MyM ! {getFurColor,[],self()},
@@ -139,9 +140,9 @@ run() ->
 			io:format(?Prefix 
 				"getFurColor returned brown as expected.~n");
 
-		{result,UnexpectedBlood} -> 
-			testFailed( io_lib:format( "wrong blood type : ~p", 
-				[ UnexpectedBlood ] ) )
+		{result,UnexpectedFurColor} -> 
+			testFailed( io_lib:format( "wrong fur color: ~p", 
+				[ UnexpectedFurColor ] ) )
 	
 	end,
 	case class_Mammal:is_wooper_debug() of 
