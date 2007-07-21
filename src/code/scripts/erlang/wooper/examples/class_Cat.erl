@@ -7,7 +7,7 @@
 
 % Parameters taken by the constructor ('construct'). 
 % They are here the ones of the Mammal mother class (the viviparous being 
-% class does not need any parameter) plus whisker color.
+% constructor does not need any parameter) plus whisker color.
 % These are class-specific data needing to be set in the constructor:
 -define(wooper_construct_attributes,Age,Gender,FurColor,WhiskerColor).
 
@@ -25,11 +25,11 @@
 construct(State,?wooper_construct_attributes) ->
 
 	% First the direct mother classes:
-	MamalState = class_Mammal:construct( State, Age, Gender, FurColor ),
-	ViviparousMamalState = class_ViviparousBeing:construct( MamalState ),
+	MammalState = class_Mammal:construct( State, Age, Gender, FurColor ),
+	ViviparousMammalState = class_ViviparousBeing:construct( MammalState ),
 	
 	% Then the class-specific attributes:
-	?setAttribute( ViviparousMamalState, whisker_color, WhiskerColor ).
+	?setAttribute( ViviparousMammalState, whisker_color, WhiskerColor ).
 	
 
 % No guarantee on biological fidelity:	
