@@ -11,7 +11,7 @@
 
 
 
-% Comment out to be able to use the interpreter after the test :
+% Comment out to be able to use the interpreter after the test:
 -define(ExitAfterTest,).
 
 -ifdef(ExitAfterTest).
@@ -31,14 +31,14 @@ testFinished() ->
 testFailed(Reason) ->
 	% For some reason erlang:error is unable to interpret strings as strings,
 	% they are always output as unreadable list.
-	io:format( "~n!!!! Test failed for module ~s, reason : ~s~n~n",
+	io:format( "~n!!!! Test failed for module ~s, reason: ~s~n~n",
 		[ ?Tested_module, Reason ] ),
 	erlang:error( "Test failed" ).	
 		
 
 run() ->
 	io:format( ?Prefix "Testing module ~s.~n", [ ?Tested_module ] ),
-	io:format( ?Prefix "Debug mode : ~s.~n", 
+	io:format( ?Prefix "Debug mode: ~s.~n", 
 		[ class_Cat:is_wooper_debug() ] ),	
 	
 		
@@ -52,26 +52,26 @@ run() ->
 	MyC ! {get_class_name,[],self()},
 	receive
 	
-		{result,class_Cat} ->
+		{wooper_result,class_Cat} ->
 			io:format( ?Prefix 
 				"After constructor, get_class_name returned 'class_Cat' "
 				"as expected.~n");
 				
-		{result,UnexpectedClass} -> 
-			testFailed( io_lib:format( "wrong class : ~p",
+		{wooper_result,UnexpectedClass} -> 
+			testFailed( io_lib:format( "wrong class: ~p",
 				[ UnexpectedClass ] ) )
 			
 	end,
 	MyC ! {get_superclasses,[],self()},
 	receive
 	
-		{result, [class_Mammal,class_ViviparousBeing]} ->
+		{wooper_result, [class_Mammal,class_ViviparousBeing]} ->
 			io:format( ?Prefix 
 				"After constructor, get_superclasses returned "
 				"[class_Creature,class_ViviparousBeing] as expected.~n");
 				
-		{result,UnexpectedSuperclasses} -> 
-			testFailed( io_lib:format( "wrong superclasses : ~p", 
+		{wooper_result,UnexpectedSuperclasses} -> 
+			testFailed( io_lib:format( "wrong superclasses: ~p", 
 				[ UnexpectedSuperclasses ] ) )
 	
 	end,
@@ -82,24 +82,24 @@ run() ->
 	MyC ! {getAge,[],self()},
 	receive
 	
-		{result,3} ->
+		{wooper_result,3} ->
 			io:format( ?Prefix 
 				"After constructor, getAge returned 3 as expected.~n");
 
-		{result,UnexpectedAge} -> 
-			testFailed( io_lib:format( "wrong age : ~p", 
+		{wooper_result,UnexpectedAge} -> 
+			testFailed( io_lib:format( "wrong age: ~p", 
 				[ UnexpectedAge ] ) )
 		
 	end,
 	MyC ! {getGender,[],self()},
 	receive
 	
-		{result,female} ->
+		{wooper_result,female} ->
 			io:format( ?Prefix 
 				"After constructor, getGender returned female as expected.~n");
 	
-		{result,UnexpectedGender} -> 
-			testFailed( io_lib:format( "wrong gender : ~p", 
+		{wooper_result,UnexpectedGender} -> 
+			testFailed( io_lib:format( "wrong gender: ~p", 
 				[ UnexpectedGender ] ) )
 			
 	end,
@@ -107,12 +107,12 @@ run() ->
 	MyC ! {getAge,[],self()},
 	receive
 	
-		 {result,5}->
+		 {wooper_result,5}->
 			io:format(?Prefix 
 				"After setAge, getAge returned 5 as expected.~n");
 	
-		{result,UnexpectedNewAge} -> 
-			testFailed( io_lib:format( "wrong age : ~p", 
+		{wooper_result,UnexpectedNewAge} -> 
+			testFailed( io_lib:format( "wrong age: ~p", 
 				[ UnexpectedNewAge ] ) )
 			
 	end,	
@@ -120,12 +120,12 @@ run() ->
 	MyC ! {getAge,[],self()},
 	receive
 	
-		{result,6}->
+		{wooper_result,6}->
 			io:format(?Prefix 
 				"After declareBirthday, getAge returned 6 as expected.~n");
 
-		{result,UnexpectedLastAge} -> 
-			testFailed( io_lib:format( "wrong age : ~p", 
+		{wooper_result,UnexpectedLastAge} -> 
+			testFailed( io_lib:format( "wrong age: ~p", 
 				[ UnexpectedLastAge ] ) )
 	
 	end,	
@@ -133,24 +133,24 @@ run() ->
 	MyC ! {isHotBlooded,[],self()},
 	receive
 	
-		{result,true}->
+		{wooper_result,true}->
 			io:format(?Prefix 
 				"isHotBlooded returned true as expected.~n");
 
-		{result,UnexpectedBlood} -> 
-			testFailed( io_lib:format( "wrong blood type : ~p", 
+		{wooper_result,UnexpectedBlood} -> 
+			testFailed( io_lib:format( "wrong blood type: ~p", 
 				[ UnexpectedBlood ] ) )
 	
 	end,	
 	MyC ! {getFurColor,[],self()},
 	receive
 	
-		 {result,sand}->
+		 {wooper_result,sand}->
 			io:format(?Prefix 
 				"getFurColor returned sand as expected.~n");
 
-		{result,UnexpectedFurColor} -> 
-			testFailed( io_lib:format( "wrong fur color : ~p", 
+		{wooper_result,UnexpectedFurColor} -> 
+			testFailed( io_lib:format( "wrong fur color: ~p", 
 				[ UnexpectedFurColor ] ) )
 	
 	end,
@@ -161,26 +161,26 @@ run() ->
 	MyC ! {getMeanChildrenCount,[],self()},
 	receive
 	
-		{result,4} ->
+		{wooper_result,4} ->
 			io:format( ?Prefix 
 				"After constructor, getMeanChildrenCount returned 4 "
 				"as expected.~n");
 
-		{result,UnexpectedMeanCount} -> 
-			testFailed( io_lib:format( "wrong mean children count : ~p", 
+		{wooper_result,UnexpectedMeanCount} -> 
+			testFailed( io_lib:format( "wrong mean children count: ~p", 
 				[ UnexpectedMeanCount ] ) )
 		
 	end,
 	MyC ! {getBirthGivenCount,[],self()},
 	receive
 	
-		{result,0} ->
+		{wooper_result,0} ->
 			io:format( ?Prefix 
 				"After constructor, getBirthGivenCount returned 0 "
 				"as expected.~n");
 	
-		{result,UnexpectedFirstCount} -> 
-			testFailed( io_lib:format( "wrong first children count : ~p", 
+		{wooper_result,UnexpectedFirstCount} -> 
+			testFailed( io_lib:format( "wrong first children count: ~p", 
 				[ UnexpectedFirstCount ] ) )
 			
 	end,
@@ -188,13 +188,13 @@ run() ->
 	MyC ! {getBirthGivenCount,[],self()},
 	receive
 	
-		 {result,5}->
+		{wooper_result,5}->
 			io:format(?Prefix 
 				"After giveBirth, getBirthGivenCount returned 5 "
 				"as expected.~n");
 	
-		{result,UnexpectedSecondCount} -> 
-			testFailed( io_lib:format( "wrong second children count : ~p", 
+		{wooper_result,UnexpectedSecondCount} -> 
+			testFailed( io_lib:format( "wrong second children count: ~p", 
 				[ UnexpectedSecondCount ] ) )
 				
 	end,		
@@ -205,12 +205,12 @@ run() ->
 	MyC ! {getTeatCount,[],self()},
 	receive
 	
-		 {result,6}->
+		{wooper_result,6}->
 			io:format(?Prefix 
 				"getTeatCount returned 6 as expected.~n");
 	
-		{result,UnexpectedTeatCount} -> 
-			testFailed( io_lib:format( "wrong teat count : ~p", 
+		{wooper_result,UnexpectedTeatCount} -> 
+			testFailed( io_lib:format( "wrong teat count: ~p", 
 				[ UnexpectedTeatCount ] ) )
 				
 	end,		
@@ -218,12 +218,12 @@ run() ->
 	MyC ! {canEat,soup,self()},
 	receive
 	
-		 {result,true}->
+		{wooper_result,true}->
 			io:format(?Prefix 
 				"This cat can eat soup, as expected.~n");
 	
-		{result,UnexpectedFoodPreference} -> 
-			testFailed( io_lib:format( "wrong food preference : ~p", 
+		{wooper_result,UnexpectedFoodPreference} -> 
+			testFailed( io_lib:format( "wrong food preference: ~p", 
 				[ UnexpectedFoodPreference ] ) )
 				
 	end,		
@@ -231,12 +231,12 @@ run() ->
 	MyC ! {canEat,tangerine,self()},
 	receive
 	
-		 {result,false}->
+		{wooper_result,false}->
 			io:format(?Prefix 
 				"This cat cannot eat tangerine, as expected.~n");
 	
-		{result,UnexpectedOtherFoodPreference} -> 
-			testFailed( io_lib:format( "wrong food preference : ~p", 
+		{wooper_result,UnexpectedOtherFoodPreference} -> 
+			testFailed( io_lib:format( "wrong food preference: ~p", 
 				[ UnexpectedOtherFoodPreference ] ) )
 				
 	end,		
@@ -244,13 +244,17 @@ run() ->
 	MyC ! {getWhiskerColor,[],self()},
 	receive
 	
-		 {result,white}->
+		{wooper_result,white}->
 			io:format(?Prefix 
 				"This cat has white whiskers, as expected.~n");
 	
-		{result,UnexpectedWhiskerColor} -> 
-			testFailed( io_lib:format( "wrong whisker color : ~p", 
-				[ UnexpectedWhiskerColor ] ) )
+		{wooper_result,UnexpectedWhiskerColor} -> 
+			testFailed( io_lib:format( "wrong whisker color: ~p", 
+				[ UnexpectedWhiskerColor ] ) );
+		
+		UnexpectedReturn ->		
+			testFailed( io_lib:format( "unexpected method return: ~p", 
+				[ UnexpectedReturn ] ) )
 				
 	end,		
 	
@@ -259,12 +263,13 @@ run() ->
 			MyC ! { wooper_get_instance_description,[], self() },
 			receive
 			
-				{result,InspectString} ->
+				{wooper_result,InspectString} ->
 					io:format( "~s~n", [ InspectString ] )
 			end ;		
 		false ->
 			ok	
-	end,				
+	end,
+	MyC ! delete,				
 	io:format( ?Prefix "End of test for module ~s.~n", [ ?Tested_module ] ),
 	testFinished().
 
