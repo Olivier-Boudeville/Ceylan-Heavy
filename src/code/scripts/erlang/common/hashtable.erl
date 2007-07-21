@@ -8,9 +8,13 @@
 -module(hashtable).
 % Directly depends on : utils module.
 
-
+% Creation date: July 2, 2007.
+% Author: Olivier Boudeville (olivier.boudeville@esperide.com).
 % Heavily inspired of the tupleStore example from 
 % 'Concurrent Programming in Erlang', section 9.8.
+
+% Licensed under a disjunctive tri-license: MPL/GPL/LGPL.
+
 
 % The hashtable is implemented thanks to a tuple whose size is the number of
 % buckets specified at the hashtable creation.
