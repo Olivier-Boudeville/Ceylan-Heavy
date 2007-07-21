@@ -75,7 +75,7 @@ run() ->
 	
 		{result,1000} ->
 			io:format( ?Prefix 
-				"After constructor, getMeanEggsCount returned 4 "
+				"After constructor, getMeanEggsCount returned 1000 "
 				"as expected.~n");
 
 		{result,UnexpectedMeanCount} -> 
