@@ -9,6 +9,19 @@
 % per-instance memory is used for the virtual table : all the instances of a 
 % given class just refer to a common virtual table stored by this manager.
 
+
+% See documentation at:
+% http://ceylan.sourceforge.net/main/documentation/wooper/
+
+
+% Creation date: Friday, July 12, 2007.
+% Author: Olivier Boudeville (olivier.boudeville@esperide.com).
+
+% Licensed under a disjunctive tri-license: MPL/GPL/LGPL, see:
+% http://ceylan.sourceforge.net/main/documentation/wooper/index.html#license
+
+
+
 -export([start/1]).
 
 
@@ -18,22 +31,22 @@
 
 % Approximate average method count for a given class, including inherited ones.
 % (ideally should be slightly above the maximum number of actual methods)
--define(WooperMethodCountUpperBound,5).
+-define(WooperMethodCountUpperBound,32).
 
 
 % Approximate average class count for the program.
 % (ideally should be slightly above the maximum number of actual classes being
 % instanciated)
--define(WooperClassCountUpperBound,5).
+-define(WooperClassCountUpperBound,128).
 
 
 % Uncomment to be in debug mode :
--define(debug,).
+%-define(debug,).
  
+-define(Log_prefix, "[WOOPER Class manager] ").
  
 -ifdef(debug).
 
-	-define(Log_prefix, "[WOOPER Class manager] ").
 	
 	display_state(Tables) ->
 		io:format( ?Log_prefix "Storing now ~B table(s).~n",
@@ -48,13 +61,13 @@
 			
 -else.
 
-	display_state(Tables) ->
+	display_state(_) ->
 		ok.
 
-	display_table_creation(Module) ->
+	display_table_creation(_) ->
 		ok.
 		
-	display(String) ->
+	display(_) ->
 		ok.
 		
 -endif.		
@@ -63,8 +76,8 @@
 
 % Starts a new blank class manager.
 start(ClientPID) ->
-	io:format( ?Log_prefix "Starting on node ~s (PID : ~w).~n",
-		 [ node(), self() ] ),
+	display( io_lib:format( "Starting on node ~s (PID : ~w).~n", 
+		[ node(), self() ] ) ),
 	% Two first instances being created nearly at the same time might trigger
 	% the creation of two class managers, if the second instance detects no
 	% manager is registered while the first manager is created but not
@@ -103,7 +116,7 @@ loop(Tables) ->
 				
 		stop ->
 			unregister( ?WooperClassManagerName ),
-			io:format( ?Log_prefix "Stopped on request.~n" )	
+			display( "Stopped on request" )	
 			
 	end.
 	
