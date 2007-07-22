@@ -7,7 +7,7 @@
 
 % Parameters taken by the constructor ('construct'). 
 % They are here the ones of the mother class (creature) plus fur color:
--define(wooper_construct_attributes,Age,Gender,FurColor).
+-define(wooper_construct_parameters,Age,Gender,FurColor).
 
 % Life cycle-related exported operators:
 -define(wooper_construct_export,new/3,construct/4,delete/1).
@@ -22,7 +22,7 @@
 
 
 % Constructs a new Mammal.
-construct(State,?wooper_construct_attributes) ->
+construct(State,?wooper_construct_parameters) ->
 	CreatureState = class_Creature:construct(State,Age,Gender),
 	?setAttribute(CreatureState,fur_color,FurColor).
 	
