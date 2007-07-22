@@ -6,7 +6,7 @@
 
 
 % Parameters taken by the constructor ('construct'):
--define(wooper_construct_attributes,Age,Gender).
+-define(wooper_construct_parameters,Age,Gender).
 
 % Construction-related exported operators:
 -define(wooper_construct_export,new/2,construct/3,toString/1).
@@ -26,7 +26,7 @@
 	
 
 % Constructs a new Creature.
-construct(State,?wooper_construct_attributes) ->
+construct(State,?wooper_construct_parameters) ->
 	% No mother class.
 	% Sanity checks could be implemented here.
 	AgeState = ?setAttribute(State,age,Age),
