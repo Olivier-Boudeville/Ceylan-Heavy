@@ -5,7 +5,7 @@
 -define(wooper_superclasses,[]).
 
 % Parameters taken by the constructor ('construct'). 
--define(wooper_construct_attributes,).
+-define(wooper_construct_parameters,).
 
 % Construction-related exported operators:
 -define(wooper_construct_export,new/0,construct/1).
