@@ -6,7 +6,7 @@
 
 
 % Parameters taken by the constructor ('construct'). 
--define(wooper_construct_attributes,ATTR1,ATTR2).
+-define(wooper_construct_parameters,PARAM1,PARAM2).
 
 % Life-cycle related exported operators:
 -define(wooper_construct_export,new/P,construct/P+1).
@@ -19,7 +19,7 @@
 
 
 % Constructs a new MYCLASS.
-construct(State,?wooper_construct_attributes) ->
+construct(State,?wooper_construct_parameters) ->
 	% Note: when constructing the initial state thanks to intermediate ones,
 	% always build newer state from the result of last update. Reusing an
 	% already updated state will loose all the changes made in-between, ex:
