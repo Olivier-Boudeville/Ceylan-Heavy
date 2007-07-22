@@ -7,7 +7,7 @@
 
 % Parameters taken by the constructor ('construct'). 
 % They are here the ones of the mother class (creature):
--define(wooper_construct_attributes,Age,Gender).
+-define(wooper_construct_parameters,Age,Gender).
 
 % Construction-related exported operators:
 -define(wooper_construct_export,new/2,construct/3).
@@ -22,7 +22,7 @@
 
 
 % Constructs a new Reptile.
-construct(State,?wooper_construct_attributes) ->
+construct(State,?wooper_construct_parameters) ->
 	class_Creature:construct(State,Age,Gender).
 	
 	
