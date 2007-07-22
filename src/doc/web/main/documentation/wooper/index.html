@@ -35,14 +35,53 @@
 <h1>WOOPER: <em>Wrapper for OOP in Erlang</em></h1>
 
 <p>
-WOOPER is an <a href="#license">open source</a> lightweight layer on top of the <a href="http://erlang.org" target="_blank">Erlang</a> language offering constructs dedicated to <a href="http://en.wikipedia.org/wiki/Object-oriented_programming" target="_blank">Object-Oriented Programing</a>. WOOPER is a part of the <a href="http://ceylan.sourceforge.net" target="_blank">Ceylan</a> project.
+WOOPER is an <a href="#license">open source</a> lightweight layer on top of the <a href="http://erlang.org" target="_blank">Erlang</a> language offering constructs dedicated to <a href="http://en.wikipedia.org/wiki/Object-oriented_programming" target="_blank">Object-Oriented Programming</a>. WOOPER is a part of the <a href="http://ceylan.sourceforge.net" target="_blank">Ceylan</a> project.
 </p>
+
 
 <p>
-Some problems may almost only be tackled efficiently thanks to an objet-oriented modeling. The set of code and conventions proposed here allow to have all the main OOP features (including polymorphism, life cycle management, state management and multiple inheritance) available from Erlang, so that object-oriented approach at the implementation level can be easily achieved, for the cases where it makes sense.
+<a name="maintoc"></a>
+<center><br>
+        <table summary="Table of contents" style="border: none">
+        <tr>
+          <td>
+<!--
+                       <a href="#"></a><br>
+-->
+
+					<div class="box">
+                       <a href="#overview">Overview</a><br>
+                       <a href="#why">Why adding OOP to Erlang ?</a><br>
+                       <a href="#how">How to use WOOPER ?</a><br>
+                       <a href="#example">WOOPER example</a><br>
+                       <a href="#current">Current stable version &amp; download</a><br>
+                       <a href="#inner">Inner workings</a><br>
+                       <a href="#next">Issues &amp; planned enhancements</a><br>
+                       <a href="#license">License</a><br>
+                       <a href="#sources">Sources, inpirations &amp; alternate solutions</a><br>
+                       <a href="#support">Support</a>
+					</div>
+
+          </td>
+        </tr>
+      </table>
+</center>
 </p>
 
+<!--
+<br><p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
+-->
 
+<!-- #####################################################################" -->
+
+
+
+<a name="overview"></a>
+<h2>Overview</h2>
+
+<p>
+Some problems may almost only be tackled efficiently thanks to an objet-oriented modeling. The set of code and conventions proposed here allow to have all the main OOP features (including polymorphism, life cycle management, state management and multiple inheritance) available from Erlang, so that an object-oriented approach at the implementation level can be easily achieved, for the cases where it makes sense.
+</p>
 
 <p>
 Here is a simple example of how WOOPER instances can be managed. This shows new/delete operators, method calling (both request and oneway), and inheritance (a cat is here a viviparous mammal, as defined <a href="#example">below</a>):
@@ -71,7 +110,7 @@ white
 5
 9&gt; MyCat ! delete.
 Destructing a Mammal (overriden destructor).
-delete
+deleted
 
 </pre></code>
             </div>
@@ -82,7 +121,7 @@ delete
 </p>
 
 <p>
-This class "Cat" is itself defined this way:
+This class <code>class_Cat</code> is itself defined this way:
 <center>
     <table summary="Code" style="border: none">
         <tr>
@@ -100,7 +139,7 @@ This class "Cat" is itself defined this way:
 % They are here the ones of the Mammal mother class (the viviparous being 
 % constructor does not need any parameter) plus whisker color.
 % These are class-specific data needing to be set in the constructor:
--define(wooper_construct_attributes,Age,Gender,FurColor,WhiskerColor).
+-define(wooper_construct_parameters,Age,Gender,FurColor,WhiskerColor).
 
 % Construction-related exported operators:
 -define(wooper_construct_export,new/4,construct/5).
@@ -113,7 +152,7 @@ This class "Cat" is itself defined this way:
 
 
 % Constructs a new Cat.
-construct(State,?wooper_construct_attributes) -&gt;
+construct(State,?wooper_construct_parameters) -&gt;
 
 	% First the direct mother classes:
 	MammalState = class_Mammal:construct( State, Age, Gender, FurColor ),
@@ -156,46 +195,15 @@ getWhiskerColor(State)-&gt;
 Straightforward, isn't it ? We will discuss it in-depth though.
 </p>
 
-
-
-<p>
-
-<a name="maintoc"></a>
-<center>
-        <table summary="Table of contents" style="border: none">
-        <tr>
-          <td>
-<!--
-                       <a href="#"></a><br>
--->
-
-                   <div class="box">
-                       <a href="#usage">Usage</a><br>
-                       <a href="#example">Example</a><br>
-                       <a href="#inner">Inner workings</a><br>
-                       <a href="#next">Issues &amp; planned enhancements</a><br>
-                       <a href="#license">License</a><br>
-                       <a href="#sources">Sources</a><br>
-                       <a href="#support">Support</a>
-          </div>
-
-          </td>
-        </tr>
-      </table>
-</center>
-
-</p>
-
-<!--
 <br><p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
--->
+
+<!-- #####################################################################" -->
 
 
-<a name="usage"></a>
-<h2>WOOPER usage</h2>
 
 
-<h3>Why adding Object-oriented elements to Erlang ?</h3>
+<a name="why"></a>
+<h2>Why adding Object-oriented elements to Erlang ?</h2>
 
 <p>
 Although applying blindly OOP with languages based on other paragdims (Erlang ones are functional and concurrent, it is not specifically targeting OOP) is a common mistake, there are some problems that may be deemed inherently "object-oriented", i.e. that cannot be effectively modelled without encapsulated abstractions sharing behaviours. 
@@ -213,16 +221,53 @@ The <a href="#example">example</a> chosen here is a simulation of the interactin
 WOOPER, which stands for <em>Wrapper for OOP in Erlang</em>, is a lightweight yet effective (performance-wise, but also regarding developing efforts) means of making these constructs available, notably with regard to state management and multiple inheritance. The same simulations could be achieved without such OOP constructs, but at the expense of way too much manually-crafted specific (per-class) code. This process would be tedious, error-prone, and the result most often could be hardly maintained. 
 </p>
 
+<p><center>[<a href="#maintoc">Back to the main table of contents</a>]</center></p>
 
 
-<h3>How to use it ? Detailed description &amp; concept mappings</h3>
+<!-- #####################################################################" -->
 
 
+<br>
 
-<h4>Classes</h4>
+<a name="how"></a>
+<h2>How to use WOOPER ?<br>Detailed description &amp; concept mappings</h2>
 
 
-<h5>Class &amp; names</h5>
+<a name="usagetoc"></a>
+<center>
+	<table summary="Usage table of contents" style="border: none">
+        <tr>
+          <td>
+<!--
+		       <a href="#"></a><br>
+-->
+
+			<div class="box">
+		       <a href="#classes">Classes</a><br>
+		       <a href="#instances">Instances</a><br>
+		       <a href="#methods">Methods</a><br>
+		       <a href="#statemanagement">State management</a><br>
+		       <a href="#inheritpolymorph">Multiple inheritance &amp; polymorphism</a><br>
+		       <a href="#lifecycle">Life cycle</a><br>
+		       <a href="#misc">Misceallenous technical points</a>
+			</div>
+
+          </td>
+        </tr>
+      </table>
+	  (<a href="#maintoc">Up to the main table of contents</a>)
+</center>
+
+
+<!--
+<br><p><center>[<a href="#usagetoc">Back to the usage table of contents</a>]</center></p><br>
+-->
+
+<a name="classes"></a>
+<h3>Classes</h3>
+
+
+<h4>Class &amp; names</h4>
 <p>
 A class is a common scheme describing the behaviour and the internal data of its instances. With WOOPER each class must have a unique name.
 </p>
@@ -232,7 +277,7 @@ To allow for <b>encapsulation</b>, here a class is mapped to an Erlang module, w
 </p>
 
 <p>
-The class name can be obtained through its <code>get_class_name</code> WOOPER-defined method:
+The class name can be obtained through its <code>get_class_name</code> WOOPER-defined static method:
 
 <center>
     <table summary="Code" style="border: none">
@@ -251,7 +296,7 @@ class_Cat
 </p>
 
 
-<h5>Inheritance &amp; superclasses</h5>
+<h4>Inheritance &amp; superclasses</h4>
 <p>
 A WOOPER class can inherit from other classes, in this case the behaviour and the internal data of the mother classes are available by default to this child class. 
 </p>
@@ -266,7 +311,7 @@ As for our cat, this animal could be modelled both as a mammal (itself a special
 
 
 <p>
-The superclasses (direct mother classes) of a given class can be retrieved thanks to its <code>get_superclasses</code> method:
+The superclasses (direct mother classes) of a given class can be retrieved thanks to its <code>get_superclasses</code> static method:
 
 <center>
     <table summary="Code" style="border: none">
@@ -284,24 +329,31 @@ The superclasses (direct mother classes) of a given class can be retrieved thank
 </center>
 </p>
 
+<br><p><center>[<a href="#usagetoc">Back to the usage table of contents</a>]</center></p><br>
 
 
-<h4>Instances</h4>
+
+<a name="instances"></a>
+<h3>Instances</h3>
 
 
-<h5>Instance mapping</h5>
+<h4>Instance mapping</h4>
 <p>
-With WOOPER, which focuses on multi-agent systems, all <b>instances</b> of a class are mapped to Erlang processes. They are therefore, in UML language, <em>active objects</em> (each has its own thread of execution, they apparently "live" simultaneously).
+With WOOPER, which focuses on multi-agent systems, all <b>instances</b> of a class are mapped to Erlang processes (one instance, one process). They are therefore, in UML language, <em>active objects</em> (each has its own thread of execution, they apparently "live" simultaneously).
 </p>
 
 
-<h5>Instance state</h5>
+<h4>Instance state</h4>
 <p>
-Another part of encapsulation is <b>state management</b>: each instance should be stateful, and able to inherit the data members defined by its mother classes. In WOOPER, this is obtained thanks to a per-instance associative table, where keys are the name of attributes and values are their value.
+Another part of encapsulation is <b>state management</b>: each instance should be stateful, and able to inherit the data members defined by its mother classes. In WOOPER, this is obtained thanks to a per-instance associative table, where keys are the name of attributes and values are their value. This will be detailed in the <a href="#statemanagement">state management</a> section.
 </p>
 
+<br><p><center>[<a href="#usagetoc">Back to the usage table of contents</a>]</center></p><br>
 
-<h4>Methods</h4>
+
+
+<a name="methods"></a>
+<h3>Methods</h3>
 <p>
 Instances may offer <b>methods</b> that can be publicly called, including remotely (RMI: <em>Remote Method Invocation</em>). Methods (either inherited or defined directly in the class) are mapped to specific Erlang functions, triggered by messages. For example, our cat may define following methods:
 <ul>
@@ -312,9 +364,9 @@ Instances may offer <b>methods</b> that can be publicly called, including remote
 	<li><code>canEat</code>, taking one parameter describing the type of food, and returning whether the cat can eat that kind of food or not. This should be cat-specific</li>
 	<li><code>getWhiskersColor</code>, taking no parameter, returning the color of its whiskers. This is indeed cat-specific</li>
 	<li>
-		<p><code>declareBirthday</code>, incrementing the age of our cat, not taking any parameter nor returning anything. This will be therefore be implemented as a one-way call (i.e. not returning any result to the caller), only interesting for its effect on the cat state: making it one year older.
+		<p><code>declareBirthday</code>, incrementing the age of our cat, not taking any parameter nor returning anything. This will be therefore be implemented as a one-way call (i.e. not returning any result to the caller, hence not needing to know it), only interesting for its effect on the cat state: making it one year older.
 		</p>	
-		<p>Declaring a birthday is not cat-specific, nor mammal-specific: we can consider it being creature-specific. Cat instances should then inherit this method, preferably indirectly from the <code>class_Creature</code> class, in all cases without having to specify anything since the <code>wooper_superclasses</code> define should already imply that information</p>
+		<p>Declaring a birthday is not cat-specific, nor mammal-specific: we can consider it being creature-specific. Cat instances should then inherit this method, preferably indirectly from the <code>class_Creature</code> class, in all cases without having to specify anything, since the <code>wooper_superclasses</code> define already implies that relationship</p>
 	</li>
 
 </ul>
@@ -325,11 +377,11 @@ Instances may offer <b>methods</b> that can be publicly called, including remote
 </p>
 
 
-<h5>Method declaration</h5>
+<h4>Method declaration</h4>
 
 <p>
 The cat-specific methods are to be declared, in the <code>class_Cat</code>, thanks to the <code>wooper_method_export</code> clause. Their arity should be equal to the number of parameters they should be called with, plus one. The additional parameter is an implicit one (automatically managed by WOOPER), corresponding to the state of the instance. This <code>State</code>
- variable defined by WOOPER can be somehow compared to the <code>self</code> parameter of Python, or to the <code>this</code> pointer of C++.
+ variable defined by WOOPER can be somehow compared to the <code>self</code> parameter of Python, or to the <code>this</code> pointer of C++. That state is automatically kept by WOOPER classes in their main loop, and automatically prepended to the parameters of incoming method calls.
 </p>
 
 <p>
@@ -337,9 +389,9 @@ In our example, it would result in: <code>-define(wooper_method_export,canEat/2,
 </p>
 
 
-<h5>Method invocation</h5>
+<h4>Method invocation</h4>
 <p> 
-If MyCat is an instance of <code>class_Cat</code>, these methods (either defined locally or inherited) should be called this way:
+If MyCat is an instance of <code>class_Cat</code>, these methods (either defined locally or inherited) should be called thanks to a dedicated tuple:
 <center>
     <table summary="Code" style="border: none">
         <tr>
@@ -349,10 +401,10 @@ If MyCat is an instance of <code>class_Cat</code>, these methods (either defined
 MyCat ! {canEat,soup,self()},
 receive
 
-	{wooper_result,true} ->
+	{wooper_result,true} -&gt;
 		io:format( "This cat likes soup !!!" );
 
-	{wooper_result,false} ->
+	{wooper_result,false} -&gt;
 		io:format( "This cat does not seem omnivorous." )
 		
 end,
@@ -360,10 +412,10 @@ end,
 MyCat ! {getWhiskersColor,[],self()},
 receive
 		
-	{wooper_result,white} ->
+	{wooper_result,white} -&gt;
 		io:format( "This cat has normal whiskers." );
 		
-	{wooper_result,blue} ->
+	{wooper_result,blue} -&gt;
 		io:format( "What a weird cat..." )
 
 end,
@@ -378,60 +430,173 @@ end.
 </center>
 </p>
 
+
+<h5>Method name</h5>
+
 <p>
-Some information must be given here: methods are designated by their atom name (as declared in the <code>wooper_method_export</code> clause of the class in the inheritance tree that define them), which is always the first information given in the method tuple. There are requests (that return a result) and one-way calls (that change only the state of the instance, no reply sent back). Both can take any number of parameters, including none. They are to be specified in a (possibly empty) list. If only one parameter is needed, the list can be omitted, and the parameter can be directly specified: <code>Me ! {setAge,30}.</code>
+Some information must be given here: methods are designated by their atom name (as declared in the <code>wooper_method_export</code> clause of the class in the inheritance tree that define them), which is always the first information given in the method call tuple.
+</p>
+
+
+
+<h5>Method parameters</h5>
+<p>
+As detailed below, there are requests (that return a result) and one-way calls (that change only the state of the instance, no reply sent back). Both can take any number of parameters, including none. <b>Marshalling</b> of parameters (and return values) is performed automatically by Erlang.  
+</p>
+
+<p>
+Parameters are to be specified in a (possibly empty) list, as second element of the call tuple. If only one parameter is needed, the list can be omitted, and the parameter can be directly specified: <code>Me ! {setAge,30}.</code>
  works as well as <code>Me ! {setAge,[30]}.</code>.
+</p>
+
+
+<h5>Two kinds of methods</h5>
+
+<h6>Request Methods</h6>
+
+<p>To send an answer to a request from a caller, the instance needs to know the caller PID.
+</p>
+
+<p>Therefore <b>requests</b> have to specify, as the third element of the call tuple, an additional information: the PID to which the answer should be sent, almost always the caller (hence the <code>self()</code>). Finally these three potential information (method name, parameters, sender, i.e. an atom, usually a list and a PID) are gathered in a tuple sent as a message: <code>{method_name,[Arg1,Arg2,..],self()}</code>. For example: <code>MyCat ! {getAge,[],self()}</code> or <code>MyCalculator ! {sum,[1,2,4],self()}</code>.
+</p>
+
+<p>
+<code>receive</code> should be used to retrieve the result, like in:
+
+<center>
+    <table summary="Code" style="border: none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+MyPoint ! {getCoordinates,[],self()},
+receive
+
+	{wooper_result,[X,Y]} -&gt;
+		[...];
+	
+	% Could be left out to ignore errors.
+	% Otherwise one might prefer making this client crash:
+	Error -&gt;
+		[...]
+		
+end,
 </pre></code>
             </div>
           </td>
         </tr>
     </table>
 </center>
+</p>
 
+
+<h6>One-way Methods</h6>
+<p>
+<b>One-way methods</b> do not have to specify a sender PID, as no result is expected. If ever they sent one nevertheless, a warning will be sent back to them, the atom <code>wooper_method_returns_void</code> instead of <code>{wooper_result,Result}</code>.
 </p>
 
 <p>
-<b>Requests</b> have to specify an additional information, the PID to which the answer should be sent, almost always the caller (hence the <code>self()</code>). Finally these three potential information (method name, parameters, sender, i.e. an atom, usually a list and a PID) are gathered in a tuple sent as a message: <code>{method_name,[Arg1,Arg2,..],self()}</code>. For example: <code>MyCat ! {getAge,[],self()}</code> or <code>MyCalculator ! {sum,[1,2,4],self()}</code>.
+Hence oneway methods should be called thanks to:
+<ul>
+
+	<li>2-element (i.e. with no PID specified) tuples: <code>{method_name,[Arg1,Arg2,..]}</code>, for example: <code>MyCat ! {setAge,5}</code> or <code>MyPoint ! {setCoordinates,[14,6]}</code></li>
+
+	<li>or, if they do not take parameters, just the atom <code>method_name</code>, for example: <code>MyCat ! declareBirthday</code></li>
+
+</ul>
 </p>
 
 <p>
-<b>One-way methods</b> do not have to specify a sender (if ever they send one nevertheless, a warning will be sent to them, the atom <code>wooper_method_returns_void</code> instead of <code>{wooper_result,Result}</code>). Hence oneway methods may be 2-element tuples (<code>{method_name,[Arg1,Arg2,..]}</code>, for example: <code>MyCat ! {setAge,5}</code> or <code>MyPoint ! {setCoordinates,[14,6]}</code>
-) or, if they do not take parameters, just the atom <code>method_name</code>, for example: <code>MyCat ! declareBirthday</code>. Due to their nature, if an error occurs with a oneway call, the sender (the client) will never be notified.
+No return should be expected (the instance does not even have the sender PID), so no receive should be attempted on the caller side. Due to their nature, if an error occurs instance-side during a oneway call, the caller will never be notified.
 </p>
 
+
+<h5>Method results</h5>
 <p>
-As for the result, if the method execution succeeded, <code>{wooper_result,ActualResult}</code> will be sent back, otherwise one of the following error messages will be emitted:
+If the method execution succeeded, and if it is a request (not a oneway), <code>{wooper_result,ActualResult}</code> will be sent back, otherwise one of the following error messages will be emitted:
 <ul>
 
 <!--
 	<li><code></code>: </li>
 -->
 
-	<li><b>wooper_method_not_found</b>, i.e. <code>{wooper_method_not_found, Module, MethodName, MethodArity}</code>: for example <code>{wooper_method_not_found, class_Cat, layEggs, 2}</code>. <code>MethodArity</code> counts the implied state parameter. This error occurs whenever a called method could not be found in the whole inheritance graph (not implemented)</li>
+	<li>
+		<p><b>wooper_method_not_found</b>, i.e. <code>{wooper_method_not_found, Module, MethodName, MethodArity}</code>: for example <code>{wooper_method_not_found, class_Cat, layEggs, 2}</code>. <code>MethodArity</code> counts the implied state parameter. This error occurs whenever a called method could not be found in the whole inheritance graph. It means this method is not implemented, at least not with the deduced arity.
+		</p>
+		
+		<p>More precisely, when a message <code>{method_name,[Arg1,Arg2,..,Argn]...}</code> (request or oneway) is received, <code>method_name/n+1</code> has be to called: WOOPER tries to find <code>method_name(State,Arg1,..,Argn)</code>, method name and arity must match. In the case where no method could be found, the <code>wooper_method_not_found</code> atom is returned, and the object state will not change
+		</p>
 
-	<li><b>wooper_method_failed</b>, i.e. <code>{wooper_method_failed, InstancePID, Module, MethodName, MethodArity, Parameters, ErrorTerm}</code>: for example, <code>{wooper_method_failed, &lt;0.30.0&gt;, class_Cat, myCrashingMethod, 1, [], {{badmatch,create_bug}, [..]]}</code>. If the exit message sent by the method specifies a PID, it is prepended to ErrorTerm</li>
+</li>
 
-	<li><b>wooper_method_faulty_return</b>, i.e. <code>{wooper_method_faulty_return, InstancePID, Module, MethodName, MethodArity, ParameterList, ActualReturn}</code>: for example <code>{wooper_method_faulty_return, &lt;0.30.0&gt;, class_Cat, myFaultyMethod, 1, [], [{{state_holder,..]}</code>. This error can only occur in debug mode, and indicates that the method implementation did not respect the expected method return convention (neither <code>wooper_return_state_result</code> nor
-<code>wooper_return_state_only</code> used)</li>
+	<li><b>wooper_method_failed</b>, i.e. <code>{wooper_method_failed, InstancePID, Module, MethodName, MethodArity, Parameters, ErrorTerm}</code>: for example, <code>{wooper_method_failed, &lt;0.30.0&gt;, class_Cat, myCrashingMethod, 1, [], {{badmatch,create_bug}, [..]]}</code>. If the exit message sent by the method specifies a PID, it is prepended to ErrorTerm. It means there is a runtime failure</li>
+
+	<li><b>wooper_method_faulty_return</b>, i.e. <code>{wooper_method_faulty_return, InstancePID, Module, MethodName, MethodArity, ParameterList, ActualReturn}</code>: for example <code>{wooper_method_faulty_return, &lt;0.30.0&gt;, class_Cat, myFaultyMethod, 1, [], [{{state_holder,..]}</code>. This error occurs when other errors did not match (catch-all). The main reason for its happening is when debug mode is set and when a method implementation did not respect the expected method return convention (neither <code>wooper_return_state_result</code> nor
+<code>wooper_return_state_only</code> used). It means the method is not implemented correctly (it has a bug)</li>
 	
 </ul>
 </p>
 
-
-<h3>Method definition</h3>
 <p>
-A method signature has always for first parameter the state of the instance, for example : <code>getAge(State) -&gt; [..]</code>, or <code>getCoordinate(State,Number) -&gt; [..]</code>.
-</p>
-
-<p>
-A method must always return at least the new instance state, even if the state did not change. In this case the parameter is directly returned :
+So on the caller side, errors can be better discriminated if needed (but defensive development is not really favored in Erlang):
 <center>
-    <table summary="Code" style="border : none">
+    <table summary="Code" style="border: none">
         <tr>
           <td>
             <div class="box">
 <code><pre>
-getWhiskerColor(State)->
+MyPoint ! {getCoordinates,[],self()},
+receive
+
+	{wooper_result, [X,Y] } -&gt;
+		[...];
+	
+	{wooper_method_not_found, Module, Method, Arity} -&gt;
+		[...];
+
+	{wooper_method_failed, Pid, Module, Method, Arity, Parameters, ErrorTerm} -&gt;
+		[...];
+
+	{wooper_method_faulty_return, Pid, Module, Method, Arity, Parameters, ErrorTerm} -&gt;
+		[...];
+
+	wooper_method_returns_void -&gt;
+		[...];
+
+	OtherError -&gt;
+		% Should never happen:
+		[...]
+		
+end,
+
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+</p>
+
+
+<h5>Method definition</h5>
+
+<p>
+Here we reverse the point of view: instead of calling a method, we are in the process of implementing a callable one.
+</p>
+
+<p>
+A method signature has always for first parameter the state of the instance, for example: <code>getAge(State) -&gt; [..]</code>, or <code>getCoordinate(State,Number) -&gt; [..]</code>. For better clarity, this variable should be preferably named always <code>State</code>.
+</p>
+
+<p>
+A method must always return at least the new instance state, even if the state did not change. In this case the parameter is directly returned:
+<center>
+    <table summary="Code" style="border: none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+getWhiskerColor(State) -&gt;
 	?wooper_return_state_result( State, ?getAttr(whisker_color) ).
 </pre></code>
             </div>
@@ -439,20 +604,20 @@ getWhiskerColor(State)->
         </tr>
     </table>
 </center>
-State is unchanged here.
+State is unchanged here. 
 </p>
 
 <p>
 Depending on its returning a specific result, the method signature will correspond either to:
 <ul>
-	<li>a <b>request</b>, and <code>?wooper_return_state_result(NewState,Result)</code> wil be used: the new state will be kept by the instance and the result will be sent to the client. For example,
+	<li>a <b>request</b>, and <code>?wooper_return_state_result(NewState,Result)</code> wil be used: the new state will be kept by the instance and the result will be sent to the client. Hence <code>wooper_return_state_result</code> means that the method returns a state <code>and</code> a result, in that order.  For example,
 <center>
-    <table summary="Code" style="border : none">
+    <table summary="Code" style="border: none">
         <tr>
           <td>
             <div class="box">
 <code><pre>
-getAge(State) ->
+getAge(State) -&gt;
 	?wooper_return_state_result(State,?getAttr(age)).
 	</pre></code>
             </div>
@@ -462,14 +627,14 @@ getAge(State) ->
 </center>
  </li>
  
-	<li>a <b>oneway</b>, and <code>?wooper_return_state_only(NewState)</code> will be used: the instance state will be updated, nothing returned. For example,
+	<li>a <b>oneway</b>, and <code>?wooper_return_state_only(NewState)</code> will be used: the instance state will be updated, and no result will be returned. For example,
 <center>
-    <table summary="Code" style="border : none">
+    <table summary="Code" style="border: none">
         <tr>
           <td>
             <div class="box">
 <code><pre>
-setAge(State,NewAge) ->
+setAge(State,NewAge) -&gt;
 	?wooper_return_state_only(?setAttribute(State,age,NewAge)).
 </pre></code>
             </div>
@@ -479,12 +644,12 @@ setAge(State,NewAge) ->
 </center>
 Oneways may leave the state unchanged, only being called for side-effects, for example:
 <center>
-    <table summary="Code" style="border : none">
+    <table summary="Code" style="border: none">
         <tr>
           <td>
             <div class="box">
 <code><pre>
-displayAge(State) ->
+displayAge(State) -&gt;
 	io:format("My age is ~B~n.",[getAttr(age)]),
 	?wooper_return_state_only(State).
 </pre></code>
@@ -500,118 +665,62 @@ displayAge(State) ->
 </p>
 
 <p>
-The two <code>wooper_return_state_*</code> macros are actually quite simple, they are just here to structure the method implementations and to help ensuring, in debug mode, they are well-formed. 
+The two <code>wooper_return_state_*</code> macros are actually quite simple, they are just here to structure the method implementations (helping the method developer not mixing states and results), and to help ensuring, in debug mode, that methods are well-formed (an atom is then prepended to the returned tuple, and WOOPER matches it during post-invocation, before handling the return, for an increased safety). 
+</p>
+
+<br><p><center>[<a href="#usagetoc">Back to the usage table of contents</a>]</center></p><br>
+
+
+
+
+<a name="statemanagement"></a>
+<h3>State management</h3>
+
+<p>
+We are dealing here with the encapsulated inner state of an instance, which is only directly accessible inside its dedicated module.
+</p>
+
+<p>
+An instance state is defined by a set of attributes. Each attribute is designated by a name and has a mutable value.
+</p>
+
+<p>
+As seen in various examples, most method implementations will access (read/write) to attributes stored in the instance state, whose original version is always specified as their first parameter. 
 </p>
 
 
-<h3>Attributes management</h3>
-<p>
-As seen in various examples, most methods will access (read/write) to attributes stored in the instance state, whose original version is always specified as their first parameter. 
-</p>
+<h4>Modifying state</h4>
 
 <p>
-Setting an attribute (creating and/or modifying it) should be done with the <code>setAttribute</code> macro : <code>?setAttribute(AState,AttributeName,NewAttributeValue)</code>. For example, <code>?setAttribute(State,age,3)</code> will set, in the state <code>State</code>, the <code>age</code> attribute to 3. 
+Setting an attribute (creating and/or modifying it) should be done with the <code>setAttribute</code> macro: <code>?setAttribute(AState,AttributeName,NewAttributeValue)</code>. For example, <code>?setAttribute(State,age,3)</code> will set, in the state <code>State</code>, the <code>age</code> attribute to 3. 
 </p>
 
+
+<h4>Reading state</h4>
 <p>
-Getting the value of an attribute should be done with the <code>getAttribute</code> macro : <code>?getAttribute(AState,AttributeName)</code>. For example, <code>?getAttribute(State,whisker_color)</code>
+Getting the value of an attribute should be done with the <code>getAttribute</code> macro: <code>?getAttribute(AState,AttributeName)</code>. For example, <code>?getAttribute(State,whisker_color)</code>
  returns the value of the attribute <code>whisker_color</code> from state <code>State</code>.
 </p>
 
 <p>
-The requested attribute may not exist in the specified state. In this case, <code>getAttribute</code> returns <code>{ attribute_not_found, AttributeName, ClassName }</code>, for example <code>{ attribute_not_found, nozzle_color, class_Cat}</code>.
+The requested attribute may not exist in the specified state. In this case, <code>getAttribute</code> returns, instead of the result, <code>{ attribute_not_found, AttributeName, ClassName }</code>, for example <code>{ attribute_not_found, nozzle_color, class_Cat}</code>.
 </p>
 
 <p>
-Quite often, when retrieving an attribute, the state variable will be named <code>State</code> (when using directly the original state specified in the method declaration). In this case, the <code>getAttr</code> macro can be used: <code>?getAttr(whisker_color)</code> expands as <code>?getAttribute(State,whisker_color)</code> (but is shorter).
+Quite often, when retrieving an attribute, the state variable will be named <code>State</code> (when using directly the original state specified in the method declaration). In this case, the <code>getAttr</code> macro can be used: <code>?getAttr(whisker_color)</code> expands as <code>?getAttribute(State,whisker_color)</code> (and is shorter).
 </p>
 
+<br><p><center>[<a href="#usagetoc">Back to the usage table of contents</a>]</center></p><br>
 
-<h3>Method look-up &amp; calls</h3>
-<p>
-When a method M/n is called, WOOPER tries to find <code>M(State,arg1,..,argn-1)</code>. Name and arity must match, the method may not be found. In this case, the <code>wooper_method_not_found</code> atom is returned, and the object state did not change.
-</p>
 
-<p>
-Oneway methods should be called like this: <code>MyPoint ! {setXY,[1,2]}</code>, and no result is to be managed. 
-</p>
 
-<p>
-As for requests, <code>receive</code> should be used to retrieved the result, like in:
 
-<center>
-    <table summary="Code" style="border : none">
-        <tr>
-          <td>
-            <div class="box">
-<code><pre>
-MyPoint ! {getCoordinates,[],self()},
-receive
 
-	{wooper_result,[X,Y]} ->
-		[...];
-	
-	% Can be left out (let it crash):
-	Error ->
-		[...]
-		
-end,
-</pre></code>
-            </div>
-          </td>
-        </tr>
-    </table>
-</center>
-</p>
+<a name="inheritpolymorph"></a>
+<h3>Multiple inheritance &amp; polymorphism</h3>
 
 <p>
-Errors can be better discriminated if needed (but defensive development is not really favored in Erlang):
-<center>
-    <table summary="Code" style="border : none">
-        <tr>
-          <td>
-            <div class="box">
-<code><pre>
-MyPoint ! {getCoordinates,[],self()},
-receive
-
-	{wooper_result, [X,Y] } ->
-		[...];
-	
-	{wooper_method_not_found, Module, Method, Arity} ->
-		[...];
-
-	{wooper_method_failed, Pid, Module, Method, Arity, Parameters, ErrorTerm} ->
-		[...];
-
-	{wooper_method_faulty_return, Pid, Module, Method, Arity, Parameters, ErrorTerm} ->
-		[...];
-
-	wooper_method_returns_void ->
-
-	OtherError ->
-		% Should never happen:
-		[...]
-		
-end,
-
-</pre></code>
-            </div>
-          </td>
-        </tr>
-    </table>
-</center>
-</p>
-
-
-
-<p>
-<b>Marshalling</b> of parameters and return values is made automatically by Erlang.  
-</p>
-
-
-<p>
-<b>Multiple inheritance</b> and <b>polymorphism</b> are managed by WOOPER: even if our cat class does not define a <code>getAge</code> method, it can be readily be used as it is inherited from its mother classes (here from Creature, an indirect mother class). All Creature instances can be handled the same:
+Both are automatically managed by WOOPER: even if our cat class does not define a <code>getAge</code> method, it can be readily be used as it is inherited from its mother classes (here from <code>class_Creature</code>, an indirect mother class). All creature instances can be handled the same:
 
 <center>
     <table summary="Code" style="border: none">
@@ -624,20 +733,20 @@ end,
 MyCat ! {getAge,[],self()},
 receive
 		
-	{wooper_result,Age} ->
-		io:format( "This is a ~B year old cat.", [Age] ) ;
+	{wooper_result,Age} -&gt;
+		io:format( "This is a ~B year old cat.", [Age] )
 
 end,
 
 % Polymorphism is immediate:
-% (class_Platypus inheriting too from class_Mammal)
+% (class_Platypus inheriting too from class_Mammal, hence from class_Creature)
 MyPetList = [ MyCat, MyPlatypus ],
 foreach( 
-	fun(AnyCreature) ->
+	fun(AnyCreature) -&gt;
 		AnyCreature ! {getAge,[],self()},
 		receive
 		
-			{wooper_result,Age} ->
+			{wooper_result,Age} -&gt;
 				io:format( "This is a ~B year old creature.", [Age] )
 
 		end,
@@ -650,10 +759,15 @@ foreach(
 </center>
 </p>
 
+<br><p><center>[<a href="#usagetoc">Back to the usage table of contents</a>]</center></p><br>
+
+
+
+<a name="lifecycle"></a>
+<h3>Life-cycle</h3>
 
 <p>
-<b>Life-cycle</b> is managed thanks to the <code>new</code> and the
-<code>delete</code> operators (both are WOOPER-reserved function names, for all arities):
+Creation and destruction of instances are managed respectively thanks to the <code>new</code> and the <code>delete</code> operators (both are WOOPER-reserved function names, for all arities):
 <center>
     <table summary="Code" style="border: none">
         <tr>
@@ -661,7 +775,7 @@ foreach(
             <div class="box">
 <code><pre>
 MyCat = class_Cat:new(Age,Gender,FurColor,WhiskerColor),
-MyCat ! delete
+MyCat ! delete.
 </pre></code>
             </div>
           </td>
@@ -670,68 +784,67 @@ MyCat ! delete
 </center>
 </p>
 
+
+<h4>Instance creation: new and construct</h4>
+
+
+<h5>Role of the new/construct pair</h5>
+
 <p>
-Only one <code>new/construct</code> pair can be defined, but this unique constructor may branch to as many subconstructors as needed:
-<code>MyCat = Class_Cat:new(ConstructorType,ConstructorParameters).</code>. For example: <code>MyCat = Class_Cat:new(constructor_one,[1,2]).</code>.
+Whereas the purpose of <code>new</code> is to create a working instance on the user behalf, the role of <code>construct</code> is to initialize an instance of that class while being able to be chained for inheritance, as explained later. 
 </p>
 
 <p>
-The <code>delete</code> operator can be omitted, in this case a default destructor is used, and the instance is stopped and garbage-collected. 
-If a specific action must be performed on deletion, potentially-chained destructors can be defined:
+The <code>new</code> operator is automatically defined by WOOPER, but it relies on the class-specific <code>construct</code> special method (it cannot be called from outside the class module). The <code>construct</code> method is the one that must be implemented by the class developer.
+</p>
+
+<p>
+Only one <code>new/construct</code> pair can be defined, but this unique twofold constructor may be defined to branch to as many subconstructors as needed: for example, <code>MyCat = Class_Cat:new(construct_from_point,[1,2]).</code>.
+</p>
+
+
+<h5>Declaration of the new/construct pair</h5>
+
+<p>
+When an instance is created, user-specified parameters are given to the <code>new</code> operator, notably to set up the instance initial state, i.e. its attributes. These parameters must be declared thanks to the <code>wooper_construct_parameters</code> define. For example, <code>-define( wooper_construct_parameters,).</code> (no parameter needed), or <code>-define( wooper_construct_parameters, Age, Gender ).</code> (two parameters needed).
+</p>
+
+<p>
+The WOOPER-defined <code>new</code> operator automatically transmits these parameters to the <code>construct</code> method.
+</p>
+
+<p>
+Based on the <code>wooper_construct_parameters</code> define (let us suppose n constructor parameters are listed in it), <code>new</code> and <code>construct</code> must be declared thanks to: <code>-define( wooper_construct_export, new/n, construct/n+1).</code>. <code>construct</code> takes one additional parameter, the instance state.
+</p>
+
+<p>
+For example, if <code>-define( wooper_construct_parameters, Age, Gender ).</code> is declared, <code>-define( wooper_construct_export, new/2, construct/3 ).</code> should then be specified, and the corresponding method will be: <code>construct(State,?wooper_construct_parameters) -&gt; [..]</code>. If there is no construction-related parameter, then the method becomes: <code>construct(State) -&gt; [..]</code>. The <code>new</code> operator is always defined automatically by WOOPER, nothing is to be done for it.
+</p>
+
+
+<h5>Definition of the <code>construct</code> method</h5>
+
+<p>
+The <code>construct</code> methods are expected to be chained: they must be designed to be called by the ones of child classes, and they must call themselves the constructors of their mother classes, if any. Hence they always take the current state of the instance being created as a starting base, and returns it once updated, first from the direct mother classes, then by this class itself.
+</p>
+
+<p>
+For example, <code>class_Cat</code> inherits directly from <code>class_Mammal</code> and <code>class_ViviparousBeing</code>, and has only one attribute (<code>whisker_color)</code> on its own:
 <center>
     <table summary="Code" style="border: none">
         <tr>
           <td>
             <div class="box">
 <code><pre>
-% Overriding default destructor:	
-% State should be returned, and destructors should be called in leaf-to-root
-% order in inheritance tree.
-delete(State) ->
-	% Perform here class-specific action (ex: socket or file explicit closing).
-	LocalDelState = my_action( State ),
-	% Then if needed call the mother class counterparts:
-	OneDelState = class_MotherOne:delete( LocalDelState ),
-	TwoDelState = class_MotherTwo:delete( OneDelState ),
-	% Finally return the state to allow child classes to chain:
-	TwoDelState.
-</pre></code>
-            </div>
-          </td>
-        </tr>
-    </table>
-</center>
-
-</p>
-
-
-<p>
-Based on the <code>wooper_construct_attributes</code> define (let us suppose n attributes are listed in it), <code>new</code> and <code>construct</code> must be declared thanks to: <code>-define( wooper_construct_export, new/n, construct/n+1).</code>.
-</p>
-
-<p>
-For example, <code>-define( wooper_construct_attributes, Age, Gender ).</code> results in <code>-define( wooper_construct_export, new/2, construct/3 ).</code>.
-</p>
-
-<p>
-The <code>new</code> operator is automatically defined by WOOPER, only the <code>construct</code> special method must be implemented by the user. 
-</p>
-
-<p>
-The <code>construct</code> functions are expected to be chained: they must be designed to be called by the ones of child classes, and they must call themselves the constructors of their mother classes, if any. Hence they always take the current state of the instance being created as a starting base, and returns it once updated, first from the direct mother classes, then by this class itself.
-</p>
-
-<p>
-For example, <code>class_Cat</code> inherits directly from <code>Mammal</code>
-and <code>ViviparousBeing</code>, and as only one attribute (<code>whisker_color)</code> on its own:
-<center>
-    <table summary="Code" style="border: none">
-        <tr>
-          <td>
-            <div class="box">
-<code><pre>
+[..]
+-define(wooper_superclasses,[class_Mammal,class_ViviparousBeing]).
+[..]
+-define(wooper_construct_parameters,Age,Gender,FurColor,WhiskerColor).
+[..]
+-define(wooper_construct_export,new/4,construct/5).
+[..]
 % Constructs a new Cat.
-construct(State,?wooper_construct_attributes) ->
+construct(State,?wooper_construct_parameters) -&gt;
 
 	% First the direct mother classes:
 	MammalState = class_Mammal:construct( State, Age, Gender, FurColor ),
@@ -750,22 +863,22 @@ construct(State,?wooper_construct_attributes) ->
 </p>
 
 <p>
-The fact that the <code>Mammal</code> class itself inherits from the <code>Creature</code> class must not appear here: it is to be managed directly by <code>class_Mammal:construct</code>.
+The fact that the <code>Mammal</code> class itself inherits from the <code>Creature</code> class must not appear here: it is to be managed directly by <code>class_Mammal:construct</code> (only direct classes must be taken into account in a given inheritance level).
 </p>
 
 <p>
 One should ensure that, in constructors, the successive states are always built from the last updated one:
 
 <center>
-    <table summary="Code" style="border : none">
+    <table summary="Code" style="border: none">
         <tr>
           <td>
             <div class="box">
 <code><pre>
 % WRONG, the age update is lost:
-construct(State,Age,Sex) ->
+construct(State,Age,Gender) -&gt;
 	AgeState = setAttribute(State,age,Age),
-	setAttribute(State,sex,Sex),
+	setAttribute(<u>State</u>,gender,Gender),
 </pre></code>
             </div>
           </td>
@@ -775,15 +888,15 @@ construct(State,Age,Sex) ->
 
 
 <center>
-    <table summary="Code" style="border : none">
+    <table summary="Code" style="border: none">
         <tr>
           <td>
             <div class="box">
 <code><pre>
 % RIGHT:
-construct(State,Age,Sex) ->
+construct(State,Age,Gender) -&gt;
 	AgeState = setAttribute(State,age,Age),
-	setAttribute(AgeState,sex,Sex),
+	setAttribute(<u>AgeState</u>,gender,Gender),
 </pre></code>
             </div>
           </td>
@@ -793,12 +906,49 @@ construct(State,Age,Sex) ->
 
 </p>
 
-<p>
-WOOPER is in some ways adding features very similar to the ones of Python (simple multiple inheritance, implied <code>self/State</code> parameter, attribute dictionaries, etc.; with less syntatic sugar available though) while still offering the major strengths of Erlang (concurrency, distribution, functional paradigm) and not hurting too much overall performances (mainly thanks to the prebuilt attribute and method hashtables).
-</p>
+
+<h4>Instance deletion: delete</h4>
 
 <p>
-All WOOPER classes must include <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/wooper/src/wooper.hrl?view=markup" target="_blank">wooper.hrl</a>. To help declaring the right defines in the right order, using a WOOPER <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/wooper/examples/class_Template.erl?view=markup" target="_blank">template</a> is recommended.
+The <code>delete</code> operator can be omitted, in this case a default do-nothing destructor is used, and the instance is stopped and garbage-collected. 
+If a specific action must be performed on deletion, potentially-chained destructors can be defined:
+<center>
+    <table summary="Code" style="border: none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+% Overriding default destructor:	
+% State should be returned, and destructors should be called in leaf-to-root
+% order in inheritance tree.
+delete(State) -&gt;
+	% Perform here class-specific action (ex: socket or file explicit closing).
+	LocalDelState = my_action( State ),
+	% Then if needed call the mother class counterparts:
+	OneDelState = class_MotherOne:delete( LocalDelState ),
+	TwoDelState = class_MotherTwo:delete( OneDelState ),
+	% Finally return the state to allow child classes to chain:
+	TwoDelState.
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+</p>
+
+
+<br><p><center>[<a href="#usagetoc">Back to the usage table of contents</a>]</center></p><br>
+
+
+
+<a name="misc"></a>
+<h3>Misceallenous technical points</h3>
+
+
+<p>
+All WOOPER classes must include <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/wooper/src/wooper.hrl?view=markup" target="_blank">wooper.hrl</a>: <code>-include("wooper.hrl").</code>. To help declaring the right defines in the right order, using the WOOPER <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/wooper/examples/class_Template.erl?view=markup" target="_blank">template</a> is recommended.
 </p>
 
 <p>
@@ -806,7 +956,7 @@ One should have <code>utils.beam</code>, <code>hashtable.beam</code> and <code>w
 </p>
 
 <p>
-These modules must be compiled before using WOOPER, for example: 
+These modules must thus be compiled before using WOOPER, for example: 
 <center>
     <table summary="Code" style="border: none">
         <tr>
@@ -823,9 +973,15 @@ These modules must be compiled before using WOOPER, for example:
 </center>
 </p>
 
+<p>
+Finally, WOOPER is in some ways adding features very similar to the ones of Python (simple multiple inheritance, implied <code>self/State</code> parameter, attribute dictionaries, etc.; with less syntatic sugar available though) while still offering the major strengths of Erlang (concurrency, distribution, functional paradigm) and not hurting too much overall performances (mainly thanks to the prebuilt attribute and method hashtables).
+</p>
 
 
 <br><p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
+
+
+<!-- #####################################################################" -->
 
 
 
@@ -871,110 +1027,7 @@ We created a small set of classes allowing to show multiple inheritance:
 </ul>
 
 
-<br><p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
-
-
-
-
-<a name="inner"></a>
-<h2>WOOPER inner workings</h2>
-
-<p>
-Each instance runs a main loop (<code>wooper_main_loop</code>, defined in <code>wooper.hrl</code>) that keeps its internal state and through a <code>receive</code> serves the methods specified by incoming messages.
-</p>
-
-<p>
-The kept state is twofold:
-<ul>
-	<li><p>a <b>method virtual table</b>: this per-class hashtable is built at runtime, on the first creation of an instance of this class, and stored by the unique (singleton) Wooper class manager that shares it to all the class instances. This manager is itself spawned the first time it is needed, and stays ready for all instances of various classes being created (it uses a hashtable to associate virtual tables to classes).</p>
-	
-	<p>This per-class method table has for keys the known method names (atoms) for this class, associated to the values being the most specialized module, in inheritance tree, that defines that method. Hence each instance has a reference to a shared hashtable that allows for a direct method look-up. As the table is built only once and is shared by all instances, it adds very little overhead, space-wise and time-wise. Thanks to the hashtable, method look-up is efficient too
-	</p>
-	</li>
-	
-	<li>an <b>attribute table</b>: another hashtable, this time per-instance. Keys are attribute names, values are attributes values. It allows a seamless yet not too slow access to all data member, including inherited ones</li>
-</ul>
-</p>
-
-
-<p>
-WOOPER relies only on these specific files:
-<ul>
-
-<!--
-    <li><a href="" target="_blank"></a></li>
--->
-
-    <li><a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/wooper/src/wooper.hrl?view=markup" target="_blank">wooper.hrl</a>: the WOOPER core, which gives modules using it all the OOP constructs discussed</li>
-    <li><a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/wooper/src/wooper_class_manager.hrl?view=markup" target="_blank">wooper_class_manager.hrl</a>: the (very short) class manager header</li>
-    <li><a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/wooper/src/wooper_class_manager.hrl?view=markup" target="_blank">wooper_class_manager.erl</a>: the class manager itself, the unique process that is automatically spawned to share virtual tables among instances</li>
-    <li><a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/common/hashtable.erl?view=markup" target="_blank">hashtable.erl</a>: efficient associative table used by WOOPER for virtual tables, methods, attributes</li>
-    <li><a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/common/utils.erl?view=markup" target="_blank">utils.erl</a>: a small module used by the hashtable and other modules</li>
-</ul>
-</p>
-
-
-<p>
-As Burkhard Neppert suggested, an alternative way of implementing OOP here could be to use Erlang behaviours. This is the way OTP handles generic functionalities that can be specialized (e.g. <code>gen_server</code>). One approach could be to map each objet-oriented base class to an Erlang behaviour. 
-</p>
-
-<p>
-See some guidelines about <a href="http://wiki.trapexit.org/index.php/Defining_Your_Own_Behaviour" target="_blank">defining</a> your own behaviours and making them <a href="http://wiki.trapexit.org/index.php/Cascading_Behaviours" target="_blank">cascade</a>.
-</p>
-
-
-
-
-
-<h2>Conventions</h2>
-
-
-
-
-<h3>Instances, a.k.a. Objects</h3>
-<p>
-An object (which is an instance of a class, with its own execution thread, active object in UML language) is able to expose a public interface (a kind of API for a server) that can be used by clients to trigger RMI-like calls.
-</p>
-
-<p>
-An object must be created through a special function defined by its class, the operator <code>new</code>, that will call a constructor. Example: <code>My_car = class_car:new("Dodge","Viper").</code>. 
-</p>
-
-<p>
-Example: <code>-module(my_class)...</code> in my_class.erl defines a class <code>my_class</code>.
-</p>
-
-
-<p>
-An interface is a set of public methods. Interfaces are inherited between classes.
-</p>
-
-
-
-<h3>Methods</h3>
-<p>
-There are two kinds of possible methods to an object: requests and oneways.
-Requests are supposed to send back an answer to the caller (the client), whereas oneways are just handled by the server, with no answer to expect from the client side. Both can be either with or without arguments.
-</p>
-
-
-<h3>Requests</h3>
-<p>
-To send an answer to the client, the server needs to know its PID, hence requests have to specify it.
-</p>
-
-<p>
-Moreover the client needs to be able to sort out multiple asynchronous answers to requests it may have sent to different (server) objects, so the answer to requests have to send back the PID of the server as well.
-</p>
-
-
-
-<h3>Oneways</h3>
-<p>
-
-</p>
-
-
+<p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
 
 
 
@@ -982,11 +1035,34 @@ Moreover the client needs to be able to sort out multiple asynchronous answers t
 
 
 <a name="current"></a>
-<h2>Current stable version</h2>
+<h2>Current stable version &amp; download</h2>
+
+<h3>Using stable release archive</h3>
 <p>
-WOOPER 0.1 is ready to be used and can be downloaded <a href="" target="_blank">here</a>.
+WOOPER 0.1 is ready to be used and can be downloaded <a href="http://sourceforge.net/project/showfiles.php?group_id=158516&package_id=239574" target="_blank">here</a>. Either a .zip or a .tar.bz2 can be retrieved.
 </p>
 
+<p>
+One way of building all of Wooper (base files and examples) is, from UNIX or on Windows from a Cygwin or MSYS shell, once the archive is downloaded and extracted, to execute <code>make all</code> from the WOOPER directory. For example:
+
+<center>
+    <table summary="Code" style="border: none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+tar xvjf wooper-x.y.tar.bz2 && cd wooper-x.y && make all
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+It will build and run all, including the various WOOPER test suites.
+</p>
+
+
+<h3>Using cutting-edge SVN</h3>
 <p>
 A SVN check-out of WOOPER code can be obtained thanks to, for example:
 <center>
@@ -1018,7 +1094,57 @@ svn co https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/doc/we
 
 </p>
 
-<br><p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
+<p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
+
+
+<!-- #####################################################################" -->
+
+
+
+
+<a name="inner"></a>
+<h2>WOOPER inner workings</h2>
+
+<p>
+Each instance runs a main loop (<code>wooper_main_loop</code>, defined in <code>wooper.hrl</code>) that keeps its internal state and through a <code>receive</code> serves the methods specified by incoming messages.
+</p>
+
+<p>
+The kept state is twofold:
+<ul>
+	<li><p>a <b>method virtual table</b>: this per-class hashtable is built at runtime, on the first creation of an instance of this class, and stored by the unique (singleton) Wooper class manager that shares it to all the class instances. This manager is itself spawned the first time it is needed, and stays ready for all instances of various classes being created (it uses a hashtable to associate to each class its specific virtual table).</p>
+	
+	<p>This per-class method table has for keys the known method names (atoms) for this class, associated to the values being the most specialized module, in inheritance tree, that defines that method. Hence each instance has a reference to a shared hashtable that allows for a direct method look-up. As the table is built only once and is shared by all instances, it adds very little overhead, space-wise and time-wise. Thanks to the hashtable, method look-up is efficient too
+	</p>
+	</li>
+	
+	<li>an <b>attribute table</b>: another hashtable, this time per-instance. Keys are attribute names, values are attributes values. It allows a seamless yet not too slow access to all data members, including inherited ones</li>
+</ul>
+</p>
+
+
+<p>
+WOOPER relies only on these specific files:
+<ul>
+
+<!--
+    <li><a href="" target="_blank"></a></li>
+-->
+
+    <li><a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/wooper/src/wooper.hrl?view=markup" target="_blank">wooper.hrl</a>: the WOOPER core, which gives modules using it all the OOP constructs discussed</li>
+    <li><a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/wooper/src/wooper_class_manager.hrl?view=markup" target="_blank">wooper_class_manager.hrl</a>: the (very short) class manager header</li>
+    <li><a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/wooper/src/wooper_class_manager.hrl?view=markup" target="_blank">wooper_class_manager.erl</a>: the class manager itself, the unique process that is automatically spawned to share virtual tables among instances</li>
+    <li><a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/common/hashtable.erl?view=markup" target="_blank">hashtable.erl</a>: efficient associative table used by WOOPER for virtual tables, methods, attributes</li>
+    <li><a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/common/utils.erl?view=markup" target="_blank">utils.erl</a>: a small module used by the hashtable and other modules</li>
+</ul>
+</p>
+
+
+<p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
+
+<!-- #####################################################################" -->
+
+
 
 
 
@@ -1033,12 +1159,16 @@ svn co https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/doc/we
 -->
 
 	<li>Is <b>wooper_main_loop</b> (in <code>wooper.hrl</code>) really tail-recursive ?</li>
-	<li>Integrate <b>persistant storage</b> of instance states into a Mnesia database</li>
-	<li>Would there be a <b>more efficient</b> implementation of hashtables ? (ex: ets-based)</li>
+	<li>Integrate automatic <b>persistant storage</b> of instance states into Mnesia databases</li>
+	<li>Would there be a <b>more efficient</b> implementation of hashtables ? (ex: ets-based). More generally speaking, some profiling could be done to further increase overall performances</li>
 	
 </ul>
 
 </p>
+
+<p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
+
+
 
 <!-- #####################################################################" -->
 
@@ -1046,7 +1176,7 @@ svn co https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/doc/we
 <a name="license"></a>
 <h2>License</h2>
 <p>
-WOOPER is licensed under a disjunctive tri-license giving you the choice of one of the three following sets of free software/open source licensing terms:
+WOOPER is licensed by its author (Olivier Boudeville) under a disjunctive tri-license giving you the choice of one of the three following sets of free software/open source licensing terms:
 <ul>
 
 <!--
@@ -1060,31 +1190,35 @@ WOOPER is licensed under a disjunctive tri-license giving you the choice of one 
 </p>
 
 <p>
-This allows the use of the WOOPER code in as wide a variety of software projects as possible, while still maintaining copyleft on this code. Being triple-licensed means that someone (the licensee) who modifies and/or distributes it can choose which of the available sets of license terms he is operating under.
+This allows the use of the WOOPER code in as wide a variety of software projects as possible, while still maintaining copyleft on this code. Being triple-licensed means that someone (the licensee) who modifies and/or distributes it can choose which of the available sets of license terms he is operating under. Enhancements are expected to be back-contributed, so that everyone can benefit from them.
 </p>
 
-<br><p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
+<p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
 
 
 <!-- #####################################################################" -->
 
 <a name="sources"></a>
-<h2>Sources</h2>
+<h2>Sources, inpirations &amp; alternate solutions</h2>
 
 <p>
 <!--
     <li><a href="" target="_blank"></a></li>
 -->
 	
-    <li><b>Concurrent Programming in Erlang</b>, Joe Armstrong, Robert Virding, Claes Wikström et Mike Williams. Chapter 18, page 299: Object-oriented Programming</li>
+    <li><b>Concurrent Programming in Erlang</b>, Joe Armstrong, Robert Virding, Claes Wikström et Mike Williams. Chapter 18, page 299: Object-oriented Programming. This book describes a simple way of implementing multiple inheritance, without virtual table, at the expense of a (problably slow) systematic method look-up (at each method call). No specific state management is supported</li>
 
-    <li>Chris Rathman 's <a href="http://www.angelfire.com/tx4/cus/shapes/erlang.html" target="_blank">approach</a> to polymorphism</li> 
+    <li>Chris Rathman 's <a href="http://www.angelfire.com/tx4/cus/shapes/erlang.html" target="_blank">approach</a> to life cycle management and polymorphism. Inheritance not supported</li> 
 	
+    <li>
+	As Burkhard Neppert suggested, an alternative way of implementing OOP here could be to use Erlang behaviours. This is the way OTP handles generic functionalities that can be specialized (e.g. <code>gen_server</code>). One approach could be to map each objet-oriented base class to an Erlang <b>behaviour</b>. See some guidelines about <a href="http://wiki.trapexit.org/index.php/Defining_Your_Own_Behaviour" target="_blank">defining</a> your own behaviours and making them <a href="http://wiki.trapexit.org/index.php/Cascading_Behaviours" target="_blank">cascade</a>
+	</li>
+
 </ul>
 
 </p>
 
-<br><p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
+<p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
 
 
 <!-- #####################################################################" -->
@@ -1096,11 +1230,10 @@ This allows the use of the WOOPER code in as wide a variety of software projects
 Bugs, questions, remarks, patches, requests for enhancements, etc. are to be sent to the <a href="mailto:ceylan-wooperNOSPAM@lists.sourceforge.net" target="_blank">ceylan-wooper at lists dot sourceforge dot net</a>. One must <a href="https://lists.sourceforge.net/lists/listinfo/ceylan-wooper" target="_blank">register</a> first.
 </p>
 
-<br><p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
+<p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
 
 <!-- #####################################################################" -->
 
-  <br>
   <br>
   <br>
 
@@ -1117,7 +1250,7 @@ Bugs, questions, remarks, patches, requests for enhancements, etc. are to be sen
   <center>
     [<a href="#_top_">Top</a>]<br>
     <br>
-    <em>Last update: Saturday, July 21, 2007</em>
+    <em>Last update: Sunday, July 22, 2007</em>
   </center>
 </body>
 </html>
