@@ -9,10 +9,21 @@ ERLANG_ROOT         := /usr
 
 ERLANG_COMPILER     := $(ERLANG_ROOT)/bin/erlc
 
+WOOPER_VERSION := 0.1
+
+WOOPER_RELEASE_BASE        := wooper-$(WOOPER_VERSION)
+
+WOOPER_RELEASE_ARCHIVE_ZIP := $(WOOPER_RELEASE_BASE).zip
+WOOPER_RELEASE_ARCHIVE_BZ2 := $(WOOPER_RELEASE_BASE).tar.bz2
+
 
 COMMON     = $(TOP)/common
 WOOPER     = $(TOP)/wooper
 WOOPER_SRC = $(WOOPER)/src
+
+DOC_ROOT       = $(TOP)/../../../doc
+WOOPER_DOC_DIR = $(DOC_ROOT)/web/main/documentation/wooper
+
 
 COMMON_INC = -I$(COMMON)
 WOOPER_INC = -I$(WOOPER_SRC)
