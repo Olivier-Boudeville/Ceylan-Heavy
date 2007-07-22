@@ -9,7 +9,7 @@
 % They are here the ones of the Mammal mother class (the ovoviviparous being 
 % constructor does not need any parameter) plus nozzle color.
 % These are class-specific data needing to be set in the constructor:
--define(wooper_construct_attributes,Age,Gender,FurColor,NozzleColor).
+-define(wooper_construct_parameters,Age,Gender,FurColor,NozzleColor).
 
 % Construction-related exported operators:
 -define(wooper_construct_export,new/4,construct/5).
@@ -22,7 +22,7 @@
 
 
 % Constructs a new Platypus.
-construct(State,?wooper_construct_attributes) ->
+construct(State,?wooper_construct_parameters) ->
 
 	% First the direct mother classes:
 	MammalState = class_Mammal:construct( State, Age, Gender, FurColor ),
