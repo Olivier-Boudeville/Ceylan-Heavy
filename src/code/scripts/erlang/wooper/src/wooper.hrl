@@ -69,7 +69,7 @@
 %   '-define(wooper_construct_export,new/p,construct/p+1,toString/1).'
 % Ex: '-define(wooper_construct_export,new/2,construct/3,toString/1).' to 
 % declare the appropriate construction-related functions (new and construct),
-% p being the number of parameters defined in the wooper_construct_attributes
+% p being the number of parameters defined in the wooper_construct_parameters
 % variable. Only the relevant 'construct' function has to be actually 
 % defined by the developer: new is automatically defined appropriately
 % (see in this file). toString is optional but proved to be often convenient
@@ -88,7 +88,7 @@
 % -module(class_Cat).
 % -define(wooper_superclasses,[class_Mammal,class_ViviparousBeing]).
 % -define(wooper_method_export,hasWhiskers/1,canEat/2).
-% -define(wooper_construct_attributes,Age,Gender,FurColor).
+% -define(wooper_construct_parameters,Age,Gender,FurColor).
 % -define(wooper_construct_export,new/3,construct/4).
 % -include("wooper.hrl").
 % [...]
@@ -254,9 +254,9 @@ get_superclasses(State) ->
 
 % Spawns a new instance for this class, using specified parameters to
 % construct it.
-new(?wooper_construct_attributes) ->
+new(?wooper_construct_parameters) ->
 	% Double-list: list with a list in it.
-	spawn(?MODULE,wooper_construct_and_run, [[?wooper_construct_attributes]] ).
+	spawn(?MODULE,wooper_construct_and_run, [[?wooper_construct_parameters]] ).
 	
 
 % Indirection level to allow constructors to be chained.
@@ -519,7 +519,9 @@ wooper_main_loop(State) ->
 					deleted;
 				
 				{ value, LocatedModule } -> 
-					apply( LocatedModule, delete, [ State ] )
+					apply( LocatedModule, delete, [ State ] ),
+					deleted
+					
 				
 			% (do nothing, loop ended).		
 			end;
