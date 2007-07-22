@@ -7,7 +7,7 @@ MODULES_DIRS = common wooper
 
 
 .PHONY: all bz2 clean release-wooper release-wooper-zip release-wooper-bz2 \
-	prepare-wooper
+	prepare-wooper clean-wooper-release clean-archive
 
 
 all: 
@@ -45,5 +45,11 @@ clean-wooper-release:
 	@echo "  Cleaning release archive for Wooper"
 	-@/bin/rm -rf $(WOOPER_RELEASE_BASE)
 	
-		
+	
+clean: clean-archive
+
+clean-archive:
+	-@/bin/rm -f wooper-*.tar.bz2 wooper-*.zip
+	
+			
 include $(TOP)/GNUmakerules.inc
