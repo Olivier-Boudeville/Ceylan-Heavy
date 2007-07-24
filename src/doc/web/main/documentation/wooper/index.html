@@ -1039,7 +1039,7 @@ We created a small set of classes allowing to show multiple inheritance:
 
 <h3>Using stable release archive</h3>
 <p>
-WOOPER 0.1 is ready to be used and can be downloaded <a href="http://sourceforge.net/project/showfiles.php?group_id=158516&package_id=239574" target="_blank">here</a>. Either a .zip or a .tar.bz2 can be retrieved.
+WOOPER 0.1 is ready to be used and can be downloaded <a href="http://sourceforge.net/project/showfiles.php?group_id=158516&package_id=239574" target="_blank">here</a>. Either a .zip or a .tar.bz2 can be retrieved. Starting from the 0.1 version, WOOPER should be fully functional (pun intended!). 
 </p>
 
 <p>
@@ -1202,6 +1202,8 @@ This allows the use of the WOOPER code in as wide a variety of software projects
 <h2>Sources, inpirations &amp; alternate solutions</h2>
 
 <p>
+
+<ul>
 <!--
     <li><a href="" target="_blank"></a></li>
 -->
@@ -1214,8 +1216,27 @@ This allows the use of the WOOPER code in as wide a variety of software projects
 	As Burkhard Neppert suggested, an alternative way of implementing OOP here could be to use Erlang behaviours. This is the way OTP handles generic functionalities that can be specialized (e.g. <code>gen_server</code>). One approach could be to map each objet-oriented base class to an Erlang <b>behaviour</b>. See some guidelines about <a href="http://wiki.trapexit.org/index.php/Defining_Your_Own_Behaviour" target="_blank">defining</a> your own behaviours and making them <a href="http://wiki.trapexit.org/index.php/Cascading_Behaviours" target="_blank">cascade</a>
 	</li>
 
+    <li>
+	
+		<p>As mentioned by Nick Eklund, despite quite different operating modes, WOOPER and <a href="http://www1.erlang.org/doc/apps/orber/index.html" target="_blank">Orber</a>, an Erlang implementation of a <b>CORBA ORB</b>
+ (<em>Object Request Broker</em>) offer similar OOP features, as CORBA IDL implies an object-oriented approach (see their <a href="http://www.erlang.org/doc/apps/orber/ch_idl_to_erlang_mapping.html#6" target="_blank">OMG IDL to Erlang Mapping</a> and <a href="http://www.erlang.org/doc/apps/ic/ch_erl_genserv.html#5" target="_blank">Generic Server Back-end</a>).
+		</p>
+
+		<p>WOOPER and Orber are rather different beasts though: WOOPER is very lightweight (less than 1000 lines, including blank lines and numerous comments), does not involve a specific (IDL) compiler generating several stub/skeleton Erlang files, nor depends on OTP or Mnesia, whereas Orber offers a full CORBA implementation, including IDL language mapping, CosNaming, IIOP, Interface Repository, etc.
+		</p>
+
+		<p>Since Orber respects the OMG standard, integrating a new language (C/C++, Java, Smalltalk, Ada, Lisp, Python etc.) should be rather easy. On the other hand, if a full-blown CORBA-compliant middleware is not needed, if simplicity and ease of understanding is a key point, then WOOPER could be preferred. If unsure, give a try to both!
+		</p>
+
+	</li>
+
+
 </ul>
 
+</p>
+
+<p>
+The WOOPER name is also a tribute to the underestimated <a href="http://en.wikipedia.org/wiki/WarGames" target="_blank">Wargames</a> movie (remember the <a href="http://en.wikipedia.org/wiki/WOPR" target="_blank">WOPR</a>, the NORAD central computer ?), which the author enjoyed a lot. It is as well a second-order tribute to the <em>Double Wooper King Size</em> (<em>Whopper</em> in most countries), which is/was a great hamburger indeed.
 </p>
 
 <p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
@@ -1250,7 +1271,7 @@ Bugs, questions, remarks, patches, requests for enhancements, etc. are to be sen
   <center>
     [<a href="#_top_">Top</a>]<br>
     <br>
-    <em>Last update: Sunday, July 22, 2007</em>
+    <em>Last update: Tuesday, July 24, 2007</em>
   </center>
 </body>
 </html>
