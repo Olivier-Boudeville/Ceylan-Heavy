@@ -1,0 +1,49 @@
+TOP = ../..
+
+.PHONY: all lib info-lib info-lib-content info-lib-content-detailed
+
+
+NDS_SUBDIRS = generic interfaces logs maths middleware modules network system
+
+
+# Library content.
+ARM7_LIB_CONTENT := $(shell find . -name 'Ceylan*.arm7.o')
+ARM9_LIB_CONTENT := $(shell find . -name 'Ceylan*.arm9.o')
+	
+
+include $(TOP)/src/conf/build/$(CROSS_TARGET)/Makerules.inc
+
+
+
+$(CEYLAN_ARM7_LIB_NAME):  $(ARM7_LIB_CONTENT)
+	@echo "    Linking" $(shell echo $(ARM7_LIB_CONTENT) | wc -w) \
+	"ARM7 object files into $@"
+	@$(AR) $(AR_FLAGS_ARM7) $@ $^
+	
+	
+$(CEYLAN_ARM9_LIB_NAME):  $(ARM9_LIB_CONTENT)
+	@echo "    Linking" $(shell echo $(ARM9_LIB_CONTENT) | wc -w) \
+	"ARM9 object files into $@"
+	@$(AR) $(AR_FLAGS_ARM9) $@ $^
+	
+
+
+
+lib: $(CEYLAN_ARM7_LIB_NAME) $(CEYLAN_ARM9_LIB_NAME)
+	@echo "Libraries $(CEYLAN_ARM7_LIB_NAME) $(CEYLAN_ARM9_LIB_NAME) are available."
+	
+
+info-lib:
+	@echo "CEYLAN_ARM7_LIB_NAME = $(CEYLAN_ARM7_LIB_NAME)"
+	@echo "CEYLAN_ARM9_LIB_NAME = $(CEYLAN_ARM9_LIB_NAME)"
+	
+	
+info-lib-content:
+	@echo "ARM7:" $(shell echo $(ARM7_LIB_CONTENT) | wc -w) "object files."
+	@echo "ARM9:" $(shell echo $(ARM9_LIB_CONTENT) | wc -w) "object files."
+
+
+info-lib-content-detailed:
+	@echo "ARM7_LIB_CONTENT = $(ARM7_LIB_CONTENT)"
+	@echo "ARM9_LIB_CONTENT = $(ARM9_LIB_CONTENT)"
+
