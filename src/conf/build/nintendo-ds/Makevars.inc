@@ -12,7 +12,7 @@
 # or directly hardcoded here :
 # NDS_DEV_ROOT = $(LOANI_INSTALLATIONS)/Nintendo-DS-development
 # Otherwise it will be guessed from LOANI-enforced directory layout :
-LOANI_INSTALLATIONS = $(TOP)/../../../../LOANI-installations/
+LOANI_INSTALLATIONS = $(TOP)/../../../../LOANI-installations
 NDS_DEV_ROOT        = $(LOANI_INSTALLATIONS)/Nintendo-DS-development
 
 
@@ -58,24 +58,34 @@ DSBUILD = $(build_tool_DIR)/dsbuild
 
 # Module settings.
 
-CEYLAN_LOGS        := $(TOP)/src/code/logs
-CEYLAN_INTERFACES  := $(TOP)/src/code/interfaces
-CEYLAN_SYSTEM      := $(TOP)/src/code/system
-CEYLAN_MODULES     := $(TOP)/src/code/modules
-CEYLAN_GENERIC     := $(TOP)/src/code/generic
-CEYLAN_MATHS       := $(TOP)/src/code/maths
-CEYLAN_NETWORK     := $(TOP)/src/code/network
-CEYLAN_MIDDLEWARE  := $(TOP)/src/code/middleware
+CEYLAN_LOGS       := $(TOP)/src/code/logs
+CEYLAN_INTERFACES := $(TOP)/src/code/interfaces
+CEYLAN_SYSTEM     := $(TOP)/src/code/system
+CEYLAN_MODULES    := $(TOP)/src/code/modules
+CEYLAN_GENERIC    := $(TOP)/src/code/generic
+CEYLAN_MATHS      := $(TOP)/src/code/maths
+CEYLAN_NETWORK    := $(TOP)/src/code/network
+CEYLAN_MIDDLEWARE := $(TOP)/src/code/middleware
 
 
-CEYLAN_LOGS_INC        := -I$(CEYLAN_LOGS)
-CEYLAN_INTERFACES_INC  := -I$(CEYLAN_INTERFACES) 
-CEYLAN_SYSTEM_INC      := -I$(CEYLAN_SYSTEM) 
-CEYLAN_MODULES_INC     := -I$(CEYLAN_MODULES) 
-CEYLAN_GENERIC_INC     := -I$(CEYLAN_GENERIC) 
-CEYLAN_MATHS_INC       := -I$(CEYLAN_MATHS) 
-CEYLAN_NETWORK_INC     := -I$(CEYLAN_NETWORK) 
-CEYLAN_MIDDLEWARE_INC  := -I$(CEYLAN_MIDDLEWARE) 
+CEYLAN_LOGS_INC       := -I$(CEYLAN_LOGS)
+CEYLAN_INTERFACES_INC := -I$(CEYLAN_INTERFACES) 
+CEYLAN_SYSTEM_INC     := -I$(CEYLAN_SYSTEM) 
+CEYLAN_MODULES_INC    := -I$(CEYLAN_MODULES) 
+CEYLAN_GENERIC_INC    := -I$(CEYLAN_GENERIC) 
+CEYLAN_MATHS_INC      := -I$(CEYLAN_MATHS) 
+CEYLAN_NETWORK_INC    := -I$(CEYLAN_NETWORK) 
+CEYLAN_MIDDLEWARE_INC := -I$(CEYLAN_MIDDLEWARE) 
+
+
+# For Ceylan versions and al:
+include $(TOP)/src/conf/CeylanSettings.inc
+
+CEYLAN_LT_CURRENT  := $(CEYLAN_MAJOR_VERSION)
+CEYLAN_LT_REVISION := $(CEYLAN_MINOR_VERSION)
+CEYLAN_LT_AGE      := $(shell expr $(CEYLAN_MAJOR_VERSION) - $(CEYLAN_MAJOR_ANCESTOR))
+
+CEYLAN_LT_VERSION := $(CEYLAN_LT_CURRENT).$(CEYLAN_LT_REVISION).$(CEYLAN_LT_AGE)
 
 
 # Architecture-related flags.
@@ -89,13 +99,75 @@ ARCH_FLAGS_ARM9   = $(ARCH_FLAGS_COMMON) -march=armv5te -mtune=arm946e-s -DCEYLA
 
 
 # Determines which kind of build is expected :
-build_mode = debug
-#build_mode = release
+#build_mode = debug
+build_mode = release
+
+
+# Ceylan library names.
+
+CEYLAN_BASE_LIB_NAME := libCeylan-$(CEYLAN_LT_CURRENT).$(CEYLAN_LT_REVISION)
+
+ifeq ($(build_mode),debug)
+	CEYLAN_BASE_LIB_NAME := $(CEYLAN_BASE_LIB_NAME)-debug
+else
+	CEYLAN_BASE_LIB_NAME := $(CEYLAN_BASE_LIB_NAME)-release
+endif
+
+
+CEYLAN_ARM7_LIB_NAME := $(CEYLAN_BASE_LIB_NAME)-arm7.a
+CEYLAN_ARM9_LIB_NAME := $(CEYLAN_BASE_LIB_NAME)-arm9.a
 
 
 # Preprocessor flags.
 
-CPP_FLAGS_COMMON := -DCEYLAN_DLL= $(CPP_FLAGS_COMMON) -I$(libnds_DIR)/include 
+CPP_DEFINES = \
+	$(CPP_ARCH_DEFINES)    \
+	$(CPP_FEATURE_DEFINES) \
+	$(CPP_DEBUG_DEFINES)   \
+	$(CPP_OTHER_DEFINES)
+	
+
+CPP_ARCH_DEFINES := \
+	-DCEYLAN_ARCH_NINTENDO_DS=1      \
+	-DCEYLAN_ARCH_WINDOWS=0          \
+	-DCEYLAN_ARCH_MACOSX=0           \
+	-DCEYLAN_RUNS_ON_LITTLE_ENDIAN=1 
+
+
+CPP_FEATURE_DEFINES := \
+	-DCEYLAN_USES_REGEX=0                        \
+	-DCEYLAN_USES_THREADS=0                      \
+	-DCEYLAN_USES_NETWORK=0                      \
+	-DCEYLAN_USES_FILE_DESCRIPTORS=0             \
+	-DCEYLAN_USES_SYMBOLIC_LINKS=0               \
+	-DCEYLAN_USES_ADVANCED_FILE_ATTRIBUTES=0     \
+	-DCEYLAN_USES_FILE_LOCKS=0                   \
+	-DCEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT=0  \
+	-DCEYLAN_USES_PLUGINS=0                      \
+	-DCEYLAN_USES_SIGNALS=0                      \
+	
+		
+CPP_DEBUG_DEFINES := \
+	-DCEYLAN_DEBUG_DEMANGLE=0          \
+	-DCEYLAN_DEBUG_EVENTS=0            \
+	-DCEYLAN_DEBUG_LOG=0               \
+	-DCEYLAN_DEBUG_RANDOM=0            \
+	-DCEYLAN_DEBUG_MARSHALLERS=0       \
+	-DCEYLAN_DEBUG_NETWORK_CLIENTS=0   \
+	-DCEYLAN_DEBUG_NETWORK_SERVERS=0   \
+	-DCEYLAN_DEBUG_LOW_LEVEL_STREAMS=0 \
+	-DCEYLAN_DEBUG_SYSTEM=0            \
+	-DCEYLAN_DEBUG_THREADS=0
+	
+	
+CPP_OTHER_DEFINES := \
+	-DCEYLAN_DLL= \
+	-DCEYLAN_LIBTOOL_VERSION="\"$(CEYLAN_LT_VERSION)\""
+
+
+CPP_FLAGS_COMMON := $(CPP_DEFINES) -I. $(CPP_FLAGS_COMMON) \
+	-I$(libnds_DIR)/include 
+
 
 # Let the possibility for the user to define his own CPP_FLAGS :
 CPP_FLAGS_ARM7   := $(CPP_FLAGS) $(CPP_FLAGS_COMMON)
@@ -106,19 +178,24 @@ CPP_FLAGS_ARM9   := $(CPP_FLAGS) $(CPP_FLAGS_COMMON)
 # C++ Compile flags.
 
 # Compile flags always used, for both ARM, both in debug and release modes :
-CXX_FLAGS_COMMON := -Winline -Wall
+CXX_FLAGS_COMMON := -Winline -Wall -Werror -Woverloaded-virtual -W -Wfloat-equal -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wcast-qual -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-format-attribute -Wredundant-decls -Wno-unused-parameter -Wno-unknown-pragmas -Wno-long-long
+
+# Removed: 
+#   -Wcast-align: too many warnings due to STL casts
+#   -Wpacked: too many warnings about 'packed attribute causes inefficient
+# alignment' in libnds headers
 
 
 ifeq ($(build_mode),debug)
 
 # Flags common to the ARM7 and the ARM9 for compilation in debug mode :
-CXX_FLAGS_COMMON := $(CXX_FLAGS_COMMON) -g -O0 -DCEYLAN_DEBUG
+CXX_FLAGS_COMMON := $(CXX_FLAGS_COMMON) -g -O0 -DCEYLAN_DEBUG=1
 
 
 else
 
 # Flags common to the ARM7 and the ARM9 for compilation in release mode :
-CXX_FLAGS_COMMON := $(CXX_FLAGS_COMMON) -O3 -fomit-frame-pointer -ffast-math
+CXX_FLAGS_COMMON := $(CXX_FLAGS_COMMON) -O3 -fomit-frame-pointer -ffast-math -DCEYLAN_DEBUG=0
 
 endif
 
