@@ -7,7 +7,8 @@
 include $(TOP)/src/conf/build/nintendo-ds/Makevars.inc
 
 
-.PHONY: info info-paths info-tools info-switches
+.PHONY: all compile info info-paths info-tools info-switches info-files \
+	displayModule arm7objectfiles arm9objectfiles clean clean-recurse	
 
 
 # Compilation.
@@ -16,27 +17,27 @@ include $(TOP)/src/conf/build/nintendo-ds/Makevars.inc
 # For source files specific to either ARM:
 
 %.arm7.o: %.arm7.cc
-	@echo "    Compiling $< into $@"
+	@echo "      Compiling $< into $@"
 	@$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
 	
 %.arm9.o: %.arm9.cc
-	@echo "    Compiling $< into $@"
+	@echo "      Compiling $< into $@"
 	@$(CXX) $(CXX_FLAGS_ARM9) $(CPP_FLAGS_ARM9) -c $< -o $@
 
-
+	
 # For source files common to both ARM:
 
 %.arm7.o: %.cc
-	@echo "    Compiling $< into $@"
-	$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
+	@echo "      Compiling $< into $@"
+	@$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
 	
 %.arm9.o: %.cc
-	@echo "    Compiling $< into $@"
+	@echo "      Compiling $< into $@"
 	@$(CXX) $(CXX_FLAGS_ARM9) $(CPP_FLAGS_ARM9) -c $< -o $@
 
 
 # For (static) libraries:
-
+# Mostly examples (no generic rule found).
 lib%.arm7.a: %.arm7.o 
 	@echo "    Linking $^ into $@"
 	@$(AR) $(AR_FLAGS_ARM7) $@ $^
@@ -98,11 +99,32 @@ lib%.arm9.a: %.arm9.o
 # dlditool Sclt.dldi helloworld.sc.nds
 
 
-clean:
-	@echo "    Cleaning in "$(shell basename `pwd`)
-	@-rm -f *.o *.lo *.map *.bin *.elf *.nds *.ds.gba 
-	
+all:
+	@for d in $(NDS_SUBDIRS); do ( cd $$d ; $(MAKE) -f Makefile.cross CROSS_TARGET=$(CROSS_TARGET) all ) ; done
 
+compile: displayModule arm7objectfiles arm9objectfiles
+
+
+arm7objectfiles: $(ARM7_OBJ_FILES)
+	@echo "    All ARM7 object files built"
+	
+arm9objectfiles: $(ARM9_OBJ_FILES)
+	@echo "    All ARM9 object files built"
+
+displayModule:
+	@echo "    Building all ARM7 and ARM9 object files in "`basename $(PWD)`
+	 
+
+clean: clean-recurse
+	@echo "    Cleaning in "$(shell basename `pwd`)
+	@-rm -f *.o *.lo *.a *.la .so *.map *.bin *.elf *.nds *.ds.gba 
+	
+	
+clean-recurse:
+	@for d in $(NDS_SUBDIRS); do ( cd $$d ; $(MAKE) -s -f Makefile.cross CROSS_TARGET=$(CROSS_TARGET) clean ) ; done
+	
+	
+	
 # Cancel automatic rule:	
 %.o: %.cc
 
@@ -146,4 +168,9 @@ info-switches:
 	@echo "LIBS_ARM7       = $(LIBS_ARM7)"
 	@echo "LIBS_ARM9       = $(LIBS_ARM9)"
 
+
+info-files:
+	@echo "ARM7_OBJ_FILES = $(ARM7_OBJ_FILES)"
+	@echo "ARM9_OBJ_FILES = $(ARM9_OBJ_FILES)"
 	
+
