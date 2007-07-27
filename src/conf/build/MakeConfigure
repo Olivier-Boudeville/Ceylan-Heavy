@@ -14,7 +14,7 @@ SUBSTITUTE := $(TOP)/src/code/scripts/shell/substitute.sh
 
 
 .PHONY: all config-files check-configure download-config-scripts \
-	clean clean-download real-clean
+	get-config-scripts clean clean-download real-clean
 
 
 CONFIGURE_SOURCE_FILE    = configure-template.ac
@@ -72,6 +72,12 @@ check-configure:
 	@$(srcdir)/checkConfigure.sh $(DIFF_TOOL)
 	@echo "$(command_style)    Comparison finished,\
 	$(CONFIGURE_SOURCE_FILE) may be updated now."
+
+
+get-config-scripts: download-config-scripts
+	@echo "$(make_style)    Patching config.sub \
+	for the Nintendo DS$(default_style)"
+	@patch config.sub patch-for-config.sub 1>/dev/null
 
 
 download-config-scripts: clean-download
