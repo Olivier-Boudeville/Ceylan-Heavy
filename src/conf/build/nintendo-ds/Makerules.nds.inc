@@ -1,10 +1,10 @@
 # General build rules for the cross-compilation of Nintendo DS binaries
 # from GNU/Linux.
 # To be included by all the Makefiles after they define their relevant TOP
-# variable, ex : 'TOP = ..', when the Makefile is in a direct subdirectory 
+# variable, ex: 'TOP = ..', when the Makefile is in a direct subdirectory 
 # of the source root. 
 
-include $(TOP)/Makevars.$(CROSS_TARGET).inc
+include $(TOP)/src/conf/build/nintendo-ds/Makevars.inc
 
 
 .PHONY: info info-paths info-tools info-switches
@@ -13,7 +13,7 @@ include $(TOP)/Makevars.$(CROSS_TARGET).inc
 # Compilation.
 
 
-# For source files specific to either ARM :
+# For source files specific to either ARM:
 
 %.arm7.o: %.arm7.cc
 	@echo "    Compiling $< into $@"
@@ -24,28 +24,38 @@ include $(TOP)/Makevars.$(CROSS_TARGET).inc
 	@$(CXX) $(CXX_FLAGS_ARM9) $(CPP_FLAGS_ARM9) -c $< -o $@
 
 
-# For source files common to both ARM :
+# For source files common to both ARM:
 
 %.arm7.o: %.cc
 	@echo "    Compiling $< into $@"
-	@$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
+	$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
 	
 %.arm9.o: %.cc
 	@echo "    Compiling $< into $@"
 	@$(CXX) $(CXX_FLAGS_ARM9) $(CPP_FLAGS_ARM9) -c $< -o $@
 
 
+# For (static) libraries:
+
+lib%.arm7.a: %.arm7.o 
+	@echo "    Linking $^ into $@"
+	@$(AR) $(AR_FLAGS_ARM7) $@ $^
+	
+lib%.arm9.a: %.arm9.o 
+	@echo "    Linking $^ into $@"
+	@$(AR) $(AR_FLAGS_ARM7) $@ $^
+	
 
 # Executable linking.	
 
 
-# Only related object files are included :
+# Only related object files are included:
 
 
 
-# From object files to ELF :
+# From object files to ELF:
 
-# CXX must be used here, not LD, otherwise :
+# CXX must be used here, not LD, otherwise:
 # arm-eabi-ld: unrecognised emulation mode: thumb-interwork
 
 %.arm7.elf: %.arm7.o
@@ -57,7 +67,7 @@ include $(TOP)/Makevars.$(CROSS_TARGET).inc
 	@$(CXX) $(LD_FLAGS_ARM9) $^ $(LIBPATHS_ARM9) $(LIBS_ARM9) -o $@
 
 
-# From ELF to DS bin format :
+# From ELF to DS bin format:
 
 %.arm7.bin: %.arm7.elf
 	@echo "    Creating ARM7 bin executable $@ from $<"
@@ -68,7 +78,7 @@ include $(TOP)/Makevars.$(CROSS_TARGET).inc
 	@$(OBJCOPY) -O binary $< $@
 
 
-# Neither basic logo, wifi logo nor sentences embedded :
+# Neither basic logo, wifi logo nor sentences embedded:
 %.nds: %.arm7.bin %.arm9.bin
 	@echo "    Creating final slot-1 DS ROM $@ from $^"
 	@$(NDSTOOL) -c $@ -7 $< -9 `echo $^| sed 's|^.* ||1'`
@@ -84,16 +94,16 @@ include $(TOP)/Makevars.$(CROSS_TARGET).inc
 	@/bin/cp -f $< $@
 
 
-# Add here : 
+# Add here: 
 # dlditool Sclt.dldi helloworld.sc.nds
 
 
 clean:
 	@echo "    Cleaning in "$(shell basename `pwd`)
-	@-rm -f *.o *.map *.bin *.elf *.nds *.ds.gba 
+	@-rm -f *.o *.lo *.map *.bin *.elf *.nds *.ds.gba 
 	
 
-# Cancel automatic rule :	
+# Cancel automatic rule:	
 %.o: %.cc
 
 
