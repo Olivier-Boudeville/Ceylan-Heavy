@@ -1,0 +1,17 @@
+TOP = .
+
+.PHONY: all lib
+
+# We are by default cross-compiling here for the Nintendo DS platform: 
+CROSS_TARGET = nintendo-ds
+
+NDS_SUBDIRS = src
+
+lib: all
+	@cd src/code; $(MAKE) -f Makefile.cross CROSS_TARGET=$(CROSS_TARGET) lib
+
+
+include $(TOP)/src/conf/build/$(CROSS_TARGET)/Makerules.inc
+
+
+
