@@ -5,14 +5,16 @@
 
 # The NDS_DEV_ROOT variable can be set outside of these Makefiles.
 # Either through a shell variable once the local definition has been commented
-# out, ex : 
+# out, ex: 
 # export NDS_DEV_ROOT=$LOANI_INSTALLATIONS/Nintendo-DS-development
 # or as a Make variable (no commenting out needed), ex :
 # make NDS_DEV_ROOT=$LOANI_INSTALLATIONS/Nintendo-DS-development
 # or directly hardcoded here :
 # NDS_DEV_ROOT = $(LOANI_INSTALLATIONS)/Nintendo-DS-development
 # Otherwise it will be guessed from LOANI-enforced directory layout :
-NDS_DEV_ROOT=$(TOP)/..
+LOANI_INSTALLATIONS = $(TOP)/../../../../LOANI-installations/
+NDS_DEV_ROOT        = $(LOANI_INSTALLATIONS)/Nintendo-DS-development
+
 
 # Safety check :
 ifeq ($(strip $(NDS_DEV_ROOT)),)
@@ -54,6 +56,28 @@ NDSTOOL = $(build_tool_DIR)/ndstool
 DSBUILD = $(build_tool_DIR)/dsbuild
 
 
+# Module settings.
+
+CEYLAN_LOGS        := $(TOP)/src/code/logs
+CEYLAN_INTERFACES  := $(TOP)/src/code/interfaces
+CEYLAN_SYSTEM      := $(TOP)/src/code/system
+CEYLAN_MODULES     := $(TOP)/src/code/modules
+CEYLAN_GENERIC     := $(TOP)/src/code/generic
+CEYLAN_MATHS       := $(TOP)/src/code/maths
+CEYLAN_NETWORK     := $(TOP)/src/code/network
+CEYLAN_MIDDLEWARE  := $(TOP)/src/code/middleware
+
+
+CEYLAN_LOGS_INC        := -I$(CEYLAN_LOGS)
+CEYLAN_INTERFACES_INC  := -I$(CEYLAN_INTERFACES) 
+CEYLAN_SYSTEM_INC      := -I$(CEYLAN_SYSTEM) 
+CEYLAN_MODULES_INC     := -I$(CEYLAN_MODULES) 
+CEYLAN_GENERIC_INC     := -I$(CEYLAN_GENERIC) 
+CEYLAN_MATHS_INC       := -I$(CEYLAN_MATHS) 
+CEYLAN_NETWORK_INC     := -I$(CEYLAN_NETWORK) 
+CEYLAN_MIDDLEWARE_INC  := -I$(CEYLAN_MIDDLEWARE) 
+
+
 # Architecture-related flags.
 
 ARCH_FLAGS_COMMON = -mthumb -mthumb-interwork
@@ -71,7 +95,7 @@ build_mode = debug
 
 # Preprocessor flags.
 
-CPP_FLAGS_COMMON := -I$(libnds_DIR)/include
+CPP_FLAGS_COMMON := -DCEYLAN_DLL= $(CPP_FLAGS_COMMON) -I$(libnds_DIR)/include 
 
 # Let the possibility for the user to define his own CPP_FLAGS :
 CPP_FLAGS_ARM7   := $(CPP_FLAGS) $(CPP_FLAGS_COMMON)
@@ -106,6 +130,14 @@ CXX_FLAGS_ARM9   := $(CXX_FLAGS) $(CXX_FLAGS_COMMON) $(ARCH_FLAGS_ARM9)
 
 
 # C++ Link flags.
+
+
+# Generating a library :
+
+AR_FLAGS_COMMON := -rc
+
+AR_FLAGS_ARM7 := $(AR_FLAGS_COMMON)
+AR_FLAGS_ARM9 := $(AR_FLAGS_COMMON)
 
 
 # Generating an executable :
