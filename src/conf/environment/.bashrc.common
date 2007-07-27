@@ -90,6 +90,8 @@ SVN_CO_OSDL='svn co https://svn.sourceforge.net/svnroot/osdl osdl'
 # Needed to override RCS's /usr/bin/ci :
 alias ci="${CEYLAN_SRC}/code/scripts/shell/ci"
 
+alias mn='make -f Makefile.cross CROSS_TARGET=nintendo-ds'
+
 # Internal CVS servers :
 
 INTERNAL_USER="${USER}"
