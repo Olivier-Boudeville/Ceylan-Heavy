@@ -1218,14 +1218,18 @@ This allows the use of the WOOPER code in as wide a variety of software projects
 
     <li>
 	
-		<p>As mentioned by Nick Eklund, despite quite different operating modes, WOOPER and <a href="http://www1.erlang.org/doc/apps/orber/index.html" target="_blank">Orber</a>, an Erlang implementation of a <b>CORBA ORB</b>
- (<em>Object Request Broker</em>) offer similar OOP features, as CORBA IDL implies an object-oriented approach (see their <a href="http://www.erlang.org/doc/apps/orber/ch_idl_to_erlang_mapping.html#6" target="_blank">OMG IDL to Erlang Mapping</a> and <a href="http://www.erlang.org/doc/apps/ic/ch_erl_genserv.html#5" target="_blank">Generic Server Back-end</a>).
+		<p>As mentioned by Niclas Eklund, despite quite different operating modes, WOOPER and <a href="http://www1.erlang.org/doc/apps/orber/index.html" target="_blank">Orber</a>, an Erlang implementation of a <b>CORBA ORB</b>
+ (<em>Object Request Broker</em>) offer similar OOP features, as CORBA IDL implies an object-oriented approach (see their <a href="http://www.erlang.org/doc/apps/orber/ch_idl_to_erlang_mapping.html#6" target="_blank">OMG IDL to Erlang Mapping</a>).
 		</p>
 
 		<p>WOOPER and Orber are rather different beasts though: WOOPER is very lightweight (less than 1000 lines, including blank lines and numerous comments), does not involve a specific (IDL) compiler generating several stub/skeleton Erlang files, nor depends on OTP or Mnesia, whereas Orber offers a full CORBA implementation, including IDL language mapping, CosNaming, IIOP, Interface Repository, etc.
 		</p>
 
 		<p>Since Orber respects the OMG standard, integrating a new language (C/C++, Java, Smalltalk, Ada, Lisp, Python etc.) should be rather easy. On the other hand, if a full-blown CORBA-compliant middleware is not needed, if simplicity and ease of understanding is a key point, then WOOPER could be preferred. If unsure, give a try to both!
+		</p>
+
+		<p>
+ See also another IDL-based approach (otherwise not connected to CORBA), the <a href="http://www.erlang.org/doc/apps/ic/ch_erl_genserv.html#5" target="_blank">Generic Server Back-end</a> (wrapper around <code>gen_server</code>).
 		</p>
 
 	</li>
@@ -1236,7 +1240,7 @@ This allows the use of the WOOPER code in as wide a variety of software projects
 </p>
 
 <p>
-The WOOPER name is also a tribute to the underestimated <a href="http://en.wikipedia.org/wiki/WarGames" target="_blank">Wargames</a> movie (remember the <a href="http://en.wikipedia.org/wiki/WOPR" target="_blank">WOPR</a>, the NORAD central computer ?), which the author enjoyed a lot. It is as well a second-order tribute to the <em>Double Wooper King Size</em> (<em>Whopper</em> in most countries), which is/was a great hamburger indeed.
+The WOOPER name is also a tribute to the underestimated <a href="http://en.wikipedia.org/wiki/WarGames" target="_blank">Wargames</a> movie (remember the <a href="http://en.wikipedia.org/wiki/WOPR" target="_blank">WOPR</a>, the NORAD central computer ?), which the author enjoyed a lot. It is as well a second-order tribute to the <em>Double Wooper King Size</em> (<em>Whopper</em> in most if not all countries), which is/was a great hamburger indeed (in France, they are not available anymore).
 </p>
 
 <p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
