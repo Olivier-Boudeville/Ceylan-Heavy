@@ -1,5 +1,5 @@
-PROJECT_NAME := Erlang
-ARCHIVE_ROOT := $$HOME/Archive/Erlang
+PROJECT_NAME := Wooper
+ARCHIVE_ROOT := $$HOME/Archive/$(PROJECT_NAME)
 ARCHIVE_FILE := $(ARCHIVE_ROOT)/`date +'%Y%m%d'`-$(PROJECT_NAME).tar.bz2
 
 
@@ -9,7 +9,7 @@ ERLANG_ROOT         := /usr
 
 ERLANG_COMPILER     := $(ERLANG_ROOT)/bin/erlc
 
-WOOPER_VERSION := 0.1
+WOOPER_VERSION := 0.2
 
 WOOPER_RELEASE_BASE        := wooper-$(WOOPER_VERSION)
 
