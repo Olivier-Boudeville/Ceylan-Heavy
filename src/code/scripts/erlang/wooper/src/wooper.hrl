@@ -110,11 +110,25 @@
 % Constant data (ex: the virtual table) are referenced by each class instance,
 % they are not duplicated (pointer to a virtual table shared by all class
 % instances rather than deep copy).
-% The attribut table (a hashtable) records all the data members of a given
+%
+% The virtual table holds the method name to module mapping for a given class.
+% The attribute table (a hashtable) records all the data members of a given
 % instance, including all the inherited ones. 
+% The request sender member is used internally by WOOPER so that a request
+% method have a way of retrieving the corresponding client PID. This avoids
+% the client to specify its PID twice, one for WOOPER, one for the method, as
+% a method parameter, in the case the method itself needs the client PID, for
+% example to register it in a list in its own state. Thus a client does not have
+% to specify: 'MyServer ! {my_request,[self()],self()}', specifying
+% 'MyServer ! {my_request,[],self()}' is enough: the method will be able to
+% retrieve the client PID thanks to the request_sender member, automatically
+% set by WOOPER. For non-request methods (oneways), WOOPER will set
+% request_sender to the atom 'undefined', to ensure the oneway crashes whenever
+% trying to use this request-specific information to send a message.
 -record( state_holder, {
 		virtual_table,
-		attribute_table
+		attribute_table,
+		request_sender
 	}).
 
 
@@ -140,7 +154,7 @@
 
 % WOOPER internal functions.
 
-% Comment/uncomment to activate debug mode:
+% Comment/uncomment to respectively disable and enable debug mode:
 %-define(wooper_debug,).
 
 
@@ -183,17 +197,6 @@
 	wooper_display_loop_state(State) ->
 		wooper_display_state(State).
 
-
-	% Helper function to test requests.
-	wooper_debug_listen(Pid,Action,Arguments) ->
-		Pid ! {Action,Arguments,self()},
-		receive
-	
-			Anything ->
-				io:format("Answer to call to ~w with arguments ~w: ~w~n",
-					[Action,Arguments,Anything])
-	
-		end.
 	
 -else.
 
@@ -203,7 +206,7 @@
 	% These methods are defined for all classes:
 	-define(WooperBaseMethods,get_class_name/0,get_class_name/1,
 		get_superclasses/0,get_superclasses/1,wooper_construct_and_run/1,
-		is_wooper_debug/0,wooper_display_state/1,
+		is_wooper_debug/0,wooper_debug_listen/3,wooper_display_state/1,
 		wooper_display_virtual_table/1,wooper_display_instance/1).
 
 	-export([?WooperBaseMethods]).
@@ -230,6 +233,29 @@
 		
 -endif.
 
+
+% Helper function to test requests.
+% Allows to test from the shell a server by sending it requests
+% (hence needing a receive whereas in the shell).
+% Available even when debug mode is off. 
+wooper_debug_listen(Pid,Action,Arguments) ->
+	Pid ! {Action,Arguments,self()},
+	receive
+
+		% A list is assumed to be a string here:
+		{wooper_result,Result} when is_list(Result) ->
+			io:format("String result of call to '~w' "
+				"with arguments '~w': ~s~n", [Action,Arguments,Result]);
+		
+		{wooper_result,Result} ->
+			io:format("Result of call to '~w' with arguments '~w': ~s~n",
+				[Action,Arguments,utils:term_toString(Result)]);
+	
+		Anything ->
+			io:format("Answer to call to '~w' with arguments '~w': ~s~n",
+				[Action,Arguments,utils:term_toString(Anything)])
+	
+	end.
 
 
 % "Static method" (only a function) which returns the name of the class.
@@ -266,7 +292,8 @@ wooper_construct_and_run(ParameterList) ->
 	% despite construct is exported with the right arity (do not know why...)
 	BlankTable = #state_holder{
 		virtual_table   = wooper_retrieve_virtual_table(),
-		attribute_table = hashtable:new(?WooperAttributeCountUpperBound)
+		attribute_table = hashtable:new(?WooperAttributeCountUpperBound),
+		request_sender  = undefined
 	},
 	wooper_main_loop(
 		apply(?MODULE,construct,[BlankTable|ParameterList]) ).
@@ -288,7 +315,8 @@ wooper_construct_and_run(ParameterList) ->
 %		attribute_table = hashtable:addEntry(
 %			AttributeName,
 %			AttributeValue,
-%			State#state_holder.attribute_table )
+%			State#state_holder.attribute_table ),
+%		request_sender  = State#state_holder.request_sender
 %	}.	
 %
 
@@ -302,7 +330,8 @@ wooper_construct_and_run(ParameterList) ->
 		attribute_table = hashtable:addEntry(
 			AttributeName,
 			AttributeValue,
-			State#state_holder.attribute_table )
+			State#state_holder.attribute_table ),
+		request_sender  = State#state_holder.request_sender
 	}
 ).
 
@@ -357,10 +386,10 @@ wooper_get_class_manager() ->
 		
 		_ ->
 			spawn(?WooperClassManagerName,start,[self()]),
-			% Only dealing with registered managers (instead of through their
-			% PID) allows to be sure only one instance (singleton) is being
-			% used, to avoid the case of two managers being launched at the
-			% same time (the second will then terminate immediately).
+			% Only dealing with registered managers (instead of using directly
+			% their PID) allows to be sure only one instance (singleton) is
+			% being used, to avoid the case of two managers being launched at
+			% the same time (the second will then terminate immediately).
 			receive
 			
 				class_manager_registered ->
@@ -368,8 +397,9 @@ wooper_get_class_manager() ->
 			
 			% 10-second time-out:
 			after 10000	->
-				io:format( "wooper_get_class_manager: unable to find "
-					"class manager after 10s." ),
+				io:format( "#### Error: wooper_get_class_manager: "
+					"unable to find WOOPER class manager after 10 seconds.~n"
+					"Please check that WOOPER has been compiled beforehand." ),
 				undefined
 					
 			end
@@ -411,7 +441,8 @@ wooper_virtual_table_toString(State) ->
 			String ++ io_lib:format( "     * ~s/~B -> ~s~n",
 				[Name,Arity,Module] )
 		end,
-		io_lib:format( "Virtual table of ~w:~n(method name/arity -> module defining that method)~n", [self()] ),
+		io_lib:format( "Virtual table of ~w:~n"
+			"(method name/arity -> module defining that method)~n", [self()] ),
 		hashtable:enumerate( State#state_holder.virtual_table )). 
 
 
@@ -477,20 +508,26 @@ wooper_main_loop(State) ->
 		% received answers on the client side.
 		{ MethodAtom, ArgumentList, SenderPID } 
 				when is_pid(SenderPID) and is_list(ArgumentList) ->
-			{ NewState, Result } = 
-				wooper_execute_method(MethodAtom, State, ArgumentList ), 
+			SenderAwareState = State#state_holder{request_sender=SenderPID},
+			{ NewState, Result } = wooper_execute_method( MethodAtom,
+				SenderAwareState, ArgumentList ), 
 			%SenderPID ! { self(), Result }
 			SenderPID ! Result,
-			wooper_main_loop(NewState);
+			SenderAgnosticState =
+				NewState#state_holder{request_sender=undefined},
+			wooper_main_loop(SenderAgnosticState);
 		
 		% Auto-wrapping single arguments implies putting lists between
 		% double-brackets		
 		{ MethodAtom, Argument, SenderPID } when is_pid(SenderPID) ->
-			{ NewState, Result } = 
-				wooper_execute_method(MethodAtom, State, [ Argument ] ), 
+			SenderAwareState = State#state_holder{request_sender=SenderPID},
+			{ NewState, Result } = wooper_execute_method( MethodAtom,
+				SenderAwareState, [ Argument ] ), 
 			%SenderPID ! { self(), Result }
 			SenderPID ! Result,
-			wooper_main_loop(NewState);
+			SenderAgnosticState =
+				NewState#state_holder{request_sender=undefined},
+			wooper_main_loop(SenderAgnosticState);
 
 
 		% Oneway calls (no client PID sent, no answer sent back):
@@ -531,7 +568,7 @@ wooper_main_loop(State) ->
 			wooper_main_loop(NewState)
 
 	end.
-	% Commented out to preserve tail-recursion :
+	% Commented out to preserve (presumably) tail-recursion:
 	% io:format( "wooper_main_loop exited.~n" ).
 
 	
