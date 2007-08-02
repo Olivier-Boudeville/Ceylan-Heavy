@@ -10,7 +10,7 @@
 -define(Prefix,"--> ").
 
 
-% Comment out to be able to use the interpreter after the test :
+% Comment out to be able to use the interpreter after the test:
 -define(ExitAfterTest,).
 
 -ifdef(ExitAfterTest).
@@ -26,7 +26,7 @@ testFinished() ->
 	
 -endif.
 
-% For WooperClassManagerName :
+% For WooperClassManagerName:
 -include("wooper_class_manager.hrl").
 
 
@@ -40,9 +40,9 @@ run() ->
 			io:format( ?Prefix "Requesting its state display.~n" ),
 			?WooperClassManagerName ! display
 			
-	% 10-second time-out :
+	% 10-second time-out:
 	after 10000	->
-		erlang:error( "wooper_get_class_manager : unable to find "
+		erlang:error( "#### Error: wooper_get_class_manager: unable to find "
 			"class manager after 10s, test failed." )
 				
 	end,
