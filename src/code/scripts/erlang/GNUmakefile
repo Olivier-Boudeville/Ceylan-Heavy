@@ -1,7 +1,6 @@
 TOP = .
 
 
-# Add : simple client-server database directory launcher naming-service 
 MODULES_DIRS = common wooper
 
 
@@ -17,7 +16,7 @@ all:
 	
 bz2: clean
 	@mkdir -p $(ARCHIVE_ROOT)
-	@cd ..; tar cvjf $(ARCHIVE_FILE) erlang
+	@cd ..; tar cvjf $(ARCHIVE_FILE) wooper-$(WOOPER_VERSION)
 	@echo "    Archive for $(PROJECT_NAME) is available at: "\
 		"$(ARCHIVE_FILE)"
 
