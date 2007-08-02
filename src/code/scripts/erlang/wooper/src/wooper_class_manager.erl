@@ -6,7 +6,7 @@
 % they are corresponding to.
 
 % This way each virtual table is computed only once per node, and no significant
-% per-instance memory is used for the virtual table : all the instances of a 
+% per-instance memory is used for the virtual table: all the instances of a 
 % given class just refer to a common virtual table stored by this manager.
 
 
@@ -25,7 +25,7 @@
 -export([start/1]).
 
 
-% For WooperClassManagerName :
+% For WooperClassManagerName:
 -include("wooper_class_manager.hrl").
 
 
@@ -40,7 +40,7 @@
 -define(WooperClassCountUpperBound,128).
 
 
-% Uncomment to be in debug mode :
+% Comment/uncomment to respectively disable and enable debug mode:
 %-define(debug,).
  
 -define(Log_prefix, "[WOOPER Class manager] ").
@@ -76,12 +76,13 @@
 
 % Starts a new blank class manager.
 start(ClientPID) ->
-	display( io_lib:format( "Starting on node ~s (PID : ~w).~n", 
+	display( io_lib:format( "Starting on node ~s (PID: ~w).~n", 
 		[ node(), self() ] ) ),
 	% Two first instances being created nearly at the same time might trigger
 	% the creation of two class managers, if the second instance detects no
 	% manager is registered while the first manager is created but not
-	% registered yet. That would
+	% registered yet. That would result in superflous class managers. Up to one
+	% should exist.
 	case catch register( ?WooperClassManagerName, self() ) of
 	
 		true ->
@@ -90,7 +91,9 @@ start(ClientPID) ->
 		
 		% A manager is already registered, let it be the only one and stop:
 		{ 'EXIT', {badarg,_} } ->
-			display( ?Log_prefix "Already a manager available, terminating" )
+			display( ?Log_prefix "Already a manager available, terminating" ),
+			% Let's notify the client nevertheless:
+			ClientPID ! class_manager_registered
 			% The instances should use the first manager only.
 			% (no looping performed, terminating this second manager).
 		
@@ -110,7 +113,7 @@ loop(Tables) ->
 			loop( NewTables );
 		
 		display ->
-			io:format( ?Log_prefix "Internal state is : ~s~n.",
+			io:format( ?Log_prefix "Internal state is: ~s~n.",
 				[ hashtable:toString(Tables) ] ),
 			loop( Tables );
 				
@@ -130,14 +133,14 @@ get_virtual_table_for(Module,Tables) ->
 	case hashtable:lookupEntry(Module,Tables) of 
 	
 		undefined ->
-			% Time to create this virtual table and to store it :
+			% Time to create this virtual table and to store it:
 			display_table_creation( Module ),
 			ModuleTable = create_method_table_for( Module ),
 			{ hashtable:addEntry( Module, ModuleTable, Tables ), ModuleTable };
 				
 			
 		{value,Table} ->
-			% Cache hit, no change in internal data :
+			% Cache hit, no change in internal data:
 			{Tables, Table}
 			
 	end.
@@ -176,9 +179,9 @@ select_function(_,_)                          -> true.
 
 % Returns a Hashtable appropriate for method look-up, for the specified module.
 create_local_method_table_for(Module) ->
-	% Filter-out functions that should not be callable via RMI :
+	% Filter-out functions that should not be callable via RMI:
 	lists:foldl(
-		% Filter-out functions that should not be callable via RMI :
+		% Filter-out functions that should not be callable via RMI:
 		fun({Name,Arity}, HashTable) ->
 			case select_function(Name,Arity) of 
 				
