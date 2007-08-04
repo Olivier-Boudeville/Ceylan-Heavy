@@ -22,6 +22,7 @@ $(error Please set the NDS_DEV_ROOT variable)
 endif
 
 
+# Tool section.
 
 devkitPro_DIR = $(NDS_DEV_ROOT)/devkitPro
 devkitARM_DIR = $(devkitPro_DIR)/devkitARM
@@ -55,6 +56,14 @@ DLDITOOL_SCRIPT = $(DLDITOOL_ROOT)/Sclt.dldi
 NDSTOOL = $(build_tool_DIR)/ndstool
 DSBUILD = $(build_tool_DIR)/dsbuild
 
+NO_CASH_GBA = $(NDS_DEV_ROOT)/NoCashGBA-w/NoCashGBA.EXE
+DESMUME     = $(NDS_DEV_ROOT)/DeSmuME-0.4.0/NDeSmuME.exe
+
+WINE = wine
+
+# Location of the removable media where ROM can be transferred:
+TRANSFER_MOUNT_POINT = /media/disk
+
 
 # Module settings.
 
@@ -87,6 +96,7 @@ CEYLAN_LT_AGE     := $(shell expr $(CEYLAN_MAJOR_VERSION) - $(CEYLAN_MAJOR_ANCES
 
 CEYLAN_VERSION:= $(CEYLAN_LT_CURRENT).$(CEYLAN_LT_REVISION)
 CEYLAN_LT_VERSION:= $(CEYLAN_LT_CURRENT).$(CEYLAN_LT_REVISION).$(CEYLAN_LT_AGE)
+
 
 # Architecture-related flags.
 
@@ -227,6 +237,9 @@ AR_FLAGS_ARM9:= $(AR_FLAGS_COMMON)
 
 # Generating an executable:
 
+
+# LD_FLAGS_ARM7 and LD_FLAGS_ARM9:
+
 LD_FLAGS_COMMON:= $(ARCH_FLAGS_COMMON)
 
 LD_FLAGS_ARM7:= -specs=ds_arm7.specs -Wl,-Map,ARM7.map
@@ -244,10 +257,25 @@ LD_FLAGS_COMMON:= $(LD_FLAGS_COMMON)
 
 endif
 
+
 # Let the possibility for the user to define his own LD_FLAGS:
 LD_FLAGS_ARM7:= $(LD_FLAGS) $(LD_FLAGS_COMMON) $(LD_FLAGS_ARM7)
 LD_FLAGS_ARM9:= $(LD_FLAGS) $(LD_FLAGS_COMMON) $(LD_FLAGS_ARM9)
 
+
+
+# CEYLAN_LIBS_ARM7 and CEYLAN_LIBS_ARM9:
+
+# Let the possibility for the user to define his own LIBS:
+LIBS_ARM7:= $(LIBS) -lnds7
+LIBS_ARM9:= $(LIBS) -lnds9
+
+CEYLAN_LIBS_ARM7:= -l$(CEYLAN_ARM7_LINK_NAME) $(LIBS_ARM7)
+CEYLAN_LIBS_ARM9:= -l$(CEYLAN_ARM9_LINK_NAME) $(LIBS_ARM9)
+
+
+
+# CEYLAN_LIBPATHS_ARM7 and CEYLAN_LIBPATHS_ARM9:
 
 LIBPATHS_COMMON = -L$(libnds_DIR)/lib
 
@@ -255,21 +283,17 @@ LIBPATHS_COMMON = -L$(libnds_DIR)/lib
 LIBPATHS_ARM7:= $(LIBPATHS) $(LIBPATHS_COMMON) $(LIBPATHS_ARM7)
 LIBPATHS_ARM9:= $(LIBPATHS) $(LIBPATHS_COMMON) $(LIBPATHS_ARM9)
 
-# Let the possibility for the user to define his own LIBS:
-LIBS_ARM7:= $(LIBS) -lnds7
-LIBS_ARM9:= $(LIBS) -lnds9
-
-
 # To build Ceylan-using executables: 
 CEYLAN_LIBPATHS_ARM7:= $(LIBPATHS_ARM7) -L$(CEYLAN_LIB_LOCATION)
 CEYLAN_LIBPATHS_ARM9:= $(LIBPATHS_ARM9) -L$(CEYLAN_LIB_LOCATION)
 
-CEYLAN_LIBS_ARM7:= -l$(CEYLAN_ARM7_LINK_NAME) $(LIBS_ARM7)
-CEYLAN_LIBS_ARM9:= -l$(CEYLAN_ARM9_LINK_NAME) $(LIBS_ARM9)
 
 
 # Install section.
 
-CEYLAN_INSTALL_ROOT = $(NDS_DEV_ROOT)/Ceylan-$(CEYLAN_VERSION)
-CEYLAN_INSTALL_INC  = $(CEYLAN_INSTALL_ROOT)/include
-CEYLAN_INSTALL_LIB  = $(CEYLAN_INSTALL_ROOT)/lib
+CEYLAN_INSTALL_ROOT := $(NDS_DEV_ROOT)/Ceylan-$(CEYLAN_VERSION)
+CEYLAN_INSTALL_INC  := $(CEYLAN_INSTALL_ROOT)/include
+CEYLAN_INSTALL_LIB  := $(CEYLAN_INSTALL_ROOT)/lib
+
+CEYLAN_ARM7_INSTALLED_LIB := $(CEYLAN_INSTALL_LIB)/$(CEYLAN_ARM7_LIB_NAME)
+CEYLAN_ARM9_INSTALLED_LIB := $(CEYLAN_INSTALL_LIB)/$(CEYLAN_ARM9_LIB_NAME)
