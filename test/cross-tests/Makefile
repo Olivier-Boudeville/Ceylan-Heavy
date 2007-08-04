@@ -1,6 +1,6 @@
 # This is a simple Makefile (not a Makefile.cross, not using overall 
-# Make{vars|rules}.inc files for build settings apart tool locations) so that
-# tests are completely uncoupled from the Ceylan library.
+# Makerules.inc rules so that tests are completely uncoupled from the 
+# Ceylan library.
 
 # This way, these tests can be directly used as guidelines to build 
 # one's application using the Ceylan library.
@@ -9,7 +9,7 @@ TOP = ../..
 
 
 .PHONY: test emulate emulate-with-NoCashGBA emulate-with-DeSmuME transfer \
-	umount info-target clean info-flags info-debug info-run
+	patch umount info-target clean info-flags info-debug info-run
 
 
 # Test target section.
@@ -22,6 +22,7 @@ CEYLAN_TESTED_BUILD_MODE := release
 TARGET_ROM_NAME_BASE := \
 	$(TEST_NAME)-$(CEYLAN_TESTED_VERSION)-$(CEYLAN_TESTED_BUILD_MODE)
 
+
 test: emulate transfer
 
 
@@ -29,26 +30,32 @@ emulate: emulate-with-NoCashGBA
 
 
 emulate-with-NoCashGBA: $(TEST_NAME).ds.gba
-	@echo "    Running $< thanks to NoCashGBA emulator"
+	@echo "      Running $< thanks to NoCashGBA emulator"
 	@$(WINE) $(NO_CASH_GBA) $<
 	
 	
 emulate-with-DeSmuME: $(TEST_NAME).nds
-	@echo "    Running $< thanks to DeSmuME emulator"
+	@echo "      Running $< thanks to DeSmuME emulator"
 	@$(WINE) $(DESMUME) $<
 
 
+patch: $(TARGET_ROM_NAME_BASE).sc.nds
+	@echo "      Patching $< with script $(DLDITOOL_SCRIPT)"
+	@$(DLDITOOL) $(DLDITOOL_SCRIPT) $<
+	
+	
 transfer: $(TARGET_ROM_NAME_BASE).sc.nds
-	@echo "    Transferring $< to $(TRANSFER_MOUNT_POINT)"
+	@echo "      Transferring $< to $(TRANSFER_MOUNT_POINT)"
 	@cp -f $< $(TRANSFER_MOUNT_POINT)
 
 
 umount: 	
-	@echo "    Unmounting $(TRANSFER_MOUNT_POINT)"
+	@echo "      Unmounting $(TRANSFER_MOUNT_POINT)"
 	@pumount $(TRANSFER_MOUNT_POINT)
 
 
 $(TARGET_ROM_NAME_BASE).sc.nds: $(TEST_NAME).ds.gba
+	@echo "      Renaming $< into $@ for SuperCard linker"
 	@cp -f $< $@
 	
 
@@ -67,60 +74,60 @@ info-target:
 
 %.arm7.o: %.arm7.cc
 	@echo "      Compiling $< into $@"
-	$(CXX) $(TEST_CXX_FLAGS_ARM7) $(TEST_CPP_FLAGS_ARM7) -c $< -o $@
+	@$(CXX) $(TEST_CXX_FLAGS_ARM7) $(TEST_CPP_FLAGS_ARM7) -c $< -o $@
 	
 %.arm9.o: %.arm9.cc
 	@echo "      Compiling $< into $@"
-	$(CXX) $(TEST_CXX_FLAGS_ARM9) $(TEST_CPP_FLAGS_ARM9) -c $< -o $@
+	@$(CXX) $(TEST_CXX_FLAGS_ARM9) $(TEST_CPP_FLAGS_ARM9) -c $< -o $@
 
 
 
 # From object files to fully linked ELF executables:
 
 %.arm7.elf: %.arm7.o $(CEYLAN_ARM7_INSTALLED_LIB)
-	@echo "    Creating Ceylan library-user ARM7 ELF executable $@ from $^"
-	$(CXX) $(TEST_LD_FLAGS_ARM7) $< $(TEST_LIBPATHS_ARM7) $(TEST_LIBS_ARM7) -o $@
+	@echo "      Creating Ceylan library-user ARM7 ELF executable $@ from $^"
+	@$(CXX) $(TEST_LD_FLAGS_ARM7) $< $(TEST_LIBPATHS_ARM7) $(TEST_LIBS_ARM7) -o $@
 
 	
 %.arm9.elf: %.arm9.o $(CEYLAN_ARM9_INSTALLED_LIB)
-	@echo "    Creating Ceylan library-user ARM9 ELF executable $@ from $^"
-	$(CXX) $(TEST_LD_FLAGS_ARM9) $< $(TEST_LIBPATHS_ARM9) $(TEST_LIBS_ARM9)  -o $@
+	@echo "      Creating Ceylan library-user ARM9 ELF executable $@ from $^"
+	@$(CXX) $(TEST_LD_FLAGS_ARM9) $< $(TEST_LIBPATHS_ARM9) $(TEST_LIBS_ARM9)  -o $@
 
 
 
 # From ELF executable to DS bin executable format:
 
 %.arm7.bin: %.arm7.elf
-	@echo "    Creating ARM7 bin executable $@ from $<"
+	@echo "      Creating ARM7 bin executable $@ from $<"
 	@$(OBJCOPY) -O binary $< $@
 
 %.arm9.bin: %.arm9.elf
-	@echo "    Creating ARM9 bin executable $@ from $<"
+	@echo "      Creating ARM9 bin executable $@ from $<"
 	@$(OBJCOPY) -O binary $< $@
 
 
 
 # Neither basic logo, wifi logo nor sentences embedded:
 %.nds: %.arm7.bin %.arm9.bin
-	@echo "    Creating final slot-1 DS ROM $@ from $^"
+	@echo "      Creating final slot-1 DS ROM $@ from $^"
 	@$(NDSTOOL) -c $@ -7 $< -9 `echo $^| sed 's|^.* ||1'`
 
 # Neither basic logo, wifi logo nor sentences embedded:
 %.nds: CeylanDefaultMain.arm7.bin %.arm9.bin
-	@echo "    Creating final slot-1 DS ROM $@ from $^"
+	@echo "      Creating final slot-1 DS ROM $@ from $^"
 	@$(NDSTOOL) -c $@ -7 $< -9 `echo $^| sed 's|^.* ||1'`
 
 %.ds.gba: %.nds
-	@echo "    Creating final slot-2 DS ROM $@ from $^"
+	@echo "      Creating final slot-2 DS ROM $@ from $^"
 	@$(DSBUILD) $<
 
 
 %.sc.nds: %.ds.gba
-	@echo "    Creating final slot-2 DS ROM $@ from $^"
+	@echo "      Creating final slot-2 DS ROM $@ from $^"
 	@/bin/cp -f $< $@
 
 clean:
-	@echo "Cleaning tests"
+	@echo "      Cleaning tests"
 	@rm -f *.o *.elf *.map *.bin *.nds *.ds.gba
 
 
