@@ -1,23 +1,36 @@
-#include "Ceylan.h"
+
+/*
+ * Apparently the overhead due to the C++, to the STL and (marginally) to
+ * the Ceylan library itself leads to having a ARM7 executable too big to
+ * fit in its IWRAM.
+ *
+ * Hence for the moment the inclusion of the Ceylan header is commented out
+ * and libnds is directly used instead.
+ *
+ */
+ 
+//#include "Ceylan.h"
+
+#define ARM7
+#include "nds.h"
+
 
 
 /*
- * Directly inspired from libnds ARM7 template.
+ * Directly obtained from libnds ARM7 template.
  * This is a stripped-down version (no sound, VBLANK kept for safety).
  *
  * @see ${libnds-sources}/basicARM7/source/defaultARM7.c
  *
  */
 
-#include <nds.h>
-
 
 touchPosition first, tempPos ;
 
 
-
 void VcountHandler() 
 {
+
 
 	static int lastbut = -1 ;
 	
