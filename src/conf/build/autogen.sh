@@ -1,9 +1,11 @@
 #!/bin/sh
 
 USAGE="
-Usage : "`basename $0`" [ -h | --help ] [ --nds ] [ -d | --disable-all-features ] [ -n | --no-build ] [ -c | --chain-test ] [ -f | --full-test ] [ -o | --only-prepare-dist ] [ --configure-options [option 1] [option 2] [...] ] : (re)generates all the autotools-based build system.
+
+Usage : "`basename $0`" [ -h | --help ] [ --nds ] [--with-osdl-env-file <filename> ] [ -d | --disable-all-features ] [ -n | --no-build ] [ -c | --chain-test ] [ -f | --full-test ] [ -o | --only-prepare-dist ] [ --configure-options [option 1] [option 2] [...] ] : (re)generates all the autotools-based build system.
 	
 	--nds : cross-compile the Ceylan library so that it can be run on the Nintendo DS
+	--with-osdl-env-file <filename> : path to the OSDL-environment.sh file, to find Nintendo DS tools (implies --nds)
 	--disable-all-features : just build the core of the Ceylan library
 	--no-build : stop just after having generated the configure script
 	--chain-test : build and install the library, build the test suite and run it against the installation
@@ -18,6 +20,9 @@ Usage : "`basename $0`" [ -h | --help ] [ --nds ] [ -d | --disable-all-features 
 ceylan_features_disable_opt="--disable-regex --disable-multithread --disable-network --disable-file-descriptor --disable-symbolic-link --disable-advanced-file-attribute --disable-file-lock --disable-advanced-process-management --disable-plugin-support --disable-signal-support"
 
 ceylan_features_opt=""
+
+ceylan_cross_build_opt=""
+osdl_env_file=""
 
 
 # To check the user can override them :
@@ -49,6 +54,18 @@ while [ $# -gt 0 ] ; do
 	
 	if [ "$1" = "-q" -o "$1" = "--quiet" ] ; then
 		be_quiet=0
+		token_eaten=0
+	fi
+	
+	if [ "$1" = "--with-osdl-env-file" ] ; then
+		shift
+		osdl_env_file=$1
+		if [ ! -f "${osdl_env_file}" ] ; then
+			echo "Error, specified OSDL environment file (${osdl_env_file}) not found. $USAGE" 1>&2
+			exit 1
+		fi
+		. "${osdl_env_file}"
+		do_target_nds=0
 		token_eaten=0
 	fi
 	
@@ -143,9 +160,35 @@ wait()
 	
 }
 
+
 if [ $do_target_nds -eq 0 ] ; then
 	echo "Preparing to cross-compile for the Nintendo DS."
 	ceylan_features_opt="$ceylan_features_disable_opt"
+	ceylan_cross_build_opt="--host=arm-nintendo-ds"
+	
+	if [ -z "${osdl_env_file}" ] ; then
+	
+		# Trying to find OSDL-environment.sh : 
+osdl_env_file="../../../../../../../LOANI-installations/OSDL-environment.sh"
+	
+		if [ ! -f ${osdl_env_file} ] ; then
+			echo "Error, no specified OSDL environment file specified and default one (${osdl_env_file}) not found. $USAGE" 1>&2
+			exit 5		
+		fi
+	
+		. ${osdl_env_file}
+	fi
+	
+	# We have now all the tool locations :
+	devkitARM_bin=${devkitARM_PREFIX}/arm-eabi/bin
+
+	LDFLAGS="-L${PREFIX}/libnds/lib"
+	LIBS="-lfat -lnds9 -ldswifi9"
+	CPPFLAGS=
+	# PATH : add /home/sye/Projects/LOANI-0.4/LOANI-installations/Nintendo-DS-development/devkitPro/devkitARM/libexec/gcc/arm-eabi/4.1.1
+	ceylan_cross_build_opt="${ceylan_cross_build_opt} CXX=${devkitARM_bin}/g++ LD=${devkitARM_bin}/ld RANLIB=${devkitARM_bin}/ranlib STRIP=${devkitARM_bin}/strip AR=${devkitARM_bin}/ar AS=${devkitARM_bin}/as OBJDUMP=${devkitARM_bin}/objdump OBJCOPY=${devkitARM_bin}/objcopy"
+
+	
 fi
 
 
@@ -205,7 +248,7 @@ fi
 
 
 if [ -z "${configure_opt}" ] ; then
-	configure_opt="$ceylan_features_opt --enable-strict-ansi --enable-debug $PREFIX_OPT $test_overriden_options"
+	configure_opt="$ceylan_cross_build_opt $ceylan_features_opt --enable-strict-ansi --enable-debug $PREFIX_OPT $test_overriden_options"
 fi
 
 
