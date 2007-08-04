@@ -5,48 +5,128 @@
 # This way, these tests can be directly used as guidelines to build 
 # one's application using the Ceylan library.
 
-
 TOP = ../..
 
-.PHONY:
+
+.PHONY: test emulate emulate-with-NoCashGBA emulate-with-DeSmuME transfer \
+	umount info-target clean info-flags info-debug info-run
 
 
-test: $(TARGET_ROM_NAME_BASE).sc.nds
+# Test target section.
 
+TEST_NAME := testCeylan
 
-# Section specific to the Ceylan library being used:
 CEYLAN_TESTED_VERSION    := 0.6
 CEYLAN_TESTED_BUILD_MODE := release
 
+TARGET_ROM_NAME_BASE := \
+	$(TEST_NAME)-$(CEYLAN_TESTED_VERSION)-$(CEYLAN_TESTED_BUILD_MODE)
 
-TARGET_ROM_NAME_BASE = \
-	testCeylan-$(CEYLAN_TESTED_VERSION)-$(CEYLAN_TESTED_BUILD_MODE)
+test: emulate transfer
 
- 
- 
-testCeylanForNintendoDS.arm7.elf: testCeylanForNintendoDS.arm7.o \
-		$(CEYLAN_ARM7_LIB_FULL_PATH)
+
+emulate: emulate-with-NoCashGBA 
+
+
+emulate-with-NoCashGBA: $(TEST_NAME).ds.gba
+	@echo "    Running $< thanks to NoCashGBA emulator"
+	@$(WINE) $(NO_CASH_GBA) $<
+	
+	
+emulate-with-DeSmuME: $(TEST_NAME).nds
+	@echo "    Running $< thanks to DeSmuME emulator"
+	@$(WINE) $(DESMUME) $<
+
+
+transfer: $(TARGET_ROM_NAME_BASE).sc.nds
+	@echo "    Transferring $< to $(TRANSFER_MOUNT_POINT)"
+	@cp -f $< $(TRANSFER_MOUNT_POINT)
+
+
+umount: 	
+	@echo "    Unmounting $(TRANSFER_MOUNT_POINT)"
+	@pumount $(TRANSFER_MOUNT_POINT)
+
+
+$(TARGET_ROM_NAME_BASE).sc.nds: $(TEST_NAME).ds.gba
+	@cp -f $< $@
+	
+
+info-target:
+	@echo "TARGET_ROM_NAME_BASE = $(TARGET_ROM_NAME_BASE)"
+	@echo "CEYLAN_ARM7_INSTALLED_LIB = $(CEYLAN_ARM7_INSTALLED_LIB)"
+	@echo "CEYLAN_ARM9_INSTALLED_LIB = $(CEYLAN_ARM9_INSTALLED_LIB)"
+
+
+
+# Rules section.
+
+
+
+# From source files specific to either ARM to object files:
+
+%.arm7.o: %.arm7.cc
+	@echo "      Compiling $< into $@"
+	$(CXX) $(TEST_CXX_FLAGS_ARM7) $(TEST_CPP_FLAGS_ARM7) -c $< -o $@
+	
+%.arm9.o: %.arm9.cc
+	@echo "      Compiling $< into $@"
+	$(CXX) $(TEST_CXX_FLAGS_ARM9) $(TEST_CPP_FLAGS_ARM9) -c $< -o $@
+
+
+
+# From object files to fully linked ELF executables:
+
+%.arm7.elf: %.arm7.o $(CEYLAN_ARM7_INSTALLED_LIB)
 	@echo "    Creating Ceylan library-user ARM7 ELF executable $@ from $^"
-	@$(CXX) $(LD_FLAGS_ARM7) $< $(CEYLAN_LIBS_ARM7) $(CEYLAN_LIBPATHS_ARM7) -o $@
+	$(CXX) $(TEST_LD_FLAGS_ARM7) $< $(TEST_LIBPATHS_ARM7) $(TEST_LIBS_ARM7) -o $@
 
-testCeylanForNintendoDS.arm9.elf: testCeylanForNintendoDS.arm9.o \
-		$(CEYLAN_ARM9_LIB_FULL_PATH)
+	
+%.arm9.elf: %.arm9.o $(CEYLAN_ARM9_INSTALLED_LIB)
 	@echo "    Creating Ceylan library-user ARM9 ELF executable $@ from $^"
-	$(CXX) $(LD_FLAGS_ARM9) $< $(CEYLAN_LIBS_ARM9) $(CEYLAN_LIBPATHS_ARM9) -o $@
-
-
-hellolibuser.arm9.elf: hellolibuser.arm9.o libhellolibrary.arm9.a
-	@echo "    Creating library-user ARM9 ELF executable $@ from $<"
-	@$(CXX) $(LD_FLAGS_ARM9) $< -lhellolibrary.arm9 -L. $(LIBPATHS_ARM9) $(LIBS_ARM9) -o $@
+	$(CXX) $(TEST_LD_FLAGS_ARM9) $< $(TEST_LIBPATHS_ARM9) $(TEST_LIBS_ARM9)  -o $@
 
 
 
+# From ELF executable to DS bin executable format:
 
-all: helloworld.sc.nds
+%.arm7.bin: %.arm7.elf
+	@echo "    Creating ARM7 bin executable $@ from $<"
+	@$(OBJCOPY) -O binary $< $@
 
-test: helloworld.arm7.bin helloworld.arm9.bin 
+%.arm9.bin: %.arm9.elf
+	@echo "    Creating ARM9 bin executable $@ from $<"
+	@$(OBJCOPY) -O binary $< $@
 
-lib: hellolibrary.arm7.a hellolibrary.arm9.a
+
+
+# Neither basic logo, wifi logo nor sentences embedded:
+%.nds: %.arm7.bin %.arm9.bin
+	@echo "    Creating final slot-1 DS ROM $@ from $^"
+	@$(NDSTOOL) -c $@ -7 $< -9 `echo $^| sed 's|^.* ||1'`
+
+# Neither basic logo, wifi logo nor sentences embedded:
+%.nds: CeylanDefaultMain.arm7.bin %.arm9.bin
+	@echo "    Creating final slot-1 DS ROM $@ from $^"
+	@$(NDSTOOL) -c $@ -7 $< -9 `echo $^| sed 's|^.* ||1'`
+
+%.ds.gba: %.nds
+	@echo "    Creating final slot-2 DS ROM $@ from $^"
+	@$(DSBUILD) $<
+
+
+%.sc.nds: %.ds.gba
+	@echo "    Creating final slot-2 DS ROM $@ from $^"
+	@/bin/cp -f $< $@
+
+clean:
+	@echo "Cleaning tests"
+	@rm -f *.o *.elf *.map *.bin *.nds *.ds.gba
+
+
+
+
+# Build flags section.
 
 
 # Build common section.
@@ -136,15 +216,13 @@ TEST_LIBS_ARM7:= $(LIBS) -lnds7
 TEST_LIBS_ARM9:= $(LIBS) -lnds9
 
 TEST_LIBS_ARM7:= \
-	-lCeylan-$(CEYLAN_TESTED_VERSION)-$(CEYLAN_TESTED_BUILD_MODE)-arm7.a \
-	$(TEST_LIBS_ARM7)
+       -lCeylan-$(CEYLAN_TESTED_VERSION)-$(CEYLAN_TESTED_BUILD_MODE)-arm7 \
+       $(TEST_LIBS_ARM7)
 	
 TEST_LIBS_ARM9:= \
-	-lCeylan-$(CEYLAN_TESTED_VERSION)-$(CEYLAN_TESTED_BUILD_MODE)-arm9.a \
-	$(TEST_LIBS_ARM9)
-
-
-
+       -lCeylan-$(CEYLAN_TESTED_VERSION)-$(CEYLAN_TESTED_BUILD_MODE)-arm9 \
+       $(TEST_LIBS_ARM9)
+	
 
 info-flags:
 	@echo "TEST_CPP_FLAGS_ARM7 = $(TEST_CPP_FLAGS_ARM7)"
@@ -163,20 +241,18 @@ info-flags:
 	@echo "TEST_LIBS_ARM9 = $(TEST_LIBS_ARM9)"
 
 
+info-debug:
+	@echo "nm command-line: $(NM) --demangle "
+	@echo "strip command-line: $(STRIP)"
+		
+
+info-run:
+	@echo "NO_CASH_GBA = $(NO_CASH_GBA)"
+	@echo "DESMUME = $(DESMUME)"
 	
-# For source files specific to either ARM:
 
-%.arm7.o: %.arm7.cc
-	@echo "      Compiling $< into $@"
-	$(CXX) $(TEST_CXX_FLAGS_ARM7) $(TEST_CPP_FLAGS_ARM7) -c $< -o $@
 	
-%.arm9.o: %.arm9.cc
-	@echo "      Compiling $< into $@"
-	$(CXX) $(TEST_CXX_FLAGS_ARM9) $(TEST_CPP_FLAGS_ARM9) -c $< -o $@
-
-
 CROSS_TARGET=nintendo-ds
-
 
 # For tool locations, not for flags nor build rules:
 include $(TOP)/src/conf/build/$(CROSS_TARGET)/Makevars.inc
