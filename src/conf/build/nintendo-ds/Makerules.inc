@@ -8,32 +8,35 @@ include $(TOP)/src/conf/build/nintendo-ds/Makevars.inc
 
 
 .PHONY: all compile info info-paths info-tools info-switches info-files \
-	displayModule arm7objectfiles arm9objectfiles clean clean-recurse	
+	info-ceylan-users displayModule arm7objectfiles arm9objectfiles \
+	install install-headers install-recurse clean clean-recurse	
 
 
 # Compilation.
+
+
+# For source files common to both ARM:
+
+%.arm7.o: %.cc
+	@echo "      Compiling $< into $@"
+	$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
+	
+%.arm9.o: %.cc
+	@echo "      Compiling $< into $@"
+	$(CXX) $(CXX_FLAGS_ARM9) $(CPP_FLAGS_ARM9) -c $< -o $@
 
 
 # For source files specific to either ARM:
 
 %.arm7.o: %.arm7.cc
 	@echo "      Compiling $< into $@"
-	@$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
+	$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
 	
 %.arm9.o: %.arm9.cc
 	@echo "      Compiling $< into $@"
-	@$(CXX) $(CXX_FLAGS_ARM9) $(CPP_FLAGS_ARM9) -c $< -o $@
+	$(CXX) $(CXX_FLAGS_ARM9) $(CPP_FLAGS_ARM9) -c $< -o $@
 
 	
-# For source files common to both ARM:
-
-%.arm7.o: %.cc
-	@echo "      Compiling $< into $@"
-	@$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
-	
-%.arm9.o: %.cc
-	@echo "      Compiling $< into $@"
-	@$(CXX) $(CXX_FLAGS_ARM9) $(CPP_FLAGS_ARM9) -c $< -o $@
 
 
 # For (static) libraries:
@@ -115,6 +118,18 @@ displayModule:
 	@echo "    Building all ARM7 and ARM9 object files in "`basename $(PWD)`
 	 
 
+install: install-recurse
+
+	
+install-headers:
+	@echo "    Installing headers from "$(shell basename `pwd`)
+	@cp -f Ceylan*.h $(CEYLAN_INSTALL_INC)
+	
+	
+install-recurse:
+	@for d in $(NDS_SUBDIRS); do ( cd $$d ; $(MAKE) -s -f Makefile.cross CROSS_TARGET=$(CROSS_TARGET) install ) ; done
+
+	
 clean: clean-recurse
 	@echo "    Cleaning in "$(shell basename `pwd`)
 	@-rm -f *.o *.lo *.a *.la .so *.map *.bin *.elf *.nds *.ds.gba 
@@ -173,4 +188,9 @@ info-files:
 	@echo "ARM7_OBJ_FILES = $(ARM7_OBJ_FILES)"
 	@echo "ARM9_OBJ_FILES = $(ARM9_OBJ_FILES)"
 	
-
+info-ceylan-users:
+	@echo "CEYLAN_LIBPATHS_ARM7 = $(CEYLAN_LIBPATHS_ARM7)"
+	@echo "CEYLAN_LIBPATHS_ARM9 = $(CEYLAN_LIBPATHS_ARM9)"
+	@echo "CEYLAN_LIBS_ARM7 = $(CEYLAN_LIBS_ARM7)"
+	@echo "CEYLAN_LIBS_ARM9 = $(CEYLAN_LIBS_ARM9)"
+	
