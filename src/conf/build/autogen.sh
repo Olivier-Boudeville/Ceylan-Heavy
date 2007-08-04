@@ -2,17 +2,21 @@
 
 USAGE="
 
-Usage : "`basename $0`" [ -h | --help ] [ --nds ] [--with-osdl-env-file <filename> ] [ -d | --disable-all-features ] [ -n | --no-build ] [ -c | --chain-test ] [ -f | --full-test ] [ -o | --only-prepare-dist ] [ --configure-options [option 1] [option 2] [...] ] : (re)generates all the autotools-based build system.
+Usage: "`basename $0`" [ -h | --help ] [ --nds ] [--with-osdl-env-file <filename> ] [ -d | --disable-all-features ] [ -n | --no-build ] [ -c | --chain-test ] [ -f | --full-test ] [ -o | --only-prepare-dist ] [ --configure-options [option 1] [option 2] [...] ]: (re)generates all the autotools-based build system.
 	
-	--nds : cross-compile the Ceylan library so that it can be run on the Nintendo DS
-	--with-osdl-env-file <filename> : path to the OSDL-environment.sh file, to find Nintendo DS tools (implies --nds)
-	--disable-all-features : just build the core of the Ceylan library
-	--no-build : stop just after having generated the configure script
-	--chain-test : build and install the library, build the test suite and run it against the installation
-	--full-test : build and install the library, perform all available tests, including 'make distcheck' and the full test suite
-	--only-prepare-dist : configure all but do not build anything
-	--disable-all-features : build the Ceylan library with none of its optional features
-	--configure-options : all following options will be directly passed whenever configure is run"
+	--nds: cross-compile the Ceylan library so that it can be run on the Nintendo DS (LOANI installation of both Ceylan and the DS cross-build chain is assumed)
+	--disable-all-features: just build the core of the Ceylan library
+	--no-build: stop just after having generated the configure script
+	--chain-test: build and install the library, build the test suite and run it against the installation
+	--full-test: build and install the library, perform all available tests, including 'make distcheck' and the full test suite
+	--only-prepare-dist: configure all but do not build anything
+	--disable-all-features: build the Ceylan library with none of its optional features
+	--configure-options: all following options will be directly passed whenever configure is run"
+
+
+HIDDEN="
+	--with-osdl-env-file <filename>: path to the OSDL-environment.sh file, to find Nintendo DS tools (implies --nds) [currently not taken into account]
+"
 
 
 # Main settings section.
@@ -25,11 +29,11 @@ ceylan_cross_build_opt=""
 osdl_env_file=""
 
 
-# To check the user can override them :
+# To check the user can override them:
 #test_overriden_options="CPPFLAGS=\"-DTEST_CPPFLAGS\" LDFLAGS=\"-LTEST_LDFLAGS\""
 
 
-# 0 means true, 1 means false :
+# 0 means true, 1 means false:
 do_remove_generated=0
 do_clean_prefix=0
 do_stop_after_configure_generation=1
@@ -70,7 +74,7 @@ while [ $# -gt 0 ] ; do
 	fi
 	
 	if [ "$1" = "--nds" ] ; then
-		# Cross-compilation for the Nintendo DS requested :
+		# Cross-compilation for the Nintendo DS requested:
 		do_target_nds=0
 		token_eaten=0
 	fi
@@ -99,7 +103,7 @@ while [ $# -gt 0 ] ; do
 	if [ "$1" = "-o" -o "$1" = "--only-prepare-dist" ] ; then
 		# We need to have the library built (do_build=0) even only when only
 		# preparing a distribution package, as the test/autogen.sh needs
-		# Ceylan-0.5/share/Ceylan/*.m4 installed files :
+		# Ceylan-0.5/share/Ceylan/*.m4 installed files:
 		do_build=0
 		do_check=1
 		# Install needed to have *.m4 files for aclocal of test ;
@@ -135,19 +139,19 @@ $USAGE" 1>&2
 done
 
 
-# debug mode activated iff equal to true (0) :
+# debug mode activated iff equal to true (0):
 debug_mode=1
 
 debug()
 {
 	if [ $debug_mode -eq 0 ] ; then
-		echo "debug : $*"
+		echo "debug: $*"
 	fi	
 }
 
 
 
-# Wait-after-execution mode activated iff equal to true (0) :
+# Wait-after-execution mode activated iff equal to true (0):
 wait_activated=1
 
 wait()
@@ -161,58 +165,27 @@ wait()
 }
 
 
-if [ $do_target_nds -eq 0 ] ; then
-	echo "Preparing to cross-compile for the Nintendo DS."
-	ceylan_features_opt="$ceylan_features_disable_opt"
-	ceylan_cross_build_opt="--host=arm-nintendo-ds"
-	
-	if [ -z "${osdl_env_file}" ] ; then
-	
-		# Trying to find OSDL-environment.sh : 
-osdl_env_file="../../../../../../../LOANI-installations/OSDL-environment.sh"
-	
-		if [ ! -f ${osdl_env_file} ] ; then
-			echo "Error, no specified OSDL environment file specified and default one (${osdl_env_file}) not found. $USAGE" 1>&2
-			exit 5		
-		fi
-	
-		. ${osdl_env_file}
-	fi
-	
-	# We have now all the tool locations :
-	devkitARM_bin=${devkitARM_PREFIX}/arm-eabi/bin
-
-	LDFLAGS="-L${PREFIX}/libnds/lib"
-	LIBS="-lfat -lnds9 -ldswifi9"
-	CPPFLAGS=
-	# PATH : add /home/sye/Projects/LOANI-0.4/LOANI-installations/Nintendo-DS-development/devkitPro/devkitARM/libexec/gcc/arm-eabi/4.1.1
-	ceylan_cross_build_opt="${ceylan_cross_build_opt} CXX=${devkitARM_bin}/g++ LD=${devkitARM_bin}/ld RANLIB=${devkitARM_bin}/ranlib STRIP=${devkitARM_bin}/strip AR=${devkitARM_bin}/ar AS=${devkitARM_bin}/as OBJDUMP=${devkitARM_bin}/objdump OBJCOPY=${devkitARM_bin}/objcopy"
-
-	
-fi
-
-
 RM="/bin/rm -f"
 
 COMMAND=$0
 
 LAUNCH_DIR=`pwd`
 
-# Always start from 'src/conf/build' directory :
+# Always start from 'src/conf/build' directory:
 cd `dirname $COMMAND`
 
 RUNNING_DIR=`pwd`
 #echo "RUNNING_DIR = $RUNNING_DIR"
 
 # How to go from RUNNING_DIR to base directory 
-# (the one containing src and test) :
+# (the one containing src and test):
 SOURCE_OFFSET="../../.."
 
 
 
 # Prefix section.
 
-# To guess the prefix, we need the current Ceylan version :
+# To guess the prefix, we need the current Ceylan version:
 VERSION_FILE="../CeylanSettings.inc"
 
 if [ ! -f "${VERSION_FILE}" ] ; then
@@ -229,7 +202,7 @@ debug "Default prefix = ${PREFIX_DEFAULT}"
 PREFIX_SECOND_DEFAULT="$HOME/tmp-Ceylan-test-install"
 
 if [ ! -d `dirname ${PREFIX_DEFAULT}` ] ; then
-	echo "Warning : base of first default install directory (${PREFIX_DEFAULT}) not existing, switching to second default directory (${PREFIX_SECOND_DEFAULT})"
+	echo "Warning: base of first default install directory (${PREFIX_DEFAULT}) not existing, switching to second default directory (${PREFIX_SECOND_DEFAULT})"
 	PREFIX="${PREFIX_SECOND_DEFAULT}"
 else
 	PREFIX="${PREFIX_DEFAULT}"
@@ -247,13 +220,45 @@ else
 fi
 
 
+# Nintendo DS special case:
+if [ $do_target_nds -eq 0 ] ; then
+
+
+	# First attempt was relying on the autotools, but it was a nightmare.
+	# Hence basic specific Makefiles (Makefile.cross) are used and it works
+	# great.
+		
+	echo "Cross-compiling for the Nintendo DS."
+	
+	# Go back in trunk directory:
+	cd ${SOURCE_OFFSET}	
+	
+	# Quite convenient:
+	alias mn='make -f Makefile.cross CROSS_TARGET=nintendo-ds'
+
+	# Build everything:
+	make -f Makefile.cross CROSS_TARGET=nintendo-ds
+	result=$?
+	
+	if [ $result -eq 0 ] ; then
+		echo "Successful cross-compiling for the Nintendo DS."
+	else	
+		echo "Cross-compiling for the Nintendo DS failed."
+	fi
+	
+	exit ${result}
+	
+fi
+
+
+
 if [ -z "${configure_opt}" ] ; then
 	configure_opt="$ceylan_cross_build_opt $ceylan_features_opt --enable-strict-ansi --enable-debug $PREFIX_OPT $test_overriden_options"
 fi
 
 
 
-# Log-on-file mode activated iff equal to true (0) :
+# Log-on-file mode activated iff equal to true (0):
 log_on_file=1
 
 log_filename="$RUNNING_DIR/autogen.log"
@@ -267,21 +272,21 @@ debug "COMMAND = $COMMAND"
 debug "RUNNING_DIR = $RUNNING_DIR" 
 
 
-# Overall autotools settings :
+# Overall autotools settings:
 
-# Be verbose for debug purpose :
+# Be verbose for debug purpose:
 #verbose="--verbose"
 verbose=""
 
-# Copy files instead of using symbolic link :
+# Copy files instead of using symbolic link:
 copy="--copy"
 #copy=""
 
-# Replace existing files :
+# Replace existing files:
 #force="--force"
 force=""
 
-# Warning selection : 
+# Warning selection: 
 warnings="--warnings=all"
 #warnings=""
 
@@ -317,23 +322,23 @@ execute()
 			echo "Error while executing '$*'" 1>&2
 			
 			AUTOMAKE_HINT="
-To upgrade automake and aclocal from Debian-based distributions, do the following as root : 'apt-get install automake1.9' which updates aclocal too. One has nonetheless to update the symbolic links /etc/alternatives/aclocal so that it points to /usr/bin/aclocal-1.9, and /etc/alternatives/automake so that it points to /usr/bin/automake-1.9"
+To upgrade automake and aclocal from Debian-based distributions, do the following as root: 'apt-get install automake1.9' which updates aclocal too. One has nonetheless to update the symbolic links /etc/alternatives/aclocal so that it points to /usr/bin/aclocal-1.9, and /etc/alternatives/automake so that it points to /usr/bin/automake-1.9"
 			
 			if [ "$1" = "aclocal" ]; then
 				echo "
-Note : if aclocal is failing since AM_CXXFLAGS (used in configure.ac) 'cannot be found in library', then check that your aclocal version is indeed 1.9 or newer. For example, with Debian-based distributions, /usr/bin/aclocal is a symbolic link to /etc/alternatives/aclocal, which itself is a symbolic link which may or may not point to the expected aclocal version. Your version of $1 is :
+Note: if aclocal is failing since AM_CXXFLAGS (used in configure.ac) 'cannot be found in library', then check that your aclocal version is indeed 1.9 or newer. For example, with Debian-based distributions, /usr/bin/aclocal is a symbolic link to /etc/alternatives/aclocal, which itself is a symbolic link which may or may not point to the expected aclocal version. Your version of $1 is:
 	" `$1 --version` "
 	
 	" `/bin/ls -l --color $(type -p $1)` "${AUTOMAKE_HINT}"
 			elif [ "$1" = "automake" ]; then
 				echo "
-Note : check that your automake version is indeed 1.9 or newer. For example, with Debian-based distributions, /usr/bin/automake is a symbolic link to /etc/alternatives/automake, which itself is a symbolic link which may or may not point to the expected automake version. Your version of $1 is :
+Note: check that your automake version is indeed 1.9 or newer. For example, with Debian-based distributions, /usr/bin/automake is a symbolic link to /etc/alternatives/automake, which itself is a symbolic link which may or may not point to the expected automake version. Your version of $1 is:
 	" `$1 --version` "
 	
 	" `/bin/ls -l --color $(type -p $1)` "${AUTOMAKE_HINT}"
 			elif [ "$1" = "./configure" ]; then
 				echo "
-Note : check the following log :" `pwd`/config.log
+Note: check the following log:" `pwd`/config.log
   			fi
 			
 		fi
@@ -347,7 +352,7 @@ Note : check the following log :" `pwd`/config.log
     
 	                                                 
 generateCustom()
-# Old-fashioned way of regenerating the build system from scratch : 
+# Old-fashioned way of regenerating the build system from scratch: 
 {
 
 	echo "--- generating build system"
@@ -378,13 +383,13 @@ generateCustom()
 	fi
 
 
-	# Update timestamps since SVN may mess them up :
+	# Update timestamps since SVN may mess them up:
 	CONFIG_SOURCE=configure-template.ac
 	touch $CONFIG_SOURCE
 
 	CONFIG_TARGET=configure.ac
 	
-	# Config files are to lie in 'src/conf/build' directory :
+	# Config files are to lie in 'src/conf/build' directory:
 	CONFIG_DIR=$RUNNING_DIR
 	
 	SETTINGS_FILE="CeylanSettings.inc"
@@ -392,7 +397,7 @@ generateCustom()
 	echo
 	echo " - generating $CONFIG_TARGET, by filling $CONFIG_SOURCE with $SETTINGS_FILE"
 
-	# Generates 'configure.ac' with an already cooked dedicated Makefile :
+	# Generates 'configure.ac' with an already cooked dedicated Makefile:
 	execute make -f MakeConfigure clean config-files
 	
 	# Prepare to run everything from the root directory (containing 'src'
@@ -401,7 +406,7 @@ generateCustom()
 	# and that configure.ac has a hardcoded AC_CONFIG_AUX_DIR
 	
 	
-	# Go to the top directory of the sources :
+	# Go to the top directory of the sources:
 	cd $SOURCE_OFFSET
 		
 	echo
@@ -445,10 +450,10 @@ generateCustom()
 	
 	ACLOCAL_OUTPUT=src/conf/build/m4/aclocal.m4
 	
-	# Do not use '--acdir=.' since it prevents aclocal from writing its file :
+	# Do not use '--acdir=.' since it prevents aclocal from writing its file:
 	execute aclocal -I $M4_DIR --output=$ACLOCAL_OUTPUT $force $verbose
 
-	# automake wants absolutely to find aclocal.m4 in the top-level directory :
+	# automake wants absolutely to find aclocal.m4 in the top-level directory:
 	ln -sf src/conf/build/m4/aclocal.m4
 
 	echo
@@ -501,7 +506,7 @@ generateCustom()
 	fi
 		
 	echo
-	echo " - executing 'configure' script with following options : ' $configure_opt'."
+	echo " - executing 'configure' script with following options: ' $configure_opt'."
 	
 
 	(./configure --version) < /dev/null > /dev/null 2>&1 || {
@@ -568,7 +573,7 @@ generateCustom()
 	if [ $do_distcheck -eq 0 ] ; then
 		echo
 		echo " - making distcheck"
-		# This target fails because of the test sub-package : distcheck cannot
+		# This target fails because of the test sub-package: distcheck cannot
 		# run the test/configure with expected --with-ceylan-prefix option,
 		# hence the script cannot find the installed Ceylan (distcheck uses
 		# a prefix in all cases) and fails.
