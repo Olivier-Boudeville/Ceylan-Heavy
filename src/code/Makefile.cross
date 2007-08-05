@@ -1,6 +1,7 @@
 TOP = ../..
 
-.PHONY: all lib info-lib info-lib-content info-lib-content-detailed
+.PHONY: all lib install install-local install-lib info-lib info-lib-content  \
+	info-lib-content-detailed
 
 
 NDS_SUBDIRS = generic interfaces logs maths middleware modules network system
@@ -32,7 +33,22 @@ $(CEYLAN_ARM9_LIB_NAME):  $(ARM9_LIB_CONTENT)
 lib: $(CEYLAN_ARM7_LIB_NAME) $(CEYLAN_ARM9_LIB_NAME)
 	@echo "Libraries $(CEYLAN_ARM7_LIB_NAME) $(CEYLAN_ARM9_LIB_NAME) are available."
 	
+	
+	
+install: install-local install-lib
 
+
+install-local:
+	@cp -f Ceylan.h CeylanConfigForNintendoDS.h $(CEYLAN_INSTALL_INC) 
+
+
+install-lib: lib
+	@echo "    Installing libraries in $(CEYLAN_INSTALL_LIB)"
+	@cp -f $(CEYLAN_ARM7_LIB_NAME) $(CEYLAN_ARM9_LIB_NAME) \
+		$(CEYLAN_INSTALL_LIB)
+	
+	
+	
 info-lib:
 	@echo "CEYLAN_ARM7_LIB_NAME = $(CEYLAN_ARM7_LIB_NAME)"
 	@echo "CEYLAN_ARM9_LIB_NAME = $(CEYLAN_ARM9_LIB_NAME)"
