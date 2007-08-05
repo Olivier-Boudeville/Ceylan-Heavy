@@ -2,12 +2,19 @@ TOP = ../../..
 
 .PHONY:
 
-CPP_FLAGS_COMMON = $(CEYLAN_GENERIC_INC) $(CEYLAN_LOGS_INC) \
-	$(CEYLAN_INTERFACES_INC) $(CEYLAN_MATHS_INC) $(CEYLAN_MODULES_INC)  \
+CPP_FLAGS_COMMON = \
+	$(CEYLAN_CODE_ROOT_INC)  \
+	$(CEYLAN_GENERIC_INC)    \
+	$(CEYLAN_LOGS_INC)       \
+	$(CEYLAN_INTERFACES_INC) \
+	$(CEYLAN_MATHS_INC)      \
+	$(CEYLAN_MODULES_INC)    \
 	$(CEYLAN_NETWORK_INC)
 
 
 all: compile
+
+install: install-headers
 
 
 # Small hack that allows to retrieve from autoconf files the relevant targets:
