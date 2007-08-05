@@ -10,6 +10,7 @@ using std::string ;
 
 using namespace Ceylan ;
 using namespace Ceylan::Log ;
+using namespace Ceylan::System ;
 
 
 
@@ -27,14 +28,21 @@ int main( int argc, char * argv[] )
 {
 
 	
-	
     try
     {
 	
-		display( "Hello world!" ) ;
+		Console MyConsole ;
 		
-		waitForKey() ;
+		MyConsole.addInBuffer( "Hello console !\n" ) ;
+		
+		MyConsole.render() ;
+		
+		waitForKey( "" ) ;
 
+		MyConsole.addInBuffer( "Bye !\n" ) ;
+		
+		MyConsole.render() ;
+			
     }
    
     catch ( const Ceylan::Exception & e )
