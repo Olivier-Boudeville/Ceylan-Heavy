@@ -96,6 +96,16 @@
  */
 
 
+// Only defined and set to 1 when cross-compiling for the Nintendo DS:
+#if CEYLAN_ARCH_NINTENDO_DS
+
+// So that DS-specific defines are readily available to the user:
+#include "CeylanConfigForNintendoDS.h"
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+
+
 // Please include below all header files to be exported for Ceylan users.
 
 #include "CeylanGenericIncludes.h"
@@ -108,6 +118,6 @@
 #include "CeylanSystemIncludes.h"
 
 
-#endif // CEYLAN_H_
 
+#endif // CEYLAN_H_
 
