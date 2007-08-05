@@ -1,12 +1,12 @@
 ## Makefile.am for the 'System' module of the Ceylan library.
 
 
-# Convenience library for the 'System' module :
+# Convenience library for the 'System' module:
 noinst_LTLIBRARIES = libCeylanSystem.la
 
 libCeylanSystem_la_SOURCES = $(SYSTEM_INTERFACES) $(SYSTEM_IMPLEMENTATIONS)
 
-libCeylanSystem_la_CPPFLAGS = -I@CEYLAN_LOGS@ -I@CEYLAN_GENERIC@ -I@CEYLAN_INTERFACES@ -I@CEYLAN_MATHS@ -I@CEYLAN_MODULES@ -I@CEYLAN_NETWORK@
+libCeylanSystem_la_CPPFLAGS = -I@CEYLAN_GENERIC@ -I@CEYLAN_LOGS@  -I@CEYLAN_INTERFACES@ -I@CEYLAN_MATHS@ -I@CEYLAN_MODULES@ -I@CEYLAN_NETWORK@
 
 libCeylanSystemIncludedir      = $(includedir)/Ceylan
 libCeylanSystemInclude_HEADERS = $(SYSTEM_INTERFACES)
@@ -19,6 +19,7 @@ noinst_HEADERS = \
 SYSTEM_INTERFACES = \
 	CeylanAnonymousInputOutputStream.h   \
 	CeylanAnonymousInputStream.h         \
+	CeylanConsole.h                      \
 	CeylanDirectory.h                    \
 	CeylanEnvironmentVariables.h         \
 	CeylanFile.h                         \
@@ -44,6 +45,7 @@ SYSTEM_INTERFACES = \
 SYSTEM_IMPLEMENTATIONS = \
 	CeylanAnonymousInputOutputStream.cc  \
 	CeylanAnonymousInputStream.cc        \
+	CeylanConsole.cc                     \
 	CeylanDirectory.cc                   \
 	CeylanEnvironmentVariables.cc        \
 	CeylanFile.cc                        \

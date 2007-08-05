@@ -7,6 +7,7 @@
 
 #include "CeylanAnonymousInputOutputStream.h"
 #include "CeylanAnonymousInputStream.h"
+#include "CeylanConsole.h"
 #include "CeylanDirectory.h"
 #include "CeylanEnvironmentVariables.h"
 #include "CeylanFile.h"
@@ -29,8 +30,8 @@
 
 
 /*
- * Private non-exported non-installed headers : 
- *   - CeylanEndianness.h : for byte-swapping 
+ * Private non-exported non-installed headers: 
+ *   - CeylanEndianness.h: for byte-swapping 
  *
  */
 
