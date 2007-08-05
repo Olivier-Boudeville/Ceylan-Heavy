@@ -1,6 +1,15 @@
 TOP = ..
 
+.PHONY: install install-code
+
+
 NDS_SUBDIRS = code
 
 
+install: install-code
+
+install-code:
+	@mkdir -p $(CEYLAN_INSTALL_LIB) $(CEYLAN_INSTALL_INC)
+
+	
 include $(TOP)/src/conf/build/$(CROSS_TARGET)/Makerules.inc
