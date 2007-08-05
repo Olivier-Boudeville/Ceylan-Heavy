@@ -1,15 +1,16 @@
 #include "CeylanConsole.h" 
 
 
-#include "CeylanOperators.h"  // for toNumericalString
+#include "CeylanOperators.h"           // for toNumericalString
 
 
 #if CEYLAN_ARCH_NINTENDO_DS
-#include <nds.h> // for nds constructs (powerON, videoSetMode, etc.)
+#include "CeylanConfigForNintendoDS.h" // for powerON, videoSetMode, etc.
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
+
 #ifdef CEYLAN_USES_CONFIG_H
-#include "CeylanConfig.h"      // for configure-time settings
+#include "CeylanConfig.h"              // for configure-time settings
 #endif // CEYLAN_USES_CONFIG_H
 
 
@@ -123,7 +124,35 @@ Console::~Console() throw()
 }
 
 
+void Console::addInBuffer( const std::string & text ) throw( ConsoleException )
+{
+	_buffer = text ;
+}
+				
+		
+					
+void Console::render() throw( ConsoleException )
+{
 
+#if CEYLAN_ARCH_NINTENDO_DS
+		
+#ifdef CEYLAN_RUNS_ON_ARM9
+
+	iprintf( _buffer.c_str() ) ;
+
+#endif // CEYLAN_RUNS_ON_ARM9
+
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	std::cout << _buffer ;
+	
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+}
+
+
+				
 const std::string Console::toString( Ceylan::VerbosityLevels level ) 
 	const throw()
 {
@@ -147,6 +176,7 @@ void Console::initConsole( CharAbscissa startingX, CharOrdinate startingY,
 		
 #ifdef CEYLAN_RUNS_ON_ARM9
 
+
 	// Powers the 2D cores:
 	powerON( POWER_ALL_2D ) ;
 
@@ -165,9 +195,10 @@ void Console::initConsole( CharAbscissa startingX, CharOrdinate startingY,
 	BG_PALETTE_SUB[255] = RGB15(31,31,31) ;	
 
 	consoleInitDefault(	
-		/* map */ (u16*) SCREEN_BASE_BLOCK_SUB(31),
+		/* map */       (u16*) SCREEN_BASE_BLOCK_SUB(31),
 		/* char base */ (u16*) CHAR_BASE_BLOCK_SUB(0), 
 		/* bit depth */ 16 ) ;
+
 
 #endif // CEYLAN_RUNS_ON_ARM9
 
