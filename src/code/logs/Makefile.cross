@@ -8,6 +8,8 @@ CPP_FLAGS_COMMON = $(CEYLAN_GENERIC_INC) $(CEYLAN_INTERFACES_INC)            \
 
 all: compile
 
+install: install-headers
+
 
 # Small hack that allows to retrieve from autoconf files the relevant targets:
 include Makefile.am
