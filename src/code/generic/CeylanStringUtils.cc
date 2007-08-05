@@ -1,15 +1,20 @@
 #include "CeylanStringUtils.h"
 
 
-#include "CeylanUtils.h"       // for generic templated split
+#include "CeylanUtils.h"               // for generic templated split
 
 #include "CeylanSystem.h"
 #include "CeylanOperators.h"
-#include "CeylanLogPlug.h"     // for the LogPLug
+#include "CeylanLogPlug.h"             // for the LogPLug
 
 
-#if CEYLAN_USES_CONFIG_H
-#include "CeylanConfig.h"      // for CEYLAN_DEBUG_DEMANGLE, etc.
+#if CEYLAN_ARCH_NINTENDO_DS
+#include "CeylanConfigForNintendoDS.h" // for iprintf
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+
+#ifdef CEYLAN_USES_CONFIG_H
+#include "CeylanConfig.h"              // for CEYLAN_DEBUG_DEMANGLE, etc.
 #endif // CEYLAN_USES_CONFIG_H
 
 
@@ -23,6 +28,9 @@ extern "C"
 }
 
 #endif // CEYLAN_ARCH_WINDOWS
+
+
+
 
 
 #include <cctype>              // for isdigit, isupper, etc.
@@ -94,12 +102,12 @@ std::string Ceylan::reverse( const std::string & source ) throw()
 char * Ceylan::getNonConstCharFrom( const std::string & source ) throw()
 {
 
-	// One more character for the trailing '0'  :
+	// One more character for the trailing '0' :
 	char * res = new char[ source.size() + 1 ] ;
 	
 	if ( res == 0 )
 		Ceylan::emergencyShutdown( 
-			"Ceylan::getNonConstCharFrom : not enough memory." ) ;
+			"Ceylan::getNonConstCharFrom: not enough memory." ) ;
 
 #if CEYLAN_ARCH_WINDOWS
 
@@ -114,13 +122,13 @@ char * Ceylan::getNonConstCharFrom( const std::string & source ) throw()
 	return res ;
 	
 	/*
-	 * Many variations could be used as well : using ::strdup instead 
-	 * (with ::free), raising an exception if out of memory, etc.
+	 * Many variations could be used as well: using::strdup instead 
+	 * (with::free), raising an exception if out of memory, etc.
 	 *
 	 * Too complicated to use (try/catch, even a null pointer checking 
-	 * would be uselessly cumbersome ) :
+	 * would be uselessly cumbersome ):
 	
-	char * result = ::strdup( source.c_str() ) ;
+	char * result =::strdup( source.c_str() ) ;
 	
 	if ( result )
 	{
@@ -128,9 +136,9 @@ char * Ceylan::getNonConstCharFrom( const std::string & source ) throw()
 	}
 	else
 	{
-		// If memory is so low, maybe the exception will fail too :
+		// If memory is so low, maybe the exception will fail too:
 		throw UtilsException( 
-			"Ceylan::getNonConstCharFrom : not enough memory." ) ;
+			"Ceylan::getNonConstCharFrom: not enough memory." ) ;
 	}
 	
 	*/
@@ -189,7 +197,7 @@ StringSize Ceylan::substituteInString( string & targetString,
 bool Ceylan::isLetter( char targetChar ) throw()
 {
 
-	if ( ::isalpha( targetChar ) ) 
+	if (::isalpha( targetChar ) ) 
 		return true ;
 
 	return false ;
@@ -200,7 +208,7 @@ bool Ceylan::isLetter( char targetChar ) throw()
 bool Ceylan::isFigure( char targetChar ) throw()
 {
 
-	if ( ::isalpha( targetChar ) ) 
+	if (::isalpha( targetChar ) ) 
 		return true ;
 
 	return false ;
@@ -211,7 +219,7 @@ bool Ceylan::isFigure( char targetChar ) throw()
 bool Ceylan::isAlphanumeric( char targetChar ) throw()
 {
 
-	if ( ::isalnum( targetChar ) ) 
+	if (::isalnum( targetChar ) ) 
 		return true ;
 
 	return false ;
@@ -222,7 +230,7 @@ bool Ceylan::isAlphanumeric( char targetChar ) throw()
 bool Ceylan::isPunctuation( char targetChar ) throw()
 {
 
-	if ( ::ispunct( targetChar ) )
+	if (::ispunct( targetChar ) )
 		return true ;
 
 	return false ;
@@ -233,7 +241,7 @@ bool Ceylan::isPunctuation( char targetChar ) throw()
 bool Ceylan::isWhitespace( char targetChar ) throw()
 {
 
-	if ( ::iswspace( targetChar ) ) 
+	if (::iswspace( targetChar ) ) 
 		return true ;
 
 	return false ;
@@ -248,8 +256,8 @@ string Ceylan::toUppercase( const std::string & text ) throw()
 	
 	for ( string::const_iterator it = text.begin(); 
 			it != text.end(); it++ )
-		if ( ::islower( *it ) )
-			result += ::toupper( *it ) ;
+		if (::islower( *it ) )
+			result +=::toupper( *it ) ;
 		else
 			result += *it ;
 	
@@ -273,7 +281,7 @@ string Ceylan::encodeToHTML( const std::string & message ) throw()
 			 * '"' and many others left untouched, assumed wanted, i.e.
 			 * belonging to an implied HTML expression.
 			 *
-			 * Only the following might be annoying :
+			 * Only the following might be annoying:
 			 *
 			 */
 			
@@ -339,16 +347,16 @@ string Ceylan::encodeToPhonetic( const std::string & message ) throw()
 		it != message.end(); it++ )
 	{
 
-		// No leading nor trailing space :
+		// No leading nor trailing space:
 		if ( firstLetter )
 			firstLetter = false ;
 		else
 			result += " " ;	
 	
-		if ( ::isupper( *it ) )
+		if (::isupper( *it ) )
 			result += toUppercase( phonetics[ (*it) - 'A' ] ) ;			
 		else
-			if ( ::islower( *it ) )
+			if (::islower( *it ) )
 				result += phonetics[ (*it) - 'a' ] ;
 			else
 				result += *it ;
@@ -365,7 +373,7 @@ string Ceylan::demangleSymbol( const std::string & symbol ) throw()
 	
 	
 	/*
-	 * Objective : convert something like 'N3One3Two11ExampleFourE' into
+	 * Objective: convert something like 'N3One3Two11ExampleFourE' into
 	 * 'One::Two::ExampleFour'
 	 *
 	 */
@@ -374,22 +382,22 @@ string Ceylan::demangleSymbol( const std::string & symbol ) throw()
 	 
 	/*
 	 * If it does not start by 'N' or does not end by 'E', not a mangled
-	 * message, return as is :
+	 * message, return as is:
 	 *
 	 */
 	if ( symbol[0] != 'N' || symbol[symbol.size()-1] != 'E' )
 		return symbol ;
 	
-	// Removes 'N' and 'E' :
+	// Removes 'N' and 'E':
 	const string shorten = symbol.substr( 1, symbol.size() - 2 ) ;
 	StringSize shortenSize = shorten.size() ;
 	
 	DISPLAY_DEBUG_DEMANGLE( "Shorten symbol is " + shorten ) ;	
 	
-	// We would have now : 3One3Two11ExampleFour
+	// We would have now: 3One3Two11ExampleFour
 	
 	/*
-	 * Algorithm : 
+	 * Algorithm: 
 	 * - while is a digit, add character to numString (here, read 3, could 
 	 * have been 38 or so)
 	 * - convert numString into num
@@ -414,7 +422,7 @@ string Ceylan::demangleSymbol( const std::string & symbol ) throw()
 			+ ", shorten is "
 			+ shorten ) ;
 	
-		while ( ::isdigit( shorten[count] ) )
+		while (::isdigit( shorten[count] ) )
 		{
 			numString += shorten[count] ;
 			count++ ;
@@ -426,7 +434,7 @@ string Ceylan::demangleSymbol( const std::string & symbol ) throw()
 			return symbol ;
 		}
 		
-		// We are at the end of the numerical string :
+		// We are at the end of the numerical string:
 		num = Ceylan::stringToUnsignedLong( numString ) ;
 
 		if ( num + count > shortenSize )
@@ -462,7 +470,7 @@ string Ceylan::demangleSymbol( const std::string & symbol ) throw()
 		
 	}
 	
-	// Remove last '::' :
+	// Remove last '::':
 	extracted.erase( extracted.size()-2, 2 ) ;
 	
 	DISPLAY_DEBUG_DEMANGLE( "Ceylan::demangleSymbol returning " 
@@ -573,17 +581,17 @@ list<string> Ceylan::splitIntoWords( const string & sentenceToSplit ) throw()
 	 * Some changes are needed in the splitted list in the case where there
 	 * are multiple spaces in a row. 
 	 * More precisely, if there are in the sentence n spaces in a row, then 
-	 * we have A instead of the desired B :
-	 * (example pattern : 'a' + n * ' ' + 'b' ) :
-	 * n=0 : A = [ 'ab' ],                B = [ 'ab' ]  		   -> OK
-	 * n=1 : A = [ 'a', 'b' ],            B = [ 'a', 'b' ]  	   -> OK
-	 * n=2 : A = [ 'a', '', 'b' ]    ,    B = [ 'a', '', 'b' ]     -> OK
-	 * n=3 : A = [ 'a', '', '', 'b' ],    B = [ 'a', ' ', 'b' ]    -> KO, 
+	 * we have A instead of the desired B:
+	 * (example pattern: 'a' + n * ' ' + 'b' ):
+	 * n=0: A = [ 'ab' ],                B = [ 'ab' ]  		   -> OK
+	 * n=1: A = [ 'a', 'b' ],            B = [ 'a', 'b' ]  	   -> OK
+	 * n=2: A = [ 'a', '', 'b' ]    ,    B = [ 'a', '', 'b' ]     -> OK
+	 * n=3: A = [ 'a', '', '', 'b' ],    B = [ 'a', ' ', 'b' ]    -> KO, 
 	 * must be corrected
-	 * n=4 : A = [ 'a', '', '', '', 'b' ],B = [ 'a', '  ', 'b' ]   -> KO, 
+	 * n=4: A = [ 'a', '', '', '', 'b' ],B = [ 'a', '  ', 'b' ]   -> KO, 
 	 * must be corrected
 	 *
-	 * Solution is : count all list items equal to '' on a row. 
+	 * Solution is: count all list items equal to '' on a row. 
 	 * Replace them by an item made of (count-1) spaces, if count is equal 
 	 * to 3 or greater.
 	 *
@@ -599,7 +607,7 @@ list<string> Ceylan::splitIntoWords( const string & sentenceToSplit ) throw()
 		it != splitted.end(); it++ )
 	{
 
-		// React only at the end of a series of '' with more than two items :
+		// React only at the end of a series of '' with more than two items:
 		if ( (*it).empty() )
 		{
 			voidItemCount++ ;
@@ -614,7 +622,7 @@ list<string> Ceylan::splitIntoWords( const string & sentenceToSplit ) throw()
 					
 				string spaces ;
 					
-				// Start at 1 so that having (n-1) spaces :
+				// Start at 1 so that having (n-1) spaces:
 				for ( Ceylan::Uint32 i = 1; i < voidItemCount; i++ )
 					spaces += " " ;
 				
@@ -622,7 +630,7 @@ list<string> Ceylan::splitIntoWords( const string & sentenceToSplit ) throw()
 				voidItemCount = 0 ;
 				
 			}
-			// else : no space, nothing special to do.
+			// else: no space, nothing special to do.
 
 			corrected.push_back( *it ) ;
 		
@@ -670,7 +678,7 @@ string Ceylan::formatStringList( const list<string> & stringList,
 	else
 	{
 
-		// Raw text :
+		// Raw text:
 		
 		res = '\n' ;  
 		for ( list<string>::const_iterator it = stringList.begin(); 
@@ -717,7 +725,7 @@ string Ceylan::formatStringMap(
 	else
 	{
 
-		// Raw text :
+		// Raw text:
 		
 		res = '\n' ;  
 		for ( map<string,string>::const_iterator it = stringMap.begin(); 
@@ -736,8 +744,56 @@ string Ceylan::formatStringMap(
 }
 
 
-void Ceylan::display( const string & message ) throw()
+void Ceylan::display( const string & message ) throw( StringUtilsException )
 {
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+
+#ifdef CEYLAN_RUNS_ON_ARM7
+	
+	throw StringUtilsException( "Ceylan::display : not available for ARM7." ) ;
+
+#elif defined(CEYLAN_RUNS_ON_ARM9)
+
+	iprintf( ( message + '\n' ).c_str()  ) ;
+
+#endif // CEYLAN_RUNS_ON_ARM7
+
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+	
 	std::cout << message << std::endl << std::flush ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 }
 
+
+void Ceylan::displayError( const string & errorMessage ) 
+	throw( StringUtilsException )
+{
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+
+#ifdef CEYLAN_RUNS_ON_ARM7
+	
+	throw StringUtilsException( 
+		"Ceylan::displayError : not available for ARM7." ) ;
+
+#elif defined(CEYLAN_RUNS_ON_ARM9)
+
+	// FIXME: BG_PALETTE_SUB[255] = RGB15(31,0,0);
+	display( errorMessage ) ;
+	
+#endif // CEYLAN_RUNS_ON_ARM7
+
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+	
+	std::cerr << message << std::endl << std::flush ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+}
