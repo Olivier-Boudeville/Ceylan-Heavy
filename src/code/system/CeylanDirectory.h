@@ -135,9 +135,15 @@ namespace Ceylan
 				virtual ~Directory() throw() ;
 
 
-				/// Tells whether the directory has an entry named <b>name</b>.
+				/**
+				 * Tells whether the directory has an entry named <b>name</b>.
+				 *
+				 * @throw DirectoryException is the operation failed or is
+				 * not supported.
+				 *
+				 */
 				virtual bool hasEntry( const std::string & name ) const
-					throw() ;
+					throw( DirectoryException ) ;
 
 
 				/**
