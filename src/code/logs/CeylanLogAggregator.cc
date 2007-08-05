@@ -13,7 +13,7 @@
 #include "CeylanLogMessage.h"
 
 
-#if CEYLAN_USES_CONFIG_H
+#ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"           // for CEYLAN_DEBUG
 #endif // CEYLAN_USES_CONFIG_H
 
