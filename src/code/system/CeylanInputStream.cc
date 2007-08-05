@@ -13,9 +13,10 @@
 /*
  * Implementation note :
  *
- * the endianness of the system is detected by CEYLAN_RUNS_ON_LITTLE_ENDIAN.
+ * the endianness of the system is detected by CEYLAN_RUNS_ON_LITTLE_ENDIAN,
+ * or explicitly set, in case of cross-compilation.
  *
- * Ceylan chosed to order its serialized mutli-byte datatypes according to
+ * Ceylan chosed to order its serialized multi-byte datatypes according to
  * the little endian convention (Least Significant Byte first), despite it 
  * is the opposite of the usual case (network order is defined as being big
  * endian).
@@ -28,7 +29,7 @@
  */
 
 
-#if CEYLAN_USES_CONFIG_H
+#ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"      // for configure-time settings
 #endif // CEYLAN_USES_CONFIG_H
 
