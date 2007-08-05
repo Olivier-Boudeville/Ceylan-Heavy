@@ -6,7 +6,7 @@
 #include "CeylanStringUtils.h"       // for isLetter
 
 
-#if CEYLAN_USES_CONFIG_H
+#ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"            // for configure-time feature settings
 #endif // CEYLAN_USES_CONFIG_H
 
@@ -239,7 +239,8 @@ bool Directory::isValid() const throw()
 }
 
 
-bool Directory::hasEntry( const string & name ) const throw()
+bool Directory::hasEntry( const string & name ) const 
+	throw( DirectoryException )
 {
 
 #ifdef CEYLAN_USES_STAT
@@ -250,9 +251,19 @@ bool Directory::hasEntry( const string & name ) const throw()
 
 #else // CEYLAN_USES_STAT
 
+
+#ifdef CEYLAN_USES__STAT
+
 	struct _stat buf ;
 	string tmp = _path + Separator + name ;
 	return ::_stat( tmp.c_str(), & buf ) == 0 ;
+	
+#else // CEYLAN_USES__STAT
+
+	throw DirectoryException( "Directory::hasEntry : "
+		"not implemented on this platform." ) ;
+		
+#endif  // CEYLAN_USES__STAT
 
 #endif // CEYLAN_USES_STAT
 	
@@ -767,11 +778,11 @@ void Directory::Remove( const string & name, bool recursive )
 
 	static struct stat buf ;
 
-#else // CEYLAN_USES__STAT
+#else // CEYLAN_USES_STAT
 
 	static struct _stat buf ;
 
-#endif // CEYLAN_USES__STAT
+#endif // CEYLAN_USES_STAT
 
 	if ( name.empty() )
 		throw CouldNotRemove( "(void directory specified)" ) ;
@@ -893,7 +904,8 @@ time_t Directory::GetEntryChangeTime( const string & name )
 
 #else // CEYLAN_USES_STAT
 
-#if CEYLAN_USES__STAT
+
+#ifdef CEYLAN_USES__STAT
 
 	struct _stat buf ;
 
@@ -906,6 +918,7 @@ time_t Directory::GetEntryChangeTime( const string & name )
 		"not available on this platform." ) ;
 
 #endif // CEYLAN_USES__STAT
+
 
 #endif // CEYLAN_USES_STAT
 
