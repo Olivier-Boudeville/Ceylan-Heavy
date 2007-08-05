@@ -16,11 +16,14 @@ TOP = ../..
 
 TEST_NAME := testCeylan
 
-CEYLAN_TESTED_VERSION    := 0.6
-CEYLAN_TESTED_BUILD_MODE := release
+CEYLAN_TESTED_VERSION    = $(CEYLAN_VERSION)
+CEYLAN_TESTED_BUILD_MODE = $(CEYLAN_BUILD_MODE)
 
-TARGET_ROM_NAME_BASE := \
+TARGET_ROM_NAME_BASE = \
 	$(TEST_NAME)-$(CEYLAN_TESTED_VERSION)-$(CEYLAN_TESTED_BUILD_MODE)
+
+
+all: $(TARGET_ROM_NAME_BASE).sc.nds
 
 
 test: emulate transfer
@@ -65,70 +68,6 @@ info-target:
 	@echo "CEYLAN_ARM9_INSTALLED_LIB = $(CEYLAN_ARM9_INSTALLED_LIB)"
 
 
-
-# Rules section.
-
-
-
-# From source files specific to either ARM to object files:
-
-%.arm7.o: %.arm7.cc
-	@echo "      Compiling $< into $@"
-	@$(CXX) $(TEST_CXX_FLAGS_ARM7) $(TEST_CPP_FLAGS_ARM7) -c $< -o $@
-	
-%.arm9.o: %.arm9.cc
-	@echo "      Compiling $< into $@"
-	@$(CXX) $(TEST_CXX_FLAGS_ARM9) $(TEST_CPP_FLAGS_ARM9) -c $< -o $@
-
-
-
-# From object files to fully linked ELF executables:
-
-%.arm7.elf: %.arm7.o $(CEYLAN_ARM7_INSTALLED_LIB)
-	@echo "      Creating Ceylan library-user ARM7 ELF executable $@ from $^"
-	@$(CXX) $(TEST_LD_FLAGS_ARM7) $< $(TEST_LIBPATHS_ARM7) $(TEST_LIBS_ARM7) -o $@
-
-	
-%.arm9.elf: %.arm9.o $(CEYLAN_ARM9_INSTALLED_LIB)
-	@echo "      Creating Ceylan library-user ARM9 ELF executable $@ from $^"
-	@$(CXX) $(TEST_LD_FLAGS_ARM9) $< $(TEST_LIBPATHS_ARM9) $(TEST_LIBS_ARM9)  -o $@
-
-
-
-# From ELF executable to DS bin executable format:
-
-%.arm7.bin: %.arm7.elf
-	@echo "      Creating ARM7 bin executable $@ from $<"
-	@$(OBJCOPY) -O binary $< $@
-
-%.arm9.bin: %.arm9.elf
-	@echo "      Creating ARM9 bin executable $@ from $<"
-	@$(OBJCOPY) -O binary $< $@
-
-
-
-# Neither basic logo, wifi logo nor sentences embedded:
-%.nds: %.arm7.bin %.arm9.bin
-	@echo "      Creating final slot-1 DS ROM $@ from $^"
-	@$(NDSTOOL) -c $@ -7 $< -9 `echo $^| sed 's|^.* ||1'`
-
-# Neither basic logo, wifi logo nor sentences embedded:
-%.nds: CeylanDefaultMain.arm7.bin %.arm9.bin
-	@echo "      Creating final slot-1 DS ROM $@ from $^"
-	@$(NDSTOOL) -c $@ -7 $< -9 `echo $^| sed 's|^.* ||1'`
-
-%.ds.gba: %.nds
-	@echo "      Creating final slot-2 DS ROM $@ from $^"
-	@$(DSBUILD) $<
-
-
-%.sc.nds: %.ds.gba
-	@echo "      Creating final slot-2 DS ROM $@ from $^"
-	@/bin/cp -f $< $@
-
-clean:
-	@echo "      Cleaning tests"
-	@rm -f *.o *.elf *.map *.bin *.nds *.ds.gba
 
 
 
@@ -219,16 +158,16 @@ TEST_LIBPATHS_ARM9 = -L$(CEYLAN_INSTALL_LIB) $(TEST_LIBPATHS_COMMON)
 # TEST_LIBS_ARM7 and TEST_LIBS_ARM9 section:
 
 # Let the possibility for the user to define his own LIBS:
-TEST_LIBS_ARM7:= $(LIBS) -lnds7
-TEST_LIBS_ARM9:= $(LIBS) -lnds9
+TEST_BASE_LIBS_ARM7:= $(LIBS) -lnds7
+TEST_BASE_LIBS_ARM9:= $(LIBS) -lnds9
 
-TEST_LIBS_ARM7:= \
+TEST_LIBS_ARM7 = \
        -lCeylan-$(CEYLAN_TESTED_VERSION)-$(CEYLAN_TESTED_BUILD_MODE)-arm7 \
-       $(TEST_LIBS_ARM7)
+       $(TEST_BASE_LIBS_ARM7)
 	
-TEST_LIBS_ARM9:= \
+TEST_LIBS_ARM9 = \
        -lCeylan-$(CEYLAN_TESTED_VERSION)-$(CEYLAN_TESTED_BUILD_MODE)-arm9 \
-       $(TEST_LIBS_ARM9)
+       $(TEST_BASE_LIBS_ARM9)
 	
 
 info-flags:
@@ -263,3 +202,76 @@ CROSS_TARGET=nintendo-ds
 
 # For tool locations, not for flags nor build rules:
 include $(TOP)/src/conf/build/$(CROSS_TARGET)/Makevars.inc
+
+
+# Rules section.
+
+
+
+# From source files specific to either ARM to object files:
+
+%.arm7.o: %.arm7.cc
+	@echo "      Compiling $< into $@"
+	@$(CXX) $(TEST_CXX_FLAGS_ARM7) $(TEST_CPP_FLAGS_ARM7) -c $< -o $@
+	
+	
+%.arm9.o: %.arm9.cc
+	@echo "      Compiling $< into $@"
+	@$(CXX) $(TEST_CXX_FLAGS_ARM9) $(TEST_CPP_FLAGS_ARM9) -c $< -o $@
+
+
+
+# From object files to fully linked ELF executables:
+
+%.arm7.elf: %.arm7.o $(CEYLAN_ARM7_INSTALLED_LIB)
+	@echo "      Creating Ceylan library-user ARM7 ELF executable $@ from $< and from ARM7 library"
+	@$(CXX) $(TEST_LD_FLAGS_ARM7) $< $(TEST_LIBPATHS_ARM7) $(TEST_LIBS_ARM7) -o $@
+
+
+%.arm9.elf: %.arm9.o $(CEYLAN_ARM9_INSTALLED_LIB)
+	@echo "      Creating Ceylan library-user ARM9 ELF executable $@ from $< and from ARM9 library"
+	@$(CXX) $(TEST_LD_FLAGS_ARM9) $< $(TEST_LIBPATHS_ARM9) $(TEST_LIBS_ARM9)  -o $@
+
+
+
+
+# From ELF executable to DS bin executable format:
+
+
+%.arm7.bin: %.arm7.elf
+	@echo "      Creating ARM7 bin executable $@ from $<"
+	@$(OBJCOPY) -O binary $< $@
+
+
+%.arm9.bin: %.arm9.elf
+	@echo "      Creating ARM9 bin executable $@ from $<"
+	@$(OBJCOPY) -O binary $< $@
+
+
+
+# Neither basic logo, wifi logo nor sentences embedded:
+%.nds: %.arm7.bin %.arm9.bin
+	@echo "      Creating final slot-1 DS ROM $@ from $^"
+	@$(NDSTOOL) -c $@ -7 $< -9 `echo $^| sed 's|^.* ||1'`
+
+
+# Neither basic logo, wifi logo nor sentences embedded:
+%.nds: CeylanDefaultMain.arm7.bin %.arm9.bin
+	@echo "      Creating final slot-1 DS ROM $@ from $^"
+	@$(NDSTOOL) -c $@ -7 $< -9 `echo $^| sed 's|^.* ||1'`
+
+
+%.ds.gba: %.nds
+	@echo "      Creating final slot-2 DS ROM $@ from $^"
+	@$(DSBUILD) $<
+
+
+%.sc.nds: %.ds.gba
+	@echo "      Creating final slot-2 DS ROM $@ from $^"
+	@/bin/cp -f $< $@
+
+
+clean:
+	@echo "      Cleaning tests"
+	@rm -f *.o *.elf *.map *.bin *.nds *.ds.gba
+
