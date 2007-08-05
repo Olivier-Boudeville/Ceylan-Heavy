@@ -1,0 +1,6 @@
+TOP = ..
+
+NDS_SUBDIRS = cross-tests
+
+
+include $(TOP)/src/conf/build/$(CROSS_TARGET)/Makerules.inc
