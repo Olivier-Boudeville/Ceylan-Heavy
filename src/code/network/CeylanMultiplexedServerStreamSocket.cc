@@ -10,7 +10,7 @@
 #include "CeylanInputStream.h"            // for Select
 
 
-#if CEYLAN_USES_CONFIG_H
+#ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"      // for configure-time feature settings
 #endif // CEYLAN_USES_CONFIG_H
 
