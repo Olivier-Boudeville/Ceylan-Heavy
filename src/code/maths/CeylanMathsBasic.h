@@ -23,17 +23,17 @@ namespace Ceylan
 		/*
 		 * Numerical constants commonly used for mathematic computations.
 		 *
-		 * Instead of standard variables (ex : M_E), their GNU counterparts
-		 * (ex : M_El) are used, since their accuracy (precision) is better :
+		 * Instead of standard variables (ex: M_E), their GNU counterparts
+		 * (ex: M_El) are used, since their accuracy (precision) is better:
 		 * they are adequate for computation using `Ceylan::LongFloat'.
 		 * 
 		 * Since depending on a GNU set of constants would not be portable
 		 * enough, their values are explicitly set here, one time for all.
 		 *
 		 * @note Curiously, the overall accuracy is not that great, for 
-		 * example with E : 
-		 * 	- original  : 2.7182818284590452353602874713526625
-		 *  - displayed : 2.7182818284590450908
+		 * example with E: 
+		 * 	- original : 2.7182818284590452353602874713526625
+		 *  - displayed: 2.7182818284590450908
 		 * even with a precision set to 40 digits.
 		 *
 		 * From that comparison, we defined epsilon.
@@ -86,7 +86,7 @@ namespace Ceylan
 		
 		
 		/// Exception for Maths-related issues.
-		class CEYLAN_DLL MathsException : public Ceylan::Exception
+		class CEYLAN_DLL MathsException: public Ceylan::Exception
 		{
 		
 			public:
@@ -220,7 +220,7 @@ namespace Ceylan
 	
 	
 		/**
-		 * A very small number, used for floating point comparisons :
+		 * A very small number, used for floating point comparisons:
 		 * two numbers x and y are deemed equal if | x - y | < EpsilonFloat32
 		 *
 		 */
@@ -228,7 +228,7 @@ namespace Ceylan
 
 
 		/**
-		 * A very small number, used for floating point comparisons : 
+		 * A very small number, used for floating point comparisons: 
 		 * two numbers x and y are deemed equal if | x - y | < EpsilonFloat64
 		 *
 		 */
@@ -236,7 +236,7 @@ namespace Ceylan
 
 
 		/**
-		 * A very small number, used for floating point comparisons : 
+		 * A very small number, used for floating point comparisons: 
 		 * two numbers x and y are deemed equal if | x - y | < EpsilonLongFloat
 		 *
 		 */
@@ -244,7 +244,7 @@ namespace Ceylan
 
 
 		/**
-		 * A very small number, used for floating point comparisons :
+		 * A very small number, used for floating point comparisons:
 		 * two numbers x and y are deemed equal if | x - y | < Epsilon
 		 *
 		 */
@@ -261,7 +261,7 @@ namespace Ceylan
 		
 
 		/** 
-		 * Tells whether x is null as regard to floating point numbers :
+		 * Tells whether x is null as regard to floating point numbers:
 		 * | x | < EpsilonFloat32.
 		 *
 		 */
@@ -269,7 +269,7 @@ namespace Ceylan
 
 		
 		/** 
-		 * Tells whether x is null as regard to floating point numbers :
+		 * Tells whether x is null as regard to floating point numbers:
 		 * | x | < epsilon.
 		 *
 		 */
@@ -279,7 +279,7 @@ namespace Ceylan
 		
 		
 		/** 
-		 * Tells whether x is null as regard to floating point numbers :
+		 * Tells whether x is null as regard to floating point numbers:
 		 * | x | < EpsilonFloat64.
 		 *
 		 */
@@ -287,7 +287,7 @@ namespace Ceylan
 		
 		
 		/** 
-		 * Tells whether x is null as regard to floating point numbers :
+		 * Tells whether x is null as regard to floating point numbers:
 		 * | x | < epsilon.
 		 *
 		 */
@@ -297,7 +297,7 @@ namespace Ceylan
 		
 		
 		/** 
-		 * Tells whether x is null as regard to floating point numbers :
+		 * Tells whether x is null as regard to floating point numbers:
 		 * | x | < EpsilonLongFloat.
 		 *
 		 */
@@ -305,7 +305,7 @@ namespace Ceylan
 		
 		
 		/** 
-		 * Tells whether x is null as regard to floating point numbers :
+		 * Tells whether x is null as regard to floating point numbers:
 		 * | x | < epsilon.
 		 *
 		 */
@@ -320,7 +320,7 @@ namespace Ceylan
 		
 		
 		/** 
-		 * Tells whether x and y are 'equal' as floating point numbers :
+		 * Tells whether x and y are 'equal' as floating point numbers:
 		 * | x - y | < EpsilonFloat32.
 		 *
 		 */
@@ -329,7 +329,7 @@ namespace Ceylan
 		
 		
 		/** 
-		 * Tells whether x and y are 'equal' as floating point numbers :
+		 * Tells whether x and y are 'equal' as floating point numbers:
 		 * | x - y | < epsilon.
 		 *
 		 */
@@ -339,7 +339,7 @@ namespace Ceylan
 		
 		
 		/** 
-		 * Tells whether x and y are 'equal' as floating point numbers :
+		 * Tells whether x and y are 'equal' as floating point numbers:
 		 * | x - y | < EpsilonFloat64.
 		 *
 		 */
@@ -348,7 +348,7 @@ namespace Ceylan
 		
 		
 		/** 
-		 * Tells whether x and y are 'equal' as floating point numbers :
+		 * Tells whether x and y are 'equal' as floating point numbers:
 		 * | x - y | < epsilon.
 		 *
 		 */
@@ -357,7 +357,7 @@ namespace Ceylan
 		
 
 		/** 
-		 * Tells whether x and y are exactly 'equal' : x == y, with no compile
+		 * Tells whether x and y are exactly 'equal': x == y, with no compile
 		 * warning about the fact that comparing floating point values 
 		 * with == operator is most of the time absurd, which is true indeed.
 		 *
@@ -372,7 +372,7 @@ namespace Ceylan
 		
 		
 		/** 
-		 * Tells whether x and y are 'equal' as floating point numbers : 
+		 * Tells whether x and y are 'equal' as floating point numbers: 
 		 * | x - y | < EpsilonLongFloat.
 		 *
 		 */
@@ -381,7 +381,7 @@ namespace Ceylan
 
 		
 		/** 
-		 * Tells whether x and y are 'equal' as floating point numbers : 
+		 * Tells whether x and y are 'equal' as floating point numbers: 
 		 * | x - y | < epsilon.
 		 *
 		 */
@@ -411,8 +411,8 @@ namespace Ceylan
 		
 		
 			/*
-			 * One goal, avoid division by zero on final formula :
-			 * x + y == 0 iff x == -y, in this case :  
+			 * One goal, avoid division by zero on final formula:
+			 * x + y == 0 iff x == -y, in this case:  
 			 *   - if x == 0 then y == 0 and they are deemed equal
 			 *   - otherwise x != 0 implies x != y (since x == -y),
 			 * hence they are not deemed equal.
@@ -428,7 +428,7 @@ namespace Ceylan
 			/*
 			 * Here x + y != 0.
 			 * 
-			 * Relative comparison : compare their difference (|x-y|) 
+			 * Relative comparison: compare their difference (|x-y|) 
 			 * to their mean value ((x+y)/2), here using 
 			 * EpsilonFloat32/2 as equality criterion.
 			 *
@@ -459,8 +459,8 @@ namespace Ceylan
 		
 		
 			/*
-			 * One goal, avoid division by zero on final formula :
-			 * x + y == 0 iff x == -y, in this case :  
+			 * One goal, avoid division by zero on final formula:
+			 * x + y == 0 iff x == -y, in this case:  
 			 *   - if x == 0 then y == 0 and they are deemed equal
 			 *   - otherwise x != 0 implies x != y (since x == -y),
 			 * hence they are not deemed equal.
@@ -473,7 +473,7 @@ namespace Ceylan
 			/*
 			 * Here x + y != 0.
 			 * 
-			 * Relative comparison : compare their difference (|x-y|) 
+			 * Relative comparison: compare their difference (|x-y|) 
 			 * to their mean value ((x+y)/2), here using Epsilon/2 as 
 			 * equality criterion.
 			 *
@@ -626,7 +626,7 @@ namespace Ceylan
 		
 		/**
 		 * Returns nearest integer value from argument. 
-		 * When half-way (ex : 0.5 or -1.5), will choose, among the 
+		 * When half-way (ex: 0.5 or -1.5), will choose, among the 
 		 * two nearest integers, the one with the greater absolute value 
 		 * (i.e. rounds away from zero).
 		 *
@@ -654,7 +654,7 @@ namespace Ceylan
 		 * Returns nearest float value, with specified fractional 
 		 * precision, from argument. 
 		 *
-		 * When half-way (ex : 0.5 or -1.5), will choose, among the 
+		 * When half-way (ex: 0.5 or -1.5), will choose, among the 
 		 * two nearest floats, the one with the greater absolute value
 		 * (i.e. rounds away from zero).
 		 *
@@ -691,7 +691,7 @@ namespace Ceylan
 		
 		/**
 		 * Returns nearest integer value from argument. 
-		 * When half-way (ex : 0.5 or -1.5), will choose, among the 
+		 * When half-way (ex: 0.5 or -1.5), will choose, among the 
 		 * two nearest integers, the one with the greater absolute value 
 		 * (i.e. rounds away from zero).
 		 *
@@ -719,7 +719,7 @@ namespace Ceylan
 		 * Returns nearest double value, with specified fractional 
 		 * precision, from argument. 
 		 *
-		 * When half-way (ex : 0.5 or -1.5), will choose, among the
+		 * When half-way (ex: 0.5 or -1.5), will choose, among the
 		 * two nearest floats, the one 
 		 * with the greater absolute value (i.e. rounds away from zero).
 		 *
@@ -758,7 +758,7 @@ namespace Ceylan
 		
 		/**
 		 * Returns nearest integer value from argument. 
-		 * When half-way (ex : 0.5 or -1.5), will choose, among the 
+		 * When half-way (ex: 0.5 or -1.5), will choose, among the 
 		 * two nearest integers, the one with the greater absolute value 
 		 * (i.e. rounds away from zero).
 		 *
@@ -786,7 +786,7 @@ namespace Ceylan
 		 * Returns nearest float value, with specified fractional 
 		 * precision, from argument. 
 		 *
-		 * When half-way (ex : 0.5 or -1.5), will choose, among the 
+		 * When half-way (ex: 0.5 or -1.5), will choose, among the 
 		 * two nearest floats, the one with the greater absolute value
 		 * (i.e. rounds away from zero).
 		 *
@@ -823,10 +823,10 @@ namespace Ceylan
 	
 			
 				
-		/// Absolute value, polluted by ambiguous calls :
+		/// Absolute value, polluted by ambiguous calls:
 		
 		
-		// Integer signed types :
+		// Integer signed types:
 
 		/// Computes the absolute value of specified argument.
 		CEYLAN_DLL Ceylan::Sint8 Abs( Ceylan::Sint8 x ) throw() ;		
@@ -851,7 +851,7 @@ namespace Ceylan
 		//long long int Abs( long long int x ) throw() ;
 		
 		
-		// Floating point types :
+		// Floating point types:
 		 
 		/// Computes the absolute value of specified argument.
 		CEYLAN_DLL Ceylan::Float32 Abs( Ceylan::Float32 x ) throw() ;
@@ -863,7 +863,7 @@ namespace Ceylan
 		CEYLAN_DLL Ceylan::LongFloat Abs( Ceylan::LongFloat x ) throw() ;
 		
 		
-		/// Min :
+		/// Min:
 		
 
 		/**
@@ -875,7 +875,7 @@ namespace Ceylan
 		template<typename T>
 		T Min( T x, T y ) throw()
 		{
-			return ( ( x < y ) ? x : y ) ;
+			return ( ( x < y ) ? x: y ) ;
 				
 		}
 
@@ -900,7 +900,7 @@ namespace Ceylan
 		}
 
 		
-		// Integer signed and unsigned types :
+		// Integer signed and unsigned types:
 
 		/**
 		 * Returns the minimum value of specified parameters.
@@ -995,7 +995,7 @@ namespace Ceylan
 		
 		
 		
-		// Floating point types :
+		// Floating point types:
 
 		 
 		/**
@@ -1030,7 +1030,7 @@ namespace Ceylan
 		
 		
 	
-		/// Max :
+		/// Max:
 
 		
 		/**
@@ -1042,12 +1042,12 @@ namespace Ceylan
 		template<typename T>
 		T Max( T x, T y ) throw()
 		{
-			return ( ( x > y ) ? x : y ) ;
+			return ( ( x > y ) ? x: y ) ;
 				
 		}
 
 		
-		// Integer signed and unsigned types :
+		// Integer signed and unsigned types:
 
 		
 		/**
@@ -1143,7 +1143,7 @@ namespace Ceylan
 		
 		
 		
-		// Floating point types :
+		// Floating point types:
 
 		 
 		/**
@@ -1178,7 +1178,7 @@ namespace Ceylan
 			
 
 				
-		// Exponentials :
+		// Exponentials:
 		
 		
 		/**
@@ -1206,7 +1206,7 @@ namespace Ceylan
 		
 		
 		
-		// Power :
+		// Power:
 		
 		/// Computes the value of x raised to the power of y.
 		CEYLAN_DLL Ceylan::Float32 Pow( Ceylan::Float32 x, Ceylan::Float32 y ) 
@@ -1222,7 +1222,7 @@ namespace Ceylan
 		
 		
 		
-		// Power of two :
+		// Power of two:
 		
 		/// Computes the value of x² (x*x).
 		CEYLAN_DLL Ceylan::Float32 Pow2( Ceylan::Float32 x ) throw() ;
@@ -1235,7 +1235,7 @@ namespace Ceylan
 		
 			
 			
-		// Logarithm :
+		// Logarithm:
 		
 		
 		/**
@@ -1266,7 +1266,7 @@ namespace Ceylan
 		
 		
 				
-		// Square root :
+		// Square root:
 		
 		
 		/**
@@ -1301,67 +1301,165 @@ namespace Ceylan
 			
 				
 				
-		// Cosine :
+		// Cosine:
 
 		
 		/**
-		 * Computes the cosine of x, where x is given in radians.
+		 * Computes the cosine of 'angle', where angle is given in radians.
 		 *
 		 * @return a value between -1 and 1.
 		 *
+		 * @note Uses a look-up table on the ARM9 Nintendo DS.
+		 *
 		 */
-		CEYLAN_DLL Ceylan::Float32 Cos( Ceylan::Float32 x ) throw() ;
+		CEYLAN_DLL Ceylan::Float32 Cos( Ceylan::Float32 angle ) throw() ;
 		
 		
 		/**
-		 * Computes the cosine of x, where x is given in radians.
+		 * Computes the cosine of 'angle', where angle is given in radians.
 		 *
 		 * @return a value between -1 and 1.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float64 Cos( Ceylan::Float64 x ) throw() ;
+		CEYLAN_DLL Ceylan::Float64 Cos( Ceylan::Float64 angle ) throw() ;
 		
 		
 		/**
-		 * Computes the cosine of x, where x is given in radians.
+		 * Computes the cosine of 'angle', where angle is given in radians.
 		 *
 		 * @return a value between -1 and 1.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::LongFloat Cos( Ceylan::LongFloat x ) throw() ;
+		CEYLAN_DLL Ceylan::LongFloat Cos( Ceylan::LongFloat angle ) throw() ;
 		
 
+
 		
-		// Sine :
+		// Sine:
 		
 		
 		/**
-		 * Computes the sine of x, where x is given in radians.
+		 * Computes the sine of 'angle', where angle is given in radians.
+		 *
+		 * @return a value between -1 and 1.
+		 *
+		 * @note Uses a look-up table on the ARM9 Nintendo DS.
+		 *
+		 */
+		CEYLAN_DLL Ceylan::Float32 Sin( Ceylan::Float32 angle ) throw() ;
+		
+		
+		/**
+		 * Computes the sine of 'angle', where angle is given in radians.
 		 *
 		 * @return a value between -1 and 1.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float32 Sin( Ceylan::Float32 x ) throw() ;
+		CEYLAN_DLL Ceylan::Float64 Sin( Ceylan::Float64 angle ) throw() ;
 		
 		
 		/**
-		 * Computes the sine of x, where x is given in radians.
+		 * Computes the sine of 'angle', where angle is given in radians.
 		 *
 		 * @return a value between -1 and 1.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float64 Sin( Ceylan::Float64 x ) throw() ;
+		CEYLAN_DLL Ceylan::LongFloat Sin( Ceylan::LongFloat angle ) throw() ;
+		
+		
+	
+	
+		// Tangent:
 		
 		
 		/**
-		 * Computes the sine of x, where x is given in radians.
+		 * Computes the tangent of 'angle', where angle is given in radians.
+		 *
+		 * @return the tangent.
+		 *
+		 * @note Uses a look-up table on the ARM9 Nintendo DS.
+		 *
+		 */
+		CEYLAN_DLL Ceylan::Float32 Tan( Ceylan::Float32 angle ) throw() ;
+		
+		
+		/**
+		 * Computes the tangent of 'angle', where angle is given in radians.
+		 *
+		 * @return the tangent.
+		 *
+		 */
+		CEYLAN_DLL Ceylan::Float64 Tan( Ceylan::Float64 angle ) throw() ;
+		
+		
+		/**
+		 * Computes the tangent of 'angle', where angle is given in radians.
+		 *
+		 * @return the tangent.
+		 *
+		 */
+		CEYLAN_DLL Ceylan::LongFloat Tan( Ceylan::LongFloat angle ) throw() ;
+		
+	
+		
+		
+#if defined(CEYLAN_ARCH_NINTENDO_DS) && CEYLAN_ARCH_NINTENDO_DS == 1
+
+
+		// Fixed-point counterparts.	
+
+		
+		/**
+		 * Computes the fixed-point non-negative square root of x.
+		 *
+		 */
+		CEYLAN_DLL Ceylan::Uint32 SqrtFixed( Ceylan::Uint32 x ) throw() ;
+		
+
+ 		
+#ifdef CEYLAN_RUNS_ON_ARM9
+
+		/**
+		 * Computes the fixed-point cosine of 'angle', where angle is
+		 * itself fixed-point, and given in radians.
 		 *
 		 * @return a value between -1 and 1.
 		 *
+		 * @note Uses a look-up table on the ARM9 Nintendo DS.
+		 *
 		 */
-		CEYLAN_DLL Ceylan::LongFloat Sin( Ceylan::LongFloat x ) throw() ;
+		CEYLAN_DLL Ceylan::Sint32 CosFixed( Ceylan::Sint32 angle ) throw() ;
+
+
+		/**
+		 * Computes the fixed-point sine of 'angle', where angle is
+		 * itself fixed-point, and given in radians.
+		 * @return a value between -1 and 1.
+		 *
+		 * @note Uses a look-up table on the ARM9 Nintendo DS.
+		 *
+		 */
+		CEYLAN_DLL Ceylan::Sint32 SinFixed( Ceylan::Sint32 angle ) throw() ;
+	
+
+		/**
+		 * Computes the fixed-point tangent of 'angle', where angle is
+		 * itself fixed-point, and given in radians.
+		 *
+		 * @return the tangent.
+		 *
+		 * @note Uses a look-up table on the ARM9 Nintendo DS.
+		 *
+		 */
+		CEYLAN_DLL Ceylan::Sint32 TanFixed( Ceylan::Sint32 angle ) throw() ;
+	
 		
-		
+#endif // CEYLAN_RUNS_ON_ARM9
+
+
+#endif // defined(CEYLAN_ARCH_NINTENDO_DS) && CEYLAN_ARCH_NINTENDO_DS == 1
+
+
 		
 		/**
 		 * Converts an angle expressed in degrees into an angle 
@@ -1405,7 +1503,7 @@ namespace Ceylan
 		 * returns integer).
 		 *
 		 */
-		class CEYLAN_DLL IntToIntFunctor : public Ceylan::Functor
+		class CEYLAN_DLL IntToIntFunctor: public Ceylan::Functor
 		{
 		
 		
