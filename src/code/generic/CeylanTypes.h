@@ -5,20 +5,20 @@
 #include <list>     // for ListSize
 
 
-// Could be used to define bound : #include <climits>
+// Could be used to define bound: #include <climits>
 
 
 /**
  * Cross-platform definition of the main Ceylan common basic data types.
  *
- * These basic data types depend on the platform Ceylan will run on : an
+ * These basic data types depend on the platform Ceylan will run on: an
  * unsigned short on a platform may be internally the same as an unsigned 
  * int on another platform, it has to be known at compile time.
  *
- * These informations may come from :
+ * These informations may come from:
  *   - the configure step
  *	 - set of platform specific definitions, as provided by the operating
- * system (ex : stdint.h, inttypes.h, cstdint, etc.)
+ * system (ex: stdint.h, inttypes.h, cstdint, etc.)
  *
  */
  
@@ -50,15 +50,15 @@ namespace Ceylan
 	
 	
 	/*
-	 * Links can be made between the Ceylan basic data types (ex : Sint16) and
-	 * the ones defined by the C language (ex : signed short) and by OpenGL
-	 * (ex : GLshort).
+	 * Links can be made between the Ceylan basic data types (ex: Sint16) and
+	 * the ones defined by the C language (ex: signed short) and by OpenGL
+	 * (ex: GLshort).
 	 *
 	 * C synonyms to data types are specified, then OpenGL ones (they all 
 	 * start with'GL'). 
 	 *
 	 * For each Ceylan basic numerical datatype, its lower and higher accepted
-	 * values are specified. For example, if x is a Uint8, then :
+	 * values are specified. For example, if x is a Uint8, then:
 	 * Uint8Min <= x <= Uint8Max (hence Min and Max bounds are included).
 	 *
 	 * @note Depending on the platform and the compiler, size of C types may
@@ -82,7 +82,7 @@ namespace Ceylan
 	 * 
 	 * Ranges from -128 to 127 (both included).
 	 *
-	 * Could be as well, if inttypes.h was used : typedef int8_t Sint8 ;
+	 * Could be as well, if inttypes.h was used: typedef int8_t Sint8 ;
 	 *
 	 */
 	typedef signed char	Sint8 ;
@@ -96,7 +96,7 @@ namespace Ceylan
 	 * 
 	 * Ranges from 0 to 255 (both included).
 	 *
-	 * Could be as well, if inttypes.h was used : typedef uint8_t Uint8 ;
+	 * Could be as well, if inttypes.h was used: typedef uint8_t Uint8 ;
 	 *
 	 */
 	typedef unsigned char Uint8 ;
@@ -108,7 +108,7 @@ namespace Ceylan
 	/**
 	 * char, signed char, and unsigned char are different types.
 	 *
-	 * Hence if :
+	 * Hence if:
 	 *
 	 * signed char * u ;
 	 * char * v = 0 ;
@@ -143,7 +143,7 @@ namespace Ceylan
 	 *
 	 * Ranges from -32 768 to 32 767 (both included).
 	 *
-	 * Could be as well, if inttypes.h was used : typedef int16_t Sint16 ;
+	 * Could be as well, if inttypes.h was used: typedef int16_t Sint16 ;
 	 *
 	 */
 	typedef signed short Sint16 ;
@@ -157,7 +157,7 @@ namespace Ceylan
 	 *
 	 * Ranges from 0 to 65 535 (both included).
 	 *
-	 * Could be as well, if inttypes.h was used : typedef uint16_t Uint16 ;
+	 * Could be as well, if inttypes.h was used: typedef uint16_t Uint16 ;
 	 *
 	 */
 	typedef unsigned short Uint16 ;
@@ -173,7 +173,7 @@ namespace Ceylan
 	 *
 	 * Ranges from -2 147 483 648 to 2 147 483 647 (both included).
 	 *
-	 * Could be as well, if inttypes.h was used : typedef int32_t Sint32 ;
+	 * Could be as well, if inttypes.h was used: typedef int32_t Sint32 ;
 	 *
 	 */
 	typedef signed int Sint32 ;
@@ -193,7 +193,7 @@ namespace Ceylan
 	 *
 	 * Ranges from 0 to 4 294 967 295 (both included).
 	 *
-	 * Could be as well, if inttypes.h was used : typedef uint32_t Uint32 ;
+	 * Could be as well, if inttypes.h was used: typedef uint32_t Uint32 ;
 	 *
 	 */
 	typedef unsigned int Uint32 ;
@@ -241,7 +241,7 @@ namespace Ceylan
 	/** 
 	 * 64-bit data types are not supported on all platforms.
 	 *
-	 * @see Low level APIs which manage them (ex : SDL, with SDL_types.h).
+	 * @see Low level APIs which manage them (ex: SDL, with SDL_types.h).
 	 *
 	 * @note Our definitions for 64-bit data types come directly from SDL
 	 * (http://www.libsdl.org), many thanks to the SDL community !
@@ -260,12 +260,12 @@ namespace Ceylan
 	 * @see COPYING.LIB under our src directory.
 	 * The source code for this 1.2.9 version of SDL and the full source of
 	 * Ceylan are available from the internet, in their respective official 
-	 * web sites : htpp://libsdl.org and http://ceylan.sourceforge.net
+	 * web sites: htpp://libsdl.org and http://ceylan.sourceforge.net
 	 *
 	 */
    
 /*
- * Identifies whether there exists a suitable 64-bit type : 
+ * Identifies whether there exists a suitable 64-bit type: 
  * (64-bit datatype is not supported on all platforms)
  *
  */  
@@ -273,20 +273,20 @@ namespace Ceylan
 	#if defined(__GNUC__) || defined(__MWERKS__) || defined(__SUNPRO_C) || defined(__DECC)
 		#define CEYLAN_64_BIT_TYPE long long
 	#elif defined(_MSC_VER) 
-			// Visual C++ :
+			// Visual C++:
 			#define CEYLAN_64_BIT_TYPE __int64
 	#endif // if defined(__GNUC__)...
 #endif // ! __STRICT_ANSI__
 
 
-// The 64-bit type is not available on EPOC/Symbian OS :
+// The 64-bit type is not available on EPOC/Symbian OS:
 #ifdef __SYMBIAN32__
 	#undef CEYLAN_64_BIT_TYPE
 #endif // __SYMBIAN32__
 
 
 
-// Now defines accordingly this 64-bit type :
+// Now defines accordingly this 64-bit type:
 #ifdef CEYLAN_64_BIT_TYPE
 
 
@@ -295,7 +295,7 @@ namespace Ceylan
 	 *
 	 * Ranges not specified for the moment. 
 	 *
-	 * Could be as well, if inttypes.h was used : typedef uint64_t Uint64 ;
+	 * Could be as well, if inttypes.h was used: typedef uint64_t Uint64 ;
 	 *
 	 */
 	typedef unsigned CEYLAN_64_BIT_TYPE Uint64 ;
@@ -306,7 +306,7 @@ namespace Ceylan
 	 *
 	 * Ranges not specified for the moment. 
 	 *
-	 * Could be as well, if inttypes.h was used : typedef int64_t Sint64 ;
+	 * Could be as well, if inttypes.h was used: typedef int64_t Sint64 ;
 	 *
 	 */
 	typedef signed CEYLAN_64_BIT_TYPE Sint64 ;
@@ -316,7 +316,7 @@ namespace Ceylan
 
 #define CEYLAN_FAKES_64_BIT_TYPE
 
-	/// This is really just a hack to prevent the compiler from complaining :
+	/// This is really just a hack to prevent the compiler from complaining:
 	typedef struct 
 	{
 	
@@ -485,7 +485,7 @@ namespace Ceylan
 	
 	/*
 	 * Makes sure the data types really have the right sizes, thanks to a 
-	 * trick coming from SDL :
+	 * trick coming from SDL:
 	 * if the size of tested type does not match desired value, expression
 	 * 'sizeof(t)  == n' is false (0) and the macro attempts to define an 
 	 * array of '0*2 -1' = -1 element, which results in a compilation error,
