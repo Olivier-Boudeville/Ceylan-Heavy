@@ -65,7 +65,11 @@ WINE = wine
 TRANSFER_MOUNT_POINT = /media/disk
 
 
+
 # Module settings.
+
+
+CEYLAN_CODE_ROOT := $(TOP)/src/code
 
 CEYLAN_LOGS      := $(TOP)/src/code/logs
 CEYLAN_INTERFACES:= $(TOP)/src/code/interfaces
@@ -76,6 +80,8 @@ CEYLAN_MATHS     := $(TOP)/src/code/maths
 CEYLAN_NETWORK   := $(TOP)/src/code/network
 CEYLAN_MIDDLEWARE:= $(TOP)/src/code/middleware
 
+
+CEYLAN_CODE_ROOT_INC := -I$(CEYLAN_CODE_ROOT)
 
 CEYLAN_LOGS_INC      := -I$(CEYLAN_LOGS)
 CEYLAN_INTERFACES_INC:= -I$(CEYLAN_INTERFACES) 
@@ -102,22 +108,22 @@ CEYLAN_LT_VERSION:= $(CEYLAN_LT_CURRENT).$(CEYLAN_LT_REVISION).$(CEYLAN_LT_AGE)
 
 ARCH_FLAGS_COMMON = -mthumb -mthumb-interwork
 
-# The -DARM7/-DARM flags are needed by libnds:
-ARCH_FLAGS_ARM7   = $(ARCH_FLAGS_COMMON) -mcpu=arm7tdmi -mtune=arm7tdmi -DCEYLAN_RUNS_ON_ARM7=1 -DARM7
+# The -DARM7/-DARM flags are needed by libnds but set by Ceylan DS header:
+ARCH_FLAGS_ARM7   = $(ARCH_FLAGS_COMMON) -mcpu=arm7tdmi -mtune=arm7tdmi -DCEYLAN_RUNS_ON_ARM7=1
 
-ARCH_FLAGS_ARM9   = $(ARCH_FLAGS_COMMON) -march=armv5te -mtune=arm946e-s -DCEYLAN_RUNS_ON_ARM9=1 -DARM9
+ARCH_FLAGS_ARM9   = $(ARCH_FLAGS_COMMON) -march=armv5te -mtune=arm946e-s -DCEYLAN_RUNS_ON_ARM9=1
 
 
 # Determines which kind of build is expected:
-#build_mode = debug
-build_mode = release
+#CEYLAN_BUILD_MODE = debug
+CEYLAN_BUILD_MODE = release
 
 
 # Ceylan library names.
 
 CEYLAN_BASE_LIB_NAME:= Ceylan-$(CEYLAN_VERSION)
 
-ifeq ($(build_mode),debug)
+ifeq ($(CEYLAN_BUILD_MODE),debug)
 	CEYLAN_BASE_LIB_NAME:= $(CEYLAN_BASE_LIB_NAME)-debug
 else
 	CEYLAN_BASE_LIB_NAME:= $(CEYLAN_BASE_LIB_NAME)-release
@@ -166,6 +172,7 @@ CPP_FEATURE_DEFINES:= \
 	
 		
 CPP_DEBUG_DEFINES:= \
+	-DCEYLAN_DEBUG_NINTENDO_DS=1       \
 	-DCEYLAN_DEBUG_DEMANGLE=0          \
 	-DCEYLAN_DEBUG_EVENTS=0            \
 	-DCEYLAN_DEBUG_LOG=0               \
@@ -204,7 +211,7 @@ CXX_FLAGS_COMMON:= -Winline -Wall -Werror -Woverloaded-virtual -W -Wfloat-equal 
 # alignment' in libnds headers
 
 
-ifeq ($(build_mode),debug)
+ifeq ($(CEYLAN_BUILD_MODE),debug)
 
 # Flags common to the ARM7 and the ARM9 for compilation in debug mode:
 CXX_FLAGS_COMMON:= $(CXX_FLAGS_COMMON) -g -O0 -DCEYLAN_DEBUG=1
@@ -235,57 +242,7 @@ AR_FLAGS_ARM7:= $(AR_FLAGS_COMMON)
 AR_FLAGS_ARM9:= $(AR_FLAGS_COMMON)
 
 
-# Generating an executable:
-
-
-# LD_FLAGS_ARM7 and LD_FLAGS_ARM9:
-
-LD_FLAGS_COMMON:= $(ARCH_FLAGS_COMMON)
-
-LD_FLAGS_ARM7:= -specs=ds_arm7.specs -Wl,-Map,ARM7.map
-LD_FLAGS_ARM9:= -specs=ds_arm9.specs -Wl,-Map,ARM9.map
-
-
-ifeq ($(build_mode),debug)
-
-
-LD_FLAGS_COMMON:= $(LD_FLAGS_COMMON) -g 
-
-else
-
-LD_FLAGS_COMMON:= $(LD_FLAGS_COMMON)
-
-endif
-
-
-# Let the possibility for the user to define his own LD_FLAGS:
-LD_FLAGS_ARM7:= $(LD_FLAGS) $(LD_FLAGS_COMMON) $(LD_FLAGS_ARM7)
-LD_FLAGS_ARM9:= $(LD_FLAGS) $(LD_FLAGS_COMMON) $(LD_FLAGS_ARM9)
-
-
-
-# CEYLAN_LIBS_ARM7 and CEYLAN_LIBS_ARM9:
-
-# Let the possibility for the user to define his own LIBS:
-LIBS_ARM7:= $(LIBS) -lnds7
-LIBS_ARM9:= $(LIBS) -lnds9
-
-CEYLAN_LIBS_ARM7:= -l$(CEYLAN_ARM7_LINK_NAME) $(LIBS_ARM7)
-CEYLAN_LIBS_ARM9:= -l$(CEYLAN_ARM9_LINK_NAME) $(LIBS_ARM9)
-
-
-
-# CEYLAN_LIBPATHS_ARM7 and CEYLAN_LIBPATHS_ARM9:
-
-LIBPATHS_COMMON = -L$(libnds_DIR)/lib
-
-# Let the possibility for the user to define his own LIBPATHS:
-LIBPATHS_ARM7:= $(LIBPATHS) $(LIBPATHS_COMMON) $(LIBPATHS_ARM7)
-LIBPATHS_ARM9:= $(LIBPATHS) $(LIBPATHS_COMMON) $(LIBPATHS_ARM9)
-
-# To build Ceylan-using executables: 
-CEYLAN_LIBPATHS_ARM7:= $(LIBPATHS_ARM7) -L$(CEYLAN_LIB_LOCATION)
-CEYLAN_LIBPATHS_ARM9:= $(LIBPATHS_ARM9) -L$(CEYLAN_LIB_LOCATION)
+# Generating an executable is defined in trunk/test/cross-tests/Makefile.
 
 
 
