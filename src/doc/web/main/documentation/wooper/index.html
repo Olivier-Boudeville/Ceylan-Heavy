@@ -55,6 +55,7 @@ WOOPER is an <a href="#license">open source</a> lightweight layer on top of the 
                        <a href="#how">How to use WOOPER ?</a><br>
                        <a href="#example">WOOPER example</a><br>
                        <a href="#current">Current stable version &amp; download</a><br>
+                       <a href="#versions">Version history &amp; changes</a><br>
                        <a href="#inner">Inner workings</a><br>
                        <a href="#next">Issues &amp; planned enhancements</a><br>
                        <a href="#license">License</a><br>
@@ -589,7 +590,7 @@ A method signature has always for first parameter the state of the instance, for
 </p>
 
 <p>
-A method must always return at least the new instance state, even if the state did not change. In this case the parameter is directly returned:
+A method must always return at least the new instance state, even if the state did not change. In this case the state parameter is directly returned, as is:
 <center>
     <table summary="Code" style="border: none">
         <tr>
@@ -625,6 +626,48 @@ getAge(State) -&gt;
         </tr>
     </table>
 </center>
+All methods are of course given the parameters specified at their call. For example, for a cat having 2 male kitten and 3 female ones, we have:
+<center>
+    <table summary="Code" style="border: none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+giveBirth(State,NumberOfMaleChildren,NumberOfFemaleChildren) -&gt; 
+	[..]
+
+MyCat ! {giveBirth,[2,3],self()}.
+	</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+But requests can access to one more information than oneways: the PID of the client that sent the request. This can be done by reading the <code>request_sender</code> member of the state variable, which is automatically set by WOOPER:
+<center>
+    <table summary="Code" style="border: none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+giveBirth(State,NumberOfMaleChildren,NumberOfFemaleChildren) -&gt; 
+	ClientPID = State#state_holder.request_sender,
+	[..]
+	</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+<p>
+Thus requests have access to their client PID without having to specify it twice, i.e. with no need to specify it in the parameters as well as in the third element of the call tuple: instead of
+<code>MyCat ! {giveBirth,[2,3,self()],self()}.</code>, only <code>MyCat ! {giveBirth,[2,3],self()}.</code> can be sent, while letting the possibility for the called request (here <code>giveBirth/3</code>, for a state and two parameters) to store the client PID (most probably in the state variable) for a later use.
+</p>
+
+<p>
+ The <code>request_sender</code> member is set accordingly (i.e. with the right PID) only while a request method is being executed, otherwise its value is always the atom <code>undefined</code>.
+</p>
  </li>
  
 	<li>a <b>oneway</b>, and <code>?wooper_return_state_only(NewState)</code> will be used: the instance state will be updated, and no result will be returned. For example,
@@ -952,11 +995,15 @@ All WOOPER classes must include <a href="http://ceylan.svn.sourceforge.net/viewv
 </p>
 
 <p>
-One should have <code>utils.beam</code>, <code>hashtable.beam</code> and <code>wooper_class_manager.beam</code> available to the interpreter before using WOOPER-based classes. Using some kind of makefiles is recommended.
+One should have <code>utils.beam</code>, <code>hashtable.beam</code> and <code>wooper_class_manager.beam</code> available to the interpreter before using WOOPER-based classes.
 </p>
 
 <p>
-These modules must thus be compiled before using WOOPER, for example: 
+On UNIX-like platforms, using the Makefiles included with WOOPER archive is recommended. One just has to go at the root of the sources (from an extracted archive, you are expected to be in the <code>wooper-x.y</code> root directory) and simply run: <code>make</code> (assuming GNU make is available, so that the WOOPER <code>GNUmakefile</code> is used).
+</p>
+
+<p>
+On other platforms, these modules must be compiled one way or another before using WOOPER, for example: 
 <center>
     <table summary="Code" style="border: none">
         <tr>
@@ -1096,6 +1143,48 @@ svn co https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/doc/we
 
 <p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
 
+<!-- #####################################################################" -->
+
+
+
+<a name="versions"></a>
+<h2>Version history &amp; changes</h2>
+
+<!--
+<a name="version_X_Y"
+<h3>Version </h3>
+<p>
+Not released yet (work-in-progress, only available on SVN). Major changes are:
+<ul>
+	<li></li>
+</ul>
+
+</p>
+-->
+
+
+<a name="version_0_1"></a>
+<h3>Version 0.1</h3>
+<p>
+Released on Sunday, July 22, 2007. Already fully functional!
+</p>
+
+
+<a name="version_0_2"></a>
+<h3>Version 0.2</h3>
+<p>
+Not released yet (work-in-progress, only available on SVN). Major changes are:
+<ul>
+	<li>the sender PID is made available to requests in the instance state variable (see <code>request_sender</code> member)</li>
+	<li>fixed a potential race condition when two clients request nearly at the same time the WOOPER class manager (previous mechanism worked, class manager was a singleton indeed, but second client was not notified)</li>
+	<li>improved build (Emakefile generated), comments, error output</li>
+	<li>test template added</li>
+	<li>documentation updated</li>
+</ul>
+
+</p>
+
+<p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
 
 <!-- #####################################################################" -->
 
@@ -1275,7 +1364,7 @@ Bugs, questions, remarks, patches, requests for enhancements, etc. are to be sen
   <center>
     [<a href="#_top_">Top</a>]<br>
     <br>
-    <em>Last update: Tuesday, July 24, 2007</em>
+    <em>Last update: Thursday, August 2, 2007</em>
   </center>
 </body>
 </html>
