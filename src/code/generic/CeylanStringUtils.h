@@ -13,7 +13,7 @@
 
 
 
-// Deserialization can fail easily, better check it systematically :
+// Deserialization can fail easily, better check it systematically:
 #define CEYLAN_DEBUG_STRING_TO_OBJECT 1
 
 
@@ -32,6 +32,26 @@ namespace Ceylan
 {
 	
 	
+	/// Exception raised by string utils services. 
+	class CEYLAN_DLL StringUtilsException : public Exception
+	{
+	
+		public:
+		
+			StringUtilsException( const std::string & message ) throw() : 
+				Exception( message )
+			{		
+			
+			}
+			
+			virtual ~StringUtilsException() throw()
+			{
+			
+			}	
+		
+	} ;	
+
+
 
 	/**
 	 * Describes a character encoded in Latin-1 (ISO 8859-1 character set).
@@ -69,7 +89,7 @@ namespace Ceylan
 	/**
 	 * Formats the specified list of strings, according to the specified format.
 	 *
-	 * Text output format is determined from overall settings : the list will
+	 * Text output format is determined from overall settings: the list will
 	 * be output with HTML tags, or use raw formatting, accordingly.
 	 *
 	 * @param stringList the list of strings to format.
@@ -93,7 +113,7 @@ namespace Ceylan
 	 * Formats the specified map whose keys and values are strings, according
 	 * to the specified format.
 	 *
-	 * Text output format is determined from overall settings : the map will
+	 * Text output format is determined from overall settings: the map will
 	 * be output with HTML tags, or use raw formatting, accordingly.
 	 *
 	 * @param stringMap the map of strings to format.
@@ -117,8 +137,24 @@ namespace Ceylan
 	/**
 	 * Displays the specified message to the user, on his console, if any.
 	 *
+	 * @throw StringUtilsException if the operation is not available on
+	 * this platform.
+	 *
 	 */
-	CEYLAN_DLL void display( const std::string & message ) throw() ;
+	CEYLAN_DLL void display( const std::string & message ) 
+		throw( StringUtilsException ) ;
+
+
+	/**
+	 * Displays the specified error message to the user, on his console, if any.
+	 *
+	 * @throw StringUtilsException if the operation is not available on
+	 * this platform.
+	 *
+	 */
+	CEYLAN_DLL void displayError( const std::string & errorMessage ) 
+		throw( StringUtilsException ) ;
+
 
 
 	/**
@@ -133,7 +169,7 @@ namespace Ceylan
 	/**
 	 * Returns the reversed source string, as read from right to left.
 	 *
-	 * Example : "Ceylan" becomes "nalyeC"
+	 * Example: "Ceylan" becomes "nalyeC"
 	 *
 	 */
 	CEYLAN_DLL std::string reverse( const std::string & source ) throw() ;
@@ -147,19 +183,19 @@ namespace Ceylan
 	 * see example below.
 	 *
 	 * This is especially useful for broken old C libraries which have 
-	 * 'char *' arguments where they should ask only for 'const char *' : STL
+	 * 'char *' arguments where they should ask only for 'const char *': STL
 	 * string cannot be used directly since the std::string c_str() method 
 	 * returns a '<b>const<b> char *'.
 	 *
 	 * @note Memory gets allocated by this function, one should therefore free,
-	 * with 'delete []', the returned char * when finished with it : the caller
+	 * with 'delete []', the returned char * when finished with it: the caller
 	 * is responsible for the returned char * deallocation, otherwise memory
 	 * is leaked.
 	 *
 	 * @return the requested 'char *'. If ever there was enough memory, 
 	 * the application is stopped in emergency.
 	 *
-	 * @example :
+	 * @example:
 	 * <pre>
 	 * void aStupidFunction( char * name ) ;
 	 *
@@ -168,7 +204,7 @@ namespace Ceylan
 	 * aStupidFunction( convertedString ) ;
 	 * delete [] convertedString ;
 	 * ...
-	 * or :
+	 * or:
 	 * ...
 	 * aStupidFunction( const_cast<char *>( aString.c_str() ) ) ;
 	 * ...
@@ -289,7 +325,7 @@ namespace Ceylan
 	/**
 	 * Demangles a C++ symbol so that it becomes human-readable.
 	 *
-	 * Example : 'N3One3Two11ExampleFourE' should be converted in
+	 * Example: 'N3One3Two11ExampleFourE' should be converted in
 	 * 'One::Two::ExampleFour'.
 	 *
 	 * @note This function operates only on symbols mangled by g++, 
@@ -332,7 +368,7 @@ namespace Ceylan
 	 * Joins the strings in <b>toJoin</b> with specified joining string.
 	 *
 	 * @example join( [ "little", "wicked", "naughty", "stinky" ], ", " )
-	 * returns : "little, wicked, naughty, stinky".
+	 * returns: "little, wicked, naughty, stinky".
 	 *
 	 * @see split
 	 *
@@ -345,11 +381,11 @@ namespace Ceylan
 	 * Splits the specified sentence into a list of words.
 	 *
 	 * Words are found based on the space (' ') character, which acts as a
-	 * separator. However n>1 spaces in a row (ex : 'abc   def', n=3) should
+	 * separator. However n>1 spaces in a row (ex: 'abc   def', n=3) should
 	 * result in a word made of 
 	 *  - if n=2, 0 space (empty word, '')
 	 *  - if n>2, (n-2) spaces 
-	 * ( n=3 : ['abc', ' ', 'def' ] instead of ['abc', '', '', 'def']).
+	 * ( n=3: ['abc', ' ', 'def' ] instead of ['abc', '', '', 'def']).
 	 *
 	 * @param sentenceToSplit the sentence to split into words.
 	 *
@@ -403,6 +439,7 @@ namespace Ceylan
 #endif // CEYLAN_DEBUG_STRING_TO_OBJECT
 
 	}
+	
 
 }
 
