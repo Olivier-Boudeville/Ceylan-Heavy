@@ -129,6 +129,47 @@ namespace Ceylan
 				virtual ~Console() throw() ;
 
 
+
+				// Buffer manipulation section.
+
+
+				/** 
+				 * Adds specified text in the character buffer of this console.
+				 *
+				 * @note Does not render anything, just stores the text.
+				 *
+				 * @param text the text to add.
+				 *
+				 * @throw ConsoleException if the operation failed.
+				 *
+				 */
+				void addInBuffer( const std::string & text ) 
+					throw( ConsoleException ) ;
+
+
+				/** 
+				 * Blanks the character buffer of this console.
+				 *
+				 * @throw ConsoleException if the operation failed.
+				 *
+				 */
+				void blankBuffer() throw( ConsoleException ) ;
+
+
+
+				// Render section.
+
+
+				/**
+				 * Renders in console output the current text of its 
+				 * character buffer.
+				 *
+				 * @throw ConsoleException if the operation failed.
+				 *
+				 */
+				void render() throw( ConsoleException ) ; 
+				
+				
             	/**
             	 * Returns an user-friendly description of the state of
 				 * this object.
@@ -246,6 +287,7 @@ namespace Ceylan
 				CharAbscissa _width ;
 				CharOrdinate _height ;
 				
+				std::string _buffer ;
 				
 				
 			private:
