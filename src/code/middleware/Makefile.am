@@ -7,7 +7,7 @@ noinst_LTLIBRARIES = libCeylanMiddleware.la
 libCeylanMiddleware_la_SOURCES = $(MIDDLEWARE_INTERFACES) \
 	$(MIDDLEWARE_IMPLEMENTATIONS)
 
-libCeylanMiddleware_la_CPPFLAGS = -I@CEYLAN_LOGS@ -I@CEYLAN_GENERIC@ -I@CEYLAN_INTERFACES@ -I@CEYLAN_SYSTEM@ -I@CEYLAN_MODULES@
+libCeylanMiddleware_la_CPPFLAGS = -I@CEYLAN_GENERIC@ -I@CEYLAN_LOGS@  -I@CEYLAN_INTERFACES@ -I@CEYLAN_SYSTEM@ -I@CEYLAN_MODULES@
 
 libCeylanMiddlewareIncludedir      = $(includedir)/Ceylan
 libCeylanMiddlewareInclude_HEADERS = $(MIDDLEWARE_INTERFACES)
