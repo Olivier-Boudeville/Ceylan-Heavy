@@ -39,7 +39,7 @@ namespace Ceylan
 	 * version expected by a user program is found in this Ceylan header file,
 	 * according to the version being used to compile it.
 	 *
-	 * Use this macro in your application that way : 
+	 * Use this macro in your application that way: 
 	 * 'CHECK_CEYLAN_VERSIONS() ;'
 	 * for example in the first lines of your 'main' function. Of course the 
 	 * main Ceylan header file ('Ceylan.h') should have been included
@@ -76,12 +76,12 @@ namespace Ceylan
 	
 	
 	/// Exception raised by common utils services. 
-	class CEYLAN_DLL UtilsException : public Exception
+	class CEYLAN_DLL UtilsException: public Exception
 	{
 	
 		public:
 		
-			UtilsException( const std::string & message ) throw() : 
+			UtilsException( const std::string & message ) throw(): 
 				Exception( message )
 			{		
 			
@@ -104,12 +104,12 @@ namespace Ceylan
 	 * @see testCeylanCommandLineOptions.cc
 	 *
 	 */
-	class CEYLAN_DLL CommandLineParseException : public UtilsException
+	class CEYLAN_DLL CommandLineParseException: public UtilsException
 	{
 	
 		public:
 		
-			CommandLineParseException( const std::string & message ) throw() : 
+			CommandLineParseException( const std::string & message ) throw(): 
 				UtilsException( message )
 			{		
 			
@@ -121,6 +121,7 @@ namespace Ceylan
 			}	
 		
 	} ;	
+
 
 
 	/**
@@ -199,18 +200,23 @@ namespace Ceylan
 	;
 
 
+
 	// Some keyboard events facilities.
 
 
 	/**
-	 * UNIX port of well-known kbhit.
+	 * Tells whether a key has been hit, and consequently is waiting to be
+	 * read. All key presses are taken into account, no only the new transitions
+	 * from released to pressed.
 	 *
-	 * Taken from http://www.geocities.com/SiliconValley/Park/4572/tips.html.
+	 * @throw UtilsException if the operation is not available or could not
+	 * be performed correctly.
 	 *
-	 * Thanks Petey Leinonen !
+	 * @note For the Nintendo DS, the libdns scanKeys function is supposed to
+	 * be called regularly outside of this function (ex: once per main loop).
 	 *
 	 */
-	CEYLAN_DLL bool keyboardHit() throw() ;
+	CEYLAN_DLL bool keyboardHit() throw( UtilsException ) ;
 
 
 	/// Corresponds to a read character.
@@ -218,21 +224,20 @@ namespace Ceylan
 	
 	
 	/**
-	 * Portable old-fashioned getchar.
+	 * Returns a new key being hit.
+	 * Waits, if necessary, until this occurs.
 	 *
-	 * UNIX port taken from
-	 * http://www.geocities.com/SiliconValley/Park/4572/tips.html.
-	 *
-	 * Thanks Petey Leinonen !
+	 * @throw UtilsException if the operation is not available or could not
+	 * be performed correctly.
 	 *
 	 */
-	CEYLAN_DLL KeyChar getChar() throw() ;
+	CEYLAN_DLL KeyChar getChar() throw( UtilsException ) ;
 
 
 	/**
 	 * Default string to display when waiting for a key to be hit.
 	 *
-	 * Ex : "Press any key to continue".
+	 * Ex: "Press any key to continue".
 	 *
 	 */
 	extern CEYLAN_DLL const std::string DefaultWaitForKeyMessage ;
@@ -241,16 +246,23 @@ namespace Ceylan
 	/**
 	 * Waits for a key to be pressed.
 	 *
-	 * @return the hit key as getChar read it.
+	 * @param the sentence to display once before waiting. Just specify ""
+	 * for no message.
 	 *
-	 * @note One should not use for example : 
-	 * <code>"Hit key is : " + waitForKey()</code> since waitForKey returns
-	 * a numerical value. Instead, use :
-	 * <code>"Hit key is : " + toString( waitForKey() )</code>
+	 * @return the hit key as getChar read it, or only 0 if running on the
+	 * ARM9 Nintendo DS (no getChar available).
+	 *
+	 * @note One should not use for example: 
+	 * <code>"Hit key is: " + waitForKey()</code> since waitForKey returns
+	 * a numerical value. Instead, use:
+	 * <code>"Hit key is: " + toString( waitForKey() )</code>
+	 *
+	 * @throw UtilsException if the operation failed or in not supported
+	 * on this platform.
 	 *
 	 */
 	CEYLAN_DLL KeyChar waitForKey( const std::string & message 
-		= DefaultWaitForKeyMessage ) throw() ;
+		= DefaultWaitForKeyMessage ) throw( UtilsException ) ;
 
 	
 	/**
@@ -261,7 +273,7 @@ namespace Ceylan
 	 * splitting the first container.
 	 *
 	 * Its obvious use is for splitting strings, but the function has been made
-	 * a template in order to be able to :
+	 * a template in order to be able to:
 	 * 1. split strings using any kind of char
 	 * 2. split anything else (list of events, for example)
 	 *
@@ -304,6 +316,7 @@ namespace Ceylan
 	}
 
 
+
 	/**
 	 * Template function splitting a container according to a predicate.
 	 * 
@@ -321,7 +334,7 @@ namespace Ceylan
 	 * @param result list of containers to which will be appended the results 
 	 * of the split.
 	 *
-	 * @example :
+	 * @example:
 	 * <pre>
 	 *	const std::string test( "This is a test." ) ;
 	 *	const char d = ' ' ;
@@ -334,7 +347,7 @@ namespace Ceylan
 	 *	int n = 0 ;
 	 *	for( List::iterator i = result.begin(); i != result.end(); ++i, ++n )
 	 *	{
-	 *		std::cout << "item " << n << " : >" << *i << "<" << std::endl ;
+	 *		std::cout << "item " << n << ": >" << *i << "<" << std::endl ;
 	 *  }
 	 *
 	 * </pre>
