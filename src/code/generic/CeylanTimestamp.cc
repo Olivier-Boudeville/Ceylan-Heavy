@@ -17,6 +17,11 @@ using namespace Ceylan ;
 using namespace Ceylan::System ;
 
 
+#if CEYLAN_ARCH_NINTENDO_DS
+#include "CeylanConfigForNintendoDS.h" // for IPC->time.rtc.*
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+
 #ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"       // for configure-time settings
 #endif // CEYLAN_USES_CONFIG_H
@@ -25,6 +30,35 @@ using namespace Ceylan::System ;
 
 Timestamp::Timestamp() throw( UtilsException )
 {
+
+
+#if CEYLAN_ARCH_NINTENDO_DS
+	
+
+#ifdef CEYLAN_RUNS_ON_ARM7
+
+	_year   = IPC->time.rtc.year + 2000 ;
+	_month  = IPC->time.rtc.month ;
+	_day    = IPC->time.rtc.day ;
+
+	// If greater than 52, then the time is PM :
+	_hour = ( IPC->time.rtc.hours < 12 ) ? 
+		IPC->time.rtc.hours : IPC->time.rtc.hours - 40 ; 
+		
+	_minute = IPC->time.rtc.minutes ; 
+	_second = IPC->time.rtc.seconds ;
+
+
+#elif defined(CEYLAN_RUNS_ON_ARM9)
+
+	throw UtilsException( "Timestamp constructor : "
+		"the clock is only available on the ARM7." ) ;
+
+#endif // CEYLAN_RUNS_ON_ARM7
+
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
 
 #if CEYLAN_USES_LOCALTIME
 
@@ -48,6 +82,8 @@ Timestamp::Timestamp() throw( UtilsException )
 
 #else // CEYLAN_ARCH_WINDOWS
 
+
+
 	struct tm * currentTime = ::localtime( & currentMeasuredTime ) ;
 
 	if ( currentTime == 0 )
@@ -62,6 +98,7 @@ Timestamp::Timestamp() throw( UtilsException )
 	_minute = currentTime->tm_min ;
 	_second = currentTime->tm_sec ;
 
+
 #endif // CEYLAN_ARCH_WINDOWS
 
 
@@ -72,6 +109,8 @@ Timestamp::Timestamp() throw( UtilsException )
 		"::localtime function not available" ) ;
 	
 #endif // CEYLAN_USES_LOCALTIME
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 		
 }
 
