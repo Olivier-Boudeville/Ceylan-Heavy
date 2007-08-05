@@ -12,6 +12,12 @@
 #include "CeylanConfig.h"                 // for configure-time settings
 #endif // CEYLAN_USES_CONFIG_H
 
+
+#if CEYLAN_ARCH_NINTENDO_DS
+#include "CeylanConfigForNintendoDS.h"    // for irqInit and al (ARM9)
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+
 #if CEYLAN_ARCH_WINDOWS
 #include "CeylanNetwork.h"                // for explainSocketError, etc.
 #endif // CEYLAN_ARCH_WINDOWS
@@ -69,7 +75,7 @@ extern "C"
 #include <iostream>                       // for sync_with_stdio
 
 
-// For Windows select : #define FD_SETSIZE 512 (instead of 64)
+// For Windows select: #define FD_SETSIZE 512 (instead of 64)
 
 using std::string ;
 
@@ -142,7 +148,7 @@ const string Ceylan::System::explainError( ErrorCode errorID ) throw()
 const string Ceylan::System::explainError() throw()
 {
 
-#if CEYLAN_USES_STRERROR
+#ifdef CEYLAN_USES_STRERROR
 
 	return string( ::strerror( errno ) ) ;
 
@@ -165,6 +171,52 @@ string Ceylan::System::getShellName() throw()
 	
 }
 
+
+void Ceylan::System::InitializeInterrupts( bool force ) throw( SystemException )
+{
+
+#if CEYLAN_ARCH_NINTENDO_DS
+		
+#ifdef CEYLAN_RUNS_ON_ARM7
+
+	throw SystemException( 
+		"Ceylan::System::InitializeInterrupts : only available on the ARM9." ) ;
+
+#elif defined(CEYLAN_RUNS_ON_ARM9)
+
+	static bool initialized = false ;
+	
+	if ( ( ! initialized ) || force )
+	{
+	
+		// Initialize the interrupt subsystem:
+		irqInit() ;
+
+		/*
+		 * VBlank enabled but no specific handler set 
+		 * (only wanting ot for swiWaitForVBlank):
+		 *
+		 */
+		irqEnable( IRQ_VBLANK ) ;
+		
+		// Force a first update, to avoid reading random keys before first VBL:
+		swiWaitForVBlank() ;
+		
+		initialized = true ;
+		CEYLAN_LOG( "Interrupts initialized." ) ;
+	}	
+
+#endif // CEYLAN_RUNS_ON_ARM7
+
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	LogPlug::warning( "Ceylan::System::InitializeInterrupts "
+		"should not be called on this platform." ) ;
+	
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+}
 
 
 
@@ -480,7 +532,7 @@ Size Ceylan::System::FDWrite( FileDescriptor fd,
 Second Ceylan::System::getTime() throw( SystemException )
 {
 
-#if CEYLAN_USES_TIME
+#ifdef CEYLAN_USES_TIME
 
 	Ceylan::Sint32 currentTime = static_cast<Ceylan::Sint32>(
 			::time( 0 ) ) ;
@@ -513,7 +565,7 @@ string Ceylan::System::timeToString( const time_t & t )
 	throw( SystemException )
 {
 
-#if CEYLAN_USES_CTIME
+#ifdef CEYLAN_USES_CTIME
 
 	char * charTime = ::ctime( &t ) ;
 
@@ -643,7 +695,7 @@ void Ceylan::System::getPreciseTime( Second & seconds,
 {
 
 
-#if CEYLAN_USES_GETTIMEOFDAY
+#ifdef CEYLAN_USES_GETTIMEOFDAY
 
 	timeval currentTime ;
 
@@ -658,7 +710,7 @@ void Ceylan::System::getPreciseTime( Second & seconds,
 #else // CEYLAN_USES_GETTIMEOFDAY
 
 
-#if CEYLAN_USES__FTIME_S
+#ifdef CEYLAN_USES__FTIME_S
 
     struct _timeb timeBuffer ;
 
@@ -670,7 +722,7 @@ void Ceylan::System::getPreciseTime( Second & seconds,
 	microsec = static_cast<Microsecond>( timeBuffer.millitm * 1000 ) ;
 
 
-#else CEYLAN_USES__FTIME_S
+#else // CEYLAN_USES__FTIME_S
 
 	throw SystemException( "System::getPreciseTime : "
 		"not available on this platform." ) ;
