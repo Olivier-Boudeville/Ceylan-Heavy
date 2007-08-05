@@ -6,7 +6,7 @@
 #include "CeylanStringUtils.h" // for StringSize
 
 
-#if CEYLAN_USES_CONFIG_H
+#ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"      // for configure-time feature settings
 #endif // CEYLAN_USES_CONFIG_H
 
@@ -1158,18 +1158,19 @@ bool File::Exists( const string & name ) throw( CouldNotStatFile )
 	
 #else // CEYLAN_USES_STAT
 
+#ifdef CEYLAN_USES__STAT
+
 	struct _stat buf ;
 	return ( ( ::_stat( name.c_str(), & buf ) == 0 )
 		&& ( buf.st_mode & _S_IFREG ) ) ;
 
-#ifdef CEYLAN_USES__STAT
 
 #else // CEYLAN_USES__STAT
 
-	throw CouldNotStatFile( 
-		"File::Exists : not available on this platform." ) ;
+	throw CouldNotStatFile( "File::Exists : not available on this platform." ) ;
 
 #endif // CEYLAN_USES__STAT
+
 #endif // CEYLAN_USES_STAT
 	
 }
@@ -1247,12 +1248,12 @@ bool File::ExistsAsFileOrSymbolicLink( const string & name )
 	return ( ::_stat( name.c_str(), & buf ) == 0 
 		&& ( buf.st_mode & _S_IFREG ) ) ;
 
-#else CEYLAN_USES__STAT
+#else // CEYLAN_USES__STAT
 
 	throw CouldNotStatFile( "File::ExistsAsFileOrSymbolicLink : "
 		"not available on this platform." ) ;
 
-#endif CEYLAN_USES__STAT
+#endif // CEYLAN_USES__STAT
 
 #endif // CEYLAN_USES_STAT
 	 	 
