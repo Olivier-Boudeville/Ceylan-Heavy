@@ -43,7 +43,7 @@ namespace Ceylan
 		 
 		/*
 		 * Using here the only configuration-specific preprocessor symbol that
-		 * may exist in Ceylan public headers :
+		 * may exist in Ceylan public headers:
 		 *
 		 */
 #ifdef CEYLAN_RUNS_ON_WINDOWS
@@ -93,9 +93,9 @@ namespace Ceylan
 
 
 		/// Exception raised when system operation fails.
-		class CEYLAN_DLL SystemException : public Ceylan::Exception
+		class CEYLAN_DLL SystemException: public Ceylan::Exception
 		{
-			public :
+			public:
 				explicit SystemException( const std::string & message )
 					throw() ;
 				virtual ~SystemException() throw() ;
@@ -104,9 +104,9 @@ namespace Ceylan
 
 
 		/// Exception raised when basic input/output operation fails.
-		class CEYLAN_DLL IOException : public SystemException
+		class CEYLAN_DLL IOException: public SystemException
 		{
-			public :
+			public:
 				IOException( const std::string & message ) throw() ;
 				virtual ~IOException() throw() ;
 		} ;
@@ -124,7 +124,7 @@ namespace Ceylan
 		
 		/*
 		 * Using here the only configuration-specific preprocessor symbol that
-		 * may exist in Ceylan public headers :
+		 * may exist in Ceylan public headers:
 		 *
 		 */
 #ifdef CEYLAN_RUNS_ON_WINDOWS
@@ -170,6 +170,25 @@ namespace Ceylan
 		 */
 		CEYLAN_DLL std::string getShellName() throw() ;
 
+
+		/**
+		 * On platforms requiring it (ex: the Nintendo DS on the ARM9),
+		 * initializes the interrupt system by using a default handler.
+		 *
+		 * @param force if true, the handler will be reset unconditionnally,
+		 * if false it will be reset only if not already set (allows to 
+		 * perform it once for all at startup).
+		 *
+		 * @throw SystemException if an error occurred (if on the platform
+		 * nothing has to be done, only a log warning will be issued, no
+		 * exception will be thrown).
+		 *
+		 */
+		CEYLAN_DLL void InitializeInterrupts( bool force = false ) 
+			throw( SystemException ) ;
+
+
+		
 
 		/**
 		 * Tells whether there is data available on specified file
@@ -254,7 +273,7 @@ namespace Ceylan
 		 * Returns a textual representation for the duration specified thanks
 		 * to its start and stop times.
 		 *
-		 * @example : "3 second(s) and 322 microsecond(s)".
+		 * @example: "3 second(s) and 322 microsecond(s)".
 		 *
 		 * This is not a totally obvious function, since overflow must not
 		 * occur, and microseconds are not required to be in the [0;100000[
@@ -328,7 +347,7 @@ namespace Ceylan
 		 *
 		 * @note Keep in mind that a microsecond lasts for 10^-6 second.
 		 *
-		 * @note The returned number of seconds should be roughly equal to :
+		 * @note The returned number of seconds should be roughly equal to:
 		 * 35 years * 365 days * 24 hours * 3600 seconds = 1 103 760 000 which
 		 * does not risk overflow when stored in Uint32, whose maximum value
 		 * is 4 294 967 295.
@@ -433,7 +452,7 @@ namespace Ceylan
 		 * scheduler-wise, i.e. exactly one time slice.
 		 *
 		 * This is useful to spare CPU time/battery life by avoiding
-		 * busy loops, without needing fine-grained timing : it is just
+		 * busy loops, without needing fine-grained timing: it is just
 		 * a convenient way of adding a delay in a busy loop so that
 		 * it becomes more resource-friendly, while minimizing the delay.
 		 *
@@ -616,7 +635,7 @@ namespace Ceylan
 		 * at 4 ms, with next stages at 8, 12, 16 ms etc., which are quite
 		 * stable. The algorithm detects then a 8 ms granularity, which is 
 		 * recommended, as in the 4 ms stage (reached for requests between 0
-		 * and 4 ms), there is often a peak : asking for 0.5 ms yields a 
+		 * and 4 ms), there is often a peak: asking for 0.5 ms yields a 
 		 * reproducible 25 ms sleep !
 		 *
 		 * @note One may force a first call to this method to have the
