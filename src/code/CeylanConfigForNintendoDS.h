@@ -14,28 +14,46 @@
 
 #define CEYLAN_DLL
 
-// Auto-set the arch flags expected by libnds:
-#if CEYLAN_RUNS_ON_ARM7
 
-#define ARM7
+
+ 
+// Auto-set the arch flags expected by libnds:
+#ifdef CEYLAN_RUNS_ON_ARM7
+
+	#define ARM7
 
 #else // CEYLAN_RUNS_ON_ARM7
 
-#if CEYLAN_RUNS_ON_ARM9
+	#ifdef CEYLAN_RUNS_ON_ARM9
 
-#define ARM9
+		#define ARM9
 
-#else // CEYLAN_RUNS_ON_ARM9
+		#if CEYLAN_DEBUG_NINTENDO_DS
 
-#error CeylanConfigForNintendoDS.h: either CEYLAN_RUNS_ON_ARM7 or CEYLAN_RUNS_ON_ARM9 must be set to 1.
+			#define CEYLAN_LOG(message) ::iprintf( "[Debug] %s\n",(message))
 
-#endif // CEYLAN_RUNS_ON_ARM9
+		#else// DCEYLAN_DEBUG_NINTENDO_DS
+
+			#define CEYLAN_LOG(message)
+
+		#endif // CEYLAN_DEBUG_NINTENDO_DS
+
+
+	#else // CEYLAN_RUNS_ON_ARM9
+
+		#error CeylanConfigForNintendoDS.h: either CEYLAN_RUNS_ON_ARM7 or CEYLAN_RUNS_ON_ARM9 must be defined.
+
+	#endif // CEYLAN_RUNS_ON_ARM9
 
 #endif // CEYLAN_RUNS_ON_ARM7
 
+
+// For iprintf and al:
+#include <stdio.h> 
 
 // For libnds (discriminates between ARM7/ARM9):
 #include "nds.h"
 
 
 #endif // CEYLAN_CONFIG_FOR_NINTENDO_DS
+
