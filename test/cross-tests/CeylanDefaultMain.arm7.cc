@@ -8,12 +8,19 @@
  * and libnds is directly used instead.
  *
  */
- 
-//#include "Ceylan.h"
+
+#define USE_CEYLAN 0 
+
+#if USE_CEYLAN
+
+#include "Ceylan.h"
+
+#else // USE_CEYLAN
 
 #define ARM7
 #include "nds.h"
 
+#endif // USE_CEYLAN
 
 
 /*
@@ -31,7 +38,8 @@ touchPosition first, tempPos ;
 void VcountHandler() 
 {
 
-
+	// Updates the button state and the touchscreen:
+	
 	static int lastbut = -1 ;
 	
 	uint16 but=0, x=0, y=0, xpx=0, ypx=0, z1=0, z2=0 ;
@@ -80,7 +88,7 @@ void VcountHandler()
 }
 
 
-
+// Empty, but kept to be able to wait for its interrupt. 
 void VblankHandler() 
 {
 
@@ -95,7 +103,7 @@ int main(int argc, char ** argv)
 	// Reset the clock if needed :
 	rtcReset() ;
 	
-	irqInit();
+	irqInit() ;
 
 	irqSet( IRQ_VBLANK, VblankHandler ) ;
 
