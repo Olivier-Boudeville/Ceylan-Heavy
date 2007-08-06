@@ -8,14 +8,14 @@
 #include "CeylanLogPlug.h"             // for the LogPLug
 
 
-#if CEYLAN_ARCH_NINTENDO_DS
-#include "CeylanConfigForNintendoDS.h" // for iprintf
-#endif // CEYLAN_ARCH_NINTENDO_DS
-
-
 #ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"              // for CEYLAN_DEBUG_DEMANGLE, etc.
 #endif // CEYLAN_USES_CONFIG_H
+
+
+#if CEYLAN_ARCH_NINTENDO_DS
+#include "CeylanConfigForNintendoDS.h" // for iprintf
+#endif // CEYLAN_ARCH_NINTENDO_DS
 
 
 #if CEYLAN_ARCH_WINDOWS
@@ -23,7 +23,7 @@
 extern "C"
 {
 
-#include "string.h" // for strcpy_s
+#include "string.h"                    // for strcpy_s
 
 }
 
@@ -33,13 +33,13 @@ extern "C"
 
 
 
-#include <cctype>              // for isdigit, isupper, etc.
-#include <iostream>            // for cout, endl, flush.
+#include <cctype>                      // for isdigit, isupper, etc.
+#include <iostream>                    // for cout, endl, flush.
 
 
 using std::string ;
 using std::list ;
-using std::map ;
+using std::pair ;
 
 using namespace Ceylan ;
 using namespace Ceylan::Log ;
@@ -56,7 +56,256 @@ using namespace Ceylan::Log ;
 #endif // CEYLAN_DEBUG_DEMANGLE
 
 
+
 const std::string Ceylan::BatchTestOption = "--batch" ;
+
+
+
+// TextBuffer section.
+
+
+TextBuffer::TextBuffer( CharAbscissa width, CharOrdinate height ) 
+	throw( StringUtilsException ):
+	_width( width ),
+	_height( height )
+{
+
+
+}
+
+
+TextBuffer::~TextBuffer() throw()
+{
+
+	for ( std::list<TextEntry>::iterator it = _textEntries.begin(); 
+			it != _textEntries.end(); it++ )
+		deleteTextGrid( (*it).second ) ;
+		
+}
+	
+				
+void TextBuffer::add( const std::string & text ) throw( StringUtilsException )
+{
+
+	TextGrid * newGrid = createTextGridFrom( text ) ;
+	
+	_textEntries.push_back( TextEntry( text, newGrid ) ) ;
+	
+}
+
+
+
+// Screen positioning section.
+
+
+bool TextBuffer::jumpNextText() throw()
+{
+
+	if ( _currentText != _textEntries.end() )
+	{
+		_currentText++ ;
+		updateScreenLines() ;
+		return true ;	
+	}	
+
+	
+	
+	return false ;	
+		
+}
+
+
+bool TextBuffer::jumpPreviousText() throw()
+{
+
+	if ( _currentText != _textEntries.begin() )
+	{
+		_currentText-- ;
+		updateScreenLines() ;
+		return true ;
+	}	
+
+	return false ;	
+
+}
+
+
+bool TextBuffer::jumpNextLine() throw()
+{
+
+	if ( _lineIndex != ((*_currentText).second)->end() )
+	{
+		_lineIndex++ ;
+		
+		// Remove
+		return true ;
+	}	
+
+	return false ;	
+	
+}
+
+
+bool TextBuffer::jumpPreviousLine() throw()
+{
+
+	if ( _lineIndex != ((*_currentText).second)->end() )
+	{
+		_lineIndex++ ;
+		return true ;
+	}	
+
+	return false ;	
+
+}
+
+
+const TextGrid & TextBuffer::getScreenLines() const throw()
+{
+
+	return _screenLines ;
+	
+}
+
+
+const std::string TextBuffer::toString( Ceylan::VerbosityLevels level ) 
+	const throw()
+{
+
+	string res = "Text buffer of width " + Ceylan::toNumericalString( _width )
+		+ " and of height " + Ceylan::toNumericalString( _height ) 
+		+ ", containing " + Ceylan::toString( _textEntries.size() ) 
+		+ "text(s)" ;
+		
+	if ( level != Ceylan::high )
+		return res ;
+	
+	if ( _screenLines.empty() )
+		return res + ". Abstract screen is empty" ;
+		
+	res += ". Abstract screen contains " + 	_screenLines.size() + " lines:" ;
+	
+	
+	// Beware, lines are not null-terminated:
+	char * tempLine = new char[_width+1] ;
+	tempLine[_width] = 0 ;
+	
+	for ( TextGrid::const_iterator it = _screenLines.begin() ;
+			it != _screenLines.end(); it++ )
+		{	
+		
+			for ( CharAbscissa i = 0; i < _width; i++ )
+				tempLine[i] = (*it)[i] ;
+			
+			res += "line #" + Ceylan::toNumericalString( i ) + ": " 
+				+ string( tempLine ) + '\n' ;
+			
+		}
+			
+	delete [] tempLine ;
+	
+	return res ;
+		
+}
+
+
+
+
+// Protected section.
+
+
+void TextBuffer::updateScreenLines() throw()
+{
+
+}
+
+
+
+TextGrid & TextBuffer::createTextGridFrom( const std::string & text ) throw()
+{
+
+	
+	TextGrid * res = new std::list<char *> ;
+	
+	char * currentLine = getNewLine() ; 
+		
+	// Char index in current line:
+	CharAbscissa currentAbscissa = 0 ;
+	
+	for ( string::const_iterator it = text.begin(); it != text.end() ; it++ )
+	{
+	
+		switch( *it )
+		{
+		
+		
+			case '\n':
+				res.push_back( currentLine ) ;
+				currentLine = getNewLine() ;
+				currentAbscissa = 0 ;
+				break ;
+			
+			
+			case '\t':
+				for ( Ceylan::Uint8 i = 0; i < TabSpacing; i++ )
+				{
+					currentLine[currentAbscissa] = ' ' ;
+					currentAbscissa++ ;
+					if ( currentAbscissa == _width )
+					{
+						res.push_back( currentLine ) ;
+						currentLine = getNewLine() ;
+						currentAbscissa = 0 ;	
+					}
+			
+				}
+				
+				
+			default:
+				currentLine[currentAbscissa] = (*it) ;
+				currentAbscissa++ ;
+				if ( currentAbscissa == _width )
+				{
+					res.push_back( currentLine ) ;
+					currentLine = getNewLine() ;
+					currentAbscissa = 0 ;	
+				}
+				break ;
+				
+	}
+
+	return * res ;
+	
+}
+
+
+char * TextBuffer::getNewLine() throw()
+{
+
+	char * res = new char[ _width ] ;
+	for ( CharAbscissa i = 0; i < _width; i++ )
+		line[i] = ' ' ;
+		
+}
+
+
+void TextBuffer::deleteTextGrid( TextGrid * grid ) throw()
+{
+
+	for ( std::list<char *>::iterator it = grid->begin(); it != grid->end();
+			it++ )
+		delete [] (*it)	;
+		
+	delete grid ;
+		
+}
+
+
+
+
+
+// Other text operations.
+
 
 
 StringSize Ceylan::countChars( const string & aString, char targetChar )
@@ -102,7 +351,7 @@ std::string Ceylan::reverse( const std::string & source ) throw()
 char * Ceylan::getNonConstCharFrom( const std::string & source ) throw()
 {
 
-	// One more character for the trailing '0' :
+	// One more character for the trailing '0':
 	char * res = new char[ source.size() + 1 ] ;
 	
 	if ( res == 0 )
@@ -752,7 +1001,7 @@ void Ceylan::display( const string & message ) throw( StringUtilsException )
 
 #ifdef CEYLAN_RUNS_ON_ARM7
 	
-	throw StringUtilsException( "Ceylan::display : not available for ARM7." ) ;
+	throw StringUtilsException( "Ceylan::display: not available for ARM7." ) ;
 
 #elif defined(CEYLAN_RUNS_ON_ARM9)
 
@@ -780,7 +1029,7 @@ void Ceylan::displayError( const string & errorMessage )
 #ifdef CEYLAN_RUNS_ON_ARM7
 	
 	throw StringUtilsException( 
-		"Ceylan::displayError : not available for ARM7." ) ;
+		"Ceylan::displayError: not available for ARM7." ) ;
 
 #elif defined(CEYLAN_RUNS_ON_ARM9)
 
@@ -792,7 +1041,7 @@ void Ceylan::displayError( const string & errorMessage )
 
 #else // CEYLAN_ARCH_NINTENDO_DS
 	
-	std::cerr << message << std::endl << std::flush ;
+	std::cerr << errorMessage << std::endl << std::flush ;
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
