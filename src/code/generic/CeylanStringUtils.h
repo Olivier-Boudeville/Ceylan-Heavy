@@ -7,9 +7,9 @@
 
 
 #include <sstream>                // for istringstream
-#include <string>
-#include <list>                   // for string, string::size_type
-#include <map>                    // for map
+#include <string>                 // for string, string::size_type
+#include <list>                   // for list
+#include <pair>                   // for pair
 
 
 
@@ -81,6 +81,271 @@ namespace Ceylan
 	 */
 	extern CEYLAN_DLL const std::string BatchTestOption ;
 
+
+
+	/**
+	 * Stores a sequence of texts, and allows to access the overall text
+	 * according to various ways, either text-by-text or line-by-line.
+	 * 
+	 * Computes the corresponding character layout for onscreen rendering,
+	 * depending on the specified abstract screen dimensions (expressed in
+	 * characters, not in pixels, as character look-up and rendering are
+	 * uncoupled here).
+	 *
+	 * The abstract screen is a kind of grid of characters, of 
+	 * user-specified size, that can slide over parts of the stored text.
+	 *
+	 * This helps for example fixed-font text rendering.
+	 *
+	 */
+	class CEYLAN_DLL TextBuffer: public Ceylan::TextDisplayable 	
+	{
+
+
+		public:
+					
+					
+			/// Abscissa index of a character in a buffer.	
+			typedef Ceylan::Uint8 CharAbscissa ;
+				
+			/// Ordinate index of a character in a buffer.	
+			typedef Ceylan::Uint8 CharOrdinate ;
+			
+			
+			/// Index of a text in buffer list.
+			typedef Ceylan::Uint32 TextIndex ;
+			
+			/// Index of a preformatted line in a text.
+			typedef Ceylan::Uint32 LineIndex ;
+			
+			
+			/** 
+			 * Creates a new text buffer, whose sliding window is of 
+			 * specified size.
+			 *
+			 * @param width the width of the character grid.
+			 *
+			 * @param height the width of the character grid.
+			 *
+			 * @throw StringUtilsException if the operation failed.
+			 *
+			 */		
+			TextBuffer( CharAbscissa width, CharOrdinate height ) 
+				throw( StringUtilsException ) ;
+			
+			
+			/// Virtual destructor.
+			virtual ~TextBuffer() throw() ;
+	
+			
+			/**
+			 * Records a preformatted text entry, whose escape sequences 
+			 * (\t,\n) have been translated into a series of basic characters
+			 * (alphanumerical and spaces) stored in a list of lines, 
+			 * each line being an array of width characters (char *), to fit 
+			 * in character grid.
+			 *
+			 */
+			typedef std::list<char *> TextGrid ;
+			
+			
+			
+			/**
+			 * Adds specified text in the buffer.
+			 *
+			 * @param text the text to add in buffer.
+			 *
+			 * @throw StringUtilsException if the operation failed.
+			 *
+			 */
+			virtual void add( const std::string & text ) 
+				throw( StringUtilsException ) ;
+			
+			
+			
+			// Screen positioning section.
+			
+			
+			/**
+			 * Centers the abstract screen on next text entry, if any.
+			 *
+			 * Does nothing if there is no text left.
+			 *
+			 * @return true iff there was a text entry left indeed.
+			 *
+			 */
+			bool jumpNextText() throw() ;
+			
+			
+			/**
+			 * Centers the abstract screen on previous text, if any.
+			 *
+			 * Does nothing if there is no text left.
+			 *
+			 * @return true iff there was a text entry left indeed.
+			 *
+			 */
+			bool jumpPreviousText() throw() ;
+			
+			
+			
+			/**
+			 * Makes the abstract screen go one line down.
+			 *
+			 * Does nothing if there is no text line left.
+			 *
+			 * @return true iff there was a line left indeed.
+			 *
+			 */
+			bool jumpNextLine() throw() ;
+			
+			
+			/**
+			 * Makes the abstract screen go one line up.
+			 *
+			 * Does nothing if there is no text line left.
+			 *
+			 * @return true iff there was a line left indeed.
+			 *
+			 */
+			bool jumpPreviousLine() throw() ;
+			
+			
+			 
+			/**
+			 * Returns the list of lines that should be displayed should
+			 * this buffer be rendered.
+			 *
+			 * Depends on the stored texts and on the location of the abstract
+			 * screen.
+			 *
+			 * The width of each line is the one of this buffer (char[_width]).
+			 * The screen list has between [0.._height] lines, missing ones mean
+			 * they are blank.
+			 *
+			 */
+			const TextGrid & getScreenLines() const throw() ;
+						
+					
+						 
+			/**
+			 * Returns an user-friendly description of the state of
+			 * this object.
+			 *
+			 * @param level the requested verbosity level.
+			 *
+			 * @note Text output format is determined from overall 
+			 * settings.
+			 *
+			 * @see TextDisplayable
+			 *
+			 */
+			virtual const std::string toString( 
+					Ceylan::VerbosityLevels level = Ceylan::high ) 
+						const throw() ;
+						
+			
+			/// Number of spaces corresponding to one tabulation.
+			static const Ceylan::Uint32 TabSpacing = 4 ;
+			
+			
+			
+		protected:
+	
+	
+			/**
+			 * Updates screen lines according to current index.
+			 *
+			 */
+			void updateScreenLines() throw() ;
+			
+			
+			/**
+			 * Translates specified text entry into a list of lines of buffer
+			 * width.
+			 *
+			 * @note Ownership of the text grid is transferred to the caller.
+			 *
+			 * @see deleteTextGrid
+			 *
+			 */
+			TextGrid & createTextGridFrom( const std::string & text ) throw() ;
+			
+			
+			/// Deletes a TextGrid.
+			void deleteTextGrid( TextGrid * grid ) throw()	;
+
+
+			/// Creates a new blank line of the appropriate width (length).
+			char * getNewLine() throw() ;
+			
+			
+			
+			/// A text and its precomputed lines.
+			typedef std::pair<std::string, TextGrid*> TextEntry ;
+
+
+			/// A list of text entries.
+			typedef std::list<TextEntry> ListOfTexts ;
+			
+			
+			/**
+			 * Records the text stored by this buffer and its precomputed 
+			 * lines.
+			 *
+			 */
+			ListOfTexts _textEntries ;
+	
+	
+			/// The width of the character grid.
+ 			CharAbscissa _width ;
+			
+			/// The ordinate of the character grid.
+			CharOrdinate _height ;
+			
+			
+			/// The index of the text entry being rendered.
+			ListOfTexts::const_iterator _currentText ;
+			
+			/// Index of a preformatted line in current rendered text grid.
+			TextGrid::const_iterator _lineIndex ;
+			
+			
+			/// The current screen, seen as a list of (at most _height) lines.	
+			TextGrid _screenLines ;
+			
+			
+			
+		private:
+			
+			
+			
+			/**
+			 * Copy constructor made private to ensure that it will
+			 * be never called.
+			 *
+			 * The compiler should complain whenever this undefined
+			 * constructor is called, implicitly or not.
+			 * 
+			 */			 
+			TextBuffer( const TextBuffer & source ) throw() ;
+			
+			
+			/**
+			 * Assignment operator made private to ensure that it 
+			 * will be never called.
+			 *
+			 * The compiler should complain whenever this undefined 
+			 * operator is called, implicitly or not.
+			 * 
+			 */			 
+			TextBuffer & operator = ( const TextBuffer & source ) throw() ;
+	
+	
+	} ;
+	
+				
+	
 	
 	
 	// Container formatting section.
