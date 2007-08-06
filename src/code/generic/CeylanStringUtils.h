@@ -9,8 +9,8 @@
 #include <sstream>                // for istringstream
 #include <string>                 // for string, string::size_type
 #include <list>                   // for list
-#include <pair>                   // for pair
-
+#include <map>                    // for map
+#include <utility>                // for std::pair
 
 
 // Deserialization can fail easily, better check it systematically:
@@ -139,6 +139,14 @@ namespace Ceylan
 	
 			
 			/**
+			 * Returns the width of the abstract screen associated to this
+			 * buffer.
+			 *
+			 */
+			virtual CharAbscissa getWidth() throw() ;
+		
+			
+			/**
 			 * Records a preformatted text entry, whose escape sequences 
 			 * (\t,\n) have been translated into a series of basic characters
 			 * (alphanumerical and spaces) stored in a list of lines, 
@@ -256,6 +264,8 @@ namespace Ceylan
 			/**
 			 * Updates screen lines according to current index.
 			 *
+			 * Recreates from scratch the list of line references.
+			 *
 			 */
 			void updateScreenLines() throw() ;
 			
@@ -276,7 +286,12 @@ namespace Ceylan
 			void deleteTextGrid( TextGrid * grid ) throw()	;
 
 
-			/// Creates a new blank line of the appropriate width (length).
+			/**
+			 * Creates a new blank line of the appropriate width (length).
+			 *
+			 * @note Ownership of the line is transferred to the caller.
+			 *
+			 */
 			char * getNewLine() throw() ;
 			
 			
@@ -308,7 +323,7 @@ namespace Ceylan
 			ListOfTexts::const_iterator _currentText ;
 			
 			/// Index of a preformatted line in current rendered text grid.
-			TextGrid::const_iterator _lineIndex ;
+			TextGrid::const_iterator _currentLine ;
 			
 			
 			/// The current screen, seen as a list of (at most _height) lines.	

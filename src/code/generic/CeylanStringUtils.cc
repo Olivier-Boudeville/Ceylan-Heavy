@@ -39,6 +39,7 @@ extern "C"
 
 using std::string ;
 using std::list ;
+using std::map ;
 using std::pair ;
 
 using namespace Ceylan ;
@@ -70,6 +71,10 @@ TextBuffer::TextBuffer( CharAbscissa width, CharOrdinate height )
 	_height( height )
 {
 
+	CEYLAN_LOG( "Creating a " + Ceylan::toString( width ) + "x"
+		+ Ceylan::toString( height ) + " text buffer." ) ;
+		
+	_currentText = _textEntries.end() ;
 
 }
 
@@ -83,13 +88,33 @@ TextBuffer::~TextBuffer() throw()
 		
 }
 	
-				
+
+TextBuffer::CharAbscissa TextBuffer::getWidth() throw()		
+{
+
+	return _width ;
+}
+
+	
 void TextBuffer::add( const std::string & text ) throw( StringUtilsException )
 {
 
-	TextGrid * newGrid = createTextGridFrom( text ) ;
+	CEYLAN_LOG( "Adding to buffer '" + text + "'." ) ;
+
+	TextGrid * newGrid = & createTextGridFrom( text ) ;
 	
 	_textEntries.push_back( TextEntry( text, newGrid ) ) ;
+	
+	
+	// Update text iterator if first text added:
+	if ( _textEntries.size() == 1 )
+	{
+		_currentText = _textEntries.begin() ;
+		_currentLine = newGrid->begin() ;		
+	}	
+
+	// Needed in all cases (ex: a second text showing up after the first):
+	updateScreenLines() ;
 	
 }
 
@@ -98,69 +123,128 @@ void TextBuffer::add( const std::string & text ) throw( StringUtilsException )
 // Screen positioning section.
 
 
+
 bool TextBuffer::jumpNextText() throw()
 {
 
-	if ( _currentText != _textEntries.end() )
+	ListOfTexts::const_iterator nextText = _currentText ;
+	nextText++ ;
+
+	if ( nextText != _textEntries.end() )
 	{
-		_currentText++ ;
+	
+		_currentText = nextText ;
+		
+		TextGrid * currentTextGrid = (*_currentText).second ;
+		_currentLine = currentTextGrid->begin() ;
+		
 		updateScreenLines() ;
+		
 		return true ;	
+		
 	}	
 
-	
-	
+	// Not moved:
 	return false ;	
 		
 }
 
 
+
 bool TextBuffer::jumpPreviousText() throw()
 {
-
+	
 	if ( _currentText != _textEntries.begin() )
 	{
+	
 		_currentText-- ;
+		
+		TextGrid * currentTextGrid = (*_currentText).second ;
+		_currentLine = currentTextGrid->begin() ;
+		
 		updateScreenLines() ;
+		
 		return true ;
 	}	
 
+	// Not moved:
 	return false ;	
 
 }
+
 
 
 bool TextBuffer::jumpNextLine() throw()
 {
 
-	if ( _lineIndex != ((*_currentText).second)->end() )
+	TextGrid * currentTextGrid = (*_currentText).second ;
+	
+	if ( _currentLine != currentTextGrid->end() )
 	{
-		_lineIndex++ ;
-		
-		// Remove
-		return true ;
+		_currentLine++ ;
 	}	
-
+	else
+	{
+		// End of current text, let's take next if any:
+		
+		ListOfTexts::const_iterator nextText = _currentText ;
+		nextText++ ;
+		
+		if ( nextText != _textEntries.end() )
+		{
+			_currentText = nextText ;
+			currentTextGrid = (*_currentText).second ;
+			_currentLine = currentTextGrid->begin() ;
+		}
+		
+	}
+	
+	// FIXME: optimize:
+	updateScreenLines() ;
+	
 	return false ;	
 	
 }
 
 
+
 bool TextBuffer::jumpPreviousLine() throw()
 {
 
-	if ( _lineIndex != ((*_currentText).second)->end() )
+	TextGrid * currentTextGrid = (*_currentText).second ;
+	
+	if ( _currentLine != currentTextGrid->begin() )
 	{
-		_lineIndex++ ;
-		return true ;
+	
+		_currentLine-- ;
+		
+	}	
+	else
+	{
+	
+		// Was at the beginning of current text, let's take previous if any:
+		if ( _currentText != _textEntries.begin() )
+		{
+			_currentText-- ;
+			currentTextGrid = (*_currentText).second ;
+			_currentLine = currentTextGrid->end() ;
+			
+		}
+
 	}	
 
+		
+	// FIXME: optimize:
+	updateScreenLines() ;
+	
 	return false ;	
 
 }
 
 
-const TextGrid & TextBuffer::getScreenLines() const throw()
+
+
+const TextBuffer::TextGrid & TextBuffer::getScreenLines() const throw()
 {
 
 	return _screenLines ;
@@ -183,13 +267,16 @@ const std::string TextBuffer::toString( Ceylan::VerbosityLevels level )
 	if ( _screenLines.empty() )
 		return res + ". Abstract screen is empty" ;
 		
-	res += ". Abstract screen contains " + 	_screenLines.size() + " lines:" ;
+	res += ". Abstract screen contains " 
+		+ Ceylan::toString( _screenLines.size() ) + " lines:" ;
 	
 	
 	// Beware, lines are not null-terminated:
 	char * tempLine = new char[_width+1] ;
 	tempLine[_width] = 0 ;
 	
+	CharOrdinate lineCount = 1 ;
+	 
 	for ( TextGrid::const_iterator it = _screenLines.begin() ;
 			it != _screenLines.end(); it++ )
 		{	
@@ -197,9 +284,11 @@ const std::string TextBuffer::toString( Ceylan::VerbosityLevels level )
 			for ( CharAbscissa i = 0; i < _width; i++ )
 				tempLine[i] = (*it)[i] ;
 			
-			res += "line #" + Ceylan::toNumericalString( i ) + ": " 
+			res += "line #" + Ceylan::toNumericalString( lineCount ) + ": " 
 				+ string( tempLine ) + '\n' ;
 			
+			lineCount++ ;
+						
 		}
 			
 	delete [] tempLine ;
@@ -217,11 +306,59 @@ const std::string TextBuffer::toString( Ceylan::VerbosityLevels level )
 void TextBuffer::updateScreenLines() throw()
 {
 
+	_screenLines.clear() ;
+	
+
+	CharOrdinate lineCount = 0 ;
+	
+	
+	// At least a text, use _currentText:	
+	
+	ListOfTexts::const_iterator textIterator = _currentText ;
+	
+	TextGrid::const_iterator textLineIterator = _currentLine ;
+	
+	TextGrid * textListOfLines  ;
+	
+	// First loop step should begin from current line, others from first line:
+	bool resetLineInText = false ;
+	
+	while ( textIterator != _textEntries.end() )
+	{
+
+		textListOfLines = (*textIterator).second ;
+	
+		if ( resetLineInText )
+			textLineIterator = textListOfLines->begin() ;
+		
+		while ( textLineIterator != textListOfLines->end() 
+			&& lineCount < _width )
+		{
+			_screenLines.push_back( (*textLineIterator) ) ;
+			lineCount++ ;
+		}
+	
+		if ( lineCount == _width )
+			return ;
+	
+		/*
+		 * Still needing lines beside current text.
+		 * Here we arrived to the end of the lines for current text, let's
+		 * take next, if any:
+		 *
+		 */
+		textIterator++ ;
+		resetLineInText = true ;
+		
+	}
+			
+	
 }
 
 
 
-TextGrid & TextBuffer::createTextGridFrom( const std::string & text ) throw()
+TextBuffer::TextGrid & TextBuffer::createTextGridFrom( 
+	const std::string & text ) throw()
 {
 
 	
@@ -240,7 +377,7 @@ TextGrid & TextBuffer::createTextGridFrom( const std::string & text ) throw()
 		
 		
 			case '\n':
-				res.push_back( currentLine ) ;
+				res->push_back( currentLine ) ;
 				currentLine = getNewLine() ;
 				currentAbscissa = 0 ;
 				break ;
@@ -253,7 +390,7 @@ TextGrid & TextBuffer::createTextGridFrom( const std::string & text ) throw()
 					currentAbscissa++ ;
 					if ( currentAbscissa == _width )
 					{
-						res.push_back( currentLine ) ;
+						res->push_back( currentLine ) ;
 						currentLine = getNewLine() ;
 						currentAbscissa = 0 ;	
 					}
@@ -266,11 +403,13 @@ TextGrid & TextBuffer::createTextGridFrom( const std::string & text ) throw()
 				currentAbscissa++ ;
 				if ( currentAbscissa == _width )
 				{
-					res.push_back( currentLine ) ;
+					res->push_back( currentLine ) ;
 					currentLine = getNewLine() ;
 					currentAbscissa = 0 ;	
 				}
 				break ;
+				
+		}		
 				
 	}
 
@@ -279,12 +418,16 @@ TextGrid & TextBuffer::createTextGridFrom( const std::string & text ) throw()
 }
 
 
+
+
 char * TextBuffer::getNewLine() throw()
 {
 
 	char * res = new char[ _width ] ;
 	for ( CharAbscissa i = 0; i < _width; i++ )
-		line[i] = ' ' ;
+		res[i] = ' ' ;
+	
+	return res ;	
 		
 }
 
