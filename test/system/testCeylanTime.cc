@@ -38,11 +38,11 @@ Ceylan::Float32 activeWaiting() throw()
 /**
  * Test of Ceylan time utilities.
  *
- * @note Beware, this test is very long : it can last up to a few minutes.
+ * @note Beware, this test is very long: it can last up to a few minutes.
  *
  * @see Ceylan::System.
  *
- * Ceylan numerical datatypes (ex : Ceylan::Uint64) could be used instead
+ * Ceylan numerical datatypes (ex: Ceylan::Uint64) could be used instead
  * of long long, etc.
  *
  * @note Beware to the classical log plug that may cause wrong timings due
@@ -89,7 +89,7 @@ int main( int argc, char * argv[] )
 			
 			if ( token == "--online" )
 			{
-				// Ignored :
+				// Ignored:
 				tokenEaten = true ;
 			}
 						
@@ -109,7 +109,7 @@ int main( int argc, char * argv[] )
 			if ( ! tokenEaten )
 			{
 				throw Ceylan::CommandLineParseException( 
-					"Unexpected command line argument : " + token ) ;
+					"Unexpected command line argument: " + token ) ;
 			}
 		
 		}
@@ -133,15 +133,15 @@ int main( int argc, char * argv[] )
 		
 		}
 		
-		std::cout << "(Beware, this test might be very long : "
+		std::cout << "(Beware, this test might be very long: "
 			"it can last up to a few minutes)" << std::endl ;
 		
         LogPlug::info( "Testing Ceylan's time implementation "
-			"(warning : this test is long)." ) ;
+			"(warning: this test is long)." ) ;
 
 		Ceylan::Uint32 now = getTime() ;
 		
-		LogPlug::info( "Testing getTime and timeToString : current time is " 
+		LogPlug::info( "Testing getTime and timeToString: current time is " 
 			+ timeToString( now ) + " (" + Ceylan::toString( now ) 
 			+ " seconds)" ) ;
 		
@@ -149,14 +149,14 @@ int main( int argc, char * argv[] )
 		Microsecond currentMicrosecond ;
 		
 		getPreciseTime( currentSecond, currentMicrosecond ) ;
-		LogPlug::info( "Testing getPreciseTime : current second is " 
+		LogPlug::info( "Testing getPreciseTime: current second is " 
 			+ Ceylan::toString( currentSecond ) + ", current microsecond is "
 			+ Ceylan::toString( currentMicrosecond ) + "." ) ;
 			
 		Microsecond min, max, mean ;
 			
 		mean = getAccuracyOfPreciseTime( & min, & max ) ;
-		LogPlug::info( "Testing getAccuracyOfPreciseTime : "
+		LogPlug::info( "Testing getAccuracyOfPreciseTime: "
 			"in microseconds, measured minimum accuracy is " 
 			+ Ceylan::toString( min ) + ", maximum is " 
 			+ Ceylan::toString( max )
@@ -167,7 +167,7 @@ int main( int argc, char * argv[] )
 		LogPlug::info( "A call to getPreciseTime lasts roughly for " 
 			+ Ceylan::toString( preciseTimeDuration ) + " microsecond(s)." ) ;
 		
-		if ( argc > 1 && argv[1] == Ceylan::BatchTestOption )
+		if ( isBatch )
 		{
 		
 			LogPlug::info( "Non-interactive test mode, "
@@ -176,6 +176,7 @@ int main( int argc, char * argv[] )
 			return Ceylan::ExitSuccess ;
 			
 		}	
+
 
 		if ( ! areSubSecondSleepsAvailable() )
 		{
@@ -189,7 +190,7 @@ int main( int argc, char * argv[] )
 		
 		
 		/*
-		 * Logs can been interpreted thanks to gnuplot, ex : 
+		 * Logs can been interpreted thanks to gnuplot, ex: 
 		 *   - set DEBUG_SYSTEM=1 in src/conf/build/configure-template.ac
 		 *   - rebuilds all (use autogen.sh)
 		 *   - run 'testCeylanTime.exe' from the build tree
@@ -204,16 +205,16 @@ int main( int argc, char * argv[] )
 			+ Ceylan::toString( granularity ) + " microseconds." ) ;
 		
 			
-		// First wait duration, in microsecond :
+		// First wait duration, in microsecond:
 		Microsecond shortestMicroDuration = 0 ;  	
 		
-		// Last wait duration, in microsecond (stops immediatly after 20 ms) :
+		// Last wait duration, in microsecond (stops immediatly after 20 ms):
 		Microsecond longestMicroDuration = /* 5000 */ 21000 ;  	
 				
-		// Number of steps :
+		// Number of steps:
 		Ceylan::Uint32 durationStepsCount = /* 1000 */ 2000 ;
 		
-		// Micro duration step :
+		// Micro duration step:
 		Microsecond microDuration = static_cast<Microsecond>( 
 			( longestMicroDuration - shortestMicroDuration ) 
 				/ durationStepsCount ) ;  	
@@ -227,7 +228,7 @@ int main( int argc, char * argv[] )
 			+ Ceylan::toString( microDuration ) +  " microsecond steps." ) ;
 				
 		
-		// Avoid to distort measures, by doing only the strict necessary :
+		// Avoid to distort measures, by doing only the strict necessary:
 		
 				
 		Second lastSecond ;
@@ -247,7 +248,7 @@ int main( int argc, char * argv[] )
 
 		/*
 		 * Perform between 0 to 10 waiting loops to avoid being sync'ed 
-		 * with the beginning of time slices :
+		 * with the beginning of time slices:
 		 *
 		 */
 		Ceylan::Maths::Random::WhiteNoiseGenerator activeWaitingRand( 0, 10 ) ;
@@ -259,7 +260,7 @@ int main( int argc, char * argv[] )
 		
 			waitCount = activeWaitingRand.getNewValue() ;
 		
-			// Do not get aligned with beginning of time slices :
+			// Do not get aligned with beginning of time slices:
 			for ( Ceylan::Uint32 w = 0; w < waitCount; w++ )
 				activeWaiting() ;
 				
@@ -291,12 +292,12 @@ int main( int argc, char * argv[] )
 		for ( Ceylan::Uint32 i = 0 ; i < durationStepsCount; i++ )
 		{
 		
-			// Do not get aligned with beginning of time slices :
+			// Do not get aligned with beginning of time slices:
 			for ( Ceylan::Uint32 w = 0; w < waitCount; w++ )
 		
 			waitCount = activeWaitingRand.getNewValue() ;
 		
-			// Do not get aligned with beginning of time slices :
+			// Do not get aligned with beginning of time slices:
 			for ( Ceylan::Uint32 w = 0; w < waitCount; w++ )
 				activeWaiting() ;
 				
@@ -310,7 +311,7 @@ int main( int argc, char * argv[] )
 				
 			getPreciseTime( currentSecond, currentMicrosecond ) ;
 		
-			// Do not use durationToString, it would create english text :
+			// Do not use durationToString, it would create english text:
 			logFile->write( Ceylan::toString( currentRequestedDuration ) 
 				+ " \t " 
 				+ Ceylan::toString( getDurationBetween( 
@@ -332,7 +333,7 @@ int main( int argc, char * argv[] )
 		
 		LogPlug::info( "Testing smartSleep with random sleep durations." ) ;
 		
-		// Can easily be very long : 
+		// Can easily be very long: 
 		Ceylan::Uint32 sampleCount = 1 ;
 		
 		if ( ! isBatch )
@@ -341,16 +342,16 @@ int main( int argc, char * argv[] )
 		Second drawnSecond ;
 		Microsecond drawnMicrosecond ;
 		
-		// Wait for 0, 1 or 2 seconds :
+		// Wait for 0, 1 or 2 seconds:
 		Ceylan::Maths::Random::WhiteNoiseGenerator secondRand( 0, 3 ) ;
 		
-		// Wait for 0 to 999 999 microseconds :
+		// Wait for 0 to 999 999 microseconds:
 		Ceylan::Maths::Random::WhiteNoiseGenerator 
 			microsecondRand( 0, 1000000 ) ;
 		
 		/*
 		 * Determines what is the maximum error tolerated for smartSleep,
-		 * in microseconds :
+		 * in microseconds:
 		 *
 		 */
 		Ceylan::SignedLongInteger maximumAllowedError = 5 ;
@@ -378,7 +379,7 @@ int main( int argc, char * argv[] )
 
 			/*
 			 * preciseTimeDuration is substracted since getPreciseTime 
-			 * lasts for a moment too :
+			 * lasts for a moment too:
 			 *
 			 */
 			
@@ -394,8 +395,8 @@ int main( int argc, char * argv[] )
 				
 				if ( currentError > 0 ) 
 				{
-					// Waited too much :
-					LogPlug::error( "smartSleep waited for too long : "
+					// Waited too much:
+					LogPlug::error( "smartSleep waited for too long: "
 						"for a requested sleep of " 
 						+ Ceylan::toString( drawnSecond ) 
 						+ " second(s) and " 
@@ -407,8 +408,8 @@ int main( int argc, char * argv[] )
 				}		
 				else 
 				{
-					// Did not wait enough :
-					LogPlug::error( "smartSleep did not wait enough : "
+					// Did not wait enough:
+					LogPlug::error( "smartSleep did not wait enough: "
 						"for a requested sleep of " 
 						+ Ceylan::toString( drawnSecond ) 
 						+ " second(s) and " 
@@ -460,8 +461,8 @@ int main( int argc, char * argv[] )
 				
 				if ( currentError > 0 ) 
 				{
-					// Waited too much :
-					LogPlug::error( "smartSleepUntil waited for too long : "
+					// Waited too much:
+					LogPlug::error( "smartSleepUntil waited for too long: "
 						"for a target time of " 
 						+ Ceylan::toString( lastSecond + drawnSecond ) 
 						+ " second(s) and " 
@@ -472,8 +473,8 @@ int main( int argc, char * argv[] )
 				}		
 				else 
 				{
-					// Did not wait enough :
-					LogPlug::error( "smartSleepUntil did not wait enough : "
+					// Did not wait enough:
+					LogPlug::error( "smartSleepUntil did not wait enough: "
 						"for a target time of " 
 						+ Ceylan::toString( lastSecond + drawnSecond ) 
 						+ " second(s) and " 
@@ -501,7 +502,7 @@ int main( int argc, char * argv[] )
 		}
 		
 		
-		// Testing durationToString now :
+		// Testing durationToString now:
 			
 		Second startingSecond ;
 		Microsecond startingMicrosecond ;
@@ -519,7 +520,7 @@ int main( int argc, char * argv[] )
 			+ Ceylan::toString( startingSecond ) + ", "
 			+ Ceylan::toString( startingMicrosecond ) + ") to ("
 			+ Ceylan::toString( stoppingSecond ) + ", "
-			+ Ceylan::toString( stoppingMicrosecond ) + ") : " 
+			+ Ceylan::toString( stoppingMicrosecond ) + "): " 
 			+ Ceylan::System::durationToString( startingSecond,
 				startingMicrosecond, stoppingSecond, stoppingMicrosecond ) ) ;
 		
@@ -535,7 +536,7 @@ int main( int argc, char * argv[] )
 			+ Ceylan::toString( startingSecond ) + ", "
 			+ Ceylan::toString( startingMicrosecond ) + ") to ("
 			+ Ceylan::toString( stoppingSecond ) + ", "
-			+ Ceylan::toString( stoppingMicrosecond ) + ") : " 
+			+ Ceylan::toString( stoppingMicrosecond ) + "): " 
 			+ Ceylan::System::durationToString( startingSecond,
 				startingMicrosecond, stoppingSecond, stoppingMicrosecond ) ) ;
 
@@ -550,7 +551,7 @@ int main( int argc, char * argv[] )
 			+ Ceylan::toString( startingSecond ) + ", "
 			+ Ceylan::toString( startingMicrosecond ) + ") to ("
 			+ Ceylan::toString( stoppingSecond ) + ", "
-			+ Ceylan::toString( stoppingMicrosecond ) + ") : " 
+			+ Ceylan::toString( stoppingMicrosecond ) + "): " 
 			+ Ceylan::System::durationToString( startingSecond,
 				startingMicrosecond, stoppingSecond, stoppingMicrosecond ) ) ;
 
@@ -590,7 +591,7 @@ int main( int argc, char * argv[] )
 			+ Ceylan::toString( startingSecond ) + ", "
 			+ Ceylan::toString( startingMicrosecond ) + ") to ("
 			+ Ceylan::toString( stoppingSecond ) + ", "
-			+ Ceylan::toString( stoppingMicrosecond ) + ") : " 
+			+ Ceylan::toString( stoppingMicrosecond ) + "): " 
 			+ Ceylan::System::durationToString( startingSecond,
 				startingMicrosecond, stoppingSecond, stoppingMicrosecond ) ) ;
 
@@ -628,7 +629,7 @@ int main( int argc, char * argv[] )
 	
     catch ( const Ceylan::Exception & e )
     {
-        std::cerr << "Ceylan exception caught : "
+        std::cerr << "Ceylan exception caught: "
         	<< e.toString( Ceylan::high ) << std::endl ;
 		return Ceylan::ExitFailure ;
 
@@ -636,7 +637,7 @@ int main( int argc, char * argv[] )
 
     catch ( const std::exception & e )
     {
-        std::cerr << "Standard exception caught : " 
+        std::cerr << "Standard exception caught: " 
 			 << e.what() << std::endl ;
 		return Ceylan::ExitFailure ;
 
