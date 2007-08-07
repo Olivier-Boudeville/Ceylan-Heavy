@@ -172,16 +172,18 @@ CPP_FEATURE_DEFINES:= \
 	
 		
 CPP_DEBUG_DEFINES:= \
-	-DCEYLAN_DEBUG_NINTENDO_DS=1       \
+	-DCEYLAN_DEBUG_CONSOLE=0           \
 	-DCEYLAN_DEBUG_DEMANGLE=0          \
 	-DCEYLAN_DEBUG_EVENTS=0            \
 	-DCEYLAN_DEBUG_LOG=0               \
-	-DCEYLAN_DEBUG_RANDOM=0            \
+	-DCEYLAN_DEBUG_LOW_LEVEL_STREAMS=0 \
 	-DCEYLAN_DEBUG_MARSHALLERS=0       \
 	-DCEYLAN_DEBUG_NETWORK_CLIENTS=0   \
 	-DCEYLAN_DEBUG_NETWORK_SERVERS=0   \
-	-DCEYLAN_DEBUG_LOW_LEVEL_STREAMS=0 \
+	-DCEYLAN_DEBUG_NINTENDO_DS=1       \
+	-DCEYLAN_DEBUG_RANDOM=0            \
 	-DCEYLAN_DEBUG_SYSTEM=0            \
+	-DCEYLAN_DEBUG_TEXTBUFFER=0        \
 	-DCEYLAN_DEBUG_THREADS=0
 	
 	
@@ -242,7 +244,7 @@ AR_FLAGS_ARM7:= $(AR_FLAGS_COMMON)
 AR_FLAGS_ARM9:= $(AR_FLAGS_COMMON)
 
 
-# Generating an executable is defined in trunk/test/cross-tests/Makefile.
+# Generating an executable is defined in trunk/test/cross-tests/GNUmakefile.
 
 
 
