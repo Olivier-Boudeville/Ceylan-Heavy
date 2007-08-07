@@ -6,7 +6,7 @@
 #include "CeylanTextDisplayable.h"   // for inheritance
 #include "CeylanTypes.h"             // for Ceylan::Uint8 and al
 #include "CeylanSystem.h"            // for SystemException
-
+#include "CeylanStringUtils.h"       // for CharAbscissa and al
 
 
 namespace Ceylan
@@ -30,12 +30,6 @@ namespace Ceylan
 
 			public:
 					
-					
-				/// Abscissa index of a character in a buffer.	
-				typedef Ceylan::Uint8 CharAbscissa ;
-				
-				/// Ordinate index of a character in a buffer.	
-				typedef Ceylan::Uint8 CharOrdinate ;
 				
 				
 				/**
@@ -43,7 +37,7 @@ namespace Ceylan
 				 * (i.e. performs line-wrapping).
 				 *
 				 */
-				static const CharAbscissa UnlimitedWidth = 0 ;
+				static const TextBuffer::CharAbscissa UnlimitedWidth = 0 ;
 				
 				
 				/**
@@ -51,7 +45,7 @@ namespace Ceylan
 				 * (i.e. performs line-scrolling).
 				 *
 				 */
-				static const CharOrdinate UnlimitedHeight = 0 ;
+				static const TextBuffer::CharOrdinate UnlimitedHeight = 0 ;
 				
 				
 				
@@ -120,8 +114,10 @@ namespace Ceylan
 				 * supported.
 				 *
 				 */
-				Console( CharAbscissa startingX, CharOrdinate startingY,
-						CharAbscissa width, CharOrdinate height )
+				Console( TextBuffer::CharAbscissa startingX,
+						 TextBuffer::CharOrdinate startingY,
+						 TextBuffer::CharAbscissa width,
+						 TextBuffer::CharOrdinate height )
 					throw( ConsoleException ) ;
 	
 	
@@ -131,6 +127,53 @@ namespace Ceylan
 
 
 				// Buffer manipulation section.
+
+
+
+				/**
+				 * Makes the console display next text on top
+				 *
+				 * Does nothing if there is no text left.
+				 *
+				 * @return true iff there was a text left indeed.
+				 *
+				 */
+				virtual bool jumpNextText() throw() ;
+
+
+				/**
+				 * Makes the console display previous text on top
+				 *
+				 * Does nothing if there is no text left.
+				 *
+				 * @return true iff there was a prior text indeed.
+				 *
+				 */
+				virtual bool jumpPreviousText() throw() ;
+
+
+
+				/**
+				 * Offsets the console display text of one line to the bottom.
+				 *
+				 * Does nothing if there is no line left.
+				 *
+				 * @return true iff there was a line left indeed.
+				 *
+				 */
+				virtual bool jumpNextLine() throw() ;
+				
+
+				/**
+				 * Offsets the console display text of one line to the bottom.
+				 *
+				 * Does nothing if there is no line left.
+				 *
+				 * @return true iff there was a line left indeed.
+				 *
+				 */
+				virtual bool jumpPreviousLine() throw() ;
+				
 
 
 				/** 
@@ -143,7 +186,7 @@ namespace Ceylan
 				 * @throw ConsoleException if the operation failed.
 				 *
 				 */
-				void addInBuffer( const std::string & text ) 
+				virtual void addInBuffer( const std::string & text ) 
 					throw( ConsoleException ) ;
 
 
@@ -153,7 +196,7 @@ namespace Ceylan
 				 * @throw ConsoleException if the operation failed.
 				 *
 				 */
-				void blankBuffer() throw( ConsoleException ) ;
+				virtual void blankBuffer() throw( ConsoleException ) ;
 
 
 
@@ -167,7 +210,7 @@ namespace Ceylan
 				 * @throw ConsoleException if the operation failed.
 				 *
 				 */
-				void render() throw( ConsoleException ) ; 
+				virtual void render() throw( ConsoleException ) ; 
 				
 				
             	/**
@@ -268,6 +311,7 @@ namespace Ceylan
 			
 			protected:
 			
+			
 				/**
 				 * Initializes a console, used by constructors.
 				 *
@@ -276,18 +320,19 @@ namespace Ceylan
 				 *
 				 */
 				void initConsole( 
-						CharAbscissa startingX, CharOrdinate startingY,
-						CharAbscissa width, CharOrdinate height)
+						TextBuffer::CharAbscissa startingX,
+						TextBuffer::CharOrdinate startingY,
+						TextBuffer::CharAbscissa width, 
+						TextBuffer::CharOrdinate height)
 					throw( ConsoleException ) ; 
 
 
-				CharAbscissa _xstart ;
-				CharOrdinate _ystart ;
+				TextBuffer::CharAbscissa _xstart ;
+				TextBuffer::CharOrdinate _ystart ;
 				
-				CharAbscissa _width ;
-				CharOrdinate _height ;
 				
-				std::string _buffer ;
+				/// Buffer storing all the texts.
+				TextBuffer * _buffer ;
 				
 				
 			private:
