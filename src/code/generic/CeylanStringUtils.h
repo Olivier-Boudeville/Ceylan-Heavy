@@ -120,8 +120,8 @@ namespace Ceylan
 			
 			
 			/** 
-			 * Creates a new text buffer, whose sliding window is of 
-			 * specified size.
+			 * Creates a new text buffer, whose sliding window (abstracted
+			 * screen) is of specified size.
 			 *
 			 * @param width the width of the character grid.
 			 *
@@ -130,7 +130,7 @@ namespace Ceylan
 			 * @throw StringUtilsException if the operation failed.
 			 *
 			 */		
-			TextBuffer( CharAbscissa width, CharOrdinate height ) 
+			TextBuffer( CharAbscissa screenWidth, CharOrdinate screenHeight ) 
 				throw( StringUtilsException ) ;
 			
 			
@@ -138,28 +138,28 @@ namespace Ceylan
 			virtual ~TextBuffer() throw() ;
 	
 			
+			
 			/**
 			 * Returns the width of the abstract screen associated to this
 			 * buffer.
 			 *
 			 */
-			virtual CharAbscissa getWidth() throw() ;
+			virtual CharAbscissa getWidth() const throw() ;
 		
-			
+		
 			/**
-			 * Records a preformatted text entry, whose escape sequences 
-			 * (\t,\n) have been translated into a series of basic characters
-			 * (alphanumerical and spaces) stored in a list of lines, 
-			 * each line being an array of width characters (char *), to fit 
-			 * in character grid.
+			 * Returns the height of the abstract screen associated to this
+			 * buffer.
 			 *
 			 */
-			typedef std::list<char *> TextGrid ;
+			virtual CharOrdinate getHeight() const throw() ;			
 			
 			
 			
 			/**
 			 * Adds specified text in the buffer.
+			 *
+			 * Updates the internal virtual screen accordingly.
 			 *
 			 * @param text the text to add in buffer.
 			 *
@@ -168,6 +168,16 @@ namespace Ceylan
 			 */
 			virtual void add( const std::string & text ) 
 				throw( StringUtilsException ) ;
+			
+			
+			/**
+			 * Blanks this whole buffer.
+			 *
+			 * Removes all text content.
+			 *
+			 */
+			virtual void blank() throw() ;
+			
 			
 			
 			
@@ -182,7 +192,7 @@ namespace Ceylan
 			 * @return true iff there was a text entry left indeed.
 			 *
 			 */
-			bool jumpNextText() throw() ;
+			virtual bool jumpNextText() throw() ;
 			
 			
 			/**
@@ -190,38 +200,49 @@ namespace Ceylan
 			 *
 			 * Does nothing if there is no text left.
 			 *
-			 * @return true iff there was a text entry left indeed.
+			 * @return true iff there was a prior text entry indeed.
 			 *
 			 */
-			bool jumpPreviousText() throw() ;
+			virtual bool jumpPreviousText() throw() ;
 			
 			
 			
 			/**
 			 * Makes the abstract screen go one line down.
 			 *
-			 * Does nothing if there is no text line left.
+			 * Does nothing if there is no text line left (already at bottom).
 			 *
 			 * @return true iff there was a line left indeed.
 			 *
 			 */
-			bool jumpNextLine() throw() ;
+			virtual bool jumpNextLine() throw() ;
 			
 			
 			/**
 			 * Makes the abstract screen go one line up.
 			 *
-			 * Does nothing if there is no text line left.
+			 * Does nothing if there is no text line left (already on top).
 			 *
 			 * @return true iff there was a line left indeed.
 			 *
 			 */
-			bool jumpPreviousLine() throw() ;
+			virtual bool jumpPreviousLine() throw() ;
 			
 			
+			
+			/**
+			 * Records a preformatted text entry, whose escape sequences 
+			 * (\t,\n) have been translated into a series of basic characters
+			 * (alphanumerical and spaces) stored in a list of lines, 
+			 * each line being an array of width characters (char *), to fit 
+			 * in character grid.
+			 *
+			 */
+			typedef std::list<char *> TextGrid ;
+
 			 
 			/**
-			 * Returns the list of lines that should be displayed should
+			 * Returns the list of lines that should be displayed, should
 			 * this buffer be rendered.
 			 *
 			 * Depends on the stored texts and on the location of the abstract
@@ -232,7 +253,7 @@ namespace Ceylan
 			 * they are blank.
 			 *
 			 */
-			const TextGrid & getScreenLines() const throw() ;
+			virtual const TextGrid & getScreenLines() const throw() ;
 						
 					
 						 
@@ -254,15 +275,17 @@ namespace Ceylan
 						
 			
 			/// Number of spaces corresponding to one tabulation.
-			static const Ceylan::Uint32 TabSpacing = 4 ;
+			static const CharAbscissa TabSpacing = 4 ;
+			
 			
 			
 			
 		protected:
 	
-	
+
 			/**
-			 * Updates screen lines according to current index.
+			 * Updates screen lines according to current buffer text and line 
+			 * index.
 			 *
 			 * Recreates from scratch the list of line references.
 			 *
@@ -287,22 +310,43 @@ namespace Ceylan
 
 
 			/**
+			 * Tells how many lines spread from the current position to 
+			 * the end of text.
+			 *
+			 */
+			LineIndex getHeightFromCurrentPosition() const throw() ;
+				
+
+			
+			/**
+			 * A text entry is made of a chunk of text and its precomputed
+			 * lines (if any).
+			 *
+			 */
+			typedef std::pair<std::string, TextGrid*> TextEntry ;
+
+
+			/// A list of text entries.
+			typedef std::list<TextEntry> ListOfTexts ;
+
+				
+			/**
+			 * Tells how many lines spread from the beggining of specified 
+			 * text entry to the end of text.
+			 *
+			 */
+			LineIndex getHeightFromEntry( 
+				ListOfTexts::const_iterator textIterator ) const throw() ;
+				
+				
+			/**
 			 * Creates a new blank line of the appropriate width (length).
 			 *
 			 * @note Ownership of the line is transferred to the caller.
 			 *
 			 */
 			char * getNewLine() throw() ;
-			
-			
-			
-			/// A text and its precomputed lines.
-			typedef std::pair<std::string, TextGrid*> TextEntry ;
-
-
-			/// A list of text entries.
-			typedef std::list<TextEntry> ListOfTexts ;
-			
+				
 			
 			/**
 			 * Records the text stored by this buffer and its precomputed 
