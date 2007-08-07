@@ -18,14 +18,56 @@
 #include <iostream>				       // for cerr, endl, cout
 
 
+
+#ifdef CEYLAN_USES_CONFIG_H
+#include <CeylanConfig.h>              // for the actual CEYLAN_LIBTOOL_VERSION
+#endif // CEYLAN_USES_CONFIG_H
+
 #if CEYLAN_ARCH_NINTENDO_DS
 #include "CeylanConfigForNintendoDS.h" // for keysDown (ARM9)
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 
-#ifdef CEYLAN_USES_CONFIG_H
-#include <CeylanConfig.h>              // for the actual CEYLAN_LIBTOOL_VERSION
-#endif // CEYLAN_USES_CONFIG_H
+
+#if defined(CEYLAN_ARCH_NINTENDO_DS) && CEYLAN_ARCH_NINTENDO_DS == 1
+
+#ifdef CEYLAN_RUNS_ON_ARM9
+
+// Mapping of libnds defines for the ARM9:
+
+extern const Ceylan::DSBinaryInput Ceylan::ButtonX             = KEY_X ;
+extern const Ceylan::DSBinaryInput Ceylan::ButtonY             = KEY_Y ;
+
+extern const Ceylan::DSBinaryInput Ceylan::ButtonA             = KEY_A ;
+extern const Ceylan::DSBinaryInput Ceylan::ButtonB             = KEY_B ;
+
+extern const Ceylan::DSBinaryInput Ceylan::ButtonStart         = KEY_START ;
+extern const Ceylan::DSBinaryInput Ceylan::ButtonSelect        = KEY_SELECT ;
+
+extern const Ceylan::DSBinaryInput Ceylan::ButtonLeft          = KEY_LEFT ;
+extern const Ceylan::DSBinaryInput Ceylan::ButtonRight         = KEY_RIGHT ;
+
+extern const Ceylan::DSBinaryInput Ceylan::ButtonUp            = KEY_UP ;
+extern const Ceylan::DSBinaryInput Ceylan::ButtonDown          = KEY_DOWN ;
+
+extern const Ceylan::DSBinaryInput Ceylan::ShoulderButtonLeft  = KEY_L ;
+extern const Ceylan::DSBinaryInput Ceylan::ShoulderButtonRight = KEY_R ;
+
+extern const Ceylan::DSBinaryInput Ceylan::StylusContact       = KEY_TOUCH ;
+extern const Ceylan::DSBinaryInput Ceylan::LidOpen             = KEY_LID ;
+
+
+// Lid is not deemd a user input:
+extern const Ceylan::DSBinaryInput Ceylan::AllUserInputs = ButtonX | ButtonY 
+	| ButtonA | ButtonB | ButtonStart | ButtonSelect 
+	| ButtonLeft | ButtonRight | ButtonUp | ButtonDown 
+	| ShoulderButtonLeft | ShoulderButtonRight | StylusContact ;
+
+
+#endif // CEYLAN_RUNS_ON_ARM9
+
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 
 
 
@@ -146,18 +188,16 @@ bool Ceylan::keyboardHit() throw( UtilsException )
 	// Ensures the interrupts are initialized (once):
 	Ceylan::System::InitializeInterrupts() ;
 
-	// Lid is not an input:
-	const int AllInputs = KEY_A | KEY_B	| KEY_SELECT | KEY_START 
-		| KEY_RIGHT | KEY_LEFT | KEY_UP | KEY_DOWN | KEY_R | KEY_L 
-		| KEY_X | KEY_Y | KEY_TOUCH ;
-		
-	//swiWaitForVBlank();
-		
+				
 	// Update key state:
 	scanKeys() ;
 	
+	//CEYLAN_DS_LOG( "Key held   = " + Ceylan::toString( keysHeld() ) ) ;
+	//CEYLAN_DS_LOG( "Key down   = " + Ceylan::toString( keysDown() ) ) ;
+	//CEYLAN_DS_LOG( "Key repeat = " + Ceylan::toString( keysDownRepeat() ) ) ;
+	
 	// Touch-screen pen down taken into account here:
-	return ( ( keysDown() & AllInputs ) != 0 ) ;
+	return ( ( keysHeld() & AllUserInputs ) != 0 ) ;
 
 #endif // CEYLAN_RUNS_ON_ARM7
 
@@ -237,9 +277,19 @@ KeyChar Ceylan::getChar() throw( UtilsException )
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
+#ifdef CEYLAN_RUNS_ON_ARM7
+
 	// Would not really make sense here:
 	throw UtilsException( "Ceylan::getChar: "
-		"not available on the Nintendo DS." ) ;
+		"not available on the Nintendo DS ARM7." ) ;
+		
+#else // CEYLAN_RUNS_ON_ARM7
+	
+	// keysHeld quite smooth too:
+	return ( keysDownRepeat() & AllUserInputs ) ;
+	
+#endif // CEYLAN_RUNS_ON_ARM7
+
 	
 #else // CEYLAN_ARCH_NINTENDO_DS
 
@@ -314,32 +364,38 @@ KeyChar Ceylan::waitForKey( const string & message ) throw( UtilsException )
 	throw UtilsException( 
 		"Ceylan::waitForKey: only available on the ARM9." ) ;
 
+#else // CEYLAN_RUNS_ON_ARM7
+
+
+	// Leave the terminal untouched if no display wanted.
+	if ( ! message.empty() )
+		display( message ) ;
+		
+			
+	// ATOMIC SLEEP
+	// Wait at most about 16 ms:
+	while ( ! Ceylan::keyboardHit() )
+		swiWaitForVBlank() ;
+		
+	return Ceylan::getChar() ;
+
 #endif // CEYLAN_RUNS_ON_ARM7
+
 
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 	bool sleepFailed = false ;
 
-#endif // CEYLAN_ARCH_NINTENDO_DS
-
 
 	// Leave the terminal untouched if no display wanted.
 	if ( ! message.empty() )
-	{
 		display( message ) ;
-	}
 	
 		
 	while ( ! Ceylan::keyboardHit() )
 	{
 
-#if CEYLAN_ARCH_NINTENDO_DS
-
-		// Wait at most about 16 ms:
-		swiWaitForVBlank() ;
 		
-#else // CEYLAN_ARCH_NINTENDO_DS
-	
 		// Wait a bit if possible, to save CPU time and laptop batteries: 
 		if ( Features::areFileDescriptorsSupported() && ! sleepFailed )
 		{
@@ -359,21 +415,12 @@ KeyChar Ceylan::waitForKey( const string & message ) throw( UtilsException )
 			
 		}		
 
-#endif // CEYLAN_ARCH_NINTENDO_DS
 		
 	}
-	
-	
-#if CEYLAN_ARCH_NINTENDO_DS
-
-	return 0 ;	
-	
-#else // CEYLAN_ARCH_NINTENDO_DS
-
-	return Ceylan::getChar() ;	
-	
+			
+	return Ceylan::getChar() ;
+		
 #endif // CEYLAN_ARCH_NINTENDO_DS
-
 		
 }
 
