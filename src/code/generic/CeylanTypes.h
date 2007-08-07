@@ -40,6 +40,8 @@
  * cstdint, defined in Boost (http://www.boost.org), is sadly not existing 
  * yet in the C++ standard.
  *
+ * On the Nintendo DS, we could use also datatypes defined in libnds.
+ *
  */
 //#include <inttypes.h>   // for int8_t and others
 
