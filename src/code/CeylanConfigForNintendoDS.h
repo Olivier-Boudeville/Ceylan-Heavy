@@ -14,30 +14,24 @@
 
 #define CEYLAN_DLL
 
-
-
  
 // Auto-set the arch flags expected by libnds:
 #ifdef CEYLAN_RUNS_ON_ARM7
 
 	#define ARM7
-
+	
+	#define CEYLAN_DS_LOG(messageString)
+	
 #else // CEYLAN_RUNS_ON_ARM7
 
 	#ifdef CEYLAN_RUNS_ON_ARM9
 
 		#define ARM9
+	
+		// For iprintf and al:
+		#include <stdio.h> 
 
-		#if CEYLAN_DEBUG_NINTENDO_DS
-
-			#define CEYLAN_LOG(message) ::iprintf( "[Debug] %s\n",(message))
-
-		#else// DCEYLAN_DEBUG_NINTENDO_DS
-
-			#define CEYLAN_LOG(message)
-
-		#endif // CEYLAN_DEBUG_NINTENDO_DS
-
+		#define CEYLAN_DS_LOG(messageString) ::iprintf( "[Debug] %s\n", ((messageString).c_str()) )
 
 	#else // CEYLAN_RUNS_ON_ARM9
 
