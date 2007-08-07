@@ -4,21 +4,38 @@
 #include "CeylanOperators.h"           // for toNumericalString
 
 
-#if CEYLAN_ARCH_NINTENDO_DS
-#include "CeylanConfigForNintendoDS.h" // for powerON, videoSetMode, etc.
-#endif // CEYLAN_ARCH_NINTENDO_DS
-
 
 #ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"              // for configure-time settings
 #endif // CEYLAN_USES_CONFIG_H
 
 
+#if CEYLAN_ARCH_NINTENDO_DS
+#include "CeylanConfigForNintendoDS.h" // for powerON, videoSetMode, etc.
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+
+#include <iostream>                    // for cout
+#include <cstdio>                      // for putchar
+
 
 using namespace Ceylan::System ;
 
 
 using std::string ;
+using std::list ;
+
+
+#if CEYLAN_DEBUG_CONSOLE
+
+#include "CeylanLogLight.h"
+#define CEYLAN_CONSOLE_LOG(message) CEYLAN_LOG((string(message)))
+
+#else // CEYLAN_DEBUG_CONSOLE
+
+#define CEYLAN_CONSOLE_LOG(message)
+
+#endif // CEYLAN_DEBUG_CONSOLE
 
 
 const char * const Console::ForegroundColor::Red     = "\033[91m" ;
@@ -65,7 +82,8 @@ const char * const Console::InvisibleImageOff = "\033[28m" ;
 
 
 
-Console::Console() throw( ConsoleException )
+Console::Console() throw( ConsoleException ):	
+	_buffer( 0 )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -86,15 +104,19 @@ Console::Console() throw( ConsoleException )
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 	// Assumes fully-capable windowed terminal:
-	initConsole( 0, 0, UnlimitedWidth, UnlimitedHeight ) ;  
+	initConsole( 0, 0, 32, 24 ) ;  
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 	
 }
 
 		
-Console::Console( CharAbscissa startingX, CharOrdinate startingY,
-	CharAbscissa width, CharOrdinate height ) throw( ConsoleException )
+Console::Console(
+	TextBuffer::CharAbscissa startingX, TextBuffer::CharOrdinate startingY,
+	TextBuffer::CharAbscissa width, TextBuffer::CharOrdinate height ) 
+		throw( ConsoleException ):
+	_buffer( 0 )
+	
 {
 
 	initConsole( startingX, startingY, width, height ) ;  
@@ -121,31 +143,162 @@ Console::~Console() throw()
 	
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
+	if ( _buffer != 0 )
+		delete _buffer ;
+		
 }
+
+
+
+bool Console::jumpNextText() throw()
+{
+
+	// _buffer should be already allocated.
+	
+	if ( _buffer->jumpNextText() )
+	{
+		render() ;
+		return true ;
+	}
+	else
+	{
+		return false ;
+	}
+	
+}
+
+
+bool Console::jumpPreviousText() throw()
+{
+
+	// _buffer should be already allocated.
+	
+	if ( _buffer->jumpPreviousText() )
+	{
+		render() ;
+		return true ;
+	}
+	else
+	{
+		return false ;
+	}
+
+}
+
+
+
+bool Console::jumpNextLine() throw()
+{
+
+	// _buffer should be already allocated.
+	
+	if ( _buffer->jumpNextLine() )
+	{
+		render() ;
+		return true ;
+	}
+	else
+	{
+		return false ;
+	}
+
+}
+
+
+bool Console::jumpPreviousLine() throw()
+{
+
+	// _buffer should be already allocated.
+	
+	if ( _buffer->jumpPreviousLine() )
+	{
+		render() ;
+		return true ;
+	}
+	else
+	{
+		return false ;
+	}
+
+}
+
 
 
 void Console::addInBuffer( const std::string & text ) throw( ConsoleException )
 {
-	_buffer = text ;
+
+	// _buffer should be already allocated.
+	
+	_buffer->add( text ) ;
+	
 }
-				
+
+
+void Console::blankBuffer() throw( ConsoleException )	
+{
+
+	// _buffer should be already allocated.
 		
+	_buffer->blank() ;
+		
+}
+
 					
 void Console::render() throw( ConsoleException )
 {
 
+	if ( _buffer == 0 )
+		return ;
+			
 #if CEYLAN_ARCH_NINTENDO_DS
 		
 #ifdef CEYLAN_RUNS_ON_ARM9
 
-	iprintf( _buffer.c_str() ) ;
+	consoleClear() ;
+	
+	const std::list<char *> & charGrid( _buffer->getScreenLines() ) ;
+	
+	TextBuffer::CharAbscissa width = _buffer->getWidth() ;
+	
+	const char * currentLine ;
+
+	for ( list<char *>::const_iterator it = charGrid.begin() ;
+			it != charGrid.end(); it++ )
+		{
+		
+			currentLine = (*it) ;
+			
+			for ( TextBuffer::CharAbscissa i = 0; i < width; i++ )
+				putchar( currentLine[i] ) ;
+
+		}
+				
 
 #endif // CEYLAN_RUNS_ON_ARM9
 
 	
 #else // CEYLAN_ARCH_NINTENDO_DS
 
-	std::cout << _buffer ;
+	const std::list<char *> & charGrid( _buffer->getScreenLines() ) ;
+	
+	TextBuffer::CharAbscissa width = _buffer->getWidth() ;
+	
+	const char * currentLine ;
+
+	for ( list<char *>::const_iterator it = charGrid.begin() ;
+			it != charGrid.end(); it++ )
+		{
+		
+			currentLine = (*it) ;
+			
+			for ( TextBuffer::CharAbscissa i = 0; i < width; i++ )
+				putchar( currentLine[i] ) ;			
+			
+			putchar( '\n' ) ;
+			
+		}
+		
+	putchar( '\n' ) ;
 	
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
@@ -159,24 +312,39 @@ const std::string Console::toString( Ceylan::VerbosityLevels level )
 
 	string res = "Console whose upper-left corner is at ("
 		+ Ceylan::toNumericalString( _xstart ) + ","
-		+ Ceylan::toNumericalString( _ystart ) + "), whose width is " 
-		+ Ceylan::toNumericalString( _width ) + ", whose width is "
-		+ Ceylan::toNumericalString( _height ) + ", whose height is " ;
+		+ Ceylan::toNumericalString( _ystart ) + ")" ;
+	
+	if ( _buffer != 0 )
+		res += ", storing its content in " + _buffer->toString( level ) ;
+	else		
+		res += ", not having a text buffer" ;
 
 	return res ;
 	
 }
 
 
-void Console::initConsole( CharAbscissa startingX, CharOrdinate startingY,
-	CharAbscissa width, CharOrdinate height ) throw( ConsoleException )
+void Console::initConsole( 
+	TextBuffer::CharAbscissa startingX, 
+	TextBuffer::CharOrdinate startingY,
+	TextBuffer::CharAbscissa width, 
+	TextBuffer::CharOrdinate height ) throw( ConsoleException )
 {
 
+
+	if ( _buffer != 0 )
+		delete _buffer ;
+		
+	_buffer = new TextBuffer( width, height ) ;
+		
 #if CEYLAN_ARCH_NINTENDO_DS
 		
 #ifdef CEYLAN_RUNS_ON_ARM9
 
-
+	// 60/15 good in emulator, 60 / 30 better with real DS:
+	keysSetRepeat( 60 /* VBL count before repeat */, 
+		30 /* VBL count between repeats when repeating */) ;
+	
 	// Powers the 2D cores:
 	powerON( POWER_ALL_2D ) ;
 
@@ -212,9 +380,9 @@ void Console::initConsole( CharAbscissa startingX, CharOrdinate startingY,
 
 	_xstart = startingX ;
 	_ystart = startingY ;
+	
+	CEYLAN_CONSOLE_LOG( "Console created") ;
 
-	_width  = width  ;
-	_height = height ;
 	
 }
 
