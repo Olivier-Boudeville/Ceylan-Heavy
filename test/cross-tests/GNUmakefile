@@ -9,7 +9,13 @@ TOP = ../..
 
 
 .PHONY: test emulate emulate-with-NoCashGBA emulate-with-DeSmuME transfer \
-	patch umount info-target clean info-flags info-debug info-run
+	patch umount export info-target clean info-flags info-debug info-run
+
+
+CROSS_TARGET=nintendo-ds
+
+# For tool locations, not for flags nor build rules:
+include $(TOP)/src/conf/build/$(CROSS_TARGET)/Makevars.inc
 
 
 # Test target section.
@@ -57,6 +63,9 @@ umount:
 	@pumount $(TRANSFER_MOUNT_POINT)
 
 
+export: transfer umount
+
+	
 $(TARGET_ROM_NAME_BASE).sc.nds: $(TEST_NAME).ds.gba
 	@echo "      Renaming $< into $@ for SuperCard linker"
 	@cp -f $< $@
@@ -86,9 +95,9 @@ TEST_ARCH_FLAGS_COMMON = -mthumb -mthumb-interwork
 TEST_CPP_FLAGS_COMMON = -I. -I$(CEYLAN_INSTALL_INC) \
 	-I$(libnds_DIR)/include -DCEYLAN_ARCH_NINTENDO_DS
 
-TEST_CPP_FLAGS_ARM7 = $(TEST_CPP_FLAGS_COMMON) -DCEYLAN_RUNS_ON_ARM7=1 -DCEYLAN_RUNS_ON_ARM9=0 
+TEST_CPP_FLAGS_ARM7 = $(TEST_CPP_FLAGS_COMMON) -DCEYLAN_RUNS_ON_ARM7
 
-TEST_CPP_FLAGS_ARM9 = $(TEST_CPP_FLAGS_COMMON) -DCEYLAN_RUNS_ON_ARM7=0 -DCEYLAN_RUNS_ON_ARM9=1
+TEST_CPP_FLAGS_ARM9 = $(TEST_CPP_FLAGS_COMMON) -DCEYLAN_RUNS_ON_ARM9
 
 
 
@@ -198,10 +207,6 @@ info-run:
 	
 
 	
-CROSS_TARGET=nintendo-ds
-
-# For tool locations, not for flags nor build rules:
-include $(TOP)/src/conf/build/$(CROSS_TARGET)/Makevars.inc
 
 
 # Rules section.
