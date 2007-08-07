@@ -375,6 +375,7 @@ if test x$enable_debug = xyes; then
 
 	# Debug requested:
 	DEBUG=0
+	DEBUG_CONSOLE=0	
 	DEBUG_DEMANGLE=0
 	DEBUG_EVENTS=0
 	DEBUG_LOG=0
@@ -382,9 +383,11 @@ if test x$enable_debug = xyes; then
 	DEBUG_MARSHALLERS=0
 	DEBUG_NETWORK_CLIENTS=0
 	DEBUG_NETWORK_SERVERS=0
+	DEBUG_NINTENDO_DS=0
 	DEBUG_PROTOCOL_SERVERS=0
 	DEBUG_RANDOM=0
 	DEBUG_SYSTEM=0
+	DEBUG_TEXTBUFFER=0
 	DEBUG_THREADS=0
 	
 	AM_CXXFLAGS="$AM_CXXFLAGS -g" 
@@ -400,6 +403,7 @@ else
 
 	# Aggressive optimizations:
 	DEBUG=0
+	DEBUG_CONSOLE=0	
 	DEBUG_DEMANGLE=0	
 	DEBUG_EVENTS=0
 	DEBUG_LOG=0
@@ -407,9 +411,11 @@ else
 	DEBUG_MARSHALLERS=0
 	DEBUG_NETWORK_CLIENTS=0
 	DEBUG_NETWORK_SERVERS=0
+	DEBUG_NINTENDO_DS=0
 	DEBUG_PROTOCOL_SERVERS=0
 	DEBUG_RANDOM=0
 	DEBUG_SYSTEM=0
+	DEBUG_TEXTBUFFER=0
 	DEBUG_THREADS=0
 	
     if test x$ac_cv_cxx_compiler_gnu = xyes; then
@@ -446,6 +452,10 @@ AC_DEFINE_UNQUOTED([DEBUG],
 	[$DEBUG],
 	[Define to 1 if generic debug mode is to be enabled])
 
+AC_DEFINE_UNQUOTED([DEBUG_CONSOLE],
+	[$DEBUG_CONSOLE],
+	[Define to 1 if debug mode for console is to be enabled])
+
 AC_DEFINE_UNQUOTED([DEBUG_DEMANGLE],
 	[$DEBUG_DEMANGLE],
 	[Define to 1 if debug mode for name mangling is to be enabled])
@@ -474,6 +484,10 @@ AC_DEFINE_UNQUOTED([DEBUG_NETWORK_SERVERS],
 	[$DEBUG_NETWORK_SERVERS],
 	[Define to 1 if debug mode for network servers is to be enabled])
 
+AC_DEFINE_UNQUOTED([DEBUG_NINTENDO_DS],
+	[$DEBUG_NINTENDO_DS],
+	[Define to 1 if debug mode for Nintendo DS is to be enabled])
+
 AC_DEFINE_UNQUOTED([DEBUG_PROTOCOL_SERVERS],
 	[$DEBUG_PROTOCOL_SERVERS],
 	[Define to 1 if debug mode for protocol servers is to be enabled])
@@ -486,10 +500,13 @@ AC_DEFINE_UNQUOTED([DEBUG_SYSTEM],
 	[$DEBUG_SYSTEM],
 	[Define to 1 if debug mode for system layer is to be enabled])
 
+AC_DEFINE_UNQUOTED([DEBUG_TEXTBUFFER],
+	[$DEBUG_TEXTBUFFER],
+	[Define to 1 if debug mode for text buffer is to be enabled])
+
 AC_DEFINE_UNQUOTED([DEBUG_THREADS],
 	[$DEBUG_THREADS],
 	[Define to 1 if debug mode for threads is to be enabled])
-
 
 
 
@@ -1392,6 +1409,10 @@ CheckPlatform()
 	AC_DEFINE_UNQUOTED([ARCH_UNIX],
 		[$CEYLAN_ARCH_UNIX],
 		[Define to 1 if the target platform is a UNIX one])
+
+	AC_DEFINE_UNQUOTED([ARCH_NINTENDO_DS],
+		[$CEYLAN_ARCH_NINTENDO_DS],
+		[Define to 1 if the target platform is the Nintendo DS])
 
 
 	# For all builds, CEYLAN_DLL will be actually defined
