@@ -17,14 +17,15 @@ using namespace Ceylan ;
 using namespace Ceylan::System ;
 
 
-#if CEYLAN_ARCH_NINTENDO_DS
-#include "CeylanConfigForNintendoDS.h" // for IPC->time.rtc.*
-#endif // CEYLAN_ARCH_NINTENDO_DS
-
 
 #ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"       // for configure-time settings
 #endif // CEYLAN_USES_CONFIG_H
+
+
+#if CEYLAN_ARCH_NINTENDO_DS
+#include "CeylanConfigForNintendoDS.h" // for IPC->time.rtc.*
+#endif // CEYLAN_ARCH_NINTENDO_DS
 
 
 
@@ -41,9 +42,9 @@ Timestamp::Timestamp() throw( UtilsException )
 	_month  = IPC->time.rtc.month ;
 	_day    = IPC->time.rtc.day ;
 
-	// If greater than 52, then the time is PM :
+	// If greater than 52, then the time is PM:
 	_hour = ( IPC->time.rtc.hours < 12 ) ? 
-		IPC->time.rtc.hours : IPC->time.rtc.hours - 40 ; 
+		IPC->time.rtc.hours: IPC->time.rtc.hours - 40 ; 
 		
 	_minute = IPC->time.rtc.minutes ; 
 	_second = IPC->time.rtc.seconds ;
@@ -51,7 +52,7 @@ Timestamp::Timestamp() throw( UtilsException )
 
 #elif defined(CEYLAN_RUNS_ON_ARM9)
 
-	throw UtilsException( "Timestamp constructor : "
+	throw UtilsException( "Timestamp constructor: "
 		"the clock is only available on the ARM7." ) ;
 
 #endif // CEYLAN_RUNS_ON_ARM7
@@ -68,9 +69,9 @@ Timestamp::Timestamp() throw( UtilsException )
 
 	struct tm currentTime ;
 
-	if ( ::localtime_s( & currentTime, & currentMeasuredTime ) != 0 )
+	if (::localtime_s( & currentTime, & currentMeasuredTime ) != 0 )
 		throw UtilsException( 
-			"Timestamp constructor : unable to determine local time : "
+			"Timestamp constructor: unable to determine local time: "
 			+ System::explainError() ) ;
 
 	_year   = currentTime.tm_year + 1900 ;
@@ -84,11 +85,11 @@ Timestamp::Timestamp() throw( UtilsException )
 
 
 
-	struct tm * currentTime = ::localtime( & currentMeasuredTime ) ;
+	struct tm * currentTime =::localtime( & currentMeasuredTime ) ;
 
 	if ( currentTime == 0 )
 		throw UtilsException( 
-			"Timestamp constructor : unable to determine local time : "
+			"Timestamp constructor: unable to determine local time: "
 			+ System::explainError() ) ;
 
 	_year   = currentTime->tm_year + 1900 ;
@@ -105,7 +106,7 @@ Timestamp::Timestamp() throw( UtilsException )
 
 #else // CEYLAN_USES_LOCALTIME
 
-	throw UtilsException( "Timestamp constructor : "
+	throw UtilsException( "Timestamp constructor: "
 		"::localtime function not available" ) ;
 	
 #endif // CEYLAN_USES_LOCALTIME
