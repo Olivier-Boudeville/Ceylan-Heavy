@@ -220,12 +220,84 @@ namespace Ceylan
 
 
 	/// Corresponds to a read character.
-	typedef Ceylan::Sint32 KeyChar ;
+	typedef Ceylan::Sint32 KeyChar ;  
+  
+
+
+#if defined(CEYLAN_ARCH_NINTENDO_DS) && CEYLAN_ARCH_NINTENDO_DS == 1
+  
+
+	// Mapping for Nintendo DS buttons.
+
+
+	/// Corresponds to a Nintendo DS binary input device.
+	typedef Ceylan::Uint32 DSBinaryInput ;
+
+
+  
+  	/// The keypad 'X' of the Nintendo DS.
+	extern CEYLAN_DLL const DSBinaryInput ButtonX ;
+	
+  	/// The keypad 'Y' of the Nintendo DS.
+	extern CEYLAN_DLL const DSBinaryInput ButtonY ;
 	
 	
+  	/// The keypad 'A' of the Nintendo DS.
+	extern CEYLAN_DLL const DSBinaryInput ButtonA ;
+	
+  	/// The keypad 'B' of the Nintendo DS.
+	extern CEYLAN_DLL const DSBinaryInput ButtonB ;
+	
+	
+  	/// The keypad 'START' of the Nintendo DS.
+	extern CEYLAN_DLL const DSBinaryInput ButtonStart ;
+	
+  	/// The keypad 'SELECT' of the Nintendo DS.
+	extern CEYLAN_DLL const DSBinaryInput ButtonSelect ;
+
+
+  	/// The keypad 'left' of the Nintendo DS cursor.
+	extern CEYLAN_DLL const DSBinaryInput ButtonLeft ;
+	
+  	/// The keypad 'right' of the Nintendo DS cursor.
+	extern CEYLAN_DLL const DSBinaryInput ButtonRight ;
+	
+	
+  	/// The keypad 'up' of the Nintendo DS cursor.
+	extern CEYLAN_DLL const DSBinaryInput ButtonUp ;
+	
+  	/// The keypad 'down' of the Nintendo DS cursor.
+	extern CEYLAN_DLL const DSBinaryInput ButtonDown ;
+
+
+  	/// The left shoulder button of the Nintendo DS.
+	extern CEYLAN_DLL const DSBinaryInput ShoulderButtonLeft ;
+	
+  	/// The right shoulder button of the Nintendo DS.
+	extern CEYLAN_DLL const DSBinaryInput ShoulderButtonRight ;
+	
+	
+  	/// The pen down (stylus touches touchscreen) of the Nintendo DS.
+	extern CEYLAN_DLL const DSBinaryInput StylusContact ;
+	
+  	/// The lid status (open/closed) of the Nintendo DS.
+	extern CEYLAN_DLL const DSBinaryInput LidOpen ;
+
+
+  	/// Gathers all buttons and stylus contact (everything but the lid).
+	extern CEYLAN_DLL const DSBinaryInput AllUserInputs ;
+	
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+
+
+	 
 	/**
 	 * Returns a new key being hit.
 	 * Waits, if necessary, until this occurs.
+	 *
+	 * On the Nintendo DS ARM9, returns the key state.
 	 *
 	 * @throw UtilsException if the operation is not available or could not
 	 * be performed correctly.
@@ -249,8 +321,8 @@ namespace Ceylan
 	 * @param the sentence to display once before waiting. Just specify ""
 	 * for no message.
 	 *
-	 * @return the hit key as getChar read it, or only 0 if running on the
-	 * ARM9 Nintendo DS (no getChar available).
+	 * @return the hit key as getChar read it. For the ARM9 Nintendo DS,
+	 * returns the letter mapped by Ceylan to the DS key.
 	 *
 	 * @note One should not use for example: 
 	 * <code>"Hit key is: " + waitForKey()</code> since waitForKey returns
