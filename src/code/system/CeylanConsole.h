@@ -230,6 +230,25 @@ namespace Ceylan
 						const throw() ;
 
 				
+				/**
+				 * Sets for the console the key repeat settings.
+				 *
+				 * @param durationBeforeFirstRepeat duration in milliseconds
+				 * before, once a key is help, it starts repeating.
+				 *
+				 * @param durationBetweenRepeats duration in milliseconds 
+				 * before two key repeats are triggered, once they are 
+				 * repeating.
+				 *
+				 * @throw ConsoleException if the key repeat could not be set.
+				 *
+				 */
+				static void SetKeyRepeat( 
+						Millisecond durationBeforeFirstRepeat = 800,
+						Millisecond durationBetweenRepeats    = 500 ) 
+					throw( ConsoleException ) ;
+				
+				
 				
 				/**
 				 * Escape sequences for color backgrounds in terminal.
@@ -333,6 +352,7 @@ namespace Ceylan
 				
 				/// Buffer storing all the texts.
 				TextBuffer * _buffer ;
+				
 				
 				
 			private:
