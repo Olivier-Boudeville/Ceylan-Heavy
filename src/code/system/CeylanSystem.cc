@@ -203,7 +203,8 @@ void Ceylan::System::InitializeInterrupts( bool force ) throw( SystemException )
 		swiWaitForVBlank() ;
 		
 		initialized = true ;
-		CEYLAN_LOG( "Interrupts initialized." ) ;
+		//CEYLAN_LOG( "Interrupts initialized." ) ;
+		
 	}	
 
 #endif // CEYLAN_RUNS_ON_ARM7
@@ -916,7 +917,12 @@ void Ceylan::System::sleepForSeconds( Second seconds )
 bool Ceylan::System::areSubSecondSleepsAvailable() throw()
 {
 
-#if CEYLAN_ARCH_WINDOWS
+#if CEYLAN_ARCH_NINTENDO_DS
+		
+	// swiWaitForVBlank available for both ARMs:
+	return true ; 
+
+#elif CEYLAN_ARCH_WINDOWS == 1
 
 	return true ;
 	
@@ -930,7 +936,7 @@ bool Ceylan::System::areSubSecondSleepsAvailable() throw()
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
 	
 	
-#endif // CEYLAN_ARCH_WINDOWS
+#endif // CEYLAN_ARCH_NINTENDO_DS
 		
 }
 
@@ -1032,6 +1038,16 @@ void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 void Ceylan::System::atomicSleep() throw( SystemException )
 {
 
+#if CEYLAN_ARCH_NINTENDO_DS
+	
+	/*
+	 * Available for both ARMs.
+	 * Mean time waiting is 1/(60*2) = 8.3 ms.
+	 *
+	 */
+	swiWaitForVBlank() ;
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
 
 	/*
 	 * Factor of margin so that the requested waiting time will most
@@ -1055,6 +1071,9 @@ void Ceylan::System::atomicSleep() throw( SystemException )
 
 	basicSleep( static_cast<Microsecond>(
 		marginDecreaseFactor * getSchedulingGranularity() ) ) ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS		
+
 
 }
 
