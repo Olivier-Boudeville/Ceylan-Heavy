@@ -196,7 +196,15 @@ bool Ceylan::keyboardHit() throw( UtilsException )
 	//CEYLAN_DS_LOG( "Key down   = " + Ceylan::toString( keysDown() ) ) ;
 	//CEYLAN_DS_LOG( "Key repeat = " + Ceylan::toString( keysDownRepeat() ) ) ;
 	
-	// Touch-screen pen down taken into account here:
+	/*
+	 * Touch-screen pen down taken into account here:
+	 *  - keysDown would only take held keys once (no autorepeat managed)
+	 *  - keysDownRepeat would suppress all key hits (always resetting the
+	 * repeat count)
+	 *
+	 * So: keysHeld (direct reading) must be used here.
+	 *
+	 */
 	return ( ( keysHeld() & AllUserInputs ) != 0 ) ;
 
 #endif // CEYLAN_RUNS_ON_ARM7
@@ -259,7 +267,7 @@ bool Ceylan::keyboardHit() throw( UtilsException )
 
 #elif defined(CEYLAN_USES_CONIO_H)
 
-	return (::_kbhit() != 0 ) ;
+	return ( ::_kbhit() != 0 ) ;
 
 #else // CEYLAN_USES_CONIO_H
 
@@ -285,7 +293,18 @@ KeyChar Ceylan::getChar() throw( UtilsException )
 		
 #else // CEYLAN_RUNS_ON_ARM7
 	
-	// keysHeld quite smooth too:
+	// In case keyboardHit was not called beforehand:
+	scanKeys() ;
+	
+	/*
+	 * keysHeld quite smooth too.
+	 *s
+	 * keysDownRepeat used, but its calling resets the key repeat
+	 * state, hence when used with keyboardHit only reports two
+	 * scanKeys-detected keypresses:
+	 *
+	 */
+	
 	return ( keysDownRepeat() & AllUserInputs ) ;
 	
 #endif // CEYLAN_RUNS_ON_ARM7
@@ -371,12 +390,10 @@ KeyChar Ceylan::waitForKey( const string & message ) throw( UtilsException )
 	if ( ! message.empty() )
 		display( message ) ;
 		
-			
-	// ATOMIC SLEEP
 	// Wait at most about 16 ms:
 	while ( ! Ceylan::keyboardHit() )
-		swiWaitForVBlank() ;
-		
+		System::atomicSleep() ;
+
 	return Ceylan::getChar() ;
 
 #endif // CEYLAN_RUNS_ON_ARM7
@@ -397,7 +414,7 @@ KeyChar Ceylan::waitForKey( const string & message ) throw( UtilsException )
 
 		
 		// Wait a bit if possible, to save CPU time and laptop batteries: 
-		if ( Features::areFileDescriptorsSupported() && ! sleepFailed )
+		if ( System::areSubSecondSleepsAvailable() && ! sleepFailed )
 		{
 			try
 			{
@@ -431,11 +448,13 @@ void Ceylan::checkpoint( const std::string & message ) throw()
  	static Ceylan::Uint32 checkpointCount = 1 ;
  
  	if ( message.empty() )
-		std::cout << "Checkpoint [" << checkpointCount++ 
-			<< "]" << std::endl ;
+		display( "Checkpoint [" + Ceylan::toString( checkpointCount ) 
+			+ "]" ) ;
 	else
-		std::cout << "Checkpoint [" << checkpointCount++ << "]: " 
-			<< message << std::endl ;
+		display( "Checkpoint [" + Ceylan::toString( checkpointCount ) 
+			+ "]: " + message ) ;
+				
+	checkpointCount++ ;		
 		
 }
 
@@ -446,14 +465,15 @@ void Ceylan::breakpoint( const std::string & message ) throw()
  	static Ceylan::Uint32 breakpointCount = 1 ;
 
 	if ( ! message.empty() )
-		std::cout << std::endl 
-			<< "New breakpoint: " << message ;
-	
- 	std::cout << std::endl 
-		<< "Successfully arrived at breakpoint number #"
-		<< breakpointCount++ << std::endl ;
+		display( "Breakpoint number #" + Ceylan::toString( breakpointCount )
+			+ ": " + message ) ;
+	else
+		display( "Successfully arrived at breakpoint number #"
+			+ Ceylan::toString( breakpointCount ) + "." ) ;
 
-	 waitForKey() ;
+	breakpointCount++ ;
+	
+	waitForKey() ;
  
 }
 

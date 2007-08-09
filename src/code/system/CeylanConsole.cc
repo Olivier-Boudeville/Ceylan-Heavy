@@ -324,13 +324,57 @@ const std::string Console::toString( Ceylan::VerbosityLevels level )
 }
 
 
+
+void Console::SetKeyRepeat( Millisecond durationBeforeFirstRepeat, 
+	Millisecond durationBetweenRepeats ) throw( ConsoleException )
+{
+
+#if CEYLAN_ARCH_NINTENDO_DS
+		
+#ifdef CEYLAN_RUNS_ON_ARM9
+
+	/*
+	 * On the DS VBL are paced at 60 Hz, we suppose here scanKeys is 
+	 * called at each VBL.
+	 *
+	 * @see also test/cross-tests/CeylanDefaultMain.arm7.cc
+	 *
+	 * Current libnds implementation of keysDownRepeat resets the
+	 * 'keysrepeat' variable, which seems to prevent use of key repeats.
+	 *
+	 */
+		
+	keysSetRepeat( 
+		/* VBL count before repeat */ 
+			( durationBeforeFirstRepeat * 60 ) / 1000, 
+		/* VBL count between repeats when repeating */
+			( durationBetweenRepeats * 60 ) / 1000 ) ;
+
+#else // CEYLAN_RUNS_ON_ARM9
+
+	throw ConsoleException( "Console::SetKeyRepeat: "
+		"not available on this platform." ) ;
+
+#endif // CEYLAN_RUNS_ON_ARM9
+
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	throw ConsoleException( "Console::SetKeyRepeat: "
+		"not available on this platform." ) ;
+		
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+}
+
+
+
 void Console::initConsole( 
 	TextBuffer::CharAbscissa startingX, 
 	TextBuffer::CharOrdinate startingY,
 	TextBuffer::CharAbscissa width, 
 	TextBuffer::CharOrdinate height ) throw( ConsoleException )
 {
-
 
 	if ( _buffer != 0 )
 		delete _buffer ;
@@ -341,9 +385,7 @@ void Console::initConsole(
 		
 #ifdef CEYLAN_RUNS_ON_ARM9
 
-	// 60/15 good in emulator, 60 / 30 better with real DS:
-	keysSetRepeat( 60 /* VBL count before repeat */, 
-		30 /* VBL count between repeats when repeating */) ;
+	SetKeyRepeat() ; 
 	
 	// Powers the 2D cores:
 	powerON( POWER_ALL_2D ) ;
