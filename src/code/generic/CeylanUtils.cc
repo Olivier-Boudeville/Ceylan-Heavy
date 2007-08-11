@@ -292,21 +292,24 @@ KeyChar Ceylan::getChar() throw( UtilsException )
 		"not available on the Nintendo DS ARM7." ) ;
 		
 #else // CEYLAN_RUNS_ON_ARM7
+
+	// Ensures the interrupts are initialized (once):
+	Ceylan::System::InitializeInterrupts() ;
 	
-	// In case keyboardHit was not called beforehand:
-	scanKeys() ;
+	KeyChar key ;
 	
-	/*
-	 * keysHeld quite smooth too.
-	 *s
-	 * keysDownRepeat used, but its calling resets the key repeat
-	 * state, hence when used with keyboardHit only reports two
-	 * scanKeys-detected keypresses:
-	 *
-	 */
+	do
+	{
 	
-	return ( keysDownRepeat() & AllUserInputs ) ;
+		System::atomicSleep() ;
+		scanKeys() ;
+		key = keysDownRepeat() & AllUserInputs ;
 	
+	}	
+	while ( key == 0 ) ;
+	
+	return key ;
+		
 #endif // CEYLAN_RUNS_ON_ARM7
 
 	
@@ -385,14 +388,9 @@ KeyChar Ceylan::waitForKey( const string & message ) throw( UtilsException )
 
 #else // CEYLAN_RUNS_ON_ARM7
 
-
 	// Leave the terminal untouched if no display wanted.
 	if ( ! message.empty() )
 		display( message ) ;
-		
-	// Wait at most about 16 ms:
-	while ( ! Ceylan::keyboardHit() )
-		System::atomicSleep() ;
 
 	return Ceylan::getChar() ;
 
