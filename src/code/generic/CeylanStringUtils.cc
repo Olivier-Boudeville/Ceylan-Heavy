@@ -14,7 +14,7 @@
 
 
 #if CEYLAN_ARCH_NINTENDO_DS
-#include "CeylanConfigForNintendoDS.h" // for iprintf
+#include "CeylanConfigForNintendoDS.h" // for iprintf, CEYLAN_DS_LOG
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 
@@ -60,14 +60,15 @@ using namespace Ceylan::Log ;
 #endif // CEYLAN_DEBUG_DEMANGLE
 
 
-#include "CeylanLogLight.h"
-#define CEYLAN_OTHER_TEXTBUFFER_LOG(message) CEYLAN_LOG((string(message)))
+//#include "CeylanLogLight.h"
+//#define CEYLAN_OTHER_TEXTBUFFER_LOG(message) CEYLAN_LOG((string(message)))
 
+//#define CEYLAN_DEBUG_TEXTBUFFER 1
 
 #if CEYLAN_DEBUG_TEXTBUFFER
 
 #include "CeylanLogLight.h"
-#define CEYLAN_TEXTBUFFER_LOG(message) CEYLAN_LOG((string(message)))
+#define CEYLAN_TEXTBUFFER_LOG(message) LogPlug::debug(message)
 
 #else // CEYLAN_DEBUG_TEXTBUFFER
 
@@ -126,9 +127,9 @@ TextBuffer::CharOrdinate TextBuffer::getHeight() const throw()
 void TextBuffer::add( const std::string & text ) throw( StringUtilsException )
 {
 
-	CEYLAN_TEXTBUFFER_LOG( "TextBuffer::add begin" ) ;
-	CEYLAN_OTHER_TEXTBUFFER_LOG("rr") ;
+
 	TextGrid * newGrid = & createTextGridFrom( text ) ;
+	
 		
 	_textEntries.push_back( TextEntry( text, newGrid ) ) ;
 	
@@ -143,9 +144,9 @@ void TextBuffer::add( const std::string & text ) throw( StringUtilsException )
 	// Needed in all cases (ex: a second text showing up after the first):
 	updateScreenLines() ;
 	
-	CEYLAN_TEXTBUFFER_LOG( "TextBuffer::add end" ) ;
 	
 }
+
 
 
 void TextBuffer::blank() throw()
@@ -169,8 +170,6 @@ void TextBuffer::blank() throw()
 
 bool TextBuffer::jumpNextText() throw()
 {
-
-	CEYLAN_TEXTBUFFER_LOG( "TextBuffer::jumpNextText" ) ;
 	
 	ListOfTexts::const_iterator nextText = _currentText ;
 	nextText++ ;
@@ -199,8 +198,6 @@ bool TextBuffer::jumpNextText() throw()
 bool TextBuffer::jumpPreviousText() throw()
 {
 	
-	CEYLAN_TEXTBUFFER_LOG( "TextBuffer::jumpPreviousText" ) ;
-	
 	if ( _currentText != _textEntries.begin() )
 	{
 	
@@ -224,30 +221,31 @@ bool TextBuffer::jumpPreviousText() throw()
 
 bool TextBuffer::jumpNextLine() throw()
 {
-
-	CEYLAN_TEXTBUFFER_LOG( "TextBuffer::jumpNextLine" ) ;
+		
+	if ( getHeightFromCurrentPosition() <= _height )
+		return false ;
 	
 	bool moved ;
 	
 	TextGrid * currentTextGrid = (*_currentText).second ;
 	
+	_currentLine++ ;;
+	
 	if ( _currentLine != currentTextGrid->end() )
 	{
 
-		_currentLine++ ;
 		moved = true ;
 		
 	}	
 	else
 	{
-
 		
 		ListOfTexts::const_iterator nextText = _currentText ;
 		nextText++ ;
 		
-		if ( nextText != _textEntries.end() 
-			&& getHeightFromCurrentPosition() > _height )
+		if ( nextText != _textEntries.end() )
 		{
+		
 			_currentText = nextText ;
 			currentTextGrid = (*_currentText).second ;
 			_currentLine = currentTextGrid->begin() ;
@@ -255,13 +253,20 @@ bool TextBuffer::jumpNextLine() throw()
 		}
 		else
 		{
+
 			moved = false ;
 		}
 		
 	}
 	
-	// FIXME: optimize:
-	updateScreenLines() ;
+	/*
+	 * There is no point in optimizing, as, if removing top line is easy
+	 * ('_screenLines.pop_front() ;'), adding latest one involves doing the
+	 * same as:
+	 *
+	 */
+	if ( moved ) 
+		updateScreenLines() ;
 	
 	return moved ;	
 	
@@ -271,8 +276,6 @@ bool TextBuffer::jumpNextLine() throw()
 
 bool TextBuffer::jumpPreviousLine() throw()
 {
-
-	CEYLAN_TEXTBUFFER_LOG( "TextBuffer::jumpPreviousLine" ) ;
 	
 	bool moved ;
 	
@@ -291,9 +294,16 @@ bool TextBuffer::jumpPreviousLine() throw()
 		// Was at the beginning of current text, let's take previous if any:
 		if ( _currentText != _textEntries.begin() )
 		{
+		
 			_currentText-- ;
 			currentTextGrid = (*_currentText).second ;
+			
+			// Not using rbegin() to avoid mixing regular and reverse iterators:
 			_currentLine = currentTextGrid->end() ;
+			
+			if ( _currentLine != currentTextGrid->begin() )
+				_currentLine-- ;
+			
 			moved = true ;
 			
 		}
@@ -304,9 +314,24 @@ bool TextBuffer::jumpPreviousLine() throw()
 
 	}	
 
+
+	// More optimized than to call 'updateScreenLines() ;':
+	
+	if ( moved && _currentLine != currentTextGrid->end() )
+	{
+	
+		/*
+		 * Remove bottom line (beware when going up from last incomplete 
+		 * screen):
+		 *
+		 */
+		if ( _screenLines.size() == _height )
+			_screenLines.pop_back() ;
 		
-	// FIXME: optimize:
-	updateScreenLines() ;
+		// Add top line:
+		_screenLines.push_front( *_currentLine ) ;
+		
+	}
 	
 	return moved ;	
 
@@ -379,8 +404,6 @@ const std::string TextBuffer::toString( Ceylan::VerbosityLevels level )
 void TextBuffer::updateScreenLines() throw()
 {
 
-	CEYLAN_TEXTBUFFER_LOG( "TextBuffer::updateScreenLines begin" ) ;
-
 	_screenLines.clear() ;
 	
 
@@ -400,7 +423,6 @@ void TextBuffer::updateScreenLines() throw()
 	
 	while ( textIterator != _textEntries.end() )
 	{
-		
 		
 		textListOfLines = (*textIterator).second ;
 	
@@ -429,9 +451,7 @@ void TextBuffer::updateScreenLines() throw()
 		resetLineInText = true ;
 		
 	}
-			
-	CEYLAN_TEXTBUFFER_LOG( "TextBuffer::updateScreenLines text end" ) ;
-	
+				
 }
 
 
@@ -531,13 +551,9 @@ TextBuffer::LineIndex TextBuffer::getHeightFromCurrentPosition()
 	
 	}
 	
-	CEYLAN_OTHER_TEXTBUFFER_LOG( 
-		( "TextBuffer::getHeightFromCurrentPosition " 
-		+ Ceylan::toString ( count ) ).c_str() ) ;
 		
 	return count ;
-	
-	
+		
 }
 
 	
@@ -1292,7 +1308,7 @@ void Ceylan::display( const string & message ) throw( StringUtilsException )
 
 #elif defined(CEYLAN_RUNS_ON_ARM9)
 
-	iprintf( ( message + '\n' ).c_str()  ) ;
+	::iprintf( ( message + '\n' ).c_str()  ) ;
 
 #endif // CEYLAN_RUNS_ON_ARM7
 
