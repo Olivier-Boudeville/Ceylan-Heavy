@@ -30,6 +30,7 @@ GENERIC_INTERFACES = \
 	CeylanSmartResourceManager.h         \
 	CeylanStringUtils.h                  \
 	CeylanTestException.h                \
+	CeylanTextBuffer.h                   \
 	CeylanTimestamp.h                    \
 	CeylanTree.h                         \
 	CeylanTypes.h                        \
@@ -50,6 +51,7 @@ GENERIC_IMPLEMENTATIONS = \
 	CeylanSmartResource.cc               \
 	CeylanStringUtils.cc                 \
 	CeylanTestException.cc               \
+	CeylanTextBuffer.cc                  \
 	CeylanTimestamp.cc                   \
 	CeylanTree.cc                        \
 	CeylanTypes.cc                       \

@@ -21,6 +21,7 @@
 #include "CeylanSmartResourceManager.h"
 #include "CeylanStringUtils.h"
 #include "CeylanTestException.h"
+#include "CeylanTextBuffer.h"
 #include "CeylanTimestamp.h"
 #include "CeylanTree.h"
 #include "CeylanTypes.h"

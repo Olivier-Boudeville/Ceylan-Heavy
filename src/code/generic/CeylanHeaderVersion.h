@@ -1,20 +1,10 @@
 #ifndef CEYLAN_HEADER_VERSION_H_
 #define CEYLAN_HEADER_VERSION_H_
 
+
 #include <string>
 
 
-
-/*
- * This file is dedicated to the Windows version, as on UNIX it is overwritten
- * by the configure-time generated one.
- *
- * @note This Windows version needs CeylanHeaderVersion.cc, whereas the UNIX
- * one does not.
- *
- */
- 
- 
 namespace Ceylan
 {
 
@@ -27,15 +17,19 @@ namespace Ceylan
 	 * program or a library was compiled with, and the actual Ceylan library
 	 * it is then linked to.
 	 *
-	 * @note Cannot declare here :
-	 * 'extern CEYLAN_DLL const std::string actualCeylanHeaderLibtoolVersion 
-	 * 	= CEYLAN_LIBTOOL_VERSION ;' because with Visual C++ it leads to
-	 * multiple definitions for actualCeylanHeaderLibtoolVersion.
+	 */
+	CEYLAN_DLL const std::string actualCeylanHeaderLibtoolVersion 
+		= "0.6.0" ;
+
+	
+	/*
+	 * NEVER check-in this file if there is no more CEYLAN_LIBTOOL_VERSION 
+	 * above !
 	 *
 	 */
-	extern CEYLAN_DLL const std::string actualCeylanHeaderLibtoolVersion ;
-		
+	 		
 }
 
 
 #endif // CEYLAN_HEADER_VERSION_H_
+
