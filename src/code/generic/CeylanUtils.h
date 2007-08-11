@@ -321,8 +321,7 @@ namespace Ceylan
 	 * @param the sentence to display once before waiting. Just specify ""
 	 * for no message.
 	 *
-	 * @return the hit key as getChar read it. For the ARM9 Nintendo DS,
-	 * returns the letter mapped by Ceylan to the DS key.
+	 * @return the hit key as getChar read it.
 	 *
 	 * @note One should not use for example: 
 	 * <code>"Hit key is: " + waitForKey()</code> since waitForKey returns
