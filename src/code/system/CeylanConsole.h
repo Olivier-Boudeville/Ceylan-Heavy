@@ -244,8 +244,8 @@ namespace Ceylan
 				 *
 				 */
 				static void SetKeyRepeat( 
-						Millisecond durationBeforeFirstRepeat = 800,
-						Millisecond durationBetweenRepeats    = 400 ) 
+						Millisecond durationBeforeFirstRepeat = 300,
+						Millisecond durationBetweenRepeats    = 100 ) 
 					throw( ConsoleException ) ;
 				
 				
