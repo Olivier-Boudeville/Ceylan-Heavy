@@ -96,7 +96,7 @@ Console::Console() throw( ConsoleException ):
 #elif defined(CEYLAN_RUNS_ON_ARM9)
 
 	// Take the full LCD:
-	initConsole( 0, 0, 32, 24 ) ;  
+	initConsole( 0, 0, 32, 24, TextBuffer::Raw ) ;  
 
 #endif // CEYLAN_RUNS_ON_ARM7
 
@@ -104,7 +104,7 @@ Console::Console() throw( ConsoleException ):
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 	// Assumes fully-capable windowed terminal:
-	initConsole( 0, 0, 32, 24 ) ;  
+	initConsole( 0, 0, 32, 24, TextBuffer::Raw ) ;  
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 	
@@ -113,13 +113,14 @@ Console::Console() throw( ConsoleException ):
 		
 Console::Console(
 	TextBuffer::CharAbscissa startingX, TextBuffer::CharOrdinate startingY,
-	TextBuffer::CharAbscissa width, TextBuffer::CharOrdinate height ) 
+	TextBuffer::CharAbscissa width, TextBuffer::CharOrdinate height,
+	TextBuffer::TextLayout layout ) 
 		throw( ConsoleException ):
 	_buffer( 0 )
 	
 {
 
-	initConsole( startingX, startingY, width, height ) ;  
+	initConsole( startingX, startingY, width, height, layout ) ;  
 	
 }
 	
@@ -146,6 +147,39 @@ Console::~Console() throw()
 	if ( _buffer != 0 )
 		delete _buffer ;
 		
+}
+
+
+
+Ceylan::TextBuffer::TextLayout Console::getTextLayout() const throw()
+{
+
+	return _buffer->getTextLayout() ;
+	
+}
+
+
+void Console::setTextLayout( TextBuffer::TextLayout newLayout ) 
+	throw( ConsoleException )
+{
+
+	try
+	{
+	
+		_buffer->setTextLayout( newLayout ) ;
+		
+	}
+	catch( const TextBuffer::TextBufferException & e )
+	{
+	
+		throw ConsoleException( "Console::setTextLayout failed: "
+			+ e.toString() ) ;
+			
+	}
+	
+	// Update the rendering:
+	render() ;
+	
 }
 
 
@@ -373,13 +407,14 @@ void Console::initConsole(
 	TextBuffer::CharAbscissa startingX, 
 	TextBuffer::CharOrdinate startingY,
 	TextBuffer::CharAbscissa width, 
-	TextBuffer::CharOrdinate height ) throw( ConsoleException )
+	TextBuffer::CharOrdinate height,
+	TextBuffer::TextLayout   layout ) throw( ConsoleException )
 {
 
 	if ( _buffer != 0 )
 		delete _buffer ;
 		
-	_buffer = new TextBuffer( width, height ) ;
+	_buffer = new TextBuffer( width, height, layout ) ;
 		
 #if CEYLAN_ARCH_NINTENDO_DS
 		
@@ -425,7 +460,6 @@ void Console::initConsole(
 	
 	CEYLAN_CONSOLE_LOG( "Console created") ;
 
-	
 }
 
 	
