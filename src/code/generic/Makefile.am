@@ -6,7 +6,7 @@ noinst_LTLIBRARIES = libCeylanGeneric.la
 
 libCeylanGeneric_la_SOURCES = $(GENERIC_INTERFACES) $(GENERIC_IMPLEMENTATIONS)
 
-libCeylanGeneric_la_CPPFLAGS = -I@CEYLAN_LOGS@ -I@CEYLAN_INTERFACES@ -I@CEYLAN_SYSTEM@ -I@CEYLAN_MODULES@
+libCeylanGeneric_la_CPPFLAGS = -I@CEYLAN_LOGS@ -I@CEYLAN_INTERFACES@ -I@CEYLAN_SYSTEM@ -I@CEYLAN_MATHS@ -I@CEYLAN_MODULES@
 
 libCeylanGenericIncludedir      = $(includedir)/Ceylan
 libCeylanGenericInclude_HEADERS = $(GENERIC_INTERFACES)
