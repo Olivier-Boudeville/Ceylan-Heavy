@@ -90,6 +90,7 @@ namespace Ceylan
 			} ;
 			
 			
+			
 			/// Abscissa index of a character in a buffer.	
 			typedef Ceylan::Uint8 CharAbscissa ;
 				
@@ -116,6 +117,10 @@ namespace Ceylan
 			 * @param layout the desired text layout for this buffer.
 			 *
 			 * @see TextLayout
+			 *
+			 * By default, an alinea is 2-character wide.
+			 *
+			 * @see setAlineaWidth
 			 *
 			 * @throw StringUtilsException if the operation failed.
 			 *
@@ -149,6 +154,7 @@ namespace Ceylan
 
 			/// Returns the text layout being currently used.
 			virtual TextLayout getTextLayout() const throw() ;
+		
 			
 			/**
 			 * Sets a new text layout.
@@ -162,8 +168,25 @@ namespace Ceylan
 			virtual void setTextLayout( TextLayout newLayout ) 
 				throw( TextBufferException ) ;
 
+
+			/**
+			 * Returns the current alinea width, in characters.
+			 *
+			 */
+			virtual CharAbscissa getAlineaWidth() const throw() ;
 			
 			
+			/**
+			 * Sets a new alinea width, in character.
+			 *
+			 * @param newAlineaWidth the new alinea width, in character.
+			 * It can be null for no alinea at all.
+			 *
+			 */
+			virtual void setAlineaWidth( CharAbscissa newAlineaWidth )
+				throw() ;
+				
+				
 			/**
 			 * Adds specified text in the buffer.
 			 *
@@ -292,6 +315,18 @@ namespace Ceylan
 	
 
 			/**
+			 * Recomputes cached grid lines with current settings.
+			 * Any previous ones are removed first.
+			 *
+			 * @note The current line of text will be reset to the first line
+			 * of the current text, as any change in dimension or layout will
+			 * invalidate line content.
+			 *
+			 */
+			virtual void recomputeGrids() throw() ;
+			 
+			 
+			/**
 			 * Updates screen lines according to current buffer text and line 
 			 * index.
 			 *
@@ -303,7 +338,7 @@ namespace Ceylan
 			
 			/**
 			 * Translates specified text entry into a list of lines of buffer
-			 * width.
+			 * width, according to current screen dimensions and layout.
 			 *
 			 * @note Ownership of the text grid is transferred to the caller.
 			 *
@@ -316,6 +351,32 @@ namespace Ceylan
 			/// Deletes a TextGrid.
 			void deleteTextGrid( TextGrid * grid ) throw()	;
 
+
+
+			/**
+			 * Translates specified text entry into a list of lines of buffer
+			 * width, with no special concern for layout: text written letter
+			 * by letter.
+			 *
+			 * @note Ownership of the text grid is transferred to the caller.
+			 *
+			 */
+			TextGrid & createRawGridFrom( const std::string & text ) 
+				throw() ;
+
+
+			/**
+			 * Translates specified text entry into a list of lines of buffer
+			 * width, with word-wrapped or justified (i.e. word-wrapped with
+			 * adapted spaces) lines, depending on current layout.
+			 *
+			 * @note Ownership of the text grid is transferred to the caller.
+			 *
+			 */
+			TextGrid & createAdvancedGridFrom( const std::string & text ) 
+				throw() ;
+
+			
 
 			/**
 			 * Tells how many lines spread from the current position to 
@@ -374,6 +435,9 @@ namespace Ceylan
 			/// Records the current text layout being used.
 			TextLayout _layout ;
 			
+			/// The width, in characters, of a paragraph alinea.
+ 			CharAbscissa _alineaWidth ;
+					
 						
 			/// The index of the text entry being rendered.
 			ListOfTexts::const_iterator _currentText ;
@@ -387,10 +451,10 @@ namespace Ceylan
 			
 			
 			
+			
 		private:
 			
-			
-			
+				
 			/**
 			 * Copy constructor made private to ensure that it will
 			 * be never called.
