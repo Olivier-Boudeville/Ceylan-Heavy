@@ -610,13 +610,12 @@ TextBuffer::TextGrid & TextBuffer::createAdvancedGridFrom(
 	 * OSDL::Video::Surface & Font::renderLatin1MultiLineText
 	 *
 	 */
-	
-	list<string> words = Ceylan::splitIntoWords( text ) ;
-	
-	CEYLAN_TEXTBUFFER_LOG( "TextBuffer::createAdvancedGridFrom: for '"
-		+ text + "', (" + Ceylan::toString( words.size() ) 
-		+ " words)" ) ;
-		
+
+	list<string> paragraphs = Ceylan::splitIntoParagraphs( text ) ;
+
+	list<string> words = Ceylan::splitIntoWords( paragraphs.front() ) ;
+	paragraphs.pop_front() ;
+			
 	CharAbscissa currentWidth = _alineaWidth ;
 	CharAbscissa storedWidth  = currentWidth ;
 
@@ -692,11 +691,6 @@ TextBuffer::TextGrid & TextBuffer::createAdvancedGridFrom(
 
 		System::Size wordCount = wordsOnTheLine.size() ;
 		currentWidth = storedWidth ;
-
-		CEYLAN_TEXTBUFFER_LOG( "TextBuffer::createAdvancedGridFrom: "
-			+ Ceylan::toString( wordCount ) 
-			+ " words on the line, starting at width " 
-			+ Ceylan::toNumericalString( currentWidth )  ) ;
     
 	   
 		/*
@@ -714,8 +708,6 @@ TextBuffer::TextGrid & TextBuffer::createAdvancedGridFrom(
 			for ( list<string>::const_iterator it = wordsOnTheLine.begin();
 				it != wordsOnTheLine.end(); it++ ) 
 			{
-
-				CEYLAN_TEXTBUFFER_LOG( "Writing '" + (*it) + "'" ) ; 
 				
 				wordWidth = (*it).size() ;
 				
@@ -727,9 +719,7 @@ TextBuffer::TextGrid & TextBuffer::createAdvancedGridFrom(
 					currentWidth++ ;
 				}
 				
-  			   	CEYLAN_TEXTBUFFER_LOG( "after writing new currentWidth = " 
-					+ Ceylan::toNumericalString( currentWidth ) ) ; 
-   			   
+				   			   
 				/*
 				 * For justified text, space width is computed with 
 				 * pixel-perfect accuracy.
@@ -762,40 +752,19 @@ TextBuffer::TextGrid & TextBuffer::createAdvancedGridFrom(
 				 *
 				 */
 				wordCount-- ;
+				
+				if ( wordCount == 0 )
+					break ;
+					
 				totalWordWidth -= wordWidth ;
 				
- 			   	CEYLAN_TEXTBUFFER_LOG( "currentWidth = " 
-					+ Ceylan::toNumericalString( currentWidth ) ) ; 
 				
- 			   	CEYLAN_TEXTBUFFER_LOG( "totalWordWidth = " 
-					+ Ceylan::toNumericalString( totalWordWidth ) ) ; 
-					
- 			   	CEYLAN_TEXTBUFFER_LOG( "wordCount = " 
-					+ Ceylan::toNumericalString( wordCount ) ) ; 
-				
-				
-				CharAbscissa spaceWidth = 					static_cast<CharAbscissa>( Maths::Round( 
-						static_cast<Ceylan::Float32>( 
-					   		_width - currentWidth - totalWordWidth ) 
-								/ wordCount ) ) ;
- 
-				
- 			   	CEYLAN_TEXTBUFFER_LOG( "computed space = " 
-					+ Ceylan::toNumericalString( spaceWidth ) ) ; 
-
-				currentWidth += /* justified space */ spaceWidth ;
-				/*
-					static_cast<CharAbscissa>( Maths::Round( 
-						static_cast<Ceylan::Float32>( 
-					   		_width - currentWidth - totalWordWidth ) 
-								/ wordCount ) ) ;
-				 */
-									
-   			   
- 
- 			   	CEYLAN_TEXTBUFFER_LOG( "new totalWordWidth = " 
-					+ Ceylan::toNumericalString( totalWordWidth ) ) ; 
-   							   
+ 				// Could be computed incrementally to avoid the division:
+				currentWidth += /* justified space */ 
+					   		( _width - currentWidth - totalWordWidth ) 
+								/ wordCount ;
+										
+   			     							   
 			}
 						
 		}
@@ -807,10 +776,7 @@ TextBuffer::TextGrid & TextBuffer::createAdvancedGridFrom(
 			for ( list<string>::const_iterator it = wordsOnTheLine.begin();
 				it != wordsOnTheLine.end(); it++ ) 
 			{
-    		   
-				
-				CEYLAN_TEXTBUFFER_LOG( "Writing '" + (*it) + "'" ) ; 
-		
+    		   		
 				// Copy word in grid:
 				for ( string::const_iterator charIt = (*it).begin() ;
 					 charIt != (*it).end() ; charIt++ )
@@ -825,9 +791,36 @@ TextBuffer::TextGrid & TextBuffer::createAdvancedGridFrom(
 			}						   
 
 		}
-		
+
 		res->push_back( currentLine ) ;
-		currentWidth = 0 ;
+
+		if ( words.empty() )
+		{
+			
+			if ( paragraphs.empty() )
+				break ;
+			words = Ceylan::splitIntoWords( paragraphs.front() ) ;
+			paragraphs.pop_front() ;
+
+
+#define CEYLAN_SEPARATE_PARAGRAPHS 0
+ 
+#if CEYLAN_SEPARATE_PARAGRAPHS   	
+   
+			// One empty line between paragraphs:
+			currentLine = getNewLine() ;
+			res->push_back( currentLine ) ;
+			
+#endif // CEYLAN_SEPARATE_PARAGRAPHS		
+
+			currentWidth = _alineaWidth ;
+    	   
+		}   
+		else
+		{
+			currentWidth = 0 ;
+		}   
+		
 		
 	}	
 
