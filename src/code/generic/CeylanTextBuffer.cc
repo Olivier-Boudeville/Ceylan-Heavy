@@ -3,6 +3,8 @@
 
 #include "CeylanOperators.h"
 #include "CeylanLogPlug.h"             // for the LogPLug
+#include "CeylanSystem.h"              // for System::Size
+#include "CeylanMathsBasic.h"          // for Maths::Round
 
 
 #ifdef CEYLAN_USES_CONFIG_H
@@ -23,8 +25,6 @@ using namespace Ceylan ;
 using namespace Ceylan::Log ;
 		
 
-//#define CEYLAN_DEBUG_TEXTBUFFER 1
-
 #if CEYLAN_DEBUG_TEXTBUFFER
 
 #include "CeylanLogLight.h"
@@ -43,7 +43,8 @@ TextBuffer::TextBuffer( CharAbscissa screenWidth, CharOrdinate screenHeight,
 		TextLayout layout ) throw( TextBufferException ):
 	_width( screenWidth ),
 	_height( screenHeight ),
-	_layout( layout )
+	_layout( layout ),
+	_alineaWidth( 2 )
 {
 		
 	// Starts with no text.	
@@ -88,12 +89,33 @@ void TextBuffer::setTextLayout( TextLayout newLayout )
 	throw( TextBufferException )
 {
 
+
+	if ( newLayout == _layout )
+		return ;
+		
 	_layout = newLayout ;
 	
-	//FIXME
+	recomputeGrids() ;
+		
+}
+
+
+	
+TextBuffer::CharAbscissa TextBuffer::getAlineaWidth() const throw()
+{
+
+	return _alineaWidth ;
+
+}
+
+
+void TextBuffer::setAlineaWidth( CharAbscissa newAlineaWidth ) throw()
+{
+
+	_alineaWidth = newAlineaWidth ;
 	
 }
-	
+
 
 
 void TextBuffer::add( const std::string & text ) throw( TextBufferException )
@@ -395,6 +417,30 @@ const std::string TextBuffer::toString( Ceylan::VerbosityLevels level )
 // Protected section.
 
 
+void TextBuffer::recomputeGrids() throw()
+{
+
+	 
+	for ( ListOfTexts::iterator it = _textEntries.begin();
+		it != _textEntries.end(); it++ )
+	{
+		
+		if ( (*it).second != 0 )
+			deleteTextGrid( (*it).second ) ;
+				
+		(*it).second = & createTextGridFrom( (*it).first ) ;
+
+		// Resets line in current text to its first one:
+		if ( it == _currentText )
+			_currentLine = (*it).second->begin() ;
+				
+	}
+	
+	updateScreenLines() ;
+		
+}
+
+
 void TextBuffer::updateScreenLines() throw()
 {
 
@@ -454,6 +500,40 @@ TextBuffer::TextGrid & TextBuffer::createTextGridFrom(
 	const std::string & text ) throw()
 {
 
+	TextBuffer::TextGrid * res ;
+	
+	switch( _layout )
+	{
+	
+		case TextBuffer::Raw:
+			res = & createRawGridFrom( text ) ;
+			break ;
+	
+		// Both handled by the same method that uses _layout to discriminate:
+		case TextBuffer::WordWrapped:
+		case TextBuffer::Justified:
+			res = & createAdvancedGridFrom( text ) ;
+			break ;
+		
+		default:
+			LogPlug::error( "TextBuffer::createTextGridFrom: "
+				"unexpected layout, defaulting to raw layout." ) ;
+			res = & createRawGridFrom( text ) ;
+			break ;				
+	
+	}
+	
+	return *res ;
+	
+}
+
+
+
+TextBuffer::TextGrid & TextBuffer::createRawGridFrom( 
+	const std::string & text ) throw()
+{
+
+			
 	TextGrid * res = new std::list<char *> ;
 	
 	char * currentLine = getNewLine() ; 
@@ -514,6 +594,247 @@ TextBuffer::TextGrid & TextBuffer::createTextGridFrom(
 	return * res ;
 	
 }
+
+
+
+TextBuffer::TextGrid & TextBuffer::createAdvancedGridFrom( 
+	const std::string & text ) throw()
+{
+
+	TextGrid * res = new std::list<char *> ;
+	
+
+	/**
+	 * Adapted from OSDL: in 
+	 * OSDL/trunk/src/code/video/twoDimensional/OSDLFont.cc, see
+	 * OSDL::Video::Surface & Font::renderLatin1MultiLineText
+	 *
+	 */
+	
+	list<string> words = Ceylan::splitIntoWords( text ) ;
+	
+	CEYLAN_TEXTBUFFER_LOG( "TextBuffer::createAdvancedGridFrom: for '"
+		+ text + "', (" + Ceylan::toString( words.size() ) 
+		+ " words)" ) ;
+		
+	CharAbscissa currentWidth = _alineaWidth ;
+	CharAbscissa storedWidth  = currentWidth ;
+
+	CharAbscissa wordWidth ;
+
+
+	/*
+	 * Start from the left edge, and select as many words as possible 
+	 * within this line:
+	 *
+	 */
+	CharAbscissa totalWordWidth = 0 ;
+
+	bool lineFull ;
+	char * currentLine ; 
+	list<string> wordsOnTheLine ;
+	string currentWord ;
+
+
+	while ( ! words.empty() )
+	{
+
+		// currentWidth already set. 
+	
+		// Eat words line by line:
+		
+		lineFull = false ;
+		wordsOnTheLine.clear() ;
+		
+		currentLine = getNewLine() ;
+      	
+		storedWidth = currentWidth ;
+		totalWordWidth = 0 ;
+		
+		// Selects words for that line, be it justified or not: 
+		while ( ! lineFull && ! words.empty() ) 
+		{
+		
+			// Filling a new line now.
+				
+			currentWord = words.front() ;
+    	   
+			// Multiple whitespaces in a row can lead to empty words.
+    	 
+			wordWidth = currentWord.size() ;
+		   
+			if ( currentWidth + wordWidth <= _width ) 
+			{
+    	   
+				totalWordWidth += wordWidth ;
+    		   
+			   	// Supposed either Justified or WordWrapped:
+				wordsOnTheLine.push_back( currentWord ) ;
+    				   
+				currentWidth += wordWidth + /* space width */ 1 ;
+				words.pop_front() ;
+				
+			}
+			else
+			{
+				// With this last word, the line would be too long:
+				lineFull = true ;
+			}
+    							   
+		}
+		
+			
+		/*
+		 * Words are selected for the current line, now time to write them in
+		 * grid.
+		 *
+		 */
+
+		System::Size wordCount = wordsOnTheLine.size() ;
+		currentWidth = storedWidth ;
+
+		CEYLAN_TEXTBUFFER_LOG( "TextBuffer::createAdvancedGridFrom: "
+			+ Ceylan::toString( wordCount ) 
+			+ " words on the line, starting at width " 
+			+ Ceylan::toNumericalString( currentWidth )  ) ;
+    
+	   
+		/*
+		 * Last part of a paragraph should not be justified: it would 
+		 * result in huge inter-word spaces, instead the text can stop 
+		 * anywhere before the line's end.
+		 * Hence we check that 'words' is not empty.
+		 *
+		 * Zero word or only one word ? Do nothing special to justify text.
+		 * 
+		 */
+		if ( ( _layout == Justified ) && ! words.empty() && wordCount > 1 )
+		{
+    										   
+			for ( list<string>::const_iterator it = wordsOnTheLine.begin();
+				it != wordsOnTheLine.end(); it++ ) 
+			{
+
+				CEYLAN_TEXTBUFFER_LOG( "Writing '" + (*it) + "'" ) ; 
+				
+				wordWidth = (*it).size() ;
+				
+				// Copy word in grid:
+				for ( string::const_iterator charIt = (*it).begin() ;
+					 charIt != (*it).end(); charIt++ )
+				{
+					currentLine[currentWidth] = (*charIt) ;
+					currentWidth++ ;
+				}
+				
+  			   	CEYLAN_TEXTBUFFER_LOG( "after writing new currentWidth = " 
+					+ Ceylan::toNumericalString( currentWidth ) ) ; 
+   			   
+				/*
+				 * For justified text, space width is computed with 
+				 * pixel-perfect accuracy.
+				 * Knowing exactly what words fit with normal space width, 
+				 * a new space width is computed so that these words are
+				 * dispatched regularly on the line, and begin and end with 
+				 * it, provided it is not a paragraph end.
+				 *
+				 * As this space width has to be an integer, round off errors
+				 * would accumulate if a constant corrected space width 
+				 * was used, and the last word of the line would not end
+				 * perfectly at the end of it, which would lead to a rather
+				 * unpleasant visual effect: the right edge of the text 
+				 * would not be vertically aligned.
+				 *
+				 * To correct that, after each word, the perfect space width 
+				 * for this step is computed, considering only what remains 
+				 * to be written. 
+				 * Hence the space width is adapted and the text fit 
+				 * perfectly on the line.
+				 * 
+				 * Better round to lowest integer (ceil or static_cast) than 
+				 * to nearest, since if space width is rounded up (floor) 
+				 * the text might be clipped by the line edge.
+				 *
+				 * Number of spaces is equal to number of remaining words 
+				 * minus one, the width of the current justified space is 
+				 * the one that would be chosen if it was divided equally 
+				 * for all remaining spaces.
+				 *
+				 */
+				wordCount-- ;
+				totalWordWidth -= wordWidth ;
+				
+ 			   	CEYLAN_TEXTBUFFER_LOG( "currentWidth = " 
+					+ Ceylan::toNumericalString( currentWidth ) ) ; 
+				
+ 			   	CEYLAN_TEXTBUFFER_LOG( "totalWordWidth = " 
+					+ Ceylan::toNumericalString( totalWordWidth ) ) ; 
+					
+ 			   	CEYLAN_TEXTBUFFER_LOG( "wordCount = " 
+					+ Ceylan::toNumericalString( wordCount ) ) ; 
+				
+				
+				CharAbscissa spaceWidth = 					static_cast<CharAbscissa>( Maths::Round( 
+						static_cast<Ceylan::Float32>( 
+					   		_width - currentWidth - totalWordWidth ) 
+								/ wordCount ) ) ;
+ 
+				
+ 			   	CEYLAN_TEXTBUFFER_LOG( "computed space = " 
+					+ Ceylan::toNumericalString( spaceWidth ) ) ; 
+
+				currentWidth += /* justified space */ spaceWidth ;
+				/*
+					static_cast<CharAbscissa>( Maths::Round( 
+						static_cast<Ceylan::Float32>( 
+					   		_width - currentWidth - totalWordWidth ) 
+								/ wordCount ) ) ;
+				 */
+									
+   			   
+ 
+ 			   	CEYLAN_TEXTBUFFER_LOG( "new totalWordWidth = " 
+					+ Ceylan::toNumericalString( totalWordWidth ) ) ; 
+   							   
+			}
+						
+		}
+		else 
+		{   
+       
+			// We do not justify text here:
+    	   
+			for ( list<string>::const_iterator it = wordsOnTheLine.begin();
+				it != wordsOnTheLine.end(); it++ ) 
+			{
+    		   
+				
+				CEYLAN_TEXTBUFFER_LOG( "Writing '" + (*it) + "'" ) ; 
+		
+				// Copy word in grid:
+				for ( string::const_iterator charIt = (*it).begin() ;
+					 charIt != (*it).end() ; charIt++ )
+				{
+					currentLine[currentWidth] = (*charIt) ;
+					currentWidth++ ;
+				}
+
+				// For inter-word space:
+				currentWidth++ ; 
+    							   
+			}						   
+
+		}
+		
+		res->push_back( currentLine ) ;
+		currentWidth = 0 ;
+		
+	}	
+
+	return * res ;
+	
+}
+
 
 
 TextBuffer::LineIndex TextBuffer::getHeightFromCurrentPosition() 
