@@ -6,7 +6,7 @@
 #include "CeylanTextDisplayable.h"   // for inheritance
 #include "CeylanTypes.h"             // for Ceylan::Uint8 and al
 #include "CeylanSystem.h"            // for SystemException
-#include "CeylanStringUtils.h"       // for CharAbscissa and al
+#include "CeylanTextBuffer.h"        // for CharAbscissa and al
 
 
 namespace Ceylan
@@ -110,6 +110,10 @@ namespace Ceylan
 				 * @param height the height allowed for text output, starting 
 				 * from startingY.
 				 *
+				 * @param layout the desired text layout for this buffer.
+				 *
+				 * @see TextBuffer::TextLayout
+				 *
 				 * @throw ConsoleException if the operation failed or is not
 				 * supported.
 				 *
@@ -117,7 +121,8 @@ namespace Ceylan
 				Console( TextBuffer::CharAbscissa startingX,
 						 TextBuffer::CharOrdinate startingY,
 						 TextBuffer::CharAbscissa width,
-						 TextBuffer::CharOrdinate height )
+						 TextBuffer::CharOrdinate height,
+						 TextBuffer::TextLayout   layout )
 					throw( ConsoleException ) ;
 	
 	
@@ -126,9 +131,27 @@ namespace Ceylan
 
 
 
+				/// Returns the text layout being currently used.
+				virtual TextBuffer::TextLayout getTextLayout() const throw() ;
+			
+			
+				/**
+				 * Sets a new text layout.
+				 * Triggers an update of the preformatted text.
+				 *
+				 * @param newLayout the new layout to be used from now on.
+				 *
+				 * @throw ConsoleException if the operation failed.
+				 *
+				 */
+				virtual void setTextLayout( TextBuffer::TextLayout newLayout ) 
+					throw( ConsoleException ) ;
+
+
+
+
 				// Buffer manipulation section.
-
-
+				
 
 				/**
 				 * Makes the console display next text on top
@@ -342,7 +365,8 @@ namespace Ceylan
 						TextBuffer::CharAbscissa startingX,
 						TextBuffer::CharOrdinate startingY,
 						TextBuffer::CharAbscissa width, 
-						TextBuffer::CharOrdinate height)
+						TextBuffer::CharOrdinate height,
+						TextBuffer::TextLayout   layout )
 					throw( ConsoleException ) ; 
 
 
