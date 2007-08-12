@@ -54,9 +54,9 @@ int main( int argc, char * argv[] )
 		
 		MyConsole.addInBuffer( "Adopted and proclaimed by General Assembly resolution 217 A (III) of 10 December 1948" ) ;
 		
-		MyConsole.addInBuffer( "Article 1. All human beings are born free and equal in dignity and rights.They are endowed with reason and conscience and should act towards one another in a spirit of brotherhood." ) ;
+		MyConsole.addInBuffer( "Article 1.\nAll human beings are born free and equal in dignity and rights.They are endowed with reason and conscience and should act towards one another in a spirit of brotherhood." ) ;
  
- 		MyConsole.addInBuffer( "Article 2. Everyone is entitled to all the rights and freedoms set forth in this Declaration, without distinction of any kind, such as race, colour, sex, language, religion, political or other opinion, national or social origin, property, birth or other status. Furthermore, no distinction shall be made on the basis of the political, jurisdictional or international status of the country or territory to which a person belongs, whether it be independent, trust, non-self-governing or under any other limitation of sovereignty." ) ;
+ 		MyConsole.addInBuffer( "Article 2.\nEveryone is entitled to all the rights and freedoms set forth in this Declaration, without distinction of any kind, such as race, colour, sex, language, religion, political or other opinion, national or social origin, property, birth or other status. Furthermore, no distinction shall be made on the basis of the political, jurisdictional or international status of the country or territory to which a person belongs, whether it be independent, trust, non-self-governing or under any other limitation of sovereignty." ) ;
 		
 		MyConsole.addInBuffer( "Article 3.\nEveryone has the right to life, liberty and security of person." ) ;
 		
@@ -113,7 +113,6 @@ int main( int argc, char * argv[] )
 		
 		MyConsole.addInBuffer( "Article 30.\nNothing in this Declaration may be interpreted as implying for any State, group or person any right to engage in any activity or to perform any act aimed at the destruction of any of the rights and freedoms set forth herein." ) ;
 
-		
 		MyConsole.render() ;
 		
 		
@@ -138,8 +137,42 @@ int main( int argc, char * argv[] )
 			if ( readKey & ButtonDown )
 				MyConsole.jumpNextLine() ;
 
+
+			// Select next layout:
+			if ( readKey & ButtonY )
+			{
+							
+				TextBuffer::TextLayout layout ;
+				
+				switch( MyConsole.getTextLayout() )
+				{
+				
+					case TextBuffer::Raw:
+						layout = TextBuffer::WordWrapped ;
+						break ;
+						
+					case TextBuffer::WordWrapped:
+						layout = TextBuffer::Justified ;
+						break ;
+				
+					case TextBuffer::Justified:
+						layout = TextBuffer::Raw ;
+						break ;
+						
+					default:
+						layout = TextBuffer::Raw ;
+						break ;						
+				
+				}
+						
+				MyConsole.setTextLayout( layout ) ;
+
+			}
+			
+			
 			if ( readKey & StylusContact )
 				quit = true ;
+
 
 		}
 		while( ! quit ) ; 
@@ -164,7 +197,7 @@ int main( int argc, char * argv[] )
     catch ( const std::exception & e )
     {
 	
-        displayError( "Standard exception caught: " + e.what() ) ;
+        displayError( string( "Standard exception caught: " ) + e.what() ) ;
 		return Ceylan::ExitFailure ;
 
     }
