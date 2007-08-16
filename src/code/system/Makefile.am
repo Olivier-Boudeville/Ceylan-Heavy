@@ -24,8 +24,12 @@ SYSTEM_INTERFACES = \
 	CeylanEnvironmentVariables.h         \
 	CeylanFile.h                         \
 	CeylanFileLocator.h                  \
-	CeylanInputStream.h                  \
+	CeylanFileSystemManager.h            \
 	CeylanInputOutputStream.h            \
+	CeylanInputStream.h                  \
+	CeylanLibfatDirectory.h              \
+	CeylanLibfatFile.h                   \
+	CeylanLibfatFileSystemManager.h      \
 	CeylanMemoryStream.h                 \
 	CeylanMutex.h                        \
 	CeylanOutputStream.h                 \
@@ -33,6 +37,9 @@ SYSTEM_INTERFACES = \
 	CeylanProcess.h                      \
 	CeylanRunnable.h                     \
 	CeylanSignal.h                       \
+	CeylanStandardDirectory.h            \
+	CeylanStandardFile.h                 \
+	CeylanStandardFileSystemManager.h    \
 	CeylanStream.h                       \
 	CeylanSynchronized.h                 \
 	CeylanSystem.h                       \
@@ -43,6 +50,7 @@ SYSTEM_INTERFACES = \
 
 
 SYSTEM_IMPLEMENTATIONS = \
+	
 	CeylanAnonymousInputOutputStream.cc  \
 	CeylanAnonymousInputStream.cc        \
 	CeylanConsole.cc                     \
@@ -50,8 +58,12 @@ SYSTEM_IMPLEMENTATIONS = \
 	CeylanEnvironmentVariables.cc        \
 	CeylanFile.cc                        \
 	CeylanFileLocator.cc                 \
-	CeylanInputStream.cc                 \
+	CeylanFileSystemManager.cc           \
 	CeylanInputOutputStream.cc           \
+	CeylanInputStream.cc                 \
+	CeylanLibfatDirectory.cc             \
+	CeylanLibfatFile.cc                  \
+	CeylanLibfatFileSystemManager.cc     \
 	CeylanMemoryStream.cc                \
 	CeylanMutex.cc                       \
 	CeylanOutputStream.cc                \
@@ -59,6 +71,9 @@ SYSTEM_IMPLEMENTATIONS = \
 	CeylanProcess.cc                     \
 	CeylanRunnable.cc                    \
 	CeylanSignal.cc                      \
+	CeylanStandardDirectory.cc           \
+	CeylanStandardFile.cc                \
+	CeylanStandardFileSystemManager.cc   \
 	CeylanStream.cc                      \
 	CeylanSystem.cc                      \
 	CeylanSystemInformation.cc           \
