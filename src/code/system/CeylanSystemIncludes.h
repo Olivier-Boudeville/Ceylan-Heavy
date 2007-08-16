@@ -12,8 +12,12 @@
 #include "CeylanEnvironmentVariables.h"
 #include "CeylanFile.h"
 #include "CeylanFileLocator.h"
-#include "CeylanInputStream.h"
+#include "CeylanFileSystemManager.h"
 #include "CeylanInputOutputStream.h"
+#include "CeylanInputStream.h"
+#include "CeylanLibfatDirectory.h"
+#include "CeylanLibfatFile.h"
+#include "CeylanLibfatFileSystemManager.h"
 #include "CeylanMemoryStream.h"
 #include "CeylanMutex.h"
 #include "CeylanOutputStream.h"
@@ -21,13 +25,16 @@
 #include "CeylanProcess.h"
 #include "CeylanRunnable.h"
 #include "CeylanSignal.h"
+#include "CeylanStandardDirectory.h"
+#include "CeylanStandardFile.h"
+#include "CeylanStandardFileSystemManager.h"
 #include "CeylanStream.h"
 #include "CeylanSynchronized.h"
+#include "CeylanSystemDirectory.h"
 #include "CeylanSystem.h"
 #include "CeylanSystemInformation.h"
 #include "CeylanThread.h"
 #include "CeylanUniformResourceIdentifier.h"
-
 
 /*
  * Private non-exported non-installed headers: 
