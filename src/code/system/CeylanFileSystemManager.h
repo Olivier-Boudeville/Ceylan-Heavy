@@ -3,7 +3,8 @@
 
 
 
-#include "CeylanSystem.h"  // for SystemException
+#include "CeylanSystem.h"      // for SystemException
+#include "CeylanStringUtils.h" // for Latin1Char
 
 
 #include <string>
@@ -17,6 +18,34 @@ namespace Ceylan
 
 	namespace System
 	{
+
+
+
+		/**
+		 * Mother class of all file-related exceptions, including filesystem,
+		 * files and directories.
+		 *
+		 */
+		class CEYLAN_DLL FileManagementException: public SystemException
+		{
+				
+			public:
+
+				explicit FileManagementException( 
+						const std::string & reason ):
+					SystemException( reason )
+				{
+						
+				}
+						
+						
+				virtual ~FileManagementException() throw()
+				{
+						
+				}
+
+		} ;
+	
 
 
 
@@ -35,14 +64,15 @@ namespace Ceylan
 
 
 				/// Mother class of all filesystem-related exceptions.
-				class FileSystemManagerException: public SystemException
+				class CEYLAN_DLL FileSystemManagerException: 
+					public FileManagementException
 				{
 				
 					public:
 
 						explicit FileSystemManagerException( 
 								const std::string & reason ):
-							SystemException( reason )
+							FileManagementException( reason )
 						{
 						
 						}
@@ -57,7 +87,21 @@ namespace Ceylan
 
 
 
-				class TouchFailed: public FileSystemManagerException
+				/// If directory operations at the filesystem level failed.
+				class CEYLAN_DLL DirectoryOperationFailed: 
+					public FileSystemManagerException
+				{ 
+				
+					public: 
+					
+						explicit DirectoryOperationFailed( 
+								const std::string & reason ) throw() ; 
+								
+				} ;
+
+
+
+				class CEYLAN_DLL TouchFailed: public FileSystemManagerException
 				{ 
 				
 					public: 
@@ -69,7 +113,7 @@ namespace Ceylan
 
 
 
-				class RemoveFailed: public FileSystemManagerException
+				class CEYLAN_DLL RemoveFailed: public FileSystemManagerException
 				{ 
 				
 					public: 
@@ -80,7 +124,8 @@ namespace Ceylan
 
 
 
-				class SymlinkFailed: public FileSystemManagerException
+				class CEYLAN_DLL SymlinkFailed: 
+					public FileSystemManagerException
 				{ 
 				
 					public: 
@@ -91,7 +136,7 @@ namespace Ceylan
 
 
 
-				class MoveFailed: public FileSystemManagerException
+				class CEYLAN_DLL MoveFailed: public FileSystemManagerException
 				{ 
 				
 					public: 
@@ -103,7 +148,7 @@ namespace Ceylan
 
 
 
-				class CopyFailed: public FileSystemManagerException
+				class CEYLAN_DLL CopyFailed: public FileSystemManagerException
 				{ 
 				
 					public: 
@@ -115,7 +160,8 @@ namespace Ceylan
 
 
 
-				class GetChangeTimeFailed: public FileSystemManagerException
+				class CEYLAN_DLL GetChangeTimeFailed: 
+					public FileSystemManagerException
 				{ 
 				
 					public: 
@@ -127,7 +173,8 @@ namespace Ceylan
 
 
 
-				class CouldNotDuplicate: public FileSystemManagerException
+				class CEYLAN_DLL CouldNotDuplicate: 
+					public FileSystemManagerException
 				{ 
 				
 					public: 
@@ -138,7 +185,8 @@ namespace Ceylan
 				} ;
 
 
-				class CouldNotStatEntry: public FileSystemManagerException
+				class CEYLAN_DLL CouldNotStatEntry: 
+					public FileSystemManagerException
 				{ 
 					public: 
 						
@@ -148,7 +196,7 @@ namespace Ceylan
 				} ;
 
 
-				class DiffFailed: public FileSystemManagerException
+				class CEYLAN_DLL DiffFailed: public FileSystemManagerException
 				{ 
 					public: 
 						
@@ -205,8 +253,9 @@ namespace Ceylan
 					
 
 				/**
-				 * Tells whether the filesystem entry <b>entryPath</b> (be it
-				 * a file, a symbolic link or a directory) exists.
+				 * Tells whether the filesystem entry <b>entryPath</b> exists,
+				 * be it a file, a symbolic link, a directory, a character
+				 * or block device, a FIFO, a socket, etc.
 				 *
 				 * @param entryPath the path of the entry to look-up.
 				 *
@@ -216,10 +265,14 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool existsAsEntry( const std::string & entryPath ) 
-					throw( CouldNotStatEntry ) = 0 ;
+					const throw( CouldNotStatEntry ) = 0 ;
 
 
 
+
+				// File-related section.
+				
+				
 				/**
 				 * Creates a symbolic link on disk.
 				 *
@@ -341,7 +394,7 @@ namespace Ceylan
 				 */
 				virtual bool diff( const std::string & firstFilename,
 						const std::string & secondFilename ) 
-					throw( DiffFailed ) = 0 ;
+					throw( DiffFailed ) ;
 
 
 
@@ -359,6 +412,211 @@ namespace Ceylan
 	            virtual const std::string toString( 
 						Ceylan::VerbosityLevels level = Ceylan::high )
 					const throw() ;
+			
+			
+			
+			
+			
+				// Directory-related section.
+			
+			
+			
+				/**
+				 * Returns whether specified string is a valid directory name.
+				 *
+				 * @param directoryString the directory string.
+				 *
+				 * @note If no regular expression support is available, 
+				 * then the name will be deemed always correct.
+				 *
+				 */
+				virtual bool isAValidDirectoryName( 
+					const std::string & directoryString ) throw() = 0 ;
+			
+			
+				/**
+				 * Removes the leading separator, if any, in specified
+				 * directory's path.
+				 *
+				 * @param path the path that will be modified.
+				 *
+				 */
+				virtual void removeLeadingSeparator( std::string & path ) 
+					throw() ;
+			
+			
+				/**
+				 * Tells whether specified path is an absolute path.
+				 *
+				 * @param path the path that may be absolute.
+				 *
+				 */
+				virtual bool isAbsolutePath( const std::string & path ) 
+					throw() = 0 ;
+			
+			
+				/**
+				 * Returns the current working directory name.
+				 *
+				 * @throw DirectoryOperationFailed if the operation failed 
+				 * or is not supported on the target platform.
+				 *
+				 */
+				virtual std::string getCurrentWorkingDirectoryName()	
+					throw( DirectoryOperationFailed ) = 0 ;
+
+
+				/**
+				 * Changes current working directory to
+				 * <b>newWorkingDirectory</b>.
+				 *
+				 * @param newWorkingDirectory the target working directory.
+				 *
+				 * @throw DirectoryOperationFailed if the operation failed 
+				 * or is not supported on the target platform.
+				 *
+				 */
+				virtual void changeWorkingDirectory( 
+						const std::string & newWorkingDirectory )
+					throw( DirectoryOperationFailed ) = 0 ;
+
+
+				/**
+				 * Splits up <b>path</b> into the list of its sub-elements
+				 * (set of directory names).
+				 *
+				 * @param path the path to split.
+				 *
+				 * @example splitPath( '/mnt/raid/md0/LOANI-0.3' ) returns 
+				 * on UNIX:
+				 * [ '', 'mnt', 'raid', 'md0', 'LOANI-0.3' ].
+				 *
+				 * @see joinPath
+				 *
+				 */
+				virtual std::list<std::string> splitPath( 
+					const std::string & path ) throw() ;
+
+
+				/**
+				 * Joins the specified path elements with the relevant 
+				 * directory separator.
+				 *
+				 * @param pathElements the path elements to join in a path.
+				 *
+				 * @example joinPath([ '', 'mnt', 'raid', 'md0', 'LOANI-0.3' ])
+				 * returns on UNIX: '/mnt/raid/md0/LOANI-0.3'.
+				 *
+				 * @see splitPath
+				 *
+				 */
+				virtual std::string joinPath( 
+					const std::list<std::string> & pathElements ) throw() ;
+
+
+				/**
+				 * Joins the two specified path elements with the relevant
+				 * directory separator.
+				 *
+				 * @param firstPath the first part of the final path.
+				 *
+				 * @param secondPath the second part of the final path.
+				 *
+				 * @example joinPath( '/mnt/raid', 'md0/LOANI-0.3' ) 
+				 * returns on UNIX: '/mnt/raid/md0/LOANI-0.3'.
+				 *
+				 * @see splitPath
+				 *
+				 */
+				virtual std::string joinPath( const std::string & firstPath,
+					const std::string & secondPath ) throw() ;
+
+
+				/**
+				 * Separates the full pathname <b>path</b> into a basename
+				 * <b>base</b> and file name <b>file</b>.
+				 *
+				 * For example, this method applied to 
+				 * '/mnt/raid/md0/LOANI-0.3' returns respectively
+				 * '/mnt/raid/md0' and 'LOANI-0.3', when the separator is '/'.
+				 *
+				 * @param path the path which is to be stripped.
+				 *
+				 * @param base if non null, must be a pointer to an 
+				 * already allocated string where the basename will be stored.
+				 * If not interested in the basename, specify a null (0)
+				 * pointer instead: this method will act as UNIX 'basename'.
+				 *
+				 * @param file if non null, must be a pointer to an already
+				 * allocated string where the filename will be stored. 
+				 * If not interested in the filename, specify a null (0) 
+				 * pointer instead: this method will act as UNIX 'dirname'.
+				 *
+				 */
+				virtual void stripFilename( const std::string & path,
+					std::string * base, std::string * file = 0 ) throw() ;
+
+
+
+
+				// Filesystem constants.
+				
+				
+				/**
+				 * Returns the root directory prefix.
+				 *
+				 * @example "" on Unix, "c:" on Windows.
+				 *
+				 */
+				virtual const std::string & getRootDirectoryPrefix()
+					const throw() = 0 ;
+	
+	
+				/**
+				 * Returns the directory separator, a Latin-1 character.
+				 *
+				 * @example Slash or backslash, i.e. '/' or '\'.
+				 *
+				 */
+				virtual Ceylan::Latin1Char getSeparator() const throw() = 0 ;
+
+
+
+				/**
+				 * Returns the alias for the working directory.
+				 *
+				 * @example Typically it is ".", it is the value returned by
+				 * this default implementation.
+				 *
+				 */
+				virtual const std::string & getAliasForCurrentDirectory()
+					const throw() ;
+	
+
+				/**
+				 * Returns the alias for the upper (parent) directory.
+				 *
+				 * @example Typically it is "..", it is the value returned by
+				 * this default implementation.
+				 *
+				 */
+				virtual const std::string & getAliasForParentDirectory()
+					const throw() ;
+	
+
+	
+	
+				/**
+				 * Returns the directory separator, in the form of a string.
+				 *
+				 * More convenient for some operations than a character.
+				 *
+				 * @example Slash or backslash, i.e. "/" or "\".
+				 *
+				 */
+				virtual std::string getSeparatorAsString() const 
+					throw() ;
+	
 			
 			
 			
@@ -391,6 +649,7 @@ namespace Ceylan
 				 */
 				static void RemoveDefaultFileSystemManager() throw() ;
 				
+				
 			
 			
 			protected:
@@ -398,7 +657,7 @@ namespace Ceylan
 
 				/**
 				 * Constructs a reference to a filesystem, initializes 
-				 * accordingly any subsystem.
+				 * accordingly any needed subsystem.
 				 *
 				 * Cannot be private as has to be subclassed.
 				 *
@@ -421,6 +680,25 @@ namespace Ceylan
 
 
 			private:
+				
+				
+				/**
+				 * Default alias for the working directory (current directory).
+				 *
+				 * @example Typically it is ".".
+				 *
+				 */
+				static const std::string DefaultAliasForCurrentDirectory ;
+
+
+				/**
+				 * Default alias for the upper (parent) directory.
+				 *
+				 * @example Typically it is "..".
+				 *
+				 */
+				static const std::string DefaultAliasForParentDirectory ;
+				
 				
 				
 				/**

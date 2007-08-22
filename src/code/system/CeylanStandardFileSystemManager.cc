@@ -4,6 +4,8 @@
 
 #include "CeylanStandardFile.h"      // for StandardFile
 #include "CeylanStringUtils.h"       // for StringSize
+#include "CeylanOperators.h"         // for toString
+#include "CeylanRegularExpression.h" // for RegExp
 
 
 #ifdef CEYLAN_USES_CONFIG_H
@@ -15,8 +17,30 @@
 using std::ifstream ;
 using std::ios ;
 
-
 using std::string ;
+
+
+// Not available in their C++ form:
+extern "C"
+{
+
+
+#ifdef CEYLAN_USES_SYS_STAT_H
+#include <sys/stat.h>          // for mode_t
+#endif // CEYLAN_USES_SYS_STAT_H
+
+#ifdef CEYLAN_USES_UTIME_H
+#include <utime.h>             // for utime     
+#endif // CEYLAN_USES_UTIME_H
+
+#ifdef CEYLAN_USES_SYS_UTIME_H
+#include <sys/utime.h>         // for utime     
+#endif // CEYLAN_USES_SYS_UTIME_H
+
+
+}
+
+
 
 using namespace Ceylan::System ;
 
@@ -24,6 +48,19 @@ using namespace Ceylan::System ;
 StandardFileSystemManager *
 	StandardFileSystemManager::_StandardFileSystemManager = 0 ;
 
+
+#if CEYLAN_ARCH_WINDOWS
+
+// "c:" is a drive, "c:\\" is a directory.
+const string StandardFileSystemManager::RootDirectoryPrefix   = "c:" ;
+const Ceylan::Latin1Char StandardFileSystemManager::Separator = '\\' ;
+
+#else // CEYLAN_ARCH_WINDOWS
+
+const string StandardFileSystemManager::RootDirectoryPrefix   = ""   ;
+const Ceylan::Latin1Char StandardFileSystemManager::Separator = '/'  ;
+
+#endif // CEYLAN_ARCH_WINDOWS
 
 
 
@@ -290,7 +327,7 @@ void StandardFileSystemManager::copy( const string & sourceFilename,
 		f.close() ;
 		
 	} 
-	catch ( const FileException & e )
+	catch ( const File::FileException & e )
 	{
 		throw CopyFailed( 
 			"StandardFileSystemManager::copy failed when copying '"
@@ -503,6 +540,237 @@ const string StandardFileSystemManager::toString(
 	
 }
 	
+	
+
+
+// Directory-related section.
+
+
+bool StandardFileSystemManager::isAValidDirectoryName( 
+	const string & directoryString ) throw()
+{
+
+#if CEYLAN_USES_REGEX
+
+	string directoryPattern = "^[" + RootDirectoryPrefix 
+		+ Separator + "]{1,1}" ;
+
+	Ceylan::RegExp target( directoryString ) ;
+
+	return target.matches( directoryPattern ) ;
+	
+#else // CEYLAN_USES_REGEX
+
+	// A priori correct :
+	return true ;
+	
+#endif // CEYLAN_USES_REGEX
+
+}	
+			
+			
+void StandardFileSystemManager::removeLeadingSeparator( string & path ) throw()
+{
+
+	if ( path[ path.size() - 1 ] == Separator )
+		path.erase( path.size() - 1, 1 ) ;
+
+}	
+		
+			
+bool StandardFileSystemManager::isAbsolutePath( const string & path ) throw()
+{
+
+	if ( path.empty() )
+		return false ;
+
+	/*
+	 * Starts with separator, or with prefix (if prefix is used) :
+	 * absolute path.
+	 *
+	 */
+	 
+#if CEYLAN_ARCH_WINDOWS
+
+	/* Was :
+
+	if ( ! RootDirectoryPrefix.empty() )
+		if ( path.find( RootDirectoryPrefix, 0 ) == 0 )
+			return true ;
+	 */
+
+	// Prefix is : a drive letter + ':\', ex : 'c:\'
+	if ( ( Ceylan::isLetter( path[0] ) ) && ( path[1] == ':' ) )
+		return true ;
+
+	return false ;
+
+#else // CEYLAN_ARCH_WINDOWS
+
+
+	if ( path[0] == Separator )
+		return true ;
+
+
+	return false ;
+
+#endif // CEYLAN_ARCH_WINDOWS
+
+}	
+			
+			
+std::string StandardFileSystemManager::getCurrentWorkingDirectoryName()	
+	throw( DirectoryOperationFailed )
+{
+
+
+#ifdef CEYLAN_USES_GETCWD
+
+	/*
+	 * With following automatic variable, frame size is deemed 
+	 * 'too large for reliable stack checking' :
+	 
+	char buf[ PATH_MAX + 1 ] ;
+	 
+	 * Another solution would be to use a static string, but this method 
+	 * would not be reentrant anymore.
+	 *
+	 * Hence using dynamic allocation, even if slower :
+	 *
+	 */
+
+	char * buf = new char[ PATH_MAX + 1 ] ;
+	
+	if ( ::getcwd( buf, PATH_MAX ) )
+	{
+	
+		string res( buf ) ;
+		delete [] buf ;
+		
+		return res ;
+		
+	}
+	else
+	{
+	
+		delete [] buf ;
+	
+		throw DirectoryOperationFailed(
+			"StandardFileSystemManager::getCurrentWorkingDirectoryName: "
+			"unable to determine current directory: " + explainError() ) ;
+			
+	}		
+		 
+#else // CEYLAN_USES_GETCWD
+
+#ifdef CEYLAN_USES__GETCWD
+
+
+	/*
+	 * With following automatic variable, frame size is deemed 
+	 * 'too large for reliable stack checking' :
+	 
+	char buf[ PATH_MAX + 1 ] ;
+	 
+	 * Another solution would be to use a static string, but this method 
+	 * would not be reentrant anymore.
+	 *
+	 * Hence using dynamic allocation, even if slower :
+	 *
+	 */
+
+	char * buf = new char[ PATH_MAX + 1 ] ;
+	
+	if ( ::_getcwd( buf, PATH_MAX ) )
+	{
+	
+		string res( buf ) ;
+		delete [] buf ;
+		
+		return res ;
+		
+	}
+	else
+	{
+	
+		delete [] buf ;
+	
+		throw DirectoryOperationFailed(
+			"StandardFileSystemManager::getCurrentWorkingDirectoryName: "
+			"unable to determine current directory: " + explainError() ) ;
+			
+	}		
+
+#else // CEYLAN_USES__GETCWD
+
+	throw DirectoryOperationFailed(
+		"StandardFileSystemManager::getCurrentWorkingDirectoryName: "
+		"not available on this platform" ) ;
+
+#endif // CEYLAN_USES__GETCWD
+
+#endif // CEYLAN_USES_GETCWD		
+
+}	
+
+
+void StandardFileSystemManager::changeWorkingDirectory( 
+	const string & newWorkingDirectory ) throw( DirectoryOperationFailed )
+{
+
+#ifdef CEYLAN_USES_CHDIR
+
+	if ( ::chdir( newWorkingDirectory.c_str() ) != 0 )
+
+#else // CEYLAN_USES_CHDIR
+
+#ifdef CEYLAN_USES__CHDIR
+
+	if ( ::_chdir( newWorkingDirectory.c_str() ) != 0 )
+
+#else // CEYLAN_USES__CHDIR
+
+	throw DirectoryOperationFailed(
+		"StandardFileSystemManager::changeWorkingDirectory: "
+		"not supported on this platform" ) ;
+
+#endif // CEYLAN_USES__CHDIR
+
+#endif // CEYLAN_USES_CHDIR
+
+	throw DirectoryOperationFailed(
+		"StandardFileSystemManager::changeWorkingDirectory: "
+		"unable to change current working directory to "
+		+ newWorkingDirectory + ": " + explainError() ) ;
+
+}	
+
+
+
+
+// Filesystem constants.
+
+
+
+const string & StandardFileSystemManager::getRootDirectoryPrefix() const throw()
+{
+
+	return RootDirectoryPrefix ;
+	
+}
+
+	    	   					
+Ceylan::Latin1Char StandardFileSystemManager::getSeparator() const throw()
+{
+
+	return Separator ;
+	
+}
+
+
+
+
+// Static section.
 
 
 StandardFileSystemManager &
@@ -546,12 +814,18 @@ StandardFileSystemManager::StandardFileSystemManager()
 StandardFileSystemManager::~StandardFileSystemManager() throw()
 {
 
+	// Nothing special to switch off this filesystem.
+
 }
 
 
 
 
+
+
+
 // Protected section.
+
 
 
 FileDescriptor StandardFileSystemManager::Duplicate( FileDescriptor fd ) 
@@ -580,30 +854,28 @@ FileDescriptor StandardFileSystemManager::Duplicate( FileDescriptor fd )
 
 
 
-const string StandardFileSystemManager::TransformIntoValidFilename(
+const string StandardFileSystemManager::TransformIntoValidFilename( 
 	const string & rawFilename ) throw()
 {
 
 	// For MS-DOS/Windows, one may look at gcc 'dosck' as well.
 	
+	string result ;
 
 	Ceylan::Uint32 characterCount = 0 ;
 
-	// Remove all leading dots '.':
+	// Remove all leading dots '.' :
 	while ( rawFilename[ characterCount ] == '.' )
 		characterCount++ ;
 
-	// (preferred to: for( string::const_iterator it...)
+	// (preferred to : for( string::const_iterator it...)
 
-	// Substitute any space " ", slash "/" or back-slash "\" by a dash "-":
+	// Substitute any space " ", slash "/" or back-slash "\" by a dash "-" :
 
 	StringSize nameSize = rawFilename.size() ;
-
-	string result ;
 	
-	for ( ; characterCount < nameSize; characterCount++ )
+	for ( ; characterCount < nameSize ; characterCount++ )
 	{
-	
 		switch( rawFilename[ characterCount ] )
 		{
 
@@ -620,7 +892,7 @@ const string StandardFileSystemManager::TransformIntoValidFilename(
 				break ;
 
 			/*
-			 * This is not strictly needed on most systems, but it is 
+			 * This is not strictly needed on most system, but it is 
 			 * convenient to avoid ':' in HTML file references 
 			 * (<a href="xx::yyy.html">... not recommended)
 			 *
@@ -641,3 +913,4 @@ const string StandardFileSystemManager::TransformIntoValidFilename(
 	
 }
 
+	
