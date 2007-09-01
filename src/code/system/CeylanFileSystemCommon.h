@@ -30,6 +30,17 @@ namespace Ceylan
 		 * exception conversions to perform when, for example, manipulating
 		 * a filesystem from a File method.
 		 *
+		 * Here are centralized all exceptions that are either at the root
+		 * of file management or possibly thrown by FileSystemManager.
+		 *
+		 * One goal is to avoid having CeylanFile.h and CeylanDirectory.h 
+		 * depending on CeylanFileSystemManager.h, because the other way round
+		 * is already true (ex: the factories defined in FileSystemManager 
+		 * have to know the file open flags).
+		 *
+		 * Hence CeylanFile.h and CeylanDirectory.h (and
+		 * CeylanFileSystemManager.h) depends on this file.
+		 *
 		 */
 		 
 				
@@ -61,7 +72,15 @@ namespace Ceylan
 
 
 
-		// Three specific child classes for FileManagementException.
+		/*
+		 * Three specific child classes for FileManagementException: 
+		 *   - FileSystemException
+		 *   - FileException
+		 *   - DirectoryException
+		 *
+		 * They are defined in their corresponding header files.
+		 *
+		 */
 		
 		
 		/// Thrown when filesystem operations failed.
@@ -94,6 +113,29 @@ namespace Ceylan
 				}								
 						
 		} ;
+		
+		
+		/**
+		 * Thrown when file operations failed because of underlying
+		 * filesystem manager : the corresponding backend could not be retrieved
+		 * as expected.
+		 *
+		 */
+		class CEYLAN_DLL FileDelegatingException: 
+			public FileException
+		{ 
+		
+			public: 
+			
+				explicit FileDelegatingException( 
+						const std::string & reason ) throw():
+					FileException( reason )
+				{
+				
+				}								
+						
+		} ;
+
 
 
 		/// Thrown when directory operations failed.
@@ -105,6 +147,28 @@ namespace Ceylan
 				explicit DirectoryException( 
 						const std::string & reason ) throw():
 					FileManagementException( reason )
+				{
+				
+				}								
+						
+		} ;
+
+
+		/**
+		 * Thrown when directory operations failed because of underlying
+		 * filesystem manager : the corresponding backend could not be retrieved
+		 * as expected.
+		 *
+		 */
+		class CEYLAN_DLL DirectoryDelegatingException: 
+			public DirectoryException
+		{ 
+		
+			public: 
+			
+				explicit DirectoryDelegatingException( 
+						const std::string & reason ) throw():
+					DirectoryException( reason )
 				{
 				
 				}								
@@ -131,7 +195,6 @@ namespace Ceylan
 				}								
 						
 		} ;
-
 
 
 		class CEYLAN_DLL GetChangeTimeFailed: public FileSystemException
@@ -288,13 +351,13 @@ namespace Ceylan
 		// FileException child classes.
 		
 		
-		class CEYLAN_DLL DiffFailed: public FileSystemManagerException
+		class CEYLAN_DLL DiffFailed: public FileException
 		{ 
+		
 			public: 
 				
-				explicit DiffFailed( 
-					const std::string & reason ) throw():
-					FileSystemManagerException( reason )
+				explicit DiffFailed( const std::string & reason ) throw():
+					FileException( reason )
 				{
 				
 				}								

@@ -13,6 +13,34 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
+/*
+ * Implementation notes.
+ *
+ * Some file and directory operations are made available here, so that
+ * they are virtual methods (able to be overriden in FileSystemManager
+ * child classes) rather than static methods (non-overridable) in 
+ * classes File, Directory, etc. (filesystem implementations may have
+ * to define them specifically).
+ * But for the ease of programming, these FileSystemManager virtual
+ * methods will be made available through File and Directory static
+ * methods, in charge of selecting automatically the correct filesystem
+ * implementation and calling its corresponding virtual method.
+ * This allows the user programs to call only File::MyMethod instead of
+ * calling something like GetDefaultFileSystemManager().myMethod or,
+ * worst, GetStandardFileSystemManager().myMethod: less readable, more
+ * error cases to manage, and the user code would not be cross-platform.
+ *
+ * The current organization is to centralize in FileSystemManager child
+ * classes the non-static implementations of all the methods that 
+ * would be static for a given file or directory child class: these
+ * implementations must not be static (so that they are overridable) 
+ * hence cannot be defined directly from File and Directory abstract
+ * classes (otherwise polymorphism could not be used, and these two
+ * abstract classes would have to be tightly coupled to their child
+ * classes). Obviously non-static methods are to be called from
+ * instances that can be neither File nor Directory instances.
+ * 
+ */
 
 using std::string ;
 using std::list ;
@@ -25,85 +53,8 @@ const string FileSystemManager::DefaultAliasForCurrentDirectory = "."  ;
 const string FileSystemManager::DefaultAliasForParentDirectory  = ".." ;
 
 
-FileSystemManager * FileSystemManager::_DefaultFileSystemManager = 0 ;
+FileSystemManager * FileSystemManager::_CurrentDefaultFileSystemManager = 0 ;
 
-
-
-FileSystemManager::DirectoryOperationFailed::DirectoryOperationFailed( 
-		const string & reason ) throw():
-	FileSystemManagerException( reason )
-{
-
-}
-
-
-
-FileSystemManager::TouchFailed::TouchFailed( const string & reason ) throw():
-	FileSystemManagerException( reason )
-{
-
-}
-
-
-FileSystemManager::RemoveFailed::RemoveFailed( const string & reason ) throw():
-	FileSystemManagerException( reason )
-{
-
-}
-
-
-FileSystemManager::SymlinkFailed::SymlinkFailed( const string & reason ) 
-		throw():
-	FileSystemManagerException( reason )
-{
-
-}
-		
-	
-FileSystemManager::MoveFailed::MoveFailed( const string & reason ) throw():
-	FileSystemManagerException( reason )
-{
-
-}
-		
-	
-FileSystemManager::CopyFailed::CopyFailed( const string & reason ) throw():
-	FileSystemManagerException( reason )
-{
-
-}
-
-				
-FileSystemManager::GetChangeTimeFailed::GetChangeTimeFailed( 
-		const string & reason ) throw():
-	FileSystemManagerException( reason )
-{
-
-}
-
-		
-FileSystemManager::CouldNotDuplicate::CouldNotDuplicate( const string & reason )
-		throw():
-	FileSystemManagerException( reason )
-{
-
-}
-		
-			
-FileSystemManager::CouldNotStatEntry::CouldNotStatEntry( const string & reason )
-		throw():
-	FileSystemManagerException( reason )
-{
-
-}
-
-		
-FileSystemManager::DiffFailed::DiffFailed( const string & reason ) throw():
-	FileSystemManagerException( reason )
-{
-
-}
-	
 		
 	
 	
@@ -155,8 +106,8 @@ bool FileSystemManager::diff( const std::string & firstFilename,
 			+ " bytes." ) ;
 		 */
 
-		File & first  = File::Open( firstFilename ) ;
-		File & second = File::Open( secondFilename ) ;
+		File & first  = openFile( firstFilename ) ;
+		File & second = openFile( secondFilename ) ;
 	
 		for ( Size i = 0; i < commonSize; i++ )
 		{
@@ -176,7 +127,7 @@ bool FileSystemManager::diff( const std::string & firstFilename,
 			
 	}
 	
-			
+		
 }
 		
 	
@@ -328,6 +279,7 @@ const std::string & FileSystemManager::getAliasForCurrentDirectory()
 	const throw()
 {
 
+	// Made to be overriden if necessary:
 	return DefaultAliasForCurrentDirectory ;
 	
 }
@@ -337,6 +289,7 @@ const std::string & FileSystemManager::getAliasForParentDirectory()
 	const throw()
 {
 
+	// Made to be overriden if necessary:
 	return DefaultAliasForParentDirectory ;
 	
 }
@@ -352,54 +305,100 @@ string FileSystemManager::getSeparatorAsString() const throw()
 
 
 
+
 // Static section.
 	
+		
+// Default filesystem manager subsection.
 
-FileSystemManager & FileSystemManager::GetDefaultFileSystemManager() 
+
+bool FileSystemManager::IsDefaultFileSystemManagerSet() throw()
+{
+
+	return ( _CurrentDefaultFileSystemManager != 0 ) ;
+	
+}
+
+
+void FileSystemManager::SetDefaultFileSystemManager( 
+		FileSystemManager & newDefaultFileSystemManager ) throw()
+{
+
+	if ( _CurrentDefaultFileSystemManager != 0 )
+		delete _CurrentDefaultFileSystemManager ;
+	
+	_CurrentDefaultFileSystemManager = & newDefaultFileSystemManager ;
+		
+}
+
+
+void FileSystemManager::SetDefaultFileSystemManagerToPlatformDefault()
 	throw( FileSystemManagerException )
 {
 
+	if ( _CurrentDefaultFileSystemManager != 0 )
+		delete _CurrentDefaultFileSystemManager ;
 
 #if CEYLAN_ARCH_NINTENDO_DS
 		
 #ifdef CEYLAN_RUNS_ON_ARM7
 
 	throw FileSystemManagerException( 
-		"Ceylan::System::FileSystemManager::GetDefaultFileSystemManager: 
+		"FileSystemManager::SetDefaultFileSystemManagerToPlatformDefault: 
 		"only available on the ARM9." ) ;
 
 #elif defined(CEYLAN_RUNS_ON_ARM9)
 
 	/* FIXME
-	if ( _DefaultFileSystemManager == 0 )
-		_DefaultFileSystemManager = new LibfatFileSystemManager() ;
+	_CurrentDefaultFileSystemManager = new LibfatFileSystemManager() ;
 */
-	return *_DefaultFileSystemManager ;	
 
 #endif // CEYLAN_RUNS_ON_ARM7
 
 	
 #else // CEYLAN_ARCH_NINTENDO_DS
 
-	if ( _DefaultFileSystemManager == 0 )
-		_DefaultFileSystemManager = new StandardFileSystemManager() ;
-
-	return *_DefaultFileSystemManager ;	
+	_CurrentDefaultFileSystemManager = new StandardFileSystemManager() ;
 	
 #endif // CEYLAN_ARCH_NINTENDO_DS
+
+}
+	
+						
+FileSystemManager & FileSystemManager::GetExistingDefaultFileSystemManager() 
+	throw( FileSystemManagerException )
+{
+
+	if ( _CurrentDefaultFileSystemManager == 0 )
+		throw FileSystemManagerException(
+			"FileSystemManager::GetExistingDefaultFileSystemManager:"
+			"no manager currently available" ) ;
+			
+	return *_CurrentDefaultFileSystemManager ;	
 	
 }
 	
-	
+
+FileSystemManager & FileSystemManager::GetAnyDefaultFileSystemManager() 
+	throw( FileSystemManagerException )
+{
+
+	if ( _CurrentDefaultFileSystemManager == 0 )
+		SetDefaultFileSystemManagerToPlatformDefault() ;
+			
+	return *_CurrentDefaultFileSystemManager ;	
+
+}
+					
 	
 void FileSystemManager::RemoveDefaultFileSystemManager() throw()
 {
 
-	if ( _DefaultFileSystemManager != 0 )
+	if ( _CurrentDefaultFileSystemManager != 0 )
 	{
 	
-		delete _DefaultFileSystemManager ;
-		_DefaultFileSystemManager = 0 ;
+		delete _CurrentDefaultFileSystemManager ;
+		_CurrentDefaultFileSystemManager = 0 ;
 		
 	}
 	

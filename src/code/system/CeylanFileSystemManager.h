@@ -3,11 +3,14 @@
 
 
 
-#include "CeylanSystem.h"      // for SystemException
-#include "CeylanStringUtils.h" // for Latin1Char
+#include "CeylanSystem.h"           // for SystemException
+#include "CeylanStringUtils.h"      // for Latin1Char
+#include "CeylanFileSystemCommon.h" // for the various exceptions
+#include "CeylanFile.h"             // for OpeningFlag, PermissionFlag, etc.
 
 
 #include <string>
+
 
 
 
@@ -15,198 +18,32 @@ namespace Ceylan
 {
 
 
-
 	namespace System
 	{
-
-
-
-		/**
-		 * Mother class of all file-related exceptions, including filesystem,
-		 * files and directories.
-		 *
-		 */
-		class CEYLAN_DLL FileManagementException: public SystemException
-		{
-				
-			public:
-
-				explicit FileManagementException( 
-						const std::string & reason ):
-					SystemException( reason )
-				{
-						
-				}
-						
-						
-				virtual ~FileManagementException() throw()
-				{
-						
-				}
-
-		} ;
 	
-
-
-
+	
+	
+		// A filesystem manager can operate on directories.
+		class Directory ;
+		
+		
 		/**
 		 * Interface (abstract class) that allows to manage a specific
-		 * filesystem.
+		 * filesystem. More than one filesystem can be used at once, and two
+		 * different filesystems may have to be managed according to very
+		 * different ways (ex: they have to be initialized differently).
 		 *
 		 * Thus files and directories may be manipulated from various 
 		 * filesystems simultaneously.
+		 *
 		 *
 		 */
 		class CEYLAN_DLL FileSystemManager: public TextDisplayable
 		{
 
+
 			public:
-
-
-				/// Mother class of all filesystem-related exceptions.
-				class CEYLAN_DLL FileSystemManagerException: 
-					public FileManagementException
-				{
-				
-					public:
-
-						explicit FileSystemManagerException( 
-								const std::string & reason ):
-							FileManagementException( reason )
-						{
-						
-						}
-						
-						
-						virtual ~FileSystemManagerException() throw()
-						{
-						
-						}
-
-				} ;
-
-
-
-				/// If directory operations at the filesystem level failed.
-				class CEYLAN_DLL DirectoryOperationFailed: 
-					public FileSystemManagerException
-				{ 
-				
-					public: 
-					
-						explicit DirectoryOperationFailed( 
-								const std::string & reason ) throw() ; 
-								
-				} ;
-
-
-
-				class CEYLAN_DLL TouchFailed: public FileSystemManagerException
-				{ 
-				
-					public: 
-					
-						explicit TouchFailed( 
-								const std::string & reason ) throw() ; 
-								
-				} ;
-
-
-
-				class CEYLAN_DLL RemoveFailed: public FileSystemManagerException
-				{ 
-				
-					public: 
-					
-						explicit RemoveFailed( 
-								const std::string & reason ) throw() ; 
-				} ;
-
-
-
-				class CEYLAN_DLL SymlinkFailed: 
-					public FileSystemManagerException
-				{ 
-				
-					public: 
-					
-						explicit SymlinkFailed( 
-								const std::string & reason ) throw() ; 
-				} ;
-
-
-
-				class CEYLAN_DLL MoveFailed: public FileSystemManagerException
-				{ 
-				
-					public: 
-					
-						explicit MoveFailed( 
-							const std::string & reason ) throw() ;
-							 
-				} ;
-
-
-
-				class CEYLAN_DLL CopyFailed: public FileSystemManagerException
-				{ 
-				
-					public: 
-					
-						explicit CopyFailed( 
-							const std::string & reason ) throw() ; 
-							
-				} ;
-
-
-
-				class CEYLAN_DLL GetChangeTimeFailed: 
-					public FileSystemManagerException
-				{ 
-				
-					public: 
-					
-						explicit GetChangeTimeFailed( 
-							const std::string & reason ) throw() ;
-							
-				} ;
-
-
-
-				class CEYLAN_DLL CouldNotDuplicate: 
-					public FileSystemManagerException
-				{ 
-				
-					public: 
-					
-						explicit CouldNotDuplicate( 
-							const std::string & reason ) throw() ;
-							
-				} ;
-
-
-				class CEYLAN_DLL CouldNotStatEntry: 
-					public FileSystemManagerException
-				{ 
-					public: 
-						
-						explicit CouldNotStatEntry( 
-							const std::string & reason ) throw() ;
-							
-				} ;
-
-
-				class CEYLAN_DLL DiffFailed: public FileSystemManagerException
-				{ 
-					public: 
-						
-						explicit DiffFailed( 
-							const std::string & reason ) throw() ;
-							
-				} ;
-				
-				
-				
+		
 				
 				// Existence test section.
 				
@@ -220,14 +57,14 @@ namespace Ceylan
 				 * This method will work as expected whether the 
 				 * symbolic link feature is enabled or not.
 				 *
-				 * @throw CouldNotStatEntry if the operation failed (existence
+				 * @throw StatEntryFailed if the operation failed (existence
 				 * test failed with no answer) or is not supported on this 
 				 * platform.
 				 *
 				 */
 				virtual bool existsAsFileOrSymbolicLink( 
 						const std::string & filename ) const 
-					throw( CouldNotStatEntry ) = 0 ;
+					throw( StatEntryFailed ) = 0 ;
 
 							
 
@@ -241,14 +78,14 @@ namespace Ceylan
 				 * case-insensitive, and 'c:' is not a directory 
 				 * (it is seen as a drive), whereas 'c:\' is a directory.
 				 *
-				 * @throw CouldNotStatEntry if the operation failed (existence
+				 * @throw StatEntryFailed if the operation failed (existence
 				 * test failed with no answer) or is not supported on this 
 				 * platform.
 				 *
 				 */
 				virtual bool existsAsDirectory( 
 						const std::string & directoryPath ) const
-					throw( CouldNotStatEntry ) = 0 ;
+					throw( StatEntryFailed ) = 0 ;
 			
 					
 
@@ -259,13 +96,18 @@ namespace Ceylan
 				 *
 				 * @param entryPath the path of the entry to look-up.
 				 *
-				 * @throw CouldNotStatEntry if the operation failed (existence
+				 * @throw StatEntryFailed if the operation failed (existence
 				 * test failed with no answer) or is not supported on this 
 				 * platform.
 				 *
+				 * @note Not available on static form, one must use a filesystem
+				 * manager instance to call it (ex:
+				 * GetExistingDefaultFileSystemManager,
+				 * GetAnyDefaultFileSystemManager, etc.) to call it.
+				 *
 				 */
 				virtual bool existsAsEntry( const std::string & entryPath ) 
-					const throw( CouldNotStatEntry ) = 0 ;
+					const throw( StatEntryFailed ) = 0 ;
 
 
 
@@ -274,7 +116,77 @@ namespace Ceylan
 				
 				
 				/**
-				 * Creates a symbolic link on disk.
+				 * Returns a File reference on a newly created file.
+				 *
+				 * By default, it creates a new file on disk. If the name
+				 * corresponds to an already-existing file, it will be
+				 * truncated and overwritten.
+				 *
+				 * @param filename the name of the file.
+				 *
+				 * @param createFlag the flag describing the creation mode.
+				 *
+				 * @param permissionFlag the flag describing the requested
+				 * permissions. On platforms that do not manage permissions,
+				 * this parameter will be ignored.
+				 *
+				 * @see OpeningFlag, PermissionFlag
+				 *
+				 * File factory, to be used instead of a specific File subclass
+				 * constructor, so that it can return a File instance that is
+				 * actually a specialized one (ex: a StandardFile, not an
+				 * abstract File).
+				 *
+				 * @throw CreateFailed if the file creation failed.
+				 *
+				 */
+				virtual File & createFile( const std::string & filename, 
+						OpeningFlag createFlag = File::CreateToWriteBinary,
+						PermissionFlag permissionFlag = File::OwnerReadWrite ) 
+					throw( CreateFailed ) = 0 ;
+
+				
+				
+				/**
+				 * Returns a File reference on specified already-existing file,
+				 * which will be opened with specified settings.
+				 *
+				 * @param filename the name of the file.
+				 *
+				 * @param openFlag the flag describing the opening mode.
+				 *
+				 * @see OpeningFlag
+				 *
+				 * File factory, to be used instead of a specific File subclass
+				 * constructor, so that it can return a File instance that is
+				 * actually a specialized one (ex: a StandardFile, not an
+				 * abstract File).
+				 *
+				 * @throw OpenFailed if the file opening failed.
+				 *
+				 */
+				virtual File & openFile( const std::string & filename, 
+						OpeningFlag openFlag = File::OpenToReadBinary ) 
+					throw( OpenFailed ) = 0 ;
+				
+					
+
+				/**
+				 * Removes the file or symbolic link from the filesystem.
+				 *
+				 * @param filename the filename to remove.
+				 *
+				 * @throw RemoveFailed if the operation failed or is not
+				 * supported on this platform.
+				 *
+				 */
+				virtual void removeFile( const std::string & filename ) 
+					throw( RemoveFailed ) = 0 ;
+
+				
+				
+				/**
+				 * Creates a symbolic link on filesystem.
 				 *
 				 * @param linkTarget the full path of the entry the new link
 				 * should point to.
@@ -287,23 +199,10 @@ namespace Ceylan
 				 */
 				virtual void createSymbolicLink( const std::string & linkTarget,
 					const std::string & linkName ) throw( SymlinkFailed ) = 0 ;
-					
-
-				/**
-				 * Removes the file or symbolic link from the disk.
-				 *
-				 * @param filename the filename to remove.
-				 *
-				 * @throw RemoveFailed if the operation failed or is not
-				 * supported on this platform.
-				 *
-				 */
-				virtual void remove( const std::string & filename ) 
-					throw( RemoveFailed ) = 0 ;
 
 
 				/**
-				 * Moves the file on disk.
+				 * Moves the file on filesystem.
 				 *
 				 * A special case of file moving is file renaming.
 				 *
@@ -321,7 +220,7 @@ namespace Ceylan
 
 
 				/**
-				 * Copies the file on disk.
+				 * Copies the file on filesystem.
 				 *
 				 * @param sourceFilename the filename of the file to be copied.
 				 *
@@ -342,13 +241,26 @@ namespace Ceylan
 				 *
 				 * @param filename the filename whose size is searched.
 				 *
-				 * @throw CouldNotStatEntry if the operation failed (ex: file
+				 * @throw StatEntryFailed if the operation failed (ex: file
 				 * not found) or is not supported on this platform.
 				 *
 				 */
 				virtual Size getSize( const std::string & filename ) 
-					throw( CouldNotStatEntry ) = 0 ;
+					throw( StatEntryFailed ) = 0 ;
 
+
+				/**
+				 * Takes specified <b>rawFilename</b> and tries to transform it 
+				 * so that the result should be a valid name, from the
+				 * filesystem's point of view.
+				 *
+				 * @param rawFilename the filename to convert
+				 *
+				 * @return the converted filename
+				 *
+				 */
+				virtual std::string transformIntoValidFilename( 
+					const std::string & rawFilename ) throw() = 0 ;
 
 
 				/**
@@ -417,10 +329,75 @@ namespace Ceylan
 			
 			
 			
+			
 				// Directory-related section.
 			
-			
-			
+
+
+				// Factory-related subsection.
+
+				
+				/**
+				 * Returns a Directory reference on a directory newly created
+				 * on filesystem.
+				 *
+				 * @param newDirectoryName the name of the directory to create.
+				 *
+				 * Directory factory, to be used instead of a specific Directory
+				 * subclass constructor, so that it can return a Directory
+				 * instance that is actually a specialized one (ex: a
+				 * StandardDirectory, not an abstract Directory).
+				 *
+				 * @throw CreateFailed if the directory creation failed.
+				 *
+				 */
+				virtual Directory & createDirectory( 
+						const std::string & newDirectoryName ) 
+					throw( CreateFailed ) = 0 ;
+
+				
+				/**
+				 * Returns a Directory reference on specified already-existing
+				 * directory, which will be "opened" (i.e. referred to).
+				 *
+				 * @param directoryName the name of the directory. If not
+				 * specified (the string is empty), returns a reference to the
+				 * current working directory.
+				 *
+				 * Directory factory, to be used instead of a specific Directory
+				 * subclass constructor, so that it can return a Directory
+				 * instance that is actually a specialized one (ex: a
+				 * StandardDirectory, not an abstract Directory).
+				 *
+				 * @throw OpenFailed if the directory opening failed.
+				 *
+				 */
+				virtual Directory & openDirectory( 
+						const std::string & directoryName = "" ) 
+					throw( OpenFailed ) = 0 ;
+					
+
+				/**
+				 * Removes the directory from filesystem.
+				 *
+				 * @param directoryPath the path of the target directory.
+				 *
+				 * @param recursive if false, the specified directory is 
+				 * expected to be empty, and it will be removed. If true,
+				 * then the full directory content (including all files and
+				 * possible subdirectories) and this directory itself will be
+				 * removed.
+				 *
+				 * @throw RemoveFailed if the operation failed or is not
+				 * supported.
+				 *
+				 */
+				virtual void removeDirectory( 
+						const std::string & directoryPath, 
+						bool recursive = false ) 
+					throw( RemoveFailed ) = 0 ;
+
+					
 				/**
 				 * Returns whether specified string is a valid directory name.
 				 *
@@ -458,12 +435,12 @@ namespace Ceylan
 				/**
 				 * Returns the current working directory name.
 				 *
-				 * @throw DirectoryOperationFailed if the operation failed 
+				 * @throw DirectoryException if the operation failed 
 				 * or is not supported on the target platform.
 				 *
 				 */
 				virtual std::string getCurrentWorkingDirectoryName()	
-					throw( DirectoryOperationFailed ) = 0 ;
+					throw( DirectoryException ) = 0 ;
 
 
 				/**
@@ -472,24 +449,24 @@ namespace Ceylan
 				 *
 				 * @param newWorkingDirectory the target working directory.
 				 *
-				 * @throw DirectoryOperationFailed if the operation failed 
+				 * @throw DirectoryException if the operation failed 
 				 * or is not supported on the target platform.
 				 *
 				 */
 				virtual void changeWorkingDirectory( 
 						const std::string & newWorkingDirectory )
-					throw( DirectoryOperationFailed ) = 0 ;
+					throw( DirectoryException ) = 0 ;
 
 
 				/**
 				 * Splits up <b>path</b> into the list of its sub-elements
-				 * (set of directory names).
+				 * (set of directory/file names).
 				 *
 				 * @param path the path to split.
 				 *
-				 * @example splitPath( '/mnt/raid/md0/LOANI-0.3' ) returns 
+				 * @example splitPath( "/mnt/raid/md0/LOANI-0.3" ) returns 
 				 * on UNIX:
-				 * [ '', 'mnt', 'raid', 'md0', 'LOANI-0.3' ].
+				 * [ "", "mnt", "raid", "md0", "LOANI-0.3" ].
 				 *
 				 * @see joinPath
 				 *
@@ -504,8 +481,8 @@ namespace Ceylan
 				 *
 				 * @param pathElements the path elements to join in a path.
 				 *
-				 * @example joinPath([ '', 'mnt', 'raid', 'md0', 'LOANI-0.3' ])
-				 * returns on UNIX: '/mnt/raid/md0/LOANI-0.3'.
+				 * @example joinPath([ "", "mnt", "raid", "md0", "LOANI-0.3" ])
+				 * returns on UNIX: "/mnt/raid/md0/LOANI-0.3".
 				 *
 				 * @see splitPath
 				 *
@@ -522,8 +499,8 @@ namespace Ceylan
 				 *
 				 * @param secondPath the second part of the final path.
 				 *
-				 * @example joinPath( '/mnt/raid', 'md0/LOANI-0.3' ) 
-				 * returns on UNIX: '/mnt/raid/md0/LOANI-0.3'.
+				 * @example joinPath( "/mnt/raid", "md0/LOANI-0.3" ) 
+				 * returns on UNIX: "/mnt/raid/md0/LOANI-0.3".
 				 *
 				 * @see splitPath
 				 *
@@ -537,20 +514,20 @@ namespace Ceylan
 				 * <b>base</b> and file name <b>file</b>.
 				 *
 				 * For example, this method applied to 
-				 * '/mnt/raid/md0/LOANI-0.3' returns respectively
-				 * '/mnt/raid/md0' and 'LOANI-0.3', when the separator is '/'.
+				 * "/mnt/raid/md0/LOANI-0.3" returns respectively
+				 * "/mnt/raid/md0" and "LOANI-0.3", when the separator is '/'.
 				 *
 				 * @param path the path which is to be stripped.
 				 *
 				 * @param base if non null, must be a pointer to an 
 				 * already allocated string where the basename will be stored.
 				 * If not interested in the basename, specify a null (0)
-				 * pointer instead: this method will act as UNIX 'basename'.
+				 * pointer instead: this method will act as UNIX "basename".
 				 *
 				 * @param file if non null, must be a pointer to an already
 				 * allocated string where the filename will be stored. 
 				 * If not interested in the filename, specify a null (0) 
-				 * pointer instead: this method will act as UNIX 'dirname'.
+				 * pointer instead: this method will act as UNIX "dirname".
 				 *
 				 */
 				virtual void stripFilename( const std::string & path,
@@ -558,9 +535,25 @@ namespace Ceylan
 
 
 
+				/**
+				 * Returns the change time time of the entry <b>entryPath</b>,
+				 * be it a file, a directory, etc.
+				 *
+				 * @param entryPath the path of the entry.
+				 *
+				 * @throw GetChangeTimeFailed if the operation failed or
+				 * is not supported.
+				 *
+				 */
+				virtual time_t getEntryChangeTime( 
+						const std::string & entryPath )
+					throw( GetChangeTimeFailed ) = 0 ;
 
-				// Filesystem constants.
-				
+
+
+
+				// Accessors to Filesystem constants.
+
 				
 				/**
 				 * Returns the root directory prefix.
@@ -580,6 +573,17 @@ namespace Ceylan
 				 */
 				virtual Ceylan::Latin1Char getSeparator() const throw() = 0 ;
 
+
+				/**
+				 * Returns the directory separator, in the form of a string.
+				 *
+				 * More convenient for some operations than a character.
+				 *
+				 * @example Slash or backslash, i.e. '/' or '\'.
+				 *
+				 */
+				virtual std::string getSeparatorAsString() const 
+					throw() ;
 
 
 				/**
@@ -606,16 +610,6 @@ namespace Ceylan
 
 	
 	
-				/**
-				 * Returns the directory separator, in the form of a string.
-				 *
-				 * More convenient for some operations than a character.
-				 *
-				 * @example Slash or backslash, i.e. "/" or "\".
-				 *
-				 */
-				virtual std::string getSeparatorAsString() const 
-					throw() ;
 	
 			
 			
@@ -623,23 +617,101 @@ namespace Ceylan
 			
 				// Static section.
 			
+		
 			
+				/*
+				 * Default filesystem manager subsection.
+				 *
+				 * It is the filesystem manager instance used when none is
+				 * specified, not necessarily a manager deemed the default 
+				 * choice for a given platform (there are two different notions
+				 * here).				 
+				 * 
+				 */
+				 
+		
+		
 				/**
-				 * Returns a reference to the unique default filesystem 
-				 * manager.
+				 * Returns whether the default filesystem manager is set.
+				 *
+				 * @return true iff a default filesystem manager is currently 
+				 * available.
+				 *
+				 */
+				static bool IsDefaultFileSystemManagerSet() throw() ;
+			
+
+		
+				/**
+				 * Sets the default filesystem manager, the one that will be
+				 * used if no filesystem manager is specified otherwise.
+				 *
+				 * Any previously existing manager will be deallocated first.
+				 *
+				 */
+				static void SetDefaultFileSystemManager( 
+					FileSystemManager & newDefaultFileSystemManager ) throw() ;
+		
+		
+				/**
+				 * Sets the default filesystem manager to the platform default,
+				 * i.e. to the manager that is the more natural for the target
+				 * platform.
 				 *
 				 * On computers (be they UNIX or Windows), the default manager
-				 * is the standard one (StandardFileSystemManager).
+				 * is by default the standard one (StandardFileSystemManager).
 				 *
 				 * On the Nintendo DS, it is the libfat one
 				 * (LibfatFileSystemManager).
 				 *
-				 * Creates it if needed, ensures it remains a singleton.
+				 * Any previously existing manager will be deallocated first.
+				 *
+				 * @throw FileSystemManagerException if the operation failed
+				 * or is not supported.
+				 *
+				 */
+				static void SetDefaultFileSystemManagerToPlatformDefault()
+					throw( FileSystemManagerException ) ;
+			
+			
+				/**
+				 * Returns a reference to the unique default filesystem 
+				 * manager, that is expected to exist already.
+				 *
+				 * @throw FileSystemManagerException if the operation failed,
+				 * including if there is no manager available.
+				 *
+				 * @see GetAnyDefaultFileSystemManager
+				 *
+				 */
+				static FileSystemManager & GetExistingDefaultFileSystemManager()
+					throw( FileSystemManagerException ) ;
+
+			
+				/**
+				 * Returns a reference to the unique default filesystem 
+				 * manager, that is created from platform defaults if needed.
+				 *
+				 * Ensures that the unique default filesystem manager is set,
+				 * creates it if needed, ensures it remains a singleton.
+				 *
+				 * If a manager is already available, returns it.
+				 * Otherwise, it means the user did not wanted to specify a
+				 * specific one, hence one is created from platform defaults.
+				 *
+				 * @return the current default filesystem manager, either
+				 * already existing or created from platform defaults.
 				 *
 				 * @throw FileSystemManagerException if the operation failed.
 				 *
+				 * @note This is a helper method to ensure that File and 
+				 * Directory static method can rely in all cases on a filesystem
+				 * manager.
+				 *
+				 * @see GetExistingDefaultFileSystemManager
+				 *
 				 */
-				static FileSystemManager & GetDefaultFileSystemManager() 
+				static FileSystemManager & GetAnyDefaultFileSystemManager() 
 					throw( FileSystemManagerException ) ;
 
 
@@ -728,13 +800,19 @@ namespace Ceylan
 				/**
 				 * Pointer to the default filesystem manager (if any).
 				 *
-				 * This default manager is the one that is deemed the most
-				 * natural for the target running platform: standard one for
-				 * computers (either UNIX or Windows), libfat-based one for
-				 * the Nintendo DS.
+				 * This default manager is, unless specified otherwise, the one
+				 * that is deemed the most natural for the target running
+				 * platform: standard one for computers (either UNIX or
+				 * Windows), libfat-based one for the Nintendo DS.
+				 *
+				 * @note It means it will be the filesystem manager that will
+				 * be used by default (should no specific manager be specified),
+				 * which is not necessarily the most usual one for the target
+				 * platform.
 				 *
 				 */
-				static FileSystemManager * _DefaultFileSystemManager ;
+				static FileSystemManager * _CurrentDefaultFileSystemManager ;
+			
 				
 
 		} ;
@@ -744,4 +822,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_FILE_SYSTEM_MANAGER_H_
+
