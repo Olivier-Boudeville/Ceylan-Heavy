@@ -11,6 +11,7 @@
 #include "CeylanException.h"
 #include "CeylanFunctor.h"
 #include "CeylanHeaderVersion.h"
+#include "CeylanHolder.h"
 #include "CeylanLibtoolVersion.h"
 #include "CeylanOperators.h"
 #include "CeylanRegularExpression.h"
