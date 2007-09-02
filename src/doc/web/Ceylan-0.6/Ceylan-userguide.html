@@ -4,11 +4,11 @@
         For any comment, please mail to olivier.boudeville@online.fr
 -->
 <!--    
-        Creation date : 2004, February 13.
-        Author : Olivier Boudeville (olivier.boudeville@online.fr)
-        Update made by :  the author
-        Version number : 0.1
-        Adapted from : http://www.w3.org/Style/Examples/007/maps.html
+        Creation date: 2004, February 13.
+        Author: Olivier Boudeville (olivier.boudeville@online.fr)
+        Update made by:  the author
+        Version number: 0.1
+        Adapted from: http://www.w3.org/Style/Examples/007/maps.html
 -->
 
 <html lang="EN">
@@ -40,8 +40,72 @@ This user guide is not yet written. There are some informations here though, and
 
 
 
+<h3>How does the file management work ?</h3>
+<p>
+The convention here is to separate access to disk-like data storage into three layers:
+<ul>
 
-<h3>How does the middleware layer works ?</h3>
+	<li>the <b>filesystem layer</b>: in charge of initialization and management of filesystem-related operations for a given filesystem type, including the copy, move, deletion of files and directories through an instance of a <code>Ceylan::System::FileSystemManager</code> child class</li>
+	
+	<li>the <b>directory layer</b>: in charge of directory management, to perform for example directory listing, for a given filesystem type, through an instance of a <code>Ceylan::System::Directory</code> child class</li>
+	
+	<li>the <b>file layer</b>: in charge of file management, to create or open them, and to read of write data in files, through a factory or an instance of a <code>Ceylan::System::File</code> child class</li>
+	
+</ul>
+</p>
+
+
+<p>
+These three layers have been defined in an abstract level (<code>FileSystemManager</code> / <code>Directory</code> / <code>File</code>), meant to be fully defined for each actual filesystem configuration available:
+<ul>
+
+	<li>for <b>standard filesystem abstractions</b>, i.e. the ones provided by most computers, including UNIX and Windows, thanks to POSIX-based file descriptors or C++ Standard Library objects (<code>fstream</code> and al), we have: <code>StandardFileSystemManager</code> / <code>StandardDirectory</code> / <code>StandardFile</code></li>
+
+	<li>for <b>libfat-based implementations</b>, currently on the <a href="http://osdl.sourceforge.net/main/documentation/misc/nintendo-DS/HomebrewForDS.html" target="_blank">Nintendo DS</a>, we have: <code>LibfatFileSystemManager</code> / <code>LibfatDirectory</code> / <code>LibfatFile</code> (see a libfat <a href="http://osdl.sourceforge.net/main/documentation/misc/nintendo-DS/HomebrewForDS.html#libfat" target="_blank">description</a>)</li>
+
+	<li><b>libefs-based implementations</b>, again on the Nintendo DS, may be targeted next, with <code>LibefsFileSystemManager</code> / <code>LibefsDirectory</code> / <code>LibefsFile</code> (see a libefs <a href="http://osdl.sourceforge.net/main/documentation/misc/nintendo-DS/HomebrewForDS.html#libefs" target="_blank">description</a>)</li>
+
+	<li><b>PhysicsFS-based implementations</b> may be used in the future, for the PC (see <a href="http://icculus.org/physfs/" target="_blank">homepage</a>)</li>
+
+<!--
+	<li><b></b>: </li>
+-->
+
+</ul>
+
+</p>
+
+<p>
+Having such abstractions allows to write programs that depend less on specific filesystems, or even that are totally cross-platform.
+</p>
+
+<p>
+For example, the File factories (<code>Create</code>, <code>Open</code>) will hide most, if not all, platform-specific details:
+<center>
+    <table summary="Code" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+using namespace Ceylan::System ;
+File & myFile = File::Create( "Hello.txt" ) ;
+myFile.write( "Hello world !" ) ;
+myFile.close() ;
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+</p>
+
+<p>
+Actually this <code>File</code> class is abstract, and the factories return instances of child classes. On a PC, <code>File::Create</code> will return a reference on a <code>StandardFile</code> instance, whereas on the Nintendo DS it will be a <code>LibfatFile</code> instance. From the point of view of the Ceylan-using program, it will not change anything.
+</p>
+
+
+
+<h3>How does the middleware layer work ?</h3>
 
 <p>
 A multiplexed server stream spawns a connection whenever a client connects to the listening socket.
@@ -57,18 +121,18 @@ The multiplexed server detects it (at least one file descriptor is selected), aw
 
 <p>
 
-For client/server model :
+For client/server model:
 
 <ul>
 
 <!--
-	<li><b></b> : </li>
+	<li><b></b>: </li>
 -->
 
 	<li>Each <b>client</b> can, by default, call any method of any object of any ActiveObject subclass on the server</li>
-	<li>To do so, the client must <b>specify</b> to the server : a class identifier, an instance identifier, a method identifier, and the list of its arguments</li>
+	<li>To do so, the client must <b>specify</b> to the server: a class identifier, an instance identifier, a method identifier, and the list of its arguments</li>
 	<li>On the <b>server-side</b>, first there is a dictionnary whose keys are class identifiers, and whose values are classes (actually, their dictionary of instances). It is known as <em>the class dictionnary</em></li>
-	<li>Second, on a per-class basis, there is an <b>instance dictionnary</b> : for this given class, its keys are instance identifiers, and its values are pointer to instances of this class</li>
+	<li>Second, on a per-class basis, there is an <b>instance dictionnary</b>: for this given class, its keys are instance identifiers, and its values are pointer to instances of this class</li>
 
 </ul>
 
@@ -82,7 +146,7 @@ Being able to sleep the shortest amount of time is useful in different contexts,
 </p>
 
 <p>
-To provide these atomic sleeps, one has to guess what is the smallest predictable sleep time. In general it corresponds to an OS time slice for light to average system loads, or to a few of them whenever the load gets high. To compute the time slice, the algorithm is to request finely increasing sleeps, and to detect thresholds, since sleeps are made of a certain number of OS time slices, as shown here for a idle GNU/Linux 2.6.17 laptop :
+To provide these atomic sleeps, one has to guess what is the smallest predictable sleep time. In general it corresponds to an OS time slice for light to average system loads, or to a few of them whenever the load gets high. To compute the time slice, the algorithm is to request finely increasing sleeps, and to detect thresholds, since sleeps are made of a certain number of OS time slices, as shown here for a idle GNU/Linux 2.6.17 laptop:
 
 <center>
 <img src="testCeylanTime-schedulingGranularity-idle.png" alt="Steps idle"></img>
@@ -91,7 +155,7 @@ To provide these atomic sleeps, one has to guess what is the smallest predictabl
 </p>
 
 <p>
-On the same computer, but artificially loaded this time, the waiting times are quite jerky :
+On the same computer, but artificially loaded this time, the waiting times are quite jerky:
 <center>
 <img src="testCeylanTime-schedulingGranularity-loaded.png" alt="Steps idle"></img>
 </center>
@@ -99,7 +163,7 @@ On the same computer, but artificially loaded this time, the waiting times are q
 </p>
 
 <p>
-Back on an idle system, we can zoom a bit :
+Back on an idle system, we can zoom a bit:
 <center>
 <img src="testCeylanTime-schedulingGranularity-zoomed.png" alt="Steps idle"></img>
 </center>
@@ -108,7 +172,7 @@ Back on an idle system, we can zoom a bit :
 
 
 <p>
-As a side note, one can compare these results with the ones obtained on a laptop running Windows XP Professional :
+As a side note, one can compare these results with the ones obtained on a laptop running Windows XP Professional:
 
 <center>
     <img src="schedulingGranularity-win-xp.png" alt="Windows XP"></img>
@@ -117,7 +181,7 @@ As a side note, one can compare these results with the ones obtained on a laptop
 </p>
 
 <p>
-One can see a schedule granularity of 16 ms. One remarkable fact is that, whereas the delay accuracy is below 1 microsecond, the measured delays are always multiples of 1000 microseconds (ex : either 15000 or 16000, never other numbers). 
+One can see a schedule granularity of 16 ms. One remarkable fact is that, whereas the delay accuracy is below 1 microsecond, the measured delays are always multiples of 1000 microseconds (ex: either 15000 or 16000, never other numbers). 
 </p>
 
 
@@ -147,7 +211,7 @@ One can see a schedule granularity of 16 ms. One remarkable fact is that, wherea
 <a name="event"></a> 
 <h2>Event system</h2>
 <p>
-It is based on a base framework of three actors :
+It is based on a base framework of three actors:
 <ul>
 	<li><b>Events</b> (Events class), which encapsulates the concept of high-level events</li>
 	<li><b>Event sources</b> (EventSource class), which keep track of registered event listeners, and send them new events as they are generated</li>
@@ -157,7 +221,7 @@ It is based on a base framework of three actors :
 </p>
 
 <p>
-Sources send events to listeners according to the <b>Observer-Subject</b> (EventListener-EventSource) design pattern [More infos : <a href="http://sern.ucalgary.ca/courses/SENG/609.04/W98/lamsh/observerLib.html" target="_blank">1</a>, <a href="http://www.research.ibm.com/designpatterns/example.htm" target="_blank">2</a>]. 
+Sources send events to listeners according to the <b>Observer-Subject</b> (EventListener-EventSource) design pattern [More infos: <a href="http://sern.ucalgary.ca/courses/SENG/609.04/W98/lamsh/observerLib.html" target="_blank">1</a>, <a href="http://www.research.ibm.com/designpatterns/example.htm" target="_blank">2</a>]. 
 </p>
 
 
@@ -180,14 +244,14 @@ Therefore there is a reciprocal link between sources and listeners. However, the
 </p>
 
 <p>
-The reason for this difference is that the event framework is built not only so that information go from sources to listeners, but also so that <b>the event propagation is normally triggered by the sources, not the listeners</b> : as soon as the source has new events to send, it send them to all its listeners.
+The reason for this difference is that the event framework is built not only so that information go from sources to listeners, but also so that <b>the event propagation is normally triggered by the sources, not the listeners</b>: as soon as the source has new events to send, it send them to all its listeners.
 </p>
 
 
 <h4>Callable sources &amp; caller listeners</h4>
 
 <p>
-The previously discussed solution is convenient as long as the receiver (here, the listener) is to be activated by incoming events. If, on the contrary, the listener has to be activated on its own, i.e. independently of its sources (there are many cases where listeners cannot have their activation cycle managed by the sources), it becomes a problem : either the listener is to be called at random times by its sources, and it has to cope with maybe superfluous incoming events that moreover should stored for later reading, or the listener has to trigger itself its sources to have them deliver their events, if any, when this listener is ready.
+The previously discussed solution is convenient as long as the receiver (here, the listener) is to be activated by incoming events. If, on the contrary, the listener has to be activated on its own, i.e. independently of its sources (there are many cases where listeners cannot have their activation cycle managed by the sources), it becomes a problem: either the listener is to be called at random times by its sources, and it has to cope with maybe superfluous incoming events that moreover should stored for later reading, or the listener has to trigger itself its sources to have them deliver their events, if any, when this listener is ready.
 </p>
 
 <p>
@@ -214,7 +278,7 @@ As events are objects, they benefit from the inheritance scheme, so application 
 <h2>Model-View-Controller (MVC) framework</h2>
 
 <p>
-Most interactive objects can benefit from a decoupling of :
+Most interactive objects can benefit from a decoupling of:
 <ul>
 	<li>their <b>logic</b> (the way they behave)</li>
 	<li>the <b>informations they can send to their environment</b> (such as their appearance)</li>
@@ -224,17 +288,17 @@ Most interactive objects can benefit from a decoupling of :
 </p>
   
 <p>
-With the MVC framework, the previous split items are respectively described as :
+With the MVC framework, the previous split items are respectively described as:
 <ul>
-	<li>the <b>model</b> : the state of the object itself</li>
-	<li>its <b>views</b> (if any) : what can be perceived of the object's state from the outside</li>
-	<li>its <b>controllers</b> (if any) : what might change the object's state from the outside</li>
+	<li>the <b>model</b>: the state of the object itself</li>
+	<li>its <b>views</b> (if any): what can be perceived of the object's state from the outside</li>
+	<li>its <b>controllers</b> (if any): what might change the object's state from the outside</li>
 </ul>
 
 </p>
   
 <p>
-For example, in a game, the main character could have :
+For example, in a game, the main character could have:
 <ul>
 	<li>a <b>model</b> describing his current strength, health, equipments, etc.</li>
 	<li>three <b>views</b> which are reflects of his state, such a 3D model of the character walking, a point in a radar map to spot him, and an audio channel dedicated to the sounds it generates while speaking, walking, fighting, etc.</li>
@@ -259,7 +323,7 @@ In this pattern, activation of the MVC trio is based on the asynchronous surge o
 
 <h3>From controller to model</h3>
 <p>
-The controller is an event source, and models are its event listeners : multiple models can be linked to one controller instance. To notify its models, maybe after having been updated from various input devices, a controller just has to use the <code>notifyAllListeners</code> method it inherited from <code>EventSource</code>. To do so, it may just forge an MVCEvent instance (probably a direct or indirect child class of it), feed it with all the necessary data, and call its <code>notifyAllListeners</code> protected method.
+The controller is an event source, and models are its event listeners: multiple models can be linked to one controller instance. To notify its models, maybe after having been updated from various input devices, a controller just has to use the <code>notifyAllListeners</code> method it inherited from <code>EventSource</code>. To do so, it may just forge an MVCEvent instance (probably a direct or indirect child class of it), feed it with all the necessary data, and call its <code>notifyAllListeners</code> protected method.
 </p>
 
 <p>
@@ -268,7 +332,7 @@ This method will call in turn all its listeners, i.e. the linked models, and not
 
 <h3>From model to views</h3>
 <p>
-From a model point of view, informations are coming partly from its controllers, if any : a model can have zero, one or more controllers. When a model is notified by a controller, its <code>beNotifiedOf</code> method is called and it can update its state accordingly.
+From a model point of view, informations are coming partly from its controllers, if any: a model can have zero, one or more controllers. When a model is notified by a controller, its <code>beNotifiedOf</code> method is called and it can update its state accordingly.
 </p>
 
 
@@ -354,7 +418,7 @@ Let, in 3D-space, X being a point in local referential Rl to be transformed into
 </p>
 
 <p>
-To save time-consuming operations, the vast majority of 3D computing is performed thanks to homogeneous matrices. These matrices have one more dimension than the space they are applied to (example : for 3D, they are 4x4 matrices), and in one operation they are able compute a complex transformation mixing translations and rotations. One has therefore to convert all 3D vectors into 4D vectors, the last coordinate being a non-null number for points which are not located at the infinite. As for all number a non-null 
+To save time-consuming operations, the vast majority of 3D computing is performed thanks to homogeneous matrices. These matrices have one more dimension than the space they are applied to (example: for 3D, they are 4x4 matrices), and in one operation they are able compute a complex transformation mixing translations and rotations. One has therefore to convert all 3D vectors into 4D vectors, the last coordinate being a non-null number for points which are not located at the infinite. As for all number a non-null 
 
 <code>
 <table>
@@ -394,9 +458,9 @@ represents the same point in 3D space, a is often choosen equal to 1 to simplify
 
 
 <p>
- Let's search the 4x4 homogeneous matrix Hlg which transforms a point in Rl into a point in Rg :<br>
+ Let's search the 4x4 homogeneous matrix Hlg which transforms a point in Rl into a point in Rg:<br>
 <code> X' = Hlg. X</code>
-Homogeneous matrix theory teaches us that these matrices looks like :
+Homogeneous matrix theory teaches us that these matrices looks like:
 <table>
 	<tr><td rowspan="3" colspan="3">R3x3</td><td>Tx</td></tr>
 	<tr><td>Ty</td></tr>
@@ -407,7 +471,7 @@ Homogeneous matrix theory teaches us that these matrices looks like :
 </p>
 
 <p>
-The block multiplication matrix shows us that :
+The block multiplication matrix shows us that:
 <code>T = 
 <table>
 	<tr><td>Tx</td></tr>
@@ -415,7 +479,7 @@ The block multiplication matrix shows us that :
 	<tr><td>Tz</td></tr>
 </table></code>
 is the translation vector, which is applied after the R3x3 matrix rotated the object so that its line of sight points to the right direction. One way to determine v', the image of a vector v through rotation matrix, is to describe it thanks to an axis of rotation <code>axis</code>
- and an angle <code>a</code>, which results in following endormorphism <code>e</code> :
+ and an angle <code>a</code>, which results in following endormorphism <code>e</code>:
 <code>v' = e(v) = cos(a)*v + ( ( v | axis ) * ( 1 - cos(angle) ) ) * axis + sin(a) * ( axis ^ v )</code>, with <code>(v1|v2)</code> meaning the dot product of v1 and v2, and <code>v1 ^ v2</code> their cross product.
 </p>
 
@@ -431,9 +495,9 @@ Finally, each object which has to be locatable (for example, a MVC-model of a ri
 <h3>Using a tree allows to compute only once a given global referential</h3>
 
 <p>
-When dealing with multiple referential compositions (ex : a robot whose finger is defined relatively to its hand, which is relative to its arm), one has just to multiply successive transformation matrices to convert referentials. Finger movement is most easily expressed in hand space, hand movement is easily defined in arm space, and so on.</p>
+When dealing with multiple referential compositions (ex: a robot whose finger is defined relatively to its hand, which is relative to its arm), one has just to multiply successive transformation matrices to convert referentials. Finger movement is most easily expressed in hand space, hand movement is easily defined in arm space, and so on.</p>
 
-<p>If we call Rfh the transformation matrix from finger space to hand space, Rha from hand to arm, then the transformation matrix from finger to arm Rfa is : <code>Rfa = Rha.Rfh</code>. As, on a referential (say, the robot's torso Rt) can depend multiple referentials (say, the robot's left and right arms, Rla and Rra, and legs, Rll and Rlr), the relationship between composed referentials can be modelled as a tree : the root is the father referential (ex : the world space), and all its children are defined relatively to their own father. Note that when going down through the tree, we <code>right-</code>multiply the current global matrix by the next local matrix. 
+<p>If we call Rfh the transformation matrix from finger space to hand space, Rha from hand to arm, then the transformation matrix from finger to arm Rfa is: <code>Rfa = Rha.Rfh</code>. As, on a referential (say, the robot's torso Rt) can depend multiple referentials (say, the robot's left and right arms, Rla and Rra, and legs, Rll and Rlr), the relationship between composed referentials can be modelled as a tree: the root is the father referential (ex: the world space), and all its children are defined relatively to their own father. Note that when going down through the tree, we <code>right-</code>multiply the current global matrix by the next local matrix. 
 </p>
 
 <p>
@@ -452,9 +516,9 @@ Note that <code>[ R(a to b ) ^-1] = R(b to a)</code>, the matrices behave as the
 
 
 <p>
-Not only each node of the tree can contain its local referential (say, at the torso level, the transformation matrix from torso to house), but they can also contain premultiplied matrices, from the root to the node's level. In our example, at the torso level, besides the local "torso to house" matrix, there could be a "torso to world" matrix which would be the result of the right-multiplication of all local matrices, from the root to the node's level : the transformation matrix from torso to global would be : <code> R(torso to world) = R(house to world).R(torso to house)</code>. That way, to compute movements relative to arms and legs, this torso to global matrix could be used, and be computed one time for all.</p>
+Not only each node of the tree can contain its local referential (say, at the torso level, the transformation matrix from torso to house), but they can also contain premultiplied matrices, from the root to the node's level. In our example, at the torso level, besides the local "torso to house" matrix, there could be a "torso to world" matrix which would be the result of the right-multiplication of all local matrices, from the root to the node's level: the transformation matrix from torso to global would be: <code> R(torso to world) = R(house to world).R(torso to house)</code>. That way, to compute movements relative to arms and legs, this torso to global matrix could be used, and be computed one time for all.</p>
 
-<p>Besides, a propagation mechanism for up-to-date state can be added : starting from a situation where all referentials are up-to-date, if the robot's right arm moves (probably relatively to the torso), then the robot's right hand and fingers referentials have to be recomputed too. It is done by changing the local right arm referential according to the movement, recomputing the global referential for the right arm by multiplying the unchanged global matrix of the torso by the new local matrix of the right arm. Then all the subtree whose root is the robot's right hand have to be recomputed before use.
+<p>Besides, a propagation mechanism for up-to-date state can be added: starting from a situation where all referentials are up-to-date, if the robot's right arm moves (probably relatively to the torso), then the robot's right hand and fingers referentials have to be recomputed too. It is done by changing the local right arm referential according to the movement, recomputing the global referential for the right arm by multiplying the unchanged global matrix of the torso by the new local matrix of the right arm. Then all the subtree whose root is the robot's right hand have to be recomputed before use.
 </p>
 
 <p>To avoid many useless computations, the global referential for each node is linked to an up-to-date status. When a node is changed, then all its subtree including itself is marked as "not up-to-date". Any access to a node's subtree would lead to the recomputing of all transformation matrices, starting from the root, from the last unchanged matrix to the node whose global refential is wanted.
@@ -462,7 +526,7 @@ Not only each node of the tree can contain its local referential (say, at the to
 </p>
 
 <p>
-To test thoroughfully Ceylan, one should use <a href="http://valgrind.org/" target="_blank">Valgrind</a> (on x86-Linux). To do so, the recommended way is to make use of our script <code>valgrindTest.sh</code> (<code>${CEYLAN_ROOT}/src/code/scripts/shell</code>) : in order to execute the test, for instance <code>testOSDLPolygon</code>, one just has to enter <code>valgrindTest.sh testOSDLPolygon</code>. Then the memory checker messages will be output, and a tedious task will have to be achieved.
+To test thoroughfully Ceylan, one should use <a href="http://valgrind.org/" target="_blank">Valgrind</a> (on x86-Linux). To do so, the recommended way is to make use of our script <code>valgrindTest.sh</code> (<code>${CEYLAN_ROOT}/src/code/scripts/shell</code>): in order to execute the test, for instance <code>testOSDLPolygon</code>, one just has to enter <code>valgrindTest.sh testOSDLPolygon</code>. Then the memory checker messages will be output, and a tedious task will have to be achieved.
 </p>
 
  <br><br>
@@ -487,7 +551,7 @@ Depending on the returned value, the toString method can construct a raw string 
 </p>
 
 <p>
-Finally, at the end of each toString result, one should not finish its sentences with a dot (<code>An incredibly amazing library</code>, not <code>An incredibly amazing library.</code>) to allow better toString composition : when an object displays its state, it might call this method on its sub-objects to account for their own part of the overall object state.
+Finally, at the end of each toString result, one should not finish its sentences with a dot (<code>An incredibly amazing library</code>, not <code>An incredibly amazing library.</code>) to allow better toString composition: when an object displays its state, it might call this method on its sub-objects to account for their own part of the overall object state.
 </p>
 
 
@@ -507,7 +571,7 @@ For all internal issues about the Ceylan library, not related to the way it is u
 	
 	<dd>
 	<p>
-	For example, one wants to use the <code>linked</code> micro-script to generate automatically a bullet list with HTML links in an HTML file (nedit users : Alt-x then type the script name), but the script is not found.
+	For example, one wants to use the <code>linked</code> micro-script to generate automatically a bullet list with HTML links in an HTML file (nedit users: Alt-x then type the script name), but the script is not found.
 	</p>
 	
 	<p>First, one has to ensure one's PATH environment variable lists the relevant directory, which is <code>[...]Ceylan/Ceylan-x.y/src/code/scripts/shell</code>. Then all the scripts such as <code>putLinkList.sh</code> will be available.
@@ -519,9 +583,9 @@ For all internal issues about the Ceylan library, not related to the way it is u
 
 	</dd>
 
-	<dt>After having moved a directory containing Ceylan and/or libtool, the link stage fails with <code>libtool: link: cannot find the library XXX</code> (often : <code>libstdc++.la</code>)</dt>
+	<dt>After having moved a directory containing Ceylan and/or libtool, the link stage fails with <code>libtool: link: cannot find the library XXX</code> (often: <code>libstdc++.la</code>)</dt>
 	
-	<dd>This seems to be one of the way too many limitations of libtool : this wonderful tool manages, in some cases, to store in its scripts hardcoded full paths to other tools, which prevents from moving nearly anything afterwards. Rule of thumb : think carefully before choosing the directory where LOANI is to be run, so that nothing has to be moved afterwards.</dd>
+	<dd>This seems to be one of the way too many limitations of libtool: this wonderful tool manages, in some cases, to store in its scripts hardcoded full paths to other tools, which prevents from moving nearly anything afterwards. Rule of thumb: think carefully before choosing the directory where LOANI is to be run, so that nothing has to be moved afterwards.</dd>
  
  
 	<dt>My program crashes or never terminates, how can I see its logs nevertheless ?</dt>
@@ -530,9 +594,9 @@ For all internal issues about the Ceylan library, not related to the way it is u
 First, avoid using the HTML plug (do not execute <code>myOSDLProgram --HTMLPlug</code>, execute simply <code>myOSDLProgram</code>), because HTML plug needs a special final phase in order to gather all logs and generate the HTML set of pages accordingly. In both cases, crash or never-ending program, this phase would not take place and the log would not be available.
 	</p>
 	<p> 
-Not specifying any plug defaults to the classical plug, which writes logs directly into a file (ex : <code>myOSDLProgram.log</code>). As this plug does not store messages but writes them as soon as they arrive, they cannot be sorted into channels. They however are written in chronological order, and all of them will be available even though your program crashes or does not terminate. To watch these logs in pseudo-real time, one can execute on another terminal, <code>tail -f myOSDLProgram.log</code>.
+Not specifying any plug defaults to the classical plug, which writes logs directly into a file (ex: <code>myOSDLProgram.log</code>). As this plug does not store messages but writes them as soon as they arrive, they cannot be sorted into channels. They however are written in chronological order, and all of them will be available even though your program crashes or does not terminate. To watch these logs in pseudo-real time, one can execute on another terminal, <code>tail -f myOSDLProgram.log</code>.
 	</p>  
-	<p>Example of log-safe command, for a program sending logs and messages on the console too (using <code>std::cout</code> and/or <code>std::cerr</code>) : <code>bin/engine/testOSDLSchedulerNoDeadline $PLUG  2>&1 | tee run.txt</code>. Console messages will be both displayed on real-time and stored in <code>run.txt</code> file for later use.</p>
+	<p>Example of log-safe command, for a program sending logs and messages on the console too (using <code>std::cout</code> and/or <code>std::cerr</code>): <code>bin/engine/testOSDLSchedulerNoDeadline $PLUG  2>&1 | tee run.txt</code>. Console messages will be both displayed on real-time and stored in <code>run.txt</code> file for later use.</p>
 	<p>The <code>PLUG</code> environment can be left undefined to benefit from classical real-time basic logs. For more stable programs, terminating gracefully, one can use <code>export PLUG='--HTMLPlug'</code> to benefit from user-friendly logs, very useful when numerous messages are to be analyzed (a very common case, where critical messages are often missed).
 	</p>
 	<p>
@@ -542,17 +606,17 @@ Not specifying any plug defaults to the classical plug, which writes logs direct
 	</dd>
 
 
-	<dt>The log of my program shows as last message : <code>Unknown exception caught</code></dt>
+	<dt>The log of my program shows as last message: <code>Unknown exception caught</code></dt>
 	<dd>
 	<p>
-	Most of the time, it corresponds to a <code>try/catch</code> clause as defined in the <code>testOSDL*.cc</code> (ex : see <code>testOSDLScheduler.cc</code>), which caught an unexpected exception. The reason for that is often that a method had an explicit declaration for thrown exceptions (ex : <code>throw()</code>) whereas other exceptions might propagate to this method as well (ex : a function called into that method raising some other exception). The compiler relied on the declaration, and the unexpected exception caught at runtime could not be planned, causing the program to fail. The best solution is either to declare all relevant exceptions (recommended), or to not use explicit <code>throw()</code> declarations.
+	Most of the time, it corresponds to a <code>try/catch</code> clause as defined in the <code>testOSDL*.cc</code> (ex: see <code>testOSDLScheduler.cc</code>), which caught an unexpected exception. The reason for that is often that a method had an explicit declaration for thrown exceptions (ex: <code>throw()</code>) whereas other exceptions might propagate to this method as well (ex: a function called into that method raising some other exception). The compiler relied on the declaration, and the unexpected exception caught at runtime could not be planned, causing the program to fail. The best solution is either to declare all relevant exceptions (recommended), or to not use explicit <code>throw()</code> declarations.
 	</p>
 	</dd>
  
  
  	<dt>It seems that my program crashes because of Ceylan log system !</dt>
 	<dd>
-	<p>One can experiment a crash of his program, run it through a debugger, and see that the crash happens in Ceylan's code, for example a segmentation fault or an abort in : 
+	<p>One can experiment a crash of his program, run it through a debugger, and see that the crash happens in Ceylan's code, for example a segmentation fault or an abort in: 
 <code>Ceylan::Log::LogMessage::getChannelName() const (this=0x80606c4) at CeylanLogMessage.cc:63</code>. On all the cases we studied, it was due to a faulty life cycle of the user code.</p>
 
 <p>For example, this error can happen when the user provides an object <code>a</code> to an object <code>b</code>, which takes ownership of <code>a</code>, and manages its life cycle. When <code>b</code> is destroyed, then it will destroy <code>a</code> too. If the user provides an automatic variable to <code>b</code> (say, <code>a</code>, defined as <code>A a ;</code>) instead of a specifically dynamically allocated object (say, <code>A & a = new A()</code>), then such crashes may happen. In most cases, the Ceylan log system, which has been stable and unchanged for months, is not guilty !
@@ -575,10 +639,10 @@ Not specifying any plug defaults to the classical plug, which writes logs direct
     <dd>Check that you did not forget to define your virtual destructor in class Y. To know whether the symbol exists or lacks, use for instance <code>nm --demangle &lt;your binary&gt;</code>, where your binary is an executable, a library (.so or .a) or a .o.
 	</dd>
 	
-	<dt>I got : <code>*** glibc detected *** corrupted double-linked list: 0x(a number) ***</code> or <code>*** glibc detected *** double free or corruption (!prev): (a number) ***</code></dt>
+	<dt>I got: <code>*** glibc detected *** corrupted double-linked list: 0x(a number) ***</code> or <code>*** glibc detected *** double free or corruption (!prev): (a number) ***</code></dt>
 	
 	<dd>
-	It seems to happen in some cases where a library has been updated whereas an application using it has not, even when, apparently, no API change occured. Rebuilding correctly (from scratch) the library and then the application should make the issue vanish. See also : next item.
+	It seems to happen in some cases where a library has been updated whereas an application using it has not, even when, apparently, no API change occured. Rebuilding correctly (from scratch) the library and then the application should make the issue vanish. See also: next item.
 	</dd>
 	
 	
@@ -591,7 +655,7 @@ Not specifying any plug defaults to the classical plug, which writes logs direct
 		
 		<p>Similarly, if a changed test cannot compile anymore, no new executable can be copied to the installation location, whereas a previous version of this test, which used to compile, may still be there. It may confuse the user if he did not notice that one test could not be built.</p>
 		
-		<p>There are a few other reasons (ex : a debugger being used lock a test executable which could not be overwritten with its updated version, etc.) that make the <code>make clean all</code> worth a try.</p>
+		<p>There are a few other reasons (ex: a debugger being used lock a test executable which could not be overwritten with its updated version, etc.) that make the <code>make clean all</code> worth a try.</p>
 		
    </dd>
 	
@@ -600,7 +664,7 @@ Not specifying any plug defaults to the classical plug, which writes logs direct
  
 <h3>Debugging under GNU/Linux</h3>
 
-<p>Be it after a crash or an assert, one wanting to have core files on Linux, in order to inspect them post-mortem thanks to gdb, should use <code>ulimit</code>. Example : 
+<p>Be it after a crash or an assert, one wanting to have core files on Linux, in order to inspect them post-mortem thanks to gdb, should use <code>ulimit</code>. Example: 
 
   <center>
   	<table style="border: none">
@@ -616,7 +680,7 @@ ulimit -c &lt;size of corefile in bytes&gt;<br>
   </center>
 
 <p>
-The core file will be dumped in the current directory. Then run :
+The core file will be dumped in the current directory. Then run:
 <code>gdb yourProgram core.11341</code> (if the PID of your program was 11341). Once in gdb use the "up" and "down" commands to see the area where the code crashes. Also, if you used gcc to compile your programs, make sure the -g option is included. 
  </p>
 
@@ -624,7 +688,7 @@ The core file will be dumped in the current directory. Then run :
 <h3>Generating the documentation</h3>
 
 <p>
-If an error occurs while executing <code>make api</code> under <code>src/doc</code>, please ensure that <code>LOANI-installations/OSDL-environment.sh</code> has already been sourced : this script sets notably the library paths for any LOANI-installed doxygen.
+If an error occurs while executing <code>make api</code> under <code>src/doc</code>, please ensure that <code>LOANI-installations/OSDL-environment.sh</code> has already been sourced: this script sets notably the library paths for any LOANI-installed doxygen.
 </p>
 
 
@@ -673,7 +737,7 @@ If an error occurs while executing <code>make api</code> under <code>src/doc</co
       <center>
         [<a href="#_top_">Top</a>]<br>
         <br>
-        <em>Last update : Tuesday, March 20, 2007
+        <em>Last update: Thursday, August 16, 2007
 
 </em>
       </center>
