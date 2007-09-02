@@ -60,7 +60,8 @@ WOOPER is an <a href="#license">open source</a> lightweight layer on top of the 
                        <a href="#next">Issues &amp; planned enhancements</a><br>
                        <a href="#license">License</a><br>
                        <a href="#sources">Sources, inpirations &amp; alternate solutions</a><br>
-                       <a href="#support">Support</a>
+                       <a href="#support">Support</a><br>
+                       <a href="#developers">For WOOPER developers</a>
 					</div>
 
           </td>
@@ -1110,14 +1111,30 @@ It will build and run all, including the various WOOPER test suites.
 
 
 <h3>Using cutting-edge SVN</h3>
+
 <p>
-A SVN check-out of WOOPER code can be obtained thanks to, for example:
+A SVN (anonymous) check-out of WOOPER code can be obtained thanks to, for example:
 <center>
     <table summary="a box" style="border: none">
         <tr>
           <td>
             <div class="box">
 svn co https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/code/scripts/erlang Wooper-code-checkout 
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+</p>
+
+<p>
+Ceylan developers should used their Sourceforge user name so that they can commit changes:
+<center>
+    <table summary="a box" style="border: none">
+        <tr>
+          <td>
+            <div class="box">
+svn co --username YourSFUserName https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/code/scripts/erlang Wooper-code-checkout 
             </div>
           </td>
         </tr>
@@ -1348,6 +1365,28 @@ Bugs, questions, remarks, patches, requests for enhancements, etc. are to be sen
 
 <!-- #####################################################################" -->
 
+<a name="developers"></a>
+<h2>For WOOPER developers</h2>
+<p>
+When a new WOOPER version is released, tag the corresponding file versions like in:
+<center>
+    <table summary="a box" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+svn copy https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/code/scripts/erlang/wooper https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/tags/wooper-release-0.1 -m "First release (0.1) of WOOPER, already fully functional."
+
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+</p>
+
+<p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
+
+<!-- #####################################################################" -->
+
   <br>
   <br>
 
@@ -1364,7 +1403,7 @@ Bugs, questions, remarks, patches, requests for enhancements, etc. are to be sen
   <center>
     [<a href="#_top_">Top</a>]<br>
     <br>
-    <em>Last update: Thursday, August 2, 2007</em>
+    <em>Last update: Sunday, September 2, 2007</em>
   </center>
 </body>
 </html>
