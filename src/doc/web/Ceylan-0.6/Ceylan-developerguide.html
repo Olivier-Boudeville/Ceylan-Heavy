@@ -107,7 +107,7 @@ The <code>trunk/src/conf/build/autogen.sh</code> script should be used with the 
             <div class="box">
 <code><pre>
 #if CEYLAN_ARCH_NINTENDO_DS
-#include &lt;nds.h&gt; // for  (ARM9)
+#include "CeylanConfigForNintendoDS.h" // for (ARM9)
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 
@@ -147,7 +147,7 @@ The <code>trunk/src/conf/build/autogen.sh</code> script should be used with the 
 
 	<li><b>Anonymous check-out</b>: svn co https://ceylan.svn.sourceforge.net/svnroot/ceylan ceylan</li>
 
-	<li><b>User-based check-out</b>: svn co --username MyUserName https://svn.sourceforge.net/svnroot/ceylan ceylan</li>
+	<li><b>User-based check-out</b>: svn co --username MyUserName https://ceylan.svn.sourceforge.net/svnroot/ceylan ceylan</li>
 
 	<li>Make SVN <b>ignore</b> a file or a pattern of files: <code>svn propset svn:ignore myFile .</code> or <code>svn propset svn:ignore "*.log" logs/</code></li>
 	
@@ -359,7 +359,7 @@ Now <code>x'.y'</code> designates the next version.
       <center>
         [<a href="#_top_">Top</a>]<br>
         <br>
-        <em>Last update: Sunday, August 5, 2007</em>
+        <em>Last update: Sunday, September 2, 2007</em>
       </center>
   
 </body>
