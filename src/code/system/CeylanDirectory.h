@@ -2,7 +2,7 @@
 #define CEYLAN_DIRECTORY_H_
 
 
-#include "CeylanFileSystemCommon.h"    // for FileManagementException and al
+#include "CeylanFileSystemCommon.h"    // for DirectoryException and al
 #include "CeylanStringUtils.h"         // for Latin1Char
 
 
@@ -28,6 +28,26 @@ namespace Ceylan
 		 */
 		class FileSystemManager ;
 		
+
+		/**
+		 * Thrown when file operations failed because of underlying
+		 * filesystem manager: the corresponding backend could not 
+		 * be retrieved as expected.
+		 *
+		 */
+		class CEYLAN_DLL DirectoryDelegatingException: public DirectoryException
+		{ 
+		
+			public: 
+			
+				explicit DirectoryDelegatingException( 
+					const std::string & reason ) throw() ; 
+					
+		} ;
+		
+
+
+
 		
 		/**
 		 * Abstract directory mother class, so that programs can always
@@ -37,7 +57,7 @@ namespace Ceylan
 		 * Examples of convenient cross-platform Directory methods whose use 
 		 * is encouraged: Create, Open, Remove, ExistsAsDirectory.
 		 *
-		 * @see File
+		 * @see File, FileSystemManager for other file-related operations.
 		 *
 		 */
 		class CEYLAN_DLL Directory: public TextDisplayable
@@ -45,362 +65,6 @@ namespace Ceylan
 
 
 			public:
-
-
-				/// Mother class of all directory-related exceptions.
-				class CEYLAN_DLL DirectoryException: 
-					public FileManagementException
-				{
-				
-					public:
-
-						explicit DirectoryException( 
-								const std::string & reason ) throw() :
-							FileManagementException( reason )
-						{
-						
-						}
-						
-						
-						virtual ~DirectoryException() throw()
-						{
-						
-						}
-
-				} ;
-
-
-
-				class CEYLAN_DLL CreateFailed: public DirectoryException
-				{
-					public:
-					
-						explicit CreateFailed( const std::string & message )
-								throw():
-							DirectoryException( message )
-						{
-						
-						}	
-						
-				} ;
-
-
-				class CEYLAN_DLL OpenFailed: public DirectoryException
-				{
-					public:
-					
-						explicit OpenFailed( const std::string & message )
-								throw():
-							DirectoryException( message )
-						{
-						
-						}	
-						
-				} ;
-
-
-				class CEYLAN_DLL RemoveFailed: public DirectoryException
-				{
-					public:
-					
-						explicit RemoveFailed( const std::string & message )
-								throw():
-							DirectoryException( message )
-						{
-						
-						}	
-						
-				} ;
-
-
-				class CEYLAN_DLL DirectoryLookupFailed: public DirectoryException
-				{
-					public:
-					
-						explicit DirectoryLookupFailed( 
-								const std::string & message )throw():
-							DirectoryException( message )
-						{
-						
-						}	
-						
-				} ;
-
-
-				class CEYLAN_DLL ChangeDirectoryFailed: 
-					public DirectoryException
-				{
-					public:
-					
-						explicit ChangeDirectoryFailed( 
-								const std::string & message ) throw():
-							DirectoryException( message )
-						{
-						
-						}	
-						
-						
-				} ;
-
-
-				class CEYLAN_DLL InvalidPathException: public DirectoryException
-				{
-					public:
-					
-						explicit InvalidPathException( 
-								const std::string & message ) throw():
-							DirectoryException( message )
-						{
-						
-						}
-						
-				} ;
-
-
-
-				// Static section for user-dedicated cross-platform primitives.
-				
-				
-				
-				// Factory subsection.
-
-
-				/**
-				 * Returns a Directory reference on a directory newly created
-				 * on disk.
-				 *
-				 * @param newDirectoryName the name of the directory to create.
-				 *
-				 * Directory factory, to be used instead of a specific Directory
-				 * subclass constructor, so that it can return a Directory
-				 * instance that is actually a specialized one (ex: a
-				 * StandardDirectory, not an abstract Directory).
-				 *
-				 * @throw CreateFailed if the directory creation failed.
-				 *
-				 */
-				static Directory & Create( 
-						const std::string & newDirectoryName ) 
-					throw( CreateFailed ) ;
-
-				
-				/**
-				 * Returns a Directory reference on specified already-existing
-				 * directory, which will be "opened" (i.e. referred to).
-				 *
-				 * @param directoryName the name of the directory. If not
-				 * specified (the string is empty), returns a reference to the
-				 * current working directory.
-				 *
-				 * Directory factory, to be used instead of a specific Directory
-				 * subclass constructor, so that it can return a Directory
-				 * instance that is actually a specialized one (ex: a
-				 * StandardDirectory, not an abstract Directory).
-				 *
-				 * @throw OpenFailed if the directory opening failed.
-				 *
-				 */
-				static Directory & Open( 
-						const std::string & directoryName = "" ) 
-					throw( OpenFailed ) ;
-					
-
-				/**
-				 * Removes the directory from disk.
-				 *
-				 * @param directoryPath the path of the target directory.
-				 *
-				 * @param recursive if false, the specified directory is 
-				 * expected to be empty, and it will be removed. If true,
-				 * then the full directory content (including all files and
-				 * possible subdirectories) and this directory itself will be
-				 * removed.
-				 *
-				 * @throw RemoveFailed if the operation failed or is not
-				 * supported.
-				 *
-				 */
-				static void Remove( const std::string & directoryPath, 
-					bool recursive = false ) throw( RemoveFailed ) ;
-
-
-				/**
-				 * Destroys the directory reference, not the directory itself.
-				 *
-				 * @see Remove
-				 *
-				 * The destructor must be public as instances created by 
-				 * factories have to be deallocated by the user.
-				 *
-				 */
-				virtual ~Directory() throw() ;
-
-
-
-
-				// Instance methods.
-				
-				
-				
-				// Directory content subsection.
-				
-				
-				/**
-				 * Tells whether the directory has a direct entry named 
-				 * <b>entryName</b>.
-				 *
-				 * @param entryName the name of the entry to look-up.
-				 *
-				 * @throw DirectoryLookupFailed is the operation failed or is
-				 * not supported.
-				 *
-				 */
-				virtual bool hasEntry( const std::string & entryName ) const
-					throw( DirectoryLookupFailed ) = 0 ;
-
-
-				/**
-				 * Returns the names of all direct subdirectories of this
-				 * directory, in the specified list.
-				 *
-				 * @param subDirectories the caller-provided list in which
-				 * subdirectories will be put.
-				 *
-				 * @throw DirectoryLookupFailed if an error occured.
-				 *
-				 */
-				virtual void getSubdirectories( 
-						std::list<std::string> & subDirectories )
-					const throw( DirectoryLookupFailed ) = 0 ;
-
-
-				/**
-				 * Returns the names of all files of this directory, in the
-				 * specified list.
-				 *
-				 * @param files the caller-provided list in which
-				 * subdirectories will be put.
-				 *
-				 * @throw DirectoryLookupFailed if an error occured.
-				 *
-				 */
-				virtual void getFiles( std::list<std::string> & files )
-					const throw( DirectoryLookupFailed ) = 0 ;
-
-
-				/**
-				 * Returns the names of all direct entries of any type of 
-				 * this directory (including files and directories), in the
-				 * specified list.
-				 *
-				 * @param entries the caller-provided list in which 
-				 * entries will be put.
-				 *
-				 * @throw DirectoryLookupFailed if the operation failed or
-				 * is not supported.
-				 *
-				 */
-				virtual void getEntries( std::list<std::string> & entries )
-					const throw( DirectoryLookupFailed ) = 0 ;
-
-
-				/**
-				 * Returns the names of all direct entries of any type of 
-				 * this directory (including files and directories), in the
-				 * corresponding specified list.
-				 *
-				 * @param subDirectories the caller-provided list in which 
-				 * subDirectories of this directory will be put.
-				 *
-				 * @param files the caller-provided list in which 
-				 * files of this directory will be put.
-				 *
-				 * @param otherEntries the caller-provided list in which 
-				 * other entries (named FIFO, sockets, etc.) of this
-				 * directory will be put.
-				 *
-				 * @throw DirectoryLookupFailed if the operation failed or
-				 * is not supported.
-				 *
-				 */
-				virtual void getSortedEntries( 
-						std::list<std::string> & subDirectories,
-						std::list<std::string> & files,
-						std::list<std::string> & otherEntries )
-					const throw( DirectoryLookupFailed ) = 0 ;
-
-
-
-
-				// Other instance methods.
-				
-
-				/**
-				 * Changes directory to one of its direct subdirectories.
-				 *
-				 * @param subdirectoryName the name of the subdirectory of
-				 * this directory to go to. It should not have any separator
-				 * in it.
-				 *
-				 * @example myDir.goDown( "data" )
-				 *
-				 * @throw ChangeDirectoryFailed if the operation failed or is
-				 * not supported.
-				 *
-				 */
-				virtual void goDown( const std::string & subdirectoryName )
-					throw( ChangeDirectoryFailed ) ;
-
-
-				/**
-				 * Tells whether the reference on the directory is valid.
-				 *
-				 * Checks that corresponding path exists, and that it is a
-				 * directory.
-				 *
-				 * @throw DirectoryException if the operation failed or is not
-				 * supported.
-				 *
-				 */
-				virtual bool isValid() const throw( DirectoryException ) ;
-
-
-				/**
-				 * Returns the path of the directory which is referred to.
-				 *
-				 * @return the path, with no leading separator.
-				 *
-				 */
-				virtual const std::string & getPath() const throw() ;
-
-
-				/**
-				 * Removes the leading separator, if any, in the path of this
-				 * directory path.
-				 *
-				 * @throw DirectoryException if the operation failed or is not
-				 * supported.
-				 *
-				 */
-				virtual void removeLeadingSeparator()
-					throw( DirectoryException ) ;
-
-
-				/**
-				 * Returns a user-friendly description of the state of 
-				 * this object.
-				 *
-				 * @param level the requested verbosity level.
-				 *
-				 * @note Text output format is determined from overall settings.
-				 *
-				 * @see TextDisplayable
-				 *
-				 */
-	            virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high )
-					const throw() ;
-
 
 
 
@@ -416,6 +80,18 @@ namespace Ceylan
 				 * thrown, including if the filesystem manager backend could 
 				 * not be retrieved. In that case a more specialized exception
 				 * is thrown, a DirectoryDelegatingException.
+				 * 
+				 * The filesystem being used is the default one: either one is
+				 * already defined, and it will be used, or none is available
+				 * and the platform-specific default one will be created (thus
+				 * it has a side-effect).
+				 *
+				 * @see FileSystemManager::GetAnyDefaultFileSystemManager
+				 *
+				 * @note Non-static methods uses their linked filesystem
+				 * manager, which may or may not be the default one: depending
+				 * on a static or non-static method being called, different
+				 * filesystem managers may be called.
 				 *
 				 */
 				
@@ -430,15 +106,76 @@ namespace Ceylan
 				 * case-insensitive, and 'c:' is not a directory 
 				 * (it is seen as a drive), whereas 'c:\' is a directory.
 				 *
-				 * @throw DirectoryLookupFailed if the operation failed
-				 * (existence test failed with no answer) or is not supported 
-				 * on this platform. This includes throwing a more specific
-				 * DirectoryDelegatingException (a child class of
-				 * DirectoryException), should the underlying filesystem 
-				 * manager not be retrieved as expected. 
+				 * @throw DirectoryException, including DirectoryLookupFailed 
+				 * if the operation failed (existence test failed with no
+				 * answer) or is not supported on this platform, or
+				 * DirectoryDelegatingException should the underlying 
+				 * filesystem manager not be retrieved as expected. 
 				 *
 				 */
-				static bool Exists(	const std::string & directoryPath ) 
+				static bool Exists( const std::string & directoryPath ) 
+					throw( DirectoryException ) ;
+				
+
+				/**
+				 * Removes the directory from disk.
+				 *
+				 * @param directoryPath the path of the target directory.
+				 *
+				 * @param recursive if false, the specified directory is 
+				 * expected to be empty, and it will be removed. If true,
+				 * then the full directory content (including all files and
+				 * possible subdirectories) and this directory itself will be
+				 * removed.
+				 *
+				 * @throw DirectoryException, including DirectoryRemoveFailed 
+				 * if the operation failed or is not supported on this platform,
+				 * or DirectoryDelegatingException should the underlying 
+				 * filesystem manager not be retrieved as expected. 
+				 *
+				 */
+				static void Remove( const std::string & directoryPath, 
+					bool recursive = false ) throw( DirectoryException ) ;
+				
+				
+				/**
+				 * Moves specified directory on filesystem.
+				 *
+				 * A special case of directory moving is directory renaming.
+				 *
+				 * @param sourceDirectoryname the path of the directory to be
+				 * moved.
+				 *
+				 * @param targetDirectoryname the path of the target directory.
+				 *
+				 * @throw DirectoryException, including DirectoryMoveFailed 
+				 * if the operation failed or is not supported on this platform,
+				 * or DirectoryDelegatingException should the underlying 
+				 * filesystem manager not be retrieved as expected. 
+				 *
+				 */
+				static void Move( const std::string & sourceDirectoryname,
+						const std::string & targetDirectoryname ) 
+					throw( DirectoryException ) ;
+				
+				
+				/**
+				 * Copies the directory on filesystem.
+				 *
+				 * @param sourceDirectoryname the path of the directory to be
+				 * copied.
+				 *
+				 * @param targetDirectoryname the path of the target directory.
+				 *
+				 * @throw DirectoryException, including DirectoryCopyFailed 
+				 * if the operation failed or is not supported on this platform,
+				 * or DirectoryDelegatingException should the underlying 
+				 * filesystem manager not be retrieved as expected. 
+				 *
+				 *
+				 */
+				static void Copy( const std::string & sourceDirectoryname,
+						const std::string & targetDirectoryname ) 
 					throw( DirectoryException ) ;
 
 
@@ -667,6 +404,238 @@ namespace Ceylan
 					throw( DirectoryException ) ;
 				
 				
+
+				
+				// Factory subsection.
+
+
+				/**
+				 * Returns a Directory reference on a directory newly created
+				 * on disk.
+				 *
+				 * @param newDirectoryName the name of the directory to create.
+				 *
+				 * Directory factory, to be used instead of a specific Directory
+				 * subclass constructor, so that it can return a Directory
+				 * instance that is actually a specialized one (ex: a
+				 * StandardDirectory, not an abstract Directory).
+				 *
+				 * @throw DirectoryException, including DirectoryCreationFailed
+				 * if the operation failed or is not supported on this platform,
+				 * or DirectoryDelegatingException if the relevant filesystem
+				 * manager could not be retrieved.
+				 *
+				 */
+				static Directory & Create( 
+						const std::string & newDirectoryName ) 
+					throw( DirectoryException ) ;
+
+				
+				/**
+				 * Returns a Directory reference on specified already-existing
+				 * directory, which will be "opened" (i.e. referred to).
+				 *
+				 * @param directoryName the name of the directory. If not
+				 * specified (the string is empty), returns a reference to the
+				 * current working directory.
+				 *
+				 * Directory factory, to be used instead of a specific Directory
+				 * subclass constructor, so that it can return a Directory
+				 * instance that is actually a specialized one (ex: a
+				 * StandardDirectory, not an abstract Directory).
+				 *
+				 * @throw DirectoryException, including DirectoryOpeningFailed
+				 * if the operation failed or is not supported on this platform,
+				 * or DirectoryDelegatingException if the relevant filesystem
+				 * manager could not be retrieved.
+				 *
+				 */
+				static Directory & Open( 
+						const std::string & directoryName = "" ) 
+					throw( DirectoryException ) ;
+					
+
+
+
+				/**
+				 * Destroys the directory reference, not the directory itself.
+				 *
+				 * @see Remove
+				 *
+				 * The destructor must be public as instances created by 
+				 * factories have to be deallocated by the user.
+				 *
+				 */
+				virtual ~Directory() throw() ;
+
+
+
+
+				// Instance methods.
+				
+				
+				
+				// Directory content subsection.
+				
+				
+				/**
+				 * Tells whether the directory has a direct entry named 
+				 * <b>entryName</b>.
+				 *
+				 * @param entryName the name of the entry to look-up.
+				 *
+				 * @throw DirectoryLookupFailed is the operation failed or is
+				 * not supported.
+				 *
+				 */
+				virtual bool hasEntry( const std::string & entryName ) const
+					throw( DirectoryLookupFailed ) = 0 ;
+
+
+				/**
+				 * Returns the names of all direct subdirectories of this
+				 * directory, in the specified list.
+				 *
+				 * @param subDirectories the caller-provided list in which
+				 * subdirectories will be put.
+				 *
+				 * @throw DirectoryLookupFailed if an error occured.
+				 *
+				 */
+				virtual void getSubdirectories( 
+						std::list<std::string> & subDirectories )
+					const throw( DirectoryLookupFailed ) = 0 ;
+
+
+				/**
+				 * Returns the names of all files of this directory, in the
+				 * specified list.
+				 *
+				 * @param files the caller-provided list in which
+				 * subdirectories will be put.
+				 *
+				 * @throw DirectoryLookupFailed if an error occured.
+				 *
+				 */
+				virtual void getFiles( std::list<std::string> & files )
+					const throw( DirectoryLookupFailed ) = 0 ;
+
+
+				/**
+				 * Returns the names of all direct entries of any type of 
+				 * this directory (including files and directories), in the
+				 * specified list.
+				 *
+				 * @param entries the caller-provided list in which 
+				 * entries will be put.
+				 *
+				 * @throw DirectoryLookupFailed if the operation failed or
+				 * is not supported.
+				 *
+				 */
+				virtual void getEntries( std::list<std::string> & entries )
+					const throw( DirectoryLookupFailed ) = 0 ;
+
+
+				/**
+				 * Returns the names of all direct entries of any type of 
+				 * this directory (including files and directories), in the
+				 * corresponding specified list.
+				 *
+				 * @param subDirectories the caller-provided list in which 
+				 * subDirectories of this directory will be put.
+				 *
+				 * @param files the caller-provided list in which 
+				 * files of this directory will be put.
+				 *
+				 * @param otherEntries the caller-provided list in which 
+				 * other entries (named FIFO, sockets, etc.) of this
+				 * directory will be put.
+				 *
+				 * @throw DirectoryLookupFailed if the operation failed or
+				 * is not supported.
+				 *
+				 */
+				virtual void getSortedEntries( 
+						std::list<std::string> & subDirectories,
+						std::list<std::string> & files,
+						std::list<std::string> & otherEntries )
+					const throw( DirectoryLookupFailed ) = 0 ;
+
+
+
+
+				// Other instance methods.
+				
+
+				/**
+				 * Changes directory to one of its direct subdirectories.
+				 *
+				 * @param subdirectoryName the name of the subdirectory of
+				 * this directory to go to. It should not have any separator
+				 * in it.
+				 *
+				 * @example myDir.goDown( "data" )
+				 *
+				 * @throw DirectoryChangeFailed if the operation failed or is
+				 * not supported.
+				 *
+				 */
+				virtual void goDown( const std::string & subdirectoryName )
+					throw( DirectoryChangeFailed ) ;
+
+
+				/**
+				 * Tells whether the reference on the directory is valid.
+				 *
+				 * Checks that corresponding path exists, and that it is a
+				 * directory.
+				 *
+				 * @throw DirectoryException if the operation failed or is not
+				 * supported.
+				 *
+				 */
+				virtual bool isValid() const throw( DirectoryException ) ;
+
+
+				/**
+				 * Returns the path of the directory which is referred to.
+				 *
+				 * @return the path, with no leading separator.
+				 *
+				 */
+				virtual const std::string & getPath() const throw() ;
+
+
+				/**
+				 * Removes the leading separator, if any, in the path of this
+				 * directory path.
+				 *
+				 * @throw DirectoryException if the operation failed or is not
+				 * supported.
+				 *
+				 */
+				virtual void removeLeadingSeparator()
+					throw( DirectoryException ) ;
+
+
+				/**
+				 * Returns a user-friendly description of the state of 
+				 * this object.
+				 *
+				 * @param level the requested verbosity level.
+				 *
+				 * @note Text output format is determined from overall settings.
+				 *
+				 * @see TextDisplayable
+				 *
+				 */
+	            virtual const std::string toString( 
+						Ceylan::VerbosityLevels level = Ceylan::high )
+					const throw() ;
+
+
+
 				
 
 			protected:
@@ -694,6 +663,29 @@ namespace Ceylan
 
 
 
+				/**
+				 * The path a directory instance refers to.
+				 *
+				 * @note All stored path have any leading separator removed.
+				 *
+				 */
+				std::string _path ;
+
+
+				/**
+				 * Returns the filesystem manager that should be used by 
+				 * Directory static methods, which is the default manager.
+				 *
+				 * @return the default filesystem manager.
+				 *
+				 * @throw DirectoryDelegatingException if the operation failed.
+				 *
+				 */
+				static FileSystemManager & GetCorrespondingFileSystemManager()
+					throw( DirectoryDelegatingException ) ;
+
+
+
 			private:
 
 
@@ -715,16 +707,7 @@ namespace Ceylan
 				 *
 				 */
 				Directory & operator = ( const Directory & source ) throw() ;
-
-
-				/**
-				 * The path a directory instance refers to.
-				 *
-				 * @note All stored path have any leading separator removed.
-				 *
-				 */
-				std::string _path ;
-				
+			
 
 		} ;
 

@@ -2,10 +2,10 @@
 #define CEYLAN_FILE_H_
 
 
+#include "CeylanFileSystemCommon.h"    // for FileException and al
 #include "CeylanSystem.h"              // for Size, SignedSize, etc.
 #include "CeylanTypes.h"               // for Ceylan::Byte
 #include "CeylanInputOutputStream.h"   // for inheritance
-#include "CeylanFileSystemCommon.h"    // for FileManagementException and al
 
 #include <string>
 
@@ -55,6 +55,72 @@ namespace Ceylan
 		typedef Ceylan::Uint16 PermissionFlag ;
 
 
+		/*
+		 * As explained in CeylanFileSystemCommon.h, some file exceptions have
+		 * to be declared in that file and have to have a name starting with
+		 * 'File'. For the sake of homogeneity, other file exception declared
+		 * here also have a name like 'FileX', instead of being
+		 * declared as inner classes (ex: File::X').
+		 *
+		 * Note that exceptions associated to inherited methods
+		 * (InputOutputStream) cannot follow this rule.
+		 *
+		 */
+		 
+
+		class CEYLAN_DLL FileReadLockingFailed: public FileException
+		{ 
+			public: 
+			
+				explicit FileReadLockingFailed( 
+					const std::string & reason ) throw() ; 
+		} ;
+
+
+		class CEYLAN_DLL FileReadUnlockingFailed: public FileException
+		{ 
+			public: 
+			
+				explicit FileReadUnlockingFailed( 
+					const std::string & reason ) throw() ; 
+		} ;
+
+
+		class CEYLAN_DLL FileWriteLockingFailed: public FileException
+		{ 
+			public: 
+			
+				explicit FileWriteLockingFailed( 
+					const std::string & reason ) throw() ; 
+		} ;
+
+
+		class CEYLAN_DLL FileWriteUnlockingFailed: public FileException
+		{ 
+			public: 
+			
+				explicit FileWriteUnlockingFailed( 
+					const std::string & reason ) throw() ; 
+		} ;
+
+
+		/**
+		 * Thrown when file operations failed because of underlying
+		 * filesystem manager: the corresponding backend could not 
+		 * be retrieved as expected.
+		 *
+		 */
+		class CEYLAN_DLL FileDelegatingException: public FileException
+		{ 
+		
+			public: 
+			
+				explicit FileDelegatingException( 
+					const std::string & reason ) throw() ; 
+					
+		} ;
+		
+
 
 		/**
 		 * Abstract file mother class, so that programs can always manipulate
@@ -69,15 +135,17 @@ namespace Ceylan
 		 * 'File & myFile = File::Create(...)' as to be used instead. 
 		 * The drawback of this approach is that the life-cycle of the instance
 		 * has to be managed explicitly, with for example a 'delete &myFile'
-		 * to be placed before each return or throw statement.
+		 * to be placed before each return or throw statement (no automatic
+		 * variable can be used directly for an abstract file).
 		 * To restore file handling through automatic variable (which are
-		 * automatically deallocated in the relevant cases), the ResourceHolder
+		 * automatically deallocated in the relevant cases), the Holder
 		 * class is available.
 		 * It should be used that way:
 		 * 'Holder<File> myFileHolder( File::Open(...) ) ;', then
-		 * 'myFileHolder.get().lockForWriting()' can be used for example.
+		 * 'myFileHolder.get().lockForWriting()' or, preferably,
+		 * 'myFileHolder->lockForWriting()' can be used.
 		 *
-		 * @see Directory, FileSystemManager
+		 * @see Directory, FileSystemManager for other file-related operations.
 		 *
 		 * @note Depending on the platform support, some primitives may not
 		 * be available, which results in FileException being raised
@@ -93,8 +161,8 @@ namespace Ceylan
 		 * 
 		 * @note To specify all exceptions that may be thrown by file
 		 * manipulation, use System::SystemException, the closest mother class
-		 * of FileException, InputStream::ReadFailedException and
-		 * OutputStream::WriteFailedException. 
+		 * of FileException, InputStream::ReadFailedException,
+		 * OutputStream::WriteFailedException, Stream::CloseException. 
 		 * 
 		 */
 		class CEYLAN_DLL File : public InputOutputStream
@@ -102,155 +170,6 @@ namespace Ceylan
 	
 
 			public:
-
-
-				class CEYLAN_DLL RemoveFailed: public FileException
-				{
-					public:
-					
-						explicit RemoveFailed( const std::string & message )
-								throw():
-							FileException( message )
-						{
-						
-						}	
-						
-				} ;
-
-
-				class CEYLAN_DLL MoveFailed: public FileException
-				{
-					public:
-					
-						explicit MoveFailed( const std::string & message )
-								throw():
-							FileException( message )
-						{
-						
-						}	
-						
-				} ;
-
-
-				class CEYLAN_DLL CopyFailed: public FileException
-				{
-					public:
-					
-						explicit CopyFailed( const std::string & message )
-								throw():
-							FileException( message )
-						{
-						
-						}	
-						
-				} ;
-
-
-				class CEYLAN_DLL CreateFailed: public FileException
-				{ 
-					public: 
-					
-						explicit CreateFailed( 
-								const std::string & reason ) throw() ; 
-				} ;
-
-
-				class CEYLAN_DLL OpenFailed: public FileException
-				{ 
-				
-					public: 
-					
-						explicit OpenFailed( 
-								const std::string & reason ) throw() ; 
-				} ;
-
-
-				class CEYLAN_DLL AlreadyOpened: public FileException
-				{ 
-				
-					public: 
-					
-						explicit AlreadyOpened( 
-								const std::string & reason ) throw() ; 
-				} ;
-
-
-				class CEYLAN_DLL LookupFailed: public FileException
-				{
-					public:
-					
-						explicit LookupFailed( 
-								const std::string & message ) throw():
-							FileException( message )
-						{
-						
-						}	
-						
-				} ;
-
-
-
-				class CEYLAN_DLL ReadLockingFailed: public FileException
-				{ 
-					public: 
-					
-						explicit ReadLockingFailed( 
-							const std::string & reason ) throw() ; 
-				} ;
-
-
-				class CEYLAN_DLL ReadUnlockingFailed: public FileException
-				{ 
-					public: 
-					
-						explicit ReadUnlockingFailed( 
-							const std::string & reason ) throw() ; 
-				} ;
-
-
-				class CEYLAN_DLL WriteLockingFailed: public FileException
-				{ 
-					public: 
-					
-						explicit WriteLockingFailed( 
-							const std::string & reason ) throw() ; 
-				} ;
-
-
-				class CEYLAN_DLL WriteUnlockingFailed: public FileException
-				{ 
-					public: 
-					
-						explicit WriteUnlockingFailed( 
-							const std::string & reason ) throw() ; 
-				} ;
-
-
-
-				class CEYLAN_DLL CloseFailed: public FileException
-				{ 
-				
-					public: 
-					
-						explicit CloseFailed( 
-							const std::string & reason ) throw() ; 
-							
-				} ;
-
-				
-				class CEYLAN_DLL FileTouchFailed: public FileException
-				{ 
-				
-					public: 
-					
-						explicit FileTouchFailed( 
-							const std::string & reason ) throw() ; 
-							
-				} ;
-
-				
-				
-
 
 
 
@@ -493,8 +412,20 @@ namespace Ceylan
 				static const PermissionFlag OthersReadWriteExec ;
 				
 							
-							
-				// Static section.
+				/*
+				 * Static section.
+				 *
+				 * These methods encapsulate calls to the actual filesystem
+				 * manager, so that the developer does not need to mess with
+				 * platform-specific details and/or with the management of
+				 * specialized filesystem managers. 
+				 *
+				 * Should a delegated operation fail, a FileException is
+				 * thrown, including if the filesystem manager backend could 
+				 * not be retrieved. In that case a more specialized exception
+				 * is thrown, a FileDelegatingException.
+				 *
+				 */
 
 
 				/**
@@ -506,15 +437,14 @@ namespace Ceylan
 				 * This method will work as expected whether the 
 				 * symbolic link feature is enabled or not.
 				 *
-				 * @throw FileException, including File::LookupFailed if the
-				 * operation failed or is not supported on this platform, or
-				 * FileDelegatingException if the relevant filesystem manager
-				 * could not be retrieved.
+				 * @throw FileException, including FileLookupFailed if the
+				 * operation failed (existence test failed with no answer) or
+				 * is not supported on this platform, or FileDelegatingException
+				 * if the relevant filesystem manager could not be retrieved.
 				 *
 				 */
 				static bool ExistsAsFileOrSymbolicLink( 
-						const std::string & filename ) const 
-					throw( FileException ) ;
+						const std::string & filename ) throw( FileException ) ;
 
 
 				/**
@@ -522,7 +452,7 @@ namespace Ceylan
 				 *
 				 * @param filename the filename to remove.
 				 *
-				 * @throw FileException, including File::RemoveFailed if the
+				 * @throw FileException, including FileRemoveFailed if the
 				 * operation failed or is not supported on this platform, or
 				 * FileDelegatingException if the relevant filesystem manager
 				 * could not be retrieved.
@@ -533,24 +463,6 @@ namespace Ceylan
 				
 				
 				/**
-				 * Creates a symbolic link on filesystem.
-				 *
-				 * @param linkTarget the full path of the entry the new link
-				 * should point to.
-				 *
-				 * @param linkName the filename of the link to create.
-				 *
-				 * @throw FileException, including SymlinkFailed if the
-				 * operation failed or is not supported on this platform, or
-				 * FileDelegatingException if the relevant filesystem manager
-				 * could not be retrieved.
-				 *
-				 */
-				static void CreateSymbolicLink( const std::string & linkTarget,
-					const std::string & linkName ) throw( FileException ) ;
-
-
-				/**
 				 * Moves specified file on filesystem.
 				 *
 				 * A special case of file moving is file renaming.
@@ -559,7 +471,7 @@ namespace Ceylan
 				 *
 				 * @param targetFilename the target filename of the moved file.
 				 *
-				 * @throw FileException, including File::MoveFailed if the
+				 * @throw FileException, including FileMoveFailed if the
 				 * operation failed or is not supported on this platform, or
 				 * FileDelegatingException if the relevant filesystem manager
 				 * could not be retrieved.
@@ -630,7 +542,7 @@ namespace Ceylan
 				 *
 				 * @see File::Create to create empty files.
 				 *
-				 * @throw FileTouchFailed if the operation failed or is not
+				 * @throw TouchFailed if the operation failed or is not
 				 * supported on this platform, or FileDelegatingException if 
 				 * the relevant filesystem manager could not be retrieved.
 				 *
@@ -689,9 +601,10 @@ namespace Ceylan
 				 * actually a specialized one (ex: a StandardFile, not an
 				 * abstract File).
 				 *
-				 * @throw CreateFailed if the operation failed or is not
-				 * supported on this platform, or FileDelegatingException if 
-				 * the relevant filesystem manager could not be retrieved.
+				 * @throw FileException, including FileCreationFailed if the
+				 * operation failed or is not supported on this platform, or
+				 * FileDelegatingException if the relevant filesystem manager
+				 * could not be retrieved.
 				 *
 				 * @example:
 				 * <pre>
@@ -727,9 +640,10 @@ namespace Ceylan
 				 * actually a specialized one (ex: a StandardFile, not an
 				 * abstract File).
 				 *
-				 * @throw OpenFailed if the operation failed or is not
-				 * supported on this platform, or FileDelegatingException if 
-				 * the relevant filesystem manager could not be retrieved.
+				 * @throw FileException, including FileOpeningFailed if the
+				 * operation failed or is not supported on this platform, or
+				 * FileDelegatingException if the relevant filesystem manager
+				 * could not be retrieved.
 				 *
 				 * @example:
 				 * <pre>
@@ -766,6 +680,10 @@ namespace Ceylan
 
 
 
+
+				// Instance methods.
+
+
 				/// Returns this file's name.
 				const std::string & getName() const throw() ;
 
@@ -775,7 +693,7 @@ namespace Ceylan
 				 *
 				 * @return true iff an operation had to be performed.
 				 *
-				 * @throw CloseException if the close operation failed, 
+				 * @throw Stream::CloseException if the close operation failed, 
 				 * including if the file was not already opened.
 				 *
 				 */
@@ -802,56 +720,57 @@ namespace Ceylan
 				/**
 				 * Locks the file for reading.
 				 *
-				 * @throw ReadLockingFailed if the operation failed or if the
-				 * file lock feature is not available.
+				 * @throw FileReadLockingFailed if the operation failed or 
+				 * if the file lock feature is not available.
 				 *		 
 				 * This default implementation, meant to be overriden, throws
 				 * this exception if called.
 				 *
 				 */
-				virtual void lockForReading() const throw( ReadLockingFailed ) ;
+				virtual void lockForReading() const 
+					throw( FileReadLockingFailed ) ;
 
 
 				/**
 				 * Unlocks the file for reading.
 				 *
-				 * @throw ReadUnlockingFailed if the operation failed or if the
-				 * file lock feature is not available.
+				 * @throw FileReadUnlockingFailed if the operation failed or 
+				 * if the file lock feature is not available.
 				 *		 
 				 * This default implementation, meant to be overriden, throws
 				 * this exception if called.
 				 *
 				 */
 				virtual void unlockForReading() const 
-					throw( ReadUnlockingFailed ) ;
+					throw( FileReadUnlockingFailed ) ;
 
 
 				/**
 				 * Locks the file for writing.
 				 *
-				 * @throw WriteLockingFailed if the operation failed or if the
-				 * file lock feature is not available.
+				 * @throw FileWriteLockingFailed if the operation failed or 
+				 * if the file lock feature is not available.
 				 *		 
 				 * This default implementation, meant to be overriden, throws
 				 * this exception if called.
 				 *
 				 */
 				virtual void lockForWriting() const 
-					throw( WriteLockingFailed ) ;
+					throw( FileWriteLockingFailed ) ;
 
 
 				/**
 				 * Unlocks the file for writing.
 				 *
-				 * @throw WriteUnlockingFailed if the operation failed or if the
-				 * file lock feature is not available.
+				 * @throw FileWriteUnlockingFailed if the operation failed or 
+				 * if the file lock feature is not available.
 				 *		 
 				 * This default implementation, meant to be overriden, throws
 				 * this exception if called.
 				 *
 				 */
 				virtual void unlockForWriting() const 
-					throw( WriteUnlockingFailed ) ;
+					throw( FileWriteUnlockingFailed ) ;
 
 
 
@@ -876,12 +795,12 @@ namespace Ceylan
 				 *
 				 * @see GetSize
 				 *
-				 * @throw StatEntryFailed if the file metadata could not 
+				 * @throw FileLookupFailed if the file metadata could not 
 				 * be accessed or if the operation is not supported on this
 				 * platform.
 				 *
 				 */
-				virtual Size size() const throw( StatEntryFailed ) = 0 ;
+				virtual Size size() const throw( FileLookupFailed ) = 0 ;
 
 
 
@@ -985,13 +904,16 @@ namespace Ceylan
 
 				/**
 				 * Tries to open file, useful if it was created with the
-				 * DoNotOpen openFlag.
+				 * DoNotOpen open flag.
 				 *
+				 * @throw FileException, including FileAlreadyOpened if file was
+				 * already opened, and FileOpeningFailed if an error occurred, 
+				 * if the operation failed or is not supported.
 				 */
 				virtual void open( 
 						OpeningFlag openFlag = CreateToWriteBinary, 
 						PermissionFlag permissionFlag = OwnerReadWrite )
-					throw( AlreadyOpened, OpenFailed ) ;
+					throw( FileException ) ;
 
 
 
@@ -1001,11 +923,11 @@ namespace Ceylan
 				 * Closes it if necessary. No other operation should be 
 				 * performed 
 				 *
-				 * @throw RemoveFailed if the operation failed or is not
+				 * @throw FileRemoveFailed if the operation failed or is not
 				 * supported on this platform.
 				 *
 				 */
-				virtual void remove() throw( RemoveFailed ) = 0 ;
+				virtual void remove() throw( FileRemoveFailed ) = 0 ;
 
 
 
@@ -1071,9 +993,8 @@ namespace Ceylan
 				/**
 				 * Constructs a file reference object.
 				 *
-				 * By default, it creates a new file on disk, if the name
-				 * corresponds to an already-existing file, it will be
-				 * truncated and overwritten.
+				 * @note Not to be called directly, use factories (File:Create,
+				 * File::Open instead).
 				 *
 				 * @param name the name of the file.
 				 *
@@ -1086,25 +1007,19 @@ namespace Ceylan
 				 *
 				 * @see OpeningFlag, PermissionFlag
 				 *
-				 * @example:
-				 * <pre>
-				 * File f( "myfilename", Read | Binary ) ;
-				 * ...
-				 * f.read( buf, 100 ) ;
-				 * ...
-				 * </pre>
-				 *
 				 * @note If not specifically set, the file is opened in 
 				 * text mode: one should not forget to add the Binary flag. 
 				 * The mistake can be detected when basic read() returns less
 				 * than the requested size, or when readExactLength() never
 				 * terminates.
 				 *
+				 * @throw FileException if the operation failed.
+				 *
 				 */
 				explicit File( const std::string & name, 
 						OpeningFlag openFlag = CreateToWriteBinary,
 						PermissionFlag permissionFlag = OwnerReadWrite ) 
-					throw( OpenFailed ) ;
+					throw( FileException ) ;
 
 
 
@@ -1120,8 +1035,14 @@ namespace Ceylan
 					
 
 
-				/// Tries to reopen file.
-				virtual void reopen() throw( OpenFailed ) = 0 ;
+				/**
+				 * Tries to reopen file.
+				 *
+				 * @throw FileOpeningFailed if the operation failed.
+				 *
+				 */
+				virtual void reopen() throw( FileOpeningFailed ) = 0 ;
+
 
 				/// Interprets the current state of this file.
 				virtual std::string interpretState() const throw() = 0 ;
@@ -1141,7 +1062,7 @@ namespace Ceylan
 				/**
 				 * Bit field for access locks.
 				 *
-				 * Not used by current implementation.
+				 * Not used by all implementations.
 				 *
 				 */
 				bool _lockedForReading: 1, _lockedForWriting: 1 ;

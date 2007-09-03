@@ -41,6 +41,18 @@ namespace Ceylan
 		 * Hence CeylanFile.h and CeylanDirectory.h (and
 		 * CeylanFileSystemManager.h) depends on this file.
 		 *
+		 * Some exceptions have to start by the name of their corresponding
+		 * class (ex: FileLookupFailed), as LookupFailed would have to be
+		 * common to File and Directory, and File::LookupFailed cannot be used
+		 * as would be declared in File class but thrown by
+		 * CeylanFileSystemManager, thus recreating a dependency cycle.
+		 *
+		 * As a consequence, we chose to start the names of all file exceptions
+		 * with 'File' and to declare them outside the File class, so that they
+		 * are all handled the same way.
+		 *
+		 * The same process has been applied to Directory exceptions.
+		 *
 		 */
 		 
 				
@@ -74,11 +86,9 @@ namespace Ceylan
 
 		/*
 		 * Three specific child classes for FileManagementException: 
-		 *   - FileSystemException
-		 *   - FileException
-		 *   - DirectoryException
-		 *
-		 * They are defined in their corresponding header files.
+		 *   - FileSystemException (defined in FileSystemManager)
+		 *   - FileException (defined here to be shared with FileSystemManager)
+		 *   - DirectoryException (same thing)
 		 *
 		 */
 		
@@ -99,14 +109,23 @@ namespace Ceylan
 		} ;
 
 
-		/// Thrown when file operations failed.
+
+		/**
+		 * Thrown when file operations failed.
+		 *
+		 * @note Must be here and not in CeylanFile.h, as FileSystemManager 
+		 * will throw, in file-specific methods, instances of FileException
+		 * child classes. 
+		 * This allows to spare some catch/throw pairs (conversions not really
+		 * useful).
+		 *
+		 */
 		class CEYLAN_DLL FileException: public FileManagementException
 		{ 
 		
 			public: 
 			
-				explicit FileException( 
-						const std::string & reason ) throw():
+				explicit FileException( const std::string & reason ) throw():
 					FileManagementException( reason )
 				{
 				
@@ -114,31 +133,195 @@ namespace Ceylan
 						
 		} ;
 		
+
+
+
+		// FileException child classes.
 		
-		/**
-		 * Thrown when file operations failed because of underlying
-		 * filesystem manager : the corresponding backend could not be retrieved
-		 * as expected.
-		 *
-		 */
-		class CEYLAN_DLL FileDelegatingException: 
-			public FileException
-		{ 
 		
-			public: 
-			
-				explicit FileDelegatingException( 
+		
+		/// Raised at first by FileSystemManager and file-specific.
+		class CEYLAN_DLL FileCreationFailed: public FileException
+		{
+		
+			public:
+				
+				explicit FileCreationFailed( 
 						const std::string & reason ) throw():
 					FileException( reason )
 				{
 				
 				}								
+					 
+						
+		} ;
+		
+		
+		/// Raised at first by FileSystemManager and file-specific.
+		class CEYLAN_DLL FileOpeningFailed: public FileException
+		{
+		
+			public:
+				
+				explicit FileOpeningFailed( 
+						const std::string & reason ) throw():
+					FileException( reason )
+				{
+				
+				}								
+					 
+						
+		} ;
+		
+		
+		/// Raised at first by FileSystemManager and file-specific.
+		class CEYLAN_DLL FileAlreadyOpened: public FileException
+		{
+		
+			public:
+				
+				explicit FileAlreadyOpened( 
+						const std::string & reason ) throw():
+					FileException( reason )
+				{
+				
+				}								
+					 
+						
+		} ;
+		
+		
+		/// Raised at first by FileSystemManager and file-specific.
+		class CEYLAN_DLL FileLookupFailed: public FileException
+		{
+		
+			public:
+				
+				explicit FileLookupFailed( 
+						const std::string & reason ) throw():
+					FileException( reason )
+				{
+				
+				}								
+					 
+						
+		} ;
+		
+		
+		/// Raised at first by FileSystemManager and file-specific.
+		class CEYLAN_DLL FileRemoveFailed: public FileException
+		{
+		
+			public:
+				
+				explicit FileRemoveFailed( 
+						const std::string & reason ) throw():
+					FileException( reason )
+				{
+				
+				}								
+					 
+						
+		} ;
+		
+		
+		/// Raised at first by FileSystemManager and file-specific.
+		class CEYLAN_DLL FileMoveFailed: public FileException
+		{
+		
+			public:
+				
+				explicit FileMoveFailed( const std::string & reason ) throw():
+					FileException( reason )
+				{
+				
+				}								
+					 
+						
+		} ;
+	
+	
+		/// Raised at first by FileSystemManager and file-specific.
+		class CEYLAN_DLL FileCopyFailed: public FileException
+		{
+		
+			public:
+				
+				explicit FileCopyFailed( const std::string & reason ) throw():
+					FileException( reason )
+				{
+				
+				}								
+					 
+						
+		} ;
+	
+	
+		/// Raised at first by FileSystemManager and file-specific.
+		class CEYLAN_DLL FileSizeRequestFailed: public FileException
+		{
+		
+			public:
+				
+				explicit FileSizeRequestFailed( 
+						const std::string & reason ) throw():
+					FileException( reason )
+				{
+				
+				}								
+					 
+						
+		} ;
+
+
+		/// Raised at first by FileSystemManager and file-specific.
+		class CEYLAN_DLL FileTouchFailed: public FileException
+		{
+		
+			public:
+				
+				explicit FileTouchFailed( const std::string & reason ) throw():
+					FileException( reason )
+				{
+				
+				}								
+					 
+						
+		} ;
+
+
+		/// Raised at first by FileSystemManager and file-specific.
+		class CEYLAN_DLL FileDiffFailed: public FileException
+		{
+		
+			public:
+				
+				explicit FileDiffFailed( const std::string & reason ) throw():
+					FileException( reason )
+				{
+				
+				}								
+					 
 						
 		} ;
 
 
 
-		/// Thrown when directory operations failed.
+
+
+		// Directory section.
+		
+		
+		/**
+		 * Thrown when directory operations failed.
+		 *
+		 * @note Must be here and not in CeylanDirectory.h, as FileSystemManager
+		 * will throw, in file-specific methods, instances of FileException
+		 * child classes. 
+		 * This allows to spare some catch/throw pairs (conversions not really
+		 * useful).
+		 *
+		 */
 		class CEYLAN_DLL DirectoryException: public FileManagementException
 		{ 
 		
@@ -154,216 +337,148 @@ namespace Ceylan
 		} ;
 
 
-		/**
-		 * Thrown when directory operations failed because of underlying
-		 * filesystem manager : the corresponding backend could not be retrieved
-		 * as expected.
-		 *
-		 */
-		class CEYLAN_DLL DirectoryDelegatingException: 
-			public DirectoryException
-		{ 
+
+
+		// DirectoryException child classes.
+
 		
-			public: 
-			
-				explicit DirectoryDelegatingException( 
+		/// Raised at first by FileSystemManager and directory-specific.
+		class CEYLAN_DLL DirectoryCreationFailed: public DirectoryException
+		{
+		
+			public:
+				
+				explicit DirectoryCreationFailed( 
 						const std::string & reason ) throw():
 					DirectoryException( reason )
 				{
 				
 				}								
+					 
 						
 		} ;
-
-
-
-
-		// Filesystem exceptions child classes.
-
-
-		/// Thrown when filesystem manager operations failed.
-		class CEYLAN_DLL FileSystemManagerException: public FileSystemException
-		{ 
 		
-			public: 
-			
-				explicit FileSystemManagerException( 
+		
+		/// Raised at first by FileSystemManager and directory-specific.
+		class CEYLAN_DLL DirectoryOpeningFailed: public DirectoryException
+		{
+		
+			public:
+				
+				explicit DirectoryOpeningFailed( 
 						const std::string & reason ) throw():
-					FileSystemException( reason )
+					DirectoryException( reason )
 				{
 				
 				}								
+					 
 						
 		} ;
-
-
-		class CEYLAN_DLL GetChangeTimeFailed: public FileSystemException
-		{ 
 		
-			public: 
-			
-				explicit GetChangeTimeFailed( const std::string & reason )
+		
+		/// Raised at first by FileSystemManager and directory-specific.
+		class CEYLAN_DLL DirectoryLookupFailed: public DirectoryException
+		{
+		
+			public:
+				
+				explicit DirectoryLookupFailed( 
+						const std::string & reason ) throw():
+					DirectoryException( reason )
+				{
+				
+				}								
+					 
+						
+		} ;
+		
+		
+		/// Raised at first by FileSystemManager and directory-specific.
+		class CEYLAN_DLL DirectoryRemoveFailed: public DirectoryException
+		{
+		
+			public:
+				
+				explicit DirectoryRemoveFailed( 
+						const std::string & reason ) throw():
+					DirectoryException( reason )
+				{
+				
+				}								
+					 
+						
+		} ;
+		
+
+		
+		/// Raised at first by FileSystemManager and directory-specific.
+		class CEYLAN_DLL DirectoryMoveFailed: public DirectoryException
+		{
+		
+			public:
+				
+				explicit DirectoryMoveFailed( const std::string & reason )
 						throw():
-					FileSystemException( reason )
+					DirectoryException( reason )
 				{
 				
 				}								
-					
+					 
+						
 		} ;
-
-
-
-		class CEYLAN_DLL DuplicateFailed: public FileSystemException
-		{ 
+	
+	
+		/// Raised at first by FileSystemManager and directory-specific.
+		class CEYLAN_DLL DirectoryCopyFailed: public DirectoryException
+		{
 		
-			public: 
-			
-				explicit DuplicateFailed( const std::string & reason ) throw():
-					FileSystemException( reason )
+			public:
+				
+				explicit DirectoryCopyFailed( const std::string & reason )
+						throw():
+					DirectoryException( reason )
 				{
 				
 				}								
-					
+					 
+						
 		} ;
-
-
-		class CEYLAN_DLL StatEntryFailed: public FileSystemException
-		{ 
-			public: 
-				
-				explicit StatEntryFailed( const std::string & reason ) throw():
-					FileSystemException( reason )
-				{
-				
-				}	
-											
-		} ;
-					
-					
-		class CEYLAN_DLL TouchFailed: public FileSystemException
-		{ 
 		
-			public: 
-			
-				explicit TouchFailed( 
+		
+		/// Raised at first by FileSystemManager and directory-specific.
+		class CEYLAN_DLL DirectoryGetCurrentFailed: public DirectoryException
+		{
+		
+			public:
+				
+				explicit DirectoryGetCurrentFailed( 
 						const std::string & reason ) throw():
-					FileSystemException( reason )
+					DirectoryException( reason )
 				{
 				
-				}								 
+				}								
+					 
+						
+		} ;
+		
+		
+		/// Raised at first by FileSystemManager and directory-specific.
+		class CEYLAN_DLL DirectoryChangeFailed: public DirectoryException
+		{
+		
+			public:
+				
+				explicit DirectoryChangeFailed( 
+						const std::string & reason ) throw():
+					DirectoryException( reason )
+				{
+				
+				}								
+					 
 						
 		} ;
 
 
-		class CEYLAN_DLL SymlinkFailed: public FileSystemException
-		{ 
-		
-			public: 
-			
-				explicit SymlinkFailed( const std::string & reason ) throw():
-					FileSystemException( reason )
-				{
-				
-				}	
-											
-		} ;
-
-
-
-
-		// Other direct child classes of FileManagementException, theme-based.
-		
-		
-		class CEYLAN_DLL CreateFailed: public FileManagementException
-		{ 
-		
-			public: 
-			
-				explicit CreateFailed( 
-						const std::string & reason ) throw():
-					FileManagementException( reason )
-				{
-				
-				}								
-					 
-		} ;
-		
-
-		class CEYLAN_DLL OpenFailed: public FileManagementException
-		{ 
-		
-			public: 
-
-				explicit OpenFailed( const std::string & reason ) throw():
-					FileManagementException( reason )
-				{
-				
-				}								
-					 
-		} ;
-		
-		
-		class CEYLAN_DLL RemoveFailed: public FileManagementException
-		{ 
-		
-			public: 
-			
-				explicit RemoveFailed( const std::string & reason ) throw():
-					FileManagementException( reason )
-				{
-				
-				}	
-											 
-		} ;
-
-
-		class CEYLAN_DLL MoveFailed: public FileManagementException
-		{ 
-		
-			public: 
-			
-				explicit MoveFailed( const std::string & reason ) throw():
-					FileManagementException( reason )
-				{
-				
-				}								
-					 
-		} ;
-
-
-
-		class CEYLAN_DLL CopyFailed: public FileManagementException
-		{ 
-		
-			public: 
-			
-				explicit CopyFailed( const std::string & reason ) throw():
-					FileManagementException( reason )
-				{
-				
-				}								
-					
-		} ;
-
-
-		
-		
-		// FileException child classes.
-		
-		
-		class CEYLAN_DLL DiffFailed: public FileException
-		{ 
-		
-			public: 
-				
-				explicit DiffFailed( const std::string & reason ) throw():
-					FileException( reason )
-				{
-				
-				}								
-					
-		} ;
-		
 
 	}	
 
@@ -372,3 +487,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_FILE_SYSTEM_COMMON_H_
+
