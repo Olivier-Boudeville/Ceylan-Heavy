@@ -55,7 +55,121 @@ const string FileSystemManager::DefaultAliasForParentDirectory  = ".." ;
 
 FileSystemManager * FileSystemManager::_CurrentDefaultFileSystemManager = 0 ;
 
+
+
+
+// Public section.
+
+
 		
+// Static methods directly exposed to the user.
+
+
+
+// For FileSystemManager:
+
+
+bool FileSystemManager::ExistsAsEntry( const std::string & entryPath ) 
+	const throw( EntryLookupFailed )
+{
+	// use helper method to find actual FileSystemManager
+}
+
+
+void FileSystemManager::CreateSymbolicLink( const string & linkTarget, 
+	const string & linkName ) throw( SymlinkFailed )
+{
+	// use helper method to find actual FileSystemManager
+}
+
+
+time_t FileSystemManager::GetEntryChangeTime( const string & entryPath )
+	throw( GetChangeTimeFailed )
+{
+	// use helper method to find actual FileSystemManager
+}
+			
+			
+						
+// Accessors to FilesystemManager constants.
+
+
+const string & FileSystemManager::GetRootDirectoryPrefix() throw()
+{
+	// use helper method to find actual FileSystemManager
+}
+
+						
+Ceylan::Latin1Char FileSystemManager::GetSeparator() throw()
+{
+	// use helper method to find actual FileSystemManager
+}
+
+						
+string FileSystemManager::GetSeparatorAsString() throw()
+{
+	// use helper method to find actual FileSystemManager
+}
+
+						
+const string & FileSystemManager::GetAliasForCurrentDirectory()	throw()
+{
+	// use helper method to find actual FileSystemManager
+}
+	
+						
+const string & FileSystemManager::GetAliasForParentDirectory() throw()
+{
+	// use helper method to find actual FileSystemManager
+}
+						
+		
+		
+					
+										
+// Implementation virtual methods.	
+						
+
+
+
+
+// For FileSystemManager (other methods are pure virtual):
+
+
+const std::string & FileSystemManager::getAliasForCurrentDirectory()
+	const throw()
+{
+
+	// Made to be overriden if necessary:
+	return DefaultAliasForCurrentDirectory ;
+	
+}
+					
+					
+const std::string & FileSystemManager::getAliasForParentDirectory()
+	const throw()
+{
+
+	// Made to be overriden if necessary:
+	return DefaultAliasForParentDirectory ;
+	
+}
+					
+
+
+string FileSystemManager::getSeparatorAsString() const throw()
+{
+
+	return Ceylan::toString( getSeparator() ) ;
+	
+}
+
+
+
+
+
+						
+// For File (other methods are pure virtual):
 	
 	
 bool FileSystemManager::diff( const std::string & firstFilename,
@@ -133,19 +247,10 @@ bool FileSystemManager::diff( const std::string & firstFilename,
 	
 
 					
-const string FileSystemManager::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
-{
-
-	return "Abstract filesystem manager" ;
-	
-}
 
 
 
-
-
-// Directory-related section.
+// For Directory (other methods are pure virtual):
 
 
 
@@ -181,12 +286,13 @@ list<string> FileSystemManager::splitPath( const string & path ) throw()
 
 	bool inEntry = true ;
 
+	Latin1Char separator = getSeparator() ;
 	
 	// Extract each part of the specified path thanks to separators:
 	for( string::const_iterator it = path.begin(); it != path.end(); it++ )
 	{
 	
-		if ( (*it) == getSeparator() )
+		if ( (*it) == separator )
 		{
 			// We went through each character of the entry word.
 			if ( inEntry )
@@ -253,8 +359,10 @@ void FileSystemManager::stripFilename( const string & path, string * base,
 
 	string::size_type p ;
 
+	Latin1Char separator = getSeparator() ;
+
 	// Finds first separator, starting from right to left:
-	if ( ( p = path.rfind( getSeparator() ) ) != string::npos )
+	if ( ( p = path.rfind( separator ) ) != string::npos )
 	{
 		// Base is the characters between begin and last separator:
 		if ( base != 0 )
@@ -275,41 +383,25 @@ void FileSystemManager::stripFilename( const string & path, string * base,
 
 
 
-const std::string & FileSystemManager::getAliasForCurrentDirectory()
+
+
+// FileSystemManager own section.
+
+
+const string FileSystemManager::toString( Ceylan::VerbosityLevels level ) 
 	const throw()
 {
 
-	// Made to be overriden if necessary:
-	return DefaultAliasForCurrentDirectory ;
-	
-}
-					
-					
-const std::string & FileSystemManager::getAliasForParentDirectory()
-	const throw()
-{
-
-	// Made to be overriden if necessary:
-	return DefaultAliasForParentDirectory ;
-	
-}
-					
-
-
-string FileSystemManager::getSeparatorAsString() const throw()
-{
-
-	return Ceylan::toString( getSeparator() ) ;
+	return "Abstract filesystem manager" ;
 	
 }
 
 
 
 
-// Static section.
-	
-		
-// Default filesystem manager subsection.
+
+// Static section to handle default filesystem manager.
+
 
 
 bool FileSystemManager::IsDefaultFileSystemManagerSet() throw()
@@ -406,7 +498,7 @@ void FileSystemManager::RemoveDefaultFileSystemManager() throw()
 
 
 
-// Private section.
+// Protected section.
 
 
 FileSystemManager::FileSystemManager() throw( FileSystemManagerException )
