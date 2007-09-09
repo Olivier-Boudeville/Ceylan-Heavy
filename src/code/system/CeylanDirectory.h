@@ -172,10 +172,26 @@ namespace Ceylan
 				 * or DirectoryDelegatingException should the underlying 
 				 * filesystem manager not be retrieved as expected. 
 				 *
-				 *
 				 */
 				static void Copy( const std::string & sourceDirectoryname,
 						const std::string & targetDirectoryname ) 
+					throw( DirectoryException ) ;
+
+
+				/**
+				 * Returns the last change time of the specified directory.
+				 *
+				 * @param directoryPath the path of the directory whose last
+				 * change time is searched.
+				 *
+				 * @throw DirectoryLastChangeTimeRequestFailed if the operation
+				 * failed or is not supported on this platform, or
+				 * DirectoryDelegatingException if the relevant filesystem
+				 * manager could not be retrieved.
+				 *
+				 */
+				static time_t GetLastChangeTime( 
+						const std::string & directoryPath ) 
 					throw( DirectoryException ) ;
 
 
@@ -497,9 +513,12 @@ namespace Ceylan
 				 * directory, in the specified list.
 				 *
 				 * @param subDirectories the caller-provided list in which
-				 * subdirectories will be put.
+				 * subdirectories will be added.
 				 *
 				 * @throw DirectoryLookupFailed if an error occured.
+				 *
+				 * @note Aliases for current and parent directories (ex: '.'
+				 * and '..') will be filtered out.
 				 *
 				 */
 				virtual void getSubdirectories( 
@@ -512,7 +531,7 @@ namespace Ceylan
 				 * specified list.
 				 *
 				 * @param files the caller-provided list in which
-				 * subdirectories will be put.
+				 * subdirectories will be added.
 				 *
 				 * @throw DirectoryLookupFailed if an error occured.
 				 *
@@ -527,7 +546,16 @@ namespace Ceylan
 				 * specified list.
 				 *
 				 * @param entries the caller-provided list in which 
-				 * entries will be put.
+				 * entries will be added.
+				 *
+				 * @throw DirectoryLookupFailed if the operation failed or
+				 * is not supported.
+				 *
+				 * @note Aliases for current and parent directories (ex: '.'
+				 * and '..') will be filtered out.
+				 *
+				 * @note Aliases for current and parent directories (ex: '.'
+				 * and '..') will be filtered out.
 				 *
 				 * @throw DirectoryLookupFailed if the operation failed or
 				 * is not supported.
@@ -543,17 +571,20 @@ namespace Ceylan
 				 * corresponding specified list.
 				 *
 				 * @param subDirectories the caller-provided list in which 
-				 * subDirectories of this directory will be put.
+				 * subDirectories of this directory will be added.
 				 *
 				 * @param files the caller-provided list in which 
-				 * files of this directory will be put.
+				 * files of this directory will be added.
 				 *
 				 * @param otherEntries the caller-provided list in which 
-				 * other entries (named FIFO, sockets, etc.) of this
-				 * directory will be put.
+				 * other entries (named FIFO, sockets, block or character
+				 * device, etc.) of this directory will be added.
 				 *
 				 * @throw DirectoryLookupFailed if the operation failed or
 				 * is not supported.
+				 *
+				 * @note Aliases for current and parent directories (ex: '.'
+				 * and '..') will be filtered out.
 				 *
 				 */
 				virtual void getSortedEntries( 

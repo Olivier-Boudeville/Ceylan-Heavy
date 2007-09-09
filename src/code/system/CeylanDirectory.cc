@@ -1,9 +1,19 @@
 #include "CeylanDirectory.h"
 
-#include "CeylanRegularExpression.h" // for RegExp
-#include "CeylanLogLight.h"          // for CEYLAN_LOG
+
+#include "CeylanFileSystemManager.h" // for FileSystemManager
 #include "CeylanOperators.h"         // for toString
-#include "CeylanStringUtils.h"       // for isLetter
+
+
+/*
+ * The File factories (Create/Open) have to know all the Directory subclasses 
+ * to be able to instantiate them:
+ *
+ */
+ 
+#include "CeylanStandardDirectory.h" // for StandardDirectory
+//#include "CeylanLibfatDirectory.h"   // for LibfatDirectory
+
 
 
 #ifdef CEYLAN_USES_CONFIG_H
@@ -12,16 +22,14 @@
 
 
 
-#ifndef PATH_MAX
-#define PATH_MAX 1024
-#endif // PATH_MAX
-
-
 /*
  * Implementation notes.
  *
  * @note All internal paths kept in directory references (this object)
  * should be absolute paths.
+ *
+ * Non-static methods must not use static methods, as they may use different
+ * filesystem managers.
  *
  */
  
@@ -32,26 +40,258 @@ using namespace Ceylan::System ;
 
 
 
+DirectoryDelegatingException::DirectoryDelegatingException( 
+		const string & reason ) throw():
+	DirectoryException( reason )
+{
+
+}
+
+
+
+
+// Directory implementation section.
+
+
+
+// Static section.
+
+
+bool Directory::Exists( const string & directoryPath ) 
+	throw( DirectoryException )
+{
+
+	// Let DirectoryLookupFailed and DirectoryDelegatingException propagate:
+	return GetCorrespondingFileSystemManager().existsAsDirectory(
+		directoryPath ) ;
+			
+}
+
+
+void Directory::Remove( const string & directoryPath, bool recursive ) 
+	throw( DirectoryException )
+{
+
+	// Let DirectoryRemoveFailed and DirectoryDelegatingException propagate:
+	return GetCorrespondingFileSystemManager().removeDirectory(
+		directoryPath, recursive ) ;
+
+}
+
+
+void Directory::Move( const string & sourceDirectoryname,
+	const string & targetDirectoryname ) throw( DirectoryException )
+{
+
+	// Let DirectoryMoveFailed and DirectoryDelegatingException propagate:
+	return GetCorrespondingFileSystemManager().moveDirectory(
+		sourceDirectoryname, targetDirectoryname ) ;
+
+}	
+
+
+void Directory::Copy( const std::string & sourceDirectoryname,
+	const std::string & targetDirectoryname ) throw( DirectoryException )
+{
+
+	// Let DirectoryCopyFailed and DirectoryDelegatingException propagate:
+	return GetCorrespondingFileSystemManager().copyDirectory(
+		sourceDirectoryname, targetDirectoryname ) ;
+
+}	
+	
+
+time_t Directory::GetLastChangeTime( const std::string & directoryPath ) 
+	throw( DirectoryException )
+{
+
+	/*
+	 * Let DirectoryLastChangeTimeRequestFailed and 
+	 * DirectoryDelegatingException propagate:
+	 *
+	 */
+	return GetCorrespondingFileSystemManager().getLastChangeTimeDirectory(
+		directoryPath ) ;
+
+}	
+	
+																
+bool Directory::IsAValidDirectoryName( const string & directoryString ) 
+	throw( DirectoryException )
+{
+
+	// Let DirectoryDelegatingException propagate:
+	return GetCorrespondingFileSystemManager().isAValidDirectoryName( 
+		directoryString ) ;
+				
+}
+
+	
+void Directory::RemoveLeadingSeparator( std::string & path ) 
+	throw( DirectoryException )
+{
+
+	// Let DirectoryDelegatingException propagate:
+	GetCorrespondingFileSystemManager().removeLeadingSeparator( path ) ;
+	
+}
+					
+	
+bool Directory::IsAbsolutePath( const string & path ) 
+	throw( DirectoryException )
+{
+
+	// Let DirectoryDelegatingException propagate:
+	return GetCorrespondingFileSystemManager().isAbsolutePath( path ) ;
+			
+}
+
+
+string Directory::GetCurrentWorkingDirectoryName() throw( DirectoryException )
+{
+
+	// Let DirectoryGetCurrentFailed and DirectoryDelegatingException propagate:
+	return 
+		GetCorrespondingFileSystemManager().getCurrentWorkingDirectoryName() ;
+		
+}
+
+
+void Directory::ChangeWorkingDirectory( const string & newWorkingDirectory )
+	throw( DirectoryException )
+{
+
+	// Let DirectoryChangeFailed and DirectoryDelegatingException propagate:
+	return GetCorrespondingFileSystemManager().changeWorkingDirectory(
+		newWorkingDirectory ) ;
+		
+}
+
+
+
+list<string> Directory::SplitPath( const string & path ) 
+	throw( DirectoryException )
+{
+
+	// Let DirectoryDelegatingException propagate:
+	return GetCorrespondingFileSystemManager().splitPath( path ) ;
+
+}
+
+
+string Directory::JoinPath( const list<string> & pathElements ) 
+	throw( DirectoryException )
+{
+
+	// Let DirectoryDelegatingException propagate:
+	return GetCorrespondingFileSystemManager().joinPath( pathElements ) ;
+
+}
+
+
+string Directory::JoinPath( const string & firstPath, 
+	const std::string & secondPath ) throw( DirectoryException )
+{
+
+	// Let DirectoryDelegatingException propagate:
+	return GetCorrespondingFileSystemManager().joinPath( firstPath,
+		secondPath ) ;
+
+}
+
+
+void Directory::StripFilename( const string & path, string * base, 
+	string * file ) throw( DirectoryException )
+{
+
+	// Let DirectoryDelegatingException propagate:
+	return GetCorrespondingFileSystemManager().stripFilename( path, base ) ;
+
+}
+
+
+Ceylan::Latin1Char Directory::GetSeparator() throw( DirectoryException )
+{
+
+	// Let DirectoryDelegatingException propagate:
+	return GetCorrespondingFileSystemManager().getSeparator() ; 
+
+}
+
+
+string Directory::GetSeparatorAsString() throw( DirectoryException )
+{
+
+	// Let DirectoryDelegatingException propagate:
+	return Ceylan::toString( GetSeparator() ) ;
+
+}
+
+
+
+// Constructors are in protected section.	
+
+
+// Factory subsection.
+
 
 Directory & Directory::Create( const string & newDirectoryName ) 
-	throw( CouldNotCreate )
+	throw( DirectoryException )
 {
+
+#if CEYLAN_ARCH_NINTENDO_DS
+		
+#ifdef CEYLAN_RUNS_ON_ARM7
+
+	throw SystemException( 
+		"Ceylan::System::Directory::Create: only available on the ARM9." ) ;
+
+#elif defined(CEYLAN_RUNS_ON_ARM9)
+
+FIXME
+
+#endif // CEYLAN_RUNS_ON_ARM7
+
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	// We are on classical computers, let's use the OS-provided facilities:	
+	return StandardDirectory::Create( newDirectoryName ) ;
+	
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 
 }
 	
 					
 Directory & Directory::Open( const string & directoryName ) 
-	throw( OpenFailed )
+	throw( DirectoryException )
 {
+
+#if CEYLAN_ARCH_NINTENDO_DS
+		
+#ifdef CEYLAN_RUNS_ON_ARM7
+
+	throw SystemException( 
+		"Ceylan::System::Directory::Create: only available on the ARM9." ) ;
+
+#elif defined(CEYLAN_RUNS_ON_ARM9)
+
+FIXME
+
+#endif // CEYLAN_RUNS_ON_ARM7
+
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	// We are on classical computers, let's use the OS-provided facilities:	
+	return StandardDirectory::Open( directoryName ) ;
+	
+#endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
 	
 	
-void Directory::Remove( const string & directoryPath, bool recursive ) 
-	throw( RemoveFailed )
-{
-
-}
 
 	
 Directory::~Directory() throw()
@@ -62,17 +302,22 @@ Directory::~Directory() throw()
 }
 
 
+
+
+
 					
 /*
- * Default implementations from this abstract Directory are slow but safe.
- * They can be overriden by tuned specialized implementations if necessary.
+ * Instance methods.
+ *
+ * Default implementations from this abstract Directory can be overriden by
+ * tuned specialized implementations if necessary.
  *
  */
 
 
 
 void Directory::goDown( const string & subdirectoryName ) 
-	throw( ChangeDirectoryFailed )
+	throw( DirectoryChangeFailed )
 {
 
 	 
@@ -95,26 +340,32 @@ void Directory::goDown( const string & subdirectoryName )
 			}
 			else
 			{
-				throw ChangeDirectoryFailed( 
+			
+				throw DirectoryChangeFailed( 
 					"Directory::goDown failed for subdirectory '"
 					+ subdirectoryName + "' from '" + _path + "': '"
 					+ candidate + "' is not a directory." ) ;
-			
-			}	
-			
+			}
+				
 		}	
-		catch( const FileSystemManagerException & e )
+		catch( const DirectoryLookupFailed & e )
 		{
 		
-			throw ChangeDirectoryFailed( 
+			throw DirectoryChangeFailed( 
 				"Directory::goDown failed for subdirectory '"
 				+ subdirectoryName + "' from '" + _path + "': " 
+				+ e.toString() ) ;
+		}		
+		catch( const DirectoryDelegatingException & e )
+		{
+		
+			throw DirectoryChangeFailed( "Directory::goDown failed: " 
 				+ e.toString() ) ;
 		}		
 
 	}
 	
-	throw ChangeDirectoryFailed( 
+	throw DirectoryChangeFailed( 
 		"Directory::goDown failed for non-existent subdirectory '"
 		+ subdirectoryName + "' from '" + _path ) ;
 	
@@ -124,8 +375,13 @@ void Directory::goDown( const string & subdirectoryName )
 bool Directory::isValid() const throw( DirectoryException )
 {
 
-	return ExistsAsDirectory( _path ) ;
-			
+	/*
+	 * Should not call the static version, as it may use a different filesystem
+	 * manager:
+	 *
+	 */
+	return getCorrespondingFileSystemManager().existsAsDirectory( _path ) ;
+
 }
 
 
@@ -140,7 +396,12 @@ const std::string & Directory::getPath() const throw()
 void Directory::removeLeadingSeparator() throw( DirectoryException )
 {
 	
-	RemoveLeadingSeparator( _path ) ;
+	/*
+	 * Should not call the static version, as it may use a different filesystem
+	 * manager:
+	 *
+	 */
+	return getCorrespondingFileSystemManager().removeLeadingSeparator( _path ) ;
 
 }
 
@@ -154,227 +415,6 @@ const string Directory::toString( Ceylan::VerbosityLevels level ) const throw()
 
 
 
-
-// Static section.
-
-
-bool Directory::Exists( const string & directoryPath ) const
-	throw( DirectoryException )
-{
-
-	try
-	{
-	
-		return getCorrespondingFileSystemManager().existsAsDirectory( _path ) ;
-			
-	}	
-	catch( const StatEntryFailed & e )
-	{
-		
-		throw DirectoryLookupFailed( 
-			"Directory::Exists failed: " + e.toString() ) ;
-			
-	}		
-	
-}
-
-	
-bool Directory::IsAValidDirectoryName( const string & directoryString ) 
-	throw( DirectoryException )
-{
-
-	return getCorrespondingFileSystemManager().isAValidDirectoryName( 
-		directoryString ) ;
-				
-}
-
-	
-void Directory::RemoveLeadingSeparator( std::string & path ) 
-	throw( DirectoryException )
-{
-
-	getCorrespondingFileSystemManager().removeLeadingSeparator( _path ) ;
-	
-}
-					
-	
-bool Directory::IsAbsolutePath( const string & path ) 
-	throw( DirectoryException )
-{
-
-	return getCorrespondingFileSystemManager().isAbsolutePath( path ) ;
-			
-}
-
-
-string Directory::GetCurrentWorkingDirectoryName() throw( DirectoryException )
-{
-
-	return 
-		getCorrespondingFileSystemManager().getCurrentWorkingDirectoryName() ;
-		
- 
-}
-
-
-void Directory::ChangeWorkingDirectory( const string & newWorkingDirectory )
-	throw( DirectoryException )
-{
-
-	return getCorrespondingFileSystemManager().changeWorkingDirectory(
-		newWorkingDirectory ) ;
-		
-}
-
-
-
-list<string> Directory::SplitPath( const string & path ) 
-	throw( DirectoryException )
-{
-
-	/*
-	 * Not wanting to use in-out argument such as 
-	 * 'SplitPath( list<string> & nodes ...)', we have to return it. 
-	 * We are therefore unable to return directly the number of elements.
-	 *
-	 */
-
-	list<string> res ;
-	string currentWord ;
-
-	/*
-	 * With an initial value of false, "/mnt/..." would lead to
-	 * [ 'mnt', '...' ] instead of the expected [ '', 'mnt', '...' ].
-	 * Doing so is needed to make a difference between "/mnt/..." and "mnt/...".
-	 *
-	 */
-
-	bool inEntry = true ;
-
-	Latin1Char separator = GetSeparator() ;
-	
-	// Extract each part of the specified path thanks to separators:
-	for( string::const_iterator it = path.begin(); it != path.end(); it++ )
-	{
-		if ( *it == separator )
-		{
-			// We went through each character of the entry word.
-			if ( inEntry )
-				res.push_back( currentWord ) ;
-			inEntry = false ;
-			currentWord.erase();
-		}
-		else
-		{
-			// Adds the current character to the current entry name.
-			currentWord += *it ;
-			inEntry = true ;
-		}
-	}
-
-	// Add last word if needed.
-	if ( inEntry )
-		res.push_back( currentWord ) ;
-
-	return res ;
-
-}
-
-
-string Directory::JoinPath( const list<string> & pathElements ) 
-	throw( DirectoryException )
-{
-
-	list<string>::const_iterator it = pathElements.begin() ;
-	string res = (*it) ;
-	it++ ;
-
-	Latin1Char separator = GetSeparator() ;
-
-	while ( it != pathElements.end() )
-	{
-		res += separator + (*it ) ;
-		it++ ;
-	}
-
-	return res ;
-
-}
-
-
-string Directory::JoinPath( const string & firstPath, 
-	const std::string & secondPath ) throw( DirectoryException )
-{
-
-	return firstPath + GetSeparator() + secondPath ;
-
-}
-
-
-
-void Directory::StripFilename( const string & path, string * base, 
-	string * file ) throw( DirectoryException )
-{
-
-	if ( base != 0 )
-		base->erase() ;
-
-	if ( file != 0 )
-		file->erase() ;
-
-	string::size_type p ;
-
-	Latin1Char separator = GetSeparator() ;
-
-	// Finds first separator, starting from right to left:
-	if ( ( p = path.rfind( separator ) ) != string::npos )
-	{
-	
-		// Base is the characters between begin and last separator:
-		if ( base != 0 )
-			base->assign( path, 0, p ) ;
-
-		// File is the leading part:
-		if ( file != 0 )
-			file->assign( path, p+1, path.size() - p - 1 ) ;
-			
-	}
-	else
-	{
-	
-		// No separator: no path, only file.
-		if ( file != 0 )
-			*file = path ;
-			
-	}
-	
-}
-
-
-Ceylan::Latin1Char Directory::GetSeparator() const throw( DirectoryException )
-{
-
-	return getCorrespondingFileSystemManager().getSeparator() ; 
-
-}
-
-
-string Directory::GetSeparatorAsString() throw( DirectoryException )
-{
-
-	return Ceylan::toString( GetSeparator() ) ;
-
-}
-
-
-
-void Directory::Create( const string & name ) 
-	throw( Directory::CouldNotCreate )
-{
-	Directory d( name ) ;
-	
-	// FIXME
-}
 
 
 
@@ -390,6 +430,28 @@ Directory::Directory( const string & directoryName )
 
 	// Enforce the convention on _path:
 	removeLeadingSeparator() ;
+	
+}
+
+
+
+FileSystemManager & Directory::GetCorrespondingFileSystemManager()
+	throw( DirectoryDelegatingException )
+{
+
+	try
+	{
+	
+		return FileSystemManager::GetAnyDefaultFileSystemManager() ;
+	
+	}
+	catch( const FileSystemManagerException & e )
+	{
+		throw DirectoryDelegatingException(
+			"Directory::GetCorrespondingFileSystemManager failed: "
+			+ e.toString() ) ;
+	}
+	
 	
 }
 
