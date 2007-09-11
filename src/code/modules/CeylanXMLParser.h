@@ -19,7 +19,7 @@ namespace Ceylan
 	namespace System
 	{
 	
-		// Some XML operations reads from such streams :
+		// Some XML operations reads from such streams:
 		class InputStream ;
 		
 	}
@@ -39,7 +39,7 @@ namespace Ceylan
 		 * Exception to be raised when an XML parser operation failed.
 		 *
 		 */
-		class CEYLAN_DLL XMLParserException : public Ceylan::XML::XMLException
+		class CEYLAN_DLL XMLParserException: public Ceylan::XML::XMLException
 		{
 	
 			public:
@@ -63,14 +63,14 @@ namespace Ceylan
 		 * From a file, a tree in memory is generated, and reciprocally
 		 * a tree can be saved into a XML file.
 		 *
-		 * This light-weight parser works a little like DOM : it reads
+		 * This light-weight parser works a little like DOM: it reads
 		 * the full XML document before generating its counterpart in
 		 * memory.
 		 *
 		 * No validation nor XML schema managed.
 		 *
 		 */
-		class CEYLAN_DLL XMLParser : public Ceylan::TextDisplayable
+		class CEYLAN_DLL XMLParser: public Ceylan::TextDisplayable
 		{
 		
 		
@@ -207,19 +207,19 @@ namespace Ceylan
 				enum LowerThanSequence
 				{
 				
-					/// XML declaration, for example : '<?xml version="1.0"?>'.
+					/// XML declaration, for example: '<?xml version="1.0"?>'.
 					Declaration,
 					
-					/// XML comment, for example : '<!-- This is a comment -->'.
+					/// XML comment, for example: '<!-- This is a comment -->'.
 					Comment,
 					
-					/// XML opening Markup, for example : '<para>'
+					/// XML opening Markup, for example: '<para>'
 					OpeningMarkup,
 				
-					/// XML closing Markup, for example : '</para>'
+					/// XML closing Markup, for example: '</para>'
 					ClosingMarkup,
 					
-					/// Unexpected XML element :
+					/// Unexpected XML element:
 					UnexpectedElement
 				
 				} ;
@@ -252,13 +252,13 @@ namespace Ceylan
 				 * @param the sequence type to describe.
 				 *
 				 */
-				static const std::string DescribeLowerThanSequence(
+				static std::string DescribeLowerThanSequence(
 					LowerThanSequence sequence ) throw() ;
 					
 					
 				/**
 				 * Reads from specified input stream a full XML declaration 
-				 * (ex : [<?]xml version="1.0"...?>), whereas previous read
+				 * (ex: [<?]xml version="1.0"...?>), whereas previous read
 				 * characters are supposed to be '<?', interprets the
 				 * declaration, skips next whitespace and put the first
 				 * character read after in specified char.
@@ -277,7 +277,7 @@ namespace Ceylan
 					
 				/**
 				 * Reads from specified string a sequence of attributes 
-				 * (ex : version="1.0"), and store them in specified map. 
+				 * (ex: version="1.0"), and store them in specified map. 
 				 *
 				 * @param toBeParsed the string to read the attributes from.
 				 *
@@ -302,7 +302,7 @@ namespace Ceylan
 				/**
 				 * Reads from specified input stream until a text, an opening or
 				 * a closing markup is found, manages it and continue
-				 * recursively until the first open markup is closed : the 
+				 * recursively until the first open markup is closed: the 
 				 * XML document is then fully parsed.
 				 *
 				 * @param input the stream from which XML data is to be read.
@@ -343,7 +343,7 @@ namespace Ceylan
 				/**
 				 * The current encoding for the XML document.
 				 *
-				 * Example : ISO-8859-15.
+				 * Example: ISO-8859-15.
 				 *
 				 */
 				std::string _encoding ;
