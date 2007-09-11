@@ -264,6 +264,7 @@ void Console::addInBuffer( const std::string & text ) throw( ConsoleException )
 	// _buffer should be already allocated.
 	
 	_buffer->add( text ) ;
+	render() ;
 	
 }
 
