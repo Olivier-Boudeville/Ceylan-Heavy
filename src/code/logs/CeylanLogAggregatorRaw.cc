@@ -10,7 +10,7 @@
 #include "CeylanLogLight.h"    // for CEYLAN_LOG
 
 
-// for cout, endl, or for cerr, when log system fails badly :
+// for cout, endl, or for cerr, when log system fails badly:
 #include <iostream>           
 
 
@@ -37,28 +37,30 @@ LogAggregatorRaw::LogAggregatorRaw(
 	try 
 	{
 	
-		CEYLAN_LOG( "LogAggregatorRaw constructor : creating file "
+		CEYLAN_LOG( "LogAggregatorRaw constructor: creating file "
 			+ logFilename ) ;
 		
-		// Not wanting binary nor reading :
-		OpeningFlag logFlags = File::Create | File::Write | File::Truncate ;
+		// Not wanting binary nor reading:
+		OpeningFlag logFlags = File::CreateFile | File::TruncateFile 
+			| File::Write ;
 		
-		// Disable buffering to reduce log loss in case of crash :  
+		// Disable buffering to reduce log loss in case of crash:  
 		if ( _immediateWrite )
 			logFlags |= File::Synchronous ;
 			
-		_outputFile = new File( logFilename, /* OpeningFlag */ logFlags ) ;
+		_outputFile = & System::File::Create( logFilename, 
+			/* OpeningFlag */ logFlags ) ;
 		
 		
 	} 
-	catch( const File::CouldNotOpen & e )
+	catch( const System::FileCreationFailed & e )
 	{
-		throw LogAggregatorException( 
-			"Could not open LogAggregatorRaw output file : "
-			 + e.toString() ) ;
+		throw LogAggregatorException( "LogAggregatorRaw constructor: "
+			"could not create LogAggregatorRaw output file: " + e.toString() ) ;
 	}	
 
 }
+
 
 
 LogAggregatorRaw::~LogAggregatorRaw() throw() 
@@ -80,7 +82,7 @@ LogAggregatorRaw::~LogAggregatorRaw() throw()
 		{
 		
 			std::cerr << "Error while aggregating logs in "
-				"LogAggregatorRaw destructor : "
+				"LogAggregatorRaw destructor: "
 				<< e.toString() << "." << std::endl ;
 				
 			// Never throw an exception from a destructor !		
@@ -88,11 +90,12 @@ LogAggregatorRaw::~LogAggregatorRaw() throw()
 		
 	}
 		
-	// Automatically closed if needed :	
+	// Automatically closed if needed:	
 	if ( _outputFile != 0 )
 		delete _outputFile ;
 
 }
+
 
 
 void LogAggregatorRaw::aggregate() throw( LogAggregatorException ) 
@@ -103,7 +106,7 @@ void LogAggregatorRaw::aggregate() throw( LogAggregatorException )
 
 	if ( _immediateWrite )
 	{
-		CEYLAN_LOG( "LogAggregatorRaw::aggregate : "
+		CEYLAN_LOG( "LogAggregatorRaw::aggregate: "
 			"write mode is immediate, nothing to do." ) ;
 		return ;	 
 	}
@@ -126,12 +129,13 @@ void LogAggregatorRaw::aggregate() throw( LogAggregatorException )
 }
 
 
+
 void LogAggregatorRaw::store( LogMessage & message ) throw( LogException )
 {
 
 	CEYLAN_LOG( "Storing a new message " + message.toString() ) ;
 	
-	// Use standard LogAggregator method in all cases, immediate write or not :
+	// Use standard LogAggregator method in all cases, immediate write or not:
 	LogAggregator::store( message ) ;
 
 	/*
@@ -155,20 +159,45 @@ void LogAggregatorRaw::write( const LogChannel & channel )
 
 	CEYLAN_LOG( "Writing on disk channel " + channel.toString() ) ;
 	
-	_outputFile->write( '\t' 
-		+ channel.toString( getOverallVerbosityLevel() ) ) ;
-	_outputFile->write( "\n" ) ;	
+	try
+	{
 	
+		_outputFile->write( '\t' 
+			+ channel.toString( getOverallVerbosityLevel() ) + '\n' ) ;
+			
+	}
+	catch( const OutputStream::WriteFailedException & e )
+	{
+	
+		throw LogException( "LogAggregatorRaw::write (first) failed: " 
+			+ e.toString() ) ;
+	
+	}
+
 }
 
 
-void LogAggregatorRaw::write( const LogMessage & message ) const throw()
+void LogAggregatorRaw::write( const LogMessage & message ) const
+	throw( LogException )
 {
 
 	CEYLAN_LOG( "Writing on disk message " + message.toString() ) ;
 		
-	_outputFile->write( 
-		message.toString( getMessageVerbosityLevel( message ) ) + '\n' ) ;
+	try
+	{
+	
+		_outputFile->write( 
+			message.toString( getMessageVerbosityLevel( message ) ) + '\n' ) ;
+	}
+	catch( const OutputStream::WriteFailedException & e )
+	{
+	
+		throw LogException( "LogAggregatorRaw::write (second) failed: " 
+			+ e.toString() ) ;
+	
+	}
+
+			
 	
 }
 
@@ -178,7 +207,7 @@ const string LogAggregatorRaw::toString( Ceylan::VerbosityLevels level )
 {
 
 	return string( "This is LogAggregatorRaw in " )
-		+ ( _immediateWrite ? "" : "non-" ) 
+		+ ( _immediateWrite ? "": "non-" ) 
 		+ string( "immediate mode. It " )
 		+ ( _useGlobalLevelOfDetail ? "uses" : "does not use" )
 		+ string( " a global level of detail for message output. " ) 
