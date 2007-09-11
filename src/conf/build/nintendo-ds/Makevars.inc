@@ -27,6 +27,7 @@ endif
 devkitPro_DIR = $(NDS_DEV_ROOT)/devkitPro
 devkitARM_DIR = $(devkitPro_DIR)/devkitARM
 libnds_DIR    = $(devkitPro_DIR)/libnds
+libfat_DIR    = $(libnds_DIR)
 
 
 build_tool_DIR    = ${devkitARM_DIR}/bin
@@ -50,7 +51,12 @@ DLDITOOL_ROOT   = $(NDS_DEV_ROOT)/dldi
 DLDITOOL        = $(DLDITOOL_ROOT)/dlditool
 
 # Replace by your linker-specific script if not using SuperCard Lite:
-DLDITOOL_SCRIPT = $(DLDITOOL_ROOT)/Sclt.dldi
+DLDITOOL_SCRIPT = $(DLDITOOL_SC_SCRIPT)
+
+DLDITOOL_SC_SCRIPT   = $(DLDITOOL_ROOT)/Sclt.dldi
+DLDITOOL_R4_SCRIPT   = $(DLDITOOL_ROOT)/R4tf.dldi
+DLDITOOL_FCSR_SCRIPT = $(DLDITOOL_ROOT)/fcsr.dldi
+
 
 
 NDSTOOL = $(build_tool_DIR)/ndstool
@@ -193,7 +199,7 @@ CPP_OTHER_DEFINES:= \
 
 
 CPP_FLAGS_COMMON:= $(CPP_DEFINES) -I. $(CPP_FLAGS_COMMON) \
-	-I$(libnds_DIR)/include 
+	-I$(libfat_DIR)/include -I$(libnds_DIR)/include  
 
 
 # Let the possibility for the user to define his own CPP_FLAGS:
@@ -256,3 +262,4 @@ CEYLAN_INSTALL_LIB  := $(CEYLAN_INSTALL_ROOT)/lib
 
 CEYLAN_ARM7_INSTALLED_LIB := $(CEYLAN_INSTALL_LIB)/$(CEYLAN_ARM7_LIB_NAME)
 CEYLAN_ARM9_INSTALLED_LIB := $(CEYLAN_INSTALL_LIB)/$(CEYLAN_ARM9_LIB_NAME)
+
