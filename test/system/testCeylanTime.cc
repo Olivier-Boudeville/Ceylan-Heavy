@@ -278,7 +278,7 @@ int main( int argc, char * argv[] )
 		
 		
 		const string logFilename = "testCeylanTime-granularity.dat" ;
-		File * logFile = new File( logFilename ) ;
+		Ceylan::Holder<File> logFile( File::Create( logFilename ) ) ;
 		
 		logFile->write( 
 			"# This file records the requested sleep durations (first column) "
@@ -328,8 +328,6 @@ int main( int argc, char * argv[] )
 				
 		}
 
-		delete logFile ;
-		
 		
 		LogPlug::info( "Testing smartSleep with random sleep durations." ) ;
 		
