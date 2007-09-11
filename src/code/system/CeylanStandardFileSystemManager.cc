@@ -402,7 +402,7 @@ void StandardFileSystemManager::copyFile( const string & sourceFilename,
 		Size written = 0 ;
 	
 		Size bufferSize = ( fileSize > File::BigBufferSize ? 
-			File::BigBufferSize : fileSize ) ;
+			File::BigBufferSize: fileSize ) ;
 
 		char * buf = new char[ bufferSize ] ;
 
@@ -579,13 +579,13 @@ string StandardFileSystemManager::transformIntoValidFilename(
 
 	Ceylan::Uint32 characterCount = 0 ;
 
-	// Remove all leading dots '.' :
+	// Remove all leading dots '.':
 	while ( rawFilename[ characterCount ] == '.' )
 		characterCount++ ;
 
-	// (preferred to : for( string::const_iterator it...)
+	// (preferred to: for( string::const_iterator it...)
 
-	// Substitute any space " ", slash "/" or back-slash "\" by a dash "-" :
+	// Substitute any space " ", slash "/" or back-slash "\" by a dash "-":
 
 	StringSize nameSize = rawFilename.size() ;
 	
@@ -1013,7 +1013,7 @@ bool StandardFileSystemManager::isAValidDirectoryPath(
 	
 #else // CEYLAN_USES_REGEX
 
-	// A priori correct :
+	// A priori correct:
 	return true ;
 	
 #endif // CEYLAN_USES_REGEX
@@ -1038,21 +1038,21 @@ bool StandardFileSystemManager::isAbsolutePath( const string & path ) throw()
 		return false ;
 
 	/*
-	 * Starts with separator, or with prefix (if prefix is used) :
+	 * Starts with separator, or with prefix (if prefix is used):
 	 * absolute path.
 	 *
 	 */
 	 
 #if CEYLAN_ARCH_WINDOWS
 
-	/* Was :
+	/* Was:
 
 	if ( ! RootDirectoryPrefix.empty() )
 		if ( path.find( RootDirectoryPrefix, 0 ) == 0 )
 			return true ;
 	 */
 
-	// Prefix is : a drive letter + ':\', ex : 'c:\'
+	// Prefix is: a drive letter + ':\', ex: 'c:\'
 	if ( ( Ceylan::isLetter( path[0] ) ) && ( path[1] == ':' ) )
 		return true ;
 
@@ -1082,14 +1082,14 @@ std::string StandardFileSystemManager::getCurrentWorkingDirectoryPath()
 
 	/*
 	 * With following automatic variable, frame size is deemed 
-	 * 'too large for reliable stack checking' :
+	 * 'too large for reliable stack checking':
 	 
 	char buf[ PATH_MAX + 1 ] ;
 	 
 	 * Another solution would be to use a static string, but this method 
 	 * would not be reentrant anymore.
 	 *
-	 * Hence using dynamic allocation, even if slower :
+	 * Hence using dynamic allocation, even if slower:
 	 *
 	 */
 
@@ -1122,14 +1122,14 @@ std::string StandardFileSystemManager::getCurrentWorkingDirectoryPath()
 
 	/*
 	 * With following automatic variable, frame size is deemed 
-	 * 'too large for reliable stack checking' :
+	 * 'too large for reliable stack checking':
 	 
 	char buf[ PATH_MAX + 1 ] ;
 	 
 	 * Another solution would be to use a static string, but this method 
 	 * would not be reentrant anymore.
 	 *
-	 * Hence using dynamic allocation, even if slower :
+	 * Hence using dynamic allocation, even if slower:
 	 *
 	 */
 
