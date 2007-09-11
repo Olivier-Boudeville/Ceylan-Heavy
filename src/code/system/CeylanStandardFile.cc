@@ -1019,6 +1019,9 @@ StandardFile::StandardFile( const string & name, OpeningFlag openFlag,
 
 
 
+// Implementations of inherited methods.
+
+
 FileSystemManager & StandardFile::getCorrespondingFileSystemManager()
 	const throw( FileDelegatingException )
 {
@@ -1041,6 +1044,288 @@ FileSystemManager & StandardFile::getCorrespondingFileSystemManager()
 }
 	
 	
+void StandardFile::reopen() throw( FileOpeningFailed )
+{
+
+#if CEYLAN_USES_FILE_DESCRIPTORS
+
+	SystemSpecificPermissionFlag myMode ;
+	
+	ConvertToFileDescriptorPermissionFlag( _permissions, myMode ) ;
+	
+	_fdes = ::open( _name.c_str(), ConvertToFileDescriptorOpenFlag( _openFlag ),
+		myMode._mode ) ;
+
+	if ( _fdes < 0 )
+		throw FileOpeningFailed( "StandardFile::reopen failed for '" + _name
+			+ "': " + System::explainError() ) ;
+			
+			
+#else // if CEYLAN_USES_FILE_DESCRIPTORS	
+
+
+	// Second, take care of the permission openFlag:
+	
+	/*
+	 * With this implementation, _permissions is ignored, no
+	 * ConvertToStreamPermissionFlag used.
+	 *
+	 */
+	
+	/* 
+	 * If Synchronous is requested, turn off the buffering before any
+	 * I/O operation:
+	 *
+	 * @see http://gcc.gnu.org/onlinedocs/libstdc++/27_io/howto.html
+	 *
+	 * However actual tests, by triggering a division by zero crash, showed
+	 * that the 'pubsetbuf' call is not enough, since logs may be lost
+	 * nevertheless. Adding the conditional 'flush' in the 'write' method
+	 * works.
+	 *
+	 */
+	if ( Synchronous & _openFlag )
+		_fstream.rdbuf()->pubsetbuf( 0, 0 ) ;
+		
+	_fstream.open( _name.c_str(), 
+		ConvertToStreamOpenFlag( _openFlag, _name ) ) ; 
+
+	// if ( ! _fstream ) ... could be used as well
+	
+	if ( ! _fstream.is_open() )
+		throw FileOpeningFailed( "StandardFile::reopen failed for '" + _name
+			+ "': error opening file, " + interpretState() ) ;
+	
+	if ( ! _fstream.good() )
+		throw FileOpeningFailed( "StandardFile::reopen failed for '" + _name
+			+ "': " + interpretState() ) ;
+	
+#endif // if CEYLAN_USES_FILE_DESCRIPTORS	
+
+}
+
+
+string StandardFile::interpretState() const throw()
+{
+
+#if CEYLAN_USES_FILE_DESCRIPTORS
+
+	return "StandardFile uses file descriptor " + Ceylan::toString( _fdes ) ;
+	
+#else // CEYLAN_USES_FILE_DESCRIPTORS
+
+	return InterpretState( _fstream ) ;
+	
+#endif // CEYLAN_USES_FILE_DESCRIPTORS
+
+}
+
+
+
+// Conversion helper subsection.
+
+int StandardFile::ConvertToFileDescriptorOpenFlag( OpeningFlag openFlag ) 
+	throw( ConversionFailed )
+{
+
+#if CEYLAN_USES_FILE_DESCRIPTORS
+
+
+#if CEYLAN_DEBUG
+
+	if ( openFlag == DoNotOpen )
+		throw ConversionFailed( 
+			"StandardFile::ConvertToFileDescriptorOpenFlag: "
+			"flags specify that the file is not to be opened." ) ;
+			
+#endif // CEYLAN_DEBUG
+
+
+	int actualFlags = 0 ;
+		
+	if ( Read & openFlag )
+	{	
+		if ( Write & openFlag )
+			actualFlags |= O_RDWR ;
+		else 	
+			actualFlags |= O_RDONLY ;	
+	}
+	else
+	{
+		if ( Write & openFlag )
+			actualFlags |= O_WRONLY ;
+	}
+	
+	if ( CreateFile & openFlag )
+		actualFlags |= O_CREAT ;
+			
+	if ( TruncateFile & openFlag )
+		actualFlags |= O_TRUNC ;
+		
+	if ( AppendFile & openFlag )
+		actualFlags |= O_APPEND ;
+
+	// Binary: nothing to do here, with file descriptors.
+	 
+		
+#if CEYLAN_USES_ADVANCED_FILE_ATTRIBUTES
+
+	if ( NonBlocking & openFlag )
+		actualFlags |= O_NONBLOCK ;
+		
+	if ( Synchronous & openFlag )
+		actualFlags |= O_SYNC ;
+	
+#endif // CEYLAN_USES_ADVANCED_FILE_ATTRIBUTES
+
+	return actualFlags ;
+
+#else // CEYLAN_USES_FILE_DESCRIPTORS
+
+	throw ConversionFailed(	"StandardFile::ConvertToFileDescriptorOpenFlag: "
+		"file descriptor feature is not available" ) ;
+
+#endif // CEYLAN_USES_FILE_DESCRIPTORS
+
+}
+
+
+					
+void StandardFile::ConvertToFileDescriptorPermissionFlag( 
+		PermissionFlag permissionFlag, 
+		struct SystemSpecificPermissionFlag & returned ) 
+	throw( ConversionFailed )
+{
+
+#if CEYLAN_USES_FILE_DESCRIPTORS	
+
+	mode_t actualPermissions = 0 ;
+	
+	if ( permissionFlag & OwnerRead )
+		actualPermissions |= S_IRUSR ;
+		
+	if ( permissionFlag & OwnerWrite )
+		actualPermissions |= S_IWUSR ;
+		
+	if ( permissionFlag & OwnerExec )
+		actualPermissions |= S_IXUSR ;
+		
+#if CEYLAN_USES_ADVANCED_FILE_ATTRIBUTES
+		
+		
+	if ( permissionFlag & GroupRead )
+		actualPermissions |= S_IRGRP ;
+		
+	if ( permissionFlag & GroupWrite )
+		actualPermissions |= S_IWGRP ;
+		
+	if ( permissionFlag & GroupExec )
+		actualPermissions |= S_IXGRP ;
+	
+		
+	if ( permissionFlag & OthersRead )
+		actualPermissions |= S_IROTH ;
+		
+	if ( permissionFlag & OthersWrite )
+		actualPermissions |= S_IWOTH ;
+		
+	if ( permissionFlag & OthersExec )
+		actualPermissions |= S_IXOTH ;
+		
+
+#endif // CEYLAN_USES_ADVANCED_FILE_ATTRIBUTES
+
+	returned._mode = actualPermissions ;
+
+#else // CEYLAN_USES_FILE_DESCRIPTORS
+
+	throw ConversionFailed( 
+		"StandardFile::ConvertToFileDescriptorPermissionFlag: "
+		"file descriptor feature is not available" ) ;
+
+#endif	 // CEYLAN_USES_FILE_DESCRIPTORS
+
+}
+
+
+					
+ios_base::openmode StandardFile::ConvertToStreamOpenFlag( 
+		OpeningFlag openFlag, const std::string & filename ) 
+	throw( ConversionFailed )
+{
+
+#if CEYLAN_DEBUG
+
+	if ( openFlag == DoNotOpen )
+		throw ConversionFailed( 
+			"StandardFile::ConvertToStreamOpenFlag: "
+			"flags specify that the file is not to be opened." ) ;
+			
+#endif // CEYLAN_DEBUG
+
+
+	ios_base::openmode actualFlags = 
+		static_cast<ios_base::openmode>( 0 ) ;
+
+	if ( Read & openFlag )
+		actualFlags |= fstream::in ;
+	
+	if ( Write & openFlag )
+		actualFlags |= fstream::out ;
+	
+	// If CreateFile is not set, then the file is expected to exist already:
+	if ( ! ( CreateFile & openFlag ) )
+	{
+	
+		// No creation requested, checking the file already exists:
+		
+		bool alreadyExisting = false ;
+		
+		try
+		{
+		
+			alreadyExisting = StandardFileSystemManager::GetStandardFileSystemManager().existsAsFileOrSymbolicLink( filename ) ;
+					
+		}
+		catch( const FileException & e )
+		{
+		
+			throw ConversionFailed( "StandardFile::ConvertToStreamOpenFlag: "
+				"error while checking the existence of file: " 
+				+ e.toString() ) ;
+				
+		}
+		
+		if ( ! alreadyExisting )
+			throw ConversionFailed( 
+				"StandardFile::ConvertToStreamOpenFlag: the file '"
+				+ filename + "' does not exist whereas it should "
+				"( no 'CreateFile' attribute in opening flag)" ) ; 
+				
+	}
+	
+	if ( TruncateFile & openFlag )
+		actualFlags |= fstream::trunc ;
+	
+	if ( AppendFile & openFlag )
+		actualFlags |= fstream::app ;
+	
+	if ( Binary & openFlag )
+		actualFlags |= fstream::binary ;
+	
+	// fstream::ate not used.
+
+	return actualFlags ;
+
+}
+
+
+					
+
+
+// Private section.															
+
+	
 	
 void StandardFile::FromFDtoFD( FileDescriptor from, FileDescriptor to,
 	Size length ) throw( StandardFileException )
@@ -1050,7 +1335,7 @@ void StandardFile::FromFDtoFD( FileDescriptor from, FileDescriptor to,
 
 	Size written = 0 ;
 	
-	Size bufferSize = ( length > BigBufferSize ? BigBufferSize : length ) ;
+	Size bufferSize = ( length > BigBufferSize ? BigBufferSize: length ) ;
 
 	Ceylan::Byte * buf = new Ceylan::Byte[ bufferSize ] ;
 
