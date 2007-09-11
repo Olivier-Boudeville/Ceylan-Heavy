@@ -50,7 +50,7 @@ namespace Ceylan
 	/**
 	 * Pointers with reference counting.
 	 *
-	 * @example :
+	 * @example:
 	 * <pre>
 	 * CountedPointer<AnObjectType> p = new AnObjectType(...) ;
 	 * p->aMethod() ;
@@ -60,8 +60,8 @@ namespace Ceylan
 	 * This pointer will track the references to the specified resource,
 	 * which will be deallocated only when nobody references it.
 	 *
- 	 * Original name : CountedPointer.h
-	 * Original date : 07/24/99
+ 	 * Original name: CountedPointer.h
+	 * Original date: 07/24/99
 	 * @author Robert Di Falco (http://c2.com/cgi/wiki?RobertDiFalco)
 	 *	 
 	 * Implementation of the CountedPointer specification. Uses a 'static 
@@ -82,8 +82,8 @@ namespace Ceylan
 	 * Another use of this pointer is to hold local resources so that they get
 	 * deallocated whatever happens in the method (return, exceptions, etc.).
 	 *
-	 * @example : for a mutex, which is a kind of resource that has to be
-	 * specifically deallocated under such circumstances :
+	 * @example: for a mutex, which is a kind of resource that has to be
+	 * specifically deallocated under such circumstances:
 	 * <pre>
 	 * bool aMethod()
 	 * {
@@ -97,12 +97,12 @@ namespace Ceylan
 	 * </pre>
 	 *
 	 */
-	template< class T >
-	class CountedPointer : public Ceylan::TextDisplayable
+	template< typename T >
+	class CountedPointer: public Ceylan::TextDisplayable
 	{
 	
 	
-		// First : interface.
+		// First: interface.
 			
 			
 		public:
@@ -131,12 +131,12 @@ namespace Ceylan
 	        CountedPointer( ElementType * resourcePointer = 0 )
 	        {
 		 
-	            // Speeds default creation for arrays : (stack gets a reference)
+	            // Speeds default creation for arrays: (stack gets a reference)
 	            static Referent staticRef( /* null pointer */ 0, 
 					/* ref count */ 1 ) ; 
 
 	            setReferent( ( resourcePointer == 0 ) ? 
-					& staticRef : new Referent( resourcePointer ) ) ;
+					& staticRef: new Referent( resourcePointer ) ) ;
 	        }
 
 
@@ -147,7 +147,7 @@ namespace Ceylan
 			 * referent.
 			 *
 			 */
-			CountedPointer( const CountedPointer<T> & source ) :
+			CountedPointer( const CountedPointer<T> & source ):
 				Ceylan::TextDisplayable()
 			{
 				setReferent( source._referent ) ;
@@ -157,11 +157,11 @@ namespace Ceylan
 			/**
 			 * Assignment operator.
 			 *
-			 * @example :
+			 * @example:
 			 * CountedPointer<Foo> foo_ref1 = new Foo() ;
 			 * CountedPointer<Foo> foo_ref2 = new Foo() ;
 			 * foo_ref2 = foo_ref1 ;
-			 * which is equivalent to : foo_ref2.operator=( foo_ref1 ) ;
+			 * which is equivalent to: foo_ref2.operator=( foo_ref1 ) ;
 			 *			
 			 */
 			CountedPointer<T> & operator=( const CountedPointer<T> & source )
@@ -169,7 +169,7 @@ namespace Ceylan
 			
 				if ( _referent != source._referent )
 				{
-					// Sets own referent to the source one :
+					// Sets own referent to the source one:
 					reset( source._referent ) ;
 				}
 					
@@ -178,7 +178,7 @@ namespace Ceylan
 				 *
 				 */
 				
-				// For assignment chaining :
+				// For assignment chaining:
 				return * this ;
 				
 			}
@@ -190,6 +190,7 @@ namespace Ceylan
 			 *
 			 * @note Should not specifically be called explicitly under normal
 			 * use.
+			 *
 			 */
 			~CountedPointer() throw()
 			{
@@ -299,7 +300,7 @@ namespace Ceylan
 
 
 				/* 
-				 * @note : if this fails, the state of the object must continue
+				 * @note: if this fails, the state of the object must continue
 				 * to be sound. 
 				 * The only problem areas are the new operations (and possibly
 				 * the delete called by release). 
@@ -321,7 +322,7 @@ namespace Ceylan
 				{
 			 
 					/* 
-					 * @note : This is safe if the new operation fails. 
+					 * @note: This is safe if the new operation fails. 
 					 * If success, it does a simple release and reference call. 
 					 */
 
@@ -330,10 +331,14 @@ namespace Ceylan
 				}
 				catch( ... )
 				{
+				
 					delete newElement ;
-					// Propagate the exception :
-					throw ;        
+					
+					// Propagate the exception:
+					throw ;   
+					     
 				}
+				
  	        }
 
 
@@ -341,7 +346,7 @@ namespace Ceylan
 
 
 
-     /// Second : implementation.
+     /// Second: implementation.
 
 
      private:
@@ -363,7 +368,7 @@ namespace Ceylan
 			 *
 			 */
              Referent( ElementType * resourcePointer = 0, 
-			 		ReferenceCount initialCount = 0 ) :
+			 		ReferenceCount initialCount = 0 ):
                  _resourcePointer( resourcePointer ),
                  _refCount( initialCount )
              {
@@ -373,7 +378,7 @@ namespace Ceylan
 
              ~Referent() throw()
              {
-			 	// The actual only place where the wrapped resource is deleted :
+			 	// The actual only place where the wrapped resource is deleted:
                 delete _resourcePointer ;
              }
 			 
@@ -392,7 +397,7 @@ namespace Ceylan
 
 
 		 /**
-		  * Each CountedPointer has therefore a member : 
+		  * Each CountedPointer has therefore a member: 
 		  * Referent * _referent ; 
 		  *
 		  */
@@ -412,7 +417,7 @@ namespace Ceylan
          void reset( Referent * refPointer )
          {
 		 
-             // Enter critical section : auto_lock< lock_type > lock ;
+             // Enter critical section: auto_lock< lock_type > lock ;
 
              release() ;
              setReferent( refPointer ) ;
@@ -428,7 +433,7 @@ namespace Ceylan
         void setReferent( Referent * refPointer )
         {
 
-            // Enter critical section : auto_lock< lock_type > lock ;
+            // Enter critical section: auto_lock< lock_type > lock ;
 			
             ( _referent = refPointer )->_refCount++ ;
 			
@@ -443,13 +448,15 @@ namespace Ceylan
         void release()
         {
 
-            // Enter critical section : auto_lock< lock_type > lock ;
+            // Enter critical section: auto_lock< lock_type > lock ;
 
             if ( --_referent->_refCount == 0 )
 			{
-				// Will trigger the resource deletion too.
+			
+				// Will trigger the resource deletion too:
                 delete _referent ;
 				_referent = 0 ;
+				
 			}
 			
         }
