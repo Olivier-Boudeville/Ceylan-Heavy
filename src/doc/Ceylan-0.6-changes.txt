@@ -1,0 +1,18 @@
+Created on Thursday, April 26, 2007.
+Updated on .
+
+
+		Ceylan 0.6 main changes, compared to the 0.5 version
+	
+	
+	
+- a newer File/Directory/FileSystemManager generalized API has been added and integrated, aiming at support of specific filesystems on the Nintendo DS
+
+- the Nintendo DS platform is now supported (ARM9 only, library will not fit in ARM7 executables for the moment)
+
+- full support from LOANI and with Visual Express 
+
+- various smaller improvements: features (ex: Holder), documentation (developer guide), etc.
+
+
+For more details, see the ChangeLog file or go to http://ceylan.sourceforge.net/Ceylan-0.6/ChangeLog.html.
