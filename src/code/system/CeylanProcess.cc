@@ -2,7 +2,7 @@
 
 #include "CeylanLogPlug.h"
 #include "CeylanSystem.h"
-#include "CeylanFile.h"
+#include "CeylanStandardFile.h"      // for StandardFile
 #include "CeylanDirectory.h"
 #include "CeylanInputStream.h"
 #include "CeylanOutputStream.h"
@@ -48,6 +48,7 @@ extern "C"
 	
 }
 
+
 #include <csignal>
 #include <cerrno>
 
@@ -81,7 +82,7 @@ bool Process::_Saved = false ;
 
 
 
-ProcessException::ProcessException( const string message ) throw() :
+ProcessException::ProcessException( const string message ) throw():
 	RunnableException( message )
 {
 
@@ -95,7 +96,8 @@ ProcessException::~ProcessException() throw()
 
 
 
-Process::Process() throw() :
+
+Process::Process() throw():
 	Runnable(),
 	_id     ( 0 ),
 	_error  ( 0 )
@@ -104,7 +106,7 @@ Process::Process() throw() :
 }
 
 
-Process::Process( const string & name ) throw() :
+Process::Process( const string & name ) throw():
 	Runnable( name ),
 	_id     ( 0 ),
 	_error  ( 0 )
@@ -124,7 +126,7 @@ void Process::run() throw( RunnableException )
 
 #if CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
 
-	// pid_t can be -1, whereas _id is unsigned :
+	// pid_t can be -1, whereas _id is unsigned:
 	pid_t res = ::fork() ;
 
 	if ( res == -1 )
@@ -140,7 +142,7 @@ void Process::run() throw( RunnableException )
 
 	if ( _id == 0 )
 	{
-		// We are the forked child. getpid is expected to be non-negative :
+		// We are the forked child. getpid is expected to be non-negative:
 		_id = ::getpid() ;
 		start() ;
 	}
@@ -149,7 +151,7 @@ void Process::run() throw( RunnableException )
 
 #else // CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
 
-	throw ProcessException( "Process::run : "
+	throw ProcessException( "Process::run: "
 		"advanced process management feature not available." ) ;
 		 	
 #endif // CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
@@ -171,8 +173,8 @@ void Process::kill() throw( ProcessException )
 	if ( ret != 0 )
 	{
 		_error = errno ;
-		throw ProcessException( "Process::kill : could not kill process "
-			+ Ceylan::toString( _id ) + " : "
+		throw ProcessException( "Process::kill: could not kill process "
+			+ Ceylan::toString( _id ) + ": "
 			+ System::explainError( _error ) ) ;
 	}
 	else
@@ -183,7 +185,7 @@ void Process::kill() throw( ProcessException )
 	
 #else // CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
 
-	throw ProcessException( "Process::kill : "
+	throw ProcessException( "Process::kill: "
 		"advanced process management feature not available." ) ;
 	
 #endif // CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
@@ -212,7 +214,7 @@ bool Process::isRunning() const throw( ProcessException )
 	
 #else // CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
 
-	throw ProcessException( "Process::isRunning : "
+	throw ProcessException( "Process::isRunning: "
 		"advanced process management feature not available." ) ;
 		
 #endif // CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
@@ -247,7 +249,7 @@ Pid Process::GetHostingPID() throw( ProcessException )
 
 #else // CEYLAN_USES_GETPID
 
-	throw ProcessException( "Process::GetHostingPID : "
+	throw ProcessException( "Process::GetHostingPID: "
 		"not supported on this platform" ) ;
 
 #endif // CEYLAN_USES_GETPID
@@ -266,7 +268,7 @@ Pid Process::GetParentID() throw( ProcessException )
 
 #else // CEYLAN_USES_GETPID
 
-	throw ProcessException( "Process::GetParentID : "
+	throw ProcessException( "Process::GetParentID: "
 		"not supported on this platform" ) ;
 
 #endif // CEYLAN_USES_GETPID
@@ -284,7 +286,7 @@ Process::ExitReason Process::WaitChildProcess( const Process & childProcess,
 
 	Pid p = ::waitpid( childProcess.getPID(), & status, 0 ) ;
 
-	// Tracks down how the child process finished :
+	// Tracks down how the child process finished:
 
 	if ( p == childProcess.getPID() )
 	{
@@ -320,7 +322,7 @@ Process::ExitReason Process::WaitChildProcess( const Process & childProcess,
 
 #else // CEYLAN_USES_WAITPID
 
-	throw ProcessException( "Process::WaitChildProcess : "
+	throw ProcessException( "Process::WaitChildProcess: "
 		"not supported on this platform" ) ;
 
 #endif // CEYLAN_USES_WAITPID
@@ -342,7 +344,7 @@ string Process::GetOwner() throw( ProcessException )
 		if ( p != 0 )
 			_Owner = p->pw_name ;
 		else
-			throw ProcessException( "Process::GetOwner : "
+			throw ProcessException( "Process::GetOwner: "
 				"unable to determine process owner." ) ;
 	}
 
@@ -350,7 +352,7 @@ string Process::GetOwner() throw( ProcessException )
 
 #else // CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
 
-	throw ProcessException( "Process::GetOwner : "
+	throw ProcessException( "Process::GetOwner: "
 		"advanced process management feature not available" ) ;
 	
 #endif // CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
@@ -370,7 +372,7 @@ void Process::RunExecutable(
 #if CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
 
 
-	// Constructs the argument list :
+	// Constructs the argument list:
 
 	char ** cargv = new char * [ argv.size() + 2 ] ;
 
@@ -391,33 +393,33 @@ void Process::RunExecutable(
 
 	cargv[currentArg] = 0 ;
 
-	// Redirects I/O if necessary :
+	// Redirects I/O if necessary:
 
 	if ( ! stdoutFilename.empty() 
 			&& ! RedirectStdout( stdoutFilename ) )
 		throw ProcessException( 
-			"Process::runExecutable : could not redirect stdout into "
+			"Process::runExecutable: could not redirect stdout into "
 			+ stdoutFilename ) ;
 
 	if ( ! stderrFilename.empty() 
 			&& ! RedirectStderr( stderrFilename ) )
 		throw ProcessException( 
-			"Process::runExecutable : could not redirect stderr into "
+			"Process::runExecutable: could not redirect stderr into "
 			+ stderrFilename ) ;
 
 	if ( ! stdinFilename.empty() 
 			&& ! RedirectStdin( stdinFilename ) )
 		throw ProcessException( 
-			"Process::runExecutable : could not redirect stdin into "
+			"Process::runExecutable: could not redirect stdin into "
 			+ stdinFilename ) ;
 
-	// Executes it :
+	// Executes it:
 
 	::execvp( cargv[0], cargv ) ;
 
 	throw ProcessException( 
-		"Process::runExecutable : could not execute code from "
-		+ filename + " : "
+		"Process::runExecutable: could not execute code from "
+		+ filename + ": "
 		+ System::explainError( errno ) + " " + cargv[0] ) ;
 
 	for ( Ceylan::Uint16 i = 0; cargv[i] != 0 ; i++ )
@@ -427,7 +429,7 @@ void Process::RunExecutable(
 
 #else // CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
 
-	throw ProcessException( "Process::RunExecutable : "
+	throw ProcessException( "Process::RunExecutable: "
 		"advanced process management feature not available" ) ;
 
 #endif // CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
@@ -447,22 +449,27 @@ bool Process::RedirectStdout( const string & filename )
 
 	try
 	{
-		File f( filename ) ;
+	
+		StandardFile & f = StandardFile::Create( filename ) ;
+		
 		ret = DuplicateStream( f.getFileDescriptor(), STDOUT_FILENO ) ;
 		f.close() ;
+		
+		delete & f ;
+		
 	}
 	catch( const SystemException & e )
 	{
 		LogPlug::error( 
 			"Ceylan::System::Process: could not redirect stdout to "
-			+ filename + " : " + e.toString() ) ;
+			+ filename + ": " + e.toString() ) ;
 	}
 
 	return ret ;
 	
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
-	throw ProcessException( "Process::RedirectStdout : "
+	throw ProcessException( "Process::RedirectStdout: "
 		"file descriptor feature not available" ) ;
 		
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
@@ -481,7 +488,7 @@ bool Process::RedirectStdout( OutputStream & os )
 	
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
-	throw ProcessException( "Process::RedirectStdout : "
+	throw ProcessException( "Process::RedirectStdout: "
 		"file descriptor feature not available" ) ;
 		
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
@@ -499,22 +506,27 @@ bool Process::RedirectStderr( const string & filename )
 
 	try
 	{
-		File f( filename ) ;
+
+		StandardFile & f = StandardFile::Create( filename ) ;
+		
 		ret = DuplicateStream( f.getFileDescriptor(), STDERR_FILENO ) ;
 		f.close() ;
+		
+		delete & f ;
+
 	}
 	catch( const SystemException & e )
 	{
 		LogPlug::error( 
 			"Ceylan::System::Process: could not redirect stderr to "
-			+ filename + " : " + e.toString() ) ;
+			+ filename + ": " + e.toString() ) ;
 	}
 
 	return ret ;
 	
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
-	throw ProcessException( "Process::RedirectStderr : "
+	throw ProcessException( "Process::RedirectStderr: "
 		"file descriptor feature not available" ) ;
 		
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
@@ -531,7 +543,7 @@ bool Process::RedirectStderr( OutputStream & os ) throw( ProcessException )
 	
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
-	throw ProcessException( "Process::RedirectStderr : "
+	throw ProcessException( "Process::RedirectStderr: "
 		"file descriptor feature not available" ) ;
 		
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
@@ -549,22 +561,27 @@ bool Process::RedirectStdin( const string & filename ) throw( ProcessException )
 
 	try
 	{
-		File f( filename, File::Read ) ;
+
+		StandardFile & f = StandardFile::Create( filename ) ;
+		
 		ret = DuplicateStream( f.getFileDescriptor(), STDIN_FILENO ) ;
 		f.close() ;
+		
+		delete & f ;
+
 	}
 	catch( const SystemException & e )
 	{
 		LogPlug::error( 
 			"Ceylan::System::Process: could not redirect stdin to "
-			+ filename + " : " + e.toString() ) ;
+			+ filename + ": " + e.toString() ) ;
 	}
 
 	return ret ;
 	
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
-	throw ProcessException( "Process::RedirectStdin : "
+	throw ProcessException( "Process::RedirectStdin: "
 		"file descriptor feature not available" ) ;
 		
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
@@ -581,7 +598,7 @@ bool Process::RedirectStdin( InputStream & is ) throw( ProcessException )
 	
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
-	throw ProcessException( "Process::RedirectStdin : "
+	throw ProcessException( "Process::RedirectStdin: "
 		"file descriptor feature not available" ) ;
 		
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
@@ -595,7 +612,7 @@ void Process::processCreationFailed() throw( ProcessException )
 {
 
 	throw ProcessException( 
-		"Ceylan::Process:: process creation failed : "
+		"Ceylan::Process:: process creation failed: "
 		+ System::explainError( _error ) ) ;
 		
 }
@@ -613,18 +630,18 @@ Ceylan::Uint32 Process::GetTime() throw( ProcessException )
 
 	if ( clockticks < 0 )
 		throw ProcessException( 
-			"Process::GetTime : unable to determine system clock ticks : "
+			"Process::GetTime: unable to determine system clock ticks: "
 			+ System::explainError( errno ) ) ;
 
 	if ( clockticks == 0 )
-		throw ProcessException( "Process::GetTime : "
+		throw ProcessException( "Process::GetTime: "
 			"clock ticks equal to zero according to the system" ) ;
 
 	struct tms t ;
 	
 	if ( ::times( & t ) == static_cast<clock_t>( -1 ) )
-		throw ProcessException( "Process::GetTime : unable to determine "
-			"time spent in the process : " 
+		throw ProcessException( "Process::GetTime: unable to determine "
+			"time spent in the process: " 
 			+ System::explainError( errno ) ) ;
 	
 	return static_cast<Ceylan::Uint32>( 
@@ -632,7 +649,7 @@ Ceylan::Uint32 Process::GetTime() throw( ProcessException )
 		
 #else // CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
 
-	throw ProcessException( "Process::GetTime : "
+	throw ProcessException( "Process::GetTime: "
 		"advanced process management feature not available" ) ;
 		
 #endif // CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
@@ -659,22 +676,22 @@ void Process::Restart() throw( ProcessException )
 {
 
 	if ( ! _Saved )
-		throw ProcessException( "Ceylan::System::Process::restart : "
+		throw ProcessException( "Ceylan::System::Process::restart: "
 			"process command line not available." ) ;
 
 	try
 	{
 		Directory::ChangeWorkingDirectory( _Path ) ;
 	}
-	catch ( const Directory::DirectoryException & e )
+	catch ( const DirectoryException & e )
 	{
-		throw ProcessException( "Ceylan::System::Process::restart : "
+		throw ProcessException( "Ceylan::System::Process::restart: "
 			"could not change directory to initial path " + _Path ) ;
 	}
 
 	RunExecutable( _Executable, _ArgumentList ) ;
 
-	throw ProcessException( "Ceylan::System::Process::restart : "
+	throw ProcessException( "Ceylan::System::Process::restart: "
 		"could not run executable " + _Executable ) ;
 
 }
@@ -689,7 +706,7 @@ bool Process::DuplicateStream( FileDescriptor FDOld,
 	return ::dup2( FDOld, FDNew ) == FDNew ;
 #endif // CEYLAN_USES_FILE_DESCRIPTORS	
 
-	throw Features::FeatureNotAvailableException( "Process::DuplicateStream : "
+	throw Features::FeatureNotAvailableException( "Process::DuplicateStream: "
 		"file descriptor feature not available" ) ;
 		
 }
