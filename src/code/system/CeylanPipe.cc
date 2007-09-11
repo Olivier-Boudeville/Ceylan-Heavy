@@ -1,7 +1,7 @@
 #include "CeylanPipe.h"
 
-#include "CeylanFile.h"        // for Duplicate
-#include "CeylanLogPlug.h"     // for Log primitives
+#include "CeylanStandardFileSystemManager.h"  // for Duplicate
+#include "CeylanLogPlug.h"                    // for Log primitives
 
 
 #ifdef CEYLAN_USES_CONFIG_H
@@ -18,7 +18,7 @@ extern "C"
 #endif // CEYLAN_USES_SYS_TIME_H
 
 #ifdef CEYLAN_USES_UNISTD_H
-#include <unistd.h>            // for ::pipe, ::select
+#include <unistd.h>            // for ::pipe,::select
 #endif // CEYLAN_USES_UNISTD_H
 
 
@@ -28,17 +28,17 @@ extern "C"
 
 
 #ifdef CEYLAN_USES_STRING_H
-#include <string.h>            // for::select
+#include <string.h>            // for ::select
 #endif // CEYLAN_USES_STRING_H
 
 
 #ifdef CEYLAN_USES_STRINGS_H
-#include <strings.h>           // for::select
+#include <strings.h>           // for ::select
 #endif // CEYLAN_USES_STRINGS_H
 
 
 #ifdef CEYLAN_USES_SYS_SELECT_H
-#include <sys/select.h>        // for::select
+#include <sys/select.h>        // for ::select
 #endif // CEYLAN_USES_SYS_SELECT_H
 
 }
@@ -51,7 +51,7 @@ using namespace Ceylan ;
 
 
 
-Pipe::PipeException::PipeException( const string & reason ) throw() :
+Pipe::PipeException::PipeException( const string & reason ) throw():
 	SystemException( reason )
 {
 
@@ -65,25 +65,25 @@ Pipe::PipeException::~PipeException() throw()
 
 
 
-// Numerous child classes :	
+// Numerous child classes:	
 			
 
 Pipe::CouldNotCreate::CouldNotCreate( const string & reason ) 
-		throw() :
+		throw():
 	Pipe::PipeException( reason )
 {
 
 }
 		
 
-Pipe::ReadFailed::ReadFailed( const string & reason ) throw() :
+Pipe::ReadFailed::ReadFailed( const string & reason ) throw():
 	InputStream::ReadFailedException( reason )
 {
 
 }
 				
 	
-Pipe::WriteFailed::WriteFailed( const string & reason ) throw() :
+Pipe::WriteFailed::WriteFailed( const string & reason ) throw():
 	OutputStream::WriteFailedException( reason )
 {
 
@@ -91,8 +91,8 @@ Pipe::WriteFailed::WriteFailed( const string & reason ) throw() :
 
 
 
-Pipe::Pipe() throw( Pipe::CouldNotCreate, 
-		Features::FeatureNotAvailableException ) :
+
+Pipe::Pipe() throw( Pipe::CouldNotCreate ):
 	InputOutputStream()
 {
 
@@ -101,13 +101,12 @@ Pipe::Pipe() throw( Pipe::CouldNotCreate,
 	if ( ::pipe( _fd ) )
 	{
 		_fd[ 0 ] = _fd[ 1 ] = -1 ;
-		throw CouldNotCreate( "Pipe constructor : " 
-			+ System::explainError() ) ;
+		throw CouldNotCreate( "Pipe constructor: " + System::explainError() ) ;
 	}
 	
 #else // CEYLAN_USES_FILE_DESCRIPTORS	
 
-	throw Features::FeatureNotAvailableException( 
+	throw CouldNotCreate( 
 		"Pipe constructor called whereas the file desciptor feature "
 		"is not available." ) ;
 	
@@ -116,8 +115,8 @@ Pipe::Pipe() throw( Pipe::CouldNotCreate,
 }
 
 
-Pipe::Pipe( const Pipe & other ) throw( PipeException,
-		Features::FeatureNotAvailableException ) :
+
+Pipe::Pipe( const Pipe & other ) throw( PipeException ):
 	Stream(),
 	InputOutputStream()
 {
@@ -127,13 +126,13 @@ Pipe::Pipe( const Pipe & other ) throw( PipeException,
 	try
 	{
 	
-		_fd[ 0 ] = File::Duplicate( other._fd[ 0 ] ) ;
-        _fd[ 1 ] = File::Duplicate( other._fd[ 1 ] ) ;
+		_fd[ 0 ] = StandardFileSystemManager::Duplicate( other._fd[ 0 ] ) ;
+        _fd[ 1 ] = StandardFileSystemManager::Duplicate( other._fd[ 1 ] ) ;
 		
 	}
-	catch( const File::CouldNotDuplicate & e )
+	catch( const System::DuplicateFailed & e )
 	{
-		throw PipeException( "Pipe copy constructor failed : "
+		throw PipeException( "Pipe copy constructor failed: "
 			+ e.toString() ) ;
 	}		
 }
@@ -151,7 +150,7 @@ Pipe::~Pipe() throw()
 	}
 	catch( const Stream::CloseException	& e )
 	{
-		LogPlug::error( "Pipe destructor failed : " + e.toString() ) ;
+		LogPlug::error( "Pipe destructor failed: " + e.toString() ) ;
 	}
 	
 	
@@ -167,9 +166,9 @@ Size Pipe::read( char * buffer, Size maxLength )
 	SignedSize n = static_cast<SignedSize>( 
 		System::FDRead( _fd[ 0 ], buffer, maxLength ) ) ;
 
-	// Actually, n should never be negative :
+	// Actually, n should never be negative:
 	if ( n < 0 )
-		throw ReadFailedException( "Pipe::read failed : " 
+		throw ReadFailedException( "Pipe::read failed: " 
 			+ System::explainError() ) ;
 
 	return static_cast<Size>( n ) ;
@@ -195,14 +194,14 @@ Size Pipe::write( const char * buffer, Size maxLength )
 	SignedSize n = System::FDWrite( _fd[ 1 ], buffer, maxLength ) ;
 
 	if ( n < static_cast<SignedSize>( maxLength ) )
-		throw WriteFailedException( "Pipe::write failed : " 
+		throw WriteFailedException( "Pipe::write failed: " 
 			+ System::explainError() ) ;
 
 	return static_cast<Size>( n ) ;
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS	
 
-	throw Features::FeatureNotAvailableException( 
+	throw OutputStream::WriteFailedException( 
 		"Pipe::write called whereas the file desciptor feature "
 		"is not available." ) ;
 	
@@ -244,7 +243,7 @@ bool Pipe::close() throw( Stream::CloseException )
 
 #else
 
-	throw Stream::CloseException( "Pipe::close failed : "
+	throw Stream::CloseException( "Pipe::close failed: "
 		"pipe support not available." ) ;
 		
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
@@ -262,6 +261,10 @@ StreamID Pipe::getOutputStreamID() const throw()
 {
 	return getOutputStreamID() ;
 }
+
+
+
+// Protected section.
 
 
 FileDescriptor Pipe::getReadFileDescriptor() const throw()
