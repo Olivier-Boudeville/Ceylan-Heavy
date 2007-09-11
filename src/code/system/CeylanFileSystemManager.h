@@ -145,6 +145,9 @@ namespace Ceylan
 				 * (ex: ExistsAsEntry) that will select the right implementation
 				 * under the hood.
 				 *
+				 * All these static methods use any default filesystem manager,
+				 * or create a platform-default one should none be set already.
+				 *
 				 */
 
 
@@ -851,7 +854,7 @@ namespace Ceylan
 				 * on UNIX:
 				 * [ "", "mnt", "raid", "md0", "LOANI-0.3" ].
 				 *
-				 * @see joinPath
+				 * @see joinPath, Directory::JoinPath
 				 *
 				 */
 				virtual std::list<std::string> splitPath( 
@@ -868,6 +871,8 @@ namespace Ceylan
 				 * returns on UNIX: "/mnt/raid/md0/LOANI-0.3".
 				 *
 				 * @see splitPath
+				 *
+				 * @note Using Directory::JoinPath is to be preferred.
 				 *
 				 */
 				virtual std::string joinPath( 
@@ -886,6 +891,8 @@ namespace Ceylan
 				 * returns on UNIX: "/mnt/raid/md0/LOANI-0.3".
 				 *
 				 * @see splitPath
+				 *
+				 * @note Using Directory::JoinPath is to be preferred.
 				 *
 				 */
 				virtual std::string joinPath( const std::string & firstPath,
