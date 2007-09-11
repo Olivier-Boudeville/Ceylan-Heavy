@@ -110,7 +110,7 @@ const string & FileSystemManager::GetRootDirectoryPrefix()
 {
 
 	// Let FileSystemManagerDelegatingException propagate:
-	return GetAnyDefaultFileSystemManager().GetRootDirectoryPrefix() ;
+	return GetAnyDefaultFileSystemManager().getRootDirectoryPrefix() ;
 	
 }
 
