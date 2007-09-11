@@ -78,13 +78,11 @@ namespace Ceylan
 				/**
 				 * Constructs a new pipe with its own IO channels.
 				 *
-				 * @throw Various exception on failure, including
-				 * FeatureNotAvailableException if the file descriptor
-				 * feature is not available.
+				 * @throw CouldNotCreate on failure, including
+				 * if the file descriptor feature is not available.
 				 *
 				 */
-				Pipe() throw( CouldNotCreate,
-					Features::FeatureNotAvailableException ) ;
+				Pipe() throw( CouldNotCreate ) ;
 		
 		
 				/**
@@ -92,13 +90,11 @@ namespace Ceylan
 				 *
 				 * @note File descriptors are duplicated.
 				 *
-				 * @throw Various exception on failure, including
-				 * FeatureNotAvailableException if the file descriptor
-				 * feature is not available.
+				 * @throw PipeException on failure, including if the file
+				 * descriptor feature is not available.
 				 *
 				 */
-				explicit Pipe( const Pipe & other ) throw( PipeException,
-					Features::FeatureNotAvailableException ) ;
+				explicit Pipe( const Pipe & other ) throw( PipeException ) ;
 
 
 				/// Virtual destructor.
@@ -191,7 +187,6 @@ namespace Ceylan
 		protected:
 
 
-
 				/// Returns the input stream file descriptor.
 				FileDescriptor getReadFileDescriptor() const throw() ;
 		
@@ -224,8 +219,7 @@ namespace Ceylan
 	
 	
 				/**
-				 *
-				 *
+				 * The descriptors for both ends of the pipe.
 				 *
 				 */
 				mutable FileDescriptor _fd[ 2 ] ;
