@@ -116,7 +116,7 @@ time_t Directory::GetLastChangeTime( const std::string & directoryPath )
 }	
 	
 																
-bool Directory::IsAValidDirectoryName( const string & directoryString ) 
+bool Directory::IsAValidDirectoryPath( const string & directoryString ) 
 	throw( DirectoryException )
 {
 
@@ -205,7 +205,8 @@ void Directory::StripFilename( const string & path, string * base,
 {
 
 	// Let DirectoryDelegatingException propagate:
-	return GetCorrespondingFileSystemManager().stripFilename( path, base ) ;
+	return GetCorrespondingFileSystemManager().stripFilename( path, base,
+		file ) ;
 
 }
 
@@ -239,60 +240,23 @@ Directory & Directory::Create( const string & newDirectoryName )
 	throw( DirectoryException )
 {
 
-#if CEYLAN_ARCH_NINTENDO_DS
-		
-#ifdef CEYLAN_RUNS_ON_ARM7
-
-	throw SystemException( 
-		"Ceylan::System::Directory::Create: only available on the ARM9." ) ;
-
-#elif defined(CEYLAN_RUNS_ON_ARM9)
-
-FIXME
-
-#endif // CEYLAN_RUNS_ON_ARM7
-
-	
-#else // CEYLAN_ARCH_NINTENDO_DS
-
-	// We are on classical computers, let's use the OS-provided facilities:	
-	return StandardDirectory::Create( newDirectoryName ) ;
-	
-#endif // CEYLAN_ARCH_NINTENDO_DS
-
+	return GetCorrespondingFileSystemManager().createDirectory( 
+		newDirectoryName ) ;
 
 }
+	
 	
 					
 Directory & Directory::Open( const string & directoryName ) 
 	throw( DirectoryException )
 {
 
-#if CEYLAN_ARCH_NINTENDO_DS
-		
-#ifdef CEYLAN_RUNS_ON_ARM7
-
-	throw SystemException( 
-		"Ceylan::System::Directory::Create: only available on the ARM9." ) ;
-
-#elif defined(CEYLAN_RUNS_ON_ARM9)
-
-FIXME
-
-#endif // CEYLAN_RUNS_ON_ARM7
-
-	
-#else // CEYLAN_ARCH_NINTENDO_DS
-
-	// We are on classical computers, let's use the OS-provided facilities:	
-	return StandardDirectory::Open( directoryName ) ;
-	
-#endif // CEYLAN_ARCH_NINTENDO_DS
+	return GetCorrespondingFileSystemManager().openDirectory( 
+		directoryName ) ;
 
 }
 	
 	
-
 	
 Directory::~Directory() throw()
 {
@@ -300,8 +264,6 @@ Directory::~Directory() throw()
 	// Nothing special here for abstract directories.
 
 }
-
-
 
 
 
@@ -428,8 +390,13 @@ Directory::Directory( const string & directoryName )
 	_path( directoryName )
 {
 
-	// Enforce the convention on _path:
-	removeLeadingSeparator() ;
+	/* 
+	 * The convention on _path should be enforced with 
+	 * 'removeLeadingSeparator() ;' but it cannot be called here as it
+	 * uses getCorrespondingFileSystemManager which is pure virtual in this
+	 * context (compiles ok, but crashes when run).
+	 *
+	 */
 	
 }
 
