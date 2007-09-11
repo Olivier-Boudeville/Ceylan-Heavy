@@ -149,6 +149,8 @@ namespace Ceylan
 				 *
 				 * @param channel the log channel to save into file.
 				 *
+				 * @throw LogException if the write operation failed.
+				 *
 				 */
 				virtual void write( const LogChannel & channel ) 
 					const throw( LogException ) ;
@@ -163,8 +165,11 @@ namespace Ceylan
 				 * @note this method is mainly used when immediate 
 				 * writing mode is set.
 				 *
+				 * @throw LogException if the write operation failed.
+				 *
 				 */
-				virtual void write( const LogMessage & message ) const throw() ;
+				virtual void write( const LogMessage & message ) const 
+					throw( LogException ) ;
 			
 			
 				/**
@@ -185,6 +190,7 @@ namespace Ceylan
 				 *
 				 */
 				bool _immediateWrite ; 
+				
 				
 
 		private:
