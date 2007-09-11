@@ -574,12 +574,16 @@ namespace Ceylan
 				 * @throw FileOpeningFailed if the operation failed.
 				 *
 				 */
-				void reopen() throw( FileOpeningFailed ) ;
+				virtual void reopen() throw( FileOpeningFailed ) ;
 
 
 				/// Interprets the current state of this file.
 				std::string interpretState() const throw() ;
 				
+
+				
+				
+				// Conversion helper subsection.
 
 
 				/**
@@ -592,15 +596,13 @@ namespace Ceylan
 				 *
 				 * @return the converted opening flag.
 				 *
-				 * @throw ConversionFailed if the mapping failed, or
-				 * FeatureNotAvailableException is the file descriptor 
-				 * feature is not available.
+				 * @throw ConversionFailed if the mapping failed, including
+				 * if the file descriptor feature is not available.
 				 *
 				 */
 				static int ConvertToFileDescriptorOpenFlag( 
-						OpeningFlag openFlag ) 
-					throw( ConversionFailed,
-						Features::FeatureNotAvailableException ) ;  
+					OpeningFlag openFlag ) throw( ConversionFailed ) ;  
+				
 				
 				 
 				/**
@@ -618,15 +620,13 @@ namespace Ceylan
 				 * the parameter 'returned'.
 				 *
 				 * @throw ConversionFailed if the mapping failed, or
-				 * FeatureNotAvailableException is the file descriptor 
-				 * feature is not available.
+				 * if the file descriptor feature is not available.
 				 *
 				 */
 				static void ConvertToFileDescriptorPermissionFlag( 
 						PermissionFlag permissionFlag,
 						struct SystemSpecificPermissionFlag & returned ) 
-					throw( ConversionFailed,
-						Features::FeatureNotAvailableException ) ;  
+					throw( ConversionFailed ) ;  
 				
 
 
