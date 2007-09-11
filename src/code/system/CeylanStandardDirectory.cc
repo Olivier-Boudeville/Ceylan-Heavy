@@ -373,7 +373,7 @@ void StandardDirectory::getSubdirectories( list<string> & subDirectories )
 			 
 	}	
 	
-	DIR * d =::opendir( _path.c_str() ) ;
+	DIR * d = ::opendir( _path.c_str() ) ;
 
 	if ( d == 0 )
 		throw DirectoryLookupFailed( 
@@ -381,7 +381,7 @@ void StandardDirectory::getSubdirectories( list<string> & subDirectories )
 
 	struct dirent * de = 0 ;
 
-	while( ( de =::readdir( d ) ) != 0 )
+	while( ( de = ::readdir( d ) ) != 0 )
 	{
 	
 		string name = de->d_name ;
@@ -446,7 +446,7 @@ void StandardDirectory::getFiles( list<string> & files )
 			 
 	}	
 	
-	DIR * d =::opendir( _path.c_str() ) ;
+	DIR * d = ::opendir( _path.c_str() ) ;
 
 	if ( d == 0 )
 		throw DirectoryLookupFailed( 
@@ -454,7 +454,7 @@ void StandardDirectory::getFiles( list<string> & files )
 
 	struct dirent * de = 0 ;
 
-	while( ( de =::readdir( d ) ) != 0 )
+	while( ( de = ::readdir( d ) ) != 0 )
 	{
 	
 		string name = de->d_name ;
@@ -519,7 +519,7 @@ void StandardDirectory::getEntries( list<string> & entries )
 			 
 	}	
 	
-	DIR * d =::opendir( _path.c_str() ) ;
+	DIR * d = ::opendir( _path.c_str() ) ;
 
 	if ( d == 0 )
 		throw DirectoryLookupFailed( 
@@ -527,7 +527,7 @@ void StandardDirectory::getEntries( list<string> & entries )
 
 	struct dirent * de = 0 ;
 
-	while( ( de =::readdir( d ) ) != 0 )
+	while( ( de = ::readdir( d ) ) != 0 )
 	{
 	
 		string name = de->d_name ;
@@ -593,7 +593,7 @@ void StandardDirectory::getSortedEntries( list<string> & subDirectories,
 			 
 	}	
 	
-	DIR * d =::opendir( _path.c_str() ) ;
+	DIR * d = ::opendir( _path.c_str() ) ;
 
 	if ( d == 0 )
 		throw DirectoryLookupFailed( 
@@ -602,7 +602,7 @@ void StandardDirectory::getSortedEntries( list<string> & subDirectories,
 	struct dirent * de = 0 ;
 	struct stat buf ;
 
-	while( ( de =::readdir( d ) ) != 0 )
+	while( ( de = ::readdir( d ) ) != 0 )
 	{
 	
 		string name = de->d_name ;
@@ -747,44 +747,45 @@ StandardDirectory & StandardDirectory::Open( const string & directoryName )
 
 }
 			
+
 			
 StandardDirectory::StandardDirectory( const string & directoryName,
 		bool create ) throw( DirectoryException ):
 	Directory( directoryName )
 {
+
+#if CEYLAN_ARCH_NINTENDO_DS
+		
+#ifdef CEYLAN_RUNS_ON_ARM7
+
+	throw DirectoryCreationFailed( 
+		"StandardDirectory constructor: only available on the ARM9." ) ;
+
+#elif defined(CEYLAN_RUNS_ON_ARM9)
+
+FIXME
+
+#endif // CEYLAN_RUNS_ON_ARM7
+
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+
+	// Let DirectoryDelegatingException propagate:
+	FileSystemManager & fsManager = getCorrespondingFileSystemManager() ;
 	
 	if ( _path.empty() )
-	{
-	
-		_path = 
-		getCorrespondingFileSystemManager().getCurrentWorkingDirectoryPath() ;
-	
-	}
+		_path = fsManager.getCurrentWorkingDirectoryPath() ;
+
 				
 	// path should never finish with a separator:
 	removeLeadingSeparator() ;
-	
+		
 	
 #ifdef CEYLAN_USES_MKDIR
 
 	CEYLAN_LOG( "StandardDirectory constructor: "
 		"creating directory reference for " + _path ) ;
-		
-	FileSystemManager * fsManager ;
-	
-	try
-	{
-	
-		fsManager = & getCorrespondingFileSystemManager() ;
-		
-	}
-	catch( const DirectoryDelegatingException & e )
-	{
-	
-		throw DirectoryCreationFailed( 
-			"StandardDirectory constructor failed: " + e.toString() ) ;
-			 
-	}	
 
 	if ( create && ! isValid() )
 	{
@@ -803,9 +804,9 @@ StandardDirectory::StandardDirectory( const string & directoryName,
 #if CEYLAN_ARCH_UNIX
 
 		// Next split will eat leading '/':
-		if ( fsManager->isAbsolutePath( _path ) )
-			path = fsManager->getRootDirectoryPrefix() 
-				+ fsManager->getSeparator() ;
+		if ( fsManager.isAbsolutePath( _path ) )
+			path = fsManager.getRootDirectoryPrefix() 
+				+ fsManager.getSeparatorAsString() ;
 
 #endif // CEYLAN_ARCH_UNIX
 
@@ -823,7 +824,9 @@ StandardDirectory::StandardDirectory( const string & directoryName,
 
 #endif // CEYLAN_ARCH_WINDOWS
 
-		list<string> nodes = fsManager->splitPath( _path ) ;
+		// Probably the following could be rewritten with JoinPath:
+		
+		list<string> nodes = fsManager.splitPath( _path ) ;
 
 		CEYLAN_LOG( "StandardDirectory constructor: creating sub-elements." ) ;
 
@@ -838,7 +841,7 @@ StandardDirectory::StandardDirectory( const string & directoryName,
 			{
 
 				// 'c:' is never a directory, whereas 'C:\' is.
-				path += fsManager->getSeparator() ;
+				path += fsManager.getSeparatorAsString() ;
 				firstPathElement = false ;
 				
 			}
@@ -847,7 +850,7 @@ StandardDirectory::StandardDirectory( const string & directoryName,
 
 			CEYLAN_LOG( "StandardDirectory constructor: examining " + path ) ;
 
-			if ( ! fsManager->existsAsDirectory( path ) )
+			if ( ! fsManager.existsAsDirectory( path ) )
 			{
 
 				CEYLAN_LOG( "StandardDirectory constructor: creating " 
@@ -879,17 +882,17 @@ StandardDirectory::StandardDirectory( const string & directoryName,
 						+ path + ": " + explainError() ) ;
 			}
 
-			path += fsManager->getSeparator() ;
+			path += fsManager.getSeparatorAsString() ;
 
 		} // for it in nodes
 
 	} // if ( create && ! isValid() )
 
 
-	if ( ! fsManager->isAbsolutePath( _path ) )
-		_path = fsManager->getCurrentWorkingDirectoryPath() 
-			+ fsManager->getSeparator() + _path ;
-
+	if ( ! fsManager.isAbsolutePath( _path ) )
+		_path = fsManager.joinPath( 
+			fsManager.getCurrentWorkingDirectoryPath(),	_path ) ;
+			
 	CEYLAN_LOG( "Directory reference to " + _path + " done." ) ;
 
 #else // CEYLAN_USES_MKDIR
@@ -899,6 +902,7 @@ StandardDirectory::StandardDirectory( const string & directoryName,
 		
 #endif // CEYLAN_USES_MKDIR
 
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 }
 
