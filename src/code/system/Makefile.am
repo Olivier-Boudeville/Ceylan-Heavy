@@ -24,12 +24,10 @@ SYSTEM_INTERFACES = \
 	CeylanEnvironmentVariables.h         \
 	CeylanFile.h                         \
 	CeylanFileLocator.h                  \
+	CeylanFileSystemCommon.h             \
 	CeylanFileSystemManager.h            \
 	CeylanInputOutputStream.h            \
 	CeylanInputStream.h                  \
-	CeylanLibfatDirectory.h              \
-	CeylanLibfatFile.h                   \
-	CeylanLibfatFileSystemManager.h      \
 	CeylanMemoryStream.h                 \
 	CeylanMutex.h                        \
 	CeylanOutputStream.h                 \
@@ -50,7 +48,6 @@ SYSTEM_INTERFACES = \
 
 
 SYSTEM_IMPLEMENTATIONS = \
-	
 	CeylanAnonymousInputOutputStream.cc  \
 	CeylanAnonymousInputStream.cc        \
 	CeylanConsole.cc                     \
@@ -61,9 +58,6 @@ SYSTEM_IMPLEMENTATIONS = \
 	CeylanFileSystemManager.cc           \
 	CeylanInputOutputStream.cc           \
 	CeylanInputStream.cc                 \
-	CeylanLibfatDirectory.cc             \
-	CeylanLibfatFile.cc                  \
-	CeylanLibfatFileSystemManager.cc     \
 	CeylanMemoryStream.cc                \
 	CeylanMutex.cc                       \
 	CeylanOutputStream.cc                \
@@ -80,3 +74,11 @@ SYSTEM_IMPLEMENTATIONS = \
 	CeylanThread.cc                      \
 	CeylanUniformResourceIdentifier.cc
 
+HIDDEN = \
+	CeylanLibfatDirectory.h              \
+	CeylanLibfatFile.h                   \
+	CeylanLibfatFileSystemManager.h      \
+	CeylanLibfatDirectory.cc             \
+	CeylanLibfatFile.cc                  \
+	CeylanLibfatFileSystemManager.cc     \
+	fixme
