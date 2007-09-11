@@ -196,7 +196,7 @@ namespace Ceylan
 
 
 				/**
-				 * Returns whether specified string is a valid directory name.
+				 * Returns whether specified string is a valid directory path.
 				 *
 				 * @param directoryString the directory string.
 				 *
@@ -210,7 +210,7 @@ namespace Ceylan
 				 * manager not be retrieved as expected. 
 				 *
 				 */
-				static bool IsAValidDirectoryName( 
+				static bool IsAValidDirectoryPath( 
 						const std::string & directoryString ) 
 					throw( DirectoryException ) ;
 
@@ -646,7 +646,7 @@ namespace Ceylan
 				 * supported.
 				 *
 				 */
-				virtual void removeLeadingSeparator()
+				virtual void removeLeadingSeparator() 
 					throw( DirectoryException ) ;
 
 
