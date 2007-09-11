@@ -45,12 +45,13 @@ namespace Ceylan
 			public: 
 			
 				explicit DuplicateFailed( const std::string & reason ) throw():
-					FileSystemManagerException( reason )
+					StandardFileSystemManagerException( reason )
 				{
 				
 				}								
 					
 		} ;
+
 
 
 		/**
@@ -80,11 +81,7 @@ namespace Ceylan
 				
 				
 				// FileSystemManager-specific section.
-				
-				
-				
-				// Existence test section.
-		
+						
 				
 				/**
 				 * Tells whether the filesystem entry <b>entryPath</b> exists,
@@ -194,14 +191,14 @@ namespace Ceylan
 				 * instead, as it is the cross-platform factory intended for
 				 * use.
 				 *
-				 * @throw FileCreationFailed if the file creation failed or is 
-				 * not supported on this platform.
+				 * @throw FileException, including FileCreationFailed if the
+				 * operation failed or is not supported on this platform.
 				 *
 				 */
 				virtual File & createFile( const std::string & filename, 
 						OpeningFlag createFlag = File::CreateToWriteBinary,
 						PermissionFlag permissionFlag = File::OwnerReadWrite ) 
-					throw( FileCreationFailed ) ;
+					throw( FileException ) ;
 
 				
 				
@@ -220,12 +217,13 @@ namespace Ceylan
 				 * instead, as it is the cross-platform factory intended for
 				 * use.
 				 *
-				 * @throw FileOpeningFailed if the file opening failed.
+				 * @throw FileException, including FileOpeningFailed if the
+				 * operation failed or is not supported on this platform.
 				 *
 				 */
 				virtual File & openFile( const std::string & filename, 
 						OpeningFlag openFlag = File::OpenToReadBinary ) 
-					throw( FileOpeningFailed ) ;
+					throw( FileException ) ;
 				
 					
 				/**
@@ -309,6 +307,21 @@ namespace Ceylan
 
 
 				/**
+				 * Returns the last change time of the specified file.
+				 *
+				 * @param filename the filename whose last change time is
+				 * searched.
+				 *
+				 * @throw FileLastChangeTimeRequestFailed if the operation
+				 * failed or is not supported on this platform.
+				 *
+				 */
+				virtual time_t getLastChangeTimeFile( 
+						const std::string & filename ) 
+					throw( FileLastChangeTimeRequestFailed ) ;
+
+
+				/**
 				 * Takes specified <b>rawFilename</b> and tries to transform it 
 				 * so that the result should be a valid name, from the
 				 * filesystem's point of view.
@@ -345,28 +358,7 @@ namespace Ceylan
 					throw( FileTouchFailed ) ;
 
 
-
-				/**
-				 * Tells whether the two specified files have exactly the same
-				 * content (byte-wise).
-				 *
-				 * @param firstFilename the filename of the first file to
-				 * compare.
-				 *
-				 * @param secondFilename the filename of the second file to
-				 * compare.
-				 *
-				 * @return true iff these files exists and have exactly the 
-				 * same content.
-				 *
-				 * @throw FileDiffFailed if the operation failed or is not
-				 * supported on this platform.
-				 *
-				 */
-				virtual bool diff( const std::string & firstFilename,
-						const std::string & secondFilename ) 
-					throw( FileDiffFailed ) ;
-
+				// diff directly inherited from File.
 
 
 
@@ -388,13 +380,13 @@ namespace Ceylan
 				 * expected to be used instead, as it is the cross-platform
 				 * factory intended for use.
 				 *
-				 * @throw DirectoryCreationFailed if the directory creation
-				 * failed.
+				 * @throw DirectoryException, including DirectoryCreationFailed
+				 * if the directory creation failed.
 				 *
 				 */
 				virtual Directory & createDirectory( 
 						const std::string & newDirectoryName ) 
-					throw( DirectoryCreationFailed ) ;
+					throw( DirectoryException ) ;
 
 				
 				/**
@@ -410,13 +402,13 @@ namespace Ceylan
 				 * expected to be used instead, as it is the cross-platform
 				 * factory intended for use.
 				 *
-				 * @throw DirectoryOpeningFailed if the directory opening
-				 * failed.
+				 * @throw DirectoryException, including DirectoryOpeningFailed
+				 * if the directory opening failed.
 				 *
 				 */
 				virtual Directory & openDirectory( 
 						const std::string & directoryName = "" ) 
-					throw( DirectoryOpeningFailed ) ;
+					throw( DirectoryException ) ;
 					
 
 
@@ -498,17 +490,32 @@ namespace Ceylan
 						const std::string & targetDirectoryPath ) 
 					throw( DirectoryCopyFailed ) ;
 
-					
+
 				/**
-				 * Returns whether specified string is a valid directory name.
+				 * Returns the last change time of the specified directory.
 				 *
-				 * @param directoryString the directory string.
+				 * @param directoryPath the path of the directory whose last
+				 * change time is searched.
 				 *
-				 * @note If no regular expression support is available, 
-				 * then the name will be deemed always correct.
+				 * @throw DirectoryLastChangeTimeRequestFailed if the operation
+				 * failed or is not supported on this platform.
 				 *
 				 */
-				virtual bool isAValidDirectoryName( 
+				virtual time_t getLastChangeTimeDirectory( 
+						const std::string & directoryPath ) 
+					throw( DirectoryLastChangeTimeRequestFailed ) ;
+					
+					
+				/**
+				 * Returns whether specified string is a valid directory path.
+				 *
+				 * @param directoryString the directory string to examine.
+				 *
+				 * @note If no regular expression support is available, 
+				 * then the path will be deemed always correct.
+				 *
+				 */
+				virtual bool isAValidDirectoryPath( 
 					const std::string & directoryString ) throw() ;
 			
 			
@@ -534,13 +541,13 @@ namespace Ceylan
 			
 			
 				/**
-				 * Returns the current working directory name.
+				 * Returns the current working directory path.
 				 *
 				 * @throw DirectoryGetCurrentFailed if the operation failed 
 				 * or is not supported on the target platform.
 				 *
 				 */
-				virtual std::string getCurrentWorkingDirectoryName()	
+				virtual std::string getCurrentWorkingDirectoryPath()	
 					throw( DirectoryGetCurrentFailed ) ;
 
 
@@ -611,7 +618,7 @@ namespace Ceylan
 				 * failed.
 				 *
 				 */
-				static StandardFileSystemManager &
+				static StandardFileSystemManager & 
 						GetStandardFileSystemManager() 
 					throw( StandardFileSystemManagerException ) ;
 
@@ -659,15 +666,6 @@ namespace Ceylan
 				virtual ~StandardFileSystemManager() throw() ;
 
 
-
-
-			protected:
-
-
-				// Helper section.
-
-				
-
 				/**
 				 * Duplicates the file descriptor.
 				 *
@@ -679,7 +677,6 @@ namespace Ceylan
 				 */
 				static FileDescriptor Duplicate( FileDescriptor fd ) 
 					throw( DuplicateFailed ) ;
-
 
 
 

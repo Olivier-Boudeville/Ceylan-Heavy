@@ -1,9 +1,10 @@
 #include "CeylanFile.h"
 
-#include "CeylanLogPlug.h"      // for Log primitives
-#include "CeylanDirectory.h"    // for Directory
-#include "CeylanOperators.h"    // for toString
-#include "CeylanStringUtils.h"  // for StringSize
+#include "CeylanLogPlug.h"           // for Log primitives
+#include "CeylanDirectory.h"         // for Directory
+#include "CeylanOperators.h"         // for toString
+#include "CeylanStringUtils.h"       // for StringSize
+#include "CeylanFileSystemManager.h" // for FileSystemManager
 
 
 /*
@@ -99,227 +100,97 @@ const Size File::BigBufferSize   = 1<<19 ;
 
 
 
-File::FileException::FileException( const string & reason ) throw():
-	FileManagementException( reason )
-{
-
-}
-
-
-File::FileException::~FileException() throw()
-{
-
-}
-
-
-
-// Numerous child classes:	
+// Numerous FileException child classes:	
 	
 	
-File::RemoveFailed::RemoveFailed( const string & reason ) throw():
-	File::FileException( reason )
-{
-
-}
-
-
-File::MoveFailed::MoveFailed( const string & reason ) throw():
-	File::FileException( reason )
-{
-
-}
-
-
-File::CopyFailed::CopyFailed( const string & reason ) throw():
-	File::FileException( reason )
-{
-
-}
-
-
-File::CreateFailed::CreateFailed( const string & reason ) 
+	
+FileReadLockingFailed::FileReadLockingFailed( const string & reason ) 
 		throw():
-	File::FileException( reason )
-{
-
-}
-
-
-File::OpenFailed::OpenFailed( const string & reason ) throw():
-	File::FileException( reason )
-{
-
-}
-		
-	
-File::AlreadyOpened::AlreadyOpened( const string & reason ) throw():
-	File::FileException( reason )
-{
-
-}
-
-
-File::LookupFailed::LookupFailed( const string & reason ) throw():
-	File::FileException( reason )
-{
-
-}
-		
-	
-		
-File::ReadLockingFailed::ReadLockingFailed( const string & reason ) 
-		throw():
-	File::FileException( reason )
+	FileException( reason )
 {
 
 }
 			
 	
-File::ReadUnlockingFailed::ReadUnlockingFailed( const string & reason ) 
+FileReadUnlockingFailed::FileReadUnlockingFailed( const string & reason ) 
 		throw():
-	File::FileException( reason )
+	FileException( reason )
 {
 
 }
 				
 	
-File::WriteLockingFailed::WriteLockingFailed( const string & reason ) 
+FileWriteLockingFailed::FileWriteLockingFailed( const string & reason ) 
 		throw():
-	File::FileException( reason )
+	FileException( reason )
 {
 
 }
 		
 		
-File::WriteUnlockingFailed::WriteUnlockingFailed( const string & reason )
+FileWriteUnlockingFailed::FileWriteUnlockingFailed( const string & reason )
 		throw():
-	File::FileException( reason )
+	FileException( reason )
 {
 
 }
 			
 
-	
-File::CloseFailed::CloseFailed( const string & reason ) throw():
-	File::FileException( reason )
-{
 
-}
-		
-
-File::FileTouchFailed::FileTouchFailed( const string & reason ) throw():
-	File::FileException( reason )
+FileDelegatingException::FileDelegatingException( const string & reason )
+		throw():
+	FileException( reason )
 {
 
 }
 
 
-	
+
+
+// File implementation section.
+
+
 // Static section.
 
 
-bool File::ExistsAsFileOrSymbolicLink( const string & filename ) const
+bool File::ExistsAsFileOrSymbolicLink( const string & filename ) 
 	throw( FileException )
 {
 
-	// StatEntryFailed is not specific to files hence is not a FileException:
-	
-	try
-	{
-	
-		return getCorrespondingFileSystemManager().existsAsFileOrSymbolicLink(
-			filename ) ;
-			
-	}	
-	catch( const System::StatEntryFailed & e )
-	{
-		
-		throw File::LookupFailed( "File::ExistsAsFileOrSymbolicLink failed: " 
-			+ e.toString() ) ;
-			
-	}		
-	
+	// Let FileLookupFailed and FileDelegatingException propagate:
+	return GetCorrespondingFileSystemManager().existsAsFileOrSymbolicLink(
+		filename ) ;
+				
 }
 
 
 void File::Remove( const string & filename ) throw( FileException )
 {
 
-	// RemoveFailed is not specific to files hence is not a FileException:
-
-	try
-	{
-	
-		return getCorrespondingFileSystemManager().removeFile( _path ) ;
-			
-	}	
-	catch( const System::RemoveFailed & e )
-	{
-		
-		throw File::RemoveFailed( "File::Remove failed: " + e.toString() ) ;
-			
-	}		
-	
-
-}
-
-	
-void File::CreateSymbolicLink( const std::string & linkTarget,
-	const std::string & linkName ) throw( FileException )
-{
-
-	/*
-	 * SymlinkFailed and FileDelegatingException are both FileException
-	 * instances:
-	 *
-	 */
-	return getCorrespondingFileSystemManager().createSymbolicLink( _path ) ;
+	// Let FileRemoveFailed and FileDelegatingException propagate:
+	GetCorrespondingFileSystemManager().removeFile( filename ) ;	
 
 }
 
 
-void File::Move( const tring & sourceFilename, const string & targetFilename ) 
+void File::Move( const string & sourceFilename, const string & targetFilename ) 
 	throw( FileException )
 {
 
-	// MoveFailed is not specific to files hence is not a FileException:
-
-	try
-	{
-	
-		return getCorrespondingFileSystemManager().moveFile( sourceFilename,
-			targetFilename ) ;
-			
-	}	
-	catch( const System::MoveFailed & e )
-	{
-		
-		throw File::MoveFailed( "File::Move failed: " + e.toString() ) ;
-			
-	}		
+	// Let FileMoveFailed and FileDelegatingException propagate:
+	GetCorrespondingFileSystemManager().moveFile( sourceFilename,
+		targetFilename ) ;
 
 }
 	
 										
-void File::Copy( const tring & sourceFilename, const string & targetFilename ) 
+void File::Copy( const string & sourceFilename, const string & targetFilename ) 
 	throw( FileException )
 {
 
-	// CopyFailed is not specific to files hence is not a FileException:
-
-	try
-	{
-	
-		return getCorrespondingFileSystemManager().copy( sourceFilename,
-			targetFilename ) ;
-			
-	}	
-	catch( const System::CopyFailed & e )
-	{
-		
-		throw File::CopyFailed( "File::Copy failed: " + e.toString() ) ;
-			
-	}		
+	// Let FileCopyFailed and FileDelegatingException propagate:
+	GetCorrespondingFileSystemManager().copyFile( sourceFilename, 
+		targetFilename ) ;
 
 }
 
@@ -327,28 +198,32 @@ void File::Copy( const tring & sourceFilename, const string & targetFilename )
 Size File::GetSize( const string & filename ) throw( FileException )
 {
 
-	// StatEntryFailed is not specific to files hence is not a FileException:
-	
-	try
-	{
-	
-		return getCorrespondingFileSystemManager().getSize( filename ) ;
-			
-	}	
-	catch( const System::StatEntryFailed & e )
-	{
-		
-		throw File::LookupFailed( "File::GetSize failed: " + e.toString() ) ;
-			
-	}		
+	// Let FileSizeRequestFailed and FileDelegatingException propagate:
+	return GetCorrespondingFileSystemManager().getSize( filename ) ;
+
+}
+
+
+time_t File::GetLastChangeTime( const string & filename ) throw( FileException )
+{
+
+	/*
+	 * Let FileLastChangeTimeRequestFailed and FileDelegatingException
+	 * propagate:
+	 *
+	 */
+	return GetCorrespondingFileSystemManager().getLastChangeTimeFile( 
+		filename ) ;
 
 }
 
 						
-string File::TransformIntoValidFilename( const string & rawFilename ) throw(){
+string File::TransformIntoValidFilename( const string & rawFilename ) 
+	throw( FileException )
 {
 
-	return getCorrespondingFileSystemManager().transformIntoValidFilename( 
+	// Let FileDelegatingException propagates:
+	return GetCorrespondingFileSystemManager().transformIntoValidFilename( 
 		rawFilename ) ;
 			
 }
@@ -357,22 +232,9 @@ string File::TransformIntoValidFilename( const string & rawFilename ) throw(){
 void File::Touch( const string & filename ) throw( FileException )
 {
 
-	// TouchFailed is not specific to files hence is not a FileException:
-	
-	try
-	{
-	
-		return getCorrespondingFileSystemManager().touch( filename ) ;
+	// Let FileTouchFailed and FileDelegatingException propagate:
+	GetCorrespondingFileSystemManager().touch( filename ) ;
 			
-	}	
-	catch( const System::TouchFailed & e )
-	{
-		
-		throw FileTouchFailed( "File::Touch failed: " + e.toString() ) ;
-			
-	}		
-
-
 }
 
 
@@ -380,40 +242,41 @@ bool File::Diff( const string & firstFilename, const string & secondFilename )
 	throw( FileException )
 {
 
-	// DiffFailed and FileDelegatingException are both FileException instances:
-	return getCorrespondingFileSystemManager().diff( firstFilename,
+	// Let FileDiffFailed and FileDelegatingException propagate:
+	return GetCorrespondingFileSystemManager().diff( firstFilename,
 		secondFilename ) ;
 
 }
 
 
 
-// Constructors and destructor are in protected section.	
+
+// Constructors are in protected section.	
 
 
 // Factories section.
 
-/*
+
 
 File & File::Create( const std::string & filename, OpeningFlag createFlag,
-	PermissionFlag permissionFlag ) throw( CouldNotCreate )
+	PermissionFlag permissionFlag ) throw( FileException )
 {
 
+	return GetCorrespondingFileSystemManager().createFile( filename, createFlag,
+		permissionFlag ) ;
+		
 }
 
 
 
 File & File::Open( const std::string & filename, OpeningFlag openFlag ) 
-	throw( CouldNotOpen )
+	throw( FileException )
 {
 
-efsX:
-fatX:
+	return GetCorrespondingFileSystemManager().openFile( filename, openFlag ) ;
 
-StandardFile::Open
 }
 
-*/
 
 
 File::~File() throw()
@@ -456,45 +319,45 @@ const std::string & File::getName() const throw()
 // Locking section.
 
 
-void File::lockForReading() const throw( ReadLockingFailed )
+void File::lockForReading() const throw( FileReadLockingFailed )
 {
 	
 	// Meant to be overriden:
 	
-	throw ReadLockingFailed( "File::lockForReading: "
+	throw FileReadLockingFailed( "File::lockForReading: "
 		"lock feature not available" ) ;
 		
 }
 
 
-void File::unlockForReading() const throw( ReadUnlockingFailed )
+void File::unlockForReading() const throw( FileReadUnlockingFailed )
 {
 
 	// Meant to be overriden:
 	
-	throw ReadUnlockingFailed( "File::unlockForReading: "
+	throw FileReadUnlockingFailed( "File::unlockForReading: "
 		"lock feature not available" ) ;
 	
 }
 
 
-void File::lockForWriting() const throw( WriteLockingFailed )
+void File::lockForWriting() const throw( FileWriteLockingFailed )
 {
 
 	// Meant to be overriden:
 	
-	throw WriteLockingFailed( "File::lockForWriting: "
+	throw FileWriteLockingFailed( "File::lockForWriting: "
 		"lock feature not available" ) ;
 	
 }
 
 
-void File::unlockForWriting() const throw( WriteUnlockingFailed )
+void File::unlockForWriting() const throw( FileWriteUnlockingFailed )
 {
 
 	// Meant to be overriden:
 	
-	throw WriteUnlockingFailed( "File::unlockForWriting: "
+	throw FileWriteUnlockingFailed( "File::unlockForWriting: "
 		"lock feature not available" ) ;
 
 }
@@ -573,11 +436,11 @@ bool File::hasAvailableData() const throw()
 
 
 void File::open( OpeningFlag openFlag, PermissionFlag permissionFlag ) 
-	throw( File::AlreadyOpened, File::CouldNotOpen )
+	throw( FileException )
 {
 
 	if ( _openFlag != DoNotOpen )
-		throw AlreadyOpened( "File::open: file '" + _name
+		throw FileAlreadyOpened( "File::open: file '" + _name
 			+ "' was already opened." ) ;
 
 	_openFlag    = openFlag ;
@@ -625,7 +488,7 @@ const std::string File::toString( Ceylan::VerbosityLevels level )
 
 File::File( const string & name, OpeningFlag openFlag, 
 	PermissionFlag permissions )
-		throw( File::CouldNotOpen ):
+		throw( FileException ):
 	InputOutputStream(),	
 	_name( name ),
 	_openFlag( openFlag ),
@@ -644,6 +507,28 @@ File::File( const string & name, OpeningFlag openFlag,
 	 *
 	 */
 		
+}
+
+
+
+FileSystemManager & File::GetCorrespondingFileSystemManager()
+	throw( FileDelegatingException )
+{
+
+	try
+	{
+	
+		return FileSystemManager::GetAnyDefaultFileSystemManager() ;
+	
+	}
+	catch( const FileSystemManagerException & e )
+	{
+		throw FileDelegatingException(
+			"File::GetCorrespondingFileSystemManager failed: "
+			+ e.toString() ) ;
+	}
+	
+	
 }
 
 

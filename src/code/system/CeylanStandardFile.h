@@ -2,8 +2,8 @@
 #define CEYLAN_STANDARD_FILE_H_
 
 
-#include "CeylanFile.h"          // for inheritance
-
+#include "CeylanFile.h"              // for inheritance
+#include "CeylanFileSystemCommon.h"  // for FileException
 
 
 /**
@@ -30,6 +30,31 @@ namespace Ceylan
 
 
 
+		/// Mother class for all exceptions related to standard files.
+	   class CEYLAN_DLL StandardFileException: public FileException
+	   { 
+	       public: 
+	       
+	    	   explicit StandardFileException( 
+	    		   const std::string & reason ) throw() ;
+	    	   
+	    	   virtual ~StandardFileException() throw() ; 
+	    		   
+	   } ;
+
+	
+	
+	   class ConversionFailed: public StandardFileException
+	   { 
+	
+	       public: 
+	       
+	    	   explicit ConversionFailed( 
+	    		   const std::string & reason ) throw() ; 
+	    		   
+	   } ;
+
+
 		/**
 		 * Encapsulates standard files, as provided by usual operating systems,
 		 * i.e. based on file descriptors on the UNIX platforms, otherwise, for
@@ -37,7 +62,9 @@ namespace Ceylan
 		 * and al).
 		 *
 		 * Actual files should be created and opened with respectively the
-		 * File::Create and File::Open factories.
+		 * File::Create and File::Open factories, that allow the
+		 * user program to be cross-platform by hiding each filesystem-related
+		 * per-platform specificity.
 		 *
 		 * @note Depending on the platform support, some primitives may not
 		 * be available, which results in FileException being raised
@@ -55,9 +82,6 @@ namespace Ceylan
 		 * @note This class has restricted capabilities if the file 
 		 * descriptor feature is not available.
 		 * 
-		 * Not all methods are available on all platforms. Hence when a feature
-		 * is disabled, they raise a FeatureNotAvailableException.
-		 *
 		 */
 		class CEYLAN_DLL StandardFile: public File
 		{
@@ -81,30 +105,23 @@ namespace Ceylan
 			public:
 
 
+				/**
+				 * Destroys the standard file reference object, does not remove
+				 * the file itself.
+				 *
+				 * @note Will close automatically the file if needed.
+				 *
+				 * To remove the file from disk, use remove().
+				 *
+				 * @see remove
+				 *
+				 */
+				virtual ~StandardFile() throw() ;
 
-				/// Mother class for all exceptions related to standard files.
-				class CEYLAN_DLL StandardFileException: public FileException
-				{ 
-					public: 
-					
-						explicit StandardFileException( 
-							const std::string & reason ) throw() ;
-						
-						virtual ~StandardFileException() throw() ; 
-							
-				} ;
 
-	
-	
-				class ConversionFailed: public StandardFileException
-				{ 
-				
-					public: 
-					
-						explicit ConversionFailed( 
-							const std::string & reason ) throw() ; 
-							
-				} ;
+
+
+				// Implementation of instance methods inherited from File.
 
 
 				/**
@@ -112,24 +129,11 @@ namespace Ceylan
 				 *
 				 * @return true iff an operation had to be performed.
 				 *
-				 * @throw CloseException if the close operation failed, 
+				 * @throw Stream::CloseException if the close operation failed,
 				 * including if the file was not already opened.
 				 *
 				 */
 				virtual bool close() throw( Stream::CloseException ) ;
-
-
-				/**
-				 * Sends the file content to the <b>fd</b> file descriptor
-				 * stream.
-				 *
-				 * @throw FeatureNotAvailableException if the file descriptor
-				 * feature is not available.
-				 *		 
-				 */
-				virtual void serialize( FileDescriptor fd ) const
-					throw( Features::FeatureNotAvailableException ) ;
-
 
 
 				/**
@@ -145,51 +149,52 @@ namespace Ceylan
 
 
 
+
 				// Locking section.
 
 				 
 				/**
 				 * Locks the file for reading.
 				 *
-				 * @throw ReadLockingFailed if the operation failed or if the
-				 * file lock feature is not available.
+				 * @throw FileReadLockingFailed if the operation failed or 
+				 * if the file lock feature is not available.
 				 *		 
 				 */
 				virtual void lockForReading() const 
-					throw( ReadLockingFailed ) ;
+					throw( FileReadLockingFailed ) ;
 
 
 				/**
 				 * Unlocks the file for reading.
 				 *
-				 * @throw ReadUnlockingFailed if the operation failed or if the
-				 * file lock feature is not available.
+				 * @throw FileReadUnlockingFailed if the operation failed or
+				 * if the file lock feature is not available.
 				 *		 
 				 */
 				virtual void unlockForReading() const 
-					throw( ReadUnlockingFailed ) ;
+					throw( FileReadUnlockingFailed ) ;
 
 
 				/**
 				 * Locks the file for writing.
 				 *
-				 * @throw WriteLockingFailed if the operation failed or if the
-				 * file lock feature is not available.
+				 * @throw FileWriteLockingFailed if the operation failed or 
+				 * if the file lock feature is not available.
 				 *		 
 				 */
 				virtual void lockForWriting() const 
-					throw( WriteLockingFailed ) ;
+					throw( FileWriteLockingFailed ) ;
 
 
 				/**
 				 * Unlocks the file for writing.
 				 *
-				 * @throw WriteUnlockingFailed if the operation failed or if the
-				 * file lock feature is not available.
+				 * @throw FileWriteUnlockingFailed if the operation failed 
+				 * or if the file lock feature is not available.
 				 *		 
 				 */
 				virtual void unlockForWriting() const 
-					throw( WriteUnlockingFailed ) ;
+					throw( FileWriteUnlockingFailed ) ;
 
 
 				/**
@@ -209,10 +214,25 @@ namespace Ceylan
 				 *
 				 * @see GetSize
 				 *
+				 * @throw FileException, including FileLookupFailed if the file
+				 * metadata could not be accessed or if the operation is not
+				 * supported on this platform, and FileDelegatingException if
+				 * the corresponding filesystem manager could not be used as
+				 * expected.
+				 *
 				 */
-				virtual Size size() const 
-					throw( FileSystemManager::CouldNotStatEntry ) ;
+				virtual Size size() const throw( FileException ) ;
 
+
+				/**
+				 * Returns the latest change time of this standard file.
+				 *
+				 * @throw FileLastChangeTimeRequestFailed if the 
+				 * operation failed, or is not supported.
+				 *
+				 */
+				virtual time_t getLastChangeTime() const 
+					throw( FileLastChangeTimeRequestFailed ) ;
 
 
 				/**
@@ -228,7 +248,9 @@ namespace Ceylan
 				 * @return The number of bytes actually read, which should
 				 * be maxLength or lower.
 				 *
-				 * @throw ReadFailed if a read error occurred.
+				 * @throw InputStream::ReadFailedException if a read error
+				 * occurred. Note that this is not a child class of 
+				 * FileException, as it comes from an inherited interface.
 				 *
 				 * @note May be unable to read the full content of a file 
 				 * if the file was open without the 'Binary' flag (hence
@@ -244,6 +266,8 @@ namespace Ceylan
 				
 				// readExactLength inherited.
 								
+				// hasAvailableData inherited.
+				
 				
 				/**
 				 * Writes message to this file.
@@ -253,7 +277,9 @@ namespace Ceylan
 				 * @return The number of bytes actually written, which 
 				 * should be equal to the size of the string or lower.
 				 *
-				 * @throw WriteFailed if a write error occurred.
+				 * @throw OutputStream::WriteFailedException if a write error
+				 * occurred. Note that this is not a child class of 
+				 * FileException, as it comes from an inherited interface.
 				 *
 				 */
 				virtual Size write( const std::string & message ) 
@@ -271,7 +297,9 @@ namespace Ceylan
 				 * @return The number of bytes actually written, which 
 				 * should be equal to maxLength.
 				 *
-				 * @throw WriteFailed if a write error occurred.
+				 * @throw OutputStream::WriteFailedException if a write error
+				 * occurred. Note that this is not a child class of 
+				 * FileException, as it comes from an inherited interface.
 				 *
 				 */
 				virtual Size write( const Ceylan::Byte * buffer, 
@@ -279,42 +307,51 @@ namespace Ceylan
 					throw( OutputStream::WriteFailedException ) ;
 
 
+				// open inherited.
 
 
 				/**
-				 * Returns the latest change time of this standard file.
+				 * Removes this standard file from disk.
 				 *
-				 * @throw FileSystemManager::GetChangeTimeFailed if the 
-				 * operation failed, or is not supported.
+				 * Closes it if necessary. No other operation should be 
+				 * performed 
+				 *
+				 * @throw FileRemoveFailed if the operation failed or is not
+				 * supported on this platform, and FileDelegatingException
+				 * if the corresponding filesystem manager could not be used.
 				 *
 				 */
-				virtual time_t getLastChangeTime() const 
-					throw( FileSystemManager::GetChangeTimeFailed ) ;
+				virtual void remove() throw( FileException ) ;
+
+
+
+
+				// StandardFile-specific methods.
+				
+				
+				/**
+				 * Sends the file content to the <b>fd</b> file descriptor
+				 * stream.
+				 *
+				 * @throw StandardFileException if the operation failed or
+				 * if the file descriptor feature is not available.
+				 *		 
+				 */
+				virtual void serialize( FileDescriptor fd ) const
+					throw( StandardFileException ) ;
 
 
 				/**
 				 * Returns the stream id, its file descriptor.
 				 *
-				 * @throw FeatureNotAvailableException if the file descriptor
-				 * feature is not available.
+				 * @throw StandardFileException if the operation failed or
+				 * if the file descriptor feature is not available.
 				 *
 				 */
 				FileDescriptor getFileDescriptor() const 
-					throw( Features::FeatureNotAvailableException ) ;
+					throw( StandardFileException ) ;
 
 
-				/**
-				 * Removes this file from disk.
-				 *
-				 * Closes it if necessary. No other operation should be 
-				 * performed 
-				 *
-				 * @throw RemoveFailed if the operation failed or is not
-				 * supported on this platform.
-				 *
-				 */
-				virtual void remove() 
-					throw( FileSystemManager::RemoveFailed ) ;
 
 
 
@@ -331,6 +368,12 @@ namespace Ceylan
 				virtual StreamID getStreamID() const throw() ;
 
 
+
+				// getInputStreamID inherited.
+				
+				// getOutputStreamID inherited.
+				
+				
             	/**
             	 * Returns an user-friendly description of the state of
 				 * this object.
@@ -371,8 +414,71 @@ namespace Ceylan
 								
 
 
-			protected:
+				/*
+				 * Helper section.
+				 *
+				 * Factories still have to be public, to allow to create on
+				 * specific cases (ex: process redirection) specifically
+				 * standard files, not only files.
+				 *
+				 */
+				
+		
+				/**
+				 * Returns a StandardFile reference on a newly created file.
+				 *
+				 * By default, it creates a new file on disk. If the name
+				 * corresponds to an already-existing file, it will be
+				 * truncated and overwritten.
+				 *
+				 * @param filename the name of the file to be created.
+				 *
+				 * @param createFlag the flag describing the creation mode.
+				 *
+				 * @param permissionFlag the flag describing the requested
+				 * permissions.
+				 *
+				 * @see OpeningFlag, PermissionFlag
+				 *
+				 * @note This StandardFile factory is only a helper method.
+				 * Ceylan users should only use File::Create instead.
+				 *
+				 * @throw FileException, including FileCreationFailed if the
+				 * operation failed or is not supported on this platform.
+				 *
+				 */
+				static StandardFile & Create( const std::string & filename, 
+						OpeningFlag createFlag = CreateToWriteBinary,
+						PermissionFlag permissionFlag = OwnerReadWrite ) 
+					throw( FileException ) ;
 
+				
+				
+				/**
+				 * Returns a StandardFile reference on specified
+				 * already-existing file, which will be opened with specified
+				 * settings.
+				 *
+				 * @param filename the name of the file to open.
+				 *
+				 * @param openFlag the flag describing the opening mode.
+				 *
+				 * @see OpeningFlag
+				 *
+				 * @note This StandardFile factory is only a helper method.
+				 * Ceylan users should only use File::Open instead.
+				 *
+				 * @throw FileException, including FileOpeningFailed if the
+				 * operation failed or is not supported on this platform.
+				 *
+				 */
+				static StandardFile & Open( const std::string & filename, 
+						OpeningFlag openFlag = OpenToReadBinary ) 
+					throw( FileException ) ;
+				
+		
+				
+			protected:
 
 
 				/**
@@ -404,11 +510,13 @@ namespace Ceylan
 				 * from the running platform, not having to choose between the
 				 * per-platform constructors.
 				 *
+				 * @throw FileException if the operation failed.
+				 *
 				 */
 				explicit StandardFile( const std::string & name, 
 						OpeningFlag openFlag = CreateToWriteBinary,
 						PermissionFlag permissionFlag = OwnerReadWrite ) 
-					throw( CouldNotOpen ) ;
+					throw( FileException ) ;
 
 
 
@@ -428,9 +536,7 @@ namespace Ceylan
 				 * @note Very useful to copy files from streams: socket, 
 				 * file, pipe.
 				 *
-				 * @throw Various exception on failure, including
-				 * FeatureNotAvailableException if the file descriptor
-				 * feature is not available.
+				 * @throw FileException if the operation failed.
 				 *
 				 * @note This constructor should not be called directly, the
 				 * File factories (File::Create and File::Open) should be 
@@ -444,28 +550,31 @@ namespace Ceylan
 						Size length, 
 						FileDescriptor fd,
 						PermissionFlag permissionFlag = OwnerReadWrite )
-					throw( CouldNotCreate, ReadFailed, WriteFailed,
-						Features::FeatureNotAvailableException ) ;
+					throw( FileException ) ;
 
-
-
-				/**
-				 * Destroys the file reference object, does not remove the
-				 * file itself.
-				 *
-				 * @note Will close automatically the file if needed.
-				 *
-				 * To remove the file from disk, use remove().
-				 *
-				 * @see remove
-				 *
-				 */
-				virtual ~StandardFile() throw() ;
 								 
 
 
-				/// Tries to reopen file.
-				void reopen() throw( CouldNotOpen ) ;
+				// Implementations of inherited methods.
+				
+				
+				/**
+				 * Returns the standard filesystem manager.
+				 *
+				 * @throw FileDelegatingException if the operation failed.
+				 *
+				 */
+				virtual FileSystemManager & getCorrespondingFileSystemManager()
+					const throw( FileDelegatingException ) ;
+
+
+				/**
+				 * Tries to reopen file.
+				 *
+				 * @throw FileOpeningFailed if the operation failed.
+				 *
+				 */
+				void reopen() throw( FileOpeningFailed ) ;
 
 
 				/// Interprets the current state of this file.
@@ -593,6 +702,25 @@ namespace Ceylan
 					throw() ;
 
 
+
+				/**
+				 * Transfers bytes from a file descriptor to another.
+				 *
+				 * @param from the source file descriptor.
+				 *
+				 * @param to the target file descriptor.
+				 *
+				 * @param length the length of the transfer, in bytes.
+				 *
+				 * @throw StandardFileException if the operation failed or is
+				 * not supported.
+				 *
+				 */
+				static void FromFDtoFD( FileDescriptor from, 
+						FileDescriptor to, Size length )
+					throw( StandardFileException ) ;
+
+
 				/**
 				 * Internal file descriptor, used if this feature is 
 				 * available.
@@ -609,12 +737,6 @@ namespace Ceylan
 				std::fstream _fstream ;
 					
 
-
-				/// Transfers bytes from a file descriptor to another.
-				static void FromFDtoFD( FileDescriptor from, 
-						FileDescriptor to, Size length )
-					throw( IOException, 
-						Features::FeatureNotAvailableException ) ;
 
 
 		} ;

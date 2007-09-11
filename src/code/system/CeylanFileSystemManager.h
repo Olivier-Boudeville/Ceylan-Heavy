@@ -157,6 +157,8 @@ namespace Ceylan
 				 * be it a file, a symbolic link, a directory, a character
 				 * or block device, a FIFO, a socket, etc.
 				 *
+				 * @note Uses the default filesystem manager.
+				 *
 				 * @param entryPath the path of the entry to look-up.
 				 *
 				 * @throw FileSystemManagerException, which includes 
@@ -172,6 +174,8 @@ namespace Ceylan
 
 				/**
 				 * Creates a symbolic link on filesystem.
+				 *
+				 * @note Uses the default filesystem manager.
 				 *
 				 * @param linkTarget the full path of the entry the new link
 				 * should point to.
@@ -193,6 +197,8 @@ namespace Ceylan
 				/**
 				 * Returns the change time time of the entry <b>entryPath</b>,
 				 * be it a file, a directory, etc.
+				 *
+				 * @note Uses the default filesystem manager.
 				 *
 				 * @param entryPath the path of the entry.
 				 *
@@ -216,6 +222,8 @@ namespace Ceylan
 				/**
 				 * Returns the root directory prefix.
 				 *
+				 * @note Uses the default filesystem manager.
+				 *
 				 * @example "" on Unix, "c:" on Windows.
 				 *
 				 * @throw FileSystemManagerDelegatingException if the underlying
@@ -230,6 +238,8 @@ namespace Ceylan
 				/**
 				 * Returns the directory separator, a Latin-1 character.
 				 *
+				 * @note Uses the default filesystem manager.
+				 *
 				 * @example Slash or backslash, i.e. '/' or '\'.
 				 *
 				 * @throw FileSystemManagerDelegatingException if the underlying
@@ -243,6 +253,8 @@ namespace Ceylan
 
 				/**
 				 * Returns the directory separator, in the form of a string.
+				 *
+				 * @note Uses the default filesystem manager.
 				 *
 				 * More convenient for some operations than a character.
 				 *
@@ -260,6 +272,8 @@ namespace Ceylan
 				/**
 				 * Returns the alias for the working directory.
 				 *
+				 * @note Uses the default filesystem manager.
+				 *
 				 * @example Typically it is ".", it is the value returned by
 				 * this default implementation.
 				 *
@@ -274,6 +288,8 @@ namespace Ceylan
 
 				/**
 				 * Returns the alias for the upper (parent) directory.
+				 *
+				 * @note Uses the default filesystem manager.
 				 *
 				 * @example Typically it is "..", it is the value returned by
 				 * this default implementation.
@@ -424,14 +440,14 @@ namespace Ceylan
 				 * actually a specialized one (ex: a StandardFile, not an
 				 * abstract File).
 				 *
-				 * @throw FileCreationFailed if the file creation failed or is 
-				 * not supported on this platform.
+				 * @throw FileException, including FileCreationFailed if the
+				 * file creation failed or is not supported on this platform.
 				 *
 				 */
 				virtual File & createFile( const std::string & filename, 
 						OpeningFlag createFlag = File::CreateToWriteBinary,
 						PermissionFlag permissionFlag = File::OwnerReadWrite ) 
-					throw( FileCreationFailed ) = 0 ;
+					throw( FileException ) = 0 ;
 
 				
 				
@@ -450,12 +466,13 @@ namespace Ceylan
 				 * actually a specialized one (ex: a StandardFile, not an
 				 * abstract File).
 				 *
-				 * @throw FileOpeningFailed if the file opening failed.
+				 * @throw FileException, including FileOpeningFailed if the 
+				 * file opening failed.
 				 *
 				 */
 				virtual File & openFile( const std::string & filename, 
 						OpeningFlag openFlag = File::OpenToReadBinary ) 
-					throw( FileOpeningFailed ) = 0 ;
+					throw( FileException ) = 0 ;
 				
 					
 				/**
@@ -539,6 +556,21 @@ namespace Ceylan
 
 
 				/**
+				 * Returns the last change time of the specified file.
+				 *
+				 * @param filename the filename whose last change time is
+				 * searched.
+				 *
+				 * @throw FileLastChangeTimeRequestFailed if the operation
+				 * failed or is not supported on this platform.
+				 *
+				 */
+				virtual time_t getLastChangeTimeFile( 
+						const std::string & filename ) 
+					throw( FileLastChangeTimeRequestFailed ) = 0 ;
+
+
+				/**
 				 * Takes specified <b>rawFilename</b> and tries to transform it 
 				 * so that the result should be a valid name, from the
 				 * filesystem's point of view.
@@ -618,13 +650,13 @@ namespace Ceylan
 				 * instance that is actually a specialized one (ex: a
 				 * StandardDirectory, not an abstract Directory).
 				 *
-				 * @throw DirectoryCreationFailed if the directory creation
-				 * failed.
+				 * @throw DirectoryException, including DirectoryCreationFailed
+				 * if the directory creation failed.
 				 *
 				 */
 				virtual Directory & createDirectory( 
 						const std::string & newDirectoryName ) 
-					throw( DirectoryCreationFailed ) = 0 ;
+					throw( DirectoryException ) = 0 ;
 
 				
 				/**
@@ -640,13 +672,13 @@ namespace Ceylan
 				 * instance that is actually a specialized one (ex: a
 				 * StandardDirectory, not an abstract Directory).
 				 *
-				 * @throw DirectoryOpeningFailed if the directory opening
-				 * failed.
+				 * @throw DirectoryException, including DirectoryOpeningFailed
+				 * if the directory opening failed.
 				 *
 				 */
 				virtual Directory & openDirectory( 
 						const std::string & directoryName = "" ) 
-					throw( DirectoryOpeningFailed ) = 0 ;
+					throw( DirectoryException ) = 0 ;
 					
 
 				/**
@@ -727,17 +759,32 @@ namespace Ceylan
 						const std::string & targetDirectoryPath ) 
 					throw( DirectoryCopyFailed ) = 0 ;
 
-					
+
 				/**
-				 * Returns whether specified string is a valid directory name.
+				 * Returns the last change time of the specified directory.
 				 *
-				 * @param directoryString the directory string.
+				 * @param directoryPath the path of the directory whose last
+				 * change time is searched.
 				 *
-				 * @note If no regular expression support is available, 
-				 * then the name will be deemed always correct.
+				 * @throw DirectoryLastChangeTimeRequestFailed if the operation
+				 * failed or is not supported on this platform.
 				 *
 				 */
-				virtual bool isAValidDirectoryName( 
+				virtual time_t getLastChangeTimeDirectory( 
+						const std::string & directoryPath ) 
+					throw( DirectoryLastChangeTimeRequestFailed ) = 0 ;
+					
+					
+				/**
+				 * Returns whether specified string is a valid directory path.
+				 *
+				 * @param directoryString the directory string to examine.
+				 *
+				 * @note If no regular expression support is available, 
+				 * then the path will be deemed always correct.
+				 *
+				 */
+				virtual bool isAValidDirectoryPath( 
 					const std::string & directoryString ) throw() = 0 ;
 			
 			
@@ -763,13 +810,13 @@ namespace Ceylan
 			
 			
 				/**
-				 * Returns the current working directory name.
+				 * Returns the current working directory path.
 				 *
 				 * @throw DirectoryGetCurrentFailed if the operation failed 
 				 * or is not supported on the target platform.
 				 *
 				 */
-				virtual std::string getCurrentWorkingDirectoryName()	
+				virtual std::string getCurrentWorkingDirectoryPath()	
 					throw( DirectoryGetCurrentFailed ) = 0 ;
 
 
@@ -946,7 +993,7 @@ namespace Ceylan
 				 *
 				 * Any previously existing manager will be deallocated first.
 				 *
-				 * @throw FileSystemManagerException if the operation failed
+				 * @throw FileSystemManagerException if the operation failed 
 				 * or is not supported.
 				 *
 				 */
@@ -1030,6 +1077,27 @@ namespace Ceylan
 
 
 
+				/**
+				 * Pointer to the default filesystem manager (if any).
+				 *
+				 * This default manager is, unless specified otherwise, the one
+				 * that is deemed the most natural for the target running
+				 * platform: standard one for computers (either UNIX or
+				 * Windows), libfat-based one for the Nintendo DS.
+				 *
+				 * @note It means it will be the filesystem manager that will
+				 * be used by default (should no specific manager be specified),
+				 * which is not necessarily the most usual one for the target
+				 * platform.
+				 *
+				 * Must be static to allow child classes to unsubscribe their
+				 * manager if needed.
+				 *
+				 */
+				static FileSystemManager * _CurrentDefaultFileSystemManager ;
+
+
+
 
 			private:
 				
@@ -1051,24 +1119,6 @@ namespace Ceylan
 				 */
 				static const std::string DefaultAliasForParentDirectory ;
 				
-						
-				/**
-				 * Pointer to the default filesystem manager (if any).
-				 *
-				 * This default manager is, unless specified otherwise, the one
-				 * that is deemed the most natural for the target running
-				 * platform: standard one for computers (either UNIX or
-				 * Windows), libfat-based one for the Nintendo DS.
-				 *
-				 * @note It means it will be the filesystem manager that will
-				 * be used by default (should no specific manager be specified),
-				 * which is not necessarily the most usual one for the target
-				 * platform.
-				 *
-				 */
-				static FileSystemManager * _CurrentDefaultFileSystemManager ;
-			
-			
 			
 			
 				/**

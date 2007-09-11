@@ -275,6 +275,23 @@ namespace Ceylan
 
 
 		/// Raised at first by FileSystemManager and file-specific.
+		class CEYLAN_DLL FileLastChangeTimeRequestFailed: public FileException
+		{
+		
+			public:
+				
+				explicit FileLastChangeTimeRequestFailed( 
+						const std::string & reason ) throw():
+					FileException( reason )
+				{
+				
+				}								
+					 
+						
+		} ;
+
+
+		/// Raised at first by FileSystemManager and file-specific.
 		class CEYLAN_DLL FileTouchFailed: public FileException
 		{
 		
@@ -444,6 +461,24 @@ namespace Ceylan
 						
 		} ;
 		
+
+		/// Raised at first by FileSystemManager and directory-specific.
+		class CEYLAN_DLL DirectoryLastChangeTimeRequestFailed: 
+			public DirectoryException
+		{
+		
+			public:
+				
+				explicit DirectoryLastChangeTimeRequestFailed( 
+						const std::string & reason ) throw():
+					DirectoryException( reason )
+				{
+				
+				}								
+					 
+						
+		} ;
+
 		
 		/// Raised at first by FileSystemManager and directory-specific.
 		class CEYLAN_DLL DirectoryGetCurrentFailed: public DirectoryException

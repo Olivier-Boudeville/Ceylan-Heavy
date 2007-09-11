@@ -1,9 +1,10 @@
 #include "CeylanStandardFile.h"
 
-#include "CeylanLogPlug.h"     // for Log primitives
-#include "CeylanDirectory.h"   // for Directory
-#include "CeylanOperators.h"   // for toString
-#include "CeylanStringUtils.h" // for StringSize
+#include "CeylanLogPlug.h"                    // for Log primitives
+#include "CeylanDirectory.h"                  // for Directory
+#include "CeylanOperators.h"                  // for toString
+#include "CeylanStringUtils.h"                // for StringSize
+#include "CeylanStandardFileSystemManager.h"  // for StandardFileSystemManager
 
 
 #ifdef CEYLAN_USES_CONFIG_H
@@ -32,13 +33,6 @@ extern "C"
 #include <unistd.h>            // for stat
 #endif // CEYLAN_USES_UNISTD_H
 
-#ifdef CEYLAN_USES_UTIME_H
-#include <utime.h>             // for utime     
-#endif // CEYLAN_USES_UTIME_H
-
-#ifdef CEYLAN_USES_SYS_UTIME_H
-#include <sys/utime.h>         // for utime     
-#endif // CEYLAN_USES_SYS_UTIME_H
 
 }
 
@@ -46,6 +40,17 @@ extern "C"
 #include <cerrno>    // for EINTR, ENOLCK, etc.
 #include <cstdio>    // for unlink
 #include <fstream>   // for this class
+
+
+/*
+ * Implementation notes.
+ *
+ * @note In a non-static method, no static method should be used, as the former
+ * is expected to use the standard filesystem manager, whereas the latter shall
+ * use the default filesystem manager, which may or may not be the standard
+ * one.
+ * 
+ */
 
 
 using std::fstream ;
@@ -98,41 +103,61 @@ struct StandardFile::SystemSpecificPermissionFlag
 
 
 
-StandardFile::StandardFileException::StandardFileException( 
-		const string & reason ) throw():
+StandardFileException::StandardFileException( const string & reason ) throw():
 	FileException( reason )
 {
 
 }
 
 
-StandardFile::StandardFileException::~StandardFileException() throw()
+StandardFileException::~StandardFileException() throw()
 {
 
 }
 
 
 
-StandardFile::ConversionFailed::ConversionFailed( const string & reason )
-		throw():
-	StandardFile::StandardFileException( reason )
+ConversionFailed::ConversionFailed( const string & reason )	throw():
+	StandardFileException( reason )
 {
 
 }
+	
 		
 
+StandardFile::~StandardFile() throw()
+{
 
-// Constructors and destructor are in protected section.	
+	try
+	{
+		close() ;
+	}
+	catch( const Stream::CloseException & e )
+	{
+		LogPlug::error( "StandardFile destructor: close failed: " 
+			+ e.toString() ) ;
+	}
+		
+}
+
+
+
+
+// Constructors are in protected section.	
+
 	
+
+// Implementation of instance methods inherited from File.	
 	
-	
+
+
 bool StandardFile::close() throw( Stream::CloseException )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
 	
 	 throw Stream::CloseException( 
-	 	"StandardFile::close: no supported on the Nintendo DS platform." ) ;
+	 	"StandardFile::close: not supported on the Nintendo DS platform." ) ;
 
 #else // CEYLAN_ARCH_NINTENDO_DS
 		
@@ -152,7 +177,7 @@ bool StandardFile::close() throw( Stream::CloseException )
 	else
 	{
 
-		throw CloseException( "StandardFile::close: file '" +  _name 
+		throw Stream::CloseException( "StandardFile::close: file '" +  _name 
 			+ "' does not seem to have been already opened." ) ;
 			
 	}
@@ -167,7 +192,7 @@ bool StandardFile::close() throw( Stream::CloseException )
 	else
 	{
 	
-		throw CloseException( "StandardFile::close: file '" +  _name 
+		throw Stream::CloseException( "StandardFile::close: file '" +  _name 
 			+ "' does not seem to have been already opened." ) ;
 			
 	}
@@ -177,69 +202,6 @@ bool StandardFile::close() throw( Stream::CloseException )
 #endif // CEYLAN_ARCH_NINTENDO_DS
 	
 	
-}
-
-
-void StandardFile::remove() throw( FileSystemManager::RemoveFailed )
-{
-
-#if CEYLAN_ARCH_NINTENDO_DS
-
-	throw FileSystemManager::RemoveFailed( "StandardFile::remove: "
-		"no supported on the Nintendo DS platform." ) ;
-
-#else // CEYLAN_ARCH_NINTENDO_DS
-		
-	try
-	{
-		close() ;
-	}
-	catch( const Stream::CloseException & e )
-	{
-		throw FileSystemManager::RemoveFailed( "StandardFile::remove failed: " 
-			+ e.toString() ) ;
-	}
-
-
-	try
-	{
-		GetStandardFileSystemManager().remove( _name ) ;
-	}
-	catch( const StandardFileSystemManagerException & e )
-	{
-		throw RemoveFailed( "StandardFile::remove failed: " + e.toString() ) ;
-	}
-	
-#endif // CEYLAN_ARCH_NINTENDO_DS
-	
-}
-
-
-
-void StandardFile::serialize( FileDescriptor fd ) const 
-	throw( Features::FeatureNotAvailableException )
-{
-
-#if CEYLAN_ARCH_NINTENDO_DS
-
-	throw Features::FeatureNotAvailableException( "StandardFile::serialize: "
-		"no supported on the Nintendo DS platform." ) ;
-	
-#else // CEYLAN_ARCH_NINTENDO_DS
-
-#if CEYLAN_USES_FILE_DESCRIPTORS
-
-	FromFDtoFD( _fdes, fd, size() ) ;
-	
-#else // CEYLAN_USES_FILE_DESCRIPTORS
-
-	throw Features::FeatureNotAvailableException( "StandardFile::serialize: "
-		"file descriptor feature not available" ) ;
-		
-#endif // CEYLAN_USES_FILE_DESCRIPTORS
-
-#endif // CEYLAN_ARCH_NINTENDO_DS
-
 }
 
 
@@ -256,8 +218,10 @@ void StandardFile::saveAs( const string & newName ) throw( FileException )
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
-	File & f = File::Open( newName ) ;
+	// Using the helper factory directly to access to the file descriptor:
+	StandardFile & f = StandardFile::Create( newName ) ;
 	serialize( f._fdes ) ;
+	delete &f ;
 	
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
@@ -273,7 +237,8 @@ void StandardFile::saveAs( const string & newName ) throw( FileException )
 
 
 
-// Lock section.
+// Locking section.
+
 
 
 /**
@@ -288,12 +253,14 @@ void StandardFile::saveAs( const string & newName ) throw( FileException )
  *
  */
 
-void StandardFile::lockForReading() const throw( ReadLockingFailed )
+
+
+void StandardFile::lockForReading() const throw( FileReadLockingFailed )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
-	throw ReadLockingFailed( "StandardFile::lockForReading: "
+	throw FileReadLockingFailed( "StandardFile::lockForReading: "
 		"no supported on the Nintendo DS platform." ) ;
 		
 #else // CEYLAN_ARCH_NINTENDO_DS
@@ -318,7 +285,7 @@ void StandardFile::lockForReading() const throw( ReadLockingFailed )
 				continue ;
 
 			if ( error != ENOLCK )
-				throw ReadLockingFailed( 
+				throw FileReadLockingFailed( 
 					"StandardFile::lockForReading: locking failed for '" 
 						+ _name + "': " + System::explainError() ) ;
 			else
@@ -337,7 +304,7 @@ void StandardFile::lockForReading() const throw( ReadLockingFailed )
 
 #else // CEYLAN_USES_FILE_LOCKS
 
-	throw ReadLockingFailed( "StandardFile::lockForReading: "
+	throw FileReadLockingFailed( "StandardFile::lockForReading: "
 		"lock feature not available" ) ;
 		
 #endif // CEYLAN_USES_FILE_LOCKS	
@@ -347,12 +314,13 @@ void StandardFile::lockForReading() const throw( ReadLockingFailed )
 }
 
 
-void StandardFile::unlockForReading() const throw( ReadUnlockingFailed )
+
+void StandardFile::unlockForReading() const throw( FileReadUnlockingFailed )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
-	throw ReadUnlockingFailed( "StandardFile::unlockForReading: "
+	throw FileReadUnlockingFailed( "StandardFile::unlockForReading: "
 		"no supported on the Nintendo DS platform." ) ;
 		
 #else // CEYLAN_ARCH_NINTENDO_DS
@@ -367,13 +335,13 @@ void StandardFile::unlockForReading() const throw( ReadUnlockingFailed )
 
 	while ( true )
 	{
-		if (::fcntl( _fdes, F_SETLKW, &lk ) == - 1 )
+		if ( ::fcntl( _fdes, F_SETLKW, &lk ) == - 1 )
 		{
 			if ( errno == EINTR  )
 				continue ;
 
 			if ( errno != ENOLCK )
-				throw ReadUnlockingFailed( 
+				throw FileReadUnlockingFailed( 
 					"StandardFile::unlockForReading: unlocking failed for '" 
 						+ _name + "': " + System::explainError() ) ;
 			else
@@ -390,7 +358,7 @@ void StandardFile::unlockForReading() const throw( ReadUnlockingFailed )
 	
 #else // CEYLAN_USES_FILE_LOCKS
 
-	throw ReadUnlockingFailed(
+	throw FileReadUnlockingFailed(
 		"StandardFile::unlockForReading: lock feature not available" ) ;
 		
 #endif // CEYLAN_USES_FILE_LOCKS
@@ -400,12 +368,13 @@ void StandardFile::unlockForReading() const throw( ReadUnlockingFailed )
 }
 
 
-void StandardFile::lockForWriting() const throw( WriteLockingFailed )
+
+void StandardFile::lockForWriting() const throw( FileWriteLockingFailed )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
-	throw WriteLockingFailed( "StandardFile::lockForWriting: "
+	throw FileWriteLockingFailed( "StandardFile::lockForWriting: "
 		"no supported on the Nintendo DS platform." ) ;
 		
 #else // CEYLAN_ARCH_NINTENDO_DS
@@ -426,7 +395,7 @@ void StandardFile::lockForWriting() const throw( WriteLockingFailed )
 				continue ;
 
 			if ( errno != ENOLCK )
-				throw WriteLockingFailed( 
+				throw FileWriteLockingFailed( 
 					"StandardFile::lockForWriting: locking failed for '" 
 						+ _name + "': " + System::explainError() ) ;
 			else
@@ -443,7 +412,7 @@ void StandardFile::lockForWriting() const throw( WriteLockingFailed )
 	
 #else // CEYLAN_USES_FILE_LOCKS
 
-	throw WriteLockingFailed( "StandardFile::lockForWriting: "
+	throw FileWriteLockingFailed( "StandardFile::lockForWriting: "
 		"lock feature not available" ) ;
 		
 #endif // CEYLAN_USES_FILE_LOCKS
@@ -453,12 +422,13 @@ void StandardFile::lockForWriting() const throw( WriteLockingFailed )
 }
 
 
-void StandardFile::unlockForWriting() const throw( WriteUnlockingFailed )
+
+void StandardFile::unlockForWriting() const throw( FileWriteUnlockingFailed )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
-	throw WriteUnlockingFailed( "StandardFile::unlockForWriting: "
+	throw FileWriteUnlockingFailed( "StandardFile::unlockForWriting: "
 		"no supported on the Nintendo DS platform." ) ;
 		
 #else // CEYLAN_ARCH_NINTENDO_DS
@@ -480,7 +450,7 @@ void StandardFile::unlockForWriting() const throw( WriteUnlockingFailed )
 				continue;
 
 			if ( errno != ENOLCK )
-				throw WriteUnlockingFailed( 
+				throw FileWriteUnlockingFailed( 
 					"StandardFile::unlockForWriting: unlocking failed for '" 
 						+ _name + "': " + System::explainError() ) ;
 			else
@@ -497,7 +467,7 @@ void StandardFile::unlockForWriting() const throw( WriteUnlockingFailed )
 	
 #else // CEYLAN_USES_FILE_LOCKS
 
-	throw WriteUnlockingFailed( "StandardFile::unlockForWriting: "
+	throw FileWriteUnlockingFailed( "StandardFile::unlockForWriting: "
 		"lock feature not available" ) ;
 		
 #endif // CEYLAN_USES_FILE_LOCKS
@@ -505,6 +475,7 @@ void StandardFile::unlockForWriting() const throw( WriteUnlockingFailed )
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
+
 
 
 bool StandardFile::isLocked() const throw()
@@ -551,6 +522,51 @@ bool StandardFile::isLocked() const throw()
 
 }
 
+
+
+Size StandardFile::size() const throw( FileException )
+{
+
+	// Let FileSizeRequestFailed and FileDelegatingException propagate:
+	return getCorrespondingFileSystemManager().getSize( _name ) ;
+	
+}
+
+
+
+time_t StandardFile::getLastChangeTime() const 
+	throw( FileLastChangeTimeRequestFailed )
+{
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	throw FileLastChangeTimeRequestFailed( "StandardFile::getLastChangeTime:"
+		"no supported on the Nintendo DS platform." ) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+
+#ifdef CEYLAN_USES_STAT
+
+	struct stat buf ;
+
+	if ( ::stat( _name.c_str(), & buf ) == 0 )
+		return buf.st_ctime ;
+
+	throw FileLastChangeTimeRequestFailed(
+		"StandardFile::getLastChangeTime failed for '"
+		+ _name + "': " + System::explainError() ) ;
+	
+#else // CEYLAN_USES_STAT
+
+	throw FileLastChangeTimeRequestFailed(
+		"StandardFile::getLastChangeTime: not available on this platform." ) ;
+	 
+#endif // CEYLAN_USES_STAT
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+}
 
 
 
@@ -635,7 +651,6 @@ Size StandardFile::read( Ceylan::Byte * buffer, Size maxLength )
 
 
 
-
 Size StandardFile::write( const string & message ) 
 	throw( OutputStream::WriteFailedException )
 {
@@ -675,6 +690,7 @@ Size StandardFile::write( const string & message )
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
+
 
 
 Size StandardFile::write( const Ceylan::Byte * buffer, Size maxLength ) 
@@ -771,69 +787,73 @@ Size StandardFile::write( const Ceylan::Byte * buffer, Size maxLength )
 }
 
 
-void StandardFile::open( OpeningFlag openFlag, PermissionFlag permissionFlag ) 
-	throw( File::AlreadyOpened, File::CouldNotOpen )
+
+void StandardFile::remove() throw( FileException )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
-	throw File::CouldNotOpen( "StandardFile::open:"
+	throw FileRemoveFailed( "StandardFile::remove: "
 		"no supported on the Nintendo DS platform." ) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
 		
+	try
+	{
+	
+		close() ;
+		
+	}
+	catch( const Stream::CloseException & e )
+	{
+		throw FileRemoveFailed( "StandardFile::remove failed: "
+			+ e.toString() ) ;
+	}
 
-#else // CEYLAN_ARCH_NINTENDO_DS
 
-	if ( _openFlag != DoNotOpen )
-		throw AlreadyOpened( "StandardFile::open: file '" + _name
-			+ "' was already opened." ) ;
-
-	_openFlag = openFlag ;
-	_permissions = permissionFlag ;
-
-	reopen() ;
-
+	// Let FileDelegatingException and FileRemoveFailed propagate:
+	getCorrespondingFileSystemManager().removeFile( _name ) ;
+	
 #endif // CEYLAN_ARCH_NINTENDO_DS
-
+	
 }
 
 
-time_t StandardFile::getLastChangeTime() const throw( GetChangeTimeFailed )
+
+// StandardFile-specific methods.
+
+
+void StandardFile::serialize( FileDescriptor fd ) const 
+	throw( StandardFileException )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
-	throw GetChangeTimeFailed( "StandardFile::getLastChangeTime:"
+	throw StandardFileException( "StandardFile::serialize: "
 		"no supported on the Nintendo DS platform." ) ;
-
+	
 #else // CEYLAN_ARCH_NINTENDO_DS
 
+#if CEYLAN_USES_FILE_DESCRIPTORS
 
-#ifdef CEYLAN_USES_STAT
-
-	struct stat buf ;
-
-	if ( ::stat( _name.c_str(), & buf ) == 0 )
-		return buf.st_ctime ;
-
-	throw GetChangeTimeFailed( "StandardFile::getLastChangeTime failed for '"
-		+ _name + "': " + System::explainError() ) ;
+	// Let StandardFileException propagate:
+	FromFDtoFD( _fdes, fd, size() ) ;
 	
-#else // CEYLAN_USES_STAT
+#else // CEYLAN_USES_FILE_DESCRIPTORS
 
-	throw GetChangeTimeFailed( "File::getLastChangeTime: "
-		"not available on this platform." ) ;
-	 
-#endif // CEYLAN_USES_STAT
+	throw StandardFileException( "StandardFile::serialize: "
+		"file descriptor feature not available" ) ;
+		
+#endif // CEYLAN_USES_FILE_DESCRIPTORS
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
-
 
 
 
 FileDescriptor StandardFile::getFileDescriptor() const 
-	throw( Features::FeatureNotAvailableException )
+	throw( StandardFileException )
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
@@ -842,7 +862,7 @@ FileDescriptor StandardFile::getFileDescriptor() const
 	
 #else // if CEYLAN_USES_FILE_DESCRIPTORS
 
-	throw Features::FeatureNotAvailableException( 
+	throw StandardFileException( 
 		"StandardFile::getFileDescriptor: "
 		"file descriptor feature not available" ) ;
 		
@@ -903,23 +923,90 @@ const std::string StandardFile::toString( Ceylan::VerbosityLevels level )
 }
 
 
+string StandardFile::InterpretState( const ifstream & inputFile ) throw()
+{
+
+	if ( inputFile.good() )
+		return "Standard file is in clean state (no error)" ;
+		
+	string res = "Standard file in error" ;
+	
+	if ( inputFile.rdstate() & ifstream::badbit )
+		res += ", critical error in stream buffer" ;
+		
+	if ( inputFile.rdstate() & ifstream::eofbit )
+		res += ", End-Of-File reached while extracting" ;
+		
+	if ( inputFile.rdstate() & ifstream::failbit )
+		res += ", failure extracting from stream" ;
+		
+	return res ;
+
+}
+
+
+string StandardFile::InterpretState( const fstream & file ) throw()
+{
+
+	if ( file.good() )
+		return "Standard file is in clean state (no error)" ;
+		
+	string res = "Standard file in error" ;
+	
+	if ( file.rdstate() & fstream::badbit )
+		res += ", critical error in stream buffer" ;
+		
+	if ( file.rdstate() & fstream::eofbit )
+		res += ", End-Of-File reached while extracting" ;
+		
+	if ( file.rdstate() & fstream::failbit )
+		res += ", failure extracting from stream" ;
+		
+	return res ;
+
+}
 
 
 
+StandardFile & StandardFile::Create( const std::string & filename, 
+		OpeningFlag createFlag,	PermissionFlag permissionFlag ) 
+	throw( FileException )
+{
 
+	// Ensures creation is requested:
+	return * new StandardFile( filename, createFlag | File::CreateFile,
+		permissionFlag ) ;
+
+}
+
+					
+StandardFile & StandardFile::Open( const std::string & filename, 
+	OpeningFlag openFlag ) throw( FileException )
+{
+
+	// Ensures creation is not requested:
+	return * new StandardFile( filename, openFlag & ~File::CreateFile
+		/* use default permission flag */ ) ;
+
+}
+
+	
+					
+										
 // Protected section.
 
 
 StandardFile::StandardFile( const string & name, OpeningFlag openFlag, 
-	PermissionFlag permissions )
-		throw( File::CouldNotOpen ):
+		PermissionFlag permissions ) throw( FileException ):
 	File( name, openFlag, permissions )
 {
 
+	// (File constructor may raise FileException)
+	
 #if CEYLAN_ARCH_NINTENDO_DS
 
-	throw File::CouldNotOpen( "StandardFile constructor:"
-		"no supported on the Nintendo DS platform." ) ;
+	throw StandardFileException( "StandardFile constructor: "
+		"not supported on the Nintendo DS platform." ) ;
 
 #else // CEYLAN_ARCH_NINTENDO_DS
 
@@ -931,28 +1018,81 @@ StandardFile::StandardFile( const string & name, OpeningFlag openFlag,
 }
 
 
-StandardFile::~StandardFile() throw()
+
+FileSystemManager & StandardFile::getCorrespondingFileSystemManager()
+	const throw( FileDelegatingException )
 {
 
 	try
 	{
-		close() ;
-	}
-	catch( const Stream::CloseException & e )
-	{
-		LogPlug::error( "StandardFile destructor: close failed: " 
-			+ e.toString() ) ;
-	}
-		
-}
-
 	
-
-FileSystemManager & StandardFile::getCorrespondingFileSystemManager()
-	const throw( FileSystemManagerException )
+		return StandardFileSystemManager::GetStandardFileSystemManager() ;
+	
+	}
+	catch( const StandardFileSystemManagerException & e )
+	{
+	
+		throw FileDelegatingException(
+			"StandardFile::getCorrespondingFileSystemManager failed: "
+			+ e.toString() ) ;
+		
+	}
+	
+}
+	
+	
+	
+void StandardFile::FromFDtoFD( FileDescriptor from, FileDescriptor to,
+	Size length ) throw( StandardFileException )
 {
 
-	return StandardFileSystemManager::GetStandardFileSystemManager() ;
+#if CEYLAN_USES_FILE_DESCRIPTORS
+
+	Size written = 0 ;
+	
+	Size bufferSize = ( length > BigBufferSize ? BigBufferSize : length ) ;
+
+	Ceylan::Byte * buf = new Ceylan::Byte[ bufferSize ] ;
+
+	Size readCount ;
+
+	try
+	{
+	
+		while ( written < length )
+		{
+		
+			Size toRead = length - written ;
+
+			if ( toRead > bufferSize )
+				toRead = bufferSize ;
+
+			readCount = FDRead( from, buf, toRead ) ;
+
+			FDWrite( to, buf, readCount ) ;
+			
+			written += readCount ;
+			
+		}
+
+		delete [] buf ;
+		
+	} // Most direct common mother exception:
+	catch( const Ceylan::Exception & e )
+	{
+
+		delete [] buf ;
+		throw StandardFileException( 
+			"StandardFile::FromFDtoFD failed: " + e.toString() ) ;
+		
+	}	
+
+#else // CEYLAN_USES_FILE_DESCRIPTORS
+
+	throw StandardFileException( "StandardFile::FromFDtoFD: "
+		"file descriptor feature not available" ) ;
+	
+#endif // CEYLAN_USES_FILE_DESCRIPTORS	
 	
 }
-	
+

@@ -165,7 +165,7 @@ namespace Ceylan
 		 * OutputStream::WriteFailedException, Stream::CloseException. 
 		 * 
 		 */
-		class CEYLAN_DLL File : public InputOutputStream
+		class CEYLAN_DLL File: public InputOutputStream
 		{
 	
 
@@ -504,12 +504,28 @@ namespace Ceylan
 				 *
 				 * @param filename the filename whose size is searched.
 				 *
-				 * @throw File::LookupFailed if the operation failed or is not
-				 * supported on this platform, or FileDelegatingException if 
-				 * the relevant filesystem manager could not be retrieved.
+				 * @throw FileSizeRequestFailed if the operation failed or is
+				 * not supported on this platform, or FileDelegatingException 
+				 * if the relevant filesystem manager could not be retrieved.
 				 *
 				 */
 				static Size GetSize( const std::string & filename ) 
+					throw( FileException ) ;
+
+
+				/**
+				 * Returns the last change time of the specified file.
+				 *
+				 * @param filename the filename whose last change time is
+				 * searched.
+				 *
+				 * @throw FileLastChangeTimeRequestFailed if the operation
+				 * failed or is not supported on this platform, or
+				 * FileDelegatingException if the relevant filesystem manager
+				 * could not be retrieved.
+				 *
+				 */
+				static time_t GetLastChangeTime( const std::string & filename ) 
 					throw( FileException ) ;
 
 
@@ -795,13 +811,25 @@ namespace Ceylan
 				 *
 				 * @see GetSize
 				 *
-				 * @throw FileLookupFailed if the file metadata could not 
-				 * be accessed or if the operation is not supported on this
-				 * platform.
+				 * @throw FileException, including FileLookupFailed if the file
+				 * metadata could not be accessed or if the operation is not
+				 * supported on this platform, and FileDelegatingException if
+				 * the corresponding filesystem manager could not be used as
+				 * expected.
 				 *
 				 */
-				virtual Size size() const throw( FileLookupFailed ) = 0 ;
+				virtual Size size() const throw( FileException ) = 0 ;
 
+
+				/**
+				 * Returns the latest change time of this standard file.
+				 *
+				 * @throw FileLastChangeTimeRequestFailed if the 
+				 * operation failed, or is not supported.
+				 *
+				 */
+				virtual time_t getLastChangeTime() const 
+					throw( FileLastChangeTimeRequestFailed ) = 0 ;
 
 
 				/**
@@ -817,7 +845,9 @@ namespace Ceylan
 				 * @return The number of bytes actually read, which should
 				 * be maxLength or lower.
 				 *
-				 * @throw ReadFailed if a read error occurred.
+				 * @throw InputStream::ReadFailedException if a read error
+				 * occurred. Note that this is not a child class of 
+				 * FileException, as it comes from an inherited interface.
 				 *
 				 * @note May be unable to read the full content of a file 
 				 * if the file was open without the 'Binary' flag (hence
@@ -875,7 +905,9 @@ namespace Ceylan
 				 * @return The number of bytes actually written, which 
 				 * should be equal to the size of the string or lower.
 				 *
-				 * @throw WriteFailed if a write error occurred.
+				 * @throw OutputStream::WriteFailedException if a write error
+				 * occurred. Note that this is not a child class of 
+				 * FileException, as it comes from an inherited interface.
 				 *
 				 */
 				virtual Size write( const std::string & message ) 
@@ -893,7 +925,9 @@ namespace Ceylan
 				 * @return The number of bytes actually written, which 
 				 * should be equal to maxLength.
 				 *
-				 * @throw WriteFailed if a write error occurred.
+				 * @throw OutputStream::WriteFailedException if a write error
+				 * occurred. Note that this is not a child class of 
+				 * FileException, as it comes from an inherited interface.
 				 *
 				 */
 				virtual Size write( const Ceylan::Byte * buffer, 
@@ -924,10 +958,11 @@ namespace Ceylan
 				 * performed 
 				 *
 				 * @throw FileRemoveFailed if the operation failed or is not
-				 * supported on this platform.
+				 * supported on this platform, and FileDelegatingException
+				 * if the corresponding filesystem manager could not be used.
 				 *
 				 */
-				virtual void remove() throw( FileRemoveFailed ) = 0 ;
+				virtual void remove() throw( FileException ) = 0 ;
 
 
 
@@ -1046,7 +1081,7 @@ namespace Ceylan
 
 				/// Interprets the current state of this file.
 				virtual std::string interpretState() const throw() = 0 ;
-								
+
 
 
 				/// Name of the file.
@@ -1066,6 +1101,20 @@ namespace Ceylan
 				 *
 				 */
 				bool _lockedForReading: 1, _lockedForWriting: 1 ;
+
+								
+
+				/**
+				 * Returns the filesystem manager that should be used by 
+				 * File static methods, which is the default manager.
+				 *
+				 * @return the default filesystem manager.
+				 *
+				 * @throw FileDelegatingException if the operation failed.
+				 *
+				 */
+				static FileSystemManager & GetCorrespondingFileSystemManager()
+					throw( FileDelegatingException ) ;
 
 
 

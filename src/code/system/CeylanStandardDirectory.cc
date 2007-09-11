@@ -16,7 +16,7 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
-// None of them is available in standard include :
+// None of them is available in standard include:
 extern "C"
 {
 
@@ -54,6 +54,11 @@ extern "C"
  * @note All internal paths kept in directory references (this object)
  * should be absolute paths.
  *
+ * @note In a non-static method, no static method should be used, as the former
+ * is expected to use the standard filesystem manager, whereas the latter shall
+ * use the default filesystem manager, which may or may not be the standard
+ * one.
+ * 
  */
  
 using std::string ;
@@ -64,7 +69,7 @@ using namespace Ceylan::System ;
 
 
 
-/// Flags used to create new directories :
+/// Flags used to create new directories:
 
 #if CEYLAN_USES_ADVANCED_FILE_ATTRIBUTES
 
@@ -75,7 +80,7 @@ const mode_t basicDirectory =
 
 #ifdef CEYLAN_USES_MKDIR_TWO_ARGS
 
-// Currently not used on MinGW : 
+// Currently not used on MinGW: 
 const mode_t basicDirectory = S_IRWXU ;
 
 #endif // CEYLAN_USES_MKDIR_TWO_ARGS
@@ -84,7 +89,7 @@ const mode_t basicDirectory = S_IRWXU ;
 
 
 /*
- * ::stat is used often here.
+ *::stat is used often here.
  * Maybe check specifically CEYLAN_USES_SYS_STAT_H, short of having
  * 'CEYLAN_USES_STAT'.
  *
@@ -180,11 +185,12 @@ bool StandardDirectory::hasDirectory( const string & subdirectoryName ) const
 	
 	string tmp = fsManager->joinPath( _path, subdirectoryName ) ;
 	
-	return ( ::_stat( tmp.c_str(), & buf ) == 0 ) && S_ISDIR( buf.st_mode ) ;
+	return ( ::_stat( tmp.c_str(), & buf ) == 0 )
+		&& ( buf.st_mode & _S_IFDIR ) ;
 	
 #else // CEYLAN_USES__STAT
 
-	throw DirectoryException( "StandardDirectory::hasDirectory : "
+	throw DirectoryException( "StandardDirectory::hasDirectory: "
 		"not implemented on this platform." ) ;
 		
 #endif  // CEYLAN_USES__STAT
@@ -262,11 +268,12 @@ bool StandardDirectory::hasFile( const string & fileName ) const
 	
 	string tmp = fsManager->joinPath( _path, fileName ) ;
 	
-	return ( ::_stat( tmp.c_str(), & buf ) == 0 ) && S_ISREG( buf.st_mode ) ;
+	return ( ::_stat( tmp.c_str(), & buf ) == 0 ) 
+		&& ( buf.st_mode & _S_IFREG ) ;
 	
 #else // CEYLAN_USES__STAT
 
-	throw DirectoryException( "StandardDirectory::hasFile : "
+	throw DirectoryException( "StandardDirectory::hasFile: "
 		"not implemented on this platform." ) ;
 		
 #endif  // CEYLAN_USES__STAT
@@ -302,7 +309,7 @@ bool StandardDirectory::hasEntry( const string & entryName ) const
 			
 	}
 	
-	return ::stat( tmp.c_str(), & buf ) == 0 ;
+	return::stat( tmp.c_str(), & buf ) == 0 ;
 
 #else // CEYLAN_USES_STAT
 
@@ -328,11 +335,11 @@ bool StandardDirectory::hasEntry( const string & entryName ) const
 			
 	}
 	
-	return ::_stat( tmp.c_str(), & buf ) == 0 ;
+	return::_stat( tmp.c_str(), & buf ) == 0 ;
 	
 #else // CEYLAN_USES__STAT
 
-	throw DirectoryException( "StandardDirectory::hasEntry : "
+	throw DirectoryException( "StandardDirectory::hasEntry: "
 		"not implemented on this platform." ) ;
 		
 #endif  // CEYLAN_USES__STAT
@@ -366,7 +373,7 @@ void StandardDirectory::getSubdirectories( list<string> & subDirectories )
 			 
 	}	
 	
-	DIR * d = ::opendir( _path.c_str() ) ;
+	DIR * d =::opendir( _path.c_str() ) ;
 
 	if ( d == 0 )
 		throw DirectoryLookupFailed( 
@@ -374,12 +381,12 @@ void StandardDirectory::getSubdirectories( list<string> & subDirectories )
 
 	struct dirent * de = 0 ;
 
-	while( ( de = ::readdir( d ) ) != 0 )
+	while( ( de =::readdir( d ) ) != 0 )
 	{
 	
 		string name = de->d_name ;
 
-		// Selects only real subdirectories :
+		// Selects only real subdirectories:
 		if ( hasDirectory( name ) )
 			subDirectories.push_back( name ) ;
 		
@@ -387,7 +394,7 @@ void StandardDirectory::getSubdirectories( list<string> & subDirectories )
 	
 	
 	/*
-	 * errno could be checked here :
+	 * errno could be checked here:
 	 
 	if ( errno != 0 )
 		throw DirectoryLookupFailed( 
@@ -439,7 +446,7 @@ void StandardDirectory::getFiles( list<string> & files )
 			 
 	}	
 	
-	DIR * d = ::opendir( _path.c_str() ) ;
+	DIR * d =::opendir( _path.c_str() ) ;
 
 	if ( d == 0 )
 		throw DirectoryLookupFailed( 
@@ -447,19 +454,19 @@ void StandardDirectory::getFiles( list<string> & files )
 
 	struct dirent * de = 0 ;
 
-	while( ( de = ::readdir( d ) ) != 0 )
+	while( ( de =::readdir( d ) ) != 0 )
 	{
 	
 		string name = de->d_name ;
 
-		// Selects only real files :
+		// Selects only real files:
 		if ( hasFile( name ) )
 			files.push_back( name ) ;
 	}
 	
 	
 	/*
-	 * errno could be checked here :
+	 * errno could be checked here:
 	 
 	if ( errno != 0 )
 		throw DirectoryLookupFailed( 
@@ -512,7 +519,7 @@ void StandardDirectory::getEntries( list<string> & entries )
 			 
 	}	
 	
-	DIR * d = ::opendir( _path.c_str() ) ;
+	DIR * d =::opendir( _path.c_str() ) ;
 
 	if ( d == 0 )
 		throw DirectoryLookupFailed( 
@@ -520,19 +527,19 @@ void StandardDirectory::getEntries( list<string> & entries )
 
 	struct dirent * de = 0 ;
 
-	while( ( de = ::readdir( d ) ) != 0 )
+	while( ( de =::readdir( d ) ) != 0 )
 	{
 	
 		string name = de->d_name ;
 
-		// Selects only real files :
+		// Selects only real files:
 		if ( hasEntry( name ) )
 			entries.push_back( name ) ;
 	}
 	
 	
 	/*
-	 * errno could be checked here :
+	 * errno could be checked here:
 	 
 	if ( errno != 0 )
 		throw DirectoryLookupFailed( 
@@ -586,7 +593,7 @@ void StandardDirectory::getSortedEntries( list<string> & subDirectories,
 			 
 	}	
 	
-	DIR * d = ::opendir( _path.c_str() ) ;
+	DIR * d =::opendir( _path.c_str() ) ;
 
 	if ( d == 0 )
 		throw DirectoryLookupFailed( 
@@ -595,16 +602,16 @@ void StandardDirectory::getSortedEntries( list<string> & subDirectories,
 	struct dirent * de = 0 ;
 	struct stat buf ;
 
-	while( ( de = ::readdir( d ) ) != 0 )
+	while( ( de =::readdir( d ) ) != 0 )
 	{
 	
 		string name = de->d_name ;
 		string fullname = fsManager->joinPath( _path, name ) ;
 
-		// Selects only real entries :
+		// Selects only real entries:
 		if ( name != fsManager->getAliasForCurrentDirectory()
 				&& name != fsManager->getAliasForParentDirectory()
-				&& ::stat( fullname.c_str(), & buf ) == 0 )
+				&&::stat( fullname.c_str(), & buf ) == 0 )
 		{		
 		
 			if ( S_ISDIR( buf.st_mode ) )
@@ -624,7 +631,7 @@ void StandardDirectory::getSortedEntries( list<string> & subDirectories,
 	
 	
 	/*
-	 * errno could be checked here :
+	 * errno could be checked here:
 	 
 	if ( errno != 0 )
 		throw DirectoryLookupFailed( 
@@ -750,11 +757,11 @@ StandardDirectory::StandardDirectory( const string & directoryName,
 	{
 	
 		_path = 
-		getCorrespondingFileSystemManager().getCurrentWorkingDirectoryName() ;
+		getCorrespondingFileSystemManager().getCurrentWorkingDirectoryPath() ;
 	
 	}
 				
-	// path should never finish with a separator :
+	// path should never finish with a separator:
 	removeLeadingSeparator() ;
 	
 	
@@ -795,7 +802,7 @@ StandardDirectory::StandardDirectory( const string & directoryName,
 
 #if CEYLAN_ARCH_UNIX
 
-		// Next split will eat leading '/' :
+		// Next split will eat leading '/':
 		if ( fsManager->isAbsolutePath( _path ) )
 			path = fsManager->getRootDirectoryPrefix() 
 				+ fsManager->getSeparator() ;
@@ -846,7 +853,7 @@ StandardDirectory::StandardDirectory( const string & directoryName,
 				CEYLAN_LOG( "StandardDirectory constructor: creating " 
 					+ path ) ;
 
-				// Mingw's mkdir takes only parameter :
+				// Mingw's mkdir takes only parameter:
 								
 #ifdef CEYLAN_USES_MKDIR_TWO_ARGS
 
@@ -880,7 +887,7 @@ StandardDirectory::StandardDirectory( const string & directoryName,
 
 
 	if ( ! fsManager->isAbsolutePath( _path ) )
-		_path = fsManager->getCurrentWorkingDirectoryName() 
+		_path = fsManager->getCurrentWorkingDirectoryPath() 
 			+ fsManager->getSeparator() + _path ;
 
 	CEYLAN_LOG( "Directory reference to " + _path + " done." ) ;

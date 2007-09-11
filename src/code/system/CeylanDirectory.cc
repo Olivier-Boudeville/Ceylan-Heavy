@@ -121,7 +121,7 @@ bool Directory::IsAValidDirectoryName( const string & directoryString )
 {
 
 	// Let DirectoryDelegatingException propagate:
-	return GetCorrespondingFileSystemManager().isAValidDirectoryName( 
+	return GetCorrespondingFileSystemManager().isAValidDirectoryPath( 
 		directoryString ) ;
 				
 }
@@ -152,7 +152,7 @@ string Directory::GetCurrentWorkingDirectoryName() throw( DirectoryException )
 
 	// Let DirectoryGetCurrentFailed and DirectoryDelegatingException propagate:
 	return 
-		GetCorrespondingFileSystemManager().getCurrentWorkingDirectoryName() ;
+		GetCorrespondingFileSystemManager().getCurrentWorkingDirectoryPath() ;
 		
 }
 

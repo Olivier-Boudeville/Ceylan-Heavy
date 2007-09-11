@@ -70,66 +70,96 @@ FileSystemManager * FileSystemManager::_CurrentDefaultFileSystemManager = 0 ;
 
 
 bool FileSystemManager::ExistsAsEntry( const std::string & entryPath ) 
-	const throw( EntryLookupFailed )
+	throw( FileSystemManagerException )
 {
-	// use helper method to find actual FileSystemManager
+
+	// Let FileSystemManagerDelegatingException and EntryLookupFailed:
+	return GetAnyDefaultFileSystemManager().existsAsEntry( entryPath ) ;
+	
 }
 
 
 void FileSystemManager::CreateSymbolicLink( const string & linkTarget, 
-	const string & linkName ) throw( SymlinkFailed )
+	const string & linkName ) throw( FileSystemManagerException )
 {
-	// use helper method to find actual FileSystemManager
+
+	// Let FileSystemManagerDelegatingException and SymlinkFailed:
+	GetAnyDefaultFileSystemManager().createSymbolicLink( linkTarget,
+		linkName ) ;
+		
 }
 
 
 time_t FileSystemManager::GetEntryChangeTime( const string & entryPath )
-	throw( GetChangeTimeFailed )
+	throw( FileSystemManagerException )
 {
-	// use helper method to find actual FileSystemManager
+
+	// Let FileSystemManagerDelegatingException and GetChangeTimeFailed:
+	return GetAnyDefaultFileSystemManager().getEntryChangeTime( entryPath ) ;
+		
 }
 			
 			
+				
 						
 // Accessors to FilesystemManager constants.
 
 
-const string & FileSystemManager::GetRootDirectoryPrefix() throw()
+const string & FileSystemManager::GetRootDirectoryPrefix() 
+	throw( FileSystemManagerDelegatingException )
 {
-	// use helper method to find actual FileSystemManager
+
+	// Let FileSystemManagerDelegatingException propagate:
+	return GetAnyDefaultFileSystemManager().GetRootDirectoryPrefix() ;
+	
 }
 
 						
-Ceylan::Latin1Char FileSystemManager::GetSeparator() throw()
+Ceylan::Latin1Char FileSystemManager::GetSeparator() 
+	throw( FileSystemManagerDelegatingException )
 {
-	// use helper method to find actual FileSystemManager
+
+	// Let FileSystemManagerDelegatingException propagate:
+	return GetAnyDefaultFileSystemManager().getSeparator() ;
+	
 }
 
 						
-string FileSystemManager::GetSeparatorAsString() throw()
+string FileSystemManager::GetSeparatorAsString() 
+	throw( FileSystemManagerDelegatingException )
 {
-	// use helper method to find actual FileSystemManager
+
+	// Let FileSystemManagerDelegatingException propagate:
+	return GetAnyDefaultFileSystemManager().getSeparatorAsString() ;
+	
 }
 
 						
-const string & FileSystemManager::GetAliasForCurrentDirectory()	throw()
+const string & FileSystemManager::GetAliasForCurrentDirectory()	
+	throw( FileSystemManagerDelegatingException )
 {
-	// use helper method to find actual FileSystemManager
+
+	// Let FileSystemManagerDelegatingException propagate:
+	return GetAnyDefaultFileSystemManager().getAliasForCurrentDirectory() ;
+	
 }
 	
 						
-const string & FileSystemManager::GetAliasForParentDirectory() throw()
+const string & FileSystemManager::GetAliasForParentDirectory() 
+	throw( FileSystemManagerDelegatingException )
 {
-	// use helper method to find actual FileSystemManager
+
+	// Let FileSystemManagerDelegatingException propagate:
+	return GetAnyDefaultFileSystemManager().getAliasForParentDirectory() ;
+	
 }
 						
 		
 		
+	
 					
 										
-// Implementation virtual methods.	
-						
-
+// Implementation virtual methods.						
 
 
 
@@ -173,7 +203,7 @@ string FileSystemManager::getSeparatorAsString() const throw()
 	
 	
 bool FileSystemManager::diff( const std::string & firstFilename,
-	const std::string & secondFilename ) throw( DiffFailed )
+	const std::string & secondFilename ) throw( FileDiffFailed )
 {
 
 	try
@@ -237,7 +267,8 @@ bool FileSystemManager::diff( const std::string & firstFilename,
 	catch( const SystemException & e )
 	{
 	
-		throw DiffFailed( "FileSystemManager::diff failed: " + e.toString() ) ;
+		throw FileDiffFailed( "FileSystemManager::diff failed: " 
+			+ e.toString() ) ;
 			
 	}
 	
@@ -450,6 +481,7 @@ void FileSystemManager::SetDefaultFileSystemManagerToPlatformDefault()
 	
 #else // CEYLAN_ARCH_NINTENDO_DS
 
+	// Let StandardFileSystemManagerException propagate:
 	_CurrentDefaultFileSystemManager = new StandardFileSystemManager() ;
 	
 #endif // CEYLAN_ARCH_NINTENDO_DS
