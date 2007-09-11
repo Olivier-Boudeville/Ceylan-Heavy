@@ -59,14 +59,14 @@ namespace Ceylan
 			 * Non-virtual destructor, deletes its held object.
 			 *
 			 */
- 			void ~Holder() throw() ;
+ 			~Holder() throw() ;
 	
 					
 			/**
 			 * Returns the held reference.
 			 *
 			 */
-			Held & get() throw();
+			Held & get() const throw() ;
 			
 			
 			/// Returns a reference to the held instance.
@@ -74,6 +74,7 @@ namespace Ceylan
 
 			/// Returns a pointer to the held instance.
 			Held * operator->() const ;
+		
 		
 		
 		private:
@@ -122,29 +123,35 @@ namespace Ceylan
 	Holder<Held>::~Holder() throw()
 	{
 
-		delete _held ;
+		delete Holder<Held>::_held ;
 		
 	}	
 				
 				
 	template <typename Held>
-	Held & Holder<Held>::get() throw()
+	Held & Holder<Held>::get() const throw()
 	{
 
-		return *_held ;
+		return *Holder<Held>::_held ;
 		
 	}	
 				
 
-	Held & operator*() const
+	template <typename Held>
+	Held & Holder<Held>::operator*() const
 	{
-		return get() ;
+	
+		return Holder<Held>::get() ;
+		
 	}
 
 
-	Held * operator->() const
+	template <typename Held>
+	Held * Holder<Held>::operator->() const
 	{
-		return & get() ;
+	
+		return & Holder<Held>::get() ;
+		
 	}
 	
 	
