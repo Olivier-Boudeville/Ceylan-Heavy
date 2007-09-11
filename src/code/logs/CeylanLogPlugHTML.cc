@@ -23,13 +23,13 @@ void LogPlugHTML::StartService( const string & plugInitiator, bool smart )
 	throw ( LogException )
 {
 		
-	CEYLAN_LOG( "Starting LogPlug HTML service : "
+	CEYLAN_LOG( "Starting LogPlug HTML service: "
 		"creating aggregator and transport." ) ;
 	
-	// Plug should start empty :
+	// Plug should start empty:
  	LogPlug::CheckBlank() ;
 
-	// Start by the end of the chain and go back to its beginning :
+	// Start by the end of the chain and go back to its beginning:
 	
 	LogPlug::Aggregator = new LogAggregatorHTML( 
 		/* caller description */         plugInitiator,
@@ -47,10 +47,10 @@ void LogPlugHTML::StartService( const string & plugInitiator, bool smart )
 	LogPlug::Transport = 
 		new LogTransportListenerRaw( * LogPlug::Aggregator ) ;
 	
-	// Creates basic standard channels :
+	// Creates basic standard channels:
 	LogPlug::CreateBasicPlug() ;
 	
-	// Last check before service is open :
+	// Last check before service is open:
 	LogPlug::StartService( plugInitiator ) ;
 
 }
@@ -76,7 +76,7 @@ void LogPlugHTML::StopService() throw()
 const string LogPlugHTML::ToString( Ceylan::VerbosityLevels level ) throw()
 {
 
-	string result = "LogSystem status : using HTML plug" ;
+	string result = "LogSystem status: using HTML plug" ;
 	
 	if ( level != Ceylan::low )
 		result += ". " + LogPlug::ToString( level ) ;
@@ -89,7 +89,7 @@ const string LogPlugHTML::ToString( Ceylan::VerbosityLevels level ) throw()
 
 /* 
 				
-	Not even defined : 
+	Not even defined: 
 
 
 LogPlugHTML::LogPlugHTML() throw( LogException )
