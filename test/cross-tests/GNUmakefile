@@ -93,7 +93,7 @@ TEST_ARCH_FLAGS_COMMON = -mthumb -mthumb-interwork
 # Preprocessor section: exports TEST_CPP_FLAGS_ARM7 / TEST_CPP_FLAGS_ARM9
 
 TEST_CPP_FLAGS_COMMON = -I. -I$(CEYLAN_INSTALL_INC) \
-	-I$(libnds_DIR)/include -DCEYLAN_ARCH_NINTENDO_DS
+	-I$(libfat_DIR)/include -I$(libnds_DIR)/include -DCEYLAN_ARCH_NINTENDO_DS
 
 TEST_CPP_FLAGS_ARM7 = $(TEST_CPP_FLAGS_COMMON) -DCEYLAN_RUNS_ON_ARM7
 
@@ -157,7 +157,7 @@ TEST_LD_FLAGS_ARM9:= $(TEST_LD_FLAGS_COMMON) $(TEST_LD_FLAGS_ARM9)
 # TEST_LIBPATHS_ARM7 and TEST_LIBPATHS_ARM9 section:
 
 # Let the possibility for the user to define his own LIBPATHS:
-TEST_LIBPATHS_COMMON = $(LIBPATHS) -L$(libnds_DIR)/lib
+TEST_LIBPATHS_COMMON = $(LIBPATHS) -L$(libfat_DIR)/lib -L$(libnds_DIR)/lib
 
 TEST_LIBPATHS_ARM7 = -L$(CEYLAN_INSTALL_LIB) $(TEST_LIBPATHS_COMMON) 
 TEST_LIBPATHS_ARM9 = -L$(CEYLAN_INSTALL_LIB) $(TEST_LIBPATHS_COMMON) 
@@ -166,9 +166,11 @@ TEST_LIBPATHS_ARM9 = -L$(CEYLAN_INSTALL_LIB) $(TEST_LIBPATHS_COMMON)
 
 # TEST_LIBS_ARM7 and TEST_LIBS_ARM9 section:
 
-# Let the possibility for the user to define his own LIBS:
+# Let the possibility for the user to define his own LIBS.
+# Not libfat for the ARM7 yet (library too big):
 TEST_BASE_LIBS_ARM7:= $(LIBS) -lnds7
-TEST_BASE_LIBS_ARM9:= $(LIBS) -lnds9
+TEST_BASE_LIBS_ARM9:= $(LIBS) -lfat -lnds9
+
 
 TEST_LIBS_ARM7 = \
        -lCeylan-$(CEYLAN_TESTED_VERSION)-$(CEYLAN_TESTED_BUILD_MODE)-arm7 \
