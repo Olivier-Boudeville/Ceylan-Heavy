@@ -49,7 +49,7 @@ namespace Ceylan
 		 * @see LogAggregator
 		 *
 		 */
-		class CEYLAN_DLL LogAggregatorHTML : public LogAggregator
+		class CEYLAN_DLL LogAggregatorHTML: public LogAggregator
 		{
 		
 			public:
@@ -91,7 +91,7 @@ namespace Ceylan
 				 * aggregator web pages.
 				 *
 				 * @note This method does nothing if the immediate write 
-				 * flag is turned on : work should be already done in this 
+				 * flag is turned on: work should be already done in this 
 				 * case.
 				 *
 				 */
@@ -130,6 +130,7 @@ namespace Ceylan
 					const throw() ;
 
 
+
 				// Static section.
 				
 				
@@ -149,15 +150,21 @@ namespace Ceylan
 			protected:
 			
 			
+			
+				// Write section.
+			
+			
 				/**
 				 * Internal method used to perform the effective writing
 				 * of log channels into files.
 				 *
 				 * @param channel the log channel to write.
 				 *
+				 * @throw LogException if the write operation failed.
+				 *
 				 */
 				virtual void write( const LogChannel & channel ) 
-					const throw() ;
+					const throw( LogException ) ;
 			
 			
 				/**
@@ -169,9 +176,11 @@ namespace Ceylan
 				 * @note This method is mainly used when immediate 
 				 * writing mode is set.
 				 *
+				 * @throw LogException if the write operation failed.
+				 *
 				 */
 				virtual void write( const LogMessage & message, 
-					System::File & targetFile ) const throw() ;
+					System::File & targetFile ) const throw( LogException ) ;
 			
 			
 				/**
@@ -181,9 +190,11 @@ namespace Ceylan
 				 *
 				 * @see ChannelHeader
 				 *
+				 * @throw LogException if the write operation failed.
+				 *
 				 */
 				static void WriteChannelHeader( const LogChannel & channel, 
-					System::File & targetFile ) throw() ;
+					System::File & targetFile ) throw( LogException ) ;
 			
 			
 				/**
@@ -195,9 +206,12 @@ namespace Ceylan
 				 *
 				 * @see ChannelFooter
 				 *
+				 * @throw LogException if the write operation failed.
+				 *
 				 */
 				static void WriteChannelFooter( const LogChannel & channel, 
-					System::File & targetFile ) throw() ;
+					System::File & targetFile ) throw( LogException ) ;
+			
 			
 			
 				/**
