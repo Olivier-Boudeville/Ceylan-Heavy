@@ -45,7 +45,7 @@ class TestHolder: public Ceylan::Object
 		}
 		
 		
-		static GetCount() throw()
+		static Ceylan::Uint8 GetCount() throw()
 		{
 			return Count ;
 		}	
@@ -54,7 +54,7 @@ class TestHolder: public Ceylan::Object
 	private:
 	
 	
-		static Ceylan::Uint8 Count = 0 ;
+		static Ceylan::Uint8 Count ;
 		
 		
 		TestHolder( const TestHolder & source ) throw() ;
@@ -62,6 +62,9 @@ class TestHolder: public Ceylan::Object
 		TestHolder & operator = ( const TestHolder & source ) throw() ;
 		
 } ;
+
+
+Ceylan::Uint8 TestHolder::Count = 0 ;
 
 
 #include <iostream>
@@ -92,7 +95,7 @@ int main( int argc, char * argv[] )
 		if ( TestHolder::GetCount() != 0 )
 			throw Ceylan::TestException( "Wrong initial test holder count." ) ;
 			
-		Holder<TestHolder> myHolder( & new TestHolder() ) ;
+		Holder<TestHolder> myHolder( * new TestHolder() ) ;
 
 		LogPlug::info( "After first Holder creation, holder count is "
 			+ Ceylan::toNumericalString( TestHolder::GetCount() ) ) ;
@@ -109,7 +112,7 @@ int main( int argc, char * argv[] )
 		// This block will force myOtherHolder deallocation.
 		{
 		
-			Holder<TestHolder> myOtherHolder( & new TestHolder() ) ;
+			Holder<TestHolder> myOtherHolder( * new TestHolder() ) ;
 
 			if ( TestHolder::GetCount() != 2 )
 				throw Ceylan::TestException( 
