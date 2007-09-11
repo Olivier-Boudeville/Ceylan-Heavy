@@ -448,6 +448,28 @@ namespace Ceylan
 
 
 				/**
+				 * Tells whether the regular file or symbolic link 
+				 * <b>filename</b> exists (and is not a directory).
+				 *
+				 * @param filename the filename to look-up.
+				 *
+				 * This method will work as expected whether the 
+				 * symbolic link feature is enabled or not.
+				 *
+				 * @throw FileException, including FileLookupFailed if the
+				 * operation failed (existence test failed with no answer) or
+				 * is not supported on this platform, or FileDelegatingException
+				 * if the relevant filesystem manager could not be retrieved.
+				 *
+				 * @note This method is an alias for ExistsAsFileOrSymbolicLink.
+				 *
+				 */
+				static bool Exists(	const std::string & filename ) 
+					throw( FileException ) ;
+
+
+
+				/**
 				 * Removes the file or symbolic link from the filesystem.
 				 *
 				 * @param filename the filename to remove.
