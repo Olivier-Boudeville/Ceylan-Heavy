@@ -164,6 +164,16 @@ bool File::ExistsAsFileOrSymbolicLink( const string & filename )
 }
 
 
+bool File::Exists( const string & filename ) 
+	throw( FileException )
+{
+
+	// Let FileLookupFailed and FileDelegatingException propagate:
+	return ExistsAsFileOrSymbolicLink( filename ) ;
+				
+}
+
+
 void File::Remove( const string & filename ) throw( FileException )
 {
 
