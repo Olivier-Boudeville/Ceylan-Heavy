@@ -7,15 +7,6 @@
 #include "CeylanFileSystemManager.h" // for FileSystemManager
 
 
-/*
- * The File factories (Create/Open) have to know all the File subclasses to
- * be able to instantiate them:
- *
- */
-
-//#include "CeylanStandardFile.h" // for StandardFile
-//#include "CeylanLibfatFile.h" // for LibfatFile
-
 
 using std::string ;
 
@@ -383,6 +374,15 @@ bool File::isLocked() const throw()
 }
 
 
+Size File::size() const throw( FileException )
+{
+
+	// Let FileSizeRequestFailed and FileDelegatingException propagate:
+	return getCorrespondingFileSystemManager().getSize( _name ) ;
+	
+}
+
+
 void File::readExactLength( Ceylan::Byte * buffer, Size exactLength ) 
 	throw( InputStream::ReadFailedException )
 {
@@ -461,6 +461,26 @@ void File::open( OpeningFlag openFlag, PermissionFlag permissionFlag )
 }
 
 
+
+void File::remove() throw( FileException )
+{
+
+	try
+	{
+	
+		close() ;
+		
+	}
+	catch( const Stream::CloseException & e )
+	{
+		throw FileRemoveFailed( "File::remove failed: "	+ e.toString() ) ;
+	}
+
+
+	// Let FileDelegatingException and FileRemoveFailed propagate:
+	getCorrespondingFileSystemManager().removeFile( _name ) ;
+		
+}
 
 
 
