@@ -80,23 +80,30 @@ namespace Ceylan
 				 * 
 				 * On Nintendo DS, it implies it will take the full extent
 				 * of the bottom LCD screen and will provide a text area of 
-				 * 32x24 characters. As a side-effect, the 2D cores will be
+				 * 32x24 characters. As a side-effect, the sub 2D core will be
 				 * powered on, the console will use the second (sub) core, here
 				 * located at the bottom actual screen, and using the VRAM bank
 				 * C, the background #0 and the default font.
 				 * Only available for the ARM9.
 				 *
+				 * @param startInForeground tells whether the console is to
+				 * start in foreground (thus directly taking control of the
+				 * its display and input devices, i.e. keys) or if it should
+				 * be on the background, storing text non-interactively until
+				 * it is set to foreground.
+				 *
 				 * @throw ConsoleException if the operation failed or is not
 				 * supported.
 				 *
 				 */
-				explicit Console() throw( ConsoleException ) ;
+				explicit Console( bool startInForeground = true ) 
+					throw( ConsoleException ) ;
 			
 			
 			
 				/**
 				 * Constructor for a basic console, mostly suitable for
-				 * debugging.
+				 * debugging. It 
 				 *
 				 * @param startingX the abscissa of the top-left corner of
 				 * the rectangle used for text output.
@@ -112,6 +119,12 @@ namespace Ceylan
 				 *
 				 * @param layout the desired text layout for this buffer.
 				 *
+				 * @param useBottomScreen tells whether the bottom or the top
+				 * physical screen should be used (default: bottom screen).
+				 *
+				 * @param useSubCore tells whether the main or the sub 2D
+				 * engine should be used (default: sub core).
+				 *
 				 * @see TextBuffer::TextLayout
 				 *
 				 * @throw ConsoleException if the operation failed or is not
@@ -122,7 +135,10 @@ namespace Ceylan
 						 TextBuffer::CharOrdinate startingY,
 						 TextBuffer::CharAbscissa width,
 						 TextBuffer::CharOrdinate height,
-						 TextBuffer::TextLayout   layout )
+						 TextBuffer::TextLayout   layout,
+						 bool                     useBottomScreen = true,
+						 bool                     useSubCore = true,
+						 bool                     startInForeground = true )
 					throw( ConsoleException ) ;
 	
 	
@@ -130,6 +146,23 @@ namespace Ceylan
 				virtual ~Console() throw() ;
 
 
+				/**
+				 * Sets the console to foreground if needed, render its text
+				 * and enter its event loop so that the user can use the 
+				 * keys to browse its content.
+				 *
+				 * Key controls are:
+				 *  - button X: go to previous paragraph
+				 *  - button B: go to next paragraph
+				 *  - button up: go to previous line
+				 *  - button down: go to next line
+				 *  - button Y: toggle text layout (raw/justified/word-wrapped)
+				 *  - button A: quit
+				 *
+				 */
+				virtual void goInteractive() throw( ConsoleException ) ; 
+
+				
 
 				/// Returns the text layout being currently used.
 				virtual TextBuffer::TextLayout getTextLayout() const throw() ;
@@ -227,6 +260,23 @@ namespace Ceylan
 
 
 				/**
+				 * Sets the console either in the foreground (hence using the
+				 * screen and the keys), or in the background (not using them).
+				 *
+				 * @param toForeground sets the console to foreground iff true.
+				 *
+				 * @note On transition from foreground to background, do not
+				 * change the video or input settings, the caller is expected
+				 * to set them as wished after the call.
+				 *
+				 * @throw ConsoleException if the operation failed.
+				 *
+				 */
+				virtual void setToForeground( bool toForeground = true ) 
+					throw( ConsoleException ) ; 
+
+
+				/**
 				 * Renders in console output the current text of its 
 				 * character buffer.
 				 *
@@ -271,6 +321,33 @@ namespace Ceylan
 						Millisecond durationBetweenRepeats    = 100 ) 
 					throw( ConsoleException ) ;
 				
+				
+				
+				/**
+				 * Initializes the console for text output, with as little
+				 * side-effects as possible.
+				 *
+				 * After that call, Ceylan::display can be used.
+				 *
+				 * This method performs action only on the ARM9 of the 
+				 * Nintendo DS.
+				 *
+				 * @param useBottomScreen tells whether the bottom or the top
+				 * physical screen should be used (default: bottom screen).
+				 *
+				 * @param useSubCore tells whether the main or the sub 2D
+				 * engine should be used (default: sub core).
+				 *
+				 * @param force tells whether the initialization is to be
+				 * performed unconditionally (if true) or if we should rely on
+				 * the memory of this method (if false; rendering settings may
+				 * have been modified outside of this method, thus without it
+				 * knowing about them). Default is to rely on the method memory.
+				 *
+				 */
+				static void Initialize( bool useBottomScreen = true,
+						bool useSubCore = true, bool force = false ) 
+					throw( ConsoleException ) ;
 				
 				
 				/**
@@ -360,16 +437,25 @@ namespace Ceylan
 				 * @throw ConsoleException if the operation failed or is not
 				 * supported.
 				 *
+				 * @param useBottomScreen tells whether the bottom or the top
+				 * physical screen should be used (default: bottom screen).
+				 *
+				 * @param useSubCore tells whether the main or the sub 2D
+				 * engine should be used (default: sub core).
+				 *
 				 */
-				void initConsole( 
+				virtual void initConsole( 
 						TextBuffer::CharAbscissa startingX,
 						TextBuffer::CharOrdinate startingY,
 						TextBuffer::CharAbscissa width, 
 						TextBuffer::CharOrdinate height,
-						TextBuffer::TextLayout   layout )
+						TextBuffer::TextLayout   layout,
+						bool                     useBottomScreen = true,
+						bool                     useSubCore = true )
 					throw( ConsoleException ) ; 
 
-
+				
+				
 				TextBuffer::CharAbscissa _xstart ;
 				TextBuffer::CharOrdinate _ystart ;
 				
@@ -377,6 +463,21 @@ namespace Ceylan
 				/// Buffer storing all the texts.
 				TextBuffer * _buffer ;
 				
+				
+				/**
+				 * Tells whether the console is in interactive mode or hidden
+				 * from the user.
+				 *
+				 */
+				bool _inForeground ;
+				
+				/// Tells whether any bottom screen should be used.
+				bool _useBottomScreen ;
+				
+				/// Tells whether any sub rendering core should be used.
+				bool _useSubCore ;
+		
+		
 				
 				
 			private:
