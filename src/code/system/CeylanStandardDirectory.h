@@ -207,52 +207,7 @@ namespace Ceylan
 				// Other instance methods.
 				
 
-				/**
-				 * Changes directory to one of its direct subdirectories.
-				 *
-				 * @param subdirectoryName the name of the subdirectory of
-				 * this directory to go to. It should not have any separator
-				 * in it.
-				 *
-				 * @example myDir.goDown( "data" )
-				 *
-				 * @throw DirectoryChangeFailed if the operation failed or is
-				 * not supported.
-				 *
-				 */
-				virtual void goDown( const std::string & subdirectoryName )
-					throw( DirectoryChangeFailed ) ;
-
-
-				/**
-				 * Tells whether the reference on the directory is valid.
-				 *
-				 * Checks that corresponding path exists, and that it is a
-				 * directory.
-				 *
-				 * @throw DirectoryException if the operation failed or is not
-				 * supported, including DirectoryDelegatingException if the
-				 * standard filesystem manager could not be retrieved and
-				 * DirectoryLookupFailed if the check failed.
-				 *
-				 */
-				virtual bool isValid() const throw( DirectoryException ) ;
-
-
-				// getPath inherited.
-
-
-				/**
-				 * Removes the leading separator, if any, in the path of this
-				 * directory path.
-				 *
-				 * @throw DirectoryException if the operation failed or is not
-				 * supported, including DirectoryDelegatingException if the
-				 * standard filesystem manager could not be retrieved.
-				 *
-				 */
-				virtual void removeLeadingSeparator() 
-					throw( DirectoryException ) ;
+				// goDown, isValid, getPath, removeLeadingSeparator inherited.
 
 
 				/**
