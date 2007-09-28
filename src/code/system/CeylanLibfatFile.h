@@ -201,22 +201,8 @@ namespace Ceylan
 					throw( OutputStream::WriteFailedException ) ;
 
 
-				// open inherited.
 
-
-				/**
-				 * Removes this libfat file from disk.
-				 *
-				 * Closes it if necessary. No other operation should be 
-				 * performed 
-				 *
-				 * @throw FileRemoveFailed if the operation failed or is not
-				 * supported on this platform, and FileDelegatingException
-				 * if the corresponding filesystem manager could not be used.
-				 *
-				 */
-				virtual void remove() throw( FileException ) ;
-
+				// open and remove inherited from File.
 
 
 
