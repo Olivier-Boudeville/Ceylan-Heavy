@@ -228,7 +228,7 @@ namespace Ceylan
 				
 				
 				/**
-				 * Returns a StandardFile reference on a newly created file.
+				 * Returns a LibfatFile reference on a newly created file.
 				 *
 				 * By default, it creates a new file on disk. If the name
 				 * corresponds to an already-existing file, it will be
@@ -244,7 +244,7 @@ namespace Ceylan
 				 *
 				 * @see OpeningFlag, PermissionFlag
 				 *
-				 * @note StandardFile helper factory, has to be public but the
+				 * @note LibfatFile helper factory, has to be public but the
 				 * user should not use it: File::Create is expected to be used
 				 * instead, as it is the cross-platform factory intended for
 				 * use.
@@ -270,7 +270,7 @@ namespace Ceylan
 				 *
 				 * @see OpeningFlag
 				 *
-				 * @note StandardFile helper factory, has to be public but the
+				 * @note LibfatFile helper factory, has to be public but the
 				 * user should not use it: File::Open is expected to be used
 				 * instead, as it is the cross-platform factory intended for
 				 * use.
@@ -382,19 +382,6 @@ namespace Ceylan
 				// transformIntoValidFilename inherited from File.
 
 
-				/**
-				 * Takes specified <b>rawFilename</b> and tries to transform it 
-				 * so that the result should be a valid name, from the
-				 * filesystem's point of view.
-				 *
-				 * @param rawFilename the filename to convert
-				 *
-				 * @return the converted filename
-				 *
-				 */
-				virtual std::string transformIntoValidFilename( 
-					const std::string & rawFilename ) throw() ;
-
 
 				/**
 				 * Updates the last access and modification times of 
@@ -436,7 +423,7 @@ namespace Ceylan
 				 *
 				 * @param newDirectoryName the name of the directory to create.
 				 *
-				 * @note StandardDirectory helper factory, has to be public 
+				 * @note LibfatDirectory helper factory, has to be public 
 				 * but the user should not use it: Directory::Create is 
 				 * expected to be used instead, as it is the cross-platform
 				 * factory intended for use.
@@ -458,7 +445,7 @@ namespace Ceylan
 				 * specified (the string is empty), returns a reference to the
 				 * current working directory.
 				 *
-				 * @note StandardDirectory helper factory, has to be public 
+				 * @note LibfatDirectory helper factory, has to be public 
 				 * but the user should not use it: Directory::Open is 
 				 * expected to be used instead, as it is the cross-platform
 				 * factory intended for use.
@@ -581,16 +568,10 @@ namespace Ceylan
 				virtual bool isAValidDirectoryPath( 
 					const std::string & directoryString ) throw() ;
 			
+				
+						
+				// removeLeadingSeparator directly inherited from File.
 			
-				/**
-				 * Removes the leading separator, if any, in specified
-				 * directory's path.
-				 *
-				 * @param path the path that will be modified.
-				 *
-				 */
-				virtual void removeLeadingSeparator( std::string & path ) 
-					throw() ;
 			
 			
 				/**
@@ -662,12 +643,12 @@ namespace Ceylan
 
 
 
-				// Static section to handle standard filesystem manager.
+				// Static section to handle libfat filesystem manager.
 			
 
 
 				/**
-				 * Returns a reference to the unique standard filesystem 
+				 * Returns a reference to the unique libfat filesystem 
 				 * manager. 
 				 *
 				 * Does not set this filesystem manager as the default one.
@@ -687,7 +668,27 @@ namespace Ceylan
 
 
 				/**
-				 * Removes the current standard filesystem manager, if any.
+				 * Ensures that the libfat filesystem manager is actually
+				 * available, by instanciating it if necessary.
+				 *
+				 * Does not set this filesystem manager as the default one.
+				 *
+				 * Creates it if needed: this method ensures it remains a
+				 * singleton.
+				 *
+				 * Useful to ensure a static operation can rely on a 
+				 * preexisting manager..
+				 *
+				 * @throw LibfatFileSystemManagerException if the operation
+				 * failed.
+				 *
+				 */
+				static void SecureLibfatFileSystemManager() 
+					throw( LibfatFileSystemManagerException ) ;
+
+
+				/**
+				 * Removes the current libfat filesystem manager, if any.
 				 *
 				 * Must be public, as ancestor has to be able to call it.
 				 *
@@ -698,9 +699,9 @@ namespace Ceylan
 				static void RemoveLibfatFileSystemManager() throw() ;
 			
 			
-			
+					
 				/**
-				 * Constructs a reference to a standard filesystem, initializes 
+				 * Constructs a reference to a libfat filesystem, initializes 
 				 * accordingly any needed subsystem.
 				 *
 				 * Cannot be private, as has to be subclassed.
@@ -720,7 +721,7 @@ namespace Ceylan
 
 
 				/**
-				 * Destroys the Ceylan standard filesystem reference, not the 
+				 * Destroys the Ceylan libfat filesystem reference, not the 
 				 * filesystem itself.
 				 *
 				 * Cannot be private as has to be subclassed.
@@ -802,7 +803,7 @@ namespace Ceylan
 				
 					
 					
-				/// Pointer to the current standard filesystem manager (if any).
+				/// Pointer to the current libfat filesystem manager (if any).
 				static LibfatFileSystemManager * _LibfatFileSystemManager ;
 				
 
