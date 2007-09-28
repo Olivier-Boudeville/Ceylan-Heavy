@@ -442,6 +442,12 @@ bool Process::RedirectStdout( const string & filename )
 	throw( ProcessException )
 {
 
+#if CEYLAN_ARCH_NINTENDO_DS
+	
+	throw ProcessException( "Process::RedirectStdout failed: "
+		"not available on the Nintendo DS." ) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
@@ -474,13 +480,20 @@ bool Process::RedirectStdout( const string & filename )
 		
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
 
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 }
 
 
-bool Process::RedirectStdout( OutputStream & os ) 
-	throw( ProcessException )
+bool Process::RedirectStdout( OutputStream & os ) throw( ProcessException )
 {
+
+#if CEYLAN_ARCH_NINTENDO_DS
+	
+	throw ProcessException( "Process::RedirectStdout failed: "
+		"not available on the Nintendo DS." ) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
@@ -493,12 +506,21 @@ bool Process::RedirectStdout( OutputStream & os )
 		
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
 
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 }
 
 
 bool Process::RedirectStderr( const string & filename ) 
 	throw( ProcessException )
 {
+
+#if CEYLAN_ARCH_NINTENDO_DS
+	
+	throw ProcessException( "Process::RedirectStderr failed: "
+		"not available on the Nintendo DS." ) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
@@ -531,11 +553,20 @@ bool Process::RedirectStderr( const string & filename )
 		
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
 
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 }
 
 
 bool Process::RedirectStderr( OutputStream & os ) throw( ProcessException )
 {
+
+#if CEYLAN_ARCH_NINTENDO_DS
+	
+	throw ProcessException( "Process::RedirectStderr failed: "
+		"not available on the Nintendo DS." ) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
@@ -548,11 +579,20 @@ bool Process::RedirectStderr( OutputStream & os ) throw( ProcessException )
 		
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
 
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 }
 
 
 bool Process::RedirectStdin( const string & filename ) throw( ProcessException )
 {
+
+#if CEYLAN_ARCH_NINTENDO_DS
+	
+	throw ProcessException( "Process::RedirectStdin failed: "
+		"not available on the Nintendo DS." ) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
@@ -586,11 +626,20 @@ bool Process::RedirectStdin( const string & filename ) throw( ProcessException )
 		
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
 
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 }
 
 
 bool Process::RedirectStdin( InputStream & is ) throw( ProcessException )
 {
+
+#if CEYLAN_ARCH_NINTENDO_DS
+	
+	throw ProcessException( "Process::RedirectStdin failed: "
+		"not available on the Nintendo DS." ) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
@@ -603,6 +652,8 @@ bool Process::RedirectStdin( InputStream & is ) throw( ProcessException )
 		
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
 
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 }
 
 
@@ -611,8 +662,7 @@ bool Process::RedirectStdin( InputStream & is ) throw( ProcessException )
 void Process::processCreationFailed() throw( ProcessException )
 {
 
-	throw ProcessException( 
-		"Ceylan::Process:: process creation failed: "
+	throw ProcessException( "Ceylan::Process:: process creation failed: "
 		+ System::explainError( _error ) ) ;
 		
 }
@@ -620,6 +670,13 @@ void Process::processCreationFailed() throw( ProcessException )
 
 Ceylan::Uint32 Process::GetTime() throw( ProcessException )
 {
+
+#if CEYLAN_ARCH_NINTENDO_DS
+	
+	throw ProcessException( "Process::RedirectStdout failed: "
+		"not available on the Nintendo DS." ) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
 
 #if CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
 
@@ -654,6 +711,7 @@ Ceylan::Uint32 Process::GetTime() throw( ProcessException )
 		
 #endif // CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
 
+#endif // CEYLAN_ARCH_NINTENDO_DS
 		
 }
 
@@ -661,7 +719,7 @@ Ceylan::Uint32 Process::GetTime() throw( ProcessException )
 void Process::SaveState( int argc, char ** argv ) throw()
 {
 
-	_Path = Directory::GetCurrentWorkingDirectoryName() ;
+	_Path = Directory::GetCurrentWorkingDirectoryPath() ;
 	_Executable  = argv[ 0 ] ;
 
 	for ( Ceylan::Uint16 i = 1; i < argc; i++ )
@@ -702,12 +760,21 @@ bool Process::DuplicateStream( FileDescriptor FDOld,
 	FileDescriptor FDNew ) throw( Features::FeatureNotAvailableException )
 {
 
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	throw Features::FeatureNotAvailableException( 
+		"Process::DuplicateStream failed: not available on the Nintendo DS." ) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+
 #if CEYLAN_USES_FILE_DESCRIPTORS
 	return ::dup2( FDOld, FDNew ) == FDNew ;
 #endif // CEYLAN_USES_FILE_DESCRIPTORS	
 
 	throw Features::FeatureNotAvailableException( "Process::DuplicateStream: "
 		"file descriptor feature not available" ) ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 		
 }
 
