@@ -96,6 +96,13 @@ Pipe::Pipe() throw( Pipe::CouldNotCreate ):
 	InputOutputStream()
 {
 
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	throw Pipe::CouldNotCreate( "Pipe constructor failed: "
+		"not available on the Nintendo DS." ) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
 	if ( ::pipe( _fd ) )
@@ -111,6 +118,8 @@ Pipe::Pipe() throw( Pipe::CouldNotCreate ):
 		"is not available." ) ;
 	
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 }
 
@@ -120,6 +129,13 @@ Pipe::Pipe( const Pipe & other ) throw( PipeException ):
 	Stream(),
 	InputOutputStream()
 {
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	throw Pipe::CouldNotCreate( "Pipe constructor failed: "
+		"not available on the Nintendo DS." ) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
 
 	_fd[ 1 ] = -1 ;
 	
@@ -134,7 +150,10 @@ Pipe::Pipe( const Pipe & other ) throw( PipeException ):
 	{
 		throw PipeException( "Pipe copy constructor failed: "
 			+ e.toString() ) ;
-	}		
+	}
+			
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 }
 
 
