@@ -4,19 +4,21 @@
 #include "CeylanLibfatFile.h"      // for LibfatFile
 #include "CeylanLibfatDirectory.h" // for LibfatDirectory
 
+#include "CeylanLogPlug.h"         // for LogPlug
 #include "CeylanStringUtils.h"     // for StringSize
 #include "CeylanOperators.h"       // for toString
 #include "CeylanHolder.h"          // for Holder template
 
 
 #ifdef CEYLAN_USES_CONFIG_H
-#include "CeylanConfig.h"                 // for configure-time feature settings
+#include "CeylanConfig.h"              // for configure-time feature settings
 #endif // CEYLAN_USES_CONFIG_H
 
 
 #if CEYLAN_ARCH_NINTENDO_DS
-#include "CeylanConfigForNintendoDS.h"    // for libdns and al
+#include "CeylanConfigForNintendoDS.h" // for libdns and al
 #endif // CEYLAN_ARCH_NINTENDO_DS
+
 
 
 // Not available in their C++ form:
@@ -39,6 +41,7 @@ using std::string ;
 using std::list ;
 
 
+using namespace Ceylan::Log ;
 using namespace Ceylan::System ;
 
 
@@ -333,7 +336,7 @@ void LibfatFileSystemManager::copyFile( const string & sourceFilename,
 	catch ( const FileException & e )
 	{
 		throw FileCopyFailed( 
-			"StandardFileSystemManager::copyFile failed when copying '"
+			"LibfatFileSystemManager::copyFile failed when copying '"
 			+ sourceFilename + "' to '" + targetFilename + "': " 
 			+ e.toString() ) ;
 	}
@@ -799,6 +802,16 @@ LibfatFileSystemManager & LibfatFileSystemManager::GetLibfatFileSystemManager()
 }
 	
 	
+void LibfatFileSystemManager::SecureLibfatFileSystemManager() 
+	throw( LibfatFileSystemManagerException )
+{
+
+	if ( _LibfatFileSystemManager == 0 )
+		_LibfatFileSystemManager = new LibfatFileSystemManager() ;
+		
+}
+	
+	
 	
 void LibfatFileSystemManager::RemoveLibfatFileSystemManager() throw()
 {
@@ -833,11 +846,17 @@ LibfatFileSystemManager::LibfatFileSystemManager()
 			"LibfatFileSystemManager constructor: not supported on the ARM7" ) ;
 
 #else // CEYLAN_RUNS_ON_ARM7
+	
 
+	// For safety, see http://forum.gbadev.org/viewtopic.php?p=104521#104521:
+	System::atomicSleep() ;
+	System::atomicSleep() ;
+		
 	if ( ::fatInit( /* cache size, in sectors */ 8, 
 			/* set as default for stdio file device*/ true ) == false )
 		throw LibfatFileSystemManagerException( 
 			"LibfatFileSystemManager constructor: initialization failed" ) ;
+	
 
 #endif // CEYLAN_RUNS_ON_ARM7
 
