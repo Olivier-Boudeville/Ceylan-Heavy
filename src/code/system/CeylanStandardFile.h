@@ -29,32 +29,22 @@ namespace Ceylan
 	{
 
 
-
+		
 		/// Mother class for all exceptions related to standard files.
-	   class CEYLAN_DLL StandardFileException: public FileException
-	   { 
-	       public: 
+		class CEYLAN_DLL StandardFileException: public FileException
+		{ 
+		
+			public: 
 	       
-	    	   explicit StandardFileException( 
-	    		   const std::string & reason ) throw() ;
+				explicit StandardFileException( 
+					const std::string & reason ) throw() ;
 	    	   
-	    	   virtual ~StandardFileException() throw() ; 
+				virtual ~StandardFileException() throw() ; 
 	    		   
-	   } ;
+		} ;
 
 	
 	
-	   class ConversionFailed: public StandardFileException
-	   { 
-	
-	       public: 
-	       
-	    	   explicit ConversionFailed( 
-	    		   const std::string & reason ) throw() ; 
-	    		   
-	   } ;
-
-
 		/**
 		 * Encapsulates standard files, as provided by usual operating systems,
 		 * i.e. based on file descriptors on the UNIX platforms, otherwise, for
@@ -208,20 +198,7 @@ namespace Ceylan
 				virtual bool isLocked() const throw() ;
 
 
-
-				/**
-				 * Returns the file size, in bytes.
-				 *
-				 * @see GetSize
-				 *
-				 * @throw FileException, including FileLookupFailed if the file
-				 * metadata could not be accessed or if the operation is not
-				 * supported on this platform, and FileDelegatingException if
-				 * the corresponding filesystem manager could not be used as
-				 * expected.
-				 *
-				 */
-				virtual Size size() const throw( FileException ) ;
+				// size method inherited from File.
 
 
 				/**
@@ -307,22 +284,7 @@ namespace Ceylan
 					throw( OutputStream::WriteFailedException ) ;
 
 
-				// open inherited.
-
-
-				/**
-				 * Removes this standard file from disk.
-				 *
-				 * Closes it if necessary. No other operation should be 
-				 * performed 
-				 *
-				 * @throw FileRemoveFailed if the operation failed or is not
-				 * supported on this platform, and FileDelegatingException
-				 * if the corresponding filesystem manager could not be used.
-				 *
-				 */
-				virtual void remove() throw( FileException ) ;
-
+				// open and remove inherited.
 
 
 
