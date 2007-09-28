@@ -20,16 +20,26 @@ include $(TOP)/src/conf/build/$(CROSS_TARGET)/Makevars.inc
 
 # Test target section.
 
-TEST_NAME := testCeylan
+
+TEST_PREFIX= $(CEYLAN_TESTED_VERSION)-$(CEYLAN_TESTED_BUILD_MODE)
+TEST_EXEC_EXTENSION = nds
+
+TEST_ARM9_SOURCES = $(wildcard *.arm9.cc)
+TEST_TARGETS = $(patsubst %.arm9.cc,%-$(TEST_PREFIX)-patched.$(TEST_EXEC_EXTENSION),$(TEST_ARM9_SOURCES))
+
+# Some are patched, the others not:
+#TESTS_TO_TRANSFER = $(wildcard *.sc.nds)
 
 CEYLAN_TESTED_VERSION    = $(CEYLAN_VERSION)
 CEYLAN_TESTED_BUILD_MODE = $(CEYLAN_BUILD_MODE)
 
-TARGET_ROM_NAME_BASE = \
-	$(TEST_NAME)-$(CEYLAN_TESTED_VERSION)-$(CEYLAN_TESTED_BUILD_MODE)
+# Use 'make emulate TEST_NAME=testCeylanTextConsole' for example to override:
+TEST_NAME = testCeylanLibfatFilesystem
+
+TEST_FULL_NAME = $(TEST_NAME)-$(TEST_PREFIX)
 
 
-all: $(TARGET_ROM_NAME_BASE).sc.nds
+all: $(TEST_TARGETS)
 
 
 test: emulate transfer
@@ -38,24 +48,24 @@ test: emulate transfer
 emulate: emulate-with-NoCashGBA 
 
 
-emulate-with-NoCashGBA: $(TEST_NAME).ds.gba
+emulate-with-NoCashGBA: $(TEST_FULL_NAME).ds.gba
 	@echo "      Running $< thanks to NoCashGBA emulator"
 	@$(WINE) $(NO_CASH_GBA) $<
 	
 	
-emulate-with-DeSmuME: $(TEST_NAME).nds
+emulate-with-DeSmuME: $(TEST_FULL_NAME).nds
 	@echo "      Running $< thanks to DeSmuME emulator"
 	@$(WINE) $(DESMUME) $<
 
 
-patch: $(TARGET_ROM_NAME_BASE).sc.nds
+patch: $(TEST_FULL_NAME).sc.nds
 	@echo "      Patching $< with script $(DLDITOOL_SCRIPT)"
 	@$(DLDITOOL) $(DLDITOOL_SCRIPT) $<
 	
 	
-transfer: $(TARGET_ROM_NAME_BASE).sc.nds
-	@echo "      Transferring $< to $(TRANSFER_MOUNT_POINT)"
-	@cp -f $< $(TRANSFER_MOUNT_POINT)
+transfer: $(TEST_TARGETS)
+	@echo "      Transferring $^ to $(TRANSFER_MOUNT_POINT)"
+	@cp -f $^ $(TRANSFER_MOUNT_POINT)
 
 
 umount: 	
@@ -66,12 +76,10 @@ umount:
 export: transfer umount
 
 	
-$(TARGET_ROM_NAME_BASE).sc.nds: $(TEST_NAME).ds.gba
-	@echo "      Renaming $< into $@ for SuperCard linker"
-	@cp -f $< $@
-	
 
 info-target:
+	@echo "TEST_ARM9_SOURCES = $(TEST_ARM9_SOURCES)"
+	@echo "TEST_TARGETS = $(TEST_TARGETS)"
 	@echo "TARGET_ROM_NAME_BASE = $(TARGET_ROM_NAME_BASE)"
 	@echo "CEYLAN_ARM7_INSTALLED_LIB = $(CEYLAN_ARM7_INSTALLED_LIB)"
 	@echo "CEYLAN_ARM9_INSTALLED_LIB = $(CEYLAN_ARM9_INSTALLED_LIB)"
@@ -222,7 +230,7 @@ info-run:
 	@$(CXX) $(TEST_CXX_FLAGS_ARM7) $(TEST_CPP_FLAGS_ARM7) -c $< -o $@
 	
 	
-%.arm9.o: %.arm9.cc
+%-$(TEST_PREFIX).arm9.o: %.arm9.cc
 	@echo "      Compiling $< into $@"
 	@$(CXX) $(TEST_CXX_FLAGS_ARM9) $(TEST_CPP_FLAGS_ARM9) -c $< -o $@
 
@@ -231,12 +239,12 @@ info-run:
 # From object files to fully linked ELF executables:
 
 %.arm7.elf: %.arm7.o $(CEYLAN_ARM7_INSTALLED_LIB)
-	@echo "      Creating Ceylan library-user ARM7 ELF executable $@ from $< and from ARM7 library"
+	@echo "      Creating Ceylan library-user ARM7 ELF executable $@ from $< and from Ceylan ARM7 library"
 	@$(CXX) $(TEST_LD_FLAGS_ARM7) $< $(TEST_LIBPATHS_ARM7) $(TEST_LIBS_ARM7) -o $@
 
 
 %.arm9.elf: %.arm9.o $(CEYLAN_ARM9_INSTALLED_LIB)
-	@echo "      Creating Ceylan library-user ARM9 ELF executable $@ from $< and from ARM9 library"
+	@echo "      Creating Ceylan library-user ARM9 ELF executable $@ from $< and from Ceylan ARM9 library"
 	@$(CXX) $(TEST_LD_FLAGS_ARM9) $< $(TEST_LIBPATHS_ARM9) $(TEST_LIBS_ARM9)  -o $@
 
 
@@ -273,8 +281,35 @@ info-run:
 	@$(DSBUILD) $<
 
 
+# Patching does not stop on error, as not all tests have to be patched.
+
+
+# sc for SuperCard linker:
+
+# .sc.nds not working, use .nds instead
+#%-patched.sc.nds: %.sc.nds $(CEYLAN_ARM9_INSTALLED_LIB)
+#	@echo "      Patching $< into $@ with DLDI patch $(DLDITOOL_SC_SCRIPT)"
+#	@$(DLDITOOL) $(DLDITOOL_SC_SCRIPT) $< ; /bin/cp -f $< $@
+
+%-patched.nds: %.nds $(CEYLAN_ARM9_INSTALLED_LIB)
+	@echo "      Patching $< into $@ with DLDI patch $(DLDITOOL_SC_SCRIPT)"
+	@$(DLDITOOL) $(DLDITOOL_SC_SCRIPT) $< ; /bin/cp -f $< $@
+
+
+# r4 for R4 linker:
+%-patched.r4.nds: %.ds.gba $(CEYLAN_ARM9_INSTALLED_LIB)
+	@echo "      Patching $< into $@ with DLDI patch $(DLDITOOL_R4_SCRIPT)"
+	@$(DLDITOOL) $(DLDITOOL_R4_SCRIPT) $< ; /bin/cp -f $< $@
+
+
+# em for FCSR-based ROM for emulators:
+%-patched.em.nds: %.ds.gba $(CEYLAN_ARM9_INSTALLED_LIB)
+	@echo "      Patching $< into $@ with DLDI patch $(DLDITOOL_FCSR_SCRIPT)"
+	@$(DLDITOOL) $(DLDITOOL_FCSR_SCRIPT) $< ; /bin/cp -f $< $@
+
+
 %.sc.nds: %.ds.gba
-	@echo "      Creating final slot-2 DS ROM $@ from $^"
+	@echo "      Renaming $< into $@ for final slot-2 DS ROM for SuperCard linker"
 	@/bin/cp -f $< $@
 
 
