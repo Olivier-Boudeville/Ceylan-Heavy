@@ -17,37 +17,13 @@ using namespace Ceylan::System ;
 
 
 
-
-/**
- * Test for the libfat support offered by the Ceylan library on Nintendo DS.
- *
- * Test coverage is far less complete than for usual computer platforms though.
- *
- */
-int main( int argc, char * argv[] )
+void displayDirectory( const string & directory, 
+	const list<string> & subDirectories, const list<string> & files, 
+	const list<string> & otherEntries ) throw()
 {
 
-	 
-
-	LogHolder myLog( argc, argv ) ;
-
-	
-    try
-    {
-	
-		
-		LogPlug::info( "Test of Ceylan support for libfat filesystems" ) ;
-		
-		LogPlug::info( "Opening current directory." ) ;
-		
-		Directory & d = Directory::Open() ; 
-
-		LogPlug::info( "Current directory opened." ) ;
-
-		list<string> subDirectories, files, otherEntries ;
-		
-		LogPlug::info( "Listing its content." ) ;
-		d.getSortedEntries( subDirectories, files, otherEntries ) ;
+		LogPlug::info( "Listing the content of directory '" 
+			+ directory + "':" ) ;
 		
 		
 		if ( subDirectories.empty() )
@@ -99,9 +75,119 @@ int main( int argc, char * argv[] )
 					it != otherEntries.end(); it++ )
 				LogPlug::info( "     * " + (*it) ) ;
 		}	
+
+}
+
+	
+
+
+/**
+ * Test for the libfat support offered by the Ceylan library on Nintendo DS.
+ *
+ * Test coverage is far less complete than for usual computer platforms though.
+ *
+ */
+int main( int argc, char * argv[] )
+{
+
+	 
+
+	LogHolder myLog( argc, argv ) ;
+
+	
+    try
+    {
+	
+		System::InitializeInterrupts( true ) ;
+		
+		LogPlug::info( "Test of Ceylan support for libfat filesystems" ) ;
+		
+		LogPlug::info( "Opening current directory." ) ;
+
+		Directory & d = Directory::Open() ; 
+
+		LogPlug::info( "Current directory opened." ) ;
+
+		list<string> subDirectories, files, otherEntries ;
+		
+		LogPlug::info( "Listing the directory content." ) ;
+		d.getSortedEntries( subDirectories, files, otherEntries ) ;		
+		displayDirectory( Directory::GetCurrentWorkingDirectoryPath(), 
+			subDirectories, files, otherEntries ) ;
+		
+		
+		string filename = "CeylanTest.txt" ;
+		
+		LogPlug::info( "Creating now a new file, '" + filename + "'." ) ;
+		
+		LogPlug::warning( "On some linker interfaces (ex: the SuperCard GUI), " 
+			"the created file ('" + filename 
+			+ "') may not be displayed, even though it exists on the card" ) ;
+			
+		File & createdFile = File::Create( filename ) ;
+
+		
+		std::string message = "Exercise caution in your daily affairs. Try to have as good a life as you can under the circumstances. Afternoon very favorable for romance. Try a single person for a change. Thanks fortune !" ;
+
+		Ceylan::StringSize targetSize = message.size() ;
+		
+		LogPlug::info( "Writing a string in it, whose length is "
+			+ Ceylan::toString( targetSize ) + " bytes." ) ;
+		
+		createdFile.write( message ) ;
+		
+		LogPlug::info( "Deleting the file object, close implied." ) ;
+		delete & createdFile ;
+		
+
+		LogPlug::info( "Listing the directory content again." ) ;
+		
+		subDirectories.clear() ;
+		files.clear() ;
+		otherEntries.clear() ;
+		
+		d.getSortedEntries( subDirectories, files, otherEntries ) ;		
+		displayDirectory( Directory::GetCurrentWorkingDirectoryPath(), 
+			subDirectories, files, otherEntries ) ;
+
+		delete & d ;
+		
+		LogPlug::info( "Opening now this newly created file, '" 
+			+ filename + "'." ) ;
+			
+		File & openedFile = File::Open( filename ) ;
+		
+		Ceylan::Uint32 readSize = openedFile.size() ;
+		LogPlug::info( "This file has for size " 
+			+ Ceylan::toString( readSize ) + " bytes." ) ;
+		
+		if ( readSize != targetSize )
+			throw TestException( 
+				"Created file does not have the expected size." ) ; 
+		
+		LogPlug::info( "Read size is the expected one." ) ;
+		
+		char* textBuffer = new char[ readSize + 1 ] ;
+		textBuffer[readSize] = 0 ;
+		
+		openedFile.readExactLength( textBuffer, readSize ) ;
+		
+		string readMessage( textBuffer ) ;
+		
+		LogPlug::info( "Listing its content: '" + readMessage + "'." ) ;
+		
+		if ( readMessage != message )
+			throw TestException( 
+				"Created file does not have the expected content." ) ; 
+
+		LogPlug::info( "Read content is the expected one." ) ;
+		
+		delete [] textBuffer ;
+			
+		delete & openedFile ;
+		
 		
 		// LogHolder out of scope: log browser triggered.
-			
     }
    
     catch ( const Ceylan::Exception & e )
@@ -130,6 +216,8 @@ int main( int argc, char * argv[] )
 
     }
 
+	LogPlug::info( "Exit on success (no error)" ) ;
+	
     return Ceylan::ExitSuccess ;
 
 }
