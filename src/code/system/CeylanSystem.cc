@@ -23,9 +23,20 @@
 #endif // CEYLAN_ARCH_WINDOWS
 
 
+
 // <cstring> is not enough for Sun CC.
 extern "C"
 {
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+#include "fat.h"                          // for Chishm's libfat
+
+#include <fcntl.h> 
+#include <unistd.h> 
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 
 #ifdef CEYLAN_USES_UNISTD_H
 #include <unistd.h>                       // for opening and mode flags, usleep
@@ -177,6 +188,8 @@ void Ceylan::System::InitializeInterrupts( bool force ) throw( SystemException )
 
 #if CEYLAN_ARCH_NINTENDO_DS
 		
+
+		
 #ifdef CEYLAN_RUNS_ON_ARM7
 
 	throw SystemException( 
@@ -224,6 +237,15 @@ void Ceylan::System::InitializeInterrupts( bool force ) throw( SystemException )
 bool Ceylan::System::HasAvailableData( FileDescriptor fd ) throw()
 {
 
+#if CEYLAN_ARCH_NINTENDO_DS
+		
+	LogPlug::error( "Ceylan::System::HasAvailableData : "
+		"not supported on the Nintendo DS platform." ) ;
+
+	return false ;
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
 	struct timeval tv ;
@@ -254,6 +276,8 @@ bool Ceylan::System::HasAvailableData( FileDescriptor fd ) throw()
 	return false ;
 
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
 
@@ -946,11 +970,31 @@ void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 	throw( SystemException )
 {
 
+
 #if CEYLAN_DEBUG_SYSTEM
 	LogPlug::debug( "Ceylan::System::basicSleep : requested duration is "
 		+ Ceylan::toString( seconds ) + " second(s) and "
 		+ Ceylan::toString( nanos ) + " nanosecond(s)." ) ;
 #endif // CEYLAN_DEBUG_SYSTEM
+
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+#ifdef CEYLAN_RUNS_ON_ARM9
+	InitializeInterrupts( /* force */ false ) ;
+#endif // CEYLAN_RUNS_ON_ARM9
+	
+	// Each swiWaitForVBlank will last for about 1/60 s:
+	Ceylan::Uint32 vblankCount = seconds * 60 + nanos * (6/100000000) ;
+	
+	while ( vblankCount > 0 )
+	{
+		swiWaitForVBlank();
+		vblankCount-- ;
+	}
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
 
 
 #if CEYLAN_ARCH_WINDOWS
@@ -1026,6 +1070,8 @@ void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 
 #endif // CEYLAN_ARCH_WINDOWS
 
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 #if CEYLAN_DEBUG_SYSTEM
 	LogPlug::debug( "Ceylan::System::basicSleep : awoken now." ) ;
 #endif // CEYLAN_DEBUG_SYSTEM
@@ -1040,9 +1086,14 @@ void Ceylan::System::atomicSleep() throw( SystemException )
 
 #if CEYLAN_ARCH_NINTENDO_DS
 	
+#ifdef CEYLAN_RUNS_ON_ARM9
+	InitializeInterrupts( /* force */ false ) ;
+#endif // CEYLAN_RUNS_ON_ARM9
+
 	/*
 	 * Available for both ARMs.
-	 * Mean time waiting is 1/(60*2) = 8.3 ms.
+	 * Mean time waiting is 0.5 * 1/60 = 8.3 ms.
+	 * (60 Hz)
 	 *
 	 */
 	swiWaitForVBlank() ;
