@@ -38,22 +38,6 @@ namespace Ceylan
 
 
 
-		class CEYLAN_DLL DuplicateFailed: 
-			public StandardFileSystemManagerException
-		{ 
-		
-			public: 
-			
-				explicit DuplicateFailed( const std::string & reason ) throw():
-					StandardFileSystemManagerException( reason )
-				{
-				
-				}								
-					
-		} ;
-
-
-
 		/**
 		 * Allows to interact with the filesystems supported by any underlying
 		 * operation system.
@@ -70,11 +54,11 @@ namespace Ceylan
 
 				/*
 				 * No static methods exposed: the user is expected to call  
-				 * them from the abstract mother classes : File, Directory and
+				 * them from the abstract mother classes: File, Directory and
 				 * FileSystemManager.
 				 *
 				 * So only the pure virtual methods of FileSystemManager have
-				 * to be defined in this child class that must not be abstract.
+				 * to be defined in this child class, that must not be abstract.
 				 *
 				 */
 				
@@ -321,18 +305,7 @@ namespace Ceylan
 					throw( FileLastChangeTimeRequestFailed ) ;
 
 
-				/**
-				 * Takes specified <b>rawFilename</b> and tries to transform it 
-				 * so that the result should be a valid name, from the
-				 * filesystem's point of view.
-				 *
-				 * @param rawFilename the filename to convert
-				 *
-				 * @return the converted filename
-				 *
-				 */
-				virtual std::string transformIntoValidFilename( 
-					const std::string & rawFilename ) throw() ;
+				// transformIntoValidFilename inherited from File.
 
 
 				/**
@@ -508,6 +481,8 @@ namespace Ceylan
 					
 				/**
 				 * Returns whether specified string is a valid directory path.
+				 * (i.e. checks the name can be used, does not look-up any
+				 * real filesystem entry).
 				 *
 				 * @param directoryString the directory string to examine.
 				 *
@@ -519,15 +494,9 @@ namespace Ceylan
 					const std::string & directoryString ) throw() ;
 			
 			
-				/**
-				 * Removes the leading separator, if any, in specified
-				 * directory's path.
-				 *
-				 * @param path the path that will be modified.
-				 *
-				 */
-				virtual void removeLeadingSeparator( std::string & path ) 
-					throw() ;
+			
+				// removeLeadingSeparator inherited.
+			
 			
 			
 				/**
