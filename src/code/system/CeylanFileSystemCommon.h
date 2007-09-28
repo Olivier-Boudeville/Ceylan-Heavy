@@ -108,6 +108,35 @@ namespace Ceylan
 						
 		} ;
 
+		
+		/// Thrown when the conversion of a filesystem object failed.
+		class CEYLAN_DLL ConversionFailed: public FileSystemException
+		{ 
+		
+			public: 
+			
+				explicit ConversionFailed( const std::string & reason ) throw():
+					FileSystemException( reason )
+				{
+				
+				}								
+					
+		} ;
+
+
+		/// Thrown when the duplication of a filesystem object failed.
+		class CEYLAN_DLL DuplicateFailed: public FileSystemException
+		{ 
+		
+			public: 
+			
+				explicit DuplicateFailed( const std::string & reason ) throw():
+					FileSystemException( reason )
+				{
+				
+				}								
+					
+		} ;
 
 
 		/**
