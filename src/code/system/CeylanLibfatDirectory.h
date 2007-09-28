@@ -310,7 +310,8 @@ namespace Ceylan
 				/**
 				 * Returns the libfat filesystem manager.
 				 *
-				 * @note It is not necessarily the current default one.
+				 * @note It is not necessarily the current default filesystem
+				 * manager.
 				 *
 				 * @throw DirectoryDelegatingException if the operation failed.
 				 *
@@ -318,6 +319,19 @@ namespace Ceylan
 				virtual FileSystemManager & getCorrespondingFileSystemManager()
 					const throw( DirectoryDelegatingException ) ;
 
+
+				/**
+				 * Ensures that the libfat filesystem manager is actually
+				 * available, by instanciating it if necessary.
+				 *
+				 * @note It is not necessarily the current default filesystem
+				 * manager.
+				 *
+				 * @throw DirectoryDelegatingException if the operation failed.
+				 *
+				 */
+				virtual void secureCorrespondingFileSystemManager()
+					const throw( DirectoryDelegatingException ) ;
 
 
 				/**
