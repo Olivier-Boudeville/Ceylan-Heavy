@@ -584,7 +584,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual std::string transformIntoValidFilename( 
-					const std::string & rawFilename ) throw() = 0 ;
+					const std::string & rawFilename ) throw() ;
 
 
 				/**
@@ -780,6 +780,8 @@ namespace Ceylan
 					
 				/**
 				 * Returns whether specified string is a valid directory path.
+				 * (i.e. checks the name can be used, does not look-up any
+				 * real filesystem entry).
 				 *
 				 * @param directoryString the directory string to examine.
 				 *
