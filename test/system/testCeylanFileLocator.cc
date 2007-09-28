@@ -38,31 +38,31 @@ int main( int argc, char * argv[] )
 		
 		FileLocator myLocator ;
 		
-        LogPlug::info( "Creating a new file locator : " 
+        LogPlug::info( "Creating a new file locator: " 
 			+ myLocator.toString() ) ;
 		
 		LogPlug::info( "Current working directory is " 
-			+ Directory::GetCurrentWorkingDirectoryName() ) ;
+			+ Directory::GetCurrentWorkingDirectoryPath() ) ;
 
-		// When run from build tree :
+		// When run from build tree:
 		string firstPath  = "../src/code" ;
 		
 		myLocator.addPath( firstPath ) ;
-        LogPlug::info( "Adding a first UNIX path : " + myLocator.toString() ) ;
+        LogPlug::info( "Adding a first UNIX path: " + myLocator.toString() ) ;
 		
-		// When run against an install :		
+		// When run against an install:		
 		string secondPath = "../../include/Ceylan" ;
 
 		myLocator.addPath( secondPath ) ;
-        LogPlug::info( "Adding a second UNIX path : " + myLocator.toString() ) ;
+        LogPlug::info( "Adding a second UNIX path: " + myLocator.toString() ) ;
 		
 		myLocator.addPath( secondPath ) ;
-        LogPlug::info( "Adding this second path twice : " 
+        LogPlug::info( "Adding this second path twice: " 
 			+ myLocator.toString() ) ;
 
 		string thirdPath = "../code" ;
 		myLocator.addPath( thirdPath ) ;
-        LogPlug::info( "Adding a path for Windows tests : " 
+        LogPlug::info( "Adding a path for Windows tests: " 
 			+ myLocator.toString() ) ;
 
 		string toFind = "Ceylan.h" ;
@@ -76,11 +76,11 @@ int main( int argc, char * argv[] )
 		}
 		catch ( const FileLocatorException & e )
 		{
-			throw Ceylan::TestException( "File locator test failed : " 
+			throw Ceylan::TestException( "File locator test failed: " 
 				+ e.toString() ) ;
 		}
 		
-		LogPlug::info( "Testing if '" + toFind + "' is found : yes, in '"
+		LogPlug::info( "Testing if '" + toFind + "' is found: yes, in '"
 				+ found + "'." ) ;
 				 
 		string notToFind = "Ceylan-does-not-exist.txt" ;
@@ -94,25 +94,25 @@ int main( int argc, char * argv[] )
 		{
 			notFound = true ;
 			LogPlug::info( "Testing if '" + notToFind 
-				+ "' is found : no, correct : " 	+ e.toString() ) ;
+				+ "' is found: no, correct: " 	+ e.toString() ) ;
 		}
 		
 		if ( ! notFound )
 			throw Ceylan::TestException( 
-				"File locator test failed : file '" + notToFind 
+				"File locator test failed: file '" + notToFind 
 				+ "' abnormally found through " + myLocator.toString() ) ;
 		
 		
 		myLocator.removePath( "Hello" ) ;
-		LogPlug::info( "Removing a non-registered path : " 
+		LogPlug::info( "Removing a non-registered path: " 
 			+  myLocator.toString() ) ;
 		
 		myLocator.removePath( firstPath ) ;
-		LogPlug::info( "Removing first path : " 
+		LogPlug::info( "Removing first path: " 
 			+  myLocator.toString() ) ;
 	
 	
-		// Just a test, does not indicates anything : 
+		// Just a test, does not indicates anything: 
 		try
 		{
 			found = myLocator.find( toFind ) ;
@@ -123,10 +123,10 @@ int main( int argc, char * argv[] )
 		}
 			
 		if ( found.empty() )
-			LogPlug::info( "Testing if '" + toFind + "' is found : no, for " 
+			LogPlug::info( "Testing if '" + toFind + "' is found: no, for " 
 				+ myLocator.toString()   ) ;
 		else
-			LogPlug::info( "Testing if '" + toFind + "' is found : yes, for " 
+			LogPlug::info( "Testing if '" + toFind + "' is found: yes, for " 
 				+ myLocator.toString()   ) ;
 			
 		
@@ -137,7 +137,7 @@ int main( int argc, char * argv[] )
 
     catch ( const Ceylan::Exception & e )
     {
-        LogPlug::error( "Ceylan exception caught : "
+        LogPlug::error( "Ceylan exception caught: "
         	 + e.toString( Ceylan::high ) ) ;
        	return Ceylan::ExitFailure ;
 
@@ -145,7 +145,7 @@ int main( int argc, char * argv[] )
 
     catch ( const std::exception & e )
     {
-        LogPlug::error( "Standard exception caught : " 
+        LogPlug::error( "Standard exception caught: " 
 			 + std::string( e.what() ) ) ;
        	return Ceylan::ExitFailure ;
 
