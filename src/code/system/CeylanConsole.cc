@@ -2,7 +2,7 @@
 
 
 #include "CeylanOperators.h"           // for toNumericalString
-
+#include "CeylanUtils.h"               // for KeyChar
 
 
 #ifdef CEYLAN_USES_CONFIG_H
@@ -82,8 +82,9 @@ const char * const Console::InvisibleImageOff = "\033[28m" ;
 
 
 
-Console::Console() throw( ConsoleException ):	
-	_buffer( 0 )
+Console::Console( bool startInForeground ) throw( ConsoleException ):	
+	_buffer( 0 ),
+	_inForeground( false )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -96,15 +97,22 @@ Console::Console() throw( ConsoleException ):
 #elif defined(CEYLAN_RUNS_ON_ARM9)
 
 	// Take the full LCD:
-	initConsole( 0, 0, 32, 24, TextBuffer::Raw ) ;  
+	initConsole( 0, 0, 32, 24, TextBuffer::Raw, /* useBottomScreen */ true, 
+		/* useSubCore */ true ) ;  
 
+	if ( startInForeground )
+		setToForeground( true ) ;
+		
 #endif // CEYLAN_RUNS_ON_ARM7
 
 	
 #else // CEYLAN_ARCH_NINTENDO_DS
 
-	// Assumes fully-capable windowed terminal:
+	// Assumes fully-capable windowed terminal, but mimics DS size:
 	initConsole( 0, 0, 32, 24, TextBuffer::Raw ) ;  
+
+	if ( startInForeground )
+		setToForeground( true ) ;
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 	
@@ -114,13 +122,18 @@ Console::Console() throw( ConsoleException ):
 Console::Console(
 	TextBuffer::CharAbscissa startingX, TextBuffer::CharOrdinate startingY,
 	TextBuffer::CharAbscissa width, TextBuffer::CharOrdinate height,
-	TextBuffer::TextLayout layout ) 
+	TextBuffer::TextLayout layout, bool useBottomScreen, bool useSubCore,
+	bool startInForeground ) 
 		throw( ConsoleException ):
-	_buffer( 0 )
-	
+	_buffer( 0 ),
+	_inForeground( false )
 {
 
-	initConsole( startingX, startingY, width, height, layout ) ;  
+	initConsole( startingX, startingY, width, height, layout,
+		useBottomScreen, useSubCore ) ;  
+
+	if ( startInForeground )
+		setToForeground( true ) ;
 	
 }
 	
@@ -146,7 +159,81 @@ Console::~Console() throw()
 
 	if ( _buffer != 0 )
 		delete _buffer ;
+
+	// No video or input device modified by deletion.
+			
+}
+
+
+
+void Console::goInteractive() throw( ConsoleException )
+{
+
+	addInBuffer( "<Entered interactive mode, key controls are: X: go to previous paragraph, B: go to next paragraph, up: go to previous line, down: go to next line, Y: toggle text layout (raw/justified/word-wrapped), A: quit>" ) ;
+	
+	setToForeground( true ) ;
 		
+	bool quit = false ;
+	KeyChar readKey ;
+			
+	do
+	{
+		
+		readKey = getChar() ;
+			
+		if ( readKey & ButtonX )
+			jumpPreviousText() ;
+				
+		if ( readKey & ButtonB )
+			jumpNextText() ;
+				
+		if ( readKey & ButtonUp )
+			jumpPreviousLine() ;
+
+		if ( readKey & ButtonDown )
+			jumpNextLine() ;
+
+
+		// Select next layout:
+		if ( readKey & ButtonY )
+		{
+							
+			TextBuffer::TextLayout layout ;
+				
+			switch( getTextLayout() )
+			{
+				
+				case TextBuffer::Raw:
+					layout = TextBuffer::WordWrapped ;
+					break ;
+						
+				case TextBuffer::WordWrapped:
+					layout = TextBuffer::Justified ;
+					break ;
+				
+				case TextBuffer::Justified:
+					layout = TextBuffer::Raw ;
+					break ;
+						
+				default:
+					layout = TextBuffer::Raw ;
+					break ;						
+				
+			}
+						
+			setTextLayout( layout ) ;
+
+		}
+			
+			
+		if ( readKey & StylusContact || readKey & ButtonA )
+			quit = true ;
+
+	}
+	while( ! quit ) ; 
+		
+	addInBuffer( "<Quitting interactive mode>" ) ;
+	
 }
 
 
@@ -278,11 +365,41 @@ void Console::blankBuffer() throw( ConsoleException )
 		
 }
 
+
 					
+void Console::setToForeground( bool toForeground ) throw( ConsoleException )
+{
+
+	// No transition, nothing done:
+	if ( _inForeground == toForeground )
+		return ;
+	
+	if ( toForeground )
+	{
+	
+		// Was previously in background.
+		Initialize( _useBottomScreen, _useSubCore, /* force */ true ) ;
+		_inForeground = true ;
+		
+	}
+	else
+	{
+	
+		// Was previously in foreground.
+		_inForeground = false ;
+	
+		// Nothing special to be done.
+		
+	}
+		
+}
+
+
+
 void Console::render() throw( ConsoleException )
 {
 
-	if ( _buffer == 0 )
+	if ( _buffer == 0 || _inForeground == false )
 		return ;
 			
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -404,48 +521,132 @@ void Console::SetKeyRepeat( Millisecond durationBeforeFirstRepeat,
 
 
 
+void Console::Initialize( bool useBottomScreen, bool useSubCore, bool force ) 
+	throw( ConsoleException )
+{
+
+#if CEYLAN_ARCH_NINTENDO_DS
+	
+#ifdef CEYLAN_RUNS_ON_ARM7
+	
+	throw ConsoleException( "Console::Initialize: not supported on the ARM7" ) ;
+
+#else // CEYLAN_RUNS_ON_ARM7
+		
+		
+	static bool alreadyInitialized = false ;
+	
+	// Do nothing if not needed (supposing settings are constant):
+	if ( alreadyInitialized && (!force) ) 
+		return ;
+		
+		
+	// Here we have to initialize it properly, from scratch:
+	
+	/*
+	 * Powers the relevant 2D core and select the adequat screen layout:
+	 *
+	 * @see http://dev-scene.com/NDS/DOCgraphicmodes
+	 *
+	 */
+	if ( useSubCore )
+	{
+	
+		powerON( POWER_2D_B ) ;
+		
+		if ( useBottomScreen )
+			lcdMainOnTop() ;
+		else
+			lcdMainOnBottom() ;
+
+		// Sub background #0 will be used to print text:
+		videoSetModeSub( MODE_0_2D | DISPLAY_BG0_ACTIVE ) ;	
+
+		// Maps the VRAM bank C for that:
+		vramSetBankC( VRAM_C_SUB_BG ) ;
+		
+		SUB_BG0_CR = BG_MAP_BASE( 31 ) ;	
+
+		// By default, font will be rendered with color 255:
+		BG_PALETTE_SUB[255] = RGB15(31,31,31) ;	
+
+		consoleInitDefault(	
+			/* map */       (u16*) SCREEN_BASE_BLOCK_SUB(31),
+			/* char base */ (u16*) CHAR_BASE_BLOCK_SUB(0), 
+			/* bit depth */ 16 ) ;
+			
+	}	
+	else	
+	{
+	
+		// Using main core:
+		
+		powerON( POWER_2D_A ) ;
+
+		if ( useBottomScreen )
+			lcdMainOnBottom() ;
+		else
+			lcdMainOnTop() ;
+			
+		// Main background #0 will be used to print text:
+		videoSetMode( MODE_0_2D | DISPLAY_BG0_ACTIVE ) ;	
+
+		// Maps the VRAM bank C for that:
+		vramSetBankC( VRAM_C_MAIN_BG ) ;
+		
+		BG0_CR = BG_MAP_BASE( 31 ) ;	
+
+		// By default, font will be rendered with color 255:
+		PALETTE_SUB[255] = RGB15(31,31,31) ;	
+		
+		consoleInitDefault(	
+			/* map */       (u16*) SCREEN_BASE_BLOCK(31),
+			/* char base */ (u16*) CHAR_BASE_BLOCK(0), 
+			/* bit depth */ 16 ) ;
+			
+	}	
+
+	alreadyInitialized = true ;
+	
+#endif // CEYLAN_RUNS_ON_ARM7
+
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	// Nothing special to do.
+	
+#endif // CEYLAN_ARCH_NINTENDO_DS
+	
+
+}
+
+
+
 void Console::initConsole( 
-	TextBuffer::CharAbscissa startingX, 
-	TextBuffer::CharOrdinate startingY,
-	TextBuffer::CharAbscissa width, 
-	TextBuffer::CharOrdinate height,
-	TextBuffer::TextLayout   layout ) throw( ConsoleException )
+		TextBuffer::CharAbscissa startingX, 
+		TextBuffer::CharOrdinate startingY,
+		TextBuffer::CharAbscissa width, 
+		TextBuffer::CharOrdinate height,
+		TextBuffer::TextLayout   layout,
+		bool useBottomScreen,
+		bool useSubCore ) 
+	throw( ConsoleException )
 {
 
 	if ( _buffer != 0 )
 		delete _buffer ;
 		
 	_buffer = new TextBuffer( width, height, layout ) ;
-		
+	
+	_useBottomScreen = useBottomScreen ;
+	_useSubCore = useSubCore ;
+	
 #if CEYLAN_ARCH_NINTENDO_DS
-		
+	
 #ifdef CEYLAN_RUNS_ON_ARM9
 
 	SetKeyRepeat() ; 
 	
-	// Powers the 2D cores:
-	powerON( POWER_ALL_2D ) ;
-
-	// Puts the main screen on the top LCD:
-	lcdMainOnTop() ;
-
-	// Sub background #0 will be used to print text:
-	videoSetModeSub( MODE_0_2D | DISPLAY_BG0_ACTIVE ) ;	
-	
-	// Maps the VRAM bank C for that:
-	vramSetBankC( VRAM_C_SUB_BG ) ;
-
-	SUB_BG0_CR = BG_MAP_BASE( 31 ) ;
-
-	// By default, font will be rendered with color 255:
-	BG_PALETTE_SUB[255] = RGB15(31,31,31) ;	
-
-	consoleInitDefault(	
-		/* map */       (u16*) SCREEN_BASE_BLOCK_SUB(31),
-		/* char base */ (u16*) CHAR_BASE_BLOCK_SUB(0), 
-		/* bit depth */ 16 ) ;
-
-
 #endif // CEYLAN_RUNS_ON_ARM9
 
 	
