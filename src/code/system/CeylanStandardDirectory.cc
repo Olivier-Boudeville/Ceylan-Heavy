@@ -2,12 +2,10 @@
 
 
 #include "CeylanFileSystemManager.h"         // for FileSystemManager
-#include "CeylanStandardFileSystemManager.h" // for FileSystemManager
+#include "CeylanStandardFileSystemManager.h" // for StandardFileSystemManager
 
-#include "CeylanRegularExpression.h" // for RegExp
 #include "CeylanLogLight.h"          // for CEYLAN_LOG
 #include "CeylanOperators.h"         // for toString
-#include "CeylanStringUtils.h"       // for isLetter
 
 
 
@@ -89,7 +87,7 @@ const mode_t basicDirectory = S_IRWXU ;
 
 
 /*
- *::stat is used often here.
+ * ::stat is used often here.
  * Maybe check specifically CEYLAN_USES_SYS_STAT_H, short of having
  * 'CEYLAN_USES_STAT'.
  *
@@ -100,7 +98,7 @@ const mode_t basicDirectory = S_IRWXU ;
 StandardDirectory::~StandardDirectory() throw()
 {
 
-	// Nothing special here for abstract directories.
+	// Nothing special here for standard directories.
 
 }
 
@@ -309,7 +307,7 @@ bool StandardDirectory::hasEntry( const string & entryName ) const
 			
 	}
 	
-	return::stat( tmp.c_str(), & buf ) == 0 ;
+	return ::stat( tmp.c_str(), & buf ) == 0 ;
 
 #else // CEYLAN_USES_STAT
 
@@ -335,7 +333,7 @@ bool StandardDirectory::hasEntry( const string & entryName ) const
 			
 	}
 	
-	return::_stat( tmp.c_str(), & buf ) == 0 ;
+	return ::_stat( tmp.c_str(), & buf ) == 0 ;
 	
 #else // CEYLAN_USES__STAT
 
@@ -356,22 +354,6 @@ void StandardDirectory::getSubdirectories( list<string> & subDirectories )
 {
 
 #ifdef CEYLAN_USES_DIRENT_H
-
-	FileSystemManager * fsManager ;
-	
-	try
-	{
-	
-		fsManager = & getCorrespondingFileSystemManager() ;
-		
-	}
-	catch( const DirectoryDelegatingException & e )
-	{
-	
-		throw DirectoryLookupFailed( 
-			"StandardDirectory::getSubdirectories failed: " + e.toString() ) ;
-			 
-	}	
 	
 	DIR * d = ::opendir( _path.c_str() ) ;
 
@@ -430,21 +412,6 @@ void StandardDirectory::getFiles( list<string> & files )
 
 #ifdef CEYLAN_USES_DIRENT_H
 
-	FileSystemManager * fsManager ;
-	
-	try
-	{
-	
-		fsManager = & getCorrespondingFileSystemManager() ;
-		
-	}
-	catch( const DirectoryDelegatingException & e )
-	{
-	
-		throw DirectoryLookupFailed( 
-			"StandardDirectory::getFiles failed: " + e.toString() ) ;
-			 
-	}	
 	
 	DIR * d = ::opendir( _path.c_str() ) ;
 
@@ -502,22 +469,6 @@ void StandardDirectory::getEntries( list<string> & entries )
 
 
 #ifdef CEYLAN_USES_DIRENT_H
-
-	FileSystemManager * fsManager ;
-	
-	try
-	{
-	
-		fsManager = & getCorrespondingFileSystemManager() ;
-		
-	}
-	catch( const DirectoryDelegatingException & e )
-	{
-	
-		throw DirectoryLookupFailed( 
-			"StandardDirectory::getEntries failed: " + e.toString() ) ;
-			 
-	}	
 	
 	DIR * d = ::opendir( _path.c_str() ) ;
 
@@ -535,6 +486,7 @@ void StandardDirectory::getEntries( list<string> & entries )
 		// Selects only real files:
 		if ( hasEntry( name ) )
 			entries.push_back( name ) ;
+			
 	}
 	
 	
@@ -664,56 +616,7 @@ void StandardDirectory::getSortedEntries( list<string> & subDirectories,
 					
 // Other instance methods.
 
-
-void StandardDirectory::goDown( const string & subdirectoryName )
-					throw( DirectoryChangeFailed )
-{
-
-	if ( hasDirectory( subdirectoryName ) )
-	{
-
-		try
-		{
-	
-			_path = getCorrespondingFileSystemManager().joinPath( 
-				_path, subdirectoryName ) ;
-		
-		}
-		catch( const DirectoryDelegatingException & e )
-		{
-	
-			throw DirectoryChangeFailed( "StandardDirectory::goDown failed: " 
-				+ e.toString() ) ;
-			 
-		}	
-	
-		return ;
-		
-	}
-	
-	throw DirectoryChangeFailed( "StandardDirectory::goDown failed for "
-		+ subdirectoryName ) ;
-
-}
-
-					
-bool StandardDirectory::isValid() const throw( DirectoryException )
-{
-
-	// Let DirectoryDelegatingException and DirectoryLookupFailed propagate:
-	return getCorrespondingFileSystemManager().existsAsDirectory( _path ) ;
-	
-}
-
-
-void StandardDirectory::removeLeadingSeparator() throw( DirectoryException )
-{
-
-	// Let DirectoryDelegatingException propagate:
-	return getCorrespondingFileSystemManager().removeLeadingSeparator( _path ) ;
-	
-}
-					
+										
 					
 const string StandardDirectory::toString( Ceylan::VerbosityLevels level )
 	const throw()
@@ -756,16 +659,9 @@ StandardDirectory::StandardDirectory( const string & directoryName,
 
 #if CEYLAN_ARCH_NINTENDO_DS
 		
-#ifdef CEYLAN_RUNS_ON_ARM7
 
-	throw DirectoryCreationFailed( 
-		"StandardDirectory constructor: only available on the ARM9." ) ;
-
-#elif defined(CEYLAN_RUNS_ON_ARM9)
-
-FIXME
-
-#endif // CEYLAN_RUNS_ON_ARM7
+	throw DirectoryCreationFailed( "StandardDirectory constructor: "
+		"not supported on the Nintendo DS platform." ) ;
 
 	
 #else // CEYLAN_ARCH_NINTENDO_DS
@@ -931,4 +827,5 @@ FileSystemManager & StandardDirectory::getCorrespondingFileSystemManager()
 	}	
 	
 }
-																					
+
+																				
