@@ -70,16 +70,7 @@ LibfatFileException::~LibfatFileException() throw()
 
 }
 
-
-
-ConversionFailed::ConversionFailed( const string & reason )	throw():
-	LibfatFileException( reason )
-{
-
-}
 	
-
-
 		
 // LibfatFile implementation.
 
@@ -509,6 +500,8 @@ LibfatFile::LibfatFile( const string & name, OpeningFlag openFlag )
 
 #else // CEYLAN_RUNS_ON_ARM7
 
+	LibfatFileSystemManager::SecureLibfatFileSystemManager() ;
+	
 	if ( openFlag != DoNotOpen )
 		reopen() ;
 
@@ -611,7 +604,7 @@ int LibfatFile::ConvertToFileDescriptorOpenFlag( OpeningFlag openFlag )
 
 #else // CEYLAN_RUNS_ON_ARM7
 
-
+	
 #if CEYLAN_DEBUG
 
 	if ( openFlag == DoNotOpen )
@@ -684,6 +677,8 @@ void LibfatFile::FromFDtoFD( FileDescriptor from, FileDescriptor to,
 
 #else // CEYLAN_RUNS_ON_ARM7
 
+	LibfatFileSystemManager::SecureLibfatFileSystemManager() ;
+	
 	Size written = 0 ;
 	
 	Size bufferSize = ( length > BigBufferSize ? BigBufferSize: length ) ;
