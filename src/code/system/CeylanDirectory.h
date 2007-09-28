@@ -258,7 +258,7 @@ namespace Ceylan
 				 * manager not be retrieved as expected. 
 				 *
 				 */
-				static std::string GetCurrentWorkingDirectoryName()	
+				static std::string GetCurrentWorkingDirectoryPath()	
 					throw( DirectoryException ) ;
 
 
@@ -472,7 +472,6 @@ namespace Ceylan
 					
 
 
-
 				/**
 				 * Destroys the directory reference, not the directory itself.
 				 *
@@ -495,6 +494,38 @@ namespace Ceylan
 				
 				
 				/**
+				 * Tells whether the directory has a direct subdirectory named 
+				 * <b>subdirectoryName</b>.
+				 *
+				 * @param subdirectoryName the name of the directory entry to
+				 * look-up. Alias for current directory (ex: '.') and parent
+				 * one (ex: '..') are always deemed existing.
+				 *
+				 * @throw DirectoryLookupFailed is the operation failed or is
+				 * not supported.
+				 *
+				 */
+				virtual bool hasDirectory( 
+						const std::string & subdirectoryName ) const
+					throw( DirectoryLookupFailed ) = 0 ;
+
+
+				/**
+				 * Tells whether the directory has a direct file or symbolic
+				 * link named <b>fileName</b>.
+				 *
+				 * @param fileName the name of the file to look-up.
+				 *
+				 * @throw DirectoryLookupFailed is the operation failed or is
+				 * not supported.
+				 *
+				 */
+				virtual bool hasFile( const std::string & fileName ) const
+					throw( DirectoryLookupFailed ) = 0 ;
+
+				
+				
+				/**
 				 * Tells whether the directory has a direct entry named 
 				 * <b>entryName</b>.
 				 *
@@ -506,6 +537,7 @@ namespace Ceylan
 				 */
 				virtual bool hasEntry( const std::string & entryName ) const
 					throw( DirectoryLookupFailed ) = 0 ;
+
 
 
 				/**
