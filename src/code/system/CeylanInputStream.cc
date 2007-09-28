@@ -506,6 +506,14 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 	throw( InputStream::SelectFailedException )
 {
 
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	throw InputStream::SelectFailedException( "InputStream::Select: "
+		"not available on the Nintendo DS." ) ;
+		
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	
 #if CEYLAN_ARCH_WINDOWS
 
 #if CEYLAN_USES_NETWORK
@@ -818,6 +826,8 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 
 #endif // CEYLAN_ARCH_WINDOWS
 
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 }
 
 
@@ -826,6 +836,13 @@ Ceylan::Uint16 InputStream::Test( list<InputStream*> & is )
 	throw( InputStream::SelectFailedException )
 {
 
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	throw InputStream::SelectFailedException( "InputStream::Test: "
+		"not available on the Nintendo DS." ) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+		
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
 	if ( is.empty() )
@@ -930,6 +947,8 @@ Ceylan::Uint16 InputStream::Test( list<InputStream*> & is )
 	
 #endif // if CEYLAN_USES_FILE_DESCRIPTORS	
 
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 }
 
 
@@ -953,7 +972,9 @@ void InputStream::setSelected( bool newStatus ) throw()
 
 void InputStream::setFaulty( bool newFaultyState ) throw()
 {
+
 	_isFaulty = newFaultyState ;
+	
 }
 
 
