@@ -5,6 +5,7 @@
 #include "CeylanLibfatFileSystemManager.h"   // for LibfatFileSystemManager
 
 #include "CeylanLogLight.h"          // for CEYLAN_LOG
+#include "CeylanLogPlug.h"          // for LogPlug
 #include "CeylanOperators.h"         // for toString
 
 
@@ -63,6 +64,7 @@ extern "C"
 using std::string ;
 using std::list ;
 
+using namespace Ceylan::Log ;
 using namespace Ceylan::System ;
 
 
@@ -510,7 +512,7 @@ LibfatDirectory::LibfatDirectory( const string & directoryName,
 
 #else // CEYLAN_ARCH_NINTENDO_DS
 
-
+	
 	// Let DirectoryDelegatingException propagate:
 	FileSystemManager & fsManager = getCorrespondingFileSystemManager() ;
 	
@@ -629,4 +631,27 @@ FileSystemManager & LibfatDirectory::getCorrespondingFileSystemManager()
 	}	
 	
 }
-																		
+
+
+void LibfatDirectory::secureCorrespondingFileSystemManager()
+	const throw( DirectoryDelegatingException )
+{
+
+	try
+	{
+	
+		LibfatFileSystemManager::SecureLibfatFileSystemManager() ;
+	
+	} 
+	catch ( const LibfatFileSystemManagerException & e )
+	{
+	
+		throw DirectoryDelegatingException(
+			"LibfatDirectory::secureCorrespondingFileSystemManager failed: "
+			+ e.toString() ) ;
+		
+	}	
+
+}
+
+																			
