@@ -1,7 +1,7 @@
 #include "CeylanFileSystemManager.h"
 
-//#include "CeylanLibfatFileSystemManager.h"    // for LibfatFileSystemManager
 #include "CeylanStandardFileSystemManager.h"  // for StandardFileSystemManager
+#include "CeylanLibfatFileSystemManager.h"    // for LibfatFileSystemManager
 
 #include "CeylanLogPlug.h"     // for LogPlug
 #include "CeylanFile.h"        // for File
@@ -187,7 +187,7 @@ const std::string & FileSystemManager::getAliasForParentDirectory()
 					
 
 
-string FileSystemManager::getSeparatorAsString() const throw()
+std::string FileSystemManager::getSeparatorAsString() const throw()
 {
 
 	return Ceylan::toString( getSeparator() ) ;
@@ -200,6 +200,68 @@ string FileSystemManager::getSeparatorAsString() const throw()
 
 						
 // For File (other methods are pure virtual):
+
+
+
+std::string FileSystemManager::transformIntoValidFilename( 
+	const string & rawFilename ) throw()
+{
+
+	// For MS-DOS/Windows, one may look at gcc 'dosck' as well.
+	
+	string result ;
+
+	Ceylan::Uint32 characterCount = 0 ;
+
+	// Remove all leading dots '.':
+	while ( rawFilename[ characterCount ] == '.' )
+		characterCount++ ;
+
+	// (preferred to: for( string::const_iterator it...)
+
+	// Substitute any space " ", slash "/" or back-slash "\" by a dash "-":
+
+	StringSize nameSize = rawFilename.size() ;
+	
+	for ( ; characterCount < nameSize ; characterCount++ )
+	{
+		switch( rawFilename[ characterCount ] )
+		{
+
+			case ' ':
+				result += "-" ;
+				break ;
+
+			case '/':
+				result += "-" ;
+				break ;
+
+			case '\\':
+				result += "-" ;
+				break ;
+
+			/*
+			 * This is not strictly needed on most systems, but it is 
+			 * convenient to avoid ':' in HTML file references 
+			 * (<a href="xx::yyy.html">... not recommended)
+			 *
+			 */
+			case ':':
+				result += "_" ;
+				break ;
+
+			default:
+				result += rawFilename[ characterCount ] ;
+				break ;
+
+		}
+
+	}
+
+	return result ;
+	
+}
+
 	
 	
 bool FileSystemManager::diff( const std::string & firstFilename,
@@ -459,6 +521,8 @@ void FileSystemManager::SetDefaultFileSystemManagerToPlatformDefault()
 	throw( FileSystemManagerException )
 {
 
+	
+	// Common to all platforms:
 	if ( _CurrentDefaultFileSystemManager != 0 )
 		delete _CurrentDefaultFileSystemManager ;
 
@@ -467,22 +531,31 @@ void FileSystemManager::SetDefaultFileSystemManagerToPlatformDefault()
 #ifdef CEYLAN_RUNS_ON_ARM7
 
 	throw FileSystemManagerException( 
-		"FileSystemManager::SetDefaultFileSystemManagerToPlatformDefault: 
+		"FileSystemManager::SetDefaultFileSystemManagerToPlatformDefault: "
 		"only available on the ARM9." ) ;
 
 #elif defined(CEYLAN_RUNS_ON_ARM9)
 
-	/* FIXME
-	_CurrentDefaultFileSystemManager = new LibfatFileSystemManager() ;
-*/
+	/*
+	 * Registers as well this manager in static _LibfatFileSystemManager.
+	 * Let LibfatFileSystemManagerException propagate:
+	 *
+	 */
+	_CurrentDefaultFileSystemManager =
+		& LibfatFileSystemManager::GetLibfatFileSystemManager() ;
 
 #endif // CEYLAN_RUNS_ON_ARM7
 
 	
 #else // CEYLAN_ARCH_NINTENDO_DS
 
-	// Let StandardFileSystemManagerException propagate:
-	_CurrentDefaultFileSystemManager = new StandardFileSystemManager() ;
+	/*
+	 * Registers as well this manager in static _StandardFileSystemManager.
+	 * Let StandardFileSystemManagerException propagate:
+	 *
+	 */
+	_CurrentDefaultFileSystemManager = 
+		& StandardFileSystemManager::GetStandardFileSystemManager() ;
 	
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
