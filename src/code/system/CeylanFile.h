@@ -840,7 +840,7 @@ namespace Ceylan
 				 * expected.
 				 *
 				 */
-				virtual Size size() const throw( FileException ) = 0 ;
+				virtual Size size() const throw( FileException ) ;
 
 
 				/**
@@ -984,7 +984,7 @@ namespace Ceylan
 				 * if the corresponding filesystem manager could not be used.
 				 *
 				 */
-				virtual void remove() throw( FileException ) = 0 ;
+				virtual void remove() throw( FileException ) ;
 
 
 
