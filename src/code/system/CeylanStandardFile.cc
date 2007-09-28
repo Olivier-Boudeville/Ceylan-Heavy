@@ -1,9 +1,7 @@
 #include "CeylanStandardFile.h"
 
 #include "CeylanLogPlug.h"                    // for Log primitives
-#include "CeylanDirectory.h"                  // for Directory
 #include "CeylanOperators.h"                  // for toString
-#include "CeylanStringUtils.h"                // for StringSize
 #include "CeylanStandardFileSystemManager.h"  // for StandardFileSystemManager
 
 
@@ -114,16 +112,12 @@ StandardFileException::~StandardFileException() throw()
 {
 
 }
-
-
-
-ConversionFailed::ConversionFailed( const string & reason )	throw():
-	StandardFileException( reason )
-{
-
-}
+	
+	
 	
 		
+// StandardFile implementation.
+
 
 StandardFile::~StandardFile() throw()
 {
@@ -212,7 +206,7 @@ void StandardFile::saveAs( const string & newName ) throw( FileException )
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	throw FileException( "StandardFile::saveAs: "
-		"no supported on the Nintendo DS platform." ) ;
+		"not supported on the Nintendo DS platform." ) ;
 		
 #else // CEYLAN_ARCH_NINTENDO_DS
 
@@ -261,7 +255,7 @@ void StandardFile::lockForReading() const throw( FileReadLockingFailed )
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	throw FileReadLockingFailed( "StandardFile::lockForReading: "
-		"no supported on the Nintendo DS platform." ) ;
+		"not supported on the Nintendo DS platform." ) ;
 		
 #else // CEYLAN_ARCH_NINTENDO_DS
 
@@ -321,7 +315,7 @@ void StandardFile::unlockForReading() const throw( FileReadUnlockingFailed )
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	throw FileReadUnlockingFailed( "StandardFile::unlockForReading: "
-		"no supported on the Nintendo DS platform." ) ;
+		"not supported on the Nintendo DS platform." ) ;
 		
 #else // CEYLAN_ARCH_NINTENDO_DS
 
@@ -375,7 +369,7 @@ void StandardFile::lockForWriting() const throw( FileWriteLockingFailed )
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	throw FileWriteLockingFailed( "StandardFile::lockForWriting: "
-		"no supported on the Nintendo DS platform." ) ;
+		"not supported on the Nintendo DS platform." ) ;
 		
 #else // CEYLAN_ARCH_NINTENDO_DS
 
@@ -429,7 +423,7 @@ void StandardFile::unlockForWriting() const throw( FileWriteUnlockingFailed )
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	throw FileWriteUnlockingFailed( "StandardFile::unlockForWriting: "
-		"no supported on the Nintendo DS platform." ) ;
+		"not supported on the Nintendo DS platform." ) ;
 		
 #else // CEYLAN_ARCH_NINTENDO_DS
 
@@ -524,16 +518,6 @@ bool StandardFile::isLocked() const throw()
 
 
 
-Size StandardFile::size() const throw( FileException )
-{
-
-	// Let FileSizeRequestFailed and FileDelegatingException propagate:
-	return getCorrespondingFileSystemManager().getSize( _name ) ;
-	
-}
-
-
-
 time_t StandardFile::getLastChangeTime() const 
 	throw( FileLastChangeTimeRequestFailed )
 {
@@ -541,7 +525,7 @@ time_t StandardFile::getLastChangeTime() const
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	throw FileLastChangeTimeRequestFailed( "StandardFile::getLastChangeTime:"
-		"no supported on the Nintendo DS platform." ) ;
+		"not supported on the Nintendo DS platform." ) ;
 
 #else // CEYLAN_ARCH_NINTENDO_DS
 
@@ -577,7 +561,7 @@ Size StandardFile::read( Ceylan::Byte * buffer, Size maxLength )
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	throw InputStream::ReadFailedException( "StandardFile::read:"
-		"no supported on the Nintendo DS platform." ) ;
+		"not supported on the Nintendo DS platform." ) ;
 		
 
 #else // CEYLAN_ARCH_NINTENDO_DS
@@ -658,7 +642,7 @@ Size StandardFile::write( const string & message )
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	throw OutputStream::WriteFailedException( "StandardFile::write:"
-		"no supported on the Nintendo DS platform." ) ;
+		"not supported on the Nintendo DS platform." ) ;
 		
 
 #else // CEYLAN_ARCH_NINTENDO_DS
@@ -700,7 +684,7 @@ Size StandardFile::write( const Ceylan::Byte * buffer, Size maxLength )
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	throw OutputStream::WriteFailedException( "StandardFile::write:"
-		"no supported on the Nintendo DS platform." ) ;
+		"not supported on the Nintendo DS platform." ) ;
 		
 
 #else // CEYLAN_ARCH_NINTENDO_DS
@@ -788,38 +772,6 @@ Size StandardFile::write( const Ceylan::Byte * buffer, Size maxLength )
 
 
 
-void StandardFile::remove() throw( FileException )
-{
-
-#if CEYLAN_ARCH_NINTENDO_DS
-
-	throw FileRemoveFailed( "StandardFile::remove: "
-		"no supported on the Nintendo DS platform." ) ;
-
-#else // CEYLAN_ARCH_NINTENDO_DS
-		
-	try
-	{
-	
-		close() ;
-		
-	}
-	catch( const Stream::CloseException & e )
-	{
-		throw FileRemoveFailed( "StandardFile::remove failed: "
-			+ e.toString() ) ;
-	}
-
-
-	// Let FileDelegatingException and FileRemoveFailed propagate:
-	getCorrespondingFileSystemManager().removeFile( _name ) ;
-	
-#endif // CEYLAN_ARCH_NINTENDO_DS
-	
-}
-
-
-
 // StandardFile-specific methods.
 
 
@@ -830,7 +782,7 @@ void StandardFile::serialize( FileDescriptor fd ) const
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	throw StandardFileException( "StandardFile::serialize: "
-		"no supported on the Nintendo DS platform." ) ;
+		"not supported on the Nintendo DS platform." ) ;
 	
 #else // CEYLAN_ARCH_NINTENDO_DS
 
@@ -923,6 +875,7 @@ const std::string StandardFile::toString( Ceylan::VerbosityLevels level )
 }
 
 
+
 string StandardFile::InterpretState( const ifstream & inputFile ) throw()
 {
 
@@ -943,6 +896,7 @@ string StandardFile::InterpretState( const ifstream & inputFile ) throw()
 	return res ;
 
 }
+
 
 
 string StandardFile::InterpretState( const fstream & file ) throw()
@@ -978,6 +932,7 @@ StandardFile & StandardFile::Create( const std::string & filename,
 		permissionFlag ) ;
 
 }
+
 
 					
 StandardFile & StandardFile::Open( const std::string & filename, 
@@ -1019,6 +974,8 @@ StandardFile::StandardFile( const string & name, OpeningFlag openFlag,
 
 
 
+
+
 // Implementations of inherited methods.
 
 
@@ -1044,8 +1001,16 @@ FileSystemManager & StandardFile::getCorrespondingFileSystemManager()
 }
 	
 	
+	
 void StandardFile::reopen() throw( FileOpeningFailed )
 {
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	throw FileOpeningFailed( "StandardFile::reopen: "
+		"not supported on the Nintendo DS platform." ) ;
+		
+#else // CEYLAN_ARCH_NINTENDO_DS
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
@@ -1102,7 +1067,10 @@ void StandardFile::reopen() throw( FileOpeningFailed )
 	
 #endif // if CEYLAN_USES_FILE_DESCRIPTORS	
 
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 }
+
 
 
 string StandardFile::interpretState() const throw()
@@ -1127,6 +1095,15 @@ string StandardFile::interpretState() const throw()
 int StandardFile::ConvertToFileDescriptorOpenFlag( OpeningFlag openFlag ) 
 	throw( ConversionFailed )
 {
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	throw ConversionFailed( "StandardFile ConvertToFileDescriptorOpenFlag: "
+		"not supported on the Nintendo DS platform." ) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+		
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
@@ -1187,6 +1164,8 @@ int StandardFile::ConvertToFileDescriptorOpenFlag( OpeningFlag openFlag )
 
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
 
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 }
 
 
@@ -1196,6 +1175,15 @@ void StandardFile::ConvertToFileDescriptorPermissionFlag(
 		struct SystemSpecificPermissionFlag & returned ) 
 	throw( ConversionFailed )
 {
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	throw ConversionFailed( 
+		"StandardFile ConvertToFileDescriptorPermissionFlag: "
+		"not supported on the Nintendo DS platform." ) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+
 
 #if CEYLAN_USES_FILE_DESCRIPTORS	
 
@@ -1245,6 +1233,8 @@ void StandardFile::ConvertToFileDescriptorPermissionFlag(
 
 #endif	 // CEYLAN_USES_FILE_DESCRIPTORS
 
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 }
 
 
@@ -1254,11 +1244,18 @@ ios_base::openmode StandardFile::ConvertToStreamOpenFlag(
 	throw( ConversionFailed )
 {
 
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	throw ConversionFailed( "StandardFile ConvertToStreamOpenFlag: "
+		"not supported on the Nintendo DS platform." ) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+
 #if CEYLAN_DEBUG
 
 	if ( openFlag == DoNotOpen )
-		throw ConversionFailed( 
-			"StandardFile::ConvertToStreamOpenFlag: "
+		throw ConversionFailed( "StandardFile::ConvertToStreamOpenFlag: "
 			"flags specify that the file is not to be opened." ) ;
 			
 #endif // CEYLAN_DEBUG
@@ -1316,6 +1313,8 @@ ios_base::openmode StandardFile::ConvertToStreamOpenFlag(
 	// fstream::ate not used.
 
 	return actualFlags ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
 
