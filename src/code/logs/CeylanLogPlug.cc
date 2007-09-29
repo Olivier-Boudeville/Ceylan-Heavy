@@ -21,6 +21,12 @@ using std::list ;
 using namespace Ceylan::Log ;
 
 
+#ifdef CEYLAN_USES_CONFIG_H
+#include "CeylanConfig.h"      // for configure-time feature settings
+#endif // CEYLAN_USES_CONFIG_H
+
+
+
 LogSource * LogPlug::InfoLogSource     = 0 ;
 LogSource * LogPlug::TraceLogSource    = 0 ;
 LogSource * LogPlug::DebugLogSource    = 0 ;
@@ -173,44 +179,44 @@ void LogPlug::CheckBlank() throw ( LogException )
 {
 
     if ( LogrootLogSource != 0 )
-        throw LogException( "LogPlug::StartService : there was already a Log "
+        throw LogException( "LogPlug::StartService: there was already a Log "
 			"source assigned to LogPlug::logroot." ) ;
 
     if ( InfoLogSource != 0 )
-        throw LogException( "LogPlug::StartService : there was already a Log "
+        throw LogException( "LogPlug::StartService: there was already a Log "
 			"source assigned to LogPlug::info." ) ;
 
     if ( TraceLogSource != 0 )
-        throw LogException( "LogPlug::StartService : there was already a Log "
+        throw LogException( "LogPlug::StartService: there was already a Log "
 			"source assigned to LogPlug::trace." ) ;
 
     if ( DebugLogSource != 0 )
-        throw LogException( "LogPlug::StartService : there was already a Log "
+        throw LogException( "LogPlug::StartService: there was already a Log "
 			"source assigned to LogPlug::debug." ) ;
 
     if ( WarningLogSource != 0 )
-        throw LogException( "LogPlug::StartService : there was already a Log "
+        throw LogException( "LogPlug::StartService: there was already a Log "
 			"source assigned to LogPlug::warning." ) ;
 
     if ( ErrorLogSource != 0 )
-        throw LogException( "LogPlug::StartService : there was already a Log "
+        throw LogException( "LogPlug::StartService: there was already a Log "
 			"source assigned to LogPlug::error." ) ;
 
     if ( FatalLogSource != 0 )
-        throw LogException( "LogPlug::StartService : there was already a Log "
+        throw LogException( "LogPlug::StartService: there was already a Log "
 			"source assigned to LogPlug::fatal." ) ;
 
 			
     if ( Transport != 0 )
-        throw LogException( "LogPlug::StartService : LogPlug::Transport "
+        throw LogException( "LogPlug::StartService: LogPlug::Transport "
 			"was already assigned." ) ;
 			
     if ( Listener != 0 )
-        throw LogException( "LogPlug::StartService : LogPlug::Listener "
+        throw LogException( "LogPlug::StartService: LogPlug::Listener "
 			"was already assigned." ) ;
 
     if ( Aggregator != 0 )
-        throw LogException( "LogPlug::StartService : LogPlug::Aggregator "
+        throw LogException( "LogPlug::StartService: LogPlug::Aggregator "
 			"was already assigned." ) ;
 
 }
@@ -222,31 +228,40 @@ void LogPlug::CreateBasicPlug() throw ( LogException )
 	CEYLAN_LOG( "Creating default standard channels." ) ;
 		
 	if ( Transport == 0 )
-		throw LogException( "LogPlug::CreateBasicPlug : "
+		throw LogException( "LogPlug::CreateBasicPlug: "
 			"no transport available" ) ;
 						
 	LogrootLogSource = new LogSource( "Log root", * Transport ) ;
 	
+	FatalLogSource = new LogSource( "Fatal", * Transport ) ;
+	
+	ErrorLogSource = new LogSource( "Error", * Transport ) ;
+		
+	WarningLogSource = new LogSource( "Warning", * Transport ) ;
+	
+	DebugLogSource = new LogSource( "Debug", * Transport ) ;
+
+	TraceLogSource = new LogSource( "Trace", * Transport ) ;
+	
+	InfoLogSource = new LogSource( "Info", * Transport ) ;
+
+
 	LogrootLogSource->send( "Starting log plug service, from Ceylan "
 		+ Ceylan::GetVersion().toString() + "." ) ; 
 	
-	FatalLogSource = new LogSource( "Fatal", * Transport ) ;
-	LogrootLogSource->send( "Fatal standard log channel created." ) ;
 	
-	ErrorLogSource = new LogSource( "Error", * Transport ) ;
-	LogrootLogSource->send( "Error standard log channel created." ) ;
-		
-	WarningLogSource = new LogSource( "Warning", * Transport ) ;
-	LogrootLogSource->send( "Warning standard log channel created." ) ;
-	
-	DebugLogSource = new LogSource( "Debug", * Transport ) ;
-	LogrootLogSource->send( "Debug standard log channel created." ) ;
+	// Avoid having too many logs on the DS small screen:
+#if ! CEYLAN_ARCH_NINTENDO_DS
 
-	TraceLogSource = new LogSource( "Trace", * Transport ) ;
-	LogrootLogSource->send( "Trace standard log channel created." ) ;
 	
-	InfoLogSource = new LogSource( "Info", * Transport ) ;
+	LogrootLogSource->send( "Fatal standard log channel created." ) ;
+	LogrootLogSource->send( "Error standard log channel created." ) ;
+	LogrootLogSource->send( "Warning standard log channel created." ) ;
+	LogrootLogSource->send( "Debug standard log channel created." ) ;
+	LogrootLogSource->send( "Trace standard log channel created." ) ;
 	LogrootLogSource->send( "Info standard log channel created." ) ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
 
@@ -285,63 +300,91 @@ void LogPlug::StopService( bool warnIfAlreadyStopped ) throw()
 
 	if ( InfoLogSource != 0 ) 
 	{
+	
+#if ! CEYLAN_ARCH_NINTENDO_DS
 		info( "Stopping channel." ) ;
 		logroot( "Stopping channel Info." ) ;
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 		delete InfoLogSource ;
 		InfoLogSource = 0 ;
 	}
 	
 	if ( WarningLogSource != 0  ) 
 	{
+	
+#if ! CEYLAN_ARCH_NINTENDO_DS
 		warning( "Stopping channel." ) ;
 		logroot( "Stopping channel Warning." ) ;
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
     	delete WarningLogSource ;
 		WarningLogSource = 0 ;
 	}
 	
 	if ( TraceLogSource != 0  ) 
 	{
+	
+#if ! CEYLAN_ARCH_NINTENDO_DS
 		trace( "Stopping channel." ) ;
 		logroot( "Stopping channel Trace." ) ;
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
     	delete TraceLogSource ;
 		TraceLogSource = 0 ;
 	}
 	
 	if ( DebugLogSource != 0  ) 
 	{
+	
+#if ! CEYLAN_ARCH_NINTENDO_DS
 		debug( "Stopping channel." ) ;
 		logroot( "Stopping channel Debug." ) ;
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
     	delete DebugLogSource ;
 		DebugLogSource = 0 ;
 	}
 		
 	if ( ErrorLogSource != 0  ) 
 	{
+	
+#if ! CEYLAN_ARCH_NINTENDO_DS
 		error( "Stopping channel." ) ;
 		logroot( "Stopping channel Error." ) ;
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
     	delete ErrorLogSource ;
 		ErrorLogSource = 0 ;
 	}
 	
 	if ( FatalLogSource != 0  ) 
 	{
+	
+#if ! CEYLAN_ARCH_NINTENDO_DS
 		fatal( "Stopping channel." ) ;
 		logroot( "Stopping channel Fatal." ) ;
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
     	delete FatalLogSource ;
 		FatalLogSource = 0 ;
 	}
 	
 	if ( LogrootLogSource != 0  )
 	{
+	
+#if ! CEYLAN_ARCH_NINTENDO_DS
 		logroot( "Stopping log plug service." ) ;
 		delete LogrootLogSource ;
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 		LogrootLogSource = 0 ;
 	}
 	else
 	{
 	
 		if ( warnIfAlreadyStopped )
-			std::cerr << "Error in LogPlug::StopService : "
+			std::cerr << "Error in LogPlug::StopService: "
 				"no log root channel available, "
 				"maybe LogPlug::StopService was called more than once ?" 
 				<< std::endl ;	
@@ -414,7 +457,7 @@ const string LogPlug::ToString( Ceylan::VerbosityLevels level ) throw()
 		res.push_back( "no log listener connected." ) ;
 	
 	
-	return "LogSystem status : " + Ceylan::formatStringList( res ) ;
+	return "LogSystem status: " + Ceylan::formatStringList( res ) ;
 
 }
 
