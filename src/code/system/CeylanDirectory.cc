@@ -3,6 +3,7 @@
 
 #include "CeylanFileSystemManager.h" // for FileSystemManager
 #include "CeylanOperators.h"         // for toString
+#include "CeylanLogPlug.h"           // for LogPlug
 
 
 /*
@@ -36,6 +37,7 @@
 using std::string ;
 using std::list ;
 
+using namespace Ceylan::Log ;
 using namespace Ceylan::System ;
 
 
@@ -147,7 +149,7 @@ bool Directory::IsAbsolutePath( const string & path )
 }
 
 
-string Directory::GetCurrentWorkingDirectoryName() throw( DirectoryException )
+string Directory::GetCurrentWorkingDirectoryPath() throw( DirectoryException )
 {
 
 	// Let DirectoryGetCurrentFailed and DirectoryDelegatingException propagate:
@@ -406,6 +408,12 @@ FileSystemManager & Directory::GetCorrespondingFileSystemManager()
 	throw( DirectoryDelegatingException )
 {
 
+	/*
+	 * Either use a pre-registered manager or use the (platform-specific)
+	 * default one:
+	 *
+	 */
+	
 	try
 	{
 	
