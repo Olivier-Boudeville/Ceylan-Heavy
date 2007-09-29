@@ -35,8 +35,17 @@ Timestamp::Timestamp() throw( UtilsException )
 
 #if CEYLAN_ARCH_NINTENDO_DS
 	
-
+	/*
+	 * @fixme when libnds is stable for that subject.
+	 * Time should be directly available on the ARM7 and made available to the
+	 * ARM9 thanks to IPC.
+	 *
+	 * @see initClockIRQ and syncRTC in  http://devkitpro.cvs.sourceforge.net/devkitpro/libnds/source/arm7/clock.c?view=markup
+	 * 
+	 */
+	 
 #ifdef CEYLAN_RUNS_ON_ARM7
+
 
 	_year   = IPC->time.rtc.year + 2000 ;
 	_month  = IPC->time.rtc.month ;
@@ -52,9 +61,18 @@ Timestamp::Timestamp() throw( UtilsException )
 
 #elif defined(CEYLAN_RUNS_ON_ARM9)
 
+	/*
 	throw UtilsException( "Timestamp constructor: "
 		"the clock is only available on the ARM7." ) ;
+	 */
 
+	_year   = 0 ;
+	_month  = 0 ;
+	_day    = 0 ;
+	_hour   = 0 ; 	
+	_minute = 0 ; 
+	_second = 0 ;
+	 
 #endif // CEYLAN_RUNS_ON_ARM7
 
 	
@@ -69,7 +87,7 @@ Timestamp::Timestamp() throw( UtilsException )
 
 	struct tm currentTime ;
 
-	if (::localtime_s( & currentTime, & currentMeasuredTime ) != 0 )
+	if ( ::localtime_s( & currentTime, & currentMeasuredTime ) != 0 )
 		throw UtilsException( 
 			"Timestamp constructor: unable to determine local time: "
 			+ System::explainError() ) ;
