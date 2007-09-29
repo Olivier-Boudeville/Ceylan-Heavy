@@ -21,7 +21,7 @@ using namespace Ceylan::Log ;
 LogMessage::LogMessage( const string & message,	
 		const string & channelName,
 		LevelOfDetail levelOfDetail, 
-		const Timestamp & timestamp ) throw() :
+		const Timestamp & timestamp ) throw():
 	_message( message ),
 	_channelName( channelName ),
 	_levelOfDetail( levelOfDetail ),
@@ -33,7 +33,7 @@ LogMessage::LogMessage( const string & message,
 
 LogMessage::LogMessage( const string & message,	
 		const string & channelName,
-		LevelOfDetail levelOfDetail ) throw( LogException ) :
+		LevelOfDetail levelOfDetail ) throw( LogException ):
 	_message( message ),
 	_channelName( channelName ),
 	_levelOfDetail( levelOfDetail )
@@ -46,7 +46,7 @@ LogMessage::LogMessage( const string & message,
 	catch( const UtilsException & e )
 	{
 		throw LogException( 
-			"LogMessage::LogMessage : unable to generate time-stamp, "
+			"LogMessage::LogMessage: unable to generate time-stamp, "
 			+ e.toString() ) ;
 	}
 	
@@ -91,7 +91,7 @@ const Timestamp & LogMessage::getTimestamp() const throw( LogException )
 
 	if ( _timestamp == 0 )
 		throw LogException( 
-			"LogMessage::getTimestamp() : no Timestamp available." ) ;
+			"LogMessage::getTimestamp(): no Timestamp available." ) ;
 			
 #endif // CEYLAN_DEBUG
 	
@@ -105,7 +105,7 @@ const string LogMessage::getPreformattedText() const throw()
 #if CEYLAN_DEBUG
 
 	if ( _timestamp == 0 )
-		return "Error : LogMessage whose content is " 
+		return "Error: LogMessage whose content is " 
 			+ _message 
 			+ ", whose level of detail is " 
 			+ Ceylan::toNumericalString( _levelOfDetail )
@@ -124,7 +124,7 @@ const string LogMessage::toString( Ceylan::VerbosityLevels level ) const throw()
 #if CEYLAN_DEBUG
 
 	if ( _timestamp == 0 )
-		return "Error : LogMessage whose content is " 
+		return "Error: LogMessage whose content is " 
 			+ _message 
 			+ ", whose level of detail is " 
 			+ Ceylan::toNumericalString( _levelOfDetail )
@@ -132,32 +132,49 @@ const string LogMessage::toString( Ceylan::VerbosityLevels level ) const throw()
 	
 #endif // CEYLAN_DEBUG
 
-	// Arbitrary separation for level of details :
+	// Arbitrary separation for level of details:
 	
 	if ( level == Ceylan::low )
 	{
-		// Returns the most useful compact form :
-		return _timestamp->toString() + " [" 
-			+ _channelName + "] " + _message ;
+	
+	
+#if CEYLAN_ARCH_NINTENDO_DS
+
+		/*
+		 * On the DS, no timestamp is currently added, as the log console has
+		 * very little room.
+		 *
+		 * Must be very compact:
+		 *
+		 */
+		return _channelName + ": " + _message ;
+			
+#else // CEYLAN_ARCH_NINTENDO_DS
+	
+		// Returns the most useful compact form:
+		return _timestamp->toString() + " [" + _channelName + "] " + _message ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 	}		
 	else
 	{
 	
-		/// Mainly for log debugging purpose :
+		/// Mainly for log debugging purpose:
 		
 		std::list<string> res ;
 		
-		res.push_back( "targeted at channel : " 
+		res.push_back( "targeted at channel: " 
 			+ _channelName ) ;
 			
-		res.push_back( "content : [" + _message + "]" ) ;
+		res.push_back( "content: [" + _message + "]" ) ;
 		
-		res.push_back( "level of detail : " 
+		res.push_back( "level of detail: " 
 			+ Ceylan::toNumericalString( _levelOfDetail ) ) ;
 			
-		res.push_back( "timestamp : " + _timestamp->toString() ) ; 	
+		res.push_back( "timestamp: " + _timestamp->toString() ) ; 	
 		  
-		return "LogMessage : " + formatStringList( res ) ;   	
+		return "LogMessage: " + formatStringList( res ) ;   	
 		
 	}
 	
