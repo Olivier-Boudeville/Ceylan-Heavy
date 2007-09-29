@@ -16,6 +16,10 @@
 #include <iostream>                 // for cerr, if abnormal situation occurs
 
 
+#ifdef CEYLAN_USES_CONFIG_H
+#include "CeylanConfig.h"      // for configure-time feature settings
+#endif // CEYLAN_USES_CONFIG_H
+
 
 using std::string ;
 
@@ -26,7 +30,17 @@ const string LogHolder::ConsolePlugOption   = "--consolePlug" ;
 const string LogHolder::ClassicalPlugOption = "--classicalPlug" ;
 const string LogHolder::HTMLPlugOption      = "--HTMLPlug" ;
 
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+KnownPlugs LogHolder::DefaultPlug = consolePlug ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+
 KnownPlugs LogHolder::DefaultPlug = classicalPlug ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 
 
 LogHolder::LogHolder( Ceylan::Uint16 argCount, 
@@ -83,9 +97,24 @@ LogHolder::LogHolder( Ceylan::Uint16 argCount,
 	 *
 	 */
 	string speakerName ;
-	
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	/*
+	 * On the Nintendo DS, argv[0] is a null pointer, a default value is to
+	 * be used instead;
+	 *
+	 */
+
+	speakerName = "DS" ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+	 	
 	Ceylan::System::Directory::StripFilename( arguments[0], 
 		/* base path */ 0, & speakerName ) ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+		
 		
 	CEYLAN_LOG( "LogHolder: speaker name for logs will be " + speakerName ) ;
 	
