@@ -19,7 +19,7 @@ using std::list ;
 using namespace Ceylan::Log ;
 
 
-LogChannel::LogChannel( const string & name ) throw() :
+LogChannel::LogChannel( const string & name ) throw():
 	_name( name )
 {
 
@@ -47,7 +47,7 @@ void LogChannel::addMessage( LogMessage & message, bool check )
 	{
 		if ( message.getChannelName() != _name )
 			throw LogException( 
-				"LogChannel::addMessage : trying to add to LogChannel "
+				"LogChannel::addMessage: trying to add to LogChannel "
 				+ _name 
 				+ " a log message whose registered LogChannel is "
 				+ message.getChannelName() + " (not " + _name + ")." ) ;	
@@ -72,7 +72,7 @@ LogChannel::MessageCount LogChannel::getMessageCount() const throw()
 	 * count would be inaccurate.	
 	 *
 	 */
-	return static_cast<unsigned int>( _messages.size() ) ;
+	return static_cast<Ceylan::Uint32>( _messages.size() ) ;
 	
 }
 
@@ -88,7 +88,7 @@ const string LogChannel::toString( Ceylan::VerbosityLevels level )
 	
 	if ( _messages.size() == 1 )
 	{
-		result += " contains only one message : " 
+		result += " contains only one message: " 
 			+ _messages.back()->toString( level ) ;
 		return result ;
 	}	
@@ -96,7 +96,7 @@ const string LogChannel::toString( Ceylan::VerbosityLevels level )
 	{
 		result += " contains " + Ceylan::toString( 
 			static_cast<Ceylan::Uint32>( _messages.size() ) ) 
-			+ " messages : " ;
+			+ " messages: " ;
 	}
 	
 	list<string> res ;
@@ -109,7 +109,7 @@ const string LogChannel::toString( Ceylan::VerbosityLevels level )
 
 		if ( (*it) == 0 )
 		{
-			CEYLAN_LOG( "Error, LogChannel::toString : "
+			CEYLAN_LOG( "Error, LogChannel::toString: "
 				"null pointer in message list, skipping." ) ;
 			break ;
 		}	
@@ -123,3 +123,4 @@ const string LogChannel::toString( Ceylan::VerbosityLevels level )
 	return result + formatStringList( res ) ;
 	
 }	
+
