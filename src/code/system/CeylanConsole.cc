@@ -169,6 +169,10 @@ Console::~Console() throw()
 void Console::goInteractive() throw( ConsoleException )
 {
 
+#if CEYLAN_ARCH_NINTENDO_DS
+		
+#ifdef CEYLAN_RUNS_ON_ARM9
+
 	addInBuffer( "<Entered interactive mode, key controls are: X: go to previous paragraph, B: go to next paragraph, up: go to previous line, down: go to next line, Y: toggle text layout (raw/justified/word-wrapped), A: quit>" ) ;
 	
 	setToForeground( true ) ;
@@ -226,13 +230,22 @@ void Console::goInteractive() throw( ConsoleException )
 		}
 			
 			
-		if ( readKey & StylusContact || readKey & ButtonA )
+		if ( readKey & ButtonA )
 			quit = true ;
 
 	}
 	while( ! quit ) ; 
 		
 	addInBuffer( "<Quitting interactive mode>" ) ;
+
+#endif // CEYLAN_RUNS_ON_ARM9
+
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	// Nothing special for classical terminals.
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 }
 
