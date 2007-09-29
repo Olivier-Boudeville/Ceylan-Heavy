@@ -17,8 +17,14 @@ namespace Ceylan
 	namespace System
 	{
 	
+	
 		// LogAggregatorConsole instances aggregate their log into files.
 		class File ;
+		
+		// Used in some cases (ex: the Nintendo DS) instead of an output stream.
+		class Console ;
+	
+		
 	}
 	
 	
@@ -74,7 +80,8 @@ namespace Ceylan
 				 *
 				 * @param consoleStream tells to which standard stream
 				 * logs should be written. The default is the standard
-				 * output stream, Output.
+				 * output stream, Output. On the Nintendo DS, a Ceylan text
+				 * console will be used instead of a C++ output stream.
 				 * 
 				 * @param immediateWrite tells whether the aggregator 
 				 * should write log messages as soon as they are 
@@ -190,6 +197,14 @@ namespace Ceylan
 				 *
 				 */
 				std::ostream * _outputStream ; 
+				
+				
+				/**
+				 * The text console, used on embedded devices (ex: the Nintendo
+				 * DS) instead of an output stream.
+				 *
+				 */
+				System::Console * _console ;
 				
 								
 				/**
