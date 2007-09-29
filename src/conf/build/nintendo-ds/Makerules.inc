@@ -17,23 +17,41 @@ include $(TOP)/src/conf/build/nintendo-ds/Makevars.inc
 
 # For source files common to both ARM:
 
+%.arm7.o: %.cc %.h 
+	@echo "      Compiling $^ into $@"
+	$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
+	
+%.arm9.o: %.cc %.h 
+	@echo "      Compiling $^ into $@"
+	$(CXX) $(CXX_FLAGS_ARM9) $(CPP_FLAGS_ARM9) -c $< -o $@
+
+
 %.arm7.o: %.cc
-	@echo "      Compiling $< into $@"
+	@echo "      Compiling $^ into $@"
 	$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
 	
 %.arm9.o: %.cc
-	@echo "      Compiling $< into $@"
+	@echo "      Compiling $^ into $@"
 	$(CXX) $(CXX_FLAGS_ARM9) $(CPP_FLAGS_ARM9) -c $< -o $@
 
 
 # For source files specific to either ARM:
 
-%.arm7.o: %.arm7.cc
-	@echo "      Compiling $< into $@"
+%.arm7.o: %.arm7.cc %.arm7.h 
+	@echo "      Compiling $^ into $@"
 	$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
 	
-%.arm9.o: %.arm9.cc
-	@echo "      Compiling $< into $@"
+%.arm9.o: %.arm9.cc %.arm9.h 
+	@echo "      Compiling $^ into $@"
+	$(CXX) $(CXX_FLAGS_ARM9) $(CPP_FLAGS_ARM9) -c $< -o $@
+
+
+%.arm7.o: %.arm7.cc %.arm7.h 
+	@echo "      Compiling $^ into $@"
+	$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
+	
+%.arm9.o: %.arm9.cc %.arm9.h 
+	@echo "      Compiling $^ into $@"
 	$(CXX) $(CXX_FLAGS_ARM9) $(CPP_FLAGS_ARM9) -c $< -o $@
 
 	
@@ -103,7 +121,8 @@ lib%.arm9.a: %.arm9.o
 
 
 all:
-	@for d in $(NDS_SUBDIRS); do ( cd $$d ; $(MAKE) -f Makefile.cross CROSS_TARGET=$(CROSS_TARGET) all ) ; done
+	@for d in $(NDS_SUBDIRS); do cd $$d ; if ! $(MAKE) -f Makefile.cross CROSS_TARGET=$(CROSS_TARGET) all; then return 1; false ; else cd ..; fi ; done
+
 
 compile: displayModule arm7objectfiles arm9objectfiles
 
@@ -127,7 +146,7 @@ install-headers:
 	
 	
 install-recurse:
-	@for d in $(NDS_SUBDIRS); do ( cd $$d ; $(MAKE) -s -f Makefile.cross CROSS_TARGET=$(CROSS_TARGET) install ) ; done
+	@for d in $(NDS_SUBDIRS); do cd $$d ; if ! $(MAKE) -f Makefile.cross CROSS_TARGET=$(CROSS_TARGET) install; then break; else cd ..; fi ; done
 
 	
 clean: clean-recurse
@@ -136,7 +155,7 @@ clean: clean-recurse
 	
 	
 clean-recurse:
-	@for d in $(NDS_SUBDIRS); do ( cd $$d ; $(MAKE) -s -f Makefile.cross CROSS_TARGET=$(CROSS_TARGET) clean ) ; done
+	@for d in $(NDS_SUBDIRS); do cd $$d ; $(MAKE) -f Makefile.cross CROSS_TARGET=$(CROSS_TARGET) clean; cd ..; done
 	
 	
 	
@@ -187,6 +206,7 @@ info-switches:
 info-files:
 	@echo "ARM7_OBJ_FILES = $(ARM7_OBJ_FILES)"
 	@echo "ARM9_OBJ_FILES = $(ARM9_OBJ_FILES)"
+	
 	
 info-ceylan-users:
 	@echo "CEYLAN_LIBPATHS_ARM7 = $(CEYLAN_LIBPATHS_ARM7)"
