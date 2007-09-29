@@ -1,6 +1,6 @@
 TOP = .
 
-.PHONY: all test lib message install install-local clean
+.PHONY: all test lib message build install install-local clean
 
 
 # We are by default cross-compiling here for the Nintendo DS platform: 
@@ -8,17 +8,15 @@ CROSS_TARGET = nintendo-ds
 
 NDS_SUBDIRS = src
 
-
-
 all: test
 
-
 test: install
-	@cd test/cross-tests; $(MAKE) all
+	@cd test/cross-tests && $(MAKE) all
 	
 	
-lib: message build
-	@cd src/code; $(MAKE) -f Makefile.cross CROSS_TARGET=$(CROSS_TARGET) lib
+lib: build message
+	@cd src/code && \
+	$(MAKE) -f Makefile.cross CROSS_TARGET=$(CROSS_TARGET) lib
 
 
 message:
@@ -26,19 +24,21 @@ message:
 
 
 build:
-	@cd src; $(MAKE) -s -f Makefile.cross CROSS_TARGET=$(CROSS_TARGET) all
-	
+	@cd src && $(MAKE) -f Makefile.cross CROSS_TARGET=$(CROSS_TARGET) all
+
 	
 install: lib install-local
-	@cd src/code; $(MAKE) -s -f Makefile.cross CROSS_TARGET=$(CROSS_TARGET) install
+	@cd src/code && \
+	$(MAKE) -s -f Makefile.cross CROSS_TARGET=$(CROSS_TARGET) install
 
-
+	
 install-local:
 	@echo "Installation performed in $(CEYLAN_INSTALL_ROOT)"
 	
 
 clean:
-	@cd src; $(MAKE) -s -f Makefile.cross CROSS_TARGET=$(CROSS_TARGET) clean
+	@cd src && \
+	$(MAKE) -s -f Makefile.cross CROSS_TARGET=$(CROSS_TARGET) clean
 	
 		
 include $(TOP)/src/conf/build/$(CROSS_TARGET)/Makevars.inc
