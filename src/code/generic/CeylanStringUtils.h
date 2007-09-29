@@ -137,6 +137,11 @@ namespace Ceylan
 	/**
 	 * Displays the specified message to the user, on his console, if any.
 	 *
+	 * @note On some platforms (ex: the Nintendo DS), the console must have
+	 * been initialized beforehand.
+	 *
+	 * @see System::Console::Initialize
+	 *
 	 * @throw StringUtilsException if the operation is not available on
 	 * this platform.
 	 *
