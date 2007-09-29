@@ -68,7 +68,8 @@ DESMUME     = $(NDS_DEV_ROOT)/DeSmuME-0.4.0/NDeSmuME.exe
 WINE = wine
 
 # Location of the removable media where ROM can be transferred:
-TRANSFER_MOUNT_POINT = /media/disk
+#TRANSFER_MOUNT_POINT = /media/disk
+TRANSFER_MOUNT_POINT = /media/DS-homebrew
 
 
 
@@ -168,7 +169,7 @@ CPP_FEATURE_DEFINES:= \
 	-DCEYLAN_USES_REGEX=0                        \
 	-DCEYLAN_USES_THREADS=0                      \
 	-DCEYLAN_USES_NETWORK=0                      \
-	-DCEYLAN_USES_FILE_DESCRIPTORS=0             \
+	-DCEYLAN_USES_FILE_DESCRIPTORS=1             \
 	-DCEYLAN_USES_SYMBOLIC_LINKS=0               \
 	-DCEYLAN_USES_ADVANCED_FILE_ATTRIBUTES=0     \
 	-DCEYLAN_USES_FILE_LOCKS=0                   \
@@ -181,6 +182,7 @@ CPP_DEBUG_DEFINES:= \
 	-DCEYLAN_DEBUG_CONSOLE=0           \
 	-DCEYLAN_DEBUG_DEMANGLE=0          \
 	-DCEYLAN_DEBUG_EVENTS=0            \
+	-DCEYLAN_DEBUG_LIBFAT=0            \
 	-DCEYLAN_DEBUG_LOG=0               \
 	-DCEYLAN_DEBUG_LOW_LEVEL_STREAMS=0 \
 	-DCEYLAN_DEBUG_MARSHALLERS=0       \
