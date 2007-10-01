@@ -124,9 +124,10 @@ int main( int argc, char * argv[] )
 				
 			Ceylan::Float32 a = 1 ;
 				
-			while ( 1 )
+			while ( true )
 			{
-				a += Ceylan::Maths::Sin( a ) * 5.1 ;
+				a += static_cast<Ceylan::Float32>( 
+					Ceylan::Maths::Sin( a ) * 5.1 ) ;
 			}
 			
 			return Ceylan::ExitSuccess ;
