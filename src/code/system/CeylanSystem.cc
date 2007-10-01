@@ -1386,15 +1386,28 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 		 * the OS perfoming a context switch (hence even with busy waiting
 		 * we end up with a full time slice penalty, and we would be always
 		 * late, of up to one time slice. Bad performance).
+		 *
 		 * Let Ts be the time slice duration (16 ms for example).
 		 * Thus at this point if remaining time tr is between 0 and Ts / 2,
 		 * we have the choice to be too early of tr, or to be late of at least
 		 * Ts - tr > tr.
+		 *
 		 * We prefer the former to the latter (earlier better than later, and
 		 * error is smaller).
 		 * Hence on average we will be waiting the right duration, even 
 		 * though we will be most of the time either too early or too
 		 * late. 
+		 *
+		 * The 1.5 coefficient has been computed so that waitings finishing too
+		 * late or too early divide somewhat evenly, since they could not be
+		 * eradicated, with a slight advantage given to 'too early' waitings,
+		 * as they are generally less disturbing for an application.
+		 *
+		 * The coefficient has been tested both in idle and in loaded contexts.
+		 *
+		 * A coefficient equal to 2 would result in smartSleep being always 
+		 * too early.
+		 *
 		 * On GNU/Linux the busy waiting does not trigger such context changes
 		 * and we just have to wait the deadline as expected, with pretty
 		 * good results.
@@ -1757,4 +1770,3 @@ bool Ceylan::System::setLegacyStreamSynchronization( bool synchronized )
 	return std::ios::sync_with_stdio( synchronized ) ;
 
 }
-
