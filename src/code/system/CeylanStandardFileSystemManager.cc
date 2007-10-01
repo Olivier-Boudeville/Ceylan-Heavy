@@ -27,6 +27,9 @@ using std::list ;
 extern "C"
 {
 
+#ifdef CEYLAN_USES_DIRECT_H
+#include <direct.h>            // for _rmdir
+#endif // CEYLAN_USES_DIRECT_H
 
 #ifdef CEYLAN_USES_SYS_STAT_H
 #include <sys/stat.h>          // for mode_t
@@ -40,9 +43,12 @@ extern "C"
 #include <sys/utime.h>         // for utime     
 #endif // CEYLAN_USES_SYS_UTIME_H
 
-
 }
 
+
+#ifndef PATH_MAX
+#define PATH_MAX 1024
+#endif // PATH_MAX
 
 
 using namespace Ceylan::System ;
@@ -659,18 +665,20 @@ bool StandardFileSystemManager::existsAsDirectory(
 		if ( buf.st_mode & _S_IFDIR )
 		{
 
+			/*
 			CEYLAN_LOG( "StandardFileSystemManager::existsAsDirectory: "
 				+ directoryPath + " exists and is a directory" ) ;
-				
+			*/	
 			return true ;
 
 		}
 		else
 		{
 
+			/*
 			CEYLAN_LOG( "StandardFileSystemManager::existsAsDirectory: " 
 				+ directoryPath + " exists but is not a directory" ) ;
-				
+			*/					
 			return false ;
 
 		}
@@ -678,10 +686,12 @@ bool StandardFileSystemManager::existsAsDirectory(
 	}
 	else
 	{
-
+		
+		/*
 		CEYLAN_LOG( "StandardFileSystemManager::existsAsDirectory: " 
 			+ directoryPath + " is not a directory entry" ) ;
-			
+		*/
+
 		return false ;
 
 	}
