@@ -129,6 +129,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "generic-testCeylanBasicData
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "modules-testCeylanXMLParser", "..\..\..\..\test\modules\testCeylanXMLParser\testCeylanXMLParser.vcproj", "{A3EBD624-D768-4196-844C-49CAED2DBA60}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "system-testCeylanConsole", "..\..\..\..\test\system\testCeylanConsole\testCeylanConsole.vcproj", "{21C0813F-6614-420B-9FAB-F05D93585E43}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -391,6 +393,10 @@ Global
 		{A3EBD624-D768-4196-844C-49CAED2DBA60}.Debug|Win32.Build.0 = Debug|Win32
 		{A3EBD624-D768-4196-844C-49CAED2DBA60}.Release|Win32.ActiveCfg = Release|Win32
 		{A3EBD624-D768-4196-844C-49CAED2DBA60}.Release|Win32.Build.0 = Release|Win32
+		{21C0813F-6614-420B-9FAB-F05D93585E43}.Debug|Win32.ActiveCfg = Debug|Win32
+		{21C0813F-6614-420B-9FAB-F05D93585E43}.Debug|Win32.Build.0 = Debug|Win32
+		{21C0813F-6614-420B-9FAB-F05D93585E43}.Release|Win32.ActiveCfg = Release|Win32
+		{21C0813F-6614-420B-9FAB-F05D93585E43}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
