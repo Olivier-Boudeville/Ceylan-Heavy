@@ -716,15 +716,16 @@ Size StandardFile::write( const Ceylan::Byte * buffer, Size maxLength )
 		static_cast<std::streamsize>( maxLength ) ) ;
 
 	if ( n < 0 )
-		throw WriteFailed( "StandardFile::write failed for file '" 
+		throw OutputStream::WriteFailedException( 
+			"StandardFile::write failed for file '" 
 			+ _name + "': negative size written" ) ;
 
 	Size realSize = static_cast<Size>( n ) ;
 	
 	if ( realSize < maxLength )
-		throw WriteFailed( "StandardFile::write failed for file '" 
-			+ _name + "', fewer bytes wrote than expected: " 
-			+ interpretState() ) ;
+		throw OutputStream::WriteFailedException( 
+			"StandardFile::write failed for file '" + _name 
+			+ "', fewer bytes wrote than expected: " + interpretState() ) ;
 			
 	/*
 	 * Probably useless:
