@@ -348,7 +348,8 @@ const std::string TextBuffer::toString( Ceylan::VerbosityLevels level )
 
 	string res = "Text buffer of width " + Ceylan::toNumericalString( _width )
 		+ " and of height " + Ceylan::toNumericalString( _height ) 
-		+ ", containing " + Ceylan::toString( _textEntries.size() ) 
+		+ ", containing " + Ceylan::toString( 
+			static_cast<Ceylan::Uint32>( _textEntries.size() ) ) 
 		+ " text(s). Selected text layout is " ;
 	
 	switch( _layout )
@@ -380,7 +381,8 @@ const std::string TextBuffer::toString( Ceylan::VerbosityLevels level )
 		return res + ". Abstract screen is empty" ;
 		
 	res += ". Abstract screen contains " 
-		+ Ceylan::toString( _screenLines.size() ) + " line(s):" ;
+		+ Ceylan::toString( static_cast<Ceylan::Uint32>( _screenLines.size() ) ) 
+		+ " line(s):" ;
 	
 	list<string> linesList ;
 	
@@ -660,7 +662,7 @@ TextBuffer::TextGrid & TextBuffer::createAdvancedGridFrom(
     	   
 			// Multiple whitespaces in a row can lead to empty words.
     	 
-			wordWidth = currentWord.size() ;
+			wordWidth = static_cast<CharAbscissa>( currentWord.size() ) ;
 		   
 			if ( currentWidth + wordWidth <= _width ) 
 			{
@@ -709,7 +711,7 @@ TextBuffer::TextGrid & TextBuffer::createAdvancedGridFrom(
 				it != wordsOnTheLine.end(); it++ ) 
 			{
 				
-				wordWidth = (*it).size() ;
+				wordWidth = static_cast<CharAbscissa>( (*it).size() ) ;
 				
 				// Copy word in grid:
 				for ( string::const_iterator charIt = (*it).begin() ;
@@ -760,9 +762,9 @@ TextBuffer::TextGrid & TextBuffer::createAdvancedGridFrom(
 				
 				
  				// Could be computed incrementally to avoid the division:
-				currentWidth += /* justified space */ 
+				currentWidth += /* justified space */ static_cast<CharAbscissa>( 
 					   		( _width - currentWidth - totalWordWidth ) 
-								/ wordCount ;
+								/ wordCount ) ;
 										
    			     							   
 			}
@@ -854,7 +856,7 @@ TextBuffer::LineIndex TextBuffer::getHeightFromCurrentPosition()
 	while ( textIterator != _textEntries.end() )
 	{
 	
-		count += (*textIterator).second->size() ;
+		count += static_cast<LineIndex>( (*textIterator).second->size() ) ;
 		textIterator++ ;
 	
 	}
@@ -875,7 +877,7 @@ TextBuffer::LineIndex TextBuffer::getHeightFromEntry(
 	while ( textIterator != _textEntries.end() )
 	{
 	
-		count += (*textIterator).second->size() ;
+		count += static_cast<LineIndex>( (*textIterator).second->size() ) ;
 		textIterator++ ;
 	
 	}
