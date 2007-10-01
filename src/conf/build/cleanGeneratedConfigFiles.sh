@@ -22,6 +22,10 @@ cd $BASE_DIR
 cd test
 make clean 1>/dev/null 2>&1
 
+cd cross-tests
+make clean
+cd ..
+
 $FIND . \( -name 'test*.exe-logs' -a -type d \) -exec $RM -rf '{}' ';' 2>/dev/null
 
 $FIND . \( -name 'test*.exe' -a -type f \) -exec $RM -f '{}' ';' 2>/dev/null
