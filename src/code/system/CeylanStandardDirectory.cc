@@ -41,10 +41,6 @@ extern "C"
 }
 
 
-#ifndef PATH_MAX
-#define PATH_MAX 1024
-#endif // PATH_MAX
-
 
 /*
  * Implementation notes.
