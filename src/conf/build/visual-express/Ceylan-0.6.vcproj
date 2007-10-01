@@ -223,6 +223,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\code\system\CeylanConsole.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\code\interfaces\CeylanController.h"
 				>
 			</File>
@@ -287,6 +291,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\code\system\CeylanFileSystemCommon.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\code\system\CeylanFileSystemManager.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\code\generic\CeylanFunctor.h"
 				>
 			</File>
@@ -300,6 +312,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\code\generic\CeylanHeaderVersion.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\code\generic\CeylanHolder.h"
 				>
 			</File>
 			<File
@@ -336,6 +352,18 @@
 			</File>
 			<File
 				RelativePath="..\..\..\code\network\CeylanIPAddressvFour.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\code\system\CeylanLibfatDirectory.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\code\system\CeylanLibfatFile.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\code\system\CeylanLibfatFileSystemManager.h"
 				>
 			</File>
 			<File
@@ -627,6 +655,18 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\code\system\CeylanStandardDirectory.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\code\system\CeylanStandardFile.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\code\system\CeylanStandardFileSystemManager.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\code\system\CeylanStream.h"
 				>
 			</File>
@@ -660,6 +700,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\code\generic\CeylanTestException.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\code\generic\CeylanTextBuffer.h"
 				>
 			</File>
 			<File
@@ -739,7 +783,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\code\modules\ceylanxmlelement.h"
+				RelativePath="..\..\..\code\modules\CeylanXMLElement.h"
 				>
 			</File>
 			<File
@@ -747,7 +791,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\code\modules\ceylanxmlvisitor.h"
+				RelativePath="..\..\..\code\modules\CeylanXMLVisitor.h"
 				>
 			</File>
 			<File
@@ -801,6 +845,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\code\system\CeylanConsole.cc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\code\interfaces\CeylanController.cc"
 				>
 			</File>
@@ -849,6 +897,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\code\system\CeylanFileSystemManager.cc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\code\generic\CeylanFunctor.cc"
 				>
 			</File>
@@ -890,6 +942,18 @@
 			</File>
 			<File
 				RelativePath="..\..\..\code\network\CeylanIPAddressvFour.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\code\system\CeylanLibfatDirectory.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\code\system\CeylanLibfatFile.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\code\system\CeylanLibfatFileSystemManager.cc"
 				>
 			</File>
 			<File
@@ -1145,6 +1209,18 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\code\system\CeylanStandardDirectory.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\code\system\CeylanStandardFile.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\code\system\CeylanStandardFileSystemManager.cc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\code\system\CeylanStream.cc"
 				>
 			</File>
@@ -1166,6 +1242,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\code\generic\CeylanTestException.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\code\generic\CeylanTextBuffer.cc"
 				>
 			</File>
 			<File
