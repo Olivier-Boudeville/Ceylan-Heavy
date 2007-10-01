@@ -6,16 +6,6 @@
 #include "CeylanLogPlug.h"           // for LogPlug
 
 
-/*
- * The File factories (Create/Open) have to know all the Directory subclasses 
- * to be able to instantiate them:
- *
- */
- 
-#include "CeylanStandardDirectory.h" // for StandardDirectory
-//#include "CeylanLibfatDirectory.h"   // for LibfatDirectory
-
-
 
 #ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"            // for configure-time feature settings
