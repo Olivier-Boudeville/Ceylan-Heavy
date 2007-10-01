@@ -4,7 +4,6 @@
 #include "CeylanOperators.h"           // for toNumericalString
 #include "CeylanUtils.h"               // for KeyChar
 
-
 #ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"              // for configure-time settings
 #endif // CEYLAN_USES_CONFIG_H
@@ -19,6 +18,7 @@
 #include <cstdio>                      // for putchar
 
 
+using namespace Ceylan ;
 using namespace Ceylan::System ;
 
 
