@@ -208,8 +208,8 @@ check_no_ceylan_server_running()
 # Check that there are no pending servers that might interfere with tests.
 {
 
-	HANGING_TESTS=`ps -edf|grep testCeylan|grep '\.exe'|grep -v 'grep testCeylan'|awk '{print $8}'|sed 's|.*/||1'`
-	
+	 HANGING_TESTS=`ps -ef|grep testCeylan|grep '\.exe'|grep -v 'grep testCeylan'|awk '{print $8}'|sed 's|.*/||1'`
+
 	if [ -n "${HANGING_TESTS}" ] ; then
 	
 		ERROR_INTERNAL "apparently there is at least one hanging test before the test suite is launched, please remove it so that it cannot interfere with these new tests (${HANGING_TESTS})" 
@@ -454,4 +454,3 @@ End of tests"
 LTDL_LIBRARY_PATH="$saved_LTDL_LIBRARY_PATH"
 
 exit $error_count
-
