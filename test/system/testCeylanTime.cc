@@ -332,7 +332,7 @@ int main( int argc, char * argv[] )
 		LogPlug::info( "Testing smartSleep with random sleep durations." ) ;
 		
 		// Can easily be very long: 
-		Ceylan::Uint32 sampleCount = 1 ;
+		Ceylan::Uint32 sampleCount = 50 ;
 		
 		if ( ! isBatch )
 			sampleCount = 1 ;
@@ -356,6 +356,12 @@ int main( int argc, char * argv[] )
 		
 		Ceylan::SignedLongInteger currentError ;
 		
+		Ceylan::Uint32 tooEarlyCount = 0 ;
+		Ceylan::Uint32 tooEarlyTotal = 0 ;
+
+		Ceylan::Uint32 tooLateCount = 0 ;
+		Ceylan::Uint32 tooLateTotal = 0 ;
+
 		/*
 		 * smartSleep can be called safely since getSchedulingGranularity
 		 * was already called.
@@ -402,7 +408,11 @@ int main( int argc, char * argv[] )
 						+ " microseconds, actual measured sleep duration "
 						"minus requested sleep duration is "
 						+  Ceylan::toString( currentError ) 
-						+ " microsecond(s)." ) ;	
+						+ " microsecond(s)." ) ;
+
+					tooLateCount++ ;
+					tooLateTotal += currentError ;
+
 				}		
 				else 
 				{
@@ -415,7 +425,11 @@ int main( int argc, char * argv[] )
 						+ " microseconds, actual requested sleep duration "
 						"minus measured sleep duration is "
 						+  Ceylan::toString( -currentError ) 
-						+ " microsecond(s)." ) ;	
+						+ " microsecond(s)." ) ;
+
+					tooEarlyCount++ ;
+					tooEarlyTotal -= currentError ;
+
 				}	
 														
 			}
@@ -433,9 +447,23 @@ int main( int argc, char * argv[] )
 				
 		}
 		
-		
+		LogPlug::info( "Finally, smartSleep waited too much " 
+			+ Ceylan::toString( tooLateCount )
+			+ " times, for a total duration of " + Ceylan::toString( tooLateTotal ) 
+			+ " microseconds, and waited not enough " 
+			+ Ceylan::toString( tooEarlyCount )
+			+ " times, for a total duration of " + Ceylan::toString( tooEarlyTotal ) 
+			+ " microseconds." ) ; 
+
+
+
 		LogPlug::info( "Testing smartSleepUntil with random time target." ) ;
 		
+		tooEarlyCount = 0 ;
+		tooEarlyTotal = 0 ;
+
+		tooLateCount = 0 ;
+		tooLateTotal = 0 ;
 
 		for ( Ceylan::Uint32 i = 0; i < sampleCount; i++ )
 		{
@@ -467,7 +495,10 @@ int main( int argc, char * argv[] )
 						+ Ceylan::toString( lastMicrosecond + drawnMicrosecond )
 						+ " microseconds, woke up too late of "
 						+  Ceylan::toString( currentError ) 
-						+ " microsecond(s)." ) ;	
+						+ " microsecond(s)." ) ;
+
+					tooLateCount++ ;
+					tooLateTotal += currentError ;
 				}		
 				else 
 				{
@@ -493,12 +524,23 @@ int main( int argc, char * argv[] )
 				+ " microseconds, actual measured wake-up time "
 				"minus target time is "
 				+  Ceylan::toString( currentError ) 
-				+ " microsecond(s)." ) ;			
+				+ " microsecond(s)." ) ;
+
+				tooEarlyCount++ ;
+				tooEarlyTotal -= currentError ;
 					
 			}				
 		
 		}
-		
+
+		LogPlug::info( "Finally, smartSleepUntil waited too much " 
+			+ Ceylan::toString( tooLateCount )
+			+ " times, for a total duration of " + Ceylan::toString( tooLateTotal ) 
+			+ " microseconds, and waited not enough " 
+			+ Ceylan::toString( tooEarlyCount )
+			+ " times, for a total duration of " + Ceylan::toString( tooEarlyTotal ) 
+			+ " microseconds." ) ; 
+
 		
 		// Testing durationToString now:
 			
