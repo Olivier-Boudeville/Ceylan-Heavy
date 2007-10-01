@@ -395,9 +395,20 @@ namespace Ceylan
 			typedef std::pair<std::string, TextGrid*> TextEntry ;
 
 
+/*
+ * Takes care of the awful issue of Windows DLL with templates.
+ *
+ * @see Ceylan's developer guide and README-build-for-windows.txt 
+ * to understand it, and to be aware of the associated risks.
+ *
+ */
+#pragma warning( push )
+#pragma warning( disable : 4251 )
+
 			/// A list of text entries.
 			typedef std::list<TextEntry> ListOfTexts ;
 
+#pragma warning( pop ) 
 				
 			/**
 			 * Tells how many lines spread from the beggining of specified 
@@ -416,13 +427,26 @@ namespace Ceylan
 			 */
 			char * getNewLine() throw() ;
 				
+
+/*
+ * Takes care of the awful issue of Windows DLL with templates.
+ *
+ * @see Ceylan's developer guide and README-build-for-windows.txt 
+ * to understand it, and to be aware of the associated risks.
+ *
+ */
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 			
+
 			/**
 			 * Records the text stored by this buffer and its precomputed 
 			 * lines.
 			 *
 			 */
 			ListOfTexts _textEntries ;
+
+#pragma warning( pop ) 
 	
 	
 			/// The width of the character grid.
@@ -438,17 +462,26 @@ namespace Ceylan
 			/// The width, in characters, of a paragraph alinea.
  			CharAbscissa _alineaWidth ;
 					
-						
+/*
+ * Takes care of the awful issue of Windows DLL with templates.
+ *
+ * @see Ceylan's developer guide and README-build-for-windows.txt 
+ * to understand it, and to be aware of the associated risks.
+ *
+ */
+#pragma warning( push )
+#pragma warning( disable : 4251 )
+
 			/// The index of the text entry being rendered.
 			ListOfTexts::const_iterator _currentText ;
 			
 			/// Index of a preformatted line in current rendered text grid.
-			TextGrid::const_iterator _currentLine ;
-			
+			TextGrid::const_iterator _currentLine ;			
 			
 			/// The current screen, seen as a list of (at most _height) lines.	
 			TextGrid _screenLines ;
 			
+#pragma warning( pop ) 						
 			
 			
 			
