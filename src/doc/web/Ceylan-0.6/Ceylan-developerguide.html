@@ -249,11 +249,11 @@ We suppose here that, with the previous version, the current version has been se
 
 	<li>optional: enable Automake distribution checking (set <code>do_distcheck=0</code> in <code>trunk/src/conf/build/autogen.sh</code>) to ensure no distributed file is badly managed (note however that, at least for the moment, this checking cannot fully succeed, because in general tests cannot be configured without <code>distcheck</code> telling where the library was installed)</li>
 
-	<li>on Windows, update the check-out, load the previous solution (ex: <code>trunk/src/Ceylan-x.(y-1).sln</code>), rename it (right-click) with newer version, do the same for the library in solution (<code>trunk/src/Ceylan-x.y.vcproj</code>), save all and stop Visual Express, then add these two files to SVN repository and check them in. Rebuild everything and check with cygwin that the test suite runs fine</li>
+	<li>on Windows, update the check-out, load the previous solution (ex: <code>trunk/src/conf/build/visual-express/Ceylan-x.(y-1).sln</code>), rename it (right-click, still in IDE) with newer version, then do the same for the library in solution (<code>trunk/src/conf/build/visual-express/Ceylan-x.y.vcproj</code>), then <code>save as</code> that library project to a file numbered accordingly, then save all (the full solution) and stop Visual Express, then add these two files to SVN repository and check them in. Rebuild everything and check with cygwin that the test suite runs fine</li>
 
-	<li>update, preferably on UNIX, the various version-related files and directories: <code>src/doc/basic/Ceylan-*-template.txt.in</code> (including Ceylan-NEWS-template.txt.in) and <code>trunk/src/doc/web/main/News.html</code> </li>
+	<li>update, preferably on UNIX, the various version-related files and directories: <code>trunk/src/doc/basic/Ceylan-*-template.txt.in</code> (including Ceylan-NEWS-template.txt.in) and <code>trunk/src/doc/web/main/News.html</code> </li>
 
-	<li>use <code>make effective-changelog-creation html-changelog</code>, under <code>trunk/src/conf/build</code> execute <code>make -f MakeConfigure get-config-scripts</code>, create  <code>trunk/src/doc/Ceylan-x.y-release-notes.txt</code> and <code>trunk/src/doc/Ceylan-x.y-changes.txt</code>, etc.</li>
+	<li>still from <code>trunk/src/doc/basic</code>, use <code>make effective-changelog-creation html-changelog</code>, under <code>trunk/src/conf/build</code> execute <code>make -f MakeConfigure get-config-scripts</code>, create  <code>trunk/src/doc/Ceylan-x.y-release-notes.txt</code> and <code>trunk/src/doc/Ceylan-x.y-changes.txt</code>, etc.</li>
 
 
 	<li>under <code>trunk/src/conf/build</code>, use <code>autogen.sh --chain-test</code> to check everything is still working as expected: all the tests must always succeed, not depending on how many times they are run</li>
@@ -359,7 +359,7 @@ Now <code>x'.y'</code> designates the next version.
       <center>
         [<a href="#_top_">Top</a>]<br>
         <br>
-        <em>Last update: Sunday, September 2, 2007</em>
+        <em>Last update: Tuesday, October 2, 2007</em>
       </center>
   
 </body>
