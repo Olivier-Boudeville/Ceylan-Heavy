@@ -1,0 +1,366 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01//EN'
+'http://www.w3.org/TR/html4/strict.dtd'>
+<!--    This document is a part of the Ceylan project 
+        For any comment, please mail to olivier.boudeville@online.fr
+-->
+<!--    
+        Creation date: 2004, February 13.
+        Author: Olivier Boudeville (olivier.boudeville@online.fr)
+        Update made by:  the author
+        Version number: 0.1
+        Adapted from: http://www.w3.org/Style/Examples/007/maps.html
+-->
+
+<html lang="EN">
+<head>
+  <title>Ceylan - Developer Guide for the Ceylan 0.7 version</title>
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=iso-8859-1">
+  <meta name="description" content="Ceylan Project">
+  <meta name="keywords" content="library, generic, GPL, developer, guide">
+  <link href="../images/Ceylan-icon.png" rel="Ceylan icon">
+  <link rel="stylesheet" type="text/css" href="../common/css/Ceylan.css" media="screen, print, projection, tv">
+</head>
+
+<body>
+  <div class="banner">
+    <p><em>General</em> <a href="../common/black.html" onclick="parent.toolbar.location=&#39;../main/MainMenu.html&#39;">home page</a>
+    <a href="../main/Map.html">site map</a> <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan-0.7]%20Developer%20Guide">mail  us</a></p>
+  </div><br>
+  <a name="_top_"></a>
+
+
+<h1>Developer Guide for the Ceylan 0.7 version</h1>
+
+<p>
+The intended public for this document is Ceylan <b>developers</b>, i.e. working on the library itself: Ceylan <b>users</b> ought to refer to the <a href="Ceylan-userguide.html">Ceylan User Guide</a>.
+</p>
+
+<p>
+See the <a href="ChangeLog.html" target="_blank">ChangeLog</a> corresponding to this release. Besides this document, Windows users should refer as well to our <a href="BuildForWindows.html">guide for Windows build</a>.
+</p>
+
+
+<h2>Build process</h2>
+
+<h3>General conventions</h3>
+<p>
+Not depending on the build platform (i.e. the platform the build toolchain will run on), Ceylan sources must be retrieved from <a href="#ceylansvn">SVN</a>
+</p>
+
+
+<h3>When building from any non-Windows platform (i.e. UNIX)</h3>
+
+<p>
+If you are performing a native build (not cross-compiling), the Autotools should be used for all UNIX platforms. The build will be then drived by <code>Makefile.am</code> files, and the ones that are generated from them (<code>Makefile.in</code>, <code>Makefile</code>).
+</p>
+
+<p>
+If you are cross-compiling, then you should be on GNU/Linux and targeting the <a href="http://osdl.sourceforge.net/main/documentation/misc/nintendo-DS/HomebrewForDS.html" target="_blank">Nintendo DS</a> (see our <a href="#cross" target="_blank">cross-compilation</a> section).
+</p>
+
+
+<p>
+In both cases (native/cross-compilation), for a clean and complete build, one should execute <code>trunk/src/conf/build/autogen.sh</code>, preferably run with the <code>-f</code> / <code>--full-test</code> option, as it builds and installs the library, and performs all available tests.
+</p>
+
+<p>
+To request a cross-compilation targeting the Nintendo DS, the <code>--nds</code> switch should be added. To run interactively (i.e. without using <code>autogen.sh</code>) the build system, one could use for example:
+<center>
+    <table summary="Code" style="border: none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+make -f Makefile.cross CROSS_TARGET=nintendo-ds all
+Using this kind of alias is quite useful then:
+alias mn='make -f Makefile.cross CROSS_TARGET=nintendo-ds'
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+ 
+</p>
+
+
+<h3>For Windows platforms</h3>
+<p>
+In that case the fresh <a href="#ceylansvn">SVN</a> sources are expected to be used with the Visual C++ 2005 Express toolchain.
+</p>
+
+
+
+<a name="cross"></a>
+<h3>Cross-compilation to the Nintendo DS</h3>
+
+<p>
+The <code>trunk/src/conf/build/autogen.sh</code> script should be used with the <code>--nds</code> switch. This will pass to configure the relevant <code>--host=arm-nintendo-ds</code> specification and select the cross-compilation tools accordingly. For that the automatically downloaded <code>config.sub</code> is automatically patched to recognize the DS.
+</p>
+
+<p>Classical preprocessor template to handle the Nintendo DS case:
+<center>
+    <table summary="Code" style="border: none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+#if CEYLAN_ARCH_NINTENDO_DS
+#include "CeylanConfigForNintendoDS.h" // for (ARM9)
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+
+#if CEYLAN_ARCH_NINTENDO_DS
+		
+#ifdef CEYLAN_RUNS_ON_ARM7
+
+	throw ( "Ceylan:: : only available on the ARM9." ) ;
+
+#elif defined(CEYLAN_RUNS_ON_ARM9)
+
+
+#endif // CEYLAN_RUNS_ON_ARM7
+
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+</p>
+
+<a name="ceylansvn"></a>
+<h2>Using SVN (Subversion) for Ceylan</h2>
+
+<p>
+<ul>
+
+<!--
+	<li><b></b>: </li>
+-->
+
+	<li><b>Anonymous check-out</b>: svn co https://ceylan.svn.sourceforge.net/svnroot/ceylan ceylan</li>
+
+	<li><b>User-based check-out</b>: svn co --username MyUserName https://ceylan.svn.sourceforge.net/svnroot/ceylan ceylan</li>
+
+	<li>Make SVN <b>ignore</b> a file or a pattern of files: <code>svn propset svn:ignore myFile .</code> or <code>svn propset svn:ignore "*.log" logs/</code></li>
+	
+	<li><b>Deleting a full subtree</b>: svn rm https://ceylan.svn.sourceforge.net/svnroot/ceylan/branches --username=MyUserName</li>
+	
+	
+</ul>
+</p>
+
+
+<h3>Creating a new Sourceforge SVN repository</h3>
+
+<p>
+Read carefully first <a href="http://sourceforge.net/docman/display_doc.php?docid=31178&group_id=1#usage" target="_blank">Sourceforge dedicated documentation</a> and <a href="http://svnbook.red-bean.com/en/1.1/ch03s07.html#svn-ch-3-sect-7.3" target="_blank">SVN one</a>.
+</p>
+
+<p> Then:
+<ol>
+<!--
+	<li><b></b>: </li>
+-->
+	<li><b>activate</b> SVN access for the Sourceforge project</li>
+	<li><b>wait</b> until the DNS alias is created (ex: ping ceylan.svn.sourceforge.net)</li>
+	<li><b>execute</b> <code>svn import ceylan https://ceylan.svn.sourceforge.net/svnroot/ceylan --username=MyUserName</code> where ceylan is a directory containing only one directory, Ceylan, that itself contains the branches, tags, trunk directories.
+</li>
+</ol>
+
+</p>
+
+
+
+
+<h2>Tools needed to build the Ceylan library on UNIX</h2>
+
+<p>
+Before reporting an error, please check you have upgraded following tools with their latest stable version available:
+<ul>
+
+<!--
+	<li></li>
+-->
+	<li>automake</li>
+	<li>autoconf</li>
+	<li>make</li>
+	<li>gcc</li>
+	<li>g++</li>
+</ul>
+ 
+</p>
+
+
+<h2>Rules &amp; good practises</h2>
+
+<p>
+Some developing rules are to be enforced:
+
+<ol>
+<!--
+	<li><b></b>: </li>
+-->
+	<li>no <b>system header</b> mentioned in Ceylan installed headers (hence no system-specific types such as mode_t in our headers): otherwise the API exposed by Ceylan would depend on these system headers, then on a config.h that should
+be installed to select them but may clash with others, and so on. This implies using opaque handle for forward-declared but undefined struct pointer such as <code>struct ceylan_mode_t ;</code></li>
+	<li>all <b>header include guards</b> are designed to not collide with other non-Ceylan headers: for example, <code>HAVE_CTIME</code> is to be replaced by <code>CEYLAN_USES_CTIME</code></li>
+	<li><b>pkg-config</b> should be used whenever available</li>
+	<li>in each module, <b>public headers</b> should be listed alphabetically (<code>use /bin/ls -1 *.h</code>) in CeylanMODULE_NAMEIncludes.h (ex: CeylanMathsIncludes.h)</li>
+	<li>no <b>inferior to (&lt;)</b> nor  <b>superior to (&gt;)</b> symbols in log messages if not used to specify HTML tags. Otherwise they would be interpreted as mark-up elements. So to delimit precisely strings, prefer using <code>'A specific message'</code> to <code>&lt;A specific message&gt;</code>
+
+</li>
+	<li>use <b>--consolePlug</b> if you are debugging the file layer, since <code>--classicalPlug</code> would use that layer for logging purpose otherwise. Use this latter classical plug to debug the log system, including the HTML aggregator. Finally, use <code>--HTMLPlug</code> for all other needs.</li>
+	<li>to better understand <b>Locatable referentials</b>, see: <code>test/interface/testCeylanLocatable.cc</code></li>
+</ol>
+</p>
+
+
+
+<h2>Releasing a new Ceylan x.y version</h2>
+
+<p>
+We suppose here that, with the previous version, the current version has been setup, hence we will create a release for current version and then prepare the setup for the next one.
+</p>
+
+<p>
+
+
+<a name="release-before"></a>
+<h3>Release a Ceylan version</h3>
+
+<p>
+<code>x.y</code> designates here the version to release, which should be the in-development version once stabilized.
+</p>
+
+<ol>
+
+<!--
+	<li></li>
+-->
+
+	<li>freeze the developments on UNIX, ensure all the tests run fine with playTests.sh on UNIX, and check-in everything</li>
+
+	<li>optional: enable Automake distribution checking (set <code>do_distcheck=0</code> in <code>trunk/src/conf/build/autogen.sh</code>) to ensure no distributed file is badly managed (note however that, at least for the moment, this checking cannot fully succeed, because in general tests cannot be configured without <code>distcheck</code> telling where the library was installed)</li>
+
+	<li>on Windows, update the check-out, load the previous solution (ex: <code>trunk/src/conf/build/visual-express/Ceylan-x.(y-1).sln</code>), rename it (right-click, still in IDE) with newer version, then do the same for the library in solution (<code>trunk/src/conf/build/visual-express/Ceylan-x.y.vcproj</code>), then <code>save as</code> that library project to a file numbered accordingly, then save all (the full solution) and stop Visual Express, then add these two files to SVN repository and check them in. Rebuild everything and check with cygwin that the test suite runs fine</li>
+
+	<li>update, preferably on UNIX, the various version-related files and directories: <code>trunk/src/doc/basic/Ceylan-*-template.txt.in</code> (including Ceylan-NEWS-template.txt.in), <code>trunk/src/doc/web/main/News.html</code> and, in <code>trunk/src/conf/CeylanSettings.inc</code>, <code>CEYLAN_RELEASE_DATE</code></li>
+
+	<li>still from <code>trunk/src/doc/basic</code>, use <code>make effective-changelog-creation html-changelog</code>, under <code>trunk/src/conf/build</code> execute <code>make -f MakeConfigure get-config-scripts</code>, create  <code>trunk/src/doc/Ceylan-x.y-release-notes.txt</code> and <code>trunk/src/doc/Ceylan-x.y-changes.txt</code>, etc.</li>
+
+
+	<li>under <code>trunk/src/conf/build</code>, use <code>autogen.sh --chain-test</code> to check everything is still working as expected: all the tests must always succeed, not depending on how many times they are run</li>
+	
+	<li>create a distribution with <code>./autogen.sh --only-prepare-dist</code>: it should produce an archive named <code>trunk/ceylan-x.y.tar.bz2</code>. Another approach is to use an already built Ceylan tree, and from the trunk to issue <code>make dist-bzip2</code> and  <code>make dist</code> (for tar.gz archive). Build the resulting package on as many other hosts as possible, at least one time on each supported platform. For example, <code>scp ceylan-x.y.tar.bz2 $TOSFCF && sfcf</code> to transfer the archive to Sourceforge's compile farm (if one day it comes back) and to log to their platform chooser</li>
+	
+	<li>extract both source archives in separate temporary directories, and check that there are no useless elements (generated files, deprecated content, etc.), and that all files are expected and up-to-date, and they have the same exact content</li>
+
+	<li>regenerate the Sourceforge website, including the Ceylan API (under <code>src/doc</code>, <code>make api toSF</code>)
+</li>
+	
+	<li>when satisfied with the result, ensure the version control system is up-to-date with the <code>trunk/src/code/scripts/shell/toci</code> script</li>
+	
+	<li>create a tag for this new release (ensure you will specify the right UNIX Sourceforge user), for example: 
+	<center>
+    <table summary="a box" style="border: none">
+        <tr>
+          <td>
+            <div class="box">
+				<code>svn copy https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/tags/release-0.7.0 -m "First release of the 0.7 series, with XML parser added and three newly supported platforms: Windows XP, Sun Solaris, OpenBSD."</code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+	</li>
+	
+	<li>create two distribution archives: <code>ceylan-x.y.tar.bz2</code> thanks to <code>cd trunk/src/conf/build; autogen.sh --only-prepare-dist</code> and <code>ceylan-x.y.tar.gz</code> thanks to <code>make dist</code> from <code>trunk</code>
+</li>
+		
+	<li>upload both distribution archives to <a href="http://sourceforge.net/projects/ceylan" target="_blank">Sourceforge</a>: select in the admin tab <code>File releases</code>, add a release to the <code>Ceylan</code> package (not the hidden <code>ceylan</code> package), name that release <code>Ceylan-x.y</code>, create it. Upload both release notes and ChangeLog from local tree (respectively from <code>trunk/src/doc/Ceylan-x.y-release-notes.txt</code> and from <code>trunk/ChangeLog</code>). Upload by anonymous FTP both archives to
+<code>upload.sourceforge.net</code> in the <code>incoming</code> directory (delete first through the web form any alreay hidden release with the same name). Add the archives from the web interface (Processor: <code>Platform-Independent)</code>, File Type: <code>Source .bz2</code> or <code>Source .gz</code>). Send a notice. Check everything from a non-logged browser. 
+</li>
+	
+	<li>wait of few hours so that Sourceforge mirrors for file releases are updated, then download both archives, check their content and build and run them with the tests, with <code>build-and-test-package.sh</code></li>
+	
+	<li>send a release notice to <code>ceylan-announces@lists.sourceforge.net</code></li>
+	
+	<li>write a corresponding news item</li>
+		
+</ol>
+
+</p>
+
+
+<a name="release-after"></a>
+<h3>Prepare for the next version</h3>
+
+<p>
+Now <code>x'.y'</code> designates the next version.
+</p>
+
+<p>
+
+<ol>
+
+<!--
+	<li></li>
+-->
+	<li>to prepare the next version/release candidate, one can already update the release numbers for the next version in <code>trunk/src/conf/CeylanSettings.inc</code>: <code>CEYLAN_MAJOR_VERSION</code> and/or <code>CEYLAN_MINOR_VERSION</code> and/or <code>CEYLAN_RELEASE</code>, and in <code>trunk/src/code/CeylanConfigForWindows.h</code>. Create a new <code>trunk/src/conf/build/ceylan-x'.y'.pc.in</code> file, possibly from the one of the previous version. Once updated if needed, register it in SVN (<code>svn add ... && svn ci ...</code>)</li>
+
+	<li>create, thanks to a copy and a SVN add, a <code>src/doc/web/Ceylan-x'.y'</code> directory</li>
+
+	<li>update <code>trunk/src/doc/web/main/documentation/DocMenu.html</code> so that this new version is referenced</li>
+	
+	<li>update <code>trunk/src/doc/web/main/News.html</code> with the starting date of this new release</li>
+
+</ol>
+
+</p>
+
+
+
+<h2>Some developing hints</h2>
+<p>
+<ul>
+
+<!--
+    <li><a href="" target="_blank"></a></li>
+-->
+    <li>In case of trouble, run <code>trunk/src/conf/generateBugReport.sh</code>, it will generate a text file containing the report, and tell you what to do with it</li>
+    <li><a href="http://gcc.gnu.org/onlinedocs/libstdc++/27_io/howto.html" target="_blank">Using I/O with the STL</a></li>
+    <li>How to make a source archive for the testing of Ceylan ? From the trunk, use <code>make dist</code> or, preferably, <code>make dist-bzip2</code>.
+</li>
+</ul>
+
+</p>
+
+  <br>
+  <br>
+  <br>
+
+  <h3>Please react !</h3>
+
+  <p>If you have information more detailed or more recent than those
+  presented in this document, if you noticed errors, neglects or points
+  insufficiently discussed, <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan-0.7]%20Developer%20Guide">drop us a line</a>!</p><br>
+  <br>
+  <hr>
+  
+  <br>
+  
+      <center>
+        [<a href="#_top_">Top</a>]<br>
+        <br>
+        <em>Last update: Tuesday, October 2, 2007</em>
+      </center>
+  
+</body>
+</html>
