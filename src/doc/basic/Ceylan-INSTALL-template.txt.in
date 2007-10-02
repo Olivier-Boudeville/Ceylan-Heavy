@@ -5,9 +5,9 @@
 		
 The installation of Ceylan @CEYLAN_FULL_VERSION@ is detailed on the website, please refer to @CEYLAN_SF_URL@, notably at @CEYLAN_SF_VERSION_URL@ for everything specific to this @CEYLAN_VERSION@ version.
 
-The installation procedure is very close to the GNU standard one. 
+On UNIX, the installation procedure is very close to the GNU standard one. 
 
-It is mainly a matter of :
+It is mainly a matter of:
 	bunzip2 -f ceylan-@CEYLAN_VERSION@.tar.bz2 && tar -xvf ceylan-@CEYLAN_VERSION@.tar
 	cd ceylan-@CEYLAN_VERSION@
 	./configure
