@@ -8,9 +8,17 @@
 
 
 
+*** Main changes in Ceylan 0.6 [released on Tuesday, October 2, 2007] :
+	
+	* filesystem layer completely rewritten so that the same user code can be developed, not depending on the targeted platform (see filesystem managers)
+	
+	* support for the Nintendo DS added (on the ARM9)
+	
+
+
 *** Main changes in Ceylan 0.5 [released on Sunday, March 25, 2007] :
 	
-	* new code base enriched for the needs  of the upcoming OSDL 0.4
+	* new code base enriched for the needs of the upcoming OSDL 0.4
 	
 	* ported again to Windows XP, tested again
 	
