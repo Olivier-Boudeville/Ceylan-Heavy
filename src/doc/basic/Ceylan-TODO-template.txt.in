@@ -8,65 +8,66 @@ Tasks priorities, shown between brackets, range from 1 (the smallest priority) t
 
 Tasks are listed thematically, in each theme from the most important task to the least.
 
-First concern : add only functionnalities really needed, mainly by the OSDL project.
+First concern: add only functionnalities really needed, mainly by the OSDL project.
 
 
 
-* Build :
+* Build:
 
 	[2] update the embedded libltdl version
 	[1] support for the Intel icpc compiler
 	
 		
 		
-* Generic functionnalities :
+* Generic functionnalities:
 
+	[5] ensure that a stripped-down version of the library can be used, at least to save some RAM space on the Nintendo DS
 	[4] add localization service (XML-based ?) to support various languages
 	[4] add security service, including encryption, private/public key (by means of other libraries)
 	[4] add word-generator service (or in OSDL ?)
 	[3] ensure modularity is effective, that it is simple to add new components or replace / specialize existing ones on a project-by-project basis
-	[3] set optimizing services (runtime profiling), hand-written or reused : look for available too
+	[3] set optimizing services (runtime profiling), hand-written or reused: look for available too
 	[2] add a configuration helper (settings registery), which is able to read and write various properties (almost already done thanks to our XML parser)
 	[2] use data compression algorithm (mainly lossless), to be used for files and network (by means of other libraries)
   	
 
 
-* Math :
+* Math:
 
 	[3] add parametrized movements
 	[2] add Runge-Kutta (order 4) solver for physics engine
 	
 
 
-* System :
+* System:
 
-	[2] support abstract file systems (ex : file system in a file)
+	[2] support abstract file systems (ex: file system in a file)
 	
 		
 	
-* Events :
+* Events:
 
 	[6] implement the Event service (reliable publish and subscribe event framework)
 	
 	
 		
-* Network :
+* Network:
 
 	[2] add ASN.1-based cross-platform message-based networking (see esnacc)
 	[2] add network services such as file transfer, dynamic code and data retrieval based on cache and versions, on-the-fly compression
 	
 	
 	
-* Documentation :
+* Documentation:
 
-	[5] update HTML documentation : architecture, high level API description
+	[5] update HTML documentation: architecture, high level API description
 	[4] create Ceylan's user guide, it should be designed in a way that is fairly simple to understand and teach (docbook)
-	[2] add in header files something like :
+	[2] add in header files something like:
 
 /*
- * Ceylan : General-purpose open-source C++ library
+ * Ceylan: General-purpose open-source C++ library
  *
- * Web page : http://ceylan.sourceforge.net/Ceylan-x.y
+ * Web page: http://ceylan.sourceforge.net/Ceylan-x.y
  *
  * Copyright (C) 2004 "the Ceylan team" (see AUTHORS or Authors.html file)
  *
@@ -84,29 +85,29 @@ First concern : add only functionnalities really needed, mainly by the OSDL proj
 
 
 
-* Log system :
+* Log system:
 
 	[2] create a parser which add/remove, at will, log overhead
 	[2] support for format-strings as printf does it
-	[1] store log messages in an external file (classical or XML) so that localization is easier : no hard-coded sentences
+	[1] store log messages in an external file (classical or XML) so that localization is easier: no hard-coded sentences
 		
 	
 	
-* Binding :	
+* Binding:	
 
 	[6] client using Ceylan, game server using Erlang, communicating with ASN.1
 	[1] python / C++ integration module, using Boost.python
 	
 
 
-* Cross-platform :
+* Cross-platform:
 	
 	[4] add Mac OSX support (port everything in Ceylan, not helper libs)
 	[1] add AIX, IRIX, HP-UX platforms
 
 	
 	
-* Quality :
+* Quality:
 
 	[3] use unit-testing as much as possible
 	[3] use Valgrind to check memory management
