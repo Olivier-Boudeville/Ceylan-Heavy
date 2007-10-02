@@ -30,8 +30,8 @@
 	A: For general informations, visit @CEYLAN_SF_URL@. For in-depth version-related content, read the Ceylan user guide at @CEYLAN_SF_VERSION_URL@
 	
 	Q: What are the supported platforms ?
-	A: Core services are available for GNU/Linux, Solaris, FreeBSD, NetBSD, OpenBSD and Windows XP.
-	   Optional features are available for GNU/Linux, Solaris, FreeBSD, NetBSD, OpenBSD and some of them for Windows XP as well. Although networking is an optional feature, it is available for all supported platforms.
+	A: Core services are available for GNU/Linux, Solaris, FreeBSD, NetBSD, OpenBSD, Windows XP and Nintendo DS.
+	   Optional features are available for GNU/Linux, Solaris, FreeBSD, NetBSD, OpenBSD and some of them for Windows XP as well. Although networking is an optional feature, it is available for all supported platforms but the DS, for the moment.
 	
 		
 * Developper FAQ
