@@ -27,14 +27,15 @@ INTERFACES_INTERFACES = \
 	CeylanIdentifierOwner.h                       \
 	CeylanInputDevice.h                           \
 	CeylanInterfacesIncludes.h                    \
-	CeylanLocatable.h                             \
+	CeylanLoadable.h                              \
 	CeylanLocatable2D.h                           \
+	CeylanLocatable.h                             \
 	CeylanLockable.h                              \
 	CeylanLoggable.h                              \
 	CeylanMeasurable.h                            \
 	CeylanModel.h                                 \
-	CeylanObject.h                                \
 	CeylanObjectChannel.h                         \
+	CeylanObject.h                                \
 	CeylanObjectIdentifier.h                      \
 	CeylanSerializable.h                          \
 	CeylanTextDisplayable.h                       \
@@ -57,8 +58,9 @@ INTERFACES_IMPLEMENTATIONS = \
 	CeylanIdentifier.cc                           \
 	CeylanIdentifierOwner.cc                      \
 	CeylanInputDevice.cc                          \
-	CeylanLocatable.cc                            \
+	CeylanLoadable.cc                             \
 	CeylanLocatable2D.cc                          \
+	CeylanLocatable.cc                            \
 	CeylanLockable.cc                             \
 	CeylanLoggable.cc                             \
 	CeylanMeasurable.cc                           \
