@@ -6,11 +6,11 @@
 
 
 /*
- * This file is dedicated to the Windows version, as on UNIX it is overwritten
- * by the configure-time generated one.
+ * This file is dedicated to the non-UNIX versions (Windows, Nintendo DS, etc.),
+ * as on UNIX it is overwritten by the configure-time generated one.
  *
- * @note This Windows version needs CeylanHeaderVersion.cc, whereas the UNIX
- * one does not.
+ * @note This version needs CeylanHeaderVersion.cc, whereas the UNIX one does
+ * not.
  *
  */
  
@@ -20,14 +20,13 @@ namespace Ceylan
 
 
 	/**
-	 * This is the libtool version of the Ceylan headers, as defined in the
-	 * configure step.
+	 * This is the libtool version of the Ceylan headers.
 	 *
 	 * Allows to detect run-time mismatches between the Ceylan headers a 
 	 * program or a library was compiled with, and the actual Ceylan library
 	 * it is then linked to.
 	 *
-	 * @note Cannot declare here :
+	 * @note Cannot declare here:
 	 * 'extern CEYLAN_DLL const std::string actualCeylanHeaderLibtoolVersion 
 	 * 	= CEYLAN_LIBTOOL_VERSION ;' because with Visual C++ it leads to
 	 * multiple definitions for actualCeylanHeaderLibtoolVersion.
