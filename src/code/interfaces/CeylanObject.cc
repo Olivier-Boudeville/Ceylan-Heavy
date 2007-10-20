@@ -27,7 +27,7 @@ using namespace Ceylan::Log ;
 
 
 Object::Object( bool trackInstance, bool dropIdentifierOnExit ) 
-		throw( LogException ) : 
+		throw( LogException ): 
 	IdentifierOwner(),
 	Loggable( "Unknown object" ),
 	_trackInstance( trackInstance ) 
@@ -45,7 +45,7 @@ Object::Object( bool trackInstance, bool dropIdentifierOnExit )
 		
 		/*
 		 * Used to force rebuilding of its identifier so that it 
-		 * is not mangled :
+		 * is not mangled:
 		 *
 		 */
 		if ( dropIdentifierOnExit )
@@ -54,6 +54,7 @@ Object::Object( bool trackInstance, bool dropIdentifierOnExit )
 	}	
 	
 }
+
 
 
 Object::~Object() throw()
@@ -72,6 +73,7 @@ Object::~Object() throw()
 }
 
 
+
 const std::string Object::getClassName() const throw()
 {
 
@@ -85,7 +87,7 @@ const std::string Object::getClassName() const throw()
 	 
 	Ceylan::Uint16 i = 0 ; 
 	 
-	while ( ::isdigit( className[ i ] ) ) 
+	while (::isdigit( className[ i ] ) ) 
 		i++ ;
 
 	/*
@@ -103,7 +105,7 @@ const std::string Object::getClassName() const throw()
 #if CEYLAN_DEBUG
 
 	string result = className.substr( i ) ;	 
-	CEYLAN_LOG( "Object::getClassName is : " + result ) ;
+	CEYLAN_LOG( "Object::getClassName is: " + result ) ;
 	return result ;
 	
 #else // CEYLAN_DEBUG
@@ -115,10 +117,12 @@ const std::string Object::getClassName() const throw()
 }
 
 
+
 bool Object::isOfSameType( const Object & other ) const throw()
 {
     return ( getClassName() == other.getClassName() ) ;
 }
+
 
 
 void Object::logState( Ceylan::VerbosityLevels level ) throw()
@@ -127,11 +131,12 @@ void Object::logState( Ceylan::VerbosityLevels level ) throw()
 }
 
 
+
 void Object::send( const string & message, LevelOfDetail levelOfDetail ) 
 	throw( LogException )
 {
 
-	CEYLAN_LOG( "Object::send : will send message " + message ) ;
+	CEYLAN_LOG( "Object::send: will send message " + message ) ;
 	
 	if ( ! hasIdentifier() )
 	{
@@ -142,24 +147,25 @@ void Object::send( const string & message, LevelOfDetail levelOfDetail )
 		}
 		catch( const Identifier::IdentifierException & e )
 		{
-			throw LogException( "Object::send failed : "
+			throw LogException( "Object::send failed: "
 				+ e.toString() ) ;
 
 		}
 
-		CEYLAN_LOG( "Object::send : channel name set to " 
+		CEYLAN_LOG( "Object::send: channel name set to " 
 			+ getIdentifier().toString() ) ;
 
 		setChannelName( getIdentifier().toString() ) ;
 
 	}	
 	
-	CEYLAN_LOG( "Object::send : effective sending of message " 
+	CEYLAN_LOG( "Object::send: effective sending of message " 
 		+ message ) ;
 	
 	Loggable::send( message, levelOfDetail ) ;	
 	
 }
+
 
 
 const string Object::toString( Ceylan::VerbosityLevels level ) 
@@ -183,15 +189,16 @@ const string Object::toString( Ceylan::VerbosityLevels level )
 }
 	
 	
+	
 void Object::forgeIdentifier() throw( Log::LogException )
 {
 	
-	CEYLAN_LOG( "Object::forgeIdentifier : new identifier required." ) ;
+	CEYLAN_LOG( "Object::forgeIdentifier: new identifier required." ) ;
 	
 	if ( hasIdentifier() )
 		dropIdentifier() ;
 		
-	CEYLAN_LOG( "Object::forgeIdentifier : "
+	CEYLAN_LOG( "Object::forgeIdentifier: "
 		"creating new object identifier." ) ;
 
 	ObjectIdentifier * newID ;
@@ -211,7 +218,7 @@ void Object::forgeIdentifier() throw( Log::LogException )
 	}
 	catch( const Identifier::IdentifierException & e ) 
 	{
-		throw Log::LogException( "Object::forgeIdentifier : "
+		throw Log::LogException( "Object::forgeIdentifier: "
 			+ e.toString() ) ;
 	}
 
@@ -223,15 +230,16 @@ void Object::forgeIdentifier() throw( Log::LogException )
 	}
 	catch( const IdentifierNotAvailableException & e )
 	{
-		throw Log::LogException( "Object::forgeIdentifier : "
+		throw Log::LogException( "Object::forgeIdentifier: "
 			+ e.toString() ) ;
 	}
 
 
-	CEYLAN_LOG( "Object::forgeIdentifier : new ID is " 
+	CEYLAN_LOG( "Object::forgeIdentifier: new ID is " 
 		+ getIdentifier().toString() ) ;
 
 }	
+
 
 
 void Object::dropIdentifier() throw()
