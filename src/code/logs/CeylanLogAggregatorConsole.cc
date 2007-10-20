@@ -28,6 +28,7 @@ using namespace Ceylan::System ;
 #endif // CEYLAN_USES_CONFIG_H
 
 
+
 /*
  * In the case of the Nintendo DS, a convenient way of debugging is to use
  * one of the two screens as a debug console. 
@@ -81,7 +82,7 @@ LogAggregatorConsole::LogAggregatorConsole(
 		
 		default:	
 			throw LogAggregatorException( 
-				"LogAggregatorConsole constructor : "
+				"LogAggregatorConsole constructor: "
 				"unknown console stream selected." ) ;				
 			break ;
 			
@@ -90,6 +91,7 @@ LogAggregatorConsole::LogAggregatorConsole(
 #endif // CEYLAN_ARCH_NINTENDO_DS
 	
 }
+
 
 
 LogAggregatorConsole::~LogAggregatorConsole() throw() 
@@ -111,7 +113,7 @@ LogAggregatorConsole::~LogAggregatorConsole() throw()
 		{
 		
 			std::cerr << "Error while aggregating logs in "
-				"LogAggregatorConsole destructor : "
+				"LogAggregatorConsole destructor: "
 				<< e.toString() << "." << std::endl ;
 				
 			// Never throw an exception from a destructor !		
@@ -147,13 +149,14 @@ LogAggregatorConsole::~LogAggregatorConsole() throw()
 }
 
 
+
 void LogAggregatorConsole::aggregate() throw( LogAggregatorException ) 
 {
 
 
 	if ( _immediateWrite )
 	{
-		CEYLAN_LOG( "LogAggregatorConsole::aggregate : "
+		CEYLAN_LOG( "LogAggregatorConsole::aggregate: "
 			"write mode is immediate, nothing to do." ) ;
 		return ;	 
 	}
@@ -179,12 +182,13 @@ void LogAggregatorConsole::aggregate() throw( LogAggregatorException )
 }
 
 
+
 void LogAggregatorConsole::store( LogMessage & message ) throw( LogException )
 {
 
 	CEYLAN_LOG( "Storing a new message " + message.toString() ) ;
 	
-	// Use standard LogAggregator method in all cases, immediate write or not :
+	// Use standard LogAggregator method in all cases, immediate write or not:
 	LogAggregator::store( message ) ;
 
 	/*
@@ -202,6 +206,7 @@ void LogAggregatorConsole::store( LogMessage & message ) throw( LogException )
 }
 	
 
+
 void LogAggregatorConsole::write( const LogChannel & channel ) 
 	const throw( LogException )
 {
@@ -213,6 +218,7 @@ void LogAggregatorConsole::write( const LogChannel & channel )
 	(*_outputStream) << "\n" ;	
 	
 }
+
 
 
 void LogAggregatorConsole::write( const LogMessage & message ) const throw()
@@ -235,12 +241,13 @@ void LogAggregatorConsole::write( const LogMessage & message ) const throw()
 }
 
 
+
 const string LogAggregatorConsole::toString( Ceylan::VerbosityLevels level ) 
 	const throw()
 {
 
 	string res = string( "This is LogAggregatorConsole in " )
-		+ ( _immediateWrite ? "" : "non-" ) 
+		+ ( _immediateWrite ? "": "non-" ) 
 		+ string( "immediate mode. It " )
 		+ ( _useGlobalLevelOfDetail ? "uses" : "does not use" )
 		+ string( " a global level of detail for message output. It uses " ) ;
