@@ -161,7 +161,10 @@ namespace Ceylan
 	 *
 	 * @note No CEYLAN_DLL declaration for templates.
 	 *
-	 * @see testCeylanLoadable.cc
+	 * A class inheriting from this instanciated template just has to implement
+	 * the load and unload method accordingly.
+	 *
+	 * @see testCeylanLoadable.cc for an example of such implementation.
 	 *
 	 */
 	template <typename Content>
@@ -181,7 +184,13 @@ namespace Ceylan
 				throw( LoadableException ) ;
 				
 				
-			/// Virtual destructor.
+			/**
+			 * Virtual destructor.
+			 *
+			 * @note Does not delete the content as this operation is usually
+			 * content-specific.
+			 *
+			 */
 			virtual ~LoadableWithContent() throw() ;
 			
 			
@@ -218,12 +227,32 @@ namespace Ceylan
 			 */
             virtual bool unload() throw( LoadableException ) = 0 ;
 
+
+            /**
+			 * Reloads the content of this instance.
+			 *
+			 * @param forceLoad if true, then any previously loaded content
+			 * will be deleted before an unconditional loading is performed.
+			 * If false, then if there were no content already loaded, no 
+			 * loading will be performed (content availability will be kept
+			 * as was), but if the content was loaded, it will be unloaded and
+			 * reloaded.
+			 *
+			 * @return true iff a reload had to take place.
+			 *
+			 * @throw LoadableException whenever the reloading fails.
+			 *
+			 */
+            virtual bool reload( bool forceLoad = false ) 
+				throw( LoadableException ) ;
+
+
 			
 			/**
 			 * Returns true iff the content is already loaded.
 			 *
 			 */
-			virtual bool hasContent() const throw( LoadableException ) ;
+			virtual bool hasContent() const throw() ;
 			
 			
 			/**
@@ -240,6 +269,20 @@ namespace Ceylan
 			
 			
 			/**
+			 * Returns a constant reference to the already loaded content.
+			 *
+			 * @throw LoadableException if the operation failed, including if
+			 * there is no available content to be returned (it will not be
+			 * loaded if lacking).
+			 *
+			 * @note Ownership of the content is kept by this instance.
+			 *
+			 */
+			virtual const Content & getExistingContentAsConst() const 
+				throw( LoadableException ) ;
+			
+			
+			/**
 			 * Returns the loaded content, either directly (if already
 			 * available), otherwise after having loaded it.
 			 *
@@ -249,6 +292,25 @@ namespace Ceylan
 			 *
 			 */
 			virtual Content & getContent() throw( LoadableException ) ;
+			
+			
+			/**
+			 * Returns a constant reference to the loaded content, either
+			 * directly (if already available), otherwise after having loaded
+			 * it.
+			 *
+			 * @throw LoadableException if the operation failed.
+			 *
+			 * @note Ownership of the content is kept by this instance.
+			 *
+			 * @note The method cannot be const as it may have to load the 
+			 * content.
+			 *
+			 * @see getExistingContentAsConst
+			 *
+			 */
+			virtual const Content & getContentAsConst() 
+				throw( LoadableException ) ;
 			
 			
 
@@ -335,15 +397,44 @@ namespace Ceylan
 	
 	
 	template <typename Content>
-	bool LoadableWithContent<Content>::hasContent() const 
-		throw( LoadableException )
+	bool LoadableWithContent<Content>::reload( bool forceLoad ) 
+		throw( LoadableException )	
+	{
+	
+		if ( hasContent() )
+		{
+		
+			// Does not depend on forceLoad:
+			unload() ;
+			load() ;
+			
+			return true ;
+			
+		}
+		else
+		{
+		
+			// No prior content.
+			if ( forceLoad )
+				load() ;
+			
+			return forceLoad ; 
+		
+		}
+		
+	}
+	
+	
+	
+	template <typename Content>
+	bool LoadableWithContent<Content>::hasContent() const throw()
 	{
 	
 		return ( _content != 0 ) ;
 		
 	}
-	
-	
+
+
 	
 	template <typename Content>
 	Content & LoadableWithContent<Content>::getExistingContent() 
@@ -360,9 +451,37 @@ namespace Ceylan
 	}
 		
 		
+	template <typename Content>
+	const Content & LoadableWithContent<Content>::getExistingContentAsConst()
+		const throw( LoadableException ) 
+	{
+	
+		if ( ! hasContent() )
+			throw LoadableException( 	
+				"LoadableWithContent<Content>::getExistingContentAsConst "
+				"failed: no content available" ) ;
+				
+		return	* _content ;
+			
+	}
+		
+		
 
 	template <typename Content>
 	Content & LoadableWithContent<Content>::getContent() 
+		throw( LoadableException )	
+	{
+
+		if ( ! hasContent() )
+			load() ;
+		
+		return	* _content ;
+				
+	}
+	
+		
+	template <typename Content>
+	const Content & LoadableWithContent<Content>::getContentAsConst()
 		throw( LoadableException )	
 	{
 
