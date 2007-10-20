@@ -10,6 +10,7 @@ testsgeneric_PROGRAMS = \
 	testCeylanCommandLineOptions.exe              \
 	testCeylanCountedPointer.exe                  \
 	testCeylanHolder.exe                          \
+	testCeylanLoadable.exe                        \
 	testCeylanMostBasic.exe                       \
 	testCeylanOperators.exe                       \
 	testCeylanRegularExpression.exe               \
@@ -28,6 +29,7 @@ testCeylanBasicResourceManager_exe_SOURCES = testCeylanBasicResourceManager.cc
 testCeylanCommandLineOptions_exe_SOURCES   = testCeylanCommandLineOptions.cc
 testCeylanCountedPointer_exe_SOURCES       = testCeylanCountedPointer.cc
 testCeylanHolder_exe_SOURCES               = testCeylanHolder.cc
+testCeylanLoadable_exe_SOURCES             = testCeylanLoadable.cc
 testCeylanMostBasic_exe_SOURCES            = testCeylanMostBasic.cc
 testCeylanOperators_exe_SOURCES            = testCeylanOperators.cc
 testCeylanRegularExpression_exe_SOURCES    = testCeylanRegularExpression.cc
