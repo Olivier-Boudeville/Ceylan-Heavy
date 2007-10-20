@@ -32,7 +32,7 @@ namespace Ceylan
 		 *
 		 * @note Curiously, the overall accuracy is not that great, for 
 		 * example with E: 
-		 * 	- original : 2.7182818284590452353602874713526625
+		 * 	- original: 2.7182818284590452353602874713526625
 		 *  - displayed: 2.7182818284590450908
 		 * even with a precision set to 40 digits.
 		 *
@@ -76,7 +76,19 @@ namespace Ceylan
 		 *
 		 */
 		typedef Ceylan::Uint8 Percentage ;
+	
 		
+		/**
+		 * Unit for frequencies (Hz). 
+		 *
+		 * For example, a periodical event whose frequency is 100 Hz would
+		 * happen once on each period P = 1/100 s = 10 ms.
+		 *
+		 * @note For our needs, it is an integer type.
+		 *
+		 */
+		typedef Ceylan::Uint32 Hertz ;
+
 		
 		/**
 		 * Ratio unit, should store floating point values between 0 and 1.
