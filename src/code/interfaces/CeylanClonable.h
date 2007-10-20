@@ -14,7 +14,7 @@ namespace Ceylan
 
 
 	/// Exception to be raised whenever cloning fails.
-	class CEYLAN_DLL ClonableException : public Ceylan::Exception
+	class CEYLAN_DLL ClonableException: public Ceylan::Exception
 	{
 	
 		public:
@@ -45,9 +45,10 @@ namespace Ceylan
 			}
 			
 			
-			/// Basic virtual destructor.
+			/// Virtual destructor.
 			virtual ~Clonable() throw()
 			{
+			
 			}
 			
 			
@@ -94,3 +95,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_CLONABLE_H_
+
