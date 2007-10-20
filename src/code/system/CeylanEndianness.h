@@ -3,7 +3,7 @@
 
 
 
-// It is a private header, hence configuration settings can be used here :
+// It is a private header, hence configuration settings can be used here:
 
 #ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"      // for configure-time feature settings
@@ -41,7 +41,7 @@ extern "C"
 #else // CEYLAN_USES_BYTESWAP_H
 
 
-// No built-in bswap_*, let's define ours :
+// No built-in bswap_*, let's define ours:
 
 #define ceylan_bswap_16(x) \
 	 ((((x) >> 8) & 0xff)                        \
@@ -64,7 +64,7 @@ extern "C"
  *
  * Otherwise the Ceylan::byteswap functions should be used.
  *
- * Problem : on 32-bit Big Endian (ex : Ultra-60 Solaris 5.9), the 
+ * Problem: on 32-bit Big Endian (ex: Ultra-60 Solaris 5.9), the 
  * ceylan_bswap_64 macro will need an operator '&' defined, as
  * Ceylan::Uint64:
  * error: no match for 'operator&' in '*tmp & 000000000...'
@@ -76,7 +76,7 @@ extern "C"
 // Native 64-bit support ? 
 #ifndef CEYLAN_FAKES_64_BIT_TYPE
 
-// Yes ? This macro is enough :
+// Yes ? This macro is enough:
 
 #define ceylan_bswap_64(x) \
 	 ((((x) & 0xff00000000000000ull) >> 56)      \
@@ -88,7 +88,7 @@ extern "C"
 	| (((x) & 0x000000000000ff00ull) << 40)      \
 	| (((x) & 0x00000000000000ffull) << 56)) 
 
-// Otherwise : use Ceylan::byteswap
+// Otherwise: use Ceylan::byteswap
 
 #endif // CEYLAN_FAKES_64_BIT_TYPE
 
@@ -112,7 +112,7 @@ namespace Ceylan
 #ifdef CEYLAN_FAKES_64_BIT_TYPE
 
 		/*
-		 * Inspired from /usr/include/bits/byteswap.h on Linux :
+		 * Inspired from /usr/include/bits/byteswap.h on Linux:
 		 *
 		 * The conversion cannot be performed 'in place' (with no temporary
 		 * variable) as one orginal attribute (hi or lo) would be overwritten
@@ -150,6 +150,5 @@ namespace Ceylan
 #endif // CEYLAN_USES_BYTESWAP_H
 
 
-
-
 #endif // CEYLAN_ENDIANNESS_H_
+
