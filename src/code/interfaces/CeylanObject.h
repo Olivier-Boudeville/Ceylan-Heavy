@@ -28,7 +28,7 @@ namespace Ceylan
 	 * service is actually used, apart some very minor costs.
 	 *
      */
-    class CEYLAN_DLL Object : public IdentifierOwner, public Log::Loggable
+    class CEYLAN_DLL Object: public IdentifierOwner, public Log::Loggable
     {
 
 
@@ -41,7 +41,7 @@ namespace Ceylan
 			 *
 			 * @param trackInstance tells whether the created instances's
 			 * lifecycle is to be watched through the log system 
-			 * (ex : deallocation notice).
+			 * (ex: deallocation notice).
 			 *
 			 * @param dropIdentifierOnExit if trackInstance is true, 
 			 * then a mangled message has been emitted (since the instance
@@ -62,9 +62,9 @@ namespace Ceylan
 			 * long as it is not needed.
 			 *
 			 * @note Beware of Ceylan::Objects instanciated as automatic
-			 * variables : they share their mother type (Ceylan::Object), 
+			 * variables: they share their mother type (Ceylan::Object), 
 			 * they are on the same host and PID, and they have the same
-			 * address : they might be mixed up by the log system. 
+			 * address: they might be mixed up by the log system. 
 			 * One way to spot that is when an object channel as more than
 			 * one "Being allocated now." sentence.
 			 *
@@ -93,7 +93,7 @@ namespace Ceylan
 			 *
 			 *
 			 * @example With g++ 3.x, the classname is prefixed with the
-			 * character length : Lockable classname would be actually
+			 * character length: Lockable classname would be actually
 			 * 8Lockable, Log would be 3Log.
 			 *
              * @see isOfSameType
@@ -119,7 +119,7 @@ namespace Ceylan
 			 * Uses its dedicated log channel to display its state.
 			 *
 			 * @note This is the very convenient combination of a 
-			 * Loggable and a TextDisplayable : it requests this Object
+			 * Loggable and a TextDisplayable: it requests this Object
 			 * to log its textual representation in its own channel.
 			 *
 			 * @param level chooses the level of detail
