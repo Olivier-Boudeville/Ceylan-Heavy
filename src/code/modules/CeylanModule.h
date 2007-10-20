@@ -10,13 +10,14 @@
 #include <string>
 
 
+
 namespace Ceylan
 {
 
 
 
 	/// Raised whenever a module-related operation failed.
-	class CEYLAN_DLL ModuleException : public Ceylan::Exception
+	class CEYLAN_DLL ModuleException: public Ceylan::Exception
 	{
 	
 		public:
@@ -37,7 +38,7 @@ namespace Ceylan
 	 * discovered implementations (a.k.a as plug-in). 
 	 *
 	 */
-    class CEYLAN_DLL Module : public Ceylan::Object
+    class CEYLAN_DLL Module: public Ceylan::Object
     {
 
 
@@ -48,29 +49,29 @@ namespace Ceylan
             /**
 			 * Constructor of a new Ceylan Module.
 			 *
-			 * @param name the full name of the module, example : 
+			 * @param name the full name of the module, example: 
 			 * 'OSDL::Video'.
 			 *
 			 * @param description an informative description of what 
-			 * this module provides, example : 'provides a full 2D API to 
+			 * this module provides, example: 'provides a full 2D API to 
 			 * handle simple vector graphic objects'.
 			 *
 			 * @param homepageURL the URL of this module's homepage 
-			 * (if any), example : 'http://ceylan.sourceforge.net'.
+			 * (if any), example: 'http://ceylan.sourceforge.net'.
 			 *
-			 * @param author the author of the module, example : 
+			 * @param author the author of the module, example: 
 			 * 'Olivier Boudeville'.
 			 *
-			 * @param authorMail the e-mail address of the author, example :
+			 * @param authorMail the e-mail address of the author, example:
              * 'olivier.boudeville@online.fr'. 
 			 *
 			 * @param version the full version of this module. The version
 			 * object is copied, the module does not take ownership of it.
 			 *
 			 * @param licence the licence under which this module is 
-			 * released, example : 'LGPL'.
+			 * released, example: 'LGPL'.
              *
-			 * A module is identified by its name and full version :
+			 * A module is identified by its name and full version:
 			 * 'OSDL::Video.2.5.42' behaves as a primary key.
              *
              */
@@ -87,7 +88,7 @@ namespace Ceylan
 			/**
 			 * Constructor of a blank module.
 			 * Useful whenever the module informations cannot be obtained at
-			 * the object creation, ex : Ceylan::Plugin.
+			 * the object creation, ex: Ceylan::Plugin.
 			 *
 			 */
 			Module() throw() ;
@@ -245,3 +246,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_MODULE_H_
+
