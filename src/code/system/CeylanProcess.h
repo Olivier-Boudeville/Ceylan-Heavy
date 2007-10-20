@@ -30,7 +30,7 @@ namespace Ceylan
 
 
 		/// Exception class for process concerns.
-		class CEYLAN_DLL ProcessException : public RunnableException
+		class CEYLAN_DLL ProcessException: public RunnableException
 		{
 		
 			public:
@@ -80,16 +80,16 @@ namespace Ceylan
 				enum ExitReason
 				{
 				
-					/// Child exited normally :
+					/// Child exited normally:
 					ExitedNormally,
 	
-					/// Child exited after having received a signal :
+					/// Child exited after having received a signal:
 					Signaled,
 	
-					/// Child exited after having been stopped :
+					/// Child exited after having been stopped:
 					Stopped,
 	
-					/// Child PID was abnormal :
+					/// Child PID was abnormal:
 					BadChildPid
 					
 				} ;
@@ -118,7 +118,7 @@ namespace Ceylan
 				virtual void run() throw( RunnableException ) ;
 	
 	
-				/// Start point of the process : defines what it actually does.
+				/// Start point of the process: defines what it actually does.
 				virtual void start() throw() = 0 ;
 	
 	
@@ -180,6 +180,9 @@ namespace Ceylan
 				 *
 				 * @throw ProcessException if the operation failed or is
 				 * not supported.
+				 *
+				 * On OS-less machines (ex: the Nintendo DS), there is only
+				 * one process, the current one, and its PID is set to 0.
 				 *
 				 */
 				static Pid GetHostingPID() throw( ProcessException ) ;
@@ -445,7 +448,7 @@ namespace Ceylan
  * 
  */
 #pragma warning( push )
-#pragma warning( disable : 4251 )
+#pragma warning( disable: 4251 )
 
 				/// The argument list given to this process.
 				static std::list<std::string> _ArgumentList ;
