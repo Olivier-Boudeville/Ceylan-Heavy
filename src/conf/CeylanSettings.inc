@@ -46,7 +46,7 @@ UNIX_PROJECT_NAME=ceylan
 CEYLAN_MAJOR_VERSION=0
 
 # (tag : ST_MINOR_VERSION)
-CEYLAN_MINOR_VERSION=6
+CEYLAN_MINOR_VERSION=7
 
 # Release number is only for project fine grain milestone,
 # for a given major.minor version (ex : release candidate).
@@ -55,7 +55,7 @@ CEYLAN_RELEASE=0
 
 # Full actual release date (not generated for better control).
 # (tag : ST_RELEASE_DATE)
-CEYLAN_RELEASE_DATE="Saturday, December 9, 2006"
+CEYLAN_RELEASE_DATE=""
 
 # (tag : ST_VERSION)
 CEYLAN_VERSION=$(CEYLAN_MAJOR_VERSION).$(CEYLAN_MINOR_VERSION)
