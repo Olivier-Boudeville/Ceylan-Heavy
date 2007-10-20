@@ -19,16 +19,31 @@ using namespace Ceylan::Log ;
 class TestHolder: public Ceylan::Object
 {
 
+
 	public:
+	
 	
 	
 		TestHolder() throw()
 		{
+		
 			send( "Created a TestHolder." ) ;
 			Count++ ;
+			
 		}
 	
-	
+		
+		
+		~TestHolder() throw()
+		{
+		
+			send( "Destroying a TestHolder." ) ;
+			Count-- ;
+			
+		}
+		
+
+
 		int sayHello( Ceylan::Uint8 aNumber )
 		{
 		
@@ -36,19 +51,15 @@ class TestHolder: public Ceylan::Object
 			return aNumber ;
 			
 		}
-		
-		
-		~TestHolder() throw()
-		{
-			send( "Destroying a TestHolder." ) ;
-			Count-- ;
-		}
-		
+
 		
 		static Ceylan::Uint8 GetCount() throw()
 		{
+		
 			return Count ;
+			
 		}	
+		
 		
 		
 	private:
@@ -62,6 +73,7 @@ class TestHolder: public Ceylan::Object
 		TestHolder & operator = ( const TestHolder & source ) throw() ;
 		
 } ;
+
 
 
 Ceylan::Uint8 TestHolder::Count = 0 ;
