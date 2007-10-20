@@ -79,7 +79,18 @@ class MyOwnContent: public Ceylan::LoadableWithContent<MyContent>
 				+ getContentPath() ) ;
 				
 			if ( hasContent() )
-				unload() ;
+			{
+				try
+				{
+					unload() ;
+				}
+				catch( const LoadableException & e )
+				{
+					LogPlug::error( "MyOwnContent destructor failed: "
+						+ e.toString() ) ;
+				}	
+				
+			}	
 	
 		}
 
@@ -181,8 +192,24 @@ int main( int argc, char * argv[] )
 				LogPlug::trace( 
 					"Unloading whereas unloaded, nothing done as expected." ) ;
 			
+			LogPlug::trace( "Reloading with no loading forced" ) ;
 			
-			LogPlug::trace( "Reloading lastly to force deallocation "
+			if ( testInstance.reload( /* forceLoad */ false ) )
+				throw TestException( "No loading should be performed when "
+					"reloading with no loading forced and no prior content." ) ;
+			
+			LogPlug::trace( "Reloading with loading forced" ) ;
+
+			if ( ! testInstance.reload( /* forceLoad */ true ) )
+				throw TestException( "Loading should be performed when "
+					"reloading with loading forced and no prior content." ) ;
+
+			LogPlug::trace( "Retrieved content is: " +
+				testInstance.getExistingContentAsConst().toString() ) ;
+				
+			testInstance.unload() ;
+			
+			LogPlug::trace( "Loading again to force deallocation "
 				"on instance deletion." ) ;
 			testInstance.load() ;
 				
