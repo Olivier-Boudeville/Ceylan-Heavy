@@ -89,6 +89,7 @@ ProcessException::ProcessException( const string message ) throw():
 }
 
 
+
 ProcessException::~ProcessException() throw()
 {
 
@@ -106,6 +107,7 @@ Process::Process() throw():
 }
 
 
+
 Process::Process( const string & name ) throw():
 	Runnable( name ),
 	_id     ( 0 ),
@@ -115,10 +117,12 @@ Process::Process( const string & name ) throw():
 }
 
 
+
 Process::~Process() throw()
 {
 
 }
+
 
 
 void Process::run() throw( RunnableException )
@@ -159,6 +163,7 @@ void Process::run() throw( RunnableException )
 }
 
 
+
 void Process::kill() throw( ProcessException )
 {
 
@@ -193,6 +198,7 @@ void Process::kill() throw( ProcessException )
 }
 
 
+
 bool Process::isRunning() const throw( ProcessException )
 {
 
@@ -222,6 +228,7 @@ bool Process::isRunning() const throw( ProcessException )
 }
 
 
+
 const string Process::toString( Ceylan::VerbosityLevels level )
 	const throw()
 {
@@ -231,12 +238,21 @@ const string Process::toString( Ceylan::VerbosityLevels level )
 }
 	
 
+
+
 // Static section.
 
 
 Pid Process::GetHostingPID() throw( ProcessException )
 {
 
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	return 0 ;
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	
 #ifdef CEYLAN_USES_PROCESS_H
 
 	return ::_getpid() ;
@@ -256,7 +272,10 @@ Pid Process::GetHostingPID() throw( ProcessException )
 
 #endif // CEYLAN_USES_PROCESS_H
 
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 }
+
 
 
 Pid Process::GetParentID() throw( ProcessException )
@@ -272,7 +291,9 @@ Pid Process::GetParentID() throw( ProcessException )
 		"not supported on this platform" ) ;
 
 #endif // CEYLAN_USES_GETPID
+
 }
+
 
 
 Process::ExitReason Process::WaitChildProcess( const Process & childProcess,
@@ -330,6 +351,7 @@ Process::ExitReason Process::WaitChildProcess( const Process & childProcess,
 }
 
 
+
 string Process::GetOwner() throw( ProcessException )
 {
 
@@ -358,6 +380,7 @@ string Process::GetOwner() throw( ProcessException )
 #endif // CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
 
 }
+
 
 
 void Process::RunExecutable(
@@ -434,8 +457,8 @@ void Process::RunExecutable(
 
 #endif // CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
 
-
 }
+
 
 
 bool Process::RedirectStdout( const string & filename ) 
@@ -485,6 +508,7 @@ bool Process::RedirectStdout( const string & filename )
 }
 
 
+
 bool Process::RedirectStdout( OutputStream & os ) throw( ProcessException )
 {
 
@@ -509,6 +533,7 @@ bool Process::RedirectStdout( OutputStream & os ) throw( ProcessException )
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
+
 
 
 bool Process::RedirectStderr( const string & filename ) 
@@ -558,6 +583,7 @@ bool Process::RedirectStderr( const string & filename )
 }
 
 
+
 bool Process::RedirectStderr( OutputStream & os ) throw( ProcessException )
 {
 
@@ -582,6 +608,7 @@ bool Process::RedirectStderr( OutputStream & os ) throw( ProcessException )
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
+
 
 
 bool Process::RedirectStdin( const string & filename ) throw( ProcessException )
@@ -631,6 +658,7 @@ bool Process::RedirectStdin( const string & filename ) throw( ProcessException )
 }
 
 
+
 bool Process::RedirectStdin( InputStream & is ) throw( ProcessException )
 {
 
@@ -666,6 +694,7 @@ void Process::processCreationFailed() throw( ProcessException )
 		+ System::explainError( _error ) ) ;
 		
 }
+
 
 
 Ceylan::Uint32 Process::GetTime() throw( ProcessException )
@@ -716,6 +745,7 @@ Ceylan::Uint32 Process::GetTime() throw( ProcessException )
 }
 
 
+
 void Process::SaveState( int argc, char ** argv ) throw()
 {
 
@@ -728,6 +758,7 @@ void Process::SaveState( int argc, char ** argv ) throw()
 	_Saved = true ;	
 		
 }
+
 
 
 void Process::Restart() throw( ProcessException )
@@ -777,6 +808,4 @@ bool Process::DuplicateStream( FileDescriptor FDOld,
 #endif // CEYLAN_ARCH_NINTENDO_DS
 		
 }
-
-
 
