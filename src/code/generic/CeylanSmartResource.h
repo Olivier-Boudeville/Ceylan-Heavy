@@ -30,7 +30,7 @@ namespace Ceylan
 	 * in cache, depending of their use by the caller.
 	 *
 	 */
-	class CEYLAN_DLL SmartResource : 
+	class CEYLAN_DLL SmartResource: 
 		public Resource, public Measurable, public Clonable
 	{
 	
