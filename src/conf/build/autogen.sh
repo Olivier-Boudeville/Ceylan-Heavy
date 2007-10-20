@@ -69,6 +69,7 @@ while [ $# -gt 0 ] ; do
 			exit 1
 		fi
 		. "${osdl_env_file}"
+		# Implies NDS target:
 		do_target_nds=0
 		token_eaten=0
 	fi
@@ -235,6 +236,9 @@ if [ $do_target_nds -eq 0 ] ; then
 	
 	# Quite convenient:
 	alias mn='make -f Makefile.cross CROSS_TARGET=nintendo-ds'
+
+	# Clean everything:
+	make -f Makefile.cross CROSS_TARGET=nintendo-ds clean
 
 	# Build everything:
 	make -f Makefile.cross CROSS_TARGET=nintendo-ds
