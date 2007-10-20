@@ -39,10 +39,12 @@ install: install-local install-lib
 
 
 install-local:
+	@mkdir -p $(CEYLAN_INSTALL_INC) 
 	@cp -f Ceylan.h CeylanConfigForNintendoDS.h $(CEYLAN_INSTALL_INC) 
 
 
 install-lib: lib
+	@mkdir -p $(CEYLAN_INSTALL_LIB) 
 	@echo "    Installing libraries in $(CEYLAN_INSTALL_LIB)"
 	@cp -f $(CEYLAN_ARM7_LIB_NAME) $(CEYLAN_ARM9_LIB_NAME) \
 		$(CEYLAN_INSTALL_LIB)
