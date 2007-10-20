@@ -1,6 +1,6 @@
 # This is a simple Makefile (not a Makefile.cross, not using overall 
 # Makerules.inc rules so that tests are completely uncoupled from the 
-# Ceylan library.
+# Ceylan library).
 
 # This way, these tests can be directly used as guidelines to build 
 # one's application using the Ceylan library.
@@ -49,27 +49,27 @@ emulate: emulate-with-NoCashGBA
 
 
 emulate-with-NoCashGBA: $(TEST_FULL_NAME).ds.gba
-	@echo "      Running $< thanks to NoCashGBA emulator"
+	@echo "    Running $< thanks to NoCashGBA emulator"
 	@$(WINE) $(NO_CASH_GBA) $<
 	
 	
 emulate-with-DeSmuME: $(TEST_FULL_NAME).nds
-	@echo "      Running $< thanks to DeSmuME emulator"
+	@echo "    Running $< thanks to DeSmuME emulator"
 	@$(WINE) $(DESMUME) $<
 
 
 patch: $(TEST_FULL_NAME).sc.nds
-	@echo "      Patching $< with script $(DLDITOOL_SCRIPT)"
+	@echo "    Patching $< with script $(DLDITOOL_SCRIPT)"
 	@$(DLDITOOL) $(DLDITOOL_SCRIPT) $<
 	
 	
 transfer: $(TEST_TARGETS)
-	@echo "      Transferring $^ to $(TRANSFER_MOUNT_POINT)"
+	@echo "    Transferring $^ to $(TRANSFER_MOUNT_POINT)"
 	@cp -f $^ $(TRANSFER_MOUNT_POINT)
 
 
 umount: 	
-	@echo "      Unmounting $(TRANSFER_MOUNT_POINT)"
+	@echo "    Unmounting $(TRANSFER_MOUNT_POINT)"
 	@pumount $(TRANSFER_MOUNT_POINT)
 
 
@@ -101,7 +101,7 @@ TEST_ARCH_FLAGS_COMMON = -mthumb -mthumb-interwork
 # Preprocessor section: exports TEST_CPP_FLAGS_ARM7 / TEST_CPP_FLAGS_ARM9
 
 TEST_CPP_FLAGS_COMMON = -I. -I$(CEYLAN_INSTALL_INC) \
-	-I$(libfat_DIR)/include -I$(libnds_DIR)/include -DCEYLAN_ARCH_NINTENDO_DS
+	-I$(libfat_DIR)/include -I$(libnds_DIR)/include -DCEYLAN_ARCH_NINTENDO_DS -DCEYLAN_DLL=
 
 TEST_CPP_FLAGS_ARM7 = $(TEST_CPP_FLAGS_COMMON) -DCEYLAN_RUNS_ON_ARM7
 
@@ -143,8 +143,8 @@ TEST_CXX_FLAGS_ARM9 = $(TEST_CXX_FLAGS_COMMON) $(TEST_CXX_FLAGS_MODE) -march=arm
 # TEST_LD_FLAGS_ARM7 and TEST_LD_FLAGS_ARM9 section:
 TEST_LD_FLAGS_COMMON:= $(TEST_ARCH_FLAGS_COMMON)
 
-TEST_LD_FLAGS_ARM7:= -specs=ds_arm7.specs -Wl,-Map,ARM7.map
-TEST_LD_FLAGS_ARM9:= -specs=ds_arm9.specs -Wl,-Map,ARM9.map
+TEST_LD_FLAGS_ARM7:= -specs=ds_arm7.specs
+TEST_LD_FLAGS_ARM9:= -specs=ds_arm9.specs 
 
 ifeq ($(CEYLAN_TESTED_BUILD_MODE),debug)
 
@@ -226,26 +226,26 @@ info-run:
 # From source files specific to either ARM to object files:
 
 %.arm7.o: %.arm7.cc
-	@echo "      Compiling $< into $@"
+	@echo "    Compiling $< into $@"
 	@$(CXX) $(TEST_CXX_FLAGS_ARM7) $(TEST_CPP_FLAGS_ARM7) -c $< -o $@
 	
 	
 %-$(TEST_PREFIX).arm9.o: %.arm9.cc
-	@echo "      Compiling $< into $@"
-	@$(CXX) $(TEST_CXX_FLAGS_ARM9) $(TEST_CPP_FLAGS_ARM9) -c $< -o $@
+	@echo "    Compiling $< into $@"
+	$(CXX) $(TEST_CXX_FLAGS_ARM9) $(TEST_CPP_FLAGS_ARM9) -c $< -o $@
 
 
 
 # From object files to fully linked ELF executables:
 
 %.arm7.elf: %.arm7.o $(CEYLAN_ARM7_INSTALLED_LIB)
-	@echo "      Creating Ceylan library-user ARM7 ELF executable $@ from $< and from Ceylan ARM7 library"
-	@$(CXX) $(TEST_LD_FLAGS_ARM7) $< $(TEST_LIBPATHS_ARM7) $(TEST_LIBS_ARM7) -o $@
+	@echo "    Creating Ceylan library-user ARM7 ELF executable $@ from $< and from Ceylan ARM7 library"
+	@$(CXX) $(TEST_LD_FLAGS_ARM7) -Wl,-Map,$@.map $< $(TEST_LIBPATHS_ARM7) $(TEST_LIBS_ARM7) -o $@
 
 
 %.arm9.elf: %.arm9.o $(CEYLAN_ARM9_INSTALLED_LIB)
-	@echo "      Creating Ceylan library-user ARM9 ELF executable $@ from $< and from Ceylan ARM9 library"
-	@$(CXX) $(TEST_LD_FLAGS_ARM9) $< $(TEST_LIBPATHS_ARM9) $(TEST_LIBS_ARM9)  -o $@
+	@echo "    Creating Ceylan library-user ARM9 ELF executable $@ from $< and from Ceylan ARM9 library"
+	@$(CXX) $(TEST_LD_FLAGS_ARM9) -Wl,-Map,$@.map $< $(TEST_LIBPATHS_ARM9) $(TEST_LIBS_ARM9)  -o $@
 
 
 
@@ -254,30 +254,30 @@ info-run:
 
 
 %.arm7.bin: %.arm7.elf
-	@echo "      Creating ARM7 bin executable $@ from $<"
+	@echo "    Creating ARM7 bin executable $@ from $<"
 	@$(OBJCOPY) -O binary $< $@
 
 
 %.arm9.bin: %.arm9.elf
-	@echo "      Creating ARM9 bin executable $@ from $<"
+	@echo "    Creating ARM9 bin executable $@ from $<"
 	@$(OBJCOPY) -O binary $< $@
 
 
 
 # Neither basic logo, wifi logo nor sentences embedded:
 %.nds: %.arm7.bin %.arm9.bin
-	@echo "      Creating final slot-1 DS ROM $@ from $^"
+	@echo "    Creating final slot-1 DS ROM $@ from $^"
 	@$(NDSTOOL) -c $@ -7 $< -9 `echo $^| sed 's|^.* ||1'`
 
 
 # Neither basic logo, wifi logo nor sentences embedded:
 %.nds: CeylanDefaultMain.arm7.bin %.arm9.bin
-	@echo "      Creating final slot-1 DS ROM $@ from $^"
+	@echo "    Creating final slot-1 DS ROM $@ from $^"
 	@$(NDSTOOL) -c $@ -7 $< -9 `echo $^| sed 's|^.* ||1'`
 
 
 %.ds.gba: %.nds
-	@echo "      Creating final slot-2 DS ROM $@ from $^"
+	@echo "    Creating final slot-2 DS ROM $@ from $^"
 	@$(DSBUILD) $<
 
 
@@ -288,32 +288,32 @@ info-run:
 
 # .sc.nds not working, use .nds instead
 #%-patched.sc.nds: %.sc.nds $(CEYLAN_ARM9_INSTALLED_LIB)
-#	@echo "      Patching $< into $@ with DLDI patch $(DLDITOOL_SC_SCRIPT)"
+#	@echo "    Patching $< into $@ with DLDI patch $(DLDITOOL_SC_SCRIPT)"
 #	@$(DLDITOOL) $(DLDITOOL_SC_SCRIPT) $< ; /bin/cp -f $< $@
 
 %-patched.nds: %.nds $(CEYLAN_ARM9_INSTALLED_LIB)
-	@echo "      Patching $< into $@ with DLDI patch $(DLDITOOL_SC_SCRIPT)"
+	@echo "    Patching $< into $@ with DLDI patch $(DLDITOOL_SC_SCRIPT)"
 	@$(DLDITOOL) $(DLDITOOL_SC_SCRIPT) $< ; /bin/cp -f $< $@
 
 
 # r4 for R4 linker:
 %-patched.r4.nds: %.ds.gba $(CEYLAN_ARM9_INSTALLED_LIB)
-	@echo "      Patching $< into $@ with DLDI patch $(DLDITOOL_R4_SCRIPT)"
+	@echo "    Patching $< into $@ with DLDI patch $(DLDITOOL_R4_SCRIPT)"
 	@$(DLDITOOL) $(DLDITOOL_R4_SCRIPT) $< ; /bin/cp -f $< $@
 
 
 # em for FCSR-based ROM for emulators:
 %-patched.em.nds: %.ds.gba $(CEYLAN_ARM9_INSTALLED_LIB)
-	@echo "      Patching $< into $@ with DLDI patch $(DLDITOOL_FCSR_SCRIPT)"
+	@echo "    Patching $< into $@ with DLDI patch $(DLDITOOL_FCSR_SCRIPT)"
 	@$(DLDITOOL) $(DLDITOOL_FCSR_SCRIPT) $< ; /bin/cp -f $< $@
 
 
 %.sc.nds: %.ds.gba
-	@echo "      Renaming $< into $@ for final slot-2 DS ROM for SuperCard linker"
+	@echo "    Renaming $< into $@ for final slot-2 DS ROM for SuperCard linker"
 	@/bin/cp -f $< $@
 
 
 clean:
-	@echo "      Cleaning tests"
+	@echo "    Cleaning tests"
 	@rm -f *.o *.elf *.map *.bin *.nds *.ds.gba
 
