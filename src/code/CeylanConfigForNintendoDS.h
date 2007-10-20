@@ -12,8 +12,6 @@
  *
  */
 
-#define CEYLAN_DLL
-
  
 // Auto-set the arch flags expected by libnds:
 #ifdef CEYLAN_RUNS_ON_ARM7
