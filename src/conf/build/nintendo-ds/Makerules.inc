@@ -142,6 +142,7 @@ install: install-recurse
 	
 install-headers:
 	@echo "    Installing headers from "$(shell basename `pwd`)
+	@mkdir -p $(CEYLAN_INSTALL_INC)
 	@cp -f Ceylan*.h $(CEYLAN_INSTALL_INC)
 	
 	
