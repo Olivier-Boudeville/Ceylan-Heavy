@@ -399,8 +399,8 @@ KeyChar Ceylan::waitForKey( const string & message ) throw( UtilsException )
 
 #else // CEYLAN_ARCH_NINTENDO_DS
 
-	bool sleepFailed = false ;
 
+	bool sleepFailed = false ;
 
 	// Leave the terminal untouched if no display wanted.
 	if ( ! message.empty() )
