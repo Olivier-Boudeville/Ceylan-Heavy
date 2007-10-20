@@ -12,7 +12,7 @@
 // Declarations are sorted by theme, definitions are sorted by interface.
 
 
-// Usually no particular need to debug this code :
+// Usually no particular need to debug this code:
 #define CEYLAN_DEBUG_SMART_RESOURCE_MANAGER 0
 
 
@@ -22,7 +22,7 @@ namespace Ceylan
 
 	
 	/**
-	 * Manages a set of SmartResource instances : the smart Resource manager 
+	 * Manages a set of SmartResource instances: the smart Resource manager 
 	 * can behave like a basic Resource manager, if the 'NeverDrop' policy is
 	 * used, or it can provide other advanced policies. 
 	 * For all policies, supplementary means of storing resources in the cache
@@ -37,7 +37,7 @@ namespace Ceylan
 	 * Basically, besides the inherited way of storing a resource
 	 * ('takeOwnershipOf' method), smart resources can be cloned, and have their
 	 * clone stored into the cache, so that the caller keeps the ownership of
-	 * the submitted resource and the possibility to modify it afterwards : the
+	 * the submitted resource and the possibility to modify it afterwards: the
 	 * smart manager just reads the specified resource and, if its policy tells
 	 * this resource can be cached, it makes a clone of it so that it can store
 	 * this copy for later use, without changing in any way the specified
@@ -61,7 +61,7 @@ namespace Ceylan
 	 *
 	 * Specifying a policy enforcing a quota implies that resources can be
 	 * dropped and thus that the application is able to regenerate them when
-	 * needed : in this case the application can never rely on the cache to
+	 * needed: in this case the application can never rely on the cache to
 	 * answer to a given request, even if the corresponding entry had been
 	 * recently submitted to the cache. It is the price for memory control.
 	 *
@@ -70,7 +70,7 @@ namespace Ceylan
 	 * for a resource is the one it had when lastly managed by the cache.
 	 *
 	 * A smart Resource manager handles the life cycle of the resources whose
-	 * ownership has been given to it : it will deallocate them when itself
+	 * ownership has been given to it: it will deallocate them when itself
 	 * deleted, or sooner for various reasons, including if having a quota to
 	 * respect and needing some more room.
 	 *
@@ -119,7 +119,7 @@ namespace Ceylan
 	 *
 	 */
 	template <typename Key>
-	class SmartResourceManager : public Ceylan::ResourceManager<Key>
+	class SmartResourceManager: public Ceylan::ResourceManager<Key>
 	{
 	
 	
@@ -127,19 +127,19 @@ namespace Ceylan
 		
 			
 			/**
-			 * Lists all available cache policies :
+			 * Lists all available cache policies:
 			 *
-			 *  - 'NeverDrop' : no quota enforced, no resource dropped, except
+			 *  - 'NeverDrop': no quota enforced, no resource dropped, except
 			 * on manager deleting or explicit 'flush' request.
 			 * If a 'put' operation would lead to an already cached resource
 			 * being replaced by another resource associated to the same key,
 			 * a ResourceManagerException is raised.
 			 * Therefore the only cause for a non-cloned (const resource)
 			 * returned by a 'get' operation to become invalid is the resource
-			 * manager being deleted (or flushed) : its life cycle must
+			 * manager being deleted (or flushed): its life cycle must
 			 * therefore be correctly managed by the user.
 			 *
-			 *	- 'DropLessRequestedFirst' : the manager may drop resources for
+			 *	- 'DropLessRequestedFirst': the manager may drop resources for
 			 * three reasons. 
 			 * If the quota is reached, it will drop the less requested
 			 * resources, no matter their size in memory (but if this policy 
@@ -151,7 +151,7 @@ namespace Ceylan
 			 * If the manager is deleted or flushed, all resources will be
 			 * dropped.
 			 *
-			 * There is a drawback with such templated enumerations : user code
+			 * There is a drawback with such templated enumerations: user code
 			 * cannot specify a cache policy independently of the type of the
 			 * key chosen for the template instanciation.
 			 * For example, a cache policy cannot be specified as
@@ -220,7 +220,7 @@ namespace Ceylan
 			 *
 			 * With the 'DropLessRequestedFirst' policy, the smart Resource
 			 * manager will do its best to add a clone of the resource in 
-			 * cache : if there is not enough space, the less requested
+			 * cache: if there is not enough space, the less requested
 			 * resources already in cache will be dropped until the new smart
 			 * resource clone can fit into the cache, provided it is simply
 			 * possible, i.e. the resource size is smaller than the quota.
@@ -397,7 +397,7 @@ namespace Ceylan
 			
 			
 			/**
-			 * Updates the cache metadata : recomputes the size in memory of
+			 * Updates the cache metadata: recomputes the size in memory of
 			 * each cache entry, and applies the selected cache policy.
 			 *
 			 * @see updateSizes, applyPolicy
@@ -509,7 +509,7 @@ namespace Ceylan
 				
 			
 			/**
-			 * Drops specified cache entry : helper for cache policy execution. 
+			 * Drops specified cache entry: helper for cache policy execution. 
 			 *
 			 * Should be called by all methods applying a policy such as
 			 * 'applyDropLessRequestedFirst' (since this method does everything
@@ -598,7 +598,7 @@ namespace Ceylan
  * 
  */
 #pragma warning( push )
-#pragma warning( disable : 4251 )
+#pragma warning( disable: 4251 )
 
 			// The cache itself.
 			std::map<Key, CacheEntry *> _entries ;
@@ -638,11 +638,11 @@ namespace Ceylan
 
 
 
-	// Public section : implementation.
+	// Public section: implementation.
 
 
 	template <typename Key>
-	SmartResourceManager<Key>::SmartResourceManager() throw() :
+	SmartResourceManager<Key>::SmartResourceManager() throw():
 		ResourceManager<Key>(),
 		_quota( 0 ),
 		_totalSize( 0 ),
@@ -654,10 +654,11 @@ namespace Ceylan
 	}	
 
 		
+		
 	template <typename Key>
 	SmartResourceManager<Key>::SmartResourceManager( System::Size quota,
 		CachePolicy policy )
-			throw() :
+			throw():
 		ResourceManager<Key>(),
 		_quota( quota ),
 		_totalSize( 0 ),
@@ -667,6 +668,7 @@ namespace Ceylan
 	{
 	
 	}	
+	
 		
 		
 	template <typename Key>
@@ -680,8 +682,10 @@ namespace Ceylan
 		 *
 		 */
 		flush() ; 
+		
 	}	
 			
+
 
 	
 	// New methods provided by the smart Resource manager.
@@ -690,16 +694,22 @@ namespace Ceylan
 	template <typename Key>
 	System::Size SmartResourceManager<Key>::getQuota() const throw()
 	{
+	
 		return _quota ;
+		
 	}	
+
 
 
 	template <typename Key>
 	typename Ceylan::SmartResourceManager<Key>::CachePolicy 
 		SmartResourceManager<Key>::getCachePolicy() const throw()
 	{
+	
 		return _policy ;
+		
 	}	
+		
 					
 					
 	template <typename Key>
@@ -715,6 +725,7 @@ namespace Ceylan
 		return _totalSize ;
 		
 	}
+	
 	
 
 	template <typename Key>
@@ -735,14 +746,14 @@ namespace Ceylan
 		 
 		System::Size resourceSize = smartResource.getSizeInMemory() ;
 		
-		// Trivial rejection : can drop and should drop -> drop.
+		// Trivial rejection: can drop and should drop -> drop.
 		if ( _policy != NeverDrop && resourceSize > _quota )
 			return false ;
 		
 		
 		/*
 		 * Do nothing if the policy is 'NeverDrop' and the key is already
-		 * associated : otherwise this new resource would replace the previous
+		 * associated: otherwise this new resource would replace the previous
 		 * one, which would then be dropped despite the policy.
 		 *
 		 */		
@@ -750,7 +761,7 @@ namespace Ceylan
 			return false ;
 				
 				
-		// Incorporates unconditionally this resource in cache :	
+		// Incorporates unconditionally this resource in cache:	
 		
 		
 		SmartResource & clone = * dynamic_cast<SmartResource *>(
@@ -769,7 +780,7 @@ namespace Ceylan
 		/*
 		 * Reshuffles entries against cache policy, avoid cache starvation by
 		 * encouraging turn-over (newcomers are preserved from first cache
-		 * shrink) :
+		 * shrink):
 		 *
 		 */
 		applyPolicy( & clone ) ;
@@ -777,6 +788,7 @@ namespace Ceylan
 		return true ;
 		
 	}
+
 
 
 	template <typename Key>
@@ -796,21 +808,21 @@ namespace Ceylan
 		 
 		System::Size resourceSize = smartResource.getSizeInMemory() ;
 		
-		// Trivial rejection : can drop and should drop -> drop.
+		// Trivial rejection: can drop and should drop -> drop.
 		if ( _policy != NeverDrop && resourceSize > _quota )
 			return false ;
 			
 			
-		// Incorporates unconditionally this resource in cache :	
+		// Incorporates unconditionally this resource in cache:	
 		
 		
-		// Records the new entry, with directly the provided resource :
+		// Records the new entry, with directly the provided resource:
 		addEntry( key, smartResource, resourceSize ) ;
 
 		/*
 		 * Reshuffles entries against cache policy, avoid cache starvation by
 		 * encouraging turn-over (newcomers are preserved from first cache
-		 * shrink) :
+		 * shrink):
 		 *
 		 */
 		applyPolicy( & smartResource ) ;
@@ -820,20 +832,21 @@ namespace Ceylan
 	
 	}
 		
+		
 
 	template <typename Key>
 	SmartResource * SmartResourceManager<Key>::getClone( const Key & key )
 		throw()
 	{
 	
-		// Look-up entry, if any :
+		// Look-up entry, if any:
 		typename std::map<Key, CacheEntry *>::const_iterator it = 
 			_entries.find( key ) ;
 		
 		if ( it == _entries.end() )
 			return 0 ;
 		
-		// Found, let's clone it :
+		// Found, let's clone it:
 		this->_cacheHits++ ;
 		(*it).second->_requestCount++ ;
 
@@ -846,10 +859,10 @@ namespace Ceylan
 			return res ;
 		else
 		{
-			Ceylan::emergencyShutdown( "SmartResourceManager<Key>::getClone : "
+			Ceylan::emergencyShutdown( "SmartResourceManager<Key>::getClone: "
 				"clone cannot be casted back to Smart resource for "
 				+ (*it).second->_resource->toString() ) ;
-			// Avoid warning :	
+			// Avoid warning:	
 			return res ;		
 		}			
 		
@@ -863,6 +876,7 @@ namespace Ceylan
 	}
 	
 
+
 	
 	template <typename Key>
 	void SmartResourceManager<Key>::update() throw()
@@ -871,6 +885,7 @@ namespace Ceylan
 		applyPolicy() ;
 	}
 
+	
 	
 	template <typename Key>
 	void SmartResourceManager<Key>::updateSizes() throw()
@@ -891,6 +906,7 @@ namespace Ceylan
 	}
 	
 		
+		
 	template <typename Key>
 	void SmartResourceManager<Key>::applyPolicy() throw()
 	{
@@ -908,10 +924,11 @@ namespace Ceylan
 		const throw()
 	{
 
-		// Look-up any previous entry :
+		// Look-up any previous entry:
 		return ( _entries.find( key ) != _entries.end() ) ;
 
 	}
+
 
 
 	template <typename Key>
@@ -929,7 +946,7 @@ namespace Ceylan
 		}
 		else
 		{
-			// Cache miss :
+			// Cache miss:
 			this->_cacheMisses++ ;
 			return 0 ;
 		}	
@@ -952,10 +969,10 @@ namespace Ceylan
 			 _entries.begin() ; it != _entries.end(); it++ )
 		{
 		
-			// Delete the resource :
+			// Delete the resource:
 			delete (*it).second->_resource ;
 			
-			// Delete the cache entry :
+			// Delete the cache entry:
 			delete (*it).second ;
 		}
 		
@@ -964,6 +981,7 @@ namespace Ceylan
 		
 	}
 	
+
 
 	template <typename Key>
 	const std::string SmartResourceManager<Key>::toString( 
@@ -1005,7 +1023,8 @@ namespace Ceylan
 		if ( resourceCount == 0 )
 			res += "no resource" ;
 		else	
-			res += Ceylan::toString( static_cast<Ceylan::Uint32>( resourceCount ) ) 
+			res += Ceylan::toString( 
+					static_cast<Ceylan::Uint32>( resourceCount ) ) 
 				+ " resource(s), for a total estimated size of "
 				+ Ceylan::toString( static_cast<Ceylan::Uint32>( _totalSize ) ) 
 				+ " bytes" ;
@@ -1036,7 +1055,7 @@ namespace Ceylan
 		if ( resourceCount == 0 )
 			return res ;
 			
-		res += ". Displaying current cached entrie(s) : " ;
+		res += ". Displaying current cached entrie(s): " ;
 		
 		Ceylan::Uint32 count = 0 ;
 		std::list<std::string> entries ;
@@ -1047,7 +1066,7 @@ namespace Ceylan
 		
 			count++ ;
 			entries.push_back( "[Entry #" + Ceylan::toString( count ) 
-				+ "] : size = "	
+				+ "]: size = "	
 				+ Ceylan::toString( 
 					static_cast<Ceylan::Uint32>( (*it).second->_size ) ) 
 				+ ", request count = "	
@@ -1063,7 +1082,8 @@ namespace Ceylan
 	
 	
 	
-	// Protected section : implementation.
+	
+	// Protected section: implementation.
 
 
 
@@ -1093,6 +1113,7 @@ namespace Ceylan
 	}
 
 
+
 	template <typename Key>	
 	void SmartResourceManager<Key>::applyDropLessRequestedFirst( 
 		const SmartResource * lastCached ) throw()
@@ -1107,7 +1128,7 @@ namespace Ceylan
 		bool minAlreadyFound ;
 		
 		
-		// While too big, shrink :
+		// While too big, shrink:
 		while ( getFootprint() > _quota )
 		{
 		
@@ -1135,7 +1156,7 @@ namespace Ceylan
 			
 				/*
 				 * Ignores new entry lastCached 
-				 * (if any : null lastCached -> test always true) :
+				 * (if any: null lastCached -> test always true):
 				 *
 				 */
 				if ( (*it).second->_resource != lastCached )
@@ -1145,15 +1166,15 @@ namespace Ceylan
 
 					if ( minRequestCurrent == 0 )
 					{
-						// Trivial drop :
+						// Trivial drop:
 						minIterator = it ;
 						break ;
 					}
 					
-					// Select the entry with the fewer accesses :
+					// Select the entry with the fewer accesses:
 					if ( ! minAlreadyFound )
 					{
-						// Take first encountered as comparison entry :
+						// Take first encountered as comparison entry:
 						minRequestCount = minRequestCurrent ;
 						minIterator = it ;
 						minAlreadyFound = true ;
@@ -1172,7 +1193,7 @@ namespace Ceylan
 		
 			/*
 			 * We hereby have the first found entry among the entries of lowest
-			 * request count, let's drop it :
+			 * request count, let's drop it:
 			 *
 			 */
 			dropEntryDueToPolicy( minIterator ) ;
@@ -1183,13 +1204,14 @@ namespace Ceylan
 	}
 	
 	
+	
 	template <typename Key>	
 	void SmartResourceManager<Key>::addEntry( const Key & key, 
 			const SmartResource & newResource, Ceylan::System::Size size ) 
 		throw( ResourceManagerException )	
 	{
 	
-		// Erases the content of any previous entry associated with this key :
+		// Erases the content of any previous entry associated with this key:
 		typename std::map<Key, CacheEntry *>::iterator it =
 			_entries.find( key ) ;
 			
@@ -1198,30 +1220,30 @@ namespace Ceylan
 		
 			if ( _policy == NeverDrop )
 				throw ResourceManagerException(
-					"SmartResourceManager<Key>::addEntry : "
+					"SmartResourceManager<Key>::addEntry: "
 					"specified key was already associated to a resource, "
 					"and the current policy, 'NeverDrop', prevents from "
 					"removing already associated resource." ) ; 
 		
 			/*
 			 * Inconsistency risk since the already computed size might have
-			 * changed since then : better use the same estimation even if the
+			 * changed since then: better use the same estimation even if the
 			 * actual size changed, since every call to getSizeInMemory should
 			 * lead to an update of _totalSize. They should thus match at 
 			 * all times, even if 'updateSizes' is called in between.
 			 *
 			 * Delete this resource, since the manager owns it in all 'put'
-			 * cases :
+			 * cases:
 			 *
 			 */
 			dropEntry( it ) ; 
 			
 		}
 		
-		// Records the new entry :
+		// Records the new entry:
 		CacheEntry * newEntry = new CacheEntry() ;
 		
-		// Here we must be dealing with the clone only :
+		// Here we must be dealing with the clone only:
 		newEntry->_resource = & newResource ;
 		newEntry->_requestCount = 0 ;
 		
@@ -1236,6 +1258,7 @@ namespace Ceylan
 		
 	
 	}
+	
 		
 	
 	template <typename Key>	
@@ -1249,19 +1272,20 @@ namespace Ceylan
 	}		
 
 
+
 	template <typename Key>	
 	void SmartResourceManager<Key>::dropEntry( 
 		typename std::map<Key, CacheEntry *>::iterator pos ) 
 		throw()
 	{	
 	
-		// Update cache size :
+		// Update cache size:
 		_totalSize -= (*pos).second->_size ;
 		
-		// Delete embedded resource :
+		// Delete embedded resource:
 		delete (*pos).second->_resource ;
 		
-		// Remove and delete the cache entry :
+		// Remove and delete the cache entry:
 		delete (*pos).second ;
 		_entries.erase( pos ) ;
 		
@@ -1274,3 +1298,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_SMART_RESOURCE_MANAGER_H_
+
