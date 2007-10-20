@@ -50,14 +50,14 @@ const string ObjectIdentifier::Pattern =  "^([0-2]{0,1}[0-9]{0,1}[0-9]{1,1}"
 
 
 Ceylan::Log::ObjectIdentifier::ObjectIdentifier( const Object & object ) 
-		throw( IdentifierException ) :
+		throw( IdentifierException ):
 	TextIdentifier(),
 	_hostname(),
 	_pid(),
 	_address( 0 ) 
 {
 
-	CEYLAN_LOG( "Log::ObjectIdentifier constructor : "
+	CEYLAN_LOG( "Log::ObjectIdentifier constructor: "
 		"creating a new identifier for " 
 		+ object.getClassName() + " instance." ) ;
 	
@@ -69,8 +69,8 @@ Ceylan::Log::ObjectIdentifier::ObjectIdentifier( const Object & object )
 	} 
 	catch( const Network::NetworkException & e )
 	{
-		throw IdentifierException( "ObjectIdentifier constructor : "
-			"unable to get local host name : " + e.toString() ) ;		
+		throw IdentifierException( "ObjectIdentifier constructor: "
+			"unable to get local host name: " + e.toString() ) ;		
 	}
 	
 	try 
@@ -82,8 +82,8 @@ Ceylan::Log::ObjectIdentifier::ObjectIdentifier( const Object & object )
 	catch( const ProcessException & e )
 	{
 	
-		LogPlug::warning( "ObjectIdentifier constructor : "
-			"unable to get hosting PID : " + e.toString()
+		LogPlug::warning( "ObjectIdentifier constructor: "
+			"unable to get hosting PID: " + e.toString()
 			+ ", defaulting to null PID" ) ;	
 		_pid = 0 ;
 					
@@ -98,8 +98,9 @@ Ceylan::Log::ObjectIdentifier::ObjectIdentifier( const Object & object )
 }
 
 
+
 ObjectIdentifier::ObjectIdentifier(	const std::string & hostname, Pid pid,
-		const std::string & className, const void * address) throw() :
+		const std::string & className, const void * address) throw():
 	_hostname( hostname ),
 	_pid( pid ),
 	_className( className ),
@@ -117,13 +118,14 @@ ObjectIdentifier::~ObjectIdentifier() throw()
 }
 
 
+
 bool ObjectIdentifier::differentButMatches( const ObjectIdentifier & otherID )
 	const throw()
 {
 
 	/*
 	 * If addresses or other required fields do not match, they are
-	 * trivially different :
+	 * trivially different:
 	 *
 	 */
 	
@@ -137,20 +139,21 @@ bool ObjectIdentifier::differentButMatches( const ObjectIdentifier & otherID )
 		return false ;
 
 
-	// Only the class name could differ at this point :
+	// Only the class name could differ at this point:
 	
 	/*
-	 * Equality of classnames : identifiers match but are strictly the
-	 * same, so return false :
+	 * Equality of classnames: identifiers match but are strictly the
+	 * same, so return false:
 	 *
 	 */
 	if ( _className == otherID._className )
 		return false ;
 
-	// Strictly the same apart the class name : only case where true.	
+	// Strictly the same apart the class name: only case where true.	
 	return true ;
 	
 }
+
 
 
 const string ObjectIdentifier::toString( Ceylan::VerbosityLevels level ) 
@@ -161,6 +164,7 @@ const string ObjectIdentifier::toString( Ceylan::VerbosityLevels level )
 		+ _className + Separator + _address ;
 	
 }
+
 
 
 ObjectIdentifier & ObjectIdentifier::generateFromChannelName( 
@@ -176,7 +180,7 @@ ObjectIdentifier & ObjectIdentifier::generateFromChannelName(
 
 	/*
 	 * Disabled at the moment, pattern matching is to be used on 
-	 * subelements only :
+	 * subelements only:
 	 *
 	
 	Ceylan::RegExp target( channelName ) ;
@@ -184,22 +188,22 @@ ObjectIdentifier & ObjectIdentifier::generateFromChannelName(
 		 
 	if ( ! target.matches( Pattern ) )
 		throw IdentifierException( 
-			"ObjectIdentifier::generateFromChannelName : unable "
+			"ObjectIdentifier::generateFromChannelName: unable "
 			"to generate an object identifier from channel name <"
-			+ channelName + "> : it does match the relevant pattern." ) ;
+			+ channelName + ">: it does match the relevant pattern." ) ;
 	*/
 
 	/*
-	 * Channel name might be for instance :
+	 * Channel name might be for instance:
 	 * "sonata/PID-1444/N6Ceylan6ObjectE/0x8050fd0".
 	 *
 	 */
 	
-	// First : there must be exactly three / (Separators) :
+	// First: there must be exactly three / (Separators):
 	
 	if ( Ceylan::countChars( channelName, Separator ) != 3 )
 		throw IdentifierException( 
-			"ObjectIdentifier::generateFromChannelName : there are "
+			"ObjectIdentifier::generateFromChannelName: there are "
 			"not exactly three separators in channel name " 
 			+ channelName + "." ) ;
 		
@@ -207,7 +211,7 @@ ObjectIdentifier & ObjectIdentifier::generateFromChannelName(
 	
 	if ( subelements.size() != 4 )
 		throw IdentifierException( 
-			"ObjectIdentifier::generateFromChannelName : there are "
+			"ObjectIdentifier::generateFromChannelName: there are "
 			+ Ceylan::toString( 
 				static_cast<Ceylan::Uint32>( subelements.size() ) ) 
 			+ " elements after having split channel name " 
@@ -218,8 +222,8 @@ ObjectIdentifier & ObjectIdentifier::generateFromChannelName(
 	
 	if ( ! Ceylan::Network::isAValidHostName( hostnameString ) )
 		throw IdentifierException( 
-			"ObjectIdentifier::generateFromChannelName : "
-			+ hostnameString + " is not a valid host name." ) ;
+			"ObjectIdentifier::generateFromChannelName: '"
+			+ hostnameString + "' is not a valid host name." ) ;
 			
 	string pidString = subelements.front() ;
 	subelements.pop_front() ;
@@ -233,7 +237,7 @@ ObjectIdentifier & ObjectIdentifier::generateFromChannelName(
 	
 	if ( ! pidRegExp.matches( "^(PID-[0-9]{1,n})$" ) )
 		throw IdentifierException( 
-			"ObjectIdentifier::generateFromChannelName : "
+			"ObjectIdentifier::generateFromChannelName: "
 			+ pidString + " is not a valid PID string." ) ;
 	*/
 			
@@ -257,9 +261,9 @@ ObjectIdentifier & ObjectIdentifier::generateFromChannelName(
 	catch ( const Ceylan::Exception & e )
 	{
 		throw IdentifierException( 
-			"ObjectIdentifier::generateFromChannelName : unable "
+			"ObjectIdentifier::generateFromChannelName: unable "
 			"to deserialize channel name " + channelName 
-			+ " : " + e.toString() ) ;
+			+ ": " + e.toString() ) ;
 	}
 				 
 	return * new ObjectIdentifier( hostnameString, pid, 
