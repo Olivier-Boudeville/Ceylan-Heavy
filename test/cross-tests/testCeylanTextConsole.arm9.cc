@@ -30,13 +30,7 @@ using namespace Ceylan::System ;
 
 
 /**
- * All-in-one test for the Ceylan library on Nintendo DS.
- *
- * As loading and running executables on this embedded platform cannot be
- * well automated, this test agregates all subtests, that are run in a row:
- * only one load/run sequence is needed then.
- *
- * Test coverage is far less complete than for usual computer platforms though.
+ * Console test for the Ceylan library on Nintendo DS.
  *
  */
 int main( int argc, char * argv[] )
