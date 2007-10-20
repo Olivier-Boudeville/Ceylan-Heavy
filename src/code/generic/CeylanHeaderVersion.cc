@@ -1,11 +1,17 @@
 #include "CeylanHeaderVersion.h"
 
-// Allowed because on Windows (hence not installed) :
-#include "CeylanConfig.h"  // for  CEYLAN_LIBTOOL_VERSION
+
+#ifdef CEYLAN_USES_CONFIG_H
+#include "CeylanConfigForWindows.h"        // for CEYLAN_LIBTOOL_VERSION
+#endif // CEYLAN_USES_CONFIG_H
+
+
+// The DS has CEYLAN_LIBTOOL_VERSION defined on the command line.
+
 
 /*
- * This file exists only for the Windows build, as on
- * UNIX the CeylanHeaderVersion.h header file declares
+ * This file exists only for the non-UNIX builds, as on
+ * UNIX the (generated) CeylanHeaderVersion.h header file declares
  * and defines actualCeylanHeaderLibtoolVersion with no
  * multiple definitions when linking.
  *
