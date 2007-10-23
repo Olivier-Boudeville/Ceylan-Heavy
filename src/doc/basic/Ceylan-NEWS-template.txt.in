@@ -7,6 +7,11 @@
 	See ChangeLog file for more detailed informations.
 
 
+*** Main changes in Ceylan 0.7 [released on ] :
+	
+	* license extended, went from pure LGPL to disjunctive bi-license LGPL/GPL. It allows developers using GPL software to use Ceylan as well
+	
+
 
 *** Main changes in Ceylan 0.6 [released on Tuesday, October 2, 2007] :
 	
