@@ -6,7 +6,7 @@
 			
 The Ceylan library is a Free General-purpose Portable Open Source C++ Library, offering frameworks and abstractions of lower-level layers to ease software development.
 
-This is the @CEYLAN_FULL_VERSION@ version of the Ceylan library, released on @CEYLAN_RELEASE_DATE@ under the LGPL license, as stated in the COPYING.LIB file.
+This is the @CEYLAN_FULL_VERSION@ version of the Ceylan library, released on @CEYLAN_RELEASE_DATE@ under the LGPL/GPL disjunctive bi-license, as stated in the COPYING.LIB file.
 
 The full documentation for Ceylan, including troubleshooting section, is to be found at @CEYLAN_SF_URL@, notably at @CEYLAN_SF_VERSION_URL@ for everything specific to this @CEYLAN_VERSION@ version.
 
