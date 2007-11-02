@@ -56,7 +56,7 @@ TextBuffer::TextBuffer( CharAbscissa screenWidth, CharOrdinate screenHeight,
 TextBuffer::~TextBuffer() throw()
 {
 	
-	// Deallocations all text grids:
+	// Deallocates all text grids:
 	blank() ;
 		
 }
@@ -81,7 +81,9 @@ TextBuffer::CharOrdinate TextBuffer::getHeight() const throw()
 
 TextBuffer::TextLayout TextBuffer::getTextLayout() const throw()
 {
+
 	return _layout ;
+	
 }
 
 
@@ -381,31 +383,31 @@ const std::string TextBuffer::toString( Ceylan::VerbosityLevels level )
 		return res + ". Abstract screen is empty" ;
 		
 	res += ". Abstract screen contains " 
-		+ Ceylan::toString( static_cast<Ceylan::Uint32>( _screenLines.size() ) ) 
+		+ Ceylan::toString( static_cast<Ceylan::Uint32>( _screenLines.size() ) )
 		+ " line(s):" ;
 	
 	list<string> linesList ;
 	
-	// Beware, lines are not null-terminated:
+	// Beware, stored lines are not null-terminated:
 	char * tempLine = new char[_width+1] ;
 	tempLine[_width] = 0 ;
 	
 	CharOrdinate lineCount = 1 ;
 	 
 	for ( TextGrid::const_iterator it = _screenLines.begin() ;
-			it != _screenLines.end(); it++ )
-		{	
+		it != _screenLines.end(); it++ )
+	{	
 		
-			for ( CharAbscissa i = 0; i < _width; i++ )
-				tempLine[i] = (*it)[i] ;
+		for ( CharAbscissa i = 0; i < _width; i++ )
+			tempLine[i] = (*it)[i] ;
 			
-			linesList.push_back( "Line #" 
-				+ Ceylan::toNumericalString( lineCount ) + ": '" 
-				+ string( tempLine ) + "'." ) ;
+		linesList.push_back( "Line #" 
+			+ Ceylan::toNumericalString( lineCount ) + ": '" 
+			+ string( tempLine ) + "'." ) ;
 			
-			lineCount++ ;
+		lineCount++ ;
 						
-		}
+	}
 			
 	delete [] tempLine ;
 	
@@ -659,7 +661,47 @@ TextBuffer::TextGrid & TextBuffer::createAdvancedGridFrom(
 			// Filling a new line now.
 				
 			currentWord = words.front() ;
-    	   
+			
+			/*
+			 * Manage words longer than a line by splitting them in a 
+			 * full line and then the remainder (potentially many lines or an
+			 * incomplete line).
+			 * Ensures the first word chunk will be always of the size of a 
+			 * line and, hence, will begin on the leftmost part of the text,
+			 * to tell the reader that it is indeed a full word, even if broken
+			 * into pieces.
+			 *
+			 */
+			if ( currentWord.size() > _width )
+			{
+				
+				string toSplit = currentWord ;
+				
+				// Have to split and order correctly: 
+				words.pop_front() ;
+				
+				/*
+				 * Keep currentWord for the rest of this while loop:
+				 * (_width considered higher than 1)
+				 *
+				 */
+				currentWord = toSplit.substr( /* start index */ 0,
+					/* length */ _width - 1 ) ;
+					
+				/*
+				 * Add, between current word and next real ones, the remaining	
+				 * part of this word (watch out the order):
+				 *
+				 */				
+				words.push_front( toSplit.substr( /* start index */ _width - 1
+					/* rest of length */ ) ) ;
+					
+				words.push_front( currentWord + "-" ) ;
+				
+									
+		   	}
+		
+			
 			// Multiple whitespaces in a row can lead to empty words.
     	 
 			wordWidth = static_cast<CharAbscissa>( currentWord.size() ) ;
@@ -762,9 +804,9 @@ TextBuffer::TextGrid & TextBuffer::createAdvancedGridFrom(
 				
 				
  				// Could be computed incrementally to avoid the division:
-				currentWidth += /* justified space */ static_cast<CharAbscissa>( 
-					   		( _width - currentWidth - totalWordWidth ) 
-								/ wordCount ) ;
+				currentWidth += /* justified space */ static_cast<CharAbscissa>(
+					( _width - currentWidth - totalWordWidth ) 
+						/ wordCount ) ;
 										
    			     							   
 			}
@@ -801,6 +843,7 @@ TextBuffer::TextGrid & TextBuffer::createAdvancedGridFrom(
 			
 			if ( paragraphs.empty() )
 				break ;
+				
 			words = Ceylan::splitIntoWords( paragraphs.front() ) ;
 			paragraphs.pop_front() ;
 
@@ -903,11 +946,13 @@ char * TextBuffer::getNewLine() throw()
 void TextBuffer::deleteTextGrid( TextGrid * grid ) throw()
 {
 
+	// Deletes the list elements then the list itself:
+
 	for ( std::list<char *>::iterator it = grid->begin(); it != grid->end();
 			it++ )
 		delete [] (*it)	;
 		
 	delete grid ;
-		
+
 }
 
