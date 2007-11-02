@@ -17,6 +17,7 @@ namespace Ceylan
 	{
 	
 	
+	
 		/**
 		 * Provides a console abstraction for basic output of text in a
 		 * terminal.
@@ -78,6 +79,8 @@ namespace Ceylan
 				 * On classical terminals (ex: xterm-like), it implies that
 				 * terminal-provided line-wrapping and scrolling will be used.
 				 * 
+				 * This console will start with a raw layout.
+				 *
 				 * On Nintendo DS, it implies it will take the full extent
 				 * of the bottom LCD screen and will provide a text area of 
 				 * 32x24 characters. As a side-effect, the sub 2D core will be
