@@ -107,6 +107,9 @@ int main( int argc, char * argv[] )
 		
 		MyConsole.addInBuffer( "Article 30.\nNothing in this Declaration may be interpreted as implying for any State, group or person any right to engage in any activity or to perform any act aimed at the destruction of any of the rights and freedoms set forth herein." ) ;
 
+		MyConsole.addInBuffer( "Article 31.\nThis is just a test for very long words: Yourobjectistosavetheworld,whilestillleadingapleasantlife. This should show some word-cutting." ) ;
+		
+
 		MyConsole.render() ;
 		
 		
