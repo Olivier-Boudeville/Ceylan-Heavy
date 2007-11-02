@@ -7,12 +7,12 @@ PLAYTEST_LOCAL_FILE="playTests-local.sh"
 USAGE="`basename $0` [--interactive]: executes all tests for Ceylan in a row.
 	
 	If the --interactive option is used, tests will not be run in batch mode, and will prompt the user for various inputs. Otherwise only their final result will be output. In all cases their messages will be stored in file ${TESTLOGFILE}. The return code of this script will be the number of failed tests (beware to overflow of the return code)"
- 
-	
+
+
 # Please remember, when debugging on UNIX playTests.sh, to execute it from
 # *installed* version, but to modify the playTests.sh from *source* code, 
 # and to copy back the latter to the former.
-  
+
 
 # In batch (non-interactive) mode by default (0):
 is_batch=0
@@ -66,6 +66,7 @@ ERROR_INTERNAL()
 DEBUG_INTERNAL "Debug mode activated"
 
 
+
 # Some useful test functions:
 
 display_launching()
@@ -83,6 +84,7 @@ display_launching()
 }
 
 
+
 display_test_result()
 # Usage: display_test_result <name of the test> <test path> <returned code>
 {
@@ -91,7 +93,7 @@ display_test_result()
 	t="$2"
 	return_code="$3"
 	
-	if [ "$return_code" = 0 ] ; then
+	if [ "$return_code" -eq 0 ] ; then
 		# Test succeeded:
 		if [ $is_batch -eq 1 ] ; then
 			echo
@@ -137,6 +139,7 @@ display_test_result()
 }
 
 
+
 run_test()
 # Usage: run_test <name of the test> <test path> 
 {
@@ -147,38 +150,56 @@ run_test()
 	# The --interactive parameter is used to tell the test it is 
 	# run in interactive mode, so that those which are long 
 	# (ex: stress tests) are shorten.
+
+	echo "
+		
+	########### Running now $t" >>${TESTLOGFILE}
+		
+	if [ $has_ldd -eq 0 ] ; then
+		echo "Library dependencies: " >>${TESTLOGFILE}
+		${ldd_tool} $t >>${TESTLOGFILE}
+	fi
+
 	if [ $is_batch -eq 0 ] ; then
-		echo "
-		
-		########### Running now $t" >>${TESTLOGFILE}
-		
-		if [ $has_ldd -eq 0 ] ; then
-			echo "Library dependencies: " >>${TESTLOGFILE}
-			${ldd_tool} $t >>${TESTLOGFILE}
-		fi
 		
 		echo "Command line: $t --batch ${network_option} ${log_plug_option}" >>${TESTLOGFILE}
+		
 		$t --batch ${network_option} ${log_plug_option} 1>>${TESTLOGFILE} 2>&1
+		
 	else
+	
+		echo "Command line: $t --interactive ${network_option} ${log_plug_option}" >>${TESTLOGFILE}
 		$t --interactive ${network_option} ${log_plug_option}
+		
 	fi			
 		
 	return_code="$?"
 	
 	display_test_result "$test_name" "$t" "$return_code"
 	
+	
+	if [ $return_code -eq 0 ] ; then
+		echo "Test $t succeeded." 1>>${TESTLOGFILE}		
+	else
+		echo "Test $t failed with return code $return_code." 1>>${TESTLOGFILE} 
+	fi
+		
 		
 	if [ $is_batch -eq 1 ] ; then
+
 		printColor "${term_primary_marker}End of $test_name, press enter to continue" $cyan_text $blue_back
 		read 
 		clear
+
 	fi		
 			
 }
 
 
+
 display_final_stats()
 {
+
 	echo 
 
 	if [ "$error_count" -eq 0 ] ; then
@@ -187,7 +208,9 @@ display_final_stats()
 		echo "   Test result: [${red_text}m $error_count out of $test_count tests failed[${white_text}m"
 		echo "   (see ${TESTLOGFILE} for more details)"
 	fi
+
 }
+
 
 
 get_logical_test_name()
@@ -248,7 +271,7 @@ else
 	fi
 fi	
 
-# For ping:
+# For ping:
 findSupplementaryShellTools
 
 check_no_ceylan_server_running
@@ -374,7 +397,7 @@ for m in ${TESTED_ROOT_MODULES} ; do
 	export LTDL_LIBRARY_PATH
 	
 	# Some local scripts are needed in some cases, for example when a test
-	# client requires a test server to be launched before.
+	# client requires a test server to be launched before.
 	
 	PLAYTEST_LOCAL="${TEST_ROOT}/$m/${PLAYTEST_LOCAL_FILE}"
 	
@@ -397,7 +420,7 @@ for m in ${TESTED_ROOT_MODULES} ; do
 	
 	if [ $is_batch -eq 1 ] ; then
 	
-		# Lists all tests that are to be run:
+		# Lists all tests that are to be run:
 		for t in $TESTS ; do
 			if [ -x "$t" -a -f "$t" ] ; then
 				printColor "${term_offset}${term_offset}+ `basename $t`" $cyan_text $black_back
