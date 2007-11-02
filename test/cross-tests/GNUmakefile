@@ -9,7 +9,7 @@ TOP = ../..
 
 
 .PHONY: test emulate emulate-with-NoCashGBA emulate-with-DeSmuME transfer \
-	patch umount export info-target clean info-flags info-debug info-run
+	patch umount export clean info info-target info-flags info-debug info-run
 
 
 CROSS_TARGET=nintendo-ds
@@ -189,6 +189,9 @@ TEST_LIBS_ARM9 = \
        $(TEST_BASE_LIBS_ARM9)
 	
 
+info: info-target info-flags info-debug info-run
+
+
 info-flags:
 	@echo "TEST_CPP_FLAGS_ARM7 = $(TEST_CPP_FLAGS_ARM7)"
 	@echo "TEST_CPP_FLAGS_ARM9 = $(TEST_CPP_FLAGS_ARM9)"
@@ -233,7 +236,6 @@ info-run:
 %-$(TEST_PREFIX).arm9.o: %.arm9.cc
 	@echo "    Compiling $< into $@"
 	$(CXX) $(TEST_CXX_FLAGS_ARM9) $(TEST_CPP_FLAGS_ARM9) -c $< -o $@
-
 
 
 # From object files to fully linked ELF executables:
