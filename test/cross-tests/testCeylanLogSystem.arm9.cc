@@ -57,6 +57,8 @@ int main( int argc, char * argv[] )
 		LogPlug::error( "This is an error message" ) ;
 		LogPlug::fatal( "This is a fatal message" ) ;
 
+		LogPlug::info( "This is a test for very long words: Yourobjectistosave theworld,whilestillleadingapleasantlife." ) ;
+				
 		LogPlug::debug( "Logs are collected during program execution, and at the end of the program, whether on error (uncaught exception) or not, the logs should be displayed in the DS console, thanks to a small log browser allowing to navigate through all past logs." ) ;
 		
 		LogPlug::info( 
