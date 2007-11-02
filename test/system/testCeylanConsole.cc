@@ -144,7 +144,10 @@ int main( int argc, char * argv[] )
 		MyConsole.addInBuffer( "Article 29.\n(1) Everyone has duties to the community in which alone the free and full development of his personality is possible.\n(2) In the exercise of his rights and freedoms, everyone shall be subject only to such limitations as are determined by law solely for the purpose of securing due recognition and respect for the rights and freedoms of others and of meeting the just requirements of morality, public order and the general welfare in a democratic society.\n(3) These rights and freedoms may in no case be exercised contrary to the purposes and principles of the United Nations." ) ;
 		
 		MyConsole.addInBuffer( "Article 30.\nNothing in this Declaration may be interpreted as implying for any State, group or person any right to engage in any activity or to perform any act aimed at the destruction of any of the rights and freedoms set forth herein." ) ;
+
+		MyConsole.addInBuffer( "Article 31.\nThis is just a test for very long words: Yourobjectistosavetheworld,whilestillleadingapleasantlife. This should show some word-cutting." ) ;
 		
+				
 		MyConsole.render() ;
 		
 		LogPlug::info( "Console state after first render: " 
@@ -166,15 +169,13 @@ int main( int argc, char * argv[] )
 			"'h' for layout change, 'q' to quit." ) ;
 			
 			
-		KeyChar key ;
 		bool quit = false ;
 		
 		do
 		{
 		
-			key = getChar() ;
 			
-			switch (key)
+			switch( getChar() )
 			{
 
 			
