@@ -111,14 +111,26 @@ class myFIFOExample: public Ceylan::System::FIFO
 			// 128: application-specific compute request ID
 			FIFO::SetFIFOCommandIDTo( commandElement, 128 ) ;
 			
-			writeBlocking( commandElement ) ;
+			try
+			{	
+			
+				writeBlocking( commandElement ) ;
 
-			//LogPlug::trace( "sending address." ) ;
+				//LogPlug::trace( "sending address." ) ;
 			
-			writeBlocking( /* value address */ 
-				reinterpret_cast<FIFOElement>( _pointedValue ) ) ;
+				writeBlocking( /* value address */ 
+					reinterpret_cast<FIFOElement>( _pointedValue ) ) ;
 			
-			//LogPlug::trace( "sent compute request." ) ;
+			}
+			catch( const FIFOException & e )
+			{
+			
+				LogPlug::error( "sendComputeRequest failed: " + e.toString() ) ;
+				return ;	
+					
+			}
+			
+			//LogPlug::trace( "sent compute request ended." ) ;
 			
 		}	
 		
@@ -155,10 +167,26 @@ class myFIFOExample: public Ceylan::System::FIFO
 					+ Ceylan::toNumericalString( expectedID ) + ")" ) ;
 						
 			}
+			
+			FIFOElement readElement ;
 				
+			try
+			{	
+			
+				// Then read the payload (ARM7-computed value):		
+				readElement = readBlocking() ;
+			
+			}
+			catch( const FIFOException & e )
+			{
+			
+				LogPlug::error( "handleReceivedApplicationCommand failed: "
+					+ e.toString() ) ;
 				
-			// Then read the payload (ARM7-computed value):		
-			FIFOElement readElement = readBlocking() ;
+				return ;	
+					
+			}
+			
 				
 			Ceylan::Uint32 expectedValue = *_pointedValue + 42 ;
 				
@@ -199,7 +227,7 @@ class myFIFOExample: public Ceylan::System::FIFO
 		 * ARM9 cache.
 		 *
 		 */
-		Ceylan::Uint32 * _pointedValue ;
+		Ceylan::Uint32 volatile * _pointedValue ;
 		
 		
 		/// Useful for the test:		
@@ -228,7 +256,7 @@ int main( int argc, char * argv[] )
     {
 	
 		// For the test:
-		bool interactive = false ;
+		bool interactive = true ;
 		
 		
 		LogPlug::info( "Test of Ceylan support for FIFO transfers" ) ;
@@ -285,23 +313,40 @@ int main( int argc, char * argv[] )
 	
 		myFIFOExample myFifo( *safeAddressOfMyValue ) ;
 
+		/*
+		 * Interrupts enabled by previous constructor, this VBlanlk fail-over
+		 * handler is added:
+		 *
+		 * @note If you have already a VBlank handler, they should be mixed
+		 * (glued into a unique VBlank handler)
+		 *
+		 */
+		irqSet( IRQ_VBLANK, FIFO::VBlankHandlerForFIFO ) ; 
+		
+		const Ceylan::Uint32 displayCount = 1 ;
+		
+		
 		if ( interactive )
 		{
 		
 			LogPlug::info( "Press any key to activate the FIFO" ) ;
-			waitForKey() ;
+			//waitForKey() ;
 		
 		}
 
+		// Set-up the ARM7 report mechanism:
 		myFifo.activate() ;
 		
-		
-		
+			
+		LogPlug::info( "Current ARM7 status just after FIFO activation is: "
+			 + myFifo.interpretLastARM7StatusWord() ) ;
+
+
 		if ( interactive )
 		{
 		
 			LogPlug::info( "Press any key to send IPC request" ) ;
-			waitForKey() ;
+			//waitForKey() ;
 		
 		}
 		
@@ -312,6 +357,9 @@ int main( int argc, char * argv[] )
 			requestCount = 1 ;
 		else
 			requestCount = 100 ;
+
+		LogPlug::info( "Current ARM7 status just before request sending is: "
+			 + myFifo.interpretLastARM7StatusWord() ) ;
 		
 		/*
 		 * Note: there is no direct flow control, the ARM9 sends requests
@@ -320,16 +368,50 @@ int main( int argc, char * argv[] )
 		 */
 		for ( Ceylan::Uint32 i = 0; i < requestCount; i++ )
 			myFifo.sendComputeRequest() ;
+
+
+		LogPlug::info( "Current ARM7 status just after request sending is: "
+			 + myFifo.interpretLastARM7StatusWord() ) ;
+
+
+		if ( interactive )
+		{
 		
+			LogPlug::info( "Press any key to check ARM7 after IPC answer" ) ;
+			//waitForKey() ;
+		
+		}
+
+		for ( Ceylan::Uint32 i = 0; i < displayCount; i++ )
+			LogPlug::info( myFifo.interpretLastARM7StatusWord() ) ;
+
+		LogPlug::info( "Current ARM7 status just after key waiting is: "
+			 + myFifo.interpretLastARM7StatusWord() ) ;
+
+		if ( interactive )
+		{
+		
+			LogPlug::info( "Press any key to wait again" ) ;
+			//waitForKey() ;
+		
+		}
+
+		for ( Ceylan::Uint32 i = 0; i < displayCount; i++ )
+			LogPlug::info( myFifo.interpretLastARM7StatusWord() ) ;
+		
+		LogPlug::info( "stopeed" ) ;
 		
 		/*
 		 * Wait so that operation in error can be detected and the error flag
 		 * be set:
 		 *
 		 */	
-		for ( Ceylan::Uint32 i = 0 ; i < 50 ; i++ )
-			atomicSleep() ;
+		for ( Ceylan::Uint32 i = 0; i < 50; i++ )
+			; //atomicSleep() ;
 
+		LogPlug::info( "Current ARM7 status after final waiting: "
+			 + myFifo.interpretLastARM7StatusWord() ) ;
+		
 		
 		if ( myFifo.isInError() )
 			throw TestException( "Test failed: FIFO finished in error" ) ;
@@ -352,6 +434,15 @@ int main( int argc, char * argv[] )
 				+ ", obtained: " + Ceylan::toString( *safeAddressOfMyValue ) ) ;
 		else
 			LogPlug::info( "FIFO led to correct computations" ) ;
+
+
+		if ( interactive )
+		{
+		
+			LogPlug::info( "Press any key to end the test" ) ;
+			waitForKey() ;
+		
+		}
 			
 		// LogHolder out of scope: log browser triggered.
 		

@@ -5,7 +5,7 @@
  *
  * @see testCeylanFIFO.arm9.cc for the peer implementation
  * @see CeylanFIFO.h and CeylanFIFO.cc for the implementation
- *
+ * 
  */
  
  
@@ -33,6 +33,26 @@
 #endif // USE_CEYLAN
 
 
+
+/* Defines the ARM7 status word type */
+typedef uint16 ARM7StatusWord ;
+
+/* Defines the ARM7 error code type */
+typedef uint16 ARM7ErrorCode ;
+
+/* Defines the FIFO command identifier type for the ARM7 */
+typedef uint8 FIFOCommandID ;
+
+
+
+/* Defines the actual ARM7 status words and error codes */
+#include "CeylanARM7Codes.h"
+
+/* Defines IPC command identifiers */
+#include "CeylanIPCCommands.h"
+
+
+
 /*
  * Directly obtained from libnds ARM7 template.
  * This is a stripped-down version (no sound) with FIFO support.
@@ -45,10 +65,12 @@
 touchPosition first, tempPos ;
 
 
+
+/* libnds IPC uses shared variables in the transfer region */
 void VcountHandler() 
 {
 
-	// Updates the button state and the touchscreen:
+	/* Updates the button state and the touchscreen: */
 	
 	static int lastbut = -1 ;
 	
@@ -102,18 +124,84 @@ void VcountHandler()
 
 /* Ceylan FIFO-based IPC section */
 
+#define CEYLAN_DEBUG_FIFO 1
 
 
+/* One entry of the FIFO */
 typedef uint32 FIFOElement ;
-typedef uint8 FIFOCommandID ;
 
 
-/* Pointer to the ARM7 shared status word, specified by the ARM9 */
-uint32 * StatusWordPointer = 0 ;
+
+/* Pointer to the ARM7 shared status word, allocated by the ARM9 */
+uint16 * StatusWordPointer = 0 ;
+uint16 * ErrorWordPointer = 0 ;
+
 
 
 /* Helper functions */
 
+
+/**
+ * Sets the ARM7 status word, for the ARM9.
+ *
+ * @note If previous status was ARM7InError, will be left as is.
+ *
+ */
+void SetStatusWord( ARM7StatusWord newStatus )
+{
+
+	if ( StatusWordPointer != 0 )
+	{
+	
+		if ( *StatusWordPointer != ARM7InError )
+			*StatusWordPointer = newStatus ;
+			
+	}
+	
+}
+
+
+
+/**
+ * Sets the ARM7 error code, for the ARM9.
+ * Update the status word accordingly.
+ *
+ * @note If previous error code was not NoError, will be left as is.
+ *
+ */
+void SetError( ARM7ErrorCode newError )
+{
+
+	SetStatusWord( ARM7InError ) ;
+	
+	if ( ErrorWordPointer != 0 )
+	{
+	
+		if ( *ErrorWordPointer == NoError )
+			*ErrorWordPointer = newError ;
+			
+	}
+	
+}
+
+
+/**
+ * Unset any previous error status, for example when the error code has been
+ * taken into account already.
+ *
+ */
+void UnsetErrorStatus()
+{
+
+	if ( StatusWordPointer != 0 )
+		*StatusWordPointer = NoStatusAvailable ;
+		
+	if ( ErrorWordPointer != 0 )
+		*ErrorWordPointer = NoError ;
+		
+}
+
+ 
 
 FIFOCommandID GetFIFOCommandIDFrom( const FIFOElement * element )
 {
@@ -162,41 +250,147 @@ bool spaceAvailableForWriting()
 
 FIFOElement read()
 {
+
+#if CEYLAN_DEBUG_FIFO
+
+	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
+		SetError( FIFOErrorWhileReading ) ;
+
+#endif // CEYLAN_DEBUG_FIFO
 	
-	return REG_IPC_FIFO_RX ;
-	
-}
 
-
-
-FIFOElement FIFO::readBlocking() throw()
-{
-
-	while( ! dataAvailableForReading() )
-		atomicSleep() ;
+	if ( ! dataAvailableForReading() )
+		SetError( FIFOErrorWhileReading ) ;
 		
-	return REG_IPC_FIFO_RX ;
+	FIFOElement res = REG_IPC_FIFO_RX ;
+
+
+#if CEYLAN_DEBUG_FIFO
+
+	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
+		SetError( FIFOErrorWhileReading ) ;
+
+#endif // CEYLAN_DEBUG_FIFO
+
+
+	return res ;
 	
 }
 
 
 
-void FIFO::write( FIFOElement toSend ) throw( FIFOFull )
+
+FIFOElement readBlocking()
+{
+
+#if CEYLAN_DEBUG_FIFO
+
+	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
+		SetError( FIFOErrorWhileReading ) ;
+
+#endif // CEYLAN_DEBUG_FIFO
+
+
+	/* Active waiting preferred to atomicSleep(): */
+	while( ! dataAvailableForReading() )
+		;
+
+
+#if CEYLAN_DEBUG_FIFO
+
+	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
+		SetError( FIFOErrorWhileReading ) ;
+
+#endif // CEYLAN_DEBUG_FIFO
+		
+		
+	FIFOElement res = REG_IPC_FIFO_RX ;
+	
+	
+#if CEYLAN_DEBUG_FIFO
+
+	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
+		SetError( FIFOErrorWhileReading ) ;
+
+#endif // CEYLAN_DEBUG_FIFO
+
+
+	return res ;
+	
+}
+
+
+
+void write( FIFOElement toSend )
 {
 	
+#if CEYLAN_DEBUG_FIFO
+
+	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
+		SetError( FIFOErrorWhileWriting ) ;
+
+#endif // CEYLAN_DEBUG_FIFO
+
+
+	if ( ! spaceAvailableForWriting() )
+		SetError( FIFOErrorWhileWriting ) ;
+		
+		
+#if CEYLAN_DEBUG_FIFO
+
+	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
+		SetError( FIFOErrorWhileWriting ) ;
+
+#endif // CEYLAN_DEBUG_FIFO
+		
+		
 	REG_IPC_FIFO_TX = toSend ;
+
+
+#if CEYLAN_DEBUG_FIFO
+
+	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
+		SetError( FIFOErrorWhileWriting ) ;
+
+#endif // CEYLAN_DEBUG_FIFO
 	
 }
 
 
 
-void FIFO::writeBlocking( FIFOElement toSend ) throw()
+void writeBlocking( FIFOElement toSend )
 {
 
+#if CEYLAN_DEBUG_FIFO
+
+	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
+		SetError( FIFOErrorWhileWriting ) ;
+
+#endif // CEYLAN_DEBUG_FIFO
+
+
+	/* Active waiting preferred to atomicSleep(): */
 	while ( ! spaceAvailableForWriting() )
-		atomicSleep() ;
+		;
+		
+		
+#if CEYLAN_DEBUG_FIFO
+
+	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
+		SetError( FIFOErrorWhileWriting ) ;
+
+#endif // CEYLAN_DEBUG_FIFO
+
 	
 	REG_IPC_FIFO_TX = toSend ;
+
+
+#if CEYLAN_DEBUG_FIFO
+
+	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
+		SetError( FIFOErrorWhileWriting ) ;
+
+#endif // CEYLAN_DEBUG_FIFO
 	
 }
 
@@ -205,21 +399,15 @@ void FIFO::writeBlocking( FIFOElement toSend ) throw()
 /* Example of application-specific command handler */
 void handleReceivedApplicationCommand( FIFOCommandID id, FIFOElement element )
 {
-
 	
 	if ( id == 128 )
 	{
 			
 		/* Command identifier ok, needing the value address now: */
 	
-		/* FIFOElement readElement = readBlocking() ; */
-	
-		/* Active waiting */
-		while ( REG_IPC_FIFO_CR & IPC_FIFO_RECV_EMPTY )
-			;
-	
-		FIFOElement readElement = REG_IPC_FIFO_RX ;
+		FIFOElement readElement = readBlocking() ;
 
+		/* Add 42 to the value pointed by this address */
 		uint32 returnedValue = *((uint32 *) readElement) + 42 ;
 
 		/* sends answer identifier (129): */
@@ -227,66 +415,51 @@ void handleReceivedApplicationCommand( FIFOCommandID id, FIFOElement element )
 		FIFOElement commandAnswer ;
 		SetFIFOCommandIDTo( &commandAnswer, 129 ) ;
 		
-		/* writeBlocking( commandAnswer ) ; */
+		writeBlocking( commandAnswer ) ; 
 
-		/* Active waiting */
-		while ( REG_IPC_FIFO_CR & IPC_FIFO_SEND_FULL )
-			;
-	
-		REG_IPC_FIFO_TX = commandAnswer ;
-	
 		/* sends computed value: */
-	
-		/* writeBlocking( returnedValue ) ; */
-
-		/* Active waiting */
-		while ( REG_IPC_FIFO_CR & IPC_FIFO_SEND_FULL )
-			;
-	
-		REG_IPC_FIFO_TX = returnedValue ;
-
+		writeBlocking( returnedValue ) ;
+		
 	}
 	else
 	{
 	
-		/* unexpected id, sending error command: */
-		
-		/* Active waiting */
-		while ( REG_IPC_FIFO_CR & IPC_FIFO_SEND_FULL )
-			;
-		
-		/* Application-specific error on the ARM7 side : */
-		REG_IPC_FIFO_TX = 0x02000000 ;
+		/* unexpected id: */
+		SetError( UnexpectedApplicationCommand ) ;
 		
 	}	
+
 	
 }
 
 
 
-void HandleReceivedFIFOElement()
+void ManageReceivedFIFOElement()
 {
 	
 	static bool CommandInProgress = false ;
+
+	REG_IE = REG_IE & ~( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
 
 
 	if ( ! CommandInProgress )
 	{
 	
 		CommandInProgress = true ;
-	
+			
 		FIFOElement firstElement ;
 		FIFOCommandID id ;
 	
 	
-		/* while ( dataAvailableForReading() ) */
-		while ( ! ( REG_IPC_FIFO_CR & IPC_FIFO_RECV_EMPTY ) )
+		/* At least one first element to read, maybe more: */
+		while ( dataAvailableForReading() )
 		{
 
+			
 			/* Read first the command identifier: */
 	
-			/* firstElement = read() ; */
-			firstElement = REG_IPC_FIFO_RX ;
+	 		/* readBlocking instead of read: increased safety ? */
+			firstElement = readBlocking() ;
 		
 			id = GetFIFOCommandIDFrom( &firstElement ) ;
 			
@@ -297,64 +470,124 @@ void HandleReceivedFIFOElement()
 				handleReceivedApplicationCommand( id, firstElement ) ;
 	
 			}
-			else
+			else 
 			{
-	
+					
 				/*
 				 * Here we are dealing with a system-specific (Ceylan) 
 				 * command.
 				 *
+				 * @note Cannot use switch here, as if using:
+				 * const int MyConstant = 1 ;
+				 * switch ( aValue )
+				 * {
+				 *   case MyConstant:
+				 * etc.
+				 *
+				 * gcc says: 'case label does not reduce to an integer constant'
+				 *
 				 */
-				switch( id )
+				if ( id == HelloToTheARM7 )
 				{
 	
-					case 0:
-						/*
-						LogPlug::info( "The ARM9 says hello to the ARM7 !" ) ;
-						 */
-						break ;
+					/*
+					LogPlug::info( "The ARM9 says hello to the ARM7 !" ) ;
+					 */
+					 
+				} 
+				else if ( id == SendARM7StatusAndErrorReportAddress )
+				{
+				
+					/* 
+					 * The ARM9 will send the address of the shared ARM7
+					 * status word in next element: 
+					 */
+					StatusWordPointer = (uint16*) readBlocking() ;
+					*StatusWordPointer = ARM7Running ;
 						
-					case 3:	
-						/* 
-						 * The ARM9 sent the address of the shared ARM7 status 
-						 * word: 
-						 */
-						StatusWordPointer
-					default:
-						/* Sending error command: */
-						/* Active waiting */
-						while ( REG_IPC_FIFO_CR & IPC_FIFO_SEND_FULL )
-							;
-						/* System-specific (Ceylan) error on the ARM7 side: */
-						REG_IPC_FIFO_TX = 0x01000000 ;
+					ErrorWordPointer = StatusWordPointer + 1 ;
+					*ErrorWordPointer = NoError ;
 						
-						/*
-						LogPlug::error( "FIFO::handleReceivedFIFOElement: "
-							"unexpected command: "
-							+ Ceylan::toNumericalString( id ) + ", ignored." ) ;
-						 */							
-						break ;
+				} 
+				else if ( id == ShutdownIPC )
+				{
+				
+					/* 
+					 * Stop the mechanism on the ARM7 side.
+					 * 
+					 * Ends with NoStatusAvailable status (and NoError error 
+					 * code) to perform last handshake with ARM9.
+					 *
+					 * @see FIFO::deactivate
+					 *
+					 */
+					UnsetErrorStatus() ;
+					
+					StatusWordPointer = 0 ;
+					ErrorWordPointer = 0 ;
+					
+					REG_IPC_FIFO_CR &= 
+						~( IPC_FIFO_ENABLE | IPC_FIFO_RECV_IRQ ) ;
+					
+					irqDisable( IPC_FIFO_RECV_IRQ ) ;
+					
+					/* 
+					 * IRQ_VBLANK not disabled as can be used for other reasons 
+					 *
+					 */
+					
+				}
+				else
+				{						
+				
+					/* unexpected id: */
+					SetError( UnexpectedSystemCommand ) ;
+
+					/*
+					LogPlug::error( "FIFO::HandleReceivedFIFOElement: "
+						"unexpected command: "
+						+ Ceylan::toNumericalString( id ) + ", ignored." ) ;
+					 */							
 	
 				}
 				
-			}
+			} /* id corresponds to a system command */
 	
 			CommandInProgress = false ;	
-	
-	
+				
 		} /* end while */
 	
 	}
-	else /* CommandInProgress is true */
-	{
+
+	/*
+	 * else ignores the possible IRQ that triggered that method, as this 
+	 * event (FIFO not empty) is expected to be managed by the
+	 * handleReceivedCommandhandler command.
+	 *
+	 * The IRQ handler that called this method is responsible for acknoledging
+	 * the interrupt that triggered it.
+	 *
+	 */
+
+	REG_IE = REG_IE | ( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
+			
+}
+
+
+
+void HandleReceivedFIFOElement()
+{
+
 	
-		/* Ignores the IRQ, as expected to be managed by the handler: */
-		return ;
-		
-	}
+	// FIXME useless test
+
+	/* Function shared with the VBlank handler: */
+	if ( dataAvailableForReading() )
+		ManageReceivedFIFOElement() ;
 	
+	/* Notify this interrupt has been managed: */
+	REG_IF |= IRQ_FIFO_NOT_EMPTY ;			
 	
-		
 }
 
 
@@ -363,29 +596,25 @@ void HandleVBlank()
 {
 
 	/* Polling-based parachute, should a FIFO IRQ trigger have been lost: */
-	if ( ! ( REG_IPC_FIFO_CR & IPC_FIFO_RECV_EMPTY ) )
-		HandleReceivedFIFOElement() ;
-		
+	if ( dataAvailableForReading() )
+		ManageReceivedFIFOElement() ;
+
+	/* Notify this interrupt has been managed: */
+	REG_IF |= IRQ_VBLANK ;			
+	
 }
 
 
 
-int main(int argc, char ** argv) 
+void initFIFO()
 {
-	
-	/* Reset the clock if needed : */
-	rtcReset() ;
-
-	/* FIFO constructor: */
-		
-	irqInit() ;
 
 	irqSet( IRQ_FIFO_NOT_EMPTY, HandleReceivedFIFOElement ) ; 
-	irqSet( IRQ_VBLANK, HandleVBlank ) ;
-
 	irqEnable( IRQ_FIFO_NOT_EMPTY ) ;
 
-	
+	//irqSet( IRQ_VBLANK, HandleVBlank ) ;
+	//irqEnable( IRQ_VBLANK ) ;
+	 
 	/*
 	 * REG_IPC_FIFO_CR is the FIFO *control* register, and:
 	 *  - IPC_FIFO_ENABLE enables the FIFO
@@ -397,15 +626,27 @@ int main(int argc, char ** argv)
 	REG_IPC_FIFO_CR = 
 		IPC_FIFO_ENABLE | IPC_FIFO_SEND_CLEAR | IPC_FIFO_RECV_IRQ ;
 
+}
 
 
+
+int main(int argc, char ** argv) 
+{
+	
+	/* Reset the clock if needed : */
+	rtcReset() ;
+		
+	irqInit() ;
+
+	initFIFO() ;
+	 
 	SetYtrigger( 80 ) ;
 	irqSet( IRQ_VCOUNT, VcountHandler ) ;
-	irqEnable( IRQ_VBLANK | IRQ_VCOUNT ) ;
+	irqEnable( IRQ_VCOUNT ) ;
 
 	IPC->mailBusy = 0 ;
 
-	while ( true )
+	while( true )
 		atomicSleep() ;
 		
 }
