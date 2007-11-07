@@ -8,7 +8,10 @@
 
 
 
+
 // Cannot be in a namespace, as to be included in C code:
+
+
 
 /**
  * Describes an ARM7 status word.
@@ -39,6 +42,7 @@ typedef Ceylan::Uint16 ARM7ErrorCode ;
  *
  */
 typedef Ceylan::Uint8 FIFOCommandID ;
+
 
 
 
@@ -393,7 +397,7 @@ namespace Ceylan
 				 * ARM7 can report its status.
 				 *
 				 */
-				ARM7StatusWord * _arm7StatusWordPointer ;
+				ARM7StatusWord volatile * _arm7StatusWordPointer ;
 				
 				
 				/**
@@ -402,7 +406,7 @@ namespace Ceylan
 				 * ARM7 can report its last error.
 				 *
 				 */
-				ARM7ErrorCode * _arm7ErrorCodePointer ;
+				ARM7ErrorCode volatile * _arm7ErrorCodePointer ;
 				
 
 				/**
@@ -517,6 +521,7 @@ namespace Ceylan
 				 */
 				static void ManageReceivedCommand() ;
 				
+	
 	
 		private:
 

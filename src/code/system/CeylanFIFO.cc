@@ -25,6 +25,7 @@ using namespace Ceylan::Log ;
 using namespace Ceylan ;
 
 
+
 /*
  * Implementation notes:
  * 
@@ -36,6 +37,7 @@ using namespace Ceylan ;
 
 // No FIFO registered at start-up:
 FIFO * FIFO::_FIFO = 0 ;
+
 
 
 FIFO::FIFOException::FIFOException( const string & reason ) throw():
@@ -85,7 +87,31 @@ FIFO::FIFO() throw( FIFOException ):
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
-	_FIFO = this ;		
+	/*
+	 * Contains an initial zero status word (zero is not a legal ARM7 status
+	 * word).
+	 *
+	 * @note A 'new' is forced instead of a class member, as if the FIFO is 
+	 * created as an automatic variable, this variable would be in the ARM9
+	 * stack, hence out of range for the ARM7.
+	 *
+	 * The address is translated so that it is not cached by the ARM9 data 
+	 * cache.
+	 *
+	 * @note Both the status word and the error code *must* be Ceylan::Uint16
+	 * here (do not change a typedef without changing this 'new').
+	 *
+	 */
+	Ceylan::Uint16 * arm7StateMemory = ConvertToNonCacheable<Ceylan::Uint16>(
+		new Ceylan::Uint16[ 2 ] ) ;
+		
+	_arm7StatusWordPointer = &arm7StateMemory[0] ;
+	_arm7ErrorCodePointer  = &arm7StateMemory[1] ;
+	
+	(*_arm7StatusWordPointer) = NoStatusAvailable ;
+	
+	(*_arm7ErrorCodePointer) = NoError ;
+	
 
 	// Interrupts will be used here:
 	System::InitializeInterrupts() ;
@@ -97,8 +123,12 @@ FIFO::FIFO() throw( FIFOException ):
 	/*
 	 * Fail-over VBlank handler not managed here, as may be used for other
 	 * purposes as well in the user code.
+	 * (neither set nor enabled here)
 	 *
 	 */
+
+	// Last action is to register this FIFO:
+	_FIFO = this ;		
 		
 #else // CEYLAN_ARCH_NINTENDO_DS
 
@@ -118,8 +148,32 @@ FIFO::~FIFO() throw()
 	// LogPlug::trace( "FIFO destructor" ) ;
 	
 	deactivate() ;
-			
+
 	_FIFO = 0 ;
+
+
+	// Two-element area actually:
+	if ( _arm7StatusWordPointer != 0 )
+		delete [] _arm7StatusWordPointer ;
+	
+	_arm7StatusWordPointer = 0 ;
+	
+		
+	/*	
+	 * Splendid bug: the two variables were allocated as an array, even if
+	 * previous delete (for _arm7StatusWordPointer) had no '[]', 
+	 * _arm7ErrorCodePointer was already deallocated, thus the following:
+	 *	
+	 *	if ( _arm7ErrorCodePointer != 0 )
+	 *		delete _arm7ErrorCodePointer ;
+	 *	
+	 *	_arm7ErrorCodePointer = 0 ;
+	 *
+	 * caused a double deallocation which was making the NoCashGBA emulator
+	 * crash (but not the DS).
+	 *
+	 */	
+			
 	
 }
 
@@ -140,33 +194,6 @@ void FIFO::activate() throw( FIFOException )
 	 */
 	REG_IPC_FIFO_CR = 
 		IPC_FIFO_ENABLE | IPC_FIFO_SEND_CLEAR | IPC_FIFO_RECV_IRQ ;
-
-
-	/*
-	 * Contains an initial zero status word (zero is not a legal ARM7 status
-	 * word.
-	 *
-	 * @note A new is forced instead of a class member, as if the FIFO is 
-	 * created as an automatic variable, this variable would be in the ARM9
-	 * stack, hence out of range for the ARM7.
-	 *
-	 * The address is translated so that it is not cached by the ARM9 data 
-	 * cache.
-	 *
-	 * @note Both the status word and the error code *must* be Ceylan::Uint16
-	 * here.
-	 *
-	 */
-	Ceylan::Uint16 * arm7StateMemory = ConvertToNonCacheable<Ceylan::Uint16>(
-		new Ceylan::Uint16[ 2 ] ) ;
-		
-	_arm7StatusWordPointer = &arm7StateMemory[0] ;
-	_arm7ErrorCodePointer  = &arm7StateMemory[1] ;
-	
-	(*_arm7StatusWordPointer) = NoStatusAvailable ;
-	
-	(*_arm7ErrorCodePointer) = NoError ;
-	
 		
 	/*
 	 * Send this address to the ARM7 thanks to the relevant command identifier:
@@ -238,7 +265,7 @@ void FIFO::deactivate() throw()
 	// Wait for at most a whole second:
 	Ceylan::Uint8 VBlankCount = 60 ;
 	
-	while ( ( getLastARM7StatusWord() != NoStatusAvailable ) 
+	while ( ( getLastARM7StatusWord() != ARM7IPCShutdown ) 
 		&& ( VBlankCount > 0 ) )
 	{
 
@@ -250,33 +277,13 @@ void FIFO::deactivate() throw()
 	
 	if ( VBlankCount == 0 )
 		LogPlug::error( "FIFO::deactivate ended on a time-out" ) ;
-		
-	LogPlug::trace( "ARM7 shutdown" ) ;
+	else
+		LogPlug::trace( "ARM7 shutdown successful" ) ;
 	
 	irqDisable( IRQ_FIFO_NOT_EMPTY ) ;
 	
 	REG_IPC_FIFO_CR &= ~( IPC_FIFO_ENABLE | IPC_FIFO_RECV_IRQ ) ;   	
 
-	if ( _arm7StatusWordPointer != 0 )
-		delete [] _arm7StatusWordPointer ;
-	
-	_arm7StatusWordPointer = 0 ;
-	
-		
-/*	
- * Splendid bug: the two variables were allocated as an array, even if
- * previous delete (for _arm7StatusWordPointer) had no '[]', 
- * _arm7ErrorCodePointer was already deallocated, thus the following:
- *	
- *	if ( _arm7ErrorCodePointer != 0 )
- *		delete _arm7ErrorCodePointer ;
- *	
- *	_arm7ErrorCodePointer = 0 ;
- *
- * caused a double deallocation which was making the NoCashGBA emulator crash
- * (but not the DS).
- *
- */	
  
 }
 
@@ -289,6 +296,7 @@ void FIFO::deactivate() throw()
 ARM7StatusWord FIFO::getLastARM7StatusWord() throw()
 {
 
+	// Null pointer results in NoStatusAvailable (0):
 	if ( _arm7StatusWordPointer == 0 )
 		return 0 ;
 	
@@ -317,6 +325,10 @@ string FIFO::interpretLastARM7StatusWord() throw()
 		case ARM7InError:
 			return "ARM7 in error: " + interpretLastARM7ErrorCode() ;
 			break ;
+		
+		case ARM7IPCShutdown:
+			return "ARM7 IPC shutdown" ;
+			break ;
 			
 		default:
 			return "unexpected ARM7 status word (" 
@@ -332,6 +344,7 @@ string FIFO::interpretLastARM7StatusWord() throw()
 ARM7ErrorCode FIFO::getLastARM7ErrorCode() throw()
 {
 
+	// Null pointer results in NoError (0):
 	if ( _arm7ErrorCodePointer == 0 )
 		return 0 ;
 	
@@ -389,7 +402,13 @@ const std::string FIFO::toString( Ceylan::VerbosityLevels level )
 		res += "no " ;
 		
 	res += "space available for writing" ;
-				
+	
+	if ( level == Ceylan::low )			
+		return res ;
+		
+	if ( _arm7StatusWordPointer == 0 )
+		res += ". State variables not available" ;
+		
 	return res ;
 	
 }
@@ -417,14 +436,22 @@ void FIFO::SetFIFOCommandIDTo( FIFOElement & targetElement, FIFOCommandID id )
 
 void FIFO::VBlankHandlerForFIFO() 
 {
+	
+	// Disable VBlank and FIFO not empty interrupts:
+	REG_IE &= ~( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
+
 
 	// 'if ( dataAvailableForReading() )', but we are static here:
 	if ( ! ( REG_IPC_FIFO_CR & IPC_FIFO_RECV_EMPTY ) )
 		ManageReceivedCommand() ;
 	
+	
 	// Notify this interrupt has been managed:
 	REG_IF |= IRQ_VBLANK ;		
 		
+		
+	// Reactivate VBlank and FIFO not empty interrupts:
+	REG_IE |= ( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
 			
 }
 
@@ -441,14 +468,42 @@ void FIFO::VBlankHandlerForFIFO()
 void FIFO::FIFOHandlerForFIFO() 
 {
 
-	// FIXME test useless
+
+#if CEYLAN_FIFO_USES_VBLANK
+	
+	// Disable VBlank and FIFO not empty interrupts:
+	REG_IE &= ~( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
+	
+#else // CEYLAN_FIFO_USES_VBLANK
+
+	// Disable FIFO not empty interrupt:
+	REG_IE &= ~IRQ_FIFO_NOT_EMPTY ;
+
+#endif // CEYLAN_FIFO_USES_VBLANK
+
+
+	// Note that the next test must be useless:
 	
 	// 'if ( dataAvailableForReading() )', but we are static here:
 	if ( ! ( REG_IPC_FIFO_CR & IPC_FIFO_RECV_EMPTY ) )
 		ManageReceivedCommand() ;
 
+
 	// Notify this interrupt has been managed:
 	REG_IF |= IRQ_FIFO_NOT_EMPTY ;		
+
+
+#if CEYLAN_FIFO_USES_VBLANK
+
+	// Reactivate VBlank and FIFO not empty interrupts:
+	REG_IE |= ( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
+
+#else // CEYLAN_FIFO_USES_VBLANK
+
+	// Reactivate FIFO not empty interrupt:
+	REG_IE |= IRQ_FIFO_NOT_EMPTY ;
+
+#endif // CEYLAN_FIFO_USES_VBLANK
 				
 }
 
@@ -457,19 +512,22 @@ void FIFO::FIFOHandlerForFIFO()
 void FIFO::handleReceivedCommand() throw()
 {
 
+
+	FIFOElement firstElement ;
+	FIFOCommandID id ;
+
 	/*
 	 * During the management of this command, notifications of incoming FIFO
-	 * elements will be ignored (as CommandInProgress is true), so that
-	 * the next elements of the command can be read without being taken for
-	 * new commands. 
+	 * elements will be ignored (as CommandInProgress, the protection flag,
+	 * is true in the unique caller of this method, ManageReceivedCommand), 
+	 * so that the next elements of the command can be read without being 
+	 * taken for new commands. 
 	 * But it may hide real new commands that could occur after the first 
-	 * command performed its last read but before it returned. 
-	 * Thus a while loop.
+	 * command performed its last read, but before it returned. 
+	 * Thus a 'while' loop instead of a simple 'if'.
 	 *
 	 */	
 	
-	FIFOElement firstElement ;
-	FIFOCommandID id ;
 	
 	while ( dataAvailableForReading() )
 	{
@@ -506,6 +564,7 @@ void FIFO::handleReceivedCommand() throw()
 			}
 		
 		}
+		
 	
 	} // end while
 	
@@ -517,8 +576,16 @@ void FIFO::handleReceivedCommand() throw()
 void FIFO::ManageReceivedCommand()
 {
 
-	REG_IE = REG_IE & ~( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
+
+	/**
+	 * Should always be called from a context where relevant interrupts have 
+	 * already been disabled.
+	 *
+	 * @see IRQ handlers: VBlankHandlerForFIFO, FIFOHandlerForFIFO
+	 *
+	 */
 	
+	 
     /**
      * Tells whether a command is in progress: as soon as the ARM7
      * sends a multi-element FIFO command, the ARM9, after having
@@ -531,7 +598,8 @@ void FIFO::ManageReceivedCommand()
      * (potentially reading next FIFO elements of the current
      * command as if they were new commands), this flag makes IRQ 
      * handlers return immediately if found true.
-     *
+     * (increased safety beneath shutting down relevant IRQ)
+	 *
      */
 	static bool CommandInProgress = false ;
 
@@ -539,14 +607,15 @@ void FIFO::ManageReceivedCommand()
 	// LogPlug::trace( "FIFO ManageReceivedCommand" ) ;
 	
 	/*
-	 * Potential race conditions:  
+	 * Potential race conditions (mitigated a lot since IRQ are disabled):  
 	 *  - if between the FIFO IRQ and the setting of 'CommandInProgress = true' 
 	 * another FIFO IRQ is triggered, the second one might eat elements of the
 	 * first one (hence the current call will block until next sending)
 	 * [Not very likely, not very serious]
 	 *  - if between the last read of '_FIFO->handleReceivedCommand()'
-	 * and the following 'CommandInProgress = false' an IRQ is triggered, it 
-	 * will be lost (wrongly ignored). [Not very likely, not very serious]
+	 * and the following 'CommandInProgress = false' an element is sent on the
+	 * ARM7, an IRQ may triggered but it will be lost (wrongly ignored). 
+	 * [Not very likely, not very serious]
 	 * Reading regularly the FIFO state, for example in the VBLANK, should
 	 * increase the reliability of the IPC.
 	 *
@@ -566,16 +635,15 @@ void FIFO::ManageReceivedCommand()
 	
 	
 	/*
-	 * else ignores the possible IRQ that triggered that method, as this 
-	 * event (FIFO not empty) is expected to be managed by the
-	 * handleReceivedCommandhandler command.
+	 * else ( CommandInProgress is true) ignores the possible IRQ that 
+	 * triggered that method, as this event (FIFO not empty) is expected to 
+	 * be managed by the handleReceivedCommandhandler command.
 	 *
-	 * The IRQ handler that called this method is responsible for acknoledging
+	 * The IRQ handler that called this method is responsible for acknowledging
 	 * the interrupt that triggered it.
 	 *
 	 */
 
-	REG_IE = REG_IE | ( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
 	
 }
 
