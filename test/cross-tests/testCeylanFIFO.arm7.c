@@ -125,7 +125,7 @@ void VcountHandler()
 /* Ceylan FIFO-based IPC section */
 
 #define CEYLAN_DEBUG_FIFO 1
-
+#define CEYLAN_FIFO_USES_VBLANK 1 
 
 /* One entry of the FIFO */
 typedef uint32 FIFOElement ;
@@ -185,6 +185,7 @@ void SetError( ARM7ErrorCode newError )
 }
 
 
+
 /**
  * Unset any previous error status, for example when the error code has been
  * taken into account already.
@@ -192,6 +193,7 @@ void SetError( ARM7ErrorCode newError )
  */
 void UnsetErrorStatus()
 {
+
 
 	if ( StatusWordPointer != 0 )
 		*StatusWordPointer = NoStatusAvailable ;
@@ -439,7 +441,17 @@ void ManageReceivedFIFOElement()
 	
 	static bool CommandInProgress = false ;
 
-	REG_IE = REG_IE & ~( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
+#if CEYLAN_FIFO_USES_VBLANK
+	
+	/* Disable VBlank and FIFO not empty interrupts: */
+	REG_IE &= ~( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
+	
+#else // CEYLAN_FIFO_USES_VBLANK
+
+	/* Disable FIFO not empty interrupt: */
+	REG_IE &= ~IRQ_FIFO_NOT_EMPTY ;
+	
+#endif // CEYLAN_FIFO_USES_VBLANK
 
 
 	if ( ! CommandInProgress )
@@ -515,14 +527,15 @@ void ManageReceivedFIFOElement()
 					/* 
 					 * Stop the mechanism on the ARM7 side.
 					 * 
-					 * Ends with NoStatusAvailable status (and NoError error 
+					 * Ends with ARM7IPCShutdown status (and NoError error 
 					 * code) to perform last handshake with ARM9.
 					 *
 					 * @see FIFO::deactivate
 					 *
 					 */
-					UnsetErrorStatus() ;
-					
+					*StatusWordPointer = ARM7IPCShutdown ;
+					*ErrorWordPointer = NoError ;
+
 					StatusWordPointer = 0 ;
 					ErrorWordPointer = 0 ;
 					
@@ -540,16 +553,16 @@ void ManageReceivedFIFOElement()
 				else
 				{						
 				
-					/* unexpected id: */
+					/* unexpected system command id: */
 					SetError( UnexpectedSystemCommand ) ;
 
 					/*
-					LogPlug::error( "FIFO::HandleReceivedFIFOElement: "
-						"unexpected command: "
+					LogPlug::error( "unexpected command: "
 						+ Ceylan::toNumericalString( id ) + ", ignored." ) ;
 					 */							
 	
 				}
+				
 				
 			} /* id corresponds to a system command */
 	
@@ -564,12 +577,20 @@ void ManageReceivedFIFOElement()
 	 * event (FIFO not empty) is expected to be managed by the
 	 * handleReceivedCommandhandler command.
 	 *
-	 * The IRQ handler that called this method is responsible for acknoledging
+	 * The IRQ handler that called this method is responsible for acknowledging
 	 * the interrupt that triggered it.
 	 *
 	 */
 
+	#if CEYLAN_FIFO_USES_VBLANK
+
 	REG_IE = REG_IE | ( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
+
+	#else // CEYLAN_FIFO_USES_VBLANK
+
+	REG_IE = REG_IE | ( IRQ_FIFO_NOT_EMPTY ) ;
+
+	#endif // CEYLAN_FIFO_USES_VBLANK
 			
 }
 
@@ -578,8 +599,21 @@ void ManageReceivedFIFOElement()
 void HandleReceivedFIFOElement()
 {
 
+
+#if CEYLAN_FIFO_USES_VBLANK
 	
-	// FIXME useless test
+	/* Disable VBlank and FIFO not empty interrupts: */
+	REG_IE &= ~( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
+	
+#else // CEYLAN_FIFO_USES_VBLANK
+
+	/* Disable FIFO not empty interrupt: */
+	REG_IE &= ~IRQ_FIFO_NOT_EMPTY ;
+
+#endif // CEYLAN_FIFO_USES_VBLANK
+	
+	
+	/* Note that the next test must be useless: */
 
 	/* Function shared with the VBlank handler: */
 	if ( dataAvailableForReading() )
@@ -587,6 +621,20 @@ void HandleReceivedFIFOElement()
 	
 	/* Notify this interrupt has been managed: */
 	REG_IF |= IRQ_FIFO_NOT_EMPTY ;			
+
+
+#if CEYLAN_FIFO_USES_VBLANK
+
+	/* Reactivate VBlank and FIFO not empty interrupts: */
+	REG_IE |= ( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
+
+#else // CEYLAN_FIFO_USES_VBLANK
+
+	/* Reactivate FIFO not empty interrupt: */
+	REG_IE |= IRQ_FIFO_NOT_EMPTY ;
+
+#endif // CEYLAN_FIFO_USES_VBLANK
+				
 	
 }
 
@@ -595,12 +643,20 @@ void HandleReceivedFIFOElement()
 void HandleVBlank() 
 {
 
+	/* Disable VBlank and FIFO not empty interrupts: */
+	REG_IE &= ~( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
+
+
 	/* Polling-based parachute, should a FIFO IRQ trigger have been lost: */
 	if ( dataAvailableForReading() )
 		ManageReceivedFIFOElement() ;
 
+
 	/* Notify this interrupt has been managed: */
 	REG_IF |= IRQ_VBLANK ;			
+
+	/* Reactivate VBlank and FIFO not empty interrupts: */
+	REG_IE |= ( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
 	
 }
 
@@ -612,8 +668,12 @@ void initFIFO()
 	irqSet( IRQ_FIFO_NOT_EMPTY, HandleReceivedFIFOElement ) ; 
 	irqEnable( IRQ_FIFO_NOT_EMPTY ) ;
 
-	//irqSet( IRQ_VBLANK, HandleVBlank ) ;
-	//irqEnable( IRQ_VBLANK ) ;
+#if CEYLAN_FIFO_USES_VBLANK
+
+	irqSet( IRQ_VBLANK, HandleVBlank ) ;
+	irqEnable( IRQ_VBLANK ) ;
+	
+#endif // CEYLAN_FIFO_USES_VBLANK
 	 
 	/*
 	 * REG_IPC_FIFO_CR is the FIFO *control* register, and:

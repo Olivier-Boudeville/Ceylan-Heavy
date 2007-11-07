@@ -21,37 +21,29 @@ using namespace Ceylan::System ;
 /**
  * ARM9 side of the Ceylan FIFO test.
  *
- * Implementation of a FIFO example with following protocol:
+ * Implementation of a FIFO example with following application-specific 
+ * protocol:
  *
  *  - ARM9 sends a compute request to the ARM7, specifying the address of a
- * value is main memory (message ID: 128 in the first byte of a 32-bit int,
- * then the value address is specified in next element)
+ * value in main memory (message ID: 128 in the first byte of a 32-bit int,
+ * then the value address is specified in next element; this address is on the
+ * heap and in the mirrored area to stay out of the ARM9 cache, that cannot
+ * be viewed from the ARM7)
  *
  *  - ARM7 adds 42 to this value, and returns it thanks to the FIFO (message
  * ID: 129, then the value; had the value been on 24 bits or less, one
  * element could have carried both the command identifier and the return value)
  *
- * The ARM7 can report errors by sending special command identifiers:
- *   - 1 if a system-specific (Ceylan) error
- *	 - 2 if an application-specific error
- *
  * @note The ARM7 could have sent an identifier of 128 as well (each direction
  * has its own independent identifiers).
  *
+ * The ARM7 can report errors by sending special command identifiers.
+ * @see CeylanARM7Codes.h
+ *
  * @see testCeylanFIFO.arm7.c for the peer implementation
- * @see CeylanFIFO.h and CeylanFIFO.cc for the implementation
+ * @see CeylanFIFO.h and CeylanFIFO.cc for the C++ (ARM9) implementation
  *
- * Map of ARM9 -> ARM7 command identifiers:
- *   - 0: hello to ARM7
- *   - 1: system-specific (Ceylan) error on the ARM9 side 
- *   - 2: application-specific error on the ARM9 side 
- *   - 3: specification of the address of the variable to be used by the ARM7
- * to report its status
- *
- * Map of ARM7 -> ARM9 command identifiers:
- *   - 0: hello to ARM9
- *   - 1: system-specific (Ceylan) error on the ARM7 side 
- *   - 2: application-specific error on the ARM7 side 
+ * @see CeylanIPCCommands.h for a map of command identifiers
  *
  */
 class myFIFOExample: public Ceylan::System::FIFO
@@ -66,7 +58,7 @@ class myFIFOExample: public Ceylan::System::FIFO
 			FIFO(),
 			_pointedValue( & value ),
 			_inError( false ),
-			_hasWorked( false )
+			_hasWorkedAtLeastOnce( false )
 		{
 		
 			LogPlug::trace( "myFIFOExample created." ) ;
@@ -95,7 +87,7 @@ class myFIFOExample: public Ceylan::System::FIFO
 		virtual bool hasWorked() const throw() 
 		{
 		
-			return _hasWorked ;
+			return _hasWorkedAtLeastOnce ;
 			
 		}
 		
@@ -200,7 +192,8 @@ class myFIFOExample: public Ceylan::System::FIFO
 			else
 			{
 				
-				LogPlug::error( "unexpected computed value: " 
+				LogPlug::error( "handleReceivedApplicationCommand failed: "
+					"unexpected computed value: " 
 					+ Ceylan::toString( readElement ) + ", instead of "
 					+ Ceylan::toString( expectedValue ) ) ;
 						
@@ -208,12 +201,12 @@ class myFIFOExample: public Ceylan::System::FIFO
 					
 			}
 			
-			_hasWorked = true ;
+			_hasWorkedAtLeastOnce = true ;
 				
 			// No two transactions will be the same:
 			(*_pointedValue)++ ;
 				
-			LogPlug::trace( "handled answer." ) ;
+			//LogPlug::trace( "handled answer." ) ;
 			
 		}
 		
@@ -221,11 +214,10 @@ class myFIFOExample: public Ceylan::System::FIFO
 		
 	protected:	
 		
-		
-		/*
-		 * Pointer to volatile not needed, as not modified by the ARM7 nor the
-		 * ARM9 cache.
-		 *
+
+		/**
+		 * The value that will be shared: read on one side (ARM7), 
+		 * incremented on the other.*
 		 */
 		Ceylan::Uint32 volatile * _pointedValue ;
 		
@@ -233,8 +225,10 @@ class myFIFOExample: public Ceylan::System::FIFO
 		/// Useful for the test:		
 		bool _inError ;
 		
-		/// Otherwise test would not fail if no answer received.
-		bool _hasWorked ;
+		
+		/// Otherwise test would not fail if no answer was received:
+		bool _hasWorkedAtLeastOnce ;
+		
 		
 } ;
 
@@ -242,7 +236,7 @@ class myFIFOExample: public Ceylan::System::FIFO
 
 
 /**
- * Test for the FIFO support offered by the Ceylan library on Nintendo DS.
+ * Test for the FIFO support offered by the Ceylan library on the Nintendo DS.
  *
  */
 int main( int argc, char * argv[] )
@@ -256,7 +250,8 @@ int main( int argc, char * argv[] )
     {
 	
 		// For the test:
-		bool interactive = true ;
+		//bool interactive = true ;
+		bool interactive = false ;
 		
 		
 		LogPlug::info( "Test of Ceylan support for FIFO transfers" ) ;
@@ -286,8 +281,7 @@ int main( int argc, char * argv[] )
 		/*
 		 * Note: using 'Ceylan::Uint32 myValue = 100 ;' results in allocating
 		 * that variable in the ARM9 stack (ex: address 0xb003c30), which is
-		 * not in the main RAM and cannot be accessed though the non-cachable
-		 * mirror.
+		 * not in the main RAM and cannot be accessed from the ARM7.
 		 *
 		 */
 		
@@ -301,7 +295,8 @@ int main( int argc, char * argv[] )
 		
 		// Flush the cache out of safety, probably useless:
 		DC_FlushRange( &myValue, sizeof(myValue) ) ;
-		 					
+		
+		// Needing the ARM9 to access it from the non-cachable mirror:	
 		Ceylan::Uint32 * safeAddressOfMyValue =
 			ConvertToNonCacheable<Ceylan::Uint32>( &myValue ) ;
 										
@@ -314,7 +309,7 @@ int main( int argc, char * argv[] )
 		myFIFOExample myFifo( *safeAddressOfMyValue ) ;
 
 		/*
-		 * Interrupts enabled by previous constructor, this VBlanlk fail-over
+		 * Interrupts enabled by previous constructor, this VBlank fail-over
 		 * handler is added:
 		 *
 		 * @note If you have already a VBlank handler, they should be mixed
@@ -323,14 +318,12 @@ int main( int argc, char * argv[] )
 		 */
 		irqSet( IRQ_VBLANK, FIFO::VBlankHandlerForFIFO ) ; 
 		
-		const Ceylan::Uint32 displayCount = 1 ;
-		
-		
+			
 		if ( interactive )
 		{
 		
 			LogPlug::info( "Press any key to activate the FIFO" ) ;
-			//waitForKey() ;
+			waitForKey() ;
 		
 		}
 
@@ -340,13 +333,13 @@ int main( int argc, char * argv[] )
 			
 		LogPlug::info( "Current ARM7 status just after FIFO activation is: "
 			 + myFifo.interpretLastARM7StatusWord() ) ;
-
+			 
 
 		if ( interactive )
 		{
 		
-			LogPlug::info( "Press any key to send IPC request" ) ;
-			//waitForKey() ;
+			LogPlug::info( "Press any key to send first IPC request" ) ;
+			waitForKey() ;
 		
 		}
 		
@@ -367,9 +360,14 @@ int main( int argc, char * argv[] )
 		 *
 		 */
 		for ( Ceylan::Uint32 i = 0; i < requestCount; i++ )
+		{
+		
 			myFifo.sendComputeRequest() ;
-
-
+			//waitForKey() ;
+			atomicSleep() ;
+			
+		}
+		
 		LogPlug::info( "Current ARM7 status just after request sending is: "
 			 + myFifo.interpretLastARM7StatusWord() ) ;
 
@@ -378,9 +376,12 @@ int main( int argc, char * argv[] )
 		{
 		
 			LogPlug::info( "Press any key to check ARM7 after IPC answer" ) ;
-			//waitForKey() ;
+			waitForKey() ;
 		
 		}
+
+
+		const Ceylan::Uint32 displayCount = 1 ;
 
 		for ( Ceylan::Uint32 i = 0; i < displayCount; i++ )
 			LogPlug::info( myFifo.interpretLastARM7StatusWord() ) ;
@@ -392,7 +393,7 @@ int main( int argc, char * argv[] )
 		{
 		
 			LogPlug::info( "Press any key to wait again" ) ;
-			//waitForKey() ;
+			waitForKey() ;
 		
 		}
 
@@ -424,6 +425,7 @@ int main( int argc, char * argv[] )
 		else
 			throw TestException( "Test failed: "
 				"FIFO did not performed any complete operation " ) ;
+		
 		
 		Ceylan::Uint32 plannedValue = 100 + requestCount ;	
 		
