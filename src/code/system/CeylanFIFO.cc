@@ -158,7 +158,8 @@ FIFO::~FIFO() throw()
 	
 	_arm7StatusWordPointer = 0 ;
 	
-		
+	_arm7ErrorCodePointer = 0 ;
+	
 	/*	
 	 * Splendid bug: the two variables were allocated as an array, even if
 	 * previous delete (for _arm7StatusWordPointer) had no '[]', 
@@ -192,9 +193,13 @@ void FIFO::activate() throw( FIFOException )
 	 * the receive FIFO, from empty to not empty	 
 	 *
 	 */
-	REG_IPC_FIFO_CR = 
-		IPC_FIFO_ENABLE | IPC_FIFO_SEND_CLEAR | IPC_FIFO_RECV_IRQ ;
-		
+REG_IPC_SYNC = IPC_SYNC_IRQ_ENABLE; //Enable IRQs from ARM7 
+  	REG_IPC_FIFO_CR = 
+		IPC_FIFO_ENABLE | IPC_FIFO_SEND_CLEAR | IPC_FIFO_RECV_IRQ | IPC_FIFO_ERROR ;
+ REG_IME = 0;
+	REG_IE = IRQ_VBLANK | IRQ_HBLANK | IRQ_IPC_SYNC | IRQ_FIFO_NOT_EMPTY; 		
+ REG_IME = 1; //Enable interrupts 	
+	
 	/*
 	 * Send this address to the ARM7 thanks to the relevant command identifier:
 	 * Zeroed even if not necessary to avoid a warning.
@@ -233,8 +238,13 @@ void FIFO::activate() throw( FIFOException )
 	if ( VBlankCount == 0 )
 		throw FIFOException( "FIFO::activate: "
 			"time-out reached while waiting for ARM7 status update" ) ;
+				
+	if ( getLastARM7StatusWord() != ARM7Running )
+		throw FIFOException( "FIFO::activate: ARM7 status updated, "
+			"but is not in expected running state: "
+			+ interpretLastARM7StatusWord() ) ;
 			
-	LogPlug::trace( "FIFO activate ended" ) ;
+	LogPlug::trace( "FIFO successfully activated" ) ;
 	
 }
 
@@ -269,7 +279,6 @@ void FIFO::deactivate() throw()
 		&& ( VBlankCount > 0 ) )
 	{
 
-		LogPlug::trace( "shut " + interpretLastARM7StatusWord() ) ;
 		atomicSleep() ;
 		VBlankCount-- ;
 	
@@ -296,9 +305,8 @@ void FIFO::deactivate() throw()
 ARM7StatusWord FIFO::getLastARM7StatusWord() throw()
 {
 
-	// Null pointer results in NoStatusAvailable (0):
 	if ( _arm7StatusWordPointer == 0 )
-		return 0 ;
+		return NoStatusVariableAvailable ;
 	
 	return (*_arm7StatusWordPointer) ;
 	
@@ -314,8 +322,8 @@ string FIFO::interpretLastARM7StatusWord() throw()
 	switch( status )
 	{
 	
-		case NoStatusAvailable:
-			return "no ARM7 status available" ;
+		case NoStatusVariableAvailable:
+			return "no ARM7 status variable available" ;
 			break ;
 			
 		case ARM7Running:
@@ -328,6 +336,10 @@ string FIFO::interpretLastARM7StatusWord() throw()
 		
 		case ARM7IPCShutdown:
 			return "ARM7 IPC shutdown" ;
+			break ;
+			
+		case NoStatusAvailable:
+			return "no ARM7 status available" ;
 			break ;
 			
 		default:
@@ -346,7 +358,7 @@ ARM7ErrorCode FIFO::getLastARM7ErrorCode() throw()
 
 	// Null pointer results in NoError (0):
 	if ( _arm7ErrorCodePointer == 0 )
-		return 0 ;
+		return NoErrorVariableAvailable ;
 	
 	return (*_arm7ErrorCodePointer) ;
 	
@@ -362,8 +374,8 @@ string FIFO::interpretLastARM7ErrorCode() throw()
 	switch( error )
 	{
 	
-		case NoError:
-			return "ARM7 has no error registered" ;
+		case NoErrorVariableAvailable:
+			return "no ARM7 error variable available" ;
 			break ;
 			
 		case UnexpectedSystemCommand:
@@ -375,6 +387,10 @@ string FIFO::interpretLastARM7ErrorCode() throw()
 				"(application-specific) command" ;
 			break ;
 			
+		case NoError:
+			return "ARM7 has no error registered" ;
+			break ;
+			
 		default:
 			return "unexpected ARM7 error code (" 
 				+ Ceylan::toString( error ) + ")" ;
@@ -383,7 +399,6 @@ string FIFO::interpretLastARM7ErrorCode() throw()
 	}
 
 }
-
 
 
 
@@ -436,25 +451,36 @@ void FIFO::SetFIFOCommandIDTo( FIFOElement & targetElement, FIFOCommandID id )
 
 void FIFO::VBlankHandlerForFIFO() 
 {
+REG_IME = 0; //Disable interrupts while changing them 	
 	
 	// Disable VBlank and FIFO not empty interrupts:
 	REG_IE &= ~( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
 
+//REG_IME = 1; //Enable interrupts 
 
 	// 'if ( dataAvailableForReading() )', but we are static here:
 	if ( ! ( REG_IPC_FIFO_CR & IPC_FIFO_RECV_EMPTY ) )
+	{
+	
+		LogPlug::debug( 
+			"FIFO::VBlankHandlerForFIFO triggered command handling" ) ;
+			
 		ManageReceivedCommand() ;
 	
+	}
+	
+//REG_IME = 0; //Disable interrupts while changing them 	
 	
 	// Notify this interrupt has been managed:
-	REG_IF |= IRQ_VBLANK ;		
+VBLANK_INTR_WAIT_FLAGS |= IRQ_VBLANK;
+ 	REG_IF |= IRQ_VBLANK ;		
 		
 		
 	// Reactivate VBlank and FIFO not empty interrupts:
 	REG_IE |= ( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
+REG_IME = 1; //Enable interrupts 
 			
 }
-
 
 
 
@@ -468,19 +494,18 @@ void FIFO::VBlankHandlerForFIFO()
 void FIFO::FIFOHandlerForFIFO() 
 {
 
+REG_IME = 0; //Disable interrupts while changing them 	
 
 #if CEYLAN_FIFO_USES_VBLANK
-	
 	// Disable VBlank and FIFO not empty interrupts:
 	REG_IE &= ~( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
 	
 #else // CEYLAN_FIFO_USES_VBLANK
-
 	// Disable FIFO not empty interrupt:
 	REG_IE &= ~IRQ_FIFO_NOT_EMPTY ;
-
 #endif // CEYLAN_FIFO_USES_VBLANK
 
+//REG_IME = 1; //Enable interrupts 
 
 	// Note that the next test must be useless:
 	
@@ -488,8 +513,10 @@ void FIFO::FIFOHandlerForFIFO()
 	if ( ! ( REG_IPC_FIFO_CR & IPC_FIFO_RECV_EMPTY ) )
 		ManageReceivedCommand() ;
 
+//REG_IME = 0; //Disable interrupts while changing them 	
 
 	// Notify this interrupt has been managed:
+VBLANK_INTR_WAIT_FLAGS |= IRQ_FIFO_NOT_EMPTY;
 	REG_IF |= IRQ_FIFO_NOT_EMPTY ;		
 
 
@@ -504,6 +531,7 @@ void FIFO::FIFOHandlerForFIFO()
 	REG_IE |= IRQ_FIFO_NOT_EMPTY ;
 
 #endif // CEYLAN_FIFO_USES_VBLANK
+REG_IME = 1; //Enable interrupts 
 				
 }
 
@@ -632,7 +660,13 @@ void FIFO::ManageReceivedCommand()
 		CommandInProgress = false ;	
 
 	}
+	else
+	{
 	
+		LogPlug::warning( "FIFO::ManageReceivedCommand: "
+			"concurrent calls hindered" ) ;
+			
+	}	
 	
 	/*
 	 * else ( CommandInProgress is true) ignores the possible IRQ that 
@@ -714,10 +748,18 @@ FIFOElement FIFO::readBlocking() throw( FIFOException )
 #endif // CEYLAN_DEBUG_FIFO
 
 
+	Ceylan::Uint32 attemptCount = 50000 ;
+	
 	// Active waiting preferred to atomicSleep():
-	while ( ! dataAvailableForReading() )
-		 ;
 
+	while ( ! dataAvailableForReading() && attemptCount > 0 )
+		 attemptCount-- ;
+	
+	if ( attemptCount == 0 )
+		LogPlug::warning( "FIFO::readBlocking: never ending ?" ) ;
+	
+	while ( ! dataAvailableForReading() )
+		;
 
 #if CEYLAN_DEBUG_FIFO
 
@@ -790,10 +832,18 @@ void FIFO::writeBlocking( FIFOElement toSend ) throw( FIFOException )
 
 #endif // CEYLAN_DEBUG_FIFO
 
-
+	Ceylan::Uint32 attemptCount = 50000 ;
+	
 	// Active waiting preferred to atomicSleep():
+
+	while ( ! spaceAvailableForWriting() && attemptCount > 0 )
+		 attemptCount-- ;
+	
+	if ( attemptCount == 0 )
+		LogPlug::warning( "FIFO::writeBlocking: never ending ?" ) ;
+	
 	while ( ! spaceAvailableForWriting() )
-		 ;
+		;
 
 
 #if CEYLAN_DEBUG_FIFO
