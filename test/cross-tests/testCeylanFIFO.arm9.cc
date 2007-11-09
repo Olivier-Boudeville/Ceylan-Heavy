@@ -16,6 +16,21 @@ using namespace Ceylan::Log ;
 using namespace Ceylan::System ;
 
 
+/*
+ * Test with or without log as they change timings quite a lot:
+ * (with logs on, one may experience a crash due to a St9bad_alloc, whereas 
+ * there remains a lot of memory, see testCeylanLogSystem that may send more
+ * than 10 000 log messages and no new/delete/malloc/free operation is 
+ * performed...), thus our log system may be not reentrant. 
+ * Hence prefer never using it in the context of an IRQ handler. 
+ *
+ */
+//#define TEST_FIFO_LOG(message) LogPlug::trace(message)
+#define TEST_FIFO_LOG(message)
+
+
+// Allows to enable/disable the FIFO fail-over handler triggered on VBlank IRQ:
+#define CEYLAN_FIFO_USES_VBLANK 1
 
 
 /**
@@ -61,8 +76,8 @@ class myFIFOExample: public Ceylan::System::FIFO
 			_hasWorkedAtLeastOnce( false )
 		{
 		
-			LogPlug::trace( "myFIFOExample created." ) ;
-			
+			TEST_FIFO_LOG( "myFIFOExample created." ) ;
+
 		} 
 		
 		
@@ -70,7 +85,7 @@ class myFIFOExample: public Ceylan::System::FIFO
 		virtual ~myFIFOExample() throw()
 		{
 		
-			LogPlug::trace( "myFIFOExample deleted." ) ;
+			TEST_FIFO_LOG( "myFIFOExample deleted." ) ;
 			
 		}
 		
@@ -84,6 +99,7 @@ class myFIFOExample: public Ceylan::System::FIFO
 		}
 		
 		
+		
 		virtual bool hasWorked() const throw() 
 		{
 		
@@ -95,8 +111,9 @@ class myFIFOExample: public Ceylan::System::FIFO
 		
 		virtual void sendComputeRequest() throw()
 		{
-						
-			LogPlug::trace( "sending compute request." ) ;
+			
+			 		
+			TEST_FIFO_LOG( "sending compute request." ) ;
 			
 			FIFOElement commandElement ;
 			
@@ -106,12 +123,15 @@ class myFIFOExample: public Ceylan::System::FIFO
 			try
 			{	
 			
+				TEST_FIFO_LOG( "sending command ID" ) ;
 				writeBlocking( commandElement ) ;
 
-				//LogPlug::trace( "sending address." ) ;
+				TEST_FIFO_LOG( "sending address." ) ;
 			
 				writeBlocking( /* value address */ 
 					reinterpret_cast<FIFOElement>( _pointedValue ) ) ;
+
+				TEST_FIFO_LOG( "command sent" ) ;
 			
 			}
 			catch( const FIFOException & e )
@@ -122,7 +142,7 @@ class myFIFOExample: public Ceylan::System::FIFO
 					
 			}
 			
-			//LogPlug::trace( "sent compute request ended." ) ;
+			TEST_FIFO_LOG( "sent compute request ended." ) ;
 			
 		}	
 		
@@ -133,7 +153,15 @@ class myFIFOExample: public Ceylan::System::FIFO
 			FIFOCommandID commandID, FIFOElement firstElement )	throw()
 		{
 
-			LogPlug::trace( "receiving answer." ) ;
+			/*
+			 * All logs disabled in this method as called from an IRQ handler,
+			 * and the log system may be not reentrant.
+			 *
+			 * Error detection performed thanks to the _inError flag instead.
+			 *
+			 */
+
+			TEST_FIFO_LOG( "receiving answer." ) ;
 
 			if ( _inError )
 				return ;
@@ -143,6 +171,11 @@ class myFIFOExample: public Ceylan::System::FIFO
 			if ( commandID != expectedID )
 			{
 				
+				/*
+				 * Log left, disable it in case of unexplained bad_alloc
+				 * exception:
+				 *
+				 */
 				LogPlug::error( 
 					"unexpected application-specific command identifier: " 
 					+ Ceylan::toNumericalString( commandID ) 
@@ -150,14 +183,16 @@ class myFIFOExample: public Ceylan::System::FIFO
 					+ Ceylan::toNumericalString( expectedID ) ) ;
 						
 				_inError = true ;
+				
+				waitForKey() ;
 						
 			}		
 			else
 			{
-				
-				LogPlug::trace( "Received correct command header ("
+			
+				// Uncomment and the program may freeze (at value 166):
+				TEST_FIFO_LOG( "Received correct command header ("
 					+ Ceylan::toNumericalString( expectedID ) + ")" ) ;
-						
 			}
 			
 			FIFOElement readElement ;
@@ -172,41 +207,71 @@ class myFIFOExample: public Ceylan::System::FIFO
 			catch( const FIFOException & e )
 			{
 			
+				/*
+				 * Log left, disable it in case of unexplained bad_alloc
+				 * exception:
+				 *
+				 */
 				LogPlug::error( "handleReceivedApplicationCommand failed: "
 					+ e.toString() ) ;
+				
+				_inError = true ;
+				
+				waitForKey() ;
 				
 				return ;	
 					
 			}
 			
+			
 				
+			/* 
+			 * Check made useless now that logs and numerical errors are
+			 * disabled here:
+			 */
+
+			/*
+			 * This test cannot be reliable unless a new request is sent only
+			 * after the previous one has been completed: otherwise when this
+			 * callback method is called while the ARM7 is unstacking, the ARM7
+			 * could read the shared value when processing request n, whereas
+			 * the ARM9 side, still in this method for the management of 
+			 * request n-1, has not already incremented the shared variable.
+			 * Thus the ARM9, when processing the next request, will see for
+			 * example 142 instead of 143.
+			 *
+			 * The overall total will nevertheless by correct, as the 
+			 * incrementation of the shared variable is an immediate 
+			 * read-modify-write operation at each call of this method, and 
+			 * there will be as many calls to it as ther will be sent requests.
+			 */
 			Ceylan::Uint32 expectedValue = *_pointedValue + 42 ;
-				
+			 
 			if ( readElement == expectedValue )
 			{
 				
-				LogPlug::trace( "Received correct computed value: "
+				TEST_FIFO_LOG( "Received correct computed value: "
 					+ Ceylan::toString( expectedValue ) ) ;
-						
 			}		
 			else
 			{
 				
-				LogPlug::error( "handleReceivedApplicationCommand failed: "
+				TEST_FIFO_LOG( "Warning: handleReceivedApplicationCommand: "
 					"unexpected computed value: " 
 					+ Ceylan::toString( readElement ) + ", instead of "
 					+ Ceylan::toString( expectedValue ) ) ;
 						
-				_inError = true ;
-					
+				// Not really an error: _inError = true ;
+									
 			}
+			
 			
 			_hasWorkedAtLeastOnce = true ;
 				
 			// No two transactions will be the same:
 			(*_pointedValue)++ ;
 				
-			//LogPlug::trace( "handled answer." ) ;
+			//TEST_FIFO_LOG( "Handled answer." ) ;
 			
 		}
 		
@@ -223,11 +288,11 @@ class myFIFOExample: public Ceylan::System::FIFO
 		
 		
 		/// Useful for the test:		
-		bool _inError ;
+		volatile bool _inError ;
 		
 		
 		/// Otherwise test would not fail if no answer was received:
-		bool _hasWorkedAtLeastOnce ;
+		volatile bool _hasWorkedAtLeastOnce ;
 		
 		
 } ;
@@ -308,6 +373,9 @@ int main( int argc, char * argv[] )
 	
 		myFIFOExample myFifo( *safeAddressOfMyValue ) ;
 
+
+#if CEYLAN_FIFO_USES_VBLANK
+
 		/*
 		 * Interrupts enabled by previous constructor, this VBlank fail-over
 		 * handler is added:
@@ -317,6 +385,8 @@ int main( int argc, char * argv[] )
 		 *
 		 */
 		irqSet( IRQ_VBLANK, FIFO::VBlankHandlerForFIFO ) ; 
+
+#endif // CEYLAN_FIFO_USES_VBLANK
 		
 			
 		if ( interactive )
@@ -349,11 +419,12 @@ int main( int argc, char * argv[] )
 		if ( interactive )
 			requestCount = 1 ;
 		else
-			requestCount = 100 ;
+			requestCount = 500000 ;
 
 		LogPlug::info( "Current ARM7 status just before request sending is: "
 			 + myFifo.interpretLastARM7StatusWord() ) ;
-		
+	
+
 		/*
 		 * Note: there is no direct flow control, the ARM9 sends requests
 		 * as fast as possible, without waiting for answers first.
@@ -362,9 +433,13 @@ int main( int argc, char * argv[] )
 		for ( Ceylan::Uint32 i = 0; i < requestCount; i++ )
 		{
 		
+			if ( ( i % 5000 ) == 0 )
+				LogPlug::trace( "Sending #" + Ceylan::toString( i ) + "..." ) ;
+				
 			myFifo.sendComputeRequest() ;
+			TEST_FIFO_LOG( "...sent" ) ;
 			//waitForKey() ;
-			atomicSleep() ;
+			//atomicSleep() ;
 			
 		}
 		
@@ -372,6 +447,20 @@ int main( int argc, char * argv[] )
 			 + myFifo.interpretLastARM7StatusWord() ) ;
 
 
+		bool testFailed = false ;
+
+
+		if ( myFifo.getLastARM7StatusWord() != ARM7Running )
+		{
+		
+			LogPlug::error( "after request sending, "
+				"ARM7 status is not in expected running state: "
+				+ myFifo.interpretLastARM7StatusWord() ) ;
+			testFailed = true ;
+			
+		}	
+		
+		
 		if ( interactive )
 		{
 		
@@ -381,6 +470,7 @@ int main( int argc, char * argv[] )
 		}
 
 
+		// To test ARM7 shutodown:
 		const Ceylan::Uint32 displayCount = 1 ;
 
 		for ( Ceylan::Uint32 i = 0; i < displayCount; i++ )
@@ -400,7 +490,6 @@ int main( int argc, char * argv[] )
 		for ( Ceylan::Uint32 i = 0; i < displayCount; i++ )
 			LogPlug::info( myFifo.interpretLastARM7StatusWord() ) ;
 		
-		LogPlug::info( "stopeed" ) ;
 		
 		/*
 		 * Wait so that operation in error can be detected and the error flag
@@ -415,29 +504,59 @@ int main( int argc, char * argv[] )
 		
 		
 		if ( myFifo.isInError() )
-			throw TestException( "Test failed: FIFO finished in error" ) ;
+		{
+		
+			LogPlug::error( "FIFO finished in error" ) ;
+			testFailed = true ;
+			
+		}	
 		else
+		{
+		
 			LogPlug::info( "FIFO not in error" ) ;
 			
+		}
+		
 				
 		if ( myFifo.hasWorked() )
-			LogPlug::info( "FIFO performed planned operations" ) ;
-		else
-			throw TestException( "Test failed: "
-				"FIFO did not performed any complete operation " ) ;
+		{
 		
+			LogPlug::info( "FIFO performed planned operations" ) ;
+		
+		}	
+		else
+		{
+			
+			LogPlug::error(
+				"FIFO did not performed any complete operation " ) ;
+			testFailed = true ;
+			
+		}
 		
 		Ceylan::Uint32 plannedValue = 100 + requestCount ;	
 		
 		if ( *safeAddressOfMyValue != plannedValue )
-			throw TestException( "Test failed: "
+		{
+		
+			LogPlug::error( 
 				"FIFO led to faulty computations: expecting " 
 				+ Ceylan::toString( plannedValue )
 				+ ", obtained: " + Ceylan::toString( *safeAddressOfMyValue ) ) ;
+				
+			testFailed = true ;
+		}	
 		else
-			LogPlug::info( "FIFO led to correct computations" ) ;
+		{
+		
+			LogPlug::info( "FIFO led to correct computations (final value is "
+				+ Ceylan::toString( *safeAddressOfMyValue ) + ")." ) ;
 
-
+		}
+		
+		if ( testFailed )
+			throw TestException( "Test failed because of error(s) "
+				"previously displayed." ) ;
+				
 		if ( interactive )
 		{
 		

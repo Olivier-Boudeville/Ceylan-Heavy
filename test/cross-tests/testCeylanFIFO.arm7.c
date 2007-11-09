@@ -34,17 +34,6 @@
 
 
 
-/* Defines the ARM7 status word type */
-typedef uint16 ARM7StatusWord ;
-
-/* Defines the ARM7 error code type */
-typedef uint16 ARM7ErrorCode ;
-
-/* Defines the FIFO command identifier type for the ARM7 */
-typedef uint8 FIFOCommandID ;
-
-
-
 /* Defines the actual ARM7 status words and error codes */
 #include "CeylanARM7Codes.h"
 
@@ -125,7 +114,7 @@ void VcountHandler()
 /* Ceylan FIFO-based IPC section */
 
 #define CEYLAN_DEBUG_FIFO 1
-#define CEYLAN_FIFO_USES_VBLANK 1 
+#define CEYLAN_FIFO_USES_VBLANK 1
 
 /* One entry of the FIFO */
 typedef uint32 FIFOElement ;
@@ -438,20 +427,14 @@ void handleReceivedApplicationCommand( FIFOCommandID id, FIFOElement element )
 
 void ManageReceivedFIFOElement()
 {
-	
+
+	/* 
+	 * Interrupts (FIFO and, if used, VBlank) are expected to be disabled 
+	 * when this function is called.	
+	 *
+	 */
+	 
 	static bool CommandInProgress = false ;
-
-#if CEYLAN_FIFO_USES_VBLANK
-	
-	/* Disable VBlank and FIFO not empty interrupts: */
-	REG_IE &= ~( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
-	
-#else // CEYLAN_FIFO_USES_VBLANK
-
-	/* Disable FIFO not empty interrupt: */
-	REG_IE &= ~IRQ_FIFO_NOT_EMPTY ;
-	
-#endif // CEYLAN_FIFO_USES_VBLANK
 
 
 	if ( ! CommandInProgress )
@@ -581,16 +564,6 @@ void ManageReceivedFIFOElement()
 	 * the interrupt that triggered it.
 	 *
 	 */
-
-	#if CEYLAN_FIFO_USES_VBLANK
-
-	REG_IE = REG_IE | ( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
-
-	#else // CEYLAN_FIFO_USES_VBLANK
-
-	REG_IE = REG_IE | ( IRQ_FIFO_NOT_EMPTY ) ;
-
-	#endif // CEYLAN_FIFO_USES_VBLANK
 			
 }
 
@@ -599,6 +572,7 @@ void ManageReceivedFIFOElement()
 void HandleReceivedFIFOElement()
 {
 
+REG_IME = 0; //Disable interrupts while changing them 	
 
 #if CEYLAN_FIFO_USES_VBLANK
 	
@@ -611,6 +585,7 @@ void HandleReceivedFIFOElement()
 	REG_IE &= ~IRQ_FIFO_NOT_EMPTY ;
 
 #endif // CEYLAN_FIFO_USES_VBLANK
+//REG_IME = 1; //Enable interrupts 
 	
 	
 	/* Note that the next test must be useless: */
@@ -618,8 +593,10 @@ void HandleReceivedFIFOElement()
 	/* Function shared with the VBlank handler: */
 	if ( dataAvailableForReading() )
 		ManageReceivedFIFOElement() ;
+//REG_IME = 0; //Disable interrupts while changing them 	
 	
 	/* Notify this interrupt has been managed: */
+VBLANK_INTR_WAIT_FLAGS |= IRQ_FIFO_NOT_EMPTY;
 	REG_IF |= IRQ_FIFO_NOT_EMPTY ;			
 
 
@@ -634,6 +611,7 @@ void HandleReceivedFIFOElement()
 	REG_IE |= IRQ_FIFO_NOT_EMPTY ;
 
 #endif // CEYLAN_FIFO_USES_VBLANK
+REG_IME = 1; //Enable interrupts 
 				
 	
 }
@@ -642,21 +620,26 @@ void HandleReceivedFIFOElement()
 
 void HandleVBlank() 
 {
+REG_IME = 0; //Disable interrupts while changing them 	
 
 	/* Disable VBlank and FIFO not empty interrupts: */
 	REG_IE &= ~( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
 
+//REG_IME = 1; //Enable interrupts 
 
 	/* Polling-based parachute, should a FIFO IRQ trigger have been lost: */
 	if ( dataAvailableForReading() )
 		ManageReceivedFIFOElement() ;
 
+//REG_IME = 0; //Disable interrupts while changing them 	
 
 	/* Notify this interrupt has been managed: */
+VBLANK_INTR_WAIT_FLAGS |= IRQ_VBLANK;
 	REG_IF |= IRQ_VBLANK ;			
 
 	/* Reactivate VBlank and FIFO not empty interrupts: */
 	REG_IE |= ( IRQ_VBLANK | IRQ_FIFO_NOT_EMPTY ) ;
+REG_IME = 1; //Enable interrupts 
 	
 }
 
@@ -665,15 +648,6 @@ void HandleVBlank()
 void initFIFO()
 {
 
-	irqSet( IRQ_FIFO_NOT_EMPTY, HandleReceivedFIFOElement ) ; 
-	irqEnable( IRQ_FIFO_NOT_EMPTY ) ;
-
-#if CEYLAN_FIFO_USES_VBLANK
-
-	irqSet( IRQ_VBLANK, HandleVBlank ) ;
-	irqEnable( IRQ_VBLANK ) ;
-	
-#endif // CEYLAN_FIFO_USES_VBLANK
 	 
 	/*
 	 * REG_IPC_FIFO_CR is the FIFO *control* register, and:
@@ -684,7 +658,17 @@ void initFIFO()
 	 *
 	 */
 	REG_IPC_FIFO_CR = 
-		IPC_FIFO_ENABLE | IPC_FIFO_SEND_CLEAR | IPC_FIFO_RECV_IRQ ;
+		IPC_FIFO_ENABLE | IPC_FIFO_SEND_CLEAR | IPC_FIFO_RECV_IRQ| IPC_FIFO_ERROR ;
+
+	irqSet( IRQ_FIFO_NOT_EMPTY, HandleReceivedFIFOElement ) ; 
+	irqEnable( IRQ_FIFO_NOT_EMPTY ) ;
+
+#if CEYLAN_FIFO_USES_VBLANK
+
+	irqSet( IRQ_VBLANK, HandleVBlank ) ;
+	irqEnable( IRQ_VBLANK ) ;
+	
+#endif // CEYLAN_FIFO_USES_VBLANK
 
 }
 
@@ -693,7 +677,7 @@ void initFIFO()
 int main(int argc, char ** argv) 
 {
 	
-	/* Reset the clock if needed : */
+	/* Reset the clock if needed: */
 	rtcReset() ;
 		
 	irqInit() ;
@@ -710,5 +694,4 @@ int main(int argc, char ** argv)
 		atomicSleep() ;
 		
 }
-
 
