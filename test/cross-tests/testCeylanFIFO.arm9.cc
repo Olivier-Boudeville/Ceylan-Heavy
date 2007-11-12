@@ -30,7 +30,7 @@ using namespace Ceylan::System ;
 
 
 // Allows to enable/disable the FIFO fail-over handler triggered on VBlank IRQ:
-#define CEYLAN_FIFO_USES_VBLANK 1
+#define CEYLAN_FIFO_USES_VBLANK 0
 
 
 /**
@@ -39,15 +39,18 @@ using namespace Ceylan::System ;
  * Implementation of a FIFO example with following application-specific 
  * protocol:
  *
- *  - ARM9 sends a compute request to the ARM7, specifying the address of a
- * value in main memory (message ID: 128 in the first byte of a 32-bit int,
- * then the value address is specified in next element; this address is on the
- * heap and in the mirrored area to stay out of the ARM9 cache, that cannot
- * be viewed from the ARM7)
+ *  - ARM9 sends a compute request to the ARM7, specifying in the first FIFO
+ * element the command (message ID: 128 in the first byte of a 32-bit int,
+ * second byte being the command count, the two next bytes being unused)
+ * then the (32-bit) value itself is specified in the next FIFO element.
+ * This is directly the value, and not a pointer to a shared variable, as it 
+ * would imply allocating this variable on the heap, offsetting this address
+ * to the mirrored memory area, staying out of the ARM9 cache (that cannot
+ * be viewed from the ARM7), etc.
  *
  *  - ARM7 adds 42 to this value, and returns it thanks to the FIFO (message
- * ID: 129, then the value; had the value been on 24 bits or less, one
- * element could have carried both the command identifier and the return value)
+ * ID: 129 and command count in the first element), then the value in the next
+ * FIFO element
  *
  * @note The ARM7 could have sent an identifier of 128 as well (each direction
  * has its own independent identifiers).
@@ -68,10 +71,11 @@ class myFIFOExample: public Ceylan::System::FIFO
 	public:
 	
 	
-		explicit myFIFOExample( Ceylan::Uint32 & value ) 
+		explicit myFIFOExample( Ceylan::Uint32 value ) 
 				throw( FIFOException ):
 			FIFO(),
-			_pointedValue( & value ),
+			_value( value ),
+			_firstWaitedValue( value + 42 ),
 			_inError( false ),
 			_hasWorkedAtLeastOnce( false )
 		{
@@ -118,21 +122,27 @@ class myFIFOExample: public Ceylan::System::FIFO
 			FIFOElement commandElement ;
 			
 			// 128: application-specific compute request ID
-			FIFO::SetFIFOCommandIDTo( commandElement, 128 ) ;
+			prepareFIFOCommand( commandElement, 128 ) ;
 			
+			TEST_FIFO_LOG( "compute command is: " 
+				+ DescribeCommand( commandElement ) ) ;
+
 			try
 			{	
 			
-				TEST_FIFO_LOG( "sending command ID" ) ;
+				TEST_FIFO_LOG( "sending command" ) ;
 				writeBlocking( commandElement ) ;
 
-				TEST_FIFO_LOG( "sending address." ) ;
+				TEST_FIFO_LOG( "sending value." ) ;
 			
-				writeBlocking( /* value address */ 
-					reinterpret_cast<FIFOElement>( _pointedValue ) ) ;
+				writeBlocking( static_cast<FIFOElement>( _value ) ) ;
 
 				TEST_FIFO_LOG( "command sent" ) ;
-			
+				
+				notifyCommandToARM7() ;
+
+				TEST_FIFO_LOG( "command notified" ) ;
+							
 			}
 			catch( const FIFOException & e )
 			{
@@ -144,11 +154,19 @@ class myFIFOExample: public Ceylan::System::FIFO
 			
 			TEST_FIFO_LOG( "sent compute request ended." ) ;
 			
+			// Prepare next request:
+			_value++ ;
+			
 		}	
 		
 		
 		
-		/// The actual overriden method implementing the protocol.
+		/**
+		 * The actual overriden method implementing the protocol.
+		 * 
+		 * Command count has already been checked by handleReceivedCommand.
+		 *
+		 */
 		virtual void handleReceivedApplicationCommand(
 			FIFOCommandID commandID, FIFOElement firstElement )	throw()
 		{
@@ -161,40 +179,46 @@ class myFIFOExample: public Ceylan::System::FIFO
 			 *
 			 */
 
-			TEST_FIFO_LOG( "receiving answer." ) ;
+			TEST_FIFO_LOG( "receiving command " 
+				+ Ceylan::toNumericalString( commandID ) + "." ) ;
+
 
 			if ( _inError )
+			{
+				
+				LogPlug::error( "In error, nothing done." ) ;
 				return ;
 				
-			const FIFOCommandID expectedID = 129 ;
-			 	
-			if ( commandID != expectedID )
-			{
+			}	
 				
-				/*
-				 * Log left, disable it in case of unexplained bad_alloc
-				 * exception:
-				 *
-				 */
-				LogPlug::error( 
-					"unexpected application-specific command identifier: " 
-					+ Ceylan::toNumericalString( commandID ) 
-					+ ", instead of " 
-					+ Ceylan::toNumericalString( expectedID ) ) ;
-						
-				_inError = true ;
-				
-				waitForKey() ;
-						
-			}		
-			else
+			
+			switch( commandID )
 			{
 			
-				// Uncomment and the program may freeze (at value 166):
-				TEST_FIFO_LOG( "Received correct command header ("
-					+ Ceylan::toNumericalString( expectedID ) + ")" ) ;
+				case 129:
+					handleComputeAnswer() ;
+					break ;
+					
+				case 130:
+					handleSumRequest() ;
+					break ;
+				
+				default:
+					handleUnexpectedApplicationCommand( commandID ) ;
+					break ;
+					
 			}
-			
+				
+		}		
+
+		
+		
+		virtual void handleComputeAnswer() throw() 
+		{
+					
+			TEST_FIFO_LOG( "Received correct command header for "
+				"handleComputeAnswer" ) ;
+				
 			FIFOElement readElement ;
 				
 			try
@@ -212,7 +236,7 @@ class myFIFOExample: public Ceylan::System::FIFO
 				 * exception:
 				 *
 				 */
-				LogPlug::error( "handleReceivedApplicationCommand failed: "
+				LogPlug::error( "handleComputeAnswer failed: "
 					+ e.toString() ) ;
 				
 				_inError = true ;
@@ -223,57 +247,100 @@ class myFIFOExample: public Ceylan::System::FIFO
 					
 			}
 			
-			
-				
-			/* 
-			 * Check made useless now that logs and numerical errors are
-			 * disabled here:
-			 */
-
-			/*
-			 * This test cannot be reliable unless a new request is sent only
-			 * after the previous one has been completed: otherwise when this
-			 * callback method is called while the ARM7 is unstacking, the ARM7
-			 * could read the shared value when processing request n, whereas
-			 * the ARM9 side, still in this method for the management of 
-			 * request n-1, has not already incremented the shared variable.
-			 * Thus the ARM9, when processing the next request, will see for
-			 * example 142 instead of 143.
-			 *
-			 * The overall total will nevertheless by correct, as the 
-			 * incrementation of the shared variable is an immediate 
-			 * read-modify-write operation at each call of this method, and 
-			 * there will be as many calls to it as ther will be sent requests.
-			 */
-			Ceylan::Uint32 expectedValue = *_pointedValue + 42 ;
-			 
-			if ( readElement == expectedValue )
+						 
+			if ( readElement == _firstWaitedValue )
 			{
 				
-				TEST_FIFO_LOG( "Received correct computed value: "
-					+ Ceylan::toString( expectedValue ) ) ;
+				TEST_FIFO_LOG( 
+					"handleComputeAnswer: received correct computed value: "
+					+ Ceylan::toString( _firstWaitedValue ) ) ;
 			}		
 			else
 			{
 				
-				TEST_FIFO_LOG( "Warning: handleReceivedApplicationCommand: "
+				LogPlug::error( "handleComputeAnswer failed: "
 					"unexpected computed value: " 
 					+ Ceylan::toString( readElement ) + ", instead of "
-					+ Ceylan::toString( expectedValue ) ) ;
+					+ Ceylan::toString( _firstWaitedValue ) ) ;
 						
-				// Not really an error: _inError = true ;
+				_inError = true ;
 									
 			}
 			
+			// No two transactions will be the same:
+			_firstWaitedValue++ ;
 			
 			_hasWorkedAtLeastOnce = true ;
-				
-			// No two transactions will be the same:
-			(*_pointedValue)++ ;
-				
+								
 			//TEST_FIFO_LOG( "Handled answer." ) ;
-			
+								
 		}
+		
+		
+		
+		virtual void handleSumRequest() throw() 
+		{
+		
+		
+			LogPlug::info( "Received correct command header for "
+				"handleSumRequest" ) ;
+				
+			FIFOElement firstParameter, secondParameter ;
+				
+			try
+			{	
+			
+				// Read the first parameter:		
+				firstParameter = readBlocking() ;
+				LogPlug::info( "cet" + Ceylan::toString( firstParameter, true ) ) ;
+				// Then the second one:		
+				secondParameter = readBlocking() ;
+			
+				FIFOElement commandElement ;
+			
+				// Sum answer chosen to be 131:
+				prepareFIFOCommand( commandElement, 131 ) ;
+
+				writeBlocking( commandElement ) ;
+			
+				writeBlocking( static_cast<FIFOElement>( firstParameter
+					+ secondParameter ) ) ;
+				
+				notifyCommandToARM7() ;
+
+				waitForKey() ;
+							
+			}
+			catch( const FIFOException & e )
+			{
+			
+				LogPlug::error( "handleSumRequest failed: " + e.toString() ) ;
+				return ;	
+					
+			}
+									
+		}
+		
+		
+		
+		virtual void handleUnexpectedApplicationCommand( 
+			FIFOCommandID commandID	) throw()
+		{	
+				
+			/*
+			 * Log left, disable it in case of unexplained bad_alloc
+			 * exception:
+			 *
+			 */
+			LogPlug::error( "handleReceivedApplicationCommand failed: "
+				"unexpected application-specific command identifier: " 
+				+ Ceylan::toNumericalString( commandID ) ) ;
+						
+			_inError = true ;
+				
+			waitForKey() ;
+			
+		}	
 		
 		
 		
@@ -281,10 +348,17 @@ class myFIFOExample: public Ceylan::System::FIFO
 		
 
 		/**
-		 * The value that will be shared: read on one side (ARM7), 
-		 * incremented on the other.*
+		 * The value that will be send to the ARM7.
+		 *
 		 */
-		Ceylan::Uint32 volatile * _pointedValue ;
+		Ceylan::Uint32 _value ;
+		
+		
+		/**
+		 * The value expected for the next ARM7 answer.
+		 *
+		 */
+		Ceylan::Uint32 _firstWaitedValue ;
 		
 		
 		/// Useful for the test:		
@@ -319,60 +393,9 @@ int main( int argc, char * argv[] )
 		bool interactive = false ;
 		
 		
-		LogPlug::info( "Test of Ceylan support for FIFO transfers" ) ;
-
-
-		// Test of command ID management:
-		
-		// Decimal for 0b101010101010101010101010:
-		FIFOElement testElement = 2796202 ; 
-		
-		// Decimal for 0b11001010:
-		const FIFOCommandID testID = 202 ;
-		FIFO::SetFIFOCommandIDTo( testElement, testID ) ;
-		FIFOCommandID readID = FIFO::GetFIFOCommandIDFrom( testElement ) ;
-		
-		if ( readID != testID )
-			throw TestException( "Writing and reading back "
-				"a command identifier (" + Ceylan::toNumericalString( testID ) 
-				+ ") returns a different value (" 
-				+ Ceylan::toNumericalString( readID ) + ")" ) ;
-		
-				
-
-		// Complete test:
-
-
-		/*
-		 * Note: using 'Ceylan::Uint32 myValue = 100 ;' results in allocating
-		 * that variable in the ARM9 stack (ex: address 0xb003c30), which is
-		 * not in the main RAM and cannot be accessed from the ARM7.
-		 *
-		 */
-		
-		/*
-		 * Created in the heap (ex: 0x209ebb8):
-		 *
-		 * In main RAM thus may end up in the ARM9 data cache.
-		 *
-		 */
-		Ceylan::Uint32 & myValue = * new Ceylan::Uint32( 100 ) ;
-		
-		// Flush the cache out of safety, probably useless:
-		DC_FlushRange( &myValue, sizeof(myValue) ) ;
-		
-		// Needing the ARM9 to access it from the non-cachable mirror:	
-		Ceylan::Uint32 * safeAddressOfMyValue =
-			ConvertToNonCacheable<Ceylan::Uint32>( &myValue ) ;
-										
-		if ( *safeAddressOfMyValue != 100 )
-			throw TestException( "Conversion to non-cacheable memory failed, "
-				"converted address: " + Ceylan::toString( safeAddressOfMyValue )
-				+ ", value: " + Ceylan::toString( *safeAddressOfMyValue ) ) ;
-		
+		LogPlug::info( "Test of Ceylan support for FIFO transfers 5" ) ;		
 	
-		myFIFOExample myFifo( *safeAddressOfMyValue ) ;
-
+		myFIFOExample myFifo( 100 ) ;
 
 #if CEYLAN_FIFO_USES_VBLANK
 
@@ -387,8 +410,9 @@ int main( int argc, char * argv[] )
 		irqSet( IRQ_VBLANK, FIFO::VBlankHandlerForFIFO ) ; 
 
 #endif // CEYLAN_FIFO_USES_VBLANK
+
+
 		
-			
 		if ( interactive )
 		{
 		
@@ -397,13 +421,21 @@ int main( int argc, char * argv[] )
 		
 		}
 
+		LogPlug::info( "Current ARM7 status just before activation is: "
+			 + myFifo.interpretLastARM7StatusWord() ) ;
+
 		// Set-up the ARM7 report mechanism:
 		myFifo.activate() ;
+
+		LogPlug::info( "Current ARM7 status just after activation is: "
+			 + myFifo.interpretLastARM7StatusWord() ) ;
 		
+
 			
 		LogPlug::info( "Current ARM7 status just after FIFO activation is: "
 			 + myFifo.interpretLastARM7StatusWord() ) ;
 			 
+		
 
 		if ( interactive )
 		{
@@ -412,6 +444,7 @@ int main( int argc, char * argv[] )
 			waitForKey() ;
 		
 		}
+
 		
 		Ceylan::Uint32 requestCount ;
 		
@@ -419,7 +452,7 @@ int main( int argc, char * argv[] )
 		if ( interactive )
 			requestCount = 1 ;
 		else
-			requestCount = 500000 ;
+			requestCount = 1000000 ;
 
 		LogPlug::info( "Current ARM7 status just before request sending is: "
 			 + myFifo.interpretLastARM7StatusWord() ) ;
@@ -434,7 +467,11 @@ int main( int argc, char * argv[] )
 		{
 		
 			if ( ( i % 5000 ) == 0 )
-				LogPlug::trace( "Sending #" + Ceylan::toString( i ) + "..." ) ;
+				LogPlug::trace( "Sent #" + Ceylan::toString( i ) ) ;
+
+			
+			if ( ( i % 10000 ) == 0 )
+				LogPlug::trace( myFifo.interpretLastARM7StatusWord() ) ;
 				
 			myFifo.sendComputeRequest() ;
 			TEST_FIFO_LOG( "...sent" ) ;
@@ -470,7 +507,7 @@ int main( int argc, char * argv[] )
 		}
 
 
-		// To test ARM7 shutodown:
+		// To test ARM7 shutdown:
 		const Ceylan::Uint32 displayCount = 1 ;
 
 		for ( Ceylan::Uint32 i = 0; i < displayCount; i++ )
@@ -482,7 +519,7 @@ int main( int argc, char * argv[] )
 		if ( interactive )
 		{
 		
-			LogPlug::info( "Press any key to wait again" ) ;
+			LogPlug::info( "Press any key to stop waiting" ) ;
 			waitForKey() ;
 		
 		}
@@ -533,25 +570,6 @@ int main( int argc, char * argv[] )
 			
 		}
 		
-		Ceylan::Uint32 plannedValue = 100 + requestCount ;	
-		
-		if ( *safeAddressOfMyValue != plannedValue )
-		{
-		
-			LogPlug::error( 
-				"FIFO led to faulty computations: expecting " 
-				+ Ceylan::toString( plannedValue )
-				+ ", obtained: " + Ceylan::toString( *safeAddressOfMyValue ) ) ;
-				
-			testFailed = true ;
-		}	
-		else
-		{
-		
-			LogPlug::info( "FIFO led to correct computations (final value is "
-				+ Ceylan::toString( *safeAddressOfMyValue ) + ")." ) ;
-
-		}
 		
 		if ( testFailed )
 			throw TestException( "Test failed because of error(s) "

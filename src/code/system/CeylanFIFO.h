@@ -38,10 +38,21 @@ typedef Ceylan::Uint16 ARM7ErrorCode ;
  * its first FIFO element, using the FIFO command mask.
  *
  * @note The definition of their meaning is centralized in 
- * /CeylanIPCCommands.h
+ * CeylanIPCCommands.h
  *
  */
 typedef Ceylan::Uint8 FIFOCommandID ;
+
+
+/**
+ * Describes a number of FIFO commands.
+ *
+ * Allows to count how many commands were processed on both sides, and 
+ * to include that number in each command to spot eventual commands lost in the
+ * FIFO.
+ *
+ */
+typedef Ceylan::Uint8 FIFOCommandCount ;
 
 
 
@@ -117,6 +128,9 @@ namespace Ceylan
 		 *
 		 * Due to the use of a callback based on a static method, the FIFO
 		 * instance is expected to be a singleton.
+		 *
+		 * @note Once a command has been written in the FIFO, the 
+		 * 'notifyCommandToARM7' method must be called.
 		 *
 		 */
 	
@@ -236,6 +250,21 @@ namespace Ceylan
 				 *
 				 */
 				virtual void deactivate() throw() ;
+
+
+				/**
+				 * Prepare the first FIFO element for specified command.
+				 * Sets the specified ID in the specified FIFO element and,
+				 * if used, sets as well the command number.
+				 *
+				 * @param targetElement the FIFO element that will be patched
+				 * with the specified ID and, possibly, command count.
+				 *
+				 * @param id the ID to set in specifed FIFO element.
+				 *
+				 */
+				virtual void prepareFIFOCommand( 
+					FIFOElement & targetElement, FIFOCommandID id ) throw() ;
 				
 				
 				/**
@@ -345,18 +374,36 @@ namespace Ceylan
 				
 				
 				/**
-				 * Sets the specified ID in specified FIFO element.
-				 *
-				 * @param targetElement the FIFO element that will be patched
-				 * with the specified ID.
-				 *
-				 * @param id the ID to set in specifed FIFO element.
+				 * Returns the command count read from specified FIFO
+				 * element.
 				 *
 				 */
-				static void SetFIFOCommandIDTo( 
-					FIFOElement & targetElement, FIFOCommandID id ) throw() ;
+				static FIFOCommandCount GetFIFOCommandCountFrom( 
+					const FIFOElement & element ) throw() ;
 				
 				
+				/**
+				 * Returns the number of commands processed by the ARM7, based
+				 * on the IPC sync register.
+				 *
+				 * @note Only the 4 lower bits are used, for a count in
+				 * [0,15].
+				 * 
+				 */
+				static FIFOCommandCount GetARM7ProcessedCount() throw() ;
+				
+				
+				/**
+				 * Returns the number of commands processed by the ARM9, based
+				 * on the IPC sync register.
+				 *
+				 * @note Only the 4 lower bits are used, for a count in
+				 * [0,15].
+				 * 
+				 */
+				static FIFOCommandCount GetARM9ProcessedCount() throw() ;
+				
+								
 				/**
 				 * Callback to catch the reception of a FIFO element by polling
 				 * during the Vblank interrupt.
@@ -391,55 +438,15 @@ namespace Ceylan
 		protected:
 				
 				
-				/**
-				 * ARM9-allocated variable whose address will be sent to the
-				 * ARM7 when the activate method will be called so that the
-				 * ARM7 can report its status.
-				 *
-				 */
-				ARM7StatusWord volatile * _arm7StatusWordPointer ;
-				
 				
 				/**
-				 * ARM9-allocated variable whose address will be sent to the
-				 * ARM7 when the activate method will be called so that the
-				 * ARM7 can report its last error.
+				 * Sends a synchronize IRQ to the ARM7, for example to make it
+				 * check its receive FIFO.
 				 *
-				 */
-				ARM7ErrorCode volatile * _arm7ErrorCodePointer ;
+				 */				
+				virtual void sendSynchronizeInterruptToARM7() throw() ;
 				
-
-				/**
-				 * Callback to catch the reception of a FIFO element when the
-				 * FIFO not empty IRQ has been triggered.
-				 *
-				 * This signature is mandatory.
-				 *
-				 * @note Just results in a call to its virtual method 
-				 * counterpart.
-				 *
-				 * @see handleReceivedCommand
-				 *
-				 * @see VBlankHandlerForFIFO
-				 */
-				static void FIFOHandlerForFIFO() ;
-
-
-				/**
-				 * Method responsible for the actual decoding of an incoming
-				 * command.
-				 *
-				 * Discriminates between Ceylan commands, that are managed
-				 * automatically, and application-specific commands, that result
-				 * in an appropriate call to handleReceivedApplicationCommand,
-				 * which is most probably overriden.
-				 *
-				 * @note Called automatically by ManageReceivedCommand.
-				 *
-				 */
-				virtual void handleReceivedCommand() throw() ;
 				
-		
 
 				/**
 				 * Tells whether there is data available for reading in the
@@ -511,6 +518,74 @@ namespace Ceylan
 				 */
 				void writeBlocking( FIFOElement toSend ) 
 					throw( FIFOException ) ;
+
+
+				/**
+				 * Returns the current count of processed commands, in [0,15].
+				 *
+				 */
+				FIFOCommandCount getProcessedCount() const throw() ;
+				
+				
+				/**
+				 * Returns the current count of sent commands, in [0,15].
+				 *
+				 */
+				FIFOCommandCount getSentCount() const throw() ;
+				
+				
+				/**
+				 * Increments the current count of processed commands, in
+				 * [0,15], and update accordingly the IPC sync register.
+				 *
+				 */
+				virtual void incrementProcessedCount() throw() ;
+				
+				 
+				/**
+				 * Method responsible for the actual decoding of an incoming
+				 * command.
+				 *
+				 * Discriminates between Ceylan commands, that are managed
+				 * automatically, and application-specific commands, that result
+				 * in an appropriate call to handleReceivedApplicationCommand,
+				 * which is most probably overriden.
+				 *
+				 * @note Called automatically by ManageReceivedCommand.
+				 *
+				 */
+				virtual void handleReceivedCommand() throw() ;
+				
+				
+				/**
+				 * Notifies the ARM7 that a new command has been placed in the
+				 * FIFO.
+				 *
+				 * Increments the sent count, and triggers an IPC IRQ in the
+				 * ARM7.
+				 *
+				 */
+				virtual void notifyCommandToARM7() throw() ;
+				
+				
+				
+				// Static section.
+				
+					
+				/**
+				 * Callback called whenever the ARM7 triggers an IPC
+				 * Synchronize interrupt.
+				 *
+				 * This signature is mandatory.
+				 *
+				 * @note Just results in a call to its virtual method 
+				 * counterpart.
+				 *
+				 * @see handleReceivedCommand
+				 *
+				 * @see VBlankHandlerForFIFO
+				 */
+				static void SyncHandlerForFIFO() ;
 	
 	
 				/**
@@ -521,6 +596,94 @@ namespace Ceylan
 				 */
 				static void ManageReceivedCommand() ;
 				
+			
+				/**
+				 * Returns a textual description of the specified command.
+				 *
+				 */
+				static std::string DescribeCommand( FIFOElement element )
+					throw() ;
+				
+				
+				
+				// Data members section.
+				
+				
+				/**
+				 * ARM9-allocated variable whose address will be sent to the
+				 * ARM7 when the activate method will be called so that the
+				 * ARM7 can report its status.
+				 *
+				 */
+				ARM7StatusWord volatile * _arm7StatusWordPointer ;
+				
+				
+				/**
+				 * ARM9-allocated variable whose address will be sent to the
+				 * ARM7 when the activate method will be called so that the
+				 * ARM7 can report its last error.
+				 *
+				 */
+				ARM7ErrorCode volatile * _arm7ErrorCodePointer ;
+				
+
+				/**
+				 * Records the overall number of sent commands to the FIFO.
+				 *
+				 * The number of a command may be stored in its FIFO element
+				 * for increasing reliability.
+				 *
+				 * @note 8-bit, hence wraps around after 255.
+				 *
+				 * @note Automatically incremented when using the 
+				 * prepareFIFOCommand method, hence not to be especially
+				 * managed by user code.
+				 *
+				 */
+				FIFOCommandCount _localCommandCount ;
+				
+				
+				/**
+				 * Records the overall number of received commands to the FIFO.
+				 *
+				 * The number of a command may be stored in its FIFO element
+				 * for increasing reliability.
+				 *
+				 * @note 8-bit, hence wraps around after 255.
+				 *
+				 * @note Automatically incremented by the handleReceivedCommand
+				 * method, hence not to be especially managed by user code.
+				 *
+				 */
+				FIFOCommandCount _remoteCommandCount ;
+				
+				
+				/**
+				 * Records the number of commands processed by the ARM9.
+				 *
+				 * @note Only the 4 lower bits are used, for a count in
+				 * [0,15].
+				 *
+				 * @note Automatically incremented by the handleReceivedCommand
+				 * method, hence not to be especially managed by user code.
+				 *
+				 */
+				FIFOCommandCount _processedCount ;
+				 
+				 
+				/**
+				 * Records the number of commands sent by the ARM9 to the ARM7.
+				 *
+				 * @note Only the 4 lower bits are used, for a count in
+				 * [0,15].
+				 * 
+				 * @note Automatically incremented by the notifyCommandToARM7
+				 * method, hence not to be especially managed by user code.
+				 *
+				 */
+				FIFOCommandCount _sentCount ;
+				 
+				 
 	
 	
 		private:
