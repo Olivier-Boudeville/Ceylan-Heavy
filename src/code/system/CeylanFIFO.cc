@@ -68,7 +68,12 @@ FIFO::FIFOEmpty::FIFOEmpty( const string & reason ) throw():
 {
 
 }
+
 				
+void tutu()
+{
+	
+}
 	
 
 
@@ -227,16 +232,20 @@ FIFO::FIFO() throw( FIFOException ):
 	 */
 
 	irqSet( IRQ_IPC_SYNC, SyncHandlerForFIFO ) ; 
-    irqEnable( IRQ_IPC_SYNC ) ;
 	 
 	/*
-	 * Fail-over VBlank handler not managed here, as may be used for other
-	 * purposes as well in the user code.
-	 * (neither set nor enabled here)
+	 * Fail-over VBlank handler added here, as needed at least for atomic
+	 * sleep.
 	 *
-	 * Finally VBlank handler is not considered useful anymore either. 
+	 * It may be associated with an user-specific handler for other
+	 * purposes later, as long as it is not disabled (other atomic sleeps
+	 * will freeze forever).
 	 *
 	 */
+	irqSet( IRQ_VBLANK, tutu ) ;
+	
+	// Unleash these IRQ: 
+    irqEnable( IRQ_IPC_SYNC | IRQ_VBLANK ) ;
 
 	// Last action is to register this FIFO:
 	_FIFO = this ;		
@@ -347,27 +356,29 @@ void FIFO::activate() throw( FIFOException )
 	 * IPC_SYNC_IRQ_ENABLE allows the ARM7 to trigger IPC_SYNC IRQ on this
 	 * ARM9:
 	 *
+	 * ('=', not '|=', to nullify the rest of the register, not expecting to
+	 * write on ARM7 settings)
+	 * 
 	 */
-	REG_IPC_SYNC |= IPC_SYNC_IRQ_ENABLE ;
+	REG_IPC_SYNC = IPC_SYNC_IRQ_ENABLE ;
 		
 	
 	/*
-	 * Send this address to the ARM7 thanks to the relevant command identifier:
-	 * Zeroed even if not necessary to avoid a warning.
-	 */
-	FIFOElement commandElement = 0 ;
-	
-
-	/**
 	 * Send the address of the variables to be used by the ARM7
-	 * to report its status and last error.
+	 * to report its status and last error, with relevant command identifier:.
 	 *
 	 * Uses and updates _localCommandCount:
 	 *
 	 */
-	prepareFIFOCommand( commandElement,	SendARM7StatusAndErrorReportAddress ) ;
-	
-	LogPlug::debug( "Init command is: " + DescribeCommand( commandElement ) ) ;
+	FIFOElement commandElement = prepareFIFOCommand( 
+		SendARM7StatusAndErrorReportAddress ) ;
+
+	LogPlug::trace( "FIFO::activate: sending IPC activate report command." ) ;
+		
+	/*
+	 * LogPlug::debug( "Init command is: " 
+	 	+ DescribeCommand( commandElement ) ) ;
+	 */	
 	
 	writeBlocking( commandElement ) ;
 	
@@ -392,7 +403,9 @@ void FIFO::activate() throw( FIFOException )
 	/*
 	 * getLastARM7StatusWord might return the starting value 
 	 * (NoStatusAvailable) or 0 (StatusVoluntarilyLeftBlank) which is found
-	 * in the FIFO before 
+	 * in the FIFO before the ARM7 inits it.
+	 *
+	 * Waiting for the ARM7 to update these variables:
 	 *
 	 */
 	while ( ( ( getLastARM7StatusWord() == NoStatusAvailable ) 
@@ -400,7 +413,8 @@ void FIFO::activate() throw( FIFOException )
 		&& ( VBlankCount > 0 ) )
 	{
 
-		sendSynchronizeInterruptToARM7() ;
+		//sendSynchronizeInterruptToARM7() ;
+		
 		if ( VBlankCount % 10 == 0 )
 			LogPlug::debug( "Status = " 
 				+ Ceylan::toString( getLastARM7StatusWord() ) + ", error = "
@@ -451,20 +465,11 @@ void FIFO::deactivate() throw()
 	LogPlug::trace( "FIFO deactivate, stopping IPC system" ) ;
 
 	/*
-	 * Send this address to the ARM7 thanks to the relevant command identifier:
-	 * Zeroed even if not necessary to avoid a warning.
-	 */
-	FIFOElement commandElement = 0 ;
-	
-
-	/**
-	 * Send the address of the variables to be used by the ARM7
-	 * to report its status and last error.
+	 * Send  relevant command identifier for IPC shutdown:
+	 * (remaining FIFO bytes not used)
 	 *
 	 */
-	prepareFIFOCommand( commandElement, ShutdownIPC ) ;
-	
-	writeBlocking( commandElement ) ;
+	writeBlocking( prepareFIFOCommand( ShutdownIPC ) ) ;
 
 	notifyCommandToARM7() ;
 	
@@ -496,24 +501,15 @@ void FIFO::deactivate() throw()
 
 
 
-void FIFO::prepareFIFOCommand( FIFOElement & targetElement, FIFOCommandID id )
-	throw()
+FIFOElement FIFO::prepareFIFOCommand( FIFOCommandID id ) throw()
 {
 
-/*
-	// First sets the ID in first byte of the FIFO element:
-	targetElement = ( targetElement & 0x00ffffff ) | ( id << 24 ) ;
-	
-	// Then sets the command count in second byte of the FIFO element:
-	targetElement = ( targetElement & 0xff00ffff ) | ( _localCommandCount << 16 ) ;
-
-*/
-
-	targetElement = ( targetElement & 0x0000ffff ) | ( id << 24 )
-		| ( _localCommandCount << 16 ) ;
+	FIFOElement res = ( id << 24 ) | ( _localCommandCount << 16 ) ;
 	
 	// Prepare for next command:
 	_localCommandCount++ ;
+	
+	return res ;
 	
 }
 
@@ -1079,6 +1075,8 @@ void FIFO::notifyCommandToARM7() throw()
 void FIFO::SyncHandlerForFIFO() 
 {
 	
+	LogPlug::trace( "---sync---" ) ;
+	
 	// 'if ( dataAvailableForReading() )', but we are static here:
 	if ( ! ( REG_IPC_FIFO_CR & IPC_FIFO_RECV_EMPTY ) )
 		ManageReceivedCommand() ;
@@ -1089,7 +1087,6 @@ void FIFO::SyncHandlerForFIFO()
 
 void FIFO::ManageReceivedCommand()
 {
-
 
 	/**
 	 * Should always be called from a context where relevant interrupts have 

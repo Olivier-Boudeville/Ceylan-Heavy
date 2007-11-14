@@ -254,17 +254,20 @@ namespace Ceylan
 
 				/**
 				 * Prepare the first FIFO element for specified command.
-				 * Sets the specified ID in the specified FIFO element and,
+				 * Sets the specified ID in the returned FIFO element and,
 				 * if used, sets as well the command number.
 				 *
-				 * @param targetElement the FIFO element that will be patched
-				 * with the specified ID and, possibly, command count.
+				 * @note The two (if using command number) or three (if not)
+				 * remaining bytes can be used freely by application code.
 				 *
-				 * @param id the ID to set in specifed FIFO element.
+				 * @param id the ID to set in the FIFO element.
+				 *
+				 * @return a FIFO element patched with the specified ID and,
+				 * possibly, command count.
 				 *
 				 */
-				virtual void prepareFIFOCommand( 
-					FIFOElement & targetElement, FIFOCommandID id ) throw() ;
+				virtual FIFOElement prepareFIFOCommand( FIFOCommandID id )
+					throw() ;
 				
 				
 				/**

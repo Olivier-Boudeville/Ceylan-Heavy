@@ -29,9 +29,6 @@ using namespace Ceylan::System ;
 #define TEST_FIFO_LOG(message)
 
 
-// Allows to enable/disable the FIFO fail-over handler triggered on VBlank IRQ:
-#define CEYLAN_FIFO_USES_VBLANK 0
-
 
 /**
  * ARM9 side of the Ceylan FIFO test.
@@ -119,14 +116,17 @@ class myFIFOExample: public Ceylan::System::FIFO
 			 		
 			TEST_FIFO_LOG( "sending compute request." ) ;
 			
-			FIFOElement commandElement ;
-			
-			// 128: application-specific compute request ID
-			prepareFIFOCommand( commandElement, 128 ) ;
+
+			/*
+			 * 128: application-specific compute request ID, remaining bytes 
+			 * in FIFO element not used:
+			 *
+			 */
+			FIFOElement commandElement = prepareFIFOCommand( 128 ) ;
 			
 			TEST_FIFO_LOG( "compute command is: " 
 				+ DescribeCommand( commandElement ) ) ;
-
+			
 			try
 			{	
 			
@@ -156,6 +156,14 @@ class myFIFOExample: public Ceylan::System::FIFO
 			
 			// Prepare next request:
 			_value++ ;
+			
+			
+			/*
+			 * Disturb the test by adding random delays (and otherwise the ARM7
+			 * would be overloaded and would never send requests):
+			 *
+			 */
+			//swiDelay( /* cycles */ ::rand() % 500 + 10 ) ;
 			
 		}	
 		
@@ -208,6 +216,13 @@ class myFIFOExample: public Ceylan::System::FIFO
 					break ;
 					
 			}
+
+			/*
+			 * Disturb the test by adding random delays (and otherwise the ARM7
+			 * would be overloaded and would never send requests):
+			 *
+			 */
+			//swiDelay( /* cycles */ ::rand() % 500 + 10 ) ;
 				
 		}		
 
@@ -215,6 +230,8 @@ class myFIFOExample: public Ceylan::System::FIFO
 		
 		virtual void handleComputeAnswer() throw() 
 		{
+			
+			LogPlug::trace( "handleComputeAnswer" ) ;
 					
 			TEST_FIFO_LOG( "Received correct command header for "
 				"handleComputeAnswer" ) ;
@@ -231,6 +248,8 @@ class myFIFOExample: public Ceylan::System::FIFO
 			catch( const FIFOException & e )
 			{
 			
+				_inError = true ;
+
 				/*
 				 * Log left, disable it in case of unexplained bad_alloc
 				 * exception:
@@ -238,8 +257,6 @@ class myFIFOExample: public Ceylan::System::FIFO
 				 */
 				LogPlug::error( "handleComputeAnswer failed: "
 					+ e.toString() ) ;
-				
-				_inError = true ;
 				
 				waitForKey() ;
 				
@@ -258,12 +275,15 @@ class myFIFOExample: public Ceylan::System::FIFO
 			else
 			{
 				
+				_inError = true ;
+
 				LogPlug::error( "handleComputeAnswer failed: "
 					"unexpected computed value: " 
 					+ Ceylan::toString( readElement ) + ", instead of "
 					+ Ceylan::toString( _firstWaitedValue ) ) ;
 						
-				_inError = true ;
+				
+				waitForKey() ;
 									
 			}
 			
@@ -282,9 +302,13 @@ class myFIFOExample: public Ceylan::System::FIFO
 		{
 		
 		
-			LogPlug::info( "Received correct command header for "
+			LogPlug::info( "handleSumRequest!!!!!!!!!!!!!!!!!!!!!!!!!" ) ;
+			
+			TEST_FIFO_LOG( "Received correct command header for "
 				"handleSumRequest" ) ;
 				
+			
+			
 			FIFOElement firstParameter, secondParameter ;
 				
 			try
@@ -292,23 +316,20 @@ class myFIFOExample: public Ceylan::System::FIFO
 			
 				// Read the first parameter:		
 				firstParameter = readBlocking() ;
-				LogPlug::info( "cet" + Ceylan::toString( firstParameter, true ) ) ;
+				
 				// Then the second one:		
 				secondParameter = readBlocking() ;
 			
-				FIFOElement commandElement ;
-			
-				// Sum answer chosen to be 131:
-				prepareFIFOCommand( commandElement, 131 ) ;
-
-				writeBlocking( commandElement ) ;
+				// Sum answer chosen to be 131 (remaining FIFO bytes not used):
+				writeBlocking( prepareFIFOCommand( 131 ) ) ;
 			
 				writeBlocking( static_cast<FIFOElement>( firstParameter
 					+ secondParameter ) ) ;
 				
+				LogPlug::info( "#########################" ) ;
 				notifyCommandToARM7() ;
 
-				waitForKey() ;
+				//waitForKey() ;
 							
 			}
 			catch( const FIFOException & e )
@@ -327,6 +348,9 @@ class myFIFOExample: public Ceylan::System::FIFO
 			FIFOCommandID commandID	) throw()
 		{	
 				
+			_inError = true ;
+
+
 			/*
 			 * Log left, disable it in case of unexplained bad_alloc
 			 * exception:
@@ -336,7 +360,6 @@ class myFIFOExample: public Ceylan::System::FIFO
 				"unexpected application-specific command identifier: " 
 				+ Ceylan::toNumericalString( commandID ) ) ;
 						
-			_inError = true ;
 				
 			waitForKey() ;
 			
@@ -373,6 +396,28 @@ class myFIFOExample: public Ceylan::System::FIFO
 
 
 
+void makeCrash()
+{
+
+	int a = 1 ;
+	
+	int b= 0 ;
+	
+	volatile int c = a / b ;
+
+	c++ ;
+	
+	int * d = 0 ;
+	
+	*d = 1 ;
+	
+	free( d ) ;
+	free( d+1 ) ;
+	
+	//exit(1) ;
+}
+
+
 
 /**
  * Test for the FIFO support offered by the Ceylan library on the Nintendo DS.
@@ -381,7 +426,7 @@ class myFIFOExample: public Ceylan::System::FIFO
 int main( int argc, char * argv[] )
 {
 
-	 
+	// makeCrash() ;
 	LogHolder myLog( argc, argv ) ;
 
 	
@@ -396,21 +441,6 @@ int main( int argc, char * argv[] )
 		LogPlug::info( "Test of Ceylan support for FIFO transfers 5" ) ;		
 	
 		myFIFOExample myFifo( 100 ) ;
-
-#if CEYLAN_FIFO_USES_VBLANK
-
-		/*
-		 * Interrupts enabled by previous constructor, this VBlank fail-over
-		 * handler is added:
-		 *
-		 * @note If you have already a VBlank handler, they should be mixed
-		 * (glued into a unique VBlank handler)
-		 *
-		 */
-		irqSet( IRQ_VBLANK, FIFO::VBlankHandlerForFIFO ) ; 
-
-#endif // CEYLAN_FIFO_USES_VBLANK
-
 
 		
 		if ( interactive )
@@ -429,14 +459,8 @@ int main( int argc, char * argv[] )
 
 		LogPlug::info( "Current ARM7 status just after activation is: "
 			 + myFifo.interpretLastARM7StatusWord() ) ;
+					 
 		
-
-			
-		LogPlug::info( "Current ARM7 status just after FIFO activation is: "
-			 + myFifo.interpretLastARM7StatusWord() ) ;
-			 
-		
-
 		if ( interactive )
 		{
 		
@@ -452,7 +476,7 @@ int main( int argc, char * argv[] )
 		if ( interactive )
 			requestCount = 1 ;
 		else
-			requestCount = 1000000 ;
+			requestCount = 1 ;
 
 		LogPlug::info( "Current ARM7 status just before request sending is: "
 			 + myFifo.interpretLastARM7StatusWord() ) ;
@@ -462,7 +486,9 @@ int main( int argc, char * argv[] )
 		 * Note: there is no direct flow control, the ARM9 sends requests
 		 * as fast as possible, without waiting for answers first.
 		 *
+		 *
 		 */
+		
 		for ( Ceylan::Uint32 i = 0; i < requestCount; i++ )
 		{
 		
@@ -472,11 +498,24 @@ int main( int argc, char * argv[] )
 			
 			if ( ( i % 10000 ) == 0 )
 				LogPlug::trace( myFifo.interpretLastARM7StatusWord() ) ;
+			
 				
 			myFifo.sendComputeRequest() ;
 			TEST_FIFO_LOG( "...sent" ) ;
 			//waitForKey() ;
-			//atomicSleep() ;
+			atomicSleep() ;
+			
+		}
+
+		
+		// Wait a few seconds:
+		Ceylan::Uint32 u = 0 ;
+		while ( u < 180 )
+		{
+			
+			if ( u++ % 100 == 0 )
+				LogPlug::info(  myFifo.interpretLastARM7StatusWord() ) ;
+			atomicSleep() ;
 			
 		}
 		
@@ -536,10 +575,7 @@ int main( int argc, char * argv[] )
 		for ( Ceylan::Uint32 i = 0; i < 50; i++ )
 			; //atomicSleep() ;
 
-		LogPlug::info( "Current ARM7 status after final waiting: "
-			 + myFifo.interpretLastARM7StatusWord() ) ;
-		
-		
+
 		if ( myFifo.isInError() )
 		{
 		
@@ -618,3 +654,4 @@ int main( int argc, char * argv[] )
     return Ceylan::ExitSuccess ;
 
 }
+
