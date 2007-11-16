@@ -132,13 +132,29 @@ namespace Ceylan
 		 * @note Once a command has been written in the FIFO, the 
 		 * 'notifyCommandToARM7' method must be called.
 		 *
+		 * @see testCeylanFIFO.arm9.cc to have a complete example showing how
+		 * to avoid the numerous pitfalls of IPC programming.
+		 *
+		 * For example, the deactivate method should be called from the 
+		 * destructor of the child FIFO class, not from the mother FIFO one,
+		 * otherwise an IRQ after the child destructor but before the end of 
+		 * the mother destructor would trigger a call to a pure virtual
+		 * method.
+		 *
+		 * Request management should be asynchronous: one should send a request,
+		 * store in the state of the FIFO child class, and return, without 
+		 * waiting directly in this send function the answer: the other ARM may
+		 * send a request of its own just after this ARM sent his request, and
+		 * the request of the other ARM would be read instead of the expected
+		 * answer.
+		 *
 		 */
 	
 
 		/// The atomic data that can be sent through the FIFO.
 		typedef Ceylan::Uint32 FIFOElement ;
 		
-		
+			
 	
 		/**
 		 * Bidirectional interrupt-based FIFO (First In, Firt Out) class for
@@ -617,17 +633,29 @@ namespace Ceylan
 				 * ARM7 when the activate method will be called so that the
 				 * ARM7 can report its status.
 				 *
+				 * @note We expected to declare it only as 
+				 * 'ARM7StatusWord volatile *', as only the pointed value can
+				 * be modified by the ARM7. It worked on NoCashGBA emulator,
+				 * but not on the DS, until we declared as well the pointer
+				 * itself to be volatile.
+				 *
 				 */
-				ARM7StatusWord volatile * _arm7StatusWordPointer ;
-				
+				ARM7StatusWord volatile * volatile _arm7StatusWordPointer ;
+		
 				
 				/**
 				 * ARM9-allocated variable whose address will be sent to the
 				 * ARM7 when the activate method will be called so that the
 				 * ARM7 can report its last error.
 				 *
+				 * @note We expected to declare it only as 
+				 * 'ARM7ErrorCode volatile *', as only the pointed value can
+				 * be modified by the ARM7. It worked on NoCashGBA emulator,
+				 * but not on the DS, until we declared as well the pointer
+				 * itself to be volatile.
+				 *
 				 */
-				ARM7ErrorCode volatile * _arm7ErrorCodePointer ;
+				ARM7ErrorCode volatile * volatile _arm7ErrorCodePointer ;
 				
 
 				/**
@@ -643,7 +671,7 @@ namespace Ceylan
 				 * managed by user code.
 				 *
 				 */
-				FIFOCommandCount _localCommandCount ;
+				volatile FIFOCommandCount _localCommandCount ;
 				
 				
 				/**
@@ -658,7 +686,7 @@ namespace Ceylan
 				 * method, hence not to be especially managed by user code.
 				 *
 				 */
-				FIFOCommandCount _remoteCommandCount ;
+				volatile FIFOCommandCount _remoteCommandCount ;
 				
 				
 				/**
@@ -671,7 +699,7 @@ namespace Ceylan
 				 * method, hence not to be especially managed by user code.
 				 *
 				 */
-				FIFOCommandCount _processedCount ;
+				volatile FIFOCommandCount _processedCount ;
 				 
 				 
 				/**
@@ -684,7 +712,7 @@ namespace Ceylan
 				 * method, hence not to be especially managed by user code.
 				 *
 				 */
-				FIFOCommandCount _sentCount ;
+				volatile FIFOCommandCount _sentCount ;
 				 
 				 
 	

@@ -32,6 +32,15 @@ using namespace Ceylan ;
  * @see libnds include/nds/ipc.h for defines.
  * @see http://www.neimod.com/dstek/dstek2.xml#Interprocessor%20Communication
  *
+ * @note If ever a variable is read in the main function and in an IRQ handler,
+ * by all means declare it as volatile. The other ARM is not the only cause
+ * of using this qualifier !
+ *
+ * Code called from an IRQ handler (ex: handle*) does not need to be 
+ * specifically protected, as interrupts are disabled during them, but code
+ * called from a sent request (ex: sent*) have to disable interrupts, using
+ * preferably SetEnabledInterrupts.
+ *
  */
  
 
@@ -279,8 +288,14 @@ FIFO::~FIFO() throw()
 
 	// LogPlug::trace( "FIFO destructor" ) ;
 	
+	/*
+	 * Must have been called beforehand, otherwise pure method calls could
+	 * be issued:
+	
 	deactivate() ;
 
+	 */
+	 
 	_FIFO = 0 ;
 
 	if ( _arm7StatusWordPointer != 0 )
@@ -380,6 +395,8 @@ void FIFO::activate() throw( FIFOException )
 	 	+ DescribeCommand( commandElement ) ) ;
 	 */	
 	
+	InterruptMask previous = SetEnabledInterrupts( AllInterruptsDisabled ) ;
+	
 	writeBlocking( commandElement ) ;
 	
 	LogPlug::trace( "FIFO::activate: sending address of the status word." ) ;
@@ -394,11 +411,13 @@ void FIFO::activate() throw( FIFOException )
 		/* address of the error word */ 
 		reinterpret_cast<FIFOElement>( _arm7ErrorCodePointer ) ) ;
 	
-	notifyCommandToARM7() ;
 	
+	SetEnabledInterrupts( previous ) ;
+	notifyCommandToARM7() ;
+
 	
 	// Wait for at most a whole second:
-	Ceylan::Uint8 VBlankCount = 60 ;
+	Ceylan::Uint8 VBlankCount = 120 ;
 		
 	/*
 	 * getLastARM7StatusWord might return the starting value 
@@ -413,7 +432,7 @@ void FIFO::activate() throw( FIFOException )
 		&& ( VBlankCount > 0 ) )
 	{
 
-		//sendSynchronizeInterruptToARM7() ;
+		sendSynchronizeInterruptToARM7() ;
 		
 		if ( VBlankCount % 10 == 0 )
 			LogPlug::debug( "Status = " 
@@ -429,6 +448,13 @@ void FIFO::activate() throw( FIFOException )
 	if ( VBlankCount == 0 )
 		throw FIFOException( "FIFO::activate: "
 			"time-out reached while waiting for ARM7 update" ) ;
+
+	FIFOCommandCount arm7Count = GetARM7ProcessedCount() ;
+	
+	if ( arm7Count != 1 )
+		LogPlug::error( "FIFO::activate: ARM7 processed count expected "
+			"to be equal to 1, found: "
+			+ Ceylan::toNumericalString( arm7Count ) ) ;
 			
 		
 	if ( getLastARM7StatusWord() != ARM7Running )
@@ -441,12 +467,6 @@ void FIFO::activate() throw( FIFOException )
 			"but is not in expected no-error state: "
 			+ interpretLastARM7ErrorCode() ) ;
 	
-	FIFOCommandCount arm7Count = GetARM7ProcessedCount() ;
-	
-	if ( arm7Count != 1 )
-		throw FIFOException( "FIFO::activate: ARM7 processed count expected "
-			"to be equal to 1, found: "
-			+ Ceylan::toNumericalString( arm7Count ) ) ;
 	
 	LogPlug::trace( "FIFO successfully activated, ARM handshake completed" ) ;
 	
@@ -464,6 +484,8 @@ void FIFO::deactivate() throw()
 
 	LogPlug::trace( "FIFO deactivate, stopping IPC system" ) ;
 
+	InterruptMask previous = SetEnabledInterrupts( AllInterruptsDisabled ) ;
+	
 	/*
 	 * Send  relevant command identifier for IPC shutdown:
 	 * (remaining FIFO bytes not used)
@@ -471,15 +493,21 @@ void FIFO::deactivate() throw()
 	 */
 	writeBlocking( prepareFIFOCommand( ShutdownIPC ) ) ;
 
+	
+	SetEnabledInterrupts( previous ) ;
 	notifyCommandToARM7() ;
 	
 	// Wait for at most a whole second:
 	Ceylan::Uint8 VBlankCount = 60 ;
 	
+	
 	while ( ( getLastARM7StatusWord() != ARM7IPCShutdown ) 
 		&& ( VBlankCount > 0 ) )
 	{
 
+		if ( VBlankCount % 10 == 0 )
+			LogPlug::trace( "deactivating: " + interpretLastARM7StatusWord() ) ;
+		
 		atomicSleep() ;
 		VBlankCount-- ;
 	
@@ -491,10 +519,11 @@ void FIFO::deactivate() throw()
 	else
 		LogPlug::trace( "ARM7 shutdown successful" ) ;
 	
+	// Disable IPC sync IRQ:
 	irqDisable( IRQ_IPC_SYNC ) ;
-	
  	REG_IPC_SYNC &= ~IPC_SYNC_IRQ_ENABLE ;
 
+	// Disable FIFO:
 	REG_IPC_FIFO_CR = REG_IPC_FIFO_CR &	~IPC_FIFO_ENABLE ;   	
 
 }
@@ -525,7 +554,7 @@ ARM7StatusWord FIFO::getLastARM7StatusWord() throw()
 	if ( _arm7StatusWordPointer == 0 )
 		return NoStatusVariableAvailable ;
 	
-	return (*_arm7StatusWordPointer) ;
+	return ( *_arm7StatusWordPointer ) ;
 	
 }
 
@@ -563,6 +592,10 @@ string FIFO::interpretLastARM7StatusWord() throw()
 			return "ARM7 status variable not set" ;
 			break ;
 			
+		case StatusReset:
+			return "ARM7 status had been reset" ;
+			break ;
+			
 		default:
 			return "unexpected ARM7 status word (" 
 				+ Ceylan::toString( status ) + ")" ;
@@ -581,7 +614,7 @@ ARM7ErrorCode FIFO::getLastARM7ErrorCode() throw()
 	if ( _arm7ErrorCodePointer == 0 )
 		return NoErrorVariableAvailable ;
 	
-	return (*_arm7ErrorCodePointer) ;
+	return ( *_arm7ErrorCodePointer ) ;
 	
 }
 
@@ -608,12 +641,68 @@ string FIFO::interpretLastARM7ErrorCode() throw()
 				"(application-specific) command" ;
 			break ;
 			
+		case FIFOErrorWhileReading:
+			return "ARM7 encountered a FIFO error while reading" ;
+			break ;
+			
+		case FIFOErrorWhileWriting:
+			return "ARM7 encountered a FIFO error while writing" ;
+			break ;
+			
 		case NoError:
 			return "ARM7 has no error registered" ;
 			break ;
 
 		case NoErrorVariableAvailable:
 			return "ARM7 error variable not set" ;
+			break ;
+		
+		case CommandOverlapping:	
+			return "ARM7 prevented attempt of command overlapping" ;
+			break ;
+			
+		case UnexpectedBehaviour:	
+			return "ARM7 received an HelloToTheARM7 (i.e. null) command" ;
+			break ;
+			
+		case IPCAlreadyStarted:	
+			return 
+				"ARM7 received an IPC start command whereas already started" ;
+			break ;
+			
+		case IPCAlreadyStopped:	
+			return "ARM7 received an IPC stop command whereas not running" ;
+			break ;
+			
+		case AwokenWithNothingToRead:	
+			return "ARM7 had its sync IRQ triggered "
+				"whereas its input FIFO was empty" ;
+			break ;
+			
+		case IncorrectInitialStatus:	
+			return "ARM7 detected its initial status, set by the ARM9, "
+				"is incorrect" ;
+			break ;
+			
+		case IncorrectInitialError:	
+			return "ARM7 detected its initial error code, set by the ARM9, "
+				"is incorrect" ;
+			break ;
+			
+		case UnexpectedCommandCount:	
+			return "ARM7 encountered a command embedding an unexpected count" ;
+			break ;
+			
+		case IncorrectApplicationAnswer:	
+			return "ARM7 received an incorrect application-specific answer" ;
+			break ;
+			
+		case FIFOTimeOutWhileReading:	
+			return "ARM7  made a time-out while reading" ;
+			break ;
+			
+		case FIFOTimeOutWhileWriting:	
+			return "ARM7  made a time-out while writing" ;
 			break ;
 			
 		default:
@@ -1075,7 +1164,7 @@ void FIFO::notifyCommandToARM7() throw()
 void FIFO::SyncHandlerForFIFO() 
 {
 	
-	LogPlug::trace( "---sync---" ) ;
+	//LogPlug::trace( "FIFO::SyncHandlerForFIFO called" ) ;
 	
 	// 'if ( dataAvailableForReading() )', but we are static here:
 	if ( ! ( REG_IPC_FIFO_CR & IPC_FIFO_RECV_EMPTY ) )

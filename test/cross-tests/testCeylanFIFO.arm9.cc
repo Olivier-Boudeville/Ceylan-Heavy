@@ -28,7 +28,8 @@ using namespace Ceylan::System ;
 //#define TEST_FIFO_LOG(message) LogPlug::trace(message)
 #define TEST_FIFO_LOG(message)
 
-
+//#define TEST_REQUEST_SHOWN(message) LogPlug::trace(message)
+#define TEST_REQUEST_SHOWN(message)
 
 /**
  * ARM9 side of the Ceylan FIFO test.
@@ -85,7 +86,7 @@ class myFIFOExample: public Ceylan::System::FIFO
 		
 		virtual ~myFIFOExample() throw()
 		{
-		
+					
 			TEST_FIFO_LOG( "myFIFOExample deleted." ) ;
 			
 		}
@@ -117,12 +118,6 @@ class myFIFOExample: public Ceylan::System::FIFO
 			TEST_FIFO_LOG( "sending compute request." ) ;
 			
 
-			/*
-			 * 128: application-specific compute request ID, remaining bytes 
-			 * in FIFO element not used:
-			 *
-			 */
-			FIFOElement commandElement = prepareFIFOCommand( 128 ) ;
 			
 			TEST_FIFO_LOG( "compute command is: " 
 				+ DescribeCommand( commandElement ) ) ;
@@ -130,6 +125,17 @@ class myFIFOExample: public Ceylan::System::FIFO
 			try
 			{	
 			
+				InterruptMask previous = SetEnabledInterrupts(
+					AllInterruptsDisabled ) ;
+
+				/*
+				 * 128: application-specific compute request ID, remaining 
+				 * bytes in FIFO element not used:
+				 *
+				 */
+				FIFOElement commandElement = prepareFIFOCommand( 128 ) ;
+
+					
 				TEST_FIFO_LOG( "sending command" ) ;
 				writeBlocking( commandElement ) ;
 
@@ -139,7 +145,10 @@ class myFIFOExample: public Ceylan::System::FIFO
 
 				TEST_FIFO_LOG( "command sent" ) ;
 				
+				SetEnabledInterrupts( previous ) ;
 				notifyCommandToARM7() ;
+
+				
 
 				TEST_FIFO_LOG( "command notified" ) ;
 							
@@ -159,11 +168,11 @@ class myFIFOExample: public Ceylan::System::FIFO
 			
 			
 			/*
-			 * Disturb the test by adding random delays (and otherwise the ARM7
-			 * would be overloaded and would never send requests):
+			 * Disturb the test by adding random delays:
 			 *
 			 */
-			//swiDelay( /* cycles */ ::rand() % 500 + 10 ) ;
+			if ( _value % 17 == 0 )
+				swiDelay( /* cycles */ ::rand() % 500 + 1 ) ;
 			
 		}	
 		
@@ -178,6 +187,7 @@ class myFIFOExample: public Ceylan::System::FIFO
 		virtual void handleReceivedApplicationCommand(
 			FIFOCommandID commandID, FIFOElement firstElement )	throw()
 		{
+
 
 			/*
 			 * All logs disabled in this method as called from an IRQ handler,
@@ -218,11 +228,11 @@ class myFIFOExample: public Ceylan::System::FIFO
 			}
 
 			/*
-			 * Disturb the test by adding random delays (and otherwise the ARM7
-			 * would be overloaded and would never send requests):
+			 * Disturb the test by adding random delays:
 			 *
 			 */
-			//swiDelay( /* cycles */ ::rand() % 500 + 10 ) ;
+			if ( _value % 11 == 0 )
+				swiDelay( /* cycles */ ::rand() % 500 + 1 ) ;
 				
 		}		
 
@@ -231,8 +241,13 @@ class myFIFOExample: public Ceylan::System::FIFO
 		virtual void handleComputeAnswer() throw() 
 		{
 			
-			LogPlug::trace( "handleComputeAnswer" ) ;
-					
+			static int i = 0 ;
+			
+			if ( i++ % 100 == 0 )
+				TEST_REQUEST_SHOWN( "  ---- compute ----" ) ;
+				
+			 
+			 				
 			TEST_FIFO_LOG( "Received correct command header for "
 				"handleComputeAnswer" ) ;
 				
@@ -256,7 +271,9 @@ class myFIFOExample: public Ceylan::System::FIFO
 				 *
 				 */
 				LogPlug::error( "handleComputeAnswer failed: "
-					+ e.toString() ) ;
+					+ e.toString() + ", while ARM7 state is " 
+					+ interpretLastARM7StatusWord() ) ;
+				
 				
 				waitForKey() ;
 				
@@ -280,8 +297,9 @@ class myFIFOExample: public Ceylan::System::FIFO
 				LogPlug::error( "handleComputeAnswer failed: "
 					"unexpected computed value: " 
 					+ Ceylan::toString( readElement ) + ", instead of "
-					+ Ceylan::toString( _firstWaitedValue ) ) ;
-						
+					+ Ceylan::toString( _firstWaitedValue ) 
+					+ ", while ARM7 state is " 
+					+ interpretLastARM7StatusWord() ) ;	
 				
 				waitForKey() ;
 									
@@ -301,13 +319,14 @@ class myFIFOExample: public Ceylan::System::FIFO
 		virtual void handleSumRequest() throw() 
 		{
 		
-		
-			LogPlug::info( "handleSumRequest!!!!!!!!!!!!!!!!!!!!!!!!!" ) ;
+			static int i = 0 ;
 			
+			if ( i++ % 100 == 0 )
+				TEST_REQUEST_SHOWN( "+++++++++ SUM +++++++++++" ) ;
+
 			TEST_FIFO_LOG( "Received correct command header for "
 				"handleSumRequest" ) ;
 				
-			
 			
 			FIFOElement firstParameter, secondParameter ;
 				
@@ -320,15 +339,15 @@ class myFIFOExample: public Ceylan::System::FIFO
 				// Then the second one:		
 				secondParameter = readBlocking() ;
 			
+
 				// Sum answer chosen to be 131 (remaining FIFO bytes not used):
 				writeBlocking( prepareFIFOCommand( 131 ) ) ;
 			
 				writeBlocking( static_cast<FIFOElement>( firstParameter
 					+ secondParameter ) ) ;
-				
-				LogPlug::info( "#########################" ) ;
-				notifyCommandToARM7() ;
 
+				notifyCommandToARM7() ;
+				
 				//waitForKey() ;
 							
 			}
@@ -396,27 +415,6 @@ class myFIFOExample: public Ceylan::System::FIFO
 
 
 
-void makeCrash()
-{
-
-	int a = 1 ;
-	
-	int b= 0 ;
-	
-	volatile int c = a / b ;
-
-	c++ ;
-	
-	int * d = 0 ;
-	
-	*d = 1 ;
-	
-	free( d ) ;
-	free( d+1 ) ;
-	
-	//exit(1) ;
-}
-
 
 
 /**
@@ -426,7 +424,7 @@ void makeCrash()
 int main( int argc, char * argv[] )
 {
 
-	// makeCrash() ;
+
 	LogHolder myLog( argc, argv ) ;
 
 	
@@ -438,7 +436,7 @@ int main( int argc, char * argv[] )
 		bool interactive = false ;
 		
 		
-		LogPlug::info( "Test of Ceylan support for FIFO transfers 5" ) ;		
+		LogPlug::info( "Test of Ceylan support for FIFO transfers 8" ) ;		
 	
 		myFIFOExample myFifo( 100 ) ;
 
@@ -474,9 +472,9 @@ int main( int argc, char * argv[] )
 		
 		
 		if ( interactive )
-			requestCount = 1 ;
+			requestCount = 5 ;
 		else
-			requestCount = 1 ;
+			requestCount = 2000000 ;
 
 		LogPlug::info( "Current ARM7 status just before request sending is: "
 			 + myFifo.interpretLastARM7StatusWord() ) ;
@@ -492,30 +490,37 @@ int main( int argc, char * argv[] )
 		for ( Ceylan::Uint32 i = 0; i < requestCount; i++ )
 		{
 		
+		
 			if ( ( i % 5000 ) == 0 )
 				LogPlug::trace( "Sent #" + Ceylan::toString( i ) ) ;
 
 			
 			if ( ( i % 10000 ) == 0 )
-				LogPlug::trace( myFifo.interpretLastARM7StatusWord() ) ;
+				LogPlug::trace( "Report " 
+					+ myFifo.interpretLastARM7StatusWord() ) ;
 			
 				
 			myFifo.sendComputeRequest() ;
+			
+			//atomicSleep() ;
+			
 			TEST_FIFO_LOG( "...sent" ) ;
 			//waitForKey() ;
-			atomicSleep() ;
 			
 		}
 
+		LogPlug::info( "Sending finished, waiting about 3 seconds" ) ;
 		
 		// Wait a few seconds:
 		Ceylan::Uint32 u = 0 ;
 		while ( u < 180 )
 		{
 			
-			if ( u++ % 100 == 0 )
+			if ( u % 100 == 0 )
 				LogPlug::info(  myFifo.interpretLastARM7StatusWord() ) ;
 			atomicSleep() ;
+			
+			u-- ;
 			
 		}
 		
@@ -610,6 +615,8 @@ int main( int argc, char * argv[] )
 		if ( testFailed )
 			throw TestException( "Test failed because of error(s) "
 				"previously displayed." ) ;
+				
+		myFifo.deactivate() ;
 				
 		if ( interactive )
 		{

@@ -33,6 +33,9 @@
 #endif // USE_CEYLAN
 
 
+#include "stdlib.h" // for rand
+
+
 
 /*
  * Implementation notes:
@@ -135,6 +138,12 @@ typedef uint32 FIFOElement ;
 typedef uint8 FIFOCommandCount ;
 
 
+/* Masks describing which interrupts are enabled. */
+typedef int InterruptMask ;
+
+
+/* To specify that all interrupts are to disabled. */
+const InterruptMask AllInterruptsDisabled = 0 ;
 
 
 /* Definitions of global variables */
@@ -155,6 +164,9 @@ ARM7StatusWord volatile * volatile statusWordPointer = 0 ;
 ARM7ErrorCode volatile * volatile errorWordPointer = 0 ;
 
 
+volatile bool IPCRunning = false ;
+
+
 
 /* Normal command counts */
 
@@ -164,7 +176,7 @@ ARM7ErrorCode volatile * volatile errorWordPointer = 0 ;
  * not to be especially managed by user code.
  *
  */
-FIFOCommandCount localCommandCount = 0 ;
+volatile FIFOCommandCount localCommandCount = 0 ;
 
 
 /*
@@ -172,7 +184,7 @@ FIFOCommandCount localCommandCount = 0 ;
  * to be especially managed by user code.
  *
  */
-FIFOCommandCount remoteCommandCount = 0 ;
+volatile FIFOCommandCount remoteCommandCount = 0 ;
 
 
 
@@ -183,7 +195,7 @@ FIFOCommandCount remoteCommandCount = 0 ;
  * to be especially managed by user code.
  *
  */
-FIFOCommandCount processedCount = 0 ;
+volatile FIFOCommandCount processedCount = 0 ;
 
 
 /*
@@ -191,13 +203,15 @@ FIFOCommandCount processedCount = 0 ;
  * to be especially managed by user code.
  *
  */
-FIFOCommandCount sentCount = 0 ;
+volatile FIFOCommandCount sentCount = 0 ;
+
 
 
 
 /* Helper functions */
 
 
+/* Waits a short time slice. Needs the VBlank IRQ to be enabled. */ 
 void atomicSleep()
 {
 
@@ -372,6 +386,29 @@ void incrementProcessCount()
 
 
 
+/**
+ * Sets the current set of interrupts enabled.
+ *
+ * @param newMask the masks describing all the interrupts that are
+ * to be enabled.
+ *
+ * @return The previous mask that was used, before being replaced by
+ * the specified one.
+ *
+ */
+InterruptMask setEnabledInterrupts( InterruptMask newMask )
+{
+
+	InterruptMask previousMask = REG_IME ;
+	
+	REG_IME = newMask ;
+	
+	return previousMask ;
+
+}
+
+
+
 void notifyCommandToARM9()
 {
 
@@ -438,24 +475,23 @@ FIFOElement readBlocking()
 #if CEYLAN_DEBUG_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
-		setError( FIFOErrorWhileReading ) ;
+		setError( 20 ) ;
 
 #endif // CEYLAN_DEBUG_FIFO
 
 	
-	uint32 attemptCount = 1000 ;
+	uint32 attemptCount = 100000 ;
 	
 	/* Active waiting preferred to atomicSleep(): */
 
 	while ( ! dataAvailableForReading() && attemptCount > 0 )
 		 attemptCount-- ;
-	
-	
+		
 	/* readBlocking: never ending ? */
 	if ( attemptCount == 0 )
 	{
 	
-		setError( FIFOErrorWhileReading ) ;
+		setError( FIFOTimeOutWhileReading ) ;
 				 
 		/* Active waiting preferred to atomicSleep(): */
 		while( ! dataAvailableForReading() )
@@ -463,14 +499,15 @@ FIFOElement readBlocking()
 
 		/* Recovered: */
 		unsetErrorStatus() ;
-		setStatusWord( NoStatusAvailable ) ;
+		setStatusWord( StatusReset ) ;
 	
 	}
+
 	
 #if CEYLAN_DEBUG_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
-		setError( FIFOErrorWhileReading ) ;
+		setError( 21 ) ;
 
 #endif // CEYLAN_DEBUG_FIFO
 		
@@ -481,7 +518,7 @@ FIFOElement readBlocking()
 #if CEYLAN_DEBUG_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
-		setError( FIFOErrorWhileReading ) ;
+		setError( 22 ) ;
 
 #endif // CEYLAN_DEBUG_FIFO
 
@@ -539,11 +576,13 @@ void writeBlocking( FIFOElement toSend )
 
 #endif // CEYLAN_DEBUG_FIFO
 
-	/* Active waiting preferred to atomicSleep(): */
+	/* Active waiting preferred to atomicSleep(): 
 	while ( ! spaceAvailableForWriting() )
 		;
 		
-	uint32 attemptCount = 1000 ;
+	*/	
+	
+	uint32 attemptCount = 100000 ;
 	
 	/* Active waiting preferred to atomicSleep(): */
 
@@ -555,7 +594,7 @@ void writeBlocking( FIFOElement toSend )
 	if ( attemptCount == 0 )
 	{
 	
-		setError( FIFOErrorWhileWriting ) ;
+		setError( FIFOTimeOutWhileWriting ) ;
 		
 		/* Triggers the ARM9 if it can help to make some FIFO room: */
 		sendSynchronizeInterruptToARM9() ;
@@ -564,11 +603,10 @@ void writeBlocking( FIFOElement toSend )
 			;
 
 		/* Recovered: */
-		//unsetErrorStatus() ;
-		//setStatusWord( NoStatusAvailable ) ;
+		unsetErrorStatus() ;
+		setStatusWord( StatusReset ) ;
 			
 	}
-		
 		
 #if CEYLAN_DEBUG_FIFO
 
@@ -592,47 +630,44 @@ void writeBlocking( FIFOElement toSend )
 
 
 
-#include <malloc.h>
+#define CEYLAN_TEST_WITH_RANDOM 1
 
-void makeCrash()
+/*
+ * Disturbs the test by sometimes adding random delays.
+ *
+ */
+void disturbTest()
 {
 
-	int a = 1 ;
-	
-	int b= 0 ;
-	
-	volatile int c = a / b ;
+#if CEYLAN_TEST_WITH_RANDOM
 
-	c++ ;
+	static unsigned int count = 0 ;
 	
-	int * d = 0 ;
-	
-	*d = 1 ;
-	
-	free( d ) ;
-	free( d ) ;
-	
-	//exit(1) ;
+	if ( count++ == 7 )
+		swiDelay( /* cycles */ rand() % 500 + 1 ) ;
+
+#endif // CEYLAN_TEST_WITH_RANDOM
+
 }
-
 
 
 void sendSumRequest()
 {
 
-	// How to prevent this sending being interrupted by an IRQ triggering sends ?
+	InterruptMask previous = setEnabledInterrupts( AllInterruptsDisabled ) ;
+
 	/* 130: application-specific sum request ID, other bytes unused: */
-
-	
-	//setError( 50 ) ;
-
 	writeBlocking( prepareFIFOCommand( 130 ) ) ;
 	
 	writeBlocking( 234 ) ;
 	writeBlocking( 1000 ) ;
-
-	notifyCommandToARM9() ;
 	
+	disturbTest() ;
+	
+	setEnabledInterrupts( previous ) ;
+	notifyCommandToARM9() ;
+
+
 }
 
 
@@ -640,9 +675,14 @@ void sendSumRequest()
 void sendHello()
 {
 
+	InterruptMask previous = setEnabledInterrupts( AllInterruptsDisabled ) ;
+
 	writeBlocking( prepareFIFOCommand( HelloToTheARM9 ) ) ;
 
+	setEnabledInterrupts( previous ) ;
+	
 	notifyCommandToARM9() ;
+
 	
 }
 
@@ -661,6 +701,8 @@ void handleComputeRequest()
 	/* Sends answer identifier (129), other bytes unused: */		
 	writeBlocking( prepareFIFOCommand( 129 ) ) ; 
 
+	disturbTest() ;
+	
 	/* Sends computed value: */
 	writeBlocking( returnedValue ) ;
 	
@@ -675,8 +717,10 @@ void handleSumAnswer()
 
 	FIFOElement readElement = readBlocking() ;
 	
+	disturbTest() ;
+	
 	if ( readElement != 1234 )
-		setError( IncorrectApplicationCommand ) ;
+		setError( IncorrectApplicationAnswer ) ;
 		
 }
   
@@ -712,7 +756,20 @@ void handleReceivedCommand()
 {
 
 	if ( ! dataAvailableForReading() )
+	{
+	
+		/*
+		 * Is not a real error, as may be triggered by the ARM9 read/write
+		 * blocking operations when waiting for too long the ARM7:
+		  
+		setError( AwokenWithNothingToRead ) ;	
+		 
+		 *
+		 */
 		return ;
+	
+	}	
+
 		
 	/* 
 	 * Interrupts (if used, FIFO, VBlank, IPCSync) are expected to be
@@ -796,7 +853,7 @@ void handleReceivedCommand()
 				{
 				
 
-					if ( statusWordPointer != 0 )
+					if ( statusWordPointer != 0 || IPCRunning )
 					{
 					
 						setError( IPCAlreadyStarted ) ;
@@ -838,18 +895,25 @@ void handleReceivedCommand()
 					}	
 						
 					*errorWordPointer = NoError ;
+
+					/* Set it last to avoid main loop firing too soon: */
+					IPCRunning = true ;
+					
 										
 				} 
 				else if ( id == ShutdownIPC )
 				{
 				
-					if ( statusWordPointer == 0 || errorWordPointer == 0 )
+					if ( statusWordPointer == 0 || errorWordPointer == 0
+						|| ! IPCRunning )
 					{
 					
 						setError( IPCAlreadyStopped ) ;
 						return ;
 						
 					}	
+					
+					IPCRunning = false ;
 					
 					/* 
 					 * Stop the mechanism on the ARM7 side.
@@ -920,13 +984,11 @@ void handleReceivedCommand()
 
 
 
-void totot()
-{
-
-}
-
-
-
+/*
+ * Sets-up the IPC mechanism by synchronizing with the ARM9 and retrieving
+ * the status and error variables used by the ARM7 to report its state.
+ *
+ */
 void initCeylanIPC()
 {
 
@@ -955,8 +1017,6 @@ void initCeylanIPC()
   	REG_IPC_FIFO_CR = IPC_FIFO_ENABLE | IPC_FIFO_SEND_CLEAR ;
 
 
-
-
 	/*
 	 * FIFO not empty IRQ (IRQ_FIFO_NOT_EMPTY) not used anymore, as 
 	 * IRQ_IPC_SYNC is considered more appropriate.
@@ -975,7 +1035,7 @@ void initCeylanIPC()
 	irqSet( IRQ_IPC_SYNC, handleReceivedCommand ) ; 
 
 	/* Needed for atomic sleeps: */
-	irqSet( IRQ_VBLANK, totot ) ;
+	irqSet( IRQ_VBLANK, 0 ) ;
 	
 	/* Unleash these IRQ: */
 	irqEnable( IRQ_IPC_SYNC | IRQ_VBLANK ) ;
@@ -985,19 +1045,14 @@ void initCeylanIPC()
 	 * Wait until the IPC system is up and running (ARM9 handshake performed).
 	 *
 	 */
-	while( statusWordPointer == 0 ) 
-		atomicSleep() ;
-		
-	/*
-	 * The problem is that ipcInitialized is never true afterwards...
-	 * statusWordPointer always null as well
-	 */
+	while( ! IPCRunning )
+		;
 
-	//setStatusWord( ARM7Running ) ;
-		
-		//sendHello() ;
-		//atomicSleep() ;
-
+	/* Let some time elapse to get out of the IRQ handler for IPC startup: */
+	atomicSleep() ;
+	atomicSleep() ;
+	atomicSleep() ;
+	
 }
 
 
@@ -1008,7 +1063,6 @@ void initCeylanIPC()
 int main(int argc, char ** argv) 
 {
 
-//makeCrash() ;		
 	
 	/* Reset the clock if needed: */
 	rtcReset() ;
@@ -1022,39 +1076,36 @@ int main(int argc, char ** argv)
 
 	initCeylanIPC() ;
 
-//#if 0
-		
-//	setStatusWord( 30 ) ;
-	setError( 30 ) ;
-	
 
-
-
-	uint32 count = 180 ;
+	uint32 count = 2000000 ;
 		
 			
-	while( count > 0 )
+	while( count > 0 && IPCRunning )
 	{
-	
 	
 		sendSumRequest() ;
-		//sendHello() ;
-		
-		atomicSleep() ;
-		//count-- ;
-		
-	}	
-	
-	while( false )
-	{
-	
-	
-		atomicSleep() ;
-		
-	}	
-//#endif	
 
-	return 0 ;
+		/*
+		 * Without a bit of waiting, apparently the ARM7 succeeds in flooding
+		 * the ARM9: only sum requests are managed, no compute request is
+		 * managed.
+		 *
+		 */
+		if ( count % 50 == 0 )
+			atomicSleep() ;
+
+		count-- ;
+		
+	}	
+	
+	
+	/*
+	 * Wait for ever, otherwise the runtime will believe the ROM has crashed.
+	 *
+	 */
+	while( true )
+		atomicSleep() ;
+
 		
 }
 
