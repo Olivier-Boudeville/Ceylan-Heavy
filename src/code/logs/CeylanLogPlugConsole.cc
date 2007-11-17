@@ -17,17 +17,18 @@ using std::string ;
 using namespace Ceylan::Log ;
 
 
+
 void LogPlugConsole::StartService( const string & plugInitiator,  
 	bool immediateWrite, bool smart ) throw ( LogException )
 {
 	
-	CEYLAN_LOG( "Starting LogPlug console service : "
+	CEYLAN_LOG( "Starting LogPlug console service: "
 		"creating aggregator and transport." ) ;
 	
-	// Plug should start empty :
+	// Plug should start empty:
  	LogPlug::CheckBlank() ;
 
-	// Start by the end of the chain and go back to its beginning :
+	// Start by the end of the chain and go back to its beginning:
 	
 	/*
 	 * Other StandardStream may be LogAggregatorConsole::Output or
@@ -49,13 +50,14 @@ void LogPlugConsole::StartService( const string & plugInitiator,
 	LogPlug::Transport = 
 		new LogTransportListenerRaw( * LogPlug::Aggregator ) ;	
 	
-	// Creates basic standard channels :
+	// Creates basic standard channels:
 	LogPlug::CreateBasicPlug() ;
 	
-	// Last check before service is open :
+	// Last check before service is open:
 	LogPlug::StartService( plugInitiator ) ;
 
 }
+
 
 
 void LogPlugConsole::StopService() throw()
@@ -75,11 +77,12 @@ void LogPlugConsole::StopService() throw()
 }
 
 
+
 const string LogPlugConsole::ToString( 
 	Ceylan::VerbosityLevels level ) throw()
 {
 
-	string result = "LogSystem status : using console plug." ;
+	string result = "LogSystem status: using console plug." ;
 	
 	if ( level != Ceylan::low )
 		result += LogPlug::ToString( level ) ;
@@ -92,7 +95,7 @@ const string LogPlugConsole::ToString(
 
 /* 
 				
-	Not even defined : 
+	Not even defined: 
 
 LogPlugConsole::LogPlugConsole() throw( LogException )
 {
@@ -107,3 +110,4 @@ LogPlugConsole::~LogPlugConsole() throw()
 }
 
 */
+
