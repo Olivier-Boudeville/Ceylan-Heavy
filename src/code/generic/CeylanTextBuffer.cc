@@ -12,10 +12,6 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
-#if CEYLAN_ARCH_NINTENDO_DS
-#include "CeylanConfigForNintendoDS.h" // for iprintf, CEYLAN_DS_LOG
-#endif // CEYLAN_ARCH_NINTENDO_DS
-
 
 using std::string ;
 using std::list ;
@@ -53,6 +49,7 @@ TextBuffer::TextBuffer( CharAbscissa screenWidth, CharOrdinate screenHeight,
 }
 
 
+
 TextBuffer::~TextBuffer() throw()
 {
 	
@@ -71,6 +68,7 @@ TextBuffer::CharAbscissa TextBuffer::getWidth() const throw()
 }
 
 
+
 TextBuffer::CharOrdinate TextBuffer::getHeight() const throw()		
 {
 
@@ -79,12 +77,14 @@ TextBuffer::CharOrdinate TextBuffer::getHeight() const throw()
 }
 
 
+
 TextBuffer::TextLayout TextBuffer::getTextLayout() const throw()
 {
 
 	return _layout ;
 	
 }
+
 
 
 void TextBuffer::setTextLayout( TextLayout newLayout ) 
@@ -136,6 +136,13 @@ void TextBuffer::add( const std::string & text ) throw( TextBufferException )
 		_currentText = _textEntries.begin() ;
 		_currentLine = newGrid->begin() ;		
 	}	
+
+	// Scrolls:
+
+	Ceylan::Uint32 addedLinesCount = newGrid->size() ;
+	
+	for ( Ceylan::Uint32 i = 0; i < addedLinesCount; i++ )
+		jumpNextLineNoRefresh() ;
 
 	// Needed in all cases (ex: a second text showing up after the first):
 	updateScreenLines() ;
@@ -270,6 +277,37 @@ bool TextBuffer::jumpNextLine() throw()
 
 
 
+void TextBuffer::jumpNextLineNoRefresh() throw()
+{
+		
+	if ( getHeightFromCurrentPosition() <= _height )
+		return ;
+		
+	TextGrid * currentTextGrid = (*_currentText).second ;
+	
+	_currentLine++ ;;
+	
+	if ( _currentLine == currentTextGrid->end() )
+	{
+
+		ListOfTexts::const_iterator nextText = _currentText ;
+		nextText++ ;
+		
+		if ( nextText != _textEntries.end() )
+		{
+		
+			_currentText = nextText ;
+			currentTextGrid = (*_currentText).second ;
+			_currentLine = currentTextGrid->begin() ;
+		}
+		
+	}
+	
+	
+}
+
+
+
 bool TextBuffer::jumpPreviousLine() throw()
 {
 	
@@ -342,6 +380,7 @@ const TextBuffer::TextGrid & TextBuffer::getScreenLines() const throw()
 	return _screenLines ;
 	
 }
+
 
 
 const std::string TextBuffer::toString( Ceylan::VerbosityLevels level ) 
@@ -443,6 +482,7 @@ void TextBuffer::recomputeGrids() throw()
 	updateScreenLines() ;
 		
 }
+
 
 
 void TextBuffer::updateScreenLines() throw()
@@ -909,6 +949,7 @@ TextBuffer::LineIndex TextBuffer::getHeightFromCurrentPosition()
 		
 }
 
+
 	
 TextBuffer::LineIndex TextBuffer::getHeightFromEntry( 
 	ListOfTexts::const_iterator textIterator ) const throw()
@@ -928,6 +969,7 @@ TextBuffer::LineIndex TextBuffer::getHeightFromEntry(
 	return count ;
 	
 }
+	
 	
 
 char * TextBuffer::getNewLine() throw()
