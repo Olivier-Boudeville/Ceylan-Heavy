@@ -6,6 +6,17 @@
 #include "CeylanLogPlug.h"               // for LogPlug
 #include "CeylanEnvironmentVariables.h"  // for getEnvironmentVariable
 
+
+#ifdef CEYLAN_USES_CONFIG_H
+#include "CeylanConfig.h"                // for CEYLAN_DEBUG_DEMANGLE, etc.
+#endif // CEYLAN_USES_CONFIG_H
+
+
+#if CEYLAN_ARCH_NINTENDO_DS
+#include "CeylanConfigForNintendoDS.h"   // for iprintf, CEYLAN_DS_LOG
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+
 using std::string ;
 using std::list ;
 
@@ -20,7 +31,7 @@ using namespace Ceylan::Log ;
 
 
 FileLocatorException::FileLocatorException( const std::string & message )
-		throw() :
+		throw():
 	SystemException( message )
 {
 
@@ -34,7 +45,8 @@ FileLocatorException::~FileLocatorException() throw()
 
 
 
-FileLocator::FileLocator() throw() :
+
+FileLocator::FileLocator() throw():
 	_paths()
 {
 
@@ -42,10 +54,30 @@ FileLocator::FileLocator() throw() :
 
 
 FileLocator::FileLocator( const string & variableName, char separator ) 
-		throw() :
+		throw():
 	_paths()
 {
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	/*
+	 * No environment variables on the DS, so no path to consider:
+	 
+	LogPlug::warning( "FileLocator constructor: running on the DS, "
+		"hence environment variable '" + variableName + "' is ignored." ) ;
+	 *
+	 * However this log message has been commented out, as file locators are
+	 * often created in global variables (ex: C++ static initializers), which
+	 * implies that the log system may not be started yet.
+	 *
+	 */
+	 	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
 	addPathsFromEnvironmentVariable( variableName, separator ) ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+	
 } 
 
 
@@ -53,6 +85,7 @@ FileLocator::~FileLocator() throw()
 {
 
 }
+
 
 
 bool FileLocator::addPath( const string & newPath ) throw() 
@@ -65,8 +98,10 @@ bool FileLocator::addPath( const string & newPath ) throw()
 			
 	_paths.push_back( newPath ) ;
 	
-	return true ;		
+	return true ;	
+		
 }
+
 
 
 bool FileLocator::addPaths( const std::list<std::string> & paths ) throw() 
@@ -83,13 +118,17 @@ bool FileLocator::addPaths( const std::list<std::string> & paths ) throw()
 }
 
 
+
 bool FileLocator::addPathsFromEnvironmentVariable( 
 	const std::string & variableName, char separator ) throw()
 {	
+
 	return addPaths( Ceylan::split( getEnvironmentVariable( variableName ),
 		separator ) ) ;
+		
 }
 
+	
 	
 bool FileLocator::removePath( const string & pathToRemove ) throw()
 {
@@ -98,7 +137,7 @@ bool FileLocator::removePath( const string & pathToRemove ) throw()
 			it != _paths.end() ; it++ )
 		if ( (*it) == pathToRemove )
 		{
-			// Iterator will not be used anymore afterwards :
+			// Iterator will not be used anymore afterwards:
 			_paths.remove( pathToRemove ) ;
 			return true ;
 		}	
@@ -106,6 +145,7 @@ bool FileLocator::removePath( const string & pathToRemove ) throw()
 	return false ;		
 	
 }
+
 
 
 string FileLocator::find( const string & filename ) const 
@@ -120,22 +160,26 @@ string FileLocator::find( const string & filename ) const
 	
 		fullPath = Directory::JoinPath( (*it), filename ) ;
 		
-		//LogPlug::debug( "FileLocator::find : testing '" + fullPath + "'." ) ;
+		//LogPlug::debug( "FileLocator::find: testing '" + fullPath + "'." ) ;
 		
 		if ( File::ExistsAsFileOrSymbolicLink( fullPath ) )
 			return fullPath ;
 	}	
 	
 	throw FileLocatorException( "File '" + filename 
-		+ "' could not be found through following Locator : " + toString() ) ;
+		+ "' could not be found through following Locator: " + toString() ) ;
 		
 }
 
 
+
 const std::list<std::string> & FileLocator::getPaths() const throw()
 {
+
 	return _paths ;
+	
 }
+
 
 
 const string FileLocator::toString( Ceylan::VerbosityLevels level ) const
@@ -145,7 +189,7 @@ const string FileLocator::toString( Ceylan::VerbosityLevels level ) const
 	if ( _paths.empty() ) 
 		return "Empty File locator" ;
 
-	return "File locator with following registered directories : "
+	return "File locator with following registered directories: "
 		+ Ceylan::formatStringList( _paths ) ;
 				 
 }
