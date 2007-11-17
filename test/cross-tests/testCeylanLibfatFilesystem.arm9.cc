@@ -101,7 +101,6 @@ int main( int argc, char * argv[] )
 		System::InitializeInterrupts( true ) ;
 		
 		LogPlug::info( "Test of Ceylan support for libfat filesystems" ) ;
-		
 		LogPlug::info( "Opening current directory." ) ;
 
 		Directory & d = Directory::Open() ; 
@@ -114,7 +113,6 @@ int main( int argc, char * argv[] )
 		d.getSortedEntries( subDirectories, files, otherEntries ) ;		
 		displayDirectory( Directory::GetCurrentWorkingDirectoryPath(), 
 			subDirectories, files, otherEntries ) ;
-		
 		
 		string filename = "CeylanTest.txt" ;
 		
@@ -186,7 +184,10 @@ int main( int argc, char * argv[] )
 			
 		delete & openedFile ;
 		
-		
+			
+		LogPlug::info( 
+			"Press any key to end the program and look at the logs" ) ;
+			
 		// LogHolder out of scope: log browser triggered.
     }
    
