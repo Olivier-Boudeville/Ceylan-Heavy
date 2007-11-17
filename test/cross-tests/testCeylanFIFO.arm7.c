@@ -4,14 +4,14 @@
  * ARM7 side of the Ceylan FIFO test.
  *
  * @see testCeylanFIFO.arm9.cc for the peer implementation
- * @see CeylanFIFO.h and CeylanFIFO.cc for the implementation
+ * @see CeylanFIFO.h and CeylanFIFO.cc for its base implementation
  * 
  */
  
  
 /*
  * Apparently the overhead due to the C++, to the STL and (marginally) to
- * the Ceylan library itself leads to having a ARM7 executable too big to
+ * the Ceylan library itself leads to having an ARM7 executable too big to
  * fit in its IWRAM.
  *
  * Hence for the moment the inclusion of the Ceylan header is commented out
@@ -124,7 +124,13 @@ void VcountHandler()
 
 /* Ceylan FIFO-based IPC section */
 
-#define CEYLAN_DEBUG_FIFO 1
+
+
+/* Use safer settings, command count and tests */
+#define CEYLAN_SAFE_FIFO 0
+
+/* Disturbs tests with random waitings */
+#define CEYLAN_TEST_WITH_RANDOM 1
 
 
 
@@ -144,6 +150,7 @@ typedef int InterruptMask ;
 
 /* To specify that all interrupts are to disabled. */
 const InterruptMask AllInterruptsDisabled = 0 ;
+
 
 
 /* Definitions of global variables */
@@ -244,7 +251,7 @@ void setStatusWord( ARM7StatusWord newStatus )
 
 /**
  * Sets the ARM7 error code, for the ARM9.
- * Update the status word accordingly.
+ * Updates the status word accordingly.
  *
  * @note If previous error code was not NoError, will be left as is.
  *
@@ -289,11 +296,19 @@ FIFOElement prepareFIFOCommand( FIFOCommandID id )
 {
 		
 	FIFOElement res = 0 ;
+
+#if CEYLAN_SAFE_FIFO
 	
 	res |= ( id << 24 ) | ( localCommandCount << 16 ) ;
-	
+
 	/* Prepare for next command: */
 	localCommandCount++ ;
+	
+#else // CEYLAN_SAFE_FIFO
+
+	res |= id << 24 ;
+
+#endif // CEYLAN_SAFE_FIFO
 	
 	return res ;
 	
@@ -441,12 +456,13 @@ bool spaceAvailableForWriting()
 FIFOElement read()
 {
 
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
 		setError( FIFOErrorWhileReading ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
+#endif // CEYLAN_SAFE_FIFO
+	
 	
 	if ( ! dataAvailableForReading() )
 		setError( FIFOErrorWhileReading ) ;
@@ -454,13 +470,12 @@ FIFOElement read()
 	FIFOElement res = REG_IPC_FIFO_RX ;
 
 
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
 		setError( FIFOErrorWhileReading ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
-
+#endif // CEYLAN_SAFE_FIFO
 
 	return res ;
 	
@@ -472,12 +487,12 @@ FIFOElement read()
 FIFOElement readBlocking()
 {
 
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
-		setError( 20 ) ;
+		setError( FIFOErrorWhileReading ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
+#endif // CEYLAN_SAFE_FIFO
 
 	
 	uint32 attemptCount = 100000 ;
@@ -504,23 +519,23 @@ FIFOElement readBlocking()
 	}
 
 	
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
-		setError( 21 ) ;
+		setError( FIFOErrorWhileReading ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
+#endif // CEYLAN_SAFE_FIFO
 		
 		
 	FIFOElement res = REG_IPC_FIFO_RX ;
 	
 	
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
-		setError( 22 ) ;
+		setError( FIFOErrorWhileReading ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
+#endif // CEYLAN_SAFE_FIFO
 
 
 	return res ;
@@ -532,35 +547,35 @@ FIFOElement readBlocking()
 void write( FIFOElement toSend )
 {
 	
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
 		setError( FIFOErrorWhileWriting ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
+#endif // CEYLAN_SAFE_FIFO
 
 
 	if ( ! spaceAvailableForWriting() )
 		setError( FIFOErrorWhileWriting ) ;
 		
 		
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
 		setError( FIFOErrorWhileWriting ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
+#endif // CEYLAN_SAFE_FIFO
 		
 		
 	REG_IPC_FIFO_TX = toSend ;
 
 
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
 		setError( FIFOErrorWhileWriting ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
+#endif // CEYLAN_SAFE_FIFO
 	
 }
 
@@ -569,19 +584,14 @@ void write( FIFOElement toSend )
 void writeBlocking( FIFOElement toSend )
 {
 
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
 		setError( FIFOErrorWhileWriting ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
+#endif // CEYLAN_SAFE_FIFO
 
-	/* Active waiting preferred to atomicSleep(): 
-	while ( ! spaceAvailableForWriting() )
-		;
-		
-	*/	
-	
+
 	uint32 attemptCount = 100000 ;
 	
 	/* Active waiting preferred to atomicSleep(): */
@@ -608,29 +618,28 @@ void writeBlocking( FIFOElement toSend )
 			
 	}
 		
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
 		setError( FIFOErrorWhileWriting ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
+#endif // CEYLAN_SAFE_FIFO
 
 	
 	REG_IPC_FIFO_TX = toSend ;
 
 
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
 		setError( FIFOErrorWhileWriting ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
+#endif // CEYLAN_SAFE_FIFO
 	
 }
 
 
 
-#define CEYLAN_TEST_WITH_RANDOM 1
 
 /*
  * Disturbs the test by sometimes adding random delays.
@@ -643,12 +652,13 @@ void disturbTest()
 
 	static unsigned int count = 0 ;
 	
-	if ( count++ == 7 )
+	if ( count++ % 7 == 0 )
 		swiDelay( /* cycles */ rand() % 500 + 1 ) ;
 
 #endif // CEYLAN_TEST_WITH_RANDOM
 
 }
+
 
 
 void sendSumRequest()
@@ -665,8 +675,8 @@ void sendSumRequest()
 	disturbTest() ;
 	
 	setEnabledInterrupts( previous ) ;
+	
 	notifyCommandToARM9() ;
-
 
 }
 
@@ -683,7 +693,6 @@ void sendHello()
 	
 	notifyCommandToARM9() ;
 
-	
 }
 
 
@@ -745,7 +754,6 @@ void handleReceivedApplicationCommand( FIFOCommandID id, FIFOElement element )
 			setError( UnexpectedApplicationCommand ) ;
 			break ;
 				
-	
 	}
 		
 }
@@ -777,6 +785,8 @@ void handleReceivedCommand()
 	 *
 	 */
 	 
+#if CEYLAN_SAFE_FIFO
+
 	static bool CommandInProgress = false ;
 
 
@@ -784,35 +794,43 @@ void handleReceivedCommand()
 	{
 	
 		CommandInProgress = true ;
+
+#endif // CEYLAN_SAFE_FIFO
+
 			
 		FIFOElement firstElement ;
 		FIFOCommandID id ;
-		FIFOCommandCount count ;
 	
 	
 		/* At least one first element to read, maybe more: */
 		while ( dataAvailableForReading() )
 		{
-
-			
+	
 			/* Read first the command identifier: */
 	
 	 		/* readBlocking instead of read: increased safety ? */
 			firstElement = readBlocking() ;
+
+
+#if CEYLAN_SAFE_FIFO
 		
-			count = getFIFOCommandCountFrom( firstElement ) ;
+			FIFOCommandCount count = getFIFOCommandCountFrom( firstElement ) ;
 	
 			if ( count != remoteCommandCount )
 			{
 		
 				setError( UnexpectedCommandCount ) ;
-				/* CommandInProgress still true, hence frozen. */
+				
+				/* CommandInProgress still true, hence frozen if in safe mode.*/
 				return ;	
 			
 			}
 		
 			remoteCommandCount++ ;
 			
+#endif // CEYLAN_SAFE_FIFO
+
+
 			id = getFIFOCommandIDFrom( firstElement ) ;
 			
 			if ( id > 127 )
@@ -857,8 +875,6 @@ void handleReceivedCommand()
 					{
 					
 						setError( IPCAlreadyStarted ) ;
-						readBlocking() ;
-						readBlocking() ;
 						return ;
 						
 					}	
@@ -875,7 +891,6 @@ void handleReceivedCommand()
 					{
 					
 						setError( IncorrectInitialStatus ) ;
-						readBlocking() ;
 						return ;
 						
 					}	
@@ -946,7 +961,7 @@ void handleReceivedCommand()
 				else
 				{						
 				
-					/* unexpected system command id: */
+					/* Unexpected system command id: */
 					setError( UnexpectedSystemCommand ) ;
 
 					/*
@@ -964,6 +979,9 @@ void handleReceivedCommand()
 					
 		} /* end while */
 
+
+#if CEYLAN_SAFE_FIFO
+
 		CommandInProgress = false ;	
 	
 	}
@@ -974,11 +992,7 @@ void handleReceivedCommand()
 		
 	}
 	
-	/*
-	 * The IRQ handler that called this method is responsible for acknowledging
-	 * the interrupt that triggered it.
-	 *
-	 */
+#endif // CEYLAN_SAFE_FIFO
 					
 }
 
@@ -993,16 +1007,16 @@ void initCeylanIPC()
 {
 
 
-
 	/*
 	 * IPC_SYNC_IRQ_ENABLE allows the ARM9 to trigger IPC_SYNC IRQ on this
 	 * ARM7:
 	 *
 	 * ('=', not '|=', to nullify the rest of the register, not expecting to
-	 * write on ARM9 settings))
+	 * write on ARM9 settings)
 	 *
 	 */
 	REG_IPC_SYNC = IPC_SYNC_IRQ_ENABLE ;
+
 
 	/*
 	 * First, set-up the FIFO.
@@ -1027,6 +1041,7 @@ void initCeylanIPC()
 	
 	 */
 	 
+	 
 	/*
 	 * Fully managed by the Ceylan FIFO system:
 	 *
@@ -1037,7 +1052,7 @@ void initCeylanIPC()
 	/* Needed for atomic sleeps: */
 	irqSet( IRQ_VBLANK, 0 ) ;
 	
-	/* Unleash these IRQ: */
+	/* Unleashes these IRQ: */
 	irqEnable( IRQ_IPC_SYNC | IRQ_VBLANK ) ;
 
 
@@ -1050,12 +1065,8 @@ void initCeylanIPC()
 
 	/* Let some time elapse to get out of the IRQ handler for IPC startup: */
 	atomicSleep() ;
-	atomicSleep() ;
-	atomicSleep() ;
 	
 }
-
-
 
 
 
@@ -1063,9 +1074,9 @@ void initCeylanIPC()
 int main(int argc, char ** argv) 
 {
 
-	
 	/* Reset the clock if needed: */
 	rtcReset() ;
+
 	irqInit() ;
 
 	SetYtrigger( 80 ) ;
@@ -1079,7 +1090,6 @@ int main(int argc, char ** argv)
 
 	uint32 count = 2000000 ;
 		
-			
 	while( count > 0 && IPCRunning )
 	{
 	
@@ -1106,6 +1116,5 @@ int main(int argc, char ** argv)
 	while( true )
 		atomicSleep() ;
 
-		
 }
 
