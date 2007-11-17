@@ -77,6 +77,7 @@ StringSize Ceylan::countChars( const string & aString, char targetChar )
 }
 
 
+
 std::string Ceylan::reverse( const std::string & source ) throw() 
 {
 
@@ -98,6 +99,7 @@ std::string Ceylan::reverse( const std::string & source ) throw()
 	return result ;	
 	
 }
+
 
 
 char * Ceylan::getNonConstCharFrom( const std::string & source ) throw()
@@ -145,6 +147,7 @@ char * Ceylan::getNonConstCharFrom( const std::string & source ) throw()
 	*/
 		
 }
+
 
 
 StringSize Ceylan::substituteInString( string & targetString, 
@@ -195,6 +198,8 @@ StringSize Ceylan::substituteInString( string & targetString,
 	
 }
 
+
+
 bool Ceylan::isLetter( char targetChar ) throw()
 {
 
@@ -204,6 +209,7 @@ bool Ceylan::isLetter( char targetChar ) throw()
 	return false ;
 
 }
+
 
 
 bool Ceylan::isFigure( char targetChar ) throw()
@@ -217,6 +223,7 @@ bool Ceylan::isFigure( char targetChar ) throw()
 }
 
 
+
 bool Ceylan::isAlphanumeric( char targetChar ) throw()
 {
 
@@ -226,6 +233,7 @@ bool Ceylan::isAlphanumeric( char targetChar ) throw()
 	return false ;
 
 }
+
 
 
 bool Ceylan::isPunctuation( char targetChar ) throw()
@@ -239,6 +247,7 @@ bool Ceylan::isPunctuation( char targetChar ) throw()
 }
 
 
+
 bool Ceylan::isWhitespace( char targetChar ) throw()
 {
 
@@ -248,6 +257,7 @@ bool Ceylan::isWhitespace( char targetChar ) throw()
 	return false ;
 
 }
+
 
 
 string Ceylan::toUppercase( const std::string & text ) throw()
@@ -265,6 +275,7 @@ string Ceylan::toUppercase( const std::string & text ) throw()
 	return result ;			
 	
 }
+
 
 
 string Ceylan::encodeToHTML( const std::string & message ) throw()
@@ -308,6 +319,7 @@ string Ceylan::encodeToHTML( const std::string & message ) throw()
 	return result ;
 	
 }		
+
 
 
 string Ceylan::encodeToPhonetic( const std::string & message ) throw()
@@ -367,6 +379,7 @@ string Ceylan::encodeToPhonetic( const std::string & message ) throw()
 	return result ;
 	
 }		
+
 
 
 string Ceylan::demangleSymbol( const std::string & symbol ) throw()
@@ -543,6 +556,7 @@ list<string> Ceylan::split( const string & stringToSplit,
 */
 
 
+
 string Ceylan::join( const list<string> & toJoin, 
 	const string & joiningString ) throw()
 {
@@ -571,12 +585,26 @@ string Ceylan::join( const list<string> & toJoin,
 }
 
 
+
 list<string> Ceylan::splitIntoWords( const string & sentenceToSplit ) throw()
 {
 	
-	// Maybe here all non-space whitespaces should be managed separatly.
+	/*
+	 * Maybe here all non-space whitespaces should be managed separately.
+	 *
+	 * Usually this function is called on each item of a list build by 
+	 * splitIntoParagraphs, hence no '\n' should be left (we expect a sentence).
+	 *
+	 * However '\t' might still exist, each tabulation is replaced by four
+	 * spaces in a row.
+	 *
+	 */
+	 
+	string copiedSendtence = sentenceToSplit ;
 	
-	list<string> splitted = Ceylan::split( sentenceToSplit, ' ' ) ;
+	substituteInString( copiedSendtence, "\t", "    " ) ;
+	
+	list<string> splitted = Ceylan::split( copiedSendtence, ' ' ) ;
 	
 	/*
 	 * Some changes are needed in the splitted list in the case where there
@@ -584,8 +612,8 @@ list<string> Ceylan::splitIntoWords( const string & sentenceToSplit ) throw()
 	 * More precisely, if there are in the sentence n spaces in a row, then 
 	 * we have A instead of the desired B:
 	 * (example pattern: 'a' + n * ' ' + 'b' ):
-	 * n=0: A = [ 'ab' ],                B = [ 'ab' ]  		   -> OK
-	 * n=1: A = [ 'a', 'b' ],            B = [ 'a', 'b' ]  	   -> OK
+	 * n=0: A = [ 'ab' ],                B = [ 'ab' ]  		      -> OK
+	 * n=1: A = [ 'a', 'b' ],            B = [ 'a', 'b' ]  	      -> OK
 	 * n=2: A = [ 'a', '', 'b' ]    ,    B = [ 'a', '', 'b' ]     -> OK
 	 * n=3: A = [ 'a', '', '', 'b' ],    B = [ 'a', ' ', 'b' ]    -> KO, 
 	 * must be corrected
@@ -644,12 +672,14 @@ list<string> Ceylan::splitIntoWords( const string & sentenceToSplit ) throw()
 }
 
 
+
 list<string> Ceylan::splitIntoParagraphs( const string & textToSplit ) throw()
 {
 
 	return Ceylan::split( textToSplit, '\n' ) ;
 	
 }
+
 
 
 string Ceylan::formatStringList( const list<string> & stringList, 
@@ -694,6 +724,7 @@ string Ceylan::formatStringList( const list<string> & stringList,
 	return res ;
 	
 }
+
 
 
 string Ceylan::formatStringMap( 
@@ -745,6 +776,7 @@ string Ceylan::formatStringMap(
 }
 
 
+
 void Ceylan::display( const string & message ) throw( StringUtilsException )
 {
 
@@ -769,6 +801,7 @@ void Ceylan::display( const string & message ) throw( StringUtilsException )
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
+
 
 
 void Ceylan::displayError( const string & errorMessage ) 
@@ -798,3 +831,4 @@ void Ceylan::displayError( const string & errorMessage )
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
+
