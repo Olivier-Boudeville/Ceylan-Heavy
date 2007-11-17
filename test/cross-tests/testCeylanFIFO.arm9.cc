@@ -28,30 +28,37 @@ using namespace Ceylan::System ;
 //#define TEST_FIFO_LOG(message) LogPlug::trace(message)
 #define TEST_FIFO_LOG(message)
 
+
 //#define TEST_REQUEST_SHOWN(message) LogPlug::trace(message)
 #define TEST_REQUEST_SHOWN(message)
+
+
 
 /**
  * ARM9 side of the Ceylan FIFO test.
  *
  * Implementation of a FIFO example with following application-specific 
- * protocol:
+ * protocol for the compute request that can be sent by the ARM9:
  *
  *  - ARM9 sends a compute request to the ARM7, specifying in the first FIFO
  * element the command (message ID: 128 in the first byte of a 32-bit int,
- * second byte being the command count, the two next bytes being unused)
- * then the (32-bit) value itself is specified in the next FIFO element.
+ * second byte being the command count if in safe mode, the two next bytes 
+ * being unused) then the (32-bit) value itself is specified in the next FIFO
+ * element.
  * This is directly the value, and not a pointer to a shared variable, as it 
  * would imply allocating this variable on the heap, offsetting this address
  * to the mirrored memory area, staying out of the ARM9 cache (that cannot
  * be viewed from the ARM7), etc.
  *
  *  - ARM7 adds 42 to this value, and returns it thanks to the FIFO (message
- * ID: 129 and command count in the first element), then the value in the next
- * FIFO element
+ * ID: 129 and command count in the first element, if in safe mode), then the
+ * value in the next FIFO element
  *
  * @note The ARM7 could have sent an identifier of 128 as well (each direction
  * has its own independent identifiers).
+ *
+ * This ARM9 can handle sum request (request ID: 130), it will send answers
+ * whose ID will be 131.
  *
  * The ARM7 can report errors by sending special command identifiers.
  * @see CeylanARM7Codes.h
@@ -60,6 +67,9 @@ using namespace Ceylan::System ;
  * @see CeylanFIFO.h and CeylanFIFO.cc for the C++ (ARM9) implementation
  *
  * @see CeylanIPCCommands.h for a map of command identifiers
+ *
+ * Random waitings can be disabled for full-speed more or enabled to explore
+ * all timing possibilities.
  *
  */
 class myFIFOExample: public Ceylan::System::FIFO
@@ -87,6 +97,7 @@ class myFIFOExample: public Ceylan::System::FIFO
 		virtual ~myFIFOExample() throw()
 		{
 					
+			deactivate() ;
 			TEST_FIFO_LOG( "myFIFOExample deleted." ) ;
 			
 		}
@@ -114,9 +125,7 @@ class myFIFOExample: public Ceylan::System::FIFO
 		virtual void sendComputeRequest() throw()
 		{
 			
-			 		
 			TEST_FIFO_LOG( "sending compute request." ) ;
-			
 
 			
 			TEST_FIFO_LOG( "compute command is: " 
@@ -129,8 +138,8 @@ class myFIFOExample: public Ceylan::System::FIFO
 					AllInterruptsDisabled ) ;
 
 				/*
-				 * 128: application-specific compute request ID, remaining 
-				 * bytes in FIFO element not used:
+				 * 128: application-specific compute request ID, the 2/3
+				 * remaining bytes in FIFO element not used.
 				 *
 				 */
 				FIFOElement commandElement = prepareFIFOCommand( 128 ) ;
@@ -146,9 +155,9 @@ class myFIFOExample: public Ceylan::System::FIFO
 				TEST_FIFO_LOG( "command sent" ) ;
 				
 				SetEnabledInterrupts( previous ) ;
+				
 				notifyCommandToARM7() ;
 
-				
 
 				TEST_FIFO_LOG( "command notified" ) ;
 							
@@ -245,7 +254,6 @@ class myFIFOExample: public Ceylan::System::FIFO
 			
 			if ( i++ % 100 == 0 )
 				TEST_REQUEST_SHOWN( "  ---- compute ----" ) ;
-				
 			 
 			 				
 			TEST_FIFO_LOG( "Received correct command header for "
@@ -501,7 +509,6 @@ int main( int argc, char * argv[] )
 			
 				
 			myFifo.sendComputeRequest() ;
-			
 			//atomicSleep() ;
 			
 			TEST_FIFO_LOG( "...sent" ) ;
@@ -509,15 +516,18 @@ int main( int argc, char * argv[] )
 			
 		}
 
+
 		LogPlug::info( "Sending finished, waiting about 3 seconds" ) ;
 		
 		// Wait a few seconds:
 		Ceylan::Uint32 u = 0 ;
+		
 		while ( u < 180 )
 		{
 			
 			if ( u % 100 == 0 )
 				LogPlug::info(  myFifo.interpretLastARM7StatusWord() ) ;
+				
 			atomicSleep() ;
 			
 			u-- ;
@@ -578,7 +588,7 @@ int main( int argc, char * argv[] )
 		 *
 		 */	
 		for ( Ceylan::Uint32 i = 0; i < 50; i++ )
-			; //atomicSleep() ;
+			; // atomicSleep() ;
 
 
 		if ( myFifo.isInError() )
@@ -615,9 +625,7 @@ int main( int argc, char * argv[] )
 		if ( testFailed )
 			throw TestException( "Test failed because of error(s) "
 				"previously displayed." ) ;
-				
-		myFifo.deactivate() ;
-				
+								
 		if ( interactive )
 		{
 		
