@@ -250,6 +250,22 @@ namespace Ceylan
 			
 			
 			/**
+			 * Makes the abstract screen go one line down, but does not 
+			 * refresh the screen lines.
+			 *
+			 * @note Useful if a series of jumpNextLine calls has to be made
+			 * with only a final refresh, instead of many useless intermediate
+			 * refreshs.
+			 *
+			 * Does nothing if there is no text line left (already at bottom).
+			 *
+			 * @return true iff there was a line left indeed.
+			 *
+			 */
+			virtual void jumpNextLineNoRefresh() throw() ;
+			
+			
+			/**
 			 * Makes the abstract screen go one line up.
 			 *
 			 * Does nothing if there is no text line left (already on top).
