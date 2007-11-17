@@ -22,6 +22,7 @@ SYSTEM_INTERFACES = \
 	CeylanConsole.h                      \
 	CeylanDirectory.h                    \
 	CeylanEnvironmentVariables.h         \
+	CeylanFIFO.h                         \
 	CeylanFile.h                         \
 	CeylanFileLocator.h                  \
 	CeylanFileSystemCommon.h             \
@@ -56,6 +57,7 @@ SYSTEM_IMPLEMENTATIONS = \
 	CeylanConsole.cc                     \
 	CeylanDirectory.cc                   \
 	CeylanEnvironmentVariables.cc        \
+	CeylanFIFO.cc                        \
 	CeylanFile.cc                        \
 	CeylanFileLocator.cc                 \
 	CeylanFileSystemManager.cc           \
