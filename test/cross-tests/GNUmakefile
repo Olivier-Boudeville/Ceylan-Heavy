@@ -25,7 +25,9 @@ TEST_PREFIX= $(CEYLAN_TESTED_VERSION)-$(CEYLAN_TESTED_BUILD_MODE)
 TEST_EXEC_EXTENSION = nds
 
 TEST_ARM9_SOURCES = $(wildcard *.arm9.cc)
-TEST_TARGETS = $(patsubst %.arm9.cc,%-$(TEST_PREFIX)-patched.$(TEST_EXEC_EXTENSION),$(TEST_ARM9_SOURCES))
+
+#TEST_TARGETS = $(patsubst %.arm9.cc,%-$(TEST_PREFIX)-patched.$(TEST_EXEC_EXTENSION),$(TEST_ARM9_SOURCES))
+TEST_TARGETS = testCeylanFIFO-0.7-release-patched.nds
 
 # Some are patched, the others not:
 #TESTS_TO_TRANSFER = $(wildcard *.sc.nds)
@@ -33,8 +35,8 @@ TEST_TARGETS = $(patsubst %.arm9.cc,%-$(TEST_PREFIX)-patched.$(TEST_EXEC_EXTENSI
 CEYLAN_TESTED_VERSION    = $(CEYLAN_VERSION)
 CEYLAN_TESTED_BUILD_MODE = $(CEYLAN_BUILD_MODE)
 
-# Use 'make emulate TEST_NAME=testCeylanTextConsole' for example to override:
-TEST_NAME = testCeylanLibfatFilesystem
+# Use 'make emulate TEST_NAME=testCeylanLogSystem' for example to override:
+TEST_NAME = testCeylanFIFO
 
 TEST_FULL_NAME = $(TEST_NAME)-$(TEST_PREFIX)
 
@@ -65,6 +67,7 @@ patch: $(TEST_FULL_NAME).sc.nds
 	
 transfer: $(TEST_TARGETS)
 	@echo "    Transferring $^ to $(TRANSFER_MOUNT_POINT)"
+	@/bin/ls $(TRANSFER_MOUNT_POINT) 1>/dev/null 2>&1
 	@cp -f $^ $(TRANSFER_MOUNT_POINT)
 
 
@@ -113,7 +116,12 @@ TEST_CPP_FLAGS_ARM9 = $(TEST_CPP_FLAGS_COMMON) -DCEYLAN_RUNS_ON_ARM9
 
 
 # Long but safe:
-TEST_CXX_FLAGS_COMMON = $(TEST_ARCH_FLAGS_COMMON) -Winline -Wall -Werror -Woverloaded-virtual -W -Wfloat-equal -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wcast-qual -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-format-attribute -Wredundant-decls -Wno-unused-parameter -Wno-unknown-pragmas -Wno-long-long
+# (-Winline removed, caused warning when inlining of test methods failed)
+TEST_CXX_FLAGS_COMMON = $(TEST_ARCH_FLAGS_COMMON) -Wall -Werror -Woverloaded-virtual -W -Wfloat-equal -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wcast-qual -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-format-attribute -Wredundant-decls -Wno-unused-parameter -Wno-unknown-pragmas -Wno-long-long
+
+# -Wconversion had to be removed because of incomprehensible warnings like:
+# 'passing argument 1 of XXX with different width due to prototype'
+TEST_CC_FLAGS_COMMON = $(TEST_ARCH_FLAGS_COMMON) -Winline -Wall -Werror  -W -Wfloat-equal -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wcast-qual -Wwrite-strings -Wsign-compare -Wmissing-format-attribute -Wredundant-decls -Wno-unused-parameter -Wno-unknown-pragmas -Wno-long-long
 
 
 # Tests will follow the release mode of the Ceylan library:
@@ -121,19 +129,25 @@ ifeq ($(CEYLAN_TESTED_BUILD_MODE),debug)
 
 # Flags common to the ARM7 and the ARM9 for compilation in debug mode:
 TEST_CXX_FLAGS_MODE = -g -O0
+TEST_CC_FLAGS_MODE = -g -O0
 
 else
 
 # Flags common to the ARM7 and the ARM9 for compilation in release mode:
 TEST_CXX_FLAGS_MODE = -O3 -fomit-frame-pointer -ffast-math
+TEST_CC_FLAGS_MODE = -O3 -fomit-frame-pointer -ffast-math
 
 endif
 
 
 TEST_CXX_FLAGS_ARM7 = $(TEST_CXX_FLAGS_COMMON) $(TEST_CXX_FLAGS_MODE) -mcpu=arm7tdmi -mtune=arm7tdmi 
 
+TEST_CC_FLAGS_ARM7 = $(TEST_CC_FLAGS_COMMON) $(TEST_CC_FLAGS_MODE) -mcpu=arm7tdmi -mtune=arm7tdmi 
+
+
 TEST_CXX_FLAGS_ARM9 = $(TEST_CXX_FLAGS_COMMON) $(TEST_CXX_FLAGS_MODE) -march=armv5te -mtune=arm946e-s 
 
+TEST_CC_FLAGS_ARM9 = $(TEST_CXX_FLAGS_COMMON) $(TEST_CXX_FLAGS_MODE) -march=armv5te -mtune=arm946e-s 
 
 
 # Linker section: exports TEST_LD_FLAGS_ARM7 / TEST_LD_FLAGS_ARM9,
@@ -228,6 +242,14 @@ info-run:
 
 # From source files specific to either ARM to object files:
 
+%-$(TEST_PREFIX).arm7.o: %.arm7.c
+	@echo "    Compiling $< into $@"
+	$(CC) $(TEST_CC_FLAGS_ARM7) $(TEST_CPP_FLAGS_ARM7) -c $< -o $@
+
+%-$(TEST_PREFIX).arm7.o: %.arm7.cc
+	@echo "    Compiling $< into $@"
+	@$(CXX) $(TEST_CXX_FLAGS_ARM7) $(TEST_CPP_FLAGS_ARM7) -c $< -o $@
+	
 %.arm7.o: %.arm7.cc
 	@echo "    Compiling $< into $@"
 	@$(CXX) $(TEST_CXX_FLAGS_ARM7) $(TEST_CPP_FLAGS_ARM7) -c $< -o $@
@@ -268,6 +290,13 @@ info-run:
 
 # Neither basic logo, wifi logo nor sentences embedded:
 %.nds: %.arm7.bin %.arm9.bin
+	@echo "    AAAACreating final slot-1 DS ROM $@ from $^"
+	@$(NDSTOOL) -c $@ -7 $< -9 `echo $^| sed 's|^.* ||1'`
+
+
+# Rules overriden to use FIFO-specific ARM7 executable:
+testCeylanFIFO-$(TEST_PREFIX).nds: testCeylanFIFO-$(TEST_PREFIX).arm7.bin \
+		testCeylanFIFO-$(TEST_PREFIX).arm9.bin
 	@echo "    Creating final slot-1 DS ROM $@ from $^"
 	@$(NDSTOOL) -c $@ -7 $< -9 `echo $^| sed 's|^.* ||1'`
 
