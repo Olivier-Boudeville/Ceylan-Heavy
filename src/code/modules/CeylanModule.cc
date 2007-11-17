@@ -1,7 +1,8 @@
 #include "CeylanModule.h"
 
-#include "CeylanOperators.h"
 #include "CeylanStringUtils.h"   // for formatStringList
+#include "CeylanLogPlug.h"
+#include "CeylanOperators.h"
 
 
 #include <list>
@@ -47,7 +48,7 @@ Module::Module( const string  & name,
         _version(),
 		_licence( licence )
 {
-
+	
 	setVersion( version ) ;
 
     send( "Creating " + toString( low ) ) ;
