@@ -95,6 +95,10 @@ using namespace Ceylan::System ;
 
 
 
+extern const Ceylan::System::InterruptMask 
+	Ceylan::System::AllInterruptsDisabled = 0 ;
+
+
 Ceylan::System::SystemException::SystemException( const string & message )
 		throw():
 	Ceylan::Exception( message )
@@ -146,7 +150,7 @@ ErrorCode Ceylan::System::getError() throw()
 
 
 
-const string Ceylan::System::explainError( ErrorCode errorID ) throw()
+string Ceylan::System::explainError( ErrorCode errorID ) throw()
 {
 
 	return string( ::strerror( errorID ) ) ;
@@ -156,7 +160,7 @@ const string Ceylan::System::explainError( ErrorCode errorID ) throw()
 
 
 
-const string Ceylan::System::explainError() throw()
+string Ceylan::System::explainError() throw()
 {
 
 #ifdef CEYLAN_USES_STRERROR
@@ -174,7 +178,6 @@ const string Ceylan::System::explainError() throw()
 
 
 
-
 string Ceylan::System::getShellName() throw()
 {
 
@@ -183,13 +186,13 @@ string Ceylan::System::getShellName() throw()
 }
 
 
+
 void Ceylan::System::InitializeInterrupts( bool force ) throw( SystemException )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
 		
 
-		
 #ifdef CEYLAN_RUNS_ON_ARM7
 
 	throw SystemException( 
@@ -207,7 +210,7 @@ void Ceylan::System::InitializeInterrupts( bool force ) throw( SystemException )
 
 		/*
 		 * VBlank enabled but no specific handler set 
-		 * (only wanting ot for swiWaitForVBlank):
+		 * (only wanting it for swiWaitForVBlank):
 		 *
 		 */
 		irqEnable( IRQ_VBLANK ) ;
@@ -216,6 +219,7 @@ void Ceylan::System::InitializeInterrupts( bool force ) throw( SystemException )
 		swiWaitForVBlank() ;
 		
 		initialized = true ;
+		
 		//CEYLAN_LOG( "Interrupts initialized." ) ;
 		
 	}	
@@ -232,6 +236,61 @@ void Ceylan::System::InitializeInterrupts( bool force ) throw( SystemException )
 
 }
 
+
+
+InterruptMask Ceylan::System::SetEnabledInterrupts( InterruptMask newMask )
+	throw( SystemException )
+{
+
+#if CEYLAN_ARCH_NINTENDO_DS
+		
+	// Works on both ARMs:
+
+	InterruptMask previousMask = REG_IME ;
+	
+	REG_IME = newMask ;
+	
+	return previousMask ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	LogPlug::warning( "Ceylan::System::SetEnabledInterrupts "
+		"should not be called on this platform." ) ;
+	
+	// Dummy to allow compilation, will never be used:
+	return 0 ;
+	
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+}
+
+/*
+Ceylan::Byte * Ceylan::System::ConvertToNonCacheable( 
+	Ceylan::Byte * sourceAddress ) throw()
+{
+
+#if CEYLAN_ARCH_NINTENDO_DS
+		
+		
+#ifdef CEYLAN_RUNS_ON_ARM7
+
+	return sourceAddress ;
+	
+#elif defined(CEYLAN_RUNS_ON_ARM9)
+
+#endif // CEYLAN_RUNS_ON_ARM7
+
+	// Could check that the offset is not already added:
+	return sourceAddress + 0x400000 ;
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	return sourceAddress ;
+	
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+}
+*/
 
 
 bool Ceylan::System::HasAvailableData( FileDescriptor fd ) throw()
