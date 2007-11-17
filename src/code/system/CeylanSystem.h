@@ -139,6 +139,18 @@ namespace Ceylan
 
 
 
+		/// Masks describing which interrupts are enabled.
+		typedef int InterruptMask ;
+
+
+		/// To specify that all interrupts are to disabled (null value).
+		extern CEYLAN_DLL const InterruptMask AllInterruptsDisabled ;
+		
+		
+		/// Signature of an interrupt handler.
+		typedef void (* IRQHandler)( void ) ;
+		
+		
 		/// Error number as defined by errno.
 		typedef int ErrorCode ;
 
@@ -148,14 +160,15 @@ namespace Ceylan
 
 
 		/// Returns the diagnosis string corresponding to errorID (errno).
-		CEYLAN_DLL const std::string explainError( ErrorCode errorID ) throw() ;
+		CEYLAN_DLL std::string explainError( ErrorCode errorID ) throw() ;
+
 
 		/**
 		 * Returns the diagnosis string corresponding to current error ID
 		 * (errno).
 		 *
 		 */
-		CEYLAN_DLL const std::string explainError() throw() ;
+		CEYLAN_DLL std::string explainError() throw() ;
 
 
 		/**
@@ -172,7 +185,7 @@ namespace Ceylan
 
 
 		/**
-		 * On platforms requiring it (ex: the Nintendo DS on the ARM9),
+		 * On platforms requiring it (ex: the Nintendo DS),
 		 * initializes the interrupt system by using a default handler.
 		 *
 		 * @param force if true, the handler will be reset unconditionnally,
@@ -188,6 +201,47 @@ namespace Ceylan
 			throw( SystemException ) ;
 
 
+		/**
+		 * On platforms supporting it (ex: the Nintendo DS on the ARM9),
+		 * sets the current set of interrupts enabled.
+		 *
+		 * @param newMask the masks describing all the interrupts that are
+		 * to be enabled. By default (no parameter specified), all will be
+		 * disabled.
+		 *
+		 * @return The previous mask that was used, before being replaced by
+		 * the specified one.
+		 *
+		 * @throw SystemException if an error occurred.
+		 *
+		 */
+		CEYLAN_DLL InterruptMask SetEnabledInterrupts( 
+				InterruptMask newMask = AllInterruptsDisabled ) 
+			throw( SystemException ) ;
+
+
+		/**
+		 * Converts specified address, expected to be in main RAM, into a 
+		 * mirrored address in the non-cacheable RAM mirror.
+		 *
+		 * @note Ensure that the specified address in the main RAM, i.e. in
+		 * the 0x0200:0000 to 0x023FF:FFFF range.
+		 *
+		 * @note Only useful for the DS ARM9, to ensure its data cache is not
+		 * used, for example when sharing data with the ARM7, which does not
+		 * see the ARM9 cache. 
+		 *
+		 */
+		template <typename T>
+		T* ConvertToNonCacheable( T * sourceAddress ) throw()
+		{
+		
+			return reinterpret_cast<T *>( ( 
+				reinterpret_cast<Ceylan::Uint32>( sourceAddress ) 
+					+ /* offset to reach mirror address */ 0x400000 ) ) ;
+	              
+		}
+		
 		
 
 		/**
