@@ -1,10 +1,9 @@
 #include "CeylanIdentifierOwner.h"
 
 #include "CeylanIdentifier.h"        // for CeylanIdentifier
-
 #include "CeylanUtils.h"             // for emergencyShutdown
-
 #include "CeylanLogLight.h"          // for CEYLAN_LOG
+//#include "CeylanLogPlug.h"             // for LogPlug
 
 
 #ifdef CEYLAN_USES_CONFIG_H
@@ -12,13 +11,15 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
+
 using std::string ;
 
 using namespace Ceylan ;
 
 
+
 IdentifierNotAvailableException::IdentifierNotAvailableException(
-    	const string & message ) throw() :
+    	const string & message ) throw():
 	Ceylan::Exception( message )
 {
 
@@ -32,11 +33,14 @@ IdentifierNotAvailableException::~IdentifierNotAvailableException() throw()
 
 
 
-IdentifierOwner::IdentifierOwner() throw() :
+IdentifierOwner::IdentifierOwner() throw():
 	_id( 0 )
 {
+
+	
 	CEYLAN_LOG( "IdentifierOwner constructor" ) ;
 }
+
 
 
 IdentifierOwner::~IdentifierOwner() throw()
@@ -46,6 +50,7 @@ IdentifierOwner::~IdentifierOwner() throw()
         deleteIdentifier() ;
 
 }
+
 
 
 Identifier & IdentifierOwner::getIdentifier() 
@@ -66,6 +71,7 @@ Identifier & IdentifierOwner::getIdentifier()
 }
 
 
+
 void IdentifierOwner::setIdentifier( Identifier & id )
 	throw( IdentifierNotAvailableException )
 {
@@ -84,10 +90,14 @@ void IdentifierOwner::setIdentifier( Identifier & id )
 }
 
 
+
 bool IdentifierOwner::hasIdentifier() const throw()
 {
+
     return ( _id != 0 ) ;
+	
 }
+
 
 
 void IdentifierOwner::deleteIdentifier() throw()
@@ -104,7 +114,7 @@ void IdentifierOwner::deleteIdentifier() throw()
     else
     {
         Ceylan::emergencyShutdown( 
-			"IdentifierOwner::deleteIdentifier : trying to "
+			"IdentifierOwner::deleteIdentifier: trying to "
 			"delete a non-existent identifier." ) ;
     }
 
@@ -118,12 +128,13 @@ void IdentifierOwner::deleteIdentifier() throw()
 }
 
 
+
 const string IdentifierOwner::toString( VerbosityLevels level ) const throw()
 {
 
 	if ( _id != 0 )
 	{
-		return "This identifier owner has a registered identifier : "
+		return "This identifier owner has a registered identifier: "
 			+ _id->toString( level ) ;
 	}	
 	else
