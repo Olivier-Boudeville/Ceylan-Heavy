@@ -425,7 +425,7 @@ namespace Ceylan
 	 * @note No CEYLAN_DLL for templates.
 	 *
 	 */
-	template <class T>
+	template <typename T>
 	void stringToObject( const std::string & source, T & object )
 	{
 	
