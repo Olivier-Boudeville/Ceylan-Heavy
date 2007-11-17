@@ -28,11 +28,12 @@ using namespace Ceylan::Log ;
 
 
 LogAggregator::LogAggregatorException::LogAggregatorException( 
-		const string & message ) throw() : 
+		const string & message ) throw(): 
 	LogException( message )
 {
 
 }
+
 
 
 LogAggregator::LogAggregatorException::~LogAggregatorException() throw()	
@@ -41,19 +42,25 @@ LogAggregator::LogAggregatorException::~LogAggregatorException() throw()
 }
 	
 	
+	
+	
 const LevelOfDetail LogAggregator::DefaultGlobalLevelOfDetail 
 	= Ceylan::Log::DefaultLevelOfDetailForListener ;
 	
+	
 							
 LogAggregator::LogAggregator( bool beSmart, 
-		bool useGlobalLevelOfDetail ) throw() : 
+		bool useGlobalLevelOfDetail ) throw(): 
 	_beSmart( beSmart ),
 	_useGlobalLevelOfDetail( useGlobalLevelOfDetail ),
 	_globalLevelOfDetail( DefaultGlobalLevelOfDetail )
 
 {
+
 	CEYLAN_LOG( "LogAggregator constructor." ) ;
+	
 }
+
 
 
 LogAggregator::~LogAggregator() throw() 
@@ -61,7 +68,7 @@ LogAggregator::~LogAggregator() throw()
 
 	CEYLAN_LOG( "LogAggregator destructor called." ) ;
 
-	// Deallocating gathered channels, which will deallocate their messages :
+	// Deallocating gathered channels, which will deallocate their messages:
 	
 	// Curiously enough, a const_iterator can be used too !
 	for ( list<LogChannel *>::iterator it = _channelList.begin(); 
@@ -74,6 +81,7 @@ LogAggregator::~LogAggregator() throw()
 }
 
 
+
 LogChannel & LogAggregator::createBasicChannel( 
 	const string & channelName ) throw( LogException )
 {
@@ -81,10 +89,10 @@ LogChannel & LogAggregator::createBasicChannel(
 #if CEYLAN_DEBUG
 
 	if ( hasChannel( channelName ) )
-		throw LogException( "LogAggregator::createBasicChannel : "
+		throw LogException( "LogAggregator::createBasicChannel: "
 			"attempt to create an already-existing channel." ) ;	
 	
-	CEYLAN_LOG( "LogAggregator : creating basic channel " + channelName ) ;
+	CEYLAN_LOG( "LogAggregator: creating basic channel " + channelName ) ;
 				
 #endif // CEYLAN_DEBUG
 	
@@ -92,7 +100,9 @@ LogChannel & LogAggregator::createBasicChannel(
 	_channelList.push_back( newChannel ) ;
 	
 	return * newChannel ;
+	
 }
+
 
 
 ObjectChannel & LogAggregator::createObjectChannel( 
@@ -105,11 +115,11 @@ ObjectChannel & LogAggregator::createObjectChannel(
 #if CEYLAN_DEBUG
 
 	if ( hasChannel( realChannelName ) )
-		throw LogException( "LogAggregator::createObjectChannel : "
+		throw LogException( "LogAggregator::createObjectChannel: "
 			"attempt to create an already-existing channel, " 
 			+ realChannelName + "." ) ;	
 	
-	CEYLAN_LOG( "LogAggregator : creating object channel for " 
+	CEYLAN_LOG( "LogAggregator: creating object channel for " 
 		+ realChannelName ) ;
 				
 #endif // CEYLAN_DEBUG
@@ -122,6 +132,7 @@ ObjectChannel & LogAggregator::createObjectChannel(
 	return * newChannel ;
 	
 }
+
 
 
 bool LogAggregator::hasChannel( const std::string & channelName ) const 
@@ -140,11 +151,11 @@ LogChannel * LogAggregator::findChannel( const string & channelName )
 {
 
 
-	CEYLAN_LOG( "LogAggregator::findChannel : looking for channel " 
+	CEYLAN_LOG( "LogAggregator::findChannel: looking for channel " 
 		+ channelName ) ;
 	
 	/*
-	 * Two cases : we have got to search a LogChannel or an 
+	 * Two cases: we have got to search a LogChannel or an 
 	 * ObjectChannel, depending on the message being aimed at 
 	 * a Loggable channel or not.
 	 *
@@ -159,6 +170,7 @@ LogChannel * LogAggregator::findChannel( const string & channelName )
 }
 
 
+
 void LogAggregator::transferChannel( LogChannel & source, 
 	LogChannel & target ) throw( LogException )
 {
@@ -168,8 +180,8 @@ void LogAggregator::transferChannel( LogChannel & source,
 		+ source.getName() 
 		+ " to " + target.getName() ) ;
 		
-	CEYLAN_LOG( "Source channel is : " + source.toString() ) ;
-	CEYLAN_LOG( "Target channel is : " + target.toString() ) ;
+	CEYLAN_LOG( "Source channel is: " + source.toString() ) ;
+	CEYLAN_LOG( "Target channel is: " + target.toString() ) ;
 		
 	/*
 	 * For each message of source channel, update its channel 
@@ -184,14 +196,14 @@ void LogAggregator::transferChannel( LogChannel & source,
 #if CEYLAN_DEBUG
 
 		if ( (*it) == 0 )
-			throw LogException( "LogAggregator::transferChannel : "
+			throw LogException( "LogAggregator::transferChannel: "
 				"null pointer in channel list." ) ;	
 					
 #endif // CEYLAN_DEBUG
 		
 
 		LogMessage * movedMessage = *it ;
-		CEYLAN_LOG( "LogAggregator::transferChannel : moving " 
+		CEYLAN_LOG( "LogAggregator::transferChannel: moving " 
 			+ movedMessage->toString( Ceylan::low ) ) ;
 				
 		movedMessage->setChannelName( target.getName() ) ;
@@ -210,15 +222,16 @@ void LogAggregator::transferChannel( LogChannel & source,
 	
 	/*
 	 * After having nullified all message pointers in source list,
-	 * remove this null pointers :
+	 * remove this null pointers:
 	 *
 	 */
 	source._messages.clear() ;
 	
-	// And finally remove this empty obsolete channel : 
+	// And finally remove this empty obsolete channel: 
 	removeChannel( source ) ;
 	
 }
+
 
 
 void LogAggregator::removeChannel( LogChannel & target ) throw()
@@ -229,15 +242,16 @@ void LogAggregator::removeChannel( LogChannel & target ) throw()
 }
 
 
+
 void LogAggregator::store( LogMessage & message ) throw( LogException ) 
 {
 	
-	CEYLAN_LOG( "LogAggregator::store : incoming message " 
+	CEYLAN_LOG( "LogAggregator::store: incoming message " 
 		+ message.toString() ) ;
 	
 	/*
 	 * Tests whether this message is an object one or not, and 
-	 * manages it accordingly :
+	 * manages it accordingly:
 	 *
 	 */
 	
@@ -246,16 +260,17 @@ void LogAggregator::store( LogMessage & message ) throw( LogException )
 	else
 		storeBasicMessage( message ) ;
 		
-	CEYLAN_LOG( "LogAggregator::store : done" ) ;
+	CEYLAN_LOG( "LogAggregator::store: done" ) ;
 		
 }		
 
+	
 				
 LogChannel * LogAggregator::findBasicChannel( 
 	const string & basicChannelName ) const throw( LogException )
 {
 
-	CEYLAN_LOG( "LogAggregator::findBasicChannel : "
+	CEYLAN_LOG( "LogAggregator::findBasicChannel: "
 		"searching basic channels for " + basicChannelName ) ;
 			
 	for ( list<LogChannel *>::const_iterator it = _channelList.begin(); 
@@ -265,7 +280,7 @@ LogChannel * LogAggregator::findBasicChannel(
 #if CEYLAN_DEBUG
 
 		if ( (*it) == 0 )
-			throw LogException( "LogAggregator::findBasicChannel : "
+			throw LogException( "LogAggregator::findBasicChannel: "
 				"null pointer in channel list." ) ;	
 
 #endif // CEYLAN_DEBUG
@@ -285,7 +300,7 @@ LogChannel * LogAggregator::findBasicChannel(
 	}
 	
 	/*
-	 * Better raise an exception on abnormal conditions :
+	 * Better raise an exception on abnormal conditions:
 	 * 
 
 	throw LogAggregatorException( "No basic channel named " 
@@ -296,14 +311,14 @@ LogChannel * LogAggregator::findBasicChannel(
 		
 }
 	
+	
 					
 ObjectChannel * LogAggregator::findObjectChannel( 
-	const string & nonPrefixedChannelName ) const throw( LogException )			
-	
+	const string & nonPrefixedChannelName ) const throw( LogException )
 {
 
 
-	CEYLAN_LOG( "LogAggregator::findObjectChannel : "
+	CEYLAN_LOG( "LogAggregator::findObjectChannel: "
 		"searching object channels for " + nonPrefixedChannelName ) ;
 			
 	for ( list<LogChannel *>::const_iterator it = _channelList.begin(); 
@@ -313,7 +328,7 @@ ObjectChannel * LogAggregator::findObjectChannel(
 #if CEYLAN_DEBUG
 
 		if ( (*it) == 0 )
-			throw LogException( "LogAggregator::findObjectChannel : "
+			throw LogException( "LogAggregator::findObjectChannel: "
 				"null pointer in channel list." ) ;	
 
 #endif // CEYLAN_DEBUG
@@ -332,7 +347,7 @@ ObjectChannel * LogAggregator::findObjectChannel(
 	}
 	
 	/*
-	 * Better raise an exception on abnormal conditions :
+	 * Better raise an exception on abnormal conditions:
 	 * 
 
 	throw LogAggregatorException( "No object channel named " 
@@ -344,13 +359,14 @@ ObjectChannel * LogAggregator::findObjectChannel(
 }
 
 
+
 void LogAggregator::createBasicChannelFrom( LogMessage & message ) 
 	throw( LogException ) 
 {
 
 	/*
 	 * Simply, creates the new channel and stores its first 
-	 * message in it :
+	 * message in it:
 	 *
 	 */
 	
@@ -360,14 +376,15 @@ void LogAggregator::createBasicChannelFrom( LogMessage & message )
 }
 
 
+
 void LogAggregator::createLoggableChannelFrom( LogMessage & message ) 
 	throw( LogException )
 {
 
-	// If it is not a smart aggregator, just store and forget : 
+	// If it is not a smart aggregator, just store and forget: 
 	if ( ! _beSmart )
 	{
-		CEYLAN_LOG( "LogAggregator::createLoggableChannelFrom : "
+		CEYLAN_LOG( "LogAggregator::createLoggableChannelFrom: "
 			"being not smart, store message inconditionnally "
 			"as if it were basic." ) ;
 		createBasicChannelFrom( message ) ;
@@ -381,20 +398,20 @@ void LogAggregator::createLoggableChannelFrom( LogMessage & message )
 	 *
 	 */
 	
-	CEYLAN_LOG( "LogAggregator::createLoggableChannelFrom : "
+	CEYLAN_LOG( "LogAggregator::createLoggableChannelFrom: "
 		"smart aggregator will try to find any previously "
 		"created channel corresponding to this message aimed at "
 		+ message.getChannelName() ) ;
 		
 	/*
 	 * Remove the protocol prefix and separator (typically, loggable://) 
-	 * to get the real channel name :
+	 * to get the real channel name:
 	 *
 	 */
 	string realChannelName = Loggable::GetEmbeddedChannelName(
 		message.getChannelName() ) ;
 		
-	CEYLAN_LOG( "LogAggregator::createLoggableChannelFrom : "
+	CEYLAN_LOG( "LogAggregator::createLoggableChannelFrom: "
 		"channel name is " + realChannelName ) ;
 		
 	/*
@@ -423,10 +440,10 @@ void LogAggregator::createLoggableChannelFrom( LogMessage & message )
 	{
 	 	 
 		throw LogException( 
-			"LogAggregator::createLoggableChannelFrom : "
+			"LogAggregator::createLoggableChannelFrom: "
 			"the channel name of incoming message, "
-			+ realChannelName + " is not an object channel name : "
-			+ idEx.toString() + " : this shoud never happen." ) ;
+			+ realChannelName + " is not an object channel name: "
+			+ idEx.toString() + ": this shoud never happen." ) ;
 	}
 	
 	CEYLAN_LOG( "Trying to match " + realChannelName 
@@ -438,7 +455,7 @@ void LogAggregator::createLoggableChannelFrom( LogMessage & message )
 	 * not exist already.
 	 * 
 	 * Second, scan existing channels to know whether there is one whose
-	 * instance address matches : it would have been created with 
+	 * instance address matches: it would have been created with 
 	 * a mangled class name for this object.
 	 *
 	 */ 
@@ -451,7 +468,7 @@ void LogAggregator::createLoggableChannelFrom( LogMessage & message )
 
 		if ( (*it) == 0 )
 		throw LogException( 
-			"LogAggregator::createLoggableChannelFrom : "
+			"LogAggregator::createLoggableChannelFrom: "
 			"null pointer in channel list." ) ;		
 			
 #endif // CEYLAN_DEBUG
@@ -486,7 +503,7 @@ void LogAggregator::createLoggableChannelFrom( LogMessage & message )
 					
 				/*
 				 * Yes, so transfer the messages after having created
-				 * the channel :
+				 * the channel:
 				 *
 				 */
 				
@@ -518,7 +535,7 @@ void LogAggregator::createLoggableChannelFrom( LogMessage & message )
 		
 	} // for ...
 	
-	// Deallocate the object identifer used for comparison purpose :
+	// Deallocate the object identifer used for comparison purpose:
 	delete identifierFromMessage ;
 			  
 	
@@ -538,17 +555,17 @@ void LogAggregator::createLoggableChannelFrom( LogMessage & message )
 	
 	newObjectChannel.addMessage( message ) ;
 	
-	CEYLAN_LOG( "LogAggregator::createLoggableChannelFrom : done." ) ;
-		
+	CEYLAN_LOG( "LogAggregator::createLoggableChannelFrom: done." ) ;	
 			 
 }				
+
 
 
 void LogAggregator::storeBasicMessage( LogMessage & basicLogMessage ) 
 	throw( LogException )
 {	
 
-	CEYLAN_LOG( "LogAggregator::storeBasicMessage : message aimed at " 
+	CEYLAN_LOG( "LogAggregator::storeBasicMessage: message aimed at " 
 		+ basicLogMessage.getChannelName() ) ;
 
 	// Maybe the relevant basic channel already exists ?
@@ -559,7 +576,7 @@ void LogAggregator::storeBasicMessage( LogMessage & basicLogMessage )
 	if ( channel == 0 )
 	{
 	
-		CEYLAN_LOG( "LogAggregator::storeBasicMessage : Channel " 
+		CEYLAN_LOG( "LogAggregator::storeBasicMessage: Channel " 
 			+ basicLogMessage.getChannelName() 
 			+ " not found, hence is to be created." ) ;
 		createBasicChannelFrom( basicLogMessage ) ;	
@@ -567,7 +584,7 @@ void LogAggregator::storeBasicMessage( LogMessage & basicLogMessage )
 		return ;
 	}
 	
-	CEYLAN_LOG( "LogAggregator::storeBasicMessage : "
+	CEYLAN_LOG( "LogAggregator::storeBasicMessage: "
 		"adding new message to already existing channel "
 		+ channel->getName() ) ;
 	channel->addMessage( basicLogMessage ) ;
@@ -575,22 +592,21 @@ void LogAggregator::storeBasicMessage( LogMessage & basicLogMessage )
 }
 
 
+
 void LogAggregator::storeObjectMessage( 
 	LogMessage & objectLogMessage ) throw( LogException )
 {
 	
+	// Maybe the relevant object channel already exists ?	
 	
-	// Maybe the relevant object channel already exists ?
-	
-	
-	// First, auto-correct any mangled class name :
+	// First, auto-correct any mangled class name:
 	demangle( objectLogMessage ) ;
 	
 	const string targetChannelName = Loggable::GetEmbeddedChannelName(
 		objectLogMessage.getChannelName() ) ;
 
 	CEYLAN_LOG( 
-		"LogAggregator::storeObjectMessage : message aimed at " 
+		"LogAggregator::storeObjectMessage: message aimed at " 
 		+ targetChannelName ) ;
 	
 	ObjectChannel * channel = findObjectChannel( targetChannelName ) ;
@@ -598,7 +614,7 @@ void LogAggregator::storeObjectMessage(
 	if ( channel == 0 )
 	{
 	
-		CEYLAN_LOG( "LogAggregator::storeObjectMessage : Channel " 
+		CEYLAN_LOG( "LogAggregator::storeObjectMessage: Channel " 
 			+ targetChannelName + " not found." ) ;
 		
 		/*
@@ -629,7 +645,7 @@ void LogAggregator::storeObjectMessage(
 	
 	/*
 	 * Removing now useless protocol prefix of this object 
-	 * message's header :
+	 * message's header:
 	 *
 	 */
 	objectLogMessage.setChannelName( 
@@ -641,6 +657,7 @@ void LogAggregator::storeObjectMessage(
 }
 
 
+
 void LogAggregator::demangle( LogMessage & objectLogMessage ) throw()
 {
 
@@ -648,7 +665,7 @@ void LogAggregator::demangle( LogMessage & objectLogMessage ) throw()
 	/*
 	 * Isolates the class name and replace it with a demangled one.
 	 *
-	 * @example : loggable://sonata/PID-31655/ExampleOne/0x8052b18
+	 * @example: loggable://sonata/PID-31655/ExampleOne/0x8052b18
 	 *
 	 * Get ExampleOne
 	 *
@@ -661,7 +678,7 @@ void LogAggregator::demangle( LogMessage & objectLogMessage ) throw()
 	string demangled ;
 	Ceylan::Uint16 count = 0 ;
 	
-	// Skip everything till fourth '/' :
+	// Skip everything till fourth '/':
 	
 	Ceylan::Uint16 sepCount = 0 ;
 	
@@ -675,7 +692,7 @@ void LogAggregator::demangle( LogMessage & objectLogMessage ) throw()
 		}
 	
 	
-		// Jump over '/' :
+		// Jump over '/':
 		count++ ;
 		demangled += ObjectIdentifier::Separator ;
 	
@@ -683,7 +700,7 @@ void LogAggregator::demangle( LogMessage & objectLogMessage ) throw()
 	}
 	
 
-	// Here we are in the interesting word :
+	// Here we are in the interesting word:
 	string className ;
 	
 	while ( channelName[ count ] != ObjectIdentifier::Separator )
@@ -725,17 +742,18 @@ Ceylan::VerbosityLevels LogAggregator::getOverallVerbosityLevel() const throw()
 	}
 	
 	
-	// Now maps the selected level to a verbosity level :
+	// Now maps the selected level to a verbosity level:
 	 
 	Ceylan::VerbosityLevels res =
 		ConvertListenerLevelOfDetailToVerbosityLevel( level ) ;
 		
-	CEYLAN_LOG( "LogAggregator::getOverallVerbosityLevel : "
-		"level of detail is : " + Ceylan::toString( res ) ) ;
+	CEYLAN_LOG( "LogAggregator::getOverallVerbosityLevel: "
+		"level of detail is: " + Ceylan::toString( res ) ) ;
 	
 	return res ;
 
 }
+
 
 				 
 Ceylan::VerbosityLevels LogAggregator::getMessageVerbosityLevel( 
@@ -756,14 +774,14 @@ Ceylan::VerbosityLevels LogAggregator::getMessageVerbosityLevel(
 	}
 
 
-	// Now maps the selected level to a verbosity level :
+	// Now maps the selected level to a verbosity level:
 	 
 	Ceylan::VerbosityLevels res =
 			LogAggregator::ConvertMessageLevelOfDetailToVerbosityLevel(
 		level ) ;
 	
-	CEYLAN_LOG( "LogAggregator::getMessageVerbosityLevel : "
-		"level of detail is : " + Ceylan::toString( res ) ) ;
+	CEYLAN_LOG( "LogAggregator::getMessageVerbosityLevel: "
+		"level of detail is: " + Ceylan::toString( res ) ) ;
 				
 	return res ;			
 
@@ -777,10 +795,10 @@ Ceylan::VerbosityLevels
 {
 	
 	/*
-	 * Maps the selected level to a verbosity level :
+	 * Maps the selected level to a verbosity level:
 	 *
-	 * @note : a switch/case/default test could not be used since case label 
-	 * would not reduce to an integer constant : 'case
+	 * @note: a switch/case/default test could not be used since case label 
+	 * would not reduce to an integer constant: 'case
 	 * MaximumLevelOfDetailForMessage:' cannot refer to an extern, in C/C++
 	 * No comment.
 	 *
@@ -800,6 +818,7 @@ Ceylan::VerbosityLevels
 		return Ceylan::high ;
 		
 }
+
 	
 
 Ceylan::VerbosityLevels 
@@ -808,16 +827,16 @@ Ceylan::VerbosityLevels
 {
 	
 	/*
-	 * Maps the selected level to a verbosity level :
+	 * Maps the selected level to a verbosity level:
 	 *
-	 * @note : a switch/case/default test could not be used since case label 
-	 * would not reduce to an integer constant : 'case
+	 * @note: a switch/case/default test could not be used since case label 
+	 * would not reduce to an integer constant: 'case
 	 * MaximumLevelOfDetailForMessage:' cannot refer to an extern, in C/C++
 	 * No comment.
 	 *
 	 */
 	
-	// For a message, a maximum LOD leads to a maximum verbosity : 
+	// For a message, a maximum LOD leads to a maximum verbosity: 
 	if ( level == MaximumLevelOfDetailForMessage )
 		return Ceylan::high ;
 	else if ( level <= DefaultLevelOfDetailForMessage )
@@ -826,6 +845,7 @@ Ceylan::VerbosityLevels
 		return Ceylan::low ;
 		
 }
+
 
 
 const string LogAggregator::toString( Ceylan::VerbosityLevels level ) 
