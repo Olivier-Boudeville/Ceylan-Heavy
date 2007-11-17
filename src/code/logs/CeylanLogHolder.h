@@ -107,9 +107,14 @@ namespace Ceylan
 				 * Only the first log plug specification found in
 				 * command-line is taken into account.
 				 *
-				 * @param argCount The number of arguments (argc).
+				 * @param argCount the number of arguments (argc).
 				 *
-				 * @param arguments The arguments themselves (argv).
+				 * @param arguments the arguments themselves (argv).
+				 *
+				 * @param forceImmediateWrite if true, forces immediate write
+				 * for the selected plug, if supported (this is the case of 
+				 * the console and the classical plug, but not for the HTML
+				 * one).
 				 *
 				 * @note There is no point in using more than one instance 
 				 * of LogHolder in a process.
@@ -119,7 +124,8 @@ namespace Ceylan
 				 *
 		 		 */
 				LogHolder( Ceylan::Uint16 argCount, 
-					const char * const arguments[] ) throw( LogException ) ;
+					const char * const arguments[],
+					bool forceImmediateWrite = false ) throw( LogException ) ;
 			
 	
 				/// Basic virtual destructor.
