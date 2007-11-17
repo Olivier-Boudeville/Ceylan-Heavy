@@ -9,23 +9,26 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
-using std::string ;
 
+using std::string ;
 
 using namespace Ceylan::Log ;
 
 
-LogListener::LogListener( LogAggregator & aggregator ) throw() :
+
+LogListener::LogListener( LogAggregator & aggregator ) throw():
 		_aggregator( & aggregator )
 {
 
 }
 
 
+
 LogListener::~LogListener() throw()
 {
 
 }
+
 
 
 const string LogListener::toString( Ceylan::VerbosityLevels level ) 
@@ -35,15 +38,16 @@ const string LogListener::toString( Ceylan::VerbosityLevels level )
 	if ( _aggregator == 0 )
 		return "This LogListener is not linked with any aggregator" ;		
 		
-	// An aggregator is available :
+	// An aggregator is available:
 	
 	if ( level == Ceylan::high )
-		return "This LogListener is linked with following aggregator : "
+		return "This LogListener is linked with following aggregator: "
 			+ _aggregator->toString( Ceylan::low ) ;
 	else
 		return "This LogListener is linked with an aggregator" ;
 
 }
+
 
 
 void LogListener::sendToAggregator( LogMessage & message ) 
@@ -53,7 +57,7 @@ void LogListener::sendToAggregator( LogMessage & message )
 #if CEYLAN_DEBUG
 	
 	if ( ! _aggregator )
-		throw LogException( "LogListener::sendToAggregator : "
+		throw LogException( "LogListener::sendToAggregator: "
 			"trying to send a message whereas "
 			"the internal aggregator has not been initialized." ) ;
 			
@@ -62,3 +66,4 @@ void LogListener::sendToAggregator( LogMessage & message )
 	_aggregator->store( message ) ;
 	
 }
+
