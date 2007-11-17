@@ -10,6 +10,7 @@
 #include "CeylanConsole.h"
 #include "CeylanDirectory.h"
 #include "CeylanEnvironmentVariables.h"
+#include "CeylanFIFO.h"
 #include "CeylanFile.h"
 #include "CeylanFileLocator.h"
 #include "CeylanFileSystemCommon.h"
@@ -36,9 +37,16 @@
 #include "CeylanThread.h"
 #include "CeylanUniformResourceIdentifier.h"
 
+#include "CeylanTypes.h"
+#include "CeylanARM7Codes.h"
+
 /*
  * Private non-exported non-installed headers: 
  *   - CeylanEndianness.h: for byte-swapping 
+ *   - CeylanIPCCommands.h: for commands exchanged internally by the DS ARMs
+ * 
+ * CeylanARM7Codes.h installed so that ARM7 status words and error codes
+ * can be used on the ARM9 side.
  *
  */
 
