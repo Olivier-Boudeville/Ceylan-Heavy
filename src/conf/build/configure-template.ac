@@ -378,6 +378,7 @@ if test x$enable_debug = xyes; then
 	DEBUG_CONSOLE=0	
 	DEBUG_DEMANGLE=0
 	DEBUG_EVENTS=0
+	DEBUG_FIFO=0
 	DEBUG_LOG=0
 	DEBUG_LOW_LEVEL_STREAMS=0
 	DEBUG_MARSHALLERS=0
@@ -406,6 +407,7 @@ else
 	DEBUG_CONSOLE=0	
 	DEBUG_DEMANGLE=0	
 	DEBUG_EVENTS=0
+	DEBUG_FIFO=0
 	DEBUG_LOG=0
 	DEBUG_LOW_LEVEL_STREAMS=0
 	DEBUG_MARSHALLERS=0
@@ -464,6 +466,10 @@ AC_DEFINE_UNQUOTED([DEBUG_EVENTS],
 	[$DEBUG_EVENTS],
 	[Define to 1 if debug mode for events is to be enabled])
 	
+AC_DEFINE_UNQUOTED([DEBUG_FIFO],
+	[$DEBUG_FIFO],
+	[Define to 1 if debug mode for FIFO-based IPC is to be enabled])
+
 AC_DEFINE_UNQUOTED([DEBUG_LOG],
 	[$DEBUG_LOG],
 	[Define to 1 if debug mode for log system is to be enabled])
