@@ -5,7 +5,7 @@
 
 #include <list>
 
-// for debug purpose only : #include <iostream>
+// for debug purpose only: #include <iostream>
 
 
 using std::string ;
@@ -14,7 +14,7 @@ using namespace Ceylan ;
 
 
 
-VersionException::VersionException( const std::string & message ) throw() :
+VersionException::VersionException( const std::string & message ) throw():
 	Ceylan::Exception( message )
 {
 
@@ -30,7 +30,7 @@ VersionException::~VersionException() throw()
 
 
 Version::Version( VersionNumber major, VersionNumber minor, 
-		VersionNumber release ) throw() :
+		VersionNumber release ) throw():
 	_major( major ),
 	_minor( minor ),
 	_release( release )
@@ -48,17 +48,17 @@ Version::Version( const std::string & versionText ) throw( VersionException )
 	 *
 	for ( std::list<string>::const_iterator it = numbers.begin(); 
 			it != numbers.end(); it++ )
-		std::cerr << "Version constructor : " << *it << std::endl ;
+		std::cerr << "Version constructor: " << *it << std::endl ;
 	 *
 	 */
 	 	 
 	if ( numbers.size() != 3 )
-		throw Ceylan::Exception( "Version constructor : input string '"
+		throw Ceylan::Exception( "Version constructor: input string '"
 			+ versionText 
 			+ "' cannot be split into three parts thanks to dots, "
 			"we have " + Ceylan::toString( 
 				static_cast<Ceylan::Uint32>( numbers.size() ) ) 
-			+ " elements : " 
+			+ " elements: " 
 			+ Ceylan::formatStringList( numbers, 
 				/* surroundByTicks */ true ) ) ;
 	
@@ -80,13 +80,13 @@ Version::Version( const std::string & versionText ) throw( VersionException )
 	}
 	catch( const Ceylan::Exception & e )
 	{
-		throw VersionException( "Version constructor : input string <"
-			+ versionText + "> could not be parsed into numbers : " 
+		throw VersionException( "Version constructor: input string <"
+			+ versionText + "> could not be parsed into numbers: " 
 			+ e.toString() ) ;
 	}
 	
 	if ( ! numbers.empty() )
-		throw VersionException( "Version constructor : input string <"
+		throw VersionException( "Version constructor: input string <"
 			+ versionText + "> has more than three elements" ) ;
 		
 			
@@ -167,7 +167,7 @@ const string Version::toString( VerbosityLevels level ) const throw()
 	if ( level == Ceylan::medium )
     	return "Version " + rawVersion ;
 				
-	return "Version : major number = " 
+	return "Version: major number = " 
 		+ Ceylan::toNumericalString( _major ) + ", minor number = "
 		+ Ceylan::toNumericalString( _minor ) + ", release number = "
 		+ Ceylan::toNumericalString( _release ) ;
@@ -187,7 +187,7 @@ bool operator < ( const Ceylan::Version & vFirst,
 {
 
 	if ( ! vFirst.canBeComparedWith( vSecond ) )
-		throw VersionException( "Version operator '<' : "
+		throw VersionException( "Version operator '<': "
 			+ vFirst.toString( Ceylan::high ) + " and "
 			+ vSecond.toString( Ceylan::high ) + " cannot be compared." ) ;
 		
@@ -218,7 +218,7 @@ bool operator == ( const Ceylan::Version & vFirst,
 
 
 	if ( ! vFirst.canBeComparedWith( vSecond ) )
-		throw VersionException( "Version operator '==' : "
+		throw VersionException( "Version operator '==': "
 			+ vFirst.toString( Ceylan::high ) + " and "
 			+ vSecond.toString( Ceylan::high ) + " cannot be compared." ) ;
 
