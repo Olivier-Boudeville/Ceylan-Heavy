@@ -19,11 +19,13 @@ using std::list ;
 using namespace Ceylan::Log ;
 
 
+
 LogChannel::LogChannel( const string & name ) throw():
 	_name( name )
 {
 
 }
+
 
 
 LogChannel::~LogChannel() throw() 
@@ -34,34 +36,53 @@ LogChannel::~LogChannel() throw()
 	{
 		delete (*it) ;
 	}
-	
 		
 }
+
 
 
 void LogChannel::addMessage( LogMessage & message, bool check ) 
 	throw( LogException )
 {
 
+	// Attempt to allow for more reentrancy in an IRQ-based system:
+	static volatile bool inUse = false ;
+	
+	while ( inUse )
+		;
+
+	inUse = true ;
+	
 	if ( check ) 
 	{
 		if ( message.getChannelName() != _name )
+		{
+		
+			inUse = false ;
 			throw LogException( 
 				"LogChannel::addMessage: trying to add to LogChannel "
 				+ _name 
 				+ " a log message whose registered LogChannel is "
 				+ message.getChannelName() + " (not " + _name + ")." ) ;	
+				
+		}		
 	}
 	
 	_messages.push_back( & message ) ;
 
+	inUse = false ;
+	
 }
+
 
 
 const string LogChannel::getName() const throw()
 {
+
 	return _name ;
+	
 }
+
 
 
 LogChannel::MessageCount LogChannel::getMessageCount() const throw()
@@ -75,6 +96,7 @@ LogChannel::MessageCount LogChannel::getMessageCount() const throw()
 	return static_cast<Ceylan::Uint32>( _messages.size() ) ;
 	
 }
+
 
 
 const string LogChannel::toString( Ceylan::VerbosityLevels level ) 
