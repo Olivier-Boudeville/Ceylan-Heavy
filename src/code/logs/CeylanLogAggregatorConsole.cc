@@ -102,6 +102,7 @@ LogAggregatorConsole::~LogAggregatorConsole() throw()
 			
 	if ( _beSmart )
 	{
+	
 		CEYLAN_LOG( "LogAggregatorConsole is smart, therefore "
 			"automatically triggers log aggregation on exit." ) ;
 		
@@ -131,7 +132,10 @@ LogAggregatorConsole::~LogAggregatorConsole() throw()
 			// Allows to read the logs:
 			_console->goInteractive() ;
 			
-			_console->addInBuffer( "Log system stopped." ) ;
+			// Notify shutdown:
+			_console->blankBuffer() ;
+			_console->addInBuffer( "Log system stopped on user request." ) ;
+			
 			
 		}
 		catch( const System::Console::ConsoleException & e )
