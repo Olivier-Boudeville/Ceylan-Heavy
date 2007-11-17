@@ -18,6 +18,7 @@ using namespace Ceylan ;
 using namespace Ceylan::Log ;
 
 
+
 LogMessage::LogMessage( const string & message,	
 		const string & channelName,
 		LevelOfDetail levelOfDetail, 
@@ -31,6 +32,7 @@ LogMessage::LogMessage( const string & message,
 }
 
 
+
 LogMessage::LogMessage( const string & message,	
 		const string & channelName,
 		LevelOfDetail levelOfDetail ) throw( LogException ):
@@ -41,48 +43,68 @@ LogMessage::LogMessage( const string & message,
 
 	try 
 	{
-		_timestamp = new Timestamp() ; 
+	
+		_timestamp = new Timestamp() ;
+		 
 	} 	
 	catch( const UtilsException & e )
 	{
+	
 		throw LogException( 
-			"LogMessage::LogMessage: unable to generate time-stamp, "
+			"LogMessage::LogMessage: unable to generate time-stamp: "
 			+ e.toString() ) ;
+			
 	}
 	
 }					
 				
 				
+				
 LogMessage::~LogMessage() throw()
 {
+
 	if ( _timestamp != 0 )
 		delete _timestamp ;
+		
 }
+
 
 
 const std::string LogMessage::getContent() const throw()
 {
+
 	return _message ;
+	
 }
+
 
 
 const std::string LogMessage::getChannelName() const throw()		
 {
+
 	return _channelName ;
+	
 }
+
 
 
 void LogMessage::setChannelName( const string & newChannelName ) throw()
 {
+
 	_channelName = newChannelName ;
+	
 }
+
 
 
 LevelOfDetail LogMessage::getLevelOfDetail() const throw()
 {
+
 	return _levelOfDetail ;
+	
 }
 
+		
 		
 const Timestamp & LogMessage::getTimestamp() const throw( LogException )
 {
@@ -91,12 +113,14 @@ const Timestamp & LogMessage::getTimestamp() const throw( LogException )
 
 	if ( _timestamp == 0 )
 		throw LogException( 
-			"LogMessage::getTimestamp(): no Timestamp available." ) ;
+			"LogMessage::getTimestamp failed: no Timestamp available." ) ;
 			
 #endif // CEYLAN_DEBUG
 	
 	return * _timestamp ;
+	
 }
+
 
 
 const string LogMessage::getPreformattedText() const throw()
@@ -116,6 +140,7 @@ const string LogMessage::getPreformattedText() const throw()
 	return _timestamp->toString() + " " + _message ;
 	
 }
+
 
 
 const string LogMessage::toString( Ceylan::VerbosityLevels level ) const throw()
@@ -179,3 +204,4 @@ const string LogMessage::toString( Ceylan::VerbosityLevels level ) const throw()
 	}
 	
 }	
+
