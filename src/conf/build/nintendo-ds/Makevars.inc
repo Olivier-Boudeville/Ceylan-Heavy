@@ -182,6 +182,7 @@ CPP_DEBUG_DEFINES:= \
 	-DCEYLAN_DEBUG_CONSOLE=0           \
 	-DCEYLAN_DEBUG_DEMANGLE=0          \
 	-DCEYLAN_DEBUG_EVENTS=0            \
+	-DCEYLAN_DEBUG_FIFO=0              \
 	-DCEYLAN_DEBUG_LIBFAT=0            \
 	-DCEYLAN_DEBUG_LOG=0               \
 	-DCEYLAN_DEBUG_LOW_LEVEL_STREAMS=0 \
@@ -213,6 +214,7 @@ CPP_FLAGS_ARM9  := $(CPP_FLAGS) $(CPP_FLAGS_COMMON)
 # C++ Compile flags.
 
 # Compile flags always used, for both ARM, both in debug and release modes:
+# 
 CXX_FLAGS_COMMON:= -Winline -Wall -Werror -Woverloaded-virtual -W -Wfloat-equal -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wcast-qual -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-format-attribute -Wredundant-decls -Wno-unused-parameter -Wno-unknown-pragmas -Wno-long-long
 
 # Removed: 
