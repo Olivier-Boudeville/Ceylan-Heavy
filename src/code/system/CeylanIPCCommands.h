@@ -9,10 +9,9 @@
  * It is to be included by ARM7 C code and ARM9 C++ code.
  *
  * typedef for FIFOCommandID is expected to be already defined (it cannot be
- * defined here as its definition is specific to each ARM:
- * Ceylan::Uint8/uint8).
+ * defined here as its definition is specific to each ARM: Ceylan::Uint8/uint8).
  *
- * enum not used as are int thus 32-bit whereas we want 8 bit.
+ * enum not used as are int, thus 32-bit, whereas we want 8 bit.
  *
  */ 
 
@@ -20,7 +19,16 @@
 /**
  * System-specific command identifier values range from 0 to 127.
  *
+ * @note Ceylan subdivided this range into [0..32], reserved for its own use,
+ * and [32..127], reserved for Ceylan-integrating libraries, notably OSDL,
+ * which reserved [32..96]. 
+ *
+ * Hence other libraries can use [97..127], and each application can use
+ * [128..255].
+ *
  */
+
+
 
 
 /**
@@ -75,11 +83,16 @@ const ARM9CommandID ShutdownIPC = 3 ;
 
 
 
+
+
+
+
 /**
  * Identifiers for commands originating from the ARM7 (aimed at the ARM9):
  * 
  */
 typedef FIFOCommandID ARM7CommandID ;
+
 
 
 /**
