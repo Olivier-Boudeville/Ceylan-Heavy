@@ -9,7 +9,7 @@
 #include "CeylanLogLight.h"      // for CEYLAN_LOG
 #include "CeylanUtils.h"         // for GetVersion
 #include "CeylanStringUtils.h"   // for formatStringList
-#include "CeylanOperators.h"     // for Ceylan::GetVersion
+#include "CeylanOperators.h"     // for Ceylan string operators
 
 #include <iostream>              // for cerr
 
@@ -27,6 +27,12 @@ using namespace Ceylan::Log ;
 
 
 
+/*
+ * The few global variables that will be set when the actual plug will be 
+ * created:
+ *
+ */
+ 
 LogSource * LogPlug::InfoLogSource     = 0 ;
 LogSource * LogPlug::TraceLogSource    = 0 ;
 LogSource * LogPlug::DebugLogSource    = 0 ;
@@ -43,139 +49,204 @@ LogAggregator * LogPlug::Aggregator = 0 ;
 string LogPlug::SourceName = "<no source specified>" ;
 
 
+
 const string LogPlug::LogSystemNotInitialized = 
 	"Attempt of using the Log system whereas it has not been initialized yet. "
 	"Consider using LogPlug<Implementation>::StartService, "
 	"for example LogPlugClassical::StartService" ;
 
 
+
 void LogPlug::SetInfoLogSource( LogSource & newInfoLogSource ) throw()
 {
+
     InfoLogSource = & newInfoLogSource ;
+	
 }
+
 
 
 LogSource & LogPlug::GetInfoLogSource() throw()
 {
+
     return * InfoLogSource ;
+	
 }
+
 
 
 void LogPlug::SetTraceLogSource( LogSource & newTraceLogSource ) throw()
 {
+
     TraceLogSource = & newTraceLogSource ;
+	
 }
+
 
 
 LogSource & LogPlug::GetTraceLogSource() throw()
 {
+
     return * TraceLogSource ;
+	
 }
+
 
 
 void LogPlug::SetDebugLogSource( LogSource & newDebugLogSource ) throw()
 {
+
     DebugLogSource = & newDebugLogSource ;
+	
 }
+
 
 
 LogSource & LogPlug::GetDebugLogSource() throw()
 {
+
     return * DebugLogSource ;
+	
 }
+
 
 
 void LogPlug::SetWarningLogSource( LogSource & newWarningLogSource ) throw()
 {
+
     WarningLogSource = & newWarningLogSource ;
+	
 }
+
 
 
 LogSource & LogPlug::GetWarningLogSource() throw()
 {
+
     return * WarningLogSource ;
+	
 }
+
 
 
 void LogPlug::SetErrorLogSource( LogSource & newErrorLogSource ) throw()
 {
+
     ErrorLogSource = & newErrorLogSource ;
+	
 }
+
 
 
 LogSource & LogPlug::GetErrorLogSource() throw()
 {
+
     return * ErrorLogSource ;
+	
 }
+
 
 
 void LogPlug::SetFatalLogSource( LogSource & newFatalLogSource ) throw()
 {
+
     FatalLogSource = & newFatalLogSource ;
+	
 }
+
 
 
 LogSource & LogPlug::GetFatalLogSource() throw()
 {
+
     return * FatalLogSource ;
+	
 }
+
 
 
 bool LogPlug::IsFatalLogSourceAvailable() throw()
 {
+
 	return ( FatalLogSource != 0 ) ;
+	
 }
+
 
 
 void LogPlug::SetLogRootLogSource( LogSource & newLogRootLogSource ) throw()
 {
+
     LogrootLogSource = & newLogRootLogSource ;
+	
 }
+
 
 
 LogSource & LogPlug::GetLogRootLogSource() throw()
 {
+
     return * LogrootLogSource ;
+	
 }
+
 
 
 void LogPlug::SetTransport( LogTransport & newTransport ) throw()
 {
+
     Transport = & newTransport ;
+	
 }
+
 
 
 LogTransport & LogPlug::GetTransport() throw()
 {
-    return * Transport ;
+
+    return *Transport ;
+	
 }
+
 
 
 void LogPlug::SetListener( LogListener & newListener ) throw()
 {
+
     Listener = & newListener ;
+	
 }
+
 
 
 LogListener & LogPlug::GetListener() throw()
 {
+
     return * Listener ;
+	
 }
+
 
 
 void LogPlug::SetAggregator( LogAggregator & newAggregator ) throw()
 {
+
     Aggregator = & newAggregator ;
+	
 }
+
 
 
 LogAggregator & LogPlug::GetAggregator() throw()
 {
+
     return * Aggregator ;
+	
 }
 
 
-void LogPlug::CheckBlank() throw ( LogException )
+
+void LogPlug::CheckBlank() throw( LogException )
 {
 
     if ( LogrootLogSource != 0 )
@@ -222,7 +293,8 @@ void LogPlug::CheckBlank() throw ( LogException )
 }
 
 
-void LogPlug::CreateBasicPlug() throw ( LogException )
+
+void LogPlug::CreateBasicPlug() throw( LogException )
 {
 	
 	CEYLAN_LOG( "Creating default standard channels." ) ;
@@ -231,19 +303,19 @@ void LogPlug::CreateBasicPlug() throw ( LogException )
 		throw LogException( "LogPlug::CreateBasicPlug: "
 			"no transport available" ) ;
 						
-	LogrootLogSource = new LogSource( "Log root", * Transport ) ;
+	LogrootLogSource = new LogSource( "Log root", *Transport ) ;
 	
-	FatalLogSource = new LogSource( "Fatal", * Transport ) ;
+	FatalLogSource = new LogSource( "Fatal", *Transport ) ;
 	
-	ErrorLogSource = new LogSource( "Error", * Transport ) ;
+	ErrorLogSource = new LogSource( "Error", *Transport ) ;
 		
-	WarningLogSource = new LogSource( "Warning", * Transport ) ;
+	WarningLogSource = new LogSource( "Warning", *Transport ) ;
 	
-	DebugLogSource = new LogSource( "Debug", * Transport ) ;
+	DebugLogSource = new LogSource( "Debug", *Transport ) ;
 
-	TraceLogSource = new LogSource( "Trace", * Transport ) ;
+	TraceLogSource = new LogSource( "Trace", *Transport ) ;
 	
-	InfoLogSource = new LogSource( "Info", * Transport ) ;
+	InfoLogSource = new LogSource( "Info", *Transport ) ;
 
 
 	LogrootLogSource->send( "Starting log plug service, from Ceylan "
@@ -266,7 +338,8 @@ void LogPlug::CreateBasicPlug() throw ( LogException )
 }
 
 
-void LogPlug::StartService( const string & plugCreator ) throw ( LogException )
+
+void LogPlug::StartService( const string & plugCreator ) throw( LogException )
 {
 
 	SourceName = plugCreator ;
@@ -293,6 +366,7 @@ void LogPlug::StartService( const string & plugCreator ) throw ( LogException )
         throw LogException( "No Log source assigned to LogPlug::fatal" ) ;
 
 }
+
 
 
 void LogPlug::StopService( bool warnIfAlreadyStopped ) throw()
@@ -393,10 +467,14 @@ void LogPlug::StopService( bool warnIfAlreadyStopped ) throw()
 }
 
 
+
 const string LogPlug::GetSourceName() throw()
 {
+
 	return SourceName ;
+	
 }
+
 
 
 const string LogPlug::ToString( Ceylan::VerbosityLevels level ) throw()
@@ -478,6 +556,7 @@ void LogPlug::info( const string & message, LevelOfDetail levelOfDetail )
 #endif // CEYLAN_DEBUG
 
     InfoLogSource->send( message, levelOfDetail ) ;
+	
 }
 
 
@@ -497,6 +576,7 @@ void LogPlug::trace( const string & message, LevelOfDetail levelOfDetail )
 #endif // CEYLAN_DEBUG
 
     TraceLogSource->send( message, levelOfDetail ) ;
+	
 }
 
 
@@ -516,6 +596,7 @@ void LogPlug::debug( const string & message, LevelOfDetail levelOfDetail )
 #endif // CEYLAN_DEBUG
 
     DebugLogSource->send( message, levelOfDetail ) ;
+	
 }
 
 
@@ -535,6 +616,7 @@ void LogPlug::warning( const string & message, LevelOfDetail levelOfDetail )
 #endif // CEYLAN_DEBUG
 
     WarningLogSource->send( message, levelOfDetail ) ;
+	
 }
 
 
@@ -554,6 +636,7 @@ void LogPlug::error( const string & message, LevelOfDetail levelOfDetail )
 #endif // CEYLAN_DEBUG
 
     ErrorLogSource->send( message, levelOfDetail ) ;
+	
 }
 
 
@@ -573,6 +656,7 @@ void LogPlug::fatal( const string & message, LevelOfDetail levelOfDetail )
 #endif // CEYLAN_DEBUG
 
     FatalLogSource->send( message, levelOfDetail ) ;
+	
 }
 
 
@@ -592,15 +676,20 @@ void LogPlug::logroot( const string & message, LevelOfDetail levelOfDetail )
 #endif // CEYLAN_DEBUG
 
     LogrootLogSource->send( message, levelOfDetail ) ;
+	
 }
+
 
 
 
 LogPlug::LogPlug() throw( LogException )
 {
+
 	throw LogException( 
 		"Ceylan::Log::LogPlug should not be instanciated directly." ) ;
+		
 }
+
 
 
 LogPlug::~LogPlug() throw()
