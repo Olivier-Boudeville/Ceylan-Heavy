@@ -16,16 +16,17 @@ using namespace Ceylan::Log ;
 
 
 LogSource::LogSource( const string & name, LevelOfDetail levelOfDetail ) 
-		throw() : 
+		throw(): 
 	_channelName( name ), _level( DefaultLevelOfDetailForSource )
 {
 
 }
 
 
+
 LogSource::LogSource( const string & name, LogTransport & transport,
 		LevelOfDetail levelOfDetail )
-		throw() : 
+		throw(): 
 	_channelName( name ), 
 	_level( DefaultLevelOfDetailForSource ),
 	_transport( & transport )  
@@ -34,8 +35,9 @@ LogSource::LogSource( const string & name, LogTransport & transport,
 }
 
 
+
 LogSource::LogSource( LogTransport & transport,	LevelOfDetail levelOfDetail )
-		throw() : 
+		throw(): 
 	_channelName(), 
 	_level( DefaultLevelOfDetailForSource ),
 	_transport( & transport )  
@@ -44,40 +46,59 @@ LogSource::LogSource( LogTransport & transport,	LevelOfDetail levelOfDetail )
 }
 
 
+
 LogSource::~LogSource() throw() 
 {
+
 	unlinkTransport() ;
+	
 }
+
 
 
 bool LogSource::hasChannelName() const throw()
 {
+
 	return ! _channelName.empty() ;
+	
 }
+
 
 
 void LogSource::setChannelName( const string & channelName ) throw() 
 {
+
 	_channelName = channelName ;
+	
 }
+
 
 
 std::string LogSource::getChannelName() const throw() 
 {
+
 	return _channelName ;
+	
 }
+
 
 
 void LogSource::setLevelOfDetail( LevelOfDetail newLevel ) throw() 
 {
+
 	_level = newLevel ;
+	
 }
+
 
 
 LevelOfDetail LogSource::getLevelOfDetail() const throw() 
 {
+
 	return _level ;
+	
 }
+
 
 
 void LogSource::send( const string & message, 
@@ -86,12 +107,13 @@ void LogSource::send( const string & message,
 	
 	/*
 	 * Too high level of detail will be filtered out in this call
-	 * to directSend :
+	 * to directSend:
 	 *
 	 */
 	directSend( _channelName, message, levelOfDetail ) ; 
 
 }
+
 
 
 void LogSource::sendToChannel( const string & channel, const string & message, 
@@ -102,14 +124,14 @@ void LogSource::sendToChannel( const string & channel, const string & message,
 		directSend( channel, message, levelOfDetail ) ; 		
 #if CEYLAN_DEBUG_LOG
 	else
-		CEYLAN_LOG( "LogSource::sendToChannel : dropping message [" + message 
+		CEYLAN_LOG( "LogSource::sendToChannel: dropping message [" + message 
 			+ "] because the source has a LOD of " 
 			+ Ceylan::toString( _level ) + " and the message "
 			+ Ceylan::toString( levelOfDetail ) + "." ) ;
 #endif // CEYLAN_DEBUG_LOG
 
-
 }
+
 
 
 void LogSource::directSend( const string & channel, const string & message, 
@@ -119,7 +141,7 @@ void LogSource::directSend( const string & channel, const string & message,
 #if CEYLAN_DEBUG_LOG
 	
 	if ( ! _transport )
-		throw LogException( "Ceylan::Log::LogSource::send : trying to "
+		throw LogException( "Ceylan::Log::LogSource::send: trying to "
 			"send a message whereas LogTransport not available." ) ;
 		
 #endif // CEYLAN_DEBUG_LOG
@@ -138,11 +160,13 @@ void LogSource::directSend( const string & channel, const string & message,
 }
 
 
+
 void LogSource::setTransport( LogTransport & newTransport ) throw() 
 {
+
 	if ( hasTransport() )
 	{
-		LogPlug::warning( "Ceylan::Log::LogSource::setTransport : there "
+		LogPlug::warning( "Ceylan::Log::LogSource::setTransport: there "
 			"was already a registered log Transport, unlinking it." ) ;
 			
 		unlinkTransport() ;
@@ -150,19 +174,27 @@ void LogSource::setTransport( LogTransport & newTransport ) throw()
 	}
 	
 	_transport = & newTransport ;
+	
 }
+
 
 				
 LogTransport * LogSource::getTransport() const throw() 
 {
+
 	return _transport ;
+	
 }
+
 
 				
 bool LogSource::hasTransport() const throw() 
 {
+
 	return ( _transport != 0 ) ;
+	
 }
+
 
 
 const string LogSource::toString( Ceylan::VerbosityLevels level ) const throw() 
@@ -178,6 +210,7 @@ const string LogSource::toString( Ceylan::VerbosityLevels level ) const throw()
 			+ Ceylan::toString( _level ) ;
 
 }	
+
 
 
 void LogSource::unlinkTransport() throw()
@@ -201,4 +234,7 @@ void LogSource::unlinkTransport() throw()
 	}
 	
 	*/
+	
 }
+
+
