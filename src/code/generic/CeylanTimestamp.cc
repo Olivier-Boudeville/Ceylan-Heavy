@@ -29,6 +29,7 @@ using namespace Ceylan::System ;
 
 
 
+
 Timestamp::Timestamp() throw( UtilsException )
 {
 
@@ -134,12 +135,14 @@ Timestamp::Timestamp() throw( UtilsException )
 }
 
 
+
 Timestamp::~Timestamp() throw()
 {
 
 	// No dynamic members.
 
 }
+
 
 
 const string Timestamp::toString( Ceylan::VerbosityLevels level ) const throw()
@@ -164,6 +167,7 @@ const string Timestamp::toString( Ceylan::VerbosityLevels level ) const throw()
 	return result ;
 	
 }	
+
 
 
 string Timestamp::DescribeDuration( Second duration ) throw()
@@ -260,6 +264,7 @@ string Timestamp::DescribeDuration( Second duration ) throw()
 	return join( res, ", " ) ;
 	
 }
+
 
 
 bool Timestamp::operator < (Timestamp & second ) throw() 
