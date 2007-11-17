@@ -1,8 +1,9 @@
 #include "CeylanFIFO.h"
 
 #include "CeylanLogPlug.h"             // for Log primitives
-#include "CeylanOperators.h"           // for toNumericalString
+#include "CeylanOperators.h"           // for toNumericalString, etc.
 #include "CeylanSystem.h"              // for ConvertToNonCacheable
+#include "CeylanUtils.h"               // for waitForKey
 
 
 #ifdef CEYLAN_USES_CONFIG_H
@@ -18,12 +19,30 @@
 #include "CeylanARM7Codes.h"           // for ARM7 status and error values
 #include "CeylanIPCCommands.h"         // for IPC command management
 
+
+
 using std::string ;
 
 using namespace Ceylan::System ;
 using namespace Ceylan::Log ;
 using namespace Ceylan ;
 
+
+
+#if CEYLAN_DEBUG_FIFO
+
+#define CEYLAN_LOG_FIFO(message) LogPlug::debug(message)
+
+#else // CEYLAN_DEBUG_FIFO
+
+#define CEYLAN_LOG_FIFO(message) 
+
+#endif // CEYLAN_DEBUG_FIFO
+
+
+
+// Define to 1 to allow for more checkings (do it too on the ARM7 side):
+#define CEYLAN_SAFE_FIFO 0
 
 
 /*
@@ -34,12 +53,13 @@ using namespace Ceylan ;
  *
  * @note If ever a variable is read in the main function and in an IRQ handler,
  * by all means declare it as volatile. The other ARM is not the only cause
- * of using this qualifier !
+ * of using this qualifier, it is useful for IRQ handler as well !
  *
  * Code called from an IRQ handler (ex: handle*) does not need to be 
- * specifically protected, as interrupts are disabled during them, but code
- * called from a sent request (ex: sent*) have to disable interrupts, using
- * preferably SetEnabledInterrupts.
+ * specifically protected, execution-wise, as interrupts are disabled during
+ * them, but code called from a sent request (ex: sent*) have to disable
+ * interrupts, using preferably SetEnabledInterrupts, otherwise commands might
+ * collide in the FIFO.
  *
  */
  
@@ -79,12 +99,6 @@ FIFO::FIFOEmpty::FIFOEmpty( const string & reason ) throw():
 }
 
 				
-void tutu()
-{
-	
-}
-	
-
 
 
 FIFO::FIFO() throw( FIFOException ):
@@ -97,20 +111,18 @@ FIFO::FIFO() throw( FIFOException ):
 {
 
 	// LogPlug::trace( "FIFO constructor" ) ;
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+#ifdef CEYLAN_RUNS_ON_ARM9
 	
 	if ( FIFO::_FIFO != 0 )
 		throw FIFOException( "FIFO constructor failed: "
 			"there is already a FIFO instance registered" ) ;
 
-
-#if CEYLAN_ARCH_NINTENDO_DS
-
-#ifdef CEYLAN_RUNS_ON_ARM9
-
-
 	/*
-	 * Two methods here to avoid the ARM7 sees obsolete values in the main RAM
-	 * while the correct ones sit in the ARM9 cache only:
+	 * Two approaches here to avoid the ARM7 sees obsolete values in the 
+	 * main RAM while the correct ones sit in the ARM9 cache only:
 	 *
 	 *   - method #1 (CEYLAN_USES_CACHE_FLUSH = 1), currently working:
 	 * we write values as usual (hence they are in the ARM9 cache) and then we
@@ -144,10 +156,10 @@ FIFO::FIFO() throw( FIFOException ):
 	(*_arm7StatusWordPointer) = NoStatusAvailable ;
 
 	if ( getLastARM7StatusWord() != NoStatusAvailable )
-		throw FIFOException( "FIFO constructor: "
+		LogPlug::warning( "FIFO constructor: "
 			"ARM7 status setting failed before flushing cache" ) ;
 
-	//DC_FlushAll() ;
+	//More specific than 'DC_FlushAll() ;':
 	DC_FlushRange( (void*) _arm7StatusWordPointer, sizeof(ARM7StatusWord) ) ;
 	
 	if ( getLastARM7StatusWord() != NoStatusAvailable )
@@ -162,10 +174,10 @@ FIFO::FIFO() throw( FIFOException ):
 	(*_arm7ErrorCodePointer) = NoErrorAvailable ;
 
 	if ( getLastARM7ErrorCode() != NoErrorAvailable )
-		throw FIFOException( "FIFO constructor: "
+		LogPlug::warning( "FIFO constructor: "
 			"ARM7 error setting failed before flushing cache" ) ;
 
-	//DC_FlushAll() ;
+	//More specific than 'DC_FlushAll() ;':
 	DC_FlushRange( (void*) _arm7ErrorCodePointer, sizeof(ARM7ErrorCode) ) ;
 	
 	if ( getLastARM7ErrorCode() != NoErrorAvailable )
@@ -179,8 +191,8 @@ FIFO::FIFO() throw( FIFOException ):
 	/*
 	 * Does not work, because the cache overwrites the mirrored data. 
 	 * So we set the correct values in the mirror and try to invalidate the
-	 * cache, but apparently the correct values are overwritten but the 
-	 * deprecated ones of the cache nevertheless.
+	 * cache, but apparently the correct values are overwritten by the 
+	 * deprecated ones, from the cache, nevertheless.
 	 *
 	 */
 	
@@ -235,29 +247,42 @@ FIFO::FIFO() throw( FIFOException ):
 	
 	 */
 
+
 	/*
 	 * Fully managed by the Ceylan FIFO system:
 	 *
 	 */
-
 	irqSet( IRQ_IPC_SYNC, SyncHandlerForFIFO ) ; 
+	 
 	 
 	/*
 	 * Fail-over VBlank handler added here, as needed at least for atomic
 	 * sleep.
 	 *
 	 * It may be associated with an user-specific handler for other
-	 * purposes later, as long as it is not disabled (other atomic sleeps
-	 * will freeze forever).
+	 * purposes later, as long as it is not disabled (otherwise atomic sleeps
+	 * would freeze forever).
 	 *
 	 */
-	irqSet( IRQ_VBLANK, tutu ) ;
+	irqSet( IRQ_VBLANK, 0 ) ;
 	
-	// Unleash these IRQ: 
+	// Unleashes these IRQ: 
     irqEnable( IRQ_IPC_SYNC | IRQ_VBLANK ) ;
 
 	// Last action is to register this FIFO:
 	_FIFO = this ;		
+
+
+	if ( getLastARM7StatusWord() != NoStatusAvailable )
+		throw FIFOException( "FIFO constructor: "
+			"ARM7 status setting failed, read finally: "
+			+ Ceylan::toString( getLastARM7StatusWord() )  ) ;
+		
+		
+	if ( getLastARM7ErrorCode() != NoErrorAvailable )
+		throw FIFOException( "FIFO constructor: "
+			"ARM7 error setting failed, read finally: "
+			+ Ceylan::toString( getLastARM7ErrorCode() )  ) ;
 
 	
 #endif // CEYLAN_RUNS_ON_ARM9
@@ -269,16 +294,6 @@ FIFO::FIFO() throw( FIFOException ):
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
-	if ( getLastARM7StatusWord() != NoStatusAvailable )
-		throw FIFOException( "FIFO constructor: "
-			"ARM7 status setting failed, read finally: "
-			+ Ceylan::toString( getLastARM7StatusWord() )  ) ;
-		
-	if ( getLastARM7ErrorCode() != NoErrorAvailable )
-		throw FIFOException( "FIFO constructor: "
-			"ARM7 error setting failed, read finally: "
-			+ Ceylan::toString( getLastARM7ErrorCode() )  ) ;
-	
 }
 
 
@@ -298,10 +313,12 @@ FIFO::~FIFO() throw()
 	 
 	_FIFO = 0 ;
 
+
 	if ( _arm7StatusWordPointer != 0 )
 		delete _arm7StatusWordPointer ;
 	
 	_arm7StatusWordPointer = 0 ;
+	
 	
 	if ( _arm7ErrorCodePointer != 0 )
 		delete _arm7ErrorCodePointer ;
@@ -320,14 +337,13 @@ void FIFO::activate() throw( FIFOException )
 
 #ifdef CEYLAN_RUNS_ON_ARM9
 
-	
 	// LogPlug::trace( "FIFO activate" ) ;
 
 	ARM7StatusWord initialStatus = getLastARM7StatusWord() ;
 	
 	ARM7ErrorCode initialError = getLastARM7ErrorCode() ;
 	
-	LogPlug::trace( "FIFO::activate: before sending command, "
+	CEYLAN_LOG_FIFO( "FIFO::activate: before sending command, "
 		"the ARM7 status word is equal to " 
 		+ Ceylan::toString( initialStatus ) + ", the error code is "
 		+ Ceylan::toString( initialError ) ) ;
@@ -365,7 +381,6 @@ void FIFO::activate() throw( FIFOException )
 	 */
   	REG_IPC_FIFO_CR = IPC_FIFO_ENABLE | IPC_FIFO_SEND_CLEAR ;
 
-	// No IRQ_IPC_SYNC to specifically set to REG_IE ?
 	
 	/*
 	 * IPC_SYNC_IRQ_ENABLE allows the ARM7 to trigger IPC_SYNC IRQ on this
@@ -380,7 +395,7 @@ void FIFO::activate() throw( FIFOException )
 	
 	/*
 	 * Send the address of the variables to be used by the ARM7
-	 * to report its status and last error, with relevant command identifier:.
+	 * to report its status and last error, with relevant command identifier.
 	 *
 	 * Uses and updates _localCommandCount:
 	 *
@@ -388,7 +403,7 @@ void FIFO::activate() throw( FIFOException )
 	FIFOElement commandElement = prepareFIFOCommand( 
 		SendARM7StatusAndErrorReportAddress ) ;
 
-	LogPlug::trace( "FIFO::activate: sending IPC activate report command." ) ;
+	CEYLAN_LOG_FIFO( "FIFO::activate: sending IPC activate report command." ) ;
 		
 	/*
 	 * LogPlug::debug( "Init command is: " 
@@ -399,30 +414,34 @@ void FIFO::activate() throw( FIFOException )
 	
 	writeBlocking( commandElement ) ;
 	
-	LogPlug::trace( "FIFO::activate: sending address of the status word." ) ;
+	CEYLAN_LOG_FIFO( "FIFO::activate: sending address of the status word." ) ;
 			
 	writeBlocking( 
 		/* address of the status word */ 
 		reinterpret_cast<FIFOElement>( _arm7StatusWordPointer ) ) ;
 
-	LogPlug::trace( "FIFO::activate: sending address of the error word." ) ;
+	CEYLAN_LOG_FIFO( "FIFO::activate: sending address of the error word." ) ;
 			
 	writeBlocking( 
 		/* address of the error word */ 
 		reinterpret_cast<FIFOElement>( _arm7ErrorCodePointer ) ) ;
 	
-	
 	SetEnabledInterrupts( previous ) ;
+	
 	notifyCommandToARM7() ;
 
 	
 	// Wait for at most a whole second:
-	Ceylan::Uint8 VBlankCount = 120 ;
+	Ceylan::Uint8 VBlankCount = 60 ;
 		
 	/*
 	 * getLastARM7StatusWord might return the starting value 
 	 * (NoStatusAvailable) or 0 (StatusVoluntarilyLeftBlank) which is found
 	 * in the FIFO before the ARM7 inits it.
+	 *
+	 * @note Even with pointers to volatile, the ARM9 still from times to times
+	 * fail to grab the correct value in RAM, maybe confused by its cache. So
+	 * the values have to be invalidated in the cache again and again.
 	 *
 	 * Waiting for the ARM7 to update these variables:
 	 *
@@ -433,22 +452,27 @@ void FIFO::activate() throw( FIFOException )
 	{
 
 		sendSynchronizeInterruptToARM7() ;
+	
+#if CEYLAN_DEBUG_FIFO
 		
 		if ( VBlankCount % 10 == 0 )
-			LogPlug::debug( "Status = " 
+			LogPlug::debug( "activating: status = " 
 				+ Ceylan::toString( getLastARM7StatusWord() ) + ", error = "
 				+ Ceylan::toString( getLastARM7ErrorCode() ) ) ;
+				
+#endif // CEYLAN_DEBUG_FIFO
 		
-		//DC_FlushAll() ;
 		atomicSleep() ;
 		VBlankCount-- ;
-	
+
 	}	
+	
 	
 	if ( VBlankCount == 0 )
 		throw FIFOException( "FIFO::activate: "
 			"time-out reached while waiting for ARM7 update" ) ;
 
+	// Not really used currently, as relying on the command embedded count;
 	FIFOCommandCount arm7Count = GetARM7ProcessedCount() ;
 	
 	if ( arm7Count != 1 )
@@ -468,7 +492,8 @@ void FIFO::activate() throw( FIFOException )
 			+ interpretLastARM7ErrorCode() ) ;
 	
 	
-	LogPlug::trace( "FIFO successfully activated, ARM handshake completed" ) ;
+	CEYLAN_LOG_FIFO( "FIFO successfully activated, ARM handshake completed" ) ;
+
 	
 #endif // CEYLAN_RUNS_ON_ARM9
 
@@ -481,8 +506,12 @@ void FIFO::activate() throw( FIFOException )
 void FIFO::deactivate() throw()
 {
 
+#if CEYLAN_ARCH_NINTENDO_DS
 
-	LogPlug::trace( "FIFO deactivate, stopping IPC system" ) ;
+#ifdef CEYLAN_RUNS_ON_ARM9
+
+	CEYLAN_LOG_FIFO( "FIFO deactivate, stopping IPC system" ) ;
+
 
 	InterruptMask previous = SetEnabledInterrupts( AllInterruptsDisabled ) ;
 	
@@ -493,9 +522,10 @@ void FIFO::deactivate() throw()
 	 */
 	writeBlocking( prepareFIFOCommand( ShutdownIPC ) ) ;
 
-	
 	SetEnabledInterrupts( previous ) ;
+
 	notifyCommandToARM7() ;
+
 	
 	// Wait for at most a whole second:
 	Ceylan::Uint8 VBlankCount = 60 ;
@@ -505,8 +535,12 @@ void FIFO::deactivate() throw()
 		&& ( VBlankCount > 0 ) )
 	{
 
+#if CEYLAN_DEBUG_FIFO
+
 		if ( VBlankCount % 10 == 0 )
 			LogPlug::trace( "deactivating: " + interpretLastARM7StatusWord() ) ;
+
+#endif // CEYLAN_DEBUG_FIFO
 		
 		atomicSleep() ;
 		VBlankCount-- ;
@@ -517,7 +551,7 @@ void FIFO::deactivate() throw()
 	if ( VBlankCount == 0 )
 		LogPlug::error( "FIFO::deactivate ended on a time-out" ) ;
 	else
-		LogPlug::trace( "ARM7 shutdown successful" ) ;
+		CEYLAN_LOG_FIFO( "ARM7 shutdown successful" ) ;
 	
 	// Disable IPC sync IRQ:
 	irqDisable( IRQ_IPC_SYNC ) ;
@@ -526,6 +560,16 @@ void FIFO::deactivate() throw()
 	// Disable FIFO:
 	REG_IPC_FIFO_CR = REG_IPC_FIFO_CR &	~IPC_FIFO_ENABLE ;   	
 
+
+#endif // CEYLAN_RUNS_ON_ARM9
+		
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	throw FIFO::FIFOException( "FIFO constructor failed: "
+		"not available on this platform." ) ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 }
 
 
@@ -533,12 +577,22 @@ void FIFO::deactivate() throw()
 FIFOElement FIFO::prepareFIFOCommand( FIFOCommandID id ) throw()
 {
 
+#if CEYLAN_SAFE_FIFO
+
 	FIFOElement res = ( id << 24 ) | ( _localCommandCount << 16 ) ;
 	
 	// Prepare for next command:
 	_localCommandCount++ ;
 	
 	return res ;
+
+#else // CEYLAN_SAFE_FIFO
+
+	FIFOElement res = id << 24 ;
+		
+	return res ;
+
+#endif // CEYLAN_SAFE_FIFO
 	
 }
 
@@ -551,10 +605,23 @@ FIFOElement FIFO::prepareFIFOCommand( FIFOCommandID id ) throw()
 ARM7StatusWord FIFO::getLastARM7StatusWord() throw()
 {
 
+#if CEYLAN_ARCH_NINTENDO_DS
+
 	if ( _arm7StatusWordPointer == 0 )
 		return NoStatusVariableAvailable ;
-	
-	return ( *_arm7StatusWordPointer ) ;
+
+	// Try to bypass this very annoying ARM9 cache:
+	volatile ARM7StatusWord * temp = (volatile ARM7StatusWord *)
+		( ( (Ceylan::Uint32) _arm7StatusWordPointer) | 0x400000 ) ;
+
+	return ( *temp ) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	// Dummy to allow compilation, will never be used:
+	return 1 ;
+		
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 }
 
@@ -614,7 +681,11 @@ ARM7ErrorCode FIFO::getLastARM7ErrorCode() throw()
 	if ( _arm7ErrorCodePointer == 0 )
 		return NoErrorVariableAvailable ;
 	
-	return ( *_arm7ErrorCodePointer ) ;
+	// Try to bypass this very annoying ARM9 cache:
+	volatile ARM7ErrorCode * temp = (volatile ARM7ErrorCode *)
+		( ( (Ceylan::Uint32) _arm7ErrorCodePointer) | 0x400000 ) ;
+
+	return ( *temp ) ; 
 	
 }
 
@@ -773,18 +844,51 @@ FIFOCommandCount FIFO::GetFIFOCommandCountFrom(
 FIFOCommandCount FIFO::GetARM7ProcessedCount() throw()
 {
 	
+#if CEYLAN_ARCH_NINTENDO_DS
+
+#ifdef CEYLAN_RUNS_ON_ARM9
+
 	// IPC Remote Status is in bits 0-3:
 	return REG_IPC_SYNC & 0x0f ;
+
+#endif // CEYLAN_RUNS_ON_ARM9
+		
+	// Dummy to allow compilation, will never be used:
+	return 1 ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	// Dummy to allow compilation, will never be used:
+	return 1 ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 }
+
 
 
 FIFOCommandCount FIFO::GetARM9ProcessedCount() throw()
 {
 	
+#if CEYLAN_ARCH_NINTENDO_DS
+
+#ifdef CEYLAN_RUNS_ON_ARM9
+
 	// IPC Local Status is in bits 8-11:
 	return ( REG_IPC_SYNC & 0x0f00 ) >> 8 ;
 	
+#endif // CEYLAN_RUNS_ON_ARM9
+		
+	// Dummy to allow compilation, will never be used:
+	return 1 ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	// Dummy to allow compilation, will never be used:
+	return 1 ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 }
 
 
@@ -792,6 +896,12 @@ FIFOCommandCount FIFO::GetARM9ProcessedCount() throw()
 void FIFO::VBlankHandlerForFIFO() 
 {
 
+#if CEYLAN_ARCH_NINTENDO_DS
+
+#ifdef CEYLAN_RUNS_ON_ARM9
+
+	// Not used currently, as not registered as a handler.
+	
 	// 'if ( dataAvailableForReading() )', but we are static here:
 	if ( ! ( REG_IPC_FIFO_CR & IPC_FIFO_RECV_EMPTY ) )
 	{
@@ -804,6 +914,10 @@ void FIFO::VBlankHandlerForFIFO()
 		ManageReceivedCommand() ;
 	
 	}
+
+#endif // CEYLAN_RUNS_ON_ARM9
+		
+#endif // CEYLAN_ARCH_NINTENDO_DS
 				
 }
 
@@ -817,6 +931,10 @@ void FIFO::VBlankHandlerForFIFO()
 void FIFO::sendSynchronizeInterruptToARM7() throw()
 {
 
+#if CEYLAN_ARCH_NINTENDO_DS
+
+#ifdef CEYLAN_RUNS_ON_ARM9
+
 	//LogPlug::trace( "FIFO::sendSynchronizeInterruptToARM7 begin" ) ;
 	
 	// Triggers an IRQ on the ARM7 and specifies the local processed count:
@@ -825,6 +943,10 @@ void FIFO::sendSynchronizeInterruptToARM7() throw()
 
 	//LogPlug::trace( "FIFO::sendSynchronizeInterruptToARM7 end" ) ;
 
+#endif // CEYLAN_RUNS_ON_ARM9
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 }
 
 
@@ -832,7 +954,16 @@ void FIFO::sendSynchronizeInterruptToARM7() throw()
 bool FIFO::dataAvailableForReading() const throw()
 {
 
+#if CEYLAN_ARCH_NINTENDO_DS
+
 	return ! ( REG_IPC_FIFO_CR & IPC_FIFO_RECV_EMPTY ) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	// Dummy to allow compilation, will never be used:
+	return 1 ;
+	
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 }
 
@@ -841,7 +972,16 @@ bool FIFO::dataAvailableForReading() const throw()
 bool FIFO::spaceAvailableForWriting() const throw()
 {
 
+#if CEYLAN_ARCH_NINTENDO_DS
+
 	return ! ( REG_IPC_FIFO_CR & IPC_FIFO_SEND_FULL ) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	// Dummy to allow compilation, will never be used:
+	return 1 ;
+	
+#endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
 
@@ -852,12 +992,14 @@ FIFOElement FIFO::read() throw( FIFOException )
 
 	// LogPlug::trace( "FIFO read" ) ;
 
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_ARCH_NINTENDO_DS
+
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
 		throw FIFOException( "FIFO::read: FIFO in error before reading" ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
+#endif // CEYLAN_SAFE_FIFO
 
 	
 	if ( ! dataAvailableForReading() )
@@ -866,15 +1008,21 @@ FIFOElement FIFO::read() throw( FIFOException )
 	FIFOElement res = REG_IPC_FIFO_RX ;
 
 
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
 		throw FIFOException( "FIFO::read: FIFO in error after reading" ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
-	
-	
+#endif // CEYLAN_SAFE_FIFO
+		
 	return res ;
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	// Dummy to allow compilation, will never be used:
+	return 1 ;
+	
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 }
 
@@ -885,16 +1033,18 @@ FIFOElement FIFO::readBlocking() throw( FIFOException )
 
 	// LogPlug::trace( "FIFO readBlocking" ) ;
 
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_ARCH_NINTENDO_DS
+
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
 		throw FIFOException( 
 			"FIFO::readBlocking: FIFO in error before waiting" ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
+#endif // CEYLAN_SAFE_FIFO
 
 
-	Ceylan::Uint32 attemptCount = 1000 ;
+	Ceylan::Uint32 attemptCount = 100000 ;
 	
 	// Active waiting preferred to atomicSleep():
 
@@ -906,33 +1056,42 @@ FIFOElement FIFO::readBlocking() throw( FIFOException )
 	
 		LogPlug::warning( "FIFO::readBlocking: never ending ?" ) ;
 
+		// Triggers the ARM7 if it can help to make some FIFO room:
+		sendSynchronizeInterruptToARM7() ;
+		
 		while ( ! dataAvailableForReading() )
 			;
 	
 	}		
 
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
 		throw FIFOException( "FIFO::readBlocking: "
 			"FIFO in error after waiting but before reading" ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
+#endif // CEYLAN_SAFE_FIFO
 
 
 	FIFOElement res = REG_IPC_FIFO_RX ;
 
 
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
 		throw FIFOException( "FIFO::readBlocking: "
 			"FIFO in error after reading" ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
-
+#endif // CEYLAN_SAFE_FIFO
 
 	return res ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	// Dummy to allow compilation, will never be used:
+	return 1 ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 }
 
@@ -943,12 +1102,14 @@ void FIFO::write( FIFOElement toSend ) throw( FIFOException )
 
 	// LogPlug::trace( "FIFO write" ) ;
 
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_ARCH_NINTENDO_DS
+
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
 		throw FIFOException( "FIFO::write: FIFO in error before writing" ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
+#endif // CEYLAN_SAFE_FIFO
 
 	
 	if ( ! spaceAvailableForWriting() )
@@ -958,12 +1119,14 @@ void FIFO::write( FIFOElement toSend ) throw( FIFOException )
 	REG_IPC_FIFO_TX = toSend ;
 
 	
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
 		throw FIFOException( "FIFO::write: FIFO in error after writing" ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
+#endif // CEYLAN_SAFE_FIFO
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 }
 
@@ -974,17 +1137,19 @@ void FIFO::writeBlocking( FIFOElement toSend ) throw( FIFOException )
 
 	// LogPlug::trace( "FIFO writeBlocking" ) ;
 
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_ARCH_NINTENDO_DS
+
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
 		throw FIFOException( 
 			"FIFO::writeBlocking: FIFO in error before waiting" ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
+#endif // CEYLAN_SAFE_FIFO
 
 	
 	
-	Ceylan::Uint32 attemptCount = 1000 ;
+	Ceylan::Uint32 attemptCount = 100000 ;
 	
 	// Active waiting preferred to atomicSleep():
 
@@ -1006,26 +1171,28 @@ void FIFO::writeBlocking( FIFOElement toSend ) throw( FIFOException )
 	}
 	
 
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
 		throw FIFOException( "FIFO::writeBlocking: "
 			"FIFO in error after waiting but before writing" ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
+#endif // CEYLAN_SAFE_FIFO
 	
 	
 	REG_IPC_FIFO_TX = toSend ;
 
 
-#if CEYLAN_DEBUG_FIFO
+#if CEYLAN_SAFE_FIFO
 
 	if ( REG_IPC_FIFO_CR & IPC_FIFO_ERROR )
 		throw FIFOException( "FIFO::writeBlocking: "
 			"FIFO in error after writing" ) ;
 
-#endif // CEYLAN_DEBUG_FIFO
+#endif // CEYLAN_SAFE_FIFO
 	
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 }
 
 
@@ -1051,10 +1218,14 @@ FIFOCommandCount FIFO::getSentCount() const throw()
 void FIFO::incrementProcessedCount() throw() 
 {
 
+#if CEYLAN_ARCH_NINTENDO_DS
+
 	_processedCount++ ;
 	
 	// Updates the local processed count in IPC register:
 	REG_IPC_SYNC = (REG_IPC_SYNC & 0xf0ff) | (getProcessedCount() << 8) ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 		
 }
 
@@ -1063,10 +1234,11 @@ void FIFO::incrementProcessedCount() throw()
 void FIFO::handleReceivedCommand() throw()
 {
 
+#if CEYLAN_ARCH_NINTENDO_DS
+
 
 	FIFOElement firstElement ;
 	FIFOCommandID id ;
-	FIFOCommandCount count ;
 	
 	/*
 	 * During the management of this command, notifications of incoming FIFO
@@ -1087,7 +1259,9 @@ void FIFO::handleReceivedCommand() throw()
 	 	// readBlocking instead of read: increased safety ?
 		firstElement = readBlocking() ;
 
-	 	count = GetFIFOCommandCountFrom( firstElement ) ;
+#if CEYLAN_SAFE_FIFO
+
+	 	FIFOCommandCount count = GetFIFOCommandCountFrom( firstElement ) ;
 		
 		if ( count != _remoteCommandCount )
 		{
@@ -1103,6 +1277,8 @@ void FIFO::handleReceivedCommand() throw()
 		}
 		
 		_remoteCommandCount++ ;
+
+#endif // CEYLAN_SAFE_FIFO
 		
 	
 		id = GetFIFOCommandIDFrom( firstElement ) ;
@@ -1142,6 +1318,7 @@ void FIFO::handleReceivedCommand() throw()
 	
 	} // end while
 	
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 }
 
@@ -1165,10 +1342,14 @@ void FIFO::SyncHandlerForFIFO()
 {
 	
 	//LogPlug::trace( "FIFO::SyncHandlerForFIFO called" ) ;
+
+#if CEYLAN_ARCH_NINTENDO_DS
 	
 	// 'if ( dataAvailableForReading() )', but we are static here:
 	if ( ! ( REG_IPC_FIFO_CR & IPC_FIFO_RECV_EMPTY ) )
 		ManageReceivedCommand() ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 				
 }
 
@@ -1176,6 +1357,8 @@ void FIFO::SyncHandlerForFIFO()
 
 void FIFO::ManageReceivedCommand()
 {
+
+#if CEYLAN_ARCH_NINTENDO_DS
 
 	/**
 	 * Should always be called from a context where relevant interrupts have 
@@ -1185,6 +1368,7 @@ void FIFO::ManageReceivedCommand()
 	 *
 	 */
 	
+#if CEYLAN_SAFE_FIFO
 	 
     /**
      * Tells whether a command is in progress: as soon as the ARM7
@@ -1224,10 +1408,14 @@ void FIFO::ManageReceivedCommand()
 	{
 	
 		CommandInProgress = true ;
+
+#endif // CEYLAN_SAFE_FIFO
 		
 		
 		if ( _FIFO != 0 )			
 			_FIFO->handleReceivedCommand() ;
+
+#if CEYLAN_SAFE_FIFO
 		
 		CommandInProgress = false ;	
 
@@ -1250,6 +1438,9 @@ void FIFO::ManageReceivedCommand()
 	 *
 	 */
 
+#endif // CEYLAN_SAFE_FIFO
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 }
 
@@ -1260,14 +1451,22 @@ string FIFO::DescribeCommand( FIFOElement element ) throw()
 
 	string res = "Command is equal to " + Ceylan::toString( element ) 
 		+ ", i.e. " + Ceylan::toString( element, /* bitField */ true ) ;
+
+#if CEYLAN_SAFE_FIFO
 		
 	res += ". Command ID is " 
 		+ Ceylan::toNumericalString( GetFIFOCommandIDFrom( element ) )
 		+ ", command count is " 
 		+ Ceylan::toNumericalString( GetFIFOCommandCountFrom( element ) ) ;
+
+#else // CEYLAN_SAFE_FIFO
+	
+	res += ". Command ID is " 
+		+ Ceylan::toNumericalString( GetFIFOCommandIDFrom( element ) ) ;
+		
+#endif // CEYLAN_SAFE_FIFO
 	
 	return res ;	
 	
 }
-
 
