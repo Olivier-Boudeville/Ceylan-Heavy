@@ -26,11 +26,15 @@ TEST_EXEC_EXTENSION = nds
 
 TEST_ARM9_SOURCES = $(wildcard *.arm9.cc)
 
+# Target linker can be; sc (SuperCard) or r4 (R4)
+TARGET_LINKER = r4
+
 #TEST_TARGETS = $(patsubst %.arm9.cc,%-$(TEST_PREFIX)-patched.$(TEST_EXEC_EXTENSION),$(TEST_ARM9_SOURCES))
-TEST_TARGETS = testCeylanFIFO-0.7-release-patched.nds
+TEST_TARGETS = testCeylanFIFO-0.7-release-patched.$(TARGET_LINKER).nds
+
 
 # Some are patched, the others not:
-#TESTS_TO_TRANSFER = $(wildcard *.sc.nds)
+#TESTS_TO_TRANSFER = $(wildcard *.$(CURRENT_LINKER).nds)
 
 CEYLAN_TESTED_VERSION    = $(CEYLAN_VERSION)
 CEYLAN_TESTED_BUILD_MODE = $(CEYLAN_BUILD_MODE)
@@ -328,7 +332,7 @@ testCeylanFIFO-$(TEST_PREFIX).nds: testCeylanFIFO-$(TEST_PREFIX).arm7.bin \
 
 
 # r4 for R4 linker:
-%-patched.r4.nds: %.ds.gba $(CEYLAN_ARM9_INSTALLED_LIB)
+%-patched.r4.nds: %.nds $(CEYLAN_ARM9_INSTALLED_LIB)
 	@echo "    Patching $< into $@ with DLDI patch $(DLDITOOL_R4_SCRIPT)"
 	@$(DLDITOOL) $(DLDITOOL_R4_SCRIPT) $< ; /bin/cp -f $< $@
 
