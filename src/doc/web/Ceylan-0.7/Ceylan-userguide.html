@@ -30,6 +30,7 @@
   </div><br>
   <a name="_top_"></a>
 
+<a name="maintoc"></a>
 
 <h1>User Guide for the Ceylan 0.7 version</h1>
 
@@ -39,7 +40,35 @@ This user guide is not yet written. There are some informations here though, and
 </p>
 
 
+<center>
+        <table summary="Table of contents" style="border: none">
+        <tr>
+          <td>
+                   <div class="box">
+                       <a href="#file-management">How does the file management work ?</a><br>
+                       <a href="#middleware">How does the middleware layer work ?</a><br>
+                       <a href="#scheduling">Understanding atomic sleeps and scheduling granularity</a><br>
+                       <a href="#ds-ipc">How does the IPC system for the Nintendo DS work ?</a><br>
+                       <a href="#hints">A few hints</a><br>
+                       <a href="#advices">Some general advices</a>
 
+<!--
+                       <a href="#"></a><br>
+-->
+
+          			</div>
+
+          </td>
+        </tr>
+      </table>
+</center>
+
+<!--
+<p><center>[<a href="#maintoc">Back to the main table of contents</a>]</center></p><br><br>
+-->
+
+
+<a name="file-management"></a>
 <h3>How does the file management work ?</h3>
 <p>
 The convention here is to separate access to disk-like data storage into three layers:
@@ -63,9 +92,9 @@ These three layers have been defined in an abstract level (<code>FileSystemManag
 
 	<li>for <b>libfat-based implementations</b>, currently on the <a href="http://osdl.sourceforge.net/main/documentation/misc/nintendo-DS/HomebrewForDS.html" target="_blank">Nintendo DS</a>, we have: <code>LibfatFileSystemManager</code> / <code>LibfatDirectory</code> / <code>LibfatFile</code> (see a libfat <a href="http://osdl.sourceforge.net/main/documentation/misc/nintendo-DS/HomebrewForDS.html#libfat" target="_blank">description</a>)</li>
 
-	<li><b>libefs-based implementations</b>, again on the Nintendo DS, may be targeted next, with <code>LibefsFileSystemManager</code> / <code>LibefsDirectory</code> / <code>LibefsFile</code> (see a libefs <a href="http://osdl.sourceforge.net/main/documentation/misc/nintendo-DS/HomebrewForDS.html#libefs" target="_blank">description</a>)</li>
+	<li><b>libefs-based implementations</b>, again on the Nintendo DS, may be targeted next, with <code>LibefsFileSystemManager</code> / <code>LibefsDirectory</code> / <code>LibefsFile</code> (see a libefs <a href="http://osdl.sourceforge.net/main/documentation/misc/nintendo-DS/HomebrewForDS.html#libefs" target="_blank">description</a>) [not yet available]</li>
 
-	<li><b>PhysicsFS-based implementations</b> may be used in the future, for the PC (see <a href="http://icculus.org/physfs/" target="_blank">homepage</a>)</li>
+	<li><b>PhysicsFS-based implementations</b> may be used in the future, for the PC (see <a href="http://icculus.org/physfs/" target="_blank">homepage</a>) [not yet available]</li>
 
 <!--
 	<li><b></b>: </li>
@@ -103,8 +132,12 @@ myFile.close() ;
 Actually this <code>File</code> class is abstract, and the factories return instances of child classes. On a PC, <code>File::Create</code> will return a reference on a <code>StandardFile</code> instance, whereas on the Nintendo DS it will be a <code>LibfatFile</code> instance. From the point of view of the Ceylan-using program, it will not change anything.
 </p>
 
+<p><center>[<a href="#maintoc">Back to the main table of contents</a>]</center></p><br><br>
 
 
+
+
+<a name="middleware"></a>
 <h3>How does the middleware layer work ?</h3>
 
 <p>
@@ -138,8 +171,11 @@ For client/server model:
 
 </p>
 
+<p><center>[<a href="#maintoc">Back to the main table of contents</a>]</center></p><br><br>
 
 
+
+<a name="scheduling"></a>
 <h3>Understanding atomic sleeps and scheduling granularity</h3>
 <p>
 Being able to sleep the shortest amount of time is useful in different contexts, to lighten busy loops or to prevent the operating system from considering the application to be CPU-hungry, which would lead to make it starve on purpose.
@@ -184,8 +220,420 @@ As a side note, one can compare these results with the ones obtained on a laptop
 One can see a schedule granularity of 16 ms. One remarkable fact is that, whereas the delay accuracy is below 1 microsecond, the measured delays are always multiples of 1000 microseconds (ex: either 15000 or 16000, never other numbers). 
 </p>
 
+<p>
+Note that this discussion applies to platforms running a multitasking operating system. For others, like the Nintendo DS, which do not have even an OS, an <code>atomicSleep</code> consists just on a wait for next vertical retrace (VBL), i.e. a duration of up to 16,7 ms (since running at 60 Hz).
+</p>
 
 
+<p><center>[<a href="#maintoc">Back to the main table of contents</a>]</center></p><br><br>
+
+
+
+
+<a name="ds-ipc"></a>
+<h3>How does the IPC system for the Nintendo DS work ?</h3>
+
+<h4>Overview</h4>
+<p>
+Our system relies on the two hardware FIFO offered by the DS to convey bidirectional interrupt-based reliable asynchronous commands and answers, which is a kind of <a href="http://en.wikipedia.org/wiki/Inter-process_communication" target="_blank">Inter-process communication</a> between the two general-purpose processors of the DS, the ARM9 and the ARM7.
+</p>
+
+<p>
+On the ARM9, the system is based on C++ code that can be specialized by the user, simply by defining a child class of the <code>Ceylan::System::FIFO</code> class which overrides only one method, <code>handleReceivedApplicationCommand</code>. See <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/system/CeylanFIFO.h?view=markup" target="_blank">CeylanFIFO.h</a>, <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/system/CeylanFIFO.cc?view=markup" target="_blank">CeylanFIFO.cc</a> and <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/test/cross-tests/testCeylanFIFO.arm9.cc?view=markup" target="_blank">testCeylanFIFO.arm9.cc</a>.
+</p>
+
+<p>
+On the ARM7, it is C code that can be specialized by the user, simply by reusing the test template and adapting the <code>handleReceivedApplicationCommand</code> function. See <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/test/cross-tests/testCeylanFIFO.arm7.c?view=markup" target="_blank">testCeylanFIFO.arm7.c</a>.
+</p>
+
+<p>
+Two shared variables are used in parallel to the FIFO, so that the ARM9 can monitor the ARM7 status and error codes (see <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/system/CeylanARM7Codes.h?view=markup" target="_blank">CeylanARM7Codes.h</a> for their definitions).
+</p>
+
+
+<p>
+In our next examples, adapted from the aforementioned tests, two main commands are used:
+<ul>
+
+	<li><b>compute</b> request: sent by the ARM9 to the ARM7, which adds a constant to a variable passed by value and returns the result</li>
+	
+	<li><b>sum</b> request: sent by the ARM7 to the ARM9, which specifies two parameters by value and expect to have their sum returned</li>
+
+<!--
+	<li><b></b>: </li>
+-->
+
+</ul>
+
+</p>
+
+<p>
+Once the handshake between the ARMs has been performed, the ARM7 status can be read thanks to <code>getLastARM7StatusWord</code>, interpreted with <code>interpretLastARM7StatusWord</code>. Its error code can be similarly taken into account thanks to <code>getLastARM7ErrorCode</code> and <code>interpretLastARM7ErrorCode</code>. As they are reported thanks to appropriately synchronized shared variables (in main RAM; not in the so-called <em>IPC transfer region</em>), they are independent from the FIFO and thus very useful to help debugging. 
+</p>
+
+
+<h4>Sending requests</h4>
+
+<p>
+Each ARM can send commands to the other ARM by putting command elements in its send FIFO, which is the receive FIFO of the other ARM. Each element is a 32-bit value. The first element describes, in its first byte, the actual command, by specifying a command identifier. Application-specific (i.e. user-supplied) identifiers must be in the <code>[128..255]</code> reserved range, see <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/system/CeylanIPCCommands.h?view=markup" target="_blank">CeylanIPCCommands.h</a> for more details.
+</p>
+
+<p>
+If in safe mode (<code>CEYLAN_SAFE_FIFO</code> equal to 1), the second byte is used to specify a command number, which allows each ARM to monitor the connection and detect any lost command. This mode could be disabled safely, as our tests in emulators and real DS did not show loss of FIFO elements, even under long-run full load on both directions and with random delays added.
+</p>
+
+<p>
+The remaining bytes of the first FIFO element (2 in safe mode, otherwise 3) and the next FIFO elements of the command (if any) are to be used to specify command parameters (ex: pointers, values, etc.).
+</p>
+
+<p>
+When sending a command element, the write primitives must be in a <code>setEnabledInterrupts</code> pair, to prevent any other concurrent activity to interlace other elements in the FIFO.
+</p>
+
+<p>
+After each command element has been written to the FIFO, the other ARM must be notified, as no polling is used. The notification is sent thanks to the IPC sync IRQ.
+</p>
+
+
+
+<h5>ARM9 short example</h5>
+
+<p>
+<center>
+    <table summary="a box" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>			
+virtual void sendComputeRequest() throw()
+{	
+	try
+	{		
+		InterruptMask previous = SetEnabledInterrupts(
+			AllInterruptsDisabled ) ;
+		/*
+		 * 128: application-specific compute request ID, the 2/3
+		 * remaining bytes in FIFO element not used.
+		 *
+		 */
+		FIFOElement commandElement = prepareFIFOCommand( 128 ) ;
+			
+		writeBlocking( commandElement ) ;
+		writeBlocking( static_cast&lt;FIFOElement&gt;( _value ) ) ;
+		SetEnabledInterrupts( previous ) ;
+		notifyCommandToARM7() ;
+					
+	}
+	catch( const FIFOException & e )
+	{
+		...
+			
+	}		
+}	
+</pre></code>			
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+</p>
+
+
+<h5>ARM7 example</h5>
+<p>
+<center>
+    <table summary="a box" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>			
+void sendSumRequest()
+{
+	InterruptMask previous = setEnabledInterrupts( AllInterruptsDisabled ) ;
+	
+	/* 130: application-specific sum request ID, other bytes unused: */
+	writeBlocking( prepareFIFOCommand( 130 ) ) ;
+		
+	writeBlocking( 234 ) ;
+	
+	writeBlocking( 1000 ) ;	
+		
+	setEnabledInterrupts( previous ) ;	
+	
+	notifyCommandToARM9() ;
+}
+</pre></code>			
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+</p>
+
+
+
+
+<h4>Answering to requests</h4>
+
+<p>
+On the receiving side, the Ceylan system detects the IRQ synchronization notification, checks the command number if in safe mode, and reads the command identifier. If it is a system (Ceylan-specific) command, it is handled without any specific support in the user code, otherwise it is an application-specific request, and its management is delegated, on the ARM9, to the <code>handleReceivedApplicationCommand</code> overriden method or, on the ARM7, to the function of the same name.
+</p>
+
+<p>
+No special protection against concurrent accesses has to be used here, as we are still in an IRQ handler, hence with all interrupts disabled. However the handling of received commands is expected not to last for long, not to trigger IRQ, and not to use specific I/O (ex: no libfat call allowed). Thus the receiving code may set appropriate flags for the main loop (which will hence have to do some polling) to perform these special operations asynchronously.
+</p>
+
+
+<h5>ARM9 short example</h5>
+
+
+<p>To handle an ARM7 answer to a previous request:
+<center>
+    <table summary="a box" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>			
+virtual void MySpecializedFIFO::handleComputeAnswer( FIFOElement firstElement ) throw() 
+{
+	// The 2 or 3 remaining bytes of this first element not used here.
+
+	FIFOElement nextElement ;		
+	try
+	{		
+		// Read the payload (ARM7-computed value):		
+		nextElement = readBlocking() ;	
+	}
+	catch( const FIFOException & e )
+	{
+		...			
+	}
+	
+	/*
+	 * Perform some operation based on nextElement, here check 
+	 * the computed value.
+	 *
+	 */
+						
+}
+</pre></code>			
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+or to answer to an ARM7 request:
+
+<center>
+    <table summary="a box" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>			
+virtual void MySpecializedFIFO::handleSumRequest() throw() 
+{
+
+	FIFOElement firstParameter, secondParameter ;
+		
+	try
+	{	
+		// Note that this method reads in and then writes to the FIFOs.
+		
+		// Read the first parameter:		
+		firstParameter = readBlocking() ;
+		
+		// Then the second one:		
+		secondParameter = readBlocking() ;
+	
+		// Sum answer chosen to be 131 (remaining FIFO bytes not used):
+		writeBlocking( prepareFIFOCommand( 131 ) ) ;
+	
+		writeBlocking( static_cast&lt;FIFOElement&gt;( firstParameter
+			+ secondParameter ) ) ;
+
+		notifyCommandToARM7() ;						
+	}
+	catch( const FIFOException & e )
+	{
+		...			
+	}
+							
+}
+</pre></code>			
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+
+</p>
+
+<p>To activate the management of these two request handlers, just override the following method that way, knowing that a basic <code>handleUnexpectedApplicationCommand</code> is provided by default:
+
+<center>
+    <table summary="a box" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>			
+virtual void MySpecializedFIFO::handleReceivedApplicationCommand(
+	FIFOCommandID commandID, FIFOElement firstElement ) throw()
+{	
+	switch( commandID )
+	{	
+		case 129:
+			handleComputeAnswer( firstElement ) ;
+			break ;			
+		case 130:
+			handleSumRequest() ;
+			break ;		
+		default:
+			handleUnexpectedApplicationCommand( commandID ) ;
+			break ;			
+	}
+
+}		
+</pre></code>			
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+
+</p>
+
+
+<h5>ARM7 example</h5>
+<p>To handle a particular request:
+<center>
+    <table summary="a box" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>			
+void handleComputeRequest()
+{				
+	/* Command identifier ok, needing the value now: */	
+	FIFOElement readElement = readBlocking() ;
+	
+	/* Add 42 to the specified value: */
+	uint32 returnedValue = readElement + 42 ;
+	
+	/* Sends answer identifier (129), other bytes unused: */		
+	writeBlocking( prepareFIFOCommand( 129 ) ) ; 	
+	
+	/* Sends computed value: */
+	writeBlocking( returnedValue ) ;	
+	
+	notifyCommandToARM9() ;	
+}
+</pre></code>			
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+</p>
+
+
+<p>To activate the management of this request, redefine appropriately this function:
+<center>
+    <table summary="a box" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>			
+void handleReceivedApplicationCommand( FIFOCommandID id, FIFOElement element )
+{	
+	switch ( id )
+	{	
+		case 128:
+			handleComputeRequest() ;
+			break ;		
+		case 131:
+			handleSumAnswer() ;
+			break ;			
+		default:
+			setError( UnexpectedApplicationCommand ) ;
+			break ;				
+	}		
+}
+
+</pre></code>			
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+</p>
+
+
+
+<p>
+Generally speaking, due to:
+<ul>
+
+	<li>the multi-processor synchronization (ARM7/ARM9)</li>
+
+	<li>the concurrent behaviour, even if not multithreaded, due to the IRQ (without being able to rely on mutices or semaphores)</li>
+
+	<li>the ARM7 isolation, unable to report easily its state, for example no access to the graphic system</li>
+	
+	<li>the sometimes oversimplifying code generated by the compiler when deepest optimisations are activated, even when using the <code>volatile</code> keyword apparently</li>
+	
+	<li>the ARM9 data cache that cannot be viewed from the ARM7, that operates only on full cache lines and the error-prone primitives to manipulate directly this cache (flush or invalidate)</li>
+
+<!--
+	<li></li>
+-->
+
+</ul>
+we found the hard way that a fast and reliable IPC system is very, very difficult to create. So one should really prefer code reuse to making one's own, there are never-ending efforts underneath this system.
+</p>
+
+<p>
+Users of the Ceylan IPC system should look at the following files:
+<ul>
+
+    <li><a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/system/CeylanFIFO.h?view=markup" target="_blank">CeylanFIFO.h</a> and <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/system/CeylanFIFO.cc?view=markup" target="_blank">CeylanFIFO.cc</a>, for the FIFO base class</li>
+	
+    <li><a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/system/CeylanIPCCommands.h?view=markup" target="_blank">CeylanIPCCommands.h</a>, for the command identifiers</li>
+
+    <li><a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/system/CeylanARM7Codes.h?view=markup" target="_blank">CeylanARM7Codes.h</a>, for ARM7 status and error codes</li>
+		
+    <li><a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/test/cross-tests/testCeylanFIFO.arm9.cc?view=markup" target="_blank">testCeylanFIFO.arm9.cc</a>, for the ARM9 implementation and example of the full tests</li>
+	
+    <li><a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/test/cross-tests/testCeylanFIFO.arm7.c?view=markup" target="_blank">testCeylanFIFO.arm7.c</a>, for the ARM7 implementation and example of the full tests</li>
+	
+    <li><a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/system/CeylanSystem.h?view=markup" target="_blank">CeylanSystem.h</a> and <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/system/CeylanSystem.cc?view=markup" target="_blank">CeylanSystem.cc</a>, for the various primitives used: <code>InitializeInterrupts</code>, <code>SetEnabledInterrupts</code>, <code>ConvertToNonCacheable</code>, <code>CacheProtectedNew</code>, <code>CacheProtectedDelete</code>, etc.
+
+</li>
+
+<!--
+    <li><a href="" target="_blank"></a></li>
+-->
+
+</ul>
+
+</p>
+
+<p>
+Finally, the tests showed us that when correctly used our IPC is fast and reliable, and would be an interesting basis for the exchange of sound commands between the ARMs, which was its objective.
+</p>
+
+
+
+<p><center>[<a href="#maintoc">Back to the main table of contents</a>]</center></p><br><br>
+
+
+<a name="hints"></a>
 <h3>A few hints</h3>
 
 <p>
@@ -628,8 +1076,12 @@ Not specifying any plug defaults to the classical plug, which writes logs direct
 
 </dl>
 
+<p><center>[<a href="#maintoc">Back to the main table of contents</a>]</center></p><br><br>
 
 
+
+
+<a name="advices"></a>
 <h2>Some general advices</h2>
 
 <h3>Building</h3>
@@ -737,7 +1189,7 @@ If an error occurs while executing <code>make api</code> under <code>src/doc</co
       <center>
         [<a href="#_top_">Top</a>]<br>
         <br>
-        <em>Last update: Tuesday, October 2, 2007</em>
+        <em>Last update: Sunday, November 18, 2007</em>
       </center>
   
 </body>
