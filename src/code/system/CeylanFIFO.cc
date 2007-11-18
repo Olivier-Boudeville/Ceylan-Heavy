@@ -40,9 +40,7 @@ using namespace Ceylan ;
 #endif // CEYLAN_DEBUG_FIFO
 
 
-
-// Define to 1 to allow for more checkings (do it too on the ARM7 side):
-#define CEYLAN_SAFE_FIFO 0
+// CEYLAN_SAFE_FIFO defined for both ARMs in CeylanARM7Codes.h
 
 
 /*
@@ -145,13 +143,26 @@ FIFO::FIFO() throw( FIFOException ):
 	 *
 	 */
 
-
 #if CEYLAN_USES_CACHE_FLUSH
 
-
+	/*
+	 * Too many times the handshake failed because either the status or the 
+	 * error code had been updated by the ARM7, despite using the volatile
+	 * keyword, DC_FlushRange/DC_InvalidateRange and reading from non-cacheable
+	 * mirror.
+	 *
+	 * For increased safety we now reserve a full cache line were both ARM7
+	 * variables are placed, and only them.
+	 *
+	 */
+	
+	// 32-byte cache line: 
+	Ceylan::Byte * cacheLine = CacheProtectedNew( sizeof( ARM7StatusWord ) +
+		sizeof( ARM7ErrorCode ) ) ;   
+	
 	// First the status word:
 	
-	_arm7StatusWordPointer = new ARM7StatusWord ;
+	_arm7StatusWordPointer = (volatile ARM7StatusWord* volatile) cacheLine ;
 		
 	(*_arm7StatusWordPointer) = NoStatusAvailable ;
 
@@ -159,23 +170,35 @@ FIFO::FIFO() throw( FIFOException ):
 		LogPlug::warning( "FIFO constructor: "
 			"ARM7 status setting failed before flushing cache" ) ;
 
-	//More specific than 'DC_FlushAll() ;':
-	DC_FlushRange( (void*) _arm7StatusWordPointer, sizeof(ARM7StatusWord) ) ;
-	
-	if ( getLastARM7StatusWord() != NoStatusAvailable )
-		throw FIFOException( "FIFO constructor: "
-			"ARM7 status setting failed after flushing cache" ) ;
-
+	/*
+	 * Not flushed directly, as may affect the error code if flushing
+	 * the cache line and if this line contains both ARM7 variables.
+	 *
+	 */	
 
 	// Then the error code:
 	
-	_arm7ErrorCodePointer = new ARM7ErrorCode ;
+	_arm7ErrorCodePointer = (volatile ARM7StatusWord* volatile) (
+		cacheLine + sizeof( ARM7StatusWord ) );
 	
 	(*_arm7ErrorCodePointer) = NoErrorAvailable ;
 
+	atomicSleep() ;
+	atomicSleep() ;
+	atomicSleep() ;
+	atomicSleep() ;
+	atomicSleep() ;
+	
 	if ( getLastARM7ErrorCode() != NoErrorAvailable )
 		LogPlug::warning( "FIFO constructor: "
 			"ARM7 error setting failed before flushing cache" ) ;
+
+	//More specific than 'DC_FlushAll() ;':
+	DC_FlushRange( (void*) _arm7StatusWordPointer, sizeof(ARM7StatusWord) ) ;
+
+	if ( getLastARM7StatusWord() != NoStatusAvailable )
+		throw FIFOException( "FIFO constructor: "
+			"ARM7 status setting failed after flushing cache" ) ;
 
 	//More specific than 'DC_FlushAll() ;':
 	DC_FlushRange( (void*) _arm7ErrorCodePointer, sizeof(ARM7ErrorCode) ) ;
@@ -184,7 +207,13 @@ FIFO::FIFO() throw( FIFOException ):
 		throw FIFOException( "FIFO constructor: "
 			"ARM7 error setting failed after flushing cache" ) ;
 
-
+	DC_InvalidateRange( (void*) _arm7StatusWordPointer, 
+		sizeof(ARM7StatusWord) ) ;
+		
+	DC_InvalidateRange( (void*) _arm7ErrorCodePointer, 
+		sizeof(ARM7ErrorCode) ) ;
+		
+	
 #else // CEYLAN_USES_CACHE_FLUSH
 
 
@@ -285,7 +314,13 @@ FIFO::FIFO() throw( FIFOException ):
 			+ Ceylan::toString( getLastARM7ErrorCode() )  ) ;
 
 	
+#else // CEYLAN_RUNS_ON_ARM9
+
+	throw FIFO::FIFOException( "FIFO constructor failed: "
+		"not available on the ARM7." ) ;
+
 #endif // CEYLAN_RUNS_ON_ARM9
+		
 		
 #else // CEYLAN_ARCH_NINTENDO_DS
 
@@ -313,7 +348,14 @@ FIFO::~FIFO() throw()
 	 
 	_FIFO = 0 ;
 
+	// Will deallocate both ARM7 variables:
+	CacheProtectedDelete( (Ceylan::Byte*) _arm7StatusWordPointer ) ;
 
+	_arm7StatusWordPointer = 0 ;
+	_arm7ErrorCodePointer = 0 ;
+
+	/*
+	
 	if ( _arm7StatusWordPointer != 0 )
 		delete _arm7StatusWordPointer ;
 	
@@ -325,6 +367,7 @@ FIFO::~FIFO() throw()
 		
 	_arm7ErrorCodePointer = 0 ;
 		
+	*/
 	
 }
 
@@ -455,9 +498,9 @@ void FIFO::activate() throw( FIFOException )
 	
 #if CEYLAN_DEBUG_FIFO
 		
-		if ( VBlankCount % 10 == 0 )
-			LogPlug::debug( "activating: status = " 
-				+ Ceylan::toString( getLastARM7StatusWord() ) + ", error = "
+		//if ( VBlankCount % 10 == 0 )
+			LogPlug::debug( "act: status " 
+				+ Ceylan::toString( getLastARM7StatusWord() ) + ", error "
 				+ Ceylan::toString( getLastARM7ErrorCode() ) ) ;
 				
 #endif // CEYLAN_DEBUG_FIFO
@@ -571,31 +614,6 @@ void FIFO::deactivate() throw()
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
-
-
-
-FIFOElement FIFO::prepareFIFOCommand( FIFOCommandID id ) throw()
-{
-
-#if CEYLAN_SAFE_FIFO
-
-	FIFOElement res = ( id << 24 ) | ( _localCommandCount << 16 ) ;
-	
-	// Prepare for next command:
-	_localCommandCount++ ;
-	
-	return res ;
-
-#else // CEYLAN_SAFE_FIFO
-
-	FIFOElement res = id << 24 ;
-		
-	return res ;
-
-#endif // CEYLAN_SAFE_FIFO
-	
-}
-
 
 
 
@@ -928,6 +946,172 @@ void FIFO::VBlankHandlerForFIFO()
 // Protected section.
 
 
+void FIFO::handleReceivedApplicationCommand( FIFOCommandID commandID, 
+	FIFOElement firstElement ) throw()
+{
+
+	/*
+	 * This basic implementation, meant to be overriden, does not call any
+	 * command handler, just reports unexpected commands:
+	 *
+	 */
+	handleUnexpectedApplicationCommand( commandID ) ;
+	
+}
+
+
+
+void FIFO::handleReceivedCommand() throw()
+{
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+
+	FIFOElement firstElement ;
+	FIFOCommandID id ;
+	
+	/*
+	 * During the management of this command, notifications of incoming FIFO
+	 * elements will be ignored (as CommandInProgress, the protection flag,
+	 * is true in the unique caller of this method, ManageReceivedCommand), 
+	 * so that the next elements of the command can be read without being 
+	 * taken for new commands. 
+	 * But it may hide real new commands that could occur after the first 
+	 * command performed its last read, but before it returned. 
+	 * Thus a 'while' loop instead of a simple 'if'.
+	 *
+	 */	
+	
+	
+	while ( dataAvailableForReading() )
+	{
+	 		
+	 	// readBlocking instead of read: increased safety ?
+		firstElement = readBlocking() ;
+
+#if CEYLAN_SAFE_FIFO
+
+	 	FIFOCommandCount count = GetFIFOCommandCountFrom( firstElement ) ;
+		
+		if ( count != _remoteCommandCount )
+		{
+		
+			LogPlug::error( "FIFO::handleReceivedCommand: "
+				"unexpected embedded command count of "
+				+ Ceylan::toNumericalString( count ) + " where "
+				+ Ceylan::toNumericalString( _remoteCommandCount ) 
+				+ " was expected." ) ;
+				
+			return ;	
+			
+		}
+		
+		_remoteCommandCount++ ;
+
+#endif // CEYLAN_SAFE_FIFO
+		
+	
+		id = GetFIFOCommandIDFrom( firstElement ) ;
+	
+		if ( id > 127 )
+		{
+				
+			// It is an application-specific command, relay it:
+			handleReceivedApplicationCommand( id, firstElement ) ;
+	
+		}
+		else
+		{
+	
+			// Here we are dealing with a system-specific (Ceylan) command.
+			switch( id )
+			{
+	
+				case HelloToTheARM9:
+					LogPlug::info( "The ARM7 says hello to the ARM9 !" ) ;
+					break ;
+		
+				default:
+					LogPlug::error( "FIFO::handleReceivedCommand: "
+						"unexpected command: " + Ceylan::toNumericalString( id )
+						+ ", ignored." ) ;
+					break ;		
+	
+			}
+		
+		}
+		
+		
+		// Each command processed is tracked (let the 4-bit variable overflow): 
+		incrementProcessedCount() ;
+		
+	
+	} // end while
+	
+#endif // CEYLAN_ARCH_NINTENDO_DS
+	
+}
+
+
+
+void FIFO::handleUnexpectedApplicationCommand( FIFOCommandID commandID ) throw()
+{
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	LogPlug::error( "handleUnexpectedApplicationCommand called: "
+		"unexpected application-specific command identifier: " 
+		+ Ceylan::toNumericalString( commandID ) ) ;
+	
+#endif // CEYLAN_ARCH_NINTENDO_DS
+	
+}
+
+
+	
+FIFOElement FIFO::prepareFIFOCommand( FIFOCommandID id ) throw()
+{
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+#if CEYLAN_SAFE_FIFO
+
+	FIFOElement res = ( id << 24 ) | ( _localCommandCount << 16 ) ;
+	
+	// Prepare for next command:
+	_localCommandCount++ ;
+	
+	return res ;
+
+#else // CEYLAN_SAFE_FIFO
+
+	FIFOElement res = id << 24 ;
+		
+	return res ;
+
+#endif // CEYLAN_SAFE_FIFO
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	// Dummy to allow compilation, will never be used:
+	return 0 ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+	
+}
+
+
+
+void FIFO::notifyCommandToARM7() throw()
+{
+
+	_sentCount++ ;
+	sendSynchronizeInterruptToARM7() ;
+	
+}
+
+
+
 void FIFO::sendSynchronizeInterruptToARM7() throw()
 {
 
@@ -961,7 +1145,7 @@ bool FIFO::dataAvailableForReading() const throw()
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 	// Dummy to allow compilation, will never be used:
-	return 1 ;
+	return false ;
 	
 #endif // CEYLAN_ARCH_NINTENDO_DS
 	
@@ -1231,109 +1415,6 @@ void FIFO::incrementProcessedCount() throw()
 
 
 
-void FIFO::handleReceivedCommand() throw()
-{
-
-#if CEYLAN_ARCH_NINTENDO_DS
-
-
-	FIFOElement firstElement ;
-	FIFOCommandID id ;
-	
-	/*
-	 * During the management of this command, notifications of incoming FIFO
-	 * elements will be ignored (as CommandInProgress, the protection flag,
-	 * is true in the unique caller of this method, ManageReceivedCommand), 
-	 * so that the next elements of the command can be read without being 
-	 * taken for new commands. 
-	 * But it may hide real new commands that could occur after the first 
-	 * command performed its last read, but before it returned. 
-	 * Thus a 'while' loop instead of a simple 'if'.
-	 *
-	 */	
-	
-	
-	while ( dataAvailableForReading() )
-	{
-	 		
-	 	// readBlocking instead of read: increased safety ?
-		firstElement = readBlocking() ;
-
-#if CEYLAN_SAFE_FIFO
-
-	 	FIFOCommandCount count = GetFIFOCommandCountFrom( firstElement ) ;
-		
-		if ( count != _remoteCommandCount )
-		{
-		
-			LogPlug::error( "FIFO::handleReceivedCommand: "
-				"unexpected embedded command count of "
-				+ Ceylan::toNumericalString( count ) + " where "
-				+ Ceylan::toNumericalString( _remoteCommandCount ) 
-				+ " was expected." ) ;
-				
-			return ;	
-			
-		}
-		
-		_remoteCommandCount++ ;
-
-#endif // CEYLAN_SAFE_FIFO
-		
-	
-		id = GetFIFOCommandIDFrom( firstElement ) ;
-	
-		if ( id > 127 )
-		{
-				
-			// It is an application-specific command, relay it:
-			handleReceivedApplicationCommand( id, firstElement ) ;
-	
-		}
-		else
-		{
-	
-			// Here we are dealing with a system-specific (Ceylan) command.
-			switch( id )
-			{
-	
-				case HelloToTheARM9:
-					LogPlug::info( "The ARM7 says hello to the ARM9 !" ) ;
-					break ;
-		
-				default:
-					LogPlug::error( "FIFO::handleReceivedCommand: "
-						"unexpected command: " + Ceylan::toNumericalString( id )
-						+ ", ignored." ) ;
-					break ;		
-	
-			}
-		
-		}
-		
-		
-		// Each command processed is tracked (let the 4-bit variable overflow): 
-		incrementProcessedCount() ;
-		
-	
-	} // end while
-	
-#endif // CEYLAN_ARCH_NINTENDO_DS
-	
-}
-
-
-
-void FIFO::notifyCommandToARM7() throw()
-{
-
-	_sentCount++ ;
-	sendSynchronizeInterruptToARM7() ;
-	
-}
-
-
-
 
 // Static section.
 
@@ -1449,6 +1530,8 @@ void FIFO::ManageReceivedCommand()
 string FIFO::DescribeCommand( FIFOElement element ) throw()
 {
 
+#if CEYLAN_ARCH_NINTENDO_DS
+
 	string res = "Command is equal to " + Ceylan::toString( element ) 
 		+ ", i.e. " + Ceylan::toString( element, /* bitField */ true ) ;
 
@@ -1467,6 +1550,12 @@ string FIFO::DescribeCommand( FIFOElement element ) throw()
 #endif // CEYLAN_SAFE_FIFO
 	
 	return res ;	
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	return "(not available on this platform)" ;
+	
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 }
 
