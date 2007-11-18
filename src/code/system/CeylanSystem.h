@@ -11,6 +11,7 @@
 #include <ctime>
 #include <string>
 #include <iosfwd>
+#include <map>
 
 
 
@@ -220,7 +221,7 @@ namespace Ceylan
 			throw( SystemException ) ;
 
 
-		/**
+		/** 
 		 * Converts specified address, expected to be in main RAM, into a 
 		 * mirrored address in the non-cacheable RAM mirror.
 		 *
@@ -243,6 +244,79 @@ namespace Ceylan
 		}
 		
 		
+		
+		/**
+		 * Reserves the specified size of memory so that it is compliant with
+		 * the Nintendo DS ARM9 data cache, i.e. the returned buffer 
+		 * spreads over an integer number of cache lines, so that flushing 
+		 * or invalidating these lines will not affect other data.
+		 *
+		 * This function is only useful for the DS ARM9.
+		 *
+		 * @param numberOfBytes the size of the safe buffer to allocate.
+		 *
+		 * @return a pointer to the allocated safe memory.
+		 *
+		 * @note Use the CacheProtectedDelete function to deallocate the
+		 * returned buffer, as the pointer returned by CacheProtectedNew is
+		 * in most cases different from the actual allocated one, as we have
+		 * to ensure it is boundary-aligned, regarding the cache lines.
+		 *
+		 * @throw SystemException if the operation failed, ex: not enough
+		 * memory.
+		 *
+		 */
+		CEYLAN_DLL Ceylan::Byte * CacheProtectedNew( Size numberOfBytes )
+			throw( SystemException ) ;
+
+
+		/**
+		 * Deallocates the specified cache-protected buffer.
+		 *
+		 * @param cacheProtectedBuffer a buffer created with CacheProtectedNew.
+		 *
+		 * @throw SystemException if the operation failed, ex: pointer not
+		 * registered.
+		 *
+		 */
+		CEYLAN_DLL void CacheProtectedDelete( 
+				Ceylan::Byte * cacheProtectedBuffer )
+			throw( SystemException ) ;
+
+
+#if defined(CEYLAN_ARCH_NINTENDO_DS) && CEYLAN_ARCH_NINTENDO_DS == 1
+
+
+		/// The size, in bytes, of a given line in data cache.
+		CEYLAN_DLL extern const Size CacheLineSize ;
+		
+		
+/* 
+ * Takes care of the awful issue of Windows DLL with templates.
+ *
+ * @see Ceylan's developer guide and README-build-for-windows.txt 
+ * to understand it, and to be aware of the associated risks. 
+ * 
+ */
+#pragma warning( push )
+#pragma warning( disable: 4251 )
+
+		/**
+		 * This associative table stores the relation between a buffer address
+		 * returned by CacheProtectedNew and the actual buffer that was 
+		 * allocated.
+		 *
+		 * The two are different, as the later has to be bigger than the former,
+		 * to be boundary-aligned on cache lines.
+		 *
+		 */
+		CEYLAN_DLL extern std::map<Ceylan::Byte *,Ceylan::Byte *>
+			CacheProtectedMap ;
+		
+#pragma warning( pop ) 			
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 
 		/**
 		 * Tells whether there is data available on specified file
