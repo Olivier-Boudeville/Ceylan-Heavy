@@ -89,10 +89,24 @@ extern "C"
 // For Windows select: #define FD_SETSIZE 512 (instead of 64)
 
 using std::string ;
+using std::map ;
+
 
 using namespace Ceylan::Log ;
 using namespace Ceylan::System ;
 
+
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+/// Cache lines for the DS ARM9 DTCM are 32-byte long:
+extern const Size Ceylan::System::CacheLineSize = 32 ;
+
+
+/// Associative buffer map starts empty:
+map<Ceylan::Byte *,Ceylan::Byte *> Ceylan::System::CacheProtectedMap ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 
 
 extern const Ceylan::System::InterruptMask 
@@ -264,34 +278,170 @@ InterruptMask Ceylan::System::SetEnabledInterrupts( InterruptMask newMask )
 
 }
 
-/*
-Ceylan::Byte * Ceylan::System::ConvertToNonCacheable( 
-	Ceylan::Byte * sourceAddress ) throw()
+
+
+Ceylan::Byte * Ceylan::System::CacheProtectedNew( Size numberOfBytes )
+	throw( SystemException )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
-		
-		
-#ifdef CEYLAN_RUNS_ON_ARM7
 
-	return sourceAddress ;
+#ifdef CEYLAN_RUNS_ON_ARM9
+
+
+	// Pseudo-protection against concurrent accesses:
+	static bool inUse = false ;
 	
-#elif defined(CEYLAN_RUNS_ON_ARM9)
-
-#endif // CEYLAN_RUNS_ON_ARM7
-
-	// Could check that the offset is not already added:
-	return sourceAddress + 0x400000 ;
+	while ( inUse )
+		;
 	
+	inUse = true ;
+	
+	int savedIME = REG_IME ;
+
+	REG_IME = AllInterruptsDisabled ;
+	
+	/*
+	 * On the DS DTCM, cache lines are 32-byte long. 
+	 * If wanting a boundary-aligned array of numberOfBytes, we have to 
+	 * allocate 'numberOfBytes + 32 -1' bytes to be sure the desired array
+	 * can be found in it
+	 *
+	 */
+	Ceylan::Byte * biggerBuffer = new Ceylan::Byte[ 
+		numberOfBytes + CacheLineSize - 1 ] ;
+	
+	if ( biggerBuffer == 0 )
+	{
+	
+		REG_IME = savedIME ;
+		inUse = false ;
+		
+		throw SystemException( "Ceylan::System::CacheProtectedNew failed: "
+			"null pointer returned, not enough memory ?" ) ;
+	
+	}
+	
+	/*
+	 * Ex: in biggerBuffer is equal to 130, boundaryAlignedBuffer is:
+	 * 160 = 5 * 32, ok.
+	 *
+	 */
+	Ceylan::Byte * boundaryAlignedBuffer = biggerBuffer 
+		+ ( CacheLineSize - reinterpret_cast<Ceylan::Uint32>( biggerBuffer ) ) 
+			% CacheLineSize ;
+
+	/*
+			
+	LogPlug::debug( "CacheProtectedNew: allocated " 
+		+ Ceylan::toString( reinterpret_cast<Ceylan::Uint32>(
+			biggerBuffer ) ) + ", returning "
+		+ Ceylan::toString( reinterpret_cast<Ceylan::Uint32>(
+			boundaryAlignedBuffer ) ) + "." ) ;
+			
+	 */	
+		
+	/*
+	 * Stores both addresses so that when CacheProtectedDelete will be given
+	 * boundaryAlignedBuffer, it will find biggerBuffer (the latter cannot be
+	 * deduced from the former).
+	 *
+	 */	
+	Ceylan::System::CacheProtectedMap[ boundaryAlignedBuffer ] = biggerBuffer ;
+
+
+	REG_IME = savedIME ;
+	
+	inUse = false ;
+	
+	return boundaryAlignedBuffer ;
+	 
+	
+#else // CEYLAN_RUNS_ON_ARM9
+
+	throw SystemException( "Ceylan::System::CacheProtectedNew failed: "
+		"not available on the ARM7." ) ;
+	
+#endif // CEYLAN_RUNS_ON_ARM9
+		
 #else // CEYLAN_ARCH_NINTENDO_DS
 
-	return sourceAddress ;
-	
+	throw SystemException( "Ceylan::System::CacheProtectedNew failed: "
+		"not available on this platform." ) ;
+
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
-*/
 
+
+
+void Ceylan::System::CacheProtectedDelete( 
+	Ceylan::Byte * cacheProtectedBuffer ) throw( SystemException )
+{
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+#ifdef CEYLAN_RUNS_ON_ARM9
+
+	// Pseudo-protection against concurrent accesses:
+	static bool inUse = false ;
+	
+	while ( inUse )
+		;
+	
+	inUse = true ;
+	
+	int savedIME = REG_IME ;
+
+	REG_IME = AllInterruptsDisabled ;
+
+	
+	// Searches for the specified pointer:
+	map<Ceylan::Byte *,Ceylan::Byte *>::iterator it =
+			CacheProtectedMap.find( cacheProtectedBuffer ) ;
+			
+	if ( it == CacheProtectedMap.end() )
+	{
+	
+		REG_IME = savedIME ;
+		inUse = false ;
+		
+		throw SystemException( "Ceylan::System::CacheProtectedDelete failed: "
+			"pointer " + Ceylan::toString( cacheProtectedBuffer ) 
+			+ " not found." ) ;
+			
+	}
+	
+	/*
+	LogPlug::debug( "CacheProtectedDelete: actual pointer found for "
+		+ Ceylan::toString( 
+			reinterpret_cast<Ceylan::Uint32>( cacheProtectedBuffer ) )
+		+ " is: " + Ceylan::toString( 
+			reinterpret_cast<Ceylan::Uint32>( (*it).second ) ) ) ;
+	 */
+	 	
+	delete [] (*it).second ;
+	
+	REG_IME = savedIME ;
+	inUse = false ;
+					
+#else // CEYLAN_RUNS_ON_ARM9
+
+	throw SystemException( "CacheProtectedDelete failed: "
+		"not available on the ARM7." ) ;
+	
+#endif // CEYLAN_RUNS_ON_ARM9
+		
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	throw SystemException( "CacheProtectedDelete failed: "
+		"not available on this platform." ) ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+}
+
+	
 
 bool Ceylan::System::HasAvailableData( FileDescriptor fd ) throw()
 {
