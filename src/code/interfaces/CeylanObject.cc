@@ -25,13 +25,13 @@ using namespace Ceylan::Log ;
 
 
 
-
 Object::Object( bool trackInstance, bool dropIdentifierOnExit ) 
 		throw( LogException ): 
 	IdentifierOwner(),
 	Loggable( "Unknown object" ),
 	_trackInstance( trackInstance ) 
 {
+
 
 	CEYLAN_LOG( "Ceylan::Object entering constructor" ) ; 
 	
@@ -222,6 +222,7 @@ void Object::forgeIdentifier() throw( Log::LogException )
 			+ e.toString() ) ;
 	}
 
+
 	try
 	{
 
@@ -248,3 +249,4 @@ void Object::dropIdentifier() throw()
 	deleteIdentifier() ;
 
 }
+
