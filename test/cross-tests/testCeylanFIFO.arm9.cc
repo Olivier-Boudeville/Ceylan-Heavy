@@ -21,7 +21,10 @@ using namespace Ceylan::System ;
  * (with logs on, one may experience a crash due to a St9bad_alloc, whereas 
  * there remains a lot of memory, see testCeylanLogSystem that may send more
  * than 10 000 log messages and no new/delete/malloc/free operation is 
- * performed...), thus our log system may be not reentrant. 
+ * performed...), thus our log system may be not reentrant.
+ *
+ * It may also freeze your tests, so avoid sending logs in handle* by all means.
+ * 
  * Hence prefer never using it in the context of an IRQ handler. 
  *
  */
@@ -84,6 +87,8 @@ class myFIFOExample: public Ceylan::System::FIFO
 			FIFO(),
 			_value( value ),
 			_firstWaitedValue( value + 42 ),
+			_testBuffer( 0 ),
+			_incorrectCount( 0 ),
 			_inError( false ),
 			_hasWorkedAtLeastOnce( false )
 		{
@@ -98,6 +103,10 @@ class myFIFOExample: public Ceylan::System::FIFO
 		{
 					
 			deactivate() ;
+
+			if ( _testBuffer != 0 )
+				delete [] _testBuffer ;
+				
 			TEST_FIFO_LOG( "myFIFOExample deleted." ) ;
 			
 		}
@@ -122,14 +131,36 @@ class myFIFOExample: public Ceylan::System::FIFO
 		
 		
 		
+		virtual bool hasBuffer() const throw() 
+		{
+		
+			return _testBuffer != 0 ;
+			
+		}		
+		
+		
+		virtual Ceylan::Uint32 getIncorrectCount() const throw() 
+		{
+		
+			return _incorrectCount ;
+			
+		}		
+		
+		
+		virtual void resetIncorrectCount() throw() 
+		{
+		
+			_incorrectCount = 0 ;
+			
+		}		
+		
+		
 		virtual void sendComputeRequest() throw()
 		{
 			
 			TEST_FIFO_LOG( "sending compute request." ) ;
 
 			
-			TEST_FIFO_LOG( "compute command is: " 
-				+ DescribeCommand( commandElement ) ) ;
 			
 			try
 			{	
@@ -144,6 +175,8 @@ class myFIFOExample: public Ceylan::System::FIFO
 				 */
 				FIFOElement commandElement = prepareFIFOCommand( 128 ) ;
 
+				TEST_FIFO_LOG( "compute command is: " 
+					+ DescribeCommand( commandElement ) ) ;
 					
 				TEST_FIFO_LOG( "sending command" ) ;
 				writeBlocking( commandElement ) ;
@@ -185,6 +218,184 @@ class myFIFOExample: public Ceylan::System::FIFO
 			
 		}	
 		
+
+		
+		/**
+		 * Simulates the loading and transfer of data, without any special
+		 * effort to ensure the buffer is cache-boundary aligned and flushed.
+		 *
+		 */
+		virtual void sendBufferSharingUnsafe() throw()
+		{
+		
+			// To remember how the buffer has been allocated:
+			_safeSharing = false ;
+		
+			Size bufSize = ::rand() % 10000 + 1 ;
+			
+			TEST_FIFO_LOG( "sendBufferSharingUnsafe: preparing buffer of size "
+				+ Ceylan::toString( bufSize ) ) ;
+			
+			if ( _testBuffer != 0 )
+			{
+			
+				LogPlug::error( "sendBufferSharingUnsafe: "
+					"non-empty test buffer." ) ;
+				return ;
+				
+			}	
+					
+			_testBuffer = new Ceylan::Byte[ bufSize ] ;
+
+			
+			// 0b10101010:
+			const Ceylan::Byte Filler = 170 ;
+			
+			
+			for ( Size i = 0; i < bufSize; i++ )
+				_testBuffer[i] = Filler ;
+			
+			/*
+			
+			if ( bufSize > 17 )
+				_testBuffer[17] = 46 ;	
+			
+			 */
+			 
+			try
+			{	
+			
+				InterruptMask previous = SetEnabledInterrupts(
+					AllInterruptsDisabled ) ;
+
+				FIFOElement commandElement = prepareFIFOCommand( 135 ) ;
+
+				TEST_FIFO_LOG( "sending command" ) ;
+				writeBlocking( commandElement ) ;
+
+				TEST_FIFO_LOG( "sending buffer address." ) ;
+			
+				writeBlocking( reinterpret_cast<FIFOElement>( _testBuffer ) ) ;
+			
+				TEST_FIFO_LOG( "sending buffer size." ) ;
+			
+				writeBlocking( static_cast<FIFOElement>( bufSize ) ) ;
+
+				TEST_FIFO_LOG( "command sent" ) ;
+				
+				SetEnabledInterrupts( previous ) ;
+				
+				notifyCommandToARM7() ;
+
+				TEST_FIFO_LOG( "command notified" ) ;
+							
+			}
+			catch( const FIFOException & e )
+			{
+			
+				LogPlug::error( "sendBufferSharingUnsafe failed: " 
+					+ e.toString() ) ;
+				return ;	
+					
+			}
+			
+			TEST_FIFO_LOG( "sendBufferSharingUnsafe request ended." ) ;
+			
+		}
+		
+		
+		
+		/**
+		 * Simulates the loading and transfer of data, with buffer protection
+		 * activated, to ensure the buffer is cache-boundary aligned and
+		 * flushed.
+		 *
+		 */
+		virtual void sendBufferSharing() throw()
+		{
+		
+			// To remember how the buffer has been allocated:
+			_safeSharing = true ;
+			
+			
+			Size bufSize = ::rand() % 10000 + 1 ;
+			
+			TEST_FIFO_LOG( "sendBufferSharing: preparing buffer of size "
+				+ Ceylan::toString( bufSize ) ) ;
+			
+			if ( _testBuffer != 0 )
+			{
+			
+				LogPlug::error( "sendBufferSharing: "
+					"non-empty test buffer." ) ;
+				return ;
+				
+			}	
+					
+			_testBuffer = CacheProtectedNew( bufSize ) ;
+
+			
+			// 0b10101010:
+			const Ceylan::Byte Filler = 170 ;
+			
+			
+			for ( Size i = 0; i < bufSize; i++ )
+				_testBuffer[i] = Filler ;
+			
+			
+			// Key point: this cache-aligned buffer can be safely flushed:
+			DC_FlushRange( (void*) _testBuffer, bufSize ) ;
+
+			
+			/*
+			 * Allows to make sure that the test can fail:
+			 
+			if ( bufSize > 17 )
+				_testBuffer[17] = 46 ;	
+			
+			 */
+			 
+			try
+			{	
+			
+				InterruptMask previous = SetEnabledInterrupts(
+					AllInterruptsDisabled ) ;
+
+				FIFOElement commandElement = prepareFIFOCommand( 135 ) ;
+
+				TEST_FIFO_LOG( "sending command" ) ;
+				writeBlocking( commandElement ) ;
+
+				TEST_FIFO_LOG( "sending buffer address." ) ;
+			
+				writeBlocking( reinterpret_cast<FIFOElement>( _testBuffer ) ) ;
+			
+				TEST_FIFO_LOG( "sending buffer size." ) ;
+			
+				writeBlocking( static_cast<FIFOElement>( bufSize ) ) ;
+
+				TEST_FIFO_LOG( "command sent" ) ;
+				
+				SetEnabledInterrupts( previous ) ;
+				
+				notifyCommandToARM7() ;
+
+				TEST_FIFO_LOG( "command notified" ) ;
+							
+			}
+			catch( const FIFOException & e )
+			{
+			
+				LogPlug::error( "sendBufferSharing failed: " 
+					+ e.toString() ) ;
+				return ;	
+					
+			}
+			
+			TEST_FIFO_LOG( "sendBufferSharing request ended." ) ;
+			
+		}
+		
 		
 		
 		/**
@@ -223,11 +434,15 @@ class myFIFOExample: public Ceylan::System::FIFO
 			{
 			
 				case 129:
-					handleComputeAnswer() ;
+					handleComputeAnswer( firstElement ) ;
 					break ;
 					
 				case 130:
 					handleSumRequest() ;
+					break ;
+				
+				case 136:
+					handleBufferSharingAnswer( firstElement ) ;
 					break ;
 				
 				default:
@@ -247,8 +462,10 @@ class myFIFOExample: public Ceylan::System::FIFO
 
 		
 		
-		virtual void handleComputeAnswer() throw() 
+		virtual void handleComputeAnswer( FIFOElement firstElement ) throw() 
 		{
+			
+			// Here the remaining bytes of firstElement are not used.
 			
 			static int i = 0 ;
 			
@@ -341,6 +558,8 @@ class myFIFOExample: public Ceylan::System::FIFO
 			try
 			{	
 			
+				// Note that this method reads in and then writes to the FIFOs.
+				
 				// Read the first parameter:		
 				firstParameter = readBlocking() ;
 				
@@ -371,6 +590,64 @@ class myFIFOExample: public Ceylan::System::FIFO
 		
 		
 		
+		/**
+		 * Checks the ARM7 answer.
+		 *
+		 */
+		virtual void handleBufferSharingAnswer( FIFOElement first ) throw() 
+		{
+		
+
+			TEST_FIFO_LOG( "Received correct command header for "
+				"handleBufferSharingAnswer" ) ;
+			
+			_incorrectCount = first & 0x0000ffff ;
+			
+				
+			TEST_FIFO_LOG( "handleBufferSharingAnswer: incorrect count is "
+				+ Ceylan::toString( incorrectCount ) ) ;
+				
+			FIFOElement index ;
+				
+			try
+			{	
+							
+				// Read the first parameter:		
+				index = readBlocking() ;
+							
+			}
+			catch( const FIFOException & e )
+			{
+			
+				LogPlug::error( "handleBufferSharingAnswer failed: " 
+					+ e.toString() ) ;
+				return ;	
+					
+			}
+			
+			if ( _incorrectCount != 0 )
+				LogPlug::error( "handleBufferSharingAnswer: "
+					"index of first incorrect byte is "
+					+ Ceylan::toString( index ) ) ;
+		
+		
+			if ( _testBuffer != 0 )
+			{
+			
+				if ( _safeSharing )
+					CacheProtectedDelete( _testBuffer ) ;
+				else
+					delete [] _testBuffer ;
+					
+				_testBuffer = 0 ;
+				
+			}
+			 
+			 																
+		}
+		
+				
+		
 		virtual void handleUnexpectedApplicationCommand( 
 			FIFOCommandID commandID	) throw()
 		{	
@@ -380,14 +657,13 @@ class myFIFOExample: public Ceylan::System::FIFO
 
 			/*
 			 * Log left, disable it in case of unexplained bad_alloc
-			 * exception:
+			 * exception (log system not reentrant):
 			 *
 			 */
 			LogPlug::error( "handleReceivedApplicationCommand failed: "
 				"unexpected application-specific command identifier: " 
 				+ Ceylan::toNumericalString( commandID ) ) ;
 						
-				
 			waitForKey() ;
 			
 		}	
@@ -401,14 +677,25 @@ class myFIFOExample: public Ceylan::System::FIFO
 		 * The value that will be send to the ARM7.
 		 *
 		 */
-		Ceylan::Uint32 _value ;
+		volatile Ceylan::Uint32 _value ;
 		
 		
 		/**
 		 * The value expected for the next ARM7 answer.
 		 *
 		 */
-		Ceylan::Uint32 _firstWaitedValue ;
+		volatile Ceylan::Uint32 _firstWaitedValue ;
+		
+		
+		/// The buffer to test caching (non-volatile pointer to volatile).
+		Ceylan::Byte * volatile _testBuffer ;
+		
+		
+		/**
+		 * The incorrect count for buffer checking.
+		 *
+		 */
+		volatile Ceylan::Uint32 _incorrectCount ;
 		
 		
 		/// Useful for the test:		
@@ -418,6 +705,8 @@ class myFIFOExample: public Ceylan::System::FIFO
 		/// Otherwise test would not fail if no answer was received:
 		volatile bool _hasWorkedAtLeastOnce ;
 		
+		/// To know how a test buffer should be deallocated.
+		volatile bool _safeSharing ;
 		
 } ;
 
@@ -439,10 +728,13 @@ int main( int argc, char * argv[] )
     try
     {
 	
+		
 		// For the test:
 		//bool interactive = true ;
 		bool interactive = false ;
 		
+		bool testRequestSending = true ;
+		bool testBufferSharing = true ;
 		
 		LogPlug::info( "Test of Ceylan support for FIFO transfers 8" ) ;		
 	
@@ -466,101 +758,215 @@ int main( int argc, char * argv[] )
 		LogPlug::info( "Current ARM7 status just after activation is: "
 			 + myFifo.interpretLastARM7StatusWord() ) ;
 					 
+
+		bool testFailed = false ;		
 		
-		if ( interactive )
+		if ( testRequestSending )
 		{
 		
-			LogPlug::info( "Press any key to send first IPC request" ) ;
-			waitForKey() ;
 		
-		}
+			if ( interactive )
+			{
+		
+				LogPlug::info( "Press any key to send first IPC request" ) ;
+				waitForKey() ;
+		
+			}
 
 		
-		Ceylan::Uint32 requestCount ;
+			Ceylan::Uint32 requestCount ;
 		
 		
-		if ( interactive )
-			requestCount = 5 ;
-		else
-			requestCount = 2000000 ;
+			if ( interactive )
+				requestCount = 5 ;
+			else
+				requestCount = 2000000 ;
 
-		LogPlug::info( "Current ARM7 status just before request sending is: "
-			 + myFifo.interpretLastARM7StatusWord() ) ;
+			LogPlug::info( "Current ARM7 status "
+				"just before request sending is: "
+			 	+ myFifo.interpretLastARM7StatusWord() ) ;
 	
 
-		/*
-		 * Note: there is no direct flow control, the ARM9 sends requests
-		 * as fast as possible, without waiting for answers first.
-		 *
-		 *
-		 */
+			/*
+			 * Note: there is no direct flow control, the ARM9 sends requests
+			 * as fast as possible, without waiting for answers first.
+			 *
+			 *
+			 */
 		
-		for ( Ceylan::Uint32 i = 0; i < requestCount; i++ )
-		{
+			for ( Ceylan::Uint32 i = 0; i < requestCount; i++ )
+			{
 		
 		
-			if ( ( i % 5000 ) == 0 )
-				LogPlug::trace( "Sent #" + Ceylan::toString( i ) ) ;
+				if ( ( i % 5000 ) == 0 )
+					LogPlug::trace( "Sent #" + Ceylan::toString( i ) ) ;
 
 			
-			if ( ( i % 10000 ) == 0 )
-				LogPlug::trace( "Report " 
-					+ myFifo.interpretLastARM7StatusWord() ) ;
+				if ( ( i % 10000 ) == 0 )
+					LogPlug::trace( "Report " 
+						+ myFifo.interpretLastARM7StatusWord() ) ;
 			
 				
-			myFifo.sendComputeRequest() ;
-			//atomicSleep() ;
+				myFifo.sendComputeRequest() ;
+				//atomicSleep() ;
 			
-			TEST_FIFO_LOG( "...sent" ) ;
-			//waitForKey() ;
+				TEST_FIFO_LOG( "...sent" ) ;
+				//waitForKey() ;
 			
-		}
+			}
 
 
-		LogPlug::info( "Sending finished, waiting about 3 seconds" ) ;
+			LogPlug::info( "Sending finished, waiting about 3 seconds" ) ;
 		
-		// Wait a few seconds:
-		Ceylan::Uint32 u = 0 ;
+			// Wait a few seconds:
+			Ceylan::Uint32 u = 0 ;
 		
-		while ( u < 180 )
-		{
+			while ( u < 180 )
+			{
 			
-			if ( u % 100 == 0 )
-				LogPlug::info(  myFifo.interpretLastARM7StatusWord() ) ;
+				if ( u % 100 == 0 )
+					LogPlug::info(  myFifo.interpretLastARM7StatusWord() ) ;
 				
-			atomicSleep() ;
+				atomicSleep() ;
 			
-			u-- ;
+				u-- ;
 			
-		}
+			}
 		
-		LogPlug::info( "Current ARM7 status just after request sending is: "
-			 + myFifo.interpretLastARM7StatusWord() ) ;
-
-
-		bool testFailed = false ;
-
-
-		if ( myFifo.getLastARM7StatusWord() != ARM7Running )
-		{
-		
-			LogPlug::error( "after request sending, "
-				"ARM7 status is not in expected running state: "
+			LogPlug::info( "Current ARM7 status just after request sending is: "
 				+ myFifo.interpretLastARM7StatusWord() ) ;
-			testFailed = true ;
+
+
+			if ( myFifo.getLastARM7StatusWord() != ARM7Running )
+			{
+		
+				LogPlug::error( "after request sending, "
+					"ARM7 status is not in expected running state: "
+					+ myFifo.interpretLastARM7StatusWord() ) ;
+				testFailed = true ;
 			
-		}	
+			}	
 		
 		
-		if ( interactive )
+			if ( interactive )
+			{
+		
+				LogPlug::info( "Press any key to check ARM7 "
+					"after IPC answer" ) ;
+				waitForKey() ;
+		
+			}
+
+		
+		} // if testRequestSending
+		
+		
+		bool safeSharingFailed = false ;
+		
+		
+		if ( testBufferSharing )
 		{
 		
-			LogPlug::info( "Press any key to check ARM7 after IPC answer" ) ;
+			LogPlug::info( "Press any key to test buffer transfers, "
+				"starting with unsafe ones." ) ;
+
 			waitForKey() ;
 		
-		}
+			const Ceylan::Uint32 testBufferCount = 15 ;
+		
+			Ceylan::Uint32 failedTransferCount = 0 ;
+			
+			Ceylan::Uint32 incorrectCount ;
+		
+			for ( Ceylan::Uint32 i = 0; i < testBufferCount; i++ )
+			{
+		
+				// Wait for last buffer command to complete:
+				while ( myFifo.hasBuffer() )
+					;
+			
+				incorrectCount = myFifo.getIncorrectCount() ;
+			
+				/*
+				LogPlug::debug( "Incorrect count: " 
+					+ Ceylan::toString( incorrectCount ) ) ;
+				 */
+			 
+				if ( incorrectCount != 0 )
+				{
+					
+					LogPlug::error( "Unsafe: non-null incorrect count: " 
+						+ Ceylan::toString( incorrectCount ) ) ;
+					
+					failedTransferCount++ ;
+					
+				}
+					
+				myFifo.sendBufferSharingUnsafe() ;
+	
+			}
+		
+			// Wait for last buffer command to complete:
+			while ( myFifo.hasBuffer() )
+					; 
+					
+			LogPlug::info( Ceylan::toString( failedTransferCount ) 
+				+ " buffer unsafe transfer(s) failed." ) ;
+				
+			myFifo.resetIncorrectCount() ;
+			failedTransferCount = 0 ;
+			
+			LogPlug::trace( "#############################" ) ;
+		
+			
+			LogPlug::info( "Press any key to test buffer transfers, "
+				"continuing now with safe ones." ) ;
+					
+			waitForKey() ;
+			
+		
+			for ( Ceylan::Uint32 i = 0; i < testBufferCount; i++ )
+			{
+		
+				// Wait for last buffer command to complete:
+				while ( myFifo.hasBuffer() )
+					;
+			
+				incorrectCount = myFifo.getIncorrectCount() ;
+			
+				/*
+				LogPlug::debug( "Incorrect count: " 
+					+ Ceylan::toString( incorrectCount ) ) ;
+				 */
+			 
+				if ( incorrectCount != 0 )
+				{
+				
+					safeSharingFailed = true ;
+					
+					LogPlug::error( "Safe: non-null incorrect count : " 
+						+ Ceylan::toString( incorrectCount ) ) ;
 
+					failedTransferCount++ ;
+					
+				}
+				
+				myFifo.sendBufferSharing() ;
+	
+			}
+		
 
+			LogPlug::info( Ceylan::toString( failedTransferCount ) 
+				+ " buffer safe transfer(s) failed." ) ;
+		
+			waitForKey() ;
+			
+		
+		} // if testBufferSharing
+		
+
+				
+		
 		// To test ARM7 shutdown:
 		const Ceylan::Uint32 displayCount = 1 ;
 
@@ -570,6 +976,8 @@ int main( int argc, char * argv[] )
 		LogPlug::info( "Current ARM7 status just after key waiting is: "
 			 + myFifo.interpretLastARM7StatusWord() ) ;
 
+
+		
 		if ( interactive )
 		{
 		
@@ -588,7 +996,7 @@ int main( int argc, char * argv[] )
 		 *
 		 */	
 		for ( Ceylan::Uint32 i = 0; i < 50; i++ )
-			; // atomicSleep() ;
+			; 
 
 
 		if ( myFifo.isInError() )
@@ -605,20 +1013,45 @@ int main( int argc, char * argv[] )
 			
 		}
 		
-				
-		if ( myFifo.hasWorked() )
+		if ( testBufferSharing )
 		{
 		
-			LogPlug::info( "FIFO performed planned operations" ) ;
+			if ( safeSharingFailed )
+			{
 		
-		}	
-		else
+				LogPlug::error( "Safe sharing failed" ) ;
+				testFailed = true ;
+			
+			}	
+			else
+			{
+		
+				LogPlug::info( "Safe sharing succedeed" ) ;
+			
+			}
+		
+		}
+		
+		
+		if ( testRequestSending	)	
 		{
+		
+		
+			if ( myFifo.hasWorked() )
+			{
+		
+				LogPlug::info( "FIFO performed planned operations" ) ;
+		
+			}	
+			else
+			{
 			
-			LogPlug::error(
-				"FIFO did not performed any complete operation " ) ;
-			testFailed = true ;
+				LogPlug::error(
+					"FIFO did not performed any complete operation " ) ;
+				testFailed = true ;
 			
+			}
+		
 		}
 		
 		
