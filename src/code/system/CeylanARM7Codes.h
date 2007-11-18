@@ -19,6 +19,15 @@
 #if defined(CEYLAN_ARCH_NINTENDO_DS) && CEYLAN_ARCH_NINTENDO_DS == 1
 
 
+/**
+ * Define to 1 to allow for more checkings, for both ARMs.
+ * Use safer settings, command count and tests.
+ *
+ */
+#define CEYLAN_SAFE_FIFO 1
+
+
+
 #ifdef CEYLAN_RUNS_ON_ARM9
 
 #include "CeylanFIFO.h" // for ARM7StatusWord and ARM7ErrorCode typedefs
