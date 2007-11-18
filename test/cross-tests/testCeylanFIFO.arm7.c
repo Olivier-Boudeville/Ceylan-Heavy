@@ -46,7 +46,7 @@
  */
 
 
-/* Defines the actual ARM7 status words and error codes */
+/* Defines the actual ARM7 status words and error codes, and CEYLAN_SAFE_FIFO */
 #include "CeylanARM7Codes.h"
 
 /* Defines IPC command identifiers */
@@ -126,11 +126,12 @@ void VcountHandler()
 
 
 
-/* Use safer settings, command count and tests */
-#define CEYLAN_SAFE_FIFO 0
+/* CEYLAN_SAFE_FIFO read from CeylanARM7Codes.h */
 
 /* Disturbs tests with random waitings */
 #define CEYLAN_TEST_WITH_RANDOM 1
+
+/* No CEYLAN_DEBUG_FIFO here */
 
 
 
@@ -142,6 +143,13 @@ typedef uint32 FIFOElement ;
 
 /* Describes a number of FIFO commands. */
 typedef uint8 FIFOCommandCount ;
+
+
+/* For buffers */
+typedef char Byte ;
+
+/* For buffers */
+typedef uint16 Size ;
 
 
 /* Masks describing which interrupts are enabled. */
@@ -735,6 +743,60 @@ void handleSumAnswer()
   
   
 
+void handleBufferSharing()  
+{
+
+	/* Reads the buffer address: */
+	Byte * buf = (Byte *) readBlocking() ; 
+
+	/* Reads the buffer size: */
+	Size size = (Size) readBlocking() ; 
+	
+	/* Scan it for expected value: */
+	
+	Size incorrectCount = 0 ;
+	
+	Size indexOfFirstIncorrect = 0 ;
+	
+	const Byte Filler = 170 ;
+	
+	Size i ;
+	
+	for ( i = 0; i < size; i++ )
+	{
+	
+		if ( buf[i] != Filler )
+		{
+		
+			incorrectCount++ ; 	
+		
+			if ( indexOfFirstIncorrect == 0 )
+				indexOfFirstIncorrect = i ;
+				
+		}	
+	
+	}
+
+	/* Sends answer identifier (136): */		
+	
+	FIFOElement firstElement = prepareFIFOCommand( 136 ) ;
+	
+	/* Store count in command element: */
+	firstElement = ( firstElement & 0xffff0000 ) 
+		| ( (FIFOElement) incorrectCount ) ;
+	
+	writeBlocking( firstElement ) ; 
+
+	writeBlocking( (FIFOElement) indexOfFirstIncorrect ) ;
+	
+	disturbTest() ;
+		
+	notifyCommandToARM9() ;
+		
+}
+
+
+
 /* Example of application-specific command handler */
 void handleReceivedApplicationCommand( FIFOCommandID id, FIFOElement element )
 {
@@ -748,6 +810,10 @@ void handleReceivedApplicationCommand( FIFOCommandID id, FIFOElement element )
 		
 		case 131:
 			handleSumAnswer() ;
+			break ;
+			
+		case 135:
+			handleBufferSharing() ;
 			break ;
 			
 		default:
@@ -1088,6 +1154,7 @@ int main(int argc, char ** argv)
 	initCeylanIPC() ;
 
 
+	/* Uncomment to test other features quietly: uint32 count = 0 ; */
 	uint32 count = 2000000 ;
 		
 	while( count > 0 && IPCRunning )
