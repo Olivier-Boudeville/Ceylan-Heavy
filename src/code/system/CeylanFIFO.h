@@ -310,53 +310,6 @@ namespace Ceylan
 				 */
 				virtual void deactivate() throw() ;
 
-
-				/**
-				 * Prepare the first FIFO element for specified command.
-				 * Sets the specified ID in the returned FIFO element and,
-				 * if used (in safe mode), sets as well the command number.
-				 *
-				 * @note The two (if using command number) or three (if not)
-				 * remaining bytes can be used freely by application code.
-				 *
-				 * @note Ensure there is exactly one command sent for each
-				 * call to this method, otherwise the command count will be
-				 * incorrect.
-				 *
-				 * @param id the command ID to set in the FIFO element.
-				 *
-				 * @return a FIFO element patched with the specified ID and,
-				 * possibly, command number.
-				 *
-				 */
-				virtual FIFOElement prepareFIFOCommand( FIFOCommandID id )
-					throw() ;
-				
-				
-				/**
-				 * Method responsible for the actual decoding and management of
-				 * an incoming application-specific command.
-				 *
-				 * Meant to be overriden according to the chosen
-				 * application-specific protocol.
-				 *
-				 * @param commandID the application-specific command ID read
-				 * from the first FIFO element of the command.
-				 *
-				 * @param firstElement the full (first) FIFO element
-				 * corresponding to the command (thus containing commandID).
-				 *
-				 * @note Called automatically by handleReceivedCommand when
-				 * relevant.
-				 *
-				 * @note Only lightweight operations should be performed here,
-				 * to avoid the saturation of the FIFO slots.
-				 *
-				 */
-				virtual void handleReceivedApplicationCommand(
-						FIFOCommandID commandID, FIFOElement firstElement )
-					throw() = 0 ;
-				
 				
 				
 				
@@ -503,6 +456,91 @@ namespace Ceylan
 				
 				
 				/**
+				 * Method responsible for the actual decoding and management of
+				 * an incoming application-specific command.
+				 *
+				 * Meant to be overriden according to the chosen
+				 * application-specific protocol.
+				 *
+				 * @param commandID the application-specific command ID read
+				 * from the first FIFO element of the command.
+				 *
+				 * @param firstElement the full (first) FIFO element
+				 * corresponding to the command (thus containing commandID).
+				 *
+				 * @note Called automatically by handleReceivedCommand when
+				 * relevant.
+				 *
+				 * @note Only lightweight operations should be performed here.
+				 *
+				 */
+				virtual void handleReceivedApplicationCommand(
+						FIFOCommandID commandID, FIFOElement firstElement )
+					throw() ;
+				
+				
+				/**
+				 * Method responsible for the actual decoding of an incoming
+				 * command.
+				 *
+				 * Discriminates between Ceylan commands, that are managed
+				 * automatically, and application-specific commands, that result
+				 * in an appropriate call to handleReceivedApplicationCommand,
+				 * which is most probably overriden.
+				 *
+				 * @note Called automatically by ManageReceivedCommand.
+				 *
+				 */
+				virtual void handleReceivedCommand() throw() ;
+				
+				
+				/**
+				 * Basic helper method called whenever an unexpected application
+				 * command is received.
+				 *
+				 * @param commandID the identifier of the unexpected command.
+				 *
+				 * @note Basic implementation made to be overriden.
+				 *
+				 */
+				virtual void handleUnexpectedApplicationCommand( 
+					FIFOCommandID commandID ) throw() ;		
+			
+				
+				/**
+				 * Prepare the first FIFO element for specified command.
+				 * Sets the specified ID in the returned FIFO element and,
+				 * if used (in safe mode), sets as well the command number.
+				 *
+				 * @note The two (if using command number) or three (if not)
+				 * remaining bytes can be used freely by application code.
+				 *
+				 * @note Ensure there is exactly one command sent for each
+				 * call to this method, otherwise the command count will be
+				 * incorrect.
+				 *
+				 * @param id the command ID to set in the FIFO element.
+				 *
+				 * @return a FIFO element patched with the specified ID and,
+				 * possibly, command number.
+				 *
+				 */
+				virtual FIFOElement prepareFIFOCommand( FIFOCommandID id )
+					throw() ;
+					
+					
+				/**
+				 * Notifies the ARM7 that a new command has been placed in the
+				 * FIFO.
+				 *
+				 * Increments the sent count, and triggers an IPC IRQ in the
+				 * ARM7.
+				 *
+				 */
+				virtual void notifyCommandToARM7() throw() ;
+				
+				
+				/**
 				 * Sends a synchronize IRQ to the ARM7, for example to make it
 				 * check its receive FIFO.
 				 *
@@ -599,33 +637,7 @@ namespace Ceylan
 				 */
 				virtual void incrementProcessedCount() throw() ;
 				
-				 
-				/**
-				 * Method responsible for the actual decoding of an incoming
-				 * command.
-				 *
-				 * Discriminates between Ceylan commands, that are managed
-				 * automatically, and application-specific commands, that result
-				 * in an appropriate call to handleReceivedApplicationCommand,
-				 * which is most probably overriden.
-				 *
-				 * @note Called automatically by ManageReceivedCommand.
-				 *
-				 */
-				virtual void handleReceivedCommand() throw() ;
-				
-				
-				/**
-				 * Notifies the ARM7 that a new command has been placed in the
-				 * FIFO.
-				 *
-				 * Increments the sent count, and triggers an IPC IRQ in the
-				 * ARM7.
-				 *
-				 */
-				virtual void notifyCommandToARM7() throw() ;
-				
-				
+				 				
 				
 				
 				// Static section.
