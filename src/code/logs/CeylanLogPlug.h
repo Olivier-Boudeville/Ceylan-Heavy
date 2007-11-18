@@ -59,6 +59,10 @@ namespace Ceylan
 		 * @note This class is mainly a clean container dedicated to the
 		 * gathering of static methods. 
 		 *
+		 * @note The log system is not designed specifically to be used in
+		 * a multithread (or IRQ-based) context: it is most probably not
+		 * reetrant.
+		 *
 		 */
 		class CEYLAN_DLL LogPlug
 		{
