@@ -68,7 +68,7 @@ const ARM9CommandID PingARM7 = 1 ;
  * address in question, no answer expected.
  *
  */
-const ARM9CommandID SendARM7StatusAndErrorReportAddress = 2 ;
+const ARM9CommandID StatusInitRequest = 2 ;
 
 
 /**
@@ -78,12 +78,36 @@ const ARM9CommandID SendARM7StatusAndErrorReportAddress = 2 ;
  * no answer expected.
  *
  */
-const ARM9CommandID ShutdownIPC = 3 ;
+const ARM9CommandID ShutdownIPCRequest = 3 ;
+
+
+/**
+ * Tells the ARM7 to send back the current battery status.
+ *
+ * No parameters set in the command element, no next element to send, but
+ * an answer is expected.
+ *
+ * @see BatteryStatusAnswer
+ *
+ */
+const ARM9CommandID BatteryStatusRequest = 4 ;
+
+
+/**
+ * Tells the ARM7 to send back the actual DS type.
+ *
+ * No parameters set in the command element, no next element to send, but
+ * an answer is expected.
+ *
+ * @see DSTypeAnswer
+ *
+ */
+const ARM9CommandID DSTypeRequest = 5 ;
 
 
 
 
-
+///////////////////////////////////////////////////////////////////////////
 
 
 
@@ -115,6 +139,23 @@ const ARM7CommandID HelloToTheARM9 = 0 ;
  */
 const ARM7CommandID PongARM9 = 1 ;
 
+
+/**
+ * Used by the ARM7 to return the current battery status.
+ *
+ * @see BatteryStatusRequest
+ *
+ */
+const ARM7CommandID BatteryStatusAnswer = 2 ;
+
+
+/**
+ * Used by the ARM7 to return the DS type.
+ *
+ * @see DSTypeRequest
+ *
+ */
+const ARM7CommandID DSTypeAnswer = 3 ;
 
 
 
