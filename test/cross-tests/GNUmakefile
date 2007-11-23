@@ -21,16 +21,17 @@ include $(TOP)/src/conf/build/$(CROSS_TARGET)/Makevars.inc
 # Test target section.
 
 
+# Target linker can be sc (SuperCard) or r4 (R4 DS):
+TARGET_LINKER = r4
+
 TEST_PREFIX= $(CEYLAN_TESTED_VERSION)-$(CEYLAN_TESTED_BUILD_MODE)
-TEST_EXEC_EXTENSION = nds
+TEST_EXEC_EXTENSION = $(TARGET_LINKER).nds
 
 TEST_ARM9_SOURCES = $(wildcard *.arm9.cc)
 
-# Target linker can be; sc (SuperCard) or r4 (R4)
-TARGET_LINKER = r4
 
-#TEST_TARGETS = $(patsubst %.arm9.cc,%-$(TEST_PREFIX)-patched.$(TEST_EXEC_EXTENSION),$(TEST_ARM9_SOURCES))
-TEST_TARGETS = testCeylanFIFO-0.7-release-patched.$(TARGET_LINKER).nds
+TEST_TARGETS = $(patsubst %.arm9.cc,%-$(TEST_PREFIX)-patched.$(TEST_EXEC_EXTENSION),$(TEST_ARM9_SOURCES))
+#TEST_TARGETS = testCeylanFIFO-0.7-release-patched.$(TARGET_LINKER).nds
 
 
 # Some are patched, the others not:
@@ -108,7 +109,8 @@ TEST_ARCH_FLAGS_COMMON = -mthumb -mthumb-interwork
 # Preprocessor section: exports TEST_CPP_FLAGS_ARM7 / TEST_CPP_FLAGS_ARM9
 
 TEST_CPP_FLAGS_COMMON = -I. -I$(CEYLAN_INSTALL_INC) \
-	-I$(libfat_DIR)/include -I$(libnds_DIR)/include -DCEYLAN_ARCH_NINTENDO_DS -DCEYLAN_DLL=
+	-I$(libfat_DIR)/include -I$(libnds_DIR)/include \
+	-DCEYLAN_ARCH_NINTENDO_DS -DCEYLAN_DLL=
 
 TEST_CPP_FLAGS_ARM7 = $(TEST_CPP_FLAGS_COMMON) -DCEYLAN_RUNS_ON_ARM7
 
@@ -164,8 +166,8 @@ TEST_LD_FLAGS_COMMON:= $(TEST_ARCH_FLAGS_COMMON)
 TEST_LD_FLAGS_ARM7:= -specs=ds_arm7.specs
 TEST_LD_FLAGS_ARM9:= -specs=ds_arm9.specs 
 
-ifeq ($(CEYLAN_TESTED_BUILD_MODE),debug)
 
+ifeq ($(CEYLAN_TESTED_BUILD_MODE),debug)
 
 TEST_LD_FLAGS_COMMON:= $(TEST_LD_FLAGS_COMMON) -g 
 
@@ -174,6 +176,7 @@ else
 TEST_LD_FLAGS_COMMON:= $(TEST_LD_FLAGS_COMMON)
 
 endif
+
 
 TEST_LD_FLAGS_ARM7:= $(TEST_LD_FLAGS_COMMON) $(TEST_LD_FLAGS_ARM7)
 TEST_LD_FLAGS_ARM9:= $(TEST_LD_FLAGS_COMMON) $(TEST_LD_FLAGS_ARM9)
@@ -205,8 +208,9 @@ TEST_LIBS_ARM7 = \
 TEST_LIBS_ARM9 = \
        -lCeylan-$(CEYLAN_TESTED_VERSION)-$(CEYLAN_TESTED_BUILD_MODE)-arm9 \
        $(TEST_BASE_LIBS_ARM9)
-	
 
+
+	
 info: info-target info-flags info-debug info-run
 
 
@@ -294,7 +298,7 @@ info-run:
 
 # Neither basic logo, wifi logo nor sentences embedded:
 %.nds: %.arm7.bin %.arm9.bin
-	@echo "    AAAACreating final slot-1 DS ROM $@ from $^"
+	@echo "    Creating final slot-1 DS ROM $@ from $^"
 	@$(NDSTOOL) -c $@ -7 $< -9 `echo $^| sed 's|^.* ||1'`
 
 
