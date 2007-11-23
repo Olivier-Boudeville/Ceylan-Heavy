@@ -2,9 +2,10 @@
 #define CEYLAN_FIFO_H_
 
 
-#include "CeylanTextDisplayable.h"  // for inheritance
-#include "CeylanSystem.h"           // for SystemException
-#include "CeylanTypes.h"            // for Ceylan::Uint32
+#include "CeylanTextDisplayable.h"   // for inheritance
+#include "CeylanSystem.h"            // for SystemException, BatteryStatus, etc.
+#include "CeylanTypes.h"             // for Ceylan::Uint32
+#include "CeylanSystemInformation.h" // for BatteryStatus
 
 
 
@@ -56,16 +57,12 @@ typedef Ceylan::Uint8 FIFOCommandCount ;
 
 
 
-
 namespace Ceylan
 {
 
 
 	namespace System
 	{
-	
-	
-	
 	
 	
 
@@ -216,7 +213,8 @@ namespace Ceylan
 
 	
 			public:
-		
+	
+	
 
 				/// Mother class for all FIFO-related exceptions.
 				class FIFOException: public SystemException
@@ -272,6 +270,13 @@ namespace Ceylan
 				/// Virtual destructor.
 				virtual ~FIFO() throw() ;
 		
+				
+				
+				// Activation section.
+				
+				
+				/// Returns whereas this FIFO is currently active.
+				virtual bool isActive() const throw() ;
 		
 		
 				/**
@@ -311,6 +316,7 @@ namespace Ceylan
 				virtual void deactivate() throw() ;
 
 				
+				// Some FIFO-provided IPC services.
 				
 				
 				// Status word and error code section.
@@ -359,8 +365,85 @@ namespace Ceylan
 				virtual std::string interpretLastARM7ErrorCode() throw() ;
 
 
+
+				/*
+				 * Section for basic request/answer services.
+				 *
+				 * Could be added:
+				 *   - get/set brightness
+				 *   - get/set backlight
+				 *	 - get/set blink status
+				 *	 - get/set blink speed
+				 *
+				 * @see http://licklick.wordpress.com/
+				 *
+				 */
+
+				
+				/**
+				 * Sends to the ARM7 a request to update the battery status.
+				 *
+				 * @note Non-blocking, not waiting for the answer.
+				 *
+				 * @throw FIFOException if the operation failed.
+				 *
+				 * @see getBatteryStatus for a blocking wait for the update.
+				 *
+				 */
+				virtual void sendBatteryStatusRequest() 
+					throw( FIFOException ) ;
 				
 				
+				/**
+				 * Returns the battery status.
+				 *
+				 * If the status is 'BatteryStatusUnknown', will wait until
+				 * either a supposedly-called 'sendBatteryStatusRequest' method
+				 * completes (resulting in an update of the status), or a
+				 * time-out expires.
+				 *
+				 * @note Uses waiting based on atomic sleeps.
+				 *
+				 * @throw FIFOException if the operation failed, including
+				 * if the time-out expires.
+				 *
+				 */
+				virtual BatteryStatus getBatteryStatus() 
+					throw( FIFOException ) ;
+					
+				
+				/**
+				 * Sends to the ARM7 a request to update the DS type.
+				 *
+				 * @note Non-blocking, not waiting for the answer.
+				 *
+				 * @throw FIFOException if the operation failed.
+				 *
+				 * @see getDSType for a blocking wait for the update.
+				 *
+				 */
+				virtual void sendDSTypeRequest() 
+					throw( FIFOException ) ;
+				
+				
+				/**
+				 * Returns the DS actual type (DS Fat,Lite, etc.).
+				 *
+				 * If the status is 'DSTypeUnknown', will wait until
+				 * either a supposedly-called 'sendDSTypeRequest' method
+				 * completes (resulting in an update of the DS type), or a
+				 * time-out expires.
+				 *
+				 * @note Uses waiting based on atomic sleeps.
+				 *
+				 * @throw FIFOException if the operation failed, including
+				 * if the time-out expires.
+				 *
+				 */
+				virtual DSType getDSType() throw( FIFOException ) ;
+					
+				
+
          	  	/**
             	 * Returns an user-friendly description of the state of
 				 * this object.
@@ -443,6 +526,47 @@ namespace Ceylan
 	
 				
 				/**
+				 * Returns the supposedly already-created and already-activated
+				 * singleton FIFO.
+				 *
+				 * @throw FIFOException if the operation failed, including if
+				 * no FIFO is available or if it is not active.
+				 *
+				 */
+				static FIFO & GetActivatedFIFO() throw ( FIFOException ) ;
+
+
+				/**
+				 * Returns the supposedly already-created singleton FIFO.
+				 *
+				 * @throw FIFOException if the operation failed, including if
+				 * not FIFO is available.
+				 *
+				 */
+				static FIFO & GetExistingFIFO() throw ( FIFOException ) ;
+				
+				
+				/**
+				 * Returns the singleton FIFO, creates it if needed.
+				 *
+				 * @throw FIFOException if the operation failed.
+				 *
+				 */
+				static FIFO & GetFIFO() throw ( FIFOException ) ;
+				
+				
+				/**
+				 * Removes the singleton FIFO, if any.
+				 *
+				 * @return true iff there was a FIFO to remove.
+				 *
+				 * @throw FIFOException if the operation failed.
+				 *
+				 */
+				static bool RemoveFIFO() throw() ;
+				
+				
+				/**
 				 * The unique FIFO instance.
 				 *
 				 */
@@ -453,6 +577,44 @@ namespace Ceylan
 
 		protected:
 				
+				
+				
+				/**
+				 * Method responsible for the actual decoding of an incoming
+				 * command.
+				 *
+				 * Discriminates between Ceylan commands, that are managed
+				 * automatically, and application-specific commands, that result
+				 * in an appropriate call to handleReceivedApplicationCommand,
+				 * which is most probably overriden.
+				 *
+				 * @note Called automatically by ManageReceivedCommand.
+				 *
+				 */
+				virtual void handleReceivedCommand() throw() ;
+				
+				
+				/**
+				 * Method responsible for the actual decoding and management of
+				 * an incoming system-specific (Ceylan) command.
+				 *
+				 * Implements the system-specific protocol for these commands.
+				 *
+				 * @param commandID the system-specific command ID read
+				 * from the first FIFO element of the command.
+				 *
+				 * @param firstElement the full (first) FIFO element
+				 * corresponding to the command (thus containing commandID).
+				 *
+				 * @note Called automatically by handleReceivedCommand when
+				 * relevant.
+				 *
+				 * @note Only lightweight operations should be performed here.
+				 *
+				 */
+				virtual void handleReceivedSystemSpecificCommand(
+						FIFOCommandID commandID, FIFOElement firstElement )
+					throw() ;
 				
 				
 				/**
@@ -477,21 +639,6 @@ namespace Ceylan
 				virtual void handleReceivedApplicationCommand(
 						FIFOCommandID commandID, FIFOElement firstElement )
 					throw() ;
-				
-				
-				/**
-				 * Method responsible for the actual decoding of an incoming
-				 * command.
-				 *
-				 * Discriminates between Ceylan commands, that are managed
-				 * automatically, and application-specific commands, that result
-				 * in an appropriate call to handleReceivedApplicationCommand,
-				 * which is most probably overriden.
-				 *
-				 * @note Called automatically by ManageReceivedCommand.
-				 *
-				 */
-				virtual void handleReceivedCommand() throw() ;
 				
 				
 				/**
@@ -765,8 +912,30 @@ namespace Ceylan
 				 *
 				 */
 				volatile FIFOCommandCount _sentCount ;
+				
+				
+				/**
+				 * Tells whether this FIFO is activated.
+				 * 
+				 * @note No need to have ot declared volatile normally.
+				 *
+				 */
+				volatile bool _activated ;
 				 
 				 
+				/**
+				 * Records the last battery status retrieved.
+				 *
+				 */
+				volatile System::BatteryStatus _batteryStatus ; 
+	
+	
+				/**
+				 * Records the DS type.
+				 *
+				 */
+				volatile System::DSType _dsType ; 
+	
 	
 	
 		private:
