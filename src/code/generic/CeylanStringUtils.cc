@@ -818,8 +818,11 @@ void Ceylan::displayError( const string & errorMessage )
 
 #elif defined(CEYLAN_RUNS_ON_ARM9)
 
-	// FIXME: BG_PALETTE_SUB[255] = RGB15(31,0,0);
+	BG_PALETTE_SUB[255] = RGB15(31,0,0) ;
 	display( errorMessage ) ;
+	
+	// Supposed default is white:
+	BG_PALETTE_SUB[255] = RGB15(31,31,31) ;
 	
 #endif // CEYLAN_RUNS_ON_ARM7
 
