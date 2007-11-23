@@ -101,7 +101,8 @@ class myFIFOExample: public Ceylan::System::FIFO
 		
 		virtual ~myFIFOExample() throw()
 		{
-					
+				
+			// Must be called from FIFO child class:		
 			deactivate() ;
 
 			if ( _testBuffer != 0 )
@@ -159,7 +160,6 @@ class myFIFOExample: public Ceylan::System::FIFO
 		{
 			
 			TEST_FIFO_LOG( "sending compute request." ) ;
-
 			
 			
 			try
@@ -736,7 +736,7 @@ int main( int argc, char * argv[] )
 		bool testRequestSending = true ;
 		bool testBufferSharing = true ;
 		
-		LogPlug::info( "Test of Ceylan support for FIFO transfers 8" ) ;		
+		LogPlug::info( "Test of Ceylan support for FIFO transfers" ) ;		
 	
 		myFIFOExample myFifo( 100 ) ;
 
