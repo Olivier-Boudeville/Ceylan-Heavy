@@ -139,18 +139,6 @@ namespace Ceylan
 #endif // CEYLAN_RUNS_ON_WINDOWS
 
 
-
-		/// Masks describing which interrupts are enabled.
-		typedef int InterruptMask ;
-
-
-		/// To specify that all interrupts are to disabled (null value).
-		extern CEYLAN_DLL const InterruptMask AllInterruptsDisabled ;
-		
-		
-		/// Signature of an interrupt handler.
-		typedef void (* IRQHandler)( void ) ;
-		
 		
 		/// Error number as defined by errno.
 		typedef int ErrorCode ;
@@ -184,6 +172,30 @@ namespace Ceylan
 		 */
 		CEYLAN_DLL std::string getShellName() throw() ;
 
+
+
+
+		
+		/*
+		 * This section is mostly related to embedded platforms, such as
+		 * the Nintendo DS.
+		 *
+		 * @see also CeylanSystemInformation.h
+		 *
+		 */
+		 
+
+		/// Masks describing which interrupts are enabled.
+		typedef int InterruptMask ;
+
+
+		/// To specify that all interrupts are to disabled (null value).
+		extern CEYLAN_DLL const InterruptMask AllInterruptsDisabled ;
+		
+		
+		/// Signature of an interrupt handler.
+		typedef void (* IRQHandler)( void ) ;
+		
 
 		/**
 		 * On platforms requiring it (ex: the Nintendo DS),
@@ -221,6 +233,23 @@ namespace Ceylan
 			throw( SystemException ) ;
 
 
+		/**
+		 * On platforms requiring it (ex: the Nintendo DS),
+		 * initializes the IPC system (Inter-Process Communication), by 
+		 * setting up the FIFO infrastructure (creation and activation).
+		 *
+		 * @note Creates a default FIFO with no application-specific requests
+		 * supported. If the user subclassed the FIFO mother class to support
+		 * additional commands, it has to be initialized by user code instead. 
+		 *
+		 * @throw SystemException if an error occurred (if on the platform
+		 * nothing has to be done, only a log warning will be issued, no
+		 * exception will be thrown).
+		 *
+		 */
+		CEYLAN_DLL void InitializeIPC() throw( SystemException ) ;
+		
+
 		/** 
 		 * Converts specified address, expected to be in main RAM, into a 
 		 * mirrored address in the non-cacheable RAM mirror.
@@ -237,9 +266,9 @@ namespace Ceylan
 		T* ConvertToNonCacheable( T * sourceAddress ) throw()
 		{
 		
-			return reinterpret_cast<T *>( ( 
+			return reinterpret_cast<T*>(
 				reinterpret_cast<Ceylan::Uint32>( sourceAddress ) 
-					+ /* offset to reach mirror address */ 0x400000 ) ) ;
+					+ /* offset to reach mirror address */ 0x400000 ) ;
 	              
 		}
 		
@@ -317,7 +346,11 @@ namespace Ceylan
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
+		
 
+		// IO section.
+		
+		
 		/**
 		 * Tells whether there is data available on specified file
 		 * descriptor.
@@ -540,7 +573,6 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL Microsecond getPreciseTimeCallDuration() throw() ;
-
 
 
 
