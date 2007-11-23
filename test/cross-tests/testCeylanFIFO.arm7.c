@@ -167,7 +167,7 @@ const InterruptMask AllInterruptsDisabled = 0 ;
  * 'ARM7StatusWord volatile * statusWordPointer = 0 ;' would not be enough:
  * it would correctly manage the fact that the ARM9 can change the pointed
  * value, but the pointer itself must be volatile too, as it can be change
- * in the IRQ handler after a SendARM7StatusAndErrorReportAddress command
+ * in the IRQ handler after a StatusInitRequest command
  * has been received.
  *
  */
@@ -648,7 +648,6 @@ void writeBlocking( FIFOElement toSend )
 
 
 
-
 /*
  * Disturbs the test by sometimes adding random delays.
  *
@@ -667,6 +666,200 @@ void disturbTest()
 
 }
 
+
+
+
+/* Section dedicated to system-specific IPC */
+
+
+	
+void handleStatusInitRequest()
+{
+	
+	if ( statusWordPointer != 0 || IPCRunning )
+	{
+	
+		setError( IPCAlreadyStarted ) ;
+		return ;
+		
+	}	
+	
+	
+	/* 
+	 * The ARM9 will send the address of the shared ARM7
+	 * status word in next element: 
+	 */
+	statusWordPointer = (volatile ARM7StatusWord*)
+		readBlocking() ;
+	
+	if ( *statusWordPointer != NoStatusAvailable )
+	{
+	
+		setError( IncorrectInitialStatus ) ;
+		return ;
+		
+	}	
+		
+	*statusWordPointer = ARM7Running ;
+	
+	
+	errorWordPointer = (volatile ARM7ErrorCode*) 
+		readBlocking() ;
+	
+	if ( *errorWordPointer != NoErrorAvailable )
+	{
+	
+		setError( IncorrectInitialError ) ;
+		return ;
+		
+	}	
+		
+	*errorWordPointer = NoError ;
+
+	/* Set it last to avoid main loop firing too soon: */
+	IPCRunning = true ;
+								
+} 
+
+
+
+void handleShutdownIPCRequest()
+{
+	
+	if ( statusWordPointer == 0 || errorWordPointer == 0 || ! IPCRunning )
+	{
+	
+		setError( IPCAlreadyStopped ) ;
+		return ;
+		
+	}	
+	
+	IPCRunning = false ;
+	
+	/* 
+	 * Stop the mechanism on the ARM7 side.
+	 * 
+	 * Ends with ARM7IPCShutdown status (and NoError error 
+	 * code) to perform last handshake with ARM9.
+	 *
+	 * @see FIFO::deactivate
+	 *
+	 */
+	*statusWordPointer = ARM7IPCShutdown ;
+	*errorWordPointer = NoError ;
+
+	statusWordPointer = 0 ;
+	errorWordPointer = 0 ;
+	
+	
+	REG_IPC_FIFO_CR = REG_IPC_FIFO_CR & ~IPC_FIFO_ENABLE ;
+	
+	irqDisable( IRQ_IPC_SYNC ) ;
+	
+	/* 
+	 * IRQ_VBLANK not disabled, as can be used for other reasons 
+	 *
+	 */
+	
+}
+
+
+/*
+    PowerManagement bits that libnds doesn't define (yet?).
+    Check out "arm7/serial.h".
+*/
+
+#define PM_BATTERY_STATUS   BIT(0)
+
+void handleBatteryStatusRequest()
+{
+
+	/*
+	 * Inspired from Rick Wong (Lick), see http://licklick.wordpress.com/
+	 *
+	 * Thanks Lick !
+	 *
+	 */
+	 
+	/* Prepares answer, last byte of the answer being zero: */
+	FIFOElement answer = prepareFIFOCommand( BatteryStatusAnswer ) ;
+	
+	if ( ! ( readPowerManagement( PM_BATTERY_REG ) & PM_BATTERY_STATUS ) )
+		answer |= 1 ;
+				
+	writeBlocking( answer ) ; 
+	
+	notifyCommandToARM9() ;
+
+}
+
+		
+				
+/* Ceylan system-specific command handler */
+void handleReceivedSystemSpecificCommand( FIFOCommandID commandID, 
+	FIFOElement firstElement )
+{
+
+	/*
+	 * Here we are dealing with a system-specific (Ceylan) 
+	 * command.
+	 *
+	 * @note Cannot use switch here, as if using:
+	 * const int MyConstant = 1 ;
+	 * switch ( aValue )
+	 * {
+	 *   case MyConstant:
+	 * etc.
+	 *
+	 * gcc says: 'case label does not reduce to an integer constant'
+	 *
+	
+	switch( commandID )
+	{
+	
+		case HelloToTheARM7:
+			// Corresponds to reading zero in the FIFO: 
+			setError( UnexpectedBehaviour ) ;
+			break ;
+			
+		case ShutdownIPCRequest:
+			handleShutdownIPCRequest() ;
+			break ;
+			
+		case StatusInitRequest:
+			handleStatusInitRequest() ;
+			break ;
+		
+		case BatteryStatusRequest:
+			handleBatteryStatusRequest() ;
+			break ;
+			
+		default:
+			// Unexpected system command id: 
+			setError( UnexpectedSystemCommand ) ;
+			break ;		
+	
+	}
+
+	 */
+
+	if ( commandID == HelloToTheARM7 )
+		setError( UnexpectedBehaviour ) ;
+	else if ( commandID == ShutdownIPCRequest )
+		handleShutdownIPCRequest() ;
+	else if ( commandID == StatusInitRequest )
+		handleStatusInitRequest() ;
+	else if ( commandID == BatteryStatusRequest )
+		handleBatteryStatusRequest() ;
+	else
+		setError( UnexpectedSystemCommand ) ;
+		
+}
+
+	
+				
+
+/* Section dedicated to application-specific IPC */
 
 
 void sendSumRequest()
@@ -690,7 +883,7 @@ void sendSumRequest()
 
 
 
-void sendHello()
+void sendHelloRequest()
 {
 
 	InterruptMask previous = setEnabledInterrupts( AllInterruptsDisabled ) ;
@@ -743,7 +936,7 @@ void handleSumAnswer()
   
   
 
-void handleBufferSharing()  
+void handleBufferSharingRequest()  
 {
 
 	/* Reads the buffer address: */
@@ -778,7 +971,6 @@ void handleBufferSharing()
 	}
 
 	/* Sends answer identifier (136): */		
-	
 	FIFOElement firstElement = prepareFIFOCommand( 136 ) ;
 	
 	/* Store count in command element: */
@@ -794,6 +986,7 @@ void handleBufferSharing()
 	notifyCommandToARM9() ;
 		
 }
+
 
 
 
@@ -813,7 +1006,7 @@ void handleReceivedApplicationCommand( FIFOCommandID id, FIFOElement element )
 			break ;
 			
 		case 135:
-			handleBufferSharing() ;
+			handleBufferSharingRequest() ;
 			break ;
 			
 		default:
@@ -826,6 +1019,7 @@ void handleReceivedApplicationCommand( FIFOCommandID id, FIFOElement element )
 
 
 
+/* Command dispatcher, between system-specific and application-specific ones. */
 void handleReceivedCommand()
 {
 
@@ -909,136 +1103,10 @@ void handleReceivedCommand()
 			else 
 			{
 					
-				/*
-				 * Here we are dealing with a system-specific (Ceylan) 
-				 * command.
-				 *
-				 * @note Cannot use switch here, as if using:
-				 * const int MyConstant = 1 ;
-				 * switch ( aValue )
-				 * {
-				 *   case MyConstant:
-				 * etc.
-				 *
-				 * gcc says: 'case label does not reduce to an integer constant'
-				 *
-				 */
-				if ( id == HelloToTheARM7 )
-				{
-	
-					setError( UnexpectedBehaviour ) ;
-					
-					/*
-					LogPlug::info( "The ARM9 says hello to the ARM7 !" ) ;
-					 */
-					 
-				} 
-				else if ( id == SendARM7StatusAndErrorReportAddress )
-				{
+				/* It is an application-specific command, relay it: */
+				handleReceivedSystemSpecificCommand( id, firstElement ) ;
 				
-
-					if ( statusWordPointer != 0 || IPCRunning )
-					{
-					
-						setError( IPCAlreadyStarted ) ;
-						return ;
-						
-					}	
-	
-					
-					/* 
-					 * The ARM9 will send the address of the shared ARM7
-					 * status word in next element: 
-					 */
-					statusWordPointer = (volatile ARM7StatusWord*)
-						readBlocking() ;
-					
-					if ( *statusWordPointer != NoStatusAvailable )
-					{
-					
-						setError( IncorrectInitialStatus ) ;
-						return ;
-						
-					}	
-						
-					*statusWordPointer = ARM7Running ;
-			
-				
-					errorWordPointer = (volatile ARM7ErrorCode*) 
-						readBlocking() ;
-					
-					if ( *errorWordPointer != NoErrorAvailable )
-					{
-					
-						setError( IncorrectInitialError ) ;
-						return ;
-						
-					}	
-						
-					*errorWordPointer = NoError ;
-
-					/* Set it last to avoid main loop firing too soon: */
-					IPCRunning = true ;
-					
-										
-				} 
-				else if ( id == ShutdownIPC )
-				{
-				
-					if ( statusWordPointer == 0 || errorWordPointer == 0
-						|| ! IPCRunning )
-					{
-					
-						setError( IPCAlreadyStopped ) ;
-						return ;
-						
-					}	
-					
-					IPCRunning = false ;
-					
-					/* 
-					 * Stop the mechanism on the ARM7 side.
-					 * 
-					 * Ends with ARM7IPCShutdown status (and NoError error 
-					 * code) to perform last handshake with ARM9.
-					 *
-					 * @see FIFO::deactivate
-					 *
-					 */
-					*statusWordPointer = ARM7IPCShutdown ;
-					*errorWordPointer = NoError ;
-
-					statusWordPointer = 0 ;
-					errorWordPointer = 0 ;
-					
-					
-					REG_IPC_FIFO_CR = REG_IPC_FIFO_CR & ~IPC_FIFO_ENABLE ;
-					
-					irqDisable( IRQ_IPC_SYNC ) ;
-					
-					/* 
-					 * IRQ_VBLANK not disabled as can be used for other reasons 
-					 *
-					 */
-					
-					return ;
-					
-				}
-				else
-				{						
-				
-					/* Unexpected system command id: */
-					setError( UnexpectedSystemCommand ) ;
-
-					/*
-					LogPlug::error( "unexpected command: "
-						+ Ceylan::toNumericalString( id ) + ", ignored." ) ;
-					 */							
-	
-				}
-				
-				
-			} /* id corresponds to a system command */
+			} 
 	
 			incrementProcessCount() ;
 			
@@ -1140,6 +1208,9 @@ void initCeylanIPC()
 int main(int argc, char ** argv) 
 {
 
+	/* Read user settings from firmware: */
+	readUserSettings() ;
+	
 	/* Reset the clock if needed: */
 	rtcReset() ;
 
