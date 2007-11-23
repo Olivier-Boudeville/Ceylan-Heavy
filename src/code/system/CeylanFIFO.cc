@@ -28,6 +28,8 @@ using namespace Ceylan::Log ;
 using namespace Ceylan ;
 
 
+// Battery informations.
+
 
 #if CEYLAN_DEBUG_FIFO
 
@@ -105,7 +107,10 @@ FIFO::FIFO() throw( FIFOException ):
 	_localCommandCount( 0 ),
 	_remoteCommandCount( 0 ),
 	_processedCount( 0 ),
-	_sentCount( 0 )
+	_sentCount( 0 ),
+	_activated( false ),
+	_batteryStatus( BatteryStatusUnknown ),
+	_dsType( DSTypeUnknown )
 {
 
 	// LogPlug::trace( "FIFO constructor" ) ;
@@ -183,12 +188,17 @@ FIFO::FIFO() throw( FIFOException ):
 	
 	(*_arm7ErrorCodePointer) = NoErrorAvailable ;
 
-	atomicSleep() ;
-	atomicSleep() ;
-	atomicSleep() ;
-	atomicSleep() ;
-	atomicSleep() ;
+	// Maybe useless:
+	Ceylan::Uint8 sleepCount = 5 ;
 	
+	while ( sleepCount > 0 )
+	{ 
+		
+		atomicSleep() ;
+		sleepCount-- ;
+		
+	}
+		
 	if ( getLastARM7ErrorCode() != NoErrorAvailable )
 		LogPlug::warning( "FIFO constructor: "
 			"ARM7 error setting failed before flushing cache" ) ;
@@ -373,6 +383,19 @@ FIFO::~FIFO() throw()
 
 
 
+
+// Activation section.
+
+
+bool FIFO::isActive() const throw()
+{
+
+	return _activated ;
+	
+}
+
+
+
 void FIFO::activate() throw( FIFOException )
 {
 
@@ -382,6 +405,9 @@ void FIFO::activate() throw( FIFOException )
 
 	// LogPlug::trace( "FIFO activate" ) ;
 
+	if ( _activated )
+		throw FIFOException( "FIFO::activate: already active" ) ;
+		
 	ARM7StatusWord initialStatus = getLastARM7StatusWord() ;
 	
 	ARM7ErrorCode initialError = getLastARM7ErrorCode() ;
@@ -436,15 +462,6 @@ void FIFO::activate() throw( FIFOException )
 	REG_IPC_SYNC = IPC_SYNC_IRQ_ENABLE ;
 		
 	
-	/*
-	 * Send the address of the variables to be used by the ARM7
-	 * to report its status and last error, with relevant command identifier.
-	 *
-	 * Uses and updates _localCommandCount:
-	 *
-	 */
-	FIFOElement commandElement = prepareFIFOCommand( 
-		SendARM7StatusAndErrorReportAddress ) ;
 
 	CEYLAN_LOG_FIFO( "FIFO::activate: sending IPC activate report command." ) ;
 		
@@ -454,6 +471,15 @@ void FIFO::activate() throw( FIFOException )
 	 */	
 	
 	InterruptMask previous = SetEnabledInterrupts( AllInterruptsDisabled ) ;
+
+	/*
+	 * Send the address of the variables to be used by the ARM7
+	 * to report its status and last error, with relevant command identifier.
+	 *
+	 * Uses and updates _localCommandCount:
+	 *
+	 */
+	FIFOElement commandElement = prepareFIFOCommand( StatusInitRequest ) ;
 	
 	writeBlocking( commandElement ) ;
 	
@@ -534,6 +560,7 @@ void FIFO::activate() throw( FIFOException )
 			"but is not in expected no-error state: "
 			+ interpretLastARM7ErrorCode() ) ;
 	
+	_activated = true ;
 	
 	CEYLAN_LOG_FIFO( "FIFO successfully activated, ARM handshake completed" ) ;
 
@@ -563,7 +590,7 @@ void FIFO::deactivate() throw()
 	 * (remaining FIFO bytes not used)
 	 *
 	 */
-	writeBlocking( prepareFIFOCommand( ShutdownIPC ) ) ;
+	writeBlocking( prepareFIFOCommand( ShutdownIPCRequest ) ) ;
 
 	SetEnabledInterrupts( previous ) ;
 
@@ -603,7 +630,9 @@ void FIFO::deactivate() throw()
 	// Disable FIFO:
 	REG_IPC_FIFO_CR = REG_IPC_FIFO_CR &	~IPC_FIFO_ENABLE ;   	
 
-
+	_activated = false ;
+	
+	
 #endif // CEYLAN_RUNS_ON_ARM9
 		
 #else // CEYLAN_ARCH_NINTENDO_DS
@@ -805,11 +834,104 @@ string FIFO::interpretLastARM7ErrorCode() throw()
 
 
 
+void FIFO::sendBatteryStatusRequest() throw( FIFOException )
+{
+
+	InterruptMask previous = SetEnabledInterrupts( AllInterruptsDisabled ) ;
+
+	// To detect the future update:
+	_batteryStatus = BatteryStatusUnknown ;
+		
+	FIFOElement commandElement = prepareFIFOCommand( BatteryStatusRequest ) ;
+
+	writeBlocking( commandElement ) ;
+	
+	SetEnabledInterrupts( previous ) ;
+				
+	notifyCommandToARM7() ;	
+		
+}
+
+
+
+BatteryStatus FIFO::getBatteryStatus() throw( FIFOException )					
+{
+
+	Ceylan::Uint8 sleepCount = 10 ;
+	
+	while ( ( sleepCount > 0 ) && ( _batteryStatus == BatteryStatusUnknown ) )
+	{
+	
+		atomicSleep() ;
+		sleepCount-- ;
+		
+	}
+	
+	if ( _batteryStatus == BatteryStatusUnknown )
+		throw FIFOException( "FIFO::getBatteryStatus failed: "
+			"time-out expired while waiting for status update" ) ;
+	
+	return _batteryStatus ;		
+		
+}
+
+
+
+void FIFO::sendDSTypeRequest() throw( FIFOException )
+{
+
+	InterruptMask previous = SetEnabledInterrupts( AllInterruptsDisabled ) ;
+
+	// To detect the future update:
+	_dsType = DSTypeUnknown ;
+		
+	FIFOElement commandElement = prepareFIFOCommand( DSTypeRequest ) ;
+
+	writeBlocking( commandElement ) ;
+	
+	SetEnabledInterrupts( previous ) ;
+				
+	notifyCommandToARM7() ;	
+		
+}
+
+
+
+DSType FIFO::getDSType() throw( FIFOException )					
+{
+
+	Ceylan::Uint8 sleepCount = 10 ;
+	
+	while ( ( sleepCount > 0 ) && ( _dsType == DSTypeUnknown ) )
+	{
+	
+		atomicSleep() ;
+		sleepCount-- ;
+		
+	}
+	
+	if ( _dsType == DSTypeUnknown )
+		throw FIFOException( "FIFO::getDSType failed: "
+			"time-out expired while waiting for type update" ) ;
+	
+	return _dsType ;		
+		
+}
+
+
+
 const std::string FIFO::toString( Ceylan::VerbosityLevels level ) 
 	const throw()
 {
 
-	string res = "FIFO with " ;
+	string res ;
+	
+	if ( _activated )
+		res = "Activated" ;
+	else
+		res = "Non-activated" ;
+		
+	res += "FIFO with " ;
 	
 	if ( ! dataAvailableForReading() )
 		res += "no " ;	
@@ -872,12 +994,12 @@ FIFOCommandCount FIFO::GetARM7ProcessedCount() throw()
 #endif // CEYLAN_RUNS_ON_ARM9
 		
 	// Dummy to allow compilation, will never be used:
-	return 1 ;
+	return 0 ;
 
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 	// Dummy to allow compilation, will never be used:
-	return 1 ;
+	return 0 ;
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 	
@@ -898,12 +1020,12 @@ FIFOCommandCount FIFO::GetARM9ProcessedCount() throw()
 #endif // CEYLAN_RUNS_ON_ARM9
 		
 	// Dummy to allow compilation, will never be used:
-	return 1 ;
+	return 0 ;
 
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 	// Dummy to allow compilation, will never be used:
-	return 1 ;
+	return 0 ;
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
@@ -941,24 +1063,71 @@ void FIFO::VBlankHandlerForFIFO()
 
 
 
-
-
-// Protected section.
-
-
-void FIFO::handleReceivedApplicationCommand( FIFOCommandID commandID, 
-	FIFOElement firstElement ) throw()
+FIFO & FIFO::GetActivatedFIFO() throw ( FIFOException )
 {
 
-	/*
-	 * This basic implementation, meant to be overriden, does not call any
-	 * command handler, just reports unexpected commands:
-	 *
-	 */
-	handleUnexpectedApplicationCommand( commandID ) ;
+	if ( _FIFO == 0 )
+		throw FIFOException( "FIFO::GetActivatedFIFO failed: "
+			"no FIFO already available" ) ;
+	
+	if ( ! _FIFO ->isActive() )
+		throw FIFOException( "FIFO::GetActivatedFIFO failed: "
+			"a FIFO is available but it is not active" ) ;
+	
+	return *_FIFO ;
+			
+}
+
+
+
+FIFO & FIFO::GetExistingFIFO() throw ( FIFOException )
+{
+
+	if ( _FIFO == 0 )
+		throw FIFOException( "FIFO::GetExistingFIFO failed: "
+			"no FIFO available" ) ;
+	
+	return *_FIFO ;
+			
+}
+
+
+
+FIFO & FIFO::GetFIFO() throw ( FIFOException )
+{
+
+	// The constructor registers the instance automatically:
+	if ( _FIFO == 0 )
+		new FIFO() ;
+	
+	return *_FIFO ;
+
+}
+
+
+
+bool FIFO::RemoveFIFO() throw()
+{
+
+	if ( _FIFO != 0 )
+	{
+	
+		delete _FIFO ;
+
+		// Useless as the destructor unregisters the instance automatically:
+		_FIFO = 0 ;
+		
+		return true ;
+		
+	}
+	
+	return false ;
 	
 }
 
+
+
+// Protected section.
 
 
 void FIFO::handleReceivedCommand() throw()
@@ -1022,22 +1191,9 @@ void FIFO::handleReceivedCommand() throw()
 		}
 		else
 		{
-	
-			// Here we are dealing with a system-specific (Ceylan) command.
-			switch( id )
-			{
-	
-				case HelloToTheARM9:
-					LogPlug::info( "The ARM7 says hello to the ARM9 !" ) ;
-					break ;
 		
-				default:
-					LogPlug::error( "FIFO::handleReceivedCommand: "
-						"unexpected command: " + Ceylan::toNumericalString( id )
-						+ ", ignored." ) ;
-					break ;		
-	
-			}
+			// It is an application-specific command, relay it:
+			handleReceivedSystemSpecificCommand( id, firstElement ) ;
 		
 		}
 		
@@ -1052,6 +1208,72 @@ void FIFO::handleReceivedCommand() throw()
 	
 }
 
+
+
+void FIFO::handleReceivedSystemSpecificCommand( FIFOCommandID commandID, 
+	FIFOElement firstElement ) throw()
+{
+
+#if CEYLAN_ARCH_NINTENDO_DS
+			
+	// Here we are dealing with a system-specific (Ceylan) command.
+	switch( commandID )
+	{
+	
+		case HelloToTheARM9:
+			LogPlug::info( "The ARM7 says hello to the ARM9 !" ) ;
+			break ;
+			
+		case PongARM9:
+			LogPlug::info( "Pong answer received from the ARM7" ) ;
+			break ;
+			
+		case BatteryStatusAnswer:
+			LogPlug::debug( "handleReceivedSystemSpecificCommand: "
+				"battery status returned" ) ;
+			// Retrieves only the last byte of the command:	
+			if ( ( firstElement & 0x000000ff ) != 0 )
+				_batteryStatus = WellCharged ;
+			else
+				_batteryStatus = AlmostEmpty ;
+			break ;
+
+		case DSTypeAnswer:
+			LogPlug::debug( "handleReceivedSystemSpecificCommand: "
+				"DS type returned" ) ;
+			// Retrieves only the last byte of the command:	
+			if ( ( firstElement & 0x000000ff ) == 1 )
+				_dsType = DSFat ;
+			else if ( ( firstElement & 0x000000ff ) == 2 )
+				_dsType = DSLite ;
+			break ;
+
+		default:
+			LogPlug::error( "handleReceivedSystemSpecificCommand: "
+				"unexpected command: " + Ceylan::toNumericalString( commandID )
+				+ ", ignored." ) ;
+			break ;		
+	
+	}
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+	
+}
+
+
+
+void FIFO::handleReceivedApplicationCommand( FIFOCommandID commandID, 
+	FIFOElement firstElement ) throw()
+{
+
+	/*
+	 * This basic implementation, meant to be overriden, does not call any
+	 * command handler, just reports unexpected commands:
+	 *
+	 */
+	handleUnexpectedApplicationCommand( commandID ) ;
+	
+}
 
 
 void FIFO::handleUnexpectedApplicationCommand( FIFOCommandID commandID ) throw()
