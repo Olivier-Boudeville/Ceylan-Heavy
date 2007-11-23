@@ -85,8 +85,11 @@ const ARM7StatusWord StatusReset = 6 ;
 
 
 
+
 /**
  * ARM7 error code values.
+ *
+ * Error codes in the [0..1023] range are reserved for Ceylan use.
  *
  */
 
