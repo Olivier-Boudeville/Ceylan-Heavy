@@ -100,6 +100,9 @@ void VblankHandler()
 int main(int argc, char ** argv) 
 {
 	
+	/* Read user settings from firmware: */
+	readUserSettings() ;
+
 	// Reset the clock if needed :
 	rtcReset() ;
 	
