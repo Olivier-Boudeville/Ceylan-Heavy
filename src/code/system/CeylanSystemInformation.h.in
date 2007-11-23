@@ -18,6 +18,9 @@
  * @note Defined automatically (at configure-time) to 1 if the platform is
  * little endian, 0 otherwise (big endian).
  *
+ * The real source file is CeylanSystemInformation.h.in, not 
+ * CeylanSystemInformation.h.
+ *
  */
 #define CEYLAN_DETECTED_LITTLE_ENDIAN @CEYLAN_RUNS_ON_LITTLE_ENDIAN@
 
@@ -158,6 +161,95 @@ namespace Ceylan
 		CEYLAN_DLL UnsignedLongInteger getBuffersMemorySize() 
 			throw( SystemException ) ; 
 
+
+
+		// User-data related section, notably for the Nintendo DS.
+		
+
+		/**
+		 * Returns the name of the user, as retrieved from the system.
+		 *
+		 * @throw SystemException on error, or if not implemented
+		 * for this platform.
+		 *
+		 * On the Nintendo DS, textual personal data is stored in 
+		 * UTF-16, hence the management of some non-ASCII characters might be
+		 * incorrect.
+		 *
+		 * On the NoCachGBA emulator, an empty string is returned.
+		 *
+		 */
+		CEYLAN_DLL std::string GetUserName() throw( SystemException ) ; 
+		
+		
+
+		/**
+		 * Describes the status of the battery (if any).
+		 *
+		 */
+		enum BatteryStatus
+		{
+		
+			/// Indicates that the charge of a battery is still high.
+			WellCharged,
+
+			/// Indicates that the charge of a battery is getting quite low.
+			AlmostEmpty,
+
+			/// Indicates that the charge of a battery is not known.
+			BatteryStatusUnknown
+		
+		} ;
+
+
+		/**
+		 * Returns the current battery status.
+		 *
+		 * On the DS ARM9, the IPC system, namely the singleton FIFO, is
+		 * expected to be already available (created and activated).
+		 *
+		 * @throw SystemException if the operation failed.
+		 *
+		 * @note On the DS ARM9, it is a synchronous operation: the ARM9 is
+		 * blocked (polling) until the ARM7 answers.
+		 *
+		 */
+		CEYLAN_DLL BatteryStatus GetBatteryStatus() throw( SystemException ) ;
+
+
+
+				  
+		/**
+		 * Describes the type of a Nintendo DS.
+		 *
+		 */
+		enum DSType
+		{
+		
+			/// The first DS release.
+			DSFat,
+
+			/// The update of the first DS.
+			DSLite,
+			
+			/// Indicates that the type of the DS is not known.
+			DSTypeUnknown
+			
+		} ;
+
+
+		/**
+		 * Returns the type of the DS running the program.
+		 *
+		 * @throw SystemException if the operation failed.
+		 *
+		 * @note On the DS ARM9, it is a synchronous operation: the ARM9 is
+		 * blocked (polling) until the ARM7 answers.
+		 *
+		 */
+		CEYLAN_DLL DSType GetDSType() throw( SystemException ) ;
+				  
+		
 
 
 		// OpenGL-related section.
