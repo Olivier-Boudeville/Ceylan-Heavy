@@ -6,6 +6,7 @@
 #include "CeylanMathsBasic.h"             // for Abs
 #include "CeylanEnvironmentVariables.h"   // for getEnvironmentVariable
 #include "CeylanFile.h"                   // for File
+#include "CeylanFIFO.h"                   // for FIFO
 
 
 #ifdef CEYLAN_USES_CONFIG_H
@@ -201,6 +202,14 @@ string Ceylan::System::getShellName() throw()
 
 
 
+
+/*
+ * This section is mostly related to embedded platforms, such as
+ * the Nintendo DS.
+ *
+ */
+
+
 void Ceylan::System::InitializeInterrupts( bool force ) throw( SystemException )
 {
 
@@ -273,6 +282,37 @@ InterruptMask Ceylan::System::SetEnabledInterrupts( InterruptMask newMask )
 	
 	// Dummy to allow compilation, will never be used:
 	return 0 ;
+	
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+}
+
+
+void Ceylan::System::InitializeIPC() throw( SystemException )
+{
+
+#if CEYLAN_ARCH_NINTENDO_DS
+		
+
+#ifdef CEYLAN_RUNS_ON_ARM7
+
+	throw SystemException( 
+		"Ceylan::System::InitializeIPC: only available on the ARM9." ) ;
+
+#elif defined(CEYLAN_RUNS_ON_ARM9)
+
+	// Automatically registered as a static singleton:
+	FIFO * fifo = new FIFO() ;
+	
+	fifo->activate() ;
+	
+#endif // CEYLAN_RUNS_ON_ARM7
+
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	LogPlug::warning( "Ceylan::System::InitializeIPC "
+		"should not be called on this platform." ) ;
 	
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
@@ -441,7 +481,8 @@ void Ceylan::System::CacheProtectedDelete(
 
 }
 
-	
+
+
 
 bool Ceylan::System::HasAvailableData( FileDescriptor fd ) throw()
 {
@@ -489,7 +530,6 @@ bool Ceylan::System::HasAvailableData( FileDescriptor fd ) throw()
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
-
 
 
 
