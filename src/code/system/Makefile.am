@@ -19,6 +19,7 @@ noinst_HEADERS = \
 SYSTEM_INTERFACES = \
 	CeylanAnonymousInputOutputStream.h   \
 	CeylanAnonymousInputStream.h         \
+	CeylanARM7Codes.h                    \
 	CeylanConsole.h                      \
 	CeylanDirectory.h                    \
 	CeylanEnvironmentVariables.h         \
@@ -29,6 +30,7 @@ SYSTEM_INTERFACES = \
 	CeylanFileSystemManager.h            \
 	CeylanInputOutputStream.h            \
 	CeylanInputStream.h                  \
+	CeylanIPCCommands.h                  \
 	CeylanLibfatDirectory.h              \
 	CeylanLibfatFile.h                   \
 	CeylanLibfatFileSystemManager.h      \
