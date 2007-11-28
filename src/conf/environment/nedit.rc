@@ -13,9 +13,9 @@
 nedit.fileVersion: 5.5
 nedit.shellCommands: \
 	spell:Alt+B:s:EX:\n\
-		cat>spellTmp; xterm -e aspell -c -x spellTmp; cat spellTmp; rm spellTmp\n\
+		cat>spellTmp; xterm -e ispell -x spellTmp; cat spellTmp; rm spellTmp\n\
 	wc::w:ED:\n\
-		set wc=`wc`; echo $wc[1] "lines," $wc[2] "words," $wc[3] "characters"\n\
+		wc | awk '{print $1 " lines, " $2 " words, " $3 " characters"}'\n\
 	sort::o:EX:\n\
 		sort\n\
 	number lines::n:AW:\n\
@@ -182,6 +182,12 @@ nedit.macroCommands: \
 	Comments>! Uncomment@X Resources:::R: {\n\
 		replace_in_selection("(^[ \\\\t]*!)(.*)$", "\\\\2", "regex")\n\
 	}\n\
+	Comments>% Comment@LaTeX:::R: {\n\
+		                replace_in_selection("^.*$", "%&", "regex")\n\
+		                }\n\
+	Comments>% Uncomment@LaTeX:::R: {\n\
+		                replace_in_selection("(^[ \\\\t]*%)(.*)$", "\\\\2", "regex")\n\
+		                }\n\
 	Comments>Bar Comment@C:::R: {\n\
 		if ($selection_left != -1) {\n\
 		    dialog("Selection must not be rectangular")\n\
@@ -282,57 +288,83 @@ nedit.highlightPatterns: Ada:Default\n\
 	Verilog:Default\n\
 	XML:Default\n\
 	X Resources:Default\n\
-	Yacc:Default
+	Yacc:Default\n\
+	Erlang:1:0{\n\
+		Comment:"%":"$"::Comment::\n\
+		WooperMacro:"\\?<(getAttr|getAttribute|getWrappedAttribute|setAttribute|removeAttribute|getSender)>":::WooperPlain::\n\
+		WooperHelper:"<(new|new_link|construct|delete)>":::WooperPlain::\n\
+		WooperPrefixed:"<wooper_[_A-Za-z]*|\\?wooper_[_A-Za-z]*>":::Wooper::\n\
+		Macro:"\\?[0-9A-Za-z_]*":::Preprocessor::\n\
+		ExportedFunc:"[A-Za-z_]*:[A-Za-z_]*":::ExportedFunc::\n\
+		Module attribute:"^[ 	]*-[_A-Za-z]*":::Preprocessor::\n\
+		Keyword:"<(after|case|end|if|of|receive|when)>":::Keyword::\n\
+		Operator:"<(and|band|bsl|bsr|bor|bxor|div|or|rem|is_pid|is_list|is_atom)>":::Keyword::\n\
+		Builtin function:"<(abs|apply|atom|atom_to_list|binary|binary_to_list|binary_to_term|catch|date|element|erase|exit|float|float_to_list|get|halt|hash|hd|info|integer|integer_to_list|length|link|list|list_to_atom|list_to_float|list_to_integer|list_to_tuple|node|nodes|now|pid|port|ports|processes|put|reference|register|registered|round|self|setelement|size|spawn|spawn_link|throw|time|tl|trace|trunc|tuple|tuple_to_list|unlink|unregister|whereis)>":::Storage Type::\n\
+		Special identifier:"<(error|false|infinity|nil|ok|true|undefined)>":::Identifier1::\n\
+		Atom:"<[a-z][0-9a-zA-Z_]*>":::Plain::\n\
+		Character:"(\\$\\\\?.)":::Character Const::\n\
+		Float:"<(\\+|-)?[0-9]+\\.[0-9]+((E|e)(\\+|-)?[0-9]+)?>":::Numeric Const::\n\
+		Integer:"<(2#[01]+|8#[0-7]+|16#[0-9A-Fa-f]+|(10#)?[0-9]+)>":::Numeric Const::\n\
+		Variable:"<[A-Z_][0-9a-zA-Z_]*>":::Identifier::\n\
+		Single-quoted string:"'":"'"::String::\n\
+		Double-quoted string:"""":""""::String::\n\
+		String escape:"\\\\(.|\\n)":::String1:Double-quoted string:\n\
+	}
 nedit.languageModes: 	Ada:.ada .ad .ads .adb .a:::::::\n\
 	Awk:.awk:::::::\n\
-	C++:.cc .hh .C .H .i .cxx .hxx .cpp .h::::::".,/\\`'!|@#%^&*()-=+{}[]"":;<>?~":\n\
-	C:.c ::::::".,/\\`'!|@#%^&*()-=+{}[]"":;<>?~":\n\
+	C++:.cc .hh .C .H .i .cxx .hxx .cpp .c++::::::".,/\\`'!|@#%^&*()-=+{}[]"":;<>?~":\n\
+	C:.c .h::::::".,/\\`'!|@#%^&*()-=+{}[]"":;<>?~":\n\
 	CSS:css::Auto:None:::".,/\\`'!|@#%^&*()=+{}[]"":;<>?~":\n\
 	Csh:.csh .cshrc .login .logout:"^[ \\t]*#[ \\t]*![ \\t]*/bin/csh"::::::\n\
 	Fortran:.f .f77 .for:::::::\n\
 	Java:.java:::::::\n\
 	JavaScript:.js:::::::\n\
-	LaTeX:.tex .sty .cls .dtx .ins:::::::\n\
+	LaTeX:.tex .sty .cls .ltx .ins:::::::\n\
 	Lex:.lex:::::::\n\
-	Makefile:Makefile makefile .gmk GNU:"TOP"::Continuous:8:8::\n\
+	Makefile:Makefile makefile .gmk:::None:8:8::\n\
 	Matlab:.m .oct .sci:::::::\n\
 	NEdit Macro:.nm .neditmacro:::::::\n\
 	Pascal:.pas .p .int:::::::\n\
 	Perl:.pl .pm .p5 .PL:"^[ \\t]*#[ \\t]*!.*perl":Auto:None:::".,/\\\\`'!$@#%^&*()-=+{}[]"":;<>?~|":\n\
 	PostScript:.ps .eps .epsf .epsi:"^%!":::::"/%(){}[]<>":\n\
-	Python:.py:"^#!.*python":Auto:None::::\n\
+	Python:.py:"^#!.*python":Auto:None:::"!""#$%&'()*+,-./:;<=>?@[\\\\]^`{|}~":\n\
 	Regex:.reg .regex:"\\(\\?[:#=!iInN].+\\)":None:Continuous::::\n\
 	SGML HTML:.sgml .sgm .html .htm:"\\<[Hh][Tt][Mm][Ll]\\>"::::::\n\
 	SQL:.sql:::::::\n\
-	Sh Ksh Bash:.sh .bash .ksh .profile .bashrc .bash_logout .bash_login .bash_profile:"^[ \\t]*#[ \\t]*![ \\t]*/.*bin/(sh|ksh|bash)"::::::\n\
+	Sh Ksh Bash:.sh .bash .ksh .profile .bashrc .bash_logout .bash_login .bash_profile:"^[ \\t]*#[ \\t]*![ \\t]*/.*bin/(bash|ksh|sh|zsh)"::::::\n\
 	Tcl:.tcl .tk .itcl .itk::Smart:None::::\n\
 	VHDL:.vhd .vhdl .vdl:::::::\n\
 	Verilog:.v:::::::\n\
 	XML:.xml .xsl .dtd:"\\<(?i\\?xml|!doctype)"::None:::"<>/=""'()+*?|":\n\
 	X Resources:.Xresources .Xdefaults .nedit:"^[!#].*([Aa]pp|[Xx]).*[Dd]efaults"::::::\n\
-	Yacc:.y::::::".,/\\`'!|@#%^&*()-=+{}[]"":;<>?~":
-nedit.styles: 	Plain:white:Plain\n\
-	Comment:#AAAAAA:Italic\n\
-	Keyword:#dbc851:Plain\n\
-	Storage Type:#afaea3:Bold\n\
+	Yacc:.y::::::".,/\\`'!|@#%^&*()-=+{}[]"":;<>?~":\n\
+	Erlang:.erl .hrl:::::::
+nedit.styles: 	ExportedFunc:#66FFFF:Plain\n\
+	Plain:white:Plain\n\
+	Comment:gray:Italic\n\
+	Keyword:green:Bold\n\
+	Wooper:#FFC94D:Bold\n\
+	WooperPlain:#FFC94D:Plain\n\
+	Storage Type:lightgreen:Bold\n\
 	Storage Type1:saddle brown:Bold\n\
-	String:green:Plain\n\
-	String1:seagreen:Plain\n\
-	String2:darkgreen:Bold\n\
-	Preprocessor:lightgreen:Plain\n\
-	Preprocessor1:violet:Plain\n\
-	Character Const:red:Plain\n\
-	Numeric Const:#00AFF0:Plain\n\
-	Identifier:lightblue:Plain\n\
-	Identifier1:#70ffff:Plain\n\
-	Subroutine:#ffb080:Plain\n\
-	Subroutine1:white:Plain\n\
+	String:red:Plain\n\
+	String1:SeaGreen:Plain\n\
+	String2:#CC0056:Bold\n\
+	Preprocessor:#FFFF66:Plain\n\
+	Preprocessor1:red:Plain\n\
+	Character Const:Green:Plain\n\
+	Numeric Const:green:Plain\n\
+	Identifier:grey:Plain\n\
+	Identifier1:magenta:Plain\n\
+	Identifier2:SteelBlue:Plain\n\
+	Subroutine:brown:Plain\n\
+	Subroutine1:chocolate:Plain\n\
 	Ada Attributes:plum:Bold\n\
 	Label:red:Italic\n\
 	Flag:red:Bold\n\
 	Text Comment:SteelBlue4:Italic\n\
-	Text Key:Violet:Bold\n\
-	Text Key1:pink:Plain\n\
+	Text Key:VioletRed4:Bold\n\
+	Text Key1:VioletRed4:Plain\n\
 	Text Arg:RoyalBlue4:Bold\n\
 	Text Arg1:SteelBlue4:Bold\n\
 	Text Arg2:RoyalBlue4:Plain\n\
@@ -340,7 +372,7 @@ nedit.styles: 	Plain:white:Plain\n\
 	LaTeX Math:darkGreen:Plain\n\
 	Pointer:#660000:Bold\n\
 	Regex:#009944:Bold\n\
-	Warning:yellow:Italic
+	Warning:brown2:Italic
 nedit.smartIndentInit: 	C:Default\n\
 	C++:Default\n\
 	Python:Default\n\
@@ -358,7 +390,7 @@ nedit.highlightSyntax: True
 nedit.backlightChars: False
 nedit.searchDialogs: False
 nedit.beepOnSearchWrap: False
-nedit.retainSearchDialogs: True
+nedit.retainSearchDialogs: False
 nedit.searchWraps: True
 nedit.stickyCaseSenseButton: True
 nedit.repositionDialogs: True
@@ -378,7 +410,7 @@ nedit.warnFileMods: True
 nedit.warnRealFileMods: True
 nedit.warnExit: True
 nedit.searchMethod: Literal
-nedit.textRows: 45
+nedit.textRows: 60
 nedit.textCols: 80
 nedit.tabDistance: 4
 nedit.emulateTabs: 0
@@ -389,9 +421,9 @@ nedit.italicHighlightFont: -*-courier-medium-o-normal--*-120-*-*-*-iso8859-1
 nedit.boldItalicHighlightFont: -*-courier-bold-o-normal--*-120-*-*-*-iso8859-1
 nedit.textFgColor: white
 nedit.textBgColor: black
-nedit.selectFgColor: darkgrey
-nedit.selectBgColor: #AAAAAA
-nedit.hiliteFgColor: lightgrey
+nedit.selectFgColor: #000000
+nedit.selectBgColor: gray50
+nedit.hiliteFgColor: white
 nedit.hiliteBgColor: red
 nedit.lineNoFgColor: red
 nedit.cursorFgColor: white
