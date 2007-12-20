@@ -135,12 +135,15 @@ createTuple(N,Default,Accumulator) ->
 	
 	
 
-% Removes pair entry from list when the key matches the specified one : 		
+% Removes pair entry from list when the key matches the specified one : 
+% (returns an identical list if the key is not found)		
 deleteBucket(Key,[{Key,_}|T],Accumulator) -> 
+	% Skips the key if matching:
 	lists:append(T,Accumulator);
 
-deleteBucket(Key,[_|T],Accumulator) -> 
-	deleteBucket(Key,[T],Accumulator);
+deleteBucket(Key,[H|T],Accumulator) ->
+	% Keeps everything else: 
+	deleteBucket(Key,T,[H|Accumulator]);
 
 deleteBucket(_,[],Accumulator) -> 
 	Accumulator.
