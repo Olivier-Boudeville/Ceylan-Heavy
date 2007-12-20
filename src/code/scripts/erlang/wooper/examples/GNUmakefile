@@ -37,5 +37,6 @@ class_OvoviviparousBeing_test: class_OvoviviparousBeing $(HELPER_MODULES)
 
 
 class_Cat_test: class_Mammal_test class_ViviparousBeing_test
-class_Platypus_test: class_Platypus_test class_OvoviviparousBeing_test
+
+class_Platypus_test: class_ViviparousBeing_test class_OvoviviparousBeing_test
 
