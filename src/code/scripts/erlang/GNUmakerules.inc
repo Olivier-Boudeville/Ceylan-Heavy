@@ -45,7 +45,7 @@ help:
 
 	
 clean: clean-database clean-subdirs
-	@echo "  Cleaning all in "`basename $(PWD)`
+	@echo "    Cleaning all in "`basename $(PWD)`
 	-@rm -f *.beam *.jam erl_crash.dump		
 
 clean-database:
