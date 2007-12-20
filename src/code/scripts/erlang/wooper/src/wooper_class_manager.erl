@@ -22,7 +22,7 @@
 
 
 
--export([start/1]).
+-export([start/1,ping/1]).
 
 
 % For WooperClassManagerName:
@@ -49,15 +49,15 @@
 
 	
 	display_state(Tables) ->
-		io:format( ?Log_prefix "Storing now ~B table(s).~n",
+		error_logger:info_msg( ?Log_prefix "Storing now ~B table(s).~n",
 			[ hashtable:getEntryCount(Tables) ] ).
 
 	display_table_creation(Module) ->
-		io:format( ?Log_prefix "Creating a virtual table "
+		error_logger:info_msg( ?Log_prefix "Creating a virtual table "
 			"for module ~s.~n", [ Module ] ).
 			
 	display(String) ->
-		io:format( ?Log_prefix "~s.~n", [ String ] ).
+		error_logger:info_msg( ?Log_prefix "~s.~n", [ String ] ).
 			
 -else.
 
@@ -113,7 +113,7 @@ loop(Tables) ->
 			loop( NewTables );
 		
 		display ->
-			io:format( ?Log_prefix "Internal state is: ~s~n.",
+			error_logger:info_msg( ?Log_prefix "Internal state is: ~s~n.",
 				[ hashtable:toString(Tables) ] ),
 			loop( Tables );
 				
@@ -136,7 +136,7 @@ get_virtual_table_for(Module,Tables) ->
 			% Time to create this virtual table and to store it:
 			display_table_creation( Module ),
 			ModuleTable = create_method_table_for( Module ),
-			{ hashtable:addEntry( Module, ModuleTable, Tables ), ModuleTable };
+			{hashtable:addEntry( Module, ModuleTable, Tables ), ModuleTable };
 				
 			
 		{value,Table} ->
@@ -195,4 +195,36 @@ create_local_method_table_for(Module) ->
 		end,
 		hashtable:new(?WooperMethodCountUpperBound),
 		Module:module_info(exports)).
+
+
+% ping specified WOOPER instance, returns pong if it could be successfully
+% pinged, otherwise returns pang.
+ping(Target) when is_pid(Target) ->
+	Target ! {ping, self()},
+	receive
+	
+		{pong,Target} ->
+			pong
+			
+		after 500 ->
+			pang
+			
+	end;
+	
+ping(Target) when is_atom(Target) ->
+	case global:whereis_name( Target ) of 
+		
+		undefined -> 
+			case whereis( Target ) of 	
+				undefined ->
+					pang;
+				
+				Pid ->
+					ping(Pid)
+			end;	
+				
+		Pid ->
+			ping(Pid)
+			
+	end.
 
