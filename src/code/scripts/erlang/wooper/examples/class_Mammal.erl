@@ -10,7 +10,7 @@
 -define(wooper_construct_parameters,Age,Gender,FurColor).
 
 % Life cycle-related exported operators:
--define(wooper_construct_export,new/3,construct/4,delete/1).
+-define(wooper_construct_export,new/3,new_link/3,construct/4,delete/1).
 
 % Declarations of class-specific methods (besides inherited ones).
 -define(wooper_method_export,isHotBlooded/1,getFurColor/1).

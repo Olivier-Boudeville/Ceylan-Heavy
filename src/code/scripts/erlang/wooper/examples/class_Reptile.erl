@@ -10,7 +10,7 @@
 -define(wooper_construct_parameters,Age,Gender).
 
 % Construction-related exported operators:
--define(wooper_construct_export,new/2,construct/3).
+-define(wooper_construct_export,new/2,new_link/2,construct/3).
 
 % Declarations of class-specific methods (besides inherited ones).
 -define(wooper_method_export,isHotBlooded/1,canMoult/1).

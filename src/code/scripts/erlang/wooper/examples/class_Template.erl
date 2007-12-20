@@ -9,7 +9,7 @@
 -define(wooper_construct_parameters,PARAM1,PARAM2).
 
 % Life-cycle related exported operators:
--define(wooper_construct_export,new/P,construct/P+1).
+-define(wooper_construct_export,new/P,new_link/P,construct/P+1).
 
 % Method declarations.
 -define(wooper_method_export,M1/A1,M2/A2).
