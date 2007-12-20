@@ -22,6 +22,8 @@ run() ->
 	MyH5=hashtable:removeEntry("MyFirstKey",MyH4),
 	io:format( "   Looking up for ~s : ~w~n", [ "MyFirstKey",
 		hashtable:lookupEntry("MyFirstKey",MyH5)]),
+	% removeEntry can also be used if the specified key is not here, will 
+	% return an identical table.	
 	hashtable:display(MyH5),
 	io:format( "   Testing double key registering.~n" ),
 	MyH6=hashtable:addEntry("AnotherKey",anything,MyH5),
