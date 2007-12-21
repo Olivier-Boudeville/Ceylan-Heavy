@@ -764,6 +764,15 @@ For example, <code>AgeState = ?setAttribute(State,age,3)</code> will return a ne
 </p>
 
 <p>
+In various cases, notably in constructors, one needs to define a series of attributes, and chaining <code>setAttribute</code> calls with intermediate states is not convenient. A better solution is to use the <b>setAttributes</b> macro (note the plural) to set a list of attribute name/attribute value pairs.
+</p>
+
+<p>
+For example, <code>ConstructedState = ?setAttributes(State,[ {age,3}, {whisker_color,white} ])</code> will return a new state, exact copy of <code>State</code> but for the listed attributes, set to their respective specified value. 
+</p>
+
+
+<p>
 An attribute may be removed, using the <b>removeAttribute</b> macro. For example: <code>NewState = ?removeAttribute(State,an_attribute)</code>.
 </p>
 
@@ -774,12 +783,21 @@ Neither <code>setAttribute</code> nor <code>removeAttribute</code> can fail, eve
 
 
 <h4>Reading state</h4>
+
+<p>
+To test whether an attribute is defined, use the <b>hasAttribute</b> macro: <code>?hasAttribute(AState,AttributeName)</code>, which returns either true or false, and cannot fail.
+</p>
+
+<p>
+For example, <code>true = ?hasAttribute(State,whisker_color)</code>
+ matches if and if the attribute <code>whisker_color</code> is defined in state <code>State</code>.
+</p>
+
 <p>
 Getting the value of an attribute should be done with the <b>getAttribute</b> macro: <code>?getAttribute(AState,AttributeName)</code>.
 </p>
 
 <p>
-
 For example, <code>MyColor = ?getAttribute(State,whisker_color)</code>
  returns the value of the attribute <code>whisker_color</code> from state <code>State</code>.
 </p>
@@ -806,7 +824,9 @@ Some more helper macros are provided for common operations, to keep the syntax a
 
 	<li><b>toggleAttribute</b>: when having a boolean attribute, whose values are either <code>true</code> or <code>false</code>, sets the opposite logical value to the current one. For example: <code>NewState = ?toggleAttribute(State,a_boolean_attribute)</code>. If the target attribute does not exist, will trigger <code>{{case_clause,undefined},[{hashtable,toggleEntry,2},..</code>. If it exists but is neither true or false, will trigger <code>{{case_clause,{value,..}},[{hashtable,toggleEntry,2},..</code></li>
 
-	<li><b>appendToAttribute</b>: when having a list attribute, appends specified element to the attribute list.For example: <code>NewState = ?appendToAttribute(State,a_list_attribute, hello)</code>. If the target attribute does not exist, will trigger <code>{{badmatch,undefined},[{hashtable,appendToEntry,3},..</code>. If it exists but is not already a list, it will not crash but will create an ill-formed list (ex: <code>[8|false]</code> when appending 8 to false, which is not a list)</li>
+	<li><b>appendToAttribute</b>: when having a list attribute, appends specified element to the attribute list. For example: <code>NewState = ?appendToAttribute(State,a_list_attribute,hello)</code>. If the target attribute does not exist, will trigger <code>{{badmatch,undefined},[{hashtable,appendToEntry,3},..</code>. If it exists but is not already a list, it will not crash but will create an ill-formed list (ex: <code>[8|false]</code> when appending 8 to false, which is not a list)</li>
+
+	<li><b>deleteFromAttribute</b>: when having a list attribute, deletes first match of specified element from the attribute list. For example: <code>NewState = ?deleteFromAttribute(State,a_list_attribute,hello)</code>. If the target attribute does not exist, will trigger <code>{{badmatch,undefined},[{hashtable,deleteFromEntry,3},..</code>. If it exists but is not already a list, it will trigger <code>{function_clause,[{lists,delete,[..,..]},{hashtable,deleteFromEntry,3}</code>. If no element in the list matches the specified one, no error will be triggered and the list will be kept as is</li>
 
 <!--
 	<li><b></b>: <code></code></li>
@@ -1007,10 +1027,26 @@ construct(State,Age,Gender) -&gt;
           <td>
             <div class="box">
 <code><pre>
-% RIGHT:
+% RIGHT but clumsy:
 construct(State,Age,Gender) -&gt;
 	AgeState = setAttribute(State,age,Age),
-	setAttribute(<u>AgeState</u>,gender,Gender),
+	setAttribute(<u>AgeState</u>,gender,Gender).
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+<center>
+    <table summary="Code" style="border: none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+% BEST:
+construct(State,Age,Gender) -&gt;
+	setAttributes( State, [ {age,Age}, {gender,Gender} ]).
 </pre></code>
             </div>
           </td>
@@ -1162,7 +1198,7 @@ We created a small set of classes allowing to show multiple inheritance:
 
 <h3>Using stable release archive</h3>
 <p>
-WOOPER 0.1 is ready to be used and can be downloaded <a href="http://sourceforge.net/project/showfiles.php?group_id=158516&package_id=239574" target="_blank">here</a>. Either a .zip or a .tar.bz2 can be retrieved. Starting from the 0.1 version, WOOPER should be fully functional (pun intended!). 
+WOOPER 0.2 is ready to be used and can be downloaded <a href="http://sourceforge.net/project/showfiles.php?group_id=158516&package_id=239574" target="_blank">here</a>. Either a .zip or a .tar.bz2 can be retrieved. Starting from the 0.1 version, WOOPER should be fully functional (pun intended!). 
 </p>
 
 <p>
@@ -1224,7 +1260,38 @@ Check-out of WOOPER documentation can be performed thanks to:
         <tr>
           <td>
             <div class="box">
-svn co https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/doc/web/main/documentation/wooper Wooper-doc-checkout
+svn co --username YourSFUserName https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/doc/web/main/documentation/wooper Wooper-doc-checkout
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+</p>
+
+
+<p>
+If just wanting a SVN anonymous export, use for example:
+<center>
+    <table summary="a box" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+svn export http://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/code/scripts/erlang Wooper-code-export 
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+and 
+
+<center>
+    <table summary="a box" style="border: none">
+        <tr>
+          <td>
+            <div class="box">
+svn export http://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/doc/web/main/documentation/wooper Wooper-doc-export
             </div>
           </td>
         </tr>
@@ -1255,10 +1322,33 @@ Not released yet (work-in-progress, only available on SVN). Major changes are:
 -->
 
 
-<a name="version_0_1"></a>
-<h3>Version 0.1</h3>
+<a name="versiontoc"></a>
+<center>
+	<table summary="Table of contents for WOOPER versions" style="border: none">
+        <tr>
+          <td>
+		   <div class="box">
+		       <a href="#version_0_3">0.3</a> [cutting-edge, in SVN only]<br>
+		       <a href="#version_0_2">0.2</a> [current stable]<br>
+		       <a href="#version_0_1">0.1</a>
+
+<!--
+		       <a href="#"></a><br>
+-->
+
+          </div>
+
+          </td>
+        </tr>
+      </table>
+</center>
+
+
+
+<a name="version_0_3"></a>
+<h3>Version 0.3</h3>
 <p>
-Released on Sunday, July 22, 2007. Already fully functional!
+Not released yet (work-in-progress, only available on SVN). Should be a BFO (Bug Fixes Only, if bugs were to be found) version, as functional coverage is pretty complete already.
 </p>
 
 
@@ -1278,11 +1368,13 @@ Released on Friday, December 21, 2007. Still fully functional!
 
 </p>
 
-<a name="version_0_3"></a>
-<h3>Version 0.3</h3>
+<a name="version_0_1"></a>
+<h3>Version 0.1</h3>
 <p>
-Not released yet (work-in-progress, only available on SVN). Should be a BFO (Bug Fixes Only, if bugs were to be found) version, as functional coverage is pretty complete already.
+Released on Sunday, July 22, 2007. Already fully functional!
 </p>
+
+
 
 <p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
 
