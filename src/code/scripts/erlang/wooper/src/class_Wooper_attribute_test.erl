@@ -56,10 +56,36 @@ test(State) ->
 	SubState    = ?substractFromAttribute(AddState,test_add,5),
 	6           = ?getAttribute(SubState,test_add),
 
+	not_crashing_examples(SubState),
+	crashing_examples(SubState),
+	
 	io:format( "   End of attribute management test.~n" ),	
 	?wooper_return_state_result( SubState, test_ok ).
 
 
+not_crashing_examples(State) ->
+	?removeAttribute(State,non_existing),
+	NewState = ?appendToAttribute(State,test_attribute,8),
+	io:format( "List is ~w.~n", [ ?getAttribute(NewState,test_attribute) ]).
+
+
+crashing_examples(State) ->
+	%?toggleAttribute(State,non_existing),
+	% Not a boolean:
+	%?toggleAttribute(State,test_add),
+	
+	%?addToAttribute(State,non_existing,4),
+	% Not a number:
+	%?addToAttribute(State,test_attribute,4),
+	
+	%?substractFromAttribute(State,non_existing,4),
+	% Not a number:
+	%?substractFromAttribute(State,test_attribute,4),
+	
+	State,
+	%?getAttr(non_existing),
+	ok.
+	
 
 % Actual test.
 % (static)
