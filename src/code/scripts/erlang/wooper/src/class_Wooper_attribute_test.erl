@@ -1,0 +1,81 @@
+-module(class_Wooper_attribute_test).
+
+
+% Determines what are the mother classes of this class (if any):
+-define(wooper_superclasses,[]).
+
+% Parameters taken by the constructor ('construct'). 
+% They are here the ones of the Mammal mother class (the ovoviviparous being 
+% constructor does not need any parameter) plus nozzle color.
+% These are class-specific data needing to be set in the constructor:
+-define(wooper_construct_parameters,).
+
+% Life-cycle related exported operators:
+-define(wooper_construct_export,new/0,new_link/0,construct/1).
+
+% Method declarations.
+-define(wooper_method_export,test/1).
+
+% Static method declarations.
+-export([run/0]).
+
+% Allows to define WOOPER base variables and methods for that class:
+-include("wooper.hrl").
+
+-define(Prefix,"--> ").
+
+
+% Constructs a new test instance.
+construct(State) ->
+	% Class-specific attributes:
+	?setAttribute(State,test_attribute,true).
+
+
+% Oneway test.
+test(State) ->
+	io:format( "   Testing attribute management.~n" ),
+	true        = ?getAttr(test_attribute),
+	
+	UnsetState  = ?removeAttribute(State,test_attribute),
+	
+	NewSetState = ?setAttribute(UnsetState,test_attribute,true),
+	true        = ?getAttribute(NewSetState,test_attribute),
+	
+	RevertState = ?toggleAttribute(NewSetState,test_attribute),
+	false       = ?getAttribute(RevertState,test_attribute),
+	
+	VoidState   = ?setAttribute(RevertState,test_list,[]),
+	AppendState = ?appendToAttribute(VoidState,test_list, 7),
+	AgainState  = ?appendToAttribute(AppendState,test_list, 8),
+	[8,7]       = ?getAttribute(AgainState,test_list),
+	
+	PreAddState = ?setAttribute(AgainState,test_add,1),
+	AddState    = ?addToAttribute(PreAddState,test_add,10),
+	11          = ?getAttribute(AddState,test_add),
+	
+	SubState    = ?substractFromAttribute(AddState,test_add,5),
+	6           = ?getAttribute(SubState,test_add),
+
+	io:format( "   End of attribute management test.~n" ),	
+	?wooper_return_state_result( SubState, test_ok ).
+
+
+
+% Actual test.
+% (static)
+run() ->
+	Tested = class_Wooper_attribute_test:new_link(),
+	Tested ! {test,[],self()},
+	receive
+	
+		{wooper_result,test_ok} ->
+			io:format( ?Prefix "Test success.~n" ),
+			erlang:halt();
+			
+		Other ->
+			io:format( ?Prefix "Test failed: ~w.~n", [Other] ),
+			erlang:exit(test_failed)
+			
+	end.
+	
+
