@@ -144,7 +144,7 @@ This class <code>class_Cat</code> is itself defined this way:
 -define(wooper_construct_parameters,Age,Gender,FurColor,WhiskerColor).
 
 % Construction-related exported operators:
--define(wooper_construct_export,new/4,construct/5).
+-define(wooper_construct_export,new/4,new_link/4,construct/5).
 
 % Method declarations.
 -define(wooper_method_export,getTeatCount/1,canEat/2,getWhiskerColor/1).
@@ -164,7 +164,7 @@ construct(State,?wooper_construct_parameters) -&gt;
 	?setAttribute( ViviparousMammalState, whisker_color, WhiskerColor ).
 	
 
-% No guarantee on biological fidelity:	
+% No guarantee of biological fidelity:	
 getTeatCount(State) -&gt;
 	?wooper_return_state_result( State, 6 ).
 
@@ -363,8 +363,10 @@ Instances may offer <b>methods</b> that can be publicly called, including remote
 <!--
 	<li></li>
 -->
-	<li><code>canEat</code>, taking one parameter describing the type of food, and returning whether the cat can eat that kind of food or not. This should be cat-specific</li>
+	<li><code>canEat</code>, taking one parameter describing the type of food, and returning whether the cat can eat that kind of food or not. The implementation should be cat-specific here, whereas the method signature is shared by all beings</li>
+	
 	<li><code>getWhiskersColor</code>, taking no parameter, returning the color of its whiskers. This is indeed cat-specific</li>
+	
 	<li>
 		<p><code>declareBirthday</code>, incrementing the age of our cat, not taking any parameter nor returning anything. This will be therefore be implemented as a one-way call (i.e. not returning any result to the caller, hence not needing to know it), only interesting for its effect on the cat state: making it one year older.
 		</p>	
@@ -383,11 +385,11 @@ Instances may offer <b>methods</b> that can be publicly called, including remote
 
 <p>
 The cat-specific methods are to be declared, in the <code>class_Cat</code>, thanks to the <code>wooper_method_export</code> clause. Their arity should be equal to the number of parameters they should be called with, plus one. The additional parameter is an implicit one (automatically managed by WOOPER), corresponding to the state of the instance. This <code>State</code>
- variable defined by WOOPER can be somehow compared to the <code>self</code> parameter of Python, or to the <code>this</code> pointer of C++. That state is automatically kept by WOOPER classes in their main loop, and automatically prepended to the parameters of incoming method calls.
+ variable defined by WOOPER can be somehow compared to the '<code>self</code>' parameter of Python, or to the '<code>this</code>' pointer of C++. That state is automatically kept by WOOPER classes in their main loop, and automatically prepended to the parameters of incoming method calls.
 </p>
 
 <p>
-In our example, it would result in: <code>-define(wooper_method_export,canEat/2,getWhiskersColor/1).</code> (as <code>declareBirthday</code> will be inherited, no need to declare it).
+In our example, it would result in: <code>-define(wooper_method_export,canEat/2,getWhiskersColor/1).</code> (as <code>declareBirthday</code> will be inherited but not overriden, no need to declare it).
 </p>
 
 
@@ -512,6 +514,10 @@ Hence oneway methods should be called thanks to:
 No return should be expected (the instance does not even have the sender PID), so no receive should be attempted on the caller side. Due to their nature, if an error occurs instance-side during a oneway call, the caller will never be notified.
 </p>
 
+<p>
+However, to help debugging, an error message is logged (using <code>error_logger:error_msg</code>) and the actual error message, the one that would be sent back to the caller if the method was a request, is given to <code>erlang:exit</code> instead.
+</p>
+
 
 <h5>Method results</h5>
 <p>
@@ -523,24 +529,35 @@ If the method execution succeeded, and if it is a request (not a oneway), <code>
 -->
 
 	<li>
-		<p><b>wooper_method_not_found</b>, i.e. <code>{wooper_method_not_found, Module, MethodName, MethodArity}</code>: for example <code>{wooper_method_not_found, class_Cat, layEggs, 2}</code>. <code>MethodArity</code> counts the implied state parameter. This error occurs whenever a called method could not be found in the whole inheritance graph. It means this method is not implemented, at least not with the deduced arity.
+		<p><b>wooper_method_not_found</b>, i.e. <code>{wooper_method_not_found, Pid, Module, MethodName, MethodArity, ListOfActualParameters}</code>: for example <code>{wooper_method_not_found, &lt;0.30.0&gt;, class_Cat, layEggs, 2, ...}</code>. <code>MethodArity</code> counts the implied state parameter. This error occurs whenever a called method could not be found in the whole inheritance graph. It means this method is not implemented, at least not with the deduced arity.
 		</p>
 		
-		<p>More precisely, when a message <code>{method_name,[Arg1,Arg2,..,Argn]...}</code> (request or oneway) is received, <code>method_name/n+1</code> has be to called: WOOPER tries to find <code>method_name(State,Arg1,..,Argn)</code>, method name and arity must match. In the case where no method could be found, the <code>wooper_method_not_found</code> atom is returned, and the object state will not change
+		<p>More precisely, when a message <code>{method_name,[Arg1,Arg2,..,Argn]...}</code> (request or oneway) is received, <code>method_name/n+1</code> has be to called: WOOPER tries to find <code>method_name(State,Arg1,..,Argn)</code>, and method name and arity must match. If no method could be found, the <code>wooper_method_not_found</code> atom is returned, and the object state will not change, nor the instance will crash, as this error is deemed a client-side one
+		</p>
+	</li>
+
+	<li>
+		<p><b>wooper_method_failed</b>, i.e. <code>{wooper_method_failed, InstancePID, Module, MethodName, MethodArity, ListOfActualParameters, ErrorTerm}</code>: for example, <code>{wooper_method_failed, &lt;0.30.0&gt;, class_Cat, myCrashingMethod, 1, [], {{badmatch,create_bug}, [..]]}</code>. If the exit message sent by the method specifies a PID, it is prepended to ErrorTerm.
 		</p>
 
-</li>
+		<p>Such a method error means there is a runtime failure, it is deemed a server-side issue, thus the instance process logs that error, sends an error term to the caller (if and only if it is a request), and then exits with the same error term
+		</p>
+	</li>
 
-	<li><b>wooper_method_failed</b>, i.e. <code>{wooper_method_failed, InstancePID, Module, MethodName, MethodArity, Parameters, ErrorTerm}</code>: for example, <code>{wooper_method_failed, &lt;0.30.0&gt;, class_Cat, myCrashingMethod, 1, [], {{badmatch,create_bug}, [..]]}</code>. If the exit message sent by the method specifies a PID, it is prepended to ErrorTerm. It means there is a runtime failure</li>
-
-	<li><b>wooper_method_faulty_return</b>, i.e. <code>{wooper_method_faulty_return, InstancePID, Module, MethodName, MethodArity, ParameterList, ActualReturn}</code>: for example <code>{wooper_method_faulty_return, &lt;0.30.0&gt;, class_Cat, myFaultyMethod, 1, [], [{{state_holder,..]}</code>. This error occurs when other errors did not match (catch-all). The main reason for its happening is when debug mode is set and when a method implementation did not respect the expected method return convention (neither <code>wooper_return_state_result</code> nor
+	<li><b>wooper_method_faulty_return</b>, i.e. <code>{wooper_method_faulty_return, InstancePID, Module, MethodName, MethodArity, ListOfActualParameters, ActualReturn}</code>: for example <code>{wooper_method_faulty_return, &lt;0.30.0&gt;, class_Cat, myFaultyMethod, 1, [], [{{state_holder,..]}</code>. This error occurs when other errors did not match (catch-all). The main reason for its happening is when debug mode is set and when a method implementation did not respect the expected method return convention (neither <code>wooper_return_state_result</code> nor
 <code>wooper_return_state_only</code> used). It means the method is not implemented correctly (it has a bug)</li>
+
+		<p>This error occurs when other errors did not match (catch-all). The main reason for its happening is when debug mode is set and when a method implementation did not respect the expected method return convention (neither <code>wooper_return_state_result</code> nor
+<code>wooper_return_state_only</code> used). It means the method is not implemented correctly (it has a bug). This is a server-side failure, thus the instance process logs that error, sends an error term to the caller (if and only if it is a request), and then exits with the same error term
+		</p>
+
+	</li>
 	
 </ul>
 </p>
 
 <p>
-So on the caller side, errors can be better discriminated if needed (but defensive development is not really favored in Erlang):
+So on the caller side, errors can be better discriminated if needed (but defensive development is not really favored in Erlang, one may let the caller crash on unexpected return instead):
 <center>
     <table summary="Code" style="border: none">
         <tr>
@@ -553,13 +570,17 @@ receive
 	{wooper_result, [X,Y] } -&gt;
 		[...];
 	
-	{wooper_method_not_found, Module, Method, Arity} -&gt;
+	{wooper_method_not_found, Pid, Module, Method, Arity, Parameters} -&gt;
 		[...];
 
 	{wooper_method_failed, Pid, Module, Method, Arity, Parameters, ErrorTerm} -&gt;
 		[...];
 
-	{wooper_method_faulty_return, Pid, Module, Method, Arity, Parameters, ErrorTerm} -&gt;
+	% Error term can be a tuple {Pid,Error} as well, depending on the exit:
+	{wooper_method_failed, Pid, Module, Method, Arity, Parameters, {Pid,Error}} -&gt;
+		[...];
+
+	{wooper_method_faulty_return, Pid, Module, Method, Arity, Parameters, UnexpectedTerm} -&gt;
 		[...];
 
 	wooper_method_returns_void -&gt;
@@ -612,7 +633,7 @@ State is unchanged here.
 <p>
 Depending on its returning a specific result, the method signature will correspond either to:
 <ul>
-	<li>a <b>request</b>, and <code>?wooper_return_state_result(NewState,Result)</code> wil be used: the new state will be kept by the instance and the result will be sent to the client. Hence <code>wooper_return_state_result</code> means that the method returns a state <code>and</code> a result, in that order.  For example,
+	<li>a <b>request</b>, and <code>?wooper_return_state_result(NewState,Result)</code> wil be used: the new state will be kept by the instance and the result will be sent to the client. Hence <code>wooper_return_state_result</code> means that the method returns a state <b>and</b> a result.  For example,
 <center>
     <table summary="Code" style="border: none">
         <tr>
@@ -644,7 +665,7 @@ MyCat ! {giveBirth,[2,3],self()}.
         </tr>
     </table>
 </center>
-But requests can access to one more information than oneways: the PID of the client that sent the request. This can be done by reading the <code>request_sender</code> member of the state variable, which is automatically set by WOOPER:
+But requests can access to one more information than oneways: the PID of the client that sent the request. This can be done by using the <code>getSender</code> macro, which is automatically set by WOOPER:
 <center>
     <table summary="Code" style="border: none">
         <tr>
@@ -652,7 +673,7 @@ But requests can access to one more information than oneways: the PID of the cli
             <div class="box">
 <code><pre>
 giveBirth(State,NumberOfMaleChildren,NumberOfFemaleChildren) -&gt; 
-	ClientPID = State#state_holder.request_sender,
+	ClientPID = ?getSender(),
 	[..]
 	</pre></code>
             </div>
@@ -663,13 +684,12 @@ giveBirth(State,NumberOfMaleChildren,NumberOfFemaleChildren) -&gt;
 
 <p>
 Thus requests have access to their client PID without having to specify it twice, i.e. with no need to specify it in the parameters as well as in the third element of the call tuple: instead of
-<code>MyCat ! {giveBirth,[2,3,self()],self()}.</code>, only <code>MyCat ! {giveBirth,[2,3],self()}.</code> can be sent, while letting the possibility for the called request (here <code>giveBirth/3</code>, for a state and two parameters) to store the client PID (most probably in the state variable) for a later use.
+<code>MyCat ! {giveBirth,[2,3,self()],self()}.</code>, only <code>MyCat ! {giveBirth,[2,3],self()}.</code> can be sent, while letting the possibility for the called request (here <code>giveBirth/3</code>, for a state and two parameters) to access the client PID thanks to the <code>getSender</code> macro, and maybe store it (most probably in the state variable) for a later use.
 </p>
 
 <p>
- The <code>request_sender</code> member is set accordingly (i.e. with the right PID) only while a request method is being executed, otherwise its value is always the atom <code>undefined</code>.
-</p>
- </li>
+The <code>getSender</code> macro should be used only for requests, as of course the sender PID has no meaning with oneways. The macro returns <code>undefined</code> in this case.
+</p> </li>
  
 	<li>a <b>oneway</b>, and <code>?wooper_return_state_only(NewState)</code> will be used: the instance state will be updated, and no result will be returned. For example,
 <center>
@@ -694,7 +714,7 @@ Oneways may leave the state unchanged, only being called for side-effects, for e
             <div class="box">
 <code><pre>
 displayAge(State) -&gt;
-	io:format("My age is ~B~n.",[getAttr(age)]),
+	io:format("My age is ~B~n.",[?getAttr(age)]),
 	?wooper_return_state_only(State).
 </pre></code>
             </div>
@@ -729,29 +749,75 @@ An instance state is defined by a set of attributes. Each attribute is designate
 </p>
 
 <p>
-As seen in various examples, most method implementations will access (read/write) to attributes stored in the instance state, whose original version is always specified as their first parameter. 
+As seen in various examples, most method implementations will access (read/write) to attributes stored in the instance state, whose original version (i.e. the state of the instance at method begin) is always specified as their first parameter. 
 </p>
 
 
 <h4>Modifying state</h4>
 
 <p>
-Setting an attribute (creating and/or modifying it) should be done with the <code>setAttribute</code> macro: <code>?setAttribute(AState,AttributeName,NewAttributeValue)</code>. For example, <code>?setAttribute(State,age,3)</code> will set, in the state <code>State</code>, the <code>age</code> attribute to 3. 
+Setting an attribute (creating and/or modifying it) should be done with the <b>setAttribute</b> macro: <code>?setAttribute(AState,AttributeName,NewAttributeValue)</code>.
 </p>
+
+<p>
+For example, <code>AgeState = ?setAttribute(State,age,3)</code> will return a new state, exact copy of <code>State</code> but for the attribute <code>age</code>, that will be set to 3, whether or not this attribute was already defined in <code>State</code>. 
+</p>
+
+<p>
+An attribute may be removed, using the <b>removeAttribute</b> macro. For example: <code>NewState = ?removeAttribute(State,an_attribute)</code>.
+</p>
+
+<p>
+Neither <code>setAttribute</code> nor <code>removeAttribute</code> can fail, even if the attribute to remove was not already existing.
+</p>
+
 
 
 <h4>Reading state</h4>
 <p>
-Getting the value of an attribute should be done with the <code>getAttribute</code> macro: <code>?getAttribute(AState,AttributeName)</code>. For example, <code>?getAttribute(State,whisker_color)</code>
+Getting the value of an attribute should be done with the <b>getAttribute</b> macro: <code>?getAttribute(AState,AttributeName)</code>.
+</p>
+
+<p>
+
+For example, <code>MyColor = ?getAttribute(State,whisker_color)</code>
  returns the value of the attribute <code>whisker_color</code> from state <code>State</code>.
 </p>
 
+
 <p>
-The requested attribute may not exist in the specified state. In this case, <code>getAttribute</code> returns, instead of the result, <code>{ attribute_not_found, AttributeName, ClassName }</code>, for example <code>{ attribute_not_found, nozzle_color, class_Cat}</code>.
+The requested attribute may not exist in the specified state. In this case, a bad match is triggered: <code>{{badmatch,undefined},[{hashtable,getEntry,2},..</code>.
 </p>
 
 <p>
-Quite often, when retrieving an attribute, the state variable will be named <code>State</code> (when using directly the original state specified in the method declaration). In this case, the <code>getAttr</code> macro can be used: <code>?getAttr(whisker_color)</code> expands as <code>?getAttribute(State,whisker_color)</code> (and is shorter).
+Quite often, when retrieving an attribute, the state variable will be named <code>State</code> (when using directly the original state specified in the method declaration). In this case, the <b>getAttr</b> macro can be used: <code>?getAttr(whisker_color)</code> expands as <code>?getAttribute(State,whisker_color)</code> (and is a bit shorter).
+</p>
+
+
+
+<h4>Read-Modify-Write operations</h4>
+<p>
+Some more helper macros are provided for common operations, to keep the syntax as lightweight as possible:
+<ul>
+
+	<li><b>addToAttribute</b>: when having a numerical attribute, adds specified number to the attribute. For example: <code>NewState = ?addToAttribute(State,a_numerical_attribute,6)</code>. If the target attribute does not exist, will trigger <code>{{badmatch,undefined},[{hashtable,addToEntry,3},..</code>. If it exists but no addition can be performed on it, will trigger <code>{badarith,[{hashtable,addToEntry,3},..</code></li>
+
+	<li><b>substractFromAttribute</b>: when having a numerical attribute, substracts specified number from the attribute. For example: <code>NewState = ?substractFromAttribute(State,a_numerical_attribute,1)</code>. If the target attribute does not exist, will trigger <code>{{badmatch,undefined},[{hashtable,substractFromEntry,3},..</code>. If it exists but no addition can be performed on it, will trigger <code>{badarith,[{hashtable,substractFromEntry,3},..</code></li>
+
+	<li><b>toggleAttribute</b>: when having a boolean attribute, whose values are either <code>true</code> or <code>false</code>, sets the opposite logical value to the current one. For example: <code>NewState = ?toggleAttribute(State,a_boolean_attribute)</code>. If the target attribute does not exist, will trigger <code>{{case_clause,undefined},[{hashtable,toggleEntry,2},..</code>. If it exists but is neither true or false, will trigger <code>{{case_clause,{value,..}},[{hashtable,toggleEntry,2},..</code></li>
+
+	<li><b>appendToAttribute</b>: when having a list attribute, appends specified element to the attribute list.For example: <code>NewState = ?appendToAttribute(State,a_list_attribute, hello)</code>. If the target attribute does not exist, will trigger <code>{{badmatch,undefined},[{hashtable,appendToEntry,3},..</code>. If it exists but is not already a list, it will not crash but will create an ill-formed list (ex: <code>[8|false]</code> when appending 8 to false, which is not a list)</li>
+
+<!--
+	<li><b></b>: <code></code></li>
+-->
+
+</ul>
+
+</p>
+
+<p>
+See <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/wooper/src/wooper.hrl?view=markup" target="_blank">wooper.hrl</a> for the actual definition of most of the WOOPER constructs.
 </p>
 
 <br><p><center>[<a href="#usagetoc">Back to the usage table of contents</a>]</center></p><br>
@@ -829,10 +895,10 @@ MyCat ! delete.
 </p>
 
 
-<h4>Instance creation: new and construct</h4>
+<h4>Instance creation: new/new_link and construct</h4>
 
 
-<h5>Role of the new/construct pair</h5>
+<h5>Role of a new/construct pair</h5>
 
 <p>
 Whereas the purpose of <code>new</code> is to create a working instance on the user behalf, the role of <code>construct</code> is to initialize an instance of that class while being able to be chained for inheritance, as explained later. 
@@ -844,6 +910,10 @@ The <code>new</code> operator is automatically defined by WOOPER, but it relies 
 
 <p>
 Only one <code>new/construct</code> pair can be defined, but this unique twofold constructor may be defined to branch to as many subconstructors as needed: for example, <code>MyCat = Class_Cat:new(construct_from_point,[1,2]).</code>.
+</p>
+
+<p>
+The <code>new_link</code> operator behaves exactly as the <code>new</code> operator, except that it creates an instance that is Erlang-linked with the process that called that operator.
 </p>
 
 
@@ -858,11 +928,11 @@ The WOOPER-defined <code>new</code> operator automatically transmits these param
 </p>
 
 <p>
-Based on the <code>wooper_construct_parameters</code> define (let us suppose n constructor parameters are listed in it), <code>new</code> and <code>construct</code> must be declared thanks to: <code>-define( wooper_construct_export, new/n, construct/n+1).</code>. <code>construct</code> takes one additional parameter, the instance state.
+Based on the <code>wooper_construct_parameters</code> define (let us suppose n constructor parameters are listed in it), <code>new</code> and <code>construct</code> must be declared thanks to: <code>-define( wooper_construct_export, new/n, new_link/n, construct/n+1).</code>. <code>construct</code> takes one additional parameter, the instance state.
 </p>
 
 <p>
-For example, if <code>-define( wooper_construct_parameters, Age, Gender ).</code> is declared, <code>-define( wooper_construct_export, new/2, construct/3 ).</code> should then be specified, and the corresponding method will be: <code>construct(State,?wooper_construct_parameters) -&gt; [..]</code>. If there is no construction-related parameter, then the method becomes: <code>construct(State) -&gt; [..]</code>. The <code>new</code> operator is always defined automatically by WOOPER, nothing is to be done for it.
+For example, if <code>-define( wooper_construct_parameters, Age, Gender ).</code> is declared, <code>-define( wooper_construct_export, new/2, new_link/2, construct/3 ).</code> should then be specified, and the corresponding method will be: <code>construct(State,?wooper_construct_parameters) -&gt; [..]</code>. If there is no construction-related parameter, then the method becomes: <code>construct(State) -&gt; [..]</code>. The <code>new</code> operator is always defined automatically by WOOPER, nothing is to be done for it.
 </p>
 
 
@@ -885,7 +955,7 @@ For example, <code>class_Cat</code> inherits directly from <code>class_Mammal</c
 [..]
 -define(wooper_construct_parameters,Age,Gender,FurColor,WhiskerColor).
 [..]
--define(wooper_construct_export,new/4,construct/5).
+-define(wooper_construct_export,new/4,new_link/4,construct/5).
 [..]
 % Constructs a new Cat.
 construct(State,?wooper_construct_parameters) -&gt;
@@ -964,11 +1034,12 @@ If a specific action must be performed on deletion, potentially-chained destruct
 <code><pre>
 % Overriding default destructor:	
 % State should be returned, and destructors should be called in leaf-to-root
-% order in inheritance tree.
+% order in inheritance tree, thus first this class, then all the direct
+% mother classes, if any.
 delete(State) -&gt;
 	% Perform here class-specific action (ex: socket or file explicit closing).
 	LocalDelState = my_action( State ),
-	% Then if needed call the mother class counterparts:
+	% Then call the direct mother class counterparts:
 	OneDelState = class_MotherOne:delete( LocalDelState ),
 	TwoDelState = class_MotherTwo:delete( OneDelState ),
 	% Finally return the state to allow child classes to chain:
@@ -1019,6 +1090,10 @@ On other platforms, these modules must be compiled one way or another before usi
         </tr>
     </table>
 </center>
+</p>
+
+<p>
+We provide as well a WOOPER-aware <a href="http://ceylan.svn.sourceforge.net/viewvc/*checkout*/ceylan/Ceylan/trunk/src/conf/environment/nedit.rc" target="_blank">nedit</a> configuration file for syntax highlighting (on black backgrounds), inspired from Daniel Solaz's <a href="http://www.trapexit.org/forum/viewtopic.php?p=30189" target="_blank">Erlang Nedit mode</a>.
 </p>
 
 <p>
@@ -1190,9 +1265,11 @@ Released on Sunday, July 22, 2007. Already fully functional!
 <a name="version_0_2"></a>
 <h3>Version 0.2</h3>
 <p>
-Not released yet (work-in-progress, only available on SVN). Major changes are:
+Released on Friday, December 21, 2007. Still fully functional!
 <ul>
-	<li>the sender PID is made available to requests in the instance state variable (see <code>request_sender</code> member)</li>
+	<li>the sender PID is made available to requests in the instance state variable (see <code>request_sender</code> member, used automatically by the <code>getSender</code> macro)</li>
+	<li>runtime errors better identified and notified</li>
+	<li>macros for attribute management added, existing ones more robust and faster</li>
 	<li>fixed a potential race condition when two clients request nearly at the same time the WOOPER class manager (previous mechanism worked, class manager was a singleton indeed, but second client was not notified)</li>
 	<li>improved build (Emakefile generated), comments, error output</li>
 	<li>test template added</li>
@@ -1201,7 +1278,14 @@ Not released yet (work-in-progress, only available on SVN). Major changes are:
 
 </p>
 
+<a name="version_0_3"></a>
+<h3>Version 0.3</h3>
+<p>
+Not released yet (work-in-progress, only available on SVN). Should be a BFO (Bug Fixes Only, if bugs were to be found) version, as functional coverage is pretty complete already.
+</p>
+
 <p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
+
 
 <!-- #####################################################################" -->
 
@@ -1264,9 +1348,9 @@ WOOPER relies only on these specific files:
 	<li><b></b>: </li>
 -->
 
-	<li>Is <b>wooper_main_loop</b> (in <code>wooper.hrl</code>) really tail-recursive ?</li>
+	<li>Is <b>wooper_main_loop</b> (in <code>wooper.hrl</code>) really tail-recursive ? I think so</li>
 	<li>Integrate automatic <b>persistant storage</b> of instance states into Mnesia databases</li>
-	<li>Would there be a <b>more efficient</b> implementation of hashtables ? (ex: ets-based). More generally speaking, some profiling could be done to further increase overall performances</li>
+	<li>Would there be a <b>more efficient</b> implementation of hashtables ? (ex: ets-based ?). More generally speaking, some profiling could be done to further increase overall performances</li>
 	
 </ul>
 
@@ -1403,7 +1487,7 @@ svn copy https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/code
   <center>
     [<a href="#_top_">Top</a>]<br>
     <br>
-    <em>Last update: Sunday, September 2, 2007</em>
+    <em>Last update: Friday, December 21, 2007</em>
   </center>
 </body>
 </html>
