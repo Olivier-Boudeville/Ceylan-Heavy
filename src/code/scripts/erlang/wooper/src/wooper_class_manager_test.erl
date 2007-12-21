@@ -42,7 +42,7 @@ run() ->
 			
 	% 10-second time-out:
 	after 10000	->
-		erlang:error( "#### Error: wooper_get_class_manager: unable to find "
+		error_logger:error_msg( "#### wooper_get_class_manager: unable to find "
 			"class manager after 10s, test failed." )
 				
 	end,
