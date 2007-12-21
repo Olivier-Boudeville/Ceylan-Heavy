@@ -27,6 +27,10 @@ class_%.beam: class_%.erl $(WOOPER_SRC)/wooper.hrl
 	@echo "    Executing test function $(STARTUP_FUNCTION) in module $@"
 	@$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT) -run $@ $(STARTUP_FUNCTION)
 
+%_test: %_test.beam
+	@echo "    Executing test function $(STARTUP_FUNCTION) in module $@"
+	@$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT) -run $@ $(STARTUP_FUNCTION)
+
 
 %:%.beam
 
