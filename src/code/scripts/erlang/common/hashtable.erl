@@ -23,8 +23,9 @@
 % Maybe the ets module could/should be used instead.
 
 
--export([new/0,new/1,addEntry/3,removeEntry/2,lookupEntry/2,enumerate/1,
-	getEntryCount/1,merge/2,toString/1,display/1]).
+-export([new/0,new/1,addEntry/3,removeEntry/2,lookupEntry/2,getEntry/2,
+	addToEntry/3,substractFromEntry/3,toggleEntry/2,appendToEntry/3,
+	enumerate/1,getEntryCount/1,merge/2,toString/1,display/1]).
 
 
 % The default number of hash buckets :
@@ -69,6 +70,63 @@ lookupEntry(Key,HashTable) ->
 	lookupInList(Key, element(erlang:phash2(Key,size(HashTable))+1,
 		HashTable)).
 
+
+% Retrieves the value corresponding to specified key and returns it directly.
+% The key/value pair is expected to exist already, otherwise a bad match is
+% triggered.
+getEntry(Key,HashTable) ->	
+	{value,Value} = lookupInList(Key,
+		element(erlang:phash2(Key,size(HashTable))+1,HashTable)),
+	Value.
+
+
+% Adds specified value to the value, supposed to be numerical, associated to
+% specified key.
+% A case clause is triggered if the key did not exist, a bad arithm is
+% triggered if no addition can be performed on the associated value.
+addToEntry(Key,Value,HashTable) ->	
+	{value,Number} = lookupInList(Key,
+		element(erlang:phash2(Key,size(HashTable))+1,HashTable)),
+	addEntry(Key,Number+Value,HashTable).
+
+
+% Substracts specified value to the value, supposed to be numerical, 
+% associated to specified key.
+% A case clause is triggered if the key did not exist, a bad arithm is
+% triggered if no substraction can be performed on the associated value.
+substractFromEntry(Key,Value,HashTable) ->	
+	{value,Number} = lookupInList(Key,
+		element(erlang:phash2(Key,size(HashTable))+1,HashTable)),
+	addEntry(Key,Number-Value,HashTable).
+
+
+% Toggles the boolean value associated with specified key: if true will be
+% false, if false will be true.
+% A case clause is triggered if the entry does not exist or it is not a boolean
+% value.
+toggleEntry(Key,HashTable) ->	
+	case lookupInList(Key,
+			element(erlang:phash2(Key,size(HashTable))+1,HashTable)) of
+	
+		{value,true} ->
+			addEntry(Key,false,HashTable); 
+	
+		{value,false} ->
+			addEntry(Key,true,HashTable) 
+	
+	end.	
+
+
+% Appends specified element to the value, supposed to be a list, associated to
+% specified key.
+% A case clause is triggered if the entry does not exist.
+% Note: no check is performed to ensure the value is a list indeed, and the
+% '[|]' operation will not complain if not.
+appendToEntry(Key,Element,HashTable) ->	
+	{value,List} = lookupInList(Key,
+		element(erlang:phash2(Key,size(HashTable))+1,HashTable)),
+	addEntry(Key,[Element|List],HashTable).
+	
 
 % Returns a flat list whose elements are all the key/value pairs of the
 % hashtable.
