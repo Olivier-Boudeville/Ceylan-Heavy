@@ -85,10 +85,25 @@ namespace Ceylan
 		 * @throw SystemException on error, or if not implemented 
 		 * for this platform.
 		 *
+		 * @see getUsedSystemMemorySize
+		 *
 		 */
 		CEYLAN_DLL UnsignedLongInteger getFreeSystemMemorySize() 
 			throw( SystemException ) ; 
 
+
+		/**
+		 * Returns the size of main memory being currently used, 
+		 * in bytes.
+		 *
+		 * @throw SystemException on error, or if not implemented 
+		 * for this platform.
+		 *
+		 * @see getFreeSystemMemorySize
+		 *
+		 */
+		CEYLAN_DLL UnsignedLongInteger getUsedSystemMemorySize() 
+			throw( SystemException ) ; 
 
 
 		/**
