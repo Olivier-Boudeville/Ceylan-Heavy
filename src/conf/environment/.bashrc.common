@@ -22,8 +22,8 @@ export LOANI_INSTALLATIONS=${LOANI_BASE}/LOANI-installations
 
 export DS_DEV=${LOANI_INSTALLATIONS}/Nintendo-DS-development
 
-export DS_TRANSFER=${DS_DEV}/ds-transfer-repository
-
+#export DS_TRANSFER=${DS_DEV}/ds-transfer-repository
+export DS_TRANSFER=/media/DS-homebrew/NDS
 
 export CEYLAN_VERSION=0.5
 export CEYLAN_ROOT=${LOANI_REPOSITORY}/ceylan/Ceylan
