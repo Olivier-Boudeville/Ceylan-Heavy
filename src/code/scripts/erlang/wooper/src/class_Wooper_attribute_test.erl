@@ -34,6 +34,10 @@ construct(State) ->
 % Oneway test.
 test(State) ->
 	io:format( "   Testing attribute management.~n" ),
+	
+	true        = ?hasAttribute(State,test_attribute),
+	false       = ?hasAttribute(State,non_existing),
+	
 	true        = ?getAttr(test_attribute),
 	
 	UnsetState  = ?removeAttribute(State,test_attribute),
@@ -41,15 +45,23 @@ test(State) ->
 	NewSetState = ?setAttribute(UnsetState,test_attribute,true),
 	true        = ?getAttribute(NewSetState,test_attribute),
 	
-	RevertState = ?toggleAttribute(NewSetState,test_attribute),
-	false       = ?getAttribute(RevertState,test_attribute),
+	MultiState  = ?setAttributes(NewSetState,[
+		{test_attribute,false}, {another_attribute,42} ]),
+	false       = ?getAttribute(MultiState,test_attribute),
+	42          = ?getAttribute(MultiState,another_attribute),
+	
+	RevertState = ?toggleAttribute(MultiState,test_attribute),
+	true        = ?getAttribute(RevertState,test_attribute),
 	
 	VoidState   = ?setAttribute(RevertState,test_list,[]),
 	AppendState = ?appendToAttribute(VoidState,test_list, 7),
 	AgainState  = ?appendToAttribute(AppendState,test_list, 8),
 	[8,7]       = ?getAttribute(AgainState,test_list),
 	
-	PreAddState = ?setAttribute(AgainState,test_add,1),
+	DeleteState = ?deleteFromAttribute(AgainState,test_list,7),
+	[8]         = ?getAttribute(DeleteState,test_list),
+	
+	PreAddState = ?setAttribute(DeleteState,test_add,1),
 	AddState    = ?addToAttribute(PreAddState,test_add,10),
 	11          = ?getAttribute(AddState,test_add),
 	
@@ -81,6 +93,9 @@ crashing_examples(State) ->
 	%?substractFromAttribute(State,non_existing,4),
 	% Not a number:
 	%?substractFromAttribute(State,test_attribute,4),
+
+	% Not a list:
+	%?deleteFromAttribute(State,test_attribute,7),
 	
 	State,
 	%?getAttr(non_existing),
