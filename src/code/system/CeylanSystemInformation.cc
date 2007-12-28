@@ -21,9 +21,30 @@ using namespace Ceylan::System ;        // for SystemException
 #endif // CEYLAN_USES_CONFIG_H
 
 
+
+
 #if CEYLAN_ARCH_NINTENDO_DS
+
 #include "CeylanConfigForNintendoDS.h" // for FIFO defines, etc.
+
+// Needed to know free and used memory:
+extern "C" 
+{
+
+#include <unistd.h>
+#include <malloc.h>
+
+}
+
+/// End of static code and data:
+extern u8 __end__[] ;        
+
+/// farthest point to which the heap will grow:
+extern u8 __eheap_end[] ;    
+
 #endif // CEYLAN_ARCH_NINTENDO_DS
+
+
 
 
 extern "C" 
@@ -86,6 +107,12 @@ Ceylan::Uint32 Ceylan::System::getTotalProcessCount()
 	throw( SystemException )
 { 
 
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	return 1 ;
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+	
 #ifdef CEYLAN_USES_SYSINFO
 
 #if CEYLAN_ARCH_SOLARIS
@@ -114,6 +141,8 @@ Ceylan::Uint32 Ceylan::System::getTotalProcessCount()
 		"not available on this platform." ) ;	
 	
 #endif // CEYLAN_USES_SYSINFO
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 } 
 
@@ -123,6 +152,13 @@ Ceylan::Uint32 Ceylan::System::getTotalProcessCount()
 UnsignedLongInteger Ceylan::System::getTotalSystemMemorySize() 
 	throw( SystemException )
 { 
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	// Main RAM is 4 MB-KkB:
+	return (4*1024 - 4) * 1024 ;
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
 	
 #ifdef CEYLAN_USES_SYSINFO
 
@@ -153,6 +189,8 @@ UnsignedLongInteger Ceylan::System::getTotalSystemMemorySize()
 		"not available on this platform." ) ;	
 	
 #endif // CEYLAN_USES_SYSINFO
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 } 
 
@@ -161,6 +199,20 @@ UnsignedLongInteger Ceylan::System::getTotalSystemMemorySize()
 UnsignedLongInteger Ceylan::System::getFreeSystemMemorySize() 
 	throw( SystemException )
 { 
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	/*
+	 * @see http://forum.gbadev.org/viewtopic.php?t=14438
+	 *
+	 * Thanks Cydrak !
+	 *
+	 */
+   struct mallinfo mi = mallinfo() ;
+   
+   return mi.fordblks + __eheap_end - (u8*) sbrk(0) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
 	
 #ifdef CEYLAN_USES_SYSINFO
 
@@ -191,6 +243,36 @@ UnsignedLongInteger Ceylan::System::getFreeSystemMemorySize()
 		"not available on this platform." ) ;	
 	
 #endif // CEYLAN_USES_SYSINFO
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+	
+} 
+
+
+
+UnsignedLongInteger Ceylan::System::getUsedSystemMemorySize() 
+	throw( SystemException )
+{ 
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	/*
+	 * @see http://forum.gbadev.org/viewtopic.php?t=14438
+	 *
+	 * Thanks Cydrak !
+	 *
+	 */
+   struct mallinfo mi = mallinfo() ;
+
+   return mi.uordblks ; 
+   
+#else // CEYLAN_ARCH_NINTENDO_DS
+	
+	throw SystemException( 
+		"Ceylan::System::getUsedSystemMemorySize: "
+		"not available on this platform." ) ;	
+	
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 } 
 
@@ -199,6 +281,12 @@ UnsignedLongInteger Ceylan::System::getFreeSystemMemorySize()
 UnsignedLongInteger Ceylan::System::getTotalSwapMemorySize() 
 	throw( SystemException )
 { 
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	return 0 ;
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
 	
 #ifdef CEYLAN_USES_SYSINFO
 
@@ -229,6 +317,8 @@ UnsignedLongInteger Ceylan::System::getTotalSwapMemorySize()
 		"not available on this platform." ) ;	
 	
 #endif // CEYLAN_USES_SYSINFO
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 } 
 
@@ -238,6 +328,12 @@ UnsignedLongInteger Ceylan::System::getFreeSwapMemorySize()
 	throw( SystemException )
 { 
 	
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	return 0 ;
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
 #ifdef CEYLAN_USES_SYSINFO
 
 #if CEYLAN_ARCH_SOLARIS
@@ -267,6 +363,8 @@ UnsignedLongInteger Ceylan::System::getFreeSwapMemorySize()
 		"not available on this platform." ) ;	
 	
 #endif // CEYLAN_USES_SYSINFO
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 } 
 
@@ -275,6 +373,12 @@ UnsignedLongInteger Ceylan::System::getFreeSwapMemorySize()
 UnsignedLongInteger Ceylan::System::getTotalHighMemorySize() 
 	throw( SystemException )
 { 
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	return 0 ;
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
 	
 #ifdef CEYLAN_USES_SYSINFO
 
@@ -305,6 +409,8 @@ UnsignedLongInteger Ceylan::System::getTotalHighMemorySize()
 		"not available on this platform." ) ;	
 	
 #endif // CEYLAN_USES_SYSINFO
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 } 
 
@@ -314,6 +420,12 @@ UnsignedLongInteger Ceylan::System::getFreeHighMemorySize()
 	throw( SystemException )
 { 
 	
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	return 0 ;
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
 #ifdef CEYLAN_USES_SYSINFO
 
 #if CEYLAN_ARCH_SOLARIS
@@ -343,6 +455,8 @@ UnsignedLongInteger Ceylan::System::getFreeHighMemorySize()
 		"not available on this platform." ) ;	
 	
 #endif // CEYLAN_USES_SYSINFO
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 } 
 
@@ -352,6 +466,13 @@ UnsignedLongInteger Ceylan::System::getSharedMemorySize()
 	throw( SystemException )
 { 
 	
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	// Main RAM shared between the ARMs:
+	return getTotalSystemMemorySize() ;
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
 #ifdef CEYLAN_USES_SYSINFO
 
 #if CEYLAN_ARCH_SOLARIS
@@ -381,6 +502,8 @@ UnsignedLongInteger Ceylan::System::getSharedMemorySize()
 		"not available on this platform." ) ;	
 	
 #endif // CEYLAN_USES_SYSINFO
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 } 
 
@@ -390,6 +513,12 @@ UnsignedLongInteger Ceylan::System::getBuffersMemorySize()
 	throw( SystemException )
 { 
 	
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	return 0 ;
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
 #ifdef CEYLAN_USES_SYSINFO
 
 #if CEYLAN_ARCH_SOLARIS
@@ -419,6 +548,8 @@ UnsignedLongInteger Ceylan::System::getBuffersMemorySize()
 		"not available on this platform." ) ;	
 	
 #endif // CEYLAN_USES_SYSINFO
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 } 
 
