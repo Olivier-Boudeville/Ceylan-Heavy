@@ -12,6 +12,8 @@
  *
  */
 
+#define CEYLAN_USES_STRERROR
+
  
 // Auto-set the arch flags expected by libnds:
 #ifdef CEYLAN_RUNS_ON_ARM7
