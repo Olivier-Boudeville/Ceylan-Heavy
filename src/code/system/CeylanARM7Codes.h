@@ -24,7 +24,7 @@
  * Use safer settings, command count and tests.
  *
  */
-#define CEYLAN_SAFE_FIFO 1
+#define CEYLAN_SAFE_FIFO 0
 
 
 
