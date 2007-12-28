@@ -319,11 +319,11 @@ wooper_construct_and_run(ParameterList) ->
 
 
 
-% Sets specified attribute of the instance to the specified value, thanks to
+% Sets specified attribute of the instance to the specified value, based from
 % specified state.
 % Returns an updated state.
 % Always succeeds.
-% See also: the similarly named function.
+% See also: the setAttributes macro to set more than one attribute at a time.
 -define(setAttribute(State,AttributeName,AttributeValue),
 	#state_holder{
 		virtual_table   = State#state_holder.virtual_table,
@@ -334,6 +334,29 @@ wooper_construct_and_run(ParameterList) ->
 		request_sender  = State#state_holder.request_sender
 	}
 ).
+
+
+% Sets a list of attribute/value pairs in specified state.
+% The expected parameter is a list of pairs (2-element tuples), each pair 
+% containing in first position the attribute name and in second one the 
+% attribute value.
+% Returns an updated state.
+% Always succeeds.
+% See also: the setAttribute macro.
+-define(setAttributes(State,ListOfAttributePairs),
+	#state_holder{
+		virtual_table   = State#state_holder.virtual_table,
+		attribute_table = hashtable:addEntries(
+			ListOfAttributePairs,
+			State#state_holder.attribute_table ),
+		request_sender  = State#state_holder.request_sender
+	}
+).
+	
+
+% Tells whether specified attribute exists, returns true or false.
+-define(hasAttribute(State,AttributeName),
+	hashtable:hasEntry( AttributeName, State#state_holder.attribute_table ) ).
 
 
 % Returns the value associated to specified named-designated attribute, if 
@@ -416,6 +439,22 @@ wooper_construct_and_run(ParameterList) ->
 	#state_holder{
 		virtual_table   = State#state_holder.virtual_table,
 		attribute_table = hashtable:appendToEntry(
+			AttributeName,
+			Element,
+			State#state_holder.attribute_table ),
+		request_sender  = State#state_holder.request_sender
+	}
+).
+
+
+% Deletes the first match of specified element from specified attribute,
+% supposed to be a list.
+% A case clause is triggered if the attribute did not exist.
+% If the element is not in the specified list, the list will not be modified.
+-define(deleteFromAttribute(State,AttributeName,Element),
+	#state_holder{
+		virtual_table   = State#state_holder.virtual_table,
+		attribute_table = hashtable:deleteFromEntry(
 			AttributeName,
 			Element,
 			State#state_holder.attribute_table ),
