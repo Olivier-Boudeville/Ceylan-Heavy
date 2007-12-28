@@ -184,7 +184,7 @@ string Ceylan::System::explainError() throw()
 
 #else // CEYLAN_USES_STRERROR
 
-	return "Ceylan::System::explainError not available on this platform  "
+	return "Ceylan::System::explainError not available on this platform "
 		"(no ::strerror function found)" ;
 
 #endif // CEYLAN_USES_STRERROR
