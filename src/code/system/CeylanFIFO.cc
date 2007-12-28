@@ -816,16 +816,19 @@ string FIFO::interpretLastARM7ErrorCode() throw()
 			break ;
 			
 		case FIFOTimeOutWhileReading:	
-			return "ARM7  made a time-out while reading" ;
+			return "ARM7 made a time-out while reading" ;
 			break ;
 			
 		case FIFOTimeOutWhileWriting:	
-			return "ARM7  made a time-out while writing" ;
+			return "ARM7 made a time-out while writing" ;
 			break ;
 			
 		default:
-			return "unexpected ARM7 error code (" 
-				+ Ceylan::toString( error ) + ")" ;
+			if ( error > 1023 )
+				return "Non-Ceylan error code: " + Ceylan::toString( error ) ;
+			else
+				return "unexpected ARM7 error code (" 
+					+ Ceylan::toString( error ) + ")" ;
 			break ;
 	
 	}
@@ -1192,8 +1195,21 @@ void FIFO::handleReceivedCommand() throw()
 		else
 		{
 		
-			// It is an application-specific command, relay it:
-			handleReceivedSystemSpecificCommand( id, firstElement ) ;
+			if ( id < 33 )
+			{
+			
+				// It is an application-specific command, relay it:
+				handleReceivedSystemSpecificCommand( id, firstElement ) ;
+				
+			}
+			else	
+			{
+
+				// It is a command for Ceylan-integrating libraries, relay it:
+				handleReceivedIntegratingLibrarySpecificCommand( id,
+					firstElement ) ;
+				
+			}
 		
 		}
 		
@@ -1255,6 +1271,25 @@ void FIFO::handleReceivedSystemSpecificCommand( FIFOCommandID commandID,
 			break ;		
 	
 	}
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+	
+}
+
+
+
+void FIFO::handleReceivedIntegratingLibrarySpecificCommand( 
+	FIFOCommandID commandID, FIFOElement firstElement ) throw()
+{
+
+	// Made to be overriden.
+	
+#if CEYLAN_ARCH_NINTENDO_DS
+			
+	// Here we are dealing with a library-specific command.
+	LogPlug::warning( "handleReceivedIntegratingLibrarySpecificCommand: "
+		"received command whose ID is "	+ Ceylan::toNumericalString( commandID )
+		+ ", ignored." ) ;
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 	
