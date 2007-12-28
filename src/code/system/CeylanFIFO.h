@@ -619,6 +619,30 @@ namespace Ceylan
 				
 				/**
 				 * Method responsible for the actual decoding and management of
+				 * an incoming command specific to an integrating library
+				 * (ex: OSDL).
+				 *
+				 * Implements the library-specific protocol for these commands.
+				 *
+				 * @param commandID the library-specific command ID read
+				 * from the first FIFO element of the command.
+				 *
+				 * @param firstElement the full (first) FIFO element
+				 * corresponding to the command (thus containing commandID).
+				 *
+				 * @note Called automatically by handleReceivedCommand when
+				 * relevant, made to be overriden by the integrating library.
+				 *
+				 * @note Only lightweight operations should be performed here.
+				 *
+				 */
+				virtual void handleReceivedIntegratingLibrarySpecificCommand(
+						FIFOCommandID commandID, FIFOElement firstElement )
+					throw() ;
+				
+				
+				/**
+				 * Method responsible for the actual decoding and management of
 				 * an incoming application-specific command.
 				 *
 				 * Meant to be overriden according to the chosen
