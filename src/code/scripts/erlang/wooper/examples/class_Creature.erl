@@ -29,8 +29,7 @@
 construct(State,?wooper_construct_parameters) ->
 	% No mother class.
 	% Sanity checks could be implemented here.
-	AgeState = ?setAttribute(State,age,Age),
-	?setAttribute(AgeState,gender,Gender).
+	?setAttributes(State, [ {age,Age}, {gender,Gender} ] ).
 	
 
 % This looks like a method, but it is not (returning only a string):	
