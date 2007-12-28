@@ -23,8 +23,10 @@
 % Maybe the ets module could/should be used instead.
 
 
--export([new/0,new/1,addEntry/3,removeEntry/2,lookupEntry/2,getEntry/2,
-	addToEntry/3,substractFromEntry/3,toggleEntry/2,appendToEntry/3,
+-export([new/0,new/1,addEntry/3,addEntries/2, 
+	removeEntry/2,lookupEntry/2,hasEntry/2,
+	getEntry/2,addToEntry/3,substractFromEntry/3,toggleEntry/2,
+	appendToEntry/3,deleteFromEntry/3,
 	enumerate/1,getEntryCount/1,merge/2,toString/1,display/1]).
 
 
@@ -54,6 +56,16 @@ addEntry(Key,Value,HashTable) ->
 	NewList=replaceBucket(Key,Value,PreviousList,[]),
 	setelement(KeyIndex,HashTable,NewList).
 
+
+% Adds specified list of key/value pair into the specified hash table.
+% If there is already a pair with this key, then its previous value
+% will be replaced by the specified one.
+addEntries([],HashTable) ->
+	HashTable;
+	
+addEntries( [{EntryName,EntryValue}|Rest], HashTable) ->
+	addEntries( Rest, addEntry(EntryName,EntryValue,HashTable) ).
+	
 	
 % Removes specified key/value pair from the specified hash table.
 removeEntry(Key,HashTable) ->
@@ -69,6 +81,20 @@ removeEntry(Key,HashTable) ->
 lookupEntry(Key,HashTable) ->	
 	lookupInList(Key, element(erlang:phash2(Key,size(HashTable))+1,
 		HashTable)).
+
+
+% Tells whether the specified key exists in the table: returns true or false.
+hasEntry(Key,HashTable) ->	
+	case lookupInList(Key,
+			element(erlang:phash2(Key,size(HashTable))+1,HashTable)) of
+	
+		{value,_} ->
+			true; 
+	
+		undefined ->
+			false 
+	
+	end.	
 
 
 % Retrieves the value corresponding to specified key and returns it directly.
@@ -127,6 +153,23 @@ appendToEntry(Key,Element,HashTable) ->
 		element(erlang:phash2(Key,size(HashTable))+1,HashTable)),
 	addEntry(Key,[Element|List],HashTable).
 	
+
+% Appends specified element to the value, supposed to be a list, associated to
+% specified key.
+% A case clause is triggered if the entry does not exist.
+% Note: no check is performed to ensure the value is a list indeed, and the
+% '[|]' operation will not complain if not.
+% Deletes the first match of specified element from the value specified from
+% key, that value being supposed to be a list.
+% A case clause is triggered if the entry did not exist.
+% If the element is not in the specified list, the list will not be modified.
+deleteFromEntry(Key,Element,HashTable) ->	
+	{value,List} = lookupInList(Key,
+		element(erlang:phash2(Key,size(HashTable))+1,HashTable)),
+	addEntry(Key,lists:delete(Element,List),HashTable).
+
+
+
 
 % Returns a flat list whose elements are all the key/value pairs of the
 % hashtable.
