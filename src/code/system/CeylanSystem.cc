@@ -6,7 +6,6 @@
 #include "CeylanMathsBasic.h"             // for Abs
 #include "CeylanEnvironmentVariables.h"   // for getEnvironmentVariable
 #include "CeylanFile.h"                   // for File
-#include "CeylanFIFO.h"                   // for FIFO
 
 
 #ifdef CEYLAN_USES_CONFIG_H
@@ -15,7 +14,10 @@
 
 
 #if CEYLAN_ARCH_NINTENDO_DS
+
 #include "CeylanConfigForNintendoDS.h"    // for irqInit and al (ARM9)
+#include "CeylanFIFO.h"                   // for FIFO
+
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 
