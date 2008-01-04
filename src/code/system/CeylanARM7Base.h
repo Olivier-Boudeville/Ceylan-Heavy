@@ -15,6 +15,21 @@
  * here, as it depends on the *.osdl.* file formats. 
  * @see Helix-OSDL for that.
  *
+ * User code is expected to define only two callback functions:
+ * 'void handleReceivedApplicationCommand( FIFOCommandID commandID, 
+ *     FIFOElement element )', which can be void or better can only contain:
+ * 'setError( UnexpectedApplicationCommand ) ;'
+ *
+ *  - and -
+ *
+ * 'void handleReceivedIntegratingLibrarySpecificCommand( FIFOCommandID
+ * commandID, FIFOElement firstElement )', which can be void or better can 
+ * only contain:
+ * 'setError( UnexpectedExternalLibraryCommand ) ;'
+ *
+ * ..plus, of course, the main() function, which can be inspired from the
+ * examples.
+ *
  * @note This Ceylan base remains lightweight, as otherwise library integrating
  * Ceylan (ex: OSDL) would have to redefine mechanisms while still linking with
  * the Ceylan counterpart version.
