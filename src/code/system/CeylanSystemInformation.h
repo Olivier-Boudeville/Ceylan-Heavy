@@ -264,8 +264,8 @@ namespace Ceylan
 		 */
 		CEYLAN_DLL DSType GetDSType() throw( SystemException ) ;
 				  
-				  
 		
+
 
 		// OpenGL-related section.
 
