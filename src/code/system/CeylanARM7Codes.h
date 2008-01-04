@@ -2,6 +2,14 @@
 #define CEYLAN_ARM7_CODES_H_
 
 
+/*
+ * This file only applies to the Nintendo DS.
+ *
+ */
+ 
+ 
+#if defined(CEYLAN_ARCH_NINTENDO_DS) && CEYLAN_ARCH_NINTENDO_DS == 1
+
 
 /**
  * Define to 1 to allow for more checkings, for both ARMs.
@@ -41,6 +49,7 @@ typedef Ceylan::Uint8 FIFOCommandID ;
 #else // USE_FULL_CEYLAN_FOR_ARM7
 
 
+
 /**
  * This include file centralizes all the ARM7 status words and error codes.
  *
@@ -49,7 +58,6 @@ typedef Ceylan::Uint8 FIFOCommandID ;
  *
  */ 
 
-#if defined(CEYLAN_ARCH_NINTENDO_DS) && CEYLAN_ARCH_NINTENDO_DS == 1
 
 
 	#ifdef CEYLAN_RUNS_ON_ARM9
@@ -97,9 +105,9 @@ typedef uint16 ARM7ErrorCode ;
 typedef uint8 FIFOCommandID ;
 
 
-#endif // defined(CEYLAN_ARCH_NINTENDO_DS)
-
 #endif // USE_FULL_CEYLAN_FOR_ARM7
+
+#endif // defined(CEYLAN_ARCH_NINTENDO_DS)
 
 
 
