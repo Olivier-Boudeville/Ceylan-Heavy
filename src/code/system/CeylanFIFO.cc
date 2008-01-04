@@ -159,6 +159,9 @@ FIFO::FIFO() throw( FIFOException ):
 	 * For increased safety we now reserve a full cache line were both ARM7
 	 * variables are placed, and only them.
 	 *
+	 * As the ARM7 is not notified in the constructor, both status and error 
+	 * code are expected to be in the value just set here.
+	 *
 	 */
 	
 	// 32-byte cache line: 
@@ -172,7 +175,7 @@ FIFO::FIFO() throw( FIFOException ):
 	(*_arm7StatusWordPointer) = NoStatusAvailable ;
 
 	if ( getLastARM7StatusWord() != NoStatusAvailable )
-		LogPlug::warning( "FIFO constructor: "
+		CEYLAN_LOG_FIFO( "FIFO constructor: "
 			"ARM7 status setting failed before flushing cache" ) ;
 
 	/*
@@ -200,22 +203,24 @@ FIFO::FIFO() throw( FIFOException ):
 	}
 		
 	if ( getLastARM7ErrorCode() != NoErrorAvailable )
-		LogPlug::warning( "FIFO constructor: "
-			"ARM7 error setting failed before flushing cache" ) ;
+		CEYLAN_LOG_FIFO( "FIFO constructor: "
+			"ARM7 error setting failed just before flushing cache" ) ;
 
+	/* DC_FlushRange seems the only method that works reliably: */
+	
 	//More specific than 'DC_FlushAll() ;':
 	DC_FlushRange( (void*) _arm7StatusWordPointer, sizeof(ARM7StatusWord) ) ;
 
 	if ( getLastARM7StatusWord() != NoStatusAvailable )
 		throw FIFOException( "FIFO constructor: "
-			"ARM7 status setting failed after flushing cache" ) ;
+			"ARM7 status setting finally failed after flushing cache" ) ;
 
 	//More specific than 'DC_FlushAll() ;':
 	DC_FlushRange( (void*) _arm7ErrorCodePointer, sizeof(ARM7ErrorCode) ) ;
 	
 	if ( getLastARM7ErrorCode() != NoErrorAvailable )
 		throw FIFOException( "FIFO constructor: "
-			"ARM7 error setting failed after flushing cache" ) ;
+			"ARM7 error setting finally failed after flushing cache" ) ;
 
 	DC_InvalidateRange( (void*) _arm7StatusWordPointer, 
 		sizeof(ARM7StatusWord) ) ;
@@ -323,6 +328,8 @@ FIFO::FIFO() throw( FIFOException ):
 			"ARM7 error setting failed, read finally: "
 			+ Ceylan::toString( getLastARM7ErrorCode() )  ) ;
 
+	CEYLAN_LOG_FIFO( 
+		"FIFO constructor: setting of status and error codes succeeded." ) ;
 	
 #else // CEYLAN_RUNS_ON_ARM9
 
@@ -541,11 +548,12 @@ void FIFO::activate() throw( FIFOException )
 		throw FIFOException( "FIFO::activate: "
 			"time-out reached while waiting for ARM7 update" ) ;
 
-	// Not really used currently, as relying on the command embedded count;
+	// Not really used currently, as relying on the command embedded count:
 	FIFOCommandCount arm7Count = GetARM7ProcessedCount() ;
 	
+	// The count is usually wrong (9 instead of 1), do not know why.
 	if ( arm7Count != 1 )
-		LogPlug::error( "FIFO::activate: ARM7 processed count expected "
+		LogPlug::warning( "FIFO::activate: ARM7 processed count expected "
 			"to be equal to 1, found: "
 			+ Ceylan::toNumericalString( arm7Count ) ) ;
 			
@@ -679,43 +687,36 @@ string FIFO::interpretLastARM7StatusWord() throw()
 
 	ARM7StatusWord status = getLastARM7StatusWord() ;
 	
-	switch( status )
-	{
-	
-		case StatusVoluntarilyLeftBlank:
-			return "unexpected unassigned null value for ARM7 status word" ;
-			break ;
-			
-		case ARM7Running:
-			return "ARM7 running normally" ;
-			break ;
-			
-		case ARM7InError:
-			return "ARM7 in error: " + interpretLastARM7ErrorCode() ;
-			break ;
+	/*
+	 * Since constants are declared as extern to avoid symbol duplication,
+	 * they cannot be used in case switch anymore apparently: g++ says
+	 * 'StatusVoluntarilyLeftBlank' cannot appear in a constant-expression, etc.
+	 *
+	 */
 		
-		case ARM7IPCShutdown:
-			return "ARM7 IPC shutdown" ;
-			break ;
+	if ( status == StatusVoluntarilyLeftBlank )
+		return "unexpected unassigned null value for ARM7 status word" ;
+		
+	if ( status == ARM7Running )
+		return "ARM7 running normally" ;
 			
-		case NoStatusAvailable:
-			return "no ARM7 status available" ;
-			break ;
-
-		case NoStatusVariableAvailable:
-			return "ARM7 status variable not set" ;
-			break ;
-			
-		case StatusReset:
-			return "ARM7 status had been reset" ;
-			break ;
-			
-		default:
-			return "unexpected ARM7 status word (" 
-				+ Ceylan::toString( status ) + ")" ;
-			break ;
+	if ( status == ARM7InError )
+		return "ARM7 in error ) " + interpretLastARM7ErrorCode() ;
 	
-	}
+	if ( status == ARM7IPCShutdown )
+		return "ARM7 IPC shutdown" ;
+	
+	if ( status == NoStatusAvailable )
+		return "no ARM7 status available" ;
+
+	if ( status == NoStatusVariableAvailable )
+		return "ARM7 status variable not set" ;
+	
+	if ( status == StatusReset )
+		return "ARM7 status had been reset" ;
+	
+	return "unexpected ARM7 status word (" + Ceylan::toString( status ) + ")" ;
+	
 	
 }
 
@@ -743,95 +744,80 @@ string FIFO::interpretLastARM7ErrorCode() throw()
 
 	ARM7ErrorCode error = getLastARM7ErrorCode() ;
 	
-	switch( error )
-	{
 	
-		case ErrorVoluntarilyLeftBlank:
-			return "unexpected unassigned null value for ARM7 error code" ;
-			break ;
-
-		case UnexpectedSystemCommand:
-			return "ARM7 received an unknown system (Ceylan-specific) command" ;
-			break ;
-			
-		case UnexpectedApplicationCommand:
-			return "ARM7 received an unknown user "
-				"(application-specific) command" ;
-			break ;
-			
-		case FIFOErrorWhileReading:
-			return "ARM7 encountered a FIFO error while reading" ;
-			break ;
-			
-		case FIFOErrorWhileWriting:
-			return "ARM7 encountered a FIFO error while writing" ;
-			break ;
-			
-		case NoError:
-			return "ARM7 has no error registered" ;
-			break ;
-
-		case NoErrorVariableAvailable:
-			return "ARM7 error variable not set" ;
-			break ;
-		
-		case CommandOverlapping:	
-			return "ARM7 prevented attempt of command overlapping" ;
-			break ;
-			
-		case UnexpectedBehaviour:	
-			return "ARM7 received an HelloToTheARM7 (i.e. null) command" ;
-			break ;
-			
-		case IPCAlreadyStarted:	
-			return 
-				"ARM7 received an IPC start command whereas already started" ;
-			break ;
-			
-		case IPCAlreadyStopped:	
-			return "ARM7 received an IPC stop command whereas not running" ;
-			break ;
-			
-		case AwokenWithNothingToRead:	
-			return "ARM7 had its sync IRQ triggered "
-				"whereas its input FIFO was empty" ;
-			break ;
-			
-		case IncorrectInitialStatus:	
-			return "ARM7 detected its initial status, set by the ARM9, "
-				"is incorrect" ;
-			break ;
-			
-		case IncorrectInitialError:	
-			return "ARM7 detected its initial error code, set by the ARM9, "
-				"is incorrect" ;
-			break ;
-			
-		case UnexpectedCommandCount:	
-			return "ARM7 encountered a command embedding an unexpected count" ;
-			break ;
-			
-		case IncorrectApplicationAnswer:	
-			return "ARM7 received an incorrect application-specific answer" ;
-			break ;
-			
-		case FIFOTimeOutWhileReading:	
-			return "ARM7 made a time-out while reading" ;
-			break ;
-			
-		case FIFOTimeOutWhileWriting:	
-			return "ARM7 made a time-out while writing" ;
-			break ;
-			
-		default:
-			if ( error > 1023 )
-				return "Non-Ceylan error code: " + Ceylan::toString( error ) ;
-			else
-				return "unexpected ARM7 error code (" 
-					+ Ceylan::toString( error ) + ")" ;
-			break ;
+	/*
+	 * Since constants are declared as extern to avoid symbol duplication,
+	 * they cannot be used in case switch anymore apparently: g++ says
+	 * 'ErrorVoluntarilyLeftBlank' cannot appear in a constant-expression, etc.
+	 *
+	 */
 	
-	}
+	 	
+	if ( error == ErrorVoluntarilyLeftBlank )
+		return "unexpected unassigned null value for ARM7 error code" ;
+
+    if ( error == UnexpectedSystemCommand )
+    	return "ARM7 received an unknown system (Ceylan-specific) command" ;
+
+    if ( error == UnexpectedApplicationCommand )
+    	return "ARM7 received an unknown user "
+    		"(application-specific) command" ;
+
+    if ( error == FIFOErrorWhileReading )
+    	return "ARM7 encountered a FIFO error while reading" ;
+
+    if ( error == FIFOErrorWhileWriting )
+    	return "ARM7 encountered a FIFO error while writing" ;
+
+    if ( error == NoError )
+    	return "ARM7 has no error registered" ;
+
+    if ( error == NoErrorVariableAvailable )
+    	return "ARM7 error variable not set" ;
+
+    if ( error == CommandOverlapping )
+    	return "ARM7 prevented attempt of command overlapping" ;
+
+    if ( error == UnexpectedBehaviour )
+    	return "ARM7 received an HelloToTheARM7 (i.e. null) command" ;
+
+    if ( error == IPCAlreadyStarted )
+    	return
+    		"ARM7 received an IPC start command whereas already started" ;
+
+    if ( error == IPCAlreadyStopped )
+    	return "ARM7 received an IPC stop command whereas not running" ;
+ 
+    if ( error == AwokenWithNothingToRead )
+    	return "ARM7 had its sync IRQ triggered "
+    		"whereas its input FIFO was empty" ;
+ 
+    if ( error == IncorrectInitialStatus )
+    	return "ARM7 detected its initial status, set by the ARM9, "
+    		"is incorrect" ;
+ 
+    if ( error == IncorrectInitialError )
+    	return "ARM7 detected its initial error code, set by the ARM9, "
+    		"is incorrect" ;
+
+    if ( error == UnexpectedCommandCount )
+    	return "ARM7 encountered a command embedding an unexpected count" ;
+
+    if ( error == IncorrectApplicationAnswer )
+    	return "ARM7 received an incorrect application-specific answer" ;
+
+    if ( error == FIFOTimeOutWhileReading )
+    	return "ARM7 made a time-out while reading" ;
+
+    if ( error == FIFOTimeOutWhileWriting )
+    	return "ARM7 made a time-out while writing" ;
+
+
+    if ( error > 1023 )
+    	return "Non-Ceylan error code: " + Ceylan::toString( error ) ;
+    else
+    	return "unexpected ARM7 error code (" + Ceylan::toString( error ) 
+			+ ")" ;
 
 }
 
@@ -1232,46 +1218,54 @@ void FIFO::handleReceivedSystemSpecificCommand( FIFOCommandID commandID,
 
 #if CEYLAN_ARCH_NINTENDO_DS
 			
-	// Here we are dealing with a system-specific (Ceylan) command.
-	switch( commandID )
+	/*
+	 * Here we are dealing with a system-specific (Ceylan) command.
+	 *
+	 * Again that 'cannot appear in a constant-expression' problem.
+	 *
+	 */
+	 
+	if ( commandID == HelloToTheARM9 )
 	{
 	
-		case HelloToTheARM9:
-			LogPlug::info( "The ARM7 says hello to the ARM9 !" ) ;
-			break ;
-			
-		case PongARM9:
-			LogPlug::info( "Pong answer received from the ARM7" ) ;
-			break ;
-			
-		case BatteryStatusAnswer:
-			LogPlug::debug( "handleReceivedSystemSpecificCommand: "
-				"battery status returned" ) ;
-			// Retrieves only the last byte of the command:	
-			if ( ( firstElement & 0x000000ff ) != 0 )
-				_batteryStatus = WellCharged ;
-			else
-				_batteryStatus = AlmostEmpty ;
-			break ;
-
-		case DSTypeAnswer:
-			LogPlug::debug( "handleReceivedSystemSpecificCommand: "
-				"DS type returned" ) ;
-			// Retrieves only the last byte of the command:	
-			if ( ( firstElement & 0x000000ff ) == 1 )
-				_dsType = DSFat ;
-			else if ( ( firstElement & 0x000000ff ) == 2 )
-				_dsType = DSLite ;
-			break ;
-
-		default:
-			LogPlug::error( "handleReceivedSystemSpecificCommand: "
-				"unexpected command: " + Ceylan::toNumericalString( commandID )
-				+ ", ignored." ) ;
-			break ;		
+		LogPlug::info( "The ARM7 says hello to the ARM9 !" ) ;
+		
+	}	
+	else if ( commandID == PongARM9 )
+	{
 	
+		LogPlug::info( "Pong answer received from the ARM7" ) ;
+		
+	}	
+	else if ( commandID == BatteryStatusAnswer )
+	{
+	
+		// Retrieves only the last byte of the command )
+		if ( ( firstElement & 0x000000ff ) != 0 )
+			_batteryStatus = WellCharged ;
+		else
+			_batteryStatus = AlmostEmpty ;
+			
+	} 
+	else if ( commandID == DSTypeAnswer )
+	{
+	
+		// Retrieves only the last byte of the command )
+		if ( ( firstElement & 0x000000ff ) == 1 )
+			_dsType = DSFat ;
+		else if ( ( firstElement & 0x000000ff ) == 2 )
+			_dsType = DSLite ;
+	
+	} 
+	else
+	{
+	
+		LogPlug::error( "handleReceivedSystemSpecificCommand ) "
+			"unexpected command ) " + Ceylan::toNumericalString( commandID	 )
+			+ ", ignored." ) ;
 	}
-
+	
+	
 #endif // CEYLAN_ARCH_NINTENDO_DS
 	
 }
