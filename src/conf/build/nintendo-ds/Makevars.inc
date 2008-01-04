@@ -71,6 +71,8 @@ WINE = wine
 #TRANSFER_MOUNT_POINT = /media/disk
 TRANSFER_MOUNT_POINT = /media/DS-homebrew
 
+TRANSFER_DIRECTORY= $(TRANSFER_MOUNT_POINT)/NDS
+
 
 
 # Module settings.
@@ -113,12 +115,23 @@ CEYLAN_LT_VERSION:= $(CEYLAN_LT_CURRENT).$(CEYLAN_LT_REVISION).$(CEYLAN_LT_AGE)
 
 # Architecture-related flags.
 
+# By default prefer THUMB mode (16 bit) to ARM mode (32 bit):
 ARCH_FLAGS_COMMON = -mthumb -mthumb-interwork
 
+# To force ARM mode (ex: on the ARM7 for the Helix decoder):
+ARCH_FLAGS_COMMON_32_BIT = 
+
+
 # The -DARM7/-DARM flags are needed by libnds but set by Ceylan DS header:
+
 ARCH_FLAGS_ARM7   = $(ARCH_FLAGS_COMMON) -mcpu=arm7tdmi -mtune=arm7tdmi -DCEYLAN_RUNS_ON_ARM7=1
 
+ARCH_FLAGS_ARM7_32_BIT = $(ARCH_FLAGS_COMMON_32_BIT) -mcpu=arm7tdmi -mtune=arm7tdmi -DCEYLAN_RUNS_ON_ARM7=1
+
+
 ARCH_FLAGS_ARM9   = $(ARCH_FLAGS_COMMON) -march=armv5te -mtune=arm946e-s -DCEYLAN_RUNS_ON_ARM9=1
+
+ARCH_FLAGS_ARM9_32_BIT   = $(ARCH_FLAGS_COMMON_32_BIT) -march=armv5te -mtune=arm946e-s -DCEYLAN_RUNS_ON_ARM9=1
 
 
 # Determines which kind of build is expected:
@@ -155,6 +168,7 @@ CPP_DEFINES = \
 	$(CPP_ARCH_DEFINES)    \
 	$(CPP_FEATURE_DEFINES) \
 	$(CPP_DEBUG_DEFINES)   \
+	$(CPP_VERBOSE_DEFINES) \
 	$(CPP_OTHER_DEFINES)
 	
 
@@ -196,6 +210,9 @@ CPP_DEBUG_DEFINES:= \
 	-DCEYLAN_DEBUG_THREADS=0
 	
 	
+CPP_VERBOSE_DEFINES	:=
+	
+	
 CPP_OTHER_DEFINES:= \
 	-DCEYLAN_DLL= \
 	-DCEYLAN_LIBTOOL_VERSION="\"$(CEYLAN_LT_VERSION)\""
@@ -210,11 +227,26 @@ CPP_FLAGS_ARM7  := $(CPP_FLAGS) $(CPP_FLAGS_COMMON)
 CPP_FLAGS_ARM9  := $(CPP_FLAGS) $(CPP_FLAGS_COMMON)
 
 
+# ARM assembler flags.
+ASM_FLAGS = -g -marm -mthumb-interwork
 
-# C++ Compile flags.
+
+# C and C++ Compile flags.
 
 # Compile flags always used, for both ARM, both in debug and release modes:
-# 
+
+# @fixme When needing to gain some room in ARM7 binary, using -Os instead of -O3
+# implies removing -Winline:
+CC_FLAGS_COMMON:=  -Wall -Werror -W -Wfloat-equal -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wwrite-strings -Wsign-compare -Wmissing-format-attribute -Wredundant-decls -Wno-unused-parameter -Wno-unknown-pragmas -Wno-long-long
+
+# Removed: 
+#   -Wcast-qual: cause Helix code to issue warnings (cast discards qualifiers) 
+#   -Wconversion: cause Helix code to issue warnings (prototype/memmove)
+#   -Wcast-align: too many warnings due to STL casts
+#   -Wpacked: too many warnings about 'packed attribute causes inefficient
+# alignment' in libnds headers
+
+
 CXX_FLAGS_COMMON:= -Winline -Wall -Werror -Woverloaded-virtual -W -Wfloat-equal -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wcast-qual -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-format-attribute -Wredundant-decls -Wno-unused-parameter -Wno-unknown-pragmas -Wno-long-long
 
 # Removed: 
@@ -226,24 +258,43 @@ CXX_FLAGS_COMMON:= -Winline -Wall -Werror -Woverloaded-virtual -W -Wfloat-equal 
 ifeq ($(CEYLAN_BUILD_MODE),debug)
 
 # Flags common to the ARM7 and the ARM9 for compilation in debug mode:
+CC_FLAGS_COMMON:= $(CC_FLAGS_COMMON) -g -O0 -DCEYLAN_DEBUG=1
+
+# Flags common to the ARM7 and the ARM9 for compilation in debug mode:
 CXX_FLAGS_COMMON:= $(CXX_FLAGS_COMMON) -g -O0 -DCEYLAN_DEBUG=1
 
 else
 
 # Flags common to the ARM7 and the ARM9 for compilation in release mode:
+CC_FLAGS_COMMON:= $(CC_FLAGS_COMMON) -O3 -fomit-frame-pointer -ffast-math -DCEYLAN_DEBUG=0
+
 CXX_FLAGS_COMMON:= $(CXX_FLAGS_COMMON) -O3 -fomit-frame-pointer -ffast-math -DCEYLAN_DEBUG=0
 
 endif
 
 
+# Let the possibility for the user to define his own CC_FLAGS:
+
+CC_FLAGS_ARM7        := $(CC_FLAGS) $(CC_FLAGS_COMMON) $(ARCH_FLAGS_ARM7)
+
+CC_FLAGS_ARM7_32_BIT := $(CC_FLAGS) $(CC_FLAGS_COMMON) $(ARCH_FLAGS_ARM7_32_BIT)
+
+CC_FLAGS_ARM9        := $(CC_FLAGS) $(CC_FLAGS_COMMON) $(ARCH_FLAGS_ARM9)
+CC_FLAGS_ARM9_32_BIT := $(CC_FLAGS) $(CC_FLAGS_COMMON) $(ARCH_FLAGS_ARM9_32_BIT)
+
+
 # Let the possibility for the user to define his own CXX_FLAGS:
-CXX_FLAGS_ARM7  := $(CXX_FLAGS) $(CXX_FLAGS_COMMON) $(ARCH_FLAGS_ARM7)
-CXX_FLAGS_ARM9  := $(CXX_FLAGS) $(CXX_FLAGS_COMMON) $(ARCH_FLAGS_ARM9)
+
+CXX_FLAGS_ARM7        := $(CXX_FLAGS) $(CXX_FLAGS_COMMON) $(ARCH_FLAGS_ARM7)
+CXX_FLAGS_ARM7_32_BIT := $(CXX_FLAGS) $(CXX_FLAGS_COMMON) $(ARCH_FLAGS_ARM7_32_BIT)
+
+CXX_FLAGS_ARM9        := $(CXX_FLAGS) $(CXX_FLAGS_COMMON) $(ARCH_FLAGS_ARM9)
+CXX_FLAGS_ARM9_32_BIT := $(CXX_FLAGS) $(CXX_FLAGS_COMMON) $(ARCH_FLAGS_ARM9_32_BIT)
 
 
 
 
-# C++ Link flags.
+# C/C++ Link flags.
 
 
 # Generating a library:
