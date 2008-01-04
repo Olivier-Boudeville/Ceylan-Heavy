@@ -19,40 +19,61 @@ include $(TOP)/src/conf/build/nintendo-ds/Makevars.inc
 
 %.arm7.o: %.cc %.h 
 	@echo "      Compiling $^ into $@"
-	$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
+	@$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
 	
 %.arm9.o: %.cc %.h 
 	@echo "      Compiling $^ into $@"
-	$(CXX) $(CXX_FLAGS_ARM9) $(CPP_FLAGS_ARM9) -c $< -o $@
+	@$(CXX) $(CXX_FLAGS_ARM9) $(CPP_FLAGS_ARM9) -c $< -o $@
 
 
 %.arm7.o: %.cc
 	@echo "      Compiling $^ into $@"
-	$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
+	@$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
 	
 %.arm9.o: %.cc
 	@echo "      Compiling $^ into $@"
-	$(CXX) $(CXX_FLAGS_ARM9) $(CPP_FLAGS_ARM9) -c $< -o $@
+	@$(CXX) $(CXX_FLAGS_ARM9) $(CPP_FLAGS_ARM9) -c $< -o $@
+
+
+# For C source files common to both ARM (uses ARM 32-bit mode):
+
+%.arm7.o: %.c %.h 
+	@echo "      Compiling in 32-bit mode $^ into $@"
+	@$(CC) $(CC_FLAGS_ARM7_32_BIT) $(CPP_FLAGS_ARM7) -c $< -o $@
+	
+%.arm9.o: %.c %.h 
+	@echo "      Compiling in 32-bit mode $^ into $@"
+	@$(CC) $(CC_FLAGS_ARM9_32_BIT) $(CPP_FLAGS_ARM9) -c $< -o $@
+
+
+%.arm7.o: %.c
+	@echo "      Compiling in 32-bit $^ into $@"
+	@$(CC) $(CC_FLAGS_ARM7_32_BIT) $(CPP_FLAGS_ARM7) -c $< -o $@
+	
+%.arm9.o: %.c
+	@echo "      Compiling in 32-bit $^ into $@"
+	@$(CC) $(CC_FLAGS_ARM9_32_BIT) $(CPP_FLAGS_ARM9) -c $< -o $@
 
 
 # For source files specific to either ARM:
 
 %.arm7.o: %.arm7.cc %.arm7.h 
 	@echo "      Compiling $^ into $@"
-	$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
+	@$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
 	
 %.arm9.o: %.arm9.cc %.arm9.h 
 	@echo "      Compiling $^ into $@"
-	$(CXX) $(CXX_FLAGS_ARM9) $(CPP_FLAGS_ARM9) -c $< -o $@
+	@$(CXX) $(CXX_FLAGS_ARM9) $(CPP_FLAGS_ARM9) -c $< -o $@
 
 
 %.arm7.o: %.arm7.cc %.arm7.h 
 	@echo "      Compiling $^ into $@"
-	$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
+	@$(CXX) $(CXX_FLAGS_ARM7) $(CPP_FLAGS_ARM7) -c $< -o $@
 	
 %.arm9.o: %.arm9.cc %.arm9.h 
 	@echo "      Compiling $^ into $@"
-	$(CXX) $(CXX_FLAGS_ARM9) $(CPP_FLAGS_ARM9) -c $< -o $@
+	@$(CXX) $(CXX_FLAGS_ARM9) $(CPP_FLAGS_ARM9) -c $< -o $@
+
 
 	
 
