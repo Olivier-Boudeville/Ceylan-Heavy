@@ -1,7 +1,7 @@
 #ifndef CEYLAN_FIFO_H_
 #define CEYLAN_FIFO_H_
 
-
+#include "CeylanARM7Codes.h"         // for ARM7StatusWord, ARM7ErrorCode, etc.
 #include "CeylanTextDisplayable.h"   // for inheritance
 #include "CeylanSystem.h"            // for SystemException, BatteryStatus, etc.
 #include "CeylanTypes.h"             // for Ceylan::Uint32
@@ -13,36 +13,6 @@
 // Cannot be in a namespace, as to be included in C code:
 
 
-
-/**
- * Describes an ARM7 status word.
- *
- * @note The definition of their meaning is centralized in 
- * CeylanARM7Codes.h
- *
- */
-typedef Ceylan::Uint16 ARM7StatusWord ;
-
-
-/**
- * Describes an ARM7 error word.
- *
- * @note The definition of their meaning is centralized in 
- * CeylanARM7Codes.h
- *
- */
-typedef Ceylan::Uint16 ARM7ErrorCode ;
-
-
-/**
- * The identifier of a FIFO command, to be read from the first byte of 
- * its first FIFO element, using the FIFO command mask.
- *
- * @note The definition of their meaning is centralized in 
- * CeylanIPCCommands.h
- *
- */
-typedef Ceylan::Uint8 FIFOCommandID ;
 
 
 /**
