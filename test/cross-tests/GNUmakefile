@@ -33,9 +33,13 @@ TEST_ARM9_SOURCES = $(wildcard *.arm9.cc)
 TEST_TARGETS = $(patsubst %.arm9.cc,%-$(TEST_PREFIX)-patched.$(TEST_EXEC_EXTENSION),$(TEST_ARM9_SOURCES))
 #TEST_TARGETS = testCeylanFIFO-0.7-release-patched.$(TARGET_LINKER).nds
 
-
 # Some are patched, the others not:
 #TESTS_TO_TRANSFER = $(wildcard *.$(CURRENT_LINKER).nds)
+
+RESOURCES = 
+
+FILES_TO_TRANSFER = $(TEST_TARGETS) $(RESOURCES)
+
 
 CEYLAN_TESTED_VERSION    = $(CEYLAN_VERSION)
 CEYLAN_TESTED_BUILD_MODE = $(CEYLAN_BUILD_MODE)
@@ -70,11 +74,11 @@ patch: $(TEST_FULL_NAME).sc.nds
 	@$(DLDITOOL) $(DLDITOOL_SCRIPT) $<
 	
 	
-transfer: $(TEST_TARGETS)
-	@echo "    Transferring $^ to $(TRANSFER_MOUNT_POINT)"
-	@/bin/ls $(TRANSFER_MOUNT_POINT) 1>/dev/null 2>&1
-	@cp -f $^ $(TRANSFER_MOUNT_POINT)
-
+transfer: $(FILES_TO_TRANSFER)
+	@echo "    Transferring $^ to $(TRANSFER_DIRECTORY)"
+	@/bin/ls $(TRANSFER_DIRECTORY) 1>/dev/null 2>&1
+	@cp -f $^ $(TRANSFER_DIRECTORY)
+	
 
 umount: 	
 	@echo "    Unmounting $(TRANSFER_MOUNT_POINT)"
@@ -297,6 +301,7 @@ info-run:
 
 
 # Neither basic logo, wifi logo nor sentences embedded:
+# (sed removes the first dependency, leaving only the ARM9 one)
 %.nds: %.arm7.bin %.arm9.bin
 	@echo "    Creating final slot-1 DS ROM $@ from $^"
 	@$(NDSTOOL) -c $@ -7 $< -9 `echo $^| sed 's|^.* ||1'`
