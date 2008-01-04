@@ -2,6 +2,9 @@
 #define CEYLAN_IPC_COMMANDS_H_
 
 
+#include "CeylanARM7Codes.h" // for FIFOCommandID
+
+
 /**
  * This include file centralizes the system (Ceylan-specific) command
  * identifiers for the FIFO-based IPC, notably for the Nintendo DS.
@@ -39,6 +42,9 @@ typedef FIFOCommandID ARM9CommandID ;
  
  
  
+// Section dedicated to commands from the ARM9 to the ARM7.
+ 
+ 
 /**
  * This is not really a command, as null values can occur before the  
  * FIFO system is up and running on both sides.
@@ -46,7 +52,7 @@ typedef FIFOCommandID ARM9CommandID ;
  * No parameters set in the command element, no answer expected.
  *
  */
-const ARM9CommandID HelloToTheARM7 = 0 ;
+extern CEYLAN_DLL const ARM9CommandID HelloToTheARM7 ;
 
 
 /**
@@ -57,7 +63,7 @@ const ARM9CommandID HelloToTheARM7 = 0 ;
  * @see PongARM9
  *
  */
-const ARM9CommandID PingARM7 = 1 ;
+extern CEYLAN_DLL const ARM9CommandID PingARM7 ;
 
 
 /**
@@ -68,7 +74,7 @@ const ARM9CommandID PingARM7 = 1 ;
  * address in question, no answer expected.
  *
  */
-const ARM9CommandID StatusInitRequest = 2 ;
+extern CEYLAN_DLL const ARM9CommandID StatusInitRequest ;
 
 
 /**
@@ -78,7 +84,7 @@ const ARM9CommandID StatusInitRequest = 2 ;
  * no answer expected.
  *
  */
-const ARM9CommandID ShutdownIPCRequest = 3 ;
+extern CEYLAN_DLL const ARM9CommandID ShutdownIPCRequest ;
 
 
 /**
@@ -90,7 +96,7 @@ const ARM9CommandID ShutdownIPCRequest = 3 ;
  * @see BatteryStatusAnswer
  *
  */
-const ARM9CommandID BatteryStatusRequest = 4 ;
+extern CEYLAN_DLL const ARM9CommandID BatteryStatusRequest ;
 
 
 /**
@@ -102,13 +108,16 @@ const ARM9CommandID BatteryStatusRequest = 4 ;
  * @see DSTypeAnswer
  *
  */
-const ARM9CommandID DSTypeRequest = 5 ;
+extern CEYLAN_DLL const ARM9CommandID DSTypeRequest ;
 
 
 
 
-///////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
+
+
+// Section dedicated to commands from the ARM7 to the ARM9.
 
 
 /**
@@ -126,7 +135,7 @@ typedef FIFOCommandID ARM7CommandID ;
  * No parameters set in the command element, no answer expected.
  *
  */
-const ARM7CommandID HelloToTheARM9 = 0 ;
+extern CEYLAN_DLL const ARM7CommandID HelloToTheARM9 ;
 
 
 /**
@@ -137,7 +146,7 @@ const ARM7CommandID HelloToTheARM9 = 0 ;
  * @see PingARM7
  *
  */
-const ARM7CommandID PongARM9 = 1 ;
+extern CEYLAN_DLL const ARM7CommandID PongARM9 ;
 
 
 /**
@@ -146,7 +155,7 @@ const ARM7CommandID PongARM9 = 1 ;
  * @see BatteryStatusRequest
  *
  */
-const ARM7CommandID BatteryStatusAnswer = 2 ;
+extern CEYLAN_DLL const ARM7CommandID BatteryStatusAnswer ;
 
 
 /**
@@ -155,7 +164,7 @@ const ARM7CommandID BatteryStatusAnswer = 2 ;
  * @see DSTypeRequest
  *
  */
-const ARM7CommandID DSTypeAnswer = 3 ;
+extern CEYLAN_DLL const ARM7CommandID DSTypeAnswer ;
 
 
 
