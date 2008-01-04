@@ -10,7 +10,6 @@
 #include "CeylanConsole.h"
 #include "CeylanDirectory.h"
 #include "CeylanEnvironmentVariables.h"
-#include "CeylanFIFO.h"
 #include "CeylanFile.h"
 #include "CeylanFileLocator.h"
 #include "CeylanFileSystemCommon.h"
@@ -35,10 +34,8 @@
 #include "CeylanSystem.h"
 #include "CeylanSystemInformation.h"
 #include "CeylanThread.h"
-#include "CeylanUniformResourceIdentifier.h"
-
 #include "CeylanTypes.h"
-#include "CeylanARM7Codes.h"
+#include "CeylanUniformResourceIdentifier.h"
 
 /*
  * Private non-exported non-installed headers: 
