@@ -2,7 +2,6 @@
 
 #include "CeylanLogPlug.h"              // for LogPlug
 #include "CeylanOperators.h"            // for toString
-#include "CeylanFIFO.h"                 // for FIFO
 
 
 #include <string>
@@ -25,7 +24,8 @@ using namespace Ceylan::System ;        // for SystemException
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
-#include "CeylanConfigForNintendoDS.h" // for FIFO defines, etc.
+#include "CeylanConfigForNintendoDS.h"  // for FIFO defines, etc.
+#include "CeylanFIFO.h"                 // for FIFO
 
 // Needed to know free and used memory:
 extern "C" 
