@@ -25,7 +25,7 @@
 
 /*
  * Directly obtained from libnds ARM7 template.
- * This is a stripped-down version (no sound, VBLANK kept for safety).
+ * This is a stripped-down version (ex: no sound).
  *
  * @see ${libnds-sources}/basicARM7/source/defaultARM7.c
  *
@@ -88,12 +88,6 @@ void VcountHandler()
 }
 
 
-// Empty, but kept to be able to wait for its interrupt. 
-void VblankHandler() 
-{
-
-
-}
 
 
 
@@ -108,7 +102,7 @@ int main(int argc, char ** argv)
 	
 	irqInit() ;
 
-	irqSet( IRQ_VBLANK, VblankHandler ) ;
+	irqSet( IRQ_VBLANK, 0 ) ;
 
 	SetYtrigger( 80 ) ;
 	irqSet( IRQ_VCOUNT, VcountHandler ) ;
