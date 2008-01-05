@@ -64,7 +64,7 @@ typedef uint8 FIFOCommandCount ;
 typedef char Byte ;
 
 /** For buffers. */
-typedef uint16 Size ;
+typedef uint32 BufferSize ;
 
 
 /** Masks describing which interrupts are enabled. */
