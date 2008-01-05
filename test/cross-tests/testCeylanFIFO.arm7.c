@@ -153,17 +153,17 @@ void handleBufferSharingRequest()
 	Byte * buf = (Byte *) readBlocking() ; 
 
 	/* Reads the buffer size: */
-	Size size = (Size) readBlocking() ; 
+	BufferSize size = (BufferSize) readBlocking() ; 
 	
 	/* Scan it for expected value: */
 	
-	Size incorrectCount = 0 ;
+	BufferSize incorrectCount = 0 ;
 	
-	Size indexOfFirstIncorrect = 0 ;
+	BufferSize indexOfFirstIncorrect = 0 ;
 	
 	const Byte Filler = 170 ;
 	
-	Size i ;
+	BufferSize i ;
 	
 	for ( i = 0; i < size; i++ )
 	{
