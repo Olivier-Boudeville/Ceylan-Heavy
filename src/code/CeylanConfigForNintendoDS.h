@@ -33,6 +33,10 @@
 
 		#define CEYLAN_DS_LOG(messageString) ::iprintf( "[Debug] %s\n", ((messageString).c_str()) )
 
+		// Only included in the DS case:
+		#include "CeylanFIFO.h"
+		
+		
 	#else // CEYLAN_RUNS_ON_ARM9
 
 		#error CeylanConfigForNintendoDS.h: either CEYLAN_RUNS_ON_ARM7 or CEYLAN_RUNS_ON_ARM9 must be defined.
