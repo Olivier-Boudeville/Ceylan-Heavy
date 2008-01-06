@@ -33,7 +33,7 @@
 
 		#define CEYLAN_DS_LOG(messageString) ::iprintf( "[Debug] %s\n", ((messageString).c_str()) )
 
-		// Only included in the DS case:
+		// Only included in the DS ARM9 case:
 		#include "CeylanFIFO.h"
 		
 		
