@@ -105,7 +105,7 @@
 
 
 
-// Please include below all header files to be exported for Ceylan users.
+// Include below all header files to be exported for Ceylan users.
 
 #include "CeylanGenericIncludes.h"
 #include "CeylanInterfacesIncludes.h"
