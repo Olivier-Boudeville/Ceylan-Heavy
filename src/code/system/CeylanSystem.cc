@@ -1154,6 +1154,13 @@ void Ceylan::System::sleepForSeconds( Second seconds )
 	throw( SystemException )
 {
 
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	basicSleep( seconds, /* Nanosecond */ 0 ) ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+	
 #ifdef CEYLAN_USES_SLEEP
 
 	Second stillToBeSlept = seconds ;
@@ -1186,7 +1193,10 @@ void Ceylan::System::sleepForSeconds( Second seconds )
 
 #endif // CEYLAN_USES_SLEEP
 
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
 }
+
 
 
 bool Ceylan::System::areSubSecondSleepsAvailable() throw()
@@ -1245,7 +1255,6 @@ void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 	}
 	
 #else // CEYLAN_ARCH_NINTENDO_DS
-
 
 
 #if CEYLAN_ARCH_WINDOWS
