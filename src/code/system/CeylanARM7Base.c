@@ -340,9 +340,16 @@ FIFOCommandCount getSentCount()
 void sendSynchronizeInterruptToARM9()
 {
 
-	/* Triggers an IRQ on the ARM9 and updates the local processed count: */
+	/*
+	 * Triggers an IRQ on the ARM9 and updates the local processed count:
+	 * (not used currently)
+	  
 	REG_IPC_SYNC = (REG_IPC_SYNC & 0xf0ff) | (getProcessedCount() << 8) 
 		| IPC_SYNC_IRQ_REQUEST ;
+		
+	 */	
+
+	REG_IPC_SYNC = REG_IPC_SYNC	| IPC_SYNC_IRQ_REQUEST ;
 
 }
 
@@ -358,8 +365,12 @@ void incrementProcessCount()
 	 *
 	 * @note: no IPC_SYNC_IRQ_REQUEST here, ARM9 not notified.
 	 *
-	 */
+	 * (not used currently)
+	 *
+	 
 	REG_IPC_SYNC = (REG_IPC_SYNC & 0xf0ff) | (getProcessedCount() << 8) ;
+	
+	 */
 		
 }
 
