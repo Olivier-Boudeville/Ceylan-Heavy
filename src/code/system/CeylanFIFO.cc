@@ -498,8 +498,7 @@ void FIFO::activate() throw( FIFOException )
 
 	CEYLAN_LOG_FIFO( "FIFO::activate: sending address of the error word." ) ;
 			
-	writeBlocking( 
-		/* address of the error word */ 
+	writeBlocking( /* address of the error word */ 
 		reinterpret_cast<FIFOElement>( _arm7ErrorCodePointer ) ) ;
 	
 	SetEnabledInterrupts( previous ) ;
@@ -548,15 +547,19 @@ void FIFO::activate() throw( FIFOException )
 		throw FIFOException( "FIFO::activate: "
 			"time-out reached while waiting for ARM7 update" ) ;
 
+	/*
+	 * The count is usually wrong (9 instead of 1), do not know why.
+	 * Currently deactivated as useless (system working good)
+
 	// Not really used currently, as relying on the command embedded count:
 	FIFOCommandCount arm7Count = GetARM7ProcessedCount() ;
-	
-	// The count is usually wrong (9 instead of 1), do not know why.
+	 
 	if ( arm7Count != 1 )
 		LogPlug::warning( "FIFO::activate: ARM7 processed count expected "
 			"to be equal to 1, found: "
 			+ Ceylan::toNumericalString( arm7Count ) ) ;
 			
+	 */	
 		
 	if ( getLastARM7StatusWord() != ARM7Running )
 		throw FIFOException( "FIFO::activate: ARM7 status updated, "
@@ -701,7 +704,7 @@ string FIFO::interpretLastARM7StatusWord() throw()
 		return "ARM7 running normally" ;
 			
 	if ( status == ARM7InError )
-		return "ARM7 in error ) " + interpretLastARM7ErrorCode() ;
+		return "ARM7 in error: " + interpretLastARM7ErrorCode() ;
 	
 	if ( status == ARM7IPCShutdown )
 		return "ARM7 IPC shutdown" ;
@@ -942,7 +945,8 @@ const std::string FIFO::toString( Ceylan::VerbosityLevels level )
 		+ Ceylan::toString( _localCommandCount ) + ", remote one is "
 		+ Ceylan::toString( _remoteCommandCount ) + ", processed count is "
 		+ Ceylan::toString( getProcessedCount() ) + ", sent count is "
-		+ Ceylan::toString( getSentCount() ) + ", ARM7 processed count is "
+		+ Ceylan::toString( getSentCount() ) 
+		+ ", ARM7 processed count (if used) is "
 		+ GetARM7ProcessedCount() ;
 		
 	return res ;
@@ -1373,8 +1377,16 @@ void FIFO::sendSynchronizeInterruptToARM7() throw()
 	//LogPlug::trace( "FIFO::sendSynchronizeInterruptToARM7 begin" ) ;
 	
 	// Triggers an IRQ on the ARM7 and specifies the local processed count:
+	
+	/*
+	 * Processed count in IPC register not used currently:
+	 
 	REG_IPC_SYNC = (REG_IPC_SYNC & 0xf0ff) | (getProcessedCount() << 8) 
 		| IPC_SYNC_IRQ_REQUEST ;
+
+	 */
+	 
+	REG_IPC_SYNC = REG_IPC_SYNC | IPC_SYNC_IRQ_REQUEST ;
 
 	//LogPlug::trace( "FIFO::sendSynchronizeInterruptToARM7 end" ) ;
 
@@ -1657,8 +1669,16 @@ void FIFO::incrementProcessedCount() throw()
 
 	_processedCount++ ;
 	
-	// Updates the local processed count in IPC register:
+	/*
+	 * Updates the local processed count in IPC register:
+	 *
+	 * (not used currently)
+	 *
+	 
 	REG_IPC_SYNC = (REG_IPC_SYNC & 0xf0ff) | (getProcessedCount() << 8) ;
+	
+	 *
+	 */
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 		
