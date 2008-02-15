@@ -10,10 +10,6 @@
 
 
 
-// Cannot be in a namespace, as to be included in C code:
-
-
-
 
 /**
  * Describes a number of FIFO commands.
@@ -21,6 +17,8 @@
  * Allows to count how many commands were processed on both sides, and 
  * to include that number in each command to spot eventual commands lost in the
  * FIFO.
+ *
+ * @note Cannot be in a namespace, as to be declared similarly also as C code.
  *
  */
 typedef Ceylan::Uint8 FIFOCommandCount ;
