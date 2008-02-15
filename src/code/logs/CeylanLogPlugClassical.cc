@@ -53,6 +53,7 @@ void LogPlugClassical::StartService( const string & plugInitiator,
 }
 
 
+
 void LogPlugClassical::StopService() throw()
 {
 	
@@ -70,6 +71,7 @@ void LogPlugClassical::StopService() throw()
 }
 
 
+
 const string LogPlugClassical::ToString( 
 	Ceylan::VerbosityLevels level ) throw()
 {
@@ -83,22 +85,3 @@ const string LogPlugClassical::ToString(
 
 }
 
-
-
-/* 
-				
-	Not even defined : 
-
-LogPlugClassical::LogPlugClassical() throw( LogException )
-{
-	throw LogException( 
-		"Ceylan::Log::LogPlugClassical should not be instanciated." ) ;
-}
-
-
-LogPlugClassical::~LogPlugClassical() throw()
-{
-
-}
-
-*/
