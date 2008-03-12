@@ -44,7 +44,7 @@ KnownPlugs LogHolder::DefaultPlug = classicalPlug ;
 
 
 LogHolder::LogHolder( Ceylan::Uint16 argCount, 
-	const char * const arguments[], bool forceImmediateWrite ) 
+	const char * const arguments[], bool immediateWrite ) 
 		throw( LogException ):
 	_chosenPlug( DefaultPlug )
 {
@@ -134,20 +134,12 @@ LogHolder::LogHolder( Ceylan::Uint16 argCount,
 	
 			case consolePlug:
 				CEYLAN_LOG( "LogHolder: using console plug." ) ;
-				if ( forceImmediateWrite )
-					LogPlugConsole::StartService( speakerName,
-						/* immediateWrite */ true ) ;
-				else	
-					LogPlugConsole::StartService( speakerName ) ;
+				LogPlugConsole::StartService( speakerName, immediateWrite ) ;
 				break ;
 	
 			case classicalPlug:
 				CEYLAN_LOG( "LogHolder: using classical plug." ) ;
-				if ( forceImmediateWrite )
-					LogPlugClassical::StartService( speakerName,
-						/* immediateWrite */ true ) ;
-				else	
-					LogPlugClassical::StartService( speakerName ) ;
+				LogPlugClassical::StartService( speakerName, immediateWrite ) ;
 				break ;
 	
 			case HTMLPlug:
@@ -159,11 +151,7 @@ LogHolder::LogHolder( Ceylan::Uint16 argCount,
 			default:	
 				CEYLAN_LOG( "Warning: LogHolder: "
 					"no known plug specified, defaulting to classical." ) ;
-				if ( forceImmediateWrite )
-					LogPlugClassical::StartService( speakerName,
-						/* immediateWrite */ true ) ;
-				else	
-					LogPlugClassical::StartService( speakerName ) ;
+				LogPlugClassical::StartService( speakerName, immediateWrite ) ;
 				break ;
 	
 		}
