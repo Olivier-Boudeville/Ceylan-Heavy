@@ -47,8 +47,7 @@ void LogPlugConsole::StartService( const string & plugInitiator,
 	 *
 	 */
 	
-	LogPlug::Transport = 
-		new LogTransportListenerRaw( * LogPlug::Aggregator ) ;	
+	LogPlug::Transport = new LogTransportListenerRaw( * LogPlug::Aggregator ) ;	
 	
 	// Creates basic standard channels:
 	LogPlug::CreateBasicPlug() ;
