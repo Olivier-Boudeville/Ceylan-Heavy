@@ -57,9 +57,10 @@ LogAggregatorConsole::LogAggregatorConsole(
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
-	// Use a default console on bottom screen:
-	_console = new System::Console() ;
+	// Use a default console that is/will be displayed on bottom screen:
+	_console = new System::Console( /* startInForeground */ false ) ;
 	
+	// Collect silently messages in the background or be visible at once:
 	if ( _immediateWrite )
 		_console->setToForeground( true ) ;
 				
@@ -167,14 +168,34 @@ void LogAggregatorConsole::aggregate() throw( LogAggregatorException )
 
 	CEYLAN_LOG( "LogAggregatorConsole aggregation started" ) ; 
 
-#if ! CEYLAN_ARCH_NINTENDO_DS
+#if CEYLAN_ARCH_NINTENDO_DS
 	
+#ifdef CEYLAN_RUNS_ON_ARM7
+
+	// Would not really make sense here:
+	throw UtilsException( "LogAggregatorConsole::aggregate: "
+		"not available on the Nintendo DS ARM7." ) ;
+		
+#else // CEYLAN_RUNS_ON_ARM7
+
+	/*
+	 * Even in non-immediate write mode, nothing special is to be done here,
+	 * as, on the DS, messages have already been collected in the text buffer
+	 * of the console.
+	 *
+	 */
+	return ;
+	
+#endif // CEYLAN_RUNS_ON_ARM7
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
 	Timestamp stamp ;
 	
 	(*_outputStream) << stamp.toString() + " Aggregating Log messages.\n\n" ;
 	
 	for ( list<LogChannel *>::const_iterator it = _channelList.begin() ;
-		it != _channelList.end() ; it ++ )
+		it != _channelList.end() ; it++ )
 	{
 		(*_outputStream) << * (*it) ;		
 	}
@@ -192,20 +213,46 @@ void LogAggregatorConsole::store( LogMessage & message ) throw( LogException )
 
 	CEYLAN_LOG( "Storing a new message " + message.toString() ) ;
 	
-	// Use standard LogAggregator method in all cases, immediate write or not:
-	LogAggregator::store( message ) ;
-
 	/*
-	 * If immediate write mode is set, let's write this message directly
-	 * to the console.
+	 * Previously the LogAggregator::store method was used whether immediate
+	 * writes were enabled or not, but, if they were enabled, storing messages
+	 * twice was useless.
 	 *
-	 * @note If this aggegator was chosen smart, the message may have a
+	 * @note If this aggregator was chosen smart, the message may have a
 	 * corrected classname due to ancestor store method.
 	 *
 	 */
+
+#if CEYLAN_ARCH_NINTENDO_DS
+	
+#ifdef CEYLAN_RUNS_ON_ARM7
+
+	// Would not really make sense here:
+	throw LogException( "LogAggregatorConsole::store: "
+		"not available on the Nintendo DS ARM7." ) ;
+		
+#else // CEYLAN_RUNS_ON_ARM7
+
+	/*
+	 * On the DS ARM9, with immediate write or not, messages are to be stored
+	 * in the console text buffer, that will display them at once (if set to
+	 * foreground, i.e. in immediate mode), or store them for a later 
+	 * displaying.
+	 *
+	 */
+	write( message ) ;	
+		
+	
+#endif // CEYLAN_RUNS_ON_ARM7
+	
+#else // CEYLAN_ARCH_NINTENDO_DS
 	 
 	if ( _immediateWrite )
-		write( message ) ;			
+		write( message ) ;	
+	else			
+		LogAggregator::store( message ) ;
+	
+#endif // CEYLAN_ARCH_NINTENDO_DS
 		
 }
 	
@@ -216,10 +263,18 @@ void LogAggregatorConsole::write( const LogChannel & channel )
 {
 
 	CEYLAN_LOG( "Writing on console channel " + channel.toString() ) ;
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	_console->addInBuffer( channel.toString( getOverallVerbosityLevel() ) ) ;
 	
+#else // CEYLAN_ARCH_NINTENDO_DS
+
 	(*_outputStream) << '\t' 
 		+ channel.toString( getOverallVerbosityLevel() ) ;
 	(*_outputStream) << "\n" ;	
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
 	
 }
 
