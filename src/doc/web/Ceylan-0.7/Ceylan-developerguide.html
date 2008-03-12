@@ -158,6 +158,7 @@ The <code>trunk/src/conf/build/autogen.sh</code> script should be used with the 
 </p>
 
 
+
 <h3>Creating a new Sourceforge SVN repository</h3>
 
 <p>
@@ -222,7 +223,7 @@ be installed to select them but may clash with others, and so on. This implies u
 </p>
 
 
-
+<a name="newrelease"></a>
 <h2>Releasing a new Ceylan x.y version</h2>
 
 <p>
@@ -334,10 +335,29 @@ Now <code>x'.y'</code> designates the next version.
 <!--
     <li><a href="" target="_blank"></a></li>
 -->
+
     <li>In case of trouble, run <code>trunk/src/conf/generateBugReport.sh</code>, it will generate a text file containing the report, and tell you what to do with it</li>
+	
     <li><a href="http://gcc.gnu.org/onlinedocs/libstdc++/27_io/howto.html" target="_blank">Using I/O with the STL</a></li>
-    <li>How to make a source archive for the testing of Ceylan ? From the trunk, use <code>make dist</code> or, preferably, <code>make dist-bzip2</code>.
-</li>
+	
+    <li>How to make a source archive for the testing of Ceylan ? From the trunk, use <code>make dist</code> or, preferably, <code>make dist-bzip2</code></li>
+	
+    <li>A backup of the SVN repository on Sourceforge should be regularly performed, thanks to: 
+	<center>
+    <table summary="Code" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+rsync -av ceylan.svn.sourceforge.net::svn/ceylan/* .
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+	</li>
+	
 </ul>
 
 </p>
@@ -359,7 +379,7 @@ Now <code>x'.y'</code> designates the next version.
       <center>
         [<a href="#_top_">Top</a>]<br>
         <br>
-        <em>Last update: Tuesday, October 2, 2007</em>
+        <em>Last update: Wednesday, March 12, 2008</em>
       </center>
   
 </body>
