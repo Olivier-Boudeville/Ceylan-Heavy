@@ -111,10 +111,11 @@ namespace Ceylan
 				 *
 				 * @param arguments the arguments themselves (argv).
 				 *
-				 * @param forceImmediateWrite if true, forces immediate write
+				 * @param immediateWrite if true, selects immediate write
 				 * for the selected plug, if supported (this is the case of 
 				 * the console and the classical plug, but not for the HTML
-				 * one).
+				 * one); otherwise (if false), deferred writes will be
+				 * performed (if the plug supports it).
 				 *
 				 * @note There is no point in using more than one instance 
 				 * of LogHolder in a process.
@@ -125,7 +126,7 @@ namespace Ceylan
 		 		 */
 				LogHolder( Ceylan::Uint16 argCount, 
 					const char * const arguments[],
-					bool forceImmediateWrite = false ) throw( LogException ) ;
+					bool immediateWrite = true ) throw( LogException ) ;
 			
 	
 				/// Basic virtual destructor.
