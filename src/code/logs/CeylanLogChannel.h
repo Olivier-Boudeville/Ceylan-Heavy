@@ -1,9 +1,11 @@
 #ifndef CEYLAN_LOG_CHANNEL_H_
 #define CEYLAN_LOG_CHANNEL_H_
 
+
 #include "CeylanTypes.h"           // for Ceylan::Uint32
 #include "CeylanLog.h"             // for LogException
 #include "CeylanTextDisplayable.h" // for inheritance
+
 
 #include <string>
 #include <list>
@@ -15,6 +17,7 @@ namespace Ceylan
 
 	namespace Log
 	{
+	
 	
 	
 		// Log messages are gathered into these Log channels.
@@ -41,7 +44,7 @@ namespace Ceylan
 			
 			
 			/**
-			 * Necessary since friend relationships are not inherited
+			 * Necessary, since friend relationships are not inherited
 			 * apparently.
 			 *
 			 */
@@ -173,4 +176,6 @@ namespace Ceylan
 
 }
 
+
 #endif // CEYLAN_LOG_CHANNEL_H_
+
