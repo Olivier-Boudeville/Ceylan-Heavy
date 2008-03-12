@@ -126,7 +126,11 @@ bool LibfatFile::close() throw( Stream::CloseException )
 	if ( _fdes > 0 )
 	{
 		return Stream::Close( _fdes ) ;
-	}	
+	}
+	/*	
+	
+	Silently ignored as apparently the case can happen with libfat:
+	
 	else
 	{
 
@@ -135,6 +139,8 @@ bool LibfatFile::close() throw( Stream::CloseException )
 			
 	}
 	
+	 */
+	 
 #endif // CEYLAN_RUNS_ON_ARM7
 
 
