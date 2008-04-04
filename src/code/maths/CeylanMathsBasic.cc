@@ -969,6 +969,7 @@ AngleInRadians Ceylan::Maths::DegreeToRadian(
 }
 
 
+
 Ceylan::Uint16 Ceylan::Maths::NextPowerOfTwo( Ceylan::Uint16 value ) throw()	
 {
 
@@ -985,10 +986,27 @@ Ceylan::Uint16 Ceylan::Maths::NextPowerOfTwo( Ceylan::Uint16 value ) throw()
 }
 
 
+
 bool Ceylan::Maths::IsAPowerOfTwo( Ceylan::Uint16 value ) throw()
 {
 	return ( value == NextPowerOfTwo( value ) ) ;
 }
+
+
+
+Ceylan::Uint16 Ceylan::Maths::NextMultipleOf( Uint16 multiple, Uint16 value )
+	throw()	
+{
+
+	if ( value % multiple == 0 )
+		return value ;
+		
+	// Integer division:	
+	return multiple * ( ( value / multiple ) + 1 )  ;		
+	
+}
+
+
 
 
 Ceylan::Maths::IntToIntFunctor::IntToIntFunctor( 
