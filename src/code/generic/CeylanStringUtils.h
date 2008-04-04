@@ -233,6 +233,20 @@ namespace Ceylan
 			const std::string & toBeReplaced, 
 			const std::string & replacement ) throw() ;
 		
+		
+	/**
+	 * Returns a new string, corresponding to the source string in which 
+	 * the substring <b>toBeReplaced</b> is replaced by the substring
+	 * <b>replacement</b>
+	 *
+	 * @return the new string.
+	 *
+	 */
+	CEYLAN_DLL std::string substituteIn( 
+			const std::string & sourceString, 
+			const std::string & toBeReplaced, 
+			const std::string & replacement ) throw() ;
+		
 
 	/**
 	 * Returns whether specified character is a letter, 
