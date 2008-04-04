@@ -1498,15 +1498,37 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL Uint16 NextPowerOfTwo( Uint16 value ) throw() ;
-		
+	
 		
 		/**
 		 * Tells whether the specified value is a power of two.
 		 *
-		 *
 		 */
 		CEYLAN_DLL bool IsAPowerOfTwo( Uint16 value ) throw() ;	
+
+
 		
+		/**
+		 * Returns the first multiple of specified multiple greater or equal 
+		 * to the specified value.
+		 *
+		 * @param multiple the multiple to align the value with
+		 *
+		 * @param value for which the smallestmulitple must be returned.
+		 *
+		 * @return the smallest multiple of the specified multiple greater or
+		 * equal to the specified value.
+		 *
+		 * @note No overflow checking is done.
+		 *
+		 * @example NextMultipleOf( 8, 15 ) == 16, and 
+		 * NextMultipleOf( 8, 16 ) == 16.
+		 *
+		 */
+		CEYLAN_DLL Uint16 NextMultipleOf( Uint16 multiple, Uint16 value )
+			throw() ;
+		
+			
 		
 
 		
