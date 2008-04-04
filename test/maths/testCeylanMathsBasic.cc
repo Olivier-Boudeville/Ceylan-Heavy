@@ -11,7 +11,7 @@ using std::string ;
 
 
 
-class myAddFunctor : public IntToIntFunctor
+class myAddFunctor: public IntToIntFunctor
 {
 	
 	public:
@@ -162,22 +162,22 @@ int main( int argc, char * argv[] )
 				"Bad value for numerical constant One_div_sqrt_2." ) ;
 		
 		
-		LogPlug::info( "Testing templated Max operator : "
+		LogPlug::info( "Testing templated Max operator: "
 			" Max&lt;Ceylan::Uint16&gt;(3,4) = "
 			+ Ceylan::toString( Max<Ceylan::Uint16>(3,4) ) ) ;
 			
 		
 		LogPlug::info( 
-			"Testing rounding facilities (Floor, Ceil and Round) :" ) ;
+			"Testing rounding facilities (Floor, Ceil and Round):" ) ;
 				
 				
-		// Testing rounding for values in [-2; 2], with 0.1 steps :
+		// Testing rounding for values in [-2; 2], with 0.1 steps:
 		for ( Ceylan::Sint8 i = -20; i < 21; i++ )
 		{
 		
 			Ceylan::Float32 x = static_cast<Ceylan::Float32>( i ) / 10 ;
 			
-			LogPlug::info( "For x = <b>" + Ceylan::toString( x ) + "</b> :" ) ;
+			LogPlug::info( "For x = <b>" + Ceylan::toString( x ) + "</b>:" ) ;
 		
 			LogPlug::info( "Floor(x) = " 
 				+ Ceylan::toString( Floor( x ) ) + "." ) ;
@@ -200,7 +200,7 @@ int main( int argc, char * argv[] )
 		
 		LogPlug::info( "Rounding " + Ceylan::toString( toRound ) + " to " 
 			+ Ceylan::toNumericalString( precision ) 
-			+ " figures after the dot : "
+			+ " figures after the dot: "
 			+ Ceylan::toString( Round( toRound, precision ) ) ) ;
 		
 		toRound = -3.234567F ;
@@ -208,23 +208,33 @@ int main( int argc, char * argv[] )
 		
 		LogPlug::info( "Rounding " + Ceylan::toString( toRound ) + " to " 
 			+ Ceylan::toNumericalString( precision ) 
-			+ " figures after the dot : "
+			+ " figures after the dot: "
 			+ Ceylan::toString( Round( toRound, precision ) ) ) ;
 			
 		
 		for ( Ceylan::Uint16 count = 511; count < 514; count++ )
-			LogPlug::info( "Testing PowerOfTwo : the first power of 2 "
+			LogPlug::info( "Testing PowerOfTwo: the first power of 2 "
 				"greater or equal to " + Ceylan::toString( count ) + " is " 
 				+ Ceylan::toString( Ceylan::Maths::NextPowerOfTwo( count ) ) 
 				+ "." ) ;
+
+
+		Ceylan::Uint16 multiple = 8 ;
 		
-		LogPlug::info( "Testing functors : "
+		for ( Ceylan::Uint16 count = 1; count < 34; count++ )
+			LogPlug::info( "Testing NextMultipleOf: the first multiple of "
+				+ Ceylan::toString( multiple ) + " greater or equal to " 
+				+ Ceylan::toString( count ) + " is " + Ceylan::toString( 
+					Ceylan::Maths::NextMultipleOf( multiple, count ) ) 
+				+ "." ) ;
+		
+		LogPlug::info( "Testing functors: "
 			"creating an integer functor adding 5." ) ;
 
 		myAddFunctor aFunctor( 5 ) ;
 		
 		
-		LogPlug::info( "Calling aFunctor(20), result is : " 
+		LogPlug::info( "Calling aFunctor(20), result is: " 
 			+ Ceylan::toString( aFunctor( 20 ) ) ) ;
 		
 		if ( aFunctor( 20 ) != 25 )
@@ -239,37 +249,37 @@ int main( int argc, char * argv[] )
 		Ceylan::Uint32 minRes ;
 		
 		minRes = Min( 1, 2, 3 ) ;
-		LogPlug::info( "Testing Min operator : Min( 1, 2, 3 ) = "
+		LogPlug::info( "Testing Min operator: Min( 1, 2, 3 ) = "
 			+ Ceylan::toString( minRes ) ) ;
 		if ( minRes != 1 )
 			throw Ceylan::TestException( "Three-argument Min failed" ) ;
 		
 		minRes = Min( 2, 2, 3 ) ;
-		LogPlug::info( "Testing Min operator : Min( 2, 2, 3 ) = "
+		LogPlug::info( "Testing Min operator: Min( 2, 2, 3 ) = "
 			+ Ceylan::toString( minRes ) ) ;
 		if ( minRes != 2 )
 			throw Ceylan::TestException( "Three-argument Min failed" ) ;
 		
 		minRes = Min( 3, 2, 3 ) ;	
-		LogPlug::info( "Testing Min operator : Min( 3, 2, 3 ) = "
+		LogPlug::info( "Testing Min operator: Min( 3, 2, 3 ) = "
 			+ Ceylan::toString( minRes ) ) ;
 		if ( minRes != 2 )
 			throw Ceylan::TestException( "Three-argument Min failed" ) ;
 			
 		minRes = Min( 3, 1, 2 ) ;
-		LogPlug::info( "Testing Min operator : Min( 3, 1, 2 ) = "
+		LogPlug::info( "Testing Min operator: Min( 3, 1, 2 ) = "
 			+ Ceylan::toString( minRes ) ) ;
 		if ( minRes != 1 )
 			throw Ceylan::TestException( "Three-argument Min failed" ) ;
 
 		minRes = Min( 2, 3, 1 ) ;
-		LogPlug::info( "Testing Min operator : Min( 2, 3, 1 ) = "
+		LogPlug::info( "Testing Min operator: Min( 2, 3, 1 ) = "
 			+ Ceylan::toString( minRes ) ) ;
 		if ( minRes != 1 )
 			throw Ceylan::TestException( "Three-argument Min failed" ) ;
 			
 		minRes = Min( 3, 3, 3 ) ;
-		LogPlug::info( "Testing Min operator : Min( 3, 3, 3 ) = "
+		LogPlug::info( "Testing Min operator: Min( 3, 3, 3 ) = "
 			+ Ceylan::toString( minRes ) ) ;
 		if ( minRes != 3 )
 			throw Ceylan::TestException( "Three-argument Min failed" ) ;
@@ -282,7 +292,7 @@ int main( int argc, char * argv[] )
 	
     catch ( const Ceylan::Exception & e )
     {
-        std::cerr << "Ceylan exception caught : "
+        std::cerr << "Ceylan exception caught: "
         	<< e.toString( Ceylan::high ) << std::endl ;
 		return Ceylan::ExitFailure ;
 
@@ -290,7 +300,7 @@ int main( int argc, char * argv[] )
 
     catch ( const std::exception & e )
     {
-        std::cerr << "Standard exception caught : " 
+        std::cerr << "Standard exception caught: " 
 			 << e.what() << std::endl ;
 		return Ceylan::ExitFailure ;
 
