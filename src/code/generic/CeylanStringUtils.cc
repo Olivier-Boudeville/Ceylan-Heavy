@@ -200,6 +200,20 @@ StringSize Ceylan::substituteInString( string & targetString,
 
 
 
+string Ceylan::substituteIn( const string & sourceString, 
+	const string & toBeReplaced, const string & replacement ) throw()
+{
+
+	string res = sourceString ;
+	
+	substituteInString( res, toBeReplaced, replacement ) ;
+	
+	return res ;
+	
+}
+	
+	
+
 bool Ceylan::isLetter( char targetChar ) throw()
 {
 
