@@ -1,7 +1,7 @@
 
 SUBDIRS = basic 
 
-# Whole website will be distributed :
+# Whole website will be distributed:
 EXTRA_DIST = \
 	Ceylan-@CEYLAN_VERSION@-release-notes.txt \
 	Ceylan-@CEYLAN_VERSION@-changes.txt       \
@@ -11,9 +11,9 @@ EXTRA_DIST = \
 # This section takes care of the web documentation.
 
  
-# What is expected from the html documentation for the Ceylan x.y version : 
+# What is expected from the html documentation for the Ceylan x.y version: 
 # 	- be accessible from '$BASE_URL' 
-# (ex : BASE_URL=http://ceylan.sourceforge.net), under '$BASE_URL/Ceylan-x.y'
+# (ex: BASE_URL=http://ceylan.sourceforge.net), under '$BASE_URL/Ceylan-x.y'
 # 	- if x.y is the latest stable version, then it should be accessible
 # from '$BASE_URL/Ceylan-latest' as well
 # 
@@ -21,20 +21,20 @@ EXTRA_DIST = \
 # be found directly from '$BASE_URL'.
 #
 # The full website must be set to any given ROOT 
-# (ex : ROOT=/home/groups/c/ce/ceylan/htdocs), 
+# (ex: ROOT=/home/groups/c/ce/ceylan/htdocs), 
 
 
 # This documentation generation has been a pain and a mess for months. 
-# The issue is : rsync will not create non already-existing target base
+# The issue is: rsync will not create non already-existing target base
 # directories, and doing it so thanks to a remote script is not 
 # convenient.
 
-# The only solution : making a perfectly similar tree and rsync'ing
+# The only solution: making a perfectly similar tree and rsync'ing
 # it blindly.
 
 
 # Therefore, for all web roots ${ROOT}, the result of the rsync should 
-# lead to a tree like : 
+# lead to a tree like: 
 # 
 # ${ROOT}/
 # |-- (directly files and directories common to all versions)
@@ -78,10 +78,10 @@ MIRROR_WEB_DIR       = /var/www/@PROJECT_NAME@
 
 # A lot of complication (the creation of directories then the installation
 # of files) comes from distcheck and its setting the whole source tree
-# (including the directories) in read-only : it is a mess to handle with
+# (including the directories) in read-only: it is a mess to handle with
 # cp --parents and/or /bin/install.
 
-# These variable are made to be evaluated from $(srcdir)/web :
+# These variable are made to be evaluated from $(srcdir)/web:
 
 WEB_CONTENT_FILES    = `find . -path 'common' -prune -a -type f -o ! -path '*.svn*' -a -type f`
 
@@ -104,6 +104,8 @@ DOXYGEN      = `PATH=$(DOXYGEN_ROOT)/bin:$$PATH which doxygen 2>/dev/null`
 
 DOXYGEN_GENERATED_CONF = @top_builddir@/src/conf/doc/doxygen.conf
 
+TXT2TAGS_ROOT = @CEYLAN_LOANI_INSTALLATIONS@/txt2tags-$(txt2tags_VERSION)
+TXT2TAGS      = `PATH=$(TXT2TAGS_ROOT)/bin:$$PATH which txt2tags 2>/dev/null`
 
 DOT_ROOT     = @CEYLAN_LOANI_INSTALLATIONS@/dot-graphviz-@DOT_VERSION@
 DOT          = `PATH=$(DOT_ROOT)/bin:$$PATH which dot 2>/dev/null`
@@ -121,10 +123,11 @@ SCP          = `which scp 2>/dev/null`
 SCP_OPT      = "-p -r"
 
 		
-.PHONY: all install doc build inc web links site common api check-dot  \
-	fix-dox-conf tidy transfer toSF toSF-rsync toSF-scp                \
-	toMirror toMirror-rsync toMirror-scp check-scp remind-locations    \
-	info info-dirs info-files info-sf info-html info-tools             \
+.PHONY: all install doc build inc web links site common                    \
+	update-tags check-txt2tags loani-archives api check-dot fix-dox-conf   \
+	tidy transfer toSF toSF-rsync toSF-scp                                 \
+	toMirror toMirror-rsync toMirror-scp check-scp remind-locations        \
+	info info-dirs info-files info-sf info-html info-tools                 \
 	clean clean-web cleanobjs cleandeps clean-install real-clean
 	
 	
@@ -132,7 +135,7 @@ SCP_OPT      = "-p -r"
 # This section is devoted to local documentation generation only.
 
 
-# If api is wanted and can be generated, will be built :
+# If api is wanted and can be generated, will be built:
 	
 install-data-local: site remind-locations
 
@@ -142,8 +145,8 @@ local-web: site api
 
 
 # The 'site' target takes automatically care of both shared tree and
-# of the tree specific to this version :
-site: common 
+# of the tree specific to this version:
+site: update-tags common 
 	@echo; echo "@CEYLAN_INSTALL_STYLE@    Copying web source tree to \
 	local web repository \
 	[$(DESTDIR)@CEYLAN_LOCAL_WEB_DIR@]@CEYLAN_DEFAULT_STYLE@"
@@ -152,10 +155,24 @@ site: common
 	for f in $(WEB_CONTENT_FILES); do \
 	cp -f $$f $(DESTDIR)@CEYLAN_LOCAL_WEB_SHARED_DIR@/$$f; done
 	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark local doc site, \
-	which is to be found in :"
+	which is to be found in:"
 	@echo "      file://$(DESTDIR)@CEYLAN_LOCAL_WEB_DIR@/index.html@CEYLAN_DEFAULT_STYLE@"
 	@cd $(DESTDIR)@CEYLAN_LOCAL_WEB_DIR@; \
 	ln -sf @CEYLAN_CURRENT_VERSION_PREFIX@ Ceylan-latest
+
+
+update-tags: check-txt2tags
+	@echo; echo "@CEYLAN_INSTALL_STYLE@    Updating tagged documentation pages \
+	thanks to txt2tags@CEYLAN_DEFAULT_STYLE@"
+	@ @CEYLAN_UPDATE_TAGS@ web/common/css/Ceylan.css
+
+
+check-txt2tags:
+	@[ -x "$(TXT2TAGS)" ] \
+	|| ( echo; echo "@CEYLAN_ERROR_STYLE@    Unable to generate \
+	html files from txt2tags files (*.t2t): \
+	txt2tags tool not found [txt2tags homepage: \
+	http://txt2tags.sourceforge.net].@CEYLAN_DEFAULT_STYLE@"; echo; false ) 
 
 
 common: 
@@ -183,13 +200,13 @@ uninstall-hook:
 # One must prevent doxygen from overwriting the master 
 # doxygen-@PROJECT_NAME@.css through the symbolic link !
 # We assume here that 'dot' has been compiled with our default 
-# compiler, gcc :
+# compiler, gcc:
 
 api: check-dot fix-dox-conf
 	@[ -x "$(DOXYGEN)" ] || \
 	( echo; echo "@CEYLAN_ERROR_STYLE@    \
-	Unable to create source documentation : doxygen tool not found \
-	[doxygen homepage : http://www.doxygen.org].@CEYLAN_DEFAULT_STYLE@"; \
+	Unable to create source documentation: doxygen tool not found \
+	[doxygen homepage: http://www.doxygen.org].@CEYLAN_DEFAULT_STYLE@"; \
 	echo; false )
 	@echo; echo "@CEYLAN_COMMAND_STYLE@    Generating API \
 	(doxygen configuration taken from $(DOXYGEN_GENERATED_CONF)) \
@@ -206,15 +223,15 @@ api: check-dot fix-dox-conf
 	$(DESTDIR)@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html
 	@echo
 	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark \
-	@CEYLAN_CURRENT_VERSION_PREFIX@ API, which is located in : \
+	@CEYLAN_CURRENT_VERSION_PREFIX@ API, which is located in: \
 file://$(DESTDIR)@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/index.html@CEYLAN_DEFAULT_STYLE@"
 	
 			
 check-dot:
 	@[ -x "$(DOT)" ] \
 	|| ( echo; echo "@CEYLAN_ERROR_STYLE@    Unable to generate \
-	any useful documentation from source code : \
-	dot tool not found (checked dot root was $(DOT_ROOT) [dot homepage : \
+	any useful documentation from source code: \
+	dot tool not found (checked dot root was $(DOT_ROOT) [dot homepage: \
 	http://www.graphviz.org/].@CEYLAN_DEFAULT_STYLE@"; echo; false ) 
 	
 	
@@ -226,7 +243,7 @@ tidy:
 	@[ -x "$(TIDY)" ] \
 	|| ( echo; echo "@CEYLAN_ERROR_STYLE@    Unable to enforce \
 	W3C compliance and formatting of html documentation files \
-	according to @PROJECT_NAME@'s conventions : \
+	according to @PROJECT_NAME@'s conventions: \
 	tidy tool not found.@CEYLAN_DEFAULT_STYLE@"; echo; false ) 
 	@echo "@CEYLAN_COMMAND_STYLE@    Tidying all html \
 	files@CEYLAN_DEFAULT_STYLE@"
@@ -311,7 +328,7 @@ toMirror-scp: check-scp site
 check-scp:
 	@[ -x "$(SCP)" ] || ( echo; echo "@CEYLAN_ERROR_STYLE@    \
 	Unable to transfer html documentation files to remote\
-	web server : rsync and its alternative scp not available.\
+	web server: rsync and its alternative scp not available.\
 	Please check src/conf/MakeVars.inc or update\
 	PATH environment variable.@CEYLAN_DEFAULT_STYLE@"; echo; false ) 
 	@echo; echo "@CEYLAN_WARNING_STYLE@    Consider installing rsync,\
@@ -321,14 +338,14 @@ check-scp:
 		
 remind-locations:
 	@echo; echo "@CEYLAN_INSTALL_STYLE@    + the following \
-	documentation repositories are available :"
-	@echo "      * local doc directory : \
+	documentation repositories are available:"
+	@echo "      * local doc directory: \
 	$(DESTDIR)@CEYLAN_LOCAL_DOC_DIR@"
-	@echo "      * local web site      : \
+	@echo "      * local web site    : \
 	$(DESTDIR)@CEYLAN_LOCAL_WEB_DIR@/main/index.html"
-	@echo "      * local web API       : \
+	@echo "      * local web API     : \
 	$(DESTDIR)@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/index.html"
-	@echo "      * official website    : @CEYLAN_SF_VERSION_URL@"
+	@echo "      * official website  : @CEYLAN_SF_VERSION_URL@"
 	@echo "@CEYLAN_DEFAULT_STYLE@"		
 
 		
@@ -349,40 +366,40 @@ info-local: info-dirs info-files info-sf
  
 
 info-dirs:
-	@echo "    + prefix is  :" ${prefix}
-	@echo "    + local documentation directory is : @CEYLAN_LOCAL_DOC_DIR@"
-	@echo "    + local web directory is  : @CEYLAN_LOCAL_WEB_DIR@"
-	@echo "    + local api directory is  :\
+	@echo "    + prefix is:" ${prefix}
+	@echo "    + local documentation directory is: @CEYLAN_LOCAL_DOC_DIR@"
+	@echo "    + local web directory is: @CEYLAN_LOCAL_WEB_DIR@"
+	@echo "    + local api directory is:\
 	@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@"
 	
 	
 info-files: info-html
-	@echo; echo "    + web documentation files are   : "; \
+	@echo; echo "    + web documentation files are : "; \
 	echo "$(WEB_CONTENT_FILES)"
-	@echo; echo "    + common web files are          : "; \
+	@echo; echo "    + common web files are        : "; \
 	echo "$(COMMON_WEB_FILES)"
-	@echo; echo "    + doxygen configuration file is : \
+	@echo; echo "    + doxygen configuration file is: \
 	$(DOXYGEN_GENERATED_CONF)"
 
 	
 info-sf:
-	@echo "    + sourceforge UNIX project name : $(SF_PROJECT_NAME)"
-	@echo "    + sourceforge shell server      : $(SF_SHELL_SERVER)"
-	@echo "    + full sourceforge login        : \
+	@echo "    + sourceforge UNIX project name: $(SF_PROJECT_NAME)"
+	@echo "    + sourceforge shell server     : $(SF_SHELL_SERVER)"
+	@echo "    + full sourceforge login       : \
 	sh $(SF_USER)@$(SF_SHELL_SERVER)"
-	@echo "    + sourceforge web directory     : $(SF_WEB_DIR)"
-	@echo "    + sourceforge home directory    : $(SF_SHELL_HOMEDIR)"
-	@echo "    + SSH target                    : \
+	@echo "    + sourceforge web directory    : $(SF_WEB_DIR)"
+	@echo "    + sourceforge home directory   : $(SF_SHELL_HOMEDIR)"
+	@echo "    + SSH target                   : \
 	$(SF_USER)@$(SF_SHELL_SERVER):$(SF_WEB_DIR)"
-	@echo "    + files to be copied will be    : \
+	@echo "    + files to be copied will be   : \
 	scp myFiles $(SF_USER)@$(SF_SHELL_SERVER):$(SF_SHELL_HOMEDIR)"
 
 
 info-html: 	
 	@echo
-	@echo "    + HTML files are    :"; echo "$(HTML_FILES)"
-	@echo "    + rsync options are : $(RSYNC_OPT)"
-	@echo "    + scp options are   : $(SCP_OPT)"
+	@echo "    + HTML files are   :"; echo "$(HTML_FILES)"
+	@echo "    + rsync options are: $(RSYNC_OPT)"
+	@echo "    + scp options are  : $(SCP_OPT)"
 
 		
 info-tools:
