@@ -144,7 +144,8 @@ This class <code>class_Cat</code> is itself defined this way:
 -define(wooper_construct_parameters,Age,Gender,FurColor,WhiskerColor).
 
 % Construction-related exported operators:
--define(wooper_construct_export,new/4,new_link/4,construct/5).
+-define(wooper_construct_export,new/4,new_link/4,
+	synchronous_new/4,synchronous_new_link/4,construct/5).
 
 % Method declarations.
 -define(wooper_method_export,getTeatCount/1,canEat/2,getWhiskerColor/1).
@@ -384,12 +385,21 @@ Instances may offer <b>methods</b> that can be publicly called, including remote
 <h4>Method declaration</h4>
 
 <p>
-The cat-specific methods are to be declared, in the <code>class_Cat</code>, thanks to the <code>wooper_method_export</code> clause. Their arity should be equal to the number of parameters they should be called with, plus one. The additional parameter is an implicit one (automatically managed by WOOPER), corresponding to the state of the instance. This <code>State</code>
+The cat-specific methods are to be declared, in the <code>class_Cat</code>, thanks to the <code>wooper_method_export</code> clause. Their arity should be equal to the number of parameters they should be called with, plus one.
+</p>
+
+<p>
+The additional parameter is an implicit one (automatically managed by WOOPER), corresponding to the state of the instance. This <code>State</code>
  variable defined by WOOPER can be somehow compared to the '<code>self</code>' parameter of Python, or to the '<code>this</code>' pointer of C++. That state is automatically kept by WOOPER classes in their main loop, and automatically prepended to the parameters of incoming method calls.
 </p>
 
 <p>
 In our example, it would result in: <code>-define(wooper_method_export,canEat/2,getWhiskersColor/1).</code> (as <code>declareBirthday</code> will be inherited but not overriden, no need to declare it).
+</p>
+
+
+<p>
+Some method names are reserved by WOOPER: no user method should have a name starting by <code>wooper</code>. Other names have a special meaning, notably <code>onWooperExitReceived</code>, discussed later.
 </p>
 
 
@@ -601,7 +611,7 @@ end,
 </p>
 
 
-<h5>Method definition</h5>
+<h4>Method definition</h4>
 
 <p>
 Here we reverse the point of view: instead of calling a method, we are in the process of implementing a callable one.
@@ -732,6 +742,44 @@ displayAge(State) -&gt;
 The two <code>wooper_return_state_*</code> macros are actually quite simple, they are just here to structure the method implementations (helping the method developer not mixing states and results), and to help ensuring, in debug mode, that methods are well-formed (an atom is then prepended to the returned tuple, and WOOPER matches it during post-invocation, before handling the return, for an increased safety). 
 </p>
 
+
+<h5>Auto-invocation</h5>
+
+<p>
+When writing a method of a class, one may want to call other methods <b>of that same class</b>, which are possibly overloaded.
+</p>
+
+<p>
+For example, when developing a <code>declareBirthday</code> method of <code>class_Mammal</code> (which among other things increments the mammal age), you may want to perform a call to the <code>setAge</code> method of the current instance.
+</p>
+
+<p>
+If you use just <code>setAge</code> or <code>class_Mammal:setAge</code>, you will never call the potentially overloaded versions from child classes: if an instance of child class <code>class_Cat</code> (which inherited  <code>declareBirthday</code> "as is") overloaded <code>setAge</code>, you may want that <code>declareBirthday</code> calls automatically <code>class_Cat:setAge</code> instead of <code>class_Mammal:setAge</code>.
+</p>
+
+<p>
+This can be easily done asynchronously: just send a classical method call through a message, like in <code>self() ! {setAge,10}</code>. If this approach is useful when not needing the result of the call and/or not needing to have it executed at once, there are times when one wants to have that possibly overriden method executed directly and to access to the corresponding result.
+</p>
+
+<p>
+For these cases, one should call <code>executeRequest</code> or <code>executeOneway</code>, depending of the type of the method to call.
+These two helper functions behave quite similarly to actual method calls that use the operator <code>!</code>, except that no target instance has to be specified (since it is a call made by an instance to itself) and no message exchange is involved: the method look-up is just performed in the inheritance hierarchy, the correct method is called with the specified parameters and the result is then directly returned.
+</p>
+
+<p>
+More precisely, <code>executeRequest</code> is <code>executeRequest/3</code> or <code>executeRequest/2</code>, its parameters being the current state, the name of the request-method, and, if specified, the parameters of the called request, either as a list or as a standalone one. It returns a triplet (3-tuple) made of the <code>wooper_result</code> atom, of the new state and of the result. For example: <code>{wooper_result,NewState,Result} = executeRequest(CurrentState, my_request_name, [ "hello", 42 ])</code>, <code>{wooper_result,NewState,Result} = executeRequest(CurrentState,another_request_name,42)</code> or <code>{wooper_result,NewState,Result} = executeRequest(CurrentState,third_request_name)</code>.
+</p>
+
+<p>
+<code>executeOneway</code> is either <code>executeOneway/3</code> or <code>executeOneway/2</code>, depending on whether the oneway takes parameters. If yes, they can be specified as a list (if there are more than one) or as a standalone parameter. A pair (2-tuple) is returned, made of the <code>wooper_result</code> atom and the new state.
+</p>
+
+<p>
+For example: <code>{wooper_result,NewState} = executeOneway(CurrentState,my_oneway_name,[ "hello", 42 ])</code>, <code>{wooper_result,NewState,Result} = executeOneway(CurrentState,another_oneway_name,42)</code> or <code>{wooper_result,NewState,Result} = executeOneway(CurrentState,another_oneway_name)</code>.
+</p>
+
+
+
 <br><p><center>[<a href="#usagetoc">Back to the usage table of contents</a>]</center></p><br>
 
 
@@ -827,6 +875,8 @@ Some more helper macros are provided for common operations, to keep the syntax a
 	<li><b>appendToAttribute</b>: when having a list attribute, appends specified element to the attribute list. For example: <code>NewState = ?appendToAttribute(State,a_list_attribute,hello)</code>. If the target attribute does not exist, will trigger <code>{{badmatch,undefined},[{hashtable,appendToEntry,3},..</code>. If it exists but is not already a list, it will not crash but will create an ill-formed list (ex: <code>[8|false]</code> when appending 8 to false, which is not a list)</li>
 
 	<li><b>deleteFromAttribute</b>: when having a list attribute, deletes first match of specified element from the attribute list. For example: <code>NewState = ?deleteFromAttribute(State,a_list_attribute,hello)</code>. If the target attribute does not exist, will trigger <code>{{badmatch,undefined},[{hashtable,deleteFromEntry,3},..</code>. If it exists but is not already a list, it will trigger <code>{function_clause,[{lists,delete,[..,..]},{hashtable,deleteFromEntry,3}</code>. If no element in the list matches the specified one, no error will be triggered and the list will be kept as is</li>
+
+	<li><b>popFromAttribute</b>:  when having a list attribute, removes the head from the list and returns a pair made of the updated state (same state except that the corresponding list attribute has lost its head) and of that head. For example: <code>{NewState,Head} = ?popFromAttribute(State,a_list_attribute)</code>. If the value of <code>a_list_attribute</code> was <code>[5,8,3]</code>, its new value (in <code>{NewState,Head}</code>) will be <code>[8,3]</code> and <code>Head</code> will be equal to 5</li>
 
 <!--
 	<li><b></b>: <code></code></li>
@@ -936,6 +986,17 @@ Only one <code>new/construct</code> pair can be defined, but this unique twofold
 The <code>new_link</code> operator behaves exactly as the <code>new</code> operator, except that it creates an instance that is Erlang-linked with the process that called that operator.
 </p>
 
+<p>
+The <code>new/new_link</code> operators are asynchronous: they trigger the creation of a new instance, and return immediately, without waiting for it to complete. Thus the caller has no way to know when the spawned instance is up and running (if it ever happens). Two counterpart operators, <code>synchronous_new/synchronous_new_link</code>, behave like <code>new/new_link</code> except they will return when (and if) the created instance is up and running. For example, after <code>MyMammal = class_Mammal:synchronous_new(...)</code>, one knows that the <code>MyMammal</code> instance is fully created and waiting for incoming messages.
+</p>
+
+<p>
+These synchronous operations are performed by automatically ensuring that the created instance sends a message (<code>{spawn_successful,InstancePid}</code>)
+to the process that created it, and that waits for it.
+</p>
+
+
+
 
 <h5>Declaration of the new/construct pair</h5>
 
@@ -948,11 +1009,15 @@ The WOOPER-defined <code>new</code> operator automatically transmits these param
 </p>
 
 <p>
-Based on the <code>wooper_construct_parameters</code> define (let us suppose n constructor parameters are listed in it), <code>new</code> and <code>construct</code> must be declared thanks to: <code>-define( wooper_construct_export, new/n, new_link/n, construct/n+1).</code>. <code>construct</code> takes one additional parameter, the instance state.
+Based on the <code>wooper_construct_parameters</code> define (let us suppose n constructor parameters are listed in it), <code>new</code> and <code>construct</code> must be declared thanks to: <code>-define( wooper_construct_export, new/n, new_link/n, synchronous_new/n, synchronous_new_link/n, construct/n+1).</code>. <code>construct</code> takes one additional parameter, the instance state.
 </p>
 
 <p>
-For example, if <code>-define( wooper_construct_parameters, Age, Gender ).</code> is declared, <code>-define( wooper_construct_export, new/2, new_link/2, construct/3 ).</code> should then be specified, and the corresponding method will be: <code>construct(State,?wooper_construct_parameters) -&gt; [..]</code>. If there is no construction-related parameter, then the method becomes: <code>construct(State) -&gt; [..]</code>. The <code>new</code> operator is always defined automatically by WOOPER, nothing is to be done for it.
+For example, if <code>-define( wooper_construct_parameters, Age, Gender ).</code> is declared, <code>-define( wooper_construct_export, new/2, new_link/2, synchronous_new/2, synchronous_new_link/2, construct/3 ).</code> should then be specified, and the corresponding method will be: <code>construct(State,?wooper_construct_parameters) -&gt; [..]</code>. If there is no construction-related parameter, then the method becomes: <code>construct(State) -&gt; [..]</code>. All four <code>new</code> operators are always defined automatically by WOOPER, nothing is to be done for them.
+</p>
+
+<p>
+
 </p>
 
 
@@ -1098,6 +1163,37 @@ delete(State) -&gt;
 <h3>Misceallenous technical points</h3>
 
 
+<h4>EXIT messages</h4>
+<p>
+A class instance may receive EXIT messages from other processes. A given class can process these EXIT notifications by exporting the <code>onWooperExitReceived/3</code> method and by defining it, including by inheritance. For example:
+
+<center>
+    <table summary="Code" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+onWooperExitReceived(State,Pid,ExitType) ->
+	io:format( "MyClass EXIT handler ignored signal '~w' from ~w.~n",
+		[ExitType,Pid] ),
+	?wooper_return_state_only(State).	
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+
+results in: 
+<code>MyClass EXIT handler ignored signal 'normal' from &lt;0.40.0&gt;.</code>
+</p>
+
+<p>
+If no class-specific EXIT handler is available, default WOOPER one will be used. It will just notify the user by displaying a message like: <code>WOOPER default EXIT handler ignored signal 'normal' from &lt;0.40.0&gt;.</code>
+</p>
+
+
+<h4>Practical build hints</h4>
 <p>
 All WOOPER classes must include <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/wooper/src/wooper.hrl?view=markup" target="_blank">wooper.hrl</a>: <code>-include("wooper.hrl").</code>. To help declaring the right defines in the right order, using the WOOPER <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/wooper/examples/class_Template.erl?view=markup" target="_blank">template</a> is recommended.
 </p>
@@ -1349,6 +1445,22 @@ Not released yet (work-in-progress, only available on SVN). Major changes are:
 <h3>Version 0.3</h3>
 <p>
 Not released yet (work-in-progress, only available on SVN). Should be a BFO (Bug Fixes Only, if bugs were to be found) version, as functional coverage is pretty complete already.
+<ul>
+
+	<li>incoming EXIT messages are caught by a default WOOPER handler which can be overridden on a per-class basis by the user-specified <code>onWooperExitReceived/3</code> method</li>
+
+	<li>direct method invocation supported, thanks to the <code>executeRequest</code> and <code>executeOneway</code> constructs</li>
+
+	<li>synchronous spawn operations added: <code>synchronous_new/synchronous_new_link</code></li>
+
+	<li>state management enriched: <code>popFromAttribute</code> added</li>
+
+<!--
+	<li></li>
+-->
+	
+</ul>
+
 </p>
 
 
@@ -1579,7 +1691,7 @@ svn copy https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/code
   <center>
     [<a href="#_top_">Top</a>]<br>
     <br>
-    <em>Last update: Friday, December 21, 2007</em>
+    <em>Last update: Friday, April 18, 2008</em>
   </center>
 </body>
 </html>
