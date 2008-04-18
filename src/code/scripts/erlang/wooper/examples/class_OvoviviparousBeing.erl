@@ -8,7 +8,8 @@
 -define(wooper_construct_parameters,).
 
 % Construction-related exported operators:
--define(wooper_construct_export,new/0,new_link/0,construct/1).
+-define(wooper_construct_export,new/0,new_link/0,
+	synchronous_new/0,synchronous_new_link/0,construct/1).
 
 % Declarations of class-specific methods (besides inherited ones).
 -define(wooper_method_export,getMeanEggsCount/1,getEggsLaidCount/1,

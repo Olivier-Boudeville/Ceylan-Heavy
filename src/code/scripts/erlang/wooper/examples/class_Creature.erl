@@ -9,12 +9,14 @@
 -define(wooper_construct_parameters,Age,Gender).
 
 % Construction-related exported operators:
--define(wooper_construct_export,new/2,new_link/2,construct/3,toString/1).
+-define(wooper_construct_export,new/2,new_link/2,
+	synchronous_new/2,synchronous_new_link/2,construct/3,toString/1).
 
 
 % Declarations of class-specific methods (besides inherited ones).
 % isHotBlooded/1 and canEat/2 are abstract here, hence not mentioned:
--define(wooper_method_export,getAge/1,setAge/2,declareBirthday/1,getGender/1).
+-define(wooper_method_export,getAge/1,setAge/2,declareBirthday/1,getGender/1,
+	getArbitraryNumber/1,testDirectMethodExecution/2).
 
 
 % Non-method exported functions:
@@ -28,7 +30,6 @@
 % Constructs a new Creature.
 construct(State,?wooper_construct_parameters) ->
 	% No mother class.
-	% Sanity checks could be implemented here.
 	?setAttributes(State, [ {age,Age}, {gender,Gender} ] ).
 	
 
@@ -44,11 +45,12 @@ toString(State) ->
 % Returns the age of this creature.
 getAge(State) ->
 	?wooper_return_state_result(State,?getAttr(age)).
-	
+		
 	
 % Sets the age of this creature.
-setAge(State,NewAge) ->
-	?wooper_return_state_only(?setAttribute(State,age,NewAge)).
+setAge(State,_NewAge) ->
+	% Mother implementation chosen faulty to check override:
+	?wooper_return_state_only(?setAttribute(State,age,36)).
 
 
 % Increments the age of this creature.
@@ -60,6 +62,32 @@ declareBirthday(State) ->
 % Returns the gender of this creature.
 getGender(State) ->
 	?wooper_return_state_result(State,?getAttr(gender)).
+
+
+% Returns a class-specific arbitrary number.
+% (request)
+getArbitraryNumber(State) ->
+	?wooper_return_state_result(State,10).
+
+
+% Tests direct (synchronous) self-invocation of methods.
+% (oneway).
+testDirectMethodExecution(State,NewAge) ->
+
+	io:format( "Testing executeOneway.~n" ),
+	{wooper_result,NewState} = executeOneway(State,setAge,NewAge),
+	
+	% Not the 36 returned by this class (347 given by the test of Mammal) :
+	347 = ?getAttribute(NewState,age),
+	
+	io:format( "Testing executeRequest.~n" ),
+	% 15 from child classes (Mammal or Reptile), not 10 from here:
+	{wooper_result,OtherState,15} =
+		executeRequest(NewState,getArbitraryNumber,[]),
+
+	io:format( "Direct self-invocation success.~n" ),
+
+	?wooper_return_state_only(OtherState).
 
 
 % Just to show it can exist:	

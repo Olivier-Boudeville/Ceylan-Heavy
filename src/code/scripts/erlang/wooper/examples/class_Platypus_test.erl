@@ -253,7 +253,56 @@ run() ->
 			testFailed( io_lib:format( "wrong nozzle color : ~p", 
 				[ UnexpectedNozzleColor ] ) )
 				
+	end,
+			
+	MyP ! {getAlternateNames,[],self()},
+	receive
+	
+		 {wooper_result,[hector,edgar,roger,sean]}->
+			io:format(?Prefix 
+				"This Platypus has the right alternate names: ~w.~n",
+					[ [hector,edgar,roger,sean] ] )
+				
 	end,		
+	
+	MyP ! {popFirstAlternateName,[],self()},
+	receive
+	
+		 {wooper_result,FirstName}->
+			io:format(?Prefix 
+				"This Platypus forgot its first alternate name: ~w.~n",
+					[ FirstName ] )
+				
+	end,
+			
+	MyP ! {getAlternateNames,[],self()},
+	receive
+	
+		 {wooper_result,[edgar,roger,sean]}->
+			io:format(?Prefix 
+				"Finally this Platypus has the right alternate names: ~w.~n",
+					[ [edgar,roger,sean] ] )
+				
+	end,		
+	
+	
+	
+	io:format(?Prefix "Testing now synchronous operations.~n" ),
+	
+	MySyncP = class_Platypus:synchronous_new_link(3,female,violet,grey),
+
+	MySyncP ! {getNozzleColor,[],self()},
+	receive
+	
+		 {wooper_result,grey}->
+			io:format(?Prefix 
+				"This synchronous Platypus has a grey nozzle, as expected.~n");
+	
+		{wooper_result,UnexpectedSyncNozzleColor} -> 
+			testFailed( io_lib:format( "wrong nozzle color : ~p", 
+				[ UnexpectedSyncNozzleColor ] ) )
+				
+	end,
 	
 	case class_Platypus:is_wooper_debug() of 
 		true ->

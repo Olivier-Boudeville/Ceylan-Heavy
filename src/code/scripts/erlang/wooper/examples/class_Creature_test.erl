@@ -10,7 +10,7 @@
 -define(Prefix,"--> ").
 
 
-% Comment out to be able to use the interpreter after the test :
+% Comment out to be able to use the interpreter after the test:
 -define(ExitAfterTest,).
 
 -ifdef(ExitAfterTest).
@@ -30,14 +30,14 @@ testFinished() ->
 testFailed(Reason) ->
 	% For some reason erlang:error is unable to interpret strings as strings,
 	% they are always output as unreadable list.
-	io:format( "~n!!!! Test failed for module ~s, reason : ~s~n~n",
+	io:format( "~n!!!! Test failed for module ~s, reason: ~s~n~n",
 		[ ?Tested_module, Reason ] ),
 	erlang:error( "Test failed" ).	
 
 
 run() ->
 	io:format( ?Prefix "Testing module ~s.~n", [ ?Tested_module ] ),
-	io:format( ?Prefix "Debug mode : ~s.~n", 
+	io:format( ?Prefix "Debug mode: ~s.~n", 
 		[ class_Creature:is_wooper_debug() ] ),	
 	io:format( ?Prefix "Class name is ~s, superclasses are ~w.~n", [
 		class_Creature:get_class_name(), class_Creature:get_superclasses() ] ),
@@ -50,7 +50,7 @@ run() ->
 				"After constructor, getAge returned 30 as expected.~n");
 
 		{wooper_result,UnexpectedAge} -> 
-			testFailed( io_lib:format( "wrong age : ~p", 
+			testFailed( io_lib:format( "wrong age: ~p", 
 				[ UnexpectedAge ] ) )
 	
 	end,
@@ -62,20 +62,21 @@ run() ->
 				"After constructor, getGender returned male as expected.~n");
 
 		{wooper_result,UnexpectedGender} -> 
-			testFailed( io_lib:format( "wrong gender : ~p", 
+			testFailed( io_lib:format( "wrong gender: ~p", 
 				[ UnexpectedGender ] ) )
 	
 	end,
 	MyC ! {setAge,5},
+	% class_Creature:setAge returns always 36 for executeRequest test purposes:
 	MyC ! {getAge,[],self()},
 	receive
 	
-		{wooper_result,5}->
+		{wooper_result,36}->
 			io:format(?Prefix 
-				"After setAge, getAge returned 5 as expected.~n");
+				"After setAge, getAge returned 36 as expected.~n");
 
 		{wooper_result,UnexpectedNewAge} -> 
-			testFailed( io_lib:format( "wrong age : ~p", 
+			testFailed( io_lib:format( "wrong age: ~p", 
 				[ UnexpectedNewAge ] ) )
 				
 	end,	
@@ -83,16 +84,18 @@ run() ->
 	MyC ! {getAge,[],self()},
 	receive
 	
-		 {wooper_result,6}->
+		 {wooper_result,37}->
 			io:format(?Prefix 
-				"After declareBirthday, getAge returned 6 as expected.~n");
+				"After declareBirthday, getAge returned 37 as expected.~n");
 
 		{wooper_result,UnexpectedLastAge} -> 
-			testFailed( io_lib:format( "wrong age : ~p", 
+			testFailed( io_lib:format( "wrong age: ~p", 
 				[ UnexpectedLastAge ] ) )	
 	
 	end,	
+	
 	MyC ! declareBirthday,
+	
 	MyC ! delete,	
 	io:format( ?Prefix "End of test for module ~s.~n", [ ?Tested_module ] ),
 	testFinished().

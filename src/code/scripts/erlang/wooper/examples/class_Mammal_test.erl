@@ -133,6 +133,12 @@ run() ->
 				[ UnexpectedBlood ] ) )
 	
 	end,	
+
+	% Not too late in the test to have enough time to execute fully:
+	io:format( ?Prefix "Testing direct method invocation.~n" ),
+	% Inherited from Creature:
+	MyM ! {testDirectMethodExecution,347},
+
 	MyM ! {getFurColor,[],self()},
 	receive
 	
@@ -156,6 +162,8 @@ run() ->
 		false ->
 			ok	
 	end,
+
+
 	MyM ! delete,				
 	io:format( ?Prefix "End of test for module ~s.~n", [ ?Tested_module ] ),
 	testFinished().

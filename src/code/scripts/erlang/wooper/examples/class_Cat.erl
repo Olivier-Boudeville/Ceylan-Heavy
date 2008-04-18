@@ -12,7 +12,8 @@
 -define(wooper_construct_parameters,Age,Gender,FurColor,WhiskerColor).
 
 % Construction-related exported operators:
--define(wooper_construct_export,new/4,new_link/4,construct/5).
+-define(wooper_construct_export,new/4,new_link/4,
+	synchronous_new/4,synchronous_new_link/4,construct/5).
 
 % Method declarations.
 -define(wooper_method_export,getTeatCount/1,canEat/2,getWhiskerColor/1).

@@ -9,7 +9,8 @@
 -define(wooper_construct_parameters,PARAM1,PARAM2).
 
 % Life-cycle related exported operators:
--define(wooper_construct_export,new/P,new_link/P,construct/P+1).
+-define(wooper_construct_export,new/P,new_link/P,
+	synchronous_new/P,synchronous_new_link/P,construct/P+1).
 
 % Method declarations.
 -define(wooper_method_export,M1/A1,M2/A2).
@@ -31,7 +32,18 @@ construct(State,?wooper_construct_parameters) ->
 	% First the direct mother classes:
 	
 	% Then the class-specific attributes:
+
 	
+% Overriden destructor.
+delete(State) ->
+	% Class-specific actions:
+
+	% Then call the direct mother class counterparts:
+	DeletedActorState = class_XXX:delete(State),
+
+	% Allow chaining:
+	DeletedActorState.
+
 
 M1(State,ARG1) ->
 

@@ -12,10 +12,13 @@
 -define(wooper_construct_parameters,Age,Gender,FurColor,NozzleColor).
 
 % Construction-related exported operators:
--define(wooper_construct_export,new/4,new_link/4,construct/5).
+-define(wooper_construct_export,new/4,new_link/4,
+	synchronous_new/4,synchronous_new_link/4,construct/5).
 
 % Method declarations.
--define(wooper_method_export,getMeanEggsCount/1,getTeatCount/1,canEat/2,getNozzleColor/1).
+-define(wooper_method_export,getMeanEggsCount/1,getTeatCount/1,canEat/2,
+	getNozzleColor/1,getAlternateNames/1,popFirstAlternateName/1).
+
 
 % Allows to define WOOPER base variables and methods for that class:
 -include("wooper.hrl").
@@ -30,7 +33,9 @@ construct(State,?wooper_construct_parameters) ->
 		MammalState ),
 	
 	% Then the class-specific attributes:
-	?setAttribute( OvoviviparousMammalState, nozzle_color, NozzleColor ).
+	?setAttributes( OvoviviparousMammalState, 
+		[ {nozzle_color,NozzleColor},
+		{alternate_names,[hector,edgar,roger,sean]} ] ).
 	
 
 	
@@ -63,4 +68,14 @@ canEat(State,_) ->
 getNozzleColor(State)->
 	?wooper_return_state_result( State, ?getAttribute(State,nozzle_color) ).
 
+
+% Returns the list of alternate names for this platypus.
+getAlternateNames(State) ->
+	?wooper_return_state_result( State, ?getAttribute(State,alternate_names) ).
+	
+
+% Returns the first alternate name for this platypus and forget it.
+popFirstAlternateName(State) ->
+	{NewState,Name} = ?popFromAttribute(State,alternate_names),
+	?wooper_return_state_result( NewState, Name ).
 
