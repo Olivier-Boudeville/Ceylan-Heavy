@@ -26,7 +26,7 @@
 -export([new/0,new/1,addEntry/3,addEntries/2, 
 	removeEntry/2,lookupEntry/2,hasEntry/2,
 	getEntry/2,addToEntry/3,substractFromEntry/3,toggleEntry/2,
-	appendToEntry/3,deleteFromEntry/3,
+	appendToEntry/3,deleteFromEntry/3,popFromEntry/2,
 	enumerate/1,getEntryCount/1,merge/2,toString/1,display/1]).
 
 
@@ -169,6 +169,13 @@ deleteFromEntry(Key,Element,HashTable) ->
 	addEntry(Key,lists:delete(Element,List),HashTable).
 
 
+% Pops the head of the value (supposed to be a list) associated to specified
+% key, and returns a pair made of the popped head and the new hashtable. 
+popFromEntry(Key,HashTable) ->
+	{value,[H|T]} = lookupEntry(Key,HashTable),
+	{H,addEntry(Key,T,HashTable)}.
+
+	
 
 
 % Returns a flat list whose elements are all the key/value pairs of the
