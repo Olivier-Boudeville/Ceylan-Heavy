@@ -5,14 +5,17 @@ MODULES_DIRS = common wooper
 
 
 
-.PHONY: all bz2 clean release-wooper release-wooper-zip release-wooper-bz2 \
+.PHONY: all tests bz2 clean \
+	release-wooper release-wooper-zip release-wooper-bz2 \
 	prepare-wooper clean-wooper-release clean-archive
 
 
 all: 
 	@echo "   Building all"
 	@for d in $(MODULES_DIRS); do ( cd $$d; $(MAKE) all ); done
-	
+
+tests: all	
+
 	
 bz2: clean
 	@mkdir -p $(ARCHIVE_ROOT)
