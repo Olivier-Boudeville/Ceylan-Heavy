@@ -164,10 +164,13 @@
 % respect the right format:
 -ifdef(wooper_debug).
 
-	% These methods are defined for all classes:
+	% These methods/functions are defined for all classes:
 	-define(WooperBaseMethods,get_class_name/0,get_class_name/1,
 		get_superclasses/0,get_superclasses/1,
-		wooper_construct_and_run/1,	is_wooper_debug/0,wooper_debug_listen/3, 
+		executeRequest/3,executeRequest/2,executeOneway/3,executeOneway/2,
+		wooper_pop_from_attribute/2,
+		wooper_construct_and_run/1,wooper_construct_and_run_synchronous/2,
+		is_wooper_debug/0,wooper_debug_listen/3, 
 		wooper_display_state/1,wooper_display_virtual_table/1,
 		wooper_display_instance/1,
 		wooper_get_state_description/1,wooper_get_virtual_table_description/1,
@@ -204,10 +207,13 @@
 	% Not in debug mode here:
 
 	
-	% These methods are defined for all classes:
+	% These methods/functions are defined for all classes:
 	-define(WooperBaseMethods,get_class_name/0,get_class_name/1,
 		get_superclasses/0,get_superclasses/1,
-		wooper_construct_and_run/1,is_wooper_debug/0,wooper_debug_listen/3,
+		executeRequest/3,executeRequest/2,executeOneway/3,executeOneway/2,
+		wooper_pop_from_attribute/2,
+		wooper_construct_and_run/1,wooper_construct_and_run_synchronous/2,
+		is_wooper_debug/0,wooper_debug_listen/3,
 		wooper_display_state/1,wooper_display_virtual_table/1,
 		wooper_display_instance/1,wooper_display_loop_state/1).
 
@@ -234,6 +240,7 @@
 		debug_no_activated.
 		
 -endif.
+
 
 
 % Helper function to test requests.
@@ -282,6 +289,9 @@ get_superclasses(State) ->
 
 % Spawns a new instance for this class, using specified parameters to
 % construct it.
+% Returns the PID of the newly created instance.
+% Creation is asynchronous: new returns as soon as the creation is triggered,
+% without waiting for it to complete.
 new(?wooper_construct_parameters) ->
 	%io:format("new operator: spawning ~w:wooper_construct_and_run "
 	%	"with parameters ~w.~n", [?MODULE,[?wooper_construct_parameters]]), 
@@ -292,11 +302,56 @@ new(?wooper_construct_parameters) ->
 
 % Spawns a new instance for this class and links it to the current process,
 % using specified parameters to construct it.
+% Returns the PID of the newly created instance.
+% Creation is asynchronous: new_link returns as soon as the creation is
+% triggered, without waiting for it to complete.
 new_link(?wooper_construct_parameters) ->
 	% Double-list: list with a list in it.
 	spawn_link(?MODULE, wooper_construct_and_run,
 		[[?wooper_construct_parameters]] ).
+
+
+% Spawns a new instance for this class, using specified parameters to
+% construct it.
+% Returns the PID of the newly created instance.
+% Creation is synchronous: synchronous_new will return only when the created
+% process reports it is up and running.
+synchronous_new(?wooper_construct_parameters) ->
+	%io:format("synchronous_new operator: spawning ~w:wooper_construct_and_run "
+	%	"with parameters ~w.~n", [?MODULE,[?wooper_construct_parameters]]), 
+	% Double-list: list with a list in it, and ++ used to allow for empty
+	% parameter list.
+	SpawnedPid = spawn(?MODULE, wooper_construct_and_run_synchronous,
+		[ [?wooper_construct_parameters], self() ] ),
+		
+	% Blocks until the spawned process answers:	
+	receive	
+		
+		{spawn_successful,SpawnedPid} ->
+			SpawnedPid
 	
+	end.
+	
+
+% Spawns a new instance for this class and links it to the current process,
+% using specified parameters to construct it.
+% Returns the PID of the newly created instance.
+% Creation is synchronous: synchronous_new will return only when the created
+% process reports it is up and running.
+synchronous_new_link(?wooper_construct_parameters) ->
+	% Double-list: list with a list in it, and ++ used to allow for empty
+	% parameter list..
+	SpawnedPid= spawn_link(?MODULE, wooper_construct_and_run_synchronous,
+		[ [?wooper_construct_parameters], self() ] ),
+	
+	% Blocks until the spawned process answers:	
+	receive	
+		
+		{spawn_successful,SpawnedPid} ->
+			SpawnedPid
+	
+	end.
+
 
 % Indirection level to allow constructors to be chained.
 % Allows to obtain the virtual table from the instance, not from its parent. 
@@ -305,12 +360,27 @@ wooper_construct_and_run(ParameterList) ->
 	%	"whose length is ~B.~n",[ParameterList,length(ParameterList)]),
 	BlankTable = #state_holder{
 		virtual_table   = wooper_retrieve_virtual_table(),
-		attribute_table =
-			hashtable:new(?WooperAttributeCountUpperBound),
+		attribute_table = hashtable:new(?WooperAttributeCountUpperBound),
 		request_sender  = undefined
 	},
 	wooper_main_loop(
 		apply(?MODULE,construct,[BlankTable|ParameterList]) ).
+
+
+
+% Indirection level to allow constructors to be chained.
+% Allows to obtain the virtual table from the instance, not from its parent. 
+wooper_construct_and_run_synchronous(ParameterList,SpawnerPid) ->
+	%io:format("wooper_construct_and_run called with parameters ~w, "
+	%	"whose length is ~B.~n",[ParameterList,length(ParameterList)]),
+	BlankTable = #state_holder{
+		virtual_table   = wooper_retrieve_virtual_table(),
+		attribute_table = hashtable:new(?WooperAttributeCountUpperBound),
+		request_sender  = undefined
+	},
+	ConstructState = apply(?MODULE,construct,[BlankTable|ParameterList]),
+	SpawnerPid ! { spawn_successful, self() },
+	wooper_main_loop( ConstructState ).
 
 
 
@@ -464,6 +534,35 @@ wooper_construct_and_run(ParameterList) ->
 
 
 
+% Removes the head from specified attribute, supposed to be a list, and 
+% returns a tuple {NewState,PoppedHead}.
+%
+% For example, if the attribute 'my_list' contains [5,8,3], executing:
+% '{PoppedState,Head} = ?popFromAttribute(State,my_list)'
+% returns a state whose my_list attribute is [8,3] and a value Head = 5.
+%
+% A case clause is triggered if the attribute did not exist.
+%
+% @note This cannot be a one-line macro, it has to be a function.
+%
+-define(popFromAttribute(State,AttributeName),
+	wooper_pop_from_attribute(State,AttributeName)).
+
+
+% Helper function for the popFromAttribute macro.
+wooper_pop_from_attribute(State,AttributeName) ->
+	{Head,PoppedAttributeTable} = hashtable:popFromEntry(AttributeName,
+		State#state_holder.attribute_table),
+	
+	{ #state_holder{
+		virtual_table   = State#state_holder.virtual_table,
+		attribute_table = PoppedAttributeTable,
+		request_sender  = State#state_holder.request_sender	},
+		Head
+	}.	
+
+
+
 % Returns the sender of the request.
 -define(getSender(),State#state_holder.request_sender).
 
@@ -591,6 +690,16 @@ wooper_get_instance_description(State) ->
 	
 -endif.
 	
+	
+	
+% WOOPER default EXIT handler.
+% Can be overriden by defining or inheriting the onWooperExitReceived/3 method.	
+wooper_default_exit_handler(State,Pid,ExitType) ->
+	io:format( "WOOPER default EXIT handler ignored signal '~w' from ~w.~n",
+		[ExitType,Pid] ),
+	?wooper_return_state_only(State).	
+
+
 
 % Waits for incoming requests and serves them.
 wooper_main_loop(State) ->
@@ -672,15 +781,16 @@ wooper_main_loop(State) ->
 		{ ping, SenderPID } ->
 			SenderPID ! {pong,self()},
 			wooper_main_loop(State);
-				
+		
+		% Oneway with parameters:		
 		{ MethodAtom, Argument } ->
 			% Any result would be ignored, only the update state is kept:
-			{ NewState, _ } = wooper_execute_method( 
-				MethodAtom, State, [ Argument ] ), 
+			{ NewState, _ } = wooper_execute_method( MethodAtom, State, 
+				[ Argument ] ), 
 			wooper_main_loop(NewState);
 			
 		delete ->
-			case hashtable:lookupEntry({delete,1},
+			case hashtable:lookupEntry( {delete,1},
 					State#state_holder.virtual_table) of 
 				
 				undefined ->
@@ -702,6 +812,25 @@ wooper_main_loop(State) ->
 			{ NewState, _ } = wooper_execute_method( MethodAtom, State, [] ),
 			wooper_main_loop(NewState);
 		
+		
+		{'EXIT',Pid,ExitType} when is_pid(Pid) ->
+			case hashtable:lookupEntry( {onWooperExitReceived,3},
+					State#state_holder.virtual_table) of 
+				
+				undefined ->
+					% EXIT handler not overriden, using default one:
+					wooper_main_loop( wooper_default_exit_handler( State,
+						Pid,ExitType ) );
+				
+				{ value, _ } -> 
+					% Reusing safe execution facilities rather than directly
+					% 'apply( LocatedModule,onWooperExitReceived,...)':
+					{ NewState, _ } = wooper_execute_method(
+						onWooperExitReceived, State, [Pid,ExitType] ),
+					wooper_main_loop(NewState)
+								
+			end;
+			
 		
 		Other ->
 			error_logger:warning_msg( "WOOPER ignored following message: ~w.~n",
@@ -749,7 +878,7 @@ wooper_lookupMethod(State,MethodAtom,Arity) ->
  
  
 % Executes the specified method, designated by its atom, with specified 
-% instance state and parameters.
+% instance state and list of parameters.
 % If the method is not found (either in the class module or in its
 % ancester trees), an error tuple beginning with the atom
 % 'wooper_method_not_found' is returned with an unchanged state.
@@ -768,8 +897,8 @@ wooper_lookupMethod(State,MethodAtom,Arity) ->
 % any linked or monitoring process.
 wooper_execute_method(MethodAtom,State,Parameters) ->	
 
-	%io:format("wooper_execute_method: executing ~s:~s(~w).~n",
-	%	[ ?MODULE, MethodAtom, Parameters ]), 	
+	%io:format("wooper_execute_method: looking up ~s(~w) from ~s.~n",
+	%	[ MethodAtom, Parameters, ?MODULE ]), 	
 	
 	% +1: take into account the State additional parameter:
 	case wooper_lookupMethod( State, MethodAtom, length(Parameters)+1 ) of
@@ -777,6 +906,10 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 		{ value, LocatedModule } -> 
 			% The 'return' atom is a safety guard against incorrect method
 			% implementations:
+
+			%io:format("wooper_execute_method: executing ~s:~s(~w).~n",
+			%	[ ?MODULE, MethodAtom, Parameters ]), 	
+			
 			case catch apply(LocatedModule,MethodAtom,[State|Parameters]) of
 
 				% Matched expressions have to be reordered depending on the
@@ -814,7 +947,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 							% This is a oneway, so log and crash:
 							error_logger:error_msg(	"WOOPER error for PID ~w: "
 								"oneway method ~s:~s/~B failed "
-								"with error term ~w for parameters ~w~n.",
+								"with error term ~w for parameters ~w.~n",
 								[ self(), ?MODULE, MethodAtom,
 									length(Parameters)+1, ErrorTerm,
 									Parameters] ),
@@ -833,7 +966,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 							% the calling function (wooper_main_loop) to crash:
 							error_logger:error_msg(	"WOOPER error for PID ~w: "
 								"request method ~s:~s/~B failed "
-								"with error term ~w for parameters ~w~n.",
+								"with error term ~w for parameters ~w.~n",
 								[ self(), ?MODULE, MethodAtom,
 									length(Parameters)+1, ErrorTerm,
 									Parameters] ),
@@ -855,7 +988,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 							error_logger:error_msg(	"WOOPER error for PID ~w: "
 								"oneway method ~s:~s/~B failed "
 								"with error term ~w and PID ~w "
-								"for parameters ~w~n.",
+								"for parameters ~w.~n",
 								[ self(), ?MODULE, MethodAtom,
 									length(Parameters)+1, ErrorTerm, Pid,
 									Parameters] ),
@@ -875,7 +1008,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 							error_logger:error_msg(	"WOOPER error for PID ~w: "
 								"request method ~s:~s/~B failed "
 								"with error term ~w and PID ~w "
-								"for parameters ~w~n.",
+								"for parameters ~w.~n",
 								[ self(), ?MODULE, MethodAtom,
 									length(Parameters)+1, ErrorTerm, Pid,
 									Parameters] ),
@@ -898,7 +1031,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 							% This is a oneway, so log and crash:
 							error_logger:error_msg(	"WOOPER error for PID ~w: "
 								"oneway method ~s:~s/~B made a faulty return "
-								"~w, parameters were ~w~n.",
+								"~w, parameters were ~w.~n",
 								[ self(), ?MODULE, MethodAtom,
 									length(Parameters)+1, Other, Parameters] ),
 
@@ -916,7 +1049,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 							% the calling function (wooper_main_loop) to crash:
 							error_logger:error_msg(	"WOOPER error for PID ~w: "
 								"request method ~s:~s/~B made a faulty return "
-								"~w, parameters were ~w~n.",
+								"~w, parameters were ~w.~n",
 								[ self(), ?MODULE, MethodAtom,
 									length(Parameters)+1, Other, Parameters ] ),
 								
@@ -944,7 +1077,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 					% is displayed as a list:
 					error_logger:error_msg(	"WOOPER error for PID ~w: "
 						"oneway method ~s:~s/~B not found, "
-						"parameters were ~w~n.",
+						"parameters were ~w.~n",
 						[ self(), ?MODULE, MethodAtom,
 							length(Parameters)+1, Parameters] ),
 
@@ -961,7 +1094,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 					% the calling function (wooper_main_loop) to crash:
 					error_logger:error_msg(	"WOOPER error for PID ~w: "
 						"request method ~s:~s/~B not found, "
-						"parameters were ~w~n.",
+						"parameters were ~w.~n",
 						[ self(), ?MODULE, MethodAtom,
 							length(Parameters)+1, Parameters] ),
 					
@@ -981,7 +1114,142 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 			
 	end.
 
+
+
+% Allows to call synchronously from the code of a given class its actual 
+% overriden methods (requests, here), including from child classes.
+%
+% @example If in a start method of an EngineVehicle class one wants to call the 
+% (possibly overriden by, say, a class Car) startEngine method, then 
+% executeRequest should be used: 'MyVehicle ! {startEngine..' would not be 
+% synchronous, startEngine() would call EngineVehicle:startEngine instead of
+% Car:startEngine when called from a Car instance, and of course EngineVehicle
+% should know nothing from its Car child class.
+% 
+% If no failure occurs, returns {wooper_result,NewState,Result}.
+%
+% @note Stripped-down version of wooper_main_loop.
+%  
+executeRequest(State,RequestAtom,ArgumentList) when is_list(ArgumentList) -> 
+
+	%io:format("executeRequest/3 with list: executing ~s(~w) from ~s.~n",
+	%	[ RequestAtom, ArgumentList, ?MODULE ]), 	
+
+			
+	% Auto-calling method:		
+	SenderAwareState = State#state_holder{request_sender=self()},
+	
+	% Correction checking by pattern-matching:
+	{ NewState, {wooper_result,Result} } = wooper_execute_method( RequestAtom,
+		SenderAwareState, ArgumentList ), 
+		
+	% Returns:			
+	{wooper_result,	NewState#state_holder{request_sender=undefined}, Result};
+	
+	
+% Here third parameter is not a list:
+executeRequest(State,RequestAtom,StandaloneArgument) -> 
+
+	%io:format("executeRequest/3 with standalone argument: "
+	%	"executing ~s(~w) from ~s.~n", 
+	%	[ RequestAtom, StandaloneArgument, ?MODULE ]),
+			
+	% Auto-calling method:		
+	SenderAwareState = State#state_holder{request_sender=self()},
+	
+	% Correction checking by pattern-matching:
+	{ NewState, {wooper_result,Result} } = wooper_execute_method( RequestAtom,
+		SenderAwareState, [StandaloneArgument] ), 
+
+	% Returns:			
+	{wooper_result,	NewState#state_holder{request_sender=undefined}, Result}.
+
+
+
+% Parameter-less request.
+executeRequest(State,RequestAtom) -> 
+
+	%io:format("executeRequest/2: executing ~s() from ~s.~n", 
+	%	[ RequestAtom , ?MODULE ]),
+			
+	% Auto-calling method:		
+	SenderAwareState = State#state_holder{request_sender=self()},
+	
+	% Correction checking by pattern-matching:
+	{ NewState, {wooper_result,Result} } = wooper_execute_method( RequestAtom,
+		SenderAwareState, [] ), 
+
+	% Returns:			
+	{wooper_result,	NewState#state_holder{request_sender=undefined}, Result}.
+
+
+		
+% Allows to call synchronously from the code of a given class its actual 
+% overriden methods (oneways, here), including from child classes.
+%
+% @example If in a start method of a EngineVehicle class one wants to call the 
+% (possibly overriden by, say, a class Car) startEngine method, then 
+% executeOneway should be used: 'MyVehicle ! startEngine' would not be 
+% synchronous, startEngine() would call EngineVehicle:startEngine instead of
+% Car:startEngine when called from a Car instance, and of course EngineVehicle
+% should know nothing from its Car child class.
+% 
+% If no failure occurs, returns {wooper_result,NewState}.
+%
+% @note Stripped-down version of wooper_main_loop.
+%  
+executeOneway(State,OnewayAtom,ArgumentList) when is_list(ArgumentList) -> 
+
+	%io:format("executeOneway/3 with list: executing ~s(~w) from ~s.~n",
+	%	[ OnewayAtom, ArgumentList, ?MODULE ]), 	
+			
+	% No request_sender to change with oneways.
+	
+	% Correction checking by pattern-matching:
+	{ NewState, wooper_method_returns_void } =
+		wooper_execute_method( OnewayAtom, State, ArgumentList ), 
+	
+	% Returns:	
+	{wooper_result,NewState};
+
+	
+% Here third parameter is not a list:
+executeOneway(State,OnewayAtom,StandaloneArgument) -> 
+
+	%io:format("executeOneway/3 with standalone argument: "
+	%	"executing ~s(~w) from ~s.~n", 
+	%	[ OnewayAtom, StandaloneArgument, ?MODULE ]),
+			
+	% No request_sender to change with oneways.
+	
+	% Correction checking by pattern-matching:
+	{ NewState, wooper_method_returns_void } =
+		wooper_execute_method( OnewayAtom, State, [StandaloneArgument] ), 
+
+	% Returns:			
+	{wooper_result,	NewState}.
+
+
+% Parameter-less oneway.
+executeOneway(State,OnewayAtom) -> 
+
+	%io:format("executeOneway/2: executing ~s() from ~s.~n", 
+	%	[ OnewayAtom, ?MODULE ]),
+			
+	% No request_sender to change with oneways.
+	
+	% Correction checking by pattern-matching:
+	{ NewState, wooper_method_returns_void } =
+		wooper_execute_method( OnewayAtom, State, [] ), 
+
+	% Returns:			
+	{wooper_result,	NewState}.
+
+
+
 -else.
+
+
 
 % Not in debug mode here:
 
@@ -1023,7 +1291,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 							% This is a oneway, so log and crash:
 							error_logger:error_msg(	"WOOPER error for PID ~w: "
 								"oneway method ~s:~s/~B failed "
-								"with error term ~w for parameters ~w~n.",
+								"with error term ~w for parameters ~w.~n",
 								[ self(), ?MODULE, MethodAtom,
 									length(Parameters)+1, ErrorTerm,
 									Parameters] ),
@@ -1042,7 +1310,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 							% the calling function (wooper_main_loop) to crash:
 							error_logger:error_msg(	"WOOPER error for PID ~w: "
 								"request method ~s:~s/~B failed "
-								"with error term ~w for parameters ~w~n.",
+								"with error term ~w for parameters ~w.~n",
 								[ self(), ?MODULE, MethodAtom,
 									length(Parameters)+1, ErrorTerm,
 									Parameters] ),
@@ -1064,7 +1332,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 							error_logger:error_msg(	"WOOPER error for PID ~w: "
 								"oneway method ~s:~s/~B failed "
 								"with error term ~w and PID ~w "
-								"for parameters ~w~n.",
+								"for parameters ~w.~n",
 								[ self(), ?MODULE, MethodAtom,
 									length(Parameters)+1, ErrorTerm, Pid,
 									Parameters] ),
@@ -1084,7 +1352,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 							error_logger:error_msg(	"WOOPER error for PID ~w: "
 								"request method ~s:~s/~B failed "
 								"with error term ~w and PID ~w "
-								"for parameters ~w~n.",
+								"for parameters ~w.~n",
 								[ self(), ?MODULE, MethodAtom,
 									length(Parameters)+1, ErrorTerm, Pid,
 									Parameters] ),
@@ -1123,7 +1391,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 					% as a list:
 					error_logger:error_msg(	"WOOPER error for PID ~w: "
 						"oneway method ~s:~s/~B not found, "
-						"parameters were ~w~n.",
+						"parameters were ~w.~n",
 						[ self(), ?MODULE, MethodAtom,
 							length(Parameters)+1, Parameters] ),
 					
@@ -1140,7 +1408,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 					% the calling function (wooper_main_loop) to crash:
 					error_logger:error_msg(	"WOOPER error for PID ~w: "
 						"request method ~s:~s/~B not found, "
-						"parameters were ~w~n.",
+						"parameters were ~w.~n",
 						[ self(), ?MODULE, MethodAtom,
 							length(Parameters)+1, Parameters] ),
 					
@@ -1152,7 +1420,139 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 		% No other term can be returned.
 		
 	end.	
+
+
+
+
+% Allows to call synchronously from the code of a given class its actual 
+% overriden methods (requests, here), including from child classes.
+%
+% @example If in a start method of an EngineVehicle class one wants to call the 
+% (possibly overriden by, say, a class Car) startEngine method, then 
+% executeRequest should be used: 'MyVehicle ! startEngine' would not be 
+% synchronous, startEngine() would call EngineVehicle:startEngine instead of
+% Car:startEngine when called from a Car instance, and of course EngineVehicle
+% should know nothing from its Car child class.
+% 
+% If no failure occurs, returns {wooper_result,NewState,Result}.
+%
+% @note Stripped-down version of wooper_main_loop.
+%  
+executeRequest(State,RequestAtom,ArgumentList) when is_list(ArgumentList) -> 
+
+	%io:format("executeRequest/3 with list: executing ~s(~w) from ~s.~n",
+	%	[ RequestAtom, ArgumentList, ?MODULE ]), 	
+			
+	% Auto-calling method:		
+	SenderAwareState = State#state_holder{request_sender=self()},
 	
+	% No special checking performed in release mode:
+	{ NewState, Result } = wooper_execute_method( RequestAtom,
+		SenderAwareState, ArgumentList ), 
+		
+	% Returns:			
+	{wooper_result,	NewState#state_holder{request_sender=undefined}, Result};
+	
+	
+	
+% Here third parameter is not a list:
+executeRequest(State,RequestAtom,StandaloneArgument) -> 
+
+	%io:format("executeRequest/3 with standalone argument: "
+	%	"executing ~s(~w) from ~s.~n", 
+	%	[ RequestAtom, StandaloneArgument, ?MODULE ]),
+			
+	% Auto-calling method:		
+	SenderAwareState = State#state_holder{request_sender=self()},
+	
+	% No special checking performed in release mode:
+	{ NewState, Result } = wooper_execute_method( RequestAtom,
+		SenderAwareState, [StandaloneArgument] ), 
+
+	% Returns:			
+	{wooper_result,	NewState#state_holder{request_sender=undefined}, Result}.
+
+
+
+% Parameter-less request.
+executeRequest(State,RequestAtom) -> 
+
+	%io:format("executeRequest/2: executing ~s() from ~s.~n", 
+	%	[ RequestAtom , ?MODULE ]),
+			
+	% Auto-calling method:		
+	SenderAwareState = State#state_holder{request_sender=self()},
+	
+	% Correction checking by pattern-matching:
+	{ NewState, Result } = wooper_execute_method( RequestAtom,
+		SenderAwareState, [] ), 
+
+	% Returns:			
+	{wooper_result,	NewState#state_holder{request_sender=undefined}, Result}.
+
+
+		
+% Allows to call synchronously from the code of a given class its actual 
+% overriden methods (oneways, here), including from child classes.
+%
+% @example If in a start method of a EngineVehicle class one wants to call the 
+% (possibly overriden by, say, a class Car) startEngine method, then 
+% executeOneway should be used: 'MyVehicle ! startEngine' would not be 
+% synchronous, startEngine() would call EngineVehicle:startEngine instead of
+% Car:startEngine when called from a Car instance, and of course EngineVehicle
+% should know nothing from its Car child class.
+% 
+% If no failure occurs, returns {wooper_result,NewState}.
+%
+% @note Stripped-down version of wooper_main_loop.
+%  
+executeOneway(State,OnewayAtom,ArgumentList) when is_list(ArgumentList) -> 
+
+	%io:format("executeOneway/3 with list: executing ~s(~w) from ~s.~n",
+	%	[ OnewayAtom, ArgumentList, ?MODULE ]), 	
+			
+	% No request_sender to change with oneways.
+	
+	% Less checking performed in release mode:
+	{ NewState, wooper_method_returns_void } = wooper_execute_method(
+		OnewayAtom,	State, ArgumentList ), 
+	
+	% Returns:	
+	{wooper_result,NewState};
+
+	
+% Here third parameter is not a list:
+executeOneway(State,OnewayAtom,StandaloneArgument) -> 
+
+	%io:format("executeOneway/3 with standalone argument: "
+	%	"executing ~s(~w) from ~s.~n", 
+	%	[ OnewayAtom, StandaloneArgument, ?MODULE ]),
+			
+	% No request_sender to change with oneways.
+	
+	% Less checking performed in release mode:
+	{ NewState, wooper_method_returns_void } = wooper_execute_method(
+		OnewayAtom,	State, [StandaloneArgument] ), 
+
+	% Returns:			
+	{wooper_result,NewState}.
+
+
+% Parameter-less oneway.
+executeOneway(State,OnewayAtom) -> 
+
+	%io:format("executeOneway/2: executing ~s() from ~s.~n", 
+	%	[ OnewayAtom, ?MODULE ]),
+			
+	% No request_sender to change with oneways.
+	
+	% Less checking performed in release mode:
+	{ NewState, wooper_method_returns_void } = wooper_execute_method(
+		OnewayAtom,	State, [] ), 
+
+	% Returns:			
+	{wooper_result,NewState}.
+		
 		
 -endif.
 
