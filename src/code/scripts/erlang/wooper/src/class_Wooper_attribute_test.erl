@@ -11,7 +11,8 @@
 -define(wooper_construct_parameters,).
 
 % Life-cycle related exported operators:
--define(wooper_construct_export,new/0,new_link/0,construct/1).
+-define(wooper_construct_export,new/0,new_link/0,
+	synchronous_new/0,synchronous_new_link/0,construct/1).
 
 % Method declarations.
 -define(wooper_method_export,test/1).
