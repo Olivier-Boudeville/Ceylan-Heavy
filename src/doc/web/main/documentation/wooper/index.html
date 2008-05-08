@@ -554,13 +554,11 @@ If the method execution succeeded, and if it is a request (not a oneway), <code>
 		</p>
 	</li>
 
-	<li><b>wooper_method_faulty_return</b>, i.e. <code>{wooper_method_faulty_return, InstancePID, Module, MethodName, MethodArity, ListOfActualParameters, ActualReturn}</code>: for example <code>{wooper_method_faulty_return, &lt;0.30.0&gt;, class_Cat, myFaultyMethod, 1, [], [{{state_holder,..]}</code>. This error occurs when other errors did not match (catch-all). The main reason for its happening is when debug mode is set and when a method implementation did not respect the expected method return convention (neither <code>wooper_return_state_result</code> nor
-<code>wooper_return_state_only</code> used). It means the method is not implemented correctly (it has a bug)</li>
+	<li><b>wooper_method_faulty_return</b>, i.e. <code>{wooper_method_faulty_return, InstancePID, Module, MethodName, MethodArity, ListOfActualParameters, ActualReturn}</code>: for example <code>{wooper_method_faulty_return, &lt;0.30.0&gt;, class_Cat, myFaultyMethod, 1, [], [{{state_holder,..]}</code>.
 
 		<p>This error occurs when other errors did not match (catch-all). The main reason for its happening is when debug mode is set and when a method implementation did not respect the expected method return convention (neither <code>wooper_return_state_result</code> nor
 <code>wooper_return_state_only</code> used). It means the method is not implemented correctly (it has a bug). This is a server-side failure, thus the instance process logs that error, sends an error term to the caller (if and only if it is a request), and then exits with the same error term
 		</p>
-
 	</li>
 	
 </ul>
@@ -1691,7 +1689,7 @@ svn copy https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/code
   <center>
     [<a href="#_top_">Top</a>]<br>
     <br>
-    <em>Last update: Friday, April 18, 2008</em>
+    <em>Last update: Thursday, May 8, 2008</em>
   </center>
 </body>
 </html>
