@@ -887,8 +887,8 @@ wooper_lookupMethod(State,MethodAtom,Arity) ->
 % If it does not fail but returns an unexpected result (i.e. not a tuple 
 % beginning with the atom 'return'), an error tuple beginning with the atom
 % 'wooper_method_faulty_return' is returned with an unchanged state.
-% If its execution succeeds, then {result,Result} is returned, with R being 
-% the actual result of the method call, with an updated state.
+% If its execution succeeds, then {wooper_result,Result} is returned, with 
+% Result being the actual result of the method call, with an updated state.
 % Finally, if the method does not return any result, the atom
 % 'wooper_method_returns_void' is returned, which allows a client that sent his
 % PID to be warned it is useless, as no answer should be expected.
@@ -1247,7 +1247,11 @@ executeOneway(State,OnewayAtom) ->
 
 
 
+
+
 -else.
+
+
 
 
 
