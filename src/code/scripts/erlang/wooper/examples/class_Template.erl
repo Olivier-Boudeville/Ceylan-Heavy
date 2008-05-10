@@ -5,7 +5,7 @@
 -define(wooper_superclasses,[]).
 
 
-% Parameters taken by the constructor ('construct'). 
+% Parameters taken by the constructor ('construct'): 
 -define(wooper_construct_parameters,PARAM1,PARAM2).
 
 % Life-cycle related exported operators:
@@ -38,21 +38,20 @@ construct(State,?wooper_construct_parameters) ->
 delete(State) ->
 	% Class-specific actions:
 
-	% Then call the direct mother class counterparts:
-	DeletedActorState = class_XXX:delete(State),
-
-	% Allow chaining:
+	% Then call the direct mother class counterparts, and allow chaining:
 	DeletedActorState.
 
 
+%
+% (request)
 M1(State,ARG1) ->
-
+	...
 	?wooper_return_state_result( A_STATE, A_RESULT ).
 
 
+%
+% (oneway)
 M2(State,ARG1,ARG2) ->
-
+	...
 	?wooper_return_state_only( A_STATE ).
-
-	
 
