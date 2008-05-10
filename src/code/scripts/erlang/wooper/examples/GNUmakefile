@@ -1,20 +1,6 @@
 TOP = ../..
 
 
-.PHONY: all
-
-
-all: \
-	class_Creature_test           \
-	class_Mammal_test             \
-	class_Reptile_test            \
-	class_ViviparousBeing_test    \
-	class_OvoviviparousBeing_test \
-	class_Cat_test                \
-	class_Platypus_test
-
-
-
 include $(TOP)/GNUmakerules.inc
 
 HELPER_MODULES = \
