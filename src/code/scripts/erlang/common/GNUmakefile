@@ -1,12 +1,15 @@
 TOP = ..
 
 
-.PHONY: all
-
-
-all: utils_test hashtable_test fsm_utils_test
-
-
+.PHONY:
 
 include $(TOP)/GNUmakerules.inc
+
+
+
+info-local:
+	@echo "BEAMS = $(BEAMS)"
+	@echo "TEST_TARGETS = $(TEST_TARGETS)"
+	
+
 
