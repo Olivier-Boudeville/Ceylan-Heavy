@@ -1,4 +1,4 @@
-include $(TOP)/GNUmakevars.inc
+include $(CEYLAN_ERLANG_TOP)/GNUmakevars.inc
 
 
 .PHONY: all all-recurse launch test test-recurse build-tests                  \
@@ -52,7 +52,7 @@ TEST_TARGETS = $(patsubst %.erl,%,$(TESTS))
 all: all-recurse $(BEAMS)
 
 all-recurse:
-	@echo "   Building all in "`basename $(PWD)`
+	@echo "   Building all in "$(PWD) #`basename $(PWD)`
 	@for m in $(MODULES_DIRS); do ( cd $$m; $(MAKE) -s all ); done
 
 
@@ -215,7 +215,7 @@ clean: clean-erlang clean-database clean-subdirs clean-dot clean-log \
 
 
 clean-erlang:
-	@echo "     Cleaning all in "`basename $(PWD)`
+	@echo "     Cleaning all in "$(PWD) #`basename $(PWD)`
 	-@rm -f *.beam *.jam erl_crash.dump
 
 
