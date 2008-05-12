@@ -1,4 +1,4 @@
-TOP = ..
+CEYLAN_ERLANG_TOP = ..
 
 
 .PHONY: all release-wooper release-wooper-zip release-wooper-bz2   \
@@ -38,5 +38,5 @@ clean-wooper-archive:
 	-@/bin/rm -f wooper-*.tar.bz2 wooper-*.zip
 	
 	
-include $(TOP)/GNUmakerules.inc
+include $(CEYLAN_ERLANG_TOP)/GNUmakerules.inc
 

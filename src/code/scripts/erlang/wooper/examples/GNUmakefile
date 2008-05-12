@@ -1,12 +1,12 @@
-TOP = ../..
+CEYLAN_ERLANG_TOP = ../..
 
 
-include $(TOP)/GNUmakerules.inc
+include $(CEYLAN_ERLANG_TOP)/GNUmakerules.inc
 
 HELPER_MODULES = \
-	$(COMMON)/utils.beam                    \
-	$(COMMON)/hashtable.beam                \
-	$(WOOPER_SRC)/wooper_class_manager.beam
+	$(COMMON_BEAM)/utils.beam                    \
+	$(COMMON_BEAM)/hashtable.beam                \
+	$(WOOPER_BEAM)/wooper_class_manager.beam
 
 
 class_Creature_test: class_Creature.beam $(HELPER_MODULES)

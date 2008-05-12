@@ -1,16 +1,16 @@
-TOP = ../..
+CEYLAN_ERLANG_TOP = ../..
 
 
 
-include $(TOP)/GNUmakerules.inc
+include $(CEYLAN_ERLANG_TOP)/GNUmakerules.inc
 
 
 # Note: utils and hashtable will be recompiled in place (here) if not already
 # available in their expected directory.
 HELPER_MODULES = \
-	$(COMMON)/utils.beam                    \
-	$(COMMON)/hashtable.beam                \
-	$(WOOPER_SRC)/wooper_class_manager.beam
+	$(COMMON_BEAM)/utils.beam                    \
+	$(COMMON_BEAM)/hashtable.beam                \
+	$(WOOPER_BEAM)/wooper_class_manager.beam
 
 
 wooper_class_manager_test: \
