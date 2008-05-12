@@ -3,6 +3,10 @@ TOP = .
 
 MODULES_DIRS = common wooper core
 
+# Defined here to avoid polluting other projects using the Ceylan ruleset:
+PROJECT_NAME := Ceylan-Erlang
+
+PROJECT_VERSION := 0.1
 
 
 .PHONY: all tests bz2 clean 
