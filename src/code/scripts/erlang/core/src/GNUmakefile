@@ -1,4 +1,4 @@
-TOP = ../..
+CEYLAN_ERLANG_TOP = ../..
 
 # Avoid declaring *_test targets as PHONY, otherwise they will not be executed
 # when appropriate.
@@ -11,7 +11,7 @@ MODULES_DIRS =
 	
 
 
-include $(TOP)/GNUmakerules.inc
+include $(CEYLAN_ERLANG_TOP)/GNUmakerules.inc
 
 
 clean: clean-plotsim

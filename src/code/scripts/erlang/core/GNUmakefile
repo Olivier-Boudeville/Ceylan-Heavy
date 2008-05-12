@@ -1,6 +1,6 @@
-TOP = ..
+CEYLAN_ERLANG_TOP = ..
 
 MODULES_DIRS = doc src
 
-include $(TOP)/GNUmakerules.inc
+include $(CEYLAN_ERLANG_TOP)/GNUmakerules.inc
 
