@@ -21,14 +21,16 @@ Unless --sn or --ln is specified, default is to use a long node name, '${DEFAULT
 
 ERL=/usr/bin/erl 
 
-CEYLAN_ERLANG=`dirname $0`/..
+CEYLAN_ERLANG=`dirname $0`/../..
 #echo "CEYLAN_ERLANG = ${CEYLAN_ERLANG}"
 
 
-WOOPER=${CEYLAN_ERLANG}/wooper
+COMMON_BEAM=${CEYLAN_ERLANG}/common/src
+WOOPER_BEAM=${CEYLAN_ERLANG}/wooper/src
+CORE_BEAM=${CEYLAN_ERLANG}/core/src
 
 # Adds the specified directories to the end of the code path:
-CODE_DIRS=". ${CEYLAN_ERLANG}/common ${WOOPER}/src"
+CODE_DIRS=". ${COMMON_BEAM} ${WOOPER_BEAM} ${CORE_BEAM}"
 
 
 # If logs are redirected to file:
