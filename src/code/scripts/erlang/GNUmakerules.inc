@@ -107,7 +107,7 @@ class_%.beam: class_%.erl
 
 %_batch_test: %.beam %_batch_test.beam
 	@echo "     Executing non-interactively test function $(STARTUP_FUNCTION) in module $@"
-	$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT)	-run $@ $(STARTUP_FUNCTION)
+	@$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT)	-run $@ $(STARTUP_FUNCTION)
 
 
 
@@ -117,35 +117,35 @@ class_%.beam: class_%.erl
 # can be specified.
 %_integration_run: %_integration_test.beam %_integration_dependencies
 	@echo "     Running integration test $@ from $^ with $(ERL_PARAMETRIZED_LAUNCHER)"
-	@$(ERL_PARAMETRIZED_LAUNCHER) --eval `echo $@ | sed 's|_run|_test:run()|1'`
+	@$(ERL_PARAMETRIZED_LAUNCHER) --eval `echo $@ | sed 's|_run|_test:run()|1'` $(CMD_LINE_OPT)
 	
 
 # class_TimerManager_run -> class_TimeManager_test:run()
 	
 %_run: %_test %_test_dependencies
 	@echo "     Running unitary test $@ (first form) from $^, with $(ERL_PARAMETRIZED_LAUNCHER)"
-	@$(ERL_PARAMETRIZED_LAUNCHER) --eval `echo $@ | sed 's|_run|_test:run()|1'`
+	@$(ERL_PARAMETRIZED_LAUNCHER) --eval `echo $@ | sed 's|_run|_test:run()|1'` $(CMD_LINE_OPT)
 
 %_run: %_test %.beam 
 	@echo "     Running unitary test $@ (second form) from $^ with $(ERL_PARAMETRIZED_LAUNCHER)"
-	@$(ERL_PARAMETRIZED_LAUNCHER) --eval `echo $@ | sed 's|_run|_test:run()|1'`
+	@$(ERL_PARAMETRIZED_LAUNCHER) --eval `echo $@ | sed 's|_run|_test:run()|1'` $(CMD_LINE_OPT)
 		
 %_run: %_test
 	@echo "     Running unitary test $@ (third form) from $^ with $(ERL_PARAMETRIZED_LAUNCHER)"
-	@$(ERL_PARAMETRIZED_LAUNCHER) --eval `echo $@ | sed 's|_run|_test:run()|1'`
+	@$(ERL_PARAMETRIZED_LAUNCHER) --eval `echo $@ | sed 's|_run|_test:run()|1'` $(CMD_LINE_OPT)
 		
 		
 %_run: %_sim.beam %.beam %_run_dependencies
 	@echo "     Running simulation $@ (two prerequesites) with $(ERL_PARAMETRIZED_LAUNCHER)" 
-	@$(ERL_PARAMETRIZED_LAUNCHER) --eval `echo $@ | sed 's|_run|_sim:run()|1'`
+	@$(ERL_PARAMETRIZED_LAUNCHER) --eval `echo $@ | sed 's|_run|_sim:run()|1'` $(CMD_LINE_OPT)
 
 %_run: %_sim.beam %_run_dependencies
 	@echo "     Running simulation $@ (one prerequesite) with $(ERL_PARAMETRIZED_LAUNCHER)" 
-	@$(ERL_PARAMETRIZED_LAUNCHER) --eval `echo $@ | sed 's|_run|_sim:run()|1'`
+	@$(ERL_PARAMETRIZED_LAUNCHER) --eval `echo $@ | sed 's|_run|_sim:run()|1'` $(CMD_LINE_OPT)
 	
 %_run: %_sim.beam %.beam
 	@echo "     Running simulation $@ (two prerequesites)  with $(ERL_PARAMETRIZED_LAUNCHER)" 
-	@$(ERL_PARAMETRIZED_LAUNCHER) --eval `echo $@ | sed 's|_run|_sim:run()|1'`
+	@$(ERL_PARAMETRIZED_LAUNCHER) --eval `echo $@ | sed 's|_run|_sim:run()|1'` $(CMD_LINE_OPT)
 
 
 test: all test-recurse
@@ -162,7 +162,7 @@ build-tests: $(BEAMS)
 
 launch: Emakefile
 	@echo "     Launching interpreter with default Ceylan settings"
-	@${ERL_PARAMETRIZED_LAUNCHER} --ln test_shell
+	@${ERL_PARAMETRIZED_LAUNCHER} --ln test_shell $(CMD_LINE_OPT)
 
 
 # Allows for example 'make:files([class_BasicMeter]).' or 'make:all().':

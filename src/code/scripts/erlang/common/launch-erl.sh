@@ -36,6 +36,7 @@ DEFAULT_LOG_FILE="Ceylan-Simulation.log"
 
 be_verbose=1
 
+
 while [ $# -gt 0 ] ; do
 	token_eaten=1
 	
@@ -86,9 +87,15 @@ while [ $# -gt 0 ] ; do
 		token_eaten=0
 	fi
 
+	# Avoids next warning:
+	if [ "$1" = "-no-supervisor" ] ; then
+		VERBATIM_OPT="${VERBATIM_OPT} $1"
+		token_eaten=0
+	fi
+
 	if [ $token_eaten -eq 1 ] ; then
-		echo "Error, unknown argument ($1)." 1>&2
-		exit 4
+		echo "Warning, unknown argument ($1), adding it 'as is' to command-line." 1>&2
+		VERBATIM_OPT="${VERBATIM_OPT} $1"
 	fi	
 	
 	shift
@@ -102,10 +109,12 @@ LOG_OPT="+W w"
 CODE_OPT="-pz ${CODE_DIRS} -smp auto"
 
 # By default up to 1,2 million processes could be created on one node:
-#MAX_PROCESS_COUNT=10000
-MAX_PROCESS_COUNT=120000000
+# (reduced, as even without having spawned these processes, the memory 
+# footprint can increase quite a lot) 
+MAX_PROCESS_COUNT=120000
+#MAX_PROCESS_COUNT=120000000
 
-COMMAND="${ERL} ${LOG_OPT} ${CODE_OPT} +P ${MAX_PROCESS_COUNT}"
+COMMAND="${ERL} ${LOG_OPT} ${CODE_OPT} +P ${MAX_PROCESS_COUNT} ${VERBATIM_OPT}"
 
 if [ -z "${COOKIE}" ] ; then
 	COOKIE=${DEFAULT_COOKIE}
