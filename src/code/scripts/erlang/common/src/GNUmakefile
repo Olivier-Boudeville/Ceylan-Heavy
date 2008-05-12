@@ -1,4 +1,4 @@
-CEYLAN_ERLANG_TOP = ..
+CEYLAN_ERLANG_TOP = ../..
 
 
 .PHONY:
