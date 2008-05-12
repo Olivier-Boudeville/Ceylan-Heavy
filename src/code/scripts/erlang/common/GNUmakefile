@@ -1,9 +1,9 @@
-TOP = ..
+CEYLAN_ERLANG_TOP = ..
 
 
 .PHONY:
 
-include $(TOP)/GNUmakerules.inc
+include $(CEYLAN_ERLANG_TOP)/GNUmakerules.inc
 
 
 
