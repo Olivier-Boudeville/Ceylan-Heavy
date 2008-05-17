@@ -7,7 +7,8 @@
 %  - Test_probe.plotsim, with the probe data
 % See class_Probe_test.erl
 % See http://www.gnuplot.info/docs/gnuplot.html for graph generation.
-% Needs gnuplot version 4.2 or higher, and uses eog (eye of gnome).
+% Needs gnuplot version 4.2 or higher, and an image viewer, eog (eye of gnome).
+% See the utils module.
 -module(class_Probe).
 
 
@@ -24,7 +25,8 @@
 
 
 % Method declarations.
--define(wooper_method_export,setData/3,generateReport/1,display/1,toString/1).
+-define(wooper_method_export,setData/3,setKeyOptions/2,
+	generateReport/1,generateReport/2).
 
 
 
@@ -59,13 +61,16 @@ construct(State,?wooper_construct_parameters) ->
 	
 	% data_table is not a hashtable because gnuplot wants the rows to be
 	% ordered: 
+	% (using default settings for graph rendering)
 	StartState = ?setAttributes( TraceState, [ {curve_count,size(CurveNames)},
 		{data_table,[]}, {trace_categorization,?TraceEmitterCategorization},
-		{data_filename,utils:convert_to_filename(Name ++ ".plotsim")} ] ),
+		{data_filename,utils:convert_to_filename(Name ++ ".plotsim")},
+		{curve_names,CurveNames}, {title,Title}, 
+		{key_options,"bmargin center horizontal"},
+		{xlabel,XLabel}, {ylabel,YLabel} ] ),
 
-	?send_trace([ TraceState, "Creating a new probe." ]),
+	?send_trace([ TraceState, "New probe created." ]),
 		
-	generate_command_file(Name,CurveNames,Title,XLabel,YLabel,StartState),
 	StartState.	
 
 	
@@ -73,6 +78,7 @@ construct(State,?wooper_construct_parameters) ->
 % Unsubscribing for TimeManager supposed already done, thanks to a termination
 % message. 
 delete(State) ->
+
 	% Class-specific actions:
 	?trace([ "Deleting probe." ]),
 	% erlang:unlink() not used. 
@@ -97,41 +103,58 @@ setData(State,Tick,Samples) ->
 	ExpectedCount = size(Samples), 	
 	?wooper_return_state_only( ?appendToAttribute( State, data_table,
 		{Tick,Samples} ) ).
-	
 
-% Generates a report for current state of this probe.
+	
+% Sets the key (legend) settings.
+% (oneway)
+setKeyOptions(State,NewOptions) ->
+	?wooper_return_state_only( ?setAttribute(State,key_options,NewOptions) ).
+
+
+% Generates a report for current state of this probe, and displays the result
+% to the user.
 % (request).	
 generateReport(State) ->
+	generateReport(State,true).
+
+
+% Generates a report for current state of this probe.
+%  - DisplayWanted: boolean telling whether the generated report will be
+% displayed to the user (if true)
+% (request).	
+generateReport(State,DisplayWanted) ->
 	?info([ "Generation of probe report requested." ]),
-		
-	{ok,File} = file:open( ?getAttr(data_filename), write ),
-	write_rows( File, lists:reverse( ?getAttr(data_table) ) ),
-	file:close(File),
-	
+
+	generate_command_file(State),
+	generate_data_file(State),
+
 	Name = ?getAttr(name), 
 	
-	% Gnuplot might issue non-serious warnings:
-	os:cmd( "gnuplot " ++ get_command_filename(Name) ),
+	% Gnuplot might issue non-serious warnings. Generates a PNG:
+	case os:cmd( "gnuplot " ++ get_command_filename( Name ) ) of
 	
-	% Viewer is 'eye of gnome' here: 
-	os:cmd( "eog "     ++ get_report_filename(Name) ++ " &" ),
+		[] ->
+			ok;
+			
+		Message ->
+			?warning([ io_lib:format( 
+				"Report generation resulted in following output: ~s.",
+				[Message] ) ]) 	
+
+	end,
+		
+	case DisplayWanted of 
 	
+		true ->	
+			utils:display_png_file( get_report_filename(Name) );
+	
+		false ->
+			ok
+	end,	
 	?wooper_return_state_result(State,report_generated).
 
 
 % Generic interface.	
-	
-% Displays the state in the console.
-display(State) ->
-	wooper_display_instance(State),
-	?wooper_return_state_only( State ).
-
-
-% Returns a textual description of this manager.
-toString(State) ->
-	?wooper_return_state_result( State, wooper_state_toString(State) ).
-	
-	
 		
 	
 % 'Static' methods (module functions):
@@ -142,8 +165,10 @@ toString(State) ->
 	
 	
 % Generates the appropriate gnuplot command file.		
-generate_command_file(Name,CurveNames,Title,XLabel,YLabel,State) ->
-	Filename = get_command_filename(Name),
+generate_command_file(State) ->
+	Name = ?getAttr(name),
+	Filename = get_command_filename( Name ),
+	
 	?trace([ io_lib:format( "Generating command file ~s.~n", [Filename] ) ]),
 	{ok,File} = file:open( Filename, write ),
 
@@ -152,23 +177,29 @@ generate_command_file(Name,CurveNames,Title,XLabel,YLabel,State) ->
 	io:format(File, "set xtic auto~n",     []),
 	io:format(File, "set ytic auto~n",	   []),
 	io:format(File, "set grid~n",		   []),
-	%io:format(File, "set key top left~n", []),
-	io:format(File, "set key bmargin center horizontal~n", []),
-	io:format(File, "set key box~n",		   []),
-	io:format(File, "set title \"~s\"~n",  [Title]),
-	io:format(File, "set xlabel \"~s\"~n", [XLabel]),
-	io:format(File, "set ylabel \"~s\"~n", [YLabel]),
+	io:format(File, "set key box ~s~n", 
+		[ ?getAttr(key_options) ] ),
+	io:format(File, "set title \"~s\"~n",  [ ?getAttr(title) ]),
+	io:format(File, "set xlabel \"~s\"~n", [ ?getAttr(xlabel) ]),
+	io:format(File, "set ylabel \"~s\"~n", [ ?getAttr(ylabel) ]),
 	% set terminal png *transparent* could be used as well:
-	io:format(File, "set terminal png font \"arial\" 8~n",  []),
-	io:format(File, "set output \"~s\"~n", [get_report_filename(Name)]),
+	io:format(File, "set terminal png~n",  []),
+	io:format(File, "set output \"~s\"~n", [ get_report_filename(Name) ]),
 	Prefix = io_lib:format( ", \"~s\"", [ ?getAttr(data_filename) ]),	
 
 	[_|CommandEnd] = make_using_command( ?getAttr(curve_count)+1,
-		Prefix,CurveNames),
+		Prefix, ?getAttr(curve_names) ),
 
 	io:format(File, "plot ~s~s~n", [ tl(Prefix),CommandEnd ]),
 	file:close(File).
-	
+
+
+% Generates the appropriate file containing probe data.		
+generate_data_file(State) ->
+	{ok,File} = file:open( ?getAttr(data_filename), write ),
+	write_rows( File, lists:reverse( ?getAttr(data_table) ) ),
+	file:close(File).
+
 	
 % Returns the gnuplot command filename.
 get_command_filename(Name) ->
