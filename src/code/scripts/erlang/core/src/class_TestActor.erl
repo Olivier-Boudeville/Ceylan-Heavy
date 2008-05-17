@@ -52,7 +52,7 @@ delete(State) ->
 	?info([ "Deleting test actor." ]),
 	% erlang:unlink() not used, as done manager-side. 
 
-	?debug([ "Actor deleted." ]),
+	?debug([ "Test actor deleted." ]),
 
 	% Then call the direct mother class counterparts and allow chaining:
 	class_Actor:delete(State).
