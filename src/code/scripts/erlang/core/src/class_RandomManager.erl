@@ -190,7 +190,7 @@ delete(State) ->
 % requests and never send messages spontaneously.
 act(State) ->
 
-	?info([ "Random manager acting (and doing nothing)." ]),
+	?trace([ "Random manager acting (and doing nothing)." ]),
 
 	% Random list requests may have been answered this tick:
 	?wooper_return_state_only( class_Actor:manage_end_of_tick(State) ).
