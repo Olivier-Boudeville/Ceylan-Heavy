@@ -180,14 +180,8 @@ test_gaussian_random(RandomManagerPid,Mu,Sigma) ->
 
 	?test_info([ "Requesting the generation of gaussian probe report." ]),
 
-	MyGaussianProbe ! {generateReport,[],self()},
-	receive
-	
-		{wooper_result,report_generated} ->
-			?test_info([ "Report correctly generated." ])	
-			
-	end,
-	
+	?generateReportForProbe(MyGaussianProbe),
+
 	MyGaussianProbe ! delete.
 
 
