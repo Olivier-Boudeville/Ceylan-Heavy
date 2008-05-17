@@ -20,7 +20,7 @@
 -define(wooper_method_export,send/10).
 
 % Static method declarations (to be directly called from module):
--export([create/1,getAggregator/0,remove/0]).
+-export([create/1,getAggregator/1,remove/0]).
 
 
 % Allows to define WOOPER base variables and methods for that class:
@@ -157,7 +157,9 @@ create(true) ->
 
 
 % Returns the Pid of the current trace aggregator.
-% Creates it, if it is not already existing.
+% Parameter is a boolean that tells whether the aggregator should be created
+% if not available (if true) or if this method should just return a failure
+% notification (if false).
 % Note: to avoid race conditions between concurrent calls to this static 
 % method (ex: due to trace emitter instances), a simulation might start with
 % a call to this method with a blocking wait until the aggregator pops up in
@@ -165,7 +167,12 @@ create(true) ->
 % Waits a bit before giving up: useful when client and aggregator processes are
 % launched almost simultaneously.
 % (static)
-getAggregator() ->
+getAggregator(CreateIfNotAvailable) ->
+	% Only dealing with registered managers (instead of using directly
+	% their PID) allows to be sure only one instance (singleton) is
+	% being used, to avoid the case of two managers being launched at
+	% the same time (the second will then terminate immediately).
+	
 	% If launching multiple trace emitters in a row, first emitter may 
 	% trigger the launch of trace aggregator, but second emitter might do the
 	% same if the aggregator is still being initialized: 
@@ -176,28 +183,37 @@ getAggregator() ->
 			AggregatorPid;
 		
 		{registration_waiting_timeout,?trace_aggregator_name} ->
-			% Not available, launch it synchronously (with default settings):
-			create(true),
-			% Only dealing with registered managers (instead of using directly
-			% their PID) allows to be sure only one instance (singleton) is
-			% being used, to avoid the case of two managers being launched at
-			% the same time (the second will then terminate immediately).
-			case utils:wait_for_global_registration_of( ?trace_aggregator_name )
-					of
-	
-				AggregatorPid when is_pid(AggregatorPid) ->
-					AggregatorPid;	
-
-				{registration_waiting_timeout,?trace_aggregator_name} ->
-					error_logger:error_msg( 
-						"class_TraceAggregator:getAggregator "
-						"unable to launch successfully the aggregator.~n" ),
-					trace_aggregator_launch_failed
-						
-			end		
+		
+			case CreateIfNotAvailable of 
 			
-	end.		
+				true ->
+				
+					% Not available, launch it synchronously (with default
+					% settings):
+					create(true),
+					case utils:wait_for_global_registration_of(
+							?trace_aggregator_name ) of
 	
+						LaunchedAggregatorPid 
+								when is_pid(LaunchedAggregatorPid) ->
+							LaunchedAggregatorPid;	
+
+						{registration_waiting_timeout,?trace_aggregator_name} ->
+							error_logger:error_msg( 
+								"class_TraceAggregator:getAggregator "
+								"unable to launch successfully "
+								"the aggregator.~n" ),
+						trace_aggregator_launch_failed
+						
+					end;
+					
+				false ->			
+					% Not available and not to be started:
+					trace_aggregator_not_found
+			
+			end
+	end.		
+			
 
 
 % Deletes the trace aggregator.
