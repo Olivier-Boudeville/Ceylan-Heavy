@@ -1,7 +1,7 @@
 % Gathering of various convenient facilities.
 % See utils_test.erl for the corresponding test.
-
 -module(utils).
+
 
 % Creation date: July 1, 2007.
 % Author: Olivier Boudeville (olivier.boudeville@esperide.com).
@@ -11,7 +11,10 @@
 
 -export([get_timestamp/0,get_textual_timestamp/0,
 	convert_to_filename/1,speak/1,notify_user/1,notify_user/2,
-	get_image_file_gif/1,term_toString/1,wait_for_global_registration_of/1]).
+	generate_png_from_graph_file/2,generate_png_from_graph_file/3,
+	display_png_file/1,
+	get_image_file_png/1,get_image_file_gif/1,
+	term_toString/1,wait_for_global_registration_of/1]).
 
 
 -define(ResourceDir,"resources").
@@ -59,7 +62,37 @@ notify_user(Message,FormatList) ->
 	speak(ActualMessage).
 
 
+% Generates a PNG image file from specified graph file, that must respect the
+% dot (graphviz) syntax.
+%  - PNGFilename the filename of the PNG to generate
+%  - GraphFilename the filename corresponding to the source graph
+%  - HaltOnDotOutput tells whether the process should crash if dot outputs
+% a warning
+generate_png_from_graph_file(PNGFilename,GraphFilename,true) ->
+	[] = execute_dot(PNGFilename,GraphFilename);
+
+% Any output remains available to the caller.
+generate_png_from_graph_file(PNGFilename,GraphFilename,false) ->
+	execute_dot(PNGFilename,GraphFilename).
 	
+
+% By default do not crash if dot outputs some warnings.
+generate_png_from_graph_file(PNGFilename,GraphFilename) ->
+	generate_png_from_graph_file(PNGFilename,GraphFilename,false).
+
+
+% Displays (without blocing) to the user the specified PNG, using an external
+% viewer. 
+display_png_file(PNGFilename) ->
+	% Viewer is 'eye of gnome' here (output ignored): 
+	os:cmd( "eog " ++ PNGFilename ++ " &" ).
+	
+	
+% Returns the image path corresponding to the specified file.	
+get_image_file_png(Image) ->
+  filename:join([?ResourceDir, "images", Image ++ ".png"]).
+
+
 % Returns the image path corresponding to the specified file.	
 get_image_file_gif(Image) ->
   filename:join([?ResourceDir, "images", Image ++ ".gif"]).
@@ -98,3 +131,11 @@ wait_for_global_registration_of(Name,SecondsToWait) ->
 			
 	end.
 	
+
+
+% Helper functions.
+
+execute_dot(PNGFilename,GraphFilename) ->
+	% Dot might issue non-serious warnings:
+	os:cmd( "dot -o" ++ PNGFilename ++ " -Tpng " ++ GraphFilename ).
+
