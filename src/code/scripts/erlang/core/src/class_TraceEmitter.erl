@@ -57,8 +57,10 @@ construct(State,?wooper_construct_parameters) ->
 	%	"whose PID is ~w and whose categorization is ~s.~n", 
 	%	[ ?LogPrefix, TraceEmitterName, self(), ?TraceEmitterCategorization ] ),
 		
-	% Either launch it or retrieve it directly:	
-	AggregatorPid = class_TraceAggregator:getAggregator(),
+	% Retrieves the trace aggregator (false: do not launch it if not available,
+	% otherwise the creation of multiple emitters would result in a race
+	% condition that would lead to the creation of multiple aggregators:	
+	AggregatorPid = class_TraceAggregator:getAggregator(false),
 	?setAttributes( State, [ {name,TraceEmitterName}, 
 		{trace_categorization,?TraceEmitterCategorization},
 		{trace_aggregator_pid, AggregatorPid} ] ).
