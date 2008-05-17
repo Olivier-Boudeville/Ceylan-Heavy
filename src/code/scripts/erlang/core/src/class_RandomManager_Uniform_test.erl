@@ -150,14 +150,8 @@ test_uniform_random(RandomManagerPid,MaxValue) ->
 
 
 	?test_info([ "Requesting the generation of uniform probe report." ]),
-		
-	MyUniformProbe ! {generateReport,[],self()},
-	receive
-	
-		{wooper_result,report_generated} ->
-			?test_info([ "Report correctly generated." ])	
-			
-	end,
+
+	?generateReportForProbe(MyUniformProbe),
 	
 	MyUniformProbe ! delete.
 	
