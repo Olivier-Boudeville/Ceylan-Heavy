@@ -36,15 +36,12 @@ run() ->
 	MyProbe ! { setData, [6, {5,2,3 } ] },
 	MyProbe ! { setData, [7, {4,3,7 } ] },
 	
+	% Changing the default settings:
+	MyProbe ! { setKeyOptions, ["outside right"] },
+	
 	?test_info([ "Requesting the generation of probe report." ]),
 
-	MyProbe ! {generateReport,[],self()},
-	receive
-	
-		{wooper_result,report_generated} ->
-			?test_info([ "Report correctly generated." ])
-			
-	end,
+	?generateReportForProbe(MyProbe),
 	
 	MyProbe ! delete,
 
