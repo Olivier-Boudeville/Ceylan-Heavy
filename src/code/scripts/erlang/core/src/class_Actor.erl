@@ -379,11 +379,13 @@ get_textual_timings(State) ->
 % tick, hence the +1.
 %
 % The ActorMessage parameter must be understandable as a oneway call, i.e. must
-% be either like 'oneway_name' or '{oneway_name,ParameterList}'.
-% The associated method signature must be 'oneway_name(State,SenderPid)' or
-% 'oneway_name(State,ParameterList,SenderPid)'
+% be either like 'oneway_name', '{oneway_name,SingleParameter}' or
+% '{oneway_name,[Parameter1,Parameter2,..]}'.
+% The associated method signature must be 'oneway_name(State,SenderPid)',
+% 'oneway_name(State,SingleParameter,SenderPid)' or
+% 'oneway_name(State,[Parameter1,Parameter2,..],SenderPid)'
 %
-% @return an updated state, appropriate to wait for this call acknowledgement.
+% Returns an updated state, appropriate to wait for this call acknowledgement.
 % (helper function)
 send_actor_message(ActorPid,ActorMessage,State) ->
 	ActorPid ! {actorMessage,
