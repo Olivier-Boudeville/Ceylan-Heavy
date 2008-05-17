@@ -28,7 +28,7 @@ prepare-wooper: clean clean-wooper-release
 	@cd .. && /bin/cp -f $(WOOPER_DOC_DIR)/index.html \
 		$(WOOPER_RELEASE_BASE)/wooper/doc/wooper.html
 
-clean: clean-subdirs clean-wooper-archive
+clean: clean-wooper-archive
 		
 clean-wooper-release:
 	@echo "  Cleaning release archive for Wooper"
