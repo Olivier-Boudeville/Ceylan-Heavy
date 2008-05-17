@@ -37,6 +37,10 @@ public class CeylanParser extends LogFileParser
     private final static SimpleDateFormat DatePattern = new SimpleDateFormat(
         "dd/MM/yyyy HH:mm:ss" ) ;
 
+    /** Pattern to match the beginning of a trace, like '<0.31.0>|':  */
+    private final static Pattern TraceBeginPattern =
+		Pattern.compile("^<\\d++\\.\\d++\\.\\d++>\\|.*$");
+
 
     /** 
      * Returns the name of this parser
@@ -65,68 +69,75 @@ public class CeylanParser extends LogFileParser
     protected void parseLine(String line) throws Exception 
 	{
 	
-        // If end of file, records last entry if necessary, and exits
-        if ( line == null || line.length() == 0 ) 
+        // If end of file, records last entry if necessary, and exits:
+        if (line == null) 
 		{
-		
             if (entry != null) 
 			{
                 addEntry(entry) ;
             }
-			
-            return;
+            return ;
         }
 
+        Matcher matcher = TraceBeginPattern.matcher(line) ;
+		
+        if ( matcher.matches() ) 
+		{
+		
+			// We are at the beginning of a trace.
+	
+			/* '|' is the field separator: */
+            String[] fields = line.split( "\\|" ) ;
 
-		/* '|' is the field separator: */
-		String[] fields = line.split( "\\|" ) ;
+            if (entry != null)
+			{ 
+				// Records previous found entry if exists:
+                addEntry(entry) ;
+            }
 
-        if (entry != null)
-		{ 
-			// record previous found entry if exists
-			addEntry(entry) ;
-		}
-
-		entry = createNewEntry() ;
+			entry = createNewEntry() ;
 			
-		/*
-		 * field #0: technical identifier   -> in entry Thread
-		 * field #1: name of the emitter    -> added to emitter categorization
-		 * field #2: emitter categorization -> in entry Emitter
-		 * field #3: simulation time        -> in entry Date
-		 * field #4: user time              -> stored in message
-		 * field #5: emitter location       -> stored in message
-		 * field #6: message categorization -> stored in message
-		 * field #7: priority               -> in entry Level
-		 * field #8: message                -> in entry Message
-		 * prefixed by: 
-		 * [message categorization][user time][location]
-		 *
-		 */
+			/*
+			 * field #0: technical identifier   -> in entry Thread
+			 * field #1: name of the emitter    -> added to emitter
+			 * categorization
+			 * field #2: emitter categorization -> in entry Emitter
+			 * field #3: simulation time        -> in entry Date
+			 * field #4: user time              -> stored in message
+			 * field #5: emitter location       -> stored in message
+			 * field #6: message categorization -> stored in message
+			 * field #7: priority               -> in entry Level
+			 * field #8: message                -> in entry Message
+			 * prefixed by: 
+			 * [message categorization][user time][location]
+			 *
+			 */
 		 			
-		entry.setThread( fields[0].trim() ) ;
-		entry.setEmitter( fields[2].trim() + "." + fields[1].trim() ) ;	
+			entry.setThread( fields[0].trim() ) ;
+			entry.setEmitter( fields[2].trim() + "." + fields[1].trim() ) ;		
+			entry.setDate( fields[3].trim() );		
+			entry.setLevel( fields[7].trim() ) ;
 		
-		/* Date here is user time, not simulation one: */		
-		entry.setDate( fields[4].trim() );		
-		entry.setLevel( fields[7].trim() ) ;
-		
-		/*
-		 * Inserts spaces to allow line-breaking, and end-of-line to separate
-		 * additional fields from actual message:
-		 *
-		 */	
-		entry.setMessage( "[" + fields[6].trim() + "] [" + fields[3].trim() 
+			/*
+			 * Inserts spaces to allow line-breaking, and end-of-line to
+			 * separate additional fields from actual message:
+			 *
+			 */	
+			entry.setMessage( "[" + fields[6].trim() + "] [" + fields[4].trim() 
 			+ "] [" + fields[5].trim() + "]\n" + fields[8].trim() ) ;
 
-		/*
-		 * Relative timestamp is also the simulation time here:
-		 * (simulation time used here)
-		 *
-		 */
-		entry.setExtraInfo( fields[3].trim() );	
+			// Relative timestamp is also the simulation time here:
+			entry.setExtraInfo( fields[3].trim() );	
 		
+      } 
+	  else if (entry != null) 
+	  {
+            // Appending this line to previous entry's text:
+            entry.setMessage( entry.getMessage() + "\n" + line ) ;
       }
+  
+	}
+	
 	  
 	  
     /**
