@@ -16,7 +16,7 @@
 	synchronous_new/2,synchronous_new_link/2,construct/3,delete/1).
 
 % Method declarations.
--define(wooper_method_export,setUniformValues/3,
+-define(wooper_method_export,setReadyListener/2,setUniformValues/3,
 	setExponentialValues/3,setPositiveIntegerExponentialValues/3,
 	setGaussianValues/3,setPositiveIntegerGaussianValues/3).
 
@@ -66,8 +66,8 @@ construct(State,?wooper_construct_parameters) ->
 	ActorState = class_Actor:construct(State,StochasticActorName),
 
 	% Then the class-specific actions:
-	StartingState = ?setAttribute( ActorState, trace_categorization,
-		?TraceEmitterCategorization ),
+	StartingState = ?setAttributes( ActorState, [ {ready_listener,none},
+		{trace_categorization,?TraceEmitterCategorization} ] ),
 
 	?send_trace([ StartingState, "Creating a new stochastic actor." ]),
 	
@@ -80,13 +80,9 @@ construct(State,?wooper_construct_parameters) ->
 	case utils:wait_for_global_registration_of( ?random_manager_name ) of
 
 		RandomManagerPid when is_pid(RandomManagerPid) ->
-		
 			?send_trace([ PreparedState, "RandomManager found." ]),
-	
-			?setAttribute( PreparedState, random_manager_pid, 
-				RandomManagerPid );
-					
-	
+			?setAttribute( PreparedState,random_manager_pid,RandomManagerPid );
+						
 		Error ->
 			?send_error([ PreparedState, io_lib:format( 
 				"Stochastic actor constructor failed: "
@@ -121,6 +117,23 @@ delete(State) ->
 
 % Management section of the actor.
 
+
+% Sets the ready listener for this stochastic actor. It will be told as soon
+% as this actor is ready.
+% (actor oneway)
+setReadyListener(State,ListenerPID) ->
+	none = ?getAttr(ready_listener),
+	NewState = case ?getAttr(initialization_status) of
+	
+		completed ->
+			class_Actor:send_actor_message( ListenerPID,
+				{ notifyReady, self() }, State );
+ 
+ 		_ ->
+			
+	
+	end.
+	
 
 % Called by the random manager, in answer to a getUniformValues call.
 % (actor oneway)
@@ -247,7 +260,7 @@ setPositiveIntegerGaussianValues( State, [RequestIdentifier,Values],
 % 'act' method not redefined here, expected to be in child classes.
 % First action of the 'act' method should be to request list refill,
 % so that initialization_status can progress to the 'completed' state. 
-% @see class_TestStochasticActor.erl 
+% See class_TestStochasticActor.erl 
 
 
 % Returns a new random value, as described in specified attribute, whose
@@ -266,33 +279,50 @@ setPositiveIntegerGaussianValues( State, [RequestIdentifier,Values],
 % Returns a pair made of an updated state and the popped random value:
 % {UpdatedState,RandomValue}.
 get_random_value_from(AttributeName,State) ->
+	
 	% There should be at least one element remaining, as refilled on purpose:
 	% (otherwise the set MinSize was not high enough)
-	{[H|T],RandomType,MinSize} = ?getAttr(AttributeName),
-	NewState = case length(T) of
 	
-		% Strict equality, not lower or equal: only one request per refill need.
-		MinSize ->
-			% Specifying attribute name allows to request multiple random series
-			% independently:
-			% (requesting 2*MinSize to limit the number of refills)
-			% Note that the minimum cache size and the size of a refill do 
-			% not have anything in common.
-			?debug([ io_lib:format( "get_random_value_from: "
-				"requesting a refill of ~w values for list ~w.", 
-				[ 2*MinSize, AttributeName ] ) ]),
+	% Was: '{[H|T],RandomType,MinSize} = ?getAttr(AttributeName),' but the
+	% interpretation of a badmatch resulting from an exhausted list was too
+	% painful, thus an explicit test is performed:
+	case ?getAttr(AttributeName) of
 			
-			request_refill_of_random_buffer( AttributeName,
-				RandomType, get_requested_count_for(MinSize), State );
+		{[H|T],RandomType,MinSize} ->
+			NewState = case length(T) of
+	
+				% Strict equality, not lower or equal: only one request per 
+				% refill need.
+				MinSize ->
+					% Specifying attribute name allows to request multiple
+					% random series independently:
+					% (requesting 2*MinSize to limit the number of refills)
+					% Note that the minimum cache size and the size of a 
+					% refill do not have anything in common.
+					?debug([ io_lib:format( "get_random_value_from: "
+						"requesting a refill of ~w values for list ~w.", 
+						[ 2*MinSize, AttributeName ] ) ]),
+			
+					% Returns an updated state:
+					request_refill_of_random_buffer( AttributeName,	RandomType,
+						get_requested_count_for(MinSize), State );
 		
-		_ ->	
-			% Still enough random values:
-			State
+				_ ->	
+					% Still enough random values:
+					State
 			
-	end,
-	% Pops the head and returns it:
-	{ ?setAttribute( NewState, AttributeName, {T,RandomType,MinSize} ), H }.
+			end,
+			% Pops the head and returns it:
+			{ ?setAttribute(NewState,AttributeName,{T,RandomType,MinSize}), H };
 	
+		{[],RandomType,MinSize} ->
+			?error([ io_lib:format( 
+				"get_random_value_from: random list ~s (type: ~w) exhausted, "
+				 "its minimal size (~B) should be increased.", 
+				 [AttributeName,RandomType,MinSize] ) ]),
+			exit(stochastic_actor_exhausted_random_list)
+			
+	end. 
 	
 
 		
