@@ -25,14 +25,6 @@ CEYLAN_ERLANG=`dirname $0`/../..
 #echo "CEYLAN_ERLANG = ${CEYLAN_ERLANG}"
 
 
-COMMON_BEAM=${CEYLAN_ERLANG}/common/src
-WOOPER_BEAM=${CEYLAN_ERLANG}/wooper/src
-CORE_BEAM=${CEYLAN_ERLANG}/core/src
-
-# Adds the specified directories to the end of the code path:
-CODE_DIRS=". ${COMMON_BEAM} ${WOOPER_BEAM} ${CORE_BEAM}"
-
-
 # If logs are redirected to file:
 DEFAULT_LOG_FILE="Ceylan-Simulation.log"
 
@@ -89,8 +81,14 @@ while [ $# -gt 0 ] ; do
 		token_eaten=0
 	fi
 
-	# Avoids next warning:
-	if [ "$1" = "-no-supervisor" ] ; then
+	if [ "$1" = "--beam-dir" ] ; then
+		shift
+		CODE_DIRS="${CODE_DIRS} $1"
+		token_eaten=0
+	fi
+
+	# Avoids warning of next test:
+	if [ "$1" = "--batch" ] ; then
 		VERBATIM_OPT="${VERBATIM_OPT} $1"
 		token_eaten=0
 	fi
