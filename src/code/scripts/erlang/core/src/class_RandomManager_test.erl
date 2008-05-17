@@ -218,7 +218,7 @@ test_uniform_random(RandomManagerPid,MaxValue) ->
 	Mean = compute_mean(FourthUniformTable),
 	 
 	?test_info([ io_lib:format( "Mean of this full actual "
-		"uniform distribution is ~w.", [ Mean ] ) ]).	
+		"uniform distribution is ~f.", [ Mean ] ) ]).	
 	
 	
 test_exponential_random(RandomManagerPid, Lambda) ->
@@ -254,7 +254,7 @@ test_exponential_random(RandomManagerPid, Lambda) ->
 	Mean = compute_mean(FourthExponentialTable),
 	 
 	?test_info([ io_lib:format( "Mean of this full actual "
-		"exponential distribution is ~w.", [ Mean ] ) ]).
+		"exponential distribution is ~f.", [ Mean ] ) ]).
 
 	
 test_gaussian_random(RandomManagerPid,Mu,Sigma) ->
@@ -290,7 +290,7 @@ test_gaussian_random(RandomManagerPid,Mu,Sigma) ->
 			RandomManagerPid),
 
 	ThirdGaussianTable =
-		draw_gaussian_values(5000-500,SecondGaussianTable,Mu,Sigma,
+		draw_gaussian_values( 5000-500,SecondGaussianTable,Mu,Sigma,
 			RandomManagerPid),
 		
 	FourthGaussianTable =
@@ -300,7 +300,7 @@ test_gaussian_random(RandomManagerPid,Mu,Sigma) ->
 	Mean = compute_mean(FourthGaussianTable),
 	 
 	?test_info([ io_lib:format( "Mean of this full actual "
-		"gaussian distribution is ~w.", [ Mean ] ) ]).
+		"gaussian distribution is ~f.", [ Mean ] ) ]).
 
 
 	
@@ -308,7 +308,6 @@ test_gaussian_random(RandomManagerPid,Mu,Sigma) ->
 run() ->
 
 	?test_start,
-
 	
 	?test_info([ "Creating a new TimeManager." ]),
 	class_TimeManager:create(),
