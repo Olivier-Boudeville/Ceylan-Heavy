@@ -13,12 +13,14 @@
 -endif.
 
 
-% Use the 'no-supervisor' option (ex: erl -no-supervisor) to disable the
+% Use the --batch option (ex: erl --batch) to disable the
 % use of the trace supervisor:
 -define(init_trace_supervisor,
 	% By default (with no specific option) a synchronous supervisor is wanted
 	% (wait for its launch to complete):
-	case init:get_argument('no-supervisor') of
+	
+	% One '-' already eaten:
+	case init:get_argument('-batch') of
 		{ok,_} ->
 			% Option specified to disable the supervisor:
 			no_trace_supervisor_wanted;
@@ -32,7 +34,7 @@
 
 
 -define(wait_for_any_trace_supervisor,
-	case init:get_argument('no-supervisor') of
+	case init:get_argument('-batch') of
 		{ok,_} ->
 			% No supervisor was launched.
 			% Let live the system for some time instead:
