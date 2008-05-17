@@ -33,6 +33,18 @@ run() ->
 		"and, if requested, a trace supervisor.~n" ),
 	?test_start,
 	
+	
+	case init:get_argument('-batch') of
+	
+		{ok,_} ->
+			io:format( ?Prefix "Running in batch mode.~n" );
+
+		_ ->
+			io:format( ?Prefix "Running in interactive mode.~n" )
+			
+	end,
+	
+	
 	io:format( ?Prefix "Creating a new TestTraceEmitter.~n" ),
 	
 	% Should not trigger the launch of another global aggregator:
