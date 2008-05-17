@@ -155,13 +155,7 @@ test_exponential_random(RandomManagerPid, Lambda) ->
 
 	?test_info([ "Requesting the generation of exponential probe report." ]),
 
-	MyExponentialProbe ! {generateReport,[],self()},
-	receive
-	
-		{wooper_result,report_generated} ->
-			?test_info([ "Report correctly generated." ])	
-		
-	end,
+	?generateReportForProbe(MyExponentialProbe),
 	
 	MyExponentialProbe ! delete.
 
