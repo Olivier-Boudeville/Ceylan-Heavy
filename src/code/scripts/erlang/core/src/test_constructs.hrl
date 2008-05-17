@@ -97,8 +97,6 @@ check_pending_wooper_results() ->
 			
 	end.
 	
-	
-
 
 
 -define(test_stop, 
@@ -109,6 +107,31 @@ check_pending_wooper_results() ->
 	testFinished()
 ).
 
+
+% Allows to defined whether the probe report should be displayed to the user
+% after generation.
+-define(generateReportForProbe(ProbePid),
+
+	% Avoids adding a bound variable:
+	case init:get_argument('-batch') of
+	
+		{ok,_} ->
+			% Boolean means 'display wanted':
+			ProbePid ! {generateReport,false,self()};
+
+		_ ->
+			ProbePid ! {generateReport,true,self()}
+			
+	end,
+				
+	receive
+	
+		{wooper_result,report_generated} ->
+			?test_info([ "Report correctly generated." ])
+			
+	end
+
+).
 
 
 % Handle a test failure.
