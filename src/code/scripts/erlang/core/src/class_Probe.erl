@@ -26,7 +26,7 @@
 
 % Method declarations.
 -define(wooper_method_export,setData/3,setKeyOptions/2,
-	generateReport/1,generateReport/2).
+	generateReport/1,generateReport/2,getPlotCommand/1).
 
 
 
@@ -36,7 +36,7 @@
 
 
 % Must be included before class_TraceEmitter header:
--define(TraceEmitterCategorization,"Probe").
+-define(TraceEmitterCategorization,"Probe.Generic").
 
 % Allows to use macros for trace sending:
 -include("class_TraceEmitter.hrl").
@@ -67,7 +67,9 @@ construct(State,?wooper_construct_parameters) ->
 		{data_filename,utils:convert_to_filename(Name ++ ".plotsim")},
 		{curve_names,CurveNames}, {title,Title}, 
 		{key_options,"bmargin center horizontal"},
-		{xlabel,XLabel}, {ylabel,YLabel} ] ),
+		{xlabel,XLabel}, {ylabel,YLabel},
+		{xtic,"auto"}, {ytic,"auto"} , {yrange,"[]"},
+		{plot_style,"linespoints"} ] ),
 
 	?send_trace([ TraceState, "New probe created." ]),
 		
@@ -154,6 +156,19 @@ generateReport(State,DisplayWanted) ->
 	?wooper_return_state_result(State,report_generated).
 
 
+% Returns the Gnuplot command appropriate to render that probe output.
+% Defines one plot curve per declared curve, with current plot settings. 
+% (const request)
+getPlotCommand(State) ->
+	Prefix = io_lib:format( ", \"~s\"", [ ?getAttr(data_filename) ] ),	
+
+	[_|CommandEnd] = make_plot_command( Prefix, State ),
+
+	% tl to remove prefix head (','):
+	?wooper_return_state_result( State, 
+		io_lib:format( "plot ~s~s~n", [ tl(Prefix),CommandEnd ] ) ).
+
+
 % Generic interface.	
 		
 	
@@ -174,23 +189,22 @@ generate_command_file(State) ->
 
 	io:format(File, "set autoscale~n",     []),
 	io:format(File, "unset log~n",         []),
-	io:format(File, "set xtic auto~n",     []),
-	io:format(File, "set ytic auto~n",	   []),
 	io:format(File, "set grid~n",		   []),
-	io:format(File, "set key box ~s~n", 
-		[ ?getAttr(key_options) ] ),
+	io:format(File, "set key box ~s~n",    [ ?getAttr(key_options) ] ),
+	io:format(File, "set xtic ~s~n",       [ ?getAttr(xtic) ] ),
+	io:format(File, "set ytic ~s~n",       [ ?getAttr(ytic) ] ),
+	io:format(File, "set yrange ~s~n",     [ ?getAttr(yrange) ] ),
 	io:format(File, "set title \"~s\"~n",  [ ?getAttr(title) ]),
 	io:format(File, "set xlabel \"~s\"~n", [ ?getAttr(xlabel) ]),
 	io:format(File, "set ylabel \"~s\"~n", [ ?getAttr(ylabel) ]),
 	% set terminal png *transparent* could be used as well:
 	io:format(File, "set terminal png~n",  []),
 	io:format(File, "set output \"~s\"~n", [ get_report_filename(Name) ]),
-	Prefix = io_lib:format( ", \"~s\"", [ ?getAttr(data_filename) ]),	
 
-	[_|CommandEnd] = make_using_command( ?getAttr(curve_count)+1,
-		Prefix, ?getAttr(curve_names) ),
-
-	io:format(File, "plot ~s~s~n", [ tl(Prefix),CommandEnd ]),
+	% getPlotCommand may be overloaded (const method):
+	% (returned state discarded)
+	{wooper_result,_State,PlotCommand} = executeRequest(State,getPlotCommand),
+	io:format(File, "~s", [ PlotCommand ]),
 	file:close(File).
 
 
@@ -234,17 +248,19 @@ make_data_row( [H|T], Acc ) ->
 
 
 % Generates the appropriate gnuplot 'using' command.
-make_using_command( Count, Prefix, CurveNames ) ->
-	make_using_command( [], Count, Prefix,
-		lists:reverse( tuple_to_list(CurveNames ))).
+make_plot_command( Prefix, State ) ->
+	Count = ?getAttr(curve_count)+1,
+	CurveNames = ?getAttr(curve_names),
+	make_plot_command( [], Count, Prefix, State,
+		lists:reverse( tuple_to_list( CurveNames ) ) ).
 	
 	
-make_using_command(Acc,1,_,_) ->
+make_plot_command(Acc,1,_Prefix,_State,_CurveNames) ->
 	Acc;
 
-make_using_command( Acc, Count, Prefix, [CurveName|OtherNames] ) ->
-	make_using_command( 
-		io_lib:format( "~s using 1:~B title \"~s\" with linespoints",
-			[ Prefix, Count, CurveName ] ) ++ Acc, 
-		Count-1, Prefix, OtherNames ).
+make_plot_command( Acc, Count, Prefix, State, [CurveName|OtherNames] ) ->
+	make_plot_command( 
+		io_lib:format( "~s using 1:~B title \"~s\" with ~s",
+			[ Prefix, Count, CurveName, ?getAttr(plot_style) ] ) ++ Acc, 
+		Count-1, Prefix, State, OtherNames ).
 		
