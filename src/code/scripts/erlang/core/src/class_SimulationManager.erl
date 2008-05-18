@@ -118,15 +118,25 @@ construct(State,?wooper_construct_parameters) ->
 delete(State) ->
 
 	% Class-specific actions:
-	?trace([ "Deleting  manager." ]),
-	stop(State),
+	?trace([ "Deleting simulation manager." ]),
+	DeleteState = case ?getAttr(started) of 
+	
+		true ->
+			% Stop may be overloaded:
+			{wooper_result,StoppedState} = executeOneway(State,stop),
+			StoppedState;
+			
+		false ->
+			State
+			
+	end,			
 	unregister( ?simulation_manager_name ),
 	global:unregister_name( ?simulation_manager_name ),
 
 	?trace([ "Simulation manager deleted." ]),
 
 	% Then call the direct mother class counterparts and allow chaining:
-	class_TraceEmitter:delete(State).
+	class_TraceEmitter:delete(DeleteState).
 	
 	
 
@@ -161,13 +171,18 @@ start(State) ->
 % (oneway)
 stop(State) ->
 
-	?notify( "Stopping simulation." ),
-
-	?getAttr(time_manager_pid) ! stop,
-
-	StoppedState = ?setAttributes( State, [
-		{stop_requested,true}, {started,false} ]),
+	StoppedState = case ?getAttr(started) of
 	
+		false ->
+			?warning([ "Stop request ignored: simulation not running." ]),
+			State;
+
+		true ->
+			?notify( "Stopping simulation." ),
+			?getAttr(time_manager_pid) ! stop,
+			?setAttributes( State, [ {stop_requested,true}, {started,false} ])
+			
+	end,
 	?wooper_return_state_only(StoppedState).
 
 
@@ -182,7 +197,7 @@ simulationEnded(State,EndTick) ->
 		
 	?notify_by_speak( "Simulation ended." ),
 
-	self() ! stop(State),
+	self() ! stop,
 	
 	% Non-WOOPER listener:
 	?getAttr(simulation_listener) ! {simulation_ended,EndTick},
