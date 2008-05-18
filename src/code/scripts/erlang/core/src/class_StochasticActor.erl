@@ -126,8 +126,7 @@ setReadyListener(State,ListenerPID) ->
 	NewState = case ?getAttr(initialization_status) of
 	
 		completed ->
-			class_Actor:send_actor_message( ListenerPID,
-				{ notifyReady, self() }, State );
+			class_Actor:send_actor_message( ListenerPID, notifyReady, State );
  
  		_ ->
 			% Not yet completed, will notify the listener on completion:
@@ -136,6 +135,7 @@ setReadyListener(State,ListenerPID) ->
 	end,
 	?wooper_return_state_only(NewState).
 	
+
 
 % Called by the random manager, in answer to a getUniformValues call.
 % (actor oneway)
@@ -152,12 +152,13 @@ setUniformValues(State,[RequestIdentifier,Values],_SenderPid) ->
 	ReadyState = case ?getAttr(ready_listener) of
 	
 		none ->
-			ok;
+			State;
 		
 		ListenerPID	->
 			% ready_listener will be still registered:
-			class_Actor:send_actor_message( ListenerPID,
-				{ notifyReady, self() }, State )
+			SentState = class_Actor:send_actor_message( ListenerPID,
+				notifyReady, State ),
+			?setAttribute(SentState,ready_listener,none)	
  
 	end,
 
@@ -185,9 +186,23 @@ setExponentialValues(State,[RequestIdentifier,Values],_SenderPid) ->
 	% Ex: {[],{exponential,80},4}
 	{CurrentRandomList,RandomType,MinSize} = ?getAttr(RequestIdentifier),
 	
+	% Now that random lists are being filled, notify any ready listener:
+	ReadyState = case ?getAttr(ready_listener) of
+	
+		none ->
+			State;
+		
+		ListenerPID	->
+			% ready_listener will be still registered:
+			SentState = class_Actor:send_actor_message( ListenerPID,
+				notifyReady, State ),
+			?setAttribute(SentState,ready_listener,none)	
+ 
+	end,
+
 	% The 'act' method of this actor will be able to use these random values
 	% directly this tick:
-	?wooper_return_state_only( ?setAttributes( State, [
+	?wooper_return_state_only( ?setAttributes( ReadyState, [
 		% All random lists of a given stochastic actor are requested at the
 		% same time, thus they all should be filled also at the same time 
 		% (thus 'completed' may be set more than once):
@@ -208,10 +223,25 @@ setPositiveIntegerExponentialValues( State, [RequestIdentifier,Values],
 
 	% Ex: {[],{positive_integer_exponential,80},4}
 	{CurrentRandomList,RandomType,MinSize} = ?getAttr(RequestIdentifier),
+
+
+	% Now that random lists are being filled, notify any ready listener:
+	ReadyState = case ?getAttr(ready_listener) of
+	
+		none ->
+			State;
+		
+		ListenerPID	->
+			% ready_listener will be still registered:
+			SentState = class_Actor:send_actor_message( ListenerPID,
+				notifyReady, State ),
+			?setAttribute(SentState,ready_listener,none)	
+ 
+	end,
 	
 	% The 'act' method of this actor will be able to use these random values
 	% directly this tick:
-	?wooper_return_state_only( ?setAttributes( State, [
+	?wooper_return_state_only( ?setAttributes( ReadyState, [
 		% All random lists of a given stochastic actor are requested at the
 		% same time, thus they all should be filled also at the same time 
 		% (thus 'completed' may be set more than once):
@@ -233,9 +263,23 @@ setGaussianValues(State,[RequestIdentifier,Values],_SenderPid) ->
 	% Ex: {[],{gaussian,{70,5}},4}
 	{CurrentRandomList,RandomType,MinSize} = ?getAttr(RequestIdentifier),
 	
+	% Now that random lists are being filled, notify any ready listener:
+	ReadyState = case ?getAttr(ready_listener) of
+	
+		none ->
+			State;
+		
+		ListenerPID	->
+			% ready_listener will be still registered:
+			SentState = class_Actor:send_actor_message( ListenerPID,
+				notifyReady, State ),
+			?setAttribute(SentState,ready_listener,none)	
+ 
+	end,
+
 	% The 'act' method of this actor will be able to use these random values
 	% directly this tick:
-	?wooper_return_state_only( ?setAttributes( State, [
+	?wooper_return_state_only( ?setAttributes( ReadyState, [
 		% All random lists of a given stochastic actor are requested at the
 		% same time, thus they all should be filled also at the same time 
 		% (thus 'completed' may be set more than once):
@@ -259,9 +303,23 @@ setPositiveIntegerGaussianValues( State, [RequestIdentifier,Values],
 	% Ex: {[],{positive_integer_gaussian,{70,5}},4}
 	{CurrentRandomList,RandomType,MinSize} = ?getAttr(RequestIdentifier),
 	
+	% Now that random lists are being filled, notify any ready listener:
+	ReadyState = case ?getAttr(ready_listener) of
+	
+		none ->
+			State;
+		
+		ListenerPID	->
+			% ready_listener will be still registered:
+			SentState = class_Actor:send_actor_message( ListenerPID,
+				notifyReady, State ),
+			?setAttribute(SentState,ready_listener,none)	
+ 
+	end,
+
 	% The 'act' method of this actor will be able to use these random values
 	% directly this tick:
-	?wooper_return_state_only( ?setAttributes( State, [
+	?wooper_return_state_only( ?setAttributes( ReadyState, [
 		% All random lists of a given stochastic actor are requested at the
 		% same time, thus they all should be filled also at the same time 
 		% (thus 'completed' may be set more than once):
