@@ -130,9 +130,11 @@ setReadyListener(State,ListenerPID) ->
 				{ notifyReady, self() }, State );
  
  		_ ->
-			
+			% Not yet completed, will notify the listener on completion:
+			?setAttribute(State,ready_listener,ListenerPID)
 	
-	end.
+	end,
+	?wooper_return_state_only(NewState).
 	
 
 % Called by the random manager, in answer to a getUniformValues call.
@@ -146,9 +148,22 @@ setUniformValues(State,[RequestIdentifier,Values],_SenderPid) ->
 	% Ex: {[],{uniform,100},4} ({uniform,N} could replace RandomType)
 	{CurrentRandomList,RandomType,MinSize} = ?getAttr(RequestIdentifier),
 	
+	% Now that random lists are being filled, notify any ready listener:
+	ReadyState = case ?getAttr(ready_listener) of
+	
+		none ->
+			ok;
+		
+		ListenerPID	->
+			% ready_listener will be still registered:
+			class_Actor:send_actor_message( ListenerPID,
+				{ notifyReady, self() }, State )
+ 
+	end,
+
 	% The 'act' method of this actor will be able to use these random values
 	% directly this tick:
-	?wooper_return_state_only( ?setAttributes( State, [
+	?wooper_return_state_only( ?setAttributes( ReadyState, [
 		% All random lists of a given stochastic actor are requested at the
 		% same time, thus they all should be filled also at the same time 
 		% (thus 'completed' may be set more than once):
