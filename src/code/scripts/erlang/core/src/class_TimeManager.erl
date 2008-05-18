@@ -866,19 +866,33 @@ handle_end_of_tick_for( State, ActorTick, ActorPid, NotificationType ) ->
 								"all 'end of tick' notifications received, "
 								"tick ~B ended.", 
 								[ NotificationType, ActorPid, ActorTick ] ) ]),
-								
-							% Go to next tick if not interactive.
-							% If interactive, will wait until the timer sends
-							% the top itself: 
-							case ?getAttribute(UpdatedState,interactive) of 
 							
-								true ->
+							case ?getAttr(started) of 
+							
+								false ->
+									% Here the TimeManager was stopped during 
+									% this tick, do not trigger next tick:
+									?debug([ "Not triggering a new top." ]),
 									ok;
-								
-								false ->	
-									self() ! timer_top
 									
-							end;		
+								true ->
+									% TimeManager still running.
+									% Go to next tick if not interactive.
+									% If interactive, will wait until the timer
+									% sends the top itself: 
+									case ?getAttribute( UpdatedState,
+											interactive ) of 
+							
+										true ->
+											ok;
+								
+										false ->	
+											self() ! timer_top
+									
+									end		
+							
+							end;
+							
 							
 						NonEmptyList ->	
 							?debug([ io_lib:format( 
