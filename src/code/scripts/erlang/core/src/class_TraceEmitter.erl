@@ -22,7 +22,7 @@
 
 
 % Method declarations.
--define(wooper_method_export,display/1,toString/1).
+-define(wooper_method_export,getName/1,setName/2,display/1,toString/1).
 
 
 % Helper functions:
@@ -84,7 +84,19 @@ delete(State) ->
 
 
 % Generic interface.	
+
+% Returns the name of this trace emitter.
+% (const request)	
+getName(State) ->
+	?wooper_return_state_result(State,?getAttr(name)).
 	
+
+% Sets the name of this trace emitter.
+% (oneway)
+setName(State,NewName) ->
+	?wooper_return_state_only( ?setAttribute( State, name, NewName ) ).
+
+
 
 % Displays the state in the console.
 display(State) ->
