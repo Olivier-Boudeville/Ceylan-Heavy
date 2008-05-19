@@ -47,10 +47,11 @@ run() ->
 	
 	io:format( ?Prefix "Creating a new TestTraceEmitter.~n" ),
 	
+	Name = "I am a test emitter of traces",
+	
 	% Should not trigger the launch of another global aggregator:
 	% (as test_start triggers a *synchronous* aggregator):
-	MyTraceEmitter = class_TestTraceEmitter:synchronous_new_link( 
-		"I am a test emitter of traces" ),	
+	MyTraceEmitter = class_TestTraceEmitter:synchronous_new_link(Name),	
 		
 	?test_fatal([   "This is a test of the fatal priority for tests." ]),
 	?test_error([   "This is a test of the error priority for tests." ]),
@@ -71,6 +72,27 @@ run() ->
 			io:format( ?Prefix "Traces sent.~n" )	
 						
 	end,
+
+	MyTraceEmitter ! {getName,[],self()},
+	receive
+	
+		{wooper_result,Name} ->
+			?test_info([ "Correct name returned." ])
+			
+	end,
+	
+	NewName = "This is my new name",
+	
+	MyTraceEmitter ! {setName,[NewName]},
+
+	MyTraceEmitter ! {getName,[],self()},
+	receive
+	
+		{wooper_result,NewName} ->
+			?test_info([ "Correct new name returned." ])
+			
+	end,
+	
 	
 	io:format( ?Prefix "Deleting this TestTraceEmitter.~n" ),
 	
