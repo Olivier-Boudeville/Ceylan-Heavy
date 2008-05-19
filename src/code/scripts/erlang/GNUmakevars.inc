@@ -29,24 +29,38 @@ ERLANG_COMPILER     := $(ERLANG_ROOT)/bin/erlc
 FRAMEWORK_DIR = $(CEYLAN_ERLANG_TOP)
 
 
-COMMON_BASE_DIR := $(FRAMEWORK_DIR)/common
-WOOPER_BASE_DIR := $(FRAMEWORK_DIR)/wooper
-CORE_BASE_DIR   := $(FRAMEWORK_DIR)/core
+COMMON_BASE_DIR  := $(FRAMEWORK_DIR)/common
+WOOPER_BASE_DIR  := $(FRAMEWORK_DIR)/wooper
+CORE_BASE_DIR    := $(FRAMEWORK_DIR)/core
+
+GENERIC_BASE_DIR := $(CORE_BASE_DIR)/generic
+SPACE_BASE_DIR   := $(CORE_BASE_DIR)/space
 
 
-COMMON_SRC := $(COMMON_BASE_DIR)/src
-WOOPER_SRC := $(WOOPER_BASE_DIR)/src
-CORE_SRC   := $(CORE_BASE_DIR)/src
+COMMON_SRC   := $(COMMON_BASE_DIR)/src
+WOOPER_SRC   := $(WOOPER_BASE_DIR)/src
+CORE_SRC     := $(CORE_BASE_DIR)/src
 
-COMMON_BEAM := $(COMMON_BASE_DIR)/src
-WOOPER_BEAM := $(WOOPER_BASE_DIR)/src
-CORE_BEAM   := $(CORE_BASE_DIR)/src
+GENERIC_SRC  := $(GENERIC_BASE_DIR)/src
+SPACE_SRC    := $(SPACE_BASE_DIR)/src
 
-COMMON_INC = -I$(COMMON_SRC)
-WOOPER_INC = -I$(WOOPER_SRC)
-CORE_INC   = -I$(CORE_SRC)
 
-INC += -I. $(COMMON_INC) $(WOOPER_INC) $(CORE_INC)
+COMMON_BEAM  := $(COMMON_BASE_DIR)/src
+WOOPER_BEAM  := $(WOOPER_BASE_DIR)/src
+CORE_BEAM    := $(CORE_BASE_DIR)/src
+
+GENERIC_BEAM := $(GENERIC_BASE_DIR)/src
+SPACE_BEAM   := $(SPACE_BASE_DIR)/src
+
+
+COMMON_INC  = -I$(COMMON_SRC)
+WOOPER_INC  = -I$(WOOPER_SRC)
+CORE_INC    = -I$(CORE_SRC)
+
+GENERIC_INC = -I$(GENERIC_SRC)
+SPACE_INC   = -I$(SPACE_SRC)
+
+INC += -I. $(COMMON_INC) $(WOOPER_INC) $(CORE_INC) $(GENERIC_INC) $(SPACE_INC)
 
 ERLANG_INTERPRETER  := $(ERLANG_ROOT)/bin/erl
 
@@ -107,12 +121,12 @@ DISTRIBUTED_NODE_OPT := -name $(VM_NAME)@$(FQDN) -setcookie $(PROJECT_NAME)
 
 STARTUP_FUNCTION := run
 
-# BEAM_DIRS can contain some paths already:
-BEAM_DIRS := . $(COMMON_BEAM) $(WOOPER_BEAM) $(CORE_BEAM) $(BEAM_DIRS)
 
-# BEAM_PATHS not set here, as all Ceylan beam paths already referenced in
-# launcher script:
-BEAM_PATH_OPT = --beam-path $(BEAM_PATHS)
+# BEAM_DIRS can contain some paths already:
+BEAM_DIRS := . $(COMMON_BEAM) $(WOOPER_BEAM) $(CORE_BEAM) $(GENERIC_BEAM) \
+	$(SPACE_BEAM) $(BEAM_DIRS)
+
+BEAM_PATH_OPT = $(foreach dir,$(BEAM_DIRS),--beam-dir $(dir))
 
 
 # +v (verbose) option removed, as only active in the interpreter has been
