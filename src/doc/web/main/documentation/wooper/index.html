@@ -945,7 +945,7 @@ foreach(
 <h3>Life-cycle</h3>
 
 <p>
-Creation and destruction of instances are managed respectively thanks to the <code>new</code> and the <code>delete</code> operators (both are WOOPER-reserved function names, for all arities):
+Creation and destruction of instances are managed respectively thanks to the <code>new</code>/<code>new_link</code> and the <code>delete</code> operators (both are WOOPER-reserved function names, for all arities):
 <center>
     <table summary="Code" style="border: none">
         <tr>
@@ -969,19 +969,19 @@ MyCat ! delete.
 <h5>Role of a new/construct pair</h5>
 
 <p>
-Whereas the purpose of <code>new</code> is to create a working instance on the user behalf, the role of <code>construct</code> is to initialize an instance of that class while being able to be chained for inheritance, as explained later. 
+Whereas the purpose of <code>new</code>/<code>new_link</code> is to create a working instance on the user behalf, the role of <code>construct</code> is to initialize an instance of that class while being able to be chained for inheritance, as explained later. 
 </p>
 
 <p>
-The <code>new</code> operator is automatically defined by WOOPER, but it relies on the class-specific <code>construct</code> special method (it cannot be called from outside the class module). The <code>construct</code> method is the one that must be implemented by the class developer.
+The <code>new_link</code> operator behaves exactly as the <code>new</code> operator, except that it creates an instance that is Erlang-linked with the process that called that operator, like <code>spawn_link</code> behaves compared to <code>spawn</code>..
 </p>
 
 <p>
-Only one <code>new/construct</code> pair can be defined, but this unique twofold constructor may be defined to branch to as many subconstructors as needed: for example, <code>MyCat = Class_Cat:new(construct_from_point,[1,2]).</code>.
+The <code>new</code> and <code>new_link</code> operators are automatically defined by WOOPER, but they rely on the class-specific <code>construct</code> special method (it cannot be called from outside the class module). The <code>construct</code> method is the one that must be implemented by the class developer.
 </p>
 
 <p>
-The <code>new_link</code> operator behaves exactly as the <code>new</code> operator, except that it creates an instance that is Erlang-linked with the process that called that operator.
+Only one version of <code>new/new_link/construct</code> can be defined, but this unique threefold constructor may be defined to branch to as many subconstructors as needed: for example, <code>MyCat = Class_Cat:new(construct_from_point,[1,2]).</code>.
 </p>
 
 <p>
@@ -999,7 +999,7 @@ to the process that created it, and that waits for it.
 <h5>Declaration of the new/construct pair</h5>
 
 <p>
-When an instance is created, user-specified parameters are given to the <code>new</code> operator, notably to set up the instance initial state, i.e. its attributes. These parameters must be declared thanks to the <code>wooper_construct_parameters</code> define. For example, <code>-define( wooper_construct_parameters,).</code> (no parameter needed), or <code>-define( wooper_construct_parameters, Age, Gender ).</code> (two parameters needed).
+When an instance is created, user-specified parameters are given to either the <code>new</code> or the <code>new_link</code> operator, notably to set up the instance initial state, i.e. its attributes. These parameters must be declared thanks to the <code>wooper_construct_parameters</code> define. For example, <code>-define( wooper_construct_parameters,).</code> (no parameter needed), or <code>-define( wooper_construct_parameters, Age, Gender ).</code> (two parameters needed).
 </p>
 
 <p>
@@ -1007,11 +1007,27 @@ The WOOPER-defined <code>new</code> operator automatically transmits these param
 </p>
 
 <p>
+<<<<<<< .mine
+<<<<<<< .mine
+Based on the <code>wooper_construct_parameters</code> define (let us suppose n constructor parameters are listed in it), <code>new</code> and <code>construct</code> must be declared thanks to: <code>-define( wooper_construct_export,new/n,new_link/n,construct/n+1).</code>. <code>construct</code> takes one additional parameter, the instance state.
+=======
+Based on the <code>wooper_construct_parameters</code> define (let us suppose n constructor parameters are listed in it), <code>new</code> and <code>construct</code> must be declared thanks to: <code>-define( wooper_construct_export, new/n, new_link/n, construct/n+1).</code>. <code>construct</code> takes one additional parameter, the instance state.
+=======
 Based on the <code>wooper_construct_parameters</code> define (let us suppose n constructor parameters are listed in it), <code>new</code> and <code>construct</code> must be declared thanks to: <code>-define( wooper_construct_export, new/n, new_link/n, synchronous_new/n, synchronous_new_link/n, construct/n+1).</code>. <code>construct</code> takes one additional parameter, the instance state.
+>>>>>>> .r2437
+>>>>>>> .r2397
 </p>
 
 <p>
+<<<<<<< .mine
+<<<<<<< .mine
+For example, if <code>-define( wooper_construct_parameters, Age, Gender ).</code> is declared, <code>-define(wooper_construct_export,new/2,new_link/2,construct/3).</code> should then be specified, and the corresponding method will be: <code>construct(State,?wooper_construct_parameters) -&gt; [..]</code>. If there is no construction-related parameter, then the method becomes: <code>construct(State) -&gt; [..]</code>. The <code>new</code> operator is always defined automatically by WOOPER, nothing is to be done for it.
+=======
+For example, if <code>-define( wooper_construct_parameters, Age, Gender ).</code> is declared, <code>-define( wooper_construct_export, new/2, new_link/2, construct/3 ).</code> should then be specified, and the corresponding method will be: <code>construct(State,?wooper_construct_parameters) -&gt; [..]</code>. If there is no construction-related parameter, then the method becomes: <code>construct(State) -&gt; [..]</code>. The <code>new</code> operator is always defined automatically by WOOPER, nothing is to be done for it.
+=======
 For example, if <code>-define( wooper_construct_parameters, Age, Gender ).</code> is declared, <code>-define( wooper_construct_export, new/2, new_link/2, synchronous_new/2, synchronous_new_link/2, construct/3 ).</code> should then be specified, and the corresponding method will be: <code>construct(State,?wooper_construct_parameters) -&gt; [..]</code>. If there is no construction-related parameter, then the method becomes: <code>construct(State) -&gt; [..]</code>. All four <code>new</code> operators are always defined automatically by WOOPER, nothing is to be done for them.
+>>>>>>> .r2437
+>>>>>>> .r2397
 </p>
 
 <p>
@@ -1689,7 +1705,15 @@ svn copy https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/code
   <center>
     [<a href="#_top_">Top</a>]<br>
     <br>
+<<<<<<< .mine
+<<<<<<< .mine
+    <em>Last update: Thursday, September 6, 2007</em>
+=======
+    <em>Last update: Friday, December 21, 2007</em>
+=======
     <em>Last update: Thursday, May 8, 2008</em>
+>>>>>>> .r2437
+>>>>>>> .r2397
   </center>
 </body>
 </html>
