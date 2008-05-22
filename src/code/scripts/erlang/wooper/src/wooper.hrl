@@ -146,7 +146,7 @@
 % Approximate average attribute count for a given class instance, including
 % inherited ones (ideally should be slightly above the maximum number of
 % actual attributes for a given class)
--define(WooperAttributeCountUpperBound,32).
+-define(WooperAttributeCountUpperBound,16).
 
 
 % For the name of the registered process that keeps the per-class method 
