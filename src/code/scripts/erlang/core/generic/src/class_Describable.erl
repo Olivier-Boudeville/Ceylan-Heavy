@@ -23,12 +23,6 @@
 -include("wooper.hrl").
 
 
-% Must be included before class_TraceEmitter header:
-%-define(TraceEmitterCategorization,"Orge.Describable").
-
-% Allows to use macros for trace sending:
-%-include("class_TraceEmitter.hrl").
-
 
 % Implementation Note:
 % Being a trace emitter is not strictly needed, as it leads to useless 
@@ -41,24 +35,12 @@ construct(State,?wooper_construct_parameters) ->
 
 	% First the direct mother classes, then this class-specific actions:
 	
-	%TraceState = class_TraceEmitter:construct( State, Name ),
-	
-	%?send_info([ TraceState, io_lib:format( 
-	%	"Creating a new describable instance whose name is ~s "
-	%		"and whose description is ~s.",	[ Name, Description ] ) ]),
-	
-	%?setAttributes( TraceState, [ {description,Description},
-	%	{trace_categorization,?TraceEmitterCategorization} ] ).
 	?setAttribute( State, description, Description ).
 	
 	
 % Overriden destructor.
 delete(State) ->
 	% Class-specific actions:
-	%?info([ "Deleting describable." ]),
-
-	%?debug([ "Describable deleted." ]),
-
 	% Then call the direct mother class counterparts and allow chaining:
 	State.
 	
