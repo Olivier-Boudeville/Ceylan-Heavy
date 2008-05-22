@@ -50,7 +50,7 @@ construct(State,?wooper_construct_parameters) ->
 	%?setAttributes( TraceState, [ {location,Location},
 	%	{trace_categorization,?TraceEmitterCategorization} ] ).
 	
-	?setAttributes( State, location, Location ).
+	?setAttribute( State, location, Location ).
 	
 	
 	
