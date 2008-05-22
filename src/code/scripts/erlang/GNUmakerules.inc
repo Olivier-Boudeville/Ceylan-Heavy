@@ -4,7 +4,8 @@ include $(CEYLAN_ERLANG_TOP)/GNUmakevars.inc
 .PHONY: all all-recurse launch test test-recurse build-tests                  \
 	help-erl clean clean-erlang clean-database                            \
 	clean-subdirs clean-dot clean-log clean-probe clean-gnuplot realclean \
-	info info-files
+	info info-files $(MODULES_DIRS)
+
 
 
 SOURCES = $(wildcard *.erl)
