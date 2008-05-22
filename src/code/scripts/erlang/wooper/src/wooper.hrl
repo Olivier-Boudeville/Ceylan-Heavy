@@ -543,7 +543,7 @@ wooper_construct_and_run_synchronous(ParameterList,SpawnerPid) ->
 %
 % A case clause is triggered if the attribute did not exist.
 %
-% @note This cannot be a one-line macro, it has to be a function.
+% Note: This cannot be a one-line macro, it has to be a function.
 %
 -define(popFromAttribute(State,AttributeName),
 	wooper_pop_from_attribute(State,AttributeName)).
@@ -910,6 +910,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 			%io:format("wooper_execute_method: executing ~s:~s(~w).~n",
 			%	[ ?MODULE, MethodAtom, Parameters ]), 	
 			
+			% TODO: use try/catch instead (see 'programming Erlang p.67).
 			case catch apply(LocatedModule,MethodAtom,[State|Parameters]) of
 
 				% Matched expressions have to be reordered depending on the
@@ -1128,7 +1129,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 % 
 % If no failure occurs, returns {wooper_result,NewState,Result}.
 %
-% @note Stripped-down version of wooper_main_loop.
+% Note: Stripped-down version of wooper_main_loop.
 %  
 executeRequest(State,RequestAtom,ArgumentList) when is_list(ArgumentList) -> 
 
@@ -1196,7 +1197,7 @@ executeRequest(State,RequestAtom) ->
 % 
 % If no failure occurs, returns {wooper_result,NewState}.
 %
-% @note Stripped-down version of wooper_main_loop.
+% Note: Stripped-down version of wooper_main_loop.
 %  
 executeOneway(State,OnewayAtom,ArgumentList) when is_list(ArgumentList) -> 
 
@@ -1440,7 +1441,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 % 
 % If no failure occurs, returns {wooper_result,NewState,Result}.
 %
-% @note Stripped-down version of wooper_main_loop.
+% Note: Stripped-down version of wooper_main_loop.
 %  
 executeRequest(State,RequestAtom,ArgumentList) when is_list(ArgumentList) -> 
 
@@ -1508,7 +1509,7 @@ executeRequest(State,RequestAtom) ->
 % 
 % If no failure occurs, returns {wooper_result,NewState}.
 %
-% @note Stripped-down version of wooper_main_loop.
+% Note: Stripped-down version of wooper_main_loop.
 %  
 executeOneway(State,OnewayAtom,ArgumentList) when is_list(ArgumentList) -> 
 
