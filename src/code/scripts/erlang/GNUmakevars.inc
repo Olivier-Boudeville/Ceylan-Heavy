@@ -3,7 +3,9 @@
 
 
 # Project section.
-# PROJECT_NAME defined on a per-project basis.
+
+# PROJECT_NAME and PORJECT_VERSION should be already defined, on a per-project
+# basis.
 
 
 ARCHIVE_ROOT := $$HOME/Archive/$(PROJECT_NAME)
@@ -20,7 +22,6 @@ PROJECT_RELEASE_ARCHIVE_BZ2 := $(PROJECT_RELEASE_BASE).tar.bz2
 
 
 ERLANG_VERSION      := R9C-2
-#ERLANG_ROOT        := /logiciels/public/otp_src_$(ERLANG_VERSION)
 ERLANG_ROOT         := /usr
 
 ERLANG_COMPILER     := $(ERLANG_ROOT)/bin/erlc
@@ -77,9 +78,6 @@ ERLANG_COMPILER_OPT       := -b beam $(INC) -v -W$(WARNING_LEVEL)  \
 
 
 
-#DOT_ROOT = /logiciels/public/gv1.7c/bin
-#DOT_ROOT = /logiciels/public/graphviz-1.8.5/bin
-#DOT_ROOT = /home/boudevil/Logiciels/graphviz-1.12/bin
 DOT_ROOT = /usr/bin
 
 DOT_OPT = -Gcharset=latin1
