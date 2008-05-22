@@ -25,7 +25,8 @@
 
 
 % Method declarations.
--define(wooper_method_export,setData/3,setKeyOptions/2,
+-define(wooper_method_export,setData/3,setPlotStyle/2,setFillStyle/2,
+	setKeyOptions/2,
 	generateReport/1,generateReport/2,getPlotCommand/1).
 
 
@@ -69,7 +70,8 @@ construct(State,?wooper_construct_parameters) ->
 		{key_options,"bmargin center horizontal"},
 		{xlabel,XLabel}, {ylabel,YLabel},
 		{xtic,"auto"}, {ytic,"auto"} , {yrange,"[]"},
-		{plot_style,"linespoints"} ] ),
+		{plot_style,"linespoints"}, {fill_style,"empty"},
+		{column_specifier,"1:"} ] ),
 
 	?send_trace([ TraceState, "New probe created." ]),
 		
@@ -95,6 +97,7 @@ delete(State) ->
 
 % Methods section.
 
+
 % Registers specified samples.
 % (oneway).
 setData(State,Tick,Samples) ->
@@ -107,10 +110,28 @@ setData(State,Tick,Samples) ->
 		{Tick,Samples} ) ).
 
 	
-% Sets the key (legend) settings.
+	
+% Sets the plot settings (ex: "histograms").
+% (oneway)
+setPlotStyle(State,"histograms") ->
+	?wooper_return_state_only( ?setAttributes(State, [
+		{plot_style,histograms}, {column_specifier,""} ] ) );
+
+setPlotStyle(State,NewPlotStyle) ->
+	?wooper_return_state_only( ?setAttribute(State,plot_style,NewPlotStyle) ).
+
+
+% Sets the fill settings (ex: "solid 1.0 border -1").
+% (oneway)
+setFillStyle(State,NewFillStyle) ->
+	?wooper_return_state_only( ?setAttribute(State,fill_style,NewFillStyle) ).
+
+
+% Sets the key (legend) settings (ex: "inside left").
 % (oneway)
 setKeyOptions(State,NewOptions) ->
 	?wooper_return_state_only( ?setAttribute(State,key_options,NewOptions) ).
+
 
 
 % Generates a report for current state of this probe, and displays the result
@@ -190,6 +211,8 @@ generate_command_file(State) ->
 	io:format(File, "set autoscale~n",     []),
 	io:format(File, "unset log~n",         []),
 	io:format(File, "set grid~n",		   []),
+	io:format(File, "set style data ~s~n", [ ?getAttr(plot_style) ] ),
+	io:format(File, "set style fill ~s~n", [ ?getAttr(fill_style) ] ),
 	io:format(File, "set key box ~s~n",    [ ?getAttr(key_options) ] ),
 	io:format(File, "set xtic ~s~n",       [ ?getAttr(xtic) ] ),
 	io:format(File, "set ytic ~s~n",       [ ?getAttr(ytic) ] ),
@@ -260,7 +283,8 @@ make_plot_command(Acc,1,_Prefix,_State,_CurveNames) ->
 
 make_plot_command( Acc, Count, Prefix, State, [CurveName|OtherNames] ) ->
 	make_plot_command( 
-		io_lib:format( "~s using 1:~B title \"~s\" with ~s",
-			[ Prefix, Count, CurveName, ?getAttr(plot_style) ] ) ++ Acc, 
+		io_lib:format( "~s using ~s~B title \"~s\" with ~s",
+			[ Prefix, ?getAttr(column_specifier), Count, CurveName,
+				?getAttr(plot_style) ] ) ++ Acc, 
 		Count-1, Prefix, State, OtherNames ).
 		
