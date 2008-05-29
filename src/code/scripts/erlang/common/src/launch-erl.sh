@@ -4,7 +4,7 @@ DEFAULT_NODE_NAME="ceylan_default"
 DEFAULT_COOKIE="ceylan"
 
 
-USAGE="`basename $0` [-v] [-c a_cookie] [--sn a_short_node_name | --ln a_long_node_name] [--fqdn a_fqdn] [--beam-path path_1 path_2] [-h]...: launches the Erlang interpreter with specified settings.
+USAGE="`basename $0` [-v] [-c a_cookie] [--sn a_short_node_name | --ln a_long_node_name] [--fqdn a_fqdn] [--beam-dir a_path] [--beam-paths path_1 path_2] [-h]...: launches the Erlang interpreter with specified settings.
 	-v: be verbose
 	-c a_cookie: specify a cookie
 	--sn a_short_node_name: specify a short name (ex: 'ceylan_2') 
@@ -12,12 +12,14 @@ USAGE="`basename $0` [-v] [-c a_cookie] [--sn a_short_node_name | --ln a_long_no
 	--fqdn a_fqdn: specify the FQDN to be used
 	--wooper-path wooper_path: specify the WOOPER path 
 	--eval 'an Erlang expression': start by evaluating this expression
-	--beam-path first_path second_path ...: adds specified directories to the path searched for beam files (multiple paths can be specified;must be the last option)
+	--beam-dir a_path: adds specified directory to the path searched for beam files (multiple --beam-dir options can be specified)
+	--beam-paths first_path second_path ...: adds specified directories to the path searched for beam files (multiple paths can be specified; must be the last option)
 	-h: display this help
 	other options will be passed 'as are' to the interpreter
 Unless --sn or --ln is specified, default is to use a long node name, '${DEFAULT_NODE_NAME}'.
 	Example: launch-erl.sh -v --ln ceylan --eval 'class_TimeManager_test:run()'"	
 
+#echo "Received as parameters: $*"
 
 ERL=/usr/bin/erl 
 
@@ -63,9 +65,13 @@ while [ $# -gt 0 ] ; do
 		token_eaten=0
 	fi
 	
-	if [ "$1" = "--beam-path" ] ; then
-		shift
-		CODE_DIRS="${CODE_DIRS} $1"
+	if [ "$1" = "--beam-paths" ] ; then
+		# Keep --beam-paths if first position, as will be shifted in end of loop
+		while [ ! $# -eq 1 ] ; do
+			#echo "  + adding beam path $2"
+			CODE_DIRS="${CODE_DIRS} $2"
+			shift
+		done
 		token_eaten=0
 	fi
 	
