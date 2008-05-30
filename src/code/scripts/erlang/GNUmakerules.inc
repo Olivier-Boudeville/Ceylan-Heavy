@@ -2,20 +2,34 @@ include $(CEYLAN_ERLANG_TOP)/GNUmakevars.inc
 
 
 .PHONY: all all-recurse launch test test-recurse build-tests                  \
-	help-erl clean clean-erlang clean-database                            \
+	doc doc-recurse help-erl                                              \
+	clean clean-erlang clean-database                                     \
 	clean-subdirs clean-dot clean-log clean-probe clean-gnuplot realclean \
 	info info-files $(MODULES_DIRS)
 
 
 
-SOURCES = $(wildcard *.erl)
+ERL_FILES = $(wildcard *.erl)
 
 # Includes test beams:
-BEAMS   = $(patsubst %.erl,%.beam,$(SOURCES))
+BEAM_FILES   = $(patsubst %.erl,%.beam,$(ERL_FILES))
 
-TESTS   = $(wildcard *_test.erl)
+TEST_SOURCES = $(wildcard *_test.erl)
 
-TEST_TARGETS = $(patsubst %.erl,%,$(TESTS))
+TEST_TARGETS = $(patsubst %.erl,%,$(TEST_SOURCES))
+
+
+RST_FILES = $(wildcard *.rst)
+
+AUX_GENERATED_FILES  = $(patsubst %.rst,%.aux,$(RST_FILES))
+TEX_GENERATED_FILES  = $(patsubst %.rst,%.tex,$(RST_FILES))
+OUT_GENERATED_FILES  = $(patsubst %.rst,%.out,$(RST_FILES))
+HTML_GENERATED_FILES = $(patsubst %.rst,%.html,$(RST_FILES))
+PDF_GENERATED_FILES  = $(patsubst %.rst,%.pdf,$(RST_FILES))
+
+RST_GENERATED_FILES =  $(AUX_GENERATED_FILES) $(TEX_GENERATED_FILES)      \
+	$(OUT_GENERATED_FILES) $(HTML_GENERATED_FILES) $(PDF_GENERATED_FILES)   
+
 
 
 # Outside prerequesites: $(WOOPER_SRC)/wooper.hrl wooper_class_manager
@@ -50,11 +64,11 @@ TEST_TARGETS = $(patsubst %.erl,%,$(TESTS))
 
 
 
-all: all-recurse $(BEAMS)
+all: all-recurse $(BEAM_FILES)
 
 all-recurse:
 	@echo "   Building all in "$(PWD) #`basename $(PWD)`
-	@for m in $(MODULES_DIRS); do ( cd $$m; $(MAKE) -s all ); done
+	@for m in $(MODULES_DIRS); do if ! ( cd $$m && $(MAKE) -s all CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ) ; then return 1; fi ; done
 
 
 class_%.beam: class_%.erl class_%.hrl class_%_dependencies
@@ -128,11 +142,11 @@ class_%.beam: class_%.erl
 	@$(ERL_PARAMETRIZED_LAUNCHER) --eval `echo $@ | sed 's|_run|_test:run()|1'` $(CMD_LINE_OPT)
 
 %_run: %_test %.beam 
-	@echo "     Running unitary test $@ (second form) from $^ with $(ERL_PARAMETRIZED_LAUNCHER)"
+	@echo "     Running unitary test $@ (second form) from $^"
 	@$(ERL_PARAMETRIZED_LAUNCHER) --eval `echo $@ | sed 's|_run|_test:run()|1'` $(CMD_LINE_OPT)
 		
 %_run: %_test
-	@echo "     Running unitary test $@ (third form) from $^ with $(ERL_PARAMETRIZED_LAUNCHER)"
+	@echo "     Running unitary test $@ (third form) from $^"
 	@$(ERL_PARAMETRIZED_LAUNCHER) --eval `echo $@ | sed 's|_run|_test:run()|1'` $(CMD_LINE_OPT)
 		
 		
@@ -150,15 +164,17 @@ class_%.beam: class_%.erl
 
 
 test: all test-recurse
-	@for t in $(TEST_TARGETS); do if ! $(MAKE) -s `echo $$t | sed 's|_test|_run|1'`; then return 1; fi ; done
+	@for t in $(TEST_TARGETS); do if ! $(MAKE) -s `echo $$t | sed 's|_test|_run|1'` CMD_LINE_OPT="${CMD_LINE_OPT}"; then return 1; fi ; done
+
 
 test-recurse:
 	@echo "   Testing all in "`basename $(PWD)`
-	@for m in $(MODULES_DIRS); do ( cd $$m; $(MAKE) -s test ); done
+	@for m in $(MODULES_DIRS); do if ! ( cd $$m && $(MAKE) -s test CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ) ; then return 1; fi ; done
+
 
 # Not used anymore now that all beams are always built:	
-build-tests: $(BEAMS)
-	@for t in $(TEST_TARGETS); do $(MAKE) -s $$t; done
+build-tests: $(BEAM_FILES)
+	@for t in $(TEST_TARGETS); do $(MAKE) -s $$t CMD_LINE_OPT="${CMD_LINE_OPT}"; done
 
 
 launch: Emakefile
@@ -177,25 +193,21 @@ help-erl:
 		"then 'hello:world().', then CTRL-C CTRL-C"
 
 
-STATE_MACHINES = $(wildcard *.graph)
 
-STATE_MACHINES_DIAGRAMS  = $(STATE_MACHINES:%.graph=%.png) 
+# To trigger the automatic rendering of a created diagram, add 'VIEW_PDF=' 
+# at the end of the command line (ex : 'make MyFSM.png VIEW_PDF=')
+VIEW_PDF = no
+#VIEW_PDF =
 
-
-# To trigger the automatic rendering of a created diagram, add 'VIEW_GRAPH=' 
-# at the end of the command line (ex : 'make MyFSM.png VIEW_GRAPH=')
-VIEW_GRAPH = no
-#VIEW_GRAPH =
-
-%.png: %.graph
+%.png: %.PDF
 	@echo "     Generating $@"
 	@$(DOT) -o$@ -Tpng $<
-	@if [ "$(VIEW_GRAPH)" != "no" ] ; then $(IMG_VIEWER) $@ & fi
+	@if [ "$(VIEW_PDF)" != "no" ] ; then $(IMG_VIEWER) $@ & fi
 
 
 
-# To trigger the automatic rendering of a created diagram, add 'VIEW_GRAPH=' 
-# at the end of the command line (ex : 'make MyFSM.png VIEW_GRAPH=')
+# To trigger the automatic rendering of a created diagram, add 'VIEW_PLOT=' 
+# at the end of the command line (ex : 'make MyFSM.png VIEW_PLOT=')
 VIEW_PLOT = yes
 #VIEW_PLOT =
 
@@ -210,23 +222,57 @@ VIEW_PLOT = yes
 	@if [ "$(VIEW_PLOT)" != "no" ] ; then $(IMG_VIEWER) $@ & fi
 
 
-	
-clean: clean-erlang clean-database clean-subdirs clean-dot clean-log \
-	clean-probe clean-gnuplot
 
+# To trigger the automatic rendering of a created PDF, add 'VIEW_PDF=' 
+# at the end of the command line (ex : 'make MyFSM.png VIEW_PDF=')
+#VIEW_PDF = yes
+VIEW_PDF = no
+
+%.pdf: %.rst
+	@echo "     Generating PDF documentation $@"
+	$(RST_GENERATOR) $< --pdf
+	@if [ "$(VIEW_PDF)" != "no" ] ; then $(PDF_VIEWER) $@ & fi
+	
+%.html: %.rst
+	@echo "     Generating HTML documentation $@"
+	$(RST_GENERATOR) $< $(CEYLAN_CSS)
+	
+
+GRAPH_SRC = $(wildcard *.graph)
+
+GRAPH_PNG  = $(GRAPH_SRC:%.graph=%.png) 
+
+doc: $(GRAPH_PNG) doc-recurse #$(PDF_GENERATED_FILES)
+
+doc-recurse:
+	@echo "   Preparing documentation in "$(PWD) #`basename $(PWD)`
+	@for m in $(MODULES_DIRS); do if ! ( cd $$m && $(MAKE) -s doc CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ) ; then return 1; fi ; done
+
+
+
+
+# To trigger the automatic rendering of a created diagram, add 'VIEW_GRAPH=' 
+# at the end of the command line (ex : 'make MyFSM.png VIEW_GRAPH=')
+VIEW_GRAPH = no
+#VIEW_GRAPH =
+
+%.png: %.graph
+	@echo "    Generating $@"
+	@$(DOT) -o$@ -Tpng $<
+	@if [ "$(VIEW_GRAPH)" != "no" ] ; then $(IMG_VIEWER) $@ & fi
+
+
+
+	
+clean: clean-erlang clean-database clean-dot clean-log \
+	clean-probe clean-gnuplot clean-rst clean-recurse
 
 clean-erlang:
 	@echo "     Cleaning all in "$(PWD) #`basename $(PWD)`
 	-@rm -f *.beam *.jam erl_crash.dump
 
-
 clean-database:
 	-@rm -rf Mnesia.*@*
-
-
-clean-subdirs:
-	@for m in $(MODULES_DIRS); do ( cd $$m; $(MAKE) -s clean ); done
-
 
 # Some .png must be kept (ex: dia-exported ones).
 clean-dot:
@@ -236,12 +282,18 @@ clean-log:
 	-@rm -f *.log
 
 clean-probe:
-	-@rm -f *_Probe*.png *_probe*.png *-generated.png
-	
+	-@if [ `basename $$PWD` != "doc" ]; then rm -f *_Probe*.png *_probe*.png *-generated.png; fi
+
 clean-gnuplot:
 	@# Let's hope we do not remove user files:
-	-@rm -f *.p *.plotsim
-	
+	-@if [ `basename $$PWD` != "doc" ]; then rm -f *.p *.plotsim; fi
+
+clean-rst:
+	-@rm -f $(RST_GENERATED_FILES)	
+
+clean-recurse:
+	@for m in $(MODULES_DIRS); do if ! ( cd $$m && $(MAKE) -s clean CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ) ; then return 1; fi ; done
+
 	
 realclean: clean
 	@echo "     Deep cleaning in "`basename $(PWD)`
@@ -250,6 +302,8 @@ realclean: clean
 
 info: info-files
 	@echo "FQDN                   = $(FQDN)"
+	@echo "BEAM_DIRS              = $(BEAM_DIRS)"
+	@echo "BEAM_PATH_OPT          = $(BEAM_PATH_OPT)"
 	@echo "ARCHIVE_FILE           = $(ARCHIVE_FILE)"
 	@echo "ERLANG_INTERPRETER     = $(ERLANG_INTERPRETER)"
 	@echo "ERLANG_INTERPRETER_OPT = $(ERLANG_INTERPRETER_OPT)"
@@ -257,8 +311,8 @@ info: info-files
 
 
 info-files:	
-	@echo "SOURCES      = $(SOURCES)"
-	@echo "BEAMS        = $(BEAMS)"
-	@echo "TESTS        = $(TESTS)"
+	@echo "ERL_FILES    = $(ERL_FILES)"
+	@echo "BEAM_FILES   = $(BEAM_FILES)"
+	@echo "TEST_SOURCES = $(TEST_SOURCES)"
 	@echo "TEST_TARGETS = $(TEST_TARGETS)"
 	
