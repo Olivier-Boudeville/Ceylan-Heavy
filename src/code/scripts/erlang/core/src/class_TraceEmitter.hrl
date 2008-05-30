@@ -198,8 +198,14 @@
 -endif.
 
 
-% Section dedicated to trace emitters that are not WOOPER-based (in general,
-% tests).
+% Section dedicated to trace emitters that are not WOOPER-based and dedicated
+% to tests.
 % See also: test_constructs.hrl.
 -define(DefaultTestMessageCategorization,"Test.Uncategorized").
+
+
+% Section dedicated to trace emitters that are not WOOPER-based and dedicated
+% to classical functions (as opposed to methods from class_TraceEmitter).
+% See also: traces.hrl.
+-define(DefaultStandaloneMessageCategorization,"Standalone.Uncategorized").
 
