@@ -26,7 +26,7 @@
 
 
 % Helper functions:
--export([send/2,send_from_test/2,get_current_tick/1]).
+-export([send/2,send_from_test/2,send_standalone/2,get_current_tick/1]).
 
 
 
@@ -164,11 +164,12 @@ send( TraceType,
 
 
 % Sends all types of traces without requiring a class_TraceEmitter state.
-% Uses default trace aggregator, supposed to be already available and registered
-send_from_test(TraceType, [Message]) ->
+% Uses default trace aggregator, supposed to be already available and 
+% registered.
+send_from_test( TraceType, [Message] ) ->
 	send_from_test(TraceType, [Message, ?DefaultTestMessageCategorization]);
 	
-send_from_test(TraceType, [Message, MessageCategorization]) ->
+send_from_test( TraceType, [Message,MessageCategorization] ) ->
 	% Follows the order of our trace format; oneway call:
 	case global:whereis_name(?trace_aggregator_name) of
 	
@@ -184,6 +185,34 @@ send_from_test(TraceType, [Message, MessageCategorization]) ->
 			get_priority_for(TraceType), Message ] }
 	
 	end.		
+
+
+
+% Sends all types of traces without requiring a class_TraceEmitter state.
+% Uses default trace aggregator, supposed to be already available and 
+% registered.
+send_standalone( TraceType, [Message] ) ->
+	send_standalone(TraceType, [Message,
+		?DefaultStandaloneMessageCategorization]);
+	
+send_standalone( TraceType, [Message,MessageCategorization] ) ->
+	% Follows the order of our trace format; oneway call:
+	case global:whereis_name(?trace_aggregator_name) of
+	
+		undefined ->
+			error_logger:info_msg( "class_TraceEmitter:send_standalone: "	
+				"trace aggregator not found." ),	
+			exit( trace_aggregator_not_found );
+			
+		AggregatorPid ->
+			AggregatorPid ! { send, 
+				[ self(), "Ceylan", "Standalone", none, 
+			current_time_to_string(), current_location(), MessageCategorization,
+			get_priority_for(TraceType), Message ] }
+	
+	end.		
+
+
 
 
 
