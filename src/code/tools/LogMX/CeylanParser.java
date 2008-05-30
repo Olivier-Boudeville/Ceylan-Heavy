@@ -126,7 +126,16 @@ public class CeylanParser extends LogFileParser
 			entry.setMessage( "[" + fields[6].trim() + "] [" + fields[4].trim() 
 			+ "] [" + fields[5].trim() + "]\n" + fields[8].trim() ) ;
 
-			// Relative timestamp is also the simulation time here:
+			/*
+			 * Relative timestamp is also the simulation time here:
+			 * (simulation time used here)
+			 *
+			 * @note If the simulation time is too high (more than a 
+			 * 32-bit int ?), the parser will not be able to manage it.
+			 *
+			 * See Integer.parseInt in getRelativeEntryDate.
+			 *
+			 */
 			entry.setExtraInfo( fields[3].trim() );	
 		
       } 
