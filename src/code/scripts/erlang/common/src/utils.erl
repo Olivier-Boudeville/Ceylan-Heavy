@@ -14,7 +14,8 @@
 	generate_png_from_graph_file/2,generate_png_from_graph_file/3,
 	display_png_file/1,
 	get_image_file_png/1,get_image_file_gif/1,
-	term_toString/1,wait_for_global_registration_of/1]).
+	term_toString/1,
+	register_as/2,register_as/3,wait_for_global_registration_of/1]).
 
 
 -define(ResourceDir,"resources").
@@ -98,6 +99,7 @@ get_image_file_gif(Image) ->
   filename:join([?ResourceDir, "images", Image ++ ".gif"]).
 
 
+
 % Returns a human-readable string describing specified term.	
 term_toString(Term) ->
 	case io_lib:printable_list(Term) of
@@ -108,6 +110,51 @@ term_toString(Term) ->
 		
 	end.	
 
+
+
+% Registers the current process under specified name.
+% Declaration is register_as(ServerName,RegistrationType) with 
+% RegistrationType in 'local_only', 'global_only', 'local_and_global', 
+% depending on what kind of registration is requested.
+% Returns ok on success.
+% If local registration fails, local_registration_failed is returned.
+% If global registration fails, global_registration_failed is returned.
+register_as(ServerName,RegistrationType) ->
+	register_as( self(), ServerName, RegistrationType ).
+
+
+% Registers specified PID under specified name.
+% Declaration is: register_as(Pid,ServerName,RegistrationType) with 
+% RegistrationType is in 'local_only', 'global_only', 'local_and_global', 
+% depending on what kind of registration is requested.
+% Returns ok on success.
+% If local registration fails, local_registration_failed is returned.
+% If global registration fails, global_registration_failed is returned.
+register_as(Pid,ServerName,local_only) ->
+	case erlang:register( ServerName, Pid ) of 
+	
+		true ->
+			ok;
+			
+		false ->
+			local_registration_failed				
+	
+	end;
+ 
+register_as(Pid,ServerName,global_only) ->
+	case global:register_name( ServerName, Pid ) of 
+	
+		yes ->
+			ok;
+					
+		no ->
+			global_registration_failed,ServerName				
+			
+	end;
+
+register_as(Pid,ServerName,local_and_global) ->
+	ok = register_as(Pid,ServerName,local_only),
+	ok = register_as(Pid,ServerName,global_only).
 
 
 % Waits (up to 5 seconds) until specified name is globally registered.
