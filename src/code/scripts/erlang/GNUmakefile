@@ -8,6 +8,8 @@ PROJECT_NAME := Ceylan-Erlang
 
 PROJECT_VERSION := 0.1
 
+OVERALL_DOCUMENT_SOURCE = Ceylan-Erlang-manual.rst
+
 
 include $(CEYLAN_ERLANG_TOP)/GNUmakerules.inc
 
