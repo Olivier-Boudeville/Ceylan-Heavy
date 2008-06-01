@@ -9,7 +9,7 @@
 % Licensed under a disjunctive tri-license: MPL/GPL/LGPL.
 
 
--export([get_timestamp/0,get_textual_timestamp/0,
+-export([get_timestamp/0,get_textual_timestamp/0,get_textual_timestamp/1,
 	convert_to_filename/1,speak/1,notify_user/1,notify_user/2,
 	generate_png_from_graph_file/2,generate_png_from_graph_file/3,
 	display_png_file/1,
@@ -29,8 +29,9 @@ get_timestamp() ->
 
 % Returns a string corresponding to the current timestamp.
 get_textual_timestamp() ->
-	{{Year,Month,Day},{Hour,Minute,Second}} = get_timestamp(),
- 	%io_lib:format( "[~p:~p:~p]", tuple_to_list(now()) ).
+	get_textual_timestamp( get_timestamp() ).
+	
+get_textual_timestamp({{Year,Month,Day},{Hour,Minute,Second}}) ->
  	io_lib:format( "[~p/~p/~p ~B:~2..0B:~2..0B]",
 		[Year,Month,Day,Hour,Minute,Second] ).
 		
@@ -56,7 +57,7 @@ notify_user(Message) ->
 
 % Notifies the user of the specified message, with log output and synthetic
 % voice.		
-% @example 'utils:notify_user( "Hello ~w", [ Name ]).'
+%Example: 'utils:notify_user( "Hello ~w", [ Name ]).'
 notify_user(Message,FormatList) ->
 	ActualMessage = io_lib:format(Message,FormatList), 
 	io:format(ActualMessage),
