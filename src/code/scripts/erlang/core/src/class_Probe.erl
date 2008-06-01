@@ -4,7 +4,7 @@
 % Note: Ticks must arrive correctly ordered (increasing timestamps)
 % A probe named 'Test probe' will result in the creation of two files:
 %  - Test_probe.p, with the relevant gnuplot commands
-%  - Test_probe.plotsim, with the probe data
+%  - Test_probe.dat, with the probe data
 % See class_Probe_test.erl
 % See http://www.gnuplot.info/docs/gnuplot.html for graph generation.
 % Needs gnuplot version 4.2 or higher, and an image viewer, eog (eye of gnome).
@@ -65,7 +65,7 @@ construct(State,?wooper_construct_parameters) ->
 	% (using default settings for graph rendering)
 	StartState = ?setAttributes( TraceState, [ {curve_count,size(CurveNames)},
 		{data_table,[]}, {trace_categorization,?TraceEmitterCategorization},
-		{data_filename,utils:convert_to_filename(Name ++ ".plotsim")},
+		{data_filename,utils:convert_to_filename(Name ++ ".dat")},
 		{curve_names,CurveNames}, {title,Title}, 
 		{key_options,"bmargin center horizontal"},
 		{xlabel,XLabel}, {ylabel,YLabel},
