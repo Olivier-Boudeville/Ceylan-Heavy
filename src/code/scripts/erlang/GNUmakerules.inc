@@ -31,6 +31,20 @@ RST_GENERATED_FILES =  $(AUX_GENERATED_FILES) $(TEX_GENERATED_FILES)      \
 	$(OUT_GENERATED_FILES) $(HTML_GENERATED_FILES) $(PDF_GENERATED_FILES)   
 
 
+PNG_FROM_PYTHON = $(patsubst %.py,%.png,$(wildcard *.py))
+PNG_FROM_PYTHON_NEGATED = $(patsubst %.py,%-negated.png,$(wildcard *.py))
+
+NEGATED_PNG = $(patsubst %.png,%-negated.png,$(wildcard *.png))
+
+GRAPH_SRC = $(wildcard *.graph)
+
+GRAPH_PNG  = $(GRAPH_SRC:%.graph=%.png) 
+
+
+# OVERALL_DOCUMENT_SOURCE defined in per-project GNUmakefile:
+OVERALL_DOCUMENT_TARGET = $(patsubst %.rst,%.pdf,$(OVERALL_DOCUMENT_SOURCE))
+
+
 
 # Outside prerequesites: $(WOOPER_SRC)/wooper.hrl wooper_class_manager
 
@@ -194,39 +208,31 @@ help-erl:
 
 
 
-# To trigger the automatic rendering of a created diagram, add 'VIEW_PDF=' 
-# at the end of the command line (ex : 'make MyFSM.png VIEW_PDF=')
-VIEW_PDF = no
-#VIEW_PDF =
-
-%.png: %.PDF
-	@echo "     Generating $@"
-	@$(DOT) -o$@ -Tpng $<
-	@if [ "$(VIEW_PDF)" != "no" ] ; then $(IMG_VIEWER) $@ & fi
-
-
-
 # To trigger the automatic rendering of a created diagram, add 'VIEW_PLOT=' 
 # at the end of the command line (ex : 'make MyFSM.png VIEW_PLOT=')
 VIEW_PLOT = yes
 #VIEW_PLOT =
 
-%.png: %.p %.plotsim
+%.png: %.plot %.dat
 	@echo "     Generating probe report $@"
 	@$(GNUPLOT) $<
 	@if [ "$(VIEW_PLOT)" != "no" ] ; then $(IMG_VIEWER) $@ & fi
 
-%-generated.png: %.pdoc %.plotdoc
-	@echo "     Generating plot report $@"
-	@$(GNUPLOT) $<
-	@if [ "$(VIEW_PLOT)" != "no" ] ; then $(IMG_VIEWER) $@ & fi
 
+%-negated.png: %.png
+	@echo "    Generating $@ from $< with $(IMAGE_MAGICK)"
+	@$(IMAGE_MAGICK) $< -negate $@
+
+
+%.dat: %.py
+	@echo "     Generating plot data $@ from $<"
+	@$(PYTHON) $<
 
 
 # To trigger the automatic rendering of a created PDF, add 'VIEW_PDF=' 
 # at the end of the command line (ex : 'make MyFSM.png VIEW_PDF=')
-#VIEW_PDF = yes
-VIEW_PDF = no
+VIEW_PDF = yes
+#VIEW_PDF = no
 
 %.pdf: %.rst
 	@echo "     Generating PDF documentation $@"
@@ -238,11 +244,10 @@ VIEW_PDF = no
 	$(RST_GENERATOR) $< $(CEYLAN_CSS)
 	
 
-GRAPH_SRC = $(wildcard *.graph)
 
-GRAPH_PNG  = $(GRAPH_SRC:%.graph=%.png) 
 
-doc: $(GRAPH_PNG) doc-recurse #$(PDF_GENERATED_FILES)
+doc: $(GRAPH_PNG) $(PNG_FROM_PYTHON) $(PNG_FROM_PYTHON_NEGATED) doc-recurse #$(PDF_GENERATED_FILES)
+
 
 doc-recurse:
 	@echo "   Preparing documentation in "$(PWD) #`basename $(PWD)`
@@ -265,31 +270,43 @@ VIEW_GRAPH = no
 
 	
 clean: clean-erlang clean-database clean-dot clean-log \
-	clean-probe clean-gnuplot clean-rst clean-recurse
+	clean-probe clean-gnuplot clean-png clean-rst clean-recurse
+
 
 clean-erlang:
 	@echo "     Cleaning all in "$(PWD) #`basename $(PWD)`
 	-@rm -f *.beam *.jam erl_crash.dump
 
+
 clean-database:
 	-@rm -rf Mnesia.*@*
+
 
 # Some .png must be kept (ex: dia-exported ones).
 clean-dot:
 	-@rm -f $(STATE_MACHINES_DIAGRAMS) *.map	
 
+
 clean-log:
 	-@rm -f *.log
+
 
 clean-probe:
 	-@if [ `basename $$PWD` != "doc" ]; then rm -f *_Probe*.png *_probe*.png *-generated.png; fi
 
+
 clean-gnuplot:
 	@# Let's hope we do not remove user files:
-	-@if [ `basename $$PWD` != "doc" ]; then rm -f *.p *.plotsim; fi
+	-@if [ `basename $$PWD` != "doc" ]; then rm -f *.dat; fi
 
+	
+clean-png:
+	-@rm -f $(PNG_FROM_PYTHON) $(PNG_FROM_PYTHON_NEGATED) $(NEGATED_PNG)
+	
+	
 clean-rst:
 	-@rm -f $(RST_GENERATED_FILES)	
+
 
 clean-recurse:
 	@for m in $(MODULES_DIRS); do if ! ( cd $$m && $(MAKE) -s clean CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ) ; then return 1; fi ; done
