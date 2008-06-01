@@ -95,6 +95,8 @@ ERLANG_COMPILER_OPT       := -b beam $(INC) -v -W$(WARNING_LEVEL)  \
 	$(ERLANG_COMPILER_OPT_DEBUG)
 
 
+PYTHON_INTERPRETER  := python
+
 
 DOT_ROOT = /usr/bin
 
@@ -114,6 +116,8 @@ IMG_VIEWER = /usr/bin/eog
 PDF_VIEWER = /usr/bin/evince
 
 CEYLAN_CSS = $(CEYLAN_TRUNK)/src/doc/web/common/css/Ceylan-docutils.css
+
+IMAGE_MAGICK = convert
 
 
 ifndef FQDN
@@ -146,8 +150,8 @@ STARTUP_FUNCTION := run
 
 # Used to use 'BEAM_DIRS := ... $(BEAM_DIRS)' but it led to multiple duplicates
 # (multiple inclusions ?)
-BEAM_DIRS = . $(COMMON_BEAM) $(WOOPER_BEAM) $(CORE_BEAM)                   \
-	$(GENERIC_BEAM) $(MESH_BEAM) $(SPACE_BEAM)                             \
+BEAM_DIRS := . $(COMMON_BEAM) $(WOOPER_BEAM) $(CORE_BEAM)                   \
+	$(GENERIC_BEAM) $(MESH_BEAM) $(SPACE_BEAM) $(BEAM_DIRS)             \
 
 
 # 'BEAM_PATH_OPT = --beam-paths $(BEAM_DIRS)' would be shorter, but would
@@ -164,8 +168,6 @@ ERL_LAUNCHER = $(COMMON_SRC)/launch-erl.sh
 
 ERL_PARAMETRIZED_LAUNCHER = $(ERL_LAUNCHER) -v -c $(PROJECT_NAME) --ln $(VM_TEST_NAME) --fqdn $(FQDN) $(BEAM_PATH_OPT)
 
-OVERALL_DOCUMENT_SOURCE = Ceylan-Erlang-manual.rst
-OVERALL_DOCUMENT_TARGET = Ceylan-Erlang-manual.pdf
 
 TMP_RST_REPOSITORY = tmp-rst
 
