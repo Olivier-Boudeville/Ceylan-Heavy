@@ -89,6 +89,7 @@ while [ $# -gt 0 ] ; do
 
 	if [ "$1" = "--beam-dir" ] ; then
 		shift
+		#echo "  + adding beam dir $1"
 		CODE_DIRS="${CODE_DIRS} $1"
 		token_eaten=0
 	fi
