@@ -15,7 +15,8 @@
 	display_png_file/1,
 	get_image_file_png/1,get_image_file_gif/1,
 	term_toString/1,
-	register_as/2,register_as/3,wait_for_global_registration_of/1]).
+	register_as/2,register_as/3,wait_for_global_registration_of/1,
+	join/2]).
 
 
 -define(ResourceDir,"resources").
@@ -179,6 +180,18 @@ wait_for_global_registration_of(Name,SecondsToWait) ->
 			
 	end.
 	
+	
+% Python-like 'join', combines items in a list into a string using a separator
+% between each item representation. 
+% Inspired from http://www.trapexit.org/String_join_with.
+join(Separator,ListToJoin) ->
+    lists:flatten( lists:reverse( join(Separator, ListToJoin, []) ) ).
+
+join(_Separator,[H| [] ],Acc) ->
+    [H|Acc];
+	
+join(Separator,[H|T],Acc) ->
+    join(Separator, T, [Separator, H|Acc]).
 
 
 % Helper functions.
