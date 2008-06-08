@@ -96,11 +96,12 @@ run() ->
 		
 	MyGraphableMesh ! { addNodes, [[
 		{ first_graphable,  class_Graphable:new( "My first graphable" ) },
-		{ second_graphable, class_Graphable:new( "My second graphable" ) },
-		{ third_graphable,  class_Graphable:new( "My third graphable" ) }
+		{ second_graphable, class_Graphable:new( [ 
+			{label,"My second graphable"}, {color,red} ] ) },
+		{ third_graphable,  class_Graphable:new( [ 
+			{label,"My third graphable"}, {shape,hexagon}, {color,blue} ] ) }
 	]] },
-
-
+	
 	MyGraphableMesh ! {addLink,[first_graphable,second_graphable,
 		"I am a link from first to second"]},
 
