@@ -1,5 +1,5 @@
 % Unit tests for the Probe class implementation.
-% @see the class_Probe.erl module.
+% See the class_Probe.erl module.
 -module(class_Probe_test).
 
 
