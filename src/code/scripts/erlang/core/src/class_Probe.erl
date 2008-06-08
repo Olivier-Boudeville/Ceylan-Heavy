@@ -173,8 +173,9 @@ generateReport(State,DisplayWanted) ->
 	
 		false ->
 			ok
+			
 	end,	
-	?wooper_return_state_result(State,report_generated).
+	?wooper_return_state_result(State,probe_report_generated).
 
 
 % Returns the Gnuplot command appropriate to render that probe output.
