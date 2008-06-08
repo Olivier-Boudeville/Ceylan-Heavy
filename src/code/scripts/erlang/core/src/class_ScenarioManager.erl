@@ -150,7 +150,7 @@ stop(State) ->
 			ProbePid ! generateReport,
 			receive
 	
-				{wooper_result,report_generated} ->
+				{wooper_result,probe_report_generated} ->
 					?trace([ "Scenario report correctly generated." ])
 					
 			end
