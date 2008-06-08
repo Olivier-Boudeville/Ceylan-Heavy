@@ -108,7 +108,7 @@ check_pending_wooper_results() ->
 ).
 
 
-% Allows to defined whether the probe report should be displayed to the user
+% Allows to define whether the probe report should be displayed to the user,
 % after generation.
 -define(generateReportForProbe(ProbePid),
 
@@ -126,8 +126,8 @@ check_pending_wooper_results() ->
 				
 	receive
 	
-		{wooper_result,report_generated} ->
-			?test_info([ "Report correctly generated." ])
+		{wooper_result,probe_report_generated} ->
+			?test_info([ "Probe report correctly generated." ])
 			
 	end
 
