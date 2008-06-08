@@ -170,6 +170,7 @@ start(State) ->
 
 
 % Starts the time manager with a specific termination tick defined.	
+% (oneway)	
 start(State,TerminationOffset) ->
 	InitState = init( State ),
 	StopTick = ?getAttribute(InitState,starting_time) + TerminationOffset,
@@ -180,13 +181,11 @@ start(State,TerminationOffset) ->
 
 % Starts the time manager with a specific termination tick defined and a
 % registered stop listener.
+% (oneway)	
 start(State,TerminationOffset,StopListenerPID) ->
-	InitState = init( ?setAttribute(State,stop_listener,StopListenerPID) ),
-	StopTick = ?getAttribute(InitState,starting_time) + TerminationOffset,
-	?info([ io_lib:format("Will stop at tick ~B.",[StopTick]) ]),
-	?wooper_return_state_only( 
-		?setAttribute( InitState, stop_tick, StopTick ) ).
-			 
+	start( ?setAttribute( State, stop_listener, StopListenerPID ),
+		TerminationOffset ).
+		
 			 
 % Stops the time manager.	
 % (oneway)
@@ -262,6 +261,8 @@ stop(State) ->
 % (to be called by the internal timer if interactive, otherwise directly).
 % (oneway)	
 timer_top(State) ->
+	io:format( "YYY1"),
+	%?trace([ "Waited listeners are: ~w", [?getAttr(waited_listeners)]),
 	
 	% Check whether the current tick can really be declared over:
 	case ?getAttr(waited_listeners) of 
@@ -306,7 +307,8 @@ timer_top(State) ->
 				false ->
 					?error([ io_lib:format( "timer_top method: "
 						"there are still waited listeners: ~w (abnormal), "
-						"still waiting.", [NonEmptyList] ) ])
+						"still waiting.", [NonEmptyList] ) ]),
+					exit( still_pending_actors )	
 						
 			end	
 					
@@ -371,27 +373,34 @@ convertTicksToSeconds(State,Ticks) ->
 % ex: MyTimeManager ! { subscribe, [], self() }
 % Current tick of manager cannot be returned, as it may not be started yet,
 % in which case there is no current tick.
-% (this is a request).
+%
+% (request).
 %
 subscribe(State) ->
 
+	io:format( "YYY3"),
+	
 	% PID retrieved from request:
 	Caller = ?getSender(),
 	
 	case lists:member(Caller, ?getAttr(time_listeners) ) of 
 			
 		true ->
+			?warning([ io_lib:format( "Subscribing requested, whereas "
+				"actor ~w was already time subscribed.", [Caller] ) ]),
 			?wooper_return_state_result(State,already_time_subscribed) ;
 				
 		false ->
+
+			?debug([ io_lib:format( "Subscribing actor ~w.", [Caller] ) ]),
 		
 			% Links together this manager and the calling listener, so that the
 			% termination of one will result in the other receiving an exit
 			% signal:
 			erlang:link(Caller), 
 			
-			% If manager already started, notify directly the actor, otherwise
-			% do nothing, as it will be done when starting:
+			% If manager is already started, notifies directly the actor,
+			% otherwise do nothing, as it will be done when starting:
 			case ?getAttr(started) of 
 				
 				true ->
@@ -424,11 +433,15 @@ unsubscribe(State) ->
 	case lists:member(Caller,Listeners) of 
 			
 		true ->
+			?debug([ io_lib:format( "Unsubscribing actor ~w.", [Caller] ) ]),
 			?wooper_return_state_result(
 				?setAttribute( State, time_listeners,
 					lists:delete(Caller,Listeners) ), time_unsubscribed ) ;
 				
 		false ->
+			?warning([ io_lib:format(
+				"Actor ~w was not already time subscribed, "
+				"whereas unsubscribing requested.",	[Caller] ) ]),
 			?wooper_return_state_result( State,	not_already_time_subscribed )
 					
 	end.
@@ -523,6 +536,8 @@ start() ->
 	
 	
 % Starts the already-created time manager, with a termination tick specified.
+% TerminationOffset is the number of ticks that should be waited until the 
+% time manager stops (duration, not absolute time).
 % (static)
 startUntil(TerminationOffset) ->
 
@@ -762,18 +777,24 @@ count_time(ManagerPid,TimeOut) ->
 
 
 % Returns the current (numerical) simulation tick, in virtual gregorian seconds.
+% Note: the time manager must be started.
 get_current_tick(State) ->
 	%io:format( "get_current_tick called.~n" ),
 	?getAttr(starting_time)	+ ?getAttr(current_time_offset).
 
 
 % Takes care of the beginning of a new simulation tick.
+% Returns an updated state.
 begin_new_tick(State) ->
 
 	% Here we go for next tick:					
 	NewState = ?addToAttribute( State, current_time_offset, 1 ),
 	
-	?info([ io_lib:format( "Top: ~s.", [get_textual_timings(NewState)] ) ]),
+	TimeListeners = ?getAttr(time_listeners),
+	
+	?info([ io_lib:format( "Top: ~s, sent to ~B actor(s).", 
+		[ get_textual_timings(NewState), length( TimeListeners ) ] )
+	]),
 	
 	CurrentTick = get_current_tick(NewState),
 	
@@ -785,45 +806,59 @@ begin_new_tick(State) ->
 			self() ! stop,
 			NewState;
 		
-		_Other ->
-			% Other tick or undefined:
-			% Can be interpreted as a listener one-way call:	
-			% (sends the beginTick tuple to all of them)
-			notify_all_listeners( NewState, { beginTick, CurrentTick } ),
+		_NonTerminalTick ->
 		
-			Terminators = ?getAttribute(NewState, terminated_actors),
+			case TimeListeners of 
+			
+				[] ->
+				
+					?debug([ "No actor registered currently, nothing to do." ]),
+					% Light sleeping added here, to avoid to eat ticks at 
+					% light speed:
+					timer:sleep(10),
+					self() ! timer_top,
+					NewState;
+				
+				_ExistingListeners ->	
+				
+					% Other tick or undefined:
+					% Can be interpreted as a listener one-way call:	
+					% (sends the beginTick tuple to all of them)
+					notify_all_listeners( NewState, {beginTick,CurrentTick} ),
+		
+					Terminators = ?getAttribute(NewState, terminated_actors),
 	
-			% Unlinks actors on termination:
-			% Yes, the Fun parameter is needed for recursion with 
-			% anonymous functions:  
-			F = fun( Fun, ListOfTerminators ) ->
+					% Unlinks actors on termination:
+					% Yes, the Fun parameter is needed for recursion with 
+					% anonymous functions:  
+					F = fun( Fun, ListOfTerminators ) ->
 
-				case ListOfTerminators of
+						case ListOfTerminators of
 		
-					[] ->
-						ok;
+							[] ->
+								ok;
 				
-					[H|T] ->
-						erlang:unlink( H ),
-						Fun(Fun,T)	
+							[H|T] ->
+								erlang:unlink( H ),
+								Fun(Fun,T)	
 				
-				end		
+						end		
 		
-			end,	
-			F(F,Terminators),
-	
-			Listeners = ?getAttribute( NewState, time_listeners ),
-	
-			% Removes all actors having sent a terminated message during 
-			% last tick:
-			FilteredListeners = lists:subtract( Listeners, Terminators ),
+					end,	
+					F(F,Terminators),
+		
+					% Removes all actors having sent a terminated message during
+					% last tick:
+					FilteredListeners = lists:subtract( TimeListeners,
+						Terminators ),
 	 
-			% Prepares to wait for all remaining listeners and clears the
-			% terminated list, now that used:
-			?setAttributes( NewState, 
-				[   {time_listeners,FilteredListeners},
-		  			{waited_listeners,FilteredListeners}, 
-		  			{terminated_actors,[]} ] )
+					% Prepares to wait for all remaining listeners and clears
+					% the terminated list, now that used:
+					?setAttributes( NewState, 
+					[   {time_listeners,FilteredListeners},
+		  				{waited_listeners,FilteredListeners}, 
+		  				{terminated_actors,[]} ] )
+			end			
 					
 	end.
 		
@@ -955,6 +990,8 @@ get_textual_timings(State) ->
 
 % Sends a message to all time listeners.
 notify_all_listeners(State,Message) ->
+	%?debug([ io_lib:format( "All ~B listener(s) will be notified of ~w.",
+	%	[length(?getAttr(time_listeners)),Message] ) ]),
 	warn_listeners( ?getAttr(time_listeners), Message ).
 	
 
@@ -1046,6 +1083,7 @@ init(State) ->
 				
 			% Sends the first top:	
 			self() ! timer_top,
+			io:format( "YYY0"),
 			StartedState	
 			
 	end.
