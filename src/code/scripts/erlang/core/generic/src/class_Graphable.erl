@@ -1,5 +1,6 @@
 % Graphable class, base of all instances able to output a textual description
-% of their state.
+% of their state in the context of graph rendering.
+% See also: core/mesh/src/class_Mesh.erl
 -module(class_Graphable).
 
 
@@ -8,7 +9,7 @@
 
 
 % Parameters taken by the constructor ('construct'). 
--define(wooper_construct_parameters,Label).
+-define(wooper_construct_parameters,OptionParameter).
 
 % Life-cycle related exported operators:
 -define(wooper_construct_export,new/1,new_link/1,
@@ -25,14 +26,20 @@
 
 
 % Implementation Note:
+%
 % Being a trace emitter is not strictly needed, as it leads to useless 
 % diamond-shaped multiple inheritance.
 
 	
 % Constructs a new graphable instance. 
+% OptionParameter is:
+%  - either a label, like "hello"
+%  - or a list of option pairs like {dot_option_name,option_value} in which
+% at least the label is defined. 
+% Ex: [ {label,"hello"}, {color,"red"} ].
 construct(State,?wooper_construct_parameters) ->
 	% First the direct mother classes, then this class-specific actions:
-	?setAttribute( State, label, transform_label(Label) ).
+	interpret_option_list(State,OptionParameter).
 	
 	
 % Overriden destructor.
@@ -65,14 +72,38 @@ setLabel(State,NewLabel) ->
 	?wooper_return_state_only( ?setAttribute( State, label,	NewLabel ) ).
 	
 
-% Returns {NodeName,NodeLabel}.
+% Returns {GraphableName,OptionList} where GraphableName is the generated name
+% for this graphable, and OptionList is the list of all attribute name/value
+% pairs, which are supposed to be dot options.
 % (const request)
 getGraphInformations(State) ->
-	?wooper_return_state_result( State, {forge_node_name(),?getAttr(label)} ).
+	?wooper_return_state_result( State, {forge_node_name(),
+		wooper_get_all_attributes(State)} ).
 
 
 		
 % Section for helper functions (not methods).
+
+% Interprets the option list specified for a graphable.
+
+
+% Sets the relevant options in state.
+interpret_option_list( State, [] ) ->
+	State;
+	
+interpret_option_list( State, [{label,Label}|T] ) ->
+	interpret_option_list( 
+		?setAttribute( State, label, transform_label(Label) ), T );
+
+% Beware to attribute name clashing:
+interpret_option_list( State, [{OptionName,OptionValue}|T] ) ->
+	interpret_option_list( 
+		?setAttribute( State, OptionName, OptionValue ), T );
+
+interpret_option_list( State, Label ) ->
+	interpret_option_list( 
+		?setAttribute( State, label, transform_label(Label) ), [] ).
+	
 
 forge_node_name() ->
 	% Ex: "<0.59.0>":
