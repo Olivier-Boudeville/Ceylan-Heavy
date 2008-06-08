@@ -88,10 +88,10 @@ run() ->
 						
 	end,
 	
-	?test_info([ "Stopping manager." ]),
+	?test_info([ "Stopping time manager." ]),
 	class_TimeManager:stop(),
 	
-	?test_info([ "Removing manager." ]),
+	?test_info([ "Removing time manager." ]),
 	class_TimeManager:remove(),
 	
 	?test_stop.
