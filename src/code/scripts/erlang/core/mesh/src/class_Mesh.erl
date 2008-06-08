@@ -3,7 +3,7 @@
 % Each node and each link can have an associated content.
 % If generateTopologicalView is used, then the content associated to each node
 % and link is expected to be the PID of a process that respects the
-% class_Graphable API. 
+% class_Graphable API (see core/generic/src/class_Graphable.erl).
 -module(class_Mesh).
 
 
@@ -36,13 +36,13 @@
 -include("class_TraceEmitter.hrl").
 
 
-% Implementation Notes:
+% Implementation notes:
 %
-% Based on labeled directed graphs, see the digraph module.
+% Implementation based on labeled directed graphs, see the digraph module.
 %
 % Mesh nodes are graph vertices, and mesh links are graph edges.
-% Content associated to a mesh node or link corresponds to the label of a graph 
-% vertex or graph edge.
+% Content associated to a mesh node or link corresponds to the dot options 
+% (including label) of a graph vertex or graph edge.
 % 
 % Such a graph is mutable and modified by digraph calls, thus there is no
 % need to re-set the graph once modified (no new graph returned, existing one
@@ -294,11 +294,20 @@ write_graph_nodes(GraphFile,[],_State) ->
 	io:format(GraphFile, "\n", []);
 	
 write_graph_nodes(GraphFile,[H|T],State) ->
-	{NodeName,NodeLabel} = get_node_graph_informations( ?getAttr(digraph), H ),
-	io:format(GraphFile, "\"~s\" [label=\"~s\"]~n", [NodeName, NodeLabel]  ),
+	{NodeName,NodeOptions} = get_node_graph_informations( 
+		?getAttr(digraph), H ),
+	io:format(GraphFile, "\"~s\" [~s]~n", [NodeName, 
+		format_options(NodeOptions) ]  ),
 	write_graph_nodes(GraphFile,T,State).	
 		
-	
+
+% Formats specified options: [ {a,a_value}, {b,b_value}, {c,c_value} ] must
+% become: a = "a_value", b = "b_value", c = "c_value".	
+format_options(NodeOptions) ->
+	utils:join( ", ", lists:map( fun( {Name,Value} ) -> 
+		io_lib:format( "~s = \"~s\"", [Name,Value] ) end, NodeOptions ) ).
+
+
 % Writes the description of graph links of this mesh in specified file.
 write_graph_links(GraphFile,State) ->
 	Links = digraph:edges( ?getAttr(digraph) ),
@@ -322,15 +331,15 @@ write_graph_footer(GraphFile,_State) ->
 	io:format(GraphFile, "~n~n}~n~n", []).	
 
 
-% Returns the graph informations associated to specified node:
+% Returns the graph informations associated to specified graphable node:
 % {NodeName,NodeLabel}.
 get_node_graph_informations(Digraph,Node) ->
 	{Node,NodeContent} = digraph:vertex(Digraph,Node),
 	NodeContent ! {getGraphInformations,[],self()},
 	receive
 	
-		{wooper_result,NodeInfos} ->
-			NodeInfos
+		{wooper_result,{GraphableName,OptionList}} ->
+			{GraphableName,OptionList}
 			
 	end.
 	
@@ -339,6 +348,7 @@ get_node_graph_informations(Digraph,Node) ->
 % {LinkLabel,SourceNodeName,TargetNodeName}.
 get_link_graph_informations(Digraph,Link) ->
 	{Link,SourceNode,TargetNode,LinkLabel} = digraph:edge(Digraph,Link),
+	% Just needing here the source and target names:
 	{SourceNodeName,_} = get_node_graph_informations(Digraph,SourceNode),
 	{TargetNodeName,_} = get_node_graph_informations(Digraph,TargetNode),
 	{LinkLabel,SourceNodeName,TargetNodeName}.
