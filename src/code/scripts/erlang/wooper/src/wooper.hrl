@@ -170,7 +170,8 @@
 		executeRequest/3,executeRequest/2,executeOneway/3,executeOneway/2,
 		wooper_pop_from_attribute/2,
 		wooper_construct_and_run/1,wooper_construct_and_run_synchronous/2,
-		is_wooper_debug/0,wooper_debug_listen/3, 
+		wooper_get_all_attributes/1, 
+		is_wooper_debug/0,wooper_debug_listen/3,
 		wooper_display_state/1,wooper_display_virtual_table/1,
 		wooper_display_instance/1,
 		wooper_get_state_description/1,wooper_get_virtual_table_description/1,
@@ -213,6 +214,7 @@
 		executeRequest/3,executeRequest/2,executeOneway/3,executeOneway/2,
 		wooper_pop_from_attribute/2,
 		wooper_construct_and_run/1,wooper_construct_and_run_synchronous/2,
+		wooper_get_all_attributes/1,
 		is_wooper_debug/0,wooper_debug_listen/3,
 		wooper_display_state/1,wooper_display_virtual_table/1,
 		wooper_display_instance/1,wooper_display_loop_state/1).
@@ -240,6 +242,12 @@
 		debug_no_activated.
 		
 -endif.
+
+
+% Returns all the attributes of this instance, as a list of {attribute_name,
+% attribute_value} pairs.
+wooper_get_all_attributes(State) ->
+	hashtable:enumerate( State#state_holder.attribute_table ).
 
 
 
