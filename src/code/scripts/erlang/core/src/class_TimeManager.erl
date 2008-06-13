@@ -64,6 +64,8 @@
 -include("class_TimeManager.hrl").
 
 
+
+
 % Use global:registered_names() to check manager presence.
 
 
@@ -261,7 +263,6 @@ stop(State) ->
 % (to be called by the internal timer if interactive, otherwise directly).
 % (oneway)	
 timer_top(State) ->
-	io:format( "YYY1"),
 	%?trace([ "Waited listeners are: ~w", [?getAttr(waited_listeners)]),
 	
 	% Check whether the current tick can really be declared over:
@@ -378,8 +379,6 @@ convertTicksToSeconds(State,Ticks) ->
 %
 subscribe(State) ->
 
-	io:format( "YYY3"),
-	
 	% PID retrieved from request:
 	Caller = ?getSender(),
 	
@@ -1018,6 +1017,9 @@ convert_ticks_to_seconds(State,Ticks) ->
 % Returns an updated state.
 init(State) ->
 
+	% Check:
+	false = ?getAttr(started),
+	
 	% This manager will not terminate when an exit signal is received, instead
 	% the signal will be transformed into an 'EXIT' message: 
 	% (a monitor could be used instead)
@@ -1038,7 +1040,7 @@ init(State) ->
 	% Notifying all actors already registered that the simulation starts:
 	notify_all_listeners( StartedState,
 		{ simulationStarted, get_current_tick(StartedState) } ),
-	
+
 	case ?getAttribute(StartedState,interactive) of 
 	
 		true ->
@@ -1083,7 +1085,6 @@ init(State) ->
 				
 			% Sends the first top:	
 			self() ! timer_top,
-			io:format( "YYY0"),
 			StartedState	
 			
 	end.
