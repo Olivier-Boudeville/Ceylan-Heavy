@@ -4,7 +4,7 @@
 
 
 % testFailed exported to avoid a warning if not used.
--export([run/0,testFailed/1]).
+-export([run/0,wait_ready/0,testFailed/1]).
 
 
 % Comment out to be able to use the interpreter after the test:
@@ -132,6 +132,47 @@ check_pending_wooper_results() ->
 	end
 
 ).
+
+
+
+% Allows to define whether the topological view should be displayed to the user,
+% after generation.
+-define(generateTopologicalViewFor(Pid),
+
+	% Avoids adding a bound variable:
+	case init:get_argument('-batch') of
+	
+		{ok,_} ->
+			% Boolean means 'display wanted':
+			Pid ! {generateTopologicalView,false,self()};
+
+		_ ->
+			Pid ! {generateTopologicalView,true,self()}
+			
+	end,
+				
+	receive
+	
+		{wooper_result,topological_view_generated} ->
+			?test_info([ "Topological view correctly generated." ])
+			
+	end
+
+).
+
+
+
+% Waits until a model is ready, and acknowledges its notification.
+wait_ready() ->
+	receive 
+	
+		{ actorMessage,	[_ATick,notifyReady,ModelPid] } ->
+			?test_debug([ io_lib:format("Model ~w ready.",[ModelPid]) ]),
+			% Acknowledges the actor message, otherwise model will be frozen:
+			ModelPid ! {acknowledgeMessage,self()}
+		
+	end.
+
 
 
 % Handle a test failure.
