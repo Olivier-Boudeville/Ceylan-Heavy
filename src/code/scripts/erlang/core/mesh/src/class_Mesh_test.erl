@@ -41,13 +41,21 @@ run() ->
 	MyMesh ! {addNodes,[NodeList]},
 
 	MyMesh ! {getNodes,[],self()},
-	
 	receive
 	
 		{wooper_result,Nodes} ->
 			?test_info([ io_lib:format( 
 				"This mesh has following nodes defined: ~w.",
 				[Nodes] ) ])
+	
+	end,
+
+
+	MyMesh ! {getNodeFromContent,[ "hello" ],self()},
+	receive
+	
+		{wooper_result,SecondNode} ->
+			?test_info([ "Node look-up from content succeeded." ])
 	
 	end,
 
@@ -97,9 +105,11 @@ run() ->
 	MyGraphableMesh ! { addNodes, [[
 		{ first_graphable,  class_Graphable:new( "My first graphable" ) },
 		{ second_graphable, class_Graphable:new( [ 
-			{label,"My second graphable"}, {color,red} ] ) },
+			{label,"My second graphable"}, {bgcolor,yellow}, 
+			{fillcolor,green}, {color,red}, {pencolor,cyan} ] ) },
 		{ third_graphable,  class_Graphable:new( [ 
-			{label,"My third graphable"}, {shape,hexagon}, {color,blue} ] ) }
+			{label,"My third graphable"}, {shape,hexagon}, {color,blue} ] ) },
+		{ fourth_graphable,  class_Graphable:new( "My fourth graphable" ) }
 	]] },
 	
 	MyGraphableMesh ! {addLink,[first_graphable,second_graphable,
@@ -110,16 +120,58 @@ run() ->
 
 	MyGraphableMesh ! {addLink,[second_graphable,third_graphable,
 		"I am a link from second to third"]},
-
-
-	MyGraphableMesh ! {generateTopologicalView,[],self()},
 	
+	MyGraphableMesh ! {addLink,[second_graphable,fourth_graphable,
+		"I am a link from second to fourth"]},
+
+
+	MyGraphableMesh ! {findLink,[first_graphable,second_graphable],self()},
 	receive
 	
-		{wooper_result,topological_view_generated} ->
-			?test_info([ "Topological view generated." ])
+		{wooper_result, {Link,LinkLabel} } ->
+			?test_info([ io_lib:format( 
+				"Link from first to second graphable is ~w, whose label is ~s.",
+					[ Link, LinkLabel ] ) ])
 	
 	end,
+	
+
+	MyGraphableMesh ! {findPath,[first_graphable,fourth_graphable],self()},
+	receive
+	
+		{wooper_result,Path} ->
+			?test_info([ io_lib:format( 
+				"Path from first to fourth graphable: ~w.", [ Path ] ) ])
+	
+	end,
+
+
+	MyGraphableMesh ! {findShortestPath,
+		[first_graphable,fourth_graphable],self()},
+	receive
+	
+		{wooper_result,ShortestPath} ->
+			?test_info([ io_lib:format( 
+				"Shortest path from first to fourth graphable: ~w.", 
+			[ ShortestPath ] ) ])
+	
+	end,
+
+	MyGraphableMesh ! {setMarkedNodes,[Path]},
+		
+		
+	MyGraphableMesh ! {getLinksInPath,[ShortestPath],self()},
+	receive
+	
+		{wooper_result,PathLinks} ->
+			?test_info([ io_lib:format( 
+				"Links from first to fourth graphable: ~w.", [ PathLinks ] ) ])
+	
+	end,
+
+	MyGraphableMesh ! {setMarkedLinks,[PathLinks]},
+	
+	?generateTopologicalViewFor(MyGraphableMesh),
 
 	MyGraphableMesh ! delete,
 		
