@@ -50,7 +50,8 @@ run() ->
 	end,
 	
 	?test_info([ "Starting time manager." ]),
-	class_TimeManager:start(),
+	%class_TimeManager:start(),
+	TimeManagerPid ! {start,[80,self()]},
 	
 	
 	?test_info([ "Requesting textual timings (first)." ]),
