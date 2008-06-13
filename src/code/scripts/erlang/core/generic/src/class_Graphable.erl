@@ -20,9 +20,18 @@
 	getGraphInformations/1).
 
 
+% Helper functions.
+-export([forge_node_name/0,forge_node_name/1]).
+
 
 % Allows to define WOOPER base variables and methods for that class:
 -include("wooper.hrl").
+
+
+
+
+-define(dot_option_list, [label,style,height,width,fixedsize,shape,
+	fillcolor,color,bgcolor,penwidth,pencolor]).
 
 
 % Implementation Note:
@@ -36,7 +45,9 @@
 %  - either a label, like "hello"
 %  - or a list of option pairs like {dot_option_name,option_value} in which
 % at least the label is defined. 
-% Ex: [ {label,"hello"}, {color,"red"} ].
+% Ex: [ {label,"hello"}, {color,red} ].
+% Note that options must be valid dot options.
+% See the dot_option_list macro.
 construct(State,?wooper_construct_parameters) ->
 	% First the direct mother classes, then this class-specific actions:
 	interpret_option_list(State,OptionParameter).
@@ -74,11 +85,11 @@ setLabel(State,NewLabel) ->
 
 % Returns {GraphableName,OptionList} where GraphableName is the generated name
 % for this graphable, and OptionList is the list of all attribute name/value
-% pairs, which are supposed to be dot options.
+% pairs corresponding to dot options.
 % (const request)
 getGraphInformations(State) ->
 	?wooper_return_state_result( State, {forge_node_name(),
-		wooper_get_all_attributes(State)} ).
+		select_attributes_from( wooper_get_all_attributes(State) ) } ).
 
 
 		
@@ -95,10 +106,16 @@ interpret_option_list( State, [{label,Label}|T] ) ->
 	interpret_option_list( 
 		?setAttribute( State, label, transform_label(Label) ), T );
 
-% Beware to attribute name clashing:
 interpret_option_list( State, [{OptionName,OptionValue}|T] ) ->
-	interpret_option_list( 
-		?setAttribute( State, OptionName, OptionValue ), T );
+	case lists:member(OptionName,?dot_option_list) of
+	
+		true ->
+			interpret_option_list( 
+				?setAttribute( State, OptionName, OptionValue ), T );
+		false ->
+			throw( {unknown_dot_option,OptionName} )
+			
+	end;				
 
 interpret_option_list( State, Label ) ->
 	interpret_option_list( 
@@ -106,8 +123,12 @@ interpret_option_list( State, Label ) ->
 	
 
 forge_node_name() ->
+	forge_node_name( self() ).
+
+
+forge_node_name(Pid) ->
 	% Ex: "<0.59.0>":
-	PidAsString = hd( io_lib:format( "~w", [self()] ) ),
+	PidAsString = hd( io_lib:format( "~w", [Pid] ) ),
 	% Ex: "0.59.0":	
 	string:substr( PidAsString, 2, length(PidAsString)-2 ).
 
@@ -127,3 +148,22 @@ separate_in_lines( [H|T], ResultingString ) ->
 	separate_in_lines( T, ResultingString ++ H ++ "\\n" ).
 	
 
+
+select_attributes_from( AttributeList ) ->
+	select_attributes_from( AttributeList, [] ).
+	
+	
+select_attributes_from( [], Acc ) ->
+	Acc;
+	
+select_attributes_from( [{Name,Value}|T], Acc ) ->
+	case lists:member(Name,?dot_option_list) of 
+	
+		true ->
+			select_attributes_from( T, [{Name,Value} | Acc]);
+		
+		false ->
+			select_attributes_from( T, Acc )
+	end.
+					
+	
