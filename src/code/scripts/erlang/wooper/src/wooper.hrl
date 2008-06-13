@@ -202,6 +202,14 @@
 	wooper_display_loop_state(State) ->
 		wooper_display_state(State).
 
+	-ifdef(wooper_log_wanted).
+		-define(wooper_log(Msg),io:format(Msg)).
+		-define(wooper_log_format(Msg,Format),io:format(Msg,Format)).
+	-else.	
+		-define(wooper_log(Msg),no_wooper_log).
+		-define(wooper_log_format(Msg,Format),no_wooper_log).
+	-endif.	
+	
 	
 -else.
 
@@ -240,6 +248,9 @@
 	
 	wooper_display_loop_state(_) ->
 		debug_no_activated.
+
+	-define(wooper_log(Msg),no_wooper_log).
+	-define(wooper_log_format(Msg,Format),no_wooper_log).
 		
 -endif.
 
@@ -712,6 +723,8 @@ wooper_default_exit_handler(State,Pid,ExitType) ->
 % Waits for incoming requests and serves them.
 wooper_main_loop(State) ->
 	
+	?wooper_log( "wooper_main_loop start.~n" ),
+
 	% Comment-out to avoid the state display prior to each method call:
 	%wooper_display_loop_state(State),
 		
@@ -723,6 +736,9 @@ wooper_main_loop(State) ->
 		% received answers on the client side.
 		{ MethodAtom, ArgumentList, SenderPID } 
 				when is_pid(SenderPID) and is_list(ArgumentList) ->
+			?wooper_log_format( "Main loop (case A) for ~w: "
+				"request ~s with argument list ~w for ~w.~n", 
+				[self(), MethodAtom, ArgumentList, SenderPID] ),
 			SenderAwareState = State#state_holder{request_sender=SenderPID},
 			{ NewState, Result } = wooper_execute_method( MethodAtom,
 				SenderAwareState, ArgumentList ), 
@@ -744,12 +760,16 @@ wooper_main_loop(State) ->
 			end, 
 			SenderAgnosticState =
 				NewState#state_holder{request_sender=undefined},
+			?wooper_log( "Main loop (case A) ended.~n" ),	
 			wooper_main_loop(SenderAgnosticState);
 
 		
 		% Auto-wrapping single arguments implies putting lists between
 		% double-brackets		
 		{ MethodAtom, Argument, SenderPID } when is_pid(SenderPID) ->
+			?wooper_log_format( "Main loop (case B) for ~w: "
+				"request ~s with argument ~w for ~w.~n", 
+				[self(), MethodAtom, Argument, SenderPID] ),
 			SenderAwareState = State#state_holder{request_sender=SenderPID},
 			{ NewState, Result } = wooper_execute_method( MethodAtom,
 				SenderAwareState, [ Argument ] ), 
@@ -771,6 +791,7 @@ wooper_main_loop(State) ->
 			end, 
 			SenderAgnosticState =
 				NewState#state_holder{request_sender=undefined},
+			?wooper_log( "Main loop (case B) ended.~n" ),	
 			wooper_main_loop(SenderAgnosticState);
 
 
@@ -779,25 +800,38 @@ wooper_main_loop(State) ->
 		% (either this method does not return anything, or the sender is not
 		% interested in the result)
 		{ MethodAtom, ArgumentList } when is_list(ArgumentList) ->
-			% Any result would be ignored, only the update state is kept:
+			?wooper_log_format( "Main loop (case C) for ~w: "
+				"oneway ~s with argument list ~w.~n",
+				[self(), MethodAtom, ArgumentList] ),
+			% Any result would be ignored, only the updated state is kept:
 			{ NewState, _ } = wooper_execute_method( 
 				MethodAtom, State, ArgumentList ),
+			?wooper_log( "Main loop (case C) ended.~n" ),	
 			wooper_main_loop(NewState);
 		
 		
 		% ping is always available and cannot be overriden:
 		{ ping, SenderPID } ->
+			?wooper_log_format( "Main loop (case D) for ~w: oneway ping.~n",
+				[self()]),
 			SenderPID ! {pong,self()},
+			?wooper_log( "Main loop (case D) ended.~n" ),	
 			wooper_main_loop(State);
+		
 		
 		% Oneway with parameters:		
 		{ MethodAtom, Argument } ->
-			% Any result would be ignored, only the update state is kept:
+			?wooper_log_format( "Main loop (case E) for ~w: "
+				"oneway ~s with argument ~w.~n",[self(),MethodAtom, Argument] ),
+			% Any result would be ignored, only the updated state is kept:
 			{ NewState, _ } = wooper_execute_method( MethodAtom, State, 
 				[ Argument ] ), 
+			?wooper_log( "Main loop (case E) ended.~n" ),	
 			wooper_main_loop(NewState);
 			
+			
 		delete ->
+			?wooper_log("Main loop: oneway delete.~n"),
 			case hashtable:lookupEntry( {delete,1},
 					State#state_holder.virtual_table) of 
 				
@@ -814,19 +848,26 @@ wooper_main_loop(State) ->
 				
 			% (do nothing, loop ended).		
 			end;
-		
+			
 			
 		MethodAtom when is_atom(MethodAtom) ->
+			?wooper_log_format( 
+				"Main loop (case F) for ~w: oneway from atom ~s.~n",
+				[self(),MethodAtom]),
 			{ NewState, _ } = wooper_execute_method( MethodAtom, State, [] ),
+			?wooper_log( "Main loop (case F) ended.~n" ),	
 			wooper_main_loop(NewState);
 		
 		
 		{'EXIT',Pid,ExitType} when is_pid(Pid) ->
+			?wooper_log_format( "Main loop (case G) for ~w: exit with ~w.~n",
+				[self(),{Pid,ExitType}] ),			
 			case hashtable:lookupEntry( {onWooperExitReceived,3},
 					State#state_holder.virtual_table) of 
 				
 				undefined ->
 					% EXIT handler not overriden, using default one:
+					?wooper_log( "Main loop (case G) ended.~n" ),	
 					wooper_main_loop( wooper_default_exit_handler( State,
 						Pid,ExitType ) );
 				
@@ -835,14 +876,18 @@ wooper_main_loop(State) ->
 					% 'apply( LocatedModule,onWooperExitReceived,...)':
 					{ NewState, _ } = wooper_execute_method(
 						onWooperExitReceived, State, [Pid,ExitType] ),
+					?wooper_log( "Main loop (case G) ended.~n" ),	
 					wooper_main_loop(NewState)
 								
 			end;
 			
 		
 		Other ->
+			?wooper_log_format( "Main loop (case H) for ~w: unmatched ~s.~n",
+				[self(),Other] ),			
 			error_logger:warning_msg( "WOOPER ignored following message: ~w.~n",
 				[Other]),
+			?wooper_log( "Main loop (case H) ended.~n" ),	
 			wooper_main_loop(State)
 			
 
@@ -1128,7 +1173,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 % Allows to call synchronously from the code of a given class its actual 
 % overriden methods (requests, here), including from child classes.
 %
-% @example If in a start method of an EngineVehicle class one wants to call the 
+% Example: If in a start method of an EngineVehicle class one wants to call the 
 % (possibly overriden by, say, a class Car) startEngine method, then 
 % executeRequest should be used: 'MyVehicle ! {startEngine..' would not be 
 % synchronous, startEngine() would call EngineVehicle:startEngine instead of
@@ -1196,7 +1241,7 @@ executeRequest(State,RequestAtom) ->
 % Allows to call synchronously from the code of a given class its actual 
 % overriden methods (oneways, here), including from child classes.
 %
-% @example If in a start method of a EngineVehicle class one wants to call the 
+% Example: If in a start method of a EngineVehicle class one wants to call the 
 % (possibly overriden by, say, a class Car) startEngine method, then 
 % executeOneway should be used: 'MyVehicle ! startEngine' would not be 
 % synchronous, startEngine() would call EngineVehicle:startEngine instead of
@@ -1440,7 +1485,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 % Allows to call synchronously from the code of a given class its actual 
 % overriden methods (requests, here), including from child classes.
 %
-% @example If in a start method of an EngineVehicle class one wants to call the 
+% Example: If in a start method of an EngineVehicle class one wants to call the 
 % (possibly overriden by, say, a class Car) startEngine method, then 
 % executeRequest should be used: 'MyVehicle ! startEngine' would not be 
 % synchronous, startEngine() would call EngineVehicle:startEngine instead of
@@ -1508,7 +1553,7 @@ executeRequest(State,RequestAtom) ->
 % Allows to call synchronously from the code of a given class its actual 
 % overriden methods (oneways, here), including from child classes.
 %
-% @example If in a start method of a EngineVehicle class one wants to call the 
+% Example: If in a start method of a EngineVehicle class one wants to call the 
 % (possibly overriden by, say, a class Car) startEngine method, then 
 % executeOneway should be used: 'MyVehicle ! startEngine' would not be 
 % synchronous, startEngine() would call EngineVehicle:startEngine instead of
