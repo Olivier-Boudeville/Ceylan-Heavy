@@ -22,7 +22,8 @@
 
 % Method declarations.
 -define(wooper_method_export,
-	start/1,start/2,start/3,stop/1,timer_top/1,done/2,terminated/2,
+	start/1,start/2,start/3,stop/1,suspend/1,resume/1,
+	timer_top/1,done/2,terminated/2,
 	getSimulationTick/1,getSimulationDate/1,getTextualTimings/1,
 	convertTicksToSeconds/2,convertSecondsToTicks/2,
 	subscribe/1,unsubscribe/1,
@@ -119,6 +120,7 @@ construct(State,?wooper_construct_parameters) ->
 
 	StartState = ?setAttributes( CategorizedState, [ {started,false}, 
 		{stop_tick,undefined}, {stop_listener,undefined},
+		{suspended,false},
 		{requested_simulation_frequency,SimulationFrequency},
 		{simulation_tick_duration,TickDuration},
 		{simulation_tick_waiting,
@@ -255,6 +257,22 @@ stop(State) ->
 	end.
 
 
+% Suspends the simulation until a resume request is received.
+% (oneway)
+suspend(State) ->
+	?info([ "Simulation requested to suspend." ]),
+	?wooper_return_state_only( ?setAttribute(State,suspended,true) ).
+
+
+% Resumes the simulation once it has been suspended.
+% (oneway)
+resume(State) ->
+	?error([ "Resume request received, whereas should have been intercepted "
+		"by suspend code. Ignored." ]),
+	?wooper_return_state_only(State).
+
+
+
 
 % Section for time synchronization of operations.	
 
@@ -291,8 +309,26 @@ timer_top(State) ->
 					ok
 					
 			end,
-			% Both cases ready for next tick: 
-			?wooper_return_state_only( begin_new_tick(State) );
+			
+			% Both cases ready for next tick... if not suspended:
+			SuspendedState = case ?getAttr(suspended) of 
+			
+				true ->
+					?trace([ "Simulation suspended, waiting for resume request."
+						]),
+					receive
+			
+						resume ->
+							?trace([ "Simulation resumed." ]),
+							?setAttribute(State,suspended,false)
+						
+					end;
+					
+				false ->
+					State
+					
+			end,		 
+			?wooper_return_state_only( begin_new_tick(SuspendedState) );
 		
 		NonEmptyList ->
 			case ?getAttr(interactive) of 
