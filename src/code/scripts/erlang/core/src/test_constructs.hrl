@@ -4,7 +4,8 @@
 
 
 % testFailed exported to avoid a warning if not used.
--export([run/0,wait_ready/0,testFailed/1]).
+-export([run/0,wait_ready/0,suspend_simulation_until_enter_pressed/1,
+	testFailed/1]).
 
 
 % Comment out to be able to use the interpreter after the test:
@@ -13,13 +14,15 @@
 -ifdef(ExitAfterTest).
 
 testFinished() ->
+	io:format( "(test finished, interpreter halted)~n" ),	
 	erlang:halt().
 	
 -else.
 
 testFinished() ->
-	io:format( "(interpreter still running)~n" ),
+	io:format( "(test finished, interpreter still running)~n" ),
 	test_success.
+	
 -endif.
 
 
@@ -174,7 +177,24 @@ wait_ready() ->
 	end.
 
 
+% Suspends the simulation until the Enter key is pressed.
+suspend_simulation_until_enter_pressed(TimeManagerPid) ->
+	case init:get_argument('-batch') of
 
+		{ok,_} ->
+			nothing_done;
+
+		_ ->
+			%io:format("Requesting the simulation to be suspended.~n"),
+			TimeManagerPid ! suspend,
+			io:get_line("Simulation requested to be suspended, "	
+				"press Enter to resume it."),
+			TimeManagerPid ! resume,
+			io:format("Simulation requested to be resumed.~n")
+			
+	end.
+	
+	
 % Handle a test failure.
 testFailed(Reason) ->
 	% For some reason erlang:error is unable to interpret strings as strings,
