@@ -30,6 +30,8 @@ run() ->
 	hashtable:display(MyH6),
 	io:format( "   Enumerating the hash table: ~w~n",
 		[hashtable:enumerate(MyH4)]),
+	io:format( "   Listing the hash table keys: ~w~n",
+		[hashtable:keys(MyH4)]),
 	MyH7=hashtable:addEntry("Third key",3,MyH6),
 	% MyH8 should have {AnotherKey,[1,2,3]} and {"Third key",3}:
 	MyH8=hashtable:merge(MyH4,MyH7),
