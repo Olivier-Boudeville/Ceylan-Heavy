@@ -4,7 +4,7 @@ DEFAULT_NODE_NAME="ceylan_default"
 DEFAULT_COOKIE="ceylan"
 
 
-USAGE="`basename $0` [-v] [-c a_cookie] [--sn a_short_node_name | --ln a_long_node_name] [--fqdn a_fqdn] [--beam-dir a_path] [--beam-paths path_1 path_2] [-h]...: launches the Erlang interpreter with specified settings.
+USAGE="`basename $0` [-v] [-c a_cookie] [--sn a_short_node_name | --ln a_long_node_name] [--fqdn a_fqdn] [--beam-dir a_path] [--beam-paths path_1 path_2] [--no-auto-start] [-h]...: launches the Erlang interpreter with specified settings.
 	-v: be verbose
 	-c a_cookie: specify a cookie
 	--sn a_short_node_name: specify a short name (ex: 'ceylan_2') 
@@ -32,6 +32,7 @@ DEFAULT_LOG_FILE="Ceylan-Simulation.log"
 
 be_verbose=1
 
+autostart=0
 
 while [ $# -gt 0 ] ; do
 	token_eaten=1
@@ -78,9 +79,16 @@ while [ $# -gt 0 ] ; do
 	if [ "$1" = "--eval" ] ; then
 		shift
 		TO_EVAL="-eval $1"
+		EVAL_CONTENT="$1"
 		token_eaten=0
 	fi
 	
+	if [ "$1" = "--no-auto-start" ] ; then
+		#echo "Autostart deactivated"
+		autostart=1
+		token_eaten=0
+	fi
+
 	if [ "$1" = "-h" ] ; then
 		echo -e "$USAGE"
 		exit
@@ -125,6 +133,11 @@ COMMAND="${ERL} ${LOG_OPT} ${CODE_OPT} +P ${MAX_PROCESS_COUNT} ${VERBATIM_OPT}"
 
 if [ -z "${COOKIE}" ] ; then
 	COOKIE=${DEFAULT_COOKIE}
+fi
+
+if [ ${autostart} -eq 1 ] ; then
+	echo " ** No autostart wanted, but you can run manually: ${EVAL_CONTENT}. **"
+	TO_EVAL="-eval io:format(\"-->"${EVAL_CONTENT}".\")"
 fi
 
 COMMAND="${COMMAND} -setcookie ${COOKIE} ${TO_EVAL}"
