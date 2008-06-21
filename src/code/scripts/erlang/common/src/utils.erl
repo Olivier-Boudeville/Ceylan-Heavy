@@ -16,7 +16,7 @@
 	get_image_file_png/1,get_image_file_gif/1,
 	term_toString/1,
 	register_as/2,register_as/3,wait_for_global_registration_of/1,
-	join/2]).
+	join/2,get_current_erlang_version/0]).
 
 
 -define(ResourceDir,"resources").
@@ -194,9 +194,15 @@ join(Separator,[H|T],Acc) ->
     join(Separator, T, [Separator, H|Acc]).
 
 
+% Returns the version informations of the current Erlang interpreter being used.
+get_current_erlang_version() ->
+	erlang:system_info(otp_release).
+
+
 % Helper functions.
 
 execute_dot(PNGFilename,GraphFilename) ->
 	% Dot might issue non-serious warnings:
 	os:cmd( "dot -o" ++ PNGFilename ++ " -Tpng " ++ GraphFilename ).
+
 
