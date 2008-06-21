@@ -27,7 +27,8 @@
 	removeEntry/2,lookupEntry/2,hasEntry/2,
 	getEntry/2,addToEntry/3,substractFromEntry/3,toggleEntry/2,
 	appendToEntry/3,deleteFromEntry/3,popFromEntry/2,
-	enumerate/1,getEntryCount/1,merge/2,toString/1,display/1]).
+	enumerate/1,keys/1,
+	getEntryCount/1,merge/2,toString/1,display/1]).
 
 
 % The default number of hash buckets :
@@ -181,7 +182,12 @@ popFromEntry(Key,HashTable) ->
 % Returns a flat list whose elements are all the key/value pairs of the
 % hashtable.
 enumerate(Hashtable) ->
-	lists:flatten(tuple_to_list(Hashtable)).
+	lists:flatten( tuple_to_list(Hashtable) ).
+
+
+% Returns a list containing all the keys of this hashtable.
+keys(Hashtable) ->
+	get_keys_from_buckets( tuple_to_list(Hashtable), [] ).
 
 
 % Returns the number of entries (key/value pairs) stored in specified
@@ -294,4 +300,11 @@ lookupInList(Key,[{Key,Value}|_]) ->
 
 lookupInList(Key,[_|T]) ->
 	lookupInList(Key,T).	
+
 	
+get_keys_from_buckets( [], Acc ) ->
+	Acc;
+	
+get_keys_from_buckets( [H|T], Acc ) ->
+	get_keys_from_buckets( T, [ Key || {Key,_Value} <- H ] ++ Acc ).
+
