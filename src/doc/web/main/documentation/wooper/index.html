@@ -54,6 +54,7 @@ WOOPER is an <a href="#license">open source</a> lightweight layer on top of the 
                        <a href="#why">Why adding OOP to Erlang ?</a><br>
                        <a href="#how">How to use WOOPER ?</a><br>
                        <a href="#example">WOOPER example</a><br>
+                       <a href="#troubleshooting">Troubleshooting</a><br>
                        <a href="#current">Current stable version &amp; download</a><br>
                        <a href="#versions">Version history &amp; changes</a><br>
                        <a href="#inner">Inner workings</a><br>
@@ -1303,7 +1304,48 @@ We created a small set of classes allowing to show multiple inheritance:
 <!-- #####################################################################" -->
 
 
-<a name="current"></a>
+<a name="troubleshooting"></a>
+<h2>Troubleshooting</h2>
+
+<p>
+Most errors while using WOOPER should result in relatively clear messages (ex: <code>wooper_method_failed</code> or <code>wooper_method_faulty_return</code>). There are a few gotchas though. 
+</p>
+
+<p>
+One of them - experienced even by the WOOPER author - is to define a two-parameter oneway, whose second parameter is a PID, and to call this method wrongly as a request, instead of as a oneway. 
+</p>
+
+<p>
+For example, let's suppose the <code>class_TimeManager</code> class defines the oneway method <code>start/3</code> as: <code>start(State,TerminationOffset,StopListenerPID) -&gt; ...</code>.
+</p>
+
+<p>
+The correct approach to call this <b>oneway</b> could be <code>TimeManagerPid ! {start,[AnOffset,self()]}</code>. An absent-minded developer could have written <code>TimeManagerPid ! {start, AnOffset,self()}</code> instead.
+</p>
+
+<p>
+This would have called a <code>request</code> method <code>start/2</code> (which could have been <code>start(State,TerminationOffset) -&gt; ...</code>, the PID being interpreted by WOOPER as the request sender PID), which most probably would not exist. This would result in a rather obscure error message like <code>Error in process <0.43.0> on node 'XXXX' with exit value: {badarg,[{class_TimeManager,wooper_main_loop,1}]}</code>.
+</p>
+
+<p>
+One way of overcoming WOOPER issues is to activate the debug mode for all WOOPER-enabled compiled modules (ex: uncomment <code>-define(wooper_debug,).</code> in <code>wooper.hrl</code>).
+</p>
+
+<p>
+If it is not enough to clear things up, an additional step is to add, on a per-class basis (ex: in <code>class_TimeManager.erl</code>), before the WOOPER include, <code>-define(wooper_log_wanted,).</code>. Then all WOOPER incoming method calls will be traced, for easier debugging.
+</p>
+
+
+<p><center>[<a href="#maintoc">Back to the table of contents</a>]</center></p><br>
+
+
+<!-- #####################################################################" -->
+
+
+
+
+<a name="example"></a>
+<h2>WOOPER example</h2>
 <h2>Current stable version &amp; download</h2>
 
 <h3>Using stable release archive</h3>
@@ -1705,15 +1747,7 @@ svn copy https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/code
   <center>
     [<a href="#_top_">Top</a>]<br>
     <br>
-<<<<<<< .mine
-<<<<<<< .mine
-    <em>Last update: Thursday, September 6, 2007</em>
-=======
-    <em>Last update: Friday, December 21, 2007</em>
-=======
-    <em>Last update: Thursday, May 8, 2008</em>
->>>>>>> .r2437
->>>>>>> .r2397
+    <em>Last update: Monday, June 9, 2008</em>
   </center>
 </body>
 </html>
