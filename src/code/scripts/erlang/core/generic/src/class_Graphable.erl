@@ -9,7 +9,7 @@
 
 
 % Parameters taken by the constructor ('construct'). 
--define(wooper_construct_parameters,OptionParameter).
+-define(wooper_construct_parameters,OptionParameters).
 
 % Life-cycle related exported operators:
 -define(wooper_construct_export,new/1,new_link/1,
@@ -17,7 +17,7 @@
 
 % Method declarations.
 -define(wooper_method_export,getNodeName/1,getLabel/1,setLabel/2,
-	getGraphInformations/1).
+	getGraphInformations/1,setOptionList/2).
 
 
 % Helper functions.
@@ -41,7 +41,7 @@
 
 	
 % Constructs a new graphable instance. 
-% OptionParameter is:
+% OptionParameters is:
 %  - either a label, like "hello"
 %  - or a list of option pairs like {dot_option_name,option_value} in which
 % at least the label is defined. 
@@ -50,7 +50,7 @@
 % See the dot_option_list macro.
 construct(State,?wooper_construct_parameters) ->
 	% First the direct mother classes, then this class-specific actions:
-	interpret_option_list(State,OptionParameter).
+	interpret_option_list(State,OptionParameters).
 	
 	
 % Overriden destructor.
@@ -71,7 +71,6 @@ getNodeName(State) ->
 	?wooper_return_state_result( State, forge_node_name() ).
 
 
-
 % Returns the description of this Graphable.
 % (const request)
 getLabel(State) ->
@@ -90,6 +89,12 @@ setLabel(State,NewLabel) ->
 getGraphInformations(State) ->
 	?wooper_return_state_result( State, {forge_node_name(),
 		select_attributes_from( wooper_get_all_attributes(State) ) } ).
+
+
+% Sets the specified option list, regarding graphable parameters.
+% (oneway)
+setOptionList(State,OptionParameters) ->
+	?wooper_return_state_only( interpret_option_list(State,OptionParameters) ).
 
 
 		
