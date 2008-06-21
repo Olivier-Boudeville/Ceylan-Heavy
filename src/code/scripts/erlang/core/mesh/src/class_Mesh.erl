@@ -19,12 +19,15 @@
 	synchronous_new/2,synchronous_new_link/2,construct/3,delete/1).
 
 % Method declarations.
--define(wooper_method_export,addNode/2,addNode/3,addNodes/2,getNodes/1,
+-define(wooper_method_export,addNode/2,addNode/3,addNodes/2,
+	getNodeContentFromName/2,getNodes/1,
 	addLink/3,addLink/4,addLink/5,getLinkInformations/2,getLinks/1,
 	getNodeFromContent/2,
 	findLink/3,findPath/3,findShortestPath/3,getLinksInPath/2,
+	findReachableFrom/2,
 	setMarkedNodes/2,setMarkedLinks/2,
-	generateTopologicalView/2).
+	setLinkRenderingStyle/2,
+	generateTopologicalView/2,generateTopologicalView/3).
 
 
 
@@ -40,7 +43,7 @@
 
 
 % The color used to represent paths:
--define(pathColor,red).
+-define(pathColor,darkgreen).
 
 
 % Implementation notes:
@@ -85,6 +88,7 @@ construct(State,?wooper_construct_parameters) ->
 	
 	?setAttributes( TraceState, [ {digraph,digraph:new([Option,private])},
 		{graph_label, io_lib:format( "Topological view of mesh '~s'", [Name] )},
+		{link_style,solid},
 		{content_map,hashtable:new()},
 		{marked_links,[]}, {marked_nodes,[]},
 		{trace_categorization,?TraceEmitterCategorization} ] ).
@@ -113,7 +117,7 @@ delete(State) ->
 
 % Adds specified node to the mesh, with possibly an associated content.
 % AddedNode can be a simple node N, or a tuple {N,AssociatedNodeContent}. 
-% (oneway).
+% (oneway)
 addNode(State,{AddedNode,AssociatedNodeContent}) ->
 	?wooper_return_state_only( 
 		add_node( AddedNode, AssociatedNodeContent, State ) );
@@ -126,7 +130,7 @@ addNode(State,AddedNode) ->
 	
 
 % Adds specified node to the mesh, with possibly an associated content.
-% (oneway).
+% (oneway)
 addNode(State,AddedNode,AssociatedNodeContent) ->
 	?wooper_return_state_only( 
 		add_node(AddedNode, AssociatedNodeContent, State ) ).
@@ -136,14 +140,20 @@ addNode(State,AddedNode,AssociatedNodeContent) ->
 % Adds specified list of nodes to the mesh.
 % Each added node can be either a simple node N, or a tuple
 % {N,AssociatedNodeContent}.
-% (oneway).
+% (oneway)
 addNodes(State,NodeList) ->
 	?wooper_return_state_only( add_nodes( NodeList, State ) ).
 		
 
+% Returns the content associated to target node, specified by name.
+% (request)
+getNodeContentFromName(State,NodeName) ->
+	{NodeName,NodeContent} = digraph:vertex( ?getAttr(digraph), NodeName ),
+	?wooper_return_state_result( State, NodeContent ).
+
 
 % Returns a list of all the nodes of this mesh.
-% (request).
+% (request)
 getNodes(State) ->
 	?wooper_return_state_result( State, digraph:vertices( ?getAttr(digraph) ) ).
 
@@ -221,7 +231,7 @@ addLink(State,Link,FromNode,ToNode,AssociatedLinkContent) ->
 
 % Returns either {SourceNode,TargetNode,LinkLabel} if specified link is found
 % in graph, otherwise link_not_found.
-% (const request).
+% (const request)
 getLinkInformations(State,Link) -> 
 	case digraph:edge( ?getAttr(digraph), Link ) of 
 	
@@ -236,14 +246,14 @@ getLinkInformations(State,Link) ->
 				
 	
 % Returns a list of all the links of this mesh.
-% (const request).
+% (const request)
 getLinks(State) ->
 	?wooper_return_state_result( State, digraph:edges( ?getAttr(digraph) ) ).
 
 
 % Returns the first node found whose associated is the specified one (if any),
 % otherwise returns node_lookup_failed.
-% (const request).
+% (const request)
 getNodeFromContent(State,NodeAssociatedContent) ->
 	ContentMap = ?getAttr(content_map),
 	case hashtable:lookupEntry(NodeAssociatedContent,ContentMap) of
@@ -270,7 +280,7 @@ findLink(State,FromNode,ToNode) ->
 % Tries to find a path between the source node and the target one.
 % Returns either an ordered list of nodes (the path) or false, if no path was
 % found.
-% (const request).
+% (const request)
 findPath(State,SourceNode,TargetNode) ->
 	?wooper_return_state_result( State, digraph:get_path( ?getAttr(digraph),
 		SourceNode, TargetNode ) ). 
@@ -279,24 +289,31 @@ findPath(State,SourceNode,TargetNode) ->
 % Tries to find the shortest path between the source node and the target one.
 % Returns either an ordered list of nodes (the path) or false, if no path was
 % found.
-% (const request).
+% (const request)
 findShortestPath(State,SourceNode,TargetNode) ->
 	?wooper_return_state_result( State, digraph:get_short_path(
 		?getAttr(digraph), SourceNode, TargetNode ) ). 
 		
 
 % Returns the list of links corresponding to the specified node path.
-% (const request).
+% (const request)
 getLinksInPath(State,NodeList) ->
 	?wooper_return_state_result( State,
 		get_links_from( NodeList, ?getAttr(digraph) ) ).
 	
 
+% Returns the list of all node names corresponding to nodes that can be reached
+% from specified one.	
+% (const request)
+findReachableFrom(State,NodeName) ->
+	?wooper_return_state_result( State,
+		digraph_utils:reachable( [NodeName], ?getAttr(digraph) ) ).
+		
 
 % Sets the list of marked nodes.
 % These nodes, once the topological view will be generated, will be 
 % visually marked. 		
-% (oneway).
+% (oneway)
 setMarkedNodes(State,NodeList) ->
 	?wooper_return_state_only( ?setAttribute(State,marked_nodes,NodeList) ). 
 
@@ -304,59 +321,44 @@ setMarkedNodes(State,NodeList) ->
 % Sets the list of marked links.
 % These links, once the topological view will be generated, will be 
 % visually marked. 		
-% (oneway).
+% (oneway)
 setMarkedLinks(State,LinkList) ->
 	?wooper_return_state_only( ?setAttribute(State,marked_links,LinkList) ). 
 		
+		
+% Sets the rendering style for links.
+% (oneway) 
+setLinkRenderingStyle(State,NewLinkStyle) ->
+	?wooper_return_state_only( ?setAttribute(State,link_style,NewLinkStyle) ). 
+
+
 
 % Generates a view of current topology of this mesh.
 %  - DisplayWanted: boolean telling whether the generated view will be
 % displayed to the user (if true)
-% (request).	
+% (request)	
 generateTopologicalView(State,DisplayWanted) ->
-	BaseFileName = utils:convert_to_filename( ?getAttr(name) ),
-	DigraphFilename = BaseFileName ++ ".graph",
-	PNGFilename   = BaseFileName ++ ".png",
 
-	?debug([ io_lib:format( "Generating topology for ~s: "
-		"graph in ~s, view in ~s.~n", 
-		[ ?getAttr(name), DigraphFilename, PNGFilename ] ) ]),
-		
-	{ok,DigraphFile} = file:open( DigraphFilename, write ),
-	write_graph_header(DigraphFile,State),
-	
-	write_graph_nodes(DigraphFile,State),
-	
-	write_graph_links(DigraphFile,State),
-	
-	write_graph_footer(DigraphFile,State),
+	NewState = generate_topological_view( State, DisplayWanted,
+		utils:convert_to_filename( ?getAttr(name) ) ),
 
-	file:close(DigraphFile),
-		
-	% Dot might issue non-serious warnings:
-	%io:format( "dot result: ~w.~n", [DotRes] ),
-	
-	case os:cmd( "dot -o" ++ PNGFilename ++ " -Tpng " ++ DigraphFilename ) of 
-		
-		[] ->
-			ok;
-			
-		Other ->
-			?warning([ io_lib:format( "Dot returned following output: ~s.", 
-				[Other] ) ])
-	
-	end,
+	?wooper_return_state_result(NewState,topological_view_generated).
 
-	case DisplayWanted of 
+
+% Generates a view of current topology of this mesh.
+%  - DisplayWanted: boolean telling whether the generated view will be
+% displayed to the user (if true)
+%  - FilenamePrefix: a string to add to the base filename (ex: '-0012'),
+% useful to iterate on a set of images
+% (request)	
+generateTopologicalView(State,DisplayWanted,FilenamePrefix) ->
+
+	NewState = generate_topological_view( State, DisplayWanted,
+		utils:convert_to_filename( ?getAttr(name) ) ++ FilenamePrefix ),
+
+	?wooper_return_state_result(NewState,topological_view_generated).
+
 	
-		true ->	
-			utils:display_png_file( PNGFilename );
-	
-		false ->
-			ok
-			
-	end,	
-	?wooper_return_state_result(State,topological_view_generated).
 
 	
 		
@@ -418,7 +420,7 @@ write_graph_nodes(DigraphFile,[Node|T],State) ->
 		true ->	
 			io:format(DigraphFile, 
 				"\"~s\" [~s, style=\"bold,filled\","
-				"color=\"~s\",penwidth=\"10\"]~n",
+				"color=\"~s\",penwidth=\"10\",shape=\"doublecircle\"]~n",
 				[ NodeName, format_options(NodeOptions), ?pathColor ]  )
 	
 	end,	
@@ -518,3 +520,49 @@ get_links_from( [N1,N2|T], Digraph, Acc ) ->
 
 get_links_from( _LastNode, _Digraph, Acc ) ->
 	lists:reverse( Acc ).
+	
+
+
+generate_topological_view(State,DisplayWanted,BaseFileName) ->		
+	DigraphFilename = BaseFileName ++ ".graph",
+	PNGFilename     = BaseFileName ++ ".png",
+
+	?debug([ io_lib:format( "Generating topology for ~s: "
+		"graph in ~s, view in ~s.~n", 
+		[ ?getAttr(name), DigraphFilename, PNGFilename ] ) ]),
+		
+	{ok,DigraphFile} = file:open( DigraphFilename, write ),
+	write_graph_header(DigraphFile,State),
+	
+	write_graph_nodes(DigraphFile,State),
+	
+	write_graph_links(DigraphFile,State),
+	
+	write_graph_footer(DigraphFile,State),
+
+	file:close(DigraphFile),
+		
+	% Dot might issue non-serious warnings:
+	%io:format( "dot result: ~w.~n", [DotRes] ),
+	
+	case os:cmd( "dot -o" ++ PNGFilename ++ " -Tpng " ++ DigraphFilename ) of 
+		
+		[] ->
+			ok;
+			
+		Other ->
+			?warning([ io_lib:format( "Dot returned following output: ~s.", 
+				[Other] ) ])
+	
+	end,
+
+	case DisplayWanted of 
+	
+		true ->	
+			utils:display_png_file( PNGFilename );
+	
+		false ->
+			ok
+			
+	end,	
+	State.
