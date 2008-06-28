@@ -30,6 +30,7 @@ CEYLAN_ERLANG=`dirname $0`/../..
 # If logs are redirected to file:
 DEFAULT_LOG_FILE="Ceylan-Simulation.log"
 
+
 be_verbose=1
 
 autostart=0
@@ -59,7 +60,7 @@ while [ $# -gt 0 ] ; do
 		LONG_NAME="$1"
 		token_eaten=0
 	fi
-
+	
 	if [ "$1" = "--fqdn" ] ; then
 		shift
 		FQDN="$1"
