@@ -10,11 +10,13 @@
 
 
 -export([get_timestamp/0,get_textual_timestamp/0,get_textual_timestamp/1,
+	get_duration/2,get_textual_duration/2,
 	convert_to_filename/1,speak/1,notify_user/1,notify_user/2,
 	generate_png_from_graph_file/2,generate_png_from_graph_file/3,
 	display_png_file/1,
 	get_image_file_png/1,get_image_file_gif/1,
-	term_toString/1,
+	term_toString/1,term_to_string/1,
+	integer_to_string/1,
 	register_as/2,register_as/3,wait_for_global_registration_of/1,
 	join/2,get_current_erlang_version/0]).
 
@@ -33,8 +35,24 @@ get_textual_timestamp() ->
 	get_textual_timestamp( get_timestamp() ).
 	
 get_textual_timestamp({{Year,Month,Day},{Hour,Minute,Second}}) ->
- 	io_lib:format( "[~p/~p/~p ~B:~2..0B:~2..0B]",
+ 	io_lib:format( "~p/~p/~p ~B:~2..0B:~2..0B",
 		[Year,Month,Day,Hour,Minute,Second] ).
+
+
+% Returns the duration in seconds between the two specified timestamps.	
+get_duration(FirstTimestamp,SecondTimestamp) ->
+	First  = calendar:datetime_to_gregorian_seconds(FirstTimestamp),
+	Second = calendar:datetime_to_gregorian_seconds(SecondTimestamp),
+	Second - First.
+
+
+% Returns a textual description of the duration between the two specified
+% timestamps.	
+get_textual_duration(FirstTimestamp,SecondTimestamp) ->
+	{Days,{Hour, Minute, Second}} = calendar:seconds_to_daystime( 
+		get_duration(FirstTimestamp,SecondTimestamp) ),
+	lists:flatten( io_lib:format( "~B day(s), ~B hour(s), ~B minute(s) "
+		"and ~B second(s)", [Days, Hour, Minute, Second] ) ).
 		
 		
 % Converts specified name to an acceptable filename, filesystem-wise.	
@@ -113,7 +131,15 @@ term_toString(Term) ->
 	end.	
 
 
-
+term_to_string(Term) ->
+	term_toString(Term).
+	
+	
+% Avoids to have to use lists:flatten when converting an integer to a string.	
+integer_to_string(IntegerValue) ->
+	hd( io_lib:format( "~B", [IntegerValue] ) ).
+	
+	
 % Registers the current process under specified name.
 % Declaration is register_as(ServerName,RegistrationType) with 
 % RegistrationType in 'local_only', 'global_only', 'local_and_global', 
@@ -186,6 +212,9 @@ wait_for_global_registration_of(Name,SecondsToWait) ->
 % Inspired from http://www.trapexit.org/String_join_with.
 join(Separator,ListToJoin) ->
     lists:flatten( lists:reverse( join(Separator, ListToJoin, []) ) ).
+
+join(_Separator,[],Acc) ->
+    Acc;
 
 join(_Separator,[H| [] ],Acc) ->
     [H|Acc];
