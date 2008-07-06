@@ -236,8 +236,7 @@ VIEW_PDF = yes
 
 %.pdf: %.rst
 	@echo "     Generating PDF documentation $@"
-	$(RST_GENERATOR) $< --pdf
-	@if [ "$(VIEW_PDF)" != "no" ] ; then $(PDF_VIEWER) $@ & fi
+	@if $(RST_GENERATOR) $< --pdf ; then if [ "$(VIEW_PDF)" != "no" ] ; then $(PDF_VIEWER) $@ & fi; fi
 	
 %.html: %.rst
 	@echo "     Generating HTML documentation $@"
