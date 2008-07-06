@@ -10,6 +10,7 @@
 
 
 -export([get_timestamp/0,get_textual_timestamp/0,get_textual_timestamp/1,
+	timestamp_to_string/1,
 	get_duration/2,get_textual_duration/2,
 	convert_to_filename/1,speak/1,notify_user/1,notify_user/2,
 	generate_png_from_graph_file/2,generate_png_from_graph_file/3,
@@ -38,7 +39,11 @@ get_textual_timestamp({{Year,Month,Day},{Hour,Minute,Second}}) ->
  	io_lib:format( "~p/~p/~p ~B:~2..0B:~2..0B",
 		[Year,Month,Day,Hour,Minute,Second] ).
 
-
+% Alias of get_textual_timestamp.
+timestamp_to_string(Timestamp) ->	
+	get_textual_timestamp(Timestamp).
+	
+	
 % Returns the duration in seconds between the two specified timestamps.	
 get_duration(FirstTimestamp,SecondTimestamp) ->
 	First  = calendar:datetime_to_gregorian_seconds(FirstTimestamp),
@@ -182,7 +187,10 @@ register_as(Pid,ServerName,global_only) ->
 
 register_as(Pid,ServerName,local_and_global) ->
 	ok = register_as(Pid,ServerName,local_only),
-	ok = register_as(Pid,ServerName,global_only).
+	ok = register_as(Pid,ServerName,global_only);
+
+register_as(_Pid,_ServerName,none) ->
+	ok.
 
 
 % Waits (up to 5 seconds) until specified name is globally registered.
@@ -210,8 +218,12 @@ wait_for_global_registration_of(Name,SecondsToWait) ->
 % Python-like 'join', combines items in a list into a string using a separator
 % between each item representation. 
 % Inspired from http://www.trapexit.org/String_join_with.
+join(_Separator,[]) ->
+    "";
+
 join(Separator,ListToJoin) ->
     lists:flatten( lists:reverse( join(Separator, ListToJoin, []) ) ).
+	
 
 join(_Separator,[],Acc) ->
     Acc;
