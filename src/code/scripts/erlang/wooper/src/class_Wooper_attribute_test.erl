@@ -77,9 +77,10 @@ test(State) ->
 
 
 not_crashing_examples(State) ->
-	?removeAttribute(State,non_existing),
-	NewState = ?appendToAttribute(State,test_attribute,8),
-	io:format( "List is ~w.~n", [ ?getAttribute(NewState,test_attribute) ]).
+	NewState = ?removeAttribute(State,non_existing),
+	OtherNewState = ?appendToAttribute(NewState,test_attribute,8),
+	io:format( "List is ~w.~n", 
+		[ ?getAttribute(OtherNewState,test_attribute) ]).
 
 
 crashing_examples(State) ->
