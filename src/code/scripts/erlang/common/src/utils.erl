@@ -18,6 +18,7 @@
 	get_image_file_png/1,get_image_file_gif/1,
 	term_toString/1,term_to_string/1,
 	integer_to_string/1,
+	ipv4_to_string/1,ipv4_to_string/2,
 	register_as/2,register_as/3,wait_for_global_registration_of/1,
 	join/2,get_current_erlang_version/0]).
 
@@ -143,6 +144,14 @@ term_to_string(Term) ->
 % Avoids to have to use lists:flatten when converting an integer to a string.	
 integer_to_string(IntegerValue) ->
 	hd( io_lib:format( "~B", [IntegerValue] ) ).
+	
+	
+ipv4_to_string( {N1,N2,N3,N4} ) ->
+	lists:flatten( io_lib:format( "~B.~B.~B.~B", [N1,N2,N3,N4] ) ).
+	
+	
+ipv4_to_string( {N1,N2,N3,N4}, Port ) ->
+	lists:flatten( io_lib:format( "~B.~B.~B.~B:~B", [N1,N2,N3,N4,Port] ) ).
 	
 	
 % Registers the current process under specified name.
