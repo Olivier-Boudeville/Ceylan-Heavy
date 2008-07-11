@@ -1008,27 +1008,11 @@ The WOOPER-defined <code>new</code> operator automatically transmits these param
 </p>
 
 <p>
-<<<<<<< .mine
-<<<<<<< .mine
 Based on the <code>wooper_construct_parameters</code> define (let us suppose n constructor parameters are listed in it), <code>new</code> and <code>construct</code> must be declared thanks to: <code>-define( wooper_construct_export,new/n,new_link/n,construct/n+1).</code>. <code>construct</code> takes one additional parameter, the instance state.
-=======
-Based on the <code>wooper_construct_parameters</code> define (let us suppose n constructor parameters are listed in it), <code>new</code> and <code>construct</code> must be declared thanks to: <code>-define( wooper_construct_export, new/n, new_link/n, construct/n+1).</code>. <code>construct</code> takes one additional parameter, the instance state.
-=======
-Based on the <code>wooper_construct_parameters</code> define (let us suppose n constructor parameters are listed in it), <code>new</code> and <code>construct</code> must be declared thanks to: <code>-define( wooper_construct_export, new/n, new_link/n, synchronous_new/n, synchronous_new_link/n, construct/n+1).</code>. <code>construct</code> takes one additional parameter, the instance state.
->>>>>>> .r2437
->>>>>>> .r2397
 </p>
 
 <p>
-<<<<<<< .mine
-<<<<<<< .mine
-For example, if <code>-define( wooper_construct_parameters, Age, Gender ).</code> is declared, <code>-define(wooper_construct_export,new/2,new_link/2,construct/3).</code> should then be specified, and the corresponding method will be: <code>construct(State,?wooper_construct_parameters) -&gt; [..]</code>. If there is no construction-related parameter, then the method becomes: <code>construct(State) -&gt; [..]</code>. The <code>new</code> operator is always defined automatically by WOOPER, nothing is to be done for it.
-=======
-For example, if <code>-define( wooper_construct_parameters, Age, Gender ).</code> is declared, <code>-define( wooper_construct_export, new/2, new_link/2, construct/3 ).</code> should then be specified, and the corresponding method will be: <code>construct(State,?wooper_construct_parameters) -&gt; [..]</code>. If there is no construction-related parameter, then the method becomes: <code>construct(State) -&gt; [..]</code>. The <code>new</code> operator is always defined automatically by WOOPER, nothing is to be done for it.
-=======
 For example, if <code>-define( wooper_construct_parameters, Age, Gender ).</code> is declared, <code>-define( wooper_construct_export, new/2, new_link/2, synchronous_new/2, synchronous_new_link/2, construct/3 ).</code> should then be specified, and the corresponding method will be: <code>construct(State,?wooper_construct_parameters) -&gt; [..]</code>. If there is no construction-related parameter, then the method becomes: <code>construct(State) -&gt; [..]</code>. All four <code>new</code> operators are always defined automatically by WOOPER, nothing is to be done for them.
->>>>>>> .r2437
->>>>>>> .r2397
 </p>
 
 <p>
@@ -1210,7 +1194,7 @@ If no class-specific EXIT handler is available, default WOOPER one will be used.
 
 <h4>Practical build hints</h4>
 <p>
-All WOOPER classes must include <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/wooper/src/wooper.hrl?view=markup" target="_blank">wooper.hrl</a>: <code>-include("wooper.hrl").</code>. To help declaring the right defines in the right order, using the WOOPER <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/wooper/examples/class_Template.erl?view=markup" target="_blank">template</a> is recommended.
+All WOOPER classes must include <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/wooper/src/wooper.hrl?view=markup" target="_blank">wooper.hrl</a>: <code>-include("wooper.hrl").</code>. To help declaring the right defines in the right order, using the WOOPER <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/erlang/wooper/examples/class_Template.erl.sample?view=markup" target="_blank">template</a> is recommended.
 </p>
 
 <p>
@@ -1511,6 +1495,8 @@ Not released yet (work-in-progress, only available on SVN). Should be a BFO (Bug
 
 	<li>state management enriched: <code>popFromAttribute</code> added</li>
 
+	<li>TO-DO: new on remote nodes to be added</li>
+
 <!--
 	<li></li>
 -->
@@ -1747,7 +1733,7 @@ svn copy https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/code
   <center>
     [<a href="#_top_">Top</a>]<br>
     <br>
-    <em>Last update: Monday, June 9, 2008</em>
+    <em>Last update: Friday, July 11, 2008</em>
   </center>
 </body>
 </html>
