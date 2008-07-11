@@ -122,7 +122,8 @@ done
 #LOG_OPT="+W w -kernel error_logger "{file,\"$DEFAULT_LOG_FILE\"}
 LOG_OPT="+W w"
 
-CODE_OPT="-pz ${CODE_DIRS} -smp auto"
+# +native not used here:
+CODE_OPT="-pz ${CODE_DIRS} -smp auto +K true +A 8"
 
 # By default up to 1,2 million processes could be created on one node:
 # (reduced, as even without having spawned these processes, the memory 
