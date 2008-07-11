@@ -26,7 +26,8 @@ PROJECT_RELEASE_ARCHIVE_BZ2 := $(PROJECT_RELEASE_BASE).tar.bz2
 ERLANG_VERSION      := R9C-2
 ERLANG_ROOT         := /usr
 
-ERLANG_COMPILER     := $(ERLANG_ROOT)/bin/erlc
+#ERLANG_COMPILER     := $(ERLANG_ROOT)/bin/erlc
+ERLANG_COMPILER     := erlc
 
 
 # Directory section.
@@ -81,7 +82,8 @@ INC += -I. $(COMMON_INC) $(WOOPER_INC) $(CORE_INC)                     \
 	$(GENERIC_INC) $(MESH_INC) $(SPACE_INC)                            \
 
 
-ERLANG_INTERPRETER  := $(ERLANG_ROOT)/bin/erl
+#ERLANG_INTERPRETER  := $(ERLANG_ROOT)/bin/erl
+ERLANG_INTERPRETER  := erl
 
 ERLANG_INTERPRETER_OPT_DEBUG := -init_debug -smp auto
 
