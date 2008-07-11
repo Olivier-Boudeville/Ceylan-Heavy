@@ -21,7 +21,8 @@ Unless --sn or --ln is specified, default is to use a long node name, '${DEFAULT
 
 #echo "Received as parameters: $*"
 
-ERL=/usr/bin/erl 
+#ERL=/usr/bin/erl 
+ERL=erl
 
 CEYLAN_ERLANG=`dirname $0`/../..
 #echo "CEYLAN_ERLANG = ${CEYLAN_ERLANG}"
