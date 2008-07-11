@@ -8,6 +8,7 @@ CEYLAN_ERLANG_TOP = ..
 MODULES_DIRS = src doc examples 
 
 
+all:
 
 release-wooper: release-wooper-zip release-wooper-bz2
 
