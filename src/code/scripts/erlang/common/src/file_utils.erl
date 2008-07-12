@@ -9,13 +9,19 @@
 % Licensed under a disjunctive tri-license: MPL/GPL/LGPL.
 
 
--export([ convert_to_filename/1, generate_png_from_graph_file/2,
-	generate_png_from_graph_file/3, display_png_file/1, get_image_file_png/1,
-	get_image_file_gif/1, join/2,
-	files_to_zipped_term/1, zipped_term_to_unzipped_files/1 ]).
+% Note: join/2 removed from file_utils, use filename:join(Components) or
+% filename:join(Name1, Name2) instead.
+
+
+-export([ convert_to_filename/1, get_image_file_png/1,
+	get_image_file_gif/1,
+	file_to_zipped_term/1,
+	zipped_term_to_unzipped_file/1,zipped_term_to_unzipped_file/2,
+	files_to_zipped_term/1,	zipped_term_to_unzipped_files/1 ]).
 
 
 -define(ResourceDir,"resources").
+
 
 		
 % Converts specified name to an acceptable filename, filesystem-wise.	
@@ -23,33 +29,7 @@ convert_to_filename(Name) ->
 	% Replace spaces by underscores:
 	{ok,Filename,_} = regexp:gsub(Name," ","_"),
 	Filename.
-	
-
-% Generates a PNG image file from specified graph file, that must respect the
-% dot (graphviz) syntax.
-%  - PNGFilename the filename of the PNG to generate
-%  - GraphFilename the filename corresponding to the source graph
-%  - HaltOnDotOutput tells whether the process should crash if dot outputs
-% a warning
-generate_png_from_graph_file(PNGFilename,GraphFilename,true) ->
-	[] = execute_dot(PNGFilename,GraphFilename);
-
-% Any output remains available to the caller.
-generate_png_from_graph_file(PNGFilename,GraphFilename,false) ->
-	execute_dot(PNGFilename,GraphFilename).
-	
-
-% By default do not crash if dot outputs some warnings.
-generate_png_from_graph_file(PNGFilename,GraphFilename) ->
-	generate_png_from_graph_file(PNGFilename,GraphFilename,false).
-
-
-% Displays (without blocing) to the user the specified PNG, using an external
-% viewer. 
-display_png_file(PNGFilename) ->
-	% Viewer is 'eye of gnome' here (output ignored): 
-	os:cmd( "eog " ++ PNGFilename ++ " &" ).
-	
+		
 	
 % Returns the image path corresponding to the specified file.	
 get_image_file_png(Image) ->
@@ -62,45 +42,65 @@ get_image_file_gif(Image) ->
 
 	
 	
-% Python-like 'join', combines items in a list into a string using a separator
-% between each item representation. 
-% Inspired from http://www.trapexit.org/String_join_with.
-join(_Separator,[]) ->
-    "";
-
-join(Separator,ListToJoin) ->
-    lists:flatten( lists:reverse( join(Separator, ListToJoin, []) ) ).
+% Reads in memory the file specified from its filename, zips the
+% corresponding term, and returns it.
+% Note: useful for network transfers of small files. 
+% Larger ones should be transferred with TCP/IP and by chunks.
+% Returns a binary.
+file_to_zipped_term(Filename)  ->
+	DummyFileName = "dummy",
+	%{ok,{_DummyFileName,Bin}} = zip:zip( DummyFileName, Filename,
+	% [verbose,memory] ),
+	{ok,{_DummyFileName,Bin}} = 
+		zip:zip( DummyFileName, [Filename], [verbose,memory] ),
+	Bin.
+	
+	
+% Reads specified binary, extracts the zipped file in it and writes it
+% on disk, in current directory.
+% Returns the filename of the unzipped file.	
+zipped_term_to_unzipped_file(ZippedTerm) ->
+	%zip:unzip(ZippedTerm,[verbose]).
+	{ok,[FileName]} = zip:unzip(ZippedTerm),
+	FileName.
+	
+	
+% Reads specified binary, extracts the zipped file in it and writes it
+% on disk, in current directory, under specified filename instead of under
+% filename stored in the zip archive.
+% Any pre-existing file will be overwritten.
+% Note: only one file is expected in the specified archive.
+zipped_term_to_unzipped_file(ZippedTerm,TargetFilename) ->
+	{ok,[{_AFilename, Binary}]} = zip:unzip(ZippedTerm,[memory]),
+	{ok,File} = file:open( TargetFilename, [write] ),
+	ok = io:format( File, "~s", [ binary_to_list(Binary) ] ),
+	ok = file:close(File).
 	
 
-join(_Separator,[],Acc) ->
-    Acc;
-
-join(_Separator,[H| [] ],Acc) ->
-    [H|Acc];
-	
-join(Separator,[H|T],Acc) ->
-    join(Separator, T, [Separator, H|Acc]).
 
 
 % Reads in memory the files specified from their filename, zips the
 % corresponding term, and returns it.
 % Note: useful for network transfers of small files. 
 % Larger ones should be transferred with TCP/IP and by chunks.
-files_to_zipped_term(FilenameList) ->
-	FileName = "dummy",
-	%{ok,{_FileName,Bin}} = zip:zip( FileName, FilenameList, [verbose,memory] ),
-	{ok,{_FileName,Bin}} = zip:zip( FileName, FilenameList, [memory] ),
+% Returns a binary.
+files_to_zipped_term(FilenameList) when is_list(FilenameList) ->
+	DummyFileName = "dummy",
+	%{ok,{_DummyFileName,Bin}} = zip:zip( DummyFileName, FilenameList,
+	% [verbose,memory] ),
+	{ok,{_DummyFileName,Bin}} = 
+		zip:zip( DummyFileName, FilenameList, [memory] ),
 	Bin.
 	
+
+% Reads specified binary, extracts the zipped files in it and writes them
+% on disk, in current directory.	
+% Returns a list of the filenames of the unzipped files.	
 zipped_term_to_unzipped_files(ZippedTerm) ->
 	%zip:unzip(ZippedTerm,[verbose]).
-	zip:unzip(ZippedTerm).
-
+	{ok,FileList} = zip:unzip(ZippedTerm),
+	FileList.
+	
 
 % Helper functions.
-
-execute_dot(PNGFilename,GraphFilename) ->
-	% Dot might issue non-serious warnings:
-	os:cmd( "dot -o" ++ PNGFilename ++ " -Tpng " ++ GraphFilename ).
-
 
