@@ -28,9 +28,7 @@ testFinished() ->
 
 
 % Per-test trace file (must be defined before TraceSupervisor include):
--define(TraceFilename,
-	io_lib:format( "~s.log", [ ?MODULE ]) 
-).
+-define( TraceFilename, ( atom_to_list(?MODULE) ++ ".log" ) ).
 
 
 % For supervisor macros (ex: init_trace_supervisor):
