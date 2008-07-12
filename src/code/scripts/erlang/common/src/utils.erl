@@ -9,11 +9,13 @@
 % Licensed under a disjunctive tri-license: MPL/GPL/LGPL.
 
 
+% Note that string:tokens can be used to split strings.
+
 -export([ get_timestamp/0, get_textual_timestamp/0, get_textual_timestamp/1,
 	timestamp_to_string/1, get_duration/2, get_textual_duration/2,
 	speak/1, notify_user/1, notify_user/2,
 	term_toString/1, term_to_string/1, integer_to_string/1,
-	ipv4_to_string/1, ipv4_to_string/2,
+	ipv4_to_string/1, ipv4_to_string/2,join/2,
 	register_as/2, register_as/3, wait_for_global_registration_of/1,
 	get_current_erlang_version/0 ]).
 
@@ -103,6 +105,27 @@ ipv4_to_string( {N1,N2,N3,N4} ) ->
 	
 ipv4_to_string( {N1,N2,N3,N4}, Port ) ->
 	lists:flatten( io_lib:format( "~B.~B.~B.~B:~B", [N1,N2,N3,N4,Port] ) ).
+
+
+% Python-like 'join', combines items in a list into a string using a separator
+% between each item representation. 
+% Inspired from http://www.trapexit.org/String_join_with.
+join(_Separator,[]) ->
+    "";
+
+join(Separator,ListToJoin) ->
+    lists:flatten( lists:reverse( join(Separator, ListToJoin, []) ) ).
+	
+
+join(_Separator,[],Acc) ->
+    Acc;
+
+join(_Separator,[H| [] ],Acc) ->
+    [H|Acc];
+	
+join(Separator,[H|T],Acc) ->
+    join(Separator, T, [Separator, H|Acc]).
+
 	
 	
 % Registers the current process under specified name.
