@@ -31,7 +31,6 @@ CEYLAN_ERLANG=`dirname $0`/../..
 # If logs are redirected to file:
 DEFAULT_LOG_FILE="Ceylan-Simulation.log"
 
-
 be_verbose=1
 
 autostart=0
@@ -148,7 +147,9 @@ COMMAND="${COMMAND} -setcookie ${COOKIE} ${TO_EVAL}"
 # nslookup could be used as well:
 # (some laptops timeout when using the 'host' command)
 if [ -z "${FQDN}" ] ; then
+	# Not used anymore:
 	FQDN=`host \`hostname\` | awk '{ print $1 }' | head -n 1`
+	#echo "Guessed FQDN is ${FQDN}"
 fi
 
 
@@ -173,7 +174,7 @@ else
 		LONG_NAME="${DEFAULT_NODE_NAME}"
 	fi
 	
-	LONG_NAME="${LONG_NAME}@${FQDN}"
+	#LONG_NAME="${LONG_NAME}@${FQDN}"
 	COMMAND="${COMMAND} -name ${LONG_NAME}"
 
 	if [ $be_verbose -eq 0 ] ; then
