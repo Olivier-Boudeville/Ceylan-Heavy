@@ -324,8 +324,9 @@ info: info-files
 	@echo "ERLANG_INTERPRETER     = $(ERLANG_INTERPRETER)"
 	@echo "ERLANG_INTERPRETER_OPT = $(ERLANG_INTERPRETER_OPT)"
 	@echo "ERLANG_SRC             = $(ERLANG_SRC)"
-
-
+	@echo "VM_TEST_NAME           = $(VM_TEST_NAME)"
+	@echo "PROJECT_NAME           = $(PROJECT_NAME)"
+	
 info-files:	
 	@echo "ERL_FILES    = $(ERL_FILES)"
 	@echo "BEAM_FILES   = $(BEAM_FILES)"
