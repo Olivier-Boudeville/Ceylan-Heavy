@@ -9,21 +9,14 @@
 % Licensed under a disjunctive tri-license: MPL/GPL/LGPL.
 
 
--export([get_timestamp/0,get_textual_timestamp/0,get_textual_timestamp/1,
-	timestamp_to_string/1,
-	get_duration/2,get_textual_duration/2,
-	convert_to_filename/1,speak/1,notify_user/1,notify_user/2,
-	generate_png_from_graph_file/2,generate_png_from_graph_file/3,
-	display_png_file/1,
-	get_image_file_png/1,get_image_file_gif/1,
-	term_toString/1,term_to_string/1,
-	integer_to_string/1,
-	ipv4_to_string/1,ipv4_to_string/2,
-	register_as/2,register_as/3,wait_for_global_registration_of/1,
-	join/2,get_current_erlang_version/0]).
+-export([ get_timestamp/0, get_textual_timestamp/0, get_textual_timestamp/1,
+	timestamp_to_string/1, get_duration/2, get_textual_duration/2,
+	speak/1, notify_user/1, notify_user/2,
+	term_toString/1, term_to_string/1, integer_to_string/1,
+	ipv4_to_string/1, ipv4_to_string/2,
+	register_as/2, register_as/3, wait_for_global_registration_of/1,
+	get_current_erlang_version/0 ]).
 
-
--define(ResourceDir,"resources").
 
 
 % Returns a tuple describing the current time. 
@@ -61,11 +54,6 @@ get_textual_duration(FirstTimestamp,SecondTimestamp) ->
 		"and ~B second(s)", [Days, Hour, Minute, Second] ) ).
 		
 		
-% Converts specified name to an acceptable filename, filesystem-wise.	
-convert_to_filename(Name) ->
-	% Replace spaces by underscores:
-	{ok,Filename,_} = regexp:gsub(Name," ","_"),
-	Filename.
 
 
 % Speaks the specified message, using espeak.		
@@ -87,43 +75,6 @@ notify_user(Message,FormatList) ->
 	ActualMessage = io_lib:format(Message,FormatList), 
 	io:format(ActualMessage),
 	speak(ActualMessage).
-
-
-% Generates a PNG image file from specified graph file, that must respect the
-% dot (graphviz) syntax.
-%  - PNGFilename the filename of the PNG to generate
-%  - GraphFilename the filename corresponding to the source graph
-%  - HaltOnDotOutput tells whether the process should crash if dot outputs
-% a warning
-generate_png_from_graph_file(PNGFilename,GraphFilename,true) ->
-	[] = execute_dot(PNGFilename,GraphFilename);
-
-% Any output remains available to the caller.
-generate_png_from_graph_file(PNGFilename,GraphFilename,false) ->
-	execute_dot(PNGFilename,GraphFilename).
-	
-
-% By default do not crash if dot outputs some warnings.
-generate_png_from_graph_file(PNGFilename,GraphFilename) ->
-	generate_png_from_graph_file(PNGFilename,GraphFilename,false).
-
-
-% Displays (without blocing) to the user the specified PNG, using an external
-% viewer. 
-display_png_file(PNGFilename) ->
-	% Viewer is 'eye of gnome' here (output ignored): 
-	os:cmd( "eog " ++ PNGFilename ++ " &" ).
-	
-	
-% Returns the image path corresponding to the specified file.	
-get_image_file_png(Image) ->
-  filename:join([?ResourceDir, "images", Image ++ ".png"]).
-
-
-% Returns the image path corresponding to the specified file.	
-get_image_file_gif(Image) ->
-  filename:join([?ResourceDir, "images", Image ++ ".gif"]).
-
 
 
 % Returns a human-readable string describing specified term.	
@@ -224,35 +175,10 @@ wait_for_global_registration_of(Name,SecondsToWait) ->
 	end.
 	
 	
-% Python-like 'join', combines items in a list into a string using a separator
-% between each item representation. 
-% Inspired from http://www.trapexit.org/String_join_with.
-join(_Separator,[]) ->
-    "";
-
-join(Separator,ListToJoin) ->
-    lists:flatten( lists:reverse( join(Separator, ListToJoin, []) ) ).
-	
-
-join(_Separator,[],Acc) ->
-    Acc;
-
-join(_Separator,[H| [] ],Acc) ->
-    [H|Acc];
-	
-join(Separator,[H|T],Acc) ->
-    join(Separator, T, [Separator, H|Acc]).
-
-
 % Returns the version informations of the current Erlang interpreter being used.
 get_current_erlang_version() ->
 	erlang:system_info(otp_release).
 
 
 % Helper functions.
-
-execute_dot(PNGFilename,GraphFilename) ->
-	% Dot might issue non-serious warnings:
-	os:cmd( "dot -o" ++ PNGFilename ++ " -Tpng " ++ GraphFilename ).
-
 
