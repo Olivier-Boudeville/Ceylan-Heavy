@@ -1,6 +1,6 @@
 % Trace supervisor.
 % This version just uses LogMX (http://logmx.com) to track the default 
-% simulation trace file.
+% simulation trace file, expected to be locally available on disk.
 -module(class_TraceSupervisor).
 
 
@@ -45,12 +45,12 @@
 
 
 % Constructs a new trace supervisor.
-% TraceFilename is the name of the file where traces should be read from.
-% MonitorNow tells whether the supervision should being immediately (if true)
+%  - TraceFilename is the name of the file where traces should be read from.
+%  - MonitorNow tells whether the supervision should being immediately (if true)
 % or only when the monitor method is called (if false).
-% Synchronous tells whether the monitoring should be non-blocking (if false) or
-% otherwise the monitoring should be blocking and Synchronous should be the
-% PID of the caller to be notified.
+%  - Synchronous tells whether the monitoring should be non-blocking
+% (if false) or otherwise the monitoring should be blocking and Synchronous
+% should be the PID of the caller to be notified.
 % This parameter has a meaning iff MonitorNow is true.
 construct(State,?wooper_construct_parameters) ->
 
@@ -123,7 +123,7 @@ monitor(State) ->
 			
 		false ->
 			error_logger:error_msg( "class_TraceSupervisor:monitor "
-				"unable to file trace file '~s'.~n", [ Filename ] ),
+				"unable to find trace file '~s'.~n", [ Filename ] ),
 			trace_file_not_found
 			
 	end,
@@ -149,7 +149,7 @@ synchronous_monitor(State) ->
 			
 		false ->
 			error_logger:error_msg( "class_TraceSupervisor:synchronous_monitor "
-				"unable to file trace file '~s'.~n", [ Filename ] ),
+				"unable to find trace file '~s'.~n", [ Filename ] ),
 			trace_file_not_found
 			
 	end,
