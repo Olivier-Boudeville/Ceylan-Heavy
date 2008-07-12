@@ -121,6 +121,13 @@ CEYLAN_CSS = $(CEYLAN_TRUNK)/src/doc/web/common/css/Ceylan-docutils.css
 
 IMAGE_MAGICK = convert
 
+ifndef PROJECT_NAME
+
+PROJECT_NAME := "Ceylan-Erlang"
+
+endif
+
+
 
 ifndef FQDN
 
@@ -168,7 +175,9 @@ ERLANG_INTERPRETER_OPT := -pz $(BEAM_DIRS) $(DISTRIBUTED_NODE_OPT)
 
 ERL_LAUNCHER = $(COMMON_SRC)/launch-erl.sh
 
-ERL_PARAMETRIZED_LAUNCHER = $(ERL_LAUNCHER) -v -c $(PROJECT_NAME) --ln $(VM_TEST_NAME) --fqdn $(FQDN) $(BEAM_PATH_OPT)
+# '--fqdn $(FQDN)' removed, because 'hostname -f' was leading to
+# 'localhost.localdomain':
+ERL_PARAMETRIZED_LAUNCHER = $(ERL_LAUNCHER) -v -c $(PROJECT_NAME) --ln $(VM_TEST_NAME) $(BEAM_PATH_OPT)
 
 
 TMP_RST_REPOSITORY = tmp-rst
