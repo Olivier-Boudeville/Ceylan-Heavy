@@ -1,5 +1,9 @@
 % Most basic trace aggregator.
 % It just collects traces from emitters and store them at once in a file.
+% Trace listeners can connect to the aggregator. In this case it will stop and 
+% send first the full current trace file to them. From that moment, incoming
+% traces will be both written in file and sent to each trace listener still
+% connected.
 -module(class_TraceAggregator).
 
 
@@ -17,7 +21,7 @@
 
 
 % Method declarations.
--define(wooper_method_export,send/10).
+-define(wooper_method_export,send/10,addTraceListener/2,removeTraceListener/2).
 
 % Static method declarations (to be directly called from module):
 -export([create/1,getAggregator/1,remove/0]).
@@ -46,9 +50,9 @@
 
 
 % Constructs a new trace aggregator.
-% TraceFilename is the name of the file where traces should be written to.
-% IsPrivate tells whether this trace aggregator will be privately held (hence
-% should not be registered in naming service) or if it is a (registered) 
+%  - TraceFilename is the name of the file where traces should be written to.
+%  - IsPrivate tells whether this trace aggregator will be privately held
+% (hence should not be registered in naming service) or if it is a (registered) 
 % singleton.
 construct(State,?wooper_construct_parameters) ->
 
@@ -85,10 +89,10 @@ construct(State,?wooper_construct_parameters) ->
 
 	end,
 	
-	{ok,File} = file:open( TraceFilename, write ),
+	{ok,File} = file:open( TraceFilename, [write] ),
 
 	EndState = ?setAttributes( PrivateState, [ {trace_filename,TraceFilename}, 
-		{trace_file,File} ] ),
+		{trace_file,File}, {trace_listeners,[]} ] ),
 	io:format( "~s Trace aggregator created.~n", [ ?LogPrefix ] ),
 	EndState.
 
@@ -110,7 +114,7 @@ delete(State) ->
 			
 	end,
 	
-	file:close( ?getAttr(trace_file) ),
+	ok = file:close( ?getAttr(trace_file) ),
 
 	% Then call the direct mother class counterparts: (none)
 	
@@ -129,15 +133,57 @@ delete(State) ->
 
 % Sends a full trace to this aggregator to have it stored.
 % The nine fields correspond to the ones defined in our trace format.
-% (oneway)
+% (const oneway)
 send( State, TraceEmitterPid, TraceEmitterName, TraceEmitterCategorization,
 		Tick, Time, Location, MessageCategorization, Priority, Message ) ->
-	io:format( ?getAttr(trace_file), "~w|~s|~s|~w|~s|~s|~s|~w|~s~n", 
+	
+	Trace = lists:flatten( io_lib:format( "~w|~s|~s|~w|~s|~s|~s|~w|~s~n", 
 		[ TraceEmitterPid, TraceEmitterName, TraceEmitterCategorization,
-		Tick, Time, Location, MessageCategorization, Priority, Message  ] ),
+		Tick, Time, Location, MessageCategorization, Priority, Message  ] ) ),	
+		
+	io:format( ?getAttr(trace_file), "~s", [Trace] ),
+	
+	Listeners = ?getAttr(trace_listeners),
+	case length(Listeners) of 
+		
+		0 ->
+			ok;
+			
+		_Other ->	
+			BinTrace = list_to_binary(Trace),
+			lists:foreach( 
+				fun(Listener) ->	
+		
+					Listener ! {addTrace,BinTrace}
+				
+				end,
+				Listeners )
+			
+	end,		 
 	?wooper_return_state_only( State ).
 
 
+% Adds specified trace listener to this aggregator.
+% (oneway)
+addTraceListener(State,ListenerPid) ->
+	io:format( "~s Adding trace listener ~w, and sending it previous traces.~n",
+		[ ?LogPrefix, ListenerPid ] ),
+	% Transfer file:
+	TraceFilename = ?getAttr(trace_filename),
+	Bin = file_utils:file_to_zipped_term( TraceFilename ),
+	ListenerPid ! {trace_zip,Bin,TraceFilename},
+	RegisterState = ?appendToAttribute(State,trace_listeners,ListenerPid),
+	?wooper_return_state_only( RegisterState ).
+
+
+% Removes specified trace listener from this aggregator.
+% (oneway)
+removeTraceListener(State,ListenerPid) ->
+	io:format( "~s Removing trace listener ~w.~n", 
+		[ ?LogPrefix, ListenerPid ] ),
+	UnregisterState = ?deleteFromAttribute(State,trace_listeners,ListenerPid),
+	?wooper_return_state_only( UnregisterState ).
+	
 
 % 'Static' methods (module functions):
 	
