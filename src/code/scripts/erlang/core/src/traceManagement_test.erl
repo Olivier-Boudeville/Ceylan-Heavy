@@ -1,7 +1,7 @@
 % Unit tests for the implementation of trace management.
-% @see the class_TraceEmitter.erl module.
-% @see the class_TraceAggregator.erl module.
-% @see the class_TraceSupervisor.erl module.
+% See the class_TraceEmitter.erl module.
+% See the class_TraceAggregator.erl module.
+% See the class_TraceSupervisor.erl module.
 % Note: trace services are among the most generic services offered, they are
 % used in the vast majority of tests but this one, as the purpose of this test
 % is actually to test traces by themselves (cannot use the trace system to test
@@ -10,7 +10,7 @@
 
 
 -define(Tested_modules,[ class_TraceEmitter, class_TraceAggregator,
-	class_TraceSupervisor ]).
+	class_TraceSupervisor, class_TraceListener ]).
 
 
 % For all facilities common to all tests:
@@ -93,7 +93,13 @@ run() ->
 			
 	end,
 	
+	receive 
 	
+		Any ->
+			io:format( "Test received: ~w.", [Any] )
+			
+	end,
+			
 	io:format( ?Prefix "Deleting this TestTraceEmitter.~n" ),
 	
 	MyTraceEmitter ! delete,
