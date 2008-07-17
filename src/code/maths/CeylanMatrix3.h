@@ -43,7 +43,7 @@ namespace Ceylan
 			 * @note Beware of counter-intuitive operator priorities.
 			 *
 			 */
-			class CEYLAN_DLL Matrix3 : public Matrix
+			class CEYLAN_DLL Matrix3: public Matrix
 			{
 
 
@@ -87,7 +87,7 @@ namespace Ceylan
 
 
 				/**  
-				 * Adds two matrices : result = m1 + m2.
+				 * Adds two matrices: result = m1 + m2.
 				 *
 				 */
 				CEYLAN_DLL friend Matrix3 operator + ( const Matrix3 & m1, 
@@ -95,7 +95,7 @@ namespace Ceylan
 				
 				
 				/**  
-				 * Substracts two matrices : result = m1 - m2.
+				 * Substracts two matrices: result = m1 - m2.
 				 *
 				 */					
 				CEYLAN_DLL friend Matrix3 operator - ( const Matrix3 & m1, 
@@ -103,7 +103,7 @@ namespace Ceylan
 				
 				
 				/**  
-				 * Multiplies two matrices : result = m1 * m2.
+				 * Multiplies two matrices: result = m1 * m2.
 				 *
 				 */									
 				CEYLAN_DLL friend Matrix3 operator * ( const Matrix3 & m1, 
@@ -111,7 +111,7 @@ namespace Ceylan
 				
 				
 				/**  
-				 * Multiplies a matrix by a scalar : result = lambda * m.
+				 * Multiplies a matrix by a scalar: result = lambda * m.
 				 *
 				 */							
 				CEYLAN_DLL friend Matrix3 operator * ( Real lambda, 
@@ -139,7 +139,7 @@ namespace Ceylan
 
 
 				/** 	
-				 * Multiplies a matrix by a vector : result = m * v
+				 * Multiplies a matrix by a vector: result = m * v
 				 *
 				 */
 				CEYLAN_DLL friend Vector3 operator * ( const Matrix3 & m , 
@@ -290,7 +290,7 @@ namespace Ceylan
 					 * endomorphism.
 					 *
 					 * @param endomorphism can be a functor 
-					 * (ex : Endomorphism3DFunctor) or a simple function :
+					 * (ex: Endomorphism3DFunctor) or a simple function:
 					 * Vector3 -> Vector3.
 					 *
 					 * @note C++ does not allow virtual template method.
@@ -335,6 +335,15 @@ namespace Ceylan
 
 			} ;
 			
+			
+			/*
+			 * g++ seems to require this outside declaration, only for this
+			 * particular operator though!
+			 *
+			 */
+			CEYLAN_DLL Matrix3 operator ! ( const Matrix3 & m ) 
+				throw( LinearException ) ;
+				
 		}
 		
 	}

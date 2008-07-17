@@ -33,7 +33,7 @@ namespace Ceylan
 			 * @note Beware of counter-intuitive operator priorities.
 			 *
 			 */
-			class CEYLAN_DLL Vector3 : public Vector
+			class CEYLAN_DLL Vector3: public Vector
 			{
 
 
@@ -63,7 +63,7 @@ namespace Ceylan
 					const Vector3 & v2 ) throw() ;
 
 
-				/** Translates a 3D point of specified 3D vector : 
+				/** Translates a 3D point of specified 3D vector: 
 				 * result = t + v.
 				 *
 				 */
@@ -72,7 +72,7 @@ namespace Ceylan
 				
 				
 				/** 
-				 * Translates a 3D point of specified opposite 3D vector :
+				 * Translates a 3D point of specified opposite 3D vector:
 				 * result = t - v.
 				 *
 				 */
@@ -90,7 +90,7 @@ namespace Ceylan
 				
 				
 				/** 
-				 * Constructs a 3D vector from two 3D points : 
+				 * Constructs a 3D vector from two 3D points: 
 				 * result = t1 - t2.
 				 *
 				 */
@@ -99,7 +99,7 @@ namespace Ceylan
 
 
 				/** 
-				 * Adds two vectors : result = v1 + v2.
+				 * Adds two vectors: result = v1 + v2.
 				 *
 				 */
 				CEYLAN_DLL friend Vector3 operator + ( const Vector3 & v1, 
@@ -107,7 +107,7 @@ namespace Ceylan
 					
 
 				/** 
-				 * Substracts two vectors : result = v1 - v2.	
+				 * Substracts two vectors: result = v1 - v2.	
 				 *
 				 */			
 				CEYLAN_DLL friend Vector3 operator - ( const Vector3 & v1, 
@@ -115,7 +115,7 @@ namespace Ceylan
 	
 				
 				/** 
-				 * Multiplies v by coefficient lambda : result = lamba.v.
+				 * Multiplies v by coefficient lambda: result = lamba.v.
 				 *
 				 */
 				CEYLAN_DLL friend Vector3 operator * ( Real lambda, 
@@ -123,7 +123,7 @@ namespace Ceylan
 				
 				
 				/** 
-				 * Applies vector v to matrix m : result = m.v
+				 * Applies vector v to matrix m: result = m.v
 				 *
 				 */
 				CEYLAN_DLL friend Vector3 operator * ( const Matrix3 & m, 
@@ -131,7 +131,7 @@ namespace Ceylan
 	
 				
 				/** 
-				 * Computes the dot product of v1 and v2 : 
+				 * Computes the dot product of v1 and v2: 
 				 * result = v1 (dotproduct) v2.
 				 *
 				 */
@@ -140,7 +140,7 @@ namespace Ceylan
 
 
 				/** 
-				 * Returns the cross product of v1 and v2 : 
+				 * Returns the cross product of v1 and v2: 
 				 * result = v1 (crossproduct) v2.
 				 *
 				 */
@@ -275,6 +275,24 @@ namespace Ceylan
 
 			} ;
 
+			
+			/*
+			 * g++ seems to require this outside declaration, only for this
+			 * particular operator though!
+			 *
+			 */
+			CEYLAN_DLL Real operator | ( const Vector3 & v1, 
+					const Vector3 & v2 ) throw()  ;
+					
+					
+			/*
+			 * g++ seems to require this outside declaration, only for this
+			 * particular operator though!
+			 *
+			 */
+			CEYLAN_DLL Vector3 operator ^ ( const Vector3 & v1, 
+					const Vector3 & v2 ) throw() ;
+					
 		}
 		
 	}
@@ -283,3 +301,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_VECTOR_3_H_
+

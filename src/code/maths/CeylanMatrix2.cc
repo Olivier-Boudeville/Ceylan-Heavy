@@ -48,7 +48,7 @@ Matrix2::Matrix2( Real x0, Real x1, Real y0, Real y1 ) throw()
 }
 
 
-Matrix2::Matrix2( const Matrix2 & source ) throw() :
+Matrix2::Matrix2( const Matrix2 & source ) throw():
 	Matrix()
 {
 
@@ -104,7 +104,7 @@ Real Matrix2::getElementAt( MatrixIndex abscissa,
 
 	if ( abscissa >= Dimensions || ordinate >= Dimensions )
 		Ceylan::emergencyShutdown( 
-			"Matrix2::getElementAt : index out of bounds." ) ;
+			"Matrix2::getElementAt: index out of bounds." ) ;
 			
 #endif // CEYLAN_DEBUG
 		
@@ -121,7 +121,7 @@ void Matrix2::setElementAt( MatrixIndex abscissa,
 
 	if ( abscissa >= Dimensions || ordinate >= Dimensions )
 		Ceylan::emergencyShutdown( 
-			"Matrix2::setElementAt : index out of bounds." ) ;
+			"Matrix2::setElementAt: index out of bounds." ) ;
 
 #endif // CEYLAN_DEBUG
 		
@@ -141,7 +141,7 @@ void Matrix2::setToDiagonal( Real diagonalTerm ) throw()
 
 	for ( MatrixIndex j = 0 ;  j < Dimensions ; j++ )
 		for ( MatrixIndex i = 0 ; i < Dimensions ; i++ )
-			_mat[i][j] = ( (i==j) ? diagonalTerm : 0 ) ;
+			_mat[i][j] = ( (i==j) ? diagonalTerm: 0 ) ;
 	 
 }
 
@@ -189,7 +189,7 @@ Real Matrix2::trace() const throw()
 
 Real Matrix2::determinant() const throw()
 {
-	// x0 * y1 - x1 * y0 :
+	// x0 * y1 - x1 * y0:
 	return _mat[0][0] * _mat[1][1] - _mat[0][1] * _mat[1][0] ;
 
 }
@@ -222,7 +222,7 @@ const string Matrix2::toString( VerbosityLevels level ) const throw()
 		return res ;
 	}
 
-	// Non-HTML format requested :
+	// Non-HTML format requested:
 	
 	ostringstream oss ;
 
@@ -232,10 +232,10 @@ const string Matrix2::toString( VerbosityLevels level ) const throw()
 
   	for ( MatrixIndex j = 0; j < Dimensions; j++ )
     	for ( MatrixIndex i = 0; i < Dimensions; i++ )
-  	  		oss << ( ( i == 0 ) ? "[ " : " " )
+  	  		oss << ( ( i == 0 ) ? "[ ": " " )
          	 	<< std::setw(5) 
 				<< _mat[i][j] 
-				<< ( ( i== Dimensions-1 ) ? " ]\n" : " ") ;
+				<< ( ( i== Dimensions-1 ) ? " ]\n": " ") ;
    	oss << endl ;
 
     res = oss.str() ;
@@ -245,7 +245,7 @@ const string Matrix2::toString( VerbosityLevels level ) const throw()
 
     if ( oss.fail() )
 	{
-		string message = "Matrix2::toString : conversion error." ;
+		string message = "Matrix2::toString: conversion error." ;
        	Log::LogPlug::error( message ) ;
 		return message ;
 	}
@@ -278,7 +278,7 @@ Matrix2 Matrix2::Adjoint( const Matrix2 & m ) throw()
 	result.transpose() ;
 	return result ;
 	
-	// or : return ~ Cofactor( m ) ;
+	// or: return ~ Cofactor( m ) ;
 }
 
 
@@ -384,7 +384,7 @@ Matrix2 Ceylan::Maths::Linear::operator ! ( const Matrix2 & m )
 	// Gauss pivot would be real overkill in this case.
 	
 	/*
-	 * Actually, the result would be :
+	 * Actually, the result would be:
 	 * 1/( x0 * y1 - x1 * y0 ) * [ y1, -x1 ; -y0, x0 ]
 	 *
 	 */
@@ -395,7 +395,7 @@ Matrix2 Ceylan::Maths::Linear::operator ! ( const Matrix2 & m )
 		return (1/d) * ~ Matrix2::Cofactor( m ) ;
 	else 
  		throw LinearException( 
-			"Matrix2 : inverse operator ('!') : singular matrix." ) ;
+			"Matrix2: inverse operator ('!'): singular matrix." ) ;
 
 }
 
