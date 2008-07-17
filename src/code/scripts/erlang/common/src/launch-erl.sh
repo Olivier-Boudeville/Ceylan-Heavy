@@ -1,14 +1,17 @@
 #!/bin/sh
 
 DEFAULT_NODE_NAME="ceylan_default"
-DEFAULT_COOKIE="ceylan"
+
+# Not used anymore as the user may prefer file-based cookies:
+#DEFAULT_COOKIE="ceylan"
 
 
 USAGE="`basename $0` [-v] [-c a_cookie] [--sn a_short_node_name | --ln a_long_node_name] [--fqdn a_fqdn] [--beam-dir a_path] [--beam-paths path_1 path_2] [--no-auto-start] [-h]...: launches the Erlang interpreter with specified settings.
 	-v: be verbose
-	-c a_cookie: specify a cookie
+	-c a_cookie: specify a cookie, otherwise no cookie will be specifically set
 	--sn a_short_node_name: specify a short name (ex: 'ceylan_2') 
 	--ln a_long_node_name: specify a long name (@FQDN will be automatically added)
+	--tcp-range LOW HIGH: specify the range of TCP ports that should be used
 	--fqdn a_fqdn: specify the FQDN to be used
 	--wooper-path wooper_path: specify the WOOPER path 
 	--eval 'an Erlang expression': start by evaluating this expression
@@ -32,7 +35,7 @@ CEYLAN_ERLANG=`dirname $0`/../..
 DEFAULT_LOG_FILE="Ceylan-Simulation.log"
 
 be_verbose=1
-
+use_tcp_range=1
 autostart=0
 
 while [ $# -gt 0 ] ; do
@@ -58,6 +61,17 @@ while [ $# -gt 0 ] ; do
 	if [ "$1" = "--ln" ] ; then
 		shift
 		LONG_NAME="$1"
+		token_eaten=0
+	fi
+
+	if [ "$1" = "--tcp-range" ] ; then
+		shift
+		use_tcp_range=0
+		LOWER_TCP_PORT="$1"
+		HIGHER_TCP_PORT="$2"
+		shift
+		shift
+		echo "  + TCP range: from $LOWER_TCP_PORT to $HIGHER_TCP_PORT"
 		token_eaten=0
 	fi
 	
@@ -133,8 +147,9 @@ MAX_PROCESS_COUNT=120000
 
 COMMAND="${ERL} ${LOG_OPT} ${CODE_OPT} +P ${MAX_PROCESS_COUNT} ${VERBATIM_OPT}"
 
-if [ -z "${COOKIE}" ] ; then
-	COOKIE=${DEFAULT_COOKIE}
+# Adds a command-line cookie only if specified:
+if [ -n "${COOKIE}" ] ; then
+	COOKIE_OPT="-setcookie ${COOKIE}"
 fi
 
 if [ ${autostart} -eq 1 ] ; then
@@ -142,7 +157,16 @@ if [ ${autostart} -eq 1 ] ; then
 	TO_EVAL="-eval io:format(\"-->"${EVAL_CONTENT}".\")"
 fi
 
-COMMAND="${COMMAND} -setcookie ${COOKIE} ${TO_EVAL}"
+
+if [ $use_tcp_range -eq 0 ] ; then
+
+	TCP_PORT_OPT="-kernel inet_dist_listen_min ${LOWER_TCP_PORT} inet_dist_listen_max ${HIGHER_TCP_PORT}"  
+
+fi
+
+COMMAND="${COMMAND} ${COOKIE_OPT} ${TO_EVAL} ${TCP_PORT_OPT}"
+
+
 
 # nslookup could be used as well:
 # (some laptops timeout when using the 'host' command)
@@ -184,6 +208,7 @@ else
 	fi
 	
 fi
+
 
 #echo "$0 running final command: ${COMMAND}" 
 
