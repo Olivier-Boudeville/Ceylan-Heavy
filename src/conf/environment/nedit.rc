@@ -390,7 +390,7 @@ nedit.highlightSyntax: True
 nedit.backlightChars: False
 nedit.searchDialogs: False
 nedit.beepOnSearchWrap: False
-nedit.retainSearchDialogs: False
+nedit.retainSearchDialogs: True
 nedit.searchWraps: True
 nedit.stickyCaseSenseButton: True
 nedit.repositionDialogs: True
