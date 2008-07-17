@@ -8,25 +8,25 @@
 
 
 
-# ----------- For required tools :
+# ----------- For required tools:
 
 
 
 
-# GNU Libtool : http://www.gnu.org/software/libtool/libtool.html
+# GNU Libtool: http://www.gnu.org/software/libtool/libtool.html
 
-libtool_VERSION="1.5.24"
+libtool_VERSION="2.2.4"
 libtool_ARCHIVE="libtool-${libtool_VERSION}.tar.gz"
-libtool_DOWNLOAD_LOCATION="ftp://ftp.cs.tu-berlin.de/pub/gnu/libtool"
+libtool_DOWNLOAD_LOCATION="http://ftp.gnu.org/gnu/libtool/"
 libtool_ALTERNATE_DOWNLOAD_LOCATION="http://mirrors.usc.edu/pub/gnu/libtool"
-libtool_MD5="d0071c890101fcf4f2be8934a37841b0"
+libtool_MD5="d41d8cd98f00b204e9800998ecf8427e"
 
 
 
+# win32 pthreads: http://sources.redhat.com/pthreads-win32/
+# (not used currently)
 
-# win32 pthreads : http://sources.redhat.com/pthreads-win32/
-
-# Use g++ with standard C++ exceptions :
+# Use g++ with standard C++ exceptions:
 win_pthread_DLL="pthreadGCE.dll"
 win_pthread_DLL_MD5="xxx"
 
@@ -48,46 +48,51 @@ win_pthread_HEADER_SEM_MD5="xxx"
 
 # checking for whole directory will be always false, 
 # actual test will be made in getwin_pthread. 
-win_pthread_MD5="xx"
+win_pthread_MD5="xxx"
 
 
 
-# ----------- For common build tools :
+# ----------- For common build tools:
 
 
 
-# gcc : http://www.gnu.org/software/gcc/gcc.html
+# gcc: http://www.gnu.org/software/gcc/gcc.html
 
-gcc_VERSION="4.1.2"
+gcc_VERSION="4.3.1"
 
 gcc_ARCHIVE="gcc-${gcc_VERSION}.tar.bz2"
 gcc_DOWNLOAD_LOCATION="ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/gcc-${gcc_VERSION}"
 gcc_ALTERNATE_DOWNLOAD_LOCATION="ftp://ftp.uvsq.fr/pub/gcc/releases/gcc-${gcc_VERSION}"
-gcc_MD5="a4a3eb15c96030906d8494959eeda23c"
+gcc_MD5="4afa0290cc3a41ac8822666f1110de98"
 gcc_BUILD_TREE="gcc-${gcc_VERSION}-buildTree"
 gcc_SOURCE_TREE="gcc-${gcc_VERSION}-sourceTree"
 
 
-# binutils : http://www.gnu.org/software/binutils/
+# binutils: http://www.gnu.org/software/binutils/
 
-binutils_VERSION="2.17"
+binutils_VERSION="2.18"
 binutils_ARCHIVE="binutils-${binutils_VERSION}.tar.bz2"
 binutils_DOWNLOAD_LOCATION="ftp://ftp.cs.tu-berlin.de/pub/gnu/binutils"
 binutils_ALTERNATE_DOWNLOAD_LOCATION="http://ftp.gnu.org/gnu/binutils"
-binutils_MD5="e26e2e06b6e4bf3acf1dc8688a94c0d1"
+binutils_MD5="9d22ee4dafa3a194457caf4706f9cf01"
 
 
 
-# gdb : http://www.gnu.org/software/gdb/gdb.html
+# gdb: http://www.gnu.org/software/gdb/gdb.html
 
-gdb_VERSION="6.6"
+gdb_VERSION="6.8"
 gdb_ARCHIVE="gdb-${gdb_VERSION}.tar.bz2"
 gdb_DOWNLOAD_LOCATION="ftp://ftp.cs.tu-berlin.de/pub/gnu/gdb"
 gdb_ALTERNATE_DOWNLOAD_LOCATION="http://ftp.gnu.org/gnu/gdb"
-gdb_MD5="a4df41d28dd514d64e8ccbfe125fd9a6"
+gdb_MD5="c9da266b884fb8fa54df786dfaadbc7a"
 
 
-# devkitpro toolchain for Nintendo DS : http://www.devkitpro.org/
+
+
+# Nintendo DS section.
+
+
+# devkitpro toolchain for Nintendo DS: http://www.devkitpro.org/
 
 devkitarm_VERSION="r20"
 devkitarm_ARCHIVE="devkitARM_${devkitarm_VERSION}-linux.tar.bz2"
@@ -125,33 +130,35 @@ dswifi_MD5=""
 
 
 
-# dot : http://www.research.att.com/sw/tools/graphviz/
+# dot: http://www.research.att.com/sw/tools/graphviz/
 
+# Actually 2.20.2:
 dot_VERSION="@DOT_VERSION@"
 dot_ARCHIVE="graphviz-${dot_VERSION}.tar.gz"
 dot_DOWNLOAD_LOCATION="http://www.graphviz.org/pub/graphviz/ARCHIVE"
 dot_ALTERNATE_DOWNLOAD_LOCATION=""
-dot_MD5="0c56ba28d4e24f3ddd5e8fdb58deba70"
+dot_MD5="8129b4682efbf0cf321c2ec8f7994003"
 
 
-
-# doxygen : http://www.stack.nl/~dimitri/doxygen/
+# Actually 1.5.6:
+# doxygen: http://www.stack.nl/~dimitri/doxygen/
 
 doxygen_VERSION="@DOXYGEN_VERSION@"
 doxygen_ARCHIVE="doxygen-${doxygen_VERSION}.src.tar.gz"
 doxygen_DOWNLOAD_LOCATION="ftp://ftp.stack.nl/pub/users/dimitri"
 doxygen_ALTERNATE_DOWNLOAD_LOCATION=""
-doxygen_MD5="5fd6f0c2c7946005703b47dc6b663757"
+doxygen_MD5="779974eedf011ed52e1fe21fc2d5079c"
 
 
 
-# tidy : http://tidy.sourceforge.net/ (currently deactivated)
+# tidy: http://tidy.sourceforge.net/ (currently deactivated)
 
 tidy_ARCHIVE="tidy_src.tgz"
 tidy_DOWNLOAD_LOCATION="http://tidy.sourceforge.net/src"
 tidy_ALTERNATE_DOWNLOAD_LOCATION=""
-# Changes often, not serious if does not match :
+# Changes often, not serious if does not match:
 tidy_MD5="xxx"
 
 
 # End of Ceylan tools definitions.
+
