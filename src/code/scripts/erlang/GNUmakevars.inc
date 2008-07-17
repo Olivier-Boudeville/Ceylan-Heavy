@@ -151,8 +151,21 @@ VM_TEST_NAME := ceylan_test
 endif
 
 
-#DISTRIBUTED_NODE_OPT := -sname $(VM_NAME) -setcookie $(PROJECT_NAME)
-DISTRIBUTED_NODE_OPT := -name $(VM_NAME)@$(FQDN) -setcookie $(PROJECT_NAME)
+# Allows third-party developments not to rely on a command-line cookie:
+ifndef NO_DEFAULT_COOKIE_WANTED
+
+COOKIE_OPT := -setcookie $(PROJECT_NAME)
+
+endif
+
+
+#DISTRIBUTED_NODE_OPT := -sname $(VM_NAME) $(COOKIE_OPT)
+DISTRIBUTED_NODE_OPT := -name $(VM_NAME)@$(FQDN) $(COOKIE_OPT)
+
+# +v (verbose) option removed, as only active in the interpreter has been
+# compiled in debug mode (otherwise a warning is displayed at each execution).
+# (note: variable generally not used, as using the ERL_LAUNCHER script instead)
+ERLANG_INTERPRETER_OPT := -pz $(BEAM_DIRS) $(DISTRIBUTED_NODE_OPT)
 
 
 STARTUP_FUNCTION := run
@@ -168,16 +181,14 @@ BEAM_DIRS := . $(COMMON_BEAM) $(WOOPER_BEAM) $(CORE_BEAM)                   \
 BEAM_PATH_OPT = $(foreach dir,$(BEAM_DIRS),--beam-dir $(dir))
 
 
-# +v (verbose) option removed, as only active in the interpreter has been
-# compiled in debug mode (otherwise a warning is displayed at each execution).
-# (note: variable generally not used, as using the ERL_LAUNCHER script instead)
-ERLANG_INTERPRETER_OPT := -pz $(BEAM_DIRS) $(DISTRIBUTED_NODE_OPT)
-
 ERL_LAUNCHER = $(COMMON_SRC)/launch-erl.sh
 
+# THIRD_PARTY_OPT is left intentionally blank for allowing third-party users
+# to add their own flags.
 # '--fqdn $(FQDN)' removed, because 'hostname -f' was leading to
-# 'localhost.localdomain':
-ERL_PARAMETRIZED_LAUNCHER = $(ERL_LAUNCHER) -v -c $(PROJECT_NAME) --ln $(VM_TEST_NAME) $(BEAM_PATH_OPT)
+# 'localhost.localdomain'
+# -c $(PROJECT_NAME) replaced by $(COOKIE_OPT)
+ERL_PARAMETRIZED_LAUNCHER = $(ERL_LAUNCHER) -v $(COOKIE_OPT) --ln $(VM_TEST_NAME) $(BEAM_PATH_OPT) $(THIRD_PARTY_OPT)
 
 
 TMP_RST_REPOSITORY = tmp-rst
