@@ -54,24 +54,13 @@ else
 fi
 
 
+# Erlang:
+export ERLANG_ROOT=${LOANI_INSTALLATIONS}/Erlang-R12B-3
+export PATH=${ERLANG_ROOT}/bin:${PATH}
+
+
 # Java :
-JAVA_SERVER_ROOT=
-alias javaServer1.3.1_02='$JAVA_SERVER_ROOT/bin/java'
-alias javacServer1.3.1_02='$JAVA_SERVER_ROOT/bin/javac'
-alias jarServer1.3.1_02='$JAVA_SERVER_ROOT/bin/jar'
-alias javadocServer1.3.1_02='$JAVA_SERVER_ROOT/bin/javadoc'
-
-JAVA_LOCAL_ROOT=
-alias javaLocal1.3.1_02='$JAVA_LOCAL_ROOT/bin/java'
-alias javacLocal1.3.1_02='$JAVA_LOCAL_ROOT/bin/javac'
-alias jarLocal1.3.1_02='$JAVA_LOCAL_ROOT/bin/jar'
-alias javadocLocal1.3.1_02='$JAVA_LOCAL_ROOT/bin/javadoc'
-
-alias java='javaLocal1.3.1_02'
-alias javac='javacLocal1.3.1_02'
-alias jar='jarLocal1.3.1_02'
-alias javadoc='javadocLocal1.3.1_02'
-
+# (nothing)
 
 # tidy :
 export PATH=$PATH:/usr/local/Logiciels/tidy/bin
