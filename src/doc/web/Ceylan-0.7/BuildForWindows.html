@@ -38,7 +38,7 @@ The goal here is to explain to developers how to <b>build</b> the 0.7 version of
 </p>
 
 <p>
-If a user just needs the Ceylan DLL so that she can <b>run</b> an executable depending on the Ceylan library (only <code>Ceylan-0.7-release-multithread.dll</code>
+If a user just needs the Ceylan DLL so that she can <b>run</b> an executable depending on the Ceylan library (in this case only <code>Ceylan-0.7-release-multithread.dll</code>
  is required), then she can download, if available, a <strong>Ceylan prebuilt user package</strong> from 
 <a href="http://sourceforge.net/project/showfiles.php?group_id=158516" target="_blank">Ceylan File Releases</a> on Sourceforge. If an up-to-date archive is not available, please
 <a href="mailto:ceylan@esperide.com?subject=[Ceylan-0.7]%20Windows%20User%20Build%20needed" target="_blank">ask us</a> and we will add it quickly.
@@ -52,8 +52,10 @@ If a user just want to <b>develop</b> a program or a library depending on the Ce
 </p>
 
 <p>
-If you are still reading, then it is that you really want to build the Ceylan library <b>by yourself</b>. This is the recommended way. 
+If you are still reading, then it is that you really want to build the Ceylan library <b>by yourself</b>, or that you are setting up the tools to run <a href="http://osdl.sourceforge.net/OSDL-latest/LOANI.html" target="_blank"></a>
+afterwards.
 </p>
+
 
 <p>
 Here the target platform is Windows XP, be it Home or Professional edition. Note that we will not have any link with the .NET framework.
@@ -63,95 +65,41 @@ Here the target platform is Windows XP, be it Home or Professional edition. Note
 <a name="toolchain"></a>
 <h2>Getting the recommended build toolchain</h2>
 
-
-<h3>C++ compiler and linker</h3>
-
-
-<h4>Visual Studio 2005</h4>
 <p>
-On Windows, for the sake of simplicity, no MSYS/MinGW/Cygwin-based approach is recommended by this Ceylan guide, instead of which the proposed method uses <em>Visual Studio 2005</em>, Express edition. It can be <a href="http://msdn.microsoft.com/vstudio/express/" target="_blank">downloaded</a> free of charge, including <em>Visual C++ 2005 Express</em>, which is the IDE and compiler toolchain that we will use here. All these packages can be used freely, including for commercial use, and they are fully functional for our needs. One may install them with default settings (including default paths), for increased safety.
+First of all, one should start from an up-to-date Windows version, regarding the system and Service Packs (use Windows Update) and general tools (ex: Firefox, antivirus/spyware/adware, etc.).
 </p>
 
 <p>
-Downloading the full MSDN documentation as well is not necessary, but helps a lot whenever developing offline: just select the relevant check-box of the Visual installer, and be prepared to download a global package of approximately 340 mb.
+For increased safety, prior versions of build-related tools should be unistalled beforehand (ex: Visual Studio, Platform SDK, .NET framework, DirectX SDK, TortoiseSVN, etc.).
 </p>
 
 <p>
-Note that you will have to register your <em>Visual Studio 2005</em> copy, otherwise it will cease to work after 30 days (at least if you do not use the procedure to burn an ISO, not tested here). If you want to install these products on multiple computers, you will have to register them on each aimed computer.
+Then the computer should be rebooted and the free space on hard disk should be checked (a few gigabytes are needed on Windows, due to the size of the Microsoft tools).
 </p>
 
 
-<h4>Platform SDK (PSDK)</h4>
-
+<h3>C++ compiler and linker: Visual C++ 2008 Express Edition</h3>
 <p>
-Once <em>Visual Studio 2005</em> is installed, the platform SDK is needed so that applications using the Win32 runtime (as opposed to the .NET runtime) can be built. Additional header files are indeed required for most Win32 applications. This is the case for Ceylan.
+On Windows, for the sake of simplicity, no MSYS/MinGW/Cygwin-based approach for the build toolchain is recommended by this Ceylan guide, instead of which the proposed method uses <em>Visual Studio 2008</em>, Express edition, and more precisely <b>Visual C++ 2008 Express (9.0)</b>, which is the IDE and compiler toolchain that we will use here.
 </p>
 
 <p>
-More precisely, for numerous functions (such as <code>gethostname</code>), specific headers are required, for example <code>Winsock2.h</code>, which is the file the build will stop at if you try to compile Ceylan without a Platform SDK being correctly installed. These headers are provided with a SDK (<em>Software Development Kit</em>) that has to be installed separatly from the IDE (Visual Express). The goal here is to be able to build Win32 applications, not only .NET ones. 
-</p>
-
-
-<h5>Installing the PSDK</h5> 
-
-<h6>Method #1</h6>
-<p>
-In the Visual Express start page (just launch the executable), there is a link to install "automatically" this PSDK (Platform-SDK). An error occurred when I clicked on it, but it displayed finally the <a href="http://msdn.microsoft.com/vstudio/express/visualc/usingpsdk/default.aspx" target="_blank"></a> correct web page nevertheless. It explains what should be done to complete the installation, their <code>Step 2</code> will last for a long time. 
-</p>
-
-<h6>Method #2</h6>
-<p>
-An alternate method is to download the PSDK by yourself. See [<a href="http://msdn2.microsoft.com/en-us/visualc/aa336404.aspx" target="_blank">1</a>] and [<a href="http://www.microsoft.com/downloads/details.aspx?familyid=EBA0128F-A770-45F1-86F3-7AB010B398A3&displaylang=en" target="_blank">2</a>].
+It can be <a href="http://www.microsoft.com/express/download/" target="_blank">downloaded</a> free of charge. All these packages can be used freely, including for commercial use, and they are fully functional for our needs. One may install them with default settings (including default paths), for increased safety. This automated install process will take quite a lot of time.
 </p>
 
 <p>
-At the time of this writing, most recent SDK is <code>Windows Server 2003 R2 Platform SDK Full Download</code>, go to <a href="http://www.microsoft.com/downloads/details.aspx?FamilyId=0BAF2B35-C656-4969-ACE8-E4C0C0716ADB&displaylang=en" target="_blank">this page</a>
- and choose to download the <code>PSDK-x86.exe</code> file. Execute it and select the <code>typical</code> installation, which will last for a long time.
-</p>
-
-
-<h5>Configuring Visual Express to use the PSDK</h5> 
-
-<p>
-On the Visual Express start page, two methods are explained to update the Visual Express configuration, both seem to work, despite they are not really clear. 
+Downloading the full MSDN documentation as well is not strictly necessary, but helps a lot whenever developing offline: just select the relevant check-box of the Visual installer, and be prepared to download a global package of approximately 340 megabytes. Selecting SQL Server or Silverlight is not necessary at all.
 </p>
 
 <p>
-One may select, in <code>Tools -&gt; Options</code>, the <code>Projects and solutions</code> panel, in which there is a tab named <code>VC++ directories</code>. Thanks to the drop box, add the suggested paths for executables, includes and libraries.
+The Windows SDK combines now two formerly separate SDKs: the <em>Platform SDK</em> (PSDK) and the <em>.NET Framework</em> SDK. Moreover, one no longer has to manually integrate the Windows SDK content with VC++ Express: with the Visual Studio 2008 Express versions, one can also build Win32 applications right out of the box. So no more special actions are to be performed here. See this <a href="http://blogs.msdn.com/windowssdk/archive/2008/02/22/using-visual-c-2008-express-with-the-windows-sdk-detailed-version.aspx" target="_blank">MSDN blog entry</a> for further informations.
 </p>
 
 <p>
-Another way of having this PSDK integrated in Visual Express is to update its configuration file, which in my case was located at <code>C:\Program Files\Microsoft Visual Studio 8\VC\vcpackages\VCProjectEngine.Dll.Express.Config</code>. I searched <code>C:\Documents and Settings\&lt;MyUserName&gt;\Application Data\Microsoft\VCExpress</code> for <code>vccomponents.dat</code> but did not find any.
-</p>
-
-
-<h5>Configuring the MSDN Help to manage the PSDK documentation too</h5> 
-
-<p>
-One just has to enter, in the help browser URL line, for example <code>ms-help://MS.VSExpressCC.v80/dv_vsexpcc/local/CollectionManagerExpress.htm</code>, select the appropriate PSDK documentation and restart its IDE once again. 
-</p>
-
-<p>
-To test the result, search for <code>gethostname</code>, the one defined by winsock should be found, whereas without the PSDK help, only the .NET-defined GetHostName or BufferedStream is referenced.
-
-</p>
-
-<p>
-Another useful tip is to select other help sources than the local one: "local, then online" for example (see <code>Tools -&gt; Options -&gt; Help -&gt; Online</code>).
+Note that you will have to register your <em>Visual Studio 2008</em> copy, otherwise it will cease to work after 30 days (at least if you do not use the procedure to burn an ISO, not tested here). If you want to install these products on multiple computers, you will have to register them on each targeted computer. To register, simply run your Express Edition and click <code>Help -&gt; Register Product</code>.
 </p>
 
   
-
-<h5>Parametrizing your projects accordingly</h5> 
-
-<p>
-Even though the pre-cooked Ceylan project file comes with the right settings already (hence nothing special to be done here), one should know that there is still a trap with the PSDK: as soon as one includes for example <code>winsock2.h</code> in an extern "C" clause, one encounters numerous errors about anonymous structs in <code>winnt.h</code>.
-</p>
-
-<p>
-According to <a href="http://community.vietfun.com/printthread.php?t=279103" target="_blank">this page</a>, you need to enable the Microsoft-specific language extensions in your project settings, in <code>C/C++ -&gt; Language</code>. It worked for me, even if it is a pity one could not stick with real ANSI/C.
-</p>
-
 
 <h3>Source control: Subversion (SVN)</h3>
 
@@ -163,7 +111,7 @@ To retrieve Ceylan sources, one needs a SVN client, we recommend <a href="http:/
 <h3>Basic shell and terminal: Cygwin (and MSYS)</h3>
 
 <p>
-It is in no way necessary, but, among others, <a href="http://www.cygwin.com" target="_blank">Cygwin</a> can provide a basic UNIX-like environment, that can be used for example to automate the running of the Ceylan test suite. If not too limited in disk space, one may click on the package setup window to replace <code>All Default</code> by <code>All install</code> to retrieve all Cygwin packages. Numerous packages can be needed, for example by playTests.sh or the LOANI scripts: md5sum, unzip, wget, ping, tar, gunzip, bzip2, svn, etc..
+It is in no way necessary, but, among others, <a href="http://www.cygwin.com" target="_blank">Cygwin</a> can provide a basic UNIX-like environment, that can be used for example to automate the running of the Ceylan test suite. If being not too limited in disk space and having a lot of time to spend on it, one may click on the package setup window to replace <code>All Default</code> by <code>All install</code> to retrieve all Cygwin packages. Numerous packages can be needed, for example by Ceylan's <code>playTests.sh</code> or the LOANI scripts: md5sum, unzip, wget, ping, tar, gunzip, bzip2, svn, etc.
 </p>
 
 <p>
@@ -176,6 +124,20 @@ Note that in no way the user application, by using Ceylan, will depend on Cygwin
 <p>
 There are plenty of them that are well-designed and open source, for example one may use <a href="http://syn.sourceforge.net/" target="_blank">Syn</a> or <a href="http://www.jedit.org/" target="_blank">jEdit</a>. Both have some drawbacks though: Syn has a few bugs and does not highlight Erlang syntax, and we did not managed to register jEdit to handle specific file extensions, due to its Java Jar nature. 
 </p>
+
+
+<center>
+    <table summary="a box" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+LOANI users should stop here: they just needed to build a proper environment for LOANI to run. Among other installations, LOANI will take care of Ceylan by itself. Read below if you are in the process of building Ceylan by yourself.
+
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
 
 
 <h2>Getting the Ceylan sources</h2>
@@ -293,14 +255,16 @@ One just has to right-click, in the Solution Explorer panel, on the  <code>Ceyla
           <td>
             <div class="box">
 That's it ! You should have here everything needed to make good use of the Ceylan library. 
-In case of problem, re-read everything carefully and <a href="mailto:ceylan@esperide.com?subject=[Ceylan-0.7]%20Windows%20Build%20Problem" target="_blank">send us a mail</a>. 
-For in-depth technical details about Windows-specific inner workings of Ceylan, one may continue the reading. 
-Most people will stop and continue by using by themselves the library.
+In case of problem, re-read everything carefully and <a href="mailto:ceylan@esperide.com?subject=[Ceylan-0.7]%20Windows%20Build%20Problem" target="_blank">send us a mail</a> should the problem persists. 
+For in-depth technical details about Windows-specific inner workings of Ceylan, one may continue the reading. Most people will stop here, and continue by using by themselves the library.
             </div>
           </td>
         </tr>
     </table>
 </center>
+
+
+
 
 
 <h2>Solving other Windows-specific pitfalls</h2>
@@ -639,7 +603,7 @@ The <code>ldd</code> tool is lacking on the Windows platform, one may use <a hre
       <center>
         [<a href="#_top_">Top</a>]<br>
         <br>
-        <em>Last update: Tuesday, October 2, 2007</em>
+        <em>Last update: Thursday, July 17, 2008</em>
       </center>
   
 </body>
