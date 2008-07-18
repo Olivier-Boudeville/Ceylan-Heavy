@@ -1,15 +1,15 @@
 # Root Makefile.am for the whole Ceylan package, including tests.
 
-# Requires following version of automake or newer :
+# Requires following version of automake or newer:
 AUTOMAKE_OPTIONS = 1.9
 
-# This order must prevail so that libltdl is available when Ceylan is linked :
+# This order must prevail so that libltdl is available when Ceylan is linked:
 SUBDIRS = $(EXTRA_SUBDIRS) src 
 
 EXTRA_SUBDIRS = @CEYLAN_EXTRA_LIBLTDL_SUBDIR@
 
 
-# These are the subdirectories which will be distributed with 'make dist' :
+# These are the subdirectories which will be distributed with 'make dist':
 # (the 'test' directory is not included since it is managed by dist-hook, as
 # it may or may not be configured).
 DIST_SUBDIRS = $(SUBDIRS) 
@@ -36,7 +36,7 @@ SRC_SNAPSHOT_ARCHIVE_NAME = \
 # a directory named .svn or .libs or LOANI-*, not a generated binary
 # (object file, executable, library ), not a dependency. 
 # Using implicit definition of a project file (defining what it is not
-# rather than what it is) reduces the risk of missing a project file :
+# rather than what it is) reduces the risk of missing a project file:
 # in case of mistake, too many files will be archived, not too few.
 # Useful notably for bz2 and tgz make targets.
 # The following line should not be broken otherwise it will not work.
@@ -46,13 +46,13 @@ CEYLAN_PROJECT_FILES = `current_dir=\`basename $$PWD\`; cd $(top_srcdir)/..; fin
 # A file is assumed to be a source file if it is a file, not located in
 # a directory named .svn, and if its name finishes by .h or .cc. 
 # Useful notably for style make targets. 
-# Only takes into account the library (ex : test sources are ignored).
+# Only takes into account the library (ex: test sources are ignored).
 # The following line should not be broken otherwise it will not work.
 CEYLAN_LIBRARY_SOURCE_FILES = `cd $(top_srcdir); find src/code -path '*.svn*' -prune -a \( -type d -a ! -name '*.svn*' \) -o -name '*.cc' -o -name '*.h' -a -type f| grep -v '.svn'`
 
 
 
-# Builds RPM distribution package from archive :
+# Builds RPM distribution package from archive:
 rpm: tgz
 	@echo; echo "@CEYLAN_COMMAND_STYLE@    Making rpm package \
 	@CEYLAN_DEFAULT_STYLE@"; echo
@@ -63,13 +63,13 @@ rpm: tgz
 # and Win32.
 
 
-# Installs the libraries only, prevents from rebuilding applications :
+# Installs the libraries only, prevents from rebuilding applications:
 install-lib:
 	cd src/code && $(MAKE) install-libLTLIBRARIES
 
 
 # Run ldconfig after installing the library:
-install-hook:
+install-exec-hook:
 	-ldconfig
 
 update-basic-doc-files:
@@ -78,7 +78,7 @@ update-basic-doc-files:
 
 source-release: update-basic-doc-files
 	@echo; echo "@CEYLAN_COMMAND_STYLE@    Making source release \
-	$(SRC_RELEASE_ARCHIVE_NAME) :@CEYLAN_DEFAULT_STYLE@"; echo
+	$(SRC_RELEASE_ARCHIVE_NAME):@CEYLAN_DEFAULT_STYLE@"; echo
 	-@cd test; if [ -f Makefile ] ; then make clean; fi
 	@mkdir -p $(SRC_RELEASE_ARCHIVE_DIR); \
 	files=$(CEYLAN_PROJECT_FILES); cd $(top_srcdir)/.. ; \
@@ -86,14 +86,14 @@ source-release: update-basic-doc-files
 	bzip2 > "$(SRC_RELEASE_ARCHIVE_DIR)/$(SRC_RELEASE_ARCHIVE_NAME)" \
 	&& echo \
 	&& echo "@CEYLAN_COMMAND_STYLE@    + Source release for @PROJECT_NAME@ \
-	version @CEYLAN_FULL_VERSION@ available at :" \
+	version @CEYLAN_FULL_VERSION@ available at:" \
 	&& echo "      $(SRC_RELEASE_ARCHIVE_DIR)/$(SRC_RELEASE_ARCHIVE_NAME) \
 	@CEYLAN_DEFAULT_STYLE@" \
 	&& echo
 
 
-# Creates a SVN snapshot one can run 'svn update' on :
-# (note : seems to delete as well generated file in the current source base)
+# Creates a SVN snapshot one can run 'svn update' on:
+# (note: seems to delete as well generated file in the current source base)
 snapshot:
 	@echo; echo "@CEYLAN_COMMAND_STYLE@    Creating a SVN Ceylan snapshot \
 	@CEYLAN_DEFAULT_STYLE@"; echo
@@ -104,14 +104,14 @@ snapshot:
 	bzip2 > $(HOME)/Ceylan-@CEYLAN_VERSION@-svn-snapshot.tar.bz2 \
 	&& echo \
 	&& echo "@CEYLAN_COMMAND_STYLE@    + SVN snapshot for @PROJECT_NAME@ \
-	available at :" \
+	available at:" \
 	&& echo "      $(HOME)/Ceylan-@CEYLAN_VERSION@-svn-snapshot.tar.bz2 \
 	@CEYLAN_DEFAULT_STYLE@" && echo
 	-@rm -rf ceylan
 	
 	
 # Brute-force archiving with bzip2, see also the 'source-release' target.
-# clean required not to archive test* executables :	
+# clean required not to archive test* executables:	
 # To avoid uselessly fat archives, some cleaning has
 # to be done, but using cleanGeneratedConfigFiles.sh removes the 
 # Makefile being used itself.	
@@ -130,7 +130,7 @@ bz2:
 	
 	
 # Brute-force archiving with gzip, see also the 'source-release' target.
-# clean required not to archive test* executables :			
+# clean required not to archive test* executables:			
 tgz:
 	@echo; echo "@CEYLAN_COMMAND_STYLE@    Saving all \
 	@PROJECT_NAME@-@CEYLAN_VERSION@ project \
@@ -153,14 +153,14 @@ ASTYLE_CONF = ${top_srcdir}/src/conf/doc/astyle.conf
 style: 
 	@[ -x "$(ASTYLE)" ] \
 	|| ( echo "@CEYLAN_ERROR_STYLE@    Unable to format source code \
-	according to @PROJECT_NAME@'s conventions : \
+	according to @PROJECT_NAME@'s conventions: \
 	astyle tool not found.@CEYLAN_DEFAULT_STYLE@"; false ) 
 	@echo
 	@echo "    Do you really want to use astyle on each of \
 	the project files ? (y/n) [n]"; \
 	read value; if [ "$$value" == "y" ]; then \
 	echo; echo "@CEYLAN_COMMAND_STYLE@    Enforcing standard project style \
-	defined in $(ASTYLE_CONF) in source files :@CEYLAN_DEFAULT_STYLE@ "; \
+	defined in $(ASTYLE_CONF) in source files:@CEYLAN_DEFAULT_STYLE@ "; \
 	stylefile=$(ASTYLE_CONF); cd $(top_srcdir)/.. ; \
 	for f in $(CEYLAN_LIBRARY_SOURCE_FILES); do ( echo "    Processing $$f"; \
 	$(ASTYLE) `cat $$stylefile` < $$f > $$f.tmp; \
@@ -183,7 +183,7 @@ stat:
 	echo $$f >> .srcFileList.txt ); done
 	@s=`cat .wholeSrcContent.txt | wc`; \
 	echo "@CEYLAN_COMMAND_STYLE@    In \
-	@PROJECT_NAME@-@CEYLAN_FULL_VERSION@'s source code, there are : \
+	@PROJECT_NAME@-@CEYLAN_FULL_VERSION@'s source code, there are: \
 	"; echo ; \
 	echo "    "`cat .srcFileList.txt | wc -w`  files; \
 	echo "    "`echo $$s | awk '{print $$1}'` lines; \
@@ -194,7 +194,7 @@ stat:
 
 
 help:
-	@echo; echo "@CEYLAN_DEFAULT_STYLE@  Main make targets are :"; echo 
+	@echo; echo "@CEYLAN_DEFAULT_STYLE@  Main make targets are:"; echo 
 	@echo "    @CEYLAN_ITEM_STYLE@all @CEYLAN_DEFAULT_STYLE@            \
 	- builds and installs a full ready-to-use                           \
 	@PROJECT_NAME@-$(VERSION) release"
@@ -230,7 +230,7 @@ help:
 	directories"	
 	@echo
 	@echo "Other @CEYLAN_ITEM_STYLE@GNU standard targets \
-	@CEYLAN_DEFAULT_STYLE@ also available with their usual meaning :"
+	@CEYLAN_DEFAULT_STYLE@ also available with their usual meaning:"
 	@echo "  install-strip, uninstall, distclean, check, installcheck \
 	and dist"
 	@echo
@@ -248,19 +248,19 @@ hints:
 	@PROJECT_NAME@." 
 	@echo
 	@echo 
-	@echo "Following settings are set :"
+	@echo "Following settings are set:"
 	@echo
-	@echo " + where most of @PROJECT_NAME@ is to be installed : \
+	@echo " + where most of @PROJECT_NAME@ is to be installed: \
 	currently $(prefix)"
 	@echo
 	@echo " + where all the @PROJECT_NAME@'s executables are to be \
-	installed : currently $(exec_prefix)"
+	installed: currently $(exec_prefix)"
 	@echo
 	@echo " + where @PROJECT_NAME@'s html documentation is to be \
-	installed, useful to feed a web server : @CEYLAN_LOCAL_WEB_DIR@"
+	installed, useful to feed a web server: @CEYLAN_LOCAL_WEB_DIR@"
 	@echo
 	@echo " + base directory where @PROJECT_NAME@ archives \
-	(source release, bz2 or tgz) are to be put : @CEYLAN_ARCHIVE_DIR@"
+	(source release, bz2 or tgz) are to be put: @CEYLAN_ARCHIVE_DIR@"
 	@echo 
 	
 	
@@ -306,9 +306,9 @@ clean-generated:
 distclean-local: real-clean
 
 
-# Grab the test programs for the distribution :
+# Grab the test programs for the distribution:
 # (the touch for both m4 is due to a libltdl bug with dist automake target)
-# Problem : to generate the distribution package, we need to have the test
+# Problem: to generate the distribution package, we need to have the test
 # configure script generated, but to do so we need an installed Ceylan tree
 # (for example for Ceylan installed *.m4 files).
 # Here we would like to write './autogen.sh --ceylan-install-prefix APrefix'
