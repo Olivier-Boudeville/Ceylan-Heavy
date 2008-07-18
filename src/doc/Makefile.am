@@ -193,6 +193,8 @@ common:
 	cp -f $$f $(DESTDIR)@CEYLAN_LOCAL_WEB_SHARED_DIR@/$$f; done
 
 
+
+
 uninstall-hook:
 	@echo; echo "@CEYLAN_INSTALL_STYLE@    Uninstalling documentation from \
 	$(DESTDIR)@CEYLAN_LOCAL_WEB_SHARED_DIR@ @CEYLAN_DEFAULT_STYLE@"
