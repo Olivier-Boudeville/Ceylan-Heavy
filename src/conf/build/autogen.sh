@@ -221,13 +221,13 @@ else
 fi
 
 
-# Nintendo DS special case:
+# Nintendo DS special case:
 if [ $do_target_nds -eq 0 ] ; then
 
 
 	# First attempt was relying on the autotools, but it was a nightmare.
 	# Hence basic specific Makefiles (Makefile.cross) are used and it works
-	# great.
+	# great.
 		
 	echo "Cross-compiling for the Nintendo DS."
 	
@@ -240,7 +240,7 @@ if [ $do_target_nds -eq 0 ] ; then
 	# Clean everything:
 	make -f Makefile.cross CROSS_TARGET=nintendo-ds clean
 
-	# Build everything:
+	# Build everything:
 	make -f Makefile.cross CROSS_TARGET=nintendo-ds
 	result=$?
 	
@@ -287,8 +287,8 @@ copy="--copy"
 #copy=""
 
 # Replace existing files:
-#force="--force"
-force=""
+force="--force"
+#force=""
 
 # Warning selection: 
 warnings="--warnings=all"
@@ -331,15 +331,12 @@ To upgrade automake and aclocal from Debian-based distributions, do the followin
 			if [ "$1" = "aclocal" ]; then
 				echo "
 Note: if aclocal is failing since AM_CXXFLAGS (used in configure.ac) 'cannot be found in library', then check that your aclocal version is indeed 1.9 or newer. For example, with Debian-based distributions, /usr/bin/aclocal is a symbolic link to /etc/alternatives/aclocal, which itself is a symbolic link which may or may not point to the expected aclocal version. Your version of $1 is:
-	" `$1 --version` "
-	
-	" `/bin/ls -l --color $(type -p $1)` "${AUTOMAKE_HINT}"
+	" `$1 --version` ", " `/bin/ls -l --color $(which $1)` "${AUTOMAKE_HINT}"
 			elif [ "$1" = "automake" ]; then
 				echo "
 Note: check that your automake version is indeed 1.9 or newer. For example, with Debian-based distributions, /usr/bin/automake is a symbolic link to /etc/alternatives/automake, which itself is a symbolic link which may or may not point to the expected automake version. Your version of $1 is:
-	" `$1 --version` "
+	" `$1 --version` ", " `/bin/ls -l --color $(which $1)`". See also the update-alternatives command. ${AUTOMAKE_HINT}"
 	
-	" `/bin/ls -l --color $(type -p $1)` "${AUTOMAKE_HINT}"
 			elif [ "$1" = "./configure" ]; then
 				echo "
 Note: check the following log:" `pwd`/config.log
@@ -357,11 +354,12 @@ Note: check the following log:" `pwd`/config.log
 	                                                 
 generateCustom()
 # Old-fashioned way of regenerating the build system from scratch: 
+# (this approach is still the one used, as more reliable)
 {
 
 	echo "--- generating build system"
 	
-	if [ "$do_remove_generated" -eq 0 ] ; then
+	if [ $do_remove_generated -eq 0 ] ; then
 		echo
 		echo " - removing all generated files"
 		./cleanGeneratedConfigFiles.sh
@@ -419,14 +417,14 @@ generateCustom()
 	
 	(libtool --version) < /dev/null > /dev/null 2>&1 || {
 		echo
-		echo "**Error**: You must have \`libtool' installed."
+		echo "**Error**: You must have 'libtool' installed."
 		echo "You can get it from: ftp://ftp.gnu.org/pub/gnu/" 
 		exit 20
    	}
 	
 	(libtoolize --version) < /dev/null > /dev/null 2>&1 || {
 		echo
-		echo "**Error**: You must have \`libtoolize' installed."
+		echo "**Error**: You must have 'libtoolize' installed."
 		echo "You can get it from: ftp://ftp.gnu.org/pub/gnu/" 
 		exit 21
    	}
@@ -437,15 +435,15 @@ generateCustom()
 		libtoolize_verbose="--debug"
 	fi
 	
-	execute libtoolize --ltdl --automake $copy $force $libtoolize_verbose
+	execute libtoolize --install --ltdl --automake $copy $force $libtoolize_verbose
 	
 	echo
 	echo " - generating aclocal.m4, by scanning configure.ac"
 	
 	(aclocal --version) < /dev/null > /dev/null 2>&1 || {
 		echo
-		echo "**Error**: Missing \`aclocal'.  The version of \`automake'"
-		echo "installed doesn't appear recent enough."
+		echo "**Error**: Missing 'aclocal'.  The version of 'automake'"
+		echo "installed does not appear recent enough."
 		echo "You can get automake from ftp://ftp.gnu.org/pub/gnu/"
 		exit 22
 	}
@@ -454,8 +452,13 @@ generateCustom()
 	
 	ACLOCAL_OUTPUT=src/conf/build/m4/aclocal.m4
 	
+	# With newer libtool (ex: 2.2.4), we need to include a whole bunch of *.m4
+	# files, otherwise 'warning: LTOPTIONS_VERSION is m4_require'd but not
+	# m4_defun'd' ... ', same thing for LTSUGAR_VERSION, LTVERSION_VERSION, etc.
+	GUESSED_LIBTOOL_BASE=`which libtool|sed 's|/bin/libtool$||1'`
+	
 	# Do not use '--acdir=.' since it prevents aclocal from writing its file:
-	execute aclocal -I $M4_DIR --output=$ACLOCAL_OUTPUT $force $verbose
+	execute aclocal -I $M4_DIR -I ${GUESSED_LIBTOOL_BASE}/share/aclocal --output=$ACLOCAL_OUTPUT $force $verbose
 
 	# automake wants absolutely to find aclocal.m4 in the top-level directory:
 	ln -sf src/conf/build/m4/aclocal.m4
@@ -465,7 +468,7 @@ generateCustom()
 	
 	(autoheader --version) < /dev/null > /dev/null 2>&1 || {
 		echo
-		echo "**Error**: You must have \`autoheader' installed."
+		echo "**Error**: You must have 'autoheader' installed."
 		echo "You can get it from: ftp://ftp.gnu.org/pub/gnu/"
 		exit 23
 	}
@@ -478,7 +481,7 @@ generateCustom()
 
 	(automake --version) < /dev/null > /dev/null 2>&1 || {
 		echo
-		echo "**Error**: You must have \`automake' installed."
+		echo "**Error**: You must have 'automake' installed."
 		echo "You can get it from: ftp://ftp.gnu.org/pub/gnu/"
 		exit 24
 	}
@@ -491,7 +494,7 @@ generateCustom()
 	
 	(autoconf --version) < /dev/null > /dev/null 2>&1 || {
 		echo
-		echo "**Error**: You must have \`autoconf' installed."
+		echo "**Error**: You must have 'autoconf' installed."
 		echo "Download the appropriate package for your distribution,"
 		echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
 		exit 25
@@ -577,11 +580,11 @@ generateCustom()
 	if [ $do_distcheck -eq 0 ] ; then
 		echo
 		echo " - making distcheck"
-		# This target fails because of the test sub-package: distcheck cannot
-		# run the test/configure with expected --with-ceylan-prefix option,
+		# This target fails because of the test sub-package: distcheck cannot
+		# run the test/configure with expected --with-ceylan-prefix option,
 		# hence the script cannot find the installed Ceylan (distcheck uses
 		# a prefix in all cases) and fails.
-		# Automake philosophy and an embedded test package (which is what we
+		# Automake philosophy and an embedded test package (which is what we
 		# really want) are not compatible.
 	 	execute make distcheck
 	fi
@@ -606,6 +609,4 @@ regenerateWithAutoreconf()
 	
 generateCustom
 #regenerateWithAutoreconf
-
-
 
