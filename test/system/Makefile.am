@@ -6,7 +6,7 @@ testssystemdir=@CEYLAN_TEST_DIR@/system
 
 testssystem_PROGRAMS = \
 	testCeylanConsole.exe                      \
-	testCeylanEnvironmentVariable.exe          \	
+	testCeylanEnvironmentVariable.exe          \
 	testCeylanEnvironmentVariable.exe          \
 	testCeylanFileAndDirectories.exe           \
 	testCeylanFileLocator.exe                  \
@@ -15,6 +15,7 @@ testssystem_PROGRAMS = \
 	testCeylanSystemInformation.exe            \
 	testCeylanThread.exe                       \
 	testCeylanTime.exe
+
 
 testCeylanConsole_exe_SOURCES             = testCeylanConsole.cc
 testCeylanEnvironmentVariable_exe_SOURCES = testCeylanEnvironmentVariable.cc
