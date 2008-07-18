@@ -4,7 +4,7 @@
 SUFFIXES = .cc .h
 
 
-# These are the subdirectories (i.e. submodules) that are always built :
+# These are the subdirectories (i.e. submodules) that are always built:
 BUILT_SUBDIRS = \
 	generic     \
 	interfaces  \
@@ -17,33 +17,33 @@ BUILT_SUBDIRS = \
 
 	
 	
-# These are the subdirectories which may be built :
+# These are the subdirectories which may be built:
 EXTRA_SUBDIRS =	@CEYLAN_EXTRA_DIRS@
 
-# Subdirectories taken into account but not especially built :
+# Subdirectories taken into account but not especially built:
 OTHER_SUBDIRS = scripts
 
-# These are the subdirectories which will be taken into account now :
+# These are the subdirectories which will be taken into account now:
 SUBDIRS = $(BUILT_SUBDIRS) $(OTHER_SUBDIRS) $(EXTRA_SUBDIRS)
 
-# These are the subdirectories which will be distributed with 'make dist' :
+# These are the subdirectories which will be distributed with 'make dist':
 DIST_SUBDIRS = $(SUBDIRS)
 
 
-# The Ceylan library target :
+# The Ceylan library target:
 lib_LTLIBRARIES = libCeylan.la
 
-# All the library sources :
+# All the library sources:
 libCeylan_la_SOURCES = $(GENERAL_SRCS)
 
-# Linker flag for the library :
+# Linker flag for the library:
 libCeylan_la_LDFLAGS = \
 	-no-undefined                                                            \
 	-release @CEYLAN_LT_RELEASE@                                             \
 	-version-info @CEYLAN_LT_CURRENT@:@CEYLAN_LT_REVISION@:@CEYLAN_LT_AGE@ 
 
 				
-# Submodule convenience libraries :	
+# Submodule convenience libraries:	
 SUBLIBS = \
 	generic/libCeylanGeneric.la       \
 	interfaces/libCeylanInterfaces.la \
@@ -57,7 +57,7 @@ SUBLIBS = \
 
 EXTRA_SUBLIBS = @CEYLAN_EXTRA_LIBLTDL_SUBLIB@	
 	
-# The overall library is made from submodule convenience libraries and al :	
+# The overall library is made from submodule convenience libraries and al:	
 libCeylan_la_LIBADD	= \
 	$(SUBLIBS)           \
 	@CEYLAN_EXTRA_LIBS@  \
@@ -76,7 +76,7 @@ DISTCLEANFILES = CeylanConfig.h
 	
 	
 # Run ldconfig after installing the library:
-install-hook:
+install-exec-hook:
 	-ldconfig
 
 clean-local:
