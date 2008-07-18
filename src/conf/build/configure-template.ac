@@ -7,7 +7,7 @@
 # leading to have the build system generated. 
 
 
-AC_PREREQ(2.59)
+AC_PREREQ(2.61)
 
 
 # Declaration section for the Autotools macros.
@@ -779,7 +779,7 @@ CheckMultithreadFeature()
             	;;
         	*-*-osf*)
             	pthread_cflags="-D_REENTRANT"
-            	if test x$ac_cv_prog_gcc = xyes; then
+            	if test x$ac_cv_c_compiler_gnu = xyes; then
             		pthread_lib="-lpthread -lrt"
             	else
             		pthread_lib="-lpthread -lexc -lrt"
@@ -1184,7 +1184,7 @@ CheckPluginFeature()
 			AC_CONFIG_SUBDIRS([libltdl])
 			CEYLAN_EXTRA_LIBLTDL_SUBDIR=libltdl
 			AC_SUBST(CEYLAN_EXTRA_LIBLTDL_SUBDIR)
-			CEYLAN_EXTRA_LIBS="$CEYLAN_EXTRA_LIBS \${top_builddir}/libltdl/libltdl.la"
+			CEYLAN_EXTRA_LIBS="$CEYLAN_EXTRA_LIBS \${top_builddir}/libltdl/libltdlc.la"
 		else	
 			AC_MSG_WARN([Plugin support requested but not available (no libltdl found), disabling it])
 			LIBS="$saved_LIBS"
@@ -1204,7 +1204,7 @@ CheckPluginFeature()
 
 	# Cannot be specified before since using plugin requires to add for example
 	# AC_LIBTOOL_DLOPEN before this call:
-	AM_PROG_LIBTOOL
+	LT_INIT
 
 }
 
@@ -1264,7 +1264,7 @@ CheckMkdir()
 
 	AC_MSG_CHECKING([whether mkdir takes two arguments])
 	have_mkdir_two_args=no
-	AC_TRY_COMPILE([
+	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 		#ifdef HAVE_SYS_STAT_H
 		#include <sys/stat.h>
 		#endif // HAVE_SYS_STAT_H
@@ -1272,9 +1272,9 @@ CheckMkdir()
 		#ifdef HAVE_SYS_TYPES_H
 		#include <sys/types.h>
 		#endif // HAVE_SYS_TYPES_H
-            ],[
+            ]], [[
               mkdir( "aPath", S_IRWXU ) ;
-            ],[have_mkdir_two_args=yes])
+            ]])],[have_mkdir_two_args=yes],[])
 			
 	AC_MSG_RESULT([$have_mkdir_two_args])
 					
