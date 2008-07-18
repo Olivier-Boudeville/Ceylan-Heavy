@@ -2,20 +2,20 @@
 
 
 USAGE="
-Usage : "`basename $0`" [ -n | --no-build ] [ -o | --only-prepare-dist] [--ceylan-install-prefix <a prefix>] : (re)generates all the autotools-based build system for Ceylan tests.
+Usage: "`basename $0`" [ -n | --no-build ] [ -o | --only-prepare-dist] [--ceylan-install-prefix <a prefix>]: (re)generates all the autotools-based build system for Ceylan tests.
 
-	--no-build : stop just after having generated the configure script
-	--only-prepare-dist : perform only necessary operations so that the test directory can be distributed afterwards
-	--ceylan-install-prefix <a prefix> : use the specified prefix to find the Ceylan library installation. Example : --ceylan-install-prefix $HOME/tmp-Ceylan-test-install"
+	--no-build: stop just after having generated the configure script
+	--only-prepare-dist: perform only necessary operations so that the test directory can be distributed afterwards
+	--ceylan-install-prefix <a prefix>: use the specified prefix to find the Ceylan library installation. Example: --ceylan-install-prefix $HOME/tmp-Ceylan-test-install"
 
-# These tests must rely on a related Ceylan source directory, since they :
+# These tests must rely on a related Ceylan source directory, since they:
 #	- need to know which Ceylan version is to be tested
-#	- use some Ceylan facilities (ex : Ceylan substitute script)
+#	- use some Ceylan facilities (ex: Ceylan substitute script)
 
 
 # Main settings section.
 
-# 0 means true, 1 means false :
+# 0 means true, 1 means false:
 do_remove_generated=0
 do_stop_after_configure=1
 do_clean=0
@@ -23,7 +23,7 @@ do_build=0
 do_install=0
 do_test=0
 
-# Default install prefix :
+# Default install prefix:
 ceylan_install_prefix="/usr/local"
 
 
@@ -64,25 +64,25 @@ while [ $# -gt 0 ] ; do
 done
 
 
-# debug mode activated iff equal to true (0) :
+# debug mode activated iff equal to true (0):
 debug_mode=1
 
 debug()
 {
 	if [ $debug_mode -eq 0 ] ; then
-		echo "debug : $*"
+		echo "debug: $*"
 	fi	
 }
 
 
-# Where the Ceylan library should be found :
+# Where the Ceylan library should be found:
 
 if [ -n "$ceylan_install_prefix" ] ; then
 	ceylan_install_prefix_opt="--with-ceylan-prefix=$ceylan_install_prefix"
 fi
 
 
-# Where these tests should be installed :
+# Where these tests should be installed:
 test_install_location="$ceylan_install_prefix"
 
 if [ -n "$test_install_location" ] ; then
@@ -92,7 +92,7 @@ else
 fi
 
 
-# To check the user can override them :
+# To check the user can override them:
 #test_overriden_options="CPPFLAGS=\"-DTEST_CPPFLAGS\" LDFLAGS=\"-LTEST_LDFLAGS\""
 test_overriden_options=""
 
@@ -104,7 +104,7 @@ RM="/bin/rm -f"
 
 
 
-# Wait-after-execution mode activated iff equal to true (0) :
+# Wait-after-execution mode activated iff equal to true (0):
 wait_activated=1
 
 wait()
@@ -119,7 +119,7 @@ wait()
 
 cd `dirname $0`
 
-# Searches for the Ceylan substitute script :
+# Searches for the Ceylan substitute script:
 CEYLAN_SUBSTITUTE_SCRIPT="../src/code/scripts/shell/substitute.sh"
 if [ ! -x "${CEYLAN_SUBSTITUTE_SCRIPT}" ] ; then
 	CEYLAN_SUBSTITUTE_SCRIPT="../code/scripts/shell/substitute.sh"
@@ -130,7 +130,7 @@ if [ ! -x "${CEYLAN_SUBSTITUTE_SCRIPT}" ] ; then
 fi
 
 
-# Searches for the Ceylan settings file :
+# Searches for the Ceylan settings file:
 CEYLAN_SETTINGS_FILE="../src/conf/CeylanSettings.inc"
 if [ ! -f "${CEYLAN_SETTINGS_FILE}" ] ; then
 	echo "Error, no Ceylan settings file found (${CEYLAN_SETTINGS_FILE})." 1>&2
@@ -138,7 +138,7 @@ if [ ! -f "${CEYLAN_SETTINGS_FILE}" ] ; then
 fi
 
 
-# Log-on-file mode activated iff equal to true (0) :
+# Log-on-file mode activated iff equal to true (0):
 log_on_file=1
 
 log_filename="autogen.log"
@@ -149,21 +149,21 @@ if [ -f "$log_filename" ]; then
 fi
 
 
-# Overall autotools settings :
+# Overall autotools settings:
 
-# Be verbose for debug purpose :
+# Be verbose for debug purpose:
 #verbose="--verbose"
 verbose=""
 
-# Copy files instead of using symbolic link :
+# Copy files instead of using symbolic link:
 copy="--copy"
 #copy=""
 
-# Replace existing files :
+# Replace existing files:
 #force="--force"
 force=""
 
-# Warning selection : 
+# Warning selection: 
 warnings="--warnings=all"
 #warnings=""
 
@@ -199,12 +199,12 @@ execute()
 			echo "Error while executing '$*'" 1>&2
 			if [ "$1" = "./configure" ]; then
 				echo "
-Note : check the following log :" test/config.log	
+Note: check the following log:" test/config.log	
   			fi
 			
 			if [ "$1" = "aclocal" ]; then
 				echo "
-Hint : look at the --ceylan-install-prefix option, with a parameter that could be similar to $HOME/Projects/LOANI-x.y/LOANI-installations/Ceylan-p.q"
+Hint: look at the --ceylan-install-prefix option, with a parameter that could be similar to $HOME/Projects/LOANI-x.y/LOANI-installations/Ceylan-p.q"
   			fi
 			
 		fi
@@ -218,7 +218,7 @@ Hint : look at the --ceylan-install-prefix option, with a parameter that could b
     
 	                                                 
 generateCustom()
-# Old-fashioned way of regenerating the build system from scratch : 
+# Old-fashioned way of regenerating the build system from scratch: 
 {
 
 
@@ -230,7 +230,7 @@ generateCustom()
 		./cleanGeneratedConfigFiles.sh
 	fi
 	
-	# Update timestamps since SVN may mess them up :
+	# Update timestamps since SVN may mess them up:
 	CONFIG_SOURCE=configure-template.ac
 	CONFIG_TARGET=configure.ac
 	
@@ -240,7 +240,7 @@ generateCustom()
 	echo
 	echo " - generating $CONFIG_TARGET, by filling $CONFIG_SOURCE with ${CEYLAN_SETTINGS_FILE}"
 
-	# Generates 'configure.ac' with an already cooked dedicated Makefile :
+	# Generates 'configure.ac' with an already cooked dedicated Makefile:
 	make -f MakeConfigure clean config-files SETTINGS_FILE=${CEYLAN_SETTINGS_FILE} SUBSTITUTE=${CEYLAN_SUBSTITUTE_SCRIPT}
 
 	echo
@@ -280,13 +280,18 @@ generateCustom()
 		exit 22
 	}
 
-	# Where ceylan.m4, pkg.m4, etc. should be found : 
+	# Where ceylan.m4, pkg.m4, etc. should be found: 
 	CEYLAN_M4_DIR=$ceylan_install_prefix/share/Ceylan
 	
 	ACLOCAL_OUTPUT=aclocal.m4
 	
-	# Do not use '--acdir=.' since it prevents aclocal from writing its file :
-	execute aclocal -I $CEYLAN_M4_DIR --output=$ACLOCAL_OUTPUT $force $verbose
+	# With newer libtool (ex: 2.2.4), we need to include a whole bunch of *.m4
+	# files, otherwise 'warning: LTOPTIONS_VERSION is m4_require'd but not
+	# m4_defun'd' ... ', same thing for LTSUGAR_VERSION, LTVERSION_VERSION, etc.
+	GUESSED_LIBTOOL_BASE=`which libtool|sed 's|/bin/libtool$||1'`
+
+	# Do not use '--acdir=.' since it prevents aclocal from writing its file:
+	execute aclocal -I $CEYLAN_M4_DIR -I ${GUESSED_LIBTOOL_BASE}/share/aclocal --output=$ACLOCAL_OUTPUT $force $verbose
 	
 	echo
 	echo " - generating '.in' files from '.am' files with automake"
@@ -364,7 +369,7 @@ generateCustom()
 	
 		if [ -n "$ceylan_install_prefix_opt" ] ; then
 			echo 1>&2
-			echo "Warning : not installing tests and using $ceylan_install_prefix_opt implies updating library search paths to select the correct library, for example one may enter : " 1>&2
+			echo "Warning: not installing tests and using $ceylan_install_prefix_opt implies updating library search paths to select the correct library, for example one may enter: " 1>&2
 			echo "export LD_LIBRARY_PATH=$ceylan_install_prefix/lib:\$LD_LIBRARY_PATH" 1>&2
 		fi
 		
