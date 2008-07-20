@@ -18,6 +18,8 @@
 	getAbscissa/1,setAbscissa/2,getOrdinate/1,setOrdinate/2,
 	getAltitude/1,setAltitude/2).
 
+% Helper functions.
+-export([describe_location/1]).
 
 
 % Allows to define WOOPER base variables and methods for that class:
@@ -135,4 +137,8 @@ setAltitude(State,NewZ) ->
 	
 % Section for helper functions (not methods).
 
+% Returns the location of this Locatable.
+% Note: is never and cannot be overloaded.
+describe_location(State) ->
+	space:location_to_string( ?getAttr(location) ).
 	
