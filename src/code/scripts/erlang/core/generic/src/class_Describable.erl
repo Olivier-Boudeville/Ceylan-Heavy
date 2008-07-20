@@ -18,6 +18,9 @@
 -define(wooper_method_export,getDescription/1,setDescription/2).
 
 
+% Helper functions.
+-export([get_description/1]).
+
 
 % Allows to define WOOPER base variables and methods for that class:
 -include("wooper.hrl").
@@ -65,4 +68,9 @@ setDescription(State,NewDescription) ->
 		
 % Section for helper functions (not methods).
 
+% Returns the description of this Describable.
+% Note: is never and cannot be overloaded.
+get_description(State) ->
+	?getAttr(description).
+	
 	
