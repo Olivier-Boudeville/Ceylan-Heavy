@@ -26,7 +26,7 @@
 % Helper functions:
 -export([prepare_processing_of_last_tick_messages/1,
 	repost_requests/1,send_end_of_tick_notification/1,send_actor_message/3,
-	manage_end_of_tick/1]).
+	manage_end_of_tick/1,get_name/1]).
 
 
 
@@ -514,3 +514,10 @@ sort_messages([{MessageTick,Pid,Message}|T],Tick,Current,Future,Past)
 sort_messages([{MessageTick,Pid,Message}|T],Tick,Current,Future,Past) ->
 	sort_messages(T,Tick,[{MessageTick,Pid,Message}|Current],Future,Past).
 	 
+
+% Returns the name of this Actor.
+% Note: is never and cannot be overloaded.
+% Masks the inheritance from TraceEmitter.
+get_name(State) ->
+	?getAttr(name).
+
