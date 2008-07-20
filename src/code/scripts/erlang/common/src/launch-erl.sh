@@ -71,7 +71,7 @@ while [ $# -gt 0 ] ; do
 		HIGHER_TCP_PORT="$2"
 		shift
 		shift
-		echo "  + TCP range: from $LOWER_TCP_PORT to $HIGHER_TCP_PORT"
+		#echo "  + TCP range: from $LOWER_TCP_PORT to $HIGHER_TCP_PORT"
 		token_eaten=0
 	fi
 	
