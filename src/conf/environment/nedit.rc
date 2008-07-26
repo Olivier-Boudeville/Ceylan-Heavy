@@ -292,7 +292,7 @@ nedit.highlightPatterns: Ada:Default\n\
 	Erlang:1:0{\n\
 		Comment:"%":"$"::Comment::\n\
 		WooperMacro:"\\?<(getAttr|getAttribute|getWrappedAttribute|setAttribute|removeAttribute|getSender)>":::WooperPlain::\n\
-		WooperHelper:"<(new|new_link|construct|delete)>":::WooperPlain::\n\
+		WooperHelper:"<(new|new_link|synchronous_new|synchronous_new_link|construct|delete)>":::WooperPlain::\n\
 		WooperPrefixed:"<wooper_[_A-Za-z]*|\\?wooper_[_A-Za-z]*>":::Wooper::\n\
 		Macro:"\\?[0-9A-Za-z_]*":::Preprocessor::\n\
 		ExportedFunc:"[A-Za-z_]*:[A-Za-z_]*":::ExportedFunc::\n\
