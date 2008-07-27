@@ -43,10 +43,6 @@
 				AdditionalIncludeDirectories="&quot;$(CeylanCodeRoot)&quot;;&quot;$(CeylanCodeRoot)\generic&quot;;&quot;$(CeylanCodeRoot)\interfaces&quot;;&quot;$(CeylanCodeRoot)\logs&quot;;&quot;$(CeylanCodeRoot)\maths&quot;;&quot;$(CeylanCodeRoot)\middleware&quot;;&quot;$(CeylanCodeRoot)\modules&quot;;&quot;$(CeylanCodeRoot)\network&quot;;&quot;$(CeylanCodeRoot)\system&quot;"
 				PreprocessorDefinitions="CEYLAN_RUNS_ON_WINDOWS=1;CEYLAN_USES_CONFIG_H=1;&quot;CEYLAN_DLL=__declspec( dllexport )&quot;;&quot;CEYLAN_EXTERN_TEMPLATE=&quot;"
 				DisableLanguageExtensions="false"
-				WarningLevel="3"
-				WarnAsError="true"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="4"
 				DisableSpecificWarnings="4290;4101;4996"
 			/>
 			<Tool
@@ -114,9 +110,6 @@
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;CEYLAN03_EXPORTS;"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
