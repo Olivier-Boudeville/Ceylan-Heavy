@@ -9,16 +9,18 @@
 
 # Projects section.
 
-export LOANI_VERSION=0.4
+export LOANI_VERSION=0.6
 
 # LOANI_BASE may have been set before by .bashrc.local:
 if [ -z "${LOANI_BASE}" ] ; then
 	# Defaults to:
-	export LOANI_BASE=/mnt/raid/md0/LOANI-${LOANI_VERSION}
+	export LOANI_BASE=/mnt/raid/md0
 fi
 
-export LOANI_REPOSITORY=${LOANI_BASE}/LOANI-repository
-export LOANI_INSTALLATIONS=${LOANI_BASE}/LOANI-installations
+LOANI_VERSION_BASE=${LOANI_BASE}/LOANI-${LOANI_VERSION}
+
+export LOANI_REPOSITORY=${LOANI_VERSION_BASE}/LOANI-repository
+export LOANI_INSTALLATIONS=${LOANI_VERSION_BASE}/LOANI-installations
 
 export DS_DEV=${LOANI_INSTALLATIONS}/Nintendo-DS-development
 
@@ -83,7 +85,7 @@ export TOSFCF=${SF_USER}@cf-shell.sourceforge.net:/home/users/w/wo/${SF_USER}
 
 export CVS_RSH=ssh
 
-# CVS not used anymore:
+# CVS not used anymore:
 CVS_CO_CEYLAN='cvs -z3 -d:ext:${SF_USER}@cvs.sourceforge.net:/cvsroot/ceylan co'
 SVN_CO_CEYLAN='svn co https://svn.sourceforge.net/svnroot/ceylan ceylan'
 
