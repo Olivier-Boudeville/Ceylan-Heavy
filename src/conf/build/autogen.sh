@@ -2,7 +2,7 @@
 
 USAGE="
 
-Usage: "`basename $0`" [ -h | --help ] [ --nds ] [--with-osdl-env-file <filename> ] [ -d | --disable-all-features ] [ -n | --no-build ] [ -c | --chain-test ] [ -f | --full-test ] [ -o | --only-prepare-dist ] [ --configure-options [option 1] [option 2] [...] ]: (re)generates all the autotools-based build system.
+Usage: "`basename $0`" [ -h | --help ] [ --nds ] [ --with-osdl-env-file <filename> ] [ -d | --disable-all-features ] [ -n | --no-build ] [ -c | --chain-test ] [ -f | --full-test ] [ -o | --only-prepare-dist ] [ --configure-options [option 1] [option 2] [...] ]: (re)generates all the autotools-based build system.
 	
 	--nds: cross-compile the Ceylan library so that it can be run on the Nintendo DS (LOANI installation of both Ceylan and the DS cross-build chain is assumed)
 	--disable-all-features: just build the core of the Ceylan library
@@ -51,6 +51,12 @@ do_target_nds=1
 while [ $# -gt 0 ] ; do
 	token_eaten=1
 	
+	if [ "$1" = "--nds" ] ; then
+		# Cross-compilation for the Nintendo DS requested:
+		do_target_nds=0
+		token_eaten=0
+	fi
+
 	if [ "$1" = "-v" -o "$1" = "--verbose" ] ; then
 		be_verbose=0
 		token_eaten=0
@@ -60,26 +66,21 @@ while [ $# -gt 0 ] ; do
 		be_quiet=0
 		token_eaten=0
 	fi
-	
+
 	if [ "$1" = "--with-osdl-env-file" ] ; then
 		shift
-		osdl_env_file=$1
-		if [ ! -f "${osdl_env_file}" ] ; then
-			echo "Error, specified OSDL environment file (${osdl_env_file}) not found. $USAGE" 1>&2
-			exit 1
+		osdl_environment_file="$1"
+		if [ ! -f "${osdl_environment_file}" ] ; then
+			echo "Error, specified OSDL environment file (${osdl_environment_file}) not found.
+$USAGE" 1>&2
+			exit 4
 		fi
-		. "${osdl_env_file}"
+		. "${osdl_environment_file}"
 		# Implies NDS target:
 		do_target_nds=0
 		token_eaten=0
 	fi
-	
-	if [ "$1" = "--nds" ] ; then
-		# Cross-compilation for the Nintendo DS requested:
-		do_target_nds=0
-		token_eaten=0
-	fi
-	
+
 	if [ "$1" = "-d" -o "$1" = "--disable-all-features" ] ; then
 		ceylan_features_opt="$ceylan_features_disable_opt"
 		token_eaten=0
@@ -104,10 +105,10 @@ while [ $# -gt 0 ] ; do
 	if [ "$1" = "-o" -o "$1" = "--only-prepare-dist" ] ; then
 		# We need to have the library built (do_build=0) even only when only
 		# preparing a distribution package, as the test/autogen.sh needs
-		# Ceylan-0.5/share/Ceylan/*.m4 installed files:
+		# Ceylan-x.y/share/Ceylan/*.m4 installed files:
 		do_build=0
 		do_check=1
-		# Install needed to have *.m4 files for aclocal of test ;
+		# Install needed to have *.m4 files for aclocal of test:
 		do_install=0
 		do_installcheck=1
 		do_distcheck=1
@@ -118,7 +119,7 @@ while [ $# -gt 0 ] ; do
 	
 	if [ "$1" = "--configure-options" ] ; then
 		shift
-		configure_opt="$*"
+		configure_user_opt="$*"
 		while [ "$#" -gt "0" ] ; do
 			shift
 		done		
@@ -134,10 +135,11 @@ while [ $# -gt 0 ] ; do
 	if [ $token_eaten -eq 1 ] ; then
 		echo "Error, unknown argument ($1).
 $USAGE" 1>&2
-		exit 4
+		exit 5
 	fi	
 	shift
 done
+
 
 
 # debug mode activated iff equal to true (0):
@@ -148,6 +150,12 @@ debug()
 	if [ $debug_mode -eq 0 ] ; then
 		echo "debug: $*"
 	fi	
+}
+
+
+warning()
+{
+	echo "warning: $*" 1>&2
 }
 
 
@@ -221,6 +229,7 @@ else
 fi
 
 
+
 # Nintendo DS special case:
 if [ $do_target_nds -eq 0 ] ; then
 
@@ -256,8 +265,8 @@ fi
 
 
 
-if [ -z "${configure_opt}" ] ; then
-	configure_opt="$ceylan_cross_build_opt $ceylan_features_opt --enable-strict-ansi --enable-debug $PREFIX_OPT $test_overriden_options"
+if [ -z "${configure_user_opt}" ] ; then
+	configure_user_opt="$ceylan_cross_build_opt $ceylan_features_opt --enable-strict-ansi --enable-debug $PREFIX_OPT $test_overriden_options"
 fi
 
 
@@ -274,6 +283,8 @@ fi
 
 debug "COMMAND = $COMMAND"
 debug "RUNNING_DIR = $RUNNING_DIR" 
+
+
 
 
 # Overall autotools settings:
@@ -336,6 +347,13 @@ Note: if aclocal is failing since AM_CXXFLAGS (used in configure.ac) 'cannot be 
 				echo "
 Note: check that your automake version is indeed 1.9 or newer. For example, with Debian-based distributions, /usr/bin/automake is a symbolic link to /etc/alternatives/automake, which itself is a symbolic link which may or may not point to the expected automake version. Your version of $1 is:
 	" `$1 --version` ", " `/bin/ls -l --color $(which $1)`". See also the update-alternatives command. ${AUTOMAKE_HINT}"
+	
+			elif [ "$1" = "libtoolize" ]; then
+				echo "
+Note: check that your libtoolize version is indeed 2.2.4 or newer, otherwise the --install could not be available. Your version of $1 is:
+	" `$1 --version` "
+	The corresponding executable is:
+	" `/bin/ls -l --color $(which $1)`
 	
 			elif [ "$1" = "./configure" ]; then
 				echo "
@@ -448,17 +466,18 @@ generateCustom()
 		exit 22
 	}
 
-	M4_DIR=$CONFIG_DIR/m4 
+	# Contains some *.m4 prerequesites:
+	M4_DIR=${CONFIG_DIR}/m4 
 	
 	ACLOCAL_OUTPUT=src/conf/build/m4/aclocal.m4
-	
+
 	# With newer libtool (ex: 2.2.4), we need to include a whole bunch of *.m4
 	# files, otherwise 'warning: LTOPTIONS_VERSION is m4_require'd but not
 	# m4_defun'd' ... ', same thing for LTSUGAR_VERSION, LTVERSION_VERSION, etc.
 	GUESSED_LIBTOOL_BASE=`which libtool|sed 's|/bin/libtool$||1'`
 	
 	# Do not use '--acdir=.' since it prevents aclocal from writing its file:
-	execute aclocal -I $M4_DIR -I ${GUESSED_LIBTOOL_BASE}/share/aclocal --output=$ACLOCAL_OUTPUT $force $verbose
+	execute aclocal -I ${M4_DIR} -I ${GUESSED_LIBTOOL_BASE}/share/aclocal --output=$ACLOCAL_OUTPUT $force $verbose
 
 	# automake wants absolutely to find aclocal.m4 in the top-level directory:
 	ln -sf src/conf/build/m4/aclocal.m4
@@ -513,7 +532,7 @@ generateCustom()
 	fi
 		
 	echo
-	echo " - executing 'configure' script with following options: ' $configure_opt'."
+	echo " - executing 'configure' script with following options: ' $configure_user_opt'."
 	
 
 	(./configure --version) < /dev/null > /dev/null 2>&1 || {
@@ -523,7 +542,7 @@ generateCustom()
 	}
 	
 	
- 	execute ./configure $configure_opt
+ 	execute ./configure $configure_user_opt
 	
 
 	if [ $do_clean -eq 0 ] ; then
@@ -559,8 +578,8 @@ generateCustom()
 		echo " - checking install"
 	 	execute make installcheck
 	fi
-	
-	
+
+
 	if [ $do_chain_tests -eq 0 ] ; then
 		echo
 		echo " - building and running test suite"
@@ -576,7 +595,7 @@ generateCustom()
 		execute make dist-bzip2 
 	fi
 	
-		
+
 	if [ $do_distcheck -eq 0 ] ; then
 		echo
 		echo " - making distcheck"
@@ -585,7 +604,7 @@ generateCustom()
 		# hence the script cannot find the installed Ceylan (distcheck uses
 		# a prefix in all cases) and fails.
 		# Automake philosophy and an embedded test package (which is what we
-		# really want) are not compatible.
+		# really want) do not seem compatible.
 	 	execute make distcheck
 	fi
 		
