@@ -3,8 +3,8 @@
 # 'configure.ac'. One can use the 'checkConfigure.sh' script to check
 # whether the corresponding 'configure.ac' is the appropriate result.
 
-# This is a way of customizing settings prior to the whole 'autogen.sh' process,
-# leading to have the build system generated. 
+# This is a way of customizing settings prior to the whole 'autogen.sh'
+# process, leading to have the build system generated. 
 
 
 AC_PREREQ(2.61)
@@ -265,6 +265,7 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
+AM_PROG_LIBTOOL
 
 
 # Checks for header files.
@@ -285,6 +286,7 @@ AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_STRUCT_TM
 AC_C_VOLATILE
+
 
 # Checks for libraries.
 
@@ -1202,9 +1204,11 @@ CheckPluginFeature()
 		[$CEYLAN_USES_PLUGINS],
 		[Define to 1 if Ceylan is to support plugin])
 
-	# Cannot be specified before since using plugin requires to add for example
+	# Cannot be specified before, since using plugin requires to add for
+	# example
 	# AC_LIBTOOL_DLOPEN before this call:
-	LT_INIT
+	LT_INIT([dlopen win32-dll])
+
 
 }
 
@@ -1288,6 +1292,8 @@ CheckMkdir()
 # Detects underlying platform and configures build accordingly.
 #
 # Still needing platform detection for some specificities:
+#   - need to define Ceylan_DLL for the Windows platform, for
+# Visual C++-based builds
 #   - CeylanDirectory: 
 #	 + directory separator, root directory: ARCH_WINDOWS
 #	 + non-blocking socket call (fcntl) not working properly on FreeBSD
@@ -1374,7 +1380,7 @@ CheckPlatform()
 			CEYLAN_ARCH_BSD=1
 			CEYLAN_ARCH_UNIX=1
 			;;
-						
+
 	    *)
 	        # Not identified
 	        ;;
@@ -1481,7 +1487,7 @@ CheckNonBlockingSockets()
 
 
 
-# TODO: use CXXCOMPILE/CXXLINK to customize build output.
+# Maybe later: use CXXCOMPILE/CXXLINK to customize build output.
 
 
 
