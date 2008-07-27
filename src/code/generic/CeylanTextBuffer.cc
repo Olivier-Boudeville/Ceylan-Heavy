@@ -139,7 +139,8 @@ void TextBuffer::add( const std::string & text ) throw( TextBufferException )
 
 	// Scrolls:
 
-	Ceylan::Uint32 addedLinesCount = newGrid->size() ;
+	Ceylan::Uint32 addedLinesCount = static_cast<Ceylan::Uint32>(
+			newGrid->size() ) ;
 	
 	for ( Ceylan::Uint32 i = 0; i < addedLinesCount; i++ )
 		jumpNextLineNoRefresh() ;
