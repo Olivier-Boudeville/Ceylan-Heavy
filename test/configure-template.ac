@@ -1,6 +1,6 @@
 
 
-AC_PREREQ(2.59)
+AC_PREREQ(2.61)
 
 
 # Declaration section for the Autotools macros.
@@ -35,10 +35,7 @@ AC_PROG_MAKE_SET
 
 
 # Tells the libtool machinery that the package supports DLLs on Windows:
-#AC_LIBTOOL_WIN32_DLL
-
-#AC_LIBTOOL_DLOPEN
-LT_INIT
+LT_INIT([dlopen win32-dll])
 
 
 CEYLAN_TEST_DIR="\${prefix}/share/Ceylan-test"
