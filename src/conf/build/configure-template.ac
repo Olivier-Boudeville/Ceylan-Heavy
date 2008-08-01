@@ -1320,11 +1320,15 @@ CheckPlatform()
 	# Needed when building a library on Windows platforms:
 	CEYLAN_DLL_EXPORT_WINDOWS="__declspec( dllexport )"
 	
+	# Needed with gcc compilers:
+	CEYLAN_PACKED_ATTRIBUTE="__attribute__ ((packed))"
+	
 	case "$target" in
 	
 		*-*-win32*) 
 			CEYLAN_ARCH_WINDOWS=1
 			CEYLAN_DLL="${CEYLAN_DLL_EXPORT_WINDOWS}"
+			CEYLAN_PACKED_ATTRIBUTE=""
 			;;
 
 		*-*-cygwin*)
@@ -1435,7 +1439,7 @@ CheckPlatform()
 	# so that headers can avoid #including platform-specific configuration
 	# files. Hence no 'AC_DEFINE_UNQUOTED([CEYLAN_DLL], ...' here.
 	
-	AM_CXXFLAGS="${AM_CXXFLAGS} -DCEYLAN_DLL=\"${CEYLAN_DLL}\""
+	AM_CXXFLAGS="${AM_CXXFLAGS} -DCEYLAN_DLL=\"${CEYLAN_DLL}\" -DCEYLAN_PACKED_ATTRIBUTE=\"${CEYLAN_PACKED_ATTRIBUTE}\"
 	
 }
 
