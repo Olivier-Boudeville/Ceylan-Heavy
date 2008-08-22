@@ -1,7 +1,7 @@
 include $(CEYLAN_ERLANG_TOP)/GNUmakevars.inc
 
 
-.PHONY: all all-recurse launch test test-recurse build-tests                  \
+.PHONY: all all-recurse launch test test-recurse build-tests              \
 	doc doc-recurse help-erl                                              \
 	clean clean-erlang clean-database                                     \
 	clean-subdirs clean-dot clean-log clean-probe clean-gnuplot realclean \
@@ -300,7 +300,7 @@ clean-gnuplot:
 
 	
 clean-png:
-	-@rm -f $(PNG_FROM_PYTHON) $(PNG_FROM_PYTHON_NEGATED) $(NEGATED_PNG)
+	-@rm -f $(GRAPH_PNG) $(PNG_FROM_PYTHON) $(PNG_FROM_PYTHON_NEGATED) $(NEGATED_PNG)
 	
 	
 clean-rst:
