@@ -198,7 +198,7 @@ run() ->
 	?test_info([ "Creating a new RandomManager." ]),
 	class_RandomManager:create(),
 
-	RandomManagerPid = case utils:wait_for_global_registration_of( 
+	RandomManagerPid = case basic_utils:wait_for_global_registration_of( 
 			?random_manager_name ) of
 
 		Answer when is_pid(Answer) ->
