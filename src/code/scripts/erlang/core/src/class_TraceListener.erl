@@ -15,12 +15,12 @@
 -define(wooper_construct_parameters,TraceAggregatorPid).
 
 % Life-cycle related exported operators:
--define(wooper_construct_export,new/1,new_link/1,
-	synchronous_new/1,synchronous_new_link/1,construct/2,delete/1).
+-define(wooper_construct_export, new/1, new_link/1, 
+	synchronous_new/1, synchronous_new_link/1, construct/2, delete/1).
 
 
 % Method declarations.
--define(wooper_method_export,monitor/1,addTrace/2).
+-define(wooper_method_export, monitor/1, addTrace/2).
 
 % Static method declarations (to be directly called from module):
 -export([create/1]).
