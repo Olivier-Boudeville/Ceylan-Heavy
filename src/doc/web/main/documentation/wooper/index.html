@@ -35,7 +35,7 @@
 <h1>WOOPER: <em>Wrapper for OOP in Erlang</em></h1>
 
 <p>
-WOOPER is an <a href="#license">open source</a> lightweight layer on top of the <a href="http://erlang.org" target="_blank">Erlang</a> language offering constructs dedicated to <a href="http://en.wikipedia.org/wiki/Object-oriented_programming" target="_blank">Object-Oriented Programming</a>. WOOPER is a part of the <a href="http://ceylan.sourceforge.net" target="_blank">Ceylan</a> project.
+WOOPER is an <a href="#license">open source</a> lightweight layer on top of the <a href="http://erlang.org" target="_blank">Erlang</a> language offering constructs dedicated to <a href="http://en.wikipedia.org/wiki/Object-oriented_programming" target="_blank">Object-Oriented Programming</a>. WOOPER is a (completely autonomous) part of the <a href="http://ceylan.sourceforge.net" target="_blank">Ceylan</a> project.
 </p>
 
 
@@ -83,11 +83,11 @@ WOOPER is an <a href="#license">open source</a> lightweight layer on top of the 
 <h2>Overview</h2>
 
 <p>
-Some problems may almost only be tackled efficiently thanks to an objet-oriented modeling. The set of code and conventions proposed here allow to have all the main OOP features (including polymorphism, life cycle management, state management and multiple inheritance) available from Erlang, so that an object-oriented approach at the implementation level can be easily achieved, for the cases where it makes sense.
+Some problems may almost only be tackled efficiently thanks to an object-oriented modeling. The set of code and conventions proposed here allows to have all the main OOP features (including polymorphism, life cycle management, state management and multiple inheritance) available from Erlang, so that an object-oriented approach at the implementation level can be easily achieved, for the cases where it makes sense.
 </p>
 
 <p>
-Here is a simple example of how WOOPER instances can be managed. This shows new/delete operators, method calling (both request and oneway), and inheritance (a cat is here a viviparous mammal, as defined <a href="#example">below</a>):
+Here is a simple example of how WOOPER instances can be managed. This shows <code>new/delete</code> operators, method calling (both request and oneway), and inheritance (a cat is here a viviparous mammal, as defined <a href="#example">below</a>):
 <center>
     <table summary="Code" style="border: none">
         <tr>
@@ -766,7 +766,25 @@ These two helper functions behave quite similarly to actual method calls that us
 </p>
 
 <p>
-More precisely, <code>executeRequest</code> is <code>executeRequest/3</code> or <code>executeRequest/2</code>, its parameters being the current state, the name of the request-method, and, if specified, the parameters of the called request, either as a list or as a standalone one. It returns a triplet (3-tuple) made of the <code>wooper_result</code> atom, of the new state and of the result. For example: <code>{wooper_result,NewState,Result} = executeRequest(CurrentState, my_request_name, [ "hello", 42 ])</code>, <code>{wooper_result,NewState,Result} = executeRequest(CurrentState,another_request_name,42)</code> or <code>{wooper_result,NewState,Result} = executeRequest(CurrentState,third_request_name)</code>.
+More precisely, <code>executeRequest</code> is <code>executeRequest/3</code> or <code>executeRequest/2</code>, its parameters being the current state, the name of the request-method, and, if specified, the parameters of the called request, either as a list or as a standalone one. It returns a triplet (3-tuple) made of the <code>wooper_result</code> atom, of the new state and of the result.
+</p>
+
+<p>
+For example: 
+<ul>
+
+	<li><code>{wooper_result,NewState,Result} = executeRequest(CurrentState, my_request_name, [ "hello", 42 ])</code></li>
+	
+	<li><code>{wooper_result,NewState,Result} = executeRequest(CurrentState,another_request_name,42)</code></li>
+	
+	<li><code>{wooper_result,NewState,Result} = executeRequest(CurrentState,third_request_name)</code></li>
+
+<!--
+	<li><code></code></li>
+-->
+
+</ul>
+
 </p>
 
 <p>
@@ -774,9 +792,26 @@ More precisely, <code>executeRequest</code> is <code>executeRequest/3</code> or 
 </p>
 
 <p>
-For example: <code>{wooper_result,NewState} = executeOneway(CurrentState,my_oneway_name,[ "hello", 42 ])</code>, <code>{wooper_result,NewState,Result} = executeOneway(CurrentState,another_oneway_name,42)</code> or <code>{wooper_result,NewState,Result} = executeOneway(CurrentState,another_oneway_name)</code>.
+For example:
+<ul>
+
+	<li><code>{wooper_result,NewState} = executeOneway(CurrentState,my_oneway_name,[ "hello", 42 ])</code></li>
+
+	<li><code>{wooper_result,NewState,Result} = executeOneway(CurrentState,another_oneway_name,42)</code></li>
+
+	<li><code>{wooper_result,NewState,Result} = executeOneway(CurrentState,another_oneway_name)</code></li>
+
+<!--
+	<li><code></code></li>
+-->
+
+</ul>
+
 </p>
 
+<p>
+Both <code>executeRequest</code> and <code>executeOneway</code> specify <code>wooper_result</code> in the returned tuple, in order to have a better homogeneity in error handling.
+</p>
 
 
 <br><p><center>[<a href="#usagetoc">Back to the usage table of contents</a>]</center></p><br>
@@ -811,7 +846,7 @@ For example, <code>AgeState = ?setAttribute(State,age,3)</code> will return a ne
 </p>
 
 <p>
-In various cases, notably in constructors, one needs to define a series of attributes, and chaining <code>setAttribute</code> calls with intermediate states is not convenient. A better solution is to use the <b>setAttributes</b> macro (note the plural) to set a list of attribute name/attribute value pairs.
+In various cases, notably in constructors, one needs to define a series of attributes, and chaining <code>setAttribute</code> calls with intermediate states is not convenient. A better solution is to use the <b>setAttributes</b> macro (note the plural) to set a list of attribute name/attribute value pairs (a.k.a. as a <em>property list</em>).
 </p>
 
 <p>
@@ -898,6 +933,8 @@ See <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/co
 <a name="inheritpolymorph"></a>
 <h3>Multiple inheritance &amp; polymorphism</h3>
 
+
+<h4>Common case</h4>
 <p>
 Both are automatically managed by WOOPER: even if our cat class does not define a <code>getAge</code> method, it can be readily be used as it is inherited from its mother classes (here from <code>class_Creature</code>, an indirect mother class). All creature instances can be handled the same:
 
@@ -937,6 +974,25 @@ foreach(
     </table>
 </center>
 </p>
+
+
+<h4>Diamond-shaped inheritance</h4>
+<p>
+In the case of a <a href="http://en.wikipedia.org/wiki/Diamond_problem" target="_blank">diamond-shaped inheritance</a>, as the method table is constructed in the order specified in the declaration of the superclasses  (<code>-define(wooper_superclasses,[class_X,class_Y, etc.]).</code>), and as child classes override mother ones, the selected <b>method</b> should be the one defined in the branch of the last child (if any), otherwise the one of the common ancestor.
+</p>
+
+<p>
+Generally speaking, in that case, overriding the relevant methods in the class at the base of the diamond so that they perform an explicit call to the wanted module is by far the most reasonable solution.   
+</p>
+
+<p>
+Regarding the instance state, the <b>attributes</b> are set by the constructors, therefore the developer can select in which order the direct mother classes should be constructed. However it always leads to calling multiple times the constructor of the class that sits at the top of the diamond. Its side-effects would then occur more than once.
+</p>
+
+<p>
+More generally speaking, in my opinion diamond-shaped inheritance is seldom necessary. More often than not, it is the consequence of a bad OOP design, and should be avoided.
+</p>
+
 
 <br><p><center>[<a href="#usagetoc">Back to the usage table of contents</a>]</center></p><br>
 
@@ -978,21 +1034,130 @@ The <code>new_link</code> operator behaves exactly as the <code>new</code> opera
 </p>
 
 <p>
-The <code>new</code> and <code>new_link</code> operators are automatically defined by WOOPER, but they rely on the class-specific <code>construct</code> special method (it cannot be called from outside the class module). The <code>construct</code> method is the one that must be implemented by the class developer.
+The <code>new</code> and <code>new_link</code> operators are automatically defined by WOOPER, but they rely on the class-specific <code>construct</code> special method (only WOOPER is expected to call this method). This <code>construct</code> method is the one that must be implemented by the class developer.
 </p>
 
 <p>
-Only one version of <code>new/new_link/construct</code> can be defined, but this unique threefold constructor may be defined to branch to as many subconstructors as needed: for example, <code>MyCat = Class_Cat:new(construct_from_point,[1,2]).</code>.
+Only one version of <code>new/new_link/construct</code> can be defined, but this unique threefold constructor may be defined to branch to as many subconstructors as needed. For example:
+<ul>
+
+	<li><code>MyCat = Class_Cat:new(construct_from_colors,[sand,white]).</code></li>
+
+	<li><code>MyCat = Class_Cat:new(construct_from_age,4).</code></li>
+
+	<li><code>MyCat = Class_Cat:new(construct_from_weight,3.8).</code></li>
+
+<!--
+
+-->
+
+</ul>
 </p>
 
 <p>
-The <code>new/new_link</code> operators are asynchronous: they trigger the creation of a new instance, and return immediately, without waiting for it to complete. Thus the caller has no way to know when the spawned instance is up and running (if it ever happens). Two counterpart operators, <code>synchronous_new/synchronous_new_link</code>, behave like <code>new/new_link</code> except they will return when (and if) the created instance is up and running. For example, after <code>MyMammal = class_Mammal:synchronous_new(...)</code>, one knows that the <code>MyMammal</code> instance is fully created and waiting for incoming messages.
+As shown with the <code>new_link</code> operator, many variations of <code>new</code> could be imagined: linked or not, synchronous or not, with a time-out or not, on current node or on a user-specified one, etc. The most common variations are detailed below.
+
+</p>
+
+<p>
+Currently, <code>new</code>, <code>new_link</code>, <code>synchronous_new</code> and <code>synchronous_new_link</code> are the only (default) built-in operators, whereas <code>synchronous_timed_new</code>, <code>remote_new</code>, etc. are not, so that the class developer is not required to declare too many <code>new</code> operator variations in each class.
+</p>
+
+
+
+<h6>Synchronous new</h6>
+
+<p>
+The basic <code>new/new_link</code> operators are <b>asynchronous</b>: they trigger the creation of a new instance, and return immediately, without waiting for it to complete. Thus the caller has no way to know when the spawned instance is up and running (if it ever happens). Two counterpart operators, <code>synchronous_new/synchronous_new_link</code>, behave like <code>new/new_link</code> except they will return when (and if) the created instance is up and running.
+</p>
+
+<p>
+For example, after <code>MyMammal = class_Mammal:synchronous_new(...)</code>, one knows that the <code>MyMammal</code> instance is fully created and waiting for incoming messages.
 </p>
 
 <p>
 These synchronous operations are performed by automatically ensuring that the created instance sends a message (<code>{spawn_successful,InstancePid}</code>)
-to the process that created it, and that waits for it.
+to the process that created it, and that waits for it automatically thanks to WOOPER.
 </p>
+
+
+<h6>Timed Synchronous new</h6>
+
+<p>
+Note that, should the instance creation fail, the caller of a synchronous new would be blocked for ever. If one wanted to use a synchronous new with a time-out, the following code could be added in the class module and exported (alternatively, '<code>% -define(use_synchronous_timed_new,).</code>' could be uncommented in <code>wooper.hrl</code>, and all classes should then export this new operator):
+<center>
+    <table summary="a box" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+% The duration in milliseconds before a time-out is triggered after a created
+% instance does not seem to answer properly and on reasonable time:
+-define(synchronous_time_out,5000).
+			
+% Spawns a new instance for this class, using specified parameters to
+% construct it.
+% Returns the PID of the newly created instance, or the time_out atom.
+% Creation is synchronous: synchronous_new will return only when the created
+% process reports it is up and running, or when a time-out occurs.
+synchronous_timed_new(?wooper_construct_parameters) ->
+	SpawnedPid = spawn(?MODULE, wooper_construct_and_run_synchronous,
+		[ [?wooper_construct_parameters], self() ] ),
+		
+	% Blocks until the spawned process answers or a time-out occurs:	
+	receive	
+		
+		{spawn_successful,SpawnedPid} ->
+			SpawnedPid
+	
+	after ?synchronous_time_out -> 
+	
+		time_out
+		
+	end.
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+  
+</p>
+
+
+<h6>Remote new</h6>
+<p>
+Exactly like a process might be spawned on another Erlang node, an instance can be spawned on a user-specified node.
+</p>
+
+<p>
+To do so, either add following code in target class module and export it, or uncomment '<code>% -define(use_remote_new,).</code>' in <code>wooper.hrl</code> to enable this operator for all classes:
+<center>
+    <table summary="a box" style="border : none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
+% Spawns a new instance for this class on specified interconnected node, using
+% specified parameters to construct it.
+% If Node does not exist, a useless pid is returned. 
+% Returns the PID of the newly created instance.
+% Creation is asynchronous: remote_new returns as soon as the creation is
+% triggered, without waiting for it to complete.
+remote_new(Node,?wooper_construct_parameters) ->
+	spawn(Node, ?MODULE, wooper_construct_and_run_synchronous,
+		[ [?wooper_construct_parameters], self() ] ).
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
+ 
+ 
+  
+</p>
+
 
 
 
@@ -1000,7 +1165,7 @@ to the process that created it, and that waits for it.
 <h5>Declaration of the new/construct pair</h5>
 
 <p>
-When an instance is created, user-specified parameters are given to either the <code>new</code> or the <code>new_link</code> operator, notably to set up the instance initial state, i.e. its attributes. These parameters must be declared thanks to the <code>wooper_construct_parameters</code> define. For example, <code>-define( wooper_construct_parameters,).</code> (no parameter needed), or <code>-define( wooper_construct_parameters, Age, Gender ).</code> (two parameters needed).
+When an instance is created, user-specified parameters are given to the relevant <code>new</code> operator, notably to set up the instance initial state, i.e. its attributes. These parameters must be declared thanks to the <code>wooper_construct_parameters</code> define. For example, <code>-define( wooper_construct_parameters,).</code> (no parameter needed), or <code>-define( wooper_construct_parameters, Age, Gender ).</code> (two parameters needed).
 </p>
 
 <p>
@@ -1595,8 +1760,12 @@ WOOPER relies only on these specific files:
 -->
 
 	<li>Is <b>wooper_main_loop</b> (in <code>wooper.hrl</code>) really tail-recursive ? I think so</li>
+	
 	<li>Integrate automatic <b>persistant storage</b> of instance states into Mnesia databases</li>
+	
 	<li>Would there be a <b>more efficient</b> implementation of hashtables ? (ex: ets-based ?). More generally speaking, some profiling could be done to further increase overall performances</li>
+
+	<li>Having to export by hand all new-related operators (ex: <code>new_link/n</code>) is cumbersome and prevent from having all the many <code>new</code> variations defined as built-in. Maybe an appropriate parse transform could do the trick ?</li>
 	
 </ul>
 
@@ -1649,7 +1818,7 @@ This allows the use of the WOOPER code in as wide a variety of software projects
     <li>Chris Rathman 's <a href="http://www.angelfire.com/tx4/cus/shapes/erlang.html" target="_blank">approach</a> to life cycle management and polymorphism. Inheritance not supported</li> 
 	
     <li>
-	As Burkhard Neppert suggested, an alternative way of implementing OOP here could be to use Erlang behaviours. This is the way OTP handles generic functionalities that can be specialized (e.g. <code>gen_server</code>). One approach could be to map each objet-oriented base class to an Erlang <b>behaviour</b>. See some guidelines about <a href="http://wiki.trapexit.org/index.php/Defining_Your_Own_Behaviour" target="_blank">defining</a> your own behaviours and making them <a href="http://wiki.trapexit.org/index.php/Cascading_Behaviours" target="_blank">cascade</a>
+	As Burkhard Neppert suggested, an alternative way of implementing OOP here could be to use Erlang behaviours. This is the way OTP handles generic functionalities that can be specialized (e.g. <code>gen_server</code>). One approach could be to map each object-oriented base class to an Erlang <b>behaviour</b>. See some guidelines about <a href="http://wiki.trapexit.org/index.php/Defining_Your_Own_Behaviour" target="_blank">defining</a> your own behaviours and making them <a href="http://wiki.trapexit.org/index.php/Cascading_Behaviours" target="_blank">cascade</a>
 	</li>
 
     <li>
@@ -1733,7 +1902,7 @@ svn copy https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/code
   <center>
     [<a href="#_top_">Top</a>]<br>
     <br>
-    <em>Last update: Friday, July 11, 2008</em>
+    <em>Last update: Wednesday, July 30, 2008</em>
   </center>
 </body>
 </html>
