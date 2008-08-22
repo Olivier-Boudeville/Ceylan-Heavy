@@ -16,8 +16,8 @@
 -define(wooper_construct_parameters,Mu,Sigma,IsPrivate).
 
 % Life-cycle related exported operators:
--define(wooper_construct_export,new/3,new_link/3,
-	synchronous_new/3,synchronous_new_link/3,construct/4,delete/1).
+-define(wooper_construct_export, new/3, new_link/3, 
+	synchronous_new/3, synchronous_new_link/3, construct/4, delete/1).
 
 
 % Method declarations.
@@ -25,18 +25,18 @@
 % the counterpart actor oneway, and get*/n+2, the same oneway apart that it 
 % returns a series of values (a list) instead of a unique one.
 -define(wooper_method_export,
-	act/1,
-	getUniformValue/2,getUniformValue/3,getUniformValues/3,
-	getExponentialValue/2,getExponentialValue/3,getExponentialValues/3,
-	getPositiveIntegerExponentialValue/2, getPositiveIntegerExponentialValue/3,
-	getPositiveIntegerExponentialValues/3,
-	getGaussianValue/1,getGaussianValue/3,getGaussianValues/3,
-	getPositiveIntegerGaussianValue/1,
-	getPositiveIntegerGaussianValue/3,getPositiveIntegerGaussianValues/3,
-	display/1,toString/1).
+	act/1, 
+	getUniformValue/2,  getUniformValue/3,  getUniformValues/3, 
+	getExponentialValue/2, getExponentialValue/3, getExponentialValues/3, 
+	getPositiveIntegerExponentialValue/2,  getPositiveIntegerExponentialValue/3,
+	getPositiveIntegerExponentialValues/3, 
+	getGaussianValue/1, getGaussianValue/3, getGaussianValues/3, 
+	getPositiveIntegerGaussianValue/1, 
+	getPositiveIntegerGaussianValue/3, getPositiveIntegerGaussianValues/3, 
+	display/1, toString/1).
 
 % Static method declarations (to be directly called from module):
--export([create/0,getManager/0,remove/0]).
+-export([create/0, getManager/0, remove/0]).
 
 
 % Allows to define WOOPER base variables and methods for that class:
@@ -83,7 +83,7 @@
 %
 % The uniform law can be based either on the random module (random:uniform/1)
 % or on the crypto module (crypto:rand_uniform/2). The two forms yield different
-% but quite similar results; currently the crypto module is used.
+% but quite similar results. See use_crypto_module below.
 % 
 % Exponential and gaussian laws generate by default floating-point numbers.
 % For more convenience, counterparts returning positive integer values have 
@@ -91,6 +91,7 @@
 %
 % Note that the random manager is not a StochasticActor: instead it is used by 
 % StochasticActor instances so that they can manage their distribution law.
+
 
 
 
@@ -108,10 +109,9 @@ construct(State,?wooper_construct_parameters) ->
 	% Then the class-specific actions:
 	StartingState = ?setAttribute( ActorState, trace_categorization,
 		?TraceEmitterCategorization ),
-	
-	% For crypto:rand_uniform:
-	crypto:start(),
-	
+
+	basic_utils:start_random_source(),
+		
 	PrivateState = case IsPrivate of 
 	
 		true ->
@@ -163,8 +163,7 @@ delete(State) ->
 	% Class-specific actions:
 	?trace([ "Deleting random manager." ]),
 
-	crypto:stop(),
-	
+	basic_utils:stop_random_source(),
 	case ?getAttr(is_private) of
 	
 		true ->
@@ -218,8 +217,7 @@ act(State) ->
 % dictionary.
 % (request method)
 getUniformValue(State,N) ->
-	%Value = random:uniform(N),
-	Value = crypto:rand_uniform(1,N+1),
+	Value = basic_utils:get_random_value(N),
 	%?debug([ io_lib:format( "Returning uniform value ~w.", 
 	%	[ Value ] ) ]),	
 	?wooper_return_state_result( State,	{uniform_value,Value} ).
@@ -553,7 +551,7 @@ create() ->
 getManager() ->
 
 	% Waits gracefully for the random manager to exist:
-	case utils:wait_for_global_registration_of( ?random_manager_name ) of
+	case basic_utils:wait_for_global_registration_of( ?random_manager_name ) of
 	
 		{registration_waiting_timeout,?random_manager_name} ->
 			random_manager_not_found;
