@@ -277,11 +277,11 @@ wooper_debug_listen(Pid,Action,Arguments) ->
 		
 		{wooper_result,Result} ->
 			io:format("Result of call to '~w' with arguments '~w': ~s~n",
-				[Action,Arguments,utils:term_toString(Result)]);
+				[Action,Arguments,basic_utils:term_toString(Result)]);
 	
 		Anything ->
 			io:format("Answer to call to '~w' with arguments '~w': ~s~n",
-				[Action,Arguments,utils:term_toString(Anything)])
+				[Action,Arguments,basic_utils:term_toString(Anything)])
 	
 	end.
 
@@ -364,12 +364,69 @@ synchronous_new_link(?wooper_construct_parameters) ->
 		[ [?wooper_construct_parameters], self() ] ),
 	
 	% Blocks until the spawned process answers:	
+	% (no risk of synchronous spawns mismatch, as each synchronous calls is
+	% waited for)
 	receive	
 		
 		{spawn_successful,SpawnedPid} ->
 			SpawnedPid
 	
 	end.
+
+
+
+% Uncomment to activate synchronous new with time-out:
+% -define(use_synchronous_timed_new,).
+
+
+-ifdef(use_synchronous_timed_new).
+
+% The duration in milliseconds before a time-out is triggered after a created
+% instance does not seem to answer properly and on reasonable time:
+-define(synchronous_time_out,5000).
+			
+% Spawns a new instance for this class, using specified parameters to
+% construct it.
+% Returns the PID of the newly created instance, or the time_out atom.
+% Creation is synchronous: synchronous_new will return only when the created
+% process reports it is up and running, or when a time-out occurs.
+synchronous_timed_new(?wooper_construct_parameters) ->
+	SpawnedPid = spawn(?MODULE, wooper_construct_and_run_synchronous,
+		[ [?wooper_construct_parameters], self() ] ),
+		
+	% Blocks until the spawned process answers or a time-out occurs:	
+	receive	
+		
+		{spawn_successful,SpawnedPid} ->
+			SpawnedPid
+	
+	after ?synchronous_time_out -> 
+	
+		time_out
+		
+	end.
+
+-endif. % use_synchronous_timed_new
+
+
+
+
+-ifdef(use_remote_new).
+					
+% Spawns a new instance for this class on specified interconnected node, using
+% specified parameters to construct it.
+% If Node does not exist, a useless pid is returned. 
+% Returns the PID of the newly created instance.
+% Creation is asynchronous: remote_new returns as soon as the creation is
+% triggered, without waiting for it to complete.
+remote_new(Node,?wooper_construct_parameters) ->
+	spawn(Node, ?MODULE, wooper_construct_and_run_synchronous,
+		[ [?wooper_construct_parameters], self() ] ).
+
+-endif. % use_remote_new
+
+
+
 
 
 % Indirection level to allow constructors to be chained.
@@ -636,8 +693,8 @@ wooper_state_toString(State) ->
 			Acc ++ io_lib:format( 
 				"     * ~s = ~s~n", 
 				[
-					utils:term_toString(AttName),
-					utils:term_toString(AttrValue)
+					basic_utils:term_toString(AttName),
+					basic_utils:term_toString(AttrValue)
 				])
 			
 		end, 
@@ -1168,6 +1225,8 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 			
 	end.
 
+
+% Note: the execute* functions might not have to return wooper_result.
 
 
 % Allows to call synchronously from the code of a given class its actual 
