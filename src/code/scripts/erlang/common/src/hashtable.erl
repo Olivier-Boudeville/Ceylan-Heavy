@@ -6,7 +6,7 @@
 % containing key/value pairs.
 
 -module(hashtable).
-% Directly depends on : utils module.
+% Directly depends on: the basic_utils module.
 
 % Creation date: July 2, 2007.
 % Author: Olivier Boudeville (olivier.boudeville@esperide.com).
@@ -31,7 +31,7 @@
 	getEntryCount/1,merge/2,toString/1,display/1]).
 
 
-% The default number of hash buckets :
+% The default number of hash buckets:
 -define(DefaultNumberOfBuckets,256).
 
 
@@ -52,7 +52,7 @@ new(NumberOfBuckets) ->
 % will be replaced by the specified one.
 addEntry(Key,Value,HashTable) ->
 	KeyIndex=erlang:phash2(Key,size(HashTable))+1,
-	% Retrieve appropriate tuple slot :
+	% Retrieve appropriate tuple slot:
 	PreviousList=element(KeyIndex,HashTable),
 	NewList=replaceBucket(Key,Value,PreviousList,[]),
 	setelement(KeyIndex,HashTable,NewList).
@@ -214,7 +214,7 @@ toString(HashTable) when size(HashTable) > 0 ->
 			Acc ++ io_lib:format(
 				"  + ~s~n",[bucket_toString(Bucket)])
 		end,
-		io_lib:format( "Hashtable with ~B bucket(s) and ~B entry(ies) : ~n",
+		io_lib:format( "Hashtable with ~B bucket(s) and ~B entry(ies): ~n",
 			[ size(HashTable), hashtable:getEntryCount(HashTable) ]), 
 		tuple_to_list(HashTable));
 
@@ -239,17 +239,17 @@ display(HashTable) ->
 createTuple(Length,Default) ->
 	createTuple(Length,Default,[]).
 
-% Final step :	
+% Final step:	
 createTuple(0,_,Accumulator) ->
 	list_to_tuple(Accumulator);
 
-% Building from n-1 to n elements :
+% Building from n-1 to n elements:
 createTuple(N,Default,Accumulator) ->
 	createTuple(N-1,Default,[Default|Accumulator]).
 	
 	
 
-% Removes pair entry from list when the key matches the specified one : 
+% Removes pair entry from list when the key matches the specified one: 
 % (returns an identical list if the key is not found)		
 deleteBucket(Key,[{Key,_}|T],Accumulator) -> 
 	% Skips the key if matching:
@@ -263,7 +263,7 @@ deleteBucket(_,[],Accumulator) ->
 	Accumulator.
 
 	
-% Replaces in specified list a key/value pair by another :	
+% Replaces in specified list a key/value pair by another:	
 replaceBucket(Key,Value,[],Accumulator)	->
 	[{Key,Value}|Accumulator];
 
@@ -276,14 +276,15 @@ replaceBucket(Key,Value,[H|T],Accumulator) ->
 
 		
 
-% Returns a string describing a hashtable bucket (list of key/value pairs) :	
+% Returns a string describing a hashtable bucket (list of key/value pairs):	
 bucket_toString(Bucket) when length(Bucket) > 0 ->
 	lists:foldl(
 		fun({Key,Value},Acc) ->
 			Acc ++ io_lib:format( "     * ~s -> ~s~n", 
-				[ utils:term_toString(Key),	utils:term_toString(Value) ])
+				[ basic_utils:term_toString(Key),
+				  basic_utils:term_toString(Value) ])
 		end,
-		io_lib:format( "Bucket with ~B element(s) :~n",
+		io_lib:format( "Bucket with ~B element(s):~n",
 			[length(Bucket)]),
 		Bucket);
 
@@ -291,7 +292,7 @@ bucket_toString(_) ->
 	"Empty bucket".
 
 	
-% Returns the value corresponding to the key in the specified list : 	
+% Returns the value corresponding to the key in the specified list: 	
 lookupInList(_,[]) ->
 	undefined;
 	
