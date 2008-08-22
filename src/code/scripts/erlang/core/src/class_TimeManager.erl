@@ -21,26 +21,26 @@
 
 
 % Method declarations.
--define(wooper_method_export,
-	start/1,start/2,start/3,stop/1,suspend/1,resume/1,
-	timer_top/1,done/2,terminated/2,
-	getSimulationTick/1,getSimulationDate/1,getTextualTimings/1,
-	convertTicksToSeconds/2,convertSecondsToTicks/2,
-	subscribe/1,unsubscribe/1,
-	onWooperExitReceived/3,
-	display/1,toString/1).
+-define(wooper_method_export, 
+	start/1, start/2, start/3, stop/1, suspend/1, resume/1, 
+	timer_top/1, done/2, terminated/2, 
+	getSimulationTick/1, getSimulationDate/1, getTextualTimings/1, 
+	convertTicksToSeconds/2, convertSecondsToTicks/2, 
+	subscribe/1, unsubscribe/1, 
+	onWooperExitReceived/3, 
+	display/1, toString/1).
 
 
 % Static method declarations (to be directly called from module):
--export([ create/0,create/1,create/2,remove/0,
-	start/0,startUntil/1,startUntil/2,stop/0,
-	getManager/0,getSimulationTick/0,
-	convertTicksToSecondsWith/2,convertSecondsToTicksWith/2,
-	subscribe/0,unsubscribe/0]).
+-export([ create/0, create/1, create/2, remove/0, 
+	start/0, startUntil/1, startUntil/2, stop/0, 
+	getManager/0, getSimulationTick/0, 
+	convertTicksToSecondsWith/2, convertSecondsToTicksWith/2, 
+	subscribe/0, unsubscribe/0]).
 
 
 % Helper functions:
--export([get_current_tick/1,begin_new_tick/1,handle_end_of_tick_for/4]).
+-export([get_current_tick/1, begin_new_tick/1, handle_end_of_tick_for/4]).
 
 
 % For the timing internal process:
@@ -194,6 +194,7 @@ start(State,TerminationOffset,StopListenerPID) ->
 % Stops the time manager.	
 % (oneway)
 stop(State) ->
+
 	?info([ io_lib:format( "Stopping simulation clock at ~s.", 
 		[get_textual_timings(State)] ) ]),
 
@@ -249,6 +250,8 @@ stop(State) ->
 
 				false ->
 					% In batch mode, no timer to stop:
+					% (note that a self-sent timer_top message might be still
+					% sitting in the TimeManager mail box)
 					?wooper_return_state_only(StoppedState)
 
 
@@ -281,6 +284,7 @@ resume(State) ->
 % (to be called by the internal timer if interactive, otherwise directly).
 % (oneway)	
 timer_top(State) ->
+		
 	%?trace([ "Waited listeners are: ~w", [?getAttr(waited_listeners)]),
 	
 	% Check whether the current tick can really be declared over:
@@ -327,9 +331,22 @@ timer_top(State) ->
 				false ->
 					State
 					
-			end,		 
-			?wooper_return_state_only( begin_new_tick(SuspendedState) );
+			end,
+			case ?getAttr(started) of
+			
+				true ->
+					?wooper_return_state_only( begin_new_tick(SuspendedState) );
 		
+				false ->
+					% No new tick should be begun if stopped in the meantime:
+					% A stop request might have been issued whereas a timer_top
+					% message was still in the mailbox. If it was the case, 
+					% just do nothing to avoid beginning a new tick whereas
+					% stopped:
+					?wooper_return_state_only( SuspendedState )
+					
+			end;
+					
 		NonEmptyList ->
 			case ?getAttr(interactive) of 
 			
@@ -558,7 +575,7 @@ create(SimulationFrequency,Interactive) ->
 start() ->
 
 	% Allows to create and start directly afterwards:
-	case utils:wait_for_global_registration_of( ?time_manager_name ) of
+	case basic_utils:wait_for_global_registration_of( ?time_manager_name ) of
 	
 		{registration_waiting_timeout,?time_manager_name} ->
 			time_manager_not_found;
@@ -577,7 +594,7 @@ start() ->
 startUntil(TerminationOffset) ->
 
 	% Allows to create and start directly afterwards:
-	case utils:wait_for_global_registration_of( ?time_manager_name ) of
+	case basic_utils:wait_for_global_registration_of( ?time_manager_name ) of
 	
 		{registration_waiting_timeout,?time_manager_name} ->
 			time_manager_not_found;
@@ -594,7 +611,7 @@ startUntil(TerminationOffset) ->
 startUntil(TerminationOffset,StopListenerPID) ->
 
 	% Allows to create and start directly afterwards:
-	case utils:wait_for_global_registration_of( ?time_manager_name ) of
+	case basic_utils:wait_for_global_registration_of( ?time_manager_name ) of
 	
 		{registration_waiting_timeout,?time_manager_name} ->
 			time_manager_not_found;
@@ -680,7 +697,7 @@ remove() ->
 getManager() ->
 
 	% Waits gracefully for the time manager to exist:
-	case utils:wait_for_global_registration_of( ?time_manager_name ) of
+	case basic_utils:wait_for_global_registration_of( ?time_manager_name ) of
 	
 		{registration_waiting_timeout,?time_manager_name} ->
 			time_manager_not_found;
@@ -957,6 +974,8 @@ handle_end_of_tick_for( State, ActorTick, ActorPid, NotificationType ) ->
 											ok;
 								
 										false ->	
+											% In batch mode, will recurse when
+											% this message will be processed:
 											self() ! timer_top
 									
 									end		
