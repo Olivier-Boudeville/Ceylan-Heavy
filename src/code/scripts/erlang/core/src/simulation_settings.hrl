@@ -21,7 +21,7 @@
 -ifdef(talkative).		
 		
 -define( notify_by_speak(Message),
-	utils:speak(Message)
+	basic_utils:speak(Message)
 ).
 		
 -else.
