@@ -222,7 +222,8 @@ getAggregator(CreateIfNotAvailable) ->
 	% If launching multiple trace emitters in a row, first emitter may 
 	% trigger the launch of trace aggregator, but second emitter might do the
 	% same if the aggregator is still being initialized: 
-	case utils:wait_for_global_registration_of( ?trace_aggregator_name ) of
+	case basic_utils:wait_for_global_registration_of( ?trace_aggregator_name )
+			of
 	
 		AggregatorPid when is_pid(AggregatorPid) ->
 			% Already available, return its PID:
@@ -237,7 +238,7 @@ getAggregator(CreateIfNotAvailable) ->
 					% Not available, launch it synchronously (with default
 					% settings):
 					create(true),
-					case utils:wait_for_global_registration_of(
+					case basic_utils:wait_for_global_registration_of(
 							?trace_aggregator_name ) of
 	
 						LaunchedAggregatorPid 
