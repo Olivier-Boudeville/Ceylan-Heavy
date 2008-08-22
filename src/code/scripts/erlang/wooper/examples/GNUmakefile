@@ -4,8 +4,9 @@ CEYLAN_ERLANG_TOP = ../..
 include $(CEYLAN_ERLANG_TOP)/GNUmakerules.inc
 
 HELPER_MODULES = \
-	$(COMMON_BEAM)/utils.beam                    \
-	$(COMMON_BEAM)/hashtable.beam                \
+	$(COMMON_BEAM)/basic_utils.beam              \
+	$(COMMON_BEAM)/file_utils.beam               \
+	$(COMMON_BEAM)/executable_utils.beam         \
 	$(WOOPER_BEAM)/wooper_class_manager.beam
 
 
