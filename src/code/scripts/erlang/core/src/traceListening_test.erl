@@ -21,13 +21,15 @@
 -define(Prefix,"--> ").
 
 
+% ?test_stop should not be used here as its wait_for_any_trace_supervisor 
+% macro would wait for a non-launched supervisor.
+
 
 send_traces( 0 ) ->
 	ok;
 	
 send_traces( Count ) ->
-	?test_trace([ io_lib:format( "Emitting trace #~s.", 
-		[utils:integer_to_string(Count)] ) ]),
+	?test_trace([ io_lib:format( "Emitting trace #~B.", [Count] ) ]),
 	send_traces( Count-1 ).
 
 	
@@ -35,30 +37,16 @@ send_timed_traces( 0 ) ->
 	ok;
 	
 send_timed_traces( Count ) ->
-	?test_trace([ io_lib:format( "Emitting timed trace #~s.", 
-		[utils:integer_to_string(Count)] ) ]),
-	timer:sleep(500),	
+	?test_trace([ io_lib:format( "Emitting timed trace #~B.", [Count] ) ]),
+	timer:sleep(100),	
 	send_timed_traces( Count-1 ).
 
 
-% Run the tests.
-run() ->
 
-	io:format( ?Prefix "Testing module ~w. "
-		"'make traceManagement_run' supposed to be already executed.~n", 
-		[ ?Tested_modules ] ),
-	
-	
-	case init:get_argument('-batch') of
-	
-		{ok,_} ->
-			io:format( ?Prefix "Running in batch mode.~n" );
+% The real code of the test, in a separate function to avoid an indentation
+% offset.
+test_actual_body() ->
 
-		_ ->
-			io:format( ?Prefix "Running in interactive mode.~n" )
-			
-	end,
-	
 	[_H,NodeName] = string:tokens( atom_to_list(node()), "@" ),
 	
 	TargetVMName = lists:flatten( 
@@ -89,30 +77,50 @@ run() ->
 		"a real synchronization.~n" ),
 	send_traces( 50 ),
 
-
-
-	% No ?test_start: we will be using the aggregator from then node
+	% No ?test_start: we will be using the aggregator from the node
 	% named 'traceManagement_run'.
-	case init:get_argument('-batch') of
-		{ok,_} ->
-			% Option specified to disable the supervisor:
-			no_trace_supervisor_wanted;
-			
-			
-		_ ->
-			io:format( ?Prefix "Creating a test trace listener.~n" ),
-			MyTraceListener =
-				class_TraceListener:synchronous_new_link(AggregatorPid),
+	io:format( ?Prefix "Creating a test trace local listener.~n" ),
+	MyTraceListener = class_TraceListener:synchronous_new_link(AggregatorPid),
 
-			send_timed_traces( 20 ),
+	send_timed_traces( 20 ),
 
-			io:format( ?Prefix "Deleting this test trace listener.~n" ),
+	io:format( ?Prefix "Deleting this test trace listener.~n" ),
 	
-			MyTraceListener ! delete
-
+	MyTraceListener ! delete,
 			
-	end,			
+	% To ensure the message has been sent before the VM shuts down:
+	timer:sleep(500),
 			
+	?test_info([ io_lib:format( "End of test for module(s) ~w.", 
+		[ ?Tested_modules ] ) ]),
+	check_pending_wooper_results(),
+	testFinished().
 
-	?test_stop.
 
+
+% Run the tests.
+run() ->
+
+	io:format( ?Prefix "Testing module ~w. "
+		"'make traceManagement_run' supposed to be already executed.~n", 
+		[ ?Tested_modules ] ),
+	
+	
+	case init:get_argument('-batch') of
+	
+		{ok,_} ->
+			io:format( ?Prefix "Running in batch mode, no traceManagement_test "
+				"supposed to be running, nothing done.~n" ),
+			io_lib:format( "End of test for module(s) ~w.",
+				[ ?Tested_modules ] ),
+			check_pending_wooper_results(),
+			testFinished();
+					
+		_ ->
+			io:format( ?Prefix "Running in interactive mode, "
+				"'make traceManagement_run' supposed to be already running.~n"
+			),
+			test_actual_body()
+			
+	end.
+	
