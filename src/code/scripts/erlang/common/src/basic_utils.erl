@@ -1,6 +1,6 @@
 % Gathering of various convenient facilities.
-% See utils_test.erl for the corresponding test.
--module(utils).
+% See basic_utils_test.erl for the corresponding test.
+-module(basic_utils).
 
 
 % Creation date: July 1, 2007.
@@ -17,7 +17,9 @@
 	term_toString/1, term_to_string/1, integer_to_string/1,
 	ipv4_to_string/1, ipv4_to_string/2,join/2,
 	register_as/2, register_as/3, wait_for_global_registration_of/1,
-	get_current_erlang_version/0 ]).
+	start_random_source/0, stop_random_source/0, get_random_value/1,
+	get_random_module_name/0, checkpoint/1,
+	get_interpreter_version/0 ]).
 
 
 
@@ -72,7 +74,7 @@ notify_user(Message) ->
 
 % Notifies the user of the specified message, with log output and synthetic
 % voice.		
-%Example: 'utils:notify_user( "Hello ~w", [ Name ]).'
+% Example: 'basic_utils:notify_user( "Hello ~w", [ Name ]).'
 notify_user(Message,FormatList) ->
 	ActualMessage = io_lib:format(Message,FormatList), 
 	io:format(ActualMessage),
@@ -94,7 +96,9 @@ term_to_string(Term) ->
 	term_toString(Term).
 	
 	
-% Avoids to have to use lists:flatten when converting an integer to a string.	
+% Avoids to have to use lists:flatten when converting an integer to a string.
+% Useless when using functions like io:format that accept iolists as 
+% parameters.	
 integer_to_string(IntegerValue) ->
 	hd( io_lib:format( "~B", [IntegerValue] ) ).
 	
@@ -110,6 +114,8 @@ ipv4_to_string( {N1,N2,N3,N4}, Port ) ->
 % Python-like 'join', combines items in a list into a string using a separator
 % between each item representation. 
 % Inspired from http://www.trapexit.org/String_join_with.
+% For file-related paths, you are expected to use portable standard
+% filename:join functions instead.
 join(_Separator,[]) ->
     "";
 
@@ -196,10 +202,80 @@ wait_for_global_registration_of(Name,SecondsToWait) ->
 			Pid
 			
 	end.
+
+
+
+
+% Random section.
+
+% If use_crypto_module is defined, the crypto module will be used, otherwise
+% the random module will be used instead.
+%-define(use_crypto_module,).
+
+
+-ifdef(use_crypto_module).
+
+
+% crypto module used:
+
+start_random_source() ->
+	ok = crypto:start().
+
+
+stop_random_source() ->
+	ok = crypto:stop().
+
+
+% Returns an integer random value generated from an uniform distribution. 
+% Given an integer N >= 1, returns a random integer uniformly distributed
+% between 1 and N (both included), updating the random state in the process
+% dictionary.
+get_random_value(N) ->
+	crypto:rand_uniform(1,N+1).
+
+
+get_random_module_name() ->
+	crypto.
+	
+	
+-else. % use_crypto_module
+
+
+% Default random module used:
+
+start_random_source() ->
+	ok.
+	
+	
+stop_random_source() ->
+	ok.
+	
+	
+% Returns an integer random value generated from an uniform distribution. 
+% Given an integer N >= 1, returns a random integer uniformly distributed
+% between 1 and N (both included), updating the random state in the process
+% dictionary.
+get_random_value(N) ->
+	random:uniform(N).
+
+	
+get_random_module_name() ->
+	random.
+	
+	
+-endif. % use_crypto_module
+
+
+
+% Displays a numbered checkpoint. 
+% Useful for debugging purposes.
+checkpoint(Number) ->
+	io:format( "----- CHECKPOINT #~B -----~n", [Number] ).
+	
 	
 	
 % Returns the version informations of the current Erlang interpreter being used.
-get_current_erlang_version() ->
+get_interpreter_version() ->
 	erlang:system_info(otp_release).
 
 
