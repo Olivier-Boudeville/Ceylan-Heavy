@@ -1,6 +1,5 @@
 % Unit tests for the TimeManager class implementations, in batch mode.
 % See the class_TimeManager.erl module.
-% Note This test must be run from a networked node (using -name).
 % See class_TimeManager.erl
 -module(class_TimeManager_batch_test).
 
@@ -39,6 +38,9 @@ flush_tick_notifications() ->
 run() ->
 
 	?test_start,
+
+	?test_info([ "Four warnings regarding an actor subscription "
+		"should be issued." ]),
 	
 	% No external time manager used anymore:
 	% Time manager is expected to be on this node on the same computer:
@@ -58,9 +60,10 @@ run() ->
 	%end,
 
 	?test_info([ "Creating a non-interactive TimeManager." ]),
-	class_TimeManager:create(false),
+	TimeManagerPid = class_TimeManager:create(false),
 
-	TimeManagerPid = case utils:wait_for_global_registration_of( 
+	% Pattern-matching:
+	TimeManagerPid = case basic_utils:wait_for_global_registration_of( 
 			?time_manager_name ) of
 
 		Answer when is_pid(Answer) ->
@@ -73,7 +76,7 @@ run() ->
 	end,
 
 	?test_info([ "Starting it." ]),
-	class_TimeManager:start(),
+	TimeManagerPid ! start,
 
 	?test_info([ "Requesting textual timings (first)." ]),
 		
@@ -92,12 +95,16 @@ run() ->
 	
 	WaitedSeconds = 2,
 
-	?test_info([ io_lib:format("Sleeping for ~w seconds.",[WaitedSeconds]) ]),
+	?test_info([ io_lib:format( 
+		"Sleeping for ~w seconds, letting some time elapse.", 
+		[WaitedSeconds]) ]),
+		
 	timer:sleep( WaitedSeconds * 1000 ),
+	
 	?test_info([ "End of sleep." ]),
 
 	?test_info([ "Stopping manager." ]),
-	class_TimeManager:stop(),
+	TimeManagerPid ! stop,
 
 	% Assignment:
 	Tick = class_TimeManager:getSimulationTick(),
@@ -118,6 +125,8 @@ run() ->
 	end,
 
 	?test_info([ "Testing unsubscription." ]),
+
+	% Using static method:
 	class_TimeManager:start(),
 
 	% Tries to unsubscribe whereas not subscribed:
@@ -233,13 +242,12 @@ run() ->
 	?test_info([ "Trying to unsubscribe twice "
 		"(already unsubscribed, as actor has been terminated)" ]),
 
-	% Wait a bit so that this test process gets effectively unsubscribed from
-	% the  time manager, otherwise next unsubscribe call would return
+	% Waits a bit so that this test process gets effectively unsubscribed from
+	% the time manager, otherwise next unsubscribe call would return
 	% 'time_unsubscribed' instead of 'not_already_time_subscribed':
 	timer:sleep( 1000 ),
 
 	not_already_time_subscribed = class_TimeManager:unsubscribe(),
-
 
 	?test_info([ "Trying to unsubscribe again." ]),
 	class_TimeManager:getManager() ! { unsubscribe, [], self() },
