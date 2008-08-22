@@ -42,7 +42,7 @@ run() ->
 		RandomLists, 20 ),
 		
 	
-	TimeManagerPid = case utils:wait_for_global_registration_of( 
+	TimeManagerPid = case basic_utils:wait_for_global_registration_of( 
 			?time_manager_name ) of
 
 		Answer when is_pid(Answer) ->
