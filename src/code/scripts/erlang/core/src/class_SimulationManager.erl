@@ -214,7 +214,8 @@ simulationEnded(State,EndTick) ->
 start() ->
 
 	% Allows to create and start directly afterwards:
-	case utils:wait_for_global_registration_of( ?simulation_manager_name ) of
+	case basic_utils:wait_for_global_registration_of( 
+			?simulation_manager_name ) of
 	
 		{registration_waiting_timeout,?simulation_manager_name} ->
 			simulation_manager_not_found;
@@ -263,7 +264,8 @@ remove() ->
 getManager() ->
 
 	% Waits gracefully for the simulation manager to exist:
-	case utils:wait_for_global_registration_of( ?simulation_manager_name ) of
+	case basic_utils:wait_for_global_registration_of( 
+			?simulation_manager_name ) of
 	
 		{registration_waiting_timeout,?simulation_manager_name} ->
 			simulation_manager_not_found;
