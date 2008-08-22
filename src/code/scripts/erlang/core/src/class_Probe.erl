@@ -8,7 +8,7 @@
 % See class_Probe_test.erl
 % See http://www.gnuplot.info/docs/gnuplot.html for graph generation.
 % Needs gnuplot version 4.2 or higher, and an image viewer, eog (eye of gnome).
-% See the utils module.
+% See the executable_utils module.
 -module(class_Probe).
 
 
@@ -20,14 +20,14 @@
 -define(wooper_construct_parameters,Name,CurveNames,Title,XLabel,YLabel).
 
 % Life-cycle related exported operators:
--define(wooper_construct_export,new/5,new_link/5,
-	synchronous_new/5,synchronous_new_link/5,construct/6,delete/1).
+-define(wooper_construct_export, new/5, new_link/5, 
+	synchronous_new/5, synchronous_new_link/5, construct/6, delete/1).
 
 
 % Method declarations.
--define(wooper_method_export,setData/3,setPlotStyle/2,setFillStyle/2,
-	setKeyOptions/2,
-	generateReport/1,generateReport/2,getPlotCommand/1).
+-define(wooper_method_export, setData/3, setPlotStyle/2, setFillStyle/2, 
+	setKeyOptions/2, 
+	generateReport/1, generateReport/2, getPlotCommand/1).
 
 
 
@@ -65,7 +65,7 @@ construct(State,?wooper_construct_parameters) ->
 	% (using default settings for graph rendering)
 	StartState = ?setAttributes( TraceState, [ {curve_count,size(CurveNames)},
 		{data_table,[]}, {trace_categorization,?TraceEmitterCategorization},
-		{data_filename,utils:convert_to_filename(Name ++ ".dat")},
+		{data_filename,file_utils:convert_to_filename(Name ++ ".dat")},
 		{curve_names,CurveNames}, {title,Title}, 
 		{key_options,"bmargin center horizontal"},
 		{xlabel,XLabel}, {ylabel,YLabel},
@@ -169,7 +169,7 @@ generateReport(State,DisplayWanted) ->
 	case DisplayWanted of 
 	
 		true ->	
-			utils:display_png_file( get_report_filename(Name) );
+			executable_utils:display_png_file( get_report_filename(Name) );
 	
 		false ->
 			ok
@@ -241,12 +241,12 @@ generate_data_file(State) ->
 	
 % Returns the gnuplot command filename.
 get_command_filename(Name) ->
-	utils:convert_to_filename(Name ++ ".p").
+	file_utils:convert_to_filename(Name ++ ".p").
 
 	
 % Returns the report filename.
 get_report_filename(Name) ->
-	utils:convert_to_filename(Name ++ ".png").
+	file_utils:convert_to_filename(Name ++ ".png").
 	
 	
 % Writes the rows of the data table into specified file.
