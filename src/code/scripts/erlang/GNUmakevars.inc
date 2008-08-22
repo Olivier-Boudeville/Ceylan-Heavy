@@ -154,7 +154,7 @@ endif
 # Allows third-party developments not to rely on a command-line cookie:
 ifndef NO_DEFAULT_COOKIE_WANTED
 
-COOKIE_OPT := -setcookie $(PROJECT_NAME)
+COOKIE_OPT := -c $(PROJECT_NAME)
 
 endif
 
