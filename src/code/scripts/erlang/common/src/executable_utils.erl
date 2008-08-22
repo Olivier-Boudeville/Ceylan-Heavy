@@ -35,10 +35,10 @@ generate_png_from_graph_file(PNGFilename,GraphFilename,false) ->
 
 
 
-% Displays (without blocing) to the user the specified PNG, using an external
+% Displays (without blocking) to the user the specified PNG, using an external
 % viewer. 
 display_png_file(PNGFilename) ->
-	% Viewer is 'eye of gnome' here (output ignored): 
+	% Viewer is 'eye of gnome' here (its output is ignored): 
 	os:cmd( "eog " ++ PNGFilename ++ " &" ).
 	
 
