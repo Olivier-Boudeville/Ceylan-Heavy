@@ -54,13 +54,10 @@ run() ->
 	MyMesh ! {getNodeFromContent,[ "hello" ],self()},
 	receive
 	
-		{wooper_result,SecondNode} ->
+		{wooper_result,{node,SecondNode}} ->
 			?test_info([ "Node look-up from content succeeded." ])
 	
 	end,
-
-
-
 
 	?test_info([ "Testing link management." ]),
 
