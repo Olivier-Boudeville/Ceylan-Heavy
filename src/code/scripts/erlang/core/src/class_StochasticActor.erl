@@ -12,17 +12,17 @@
 -define(wooper_construct_parameters,StochasticActorName,ListOfRandomLists).
 
 % Life-cycle related exported operators:
--define(wooper_construct_export,new/2,new_link/2,
-	synchronous_new/2,synchronous_new_link/2,construct/3,delete/1).
+-define( wooper_construct_export, new/2, new_link/2,
+	synchronous_new/2, synchronous_new_link/2, construct/3, delete/1 ).
 
 % Method declarations.
--define(wooper_method_export,setReadyListener/2,setUniformValues/3,
-	setExponentialValues/3,setPositiveIntegerExponentialValues/3,
-	setGaussianValues/3,setPositiveIntegerGaussianValues/3).
+-define( wooper_method_export, setReadyListener/2, setUniformValues/3,
+	setExponentialValues/3, setPositiveIntegerExponentialValues/3,
+	setGaussianValues/3, setPositiveIntegerGaussianValues/3 ).
 
 
 % Helper functions:
--export([initialize_random_buffers/1,get_random_value_from/2]).
+-export([ initialize_random_buffers/1, get_random_value_from/2 ]).
 
 
 
@@ -77,7 +77,7 @@ construct(State,?wooper_construct_parameters) ->
 	PreparedState = prepare_random_lists( ListOfRandomLists, StartingState ),
 		 	
 	% Needing the random manager:
-	case utils:wait_for_global_registration_of( ?random_manager_name ) of
+	case basic_utils:wait_for_global_registration_of( ?random_manager_name ) of
 
 		RandomManagerPid when is_pid(RandomManagerPid) ->
 			?send_trace([ PreparedState, "RandomManager found." ]),
