@@ -52,7 +52,8 @@ file_to_zipped_term(Filename)  ->
 	%{ok,{_DummyFileName,Bin}} = zip:zip( DummyFileName, Filename,
 	% [verbose,memory] ),
 	{ok,{_DummyFileName,Bin}} = 
-		zip:zip( DummyFileName, [Filename], [verbose,memory] ),
+		%zip:zip( DummyFileName, [Filename], [verbose,memory] ),
+		zip:zip( DummyFileName, [Filename], [memory] ),
 	Bin.
 	
 	
