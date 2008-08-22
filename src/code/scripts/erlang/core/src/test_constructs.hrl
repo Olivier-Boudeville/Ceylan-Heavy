@@ -103,6 +103,7 @@ check_pending_wooper_results() ->
 -define(test_stop, 
 	?test_info([ io_lib:format( "End of test for module(s) ~w.", 
 		[ ?Tested_modules ] ) ]),
+	% Defined in class_TraceSupervisor.hrl:
 	?wait_for_any_trace_supervisor,
 	check_pending_wooper_results(),
 	testFinished()
