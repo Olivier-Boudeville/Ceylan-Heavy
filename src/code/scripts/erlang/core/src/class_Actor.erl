@@ -75,7 +75,7 @@ construct(State,?wooper_construct_parameters) ->
 		{trace_categorization,?TraceEmitterCategorization} ] ),
 		
 	% Find the time manager and subscribe:
-	case utils:wait_for_global_registration_of( ?time_manager_name ) of
+	case basic_utils:wait_for_global_registration_of( ?time_manager_name ) of
 
 		TimeManagerPid when is_pid(TimeManagerPid) ->
 		
