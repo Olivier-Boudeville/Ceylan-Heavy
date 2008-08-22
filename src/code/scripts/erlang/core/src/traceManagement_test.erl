@@ -93,10 +93,21 @@ run() ->
 			
 	end,
 	
-	receive 
 	
-		Any ->
-			io:format( "Test received: ~w.", [Any] )
+	case init:get_argument('-batch') of
+	
+		{ok,_} ->
+			ok;
+					
+		_ ->
+			io:format( ?Prefix "Running in interactive mode, not terminating.~n"
+			),
+			receive 
+	
+				Any ->
+					io:format( "Test received: ~w.", [Any] )
+			
+			end			
 			
 	end,
 			
