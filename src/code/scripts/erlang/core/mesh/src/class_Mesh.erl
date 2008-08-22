@@ -15,19 +15,19 @@
 -define(wooper_construct_parameters,Name,IsCyclic).
 
 % Life-cycle related exported operators:
--define(wooper_construct_export,new/2,new_link/2,
-	synchronous_new/2,synchronous_new_link/2,construct/3,delete/1).
+-define(wooper_construct_export, new/2, new_link/2, 
+	synchronous_new/2, synchronous_new_link/2, construct/3, delete/1).
 
 % Method declarations.
--define(wooper_method_export,addNode/2,addNode/3,addNodes/2,
-	getNodeContentFromName/2,getNodes/1,
-	addLink/3,addLink/4,addLink/5,getLinkInformations/2,getLinks/1,
-	getNodeFromContent/2,
-	findLink/3,findPath/3,findShortestPath/3,getLinksInPath/2,
-	findReachableFrom/2,
-	setMarkedNodes/2,setMarkedLinks/2,
-	setLinkRenderingStyle/2,
-	generateTopologicalView/2,generateTopologicalView/3).
+-define(wooper_method_export, addNode/2, addNode/3, addNodes/2, 
+	getNodeContentFromName/2, getNodes/1, 
+	addLink/3, addLink/4, addLink/5, getLinkInformations/2, getLinks/1, 
+	getNodeFromContent/2, 
+	findLink/3, findPath/3, findShortestPath/3, getLinksInPath/2, 
+	findReachableFrom/2, 
+	setMarkedNodes/2, setMarkedLinks/2, 
+	setLinkRenderingStyle/2, 
+	generateTopologicalView/2, generateTopologicalView/3).
 
 
 
@@ -340,7 +340,7 @@ setLinkRenderingStyle(State,NewLinkStyle) ->
 generateTopologicalView(State,DisplayWanted) ->
 
 	NewState = generate_topological_view( State, DisplayWanted,
-		utils:convert_to_filename( ?getAttr(name) ) ),
+		file_utils:convert_to_filename( ?getAttr(name) ) ),
 
 	?wooper_return_state_result(NewState,topological_view_generated).
 
@@ -354,7 +354,7 @@ generateTopologicalView(State,DisplayWanted) ->
 generateTopologicalView(State,DisplayWanted,FilenamePrefix) ->
 
 	NewState = generate_topological_view( State, DisplayWanted,
-		utils:convert_to_filename( ?getAttr(name) ) ++ FilenamePrefix ),
+		file_utils:convert_to_filename( ?getAttr(name) ) ++ FilenamePrefix ),
 
 	?wooper_return_state_result(NewState,topological_view_generated).
 
@@ -431,7 +431,7 @@ write_graph_nodes(DigraphFile,[Node|T],State) ->
 % Formats specified options: [ {a,a_value}, {b,b_value}, {c,c_value} ] must
 % become: a = "a_value", b = "b_value", c = "c_value".	
 format_options(NodeOptions) ->
-	utils:join( ", ", lists:map( fun( {Name,Value} ) -> 
+	basic_utils:join( ", ", lists:map( fun( {Name,Value} ) -> 
 		io_lib:format( "~s = \"~s\"", [Name,Value] ) end, NodeOptions ) ).
 
 
@@ -559,10 +559,11 @@ generate_topological_view(State,DisplayWanted,BaseFileName) ->
 	case DisplayWanted of 
 	
 		true ->	
-			utils:display_png_file( PNGFilename );
+			executable_utils:display_png_file( PNGFilename );
 	
 		false ->
 			ok
 			
 	end,	
 	State.
+
