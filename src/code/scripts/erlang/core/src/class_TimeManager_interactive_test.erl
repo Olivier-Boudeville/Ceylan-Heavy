@@ -1,6 +1,5 @@
 % Unit tests for the TimeManager class implementations, in interactive mode.
 % See the class_TimeManager.erl module.
-% Note This test must be run from a networked node (using -name).
 % See class_TimeManager.erl
 -module(class_TimeManager_interactive_test).
 
@@ -60,7 +59,7 @@ run() ->
 	?test_info([ "Creating an interactive TimeManager." ]),
 	class_TimeManager:create( true ),
 
-	TimeManagerPid = case utils:wait_for_global_registration_of( 
+	TimeManagerPid = case basic_utils:wait_for_global_registration_of( 
 			?time_manager_name ) of
 
 		Answer when is_pid(Answer) ->
