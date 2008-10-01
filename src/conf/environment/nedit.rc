@@ -382,7 +382,7 @@ nedit.autoWrap: Continuous
 nedit.wrapMargin: 0
 nedit.autoIndent: Auto
 nedit.autoSave: True
-nedit.openInTab: False
+nedit.openInTab: True
 nedit.saveOldVersion: False
 nedit.showMatching: Delimiter
 nedit.matchSyntaxBased: True
@@ -399,7 +399,7 @@ nedit.appendLF: True
 nedit.sortOpenPrevMenu: True
 nedit.statisticsLine: True
 nedit.iSearchLine: True
-nedit.sortTabs: False
+nedit.sortTabs: True
 nedit.tabBar: True
 nedit.tabBarHideOne: True
 nedit.toolTips: True
@@ -414,7 +414,7 @@ nedit.textRows: 60
 nedit.textCols: 80
 nedit.tabDistance: 4
 nedit.emulateTabs: 0
-nedit.insertTabs: True
+nedit.insertTabs: False
 nedit.textFont: -*-courier-medium-r-normal--*-120-*-*-*-iso8859-1
 nedit.boldHighlightFont: -*-courier-bold-r-normal--*-120-*-*-*-iso8859-1
 nedit.italicHighlightFont: -*-courier-medium-o-normal--*-120-*-*-*-iso8859-1
