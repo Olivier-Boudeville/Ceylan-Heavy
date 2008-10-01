@@ -210,8 +210,8 @@ help-erl:
 
 # To trigger the automatic rendering of a created diagram, add 'VIEW_PLOT=' 
 # at the end of the command line (ex : 'make MyFSM.png VIEW_PLOT=')
-VIEW_PLOT = yes
-#VIEW_PLOT =
+#VIEW_PLOT = yes
+VIEW_PLOT = no
 
 %.png: %.plot %.dat
 	@echo "     Generating probe report $@"
@@ -233,6 +233,7 @@ VIEW_PLOT = yes
 # at the end of the command line (ex : 'make MyFSM.png VIEW_PDF=')
 VIEW_PDF = yes
 #VIEW_PDF = no
+
 
 %.pdf: %.rst
 	@echo "     Generating PDF documentation $@"
@@ -257,8 +258,9 @@ doc-recurse:
 
 # To trigger the automatic rendering of a created diagram, add 'VIEW_GRAPH=' 
 # at the end of the command line (ex : 'make MyFSM.png VIEW_GRAPH=')
+#VIEW_GRAPH = yes
 VIEW_GRAPH = no
-#VIEW_GRAPH =
+
 
 %.png: %.graph
 	@echo "    Generating $@"
