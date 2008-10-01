@@ -1438,8 +1438,9 @@ CheckPlatform()
 	# thanks to command-line preprocessor options (-DCEYLAN_DLL="...")
 	# so that headers can avoid #including platform-specific configuration
 	# files. Hence no 'AC_DEFINE_UNQUOTED([CEYLAN_DLL], ...' here.
+	# Same reason applies for CEYLAN_PACKED_ATTRIBUTE. 
 	
-	AM_CXXFLAGS="${AM_CXXFLAGS} -DCEYLAN_DLL=\"${CEYLAN_DLL}\" -DCEYLAN_PACKED_ATTRIBUTE=\"${CEYLAN_PACKED_ATTRIBUTE}\"
+	AM_CXXFLAGS="${AM_CXXFLAGS} -DCEYLAN_DLL=\"${CEYLAN_DLL}\" -DCEYLAN_PACKED_ATTRIBUTE=\"${CEYLAN_PACKED_ATTRIBUTE}\""
 	
 }
 
