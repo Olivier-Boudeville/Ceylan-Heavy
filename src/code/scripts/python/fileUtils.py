@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 
-_file__         = 'fileUtils.py'
+__file__        = 'fileUtils.py'
 __title__       = 'This module helps managing files and directories.'
 __version__     = '0.1'
 __author__      = 'Olivier Boudeville (olivier.boudeville@online.fr)'
@@ -13,7 +13,7 @@ __doc__         = __title__ + '\n' + __comments__
 
 
 # Import standard python modules :
-import sys, types, string, os, os.path, ConfigParser
+import sys, types, string, os, os.path, ConfigParser, md5
 
 # Import self-made modules :
 from generalUtils import *
@@ -160,7 +160,7 @@ def scanDirectoryForContent( directoryName ) :
 	"""Scans provided directory and return a 3-item tuple with graphics files, sound files and other files that were spotted."""
 	
 	if not os.path.isdir( directoryName ):
-		raise ValueError, "Unable to scan directory %s, for it does not exist." % ( directoryName, )	
+		raise ValueError, "Unable to scan directory %s, as it does not exist." % ( directoryName, )	
 	graphics_list = []	
 	sounds_list   = []
 	unknown_list  = []
@@ -174,6 +174,51 @@ def scanDirectoryForContent( directoryName ) :
 			
 	return graphics_list, sounds_list, unknown_list
 	        
+
+def getAllFilePathsFromRoot( directoryName ) :
+	"""Returns a list of all files relative paths found from specified directory."""
+	 
+	if not os.path.isdir( directoryName ):
+		raise ValueError, "Unable to scan directory %s, as it does not exist." % ( directoryName, )	
+
+	subdirs = getChildrenDirectories(directoryName)
+	local_files = [ os.path.join(directoryName,dir) for dir in getFilesInDir(directoryName) ]
+    
+	for dir in subdirs:
+		local_files += getAllFilePathsFromRoot(
+        	os.path.join(directoryName,dir) )
+        
+	return local_files     
+
+
+def getAllRelativeFilePathsFromRoot( directoryName ) :
+	return getAllRelativeFilePathsFromRootHelper( ".", directoryName )
+    
+    
+def getAllRelativeFilePathsFromRootHelper( directorySuffixName, baseRoot ) :
+	"""Returns a list of all files relative paths found from specified directory."""
+	 
+	complete_dir = os.path.join( baseRoot, directorySuffixName )
+    
+	if not os.path.isdir( complete_dir ):
+		raise ValueError, "Unable to scan directory %s, as it does not exist." % ( complete_dir, )	
+     
+	subdirs = getChildrenDirectories(complete_dir)
+	local_files = [ os.path.join(directorySuffixName,filename) for filename in getFilesInDir(complete_dir) ]
+    
+	for dir in subdirs:
+		local_files += getAllRelativeFilePathsFromRootHelper(
+			os.path.join(directorySuffixName,dir), baseRoot )
+        
+	return local_files     
+
+
+def getMD5codeFor(file_path):
+	""""Returns the MD5 code corresponding to the file in specified path."""
+	checkFile(file_path)
+	scanned_file = file(file_path,'rb')    
+	return md5.new( scanned_file.read() ).hexdigest()
+    
 
 def backup( fileToBackup ) :
 	"""
