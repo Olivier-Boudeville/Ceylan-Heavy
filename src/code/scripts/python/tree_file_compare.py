@@ -5,7 +5,8 @@ import os, os.path, sys, string, shutil, tempfile, fileUtils, time
 
 
 __doc__ = """
-Usage: will scan first specified tree, in search of duplicated files (same content, different path). If a second tree is given, then will look for files whose content is in second tree but not in the first one, to ensure this reference tree is complete.
+Usage: tree_file_compare.py --reference APath [--mirror AnotherPath]
+Will scan first specified tree, in search of duplicated files (same content, different path). If a second tree is given, then will look for files whose content is in second tree but not in the first one, to ensure this reference tree is complete.
 """
 
 
@@ -21,6 +22,14 @@ Usage: will scan first specified tree, in search of duplicated files (same conte
 
 log_file = None
 
+# Home directory should be writable:
+base_write_path = os.path.expanduser("~")
+
+file_base_name = time.strftime( "%Y%m%d-tree_file_compare.log", time.gmtime() )
+
+log_filename = os.path.join( base_write_path, file_base_name ) 
+
+
 def output(message):
 	print message
 	log_file.write("%s\n" % message)
@@ -29,15 +38,17 @@ def output(message):
 def build_file_index_for(path):
 	"""Creates two (dictionary-based) file index for specified path."""
 
-	file_paths = fileUtils.getAllFilePathsFromRoot(path)
+	file_paths = fileUtils.getAllRelativeFilePathsFromRoot(path)
 
 	content_dict={}
 	name_dict={}
 	
 	for f in file_paths:
 		
+		full_path = os.path.join(path,f)
+		
 		# First scan the content:
-		md5 = fileUtils.getMD5codeFor(f)
+		md5 = fileUtils.getMD5codeFor(full_path)
 		
 		if content_dict.has_key(md5):
 			content_dict[md5] += [f]
@@ -114,6 +125,8 @@ def write_hashes(log_file,content_index):
 		log_file.write( "  %s %s\n" % (k,content_index[k]))
 	log_file.write("\n")
 		
+		
+		
 if __name__ == '__main__' :
 		
 	help_options = [ '-h', '--help' ]
@@ -125,12 +138,15 @@ if __name__ == '__main__' :
 	verbose=False
     	
 	#print 'Arguments specified are <%s>.' % ( sys.argv, )
-    
+
+	saved_args = sys.argv[1:]
+	
     # Remove executable name:
 	sys.argv.pop(0)
     
 	item_count = 0
 	
+	reference_path = None
 	mirror_path = None
 	
 	while len(sys.argv):
@@ -161,7 +177,7 @@ if __name__ == '__main__' :
 			verbose=True          
 			print "Verbose mode activated."
     
-    	if not item_understood:
+		if not item_understood:
 			print "Error, unexpected parameter: %s, stopping." % (  item, )   
 			print __doc__ 
 			sys.exit( 1 )
@@ -170,15 +186,22 @@ if __name__ == '__main__' :
 		print "Reference path = %s" % ( reference_path )
 		print "Mirror path = %s" % ( mirror_path )
     
+	if not reference_path:
+		print "Error, no reference path given, stopping."
+		print __doc__ 
+		sys.exit( 2 )
+			
 	
-	(ref_content_index,ref_name_index) = build_file_index_for( reference_path )
-	
-	
-	log_file = open("tree_file_compare.log","w")
+	log_file = open(log_filename,"w")
 	log_file.write( "Report generated on %s.\n" % (time.strftime("%a, %d %B %Y %H:%M:%S", time.gmtime()),))
 
-	log_file.write("\n\n ***** For reference tree %s *****\n\n" % (reference_path,))
+	log_file.write( "Arguments specified: %s" % (saved_args,) )
+		
+	print "Scanning reference tree..."
 
+	(ref_content_index,ref_name_index) = build_file_index_for( reference_path )
+
+	log_file.write("\n\n ***** For reference tree %s *****\n\n" % (reference_path,))
 	display_content_duplicates(reference_path,ref_content_index)
 	display_name_duplicates(reference_path,ref_name_index)
 
@@ -186,6 +209,7 @@ if __name__ == '__main__' :
 	
 	if mirror_path:
 		log_file.write("\n\n ***** For mirror tree %s *****\n\n" % (mirror_path,))
+		print "Scanning mirror tree..."
 		(mirror_content_index,mirror_name_index) = build_file_index_for( mirror_path )
 		display_content_duplicates(mirror_path,mirror_content_index)
 		display_name_duplicates(mirror_path,mirror_name_index)
