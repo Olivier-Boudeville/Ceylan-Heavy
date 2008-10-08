@@ -175,9 +175,6 @@ AC_SUBST(CEYLAN_INSTALL_PYTHON_DIR)
 CEYLAN_INSTALL_SHELL_DIR="${CEYLAN_INSTALL_SCRIPT_DIR}/shell"
 AC_SUBST(CEYLAN_INSTALL_SHELL_DIR)
 
-CEYLAN_UPDATE_TAGS="$CEYLAN_INSTALL_SHELL_DIR/update-txt2tags.sh"
-AC_SUBST(CEYLAN_UPDATE_TAGS)
-
 
 # Documentation section.
 
@@ -265,7 +262,12 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AM_PROG_LIBTOOL
+
+# One of the two is necessary, otherwise apparently a more recent libtool
+# (ex: the one installed by LOANI) is necessary:
+#AM_PROG_LIBTOOL
+# Tells the libtool machinery that the package supports DLLs on Windows:
+LT_INIT([dlopen win32-dll])
 
 
 # Checks for header files.
