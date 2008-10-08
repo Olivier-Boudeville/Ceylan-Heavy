@@ -353,8 +353,8 @@ Note: check that your automake version is indeed 1.9 or newer. For example, with
 Note: check that your libtoolize version is indeed 2.2.4 or newer, otherwise the --install could not be available. Your version of $1 is:
 	" `$1 --version` "
 	The corresponding executable is:
-	" `/bin/ls -l --color $(which $1)`
-	
+	" `/bin/ls -l --color $(which $1)`"
+	(one may source its OSDL-environment.sh script to override system tools with LOANI-installed ones)"
 			elif [ "$1" = "./configure" ]; then
 				echo "
 Note: check the following log:" `pwd`/config.log
