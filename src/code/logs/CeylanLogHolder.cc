@@ -9,7 +9,6 @@
 #include "CeylanOperators.h"        // for string operators
 #include "CeylanLogLight.h"         // for CEYLAN_LOG
 #include "CeylanUtils.h"            // for ExitFailure, emergencyShutdown
-#include "CeylanDirectory.h"        // for StripFilename
 #include "CeylanTextDisplayable.h"  // for SetOutputFormat
 
 
@@ -79,47 +78,12 @@ LogHolder::LogHolder( Ceylan::Uint16 argCount,
 		
 	}
 	
-	
-	/*
-	 * If speakerName was 'arguments[0]', then all log files would be 
-	 * created alongside the test executable, in the same directory, 
-	 * no matter from which directory they were launched.
-	 *
-	 * For example, if a 'testLockable' executable lies in
-	 * 'Ceylan/Ceylan-0.2/bin/interfaces', and if we execute it from
-	 * 'Ceylan/Ceylan-0.2/tests-outputs'  (hence with
-	 * '../bin/interfaces/testLockable'), with speakerName set to 
-	 * 'arguments[0]' the log files would be created under
-	 * 'Ceylan/Ceylan-0.2/bin/interfaces'.
-	 *
-	 * The preferred behaviour would be to write them under current
-	 * directory (hence, 'tests-outputs'). 
-	 * In this case StripFilename should be used:
-	 *
-	 */
-	string speakerName ;
-
-#if CEYLAN_ARCH_NINTENDO_DS
-
-	/*
-	 * On the Nintendo DS, argv[0] is a null pointer, a default value is to
-	 * be used instead;
-	 *
-	 */
-
-	speakerName = "DS" ;
-
-#else // CEYLAN_ARCH_NINTENDO_DS
-	 	
-	Ceylan::System::Directory::StripFilename( arguments[0], 
-		/* base path */ 0, & speakerName ) ;
-
-#endif // CEYLAN_ARCH_NINTENDO_DS
-		
-		
-	CEYLAN_LOG( "LogHolder: speaker name for logs will be " + speakerName ) ;
-	
-	
+    // Records that path as some libraries (ex: PhysicsFS) need it:
+	LogPlug::SetFullExecutablePath( arguments[0] ) ;
+    
+	string speakerName = LogPlug::GetSpeakerNameFrom( arguments[0] ) ;
+    
+    
 	/*
 	 * LogHolder is usually out of a try/catch pair, avoid propagating 
 	 * exception:
