@@ -21,7 +21,7 @@ namespace Ceylan
 		
 		
 		/**
-		 * Where messages from a LogSource will be output : the first 
+		 * Where messages from a LogSource will be output: the first 
 		 * part of the LogTransport-LogListener pair.
 		 *
 		 */
@@ -29,7 +29,7 @@ namespace Ceylan
 		
 		
 		/**
-		 * Where messages from a LogSource will be received : the second 
+		 * Where messages from a LogSource will be received: the second 
 		 * part of the LogTransport-LogListener pair, before the
 		 * LogAggregator.
 		 *
@@ -45,7 +45,7 @@ namespace Ceylan
 		
 		
 		/**
-		 * This class is in charge of managing the core of the Log system :
+		 * This class is in charge of managing the core of the Log system:
 		 * it maintains a shared knowledge about all the implementation 
 		 * classes for LogSource, LogTransport, LogListener and 
 		 * LogAggregator, and links them together.
@@ -186,8 +186,49 @@ namespace Ceylan
 				 */
 				static void CheckBlank() throw ( LogException ) ;
 				
-								
 				
+                /**
+                 * Records for later use the full path of current executable.
+                 *
+                 * @param plugInitiatorFullName the full path, corresponding
+                 * to argv[0] generally.
+                 *
+                 * @throw LogException on error, including if the path was
+                 * already set.
+                 *
+                 */
+                static void SetFullExecutablePath( 
+                		const std::string & plugInitiatorFullName )	
+                    throw ( LogException ) ;
+				
+                
+                /**
+                 * Returns the full path of current executable, as stored by
+                 * SetFullExecutablePath.
+                 *
+                 * @throw LogException on error, including if no path was set
+                 * yet.
+                 *
+                 */
+                static std::string GetFullExecutablePath()
+                	throw ( LogException ) ;
+				
+                
+                /**
+                 * Determines a suitable speaker name from specified plug
+                 % initiator full name.
+                 *
+                 * @param plugInitiatorFullName the full name of the plug
+                 * initiator (usually argv[0]).
+                 *
+                 * @throw LogException on error.
+                 *
+                 */
+                static std::string GetSpeakerNameFrom(
+                		const std::string & plugInitiatorFullName )
+                    throw ( LogException ) ;
+                    
+                    
 				/**
 				 * Creates a basic plug, formed of the standard channels,
 				 * provided a transport is already available.
@@ -425,6 +466,14 @@ namespace Ceylan
 				 *
 				 */
 				static LogAggregator * Aggregator ;
+
+				
+				/**
+                 * Records the full path of current executable, for later
+                 * use.
+                 *
+                 */
+				static std::string FullExecutablePath ;
 				
 				
 				/// Records the source name, which initiated the log session.
@@ -488,6 +537,5 @@ namespace Ceylan
 
 
 
-
-
 #endif // CEYLAN_LOG_PLUG_H_
+
