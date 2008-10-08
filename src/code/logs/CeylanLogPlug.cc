@@ -7,6 +7,7 @@
 #include "CeylanLogAggregator.h" // for Aggregator
 
 #include "CeylanLogLight.h"      // for CEYLAN_LOG
+#include "CeylanDirectory.h"     // for StripFilename
 #include "CeylanUtils.h"         // for GetVersion
 #include "CeylanStringUtils.h"   // for formatStringList
 #include "CeylanOperators.h"     // for Ceylan string operators
@@ -45,6 +46,10 @@ LogSource * LogPlug::LogrootLogSource  = 0 ;
 LogTransport  * LogPlug::Transport  = 0 ;
 LogListener   * LogPlug::Listener   = 0 ;
 LogAggregator * LogPlug::Aggregator = 0 ;
+
+// Stored by the plug for later use by various libraries (ex: PhysicsFS):
+string LogPlug::FullExecutablePath = "" ;
+
 
 string LogPlug::SourceName = "<no source specified>" ;
 
@@ -294,6 +299,94 @@ void LogPlug::CheckBlank() throw( LogException )
 
 
 
+void LogPlug::SetFullExecutablePath( const string & plugInitiatorFullName )	
+	throw ( LogException )
+{
+
+	if ( FullExecutablePath.size() != 0 )
+    	throw LogException( "LogPlug::SetFullExecutablePath: "
+        	"path already set." ) ;
+            
+    FullExecutablePath = plugInitiatorFullName ;
+        
+}
+    
+    
+std::string LogPlug::GetFullExecutablePath() throw ( LogException )
+{
+    
+	if ( FullExecutablePath.size() == 0 )
+    	throw LogException( "LogPlug::GetFullExecutablePath: "
+        	"no path available." ) ;
+    
+    return FullExecutablePath ;
+    
+}
+
+                    
+                    
+std::string LogPlug::GetSpeakerNameFrom( const string & plugInitiatorFullName )
+	throw ( LogException )                    
+{
+
+	// plugInitiatorFullName is usually argv[0].
+	
+	/*
+	 * If speakerName was 'arguments[0]', then all log files would be 
+	 * created alongside the test executable, in the same directory, 
+	 * no matter from which directory they were launched.
+	 *
+	 * For example, if a 'testLockable' executable lies in
+	 * 'Ceylan/Ceylan-0.2/bin/interfaces', and if we execute it from
+	 * 'Ceylan/Ceylan-0.2/tests-outputs'  (hence with
+	 * '../bin/interfaces/testLockable'), with speakerName set to 
+	 * 'arguments[0]' the log files would be created under
+	 * 'Ceylan/Ceylan-0.2/bin/interfaces'.
+	 *
+	 * The preferred behaviour would be to write them under current
+	 * directory (hence, 'tests-outputs'). 
+	 * In this case StripFilename should be used:
+	 *
+	 */
+	string speakerName ;
+
+    
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	/*
+	 * On the Nintendo DS, argv[0] is a null pointer, a default value is to
+	 * be used instead;
+	 *
+	 */
+
+	speakerName = "DS" ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+	
+    try
+    { 	
+		
+        Ceylan::System::Directory::StripFilename( 
+    		/* fullExecutablePath */ plugInitiatorFullName, 
+			/* base path */ 0, & speakerName ) ;
+
+	}
+    catch( const System::DirectoryException & e )
+    {
+    	throw LogException( "GetSpeakerNameFrom failed: " + e.toString() ) ;
+    }
+    
+    
+#endif // CEYLAN_ARCH_NINTENDO_DS
+		
+	CEYLAN_LOG( "LogHolder: speaker name for logs will be " + speakerName ) ;
+    
+    return speakerName ;
+
+}
+
+
+    
 void LogPlug::CreateBasicPlug() throw( LogException )
 {
 	
@@ -305,17 +398,17 @@ void LogPlug::CreateBasicPlug() throw( LogException )
 						
 	LogrootLogSource = new LogSource( "Log root", *Transport ) ;
 	
-	FatalLogSource = new LogSource( "Fatal", *Transport ) ;
+	FatalLogSource   = new LogSource( "Fatal", *Transport ) ;
 	
-	ErrorLogSource = new LogSource( "Error", *Transport ) ;
+	ErrorLogSource   = new LogSource( "Error", *Transport ) ;
 		
 	WarningLogSource = new LogSource( "Warning", *Transport ) ;
 	
-	DebugLogSource = new LogSource( "Debug", *Transport ) ;
+	DebugLogSource   = new LogSource( "Debug", *Transport ) ;
 
-	TraceLogSource = new LogSource( "Trace", *Transport ) ;
+	TraceLogSource   = new LogSource( "Trace", *Transport ) ;
 	
-	InfoLogSource = new LogSource( "Info", *Transport ) ;
+	InfoLogSource    = new LogSource( "Info", *Transport ) ;
 
 
 	LogrootLogSource->send( "Starting log plug service, from Ceylan "
