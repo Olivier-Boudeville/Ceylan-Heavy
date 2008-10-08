@@ -677,7 +677,7 @@ namespace Ceylan
 				 * singleton.
 				 *
 				 * Useful to ensure a static operation can rely on a 
-				 * preexisting manager..
+				 * preexisting manager.
 				 *
 				 * @throw LibfatFileSystemManagerException if the operation
 				 * failed.
