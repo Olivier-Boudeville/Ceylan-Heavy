@@ -44,6 +44,8 @@ namespace Ceylan
 		 *
 		 * Standard (POSIX and all) calls are issued by this class.
 		 *
+         * Use GetStandardFileSystemManager to retrieve this manager.
+         *
 		 */
 		class CEYLAN_DLL StandardFileSystemManager: public FileSystemManager
 		{
@@ -130,7 +132,7 @@ namespace Ceylan
 	
 	
 				/**
-				 * Returns the directory separator, a Latin-1 character.
+				 * Returns the directory separator, as a Latin-1 character.
 				 *
 				 * @example Slash or backslash, i.e. '/' or '\'.
 				 *
