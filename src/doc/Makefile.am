@@ -95,7 +95,6 @@ COMMON_WEB_DIRS      = `find common ! -path '*.svn*' -type d -follow`
 
 
 HTML_FILES           = `find . -name '*.html' -a -type f`
-TXT2TAGS_FILES       = `find . -name '*.t2t' -a -type f`
 
 	
 
@@ -108,9 +107,6 @@ DOXYGEN_GENERATED_CONF = @top_builddir@/src/conf/doc/doxygen.conf
 
 DOT_ROOT      = @CEYLAN_LOANI_INSTALLATIONS@/dot-graphviz-@DOT_VERSION@
 DOT           = `PATH=$(DOT_ROOT)/bin:$$PATH which dot 2>/dev/null`
-
-TXT2TAGS_ROOT = @OSDL_LOANI_INSTALLATIONS@/txt2tags-$(txt2tags_VERSION)
-TXT2TAGS      = `PATH=$(TXT2TAGS_ROOT)/bin:$$PATH which txt2tags 2>/dev/null`
 
 ASTYLE        = `which astyle 2>/dev/null`
 ASTYLE_CONF   = @top_srcdir@/conf/astyle.conf
@@ -126,7 +122,7 @@ SCP_OPT       = "-p -r"
 
 		
 .PHONY: all install doc build inc web links site common                    \
-	update-tags check-txt2tags loani-archives api check-dot fix-dox-conf   \
+	update-tags loani-archives api check-dot fix-dox-conf                  \
 	tidy transfer toSF toSF-rsync toSF-scp                                 \
 	toMirror toMirror-rsync toMirror-scp check-scp remind-locations        \
 	info info-dirs info-files info-sf info-html info-tools                 \
@@ -161,21 +157,7 @@ site: update-tags common
 	@echo "      file://$(DESTDIR)@CEYLAN_LOCAL_WEB_DIR@/index.html@CEYLAN_DEFAULT_STYLE@"
 	@cd $(DESTDIR)@CEYLAN_LOCAL_WEB_DIR@; \
 	ln -sf @CEYLAN_CURRENT_VERSION_PREFIX@ Ceylan-latest
-
-
-update-tags: check-txt2tags
-	@echo; echo "@CEYLAN_INSTALL_STYLE@    Updating tagged documentation pages \
-	thanks to txt2tags@CEYLAN_DEFAULT_STYLE@"
-	@@CEYLAN_UPDATE_TAGS@ common/css/Ceylan.css
-
-
-check-txt2tags:
-	@[ -x "$(TXT2TAGS)" ] \
-	|| ( echo; echo "@CEYLAN_ERROR_STYLE@    Unable to generate \
-	html files from txt2tags files (*.t2t): \
-	txt2tags tool not found [txt2tags homepage: \
-	http://txt2tags.sourceforge.net].@CEYLAN_DEFAULT_STYLE@"; echo; false ) 
-
+    
 
 common: 
 	@echo; echo "@CEYLAN_INSTALL_STYLE@    Copying common web files to \
