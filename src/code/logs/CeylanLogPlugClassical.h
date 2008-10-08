@@ -22,7 +22,7 @@ namespace Ceylan
 		
 		
 		/**
-		 * Where messages from a LogSource will be output : the first 
+		 * Where messages from a LogSource will be output: the first 
 		 * part of the LogTransport-LogListener pair.
 		 *
 		 */
@@ -30,7 +30,7 @@ namespace Ceylan
 		
 		
 		/**
-		 * Where messages from a LogSource will be received : 
+		 * Where messages from a LogSource will be received: 
 		 * the second part of the LogTransport-LogListener pair, before
 		 * the LogAggregator.
 		 *
@@ -54,7 +54,7 @@ namespace Ceylan
 		 * @see LogPlug
 		 *
 		 */
-		class CEYLAN_DLL LogPlugClassical : public LogPlug
+		class CEYLAN_DLL LogPlugClassical: public LogPlug
 		{
 		
 			public:
@@ -64,8 +64,7 @@ namespace Ceylan
 		        /**
 		         * Starts the Log classical service.
 		         *
-		         * @param plugInitiator the name of the speaker, for 
-				 * instance argv[0].
+		         * @param plugInitiatorName the name of the speaker.
 				 *
 				 * @param immediateWrite tells whether the classical 
 				 * aggregator should store messages as soon as they arrive,
@@ -79,7 +78,8 @@ namespace Ceylan
 				 * prefix file name.
 				 *
 		         */
-		        static void StartService( const std::string & plugInitiator, 
+		        static void StartService( 
+                	const std::string & plugInitiatorName, 
 					bool immediateWrite = true, bool smart = true ) 
 						throw( LogException ) ;
 
@@ -104,7 +104,7 @@ namespace Ceylan
 
 				/* 
 				
-				Not even declared to avoid : 
+				Not even declared to avoid: 
 				'warning: will never be executed'
 				
 				/// LogPlug classical should not be instanciated.
@@ -146,7 +146,5 @@ namespace Ceylan
 } 
 
 
-
-
-
 #endif // CEYLAN_LOG_PLUG_CLASSICAL_H_
+
