@@ -650,6 +650,7 @@ namespace Ceylan
 				 * ...
 				 * myFile.write( "Hello Ceylan!" ) ;
 				 * ...
+                 * delete & myFile ;
 				 * </pre>
 				 *
 				 * @note Ceylan::Holder can be used as well to simplify the
