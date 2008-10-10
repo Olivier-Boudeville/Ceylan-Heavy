@@ -41,11 +41,10 @@ const OpeningFlag File::CreateToWriteBinary =
 	Read | Write | CreateFile | TruncateFile | Binary ;
 
 
-const OpeningFlag File::OpenToReadBinary = 
-	Read | Binary ;
+const OpeningFlag File::OpenToReadBinary = Read | Binary ;
 
 
-const OpeningFlag File::DoNotOpen     = 0xffff ;
+const OpeningFlag File::DoNotOpen = 0xffff ;
 
 
 
