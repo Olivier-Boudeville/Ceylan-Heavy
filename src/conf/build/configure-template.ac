@@ -1325,15 +1325,18 @@ CheckPlatform()
 	# Needed with gcc compilers:
 	CEYLAN_PACKED_ATTRIBUTE="__attribute__ ((packed))"
 	
-	case "$target" in
+    # Based on host, rather than on target:
+	case "$host" in
 	
 		*-*-win32*) 
+        	HOST_ARCH=win32
 			CEYLAN_ARCH_WINDOWS=1
 			CEYLAN_DLL="${CEYLAN_DLL_EXPORT_WINDOWS}"
 			CEYLAN_PACKED_ATTRIBUTE=""
 			;;
 
 		*-*-cygwin*)
+        	HOST_ARCH=win32
 			CEYLAN_ARCH_WINDOWS=1
 			CFLAGS="$CFLAGS -I/usr/include/mingw -DWIN32 -Uunix -mno-cygwin"
 			LIBS="$LIBS -mno-cygwin"
@@ -1341,39 +1344,51 @@ CheckPlatform()
 			;;
 		
 		*-*-mingw32*)
+        	HOST_ARCH=win32
 			CEYLAN_ARCH_WINDOWS=1
 	        LIBS="-lmingw32 $LIBS -mwindows"
 			CEYLAN_DLL="${CEYLAN_DLL_EXPORT_WINDOWS}"
 			;;
 				
-	    *-*-linux*) 
+	    *-*-linux*|*-*-uclinux*)
+        	HOST_ARCH=linux
 			CEYLAN_ARCH_LINUX=1
 			CEYLAN_ARCH_UNIX=1
 			;;
+
+        *-*-bsdi*)
+        	HOST_ARCH=bsdi
+			CEYLAN_ARCH_BSD=1
+			CEYLAN_ARCH_UNIX=1
+            ;;
 			
-		*-*-freebsd*)
+		*-*-freebsd*|*-*-dragonfly*)
+        	HOST_ARCH=freebsd
 			CEYLAN_ARCH_FREEBSD=1
 			CEYLAN_ARCH_BSD=1
 			CEYLAN_ARCH_UNIX=1
 			;;
 			
 		*-*-netbsd*) 
+        	HOST_ARCH=netbsd
 			CEYLAN_ARCH_NETBSD=1
 			CEYLAN_ARCH_BSD=1
 			CEYLAN_ARCH_UNIX=1
 			;;
 
 		*-*-openbsd*) 
+        	HOST_ARCH=openbsd
 			CEYLAN_ARCH_OPENBSD=1
 			CEYLAN_ARCH_BSD=1
 			CEYLAN_ARCH_UNIX=1
 			;;
-		
-		*-*-solaris*)	
-			CEYLAN_ARCH_SOLARIS=1
-			CEYLAN_ARCH_UNIX=1
-			;;
 
+        *-*-beos*)
+        	HOST_ARCH=beos           
+			# FIXME CEYLAN_ARCH_BSD=1
+			# FIXME CEYLAN_ARCH_UNIX=1
+			;;
+            
 		*-*-rhapsody* )
 			# Mac OS X Server:
 			CEYLAN_ARCH_MACOSX=1
@@ -1386,9 +1401,35 @@ CheckPlatform()
 			CEYLAN_ARCH_BSD=1
 			CEYLAN_ARCH_UNIX=1
 			;;
+		
+		*-*-solaris*)	
+			CEYLAN_ARCH_SOLARIS=1
+			CEYLAN_ARCH_UNIX=1
+			;;
+
+		*-*-hpux*)
+        	HOST_ARCH=hpux
+			CEYLAN_ARCH_UNIX=1
+			;;
+            
+		*-*-irix*)          
+        	HOST_ARCH=irix
+			CEYLAN_ARCH_UNIX=1
+			;;
+            
+		*-*-aix*)
+        	HOST_ARCH=aix
+			CEYLAN_ARCH_UNIX=1
+			;;
+            
+		*-*-osf*)
+        	HOST_ARCH=osf
+			CEYLAN_ARCH_UNIX=1
+			;;
 
 	    *)
-	        # Not identified
+	        # Not identified:
+            HOST_ARCH=unknown
 	        ;;
 		
 	esac
@@ -1448,6 +1489,39 @@ CheckPlatform()
 
 
 
+# Checks if we want to use RPATH when linking to Ceylan.
+# Note: CheckPlatform must have been executed first, for HOST_ARCH.
+CheckRpath()
+{
+  
+  AC_ARG_ENABLE([rpath],
+    AS_HELP_STRING([--enable-rpath],[use an rpath when linking to Ceylan [[default=yes]]]),
+      [case "${enableval}" in
+        yes) use_rpath=yes ;;
+        no)  use_rpath=no ;;
+	    *) AC_MSG_ERROR(bad value ${enableval} for --enable-rpath) ;;
+      esac],[use_rpath=yes])
+
+  if test "x$enable_rpath" = "xyes"; then
+
+    if test $HOST_ARCH = bsdi -o $HOST_ARCH = freebsd -o $HOST_ARCH = irix -o $HOST_ARCH = linux -o $HOST_ARCH = netbsd; then
+      CEYLAN_RPATH_LD_FLAGS="-Wl,-rpath,\${libdir}"
+    fi
+
+    if test $HOST_ARCH = solaris; then
+      CEYLAN_RPATH_LD_FLAGS="-R\${libdir}"
+    fi
+    
+  else
+  
+    CEYLAN_RPATH_LD_FLAGS=""
+    
+  fi  
+
+}
+
+
+
 # Knowing the endianness of the host that will run the Ceylan library
 # allows for correct and fast marshalling.
 CheckEndianness()
@@ -1502,6 +1576,7 @@ CheckNonBlockingSockets()
 
 CheckMkdir
 CheckPlatform
+CheckRpath
 CheckEndianness
 CheckNonBlockingSockets
 
@@ -1531,6 +1606,8 @@ AC_SUBST(CEYLAN_EXTRA_DIRS)
 
 # Libraries conditionnally selected by the configure step:
 AC_SUBST(CEYLAN_EXTRA_LIBS)
+
+AC_SUBST(CEYLAN_RPATH_LD_FLAGS)
 
 AC_SUBST(AM_CXXFLAGS)
 AC_SUBST(AM_LDFLAGS)
