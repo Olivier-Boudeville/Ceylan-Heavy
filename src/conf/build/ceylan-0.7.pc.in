@@ -7,5 +7,5 @@ Name: Ceylan
 Description: A general-purpose C++ library
 Version: @CEYLAN_VERSION@
 Requires:
-Libs: -L${libdir} -lCeylan -lm @LIBS@ -Wl,-rpath,${libdir}
+Libs: -L${libdir} @CEYLAN_RPATH_LD_FLAGS@ -lCeylan -lm @LIBS@
 Cflags: -I${includedir}/Ceylan
