@@ -58,7 +58,7 @@ export DARM_DOC=${GAMES_BASE}/Dans-l-antre-du-Roi-de-la-Montagne
 
 
 # For shell scripts:
-export PATH=${CEYLAN_SRC}/code/scripts/shell:${PATH}
+export PATH=${CEYLAN_SRC}/code/scripts/shell:${OSDL_SRC}/code/scripts/shell:${PATH}
 
 # For python scripts:
 export PATH=${CEYLAN_SRC}/code/scripts/python:${PATH}
