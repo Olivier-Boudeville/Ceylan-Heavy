@@ -88,8 +88,9 @@ const string LogPlugHTML::ToString( Ceylan::VerbosityLevels level ) throw()
 
 
 /* 
-				
-	Not even defined: 
+ *
+ * Not even defined: 
+ *
 
 
 LogPlugHTML::LogPlugHTML() throw( LogException )
@@ -104,4 +105,5 @@ LogPlugHTML::~LogPlugHTML() throw()
 
 }
 
-*/
+ */
+
