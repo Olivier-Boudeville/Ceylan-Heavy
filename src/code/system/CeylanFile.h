@@ -732,8 +732,7 @@ namespace Ceylan
 				 *
 				 * @return true iff an operation had to be performed.
 				 *
-				 * @throw Stream::CloseException if the close operation failed, 
-				 * including if the file was not already opened.
+				 * @throw Stream::CloseException if the close operation failed.
 				 *
 				 */
 				virtual bool close() throw( Stream::CloseException ) = 0 ;
@@ -960,6 +959,31 @@ namespace Ceylan
 
 
 				/**
+				 * Determines current position within this file.
+				 *
+				 * @return offset in bytes from start of file.
+                 *
+				 * @throw FileException if the operation failed.
+				 *
+				 */
+				virtual Position tell() throw( FileException ) = 0 ;
+
+
+				/**
+				 * Seeks to specified position within this file.
+				 *
+				 * @param targetPosition this position corresponds to the
+                 * number of bytes from start of file to seek to.
+                 *
+				 * @throw FileException if the operation failed.
+				 *
+				 */
+				virtual void seek( Position targetPosition ) 
+                	throw( FileException ) = 0 ;
+
+
+
+				/**
 				 * Tries to open file, useful if it was created with the
 				 * DoNotOpen open flag.
 				 *
@@ -978,7 +1002,7 @@ namespace Ceylan
 				 * Removes this file from disk.
 				 *
 				 * Closes it if necessary. No other operation should be 
-				 * performed 
+				 * performed afterwards on that file.
 				 *
 				 * @throw FileRemoveFailed if the operation failed or is not
 				 * supported on this platform, and FileDelegatingException
@@ -986,6 +1010,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual void remove() throw( FileException ) ;
+
 
 
 
@@ -1041,7 +1066,6 @@ namespace Ceylan
 				/// Describes buffer size for significant I/O operations.
 				static const Size BigBufferSize ;
 				
-
 
 
 			protected:
