@@ -119,8 +119,7 @@ namespace Ceylan
 				 *
 				 * @return true iff an operation had to be performed.
 				 *
-				 * @throw Stream::CloseException if the close operation failed,
-				 * including if the file was not already opened.
+				 * @throw Stream::CloseException if the close operation failed.
 				 *
 				 */
 				virtual bool close() throw( Stream::CloseException ) ;
