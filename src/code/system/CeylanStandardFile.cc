@@ -36,7 +36,7 @@ extern "C"
 
 
 #include <cerrno>    // for EINTR, ENOLCK, etc.
-#include <cstdio>    // for unlink
+#include <cstdio>    // for unlink, ftell, etc.
 #include <fstream>   // for this class
 
 
@@ -72,6 +72,13 @@ using namespace Ceylan::Log ;
  */
 
 
+// To test the implementation based on standard C++ streams:
+/*
+#ifdef CEYLAN_USES_FILE_DESCRIPTORS 
+	#undef CEYLAN_USES_FILE_DESCRIPTORS
+	#define CEYLAN_USES_FILE_DESCRIPTORS 0
+#endif // CEYLAN_USES_FILE_DESCRIPTORS 
+*/
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
@@ -171,8 +178,10 @@ bool StandardFile::close() throw( Stream::CloseException )
 	else
 	{
 
-		throw Stream::CloseException( "StandardFile::close: file '" +  _name 
+		LogPlug::warning( "StandardFile::close: file '" +  _name 
 			+ "' does not seem to have been already opened." ) ;
+            
+        return false ;    
 			
 	}
 
@@ -186,9 +195,11 @@ bool StandardFile::close() throw( Stream::CloseException )
 	else
 	{
 	
-		throw Stream::CloseException( "StandardFile::close: file '" +  _name 
+		LogPlug::warning( "StandardFile::close: file '" +  _name 
 			+ "' does not seem to have been already opened." ) ;
-			
+            
+        return false ;    
+        
 	}
 	
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
@@ -674,6 +685,93 @@ Size StandardFile::write( const string & message )
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
+
+
+
+
+Position StandardFile::tell() throw( FileException )
+{
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	throw FileException( "StandardFile::tell:"
+		"not supported on the Nintendo DS platform." ) ;
+		
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+#if CEYLAN_USES_FILE_DESCRIPTORS
+
+	/*
+     * Could not find a ::ftell-like function operating on file descriptors
+     * instead of on FILE pointers, thus using ::lseek for that purpose, not
+     * changing the position but reading it only:
+     */
+	off_t pos = ::lseek( _fdes, /* offset */ 0, SEEK_CUR ) ;
+    
+    if ( pos < 0 )
+		throw FileException( "StandardFile::tell failed for '" + _name
+			+ "': " + System::explainError() ) ;
+
+	return pos ;
+    
+#else // if CEYLAN_USES_FILE_DESCRIPTORS	
+
+	// tellg and tellp should be the same:
+	Position pos = _fstream.tellg() ;
+    
+	if ( ! _fstream.good() )
+		throw FileException( "StandardFile::tell failed for '" + _name
+			+ "': " + interpretState() ) ;
+
+   if ( pos < 0 )
+		throw FileException( "StandardFile::tell failed for '" + _name
+			+ "'" ) ;
+    
+	return pos ;	
+			
+#endif // if CEYLAN_USES_FILE_DESCRIPTORS	
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+}
+
+
+
+void StandardFile::seek( Position targetPosition ) throw( FileException )
+{
+
+#if CEYLAN_ARCH_NINTENDO_DS
+
+	throw FileException( "StandardFile::seek:"
+		"not supported on the Nintendo DS platform." ) ;
+		
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+#if CEYLAN_USES_FILE_DESCRIPTORS
+
+	// ::fseek only for FILE*:
+	int res = ::lseek( _fdes, targetPosition, SEEK_SET ) ;
+    
+    if ( res < 0 )
+		throw FileException( "StandardFile::seek failed for '" + _name
+			+ "': " + System::explainError() ) ;
+    
+#else // if CEYLAN_USES_FILE_DESCRIPTORS	
+
+	// seekg and seekp should be the same:
+	_fstream.seekg( targetPosition ) ;
+    
+	if ( ! _fstream.good() )
+		throw FileOpeningFailed( "StandardFile::seek failed for '" + _name
+			+ "': " + interpretState() ) ;
+    
+#endif // if CEYLAN_USES_FILE_DESCRIPTORS	
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+}
+
 
 
 
