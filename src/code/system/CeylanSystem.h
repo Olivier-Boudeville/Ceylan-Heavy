@@ -38,6 +38,13 @@ namespace Ceylan
 
 
 		/**
+		 * Unsigned position, in bytes, for example for file operations.
+		 *
+		 */
+		typedef long Position ;
+
+
+		/**
 		 * Signed size, in bytes, for example for file operations.
 		 *
 		 */
