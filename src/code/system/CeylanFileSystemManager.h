@@ -982,11 +982,14 @@ namespace Ceylan
 				 * Sets the default filesystem manager, the one that will be
 				 * used if no filesystem manager is specified otherwise.
 				 *
-				 * Any previously existing manager will be deallocated first.
+				 * @param deallocatePreviousIfAny if true, any previously
+                 * existing manager will be deallocated. If false, it would be
+                 * replaced by not deleted.
 				 *
 				 */
 				static void SetDefaultFileSystemManager( 
-					FileSystemManager & newDefaultFileSystemManager ) throw() ;
+					FileSystemManager & newDefaultFileSystemManager,
+                    bool deallocatePreviousIfAny = true ) throw() ;
 		
 		
 				/**
