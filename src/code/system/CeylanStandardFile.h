@@ -284,6 +284,31 @@ namespace Ceylan
 					throw( OutputStream::WriteFailedException ) ;
 
 
+				/**
+				 * Determines current position within this standard file.
+				 *
+				 * @return offset in bytes from start of file.
+                 *
+				 * @throw FileException if the operation failed.
+				 *
+				 */
+				virtual Position tell() throw( FileException ) ;
+
+
+				/**
+				 * Seeks to specified position within this standard file.
+				 *
+				 * @param targetPosition this position corresponds to the
+                 * number of bytes from start of file to seek to.
+                 *
+				 * @throw FileException if the operation failed.
+				 *
+				 */
+				virtual void seek( Position targetPosition )
+                	throw( FileException ) ;
+
+
+
 				// open and remove inherited.
 
 
