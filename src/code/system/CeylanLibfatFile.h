@@ -84,8 +84,7 @@ namespace Ceylan
 				 *
 				 * @return true iff an operation had to be performed.
 				 *
-				 * @throw Stream::CloseException if the close operation failed,
-				 * including if the file was not already opened.
+				 * @throw Stream::CloseException if the close operation failed.
 				 *
 				 */
 				virtual bool close() throw( Stream::CloseException ) ;
@@ -199,6 +198,30 @@ namespace Ceylan
 				virtual Size write( const Ceylan::Byte * buffer, 
 						Size maxLength ) 
 					throw( OutputStream::WriteFailedException ) ;
+
+
+				/**
+				 * Determines current position within this file.
+				 *
+				 * @return offset in bytes from start of file.
+                 *
+				 * @throw FileException if the operation failed.
+				 *
+				 */
+				virtual Position tell() throw( FileException ) ;
+
+
+				/**
+				 * Seeks to specified position within this file.
+				 *
+				 * @param targetPosition this position corresponds to the
+                 * number of bytes from start of file to seek to.
+                 *
+				 * @throw FileException if the operation failed.
+				 *
+				 */
+				virtual void seek( Position targetPosition ) 
+                	throw( FileException ) ;
 
 
 
