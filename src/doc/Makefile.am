@@ -49,6 +49,16 @@ EXTRA_DIST = \
 # etc.
 
 
+# PNG Generation for .graph files thanks to dot, for documentation files:
+# (ex: 'make web/Ceylan-latest/anImage.png')
+GRAPH_SRC = $(wildcard *.graph)
+
+GRAPH_PNG  = $(GRAPH_SRC:%.graph=%.png) 
+
+%.png: %.graph
+	@echo "     Generating PNG file $@ from $<"
+	@$(DOT) -Tpng $< -o $@
+
 
 # Content directories.
 
@@ -57,7 +67,10 @@ EXTRA_DIST = \
 # Sourceforge settings.
 
 SF_PROJECT_NAME      = @UNIX_PROJECT_NAME@
+
 SF_SHELL_SERVER      = shell.@CEYLAN_SF_WEB_SERVER@
+SF_WEB_SERVER        = web.sourceforge.net
+
 SF_WEB_DIR           = /home/groups/`echo "$(SF_PROJECT_NAME)" | head -c 1`/`echo "$(SF_PROJECT_NAME)" | head -c 2`/"$(SF_PROJECT_NAME)"/htdocs
 
 SF_WEB_URL           = @CEYLAN_SF_URL@/index.html
@@ -87,16 +100,13 @@ WEB_CONTENT_FILES    = `find . -path 'common' -prune -a -type f -o ! -path '*.sv
 
 WEB_CONTENT_DIRS     = `find . -path 'common' -prune -a -type d -o ! -path '*.svn*' -a -type d`
 
-
-
 COMMON_WEB_FILES     = `find common ! -path '*.svn*' -type f -follow`
-
 COMMON_WEB_DIRS      = `find common ! -path '*.svn*' -type d -follow` 
 
-
 HTML_FILES           = `find . -name '*.html' -a -type f`
+RST_FILES            = `find . -name '*.rst' -a -type f`
 
-	
+
 
 # Tools section
 
@@ -107,6 +117,9 @@ DOXYGEN_GENERATED_CONF = @top_builddir@/src/conf/doc/doxygen.conf
 
 DOT_ROOT      = @CEYLAN_LOANI_INSTALLATIONS@/dot-graphviz-@DOT_VERSION@
 DOT           = `PATH=$(DOT_ROOT)/bin:$$PATH which dot 2>/dev/null`
+
+RST2HTML_ROOT = @CEYLAN_LOANI_INSTALLATIONS@/docutils-$(docutils_VERSION)
+RST2HTML      = `PATH=$(RST2HTML_ROOT)/bin:$$PATH which rst2html 2>/dev/null`
 
 ASTYLE        = `which astyle 2>/dev/null`
 ASTYLE_CONF   = @top_srcdir@/conf/astyle.conf
@@ -122,7 +135,7 @@ SCP_OPT       = "-p -r"
 
 		
 .PHONY: all install doc build inc web links site common                    \
-	update-tags loani-archives api check-dot fix-dox-conf                  \
+	update-rst check-rst loani-archives api check-dot fix-dox-conf         \
 	tidy transfer toSF toSF-rsync toSF-scp                                 \
 	toMirror toMirror-rsync toMirror-scp check-scp remind-locations        \
 	info info-dirs info-files info-sf info-html info-tools                 \
@@ -144,7 +157,7 @@ local-web: site api
 
 # The 'site' target takes automatically care of both shared tree and
 # of the tree specific to this version:
-site: update-tags common 
+site: update-rst common 
 	@echo; echo "@CEYLAN_INSTALL_STYLE@    Copying web source tree to \
 	local web repository \
 	[$(DESTDIR)@CEYLAN_LOCAL_WEB_DIR@]@CEYLAN_DEFAULT_STYLE@"
@@ -157,16 +170,36 @@ site: update-tags common
 	@echo "      file://$(DESTDIR)@CEYLAN_LOCAL_WEB_DIR@/index.html@CEYLAN_DEFAULT_STYLE@"
 	@cd $(DESTDIR)@CEYLAN_LOCAL_WEB_DIR@; \
 	ln -sf @CEYLAN_CURRENT_VERSION_PREFIX@ Ceylan-latest
-    
+
+
+update-rst: check-rst
+	@echo; echo "@CEYLAN_INSTALL_STYLE@    Generating html documentation pages \
+	thanks to docutils (rst)@CEYLAN_DEFAULT_STYLE@"
+	@#Not used yet: @CEYLAN_UPDATE_RST@ web/common/css/Ceylan-docutils.css
+
+
+generate-pdf: check-rst
+	@echo; echo "@CEYLAN_INSTALL_STYLE@    Generating PDF documentation \
+	thanks to docutils (rst)@CEYLAN_DEFAULT_STYLE@"
+	@@CEYLAN_UPDATE_RST@ --pdf
+
+
+check-rst:
+	@[ -x "$(RST2HTML)" ] \
+	|| ( echo; echo "@CEYLAN_ERROR_STYLE@    Unable to generate \
+	html files from docutils files (*.rst): \
+	docutils tool (rst2html) not found [docutils homepage: \
+	http://docutils.sourceforge.net].@CEYLAN_DEFAULT_STYLE@"; echo; false ) 
+
 
 common: 
 	@echo; echo "@CEYLAN_INSTALL_STYLE@    Copying common web files to \
 	local doc repository \
-	$(DESTDIR)@CEYLAN_LOCAL_WEB_SHARED_DIR@ @CEYLAN_DEFAULT_STYLE@"
+	[$(DESTDIR)@CEYLAN_LOCAL_WEB_SHARED_DIR@]@CEYLAN_DEFAULT_STYLE@"
 	@if [ -d "$(DESTDIR)@CEYLAN_LOCAL_DOC_DIR@" ] ; then \
 	chmod a+w $(DESTDIR)@CEYLAN_LOCAL_DOC_DIR@; else \
 	chmod a+w `dirname $(DESTDIR)@CEYLAN_LOCAL_DOC_DIR@`; \
-	mkdir -p$(DESTDIR) @CEYLAN_LOCAL_DOC_DIR@ ; fi
+	mkdir -p $(DESTDIR)@CEYLAN_LOCAL_DOC_DIR@ ; fi
 	@mkdir -p $(DESTDIR)@CEYLAN_LOCAL_WEB_DIR@
 	@mkdir -p $(DESTDIR)@CEYLAN_LOCAL_WEB_SHARED_DIR@
 	@cd $(srcdir)/web; for d in $(COMMON_WEB_DIRS); do \
@@ -261,7 +294,7 @@ toSF-rsync: site
 	[@CEYLAN_LOCAL_WEB_DIR@] using rsync@CEYLAN_DEFAULT_STYLE@"
 	@echo
 	@opt=$(RSYNC_OPT); $(RSYNC) $$opt @CEYLAN_LOCAL_WEB_DIR@/* \
-	$(SF_USER)@$(SF_SHELL_SERVER):$(SF_WEB_DIR)
+	$(SF_USER)@$(SF_WEB_SERVER):$(SF_WEB_DIR)
 	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark \
 	@PROJECT_NAME@'s website on Sourceforge at \
 	$(SF_WEB_URL)@CEYLAN_DEFAULT_STYLE@"
@@ -274,7 +307,7 @@ toSF-scp: check-scp site
 	[@CEYLAN_LOCAL_WEB_DIR@] using scp@CEYLAN_DEFAULT_STYLE@"
 	@echo
 	@opt=$(SCP_OPT); $(SCP) $$opt @CEYLAN_LOCAL_WEB_DIR@/* \
-	$(SF_USER)@$(SF_SHELL_SERVER):$(SF_WEB_DIR)
+	$(SF_USER)@$(SF_WEB_SERVER):$(SF_WEB_DIR)
 	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark \
 	@PROJECT_NAME@'s website on Sourceforge at \
 	$(SF_WEB_URL)@CEYLAN_DEFAULT_STYLE@"
@@ -287,7 +320,7 @@ toMirror:
 
 toMirror-rsync: site
 	@echo
-	@echo; echo "@CEYLAN_INSTALL_STYLE@    Updating @PROJECT_NAME@\
+	@echo; echo "@CEYLAN_INSTALL_STYLE@    Updating @PROJECT_NAME@ \
 	$(MIRROR_HOSTNAME)'s website from local web repository \
 	[@CEYLAN_LOCAL_WEB_DIR@] using rsync@CEYLAN_DEFAULT_STYLE@"
 	@echo
@@ -313,11 +346,11 @@ toMirror-scp: check-scp site
 
 check-scp:
 	@[ -x "$(SCP)" ] || ( echo; echo "@CEYLAN_ERROR_STYLE@    \
-	Unable to transfer html documentation files to remote\
-	web server: rsync and its alternative scp not available.\
-	Please check src/conf/MakeVars.inc or update\
+	Unable to transfer html documentation files to remote \
+	web server: rsync and its alternative scp not available. \
+	Please check src/conf/MakeVars.inc or update \ 
 	PATH environment variable.@CEYLAN_DEFAULT_STYLE@"; echo; false ) 
-	@echo; echo "@CEYLAN_WARNING_STYLE@    Consider installing rsync,\
+	@echo; echo "@CEYLAN_WARNING_STYLE@    Consider installing rsync, \
 	which is far more efficient than scp at updating \
 	mirrors.@CEYLAN_DEFAULT_STYLE@"
 		
@@ -355,7 +388,7 @@ info-dirs:
 	@echo "    + prefix is:" ${prefix}
 	@echo "    + local documentation directory is: @CEYLAN_LOCAL_DOC_DIR@"
 	@echo "    + local web directory is: @CEYLAN_LOCAL_WEB_DIR@"
-	@echo "    + local api directory is:\
+	@echo "    + local api directory is: \
 	@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@"
 	
 	
@@ -371,6 +404,7 @@ info-files: info-html
 info-sf:
 	@echo "    + sourceforge UNIX project name: $(SF_PROJECT_NAME)"
 	@echo "    + sourceforge shell server     : $(SF_SHELL_SERVER)"
+	@echo "    + sourceforge web server       : $(SF_WEB_SERVER)"
 	@echo "    + full sourceforge login       : \
 	sh $(SF_USER)@$(SF_SHELL_SERVER)"
 	@echo "    + sourceforge web directory    : $(SF_WEB_DIR)"
@@ -378,7 +412,7 @@ info-sf:
 	@echo "    + SSH target                   : \
 	$(SF_USER)@$(SF_SHELL_SERVER):$(SF_WEB_DIR)"
 	@echo "    + files to be copied will be   : \
-	scp myFiles $(SF_USER)@$(SF_SHELL_SERVER):$(SF_SHELL_HOMEDIR)"
+	scp myFiles $(SF_USER)@$(SF_WEB_SERVER):$(SF_SHELL_HOMEDIR)"
 
 
 info-html: 	
