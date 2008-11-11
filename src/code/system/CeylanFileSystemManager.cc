@@ -506,12 +506,18 @@ bool FileSystemManager::IsDefaultFileSystemManagerSet() throw()
 
 
 void FileSystemManager::SetDefaultFileSystemManager( 
-		FileSystemManager & newDefaultFileSystemManager ) throw()
+		FileSystemManager & newDefaultFileSystemManager,
+        bool deallocatePreviousIfAny ) throw()
 {
 
-	if ( _CurrentDefaultFileSystemManager != 0 )
-		delete _CurrentDefaultFileSystemManager ;
+	if ( deallocatePreviousIfAny )
+    {
+    
+		if ( _CurrentDefaultFileSystemManager != 0 )
+			delete _CurrentDefaultFileSystemManager ;
 	
+    }
+    
 	_CurrentDefaultFileSystemManager = & newDefaultFileSystemManager ;
 		
 }
