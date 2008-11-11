@@ -127,6 +127,7 @@ bool LibfatFile::close() throw( Stream::CloseException )
 	{
 		return Stream::Close( _fdes ) ;
 	}
+
 	/*	
 	
 	Silently ignored as apparently the case can happen with libfat:
@@ -134,12 +135,14 @@ bool LibfatFile::close() throw( Stream::CloseException )
 	else
 	{
 
-		throw Stream::CloseException( "LibfatFile::close: file '" +  _name 
+		LogPlug::warning( "LibfatFile::close: file '" +  _name 
 			+ "' does not seem to have been already opened." ) ;
 			
 	}
 	
-	 */
+	*/
+    
+    return false ;
 	 
 #endif // CEYLAN_RUNS_ON_ARM7
 
@@ -352,6 +355,66 @@ Size LibfatFile::write( const Ceylan::Byte * buffer, Size maxLength )
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
+
+
+
+
+
+Position LibfatFile::tell() throw( FileException )
+{
+
+#if CEYLAN_ARCH_NINTENDO_DS
+	
+#ifdef CEYLAN_RUNS_ON_ARM7
+	
+	throw FileException( "LibfatFile::tell: "
+		"not supported on the ARM7 (no libfat available)" ) ;
+
+#else // CEYLAN_RUNS_ON_ARM7
+
+	throw FileException( "LibfatFile::tell:"
+		"not currently implemented." ) ;
+
+#endif // CEYLAN_RUNS_ON_ARM7
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	throw FileException( "LibfatFile::tell:"
+		"not supported on this platform." ) ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+}
+
+
+
+void LibfatFile::seek( Position targetPosition ) throw( FileException )
+{
+
+#if CEYLAN_ARCH_NINTENDO_DS
+	
+#ifdef CEYLAN_RUNS_ON_ARM7
+	
+	throw FileException( "LibfatFile::seek: "
+		"not supported on the ARM7 (no libfat available)" ) ;
+
+#else // CEYLAN_RUNS_ON_ARM7
+
+	throw FileException( "LibfatFile::seek:"
+		"not currently implemented." ) ;
+
+#endif // CEYLAN_RUNS_ON_ARM7
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	throw FileException( "LibfatFile::seek:"
+		"not supported on this platform." ) ;
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+
+}
+
+
 
 
 
