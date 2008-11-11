@@ -32,11 +32,13 @@ using namespace Ceylan::System ;
 
 #include "CeylanLogAggregatorHTMLFragments.h"
 
+
   
 const LevelOfDetail LogAggregatorHTML::DefaultGlobalLevelOfDetail 
 	= MaximumLevelOfDetailForMessage ;
 
 const string LogAggregatorHTML::HTMLPageSuffix = ".html" ;
+
 
 
 LogAggregatorHTML::LogAggregatorHTML( 
@@ -140,7 +142,6 @@ void LogAggregatorHTML::aggregate() throw( LogAggregatorException )
 		framesetPage.write( newFrameset ) ;
 		
 		delete & framesetPage ;
-	
 	
 	
 		/*
@@ -377,5 +378,4 @@ void LogAggregatorHTML::WriteChannelFooter( const LogChannel & channel,
 	
 		
 }
-
 
