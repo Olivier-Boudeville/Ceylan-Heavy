@@ -19,16 +19,6 @@ TEST_SOURCES = $(wildcard *_test.erl)
 TEST_TARGETS = $(patsubst %.erl,%,$(TEST_SOURCES))
 
 
-RST_FILES = $(wildcard *.rst)
-
-AUX_GENERATED_FILES  = $(patsubst %.rst,%.aux,$(RST_FILES))
-TEX_GENERATED_FILES  = $(patsubst %.rst,%.tex,$(RST_FILES))
-OUT_GENERATED_FILES  = $(patsubst %.rst,%.out,$(RST_FILES))
-HTML_GENERATED_FILES = $(patsubst %.rst,%.html,$(RST_FILES))
-PDF_GENERATED_FILES  = $(patsubst %.rst,%.pdf,$(RST_FILES))
-
-RST_GENERATED_FILES =  $(AUX_GENERATED_FILES) $(TEX_GENERATED_FILES)      \
-	$(OUT_GENERATED_FILES) $(HTML_GENERATED_FILES) $(PDF_GENERATED_FILES)   
 
 
 PNG_FROM_PYTHON = $(patsubst %.py,%.png,$(wildcard *.py))
@@ -40,9 +30,6 @@ GRAPH_SRC = $(wildcard *.graph)
 
 GRAPH_PNG  = $(GRAPH_SRC:%.graph=%.png) 
 
-
-# OVERALL_DOCUMENT_SOURCE defined in per-project GNUmakefile:
-OVERALL_DOCUMENT_TARGET = $(patsubst %.rst,%.pdf,$(OVERALL_DOCUMENT_SOURCE))
 
 
 
@@ -227,22 +214,6 @@ VIEW_PLOT = no
 %.dat: %.py
 	@echo "     Generating plot data $@ from $<"
 	@$(PYTHON) $<
-
-
-# To trigger the automatic rendering of a created PDF, add 'VIEW_PDF=' 
-# at the end of the command line (ex : 'make MyFSM.png VIEW_PDF=')
-VIEW_PDF = yes
-#VIEW_PDF = no
-
-
-%.pdf: %.rst
-	@echo "     Generating PDF documentation $@"
-	@if $(RST_GENERATOR) $< --pdf ; then if [ "$(VIEW_PDF)" != "no" ] ; then $(PDF_VIEWER) $@ & fi; fi
-	
-%.html: %.rst
-	@echo "     Generating HTML documentation $@"
-	$(RST_GENERATOR) $< $(CEYLAN_CSS)
-	
 
 
 
