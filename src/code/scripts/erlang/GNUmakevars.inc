@@ -109,13 +109,10 @@ DOT = $(DOT_ROOT)/dot $(DOT_OPT)
 
 GNUPLOT = gnuplot
 
-#RST_GENERATOR = update-docutils.sh
-RST_GENERATOR = generate-docutils.sh
 
 #IMG_VIEWER = /usr/bin/X11/xv
 IMG_VIEWER = /usr/bin/eog
 
-PDF_VIEWER = /usr/bin/evince
 
 CEYLAN_CSS = $(CEYLAN_TRUNK)/src/doc/web/common/css/Ceylan-docutils.css
 
@@ -190,6 +187,4 @@ ERL_LAUNCHER = $(COMMON_SRC)/launch-erl.sh
 # -c $(PROJECT_NAME) replaced by $(COOKIE_OPT)
 ERL_PARAMETRIZED_LAUNCHER = $(ERL_LAUNCHER) -v $(COOKIE_OPT) --ln $(VM_TEST_NAME) $(BEAM_PATH_OPT) $(THIRD_PARTY_OPT)
 
-
-TMP_RST_REPOSITORY = tmp-rst
 
