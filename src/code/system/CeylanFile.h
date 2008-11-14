@@ -726,7 +726,14 @@ namespace Ceylan
 				/// Returns this file's name.
 				const std::string & getName() const throw() ;
 
-
+				
+				/**
+				 * Returns true iff this file is open.
+				 *
+				 */
+				virtual bool isOpen() const throw() = 0 ;
+				
+				
 				/**
 				 * Closes the file for read/write actions.
 				 *
