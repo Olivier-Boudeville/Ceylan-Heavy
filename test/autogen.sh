@@ -2,8 +2,9 @@
 
 
 USAGE="
-Usage: "`basename $0`" [ -n | --no-build ] [ -o | --only-prepare-dist] [--ceylan-install-prefix <a prefix>]: (re)generates all the autotools-based build system for Ceylan tests.
+Usage: "`basename $0`" [ -g | --guess-ceylan-prefix ] [ -n | --no-build ] [ -o | --only-prepare-dist] [--ceylan-install-prefix <a prefix>]: (re)generates all the autotools-based build system for Ceylan tests.
 
+	--guess-ceylan-prefix: try to guess where a supposedly corresponding prefixed Ceylan install lies. If one is found, then it is used, otherwise stops on failure
 	--no-build: stop just after having generated the configure script
 	--only-prepare-dist: perform only necessary operations so that the test directory can be distributed afterwards
 	--ceylan-install-prefix <a prefix>: use the specified prefix to find the Ceylan library installation. Example: --ceylan-install-prefix $HOME/tmp-Ceylan-test-install"
@@ -27,9 +28,44 @@ do_test=0
 ceylan_install_prefix="/usr/local"
 
 
+
+
 while [ $# -gt 0 ] ; do
 	token_eaten=1
 		
+	if [ "$1" = "-g" -o "$1" = "--guess-ceylan-prefix" ] ; then
+	
+		# Here we suppose we want to find a LOANI-installed Ceylan:
+		COMMAND=$0
+
+		# Always start from the 'trunk/test' directory:
+		cd `dirname $COMMAND`
+
+		# Let's guess this Ceylan version:
+		ceylan_version=`grep CEYLAN_VERSION ../src/code/CeylanConfig.h|awk '{printf $3}'|sed 's|^.||1'|sed 's|.$||1'`
+		#echo "guessed ceylan_version = $ceylan_version"	
+
+
+		# Default value guessed from current path:
+		loani_repository=`pwd|sed 's|/ceylan/Ceylan/trunk/test||1'`
+		#echo "loani_repository = $loani_repository"
+
+		loani_installations=`dirname $loani_repository`/LOANI-installations
+		#echo "loani_installations = $loani_installations"
+
+		ceylan_install_prefix="${loani_installations}/Ceylan-${ceylan_version}"
+		
+		if [ ! -d "$ceylan_install_prefix" ] ; then
+			echo "Error, guessed prefix for Ceylan install ($ceylan_install_prefix) does not exist.$USAGE" 1>&2
+			exit 10
+		fi
+
+		# One more chance to rely on a proper libtool:
+		. ${loani_installations}/OSDL-environment.sh
+
+		token_eaten=0
+	fi
+
 	if [ "$1" = "-n" -o "$1" = "--no-build" ] ; then
 		do_stop_after_configure=0
 		token_eaten=0
@@ -45,7 +81,7 @@ while [ $# -gt 0 ] ; do
 		ceylan_install_prefix="$1"
 		if [ ! -d "$ceylan_install_prefix" ] ; then
 			echo "Error, specified prefix for Ceylan install ($ceylan_install_prefix) does not exist.$USAGE" 1>&2
-			exit 10
+			exit 11
 		fi
 		token_eaten=0
 	fi
