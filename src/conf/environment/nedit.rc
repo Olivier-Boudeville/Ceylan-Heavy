@@ -414,7 +414,7 @@ nedit.textRows: 60
 nedit.textCols: 80
 nedit.tabDistance: 4
 nedit.emulateTabs: 0
-nedit.insertTabs: False
+nedit.insertTabs: True
 nedit.textFont: -*-courier-medium-r-normal--*-120-*-*-*-iso8859-1
 nedit.boldHighlightFont: -*-courier-bold-r-normal--*-120-*-*-*-iso8859-1
 nedit.italicHighlightFont: -*-courier-medium-o-normal--*-120-*-*-*-iso8859-1
