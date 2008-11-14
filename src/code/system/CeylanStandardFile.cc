@@ -129,16 +129,21 @@ StandardFileException::~StandardFileException() throw()
 StandardFile::~StandardFile() throw()
 {
 
-	try
+	if ( isOpen() )
 	{
-		close() ;
-	}
-	catch( const Stream::CloseException & e )
-	{
-		LogPlug::error( "StandardFile destructor: close failed: " 
-			+ e.toString() ) ;
-	}
+	
+		try
+		{
+			close() ;
+		}
+		catch( const Stream::CloseException & e )
+		{
+			LogPlug::error( "StandardFile destructor: close failed: " 
+				+ e.toString() ) ;
+		}
 		
+	}
+			
 }
 
 
@@ -148,65 +153,82 @@ StandardFile::~StandardFile() throw()
 
 	
 
+
 // Implementation of instance methods inherited from File.	
 	
+
+bool StandardFile::isOpen() const throw()
+{
+
+#if CEYLAN_ARCH_NINTENDO_DS
+	
+	 return false ;
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+		
+	 
+#if CEYLAN_USES_FILE_DESCRIPTORS
+	
+	return ( _fdes != 0 ) ;
+
+#else // CEYLAN_USES_FILE_DESCRIPTORS
+
+	return ( _fstream.is_open() ) ;
+		
+#endif // CEYLAN_USES_FILE_DESCRIPTORS
+
+#endif // CEYLAN_ARCH_NINTENDO_DS
+	
+}
+
 
 
 bool StandardFile::close() throw( Stream::CloseException )
 {
 
+	if ( ! isOpen() )
+	{
+	
+		LogPlug::warning( "StandardFile::close: file '" +  _name 
+			+ "' does not seem to have been already opened." ) ;
+			
+		return false ;	
+	
+	}
+	else
+	{
+	
+		// Let's close it.
+		
 #if CEYLAN_ARCH_NINTENDO_DS
 	
-	 throw Stream::CloseException( 
-	 	"StandardFile::close: not supported on the Nintendo DS platform." ) ;
+	 	throw Stream::CloseException( "StandardFile::close: "
+			"not supported on the Nintendo DS platform." ) ;
 
 #else // CEYLAN_ARCH_NINTENDO_DS
 		
-	/*
-	 * Exception and returned boolean are both needed:
-	 *  - all closed files should have been opened previously
-	 *  - returned boolean comes from the Stream-inherited signature
-	 *
-	 */
+		/*
+		 * Exception and returned boolean are both needed:
+		 *  - all closed files should have been opened previously
+		 *  - returned boolean comes from the Stream-inherited signature
+		 *
+		 */
 	 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 	
-	if ( _fdes > 0 )
-	{
 		return Stream::Close( _fdes ) ;
-	}	
-	else
-	{
-
-		LogPlug::warning( "StandardFile::close: file '" +  _name 
-			+ "' does not seem to have been already opened." ) ;
-            
-        return false ;    
-			
-	}
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
-	if ( _fstream.is_open() )
-	{
 		_fstream.close() ;
 		return true ;
-	}	
-	else
-	{
-	
-		LogPlug::warning( "StandardFile::close: file '" +  _name 
-			+ "' does not seem to have been already opened." ) ;
-            
-        return false ;    
-        
-	}
 	
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 	
-	
+	}
+		
 }
 
 
