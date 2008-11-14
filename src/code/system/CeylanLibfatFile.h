@@ -80,6 +80,13 @@ namespace Ceylan
 
 
 				/**
+				 * Returns true iff this file is open.
+				 *
+				 */
+				virtual bool isOpen() const throw() ;
+
+
+				/**
 				 * Closes the file for read/write actions.
 				 *
 				 * @return true iff an operation had to be performed.
