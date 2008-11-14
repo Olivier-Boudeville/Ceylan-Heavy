@@ -153,13 +153,17 @@ int main( int argc, char * argv[] )
 		LogPlug::info( "Creating a new empty file named " + targetFile + "." ) ;
 		
 		Ceylan::Holder<File> newFileHolder( File::Create( targetFile ) ) ;
-		
+
+        newFileHolder->write( "Hello Ceylan!" ) ;
+
 		LogPlug::info( "Updating thanks to touch the last "
 			"access and modification times of file " + targetFile ) ;
 			
 		File::Touch( targetFile	) ;
 		
-		LogPlug::info( "Cleaning up: deleting file " + targetFile ) ;
+		LogPlug::info( "Cleaning up: deleting file '" + targetFile 
+        	+ "', will trigger a warning as the holder will not be able to "
+            " close it again." ) ;
 		newFileHolder->remove() ;
 		
 		if ( ! dirExistedAlready )
