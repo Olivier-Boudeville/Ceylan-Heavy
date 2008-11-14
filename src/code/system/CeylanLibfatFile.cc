@@ -80,14 +80,19 @@ LibfatFile::~LibfatFile() throw()
 
 	// FAT filesystem is using a cache, files have to be closed before shutdown:
 	
-	try
+	if ( isOpen() )
 	{
-		close() ;
-	}
-	catch( const Stream::CloseException & e )
-	{
-		LogPlug::error( "LibfatFile destructor: close failed: " 
-			+ e.toString() ) ;
+	
+		try
+		{
+			close() ;
+		}
+		catch( const Stream::CloseException & e )
+		{
+			LogPlug::error( "LibfatFile destructor: close failed: " 
+				+ e.toString() ) ;
+		}
+		
 	}
 		
 }
@@ -99,61 +104,85 @@ LibfatFile::~LibfatFile() throw()
 
 	
 
+
+
 // Implementation of instance methods inherited from File.	
 	
 
 
-bool LibfatFile::close() throw( Stream::CloseException )
+bool LibfatFile::isOpen() const throw()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
 	
 #ifdef CEYLAN_RUNS_ON_ARM7
-	
-	throw Stream::CloseException( "LibfatFile::close: "
-		"not supported on the ARM7 (no libfat available)" ) ;
 
-#else // CEYLAN_RUNS_ON_ARM7
+	 return false ;
 		
-	/*
-	 * Exception and returned boolean are both needed:
-	 *  - all closed files should have been opened previously
-	 *  - returned boolean comes from the Stream-inherited signature
-	 *
-	 */
-	 
-	
-	if ( _fdes > 0 )
-	{
-		return Stream::Close( _fdes ) ;
-	}
+#else // CEYLAN_RUNS_ON_ARM7
 
-	/*	
-	
-	Silently ignored as apparently the case can happen with libfat:
-	
-	else
-	{
+	return ( _fdes != 0 ) ;
 
+#endif // CEYLAN_RUNS_ON_ARM7
+
+#else // CEYLAN_ARCH_NINTENDO_DS
+
+	return false ;
+	
+#endif // CEYLAN_ARCH_NINTENDO_DS
+	
+}
+
+
+
+bool LibfatFile::close() throw( Stream::CloseException )
+{
+
+	if ( ! isOpen() )
+	{
+	
 		LogPlug::warning( "LibfatFile::close: file '" +  _name 
 			+ "' does not seem to have been already opened." ) ;
 			
-	}
+		return false ;	
 	
-	*/
-    
-    return false ;
+	}
+	else
+	{
+	
+		// Let's close it.
+		
+#if CEYLAN_ARCH_NINTENDO_DS
+	
+#ifdef CEYLAN_RUNS_ON_ARM7
+	
+		throw Stream::CloseException( "LibfatFile::close: "
+			"not supported on the ARM7 (no libfat available)" ) ;
+
+#else // CEYLAN_RUNS_ON_ARM7
+		
+		/*
+		 * Exception and returned boolean are both needed:
+		 *  - all closed files should have been opened previously
+		 *  - returned boolean comes from the Stream-inherited signature
+		 *
+		 */
+	 	
+		return Stream::Close( _fdes ) ;
+
 	 
 #endif // CEYLAN_RUNS_ON_ARM7
 
 
 #else // CEYLAN_ARCH_NINTENDO_DS
 
-	throw Stream::CloseException( "LibfatFile::close: "
-		"not supported on this platform" ) ;
+		throw Stream::CloseException( "LibfatFile::close: "
+			"not supported on this platform" ) ;
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
-	
+
+	}
+		
 }
 
 
