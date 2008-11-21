@@ -846,7 +846,7 @@ For example, <code>AgeState = ?setAttribute(State,age,3)</code> will return a ne
 </p>
 
 <p>
-In various cases, notably in constructors, one needs to define a series of attributes, and chaining <code>setAttribute</code> calls with intermediate states is not convenient. A better solution is to use the <b>setAttributes</b> macro (note the plural) to set a list of attribute name/attribute value pairs (a.k.a. as a <em>property list</em>).
+In various cases, notably in constructors, one needs to define a series of attributes, and chaining <code>setAttribute</code> calls with intermediate states is not convenient. A better solution is to use the <b>setAttributes</b> macro (note the plural) to set a list of attribute name/attribute value pairs.
 </p>
 
 <p>
@@ -897,20 +897,44 @@ Quite often, when retrieving an attribute, the state variable will be named <cod
 
 <h4>Read-Modify-Write operations</h4>
 <p>
-Some more helper macros are provided for common operations, to keep the syntax as lightweight as possible:
-<ul>
+Some more helper macros are provided for common operations, to keep the syntax as lightweight as possible.
 
-	<li><b>addToAttribute</b>: when having a numerical attribute, adds specified number to the attribute. For example: <code>NewState = ?addToAttribute(State,a_numerical_attribute,6)</code>. If the target attribute does not exist, will trigger <code>{{badmatch,undefined},[{hashtable,addToEntry,3},..</code>. If it exists but no addition can be performed on it, will trigger <code>{badarith,[{hashtable,addToEntry,3},..</code></li>
 
-	<li><b>substractFromAttribute</b>: when having a numerical attribute, substracts specified number from the attribute. For example: <code>NewState = ?substractFromAttribute(State,a_numerical_attribute,1)</code>. If the target attribute does not exist, will trigger <code>{{badmatch,undefined},[{hashtable,substractFromEntry,3},..</code>. If it exists but no addition can be performed on it, will trigger <code>{badarith,[{hashtable,substractFromEntry,3},..</code></li>
 
-	<li><b>toggleAttribute</b>: when having a boolean attribute, whose values are either <code>true</code> or <code>false</code>, sets the opposite logical value to the current one. For example: <code>NewState = ?toggleAttribute(State,a_boolean_attribute)</code>. If the target attribute does not exist, will trigger <code>{{case_clause,undefined},[{hashtable,toggleEntry,2},..</code>. If it exists but is neither true or false, will trigger <code>{{case_clause,{value,..}},[{hashtable,toggleEntry,2},..</code></li>
+<h5>The <code>addToAttribute/3</code> macro</h5>
 
-	<li><b>appendToAttribute</b>: when having a list attribute, appends specified element to the attribute list. For example: <code>NewState = ?appendToAttribute(State,a_list_attribute,hello)</code>. If the target attribute does not exist, will trigger <code>{{badmatch,undefined},[{hashtable,appendToEntry,3},..</code>. If it exists but is not already a list, it will not crash but will create an ill-formed list (ex: <code>[8|false]</code> when appending 8 to false, which is not a list)</li>
+<b>addToAttribute(State,AttributeName,Value)</b>: when having a numerical attribute, adds specified number to the attribute. For example: <code>NewState = ?addToAttribute(State,a_numerical_attribute,6)</code>. If the target attribute does not exist, will trigger <code>{{badmatch,undefined},[{hashtable,addToEntry,3},..</code>. If it exists but no addition can be performed on it, will trigger <code>{badarith,[{hashtable,addToEntry,3},..</code>.
 
-	<li><b>deleteFromAttribute</b>: when having a list attribute, deletes first match of specified element from the attribute list. For example: <code>NewState = ?deleteFromAttribute(State,a_list_attribute,hello)</code>. If the target attribute does not exist, will trigger <code>{{badmatch,undefined},[{hashtable,deleteFromEntry,3},..</code>. If it exists but is not already a list, it will trigger <code>{function_clause,[{lists,delete,[..,..]},{hashtable,deleteFromEntry,3}</code>. If no element in the list matches the specified one, no error will be triggered and the list will be kept as is</li>
 
-	<li><b>popFromAttribute</b>:  when having a list attribute, removes the head from the list and returns a pair made of the updated state (same state except that the corresponding list attribute has lost its head) and of that head. For example: <code>{NewState,Head} = ?popFromAttribute(State,a_list_attribute)</code>. If the value of <code>a_list_attribute</code> was <code>[5,8,3]</code>, its new value (in <code>{NewState,Head}</code>) will be <code>[8,3]</code> and <code>Head</code> will be equal to 5</li>
+
+<h5>The <code>substractFromAttribute/3</code> macro</h5>
+
+<b>substractFromAttribute(State,AttributeName,Value)</b>: when having a numerical attribute, substracts specified number from the attribute. For example: <code>NewState = ?substractFromAttribute(State,a_numerical_attribute,1)</code>. If the target attribute does not exist, will trigger <code>{{badmatch,undefined},[{hashtable,substractFromEntry,3},..</code>. If it exists but no addition can be performed on it, will trigger <code>{badarith,[{hashtable,substractFromEntry,3},..</code>.
+
+
+<h5>The <code>toggleAttribute/2</code> macro</h5>
+
+<b>toggleAttribute(State,BooleanAttributeName)</b>: when having a boolean attribute, whose values are either <code>true</code> or <code>false</code>, sets the opposite logical value to the current one. For example: <code>NewState = ?toggleAttribute(State,a_boolean_attribute)</code>. If the target attribute does not exist, will trigger <code>{{case_clause,undefined},[{hashtable,toggleEntry,2},..</code>. If it exists but is neither true or false, will trigger <code>{{case_clause,{value,..}},[{hashtable,toggleEntry,2},..</code>.
+
+
+<h5>The <code>appendToAttribute/3</code> macro</h5>
+
+<b>appendToAttribute(State,AttributeName,Element)</b>: when having a list attribute, appends specified element to the attribute list. For example: <code>NewState = ?appendToAttribute(State,a_list_attribute,hello)</code>. If the target attribute does not exist, will trigger <code>{{badmatch,undefined},[{hashtable,appendToEntry,3},..</code>. If it exists but is not already a list, it will not crash but will create an ill-formed list (ex: <code>[8|false]</code> when appending 8 to false, which is not a list).
+
+
+<h5>The <code>deleteFromAttribute/3</code> macro</h5>
+
+<b>deleteFromAttribute(State,AttributeName,Element)</b>: when having a list attribute, deletes first match of specified element from the attribute list. For example: <code>NewState = ?deleteFromAttribute(State,a_list_attribute,hello)</code>. If the target attribute does not exist, will trigger <code>{{badmatch,undefined},[{hashtable,deleteFromEntry,3},..</code>. If it exists but is not already a list, it will trigger <code>{function_clause,[{lists,delete,[..,..]},{hashtable,deleteFromEntry,3}</code>. If no element in the list matches the specified one, no error will be triggered and the list will be kept as is.
+
+	
+<h5>The <code>popFromAttribute/2</code> macro</h5>
+
+<b>popFromAttribute(State,AttributeName)</b>:  when having a list attribute, removes the head from the list and returns a pair made of the updated state (same state except that the corresponding list attribute has lost its head) and of that head. For example: <code>{NewState,Head} = ?popFromAttribute(State,a_list_attribute)</code>. If the value of <code>a_list_attribute</code> was <code>[5,8,3]</code>, its new value (in <code>{NewState,Head}</code>) will be <code>[8,3]</code> and <code>Head</code> will be equal to 5.
+
+
+<h5>The <code>addKeyValueToAttribute/4</code> macro</h5>
+
+<b>addKeyValueToAttribute(State,AttributeName,Key,Value)</b>: when having a hashtable attribute, adds specified key/value pair to that hashtable. For example: <code>WithTableState = ?setAttribute( State, my_hashtable, hashtable:new() ), NewState = ?addKeyValueToAttribute( WithTableState, my_hashtable, my_key, my_value )</code>.
 
 <!--
 	<li><b></b>: <code></code></li>
@@ -1056,7 +1080,6 @@ Only one version of <code>new/new_link/construct</code> can be defined, but this
 
 <p>
 As shown with the <code>new_link</code> operator, many variations of <code>new</code> could be imagined: linked or not, synchronous or not, with a time-out or not, on current node or on a user-specified one, etc. The most common variations are detailed below.
-
 </p>
 
 <p>
@@ -1902,7 +1925,7 @@ svn copy https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/code
   <center>
     [<a href="#_top_">Top</a>]<br>
     <br>
-    <em>Last update: Wednesday, July 30, 2008</em>
+    <em>Last update: Tuesday, October 7, 2008</em>
   </center>
 </body>
 </html>
