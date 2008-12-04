@@ -309,7 +309,7 @@ warnings="--warnings=all"
 
 echo
 echo "Bootstrapping now build system thanks to the autotools"
-echo "      (this may take a while ...)"
+echo "      (this may take a while...)"
 echo
 
 
@@ -354,7 +354,7 @@ Note: check that your libtoolize version is indeed 2.2.4 or newer, otherwise the
 	" `$1 --version` "
 	The corresponding executable is:
 	" `/bin/ls -l --color $(which $1)`"
-	(one may source its OSDL-environment.sh script to override system tools with LOANI-installed ones)"
+	(if having used LOANI, one may source his OSDL-environment.sh script to override system tools with LOANI-installed ones, for increased safety)"
 			elif [ "$1" = "./configure" ]; then
 				echo "
 Note: check the following log:" `pwd`/config.log
