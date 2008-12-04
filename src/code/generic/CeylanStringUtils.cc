@@ -35,6 +35,7 @@ extern "C"
 
 #include <cctype>                      // for isdigit, isupper, etc.
 #include <iostream>                    // for cout, endl, flush.
+#include <cstring>                     // for strcpy
 
 
 using std::string ;
@@ -131,7 +132,7 @@ char * Ceylan::getNonConstCharFrom( const std::string & source ) throw()
 	 * Too complicated to use (try/catch, even a null pointer checking 
 	 * would be uselessly cumbersome ):
 	
-	char * result =::strdup( source.c_str() ) ;
+	char * result = ::strdup( source.c_str() ) ;
 	
 	if ( result )
 	{
@@ -217,7 +218,7 @@ string Ceylan::substituteIn( const string & sourceString,
 bool Ceylan::isLetter( char targetChar ) throw()
 {
 
-	if (::isalpha( targetChar ) ) 
+	if ( ::isalpha( targetChar ) ) 
 		return true ;
 
 	return false ;
@@ -229,7 +230,7 @@ bool Ceylan::isLetter( char targetChar ) throw()
 bool Ceylan::isFigure( char targetChar ) throw()
 {
 
-	if (::isalpha( targetChar ) ) 
+	if ( ::isalpha( targetChar ) ) 
 		return true ;
 
 	return false ;
@@ -241,7 +242,7 @@ bool Ceylan::isFigure( char targetChar ) throw()
 bool Ceylan::isAlphanumeric( char targetChar ) throw()
 {
 
-	if (::isalnum( targetChar ) ) 
+	if ( ::isalnum( targetChar ) ) 
 		return true ;
 
 	return false ;
@@ -253,7 +254,7 @@ bool Ceylan::isAlphanumeric( char targetChar ) throw()
 bool Ceylan::isPunctuation( char targetChar ) throw()
 {
 
-	if (::ispunct( targetChar ) )
+	if ( ::ispunct( targetChar ) )
 		return true ;
 
 	return false ;
@@ -265,7 +266,7 @@ bool Ceylan::isPunctuation( char targetChar ) throw()
 bool Ceylan::isWhitespace( char targetChar ) throw()
 {
 
-	if (::iswspace( targetChar ) ) 
+	if ( ::iswspace( targetChar ) ) 
 		return true ;
 
 	return false ;
@@ -281,8 +282,8 @@ string Ceylan::toUppercase( const std::string & text ) throw()
 	
 	for ( string::const_iterator it = text.begin(); 
 			it != text.end(); it++ )
-		if (::islower( *it ) )
-			result +=::toupper( *it ) ;
+		if ( ::islower( *it ) )
+			result += static_cast<char>( ::toupper( *it ) ) ;
 		else
 			result += *it ;
 	
@@ -380,10 +381,10 @@ string Ceylan::encodeToPhonetic( const std::string & message ) throw()
 		else
 			result += " " ;	
 	
-		if (::isupper( *it ) )
+		if ( ::isupper( *it ) )
 			result += toUppercase( phonetics[ (*it) - 'A' ] ) ;			
 		else
-			if (::islower( *it ) )
+			if ( ::islower( *it ) )
 				result += phonetics[ (*it) - 'a' ] ;
 			else
 				result += *it ;
@@ -450,7 +451,7 @@ string Ceylan::demangleSymbol( const std::string & symbol ) throw()
 			+ ", shorten is "
 			+ shorten ) ;
 	
-		while (::isdigit( shorten[count] ) )
+		while ( ::isdigit( shorten[count] ) )
 		{
 			numString += shorten[count] ;
 			count++ ;
