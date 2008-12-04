@@ -58,12 +58,12 @@ win_pthread_MD5="xxx"
 
 # gcc: http://www.gnu.org/software/gcc/gcc.html
 
-gcc_VERSION="4.3.1"
+gcc_VERSION="4.3.2"
 
 gcc_ARCHIVE="gcc-${gcc_VERSION}.tar.bz2"
 gcc_DOWNLOAD_LOCATION="ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/gcc-${gcc_VERSION}"
 gcc_ALTERNATE_DOWNLOAD_LOCATION="ftp://ftp.uvsq.fr/pub/gcc/releases/gcc-${gcc_VERSION}"
-gcc_MD5="4afa0290cc3a41ac8822666f1110de98"
+gcc_MD5="5dfac5da961ecd5f227c3175859a486d"
 gcc_BUILD_TREE="gcc-${gcc_VERSION}-buildTree"
 gcc_SOURCE_TREE="gcc-${gcc_VERSION}-sourceTree"
 
@@ -132,27 +132,28 @@ dswifi_MD5=""
 
 # dot: http://www.research.att.com/sw/tools/graphviz/
 
-# Actually 2.20.2:
+# Actually 2.20.3 (defined in configure-template.ac):
 dot_VERSION="@DOT_VERSION@"
 dot_ARCHIVE="graphviz-${dot_VERSION}.tar.gz"
 dot_DOWNLOAD_LOCATION="http://www.graphviz.org/pub/graphviz/ARCHIVE"
 dot_ALTERNATE_DOWNLOAD_LOCATION=""
-dot_MD5="8129b4682efbf0cf321c2ec8f7994003"
+dot_MD5="4d94c4b809a5c095acfc973d8d207fa9"
 
 
-# Actually 1.5.6:
 # doxygen: http://www.stack.nl/~dimitri/doxygen/
 
+# Actually 1.5.7.1 (defined in configure-template.ac):
 doxygen_VERSION="@DOXYGEN_VERSION@"
 doxygen_ARCHIVE="doxygen-${doxygen_VERSION}.src.tar.gz"
 doxygen_DOWNLOAD_LOCATION="ftp://ftp.stack.nl/pub/users/dimitri"
 doxygen_ALTERNATE_DOWNLOAD_LOCATION=""
-doxygen_MD5="779974eedf011ed52e1fe21fc2d5079c"
+doxygen_MD5="bc35dfd52bdae0247b862e67e0cbe7d7"
 
 
 
 # tidy: http://tidy.sourceforge.net/ (currently deactivated)
 
+# Not used anymore (mess way too much the HTML content):
 tidy_ARCHIVE="tidy_src.tgz"
 tidy_DOWNLOAD_LOCATION="http://tidy.sourceforge.net/src"
 tidy_ALTERNATE_DOWNLOAD_LOCATION=""
