@@ -382,7 +382,7 @@ nedit.autoWrap: Continuous
 nedit.wrapMargin: 0
 nedit.autoIndent: Auto
 nedit.autoSave: True
-nedit.openInTab: True
+nedit.openInTab: False
 nedit.saveOldVersion: False
 nedit.showMatching: Delimiter
 nedit.matchSyntaxBased: True
@@ -400,7 +400,7 @@ nedit.sortOpenPrevMenu: True
 nedit.statisticsLine: True
 nedit.iSearchLine: True
 nedit.sortTabs: True
-nedit.tabBar: True
+nedit.tabBar: False
 nedit.tabBarHideOne: True
 nedit.toolTips: True
 nedit.globalTabNavigate: False
