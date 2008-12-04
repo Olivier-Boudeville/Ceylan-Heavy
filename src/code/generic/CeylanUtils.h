@@ -10,6 +10,7 @@
 
 #include <string>
 #include <list>
+#include <algorithm> // for std::find
 
 
 
@@ -71,7 +72,7 @@ namespace Ceylan
 	 */
 	inline Ceylan::Uint16 swapBytes( Ceylan::Uint16 arg ) throw()
 	{
-		return ( (arg<<8) | (arg>>8) ) ;
+		return static_cast<Ceylan::Uint16>( (arg<<8) | (arg>>8) ) ;
 	}
 	
 	
