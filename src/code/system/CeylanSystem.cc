@@ -872,7 +872,7 @@ string Ceylan::System::durationToString(
 	throw( SystemException )
 {
 
-	// What a shame, I spent hours on this stupid code !
+	// What a shame, I spent hours on this stupid code!
 
 
 	// These are <b>integer</b> divisions:
@@ -1914,11 +1914,14 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 
 		// Avoid zero division and do not stop at zero:
 		if ( currentMeasuredDuration == lastMeasuredDuration )
+		{
 			if ( currentMeasuredDuration == 0 )
 				continue ;
 			else
 				break ;
-
+		}
+		
+		
 		// Loop until a gentle slope is found (1%):
 		if ( Ceylan::Maths::Abs( static_cast<Ceylan::Float32>(
 					currentMeasuredDuration - lastMeasuredDuration ) )
@@ -2030,3 +2033,4 @@ bool Ceylan::System::setLegacyStreamSynchronization( bool synchronized )
 	return std::ios::sync_with_stdio( synchronized ) ;
 
 }
+
