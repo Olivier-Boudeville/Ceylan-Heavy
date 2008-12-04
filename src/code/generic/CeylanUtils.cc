@@ -11,8 +11,9 @@
 #include "CeylanFeatures.h"            // for areFileDescriptorsSupported
 
 
-#include <cstdio>                      // for kbhit.
+#include <cstdio>                      // for kbhit
 #include <ctime>
+#include <cstring>                     // for memcpy
 
 #include <algorithm>                   // for Split*
 #include <iostream>				       // for cerr, endl, cout
