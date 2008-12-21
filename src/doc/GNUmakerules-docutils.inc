@@ -21,11 +21,14 @@ RST_FILES = $(wildcard *.rst)
 AUX_GENERATED_FILES  = $(patsubst %.rst,%.aux,$(RST_FILES))
 TEX_GENERATED_FILES  = $(patsubst %.rst,%.tex,$(RST_FILES))
 OUT_GENERATED_FILES  = $(patsubst %.rst,%.out,$(RST_FILES))
+LOG_GENERATED_FILES  = $(patsubst %.rst,%.log,$(RST_FILES))
 HTML_GENERATED_FILES = $(patsubst %.rst,%.html,$(RST_FILES))
 PDF_GENERATED_FILES  = $(patsubst %.rst,%.pdf,$(RST_FILES))
 
+
 RST_GENERATED_FILES =  $(AUX_GENERATED_FILES) $(TEX_GENERATED_FILES)      \
-	$(OUT_GENERATED_FILES) $(HTML_GENERATED_FILES) $(PDF_GENERATED_FILES)   
+	$(OUT_GENERATED_FILES) $(LOG_GENERATED_FILES) $(HTML_GENERATED_FILES) \
+	$(PDF_GENERATED_FILES)   
 
 
 #RST_GENERATOR = update-docutils.sh
@@ -80,14 +83,19 @@ to-print: create-doc
 	@scp $(TMP_RST_REPOSITORY)/$(OVERALL_DOCUMENT_TARGET) $(PRINT_LOCATION) 
 		
 		
-clean: clean-doc-repository
+clean: clean-doc-repository clean-generated
 
 
 clean-doc-repository:
 	@echo "     Cleaning documentation repository in $(TMP_RST_REPOSITORY)"
 	-@rm -rf $(TMP_RST_REPOSITORY)
 			
-
+			
+clean-generated:
+	@echo "     Cleaning generated files"
+	-@rm -f $(RST_GENERATED_FILES)
+	
+	
 info: info-local
 
 
