@@ -132,7 +132,7 @@ fi
 #test_overriden_options="CPPFLAGS=\"-DTEST_CPPFLAGS\" LDFLAGS=\"-LTEST_LDFLAGS\""
 test_overriden_options=""
 
-configure_opt="-enable-strict-ansi --enable-debug $ceylan_install_prefix_opt $test_install_location_opt $test_overriden_options"
+configure_opt="-enable-strict-ansi --enable-debug --disable-rpath $ceylan_install_prefix_opt $test_install_location_opt $test_overriden_options"
 
 
 RM="/bin/rm -f"
