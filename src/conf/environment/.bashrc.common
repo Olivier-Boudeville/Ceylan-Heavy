@@ -9,7 +9,8 @@
 
 # Projects section.
 
-export LOANI_VERSION=0.6
+export LOANI_VERSION=latest
+
 
 # LOANI_BASE may have been set before by .bashrc.local:
 if [ -z "${LOANI_BASE}" ] ; then
@@ -47,14 +48,16 @@ export YAG_ROOT=/home/${USER}/Projects/Tools/yag/yag-osdl-${YAG_VERSION}
 
 export PROJECTS_BASE=$HOME/Projects
 
+export GAMES_BASE=${PROJECTS_BASE}/${LOCAL_PROJECT_OFFSET}
+
+export DARM=${GAMES_BASE}/DARM/trunk
+
 export GAMES_BASE=${PROJECTS_BASE}/OSDL-common/club/games
 
 export SKEL_VERSION=0.1
 export SKEL_ROOT=${GAMES_BASE}/Skelmiskapr-${SKEL_VERSION}
 export SKEL_SRC=${SKEL_ROOT}/src
 export SKEL_DOC=${SKEL_SRC}/doc
-
-export DARM_DOC=${GAMES_BASE}/Dans-l-antre-du-Roi-de-la-Montagne
 
 
 # For shell scripts:
