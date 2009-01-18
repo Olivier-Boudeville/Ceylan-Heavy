@@ -2,7 +2,7 @@
 
 .PHONY: full-doc create-doc regenerate-doc make-doc-repository prepare-hook \
 	view-doc to-print \
-	clean clean-doc-repository info-local
+	clean clean-doc-repository info-doc-local
 
 	
 # OVERALL_DOCUMENT_SOURCE and DOCUTILS_TOP should have been defined beforehand.
@@ -96,10 +96,10 @@ clean-generated:
 	-@rm -f $(RST_GENERATED_FILES)
 	
 	
-info: info-local
+info: info-doc-local
 
 
-info-local:
+info-doc-local:
 	@echo "OVERALL_DOCUMENT_SOURCE = $(OVERALL_DOCUMENT_SOURCE)"
 	@echo "OVERALL_DOCUMENT_TARGET = $(OVERALL_DOCUMENT_TARGET)"
 	@echo "PRINT_SERVER = $(PRINT_SERVER)"
