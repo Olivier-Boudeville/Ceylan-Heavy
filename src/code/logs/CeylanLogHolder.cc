@@ -4,6 +4,7 @@
 #include "CeylanLogPlugConsole.h"   // for console plug
 #include "CeylanLogPlugClassical.h" // for classical plug
 #include "CeylanLogPlugHTML.h"      // for HTML plug
+#include "CeylanLogPlugNull.h"      // for null plug
 
 
 #include "CeylanOperators.h"        // for string operators
@@ -16,7 +17,7 @@
 
 
 #ifdef CEYLAN_USES_CONFIG_H
-#include "CeylanConfig.h"      // for configure-time feature settings
+#include "CeylanConfig.h"           // for configure-time feature settings
 #endif // CEYLAN_USES_CONFIG_H
 
 
@@ -28,6 +29,7 @@ using namespace Ceylan::Log ;
 const string LogHolder::ConsolePlugOption   = "--consolePlug" ;
 const string LogHolder::ClassicalPlugOption = "--classicalPlug" ;
 const string LogHolder::HTMLPlugOption      = "--HTMLPlug" ;
+const string LogHolder::NullPlugOption      = "--nullPlug" ;
 
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -74,6 +76,12 @@ LogHolder::LogHolder( Ceylan::Uint16 argCount,
 			break ;
 		}	
 		
+		if ( arguments[ i ] == NullPlugOption )
+		{
+			_chosenPlug = NullPlug ;
+			break ;
+		}	
+		
 		// Do not touch argument if not recognized.
 		
 	}
@@ -97,20 +105,26 @@ LogHolder::LogHolder( Ceylan::Uint16 argCount,
 		{
 	
 			case consolePlug:
-				CEYLAN_LOG( "LogHolder: using console plug." ) ;
+				CEYLAN_LOG( "LogHolder: using the console plug." ) ;
 				LogPlugConsole::StartService( speakerName, immediateWrite ) ;
 				break ;
 	
 			case classicalPlug:
-				CEYLAN_LOG( "LogHolder: using classical plug." ) ;
+				CEYLAN_LOG( "LogHolder: using the classical plug." ) ;
 				LogPlugClassical::StartService( speakerName, immediateWrite ) ;
 				break ;
 	
 			case HTMLPlug:
-				CEYLAN_LOG( "LogHolder: using HTML plug." ) ;
+				CEYLAN_LOG( "LogHolder: using the HTML plug." ) ;
 				// No immediateWrite for LogPlugHTML:
 				LogPlugHTML::StartService( speakerName ) ;
 				break ;
+
+			case NullPlug:
+				CEYLAN_LOG( "LogHolder: using the null plug." ) ;
+				LogPlugNull::StartService( speakerName ) ;
+				break ;
+			
 			
 			default:	
 				CEYLAN_LOG( "Warning: LogHolder: "
@@ -130,6 +144,7 @@ LogHolder::LogHolder( Ceylan::Uint16 argCount,
 }
 
 
+
 LogHolder::~LogHolder() throw()
 {
 
@@ -137,29 +152,35 @@ LogHolder::~LogHolder() throw()
 	{
 	
 		case consolePlug:
-			CEYLAN_LOG( "LogHolder: stopping console plug." ) ;
+			CEYLAN_LOG( "LogHolder: stopping the console plug." ) ;
 			LogPlugConsole::StopService() ;
 			break ;
 	
 		case classicalPlug:
-			CEYLAN_LOG( "LogHolder: stopping classical plug." ) ;
+			CEYLAN_LOG( "LogHolder: stopping the classical plug." ) ;
 			LogPlugClassical::StopService() ;
 			break ;
 	
 		case HTMLPlug:
-			CEYLAN_LOG( "LogHolder: stopping HTML plug." ) ;
+			CEYLAN_LOG( "LogHolder: stopping the HTML plug." ) ;
 			LogPlugHTML::StopService() ;
+			break ;
+			
+		case NullPlug:
+			CEYLAN_LOG( "LogHolder: stopping the null plug." ) ;
+			LogPlugNull::StopService() ;
 			break ;
 			
 		default:	
 			std::cerr << "LogHolder destructor: "
-				"no valid plug available ! Aborting." << std::endl ;
+				"no valid plug available! Aborting." << std::endl ;
 			::exit( Ceylan::ExitFailure ) ;
 			break ;
 	
 	}
 
 }
+
 
 
 const string LogHolder::toString( Ceylan::VerbosityLevels level ) 
@@ -170,25 +191,29 @@ const string LogHolder::toString( Ceylan::VerbosityLevels level )
 	{
 	
 		case consolePlug:
-			return "LogHolder uses console plug" ;
+			return "LogHolder uses the console plug" ;
 			// break ;
 			
 		case classicalPlug:
-			return "LogHolder uses classical plug" ;
+			return "LogHolder uses the classical plug" ;
 			// break ;
 	
 		case HTMLPlug:
-			return "LogHolder uses HTML plug" ;
+			return "LogHolder uses the HTML plug" ;
+			// break ;
+			
+		case NullPlug:
+			return "LogHolder uses the null plug" ;
 			// break ;
 			
 		default:	
-			return "LogHolder uses an unknown plug ! (abnormal)" ;
+			return "LogHolder uses an unknown plug! (abnormal)" ;
 			// break ;
 	
 	}
 
-
 }	
+
 
 
 bool LogHolder::IsAKnownPlugOption( const std::string & option ) throw()
@@ -203,6 +228,10 @@ bool LogHolder::IsAKnownPlugOption( const std::string & option ) throw()
 	if ( option == HTMLPlugOption )
 		return true ;
 	
+	if ( option == NullPlugOption )
+		return true ;
+	
 	return false ;
 		
 }
+
