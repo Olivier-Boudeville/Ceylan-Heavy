@@ -1,4 +1,4 @@
-# Note to Ceylan developers :
+# Note to Ceylan developers:
 # This file (pkg.m4) is taken from pkg-config package.
 # It is put here so that the ceylan.m4 script can be correctly expanded
 # even if pkg-config is not available on the platform on which autogen.sh
@@ -7,7 +7,7 @@
 # If no pkg.m4 was found, then the generated configure script would include
 # unexpanded macros such as 'PKG_CHECK_MODULES(CEYLAN,ceylan-...' which would
 # cause its execution to fail with :
-# "syntax error near unexpected token `CEYLAN,ceylan-0.3'" 
+# "syntax error near unexpected token `CEYLAN,ceylan-X.Y'" 
 # even though these lines would not be executed, as the absence of pkg-config
 # would have been detected.
 
