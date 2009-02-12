@@ -70,14 +70,14 @@ LogAggregator::~LogAggregator() throw()
 
 	// Deallocating gathered channels, which will deallocate their messages:
 	
-	// Curiously enough, a const_iterator can be used too !
+	// Curiously enough, a const_iterator can be used too!
 	for ( list<LogChannel *>::iterator it = _channelList.begin(); 
-		it != _channelList.begin(); it++ )
+		it != _channelList.end(); it++ )
 	{
 		if ( (*it) != 0 )
 			delete (*it) ;
-	}		
-
+	}
+	
 }
 
 
@@ -385,7 +385,7 @@ void LogAggregator::createLoggableChannelFrom( LogMessage & message )
 	if ( ! _beSmart )
 	{
 		CEYLAN_LOG( "LogAggregator::createLoggableChannelFrom: "
-			"being not smart, store message inconditionnally "
+			"being not smart, store message unconditionally "
 			"as if it were basic." ) ;
 		createBasicChannelFrom( message ) ;
 		return ; 
@@ -467,9 +467,9 @@ void LogAggregator::createLoggableChannelFrom( LogMessage & message )
 #if CEYLAN_DEBUG
 
 		if ( (*it) == 0 )
-		throw LogException( 
-			"LogAggregator::createLoggableChannelFrom: "
-			"null pointer in channel list." ) ;		
+			throw LogException( 
+				"LogAggregator::createLoggableChannelFrom: "
+				"null pointer in channel list." ) ;		
 			
 #endif // CEYLAN_DEBUG
 
@@ -485,7 +485,7 @@ void LogAggregator::createLoggableChannelFrom( LogMessage & message )
 			
 			/*
 			 * This element of the list is an ObjectChannel, maybe 
-			 * which had the mangled name ?
+			 * which had the mangled name?
 			 *
 			 */
 			
@@ -517,6 +517,7 @@ void LogAggregator::createLoggableChannelFrom( LogMessage & message )
 				 */
 				newChannel.addMessage( message ) ;
 				
+				delete identifierFromMessage ;
 				// Normally, only one channel should be to fix.
 				
 				return ;
@@ -568,7 +569,7 @@ void LogAggregator::storeBasicMessage( LogMessage & basicLogMessage )
 	CEYLAN_LOG( "LogAggregator::storeBasicMessage: message aimed at " 
 		+ basicLogMessage.getChannelName() ) ;
 
-	// Maybe the relevant basic channel already exists ?
+	// Maybe the relevant basic channel already exists?
 
 	LogChannel * channel = findBasicChannel( 
 		basicLogMessage.getChannelName() ) ;
@@ -576,7 +577,7 @@ void LogAggregator::storeBasicMessage( LogMessage & basicLogMessage )
 	if ( channel == 0 )
 	{
 	
-		CEYLAN_LOG( "LogAggregator::storeBasicMessage: Channel " 
+		CEYLAN_LOG( "LogAggregator::storeBasicMessage: channel " 
 			+ basicLogMessage.getChannelName() 
 			+ " not found, hence is to be created." ) ;
 		createBasicChannelFrom( basicLogMessage ) ;	
