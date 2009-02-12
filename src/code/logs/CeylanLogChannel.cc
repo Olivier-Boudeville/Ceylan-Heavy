@@ -31,7 +31,7 @@ LogChannel::LogChannel( const string & name ) throw():
 LogChannel::~LogChannel() throw() 
 {
 
-	for (  list<LogMessage *>::iterator it = _messages.begin(); 
+	for ( list<LogMessage *>::iterator it = _messages.begin(); 
 		it != _messages.end(); it++ )
 	{
 		delete (*it) ;
