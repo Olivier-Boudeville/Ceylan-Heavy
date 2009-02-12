@@ -54,8 +54,9 @@ CEYLAN_MINOR_VERSION=7
 CEYLAN_RELEASE=0
 
 # Full actual release date (not generated for better control).
+# (quote protection is necessary)
 # (tag : ST_RELEASE_DATE)
-CEYLAN_RELEASE_DATE=""
+CEYLAN_RELEASE_DATE='"Thursday, February 5, 2009"'
 
 # (tag : ST_VERSION)
 CEYLAN_VERSION=$(CEYLAN_MAJOR_VERSION).$(CEYLAN_MINOR_VERSION)
