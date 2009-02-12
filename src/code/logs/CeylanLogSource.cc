@@ -17,7 +17,8 @@ using namespace Ceylan::Log ;
 
 LogSource::LogSource( const string & name, LevelOfDetail levelOfDetail ) 
 		throw(): 
-	_channelName( name ), _level( DefaultLevelOfDetailForSource )
+	_channelName( name ), 
+	_level( DefaultLevelOfDetailForSource )
 {
 
 }
@@ -25,8 +26,7 @@ LogSource::LogSource( const string & name, LevelOfDetail levelOfDetail )
 
 
 LogSource::LogSource( const string & name, LogTransport & transport,
-		LevelOfDetail levelOfDetail )
-		throw(): 
+		LevelOfDetail levelOfDetail ) throw(): 
 	_channelName( name ), 
 	_level( DefaultLevelOfDetailForSource ),
 	_transport( & transport )  
@@ -121,13 +121,17 @@ void LogSource::sendToChannel( const string & channel, const string & message,
 {
 	
 	if ( _level >= levelOfDetail )
+	{
 		directSend( channel, message, levelOfDetail ) ; 		
+	}	
 #if CEYLAN_DEBUG_LOG
 	else
+	{
 		CEYLAN_LOG( "LogSource::sendToChannel: dropping message [" + message 
 			+ "] because the source has a LOD of " 
 			+ Ceylan::toString( _level ) + " and the message "
 			+ Ceylan::toString( levelOfDetail ) + "." ) ;
+	}		
 #endif // CEYLAN_DEBUG_LOG
 
 }
@@ -236,5 +240,4 @@ void LogSource::unlinkTransport() throw()
 	*/
 	
 }
-
 
