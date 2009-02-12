@@ -513,6 +513,13 @@ void FileSystemManager::SetDefaultFileSystemManager(
 	if ( deallocatePreviousIfAny )
     {
     
+		/*
+		 * As the current manager can be registered as well in a static
+		 * class-specific variable, its destructor must perform every
+		 * needed unsubscribing by itself.
+		 *
+		 */
+		  
 		if ( _CurrentDefaultFileSystemManager != 0 )
 			delete _CurrentDefaultFileSystemManager ;
 	
