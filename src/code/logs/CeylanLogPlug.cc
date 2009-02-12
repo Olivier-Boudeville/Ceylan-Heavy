@@ -395,6 +395,8 @@ void LogPlug::CreateBasicPlug() throw( LogException )
 	if ( Transport == 0 )
 		throw LogException( "LogPlug::CreateBasicPlug: "
 			"no transport available" ) ;
+	
+	// These log sources are static variables:
 						
 	LogrootLogSource = new LogSource( "Log root", *Transport ) ;
 	
@@ -418,7 +420,6 @@ void LogPlug::CreateBasicPlug() throw( LogException )
 	// Avoid having too many logs on the DS small screen:
 #if ! CEYLAN_ARCH_NINTENDO_DS
 
-	
 	LogrootLogSource->send( "Fatal standard log channel created." ) ;
 	LogrootLogSource->send( "Error standard log channel created." ) ;
 	LogrootLogSource->send( "Warning standard log channel created." ) ;
@@ -477,6 +478,7 @@ void LogPlug::StopService( bool warnIfAlreadyStopped ) throw()
 		InfoLogSource = 0 ;
 	}
 	
+	
 	if ( WarningLogSource != 0  ) 
 	{
 	
@@ -488,6 +490,7 @@ void LogPlug::StopService( bool warnIfAlreadyStopped ) throw()
     	delete WarningLogSource ;
 		WarningLogSource = 0 ;
 	}
+	
 	
 	if ( TraceLogSource != 0  ) 
 	{
@@ -501,6 +504,7 @@ void LogPlug::StopService( bool warnIfAlreadyStopped ) throw()
 		TraceLogSource = 0 ;
 	}
 	
+	
 	if ( DebugLogSource != 0  ) 
 	{
 	
@@ -513,6 +517,7 @@ void LogPlug::StopService( bool warnIfAlreadyStopped ) throw()
 		DebugLogSource = 0 ;
 	}
 		
+	
 	if ( ErrorLogSource != 0  ) 
 	{
 	
@@ -525,6 +530,7 @@ void LogPlug::StopService( bool warnIfAlreadyStopped ) throw()
 		ErrorLogSource = 0 ;
 	}
 	
+	
 	if ( FatalLogSource != 0  ) 
 	{
 	
@@ -536,6 +542,7 @@ void LogPlug::StopService( bool warnIfAlreadyStopped ) throw()
     	delete FatalLogSource ;
 		FatalLogSource = 0 ;
 	}
+	
 	
 	if ( LogrootLogSource != 0  )
 	{
@@ -553,7 +560,7 @@ void LogPlug::StopService( bool warnIfAlreadyStopped ) throw()
 		if ( warnIfAlreadyStopped )
 			std::cerr << "Error in LogPlug::StopService: "
 				"no log root channel available, "
-				"maybe LogPlug::StopService was called more than once ?" 
+				"maybe LogPlug::StopService was called more than once?" 
 				<< std::endl ;	
 	}
 		
