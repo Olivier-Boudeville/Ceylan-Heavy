@@ -202,6 +202,9 @@ if [ ! -f "${VERSION_FILE}" ] ; then
 	exit 5
 fi
 
+
+# This file was meant to be included in Makefiles, not to be sourced in
+# a shell, but the errors then triggered can be safely ignored here:
 . ${VERSION_FILE} 2>/dev/null
  
 PREFIX_DEFAULT=`pwd | sed 's|LOANI-repository/ceylan/Ceylan/trunk/src/conf/build||1'`LOANI-installations/Ceylan-${CEYLAN_MAJOR_VERSION}.${CEYLAN_MINOR_VERSION}
@@ -525,7 +528,7 @@ generateCustom()
 
 	# Add GNU gettext (autopoint) ?
 	
-	if [ "$do_stop_after_configure_generation" -eq 0 ] ; then
+	if [ $do_stop_after_configure_generation -eq 0 ] ; then
 		echo
 		echo "Now you are ready to run $RUNNING_DIR/$SOURCE_OFFSET/configure"
 		return
