@@ -587,7 +587,7 @@ namespace Ceylan
 		/**
 		 * Sleeps for the specified number of seconds.
 		 *
-		 * It makes  the  current process sleep until seconds seconds have
+		 * It makes the current process sleep until secondCount seconds have
 		 * elapsed or a signal arrives which is not ignored.
 		 *
 		 * @throw SystemException if the sleep failed.
@@ -595,7 +595,7 @@ namespace Ceylan
 		 * @see basicSleep methods for far better accuracy.
 		 *
 		 */
-		CEYLAN_DLL void sleepForSeconds( Second seconds ) 
+		CEYLAN_DLL void sleepForSeconds( Second secondCount ) 
 			throw( SystemException ) ;
 
 
@@ -648,9 +648,9 @@ namespace Ceylan
 		 * For example, no sleep may be shorter than 10 ms on Linux/i386
 		 * (prior to kernel 2.6) and 1 ms on Linux/Alpha.
          *
-		 * @param second the number of seconds to wait
+		 * @param secondCount the number of seconds to wait
 		 *
-		 * @param nanos the remaining part of the time to wait, expressed as
+		 * @param nanoCount the remaining part of the time to wait, expressed as
 		 * a number of nanoseconds. As full seconds should be taken into
 		 * account with the parameter <b>second</b>, <b>nanos</b> should be
 		 * less than one second, i.e. should be in the range 0 to 10E9 - 1.
@@ -663,7 +663,7 @@ namespace Ceylan
 		 * prior to calling this sleep method.
 		 *
 		 */
-		CEYLAN_DLL void basicSleep( Second seconds, Nanosecond nanos )
+		CEYLAN_DLL void basicSleep( Second secondCount, Nanosecond nanoCount )
 			throw( SystemException ) ;
 
 
@@ -701,11 +701,11 @@ namespace Ceylan
 		 * lengthy process, is done before actual run.
 		 * Otherwise the first call to smartSleep would return too late.
 		 *
-		 * @param seconds the number of seconds to wait, should be in the
+		 * @param secondCount the number of seconds to wait, should be in the
 		 * range 0 to 4200 to avoid overflow. For longer periods, use multiple
 		 * calls to smartSleep.
 		 *
-		 * @param micros the remaining part of the time to wait, expressed
+		 * @param microCount the remaining part of the time to wait, expressed
 		 * as a number of microseconds. As full seconds should be taken into
 		 * account with the parameter <b>seconds</b>, <b>micros</b> should be
 		 * less than one second, i.e. should be in the range 0 to 10E6 - 1.
@@ -720,17 +720,17 @@ namespace Ceylan
 		 * prior to calling this sleep method.
 		 *
 		 */
-		CEYLAN_DLL bool smartSleep( Second seconds, Microsecond micros )
+		CEYLAN_DLL bool smartSleep( Second secondCount, Microsecond microCount )
 			throw( SystemException ) ;
 
 
 		/**
 		 * Makes the process smartly sleep until the specified time arrives.
 		 *
-		 * @param second the second to wait for.
+		 * @param secondCount the number of seconds to wait for.
 		 *
-		 * @param micro the microsecond to wait for, expressed as a number of
-		 * microseconds.
+		 * @param microCount the microsecond to wait for, expressed as a 
+		 * number of microseconds.
 		 * As full seconds should be taken into account with the parameter
 		 * <b>second</b>, <b>micros</b> should be less than one second, i.e.
 		 * should be in the range 0 to 10E6 - 1.
@@ -745,8 +745,8 @@ namespace Ceylan
 		 * prior to calling this sleep method.
 		 *
 		 */
-		CEYLAN_DLL bool smartSleepUntil( Second second, Microsecond micro )
-			throw( SystemException ) ;
+		CEYLAN_DLL bool smartSleepUntil( Second secondCount, 
+			Microsecond microCount ) throw( SystemException ) ;
 
 
 
