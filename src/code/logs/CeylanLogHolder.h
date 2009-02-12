@@ -18,28 +18,38 @@ namespace Ceylan
 	
 	
 		/**
-		 * List of the log plugs available to the LogHolder :
-		 *    - consolePlug : all logs are output in standard console streams,
+		 * List of the log plugs available to the LogHolder:
+		 *
+		 * - consolePlug: all logs are output in standard console streams,
 		 * the default one being the standard log stream (clog), the others 
 		 * being the standard output stream (cout) and the standard error
-		 * stream (cerr). Associated command-line option : '--consolePlug'.
-		 *    - classicalPlug : all logs are output in a *.log file, whose
+		 * stream (cerr). Associated command-line option: '--consolePlug'.
+		 *
+		 * - classicalPlug: all logs are output in a *.log file, whose
 		 * filename by default matches the executable name, with a raw 
 		 * encoding, all logs in chronological order. Associated 
-		 * command-line option : '--classicalPlug'.
-		 *    - HTMLPlug : all logs are output in a set of HTML files 
-		 * gathered by a generated frameset, where each log channel has a 
-		 * dedicated HTML page. Associated command-line option :
-		 * '--HTMLPlug'.
+		 * command-line option: '--classicalPlug'
 		 *
+		 * - HTMLPlug: all logs are output in a set of HTML files 
+		 * gathered by a generated frameset, where each log channel has a 
+		 * dedicated HTML page. Associated command-line option:
+		 * '--HTMLPlug'
+		 *
+		 * - nullPlug: no logs are stored. Associated command-line option:
+		 * '--nullPlug'
+		 *   
 		 */
 		enum KnownPlugs 
 		{
+		
 			consolePlug,
 			classicalPlug,
-			HTMLPlug							
+			HTMLPlug,
+			nullPlug
+										
 		} ;
 	
+		
 		
 		/**
 		 * The LogHolder object is made to be instanciated as an automatic
@@ -54,7 +64,10 @@ namespace Ceylan
 		 * in the command line, then the HTML log plug with be selected
 		 * instead of the classical raw text plug ('--classicalPlug') or the
 		 * console plug ('--consolePlug'), and log messages will be output
-		 * accordingly. The classical plug is the default one.
+		 * accordingly.
+		 * Chosing '--nullPlug' will result in no logs being output.
+		 *
+		 * The classical plug is the default one.
 		 *
 		 * The LogHolder instance should preferably by created outside the
 		 * try/catch pair to ensure it is destroyed after all automatic
@@ -63,7 +76,7 @@ namespace Ceylan
 		 * a LogHolder instance should result in an exception, instead an
 		 * emergency shutdown is triggered.
 		 *
-		 * @example : 
+		 * @example: 
 		 * <pre>
 		 * int main( int argc, char * argv[] )
 		 * {
@@ -88,7 +101,7 @@ namespace Ceylan
 	 	 *
 		 *
 	 	 */
-		class CEYLAN_DLL LogHolder : public TextDisplayable
+		class CEYLAN_DLL LogHolder: public TextDisplayable
 		{
 	
 				
@@ -181,6 +194,13 @@ namespace Ceylan
 				 * plug.		
 				 */		
 				static const std::string HTMLPlugOption ;
+
+										
+				/**
+				 * Command-line option which is to be used to select the null
+				 * plug.		
+				 */		
+				static const std::string NullPlugOption ;
 										
 				
 				/**
@@ -231,3 +251,4 @@ namespace Ceylan
 }
 
 #endif // CEYLAN_LOG_HOLDER_H_
+
