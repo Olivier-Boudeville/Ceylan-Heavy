@@ -260,7 +260,7 @@ generateCustom()
 
 	echo "--- generating build system"
 	
-	if [ "$do_remove_generated" -eq 0 ] ; then
+	if [ $do_remove_generated -eq 0 ] ; then
 		echo
 		echo " - removing all generated files"
 		./cleanGeneratedConfigFiles.sh
@@ -359,7 +359,7 @@ generateCustom()
 
 	# Add GNU gettext (autopoint) ?
 	
-	if [ "$do_stop_after_configure" -eq 0 ] ; then
+	if [ $do_stop_after_configure -eq 0 ] ; then
 		echo
 		echo "Now you are ready to run configure"
 		return
