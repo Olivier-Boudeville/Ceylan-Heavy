@@ -15,32 +15,34 @@ noinst_HEADERS = CeylanLogLight.h CeylanLogAggregatorHTMLFragments.h
 
 
 LOGS_INTERFACES = \
-	CeylanLog.h                          \
-	CeylanLogAggregator.h                \
 	CeylanLogAggregatorConsole.h         \
+	CeylanLogAggregator.h                \
 	CeylanLogAggregatorHTML.h            \
 	CeylanLogAggregatorRaw.h             \
 	CeylanLogChannel.h                   \
+	CeylanLog.h                          \
 	CeylanLogHolder.h                    \
 	CeylanLogIncludes.h                  \
 	CeylanLogListener.h                  \
 	CeylanLogMessage.h                   \
-	CeylanLogPlug.h                      \
 	CeylanLogPlugClassical.h             \
 	CeylanLogPlugConsole.h               \
+	CeylanLogPlug.h                      \
 	CeylanLogPlugHTML.h                  \
+	CeylanLogPlugNull.h                  \
 	CeylanLogSource.h                    \
 	CeylanLogTransport.h                 \
+	CeylanMuteLogSource.h                \
 	CeylanLogTransportListenerRaw.h
 	     
 	     
 	     
 LOGS_IMPLEMENTATIONS = \
-	CeylanLog.cc                         \
 	CeylanLogAggregator.cc               \
 	CeylanLogAggregatorConsole.cc        \
 	CeylanLogAggregatorHTML.cc           \
 	CeylanLogAggregatorRaw.cc            \
+	CeylanLog.cc                         \
 	CeylanLogChannel.cc                  \
 	CeylanLogHolder.cc                   \
 	CeylanLogListener.cc                 \
@@ -49,7 +51,9 @@ LOGS_IMPLEMENTATIONS = \
 	CeylanLogPlugClassical.cc            \
 	CeylanLogPlugConsole.cc              \
 	CeylanLogPlugHTML.cc                 \
+	CeylanLogPlugNull.cc                 \
 	CeylanLogSource.cc                   \
 	CeylanLogTransport.cc                \
+	CeylanMuteLogSource.cc               \
 	CeylanLogTransportListenerRaw.cc
 

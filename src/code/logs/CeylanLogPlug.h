@@ -11,6 +11,7 @@
 namespace Ceylan
 {
 
+
 	namespace Log
 	{
 
@@ -44,6 +45,7 @@ namespace Ceylan
 		class LogAggregator ;
 		
 		
+		
 		/**
 		 * This class is in charge of managing the core of the Log system:
 		 * it maintains a shared knowledge about all the implementation 
@@ -60,8 +62,8 @@ namespace Ceylan
 		 * gathering of static methods. 
 		 *
 		 * @note The log system is not designed specifically to be used in
-		 * a multithread (or IRQ-based) context: it is most probably not
-		 * reetrant.
+		 * a multithread (or IRQ-based) context: it was not designed to be
+		 * reentrant.
 		 *
 		 */
 		class CEYLAN_DLL LogPlug
@@ -235,6 +237,14 @@ namespace Ceylan
 				 *
 				 */
 				static void CreateBasicPlug() throw ( LogException ) ;
+				
+				
+				/**
+				 * Creates a null plug, formed of muted channels.
+				 *
+				 */
+				static void CreateNullPlug() throw ( LogException ) ;
+				
 				
 				
 		        /**

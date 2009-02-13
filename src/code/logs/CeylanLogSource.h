@@ -1,6 +1,7 @@
 #ifndef CEYLAN_LOG_SOURCE_H_
 #define CEYLAN_LOG_SOURCE_H_
 
+
 #include "CeylanLog.h"               // for LevelOfDetail, LogException etc.
 #include "CeylanTextDisplayable.h"   // for TextDisplayable etc.
 
@@ -10,6 +11,7 @@
 
 namespace Ceylan
 {
+
 
 	namespace Log
 	{
@@ -40,7 +42,7 @@ namespace Ceylan
 			
 				/**
 				 * Constructs a LogSource whose channel has for name
-				 * <b>name</b>, with no registered LogTransport
+				 * <b>name</b>, with no registered LogTransport.
 				 *
 				 * @see setTransport
 				 * 
@@ -75,7 +77,8 @@ namespace Ceylan
 				/// Basic virtual destructor.
 				virtual ~LogSource() throw() ;
 		
-		
+
+
 				/**
 				 * Returns whether this Log source has a registered channel
 				 * name.
@@ -83,15 +86,19 @@ namespace Ceylan
 				 */
 				bool hasChannelName() const throw() ;				
 				
+				
 				/// Sets this LogSource channel name.
 				void setChannelName( const std::string & channelName ) throw() ;
+		
 		
 				/// Returns this LogSource channel name.
 				std::string getChannelName() const throw() ;
 				
 				
+				
 				/// Sets this LogSource level of detail of interest.
 				void setLevelOfDetail( LevelOfDetail newLevel ) throw() ;
+		
 		
 				/// Returns this LogSource channel name.
 				LevelOfDetail getLevelOfDetail() const throw() ;
@@ -155,15 +162,20 @@ namespace Ceylan
 					) const throw( LogException ) ; 
 			
 				
+				
+				
 				/// Sets a new Log transport for this LogSource.
 				virtual void setTransport( LogTransport & newTransport ) 
 					throw() ;
 				
+				
 				/// Returns this LogSource's Log transport.
 				virtual LogTransport * getTransport() const throw() ;
 				
+				
 				/// Tells whether this LogSource has a registered Log transport.
 				virtual bool hasTransport() const throw() ;
+
 
 			
 				/**
@@ -207,11 +219,13 @@ namespace Ceylan
 				/// Stores this LogSource channel name.
 				std::string _channelName ;
 				
+				
 				/// The current level of detail of interest for this Log source.
 				LevelOfDetail _level ;
 				
+				
 				/**
-				 * Suppress the link between this LogSource and its Log
+				 * Suppresses the link between this LogSource and its Log
 				 * transport.
 				 *
 				 */
@@ -258,3 +272,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_LOG_SOURCE_H_
+

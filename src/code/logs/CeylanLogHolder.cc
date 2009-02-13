@@ -32,6 +32,7 @@ const string LogHolder::HTMLPlugOption      = "--HTMLPlug" ;
 const string LogHolder::NullPlugOption      = "--nullPlug" ;
 
 
+
 #if CEYLAN_ARCH_NINTENDO_DS
 
 KnownPlugs LogHolder::DefaultPlug = consolePlug ;
@@ -78,7 +79,7 @@ LogHolder::LogHolder( Ceylan::Uint16 argCount,
 		
 		if ( arguments[ i ] == NullPlugOption )
 		{
-			_chosenPlug = NullPlug ;
+			_chosenPlug = nullPlug ;
 			break ;
 		}	
 		
@@ -120,9 +121,9 @@ LogHolder::LogHolder( Ceylan::Uint16 argCount,
 				LogPlugHTML::StartService( speakerName ) ;
 				break ;
 
-			case NullPlug:
+			case nullPlug:
 				CEYLAN_LOG( "LogHolder: using the null plug." ) ;
-				LogPlugNull::StartService( speakerName ) ;
+				LogPlugNull::StartService() ;
 				break ;
 			
 			
@@ -166,7 +167,7 @@ LogHolder::~LogHolder() throw()
 			LogPlugHTML::StopService() ;
 			break ;
 			
-		case NullPlug:
+		case nullPlug:
 			CEYLAN_LOG( "LogHolder: stopping the null plug." ) ;
 			LogPlugNull::StopService() ;
 			break ;
@@ -202,7 +203,7 @@ const string LogHolder::toString( Ceylan::VerbosityLevels level )
 			return "LogHolder uses the HTML plug" ;
 			// break ;
 			
-		case NullPlug:
+		case nullPlug:
 			return "LogHolder uses the null plug" ;
 			// break ;
 			

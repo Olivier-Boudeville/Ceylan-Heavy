@@ -1,6 +1,7 @@
 #include "CeylanLogPlug.h"
 
 #include "CeylanLogSource.h"     // for setLevelOfDetail, etc.
+#include "CeylanMuteLogSource.h" // for MuteLogSource
 
 #include "CeylanLogTransport.h"  // for Transport
 #include "CeylanLogListener.h"   // for Listener
@@ -430,6 +431,41 @@ void LogPlug::CreateBasicPlug() throw( LogException )
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
+
+
+
+void LogPlug::CreateNullPlug() throw( LogException )
+{
+	
+	CEYLAN_LOG( "Creating muted null channels." ) ;
+
+	/*
+	 * Instances must be created, as LogPlug::info for example dereferences
+	 * the associated log source pointer, and would throw an exception should
+	 * that pointer be null.
+	 *
+	 * As many instances should be created as standard channels, since they
+	 * will be deallocated as if they were different insteances (no multiple
+	 * deletes of the same pointer wanted), in StopService.
+	 *
+	 */
+	 
+	LogrootLogSource = new MuteLogSource() ;
+	
+	FatalLogSource   = new MuteLogSource() ;
+	
+	ErrorLogSource   = new MuteLogSource() ;
+		
+	WarningLogSource = new MuteLogSource() ;
+	
+	DebugLogSource   = new MuteLogSource() ;
+
+	TraceLogSource   = new MuteLogSource() ;
+	
+	InfoLogSource    = new MuteLogSource() ;
+		
+}
+
 
 
 
