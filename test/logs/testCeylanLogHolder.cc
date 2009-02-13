@@ -15,6 +15,11 @@ using std::endl ;
 /**
  * Test of LogHolder.
  *
+ * @note One can specify the various log options to test the available
+ * plugs (ex: --consolePlug, --classicalPlug, --HTMLPlug, --nullPlug).
+ *
+ * For example: './testCeylanLogHolder --HTMLPlug'.
+ *
  * @see LogHolder, LogPlug.
  *
  */
@@ -58,7 +63,7 @@ int main( int argc, char * argv[] )
 
     catch ( const Ceylan::Exception & e )
     {
-        cerr << "Ceylan exception caught : "
+        cerr << "Ceylan exception caught: "
         	<< e.toString( Ceylan::high ) << endl ;
 		return Ceylan::ExitFailure ;
 
@@ -66,7 +71,7 @@ int main( int argc, char * argv[] )
 
     catch ( const std::exception & e )
     {
-        cerr << "Standard exception caught : " 
+        cerr << "Standard exception caught: " 
 			 << e.what() << endl ;
 		return Ceylan::ExitFailure ;
 
