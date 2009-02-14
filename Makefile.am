@@ -331,3 +331,11 @@ uninstall-hook:
 	files from $(DESTDIR)@CEYLAN_INSTALL_SHARED_DIR@ @CEYLAN_DEFAULT_STYLE@"
 	-@rm -rf $(DESTDIR)@CEYLAN_INSTALL_SHARED_DIR@
 
+
+RELEASE_FILES="ceylan-@CEYLAN_VERSION@.tar.gz ceylan-@CEYLAN_VERSION@.tar.bz2"
+
+
+upload-release: dist dist-bzip2
+	@echo; echo "@CEYLAN_COMMAND_STYLE@    Uploading release files $(RELEASE_FILES) to Sourceforge @CEYLAN_DEFAULT_STYLE@"
+	@rsync -avP -e ssh $(RELEASE_FILES) @CEYLAN_DEFAULT_SF_USER@@frs.sourceforge.net:uploads/
+
