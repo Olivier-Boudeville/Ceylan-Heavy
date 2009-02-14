@@ -1,0 +1,12 @@
+Created on Saturday, February 14, 2009.
+
+
+		Ceylan 0.7 main changes, compared to the 0.6 version
+	
+	
+	
+ - log system updated a bit and fixed 
+ - many shell scripts improved and extented
+ - lots of minor improvements
+
+For more details, see the ChangeLog file or go to http://ceylan.sourceforge.net/Ceylan-0.7/ChangeLog.html

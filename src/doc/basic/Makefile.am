@@ -6,17 +6,21 @@
 	clean-local real-clean
 
 
+
+# Change it to 'true' to have ChangeLog generated from SVN:
+CREATE_CHANGELOG=false
+
+
+
 all: update-basic-doc-files
 
 
 # To hide date format from automake which does not 
-# like non-POSIX variable name :
+# like non-POSIX variable name:
 DATE_FORMAT = '+%Y, %B %-e'
 
 CURRENT_DATE= `LANG=; date $(DATE_FORMAT)`
 
-# Change it to 'true' to have ChangeLog generated from SVN :
-CREATE_CHANGELOG=false
 
 
 EXTRA_DIST = $(RAW_DOC_FILES) ${top_builddir}/ChangeLog
@@ -43,12 +47,12 @@ install-data-local: $(RAW_DOC_FILES) # update-changelog
 	NEWS README THANKS TODO $(DESTDIR)@CEYLAN_LOCAL_DOC_DIR@
  
  
-# Creates automatically a standard ChangeLog file from SVN logs :
+# Creates automatically a standard ChangeLog file from SVN logs:
 CHANGELOG_GENERATOR = `which svn2cl 2>/dev/null`
 
 # The '-d' option could be used as well to have distributed Change Logs
-# in each directory :
-CHANGELOG_COMMAND   = "$(CHANGELOG_GENERATOR)"
+# in each directory:
+CHANGELOG_COMMAND = "$(CHANGELOG_GENERATOR)"
 
 
 update-changelog: 
@@ -70,10 +74,12 @@ effective-changelog-creation:
 	available, nothing done@CEYLAN_DEFAULT_STYLE@"; else \
 	if [ -d "${top_srcdir}/.svn" ] ; then \
 	$(CHANGELOG_COMMAND) ${top_srcdir} --linelen=10000 \
-	-o ${top_builddir}/ChangeLog ; else \
-	echo "@CEYLAN_WARNING_STYLE@ No ChangeLog created as not in a SVN \
-	tree@CEYLAN_DEFAULT_STYLE@"; touch ${top_builddir}/ChangeLog ; fi ; fi
-	-@/bin/rm -f ${top_builddir}/ChangeLog.bak
+	-o ${srcdir}/ChangeLog && \
+	echo "@CEYLAN_COMMAND_STYLE@    Changes have been written in \
+	${srcdir}/ChangeLog@CEYLAN_DEFAULT_STYLE@" \
+	; else echo "@CEYLAN_WARNING_STYLE@ No ChangeLog created as not in a SVN \
+	tree@CEYLAN_DEFAULT_STYLE@"; touch ${srcdir}/ChangeLog ; fi ; fi
+	-@/bin/rm -f ${srcdir}/ChangeLog.bak
 
 
 html-changelog:
