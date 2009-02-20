@@ -11,6 +11,7 @@ testsgeneric_PROGRAMS = \
 	testCeylanCountedPointer.exe                  \
 	testCeylanHolder.exe                          \
 	testCeylanLoadable.exe                        \
+	testCeylanLocale.exe                          \
 	testCeylanMostBasic.exe                       \
 	testCeylanOperators.exe                       \
 	testCeylanRegularExpression.exe               \
@@ -30,6 +31,7 @@ testCeylanCommandLineOptions_exe_SOURCES   = testCeylanCommandLineOptions.cc
 testCeylanCountedPointer_exe_SOURCES       = testCeylanCountedPointer.cc
 testCeylanHolder_exe_SOURCES               = testCeylanHolder.cc
 testCeylanLoadable_exe_SOURCES             = testCeylanLoadable.cc
+testCeylanLocale_exe_SOURCES               = testCeylanLocale.cc
 testCeylanMostBasic_exe_SOURCES            = testCeylanMostBasic.cc
 testCeylanOperators_exe_SOURCES            = testCeylanOperators.cc
 testCeylanRegularExpression_exe_SOURCES    = testCeylanRegularExpression.cc
