@@ -13,6 +13,7 @@
 #include "CeylanHeaderVersion.h"
 #include "CeylanHolder.h"
 #include "CeylanLibtoolVersion.h"
+#include "CeylanLocale.h"
 #include "CeylanOperators.h"
 #include "CeylanRegularExpression.h"
 #include "CeylanResource.h"
@@ -33,3 +34,4 @@
 
 
 #endif // CEYLAN_GENERIC_INCLUDES_H_
+
