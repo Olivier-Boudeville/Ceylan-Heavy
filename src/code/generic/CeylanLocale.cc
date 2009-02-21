@@ -43,7 +43,8 @@ const std::string GermanLocaleName  = "german" ;
 
 
 
-LocalizationSettings::LocalizationSettings() throw( LocalizationException )
+LocalizationSettings::LocalizationSettings() throw( LocalizationException ):
+	_currentLocale( 0 )
 {
 
 }
@@ -57,6 +58,18 @@ LocalizationSettings::~LocalizationSettings() throw()
 
 
 
+void LocalizationSettings::addSupportedLocale( LocaleCode code )
+	throw( LocalizationException )
+{
+	
+		
+	// Adds only if not already there:		
+	if ( ! isSupported( code ) )
+		_supportedLocales.push_back( code ) ;
+		
+}
+
+
 void LocalizationSettings::addSupportedLocale( const string & localeName )
 	throw( LocalizationException )
 {
@@ -65,14 +78,9 @@ void LocalizationSettings::addSupportedLocale( const string & localeName )
 		throw LocalizationException( 
 			"LocalizationSettings::addSupportedLocale failed: locale '"
 			+ localeName + "' not known." ) ;
+		
+	addSupportedLocale( GetLocaleCodeFromName( localeName ) ) ;
 	
-	LocaleCode code = GetLocaleCodeFromName( localeName ) ;
-		
-		
-	// Adds only if not already there:		
-	if ( ! isSupported( code ) )
-		_supportedLocales.push_back( code ) ;
-		
 }
 
 
@@ -99,8 +107,8 @@ bool LocalizationSettings::isSupported( const std::string & localeName ) throw()
 }
 
 
-
-const list<LocaleCode> & LocalizationSettings::getSupportedLocales() 
+				
+const std::list<LocaleCode> & LocalizationSettings::getSupportedLocales() 
 	const throw()
 {
 
@@ -110,20 +118,87 @@ const list<LocaleCode> & LocalizationSettings::getSupportedLocales()
 
 
 
-const string LocalizationSettings::toString( VerbosityLevels level ) 
+
+bool LocalizationSettings::hasCurrentLocale() const throw()
+{
+
+	return ( _currentLocale != 0 ) ;
+	
+}
+
+
+
+LocaleCode LocalizationSettings::getCurrentLocaleCode() const 
+	throw( LocalizationException )
+{
+
+	if ( _currentLocale == 0 )
+		throw LocalizationException( 
+			"LocalizationSettings::getCurrentLocaleCode failed: "
+			"no current locale set." ) ;
+			
+	return _currentLocale ;	
+}
+
+				
+				
+const std::string & LocalizationSettings::getCurrentLocaleName() const 
+	throw( LocalizationException )				
+{
+
+	return GetLocaleNameFromCode( getCurrentLocaleCode() ) ;
+	
+}
+
+				
+								
+void LocalizationSettings::setCurrentLocale( LocaleCode code ) 
+	throw( LocalizationException )
+{
+
+	if ( ! isSupported( code ) )
+		throw LocalizationException( 
+			"LocalizationSettings::setCurrentLocale failed for locale code "
+				+ Ceylan::toString( code ) + ": locale not supported." ) ;
+				
+	_currentLocale = code ;
+	
+}
+														
+
+
+void LocalizationSettings::setCurrentLocale( const std::string & localeName ) 
+	throw( LocalizationException )
+{
+
+	setCurrentLocale( GetLocaleCodeFromName( localeName ) ) ;
+	
+}
+														
+
+
+const std::string LocalizationSettings::toString( VerbosityLevels level ) 
 	const throw()
 {
 
 	if ( _supportedLocales.empty() )
 		return "No locale supported" ;
-		
+	
+	string currentMessage ;
+	
+	if ( hasCurrentLocale() )
+		currentMessage = "Current locale is " + getCurrentLocaleName() ;
+	else
+		currentMessage = "No current locale set" ;
+			
 	list<string> res ;
 	
 	for ( list<LocaleCode>::const_iterator it = _supportedLocales.begin();
 			it != _supportedLocales.end(); it++ )
 		res.push_back( GetLocaleNameFromCode( *it ) ) ;
 		
-	return "Supported locales are: " + Ceylan::formatStringList( res ) ;
+	return currentMessage + ". Supported locales are: " 
+		+ Ceylan::formatStringList( res ) ;
 	
 }
 
@@ -165,8 +240,8 @@ LocaleCode LocalizationSettings::GetLocaleCodeFromName(
 				
 				
 				
-const string & LocalizationSettings::GetLocaleNameFromCode( LocaleCode code ) 
-	throw( LocalizationException )				
+const std::string & LocalizationSettings::GetLocaleNameFromCode( 
+	LocaleCode code ) throw( LocalizationException )				
 {
 
 	switch( code )
