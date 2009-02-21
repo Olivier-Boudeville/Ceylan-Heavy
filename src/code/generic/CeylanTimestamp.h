@@ -22,7 +22,7 @@ namespace Ceylan
 	 * computer.
 	 *	
 	 * @note On a distributed system, one should check that clocks are, at 
-	 * least roughly (ex : thanks to NTP), in synch.
+	 * least roughly (ex: thanks to NTP), in synch.
 	 *
 	 * @note To understand numerical conventions behind the time units, one can
 	 * have a look to UNIX 'ctime' manual, for example.
@@ -60,7 +60,7 @@ namespace Ceylan
 			 * Returns a user-friendly description of the state of this object.
 		     *
 			 * The timestamp format is [year/month/day hours:minutes:seconds]
-			 * For instance : [2004/05/07 19:07:54] 
+			 * For instance: [2004/05/07 19:07:54] 
 			 *
 			 * Another format could have been the one given by 
 			 * System::timeToString( System::getTime() ) ;
@@ -179,4 +179,6 @@ namespace Ceylan
 	
 }
 
+
 #endif // CEYLAN_TIME_STAMP_H_
+
