@@ -63,10 +63,21 @@ namespace Ceylan
 		typedef Ceylan::Float32 Real ;
 		
 		
-		/// Angles, expressed in degrees.
+		/**
+		 * Angles, expressed in degrees.
+		 *
+		 * @note Degrees typically range in [0;360[.
+		 *
+		 */
 		typedef Ceylan::Float32 AngleInDegrees ;
 		
-		/// Angles, expressed in radians.
+
+		/**
+		 * Angles, expressed in radians.
+		 *
+		 * @note Radians typically range in [0;2*Pi[.
+		 *
+		 */
 		typedef Ceylan::Float32 AngleInRadians ;
 		
 		
