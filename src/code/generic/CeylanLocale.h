@@ -54,6 +54,21 @@ namespace Ceylan
             virtual ~LocalizationSettings() throw() ;
 
 
+
+			// Locale support section.
+			
+
+			/**
+			 * Adds a new supported locale.
+			 *
+			 * @throw LocalizationException if the locale is not a 
+			 * known one.
+			 *
+			 */
+			virtual void addSupportedLocale( LocaleCode code )
+				throw( LocalizationException ) ;
+			
+			
 			/**
 			 * Adds a new supported locale.
 			 *
@@ -63,6 +78,7 @@ namespace Ceylan
 			 */
 			virtual void addSupportedLocale( const std::string & localeName )
 				throw( LocalizationException ) ;
+			
 			
 			
 			/**
@@ -80,13 +96,65 @@ namespace Ceylan
 			virtual bool isSupported( const std::string & localeName ) throw() ;
 			
 			 
-			
 			/**
 			 * Returns the list of the codes of all supported locales.
 			 *
 			 */
 			virtual const std::list<LocaleCode> & getSupportedLocales() 
 				const throw() ;
+			
+			
+			
+			 
+			 
+			// Current locale section.
+			
+			
+			/// Returns true iff a current locale is set.
+			virtual bool hasCurrentLocale() const throw() ;
+			
+			
+			/**
+			 * Returns the code of the current locale in use.
+			 *
+			 * @throw LocalizationException if none is set.
+			 *
+			 */
+			virtual LocaleCode getCurrentLocaleCode() const 
+				throw( LocalizationException ) ;
+			
+			
+			/**
+			 * Returns the name of the current locale in use.
+			 *
+			 * @throw LocalizationException if none is set.
+			 *
+			 */
+			virtual const std::string & getCurrentLocaleName() const 
+				throw( LocalizationException ) ;
+			
+			
+			
+			/**
+			 * Sets the current locale from its code.
+			 *
+			 * @throw LocalizationException if the operation failed.
+			 *
+			 */
+			virtual void setCurrentLocale( LocaleCode code ) 
+				throw( LocalizationException ) ;
+			
+			
+			/**
+			 * Sets the current locale from its name.
+			 *
+			 * @throw LocalizationException if the operation failed.
+			 *
+			 */
+			virtual void setCurrentLocale( const std::string & localeName ) 
+				throw( LocalizationException ) ;
+			
+			
 			
 			
             /**
@@ -151,7 +219,8 @@ namespace Ceylan
 
 			std::list<LocaleCode> _supportedLocales ;
 
-
+			LocaleCode _currentLocale ;
+			
 
 		private:
 		
