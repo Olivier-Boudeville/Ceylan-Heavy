@@ -87,9 +87,9 @@ extern "C"
 
 
 
-const Ceylan::Sint16 Ceylan::ExitSuccess      =  0 ;
-const Ceylan::Sint16 Ceylan::ExitFailure      =  1 ;
-const Ceylan::Sint16 Ceylan::ExitDebugFailure = 10 ;
+const Ceylan::ExitCode Ceylan::ExitSuccess      =  0 ;
+const Ceylan::ExitCode Ceylan::ExitFailure      =  1 ;
+const Ceylan::ExitCode Ceylan::ExitDebugFailure = 10 ;
 
 const std::string Ceylan::DefaultWaitForKeyMessage( 
 	"< Press any key to continue >" ) ;
