@@ -150,14 +150,16 @@ namespace Ceylan
 		std::list<std::string> & readOptions, 
 		Ceylan::Uint16 argumentCount, char ** argumentVector ) throw() ;
 		
+		
+	// Codes to be returned by executables on exit.
+	typedef Ceylan::Sint16 ExitCode ;
 	
-
 	/// Return value to be used on success.
-	extern CEYLAN_DLL const Ceylan::Sint16 ExitSuccess ;
+	extern CEYLAN_DLL const ExitCode ExitSuccess ;
 
 
 	/// Return value to be used on failure (any non zero value could be used).
-	extern CEYLAN_DLL const Ceylan::Sint16 ExitFailure ;
+	extern CEYLAN_DLL const ExitCode ExitFailure ;
 
 
 	/**
@@ -168,7 +170,7 @@ namespace Ceylan
 	 * a real basic assumption was unexpectedly not met.
 	 *
 	 */
-	extern CEYLAN_DLL const Ceylan::Sint16 ExitDebugFailure ;
+	extern CEYLAN_DLL const ExitCode ExitDebugFailure ;
 	
 	
 	/**
