@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 
-# Imports standard python modules :
+# Imports standard python modules:
 import os, os.path, sys, string, shutil, tempfile, fileUtils, time
 
 
 __doc__ = """
-Usage: tree_file_compare.py --reference APath [--mirror AnotherPath]
-Will scan first specified tree, in search of duplicated files (same content, different path). If a second tree is given, then will look for files whose content is in second tree but not in the first one, to ensure this reference tree is complete.
+Usage: tree-file-compare.py --reference APath [--mirror AnotherPath]
+Will scan first specified tree, in search of duplicated files (same content, different path). The resulting associations will be stored in ~/*-tree-file-compare.log files.If a second tree is given, then will look for files whose content is in second tree but not in the first one, to ensure the reference tree is complete.
 """
 
 
-# A scanned path will store, in a dictionary, a series of entries 
-# identifying the different file content found.
+# The scanning of a path will result in the storing, in a dictionary, of
+# a series of entries identifying the different file contents found.
 # Each entry has for key a md5 code, and its associated value is 
 # a list of the full relative paths of the files having that md5
 # code. 
@@ -25,19 +25,24 @@ log_file = None
 # Home directory should be writable:
 base_write_path = os.path.expanduser("~")
 
-file_base_name = time.strftime( "%Y%m%d-tree_file_compare.log", time.gmtime() )
+file_base_name = time.strftime( "%Y%m%d-tree-file-compare.log", time.gmtime() )
 
 log_filename = os.path.join( base_write_path, file_base_name ) 
+
 
 
 def output(message):
 	print message
 	log_file.write("%s\n" % message)
 	
+	
 
 def build_file_index_for(path):
 	"""Creates two (dictionary-based) file index for specified path."""
 
+	# content_dict: keys are MD5 codes, values are lists of relative paths.
+	# name_dict: keys are filenames, values are lists of relative paths.
+	
 	file_paths = fileUtils.getAllRelativeFilePathsFromRoot(path)
 
 	content_dict={}
@@ -70,26 +75,28 @@ def build_file_index_for(path):
 
 
 
-def display_content_duplicates(root_path,file_index):
+def display_content_duplicates(root_path,content_index):
 	"""Displays the duplicates in specified content file index."""
 	output( "Displaying duplicated content in tree %s:" % (root_path,))
-	for k in file_index.keys():
-		file_list = file_index[k]
+	for k in content_index.keys():
+		file_list = content_index[k]
 		if len(file_list) > 1:
 			#print "Following files located in path %s have the same content: %s." % (root_path,file_list)
 			output( "  + identical content: %s." % (file_list,) )			
 	output("")
 	
+	
 			
-def display_name_duplicates(root_path,file_index):
+def display_name_duplicates(root_path,name_index):
 	"""Displays the duplicates in specified name file index."""
 	output( "Displaying duplicated names in tree %s:" % (root_path,))
-	for k in file_index.keys():
-		file_list = file_index[k]
+	for k in name_index.keys():
+		file_list = name_index[k]
 		if len(file_list) > 1:
 			#print "Following files located in path %s have the same name: %s." % (root_path,file_list)
 			output( "  + duplicated names: %s." % (file_list,) )
 	output("")
+
 
 
 def compare_trees(ref_content_index,mirror_content_index):
@@ -108,6 +115,7 @@ def compare_trees(ref_content_index,mirror_content_index):
 	output("")
 	
 	
+	
 def check_completeness(ref_content_index,mirror_content_index):
 	"""Checks that all content of mirror tree is in reference tree, preferably with the same filenames."""
 	output("Checking completeness of reference regarding the mirror:")
@@ -116,6 +124,7 @@ def check_completeness(ref_content_index,mirror_content_index):
 			#print "Content whose MD5 code is %s is referenced in the mirror tree, as %s, and not available in reference." % (k,mirror_content_index[k])
 			output( "  + content corresponding to %s is in mirror but not in reference." % (mirror_content_index[k],) )	
 	output("")
+		
 		
 
 def write_hashes(log_file,content_index):
@@ -127,7 +136,8 @@ def write_hashes(log_file,content_index):
 		
 		
 		
-if __name__ == '__main__' :
+		
+if __name__ == '__main__':
 		
 	help_options = [ '-h', '--help' ]
 	verbose_options = [ '-v', '--verbose' ]
@@ -135,7 +145,7 @@ if __name__ == '__main__' :
 	options = help_options + verbose_options
 
 	# Defaults:
-	verbose=False
+	verbose = False
     	
 	#print 'Arguments specified are <%s>.' % ( sys.argv, )
 
@@ -152,29 +162,29 @@ if __name__ == '__main__' :
 	while len(sys.argv):
 
 		item = sys.argv.pop(0)
-		item_understood=False
+		item_understood = False
 
 		#print 'Examining argument %s.' % ( item, )
 		item_count += 1
 	
-		if item in help_options :
-			item_understood=True
+		if item in help_options:
+			item_understood = True
 			print __doc__ 
 			sys.exit( 0 )
 									
 		if item == "--reference":
-			item_understood=True
+			item_understood = True
 			reference_path = sys.argv.pop(0)            
 			#print "Set reference path to %s." % ( reference_path,)
 
 		if item == "--mirror":
-			item_understood=True
+			item_understood = True
 			mirror_path = sys.argv.pop(0)            
 			#print "Set mirror path to %s." % ( mirror_path,)
 
 		if item in verbose_options:
-			item_understood=True
-			verbose=True          
+			item_understood = True
+			verbose = True          
 			print "Verbose mode activated."
     
 		if not item_understood:
@@ -193,7 +203,8 @@ if __name__ == '__main__' :
 			
 	
 	log_file = open(log_filename,"w")
-	log_file.write( "Report generated on %s.\n" % (time.strftime("%a, %d %B %Y %H:%M:%S", time.gmtime()),))
+	
+	log_file.write( "Report generated on %s.\n" % ( time.strftime("%a, %d %B %Y %H:%M:%S", time.gmtime()),) )
 
 	log_file.write( "Arguments specified: %s" % (saved_args,) )
 		
