@@ -5,9 +5,27 @@ import os, os.path, sys, string, shutil, tempfile, fileUtils, time
 
 
 __doc__ = """
-Usage: tree-file-compare.py --reference APath [--mirror AnotherPath]
-Will scan first specified tree, in search of duplicated files (same content, different path). The resulting associations will be stored in ~/*-tree-file-compare.log files.If a second tree is given, then will look for files whose content is in second tree but not in the first one, to ensure the reference tree is complete.
+Usage: tree-file-compare.py [ -h | --help ] [ -v | --verbose ] [ --by-name-only ] --reference APath [--mirror AnotherPath]
+Will scan first specified tree, in search of duplicated files (same content, different path). The resulting associations will be stored in ~/*-tree-file-compare.log files. If a second tree is specified (--mirror option), then will look for files whose content is in second tree but not in the first one, to ensure the reference tree is complete.
+
+This script is useful to ensure a reference tree does not lack any content from a mirror and to know whether the mirror is up-to-date.
+The script can be used for example for snapshots or archives.
+
+Options:
+	-v or --verbose: set verbose mode
+	--by-name-only: comparison is done based on names only; no MD5 checksum performed (useful when the names refer clearly to the content, as an archive filename, as opposed to snapshots) 
+	--mirror A_PATH: specifies a second tree to compare with
 """
+
+
+# Examples:  
+#
+#   - for snapshots:
+# ./tree_file_compare.py --by-name-only --reference /media/MacWay-Huge/Archive/ --mirror /home/boudevil/Projects/Generic/Personnel/Archives-personnelles/
+#
+#   - for archives: 
+# ./tree_file_compare.py --reference /home/boudevil/Snapshots-Repository/ --mirror /home/boudevil/Snapshots-Repository-from-rainbow/
+
 
 
 # The scanning of a path will result in the storing, in a dictionary, of
@@ -75,6 +93,33 @@ def build_file_index_for(path):
 
 
 
+def build_name_index_for(path):
+	"""Creates one (dictionary-based) name index for specified path."""
+
+	# name_dict: keys are filenames, values are lists of relative paths.
+	
+	file_paths = fileUtils.getAllRelativeFilePathsFromRoot(path)
+
+	name_dict={}
+	
+	for f in file_paths:
+		
+		full_path = os.path.join(path,f)
+		
+		# Scan the filenames:
+		name = os.path.basename(f)
+
+		if name_dict.has_key(name):
+			name_dict[name] += [f]
+		else:
+			name_dict[name] = [f]		
+		
+	#print "File name index = %s." % (name_dict,)
+		
+	return name_dict
+
+
+
 def display_content_duplicates(root_path,content_index):
 	"""Displays the duplicates in specified content file index."""
 	output( "Displaying duplicated content in tree %s:" % (root_path,))
@@ -99,8 +144,8 @@ def display_name_duplicates(root_path,name_index):
 
 
 
-def compare_trees(ref_content_index,mirror_content_index):
-	"""Compares the reference and mirror trees, based on the file content."""
+def compare_content_trees(ref_content_index,mirror_content_index):
+	"""Compares the reference and mirror trees, based on the file content. Useful to know whether a mirror is complete."""
 	output("Comparing reference tree with mirror tree:")
 	for k in ref_content_index.keys():
 		ref_files = ref_content_index[k]
@@ -110,13 +155,29 @@ def compare_trees(ref_content_index,mirror_content_index):
 				#print "For content whose MD5 code is %s, reference tells: %s, whereas mirror tells: %s." % (k,ref_files,mirror_files)				
 				output( "  + identical content for %s in reference and %s in mirror." % (ref_files,mirror_files) )				
 		else:
-				#print "Content whose MD5 code is %s is in reference tells: %s, whereas mirror does not have it." % (k,ref_files)	
+				#print "Content whose MD5 code is %s is in reference as %s, whereas mirror does not have it." % (k,ref_files)	
 				output( "  (content corresponding to %s is in reference but not in mirror)" % (ref_files,) )	
 	output("")
 	
 	
+def compare_name_trees(ref_name_index,mirror_name_index):
+	"""Compares the reference and mirror trees, based on the file name. Useful to know whether a mirror is complete."""
+	output("Comparing reference tree with mirror tree:")
+	for k in ref_name_index.keys():
+		ref_files = ref_name_index[k]
+		if mirror_name_index.has_key(k):
+			mirror_files = mirror_name_index[k]
+			if mirror_files != ref_files:
+				#print "For name %s, reference tells: %s, whereas mirror tells: %s." % (k,ref_files,mirror_files)				
+				output( "  + identical name for %s in reference and %s in mirror." % (ref_files,mirror_files) )				
+		else:
+				#print "Name %s is in reference as %s, whereas mirror does not have it." % (k,ref_files)	
+				output( "  (name corresponding to %s is in reference but not in mirror)" % (ref_files,) )	
+	output("")
 	
-def check_completeness(ref_content_index,mirror_content_index):
+	
+	
+def check_content_completeness(ref_content_index,mirror_content_index):
 	"""Checks that all content of mirror tree is in reference tree, preferably with the same filenames."""
 	output("Checking completeness of reference regarding the mirror:")
 	for k in mirror_content_index.keys():
@@ -126,6 +187,17 @@ def check_completeness(ref_content_index,mirror_content_index):
 	output("")
 		
 		
+	
+def check_name_completeness(ref_name_index,mirror_name_index):
+	"""Checks that all name of mirror tree is in reference tree, preferably with the same filenames."""
+	output("Checking completeness of reference regarding the mirror:")
+	for k in mirror_name_index.keys():
+		if not ref_name_index.has_key(k):
+			#print "Content whose MD5 code is %s is referenced in the mirror tree, as %s, and not available in reference." % (k,mirror_name_index[k])
+			output( "  + name corresponding to %s is in mirror but not in reference." % (mirror_name_index[k],) )	
+	output("")
+
+
 
 def write_hashes(log_file,content_index):
 	"""Writes specified content index in specified log file."""
@@ -141,12 +213,14 @@ if __name__ == '__main__':
 		
 	help_options = [ '-h', '--help' ]
 	verbose_options = [ '-v', '--verbose' ]
-
-	options = help_options + verbose_options
+	by_name_options = [ '--by-name-only' ]
+	
+	options = help_options + verbose_options + by_name_options
 
 	# Defaults:
 	verbose = False
-    	
+	compare_by_content = True
+		
 	#print 'Arguments specified are <%s>.' % ( sys.argv, )
 
 	saved_args = sys.argv[1:]
@@ -187,6 +261,11 @@ if __name__ == '__main__':
 			verbose = True          
 			print "Verbose mode activated."
     
+		if item in by_name_options:
+			item_understood = True
+			compare_by_content = False          
+			print "Comparison will be based on names only, rather than on content too."
+    
 		if not item_understood:
 			print "Error, unexpected parameter: %s, stopping." % (  item, )   
 			print __doc__ 
@@ -210,24 +289,39 @@ if __name__ == '__main__':
 		
 	print "Scanning reference tree..."
 
-	(ref_content_index,ref_name_index) = build_file_index_for( reference_path )
+	if compare_by_content:
+		(ref_content_index,ref_name_index) = build_file_index_for( reference_path )
+		log_file.write("\n\n ***** For reference tree %s *****\n\n" % (reference_path,))
+		display_content_duplicates(reference_path,ref_content_index)
+		display_name_duplicates(reference_path,ref_name_index)
+		write_hashes(log_file,ref_content_index)
+	else:
+		ref_name_index = build_name_index_for( reference_path )
+		log_file.write("\n\n ***** For reference tree %s *****\n\n" % (reference_path,))
+		display_name_duplicates(reference_path,ref_name_index)
 
-	log_file.write("\n\n ***** For reference tree %s *****\n\n" % (reference_path,))
-	display_content_duplicates(reference_path,ref_content_index)
-	display_name_duplicates(reference_path,ref_name_index)
-
-	write_hashes(log_file,ref_content_index)
-	
 	if mirror_path:
 		log_file.write("\n\n ***** For mirror tree %s *****\n\n" % (mirror_path,))
 		print "Scanning mirror tree..."
-		(mirror_content_index,mirror_name_index) = build_file_index_for( mirror_path )
-		display_content_duplicates(mirror_path,mirror_content_index)
-		display_name_duplicates(mirror_path,mirror_name_index)
-		write_hashes(log_file,mirror_content_index)
+		if compare_by_content:
+			(mirror_content_index,mirror_name_index) = build_file_index_for( mirror_path )
+			display_content_duplicates(mirror_path,mirror_content_index)
+			display_name_duplicates(mirror_path,mirror_name_index)
+			write_hashes(log_file,mirror_content_index)
+			compare_content_trees( ref_content_index, 
+				mirror_content_index )
+			check_content_completeness( ref_content_index,
+				mirror_content_index )
+		else:
+			mirror_name_index = build_name_index_for( mirror_path )
+			display_name_duplicates(mirror_path,mirror_name_index)
+			# Maybe less useful:
+			#compare_name_trees( ref_name_index, 
+			#	mirror_name_index )
+			check_name_completeness( ref_name_index,
+				mirror_name_index )
+			
 		log_file.write("\n\n ***** Tree comparison *****\n\n")
-		compare_trees(ref_content_index,mirror_content_index)
-		check_completeness(ref_content_index,mirror_content_index)
 
 	log_file.close()
 	
