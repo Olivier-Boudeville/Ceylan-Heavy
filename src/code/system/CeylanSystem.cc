@@ -360,7 +360,7 @@ Ceylan::Byte * Ceylan::System::CacheProtectedNew( Size numberOfBytes )
 		inUse = false ;
 		
 		throw SystemException( "Ceylan::System::CacheProtectedNew failed: "
-			"null pointer returned, not enough memory ?" ) ;
+			"null pointer returned, not enough memory?" ) ;
 	
 	}
 	
@@ -1115,7 +1115,7 @@ Microsecond Ceylan::System::getPreciseTimeCallDuration() throw()
 
 	static Microsecond duration = 0 ;
 
-	// Already computed ? Returned it !
+	// Already computed? Return it!
 	if ( duration != 0 )
 		return duration ;
 
@@ -1411,7 +1411,7 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	/*
 	 * Warning: this piece of code is especially sensitive to overflows,
 	 * since very high numbers of microseconds are to be handled in
-	 * often unsigned variables. Beware !
+	 * often unsigned variables. Beware!
 	 *
 	 * Please test it thoroughfully thanks to testCeylanTime utility.
 	 *
@@ -1713,7 +1713,7 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	std::cerr << "finished" ;
 #endif // CEYLAN_CHECK_FOR_FREEZE
 
-	// We should be almost just-in-time here !
+	// We should be almost just-in-time here!
 
 	return true ;
 	
@@ -1768,7 +1768,7 @@ Microsecond Ceylan::System::getActualDurationForSleep(
 	// (disabled, see below) Be sure it is precomputed:
 	//Microsecond preciseTimeDuration = getPreciseTimeCallDuration() ;
 
-	// Beware of overflows !
+	// Beware of overflows!
 
 	Second lastSecond ;
 	Microsecond lastMicrosecond ;
@@ -1816,7 +1816,7 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 
 	static Microsecond granularity = 0 ;
 
-	// Already computed ? Returned it !
+	// Already computed? Return it!
 	if ( granularity != 0 )
 		return granularity ;
 
@@ -1946,7 +1946,7 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 	Microsecond testDuration = 900 ;
 
 
-	// Hit top, nothing found ?
+	// Hit top, nothing found?
 	if ( currentRequestedDuration == maximumPossibleDuration )
 	{
 	
