@@ -404,6 +404,7 @@ namespace Ceylan
 
 
 
+
 		/*
 		 * Time section.
 		 *
@@ -499,6 +500,7 @@ namespace Ceylan
 			throw( SystemException ) ;
 
 
+
 		/**
 		 * Returns the time since the Epoch (00:00:00 UTC, January 1, 1970),
 		 * with up to a one microsecond accuracy, expressed as a pair
@@ -529,6 +531,7 @@ namespace Ceylan
 		 */
 		CEYLAN_DLL void getPreciseTime( Second & seconds, 
 			Microsecond & microsec ) throw( SystemException ) ;
+
 
 
 		/**
@@ -568,8 +571,9 @@ namespace Ceylan
 			throw( SystemException ) ;
 
 
+
 		/**
-		 * Returns a mean duration of a call to getPreciseTime.
+		 * Returns the mean duration of a call to getPreciseTime.
 		 *
 		 * @note The computation is done one time for all. The first call may
 		 * last up to 3 milliseconds.
@@ -599,6 +603,7 @@ namespace Ceylan
 			throw( SystemException ) ;
 
 
+
 		/**
 		 * Tells whether sub-second sleeps can be performed.
 		 *
@@ -611,6 +616,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL bool areSubSecondSleepsAvailable() throw() ;
+
 
 
 		/**
@@ -634,6 +640,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL void atomicSleep() throw( SystemException ) ;
+
 
 
 		/**
@@ -667,6 +674,7 @@ namespace Ceylan
 			throw( SystemException ) ;
 
 
+
 		/**
 		 * Makes the process basically sleep for (at least) specified duration.
 		 *
@@ -675,6 +683,7 @@ namespace Ceylan
 		 */
 		CEYLAN_DLL void basicSleep( Microsecond micros ) 
 			throw( SystemException ) ;
+
 
 
 		/**
@@ -724,6 +733,7 @@ namespace Ceylan
 			throw( SystemException ) ;
 
 
+
 		/**
 		 * Makes the process smartly sleep until the specified time arrives.
 		 *
@@ -768,6 +778,7 @@ namespace Ceylan
 		CEYLAN_DLL Microsecond getActualDurationForSleep(
 				Microsecond requestedMicroseconds, Second requestedSeconds = 0 )
 			throw( SystemException ) ;
+
 
 
 		/**
