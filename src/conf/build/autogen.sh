@@ -5,6 +5,7 @@ USAGE="
 Usage: "`basename $0`" [ -h | --help ] [ --nds ] [ --with-osdl-env-file <filename> ] [ -d | --disable-all-features ] [ -n | --no-build ] [ -c | --chain-test ] [ -f | --full-test ] [ -o | --only-prepare-dist ] [ --configure-options [option 1] [option 2] [...] ]: (re)generates all the autotools-based build system.
 	
 	--nds: cross-compile the Ceylan library so that it can be run on the Nintendo DS (LOANI installation of both Ceylan and the DS cross-build chain is assumed)
+	--with-osdl-env-file <filename>: path to the OSDL-environment.sh file, to find Nintendo DS tools or to use LOANI-installed tools like libtool
 	--disable-all-features: just build the core of the Ceylan library
 	--no-build: stop just after having generated the configure script
 	--chain-test: build and install the library, build the test suite and run it against the installation
@@ -15,7 +16,6 @@ Usage: "`basename $0`" [ -h | --help ] [ --nds ] [ --with-osdl-env-file <filenam
 
 
 HIDDEN="
-	--with-osdl-env-file <filename>: path to the OSDL-environment.sh file, to find Nintendo DS tools (implies --nds) [currently not taken into account]
 "
 
 
@@ -439,14 +439,14 @@ generateCustom()
 	(libtool --version) < /dev/null > /dev/null 2>&1 || {
 		echo
 		echo "**Error**: You must have 'libtool' installed."
-		echo "You can get it from: ftp://ftp.gnu.org/pub/gnu/" 
+		echo "You can get it from: ftp://ftp.gnu.org/pub/gnu/ or, if targeting OSDL, by using the LOANI script (in this case, source the OSDL-environment.sh file behorehand or use the --with-osdl-env-file option)." 
 		exit 20
    	}
 	
 	(libtoolize --version) < /dev/null > /dev/null 2>&1 || {
 		echo
 		echo "**Error**: You must have 'libtoolize' installed."
-		echo "You can get it from: ftp://ftp.gnu.org/pub/gnu/" 
+		echo "You can get it from: ftp://ftp.gnu.org/pub/gnu/ or, if targeting OSDL, by using the LOANI script (in this case, source the OSDL-environment.sh file behorehand or use the --with-osdl-env-file option)." 
 		exit 21
    	}
 
