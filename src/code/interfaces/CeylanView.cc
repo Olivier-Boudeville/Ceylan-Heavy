@@ -30,11 +30,13 @@ View::View() throw() :
 }
 
 
+
 View::View( Model & model ) throw() :
 	CallerEventListener( static_cast<EventSource &>( model ) )
 {
 
 }
+
 
 
 View::~View() throw()
@@ -45,6 +47,7 @@ View::~View() throw()
 #endif // CEYLAN_DEBUG_EVENTS
 	
 }
+
 
 
 const string View::toString( Ceylan::VerbosityLevels level ) const throw() 
@@ -59,3 +62,19 @@ const string View::toString( Ceylan::VerbosityLevels level ) const throw()
 			+ " model(s)" ;
 				
 }
+
+
+
+// Protected section.
+Model & View::getModel() throw( EventException )
+{
+
+	if ( _sources.size() != 1 )
+		throw EventException( "View::getModel failed: "
+			+ Ceylan::toString( _sources.size() ) 
+			+ " model(s) associated to that view." ) ;
+	
+	return * dynamic_cast<Model *>( _sources.front() ) ;
+			
+}
+
