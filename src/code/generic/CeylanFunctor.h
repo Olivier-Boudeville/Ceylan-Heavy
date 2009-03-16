@@ -17,7 +17,10 @@ namespace Ceylan
 		 * A functor is an object that behaves as a function, thanks 
 		 * to the overloading of operator (). 
 		 *
-		 * This allows the encapsulated function to have a state.
+		 * This allows the encapsulated function to have a state, as opposed
+		 * to mere C function pointers: this state allows to first setup
+		 * and parametrize the functor (thanks to its constructor), then to
+		 * use it as "a lambda function".
 		 *
 		 * @note It is especially useful when one has to specify a 
 		 * function A as a parameter for another function B. If B is set
@@ -26,16 +29,16 @@ namespace Ceylan
 		 * reciprocal would not be true.
 		 *
 		 * @note Functors are great when one wants to make use of 
-		 * parametrized functions : thanks to the functor's constructor,
+		 * parametrized functions: thanks to the functor's constructor,
 		 * one can generate numerous different functions at runtime.
 		 *
-		 * @example addFunctor( int myAdd ) could be constructed as :
-		 * <code>Functor * myAdd = new addFunctor( 5 )</code> : myAdd 
+		 * @example addFunctor( int myAdd ) could be constructed as:
+		 * <code>Functor * myAdd = new addFunctor( 5 )</code>: myAdd 
 		 * is a dynamically created function.
 		 * 
 		 * @see Ceylan::Maths::IntToIntFunctor for a complete example.
 		 *
-		 * @note Each child should define following operator :
+		 * @note Each child class should define following operator:
 		 * virtual 'returned type' operator() ('parameter') throw()
 		 *
 		 */
@@ -49,12 +52,13 @@ namespace Ceylan
 				/// Do-nothing constructor.
 				Functor() throw() ;
 				
-				/// Basic virtual destructor;
+				
+				/// Virtual destructor;
 				virtual ~Functor() throw() ;
 				
 
 				/*
-				 * The operator a functor is defined for :
+				 * The operator a functor is defined for:
 
 				/// The callable method.
 				virtual X operator() ( Y y ) throw() = 0 ;
@@ -85,7 +89,7 @@ namespace Ceylan
 			
 				/**
 				 * Copy constructor cannot be private since would 
-				 * prevent calls such as :
+				 * prevent calls such as:
 				 * 'CreateFrom( Linear::Rotation2DFunctor( angle )'.
 				 *
 				 *	Functor( const Functor & source ) throw() ;
@@ -110,3 +114,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_FUNCTOR_H_		
+
