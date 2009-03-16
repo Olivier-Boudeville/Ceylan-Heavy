@@ -8,6 +8,7 @@ testsinterfaces_PROGRAMS = \
 	testCeylanClonable.exe                     \
 	testCeylanCountable.exe                    \
 	testCeylanEvents.exe                       \
+	testCeylanGenericMVC.exe                   \
 	testCeylanLocatable.exe                    \
 	testCeylanLockable.exe                     \
 	testCeylanMVCFramework.exe                 \
@@ -19,9 +20,11 @@ testsinterfaces_PROGRAMS = \
 testCeylanClonable_exe_SOURCES         = testCeylanClonable.cc
 testCeylanCountable_exe_SOURCES        = testCeylanCountable.cc
 testCeylanEvents_exe_SOURCES           = testCeylanEvents.cc
+testCeylanGenericMVC_exe_SOURCES       = testCeylanGenericMVC.cc
 testCeylanLocatable_exe_SOURCES        = testCeylanLocatable.cc
 testCeylanLockable_exe_SOURCES         = testCeylanLockable.cc
 testCeylanMVCFramework_exe_SOURCES     = testCeylanMVCFramework.cc
 testCeylanObject_exe_SOURCES           = testCeylanObject.cc
 testCeylanObjectIdentifier_exe_SOURCES = testCeylanObjectIdentifier.cc
 testCeylanTextDisplayable_exe_SOURCES  = testCeylanTextDisplayable.cc
+
