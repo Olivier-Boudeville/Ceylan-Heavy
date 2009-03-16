@@ -103,13 +103,11 @@ namespace Ceylan
 			 * Unsubscribes all registered listeners from this source,
 			 * no forthcoming event will be sent. 
 			 *
-			 * Should not be used under normal circumstances.
+			 * This source will request each of its listeners to unsubscribe
+			 * from it, then the source will forget them in turn.
 			 *
-			 * @note This is not how things should be done, since 
-			 * registered listeners will not be informed the source unlisted
-			 * them. The process should be done the other way round :
-			 * each listener should have unsubscribed itself instead from
-			 * this source.
+		 	 * The links will be removed, but no instance will be deleted 
+			 * by this call.
 			 *
 			 * @see Ceylan::EventListener::unsubscribeFromAllSources
 			 *
