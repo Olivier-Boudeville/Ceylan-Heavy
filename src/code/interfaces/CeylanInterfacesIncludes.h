@@ -15,6 +15,10 @@
 #include "CeylanEvent.h"
 #include "CeylanEventListener.h"
 #include "CeylanEventSource.h"
+#include "CeylanGenericController.h"
+#include "CeylanGenericDefines.h"
+#include "CeylanGenericModel.h"
+#include "CeylanGenericView.h"
 #include "CeylanHashable.h"
 #include "CeylanIdentifier.h"
 #include "CeylanIdentifierOwner.h"
@@ -38,3 +42,4 @@
 
 
 #endif // CEYLAN_INTERFACES_INCLUDES_H_
+
