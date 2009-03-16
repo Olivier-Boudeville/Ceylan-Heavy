@@ -49,8 +49,15 @@ namespace Ceylan
 		 * various instances of the log framework in their HTML version, 
 		 * and creates the relevant standard channels. 
 		 *
-		 * @note With this Log implementation, log informations will be 
+		 * With this Log implementation, log informations will be 
 		 * output in HTML format.
+		 *
+		 * @note As the messages will be stored in memory, and only aggregated
+		 * once the program stopped, on one hand if the program crashes the logs
+		 * are lost, but on the other hand logging will induce very low
+		 * runtime overhead (processing-wise; memory-wise this can be another
+		 * story), so this kind of logs can be useful to debug time-critical
+		 * operations (ex: a scheduler).
 		 *
 		 * A web page will correspond to each log channel and list its 
 		 * messages.
