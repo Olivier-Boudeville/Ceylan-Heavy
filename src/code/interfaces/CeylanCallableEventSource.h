@@ -46,7 +46,6 @@ namespace Ceylan
 	 * according to all the events this source sent, so that the listener is
 	 * given accurate, specific but full informations about the source.
 	 *
-	 *
 	 * @see getEventFor
 	 *
      */
@@ -94,18 +93,18 @@ namespace Ceylan
 			 * immediately, accordingly. It is therefore source-driven.
 			 *
 			 * On cases where the listener activation is not to be ruled by
-			 * sources (ex : if listeners are specifically scheduled already,
+			 * sources (ex: if listeners are specifically scheduled already,
 			 * or if sources, from a listener point of view, would send
 			 * unnecessary notifications as long as listener is not ready),
 			 * caller listeners can be used.
 			 *
-			 * They are in charge of driving the communication process : 
+			 * They are in charge of driving the communication process: 
 			 * whenever they deem it useful, they ask their sources to return
 			 * an event describing their current state.
 			 *
 			 * This allows to propagate only fresh and required events for
 			 * listeners, which is the appropriate way of handling events 
-			 * in all the cases where listeners give the pace of the pair.
+			 * in all the cases where listeners drive the pace of the pair.
 			 *
 			 * @return an event that can be the latest sent event (if any), 
 			 * or an event especially created for this specific call of this
@@ -119,7 +118,7 @@ namespace Ceylan
 			 *
 			 * @note This listener-driven event propagation is especially 
 			 * useful for memory-less sources such as most controllers,
-			 * according to the MVC framework : for models, the only 
+			 * according to the MVC framework: for models, the only 
 			 * interesting information is their current state, thus the
 			 * propagated source event could be used to summarize to the model
 			 * what is the current controller state, without having to take
@@ -183,3 +182,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_CALLABLE_EVENT_SOURCE_H_
+
