@@ -8,6 +8,7 @@
 #include <string>
 
 
+
 namespace Ceylan
 {
 
@@ -15,6 +16,14 @@ namespace Ceylan
 	/**
 	 * Specialized event exchanged through Model-View-Controller (MVC)
 	 * framework.
+	 *
+	 * Note that the communication between the MVC components could also
+	 * be performed thanks to direct method call, if no distributed operation
+	 * is targeted.
+	 *
+	 * @see also the generic alternative MVC framework, for more lightweight and
+	 * flexible exchanges: Ceylan::BaseView, Ceylan::BaseModel and
+	 * Ceylan::BaseController.
 	 *
 	 */
 	class CEYLAN_DLL MVCEvent : public Event
@@ -84,7 +93,7 @@ namespace Ceylan
 	 * a (caller) event listener for its controllers.
 	 *
 	 * @note The link between a model and its views could take into 
-	 * account various aspects : not all views are interested in each
+	 * account various aspects, themes: not all views are interested in each
 	 * and every event.
 	 *
 	 * @note Models have to implement both the <code>beNotifiedOf</code> method 
@@ -130,14 +139,12 @@ namespace Ceylan
 			/**
 			 * Unregisters all registered views.
 			 *
-			 * Should not be used under normal circumstances.
-			 *
-			 * @note This is not how things should be done, since 
-			 * registered views will not be informed this model unlisted
-			 * them. The process should be done the other way round :
-			 * each view should have unsubscribed itself instead from this
+			 * Each of its views will be requested to unsubscribe from this 
 			 * model.
-		 	 *
+			 *
+		 	 * The links will be removed, but no instance will be deleted 
+			 * by this call.
+			 *
 			 */
 			virtual void removeAllViews() throw() ;
 			
@@ -235,3 +242,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_MODEL_H_
+
