@@ -13,11 +13,10 @@ using std::string ;
 
 
 
-
 /**
  * Test of Locatable implementation.
  *
- * @see Locatable, Locatable2D
+ * @see Locatable, Locatable2D.
  *
  */
 int main( int argc, char * argv[] )
@@ -31,14 +30,15 @@ int main( int argc, char * argv[] )
 		LogPlug::info( "Starting testing Locatable2D." ) ;
 		
 		Locatable2D root ;
-		LogPlug::info( "Create root absolute Locatable2D : " 
+		
+		LogPlug::info( "Create root absolute Locatable2D: " 
 			+ root.toString() ) ;
 
 		
 		/*
 		 * Will be the transformation matrix from the first child to the 
 		 * root, obtained by rotating the two axis of 90 degrees clockwise
-		 * and then translating the origin to (5,10) :
+		 * and then translating the origin to (5,10):
 		 *
 		 */
 		 
@@ -47,22 +47,22 @@ int main( int argc, char * argv[] )
 		 * obtained from the ones of the root thanks to a counterclockwise
 		 * rotation of 90 degrees, and whose origin is located at (5,10).
 		 *
-		 * The corresponding transformation matrix is : 
+		 * The corresponding transformation matrix is: 
 		 * P(from Rfirst to Rroot ) = 
 		 * [ 0  ;  -1 ;  5 ]
 		 * [ 1  ;  0  ; 10 ]
 		 * [ 0  ;  0  ;  1 ]
 		 *
-		 * For example : 
+		 * For example: 
 		 *
-		 *   * in referential Rfirst, a point A is :
+		 *   * in referential Rfirst, a point A is:
 		 * Afirst = (1,0) = [ 1 ; 0 ; 1 ]
-		 * and in referential Rroot is : 
+		 * and in referential Rroot is: 
 		 * Aroot = (5,11) = [ 5 ; 11 ; 1 ] = P(from Rfirst to Rroot ) * Afirst
 		 *
-		 *   * in referential Rfirst, a point B is :
+		 *   * in referential Rfirst, a point B is:
 		 * Bfirst = (0,1) = [ 0 ; 1 ; 1 ]
-		 * and in referential Rroot is : 
+		 * and in referential Rroot is: 
 		 * Broot = (4,10) = [ 4 ; 10 ; 1 ] = P(from Rfirst to Rroot ) * Afirst
 		 *
 		 * @note As the Locatable will take ownership of the specified
@@ -77,15 +77,15 @@ int main( int argc, char * argv[] )
 		Locatable2D first( /* fatherLocatable */ root,
 			/* localReferential */ transform ) ;
 			
-		LogPlug::info( "Create first child : " + first.toString() ) ;
+		LogPlug::info( "Create first child: " + first.toString() ) ;
 		
 		Locatable2D second( root ) ;
-		LogPlug::info( "Create second child : " + second.toString() ) ;
+		LogPlug::info( "Create second child: " + second.toString() ) ;
 		
 		Locatable2D third( first ) ;
 		
 		/*
-		 * Relations between created referentials :
+		 * Relations between created referentials:
 		 * 
 		 * root
 		 * |-- first
@@ -95,14 +95,14 @@ int main( int argc, char * argv[] )
 		 */
 		 
 		 
-		// Result not stored, it is just used to force cached computation :
+		// Result not stored, it is just used to force cached computation:
 		//third.getGlobalReferential() ;
 		
 		LogPlug::info( "Create third Locatable2D, a child of "
-			"previously defined first child : " + third.toString() ) ;
+			"previously defined first child: " + third.toString() ) ;
 		
-		LogPlug::info( "Root displays now as : " + root.toString() ) ;
-		LogPlug::info( "Its first child displays now as : " 
+		LogPlug::info( "Root displays now as: " + root.toString() ) ;
+		LogPlug::info( "Its first child displays now as: " 
 			+ first.toString() ) ;
 	
 		LogPlug::info( "End of Locatable2D test." ) ;
@@ -113,7 +113,7 @@ int main( int argc, char * argv[] )
 	
     catch ( const Ceylan::Exception & e )
     {
-        std::cerr << "Ceylan exception caught : "
+        std::cerr << "Ceylan exception caught: "
         	<< e.toString( Ceylan::high ) << std::endl ;
 		return Ceylan::ExitFailure ;
 
@@ -121,7 +121,7 @@ int main( int argc, char * argv[] )
 
     catch ( const std::exception & e )
     {
-        std::cerr << "Standard exception caught : " 
+        std::cerr << "Standard exception caught: " 
 			 << e.what() << std::endl ;
 		return Ceylan::ExitFailure ;
 
@@ -137,3 +137,4 @@ int main( int argc, char * argv[] )
     return Ceylan::ExitSuccess ;
 
 }
+
