@@ -56,7 +56,7 @@ namespace Ceylan
      * Interface that every object which can be loaded dynamically from file
 	 * should implement. 
      *
-	 * @see the associated child template, Loadable<Content>
+	 * @see the associated child template, Loadable<Content>.
 	 *
 	 * @see testCeylanLoadable.cc
 	 *
