@@ -7,7 +7,7 @@
 #include "CeylanController.h"   // for Ceylan::Controller
 
 #ifdef CEYLAN_USES_CONFIG_H
-#include "CeylanConfig.h"      // for CEYLAN_DEBUG_EVENTS
+#include "CeylanConfig.h"       // for CEYLAN_DEBUG_EVENTS
 #endif // CEYLAN_USES_CONFIG_H
 
 
@@ -20,6 +20,7 @@ using std::list ;
 
 using namespace Ceylan ;
 using namespace Ceylan::Log ;
+
 
 
 
@@ -37,12 +38,14 @@ MVCEvent::~MVCEvent() throw()
 
 
 
+
 Model::Model() throw() :
 	CallableEventSource(), 
 	CallerEventListener()
 {
 
 }
+
 
 
 Model::~Model() throw()
@@ -55,26 +58,35 @@ Model::~Model() throw()
 	unsubscribeFromAllControllers() ;
 	
 	// removeAllViews would be useless.
+	
 }
+
 
 
 void Model::addView( View & newView ) throw( EventException )
 {
-	// Model will send events to views :
-	add( newView ) ;	
+
+	// Model will send events to views:
+	add( newView ) ;
+		
 }
+
 
 
 void Model::removeView( View & view ) throw( EventException )
 {
+
 	remove( view ) ;
+	
 }
+
 
 
 void Model::removeAllViews() throw() 
 {
-	// Bad habit !
+
 	removeAllListeners() ;
+	
 }
 
 
@@ -82,22 +94,31 @@ void Model::removeAllViews() throw()
 void Model::subscribeToController( Controller & newController ) 
 	throw( EventException )
 {
-	// Model will listen to controller :
-	subscribeTo( newController ) ;	
+
+	// Model will listen to controller:
+	subscribeTo( newController ) ;
+		
 }
+
 
 
 void Model::unsubscribeFromController( Controller & controller ) 
 	throw( EventException )
 {
+
 	unsubscribeFrom( controller ) ;
+	
 }
+
 
 
 void Model::unsubscribeFromAllControllers() throw() 
 {
+
 	unsubscribeFromAllSources() ;
+	
 }
+
 
 
 const string Model::toString( Ceylan::VerbosityLevels level ) const throw() 
@@ -126,8 +147,11 @@ const string Model::toString( Ceylan::VerbosityLevels level ) const throw()
 }
 
 
+
 void Model::notifyAllViews( const MVCEvent & newMVCEvent ) throw()
 {
+
 	notifyAllListeners( newMVCEvent ) ;
+	
 }
 
