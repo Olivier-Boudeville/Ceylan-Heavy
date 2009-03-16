@@ -22,15 +22,22 @@ namespace Ceylan
     /**
      * View of the Model-View-Controller (MVC) design pattern.
 	 *
-	 * The view of an object reflects the state of its model.
+	 * The view of an object reflects the state of its model(s).
+	 *
+	 * Such view is meant to communicate with its model(s) only by the means
+	 * of exchanged events.
 	 *
 	 * @note View is mainly a listener of events from its model, it can 
 	 * however listen to other objects as well, helping the view in its task.
 	 *
 	 * @note The link between a model and its views could take into account
-	 * various aspects : not all views are interested in each and every event.
+	 * various aspects: not all views are interested in each and every event.
 	 *
 	 * @note Views might be shared between multiple models.
+	 *
+	 * @see also the generic alternative MVC framework, for more lightweight and
+	 * flexible exchanges: Ceylan::BaseView, Ceylan::BaseModel and
+	 * Ceylan::BaseController.
 	 *
      */
     class CEYLAN_DLL View : public CallerEventListener
@@ -62,7 +69,7 @@ namespace Ceylan
 			
 			
 			/**
-			 * Requests that view to generate its interpretation  of the model
+			 * Requests that view to generate its interpretation of the model
 			 * it is linked to.
 			 *
 			 */
@@ -82,8 +89,31 @@ namespace Ceylan
 			virtual const std::string toString( 
 				Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
 				
-					
 		
+		protected:
+		
+		
+			/**
+			 * Returns the model presumably associated to this view.
+			 *
+			 * @note A view might not be associated with any model (yet) or
+			 * it might be associated to more than one model.
+			 *
+			 * @throw EventException if there is not exactly one model
+			 * registered by this view.
+			 *
+			 */
+			virtual Model &	getModel() throw( EventException ) ;		
+		
+		
+			/*
+			 * The models (usually just one) corresponding to that view are
+			 * stored in the _sources member, a list of EventSource pointers,
+			 * inherited from the EventListener mother class.
+			 *
+			 */
+
+
 		private:
 		
 		
@@ -115,3 +145,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_VIEW_H_
+
