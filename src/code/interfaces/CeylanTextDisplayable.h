@@ -135,7 +135,7 @@ namespace Ceylan
 		
 			/**
 			 * Copy constructor cannot be private since needed in some cases
-			 * (ex : Vector instances).
+			 * (ex: Vector instances).
 			 *
 			 * TextDisplayable( const TextDisplayable & source ) throw() ;
 			 *
@@ -144,7 +144,7 @@ namespace Ceylan
 			
 			/**
 			 * Assignment operator should not be private since it is useful
-			 * in some cases (ex : Vector instances).
+			 * in some cases (ex: Vector instances).
 			 *
 			 * TextDisplayable & operator = ( const TextDisplayable & source )
 			 * throw() ;
@@ -173,3 +173,4 @@ std::ostream & operator << ( std::ostream & os,
 
 
 #endif // CEYLAN_TEXT_DISPLAYABLE_H_
+
