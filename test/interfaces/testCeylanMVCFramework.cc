@@ -39,7 +39,7 @@ class TestMVCEvent : public Ceylan::MVCEvent
 		virtual const std::string toString( 
 			Ceylan::VerbosityLevels level = Ceylan::high ) const throw()
 		{
-			return "Test MVC event : " + _message ;
+			return "Test MVC event: " + _message ;
 		}					
 		
 		
@@ -93,7 +93,7 @@ class AnObjectModel : public Ceylan::Model
 		{
 			if ( _lastEvent == 0 )
 				throw EventException( 
-					"AnObjectView::getEventFor : no event available." ) ;
+					"AnObjectView::getEventFor: no event available." ) ;
 			
 			return * _lastEvent ;
 				
@@ -126,10 +126,10 @@ class AnObjectView : public Ceylan::View
 		{
 		
 			LogPlug::info( "I am an AnObjectView and "
-				"I am notified of following event : " 
+				"I am notified of following event: " 
 				+ newEvent.toString() ) ;
 				
-			// Render at each event received :
+			// Render at each event received:
 			renderModel() ;
 			
 		}
@@ -138,7 +138,7 @@ class AnObjectView : public Ceylan::View
 		
 		virtual void renderModel() throw() 
 		{
-			LogPlug::info( "Rendering of AnObjectView : " + toString() ) ;
+			LogPlug::info( "Rendering of AnObjectView: " + toString() ) ;
 		}
 		
 		
@@ -195,11 +195,11 @@ class AnObjectController : public Ceylan::Controller
 		{
 		
 			if ( ! isRegistered( listener ) )
-				throw EventException( "AnObjectController::getEventFor : "
+				throw EventException( "AnObjectController::getEventFor: "
 					"listener not registered." ) ;
 			
 			if ( _lastEvent == 0 )
-				throw EventException( "AnObjectController::getEventFor : "
+				throw EventException( "AnObjectController::getEventFor: "
 					"no event available." ) ;
 			
 			return * _lastEvent ;
@@ -237,20 +237,20 @@ int main( int argc, char * argv[] )
 		LogPlug::info( "First create the model." ) ;
 		AnObjectModel model ;
 		
-		LogPlug::info( "Model : " + model.toString() ) ;
+		LogPlug::info( "Model: " + model.toString() ) ;
 		
 		LogPlug::info( "Then create its first view, and link them." ) ;
 		AnObjectView firstView( model ) ;
 
-		LogPlug::info( "Model : " + model.toString() ) ;
-		LogPlug::info( "First view : " + firstView.toString() ) ;
+		LogPlug::info( "Model: " + model.toString() ) ;
+		LogPlug::info( "First view: " + firstView.toString() ) ;
 		
 		LogPlug::info( "Then create the model's first controller, "
 			"and link them." ) ;
 		AnObjectController firstController( model ) ;
 
-		LogPlug::info( "Model : " + model.toString() ) ;
-		LogPlug::info( "First controller : " + firstController.toString() ) ;
+		LogPlug::info( "Model: " + model.toString() ) ;
+		LogPlug::info( "First controller: " + firstController.toString() ) ;
 		
 		LogPlug::info( "Now activate the controller twice "
 			"and see how the view reacts." ) ;
@@ -261,7 +261,7 @@ int main( int argc, char * argv[] )
 		LogPlug::info( "Add a second view, use the controller again." ) ;
 		AnObjectView secondView( model ) ;
 
-		LogPlug::info( "Model : " + model.toString() ) ;
+		LogPlug::info( "Model: " + model.toString() ) ;
 		
 		firstController.sendEvent( 103 ) ;
 		
@@ -271,7 +271,7 @@ int main( int argc, char * argv[] )
 		secondController.sendEvent( 201 ) ;
 		
 		LogPlug::info( "Event requested, on behalf of the model, "
-			"to the second controller is : "
+			"to the second controller is: "
 			+ secondController.getEventFor( model ).toString() ) ;
 		
 		LogPlug::info( "Unlink model from controllers." ) ;
@@ -288,7 +288,7 @@ int main( int argc, char * argv[] )
 	
     catch ( const Ceylan::Exception & e )
     {
-        std::cerr << "Ceylan exception caught : "
+        std::cerr << "Ceylan exception caught: "
         	<< e.toString( Ceylan::high ) << std::endl ;
 		return Ceylan::ExitFailure ;
 
@@ -296,7 +296,7 @@ int main( int argc, char * argv[] )
 
     catch ( const std::exception & e )
     {
-        std::cerr << "Standard exception caught : " 
+        std::cerr << "Standard exception caught: " 
 			 << e.what() << std::endl ;
 		return Ceylan::ExitFailure ;
 
