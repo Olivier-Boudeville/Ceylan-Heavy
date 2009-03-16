@@ -21,8 +21,9 @@ using namespace Ceylan::Maths::Linear ;
 
 
 
+
 LocatableException::LocatableException( const string & message ) throw() :
-	Ceylan::Exception( "Locatable exception : " + message )
+	Ceylan::Exception( "Locatable exception: " + message )
 {
 
 }
@@ -32,6 +33,7 @@ LocatableException::~LocatableException() throw()
 {
 
 }
+
 
 
 
@@ -80,11 +82,12 @@ Locatable::Locatable( Locatable & fatherLocatable ) throw() :
 	catch( const EventException	& e )
 	{
 	
-		LogPlug::error( "Locatable constructor : " + e.toString() ) ;	
+		LogPlug::error( "Locatable constructor: " + e.toString() ) ;	
 		
 	}
 	
 }
+
 
 
 Locatable::Locatable() throw() :
@@ -96,6 +99,7 @@ Locatable::Locatable() throw() :
 {
 
 }
+
 
 
 Locatable::Locatable( Locatable & fatherLocatable, Matrix & localReferential )
@@ -119,10 +123,11 @@ Locatable::Locatable( Locatable & fatherLocatable, Matrix & localReferential )
 	}
 	catch( const EventException	& e )
 	{
-		LogPlug::error( "Locatable constructor failed : " + e.toString() ) ;	
+		LogPlug::error( "Locatable constructor failed: " + e.toString() ) ;	
 	}
 	
 }
+
 
 
 Locatable::Locatable( Matrix & localReferential ) throw() :
@@ -134,6 +139,7 @@ Locatable::Locatable( Matrix & localReferential ) throw() :
 {
 
 }
+
 
 
 Locatable::~Locatable() throw()
@@ -151,12 +157,12 @@ Locatable::~Locatable() throw()
 		} 
 		catch( const LocatableException & e )
 		{
-			LogPlug::error( "Locatable destructor : " + e.toString() ) ;
+			LogPlug::error( "Locatable destructor: " + e.toString() ) ;
 		}
 		
 	}
 	
-	// Out of carefulness :
+	// Out of carefulness:
 	removeAllListeners() ;
 	
 		
@@ -173,12 +179,14 @@ Locatable::~Locatable() throw()
 }
 
 
+
 bool Locatable::isAbsolute() const throw()
 {
 
 	return ( _father == 0 ) ;
 	
 }
+
 
 
 bool Locatable::hasLocalReferential() const throw()
@@ -189,16 +197,18 @@ bool Locatable::hasLocalReferential() const throw()
 }
 
 
+
 Matrix & Locatable::getLocalReferential() const throw( LocatableException )
 {
 
 	if ( _localReferential == 0 )
-		throw LocatableException( "Locatable::getLocalReferential() : "
+		throw LocatableException( "Locatable::getLocalReferential(): "
 			"no local referential available." ) ;
 	
 	return * _localReferential ;
 
 }
+
 
 
 void Locatable::setLocalReferential( Matrix & newGlobalReferential ) throw() 
@@ -209,12 +219,14 @@ void Locatable::setLocalReferential( Matrix & newGlobalReferential ) throw()
 }
 
 
+
 bool Locatable::hasGlobalReferential() const throw()
 {
 
 	return _globalReferential != 0 ; 
 	
 }
+
 
 
 Matrix & Locatable::getGlobalReferential() throw( LocatableException ) 
@@ -226,7 +238,7 @@ Matrix & Locatable::getGlobalReferential() throw( LocatableException )
 #if CEYLAN_DEBUG
 
 		if ( _globalReferential == 0 )
-			emergencyShutdown( "Locatable::getGlobalReferential() : "
+			emergencyShutdown( "Locatable::getGlobalReferential(): "
 				"Locatable should be up-to-date, "
 				"whereas no global referential available." ) ;
 				
@@ -240,7 +252,7 @@ Matrix & Locatable::getGlobalReferential() throw( LocatableException )
 	{
 	
 		if ( _localReferential == 0 )
-			throw LocatableException( "Locatable::getGlobalReferential() : "
+			throw LocatableException( "Locatable::getGlobalReferential(): "
 				"this absolute referential has no "
 				"local referential available." ) ;		
 
@@ -262,20 +274,21 @@ Matrix & Locatable::getGlobalReferential() throw( LocatableException )
 	
 	
 	/*
-	 * Problem : no '*' operator for abstract Matrix class can exist, 
+	 * Problem: no '*' operator for abstract Matrix class can exist, 
 	 * overcomed by calling pure virtual method 'updateFromFather' which
 	 * will have to be implemented thanks to dynamic casts in all children,
-	 * so that each called the appropriate '*' operator (ex : Matrix3's one). 
+	 * so that each called the appropriate '*' operator (ex: Matrix3's one). 
 	 *
 	 */	 
 	updateFromFather( _father->getGlobalReferential() ) ;
 	
-	// False to true up-to-date state not triggering anything :
+	// False to true up-to-date state not triggering anything:
 	setUpToDateState( true ) ;
 		
 	return * _globalReferential ;
 
 }
+
 
 
 bool Locatable::isUpToDate() const throw()
@@ -286,15 +299,16 @@ bool Locatable::isUpToDate() const throw()
 }
 
 
+
 void Locatable::setUpToDateState( bool newState ) throw()
 {
 
 	/*
-	 * Changed state :
-	 *   true  -> true  : nothing
-	 *   false -> false : nothing
-	 *   true  -> false : nothing
-	 *   false -> true  : notify all children
+	 * Changed state:
+	 *   true  -> true : nothing
+	 *   false -> false: nothing
+	 *   true  -> false: nothing
+	 *   false -> true : notify all children
 	 *
 	 */
 	 
@@ -302,7 +316,7 @@ void Locatable::setUpToDateState( bool newState ) throw()
 	{
 		/*
 		 * Propagate the news if and only if it was up-to-date and is 
-		 * not any more :
+		 * not any more:
 		 *
 		 */
 		changed() ;
@@ -313,15 +327,17 @@ void Locatable::setUpToDateState( bool newState ) throw()
 }
 
 
+
 void Locatable::beNotifiedOf( const Event & newEvent ) throw()
 {
 
 	if ( dynamic_cast<const ReferentialChangedEvent *>( & newEvent ) != 0 )
 		setUpToDateState( false ) ;
 	
-	// else : not a ReferentialChangedEvent, event ignored.	
+	// else: not a ReferentialChangedEvent, event ignored.	
 	
 }
+
 
 
 const string Locatable::toString( VerbosityLevels level ) const throw()
@@ -339,10 +355,11 @@ const string Locatable::toString( VerbosityLevels level ) const throw()
 }
 
 
+
 void Locatable::changed() throw() 
 {
 
-	// Force recomputation of global referential for next time :
+	// Force recomputation of global referential for next time:
 	if ( _globalReferential != 0 )
 	{
 		delete _globalReferential ;
@@ -357,12 +374,13 @@ void Locatable::changed() throw()
 }
 
 
+
 void Locatable::detachFromFather() throw( LocatableException )
 {
 
 	if ( _father == 0 ) 
 		throw LocatableException( 
-			"Locatable::detachFromFather : no father registered." ) ;
+			"Locatable::detachFromFather: no father registered." ) ;
 	
 	try 
 	{
@@ -370,12 +388,13 @@ void Locatable::detachFromFather() throw( LocatableException )
 	} 
 	catch( const EventException & e )
 	{
-		// Could be throw LocatableException as well :
-		LogPlug::error( "Locatable::detachFromFather failed : " 
+		// Could be throw LocatableException as well:
+		LogPlug::error( "Locatable::detachFromFather failed: " 
 			+ e.toString() ) ;
 	}
 	
 }
+
 
 
 const string Locatable::describe( VerbosityLevels level ) const throw()
