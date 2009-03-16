@@ -19,11 +19,13 @@ using namespace Ceylan::Log ;
 
 
 
+
 EventListener::EventListener() throw() :
 	_sources()
 {
 
 }
+
 
 
 EventListener::EventListener( EventSource & source ) throw() :
@@ -33,12 +35,13 @@ EventListener::EventListener( EventSource & source ) throw() :
 }
 
 
+
 EventListener::~EventListener() throw()
 {
 
 #if CEYLAN_DEBUG_EVENTS
 	if ( ! _sources.empty() )		
-		LogPlug::debug( "EventListener destructor : "
+		LogPlug::debug( "EventListener destructor: "
 			"listener was still registered to " 
 			+ Ceylan::toString( 
 				static_cast<Ceylan::Uint32>( _sources.size() ) )
@@ -52,6 +55,7 @@ EventListener::~EventListener() throw()
 }
 
 
+
 void EventListener::subscribeTo( EventSource & source ) throw( EventException )
 {
 
@@ -60,7 +64,7 @@ void EventListener::subscribeTo( EventSource & source ) throw( EventException )
 	{
 			if  ( (*it) == & source )
 				throw EventException( 
-					"EventListener::subscribeTo : event source " 
+					"EventListener::subscribeTo: event source " 
 					+ source.toString() + " is already registered." ) ;
 		
 	}
@@ -77,6 +81,7 @@ void EventListener::subscribeTo( EventSource & source ) throw( EventException )
 }
 
 
+
 void EventListener::unsubscribeFrom( EventSource & source ) 
 	throw( EventException )
 {
@@ -89,40 +94,40 @@ void EventListener::unsubscribeFrom( EventSource & source )
 		if ( (*it) == & source )
 		{
 			
-			// Ensure that the source forgot this listener :
-			(*it)->remove( * this ) ;
+			// Ensure that the source forgot this listener:
+			(*it)->remove( *this ) ;
 
 #if CEYLAN_DEBUG_EVENTS		
 
 			LogPlug::debug( 
-				"EventListener unsubscribed from following source : " 
+				"EventListener unsubscribed from following source: " 
 				+ (*it)->toString() ) ;
 
 #endif // CEYLAN_DEBUG_EVENTS
 
 			/*
 			 * Removes the source, invalidates the iterator but it will 
-			 * not be used any more :
+			 * not be used any more:
 			 *
 			 */
 			_sources.remove( & source ) ;
 				
 
-			// At most one pointer to this source registered !
-				
-
-				
+			// At most one pointer to this source registered!
+						
 			return ;
+			
 		}	
 						
 	}
 					
 	if ( it == _sources.end() )
-		throw EventException( "EventListener::unsubscribeFrom : "
-			"listener was not already registered to following event source : " 
+		throw EventException( "EventListener::unsubscribeFrom: "
+			"listener was not already registered to following event source: " 
 			+ source.toString() ) ;
 	
 }
+
 
 
 void EventListener::unsubscribeFromAllSources() throw()
@@ -133,7 +138,7 @@ void EventListener::unsubscribeFromAllSources() throw()
 	{
 	
 		/*
-		 * Ensure that this source forgot this listener :
+		 * Ensure that this source forgot this listener:
 		 *
 		 * @note The rule of not deleting elements while iterating is 
 		 * respected.
@@ -143,7 +148,7 @@ void EventListener::unsubscribeFromAllSources() throw()
 	
 #if CEYLAN_DEBUG_EVENTS	
 
-		LogPlug::debug( "EventListener unsubscribed from following source : " 
+		LogPlug::debug( "EventListener unsubscribed from following source: " 
 			+ (*it)->toString() ) ;
 
 #endif // CEYLAN_DEBUG_EVENTS
@@ -155,6 +160,7 @@ void EventListener::unsubscribeFromAllSources() throw()
 }
 
 
+
 void EventListener::forgetSource( EventSource & source ) 
 	throw( EventException )
 {
@@ -162,7 +168,7 @@ void EventListener::forgetSource( EventSource & source )
 
 #if CEYLAN_DEBUG_EVENTS		
 	
-	// Check that the source was already known of this listener :
+	// Check that the source was already known of this listener:
 	
 	LogPlug::warning( "EventListener had to forgot source " 
 		+ source.toString() ) ;
@@ -178,22 +184,26 @@ void EventListener::forgetSource( EventSource & source )
 	}
 					
 	if ( it == _sources.end() )
-		throw EventException( "EventListener::unsubscribeFrom : "
-			"listener was not already registered to following event source : " 
+		throw EventException( "EventListener::unsubscribeFrom: "
+			"listener was not already registered to following event source: " 
 			+ source.toString() ) ;
 
 #endif // CEYLAN_DEBUG_EVENTS	
 
-	// Do not use iterator for deleting tasks !	
+	// Do not use iterator for deleting tasks!	
 	_sources.remove( & source ) ;
 
 }
 
 
+
 list<EventSource *> EventListener::getSources() const throw()
 {
+
 	return _sources ;
+	
 }
+
 
 
 const string EventListener::toString( Ceylan::VerbosityLevels level ) 
