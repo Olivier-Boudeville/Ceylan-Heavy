@@ -1873,12 +1873,13 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 	Microsecond lastMeasuredDuration = 0 ;
 	Microsecond currentMeasuredDuration = 0 ;
 
-
+	// 0.25 ms between two samplings:
 	const Microsecond durationStep = 250 ;
 
 	/**
 	 * Upper bound to time slice is 110 ms, to be able to catch as high as
-	 * a 100 ms granularity.
+	 * a 100 ms granularity (a frequency of less than 10Hz should be quite
+	 * uncommon).
 	 *
 	 */
 	Microsecond maximumPossibleDuration = 110000 ;
@@ -1952,7 +1953,7 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 	
 		currentMeasuredDuration = getActualDurationForSleep( testDuration ) ;
 		LogPlug::warning( "Ceylan::System::getSchedulingGranularity: "
-			"failed to guess actual time slice duration, taking "
+			"failed to guess actual time slice duration, starting with "
 			+ Ceylan::toString( currentMeasuredDuration )
 			+ " microseconds as an experimental basis." ) ;
 			
@@ -1965,7 +1966,7 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 		LogPlug::debug( "Relative equality has been found between previous ("
 			+ Ceylan::toString( lastMeasuredDuration )
 			+ ") and current (" + Ceylan::toString( currentMeasuredDuration )
-			+ ") measured durations." ) ;
+			+ ") measured durations, research was stopped." ) ;
 #endif // CEYLAN_DEBUG_SYSTEM
 
 	}
@@ -1978,7 +1979,7 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 	 */
 	const Ceylan::Uint8 sampleCount = 20 ;
 
-	// Useless but careful:
+	// Useless but safer:
 	granularity = 0 ;
 
 	for ( Ceylan::Uint8 i = 0; i < sampleCount; i++ )
@@ -1998,6 +1999,15 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 
 	granularity /= sampleCount ;
 
+	/*
+	 * We suppose here that we interrupted the current time-slice at random
+	 * moments, therefore on average on its middle, hence the multiplication
+	 * by two:
+	 *
+	 */
+	granularity *= 2 ;
+	
+	 
 #if CEYLAN_DEBUG_SYSTEM
 	LogPlug::debug( "Final returned scheduling granularity is "
 		+ Ceylan::toString( granularity ) + " microseconds." ) ;
