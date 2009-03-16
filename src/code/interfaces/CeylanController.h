@@ -12,11 +12,13 @@ namespace Ceylan
 {
 
 
+
 	// Controllers send MVC events.
 	class MVCEvent ;
 	
 	// Models received MVC events from controllers.	
 	class Model ;
+
 
 
     /**
@@ -44,6 +46,10 @@ namespace Ceylan
 	 * @note Controllers have to implement the <code>getSourceEvent</code>
 	 * virtual method, since they must be able to be triggered, notably by
 	 * Models.
+	 *
+	 * @see also the generic alternative MVC framework, for more lightweight and
+	 * flexible exchanges: Ceylan::BaseView, Ceylan::BaseModel and
+	 * Ceylan::BaseController.
 	 *
      */
     class CEYLAN_DLL Controller : public CallableEventSource
@@ -120,3 +126,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_CONTROLLER_H_
+
