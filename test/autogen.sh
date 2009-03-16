@@ -285,8 +285,8 @@ generateCustom()
 	
 	(libtool --version) < /dev/null > /dev/null 2>&1 || {
 		echo
-		echo "**Error**: You must have \`libtool' installed."
-		echo "You can get it from: ftp://ftp.gnu.org/pub/gnu/" 
+		echo "**Error**: You must have \`libtool' installed and available in your path (forgot to request to guess where the OSDL environment file is ?)."
+		echo "You can get libtool from: ftp://ftp.gnu.org/pub/gnu/" 
 		exit 20
    	}
 	
