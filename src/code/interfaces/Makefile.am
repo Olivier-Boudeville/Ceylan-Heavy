@@ -22,6 +22,10 @@ INTERFACES_INTERFACES = \
 	CeylanEvent.h                                 \
 	CeylanEventListener.h                         \
 	CeylanEventSource.h                           \
+	CeylanGenericController.h                     \
+	CeylanGenericDefines.h                        \
+	CeylanGenericModel.h                          \
+	CeylanGenericView.h                           \
 	CeylanHashable.h                              \
 	CeylanIdentifier.h                            \
 	CeylanIdentifierOwner.h                       \
@@ -54,6 +58,9 @@ INTERFACES_IMPLEMENTATIONS = \
 	CeylanEvent.cc                                \
 	CeylanEventListener.cc                        \
 	CeylanEventSource.cc                          \
+	CeylanGenericController.cc                    \
+	CeylanGenericModel.cc                         \
+	CeylanGenericView.cc                          \
 	CeylanHashable.cc                             \
 	CeylanIdentifier.cc                           \
 	CeylanIdentifierOwner.cc                      \
