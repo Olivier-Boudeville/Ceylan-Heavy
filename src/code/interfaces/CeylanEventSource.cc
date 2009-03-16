@@ -29,6 +29,7 @@ EventSource::EventSource() throw() :
 }
 
 
+
 EventSource::EventSource( EventListener & listener ) throw() :
 	_listeners()
 	//,_events()
@@ -37,16 +38,17 @@ EventSource::EventSource( EventListener & listener ) throw() :
 }
 
 
+
 EventSource::~EventSource() throw()
 {
 
 	if ( ! _listeners.empty() )
 	{
 	
-		LogPlug::error( "EventSource destructor : " 
+		LogPlug::error( "EventSource destructor: " 
 			+ Ceylan::toString( 
 				static_cast<Ceylan::Uint32>( _listeners.size() ) )
-			+ " listener(s) still registered : faulty life cycle, "
+			+ " listener(s) still registered: faulty life cycle, "
 			"temporary parachute deployed, "
 			"the listeners should have been unsubscribed before "
 			"(for example they may have to be deallocated before "
@@ -73,7 +75,7 @@ EventSource::~EventSource() throw()
 	_listeners.clear() ;
 	
 	
-	// Events are to be deleted if stored (which is not the case). :
+	// Events are to be deleted if stored (which is not the case):
 	
 	/*
 	for ( std::list<Event *>::iterator it = _events.begin(); 
@@ -84,6 +86,7 @@ EventSource::~EventSource() throw()
 }
 
 
+
 void EventSource::add( EventListener & listener ) throw( EventException )
 {
 
@@ -91,13 +94,13 @@ void EventSource::add( EventListener & listener ) throw( EventException )
 		it != _listeners.end(); it++ )
 	{
 			if  ( (*it) == & listener )
-				throw EventException( "EventSource::add : event listener (" 
+				throw EventException( "EventSource::add: event listener (" 
 					+ listener.toString() + ") is already registered." ) ;
 		
 	}
 					
 #if CEYLAN_DEBUG_EVENTS		
-	LogPlug::debug( "A new event listener registered : " 
+	LogPlug::debug( "A new event listener registered: " 
 		+ listener.toString() ) ;
 #endif // CEYLAN_DEBUG_EVENTS
 		
@@ -105,6 +108,7 @@ void EventSource::add( EventListener & listener ) throw( EventException )
 
 			
 }
+
 
 
 void EventSource::remove( const EventListener & listener ) 
@@ -141,17 +145,17 @@ void EventSource::remove( const EventListener & listener )
 			if ( ! found )
 				found = true ;
 			else
-				LogPlug::error( "EventSource::remove : this event source "
+				LogPlug::error( "EventSource::remove: this event source "
 					"was linked more than once with listener " 
 					+ (*it)->toString() ) ;
 
 #if CEYLAN_DEBUG_EVENTS		
-			LogPlug::debug( "EventSource::remove : "
+			LogPlug::debug( "EventSource::remove: "
 				"this event source acknowledges "
 				"unsubscription from listener " + (*it)->toString() ) ;
 #endif // CEYLAN_DEBUG_EVENTS
 
-			// Directly points to the next element :
+			// Directly points to the next element:
 			it = _listeners.erase( it ) ;
 						
 		}	
@@ -163,20 +167,22 @@ void EventSource::remove( const EventListener & listener )
 	}
 
 	if ( ! found )
-		throw EventException( "EventSource::remove : event listener " 
+		throw EventException( "EventSource::remove: event listener " 
 			+ listener.toString() + " was not already registered." ) ;
-
 	
 }
+
 
 
 void EventSource::removeAllListeners() throw()
 {
 
-	// Should not be used under normal circumstances.
-	_listeners.clear() ;
-		
+	// Avoid the use of iterators that could be invalidated:
+	while ( ! _listeners.empty() )
+		_listeners.front()->unsubscribeFrom( *this ) ;
+				
 }
+
 
 
 const string EventSource::toString( Ceylan::VerbosityLevels level ) 
@@ -207,13 +213,14 @@ const string EventSource::toString( Ceylan::VerbosityLevels level )
 			return "Event source has currently " 
 				+ Ceylan::toString( 
 					static_cast<Ceylan::Uint32>( _listeners.size() ) )
-				+ " registered listener(s) : " 
+				+ " registered listener(s): " 
 				+ Ceylan::formatStringList( listenersDescription ) ;
 	
 		}
 			
 	}
 }
+
 
 
 bool EventSource::isRegistered( const EventListener & listener ) throw()
@@ -233,13 +240,14 @@ bool EventSource::isRegistered( const EventListener & listener ) throw()
 }
 
 
+
 void EventSource::notifyAllListeners( const Event & newEvent ) throw() 
 {
 
 	// _events.push_back( & newEvent ) ;
 	
 	for ( list<EventListener *>::iterator it = _listeners.begin(); 
-		it != _listeners.end(); it ++ )
+		it != _listeners.end(); it++ )
 	{
 		(*it)->beNotifiedOf( newEvent ) ;	
 	}
