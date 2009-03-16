@@ -11,11 +11,13 @@ namespace Ceylan
 	enum VerbosityLevels { low, medium, high } ;
 
 
+
     /**
      * Interface that every object which can be displayed should implement. 
      *
      * Most objects implement that interface. 
-	 * Most of the time, they implement indirectly, i.e. because they
+	 *
+	 * Most of the time, they implement it indirectly, i.e. because they
 	 * inherited it.
 	 *
 	 * @note Copy constructor and assignment operator cannot be private,
@@ -74,3 +76,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_DISPLAYABLE_H_
+
