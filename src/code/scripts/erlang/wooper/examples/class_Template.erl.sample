@@ -8,9 +8,32 @@
 % Parameters taken by the constructor ('construct'): 
 -define(wooper_construct_parameters,PARAM1,PARAM2).
 
-% Life-cycle related exported operators:
--define(wooper_construct_export,new/P,new_link/P,
-	synchronous_new/P,synchronous_new_link/P,construct/P+1).
+
+% If using the default do-nothing destructor:
+
+% Declaring all variations of WOOPER-defined standard life-cycle operations:
+% (template pasted, just two replacements performed to update arities)
+-define( wooper_construct_export, new/A, new_link/A, 
+   synchronous_new/A, synchronous_new_link/A,
+   synchronous_timed_new/A, synchronous_timed_new_link/A,
+   remote_new/B, remote_new_link/B, remote_synchronous_new/B,
+   remote_synchronous_new_link/B, remote_synchronous_timed_new/B,
+   remote_synchronous_timed_new_link/B, construct/B ).
+
+
+
+% If overriding the default do-nothing destructor:
+
+% Declaring all variations of WOOPER-defined standard life-cycle operations:
+% (template pasted, just two replacements performed to update arities)
+-define( wooper_construct_export, new/A, new_link/A, 
+   synchronous_new/A, synchronous_new_link/A,
+   synchronous_timed_new/A, synchronous_timed_new_link/A,
+   remote_new/B, remote_new_link/B, remote_synchronous_new/B,
+   remote_synchronous_new_link/B, remote_synchronous_timed_new/B,
+   remote_synchronous_timed_new_link/B, construct/B, delete/1 ).
+
+
 
 % Method declarations.
 -define(wooper_method_export,M1/A1,M2/A2).
