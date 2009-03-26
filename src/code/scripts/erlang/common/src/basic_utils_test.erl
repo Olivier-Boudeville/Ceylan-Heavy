@@ -26,7 +26,7 @@ run() ->
 
 	basic_utils:checkpoint(1),
 	
-	basic_utils:start_random_source(),
+	basic_utils:start_random_source( default_seed ),
 	
 	RandomList = [ basic_utils:get_random_value(5) || _X <- lists:seq(1,15) ],
 
@@ -39,10 +39,64 @@ run() ->
 			
 	io:format( "   A list of integer random values between 1 and 5 "
 		"(both included): ~w.~n", [RandomList] ),
-				
-	io:format( "   Displaying the duration of this test: ~s.~n", 
-		[ basic_utils:get_textual_duration( InitialTimestamp,
-			basic_utils:get_timestamp() ) ] ),
+	
+	TestName = "I have spaces and also 'I have quotes'",
+		
+	io:format( "   Filename generated from '~s' is '~s'.~n", 
+		[TestName,file_utils:convert_to_filename(TestName)] ),
+	
+	
+	% Testing list management:
+	L = [ 12, 4, 13, 2, 56, 0 ],
+	
+	GetIndex = 3,
+	
+	GetValue = basic_utils:get_element_at(L,GetIndex),
+	io:format( "   Getting item #~B of list ~w: ~B.~n", [GetIndex,L,GetValue] ),
+	
+	13 = GetValue,
+
+
+	%OutOfBoundsIndex = 0,
+	%OutOfBoundsIndex = 100,
+	%io:format( "   Getting item #~B of list ~w: ~B.~n", [OutOfBoundsIndex,L,
+	%	basic_utils:get_element_at(L,OutOfBoundsIndex) ] ),    
+	
+	RemoveIndex = 3,
+	
+	ShortenList = basic_utils:remove_element_at( L, RemoveIndex ),
+	
+	io:format( "   List obtained after having removed item #~B of list ~w: "
+		" ~w.~n", [RemoveIndex,L,ShortenList] ),
+
+	% Hardcoded for checking:
+	CorrectShortenList = [ 12, 4, 2, 56, 0 ],
+	
+	ShortenList = CorrectShortenList,
+
+
+	%OutOfBoundsIndex = 0,
+	%OutOfBoundsIndex = 100,
+	%io:format( "   List obtained after having removed item #~B of list ~w: "
+	%	" ~w.~n", [OutOfBoundsIndex,L,
+	%	basic_utils:remove_element_at( L, OutOfBoundsIndex )] ),
+
+	io:format( "   List obtained after having uniformly permuted list ~w: "
+		" ~w.~n", [L,basic_utils:random_permute(L)] ),
+
+	io:format( "   List obtained after having uniformly permuted list ~w "
+		"(again): ~w.~n", [L,basic_utils:random_permute(L)] ),
+
+	L1 = [1,2,3,4,2],
+	
+	L2 = [2,3],
+	
+	Subtracted = basic_utils:subtract_all_duplicates( L1, L2 ),  
+	
+	io:format( "   Displaying the subtraction with duplicates removal "
+		"of ~w by ~w: ~w.~n", [ L1, L2, Subtracted ] ),
+
+	[1,4] = Subtracted, 	
 	
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().
