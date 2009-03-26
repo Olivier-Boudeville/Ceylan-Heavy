@@ -4,16 +4,21 @@
 % Determines what are the mother classes of this class (if any):
 -define(wooper_superclasses,[]).
 
-% Parameters taken by the constructor ('construct'). 
--define(wooper_construct_parameters,).
 
-% Construction-related exported operators:
--define(wooper_construct_export,new/0,new_link/0,
-	synchronous_new/0,synchronous_new_link/0,construct/1).
+% Declaring all variations of WOOPER standard life-cycle operations:
+% (template pasted, two replacements performed to update arities)
+-define( wooper_construct_export, new/0, new_link/0, 
+	synchronous_new/0, synchronous_new_link/0,
+	synchronous_timed_new/0, synchronous_timed_new_link/0,
+	remote_new/1, remote_new_link/1, remote_synchronous_new/1,
+	remote_synchronous_new_link/1, remote_synchronous_timed_new/1,
+	remote_synchronous_timed_new_link/1, construct/1 ).
+
 
 % Declarations of class-specific methods (besides inherited ones).
--define(wooper_method_export,getMeanChildrenCount/1,getBirthGivenCount/1,
-	giveBirth/2).
+-define(wooper_method_export, getMeanChildrenCount/1, getBirthGivenCount/1,
+	giveBirth/2 ).
+
 
 % Allows to define WOOPER base variables and methods for that class:
 -include("wooper.hrl").
