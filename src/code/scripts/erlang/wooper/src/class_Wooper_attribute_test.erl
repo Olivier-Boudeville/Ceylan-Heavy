@@ -4,21 +4,29 @@
 % Determines what are the mother classes of this class (if any):
 -define(wooper_superclasses,[]).
 
-% Parameters taken by the constructor ('construct'). 
-% They are here the ones of the Mammal mother class (the ovoviviparous being 
-% constructor does not need any parameter) plus nozzle color.
-% These are class-specific data needing to be set in the constructor:
--define(wooper_construct_parameters,).
 
-% Life-cycle related exported operators:
--define(wooper_construct_export,new/0,new_link/0,
-	synchronous_new/0,synchronous_new_link/0,construct/1).
+% Parameters taken by the constructor ('construct'). 
+% There are no class-specific data needing to be set in the constructor here,
+% thus wooper_construct_parameters is not defined (interesting test as such).
+
+
+% Declaring all variations of WOOPER standard life-cycle operations:
+% (template pasted, two replacements performed to update arities)
+-define( wooper_construct_export, new/0, new_link/0, 
+	synchronous_new/0, synchronous_new_link/0,
+	synchronous_timed_new/0, synchronous_timed_new_link/0,
+	remote_new/1, remote_new_link/1, remote_synchronous_new/1,
+	remote_synchronous_new_link/1, remote_synchronous_timed_new/1,
+	remote_synchronous_timed_new_link/1, construct/1 ).
+
 
 % Method declarations.
 -define(wooper_method_export,test/1).
 
+
 % Static method declarations.
--export([run/0]).
+-export([run/0,crashing_examples/1]).
+
 
 % Allows to define WOOPER base variables and methods for that class:
 -include("wooper.hrl").
@@ -42,6 +50,7 @@ test(State) ->
 	true        = ?getAttr(test_attribute),
 	
 	UnsetState  = ?removeAttribute(State,test_attribute),
+	false       = ?hasAttribute(UnsetState,test_attribute),
 	
 	NewSetState = ?setAttribute(UnsetState,test_attribute,true),
 	true        = ?getAttribute(NewSetState,test_attribute),
@@ -69,18 +78,25 @@ test(State) ->
 	SubState    = ?substractFromAttribute(AddState,test_add,5),
 	6           = ?getAttribute(SubState,test_add),
 
-	not_crashing_examples(SubState),
-	crashing_examples(SubState),
+	{PoppedState,8} = ?popFromAttribute(AgainState,test_list),
+	{_,7}           = ?popFromAttribute(PoppedState,test_list),
 	
-	io:format( "   End of attribute management test.~n" ),	
+	UndefState  = ?setAttribute(PoppedState,test_undef,undefined),
+	%UndefState  = ?setAttribute(PoppedState,test_undef,not_undefined),
+	
+	not_crashing_examples(UndefState),
+	%crashing_examples(UndefState),
+	
+	io:format( "   Successful ending of attribute management test.~n" ),	
 	?wooper_return_state_result( SubState, test_ok ).
 
 
 not_crashing_examples(State) ->
 	NewState = ?removeAttribute(State,non_existing),
 	OtherNewState = ?appendToAttribute(NewState,test_attribute,8),
-	io:format( "List is ~w.~n", 
-		[ ?getAttribute(OtherNewState,test_attribute) ]).
+	[8|true] = ?getAttribute(OtherNewState,test_attribute),
+	not_crashing_test_undefined(State),
+	not_crashing_test_hashtable(State).
 
 
 crashing_examples(State) ->
@@ -99,11 +115,32 @@ crashing_examples(State) ->
 	% Not a list:
 	%?deleteFromAttribute(State,test_attribute,7),
 	
-	State,
+	crashing_test_undefined(State),
+
 	%?getAttr(non_existing),
 	ok.
 	
 
+% Function needed as the checkUndefined macro operates on 'State':
+not_crashing_test_undefined(State) ->
+	?checkUndefined(test_undef).
+	
+	
+% Function needed as the checkUndefined macro operates on 'State':
+crashing_test_undefined(State) ->
+	?checkUndefined(unexisting_attribute).
+	
+
+not_crashing_test_hashtable(State) ->
+	% Let's have an (empty) hashtable first:
+	WithTableState = ?setAttribute( State, test_hashtable, hashtable:new() ),
+	EntrySetState = ?addKeyValueToAttribute(WithTableState,test_hashtable,
+		my_key, my_value ),
+	% Check was registered indeed:
+	ReadTable = ?getAttribute( EntrySetState, test_hashtable ),
+	{value,my_value} = hashtable:lookupEntry( my_key, ReadTable ).
+	
+	
 % Actual test.
 % (static)
 run() ->
@@ -121,4 +158,3 @@ run() ->
 			
 	end.
 	
-
