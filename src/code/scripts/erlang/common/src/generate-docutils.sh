@@ -1,0 +1,1 @@
+../../../shell/generate-docutils.sh
