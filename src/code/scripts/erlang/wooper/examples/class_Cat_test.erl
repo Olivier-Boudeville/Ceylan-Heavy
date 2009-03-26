@@ -269,7 +269,21 @@ run() ->
 		false ->
 			ok	
 	end,
-	MyC ! delete,				
+
+	% Some waiting could be needed in cases where the interpreter is to stop
+	% immediatly afterwards, so that the actions performed in the destructor
+	% can be performed:
+	MyC ! delete,	
+
+	MyOtherC = class_Cat:new(3,male,black,white),
+	MyOtherC ! {synchronous_delete,self()},
+	receive
+	
+		{deleted,MyOtherC} ->
+			io:format(?Prefix "This cat could be created and be synchronously deleted, as expected.~n")
+			
+	end,		
+
 	io:format( ?Prefix "End of test for module ~s.~n", [ ?Tested_module ] ),
 	testFinished().
 
