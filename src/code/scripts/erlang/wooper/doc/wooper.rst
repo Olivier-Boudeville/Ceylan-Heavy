@@ -1380,6 +1380,8 @@ WOOPER Example
 
 We created a small set of classes allowing to show multiple inheritance:
 
+.. comment Use format-specific instructions so that the PDF fits in one page and the HTML has a full-sized image.
+
 .. figure:: wooper-example.png
    :alt: WOOPER Example
    :scale: 40
@@ -1651,7 +1653,7 @@ Each instance runs a main loop (``wooper_main_loop``, defined in `wooper.hrl <ht
 		{command,{M,P}} ->
   			S_new = f(S,M,P),
 			my_server( S_new )
-	end.		
+    end.		
 		
 			
 In each instance, WOOPER manages the tail-recursive infinite surrounding loop, ``S`` corresponds to the state of the instance (``State``), and ``f(S,M,P)`` corresponds to the WOOPER logic that triggers the user-defined method ``M`` with the current state (``S``) and the specified parameters (``P``), and that may return a result.
