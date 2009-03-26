@@ -26,12 +26,13 @@ testFinished() ->
 	
 -endif.
 
+
 % For WooperClassManagerName:
 -include("wooper_class_manager.hrl").
 
 
 run() ->
-	io:format( ?Prefix "Testing module ~s.~n", [ ?Tested_module ] ),
+	io:format( ?Prefix "Testing module ~s.~n",  [ ?Tested_module ] ),
 	io:format( ?Prefix "Spawning module ~s.~n", [ ?Tested_module ] ),
 	spawn(?Tested_module,start,[self()]),	
 	receive
