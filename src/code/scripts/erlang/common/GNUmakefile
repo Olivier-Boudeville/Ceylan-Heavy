@@ -1,6 +1,6 @@
-CEYLAN_ERLANG_TOP = ..
+COMMON_TOP = .
 
-MODULES_DIRS = src
+MODULES_DIRS = src doc
 
-include $(CEYLAN_ERLANG_TOP)/GNUmakerules.inc
+include $(COMMON_TOP)/GNUmakesettings.inc
 
