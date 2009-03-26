@@ -91,8 +91,8 @@ hasEntry(Key,HashTable) ->
 	
 		{value,_} ->
 			true; 
-	
-		undefined ->
+
+		{hashtable_key_not_found,_Key} ->
 			false 
 	
 	end.	
@@ -181,6 +181,7 @@ popFromEntry(Key,HashTable) ->
 
 % Returns a flat list whose elements are all the key/value pairs of the
 % hashtable.
+% Ex: [ {K1,V1}, {K2,V2},.. ].
 enumerate(Hashtable) ->
 	lists:flatten( tuple_to_list(Hashtable) ).
 
@@ -293,8 +294,8 @@ bucket_toString(_) ->
 
 	
 % Returns the value corresponding to the key in the specified list: 	
-lookupInList(_,[]) ->
-	undefined;
+lookupInList(Key,[]) ->
+	{hashtable_key_not_found,Key};
 	
 lookupInList(Key,[{Key,Value}|_]) ->
 	{value,Value};
