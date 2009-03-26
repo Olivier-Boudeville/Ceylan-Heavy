@@ -1,43 +1,54 @@
-CEYLAN_ERLANG_TOP = ..
+WOOPER_TOP = .
 
 
-.PHONY: all release-wooper release-wooper-zip release-wooper-bz2   \
-	prepare-wooper clean-wooper-release clean-wooper-archive
+.PHONY: release release-zip release-bz2   \
+	prepare-release clean-release clean-archive
 
  
 MODULES_DIRS = src doc examples 
 
 
-all:
+# Note: the source archives are not produced in this directory, but in its 
+# parent, so that everything related to WOOPER (including these rules) 
+# remains self-contained. 
 
-release-wooper: release-wooper-zip release-wooper-bz2
 
 
-release-wooper-zip: prepare-wooper
-	@echo "  Creating Wooper release archive $(WOOPER_RELEASE_ARCHIVE_ZIP)"
-	@cd .. && zip -r $(WOOPER_RELEASE_ARCHIVE_ZIP) $(WOOPER_RELEASE_BASE) 
+release: release-zip release-bz2
+	@$(MAKE) clean-release
+
+
+release-zip: prepare-release
+	@echo "     Creating WOOPER release archive $(WOOPER_RELEASE_ARCHIVE_ZIP)"
+	@cd .. && zip -r $(WOOPER_RELEASE_ARCHIVE_ZIP) $(WOOPER_RELEASE_BASE) \
+	&& echo "     Archive $(WOOPER_RELEASE_ARCHIVE_ZIP) ready in "`pwd` 
 	
-release-wooper-bz2: prepare-wooper
-	@echo "  Creating Wooper release archive $(WOOPER_RELEASE_ARCHIVE_BZ2)"
-	@cd .. && tar cvjf $(WOOPER_RELEASE_ARCHIVE_BZ2) $(WOOPER_RELEASE_BASE)
+	
+release-bz2: prepare-release
+	@echo "     Creating WOOPER release archive $(WOOPER_RELEASE_ARCHIVE_BZ2)"
+	@cd .. && tar cvjf $(WOOPER_RELEASE_ARCHIVE_BZ2) $(WOOPER_RELEASE_BASE) \
+	&& echo "     Archive $(WOOPER_RELEASE_ARCHIVE_BZ2) ready in "`pwd` 
 	
 	
-prepare-wooper: clean clean-wooper-release
-	@echo "  Preparing release archive for Wooper $(WOOPER_VERSION)"
-	@cd .. && mkdir -p $(WOOPER_RELEASE_BASE) && /bin/cp -r common wooper GNUmake* $(WOOPER_RELEASE_BASE)
-	@-cd.. && find $(WOOPER_RELEASE_BASE) -type d -a -name '.svn' -exec /bin/rm -rf '{}' ';' 2>/dev/null
-	@cd .. && /bin/cp -f $(WOOPER_DOC_DIR)/index.html \
-		$(WOOPER_RELEASE_BASE)/wooper/doc/wooper.html
+prepare-release: clean clean-release
+	@echo "     Preparing release archive for WOOPER $(WOOPER_VERSION)"
+	@cd .. && mkdir -p $(WOOPER_RELEASE_BASE) && /bin/cp -r common wooper $(WOOPER_RELEASE_BASE)
+	@cd ../$(WOOPER_RELEASE_BASE) && mv wooper/top-GNUmakefile-for-releases GNUmakefile
+	-@cd .. && find $(WOOPER_RELEASE_BASE) -type d -a -name '.svn' -exec /bin/rm -rf '{}' ';' 2>/dev/null
+	-@cd .. && find $(WOOPER_RELEASE_BASE) -type f -a -name '*.beam' -exec /bin/rm -f '{}' ';' 2>/dev/null
 
-clean: clean-wooper-archive
+
+clean: clean-release clean-archive
+	
 		
-clean-wooper-release:
-	@echo "  Cleaning release archive for Wooper"
+clean-release:
+	@echo "     Cleaning release archive for WOOPER"
 	-@cd .. && /bin/rm -rf $(WOOPER_RELEASE_BASE)
+
 	
-clean-wooper-archive:
-	-@/bin/rm -f wooper-*.tar.bz2 wooper-*.zip
+clean-archive:
+	-@cd .. && /bin/rm -f $(WOOPER_RELEASE_ARCHIVE_BZ2) $(WOOPER_RELEASE_BASE)
 	
 	
-include $(CEYLAN_ERLANG_TOP)/GNUmakerules.inc
+include $(WOOPER_TOP)/GNUmakesettings.inc
 
