@@ -1,1 +1,1 @@
-/home/sye/Projects/LOANI/LOANI-0.6/LOANI-repository/ceylan/Ceylan/trunk/src/doc/GNUmakerules-docutils.inc
+../../../../../doc/GNUmakerules-docutils.inc
