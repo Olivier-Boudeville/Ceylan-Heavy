@@ -13,11 +13,10 @@
 % filename:join(Name1, Name2) instead.
 
 
--export([ convert_to_filename/1, get_image_file_png/1,
-	get_image_file_gif/1,
-	file_to_zipped_term/1,
-	zipped_term_to_unzipped_file/1,zipped_term_to_unzipped_file/2,
-	files_to_zipped_term/1,	zipped_term_to_unzipped_files/1 ]).
+-export([ convert_to_filename/1, get_image_file_png/1, get_image_file_gif/1,
+	file_to_zipped_term/1, zipped_term_to_unzipped_file/1,
+	zipped_term_to_unzipped_file/2, files_to_zipped_term/1,
+	zipped_term_to_unzipped_files/1 ]).
 
 
 -define(ResourceDir,"resources").
@@ -27,7 +26,8 @@
 % Converts specified name to an acceptable filename, filesystem-wise.	
 convert_to_filename(Name) ->
 	% Replace spaces by underscores:
-	{ok,Filename,_} = regexp:gsub(Name," ","_"),
+	{ok,Filename,_} = regexp:gsub( lists:flatten(Name)," ","_"),
+	%io:format( "Converted '~s' into '~s'.~n", [Name,Filename] ),
 	Filename.
 		
 	
@@ -102,6 +102,3 @@ zipped_term_to_unzipped_files(ZippedTerm) ->
 	{ok,FileList} = zip:unzip(ZippedTerm),
 	FileList.
 	
-
-% Helper functions.
-
