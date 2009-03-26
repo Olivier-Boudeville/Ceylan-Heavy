@@ -18,8 +18,6 @@
 
 % Instances are created thanks to the new operator, which calls automatically
 % the relevant constructor ('construct' function).
-% Abstract classes need only to define their 'construct' function, as no 'new'
-% operator can apply.
 
 % A class C is mapped to an Erlang module, preferably named 'class_C'.
 % An active object is mapped to an Erlang process.
@@ -35,6 +33,7 @@
 % The hashtable type, defined in hashtable.erl, is used at all levels: 
 % per-instance (for the attribute table), per-class (for the so-called virtual
 % table), per-node (for the class manager).
+% The proplist module could be used instead.
 
 % When an exported function is called as a method (i.e. it is listed in 
 % the wooper_method_export variable, see below) the list of parameters
@@ -44,7 +43,7 @@
 % wooper_method_export) with parameters automatically given to that function
 % being: 'CurrentStateOfA, 1, 2' instead of '1, 2', with 
 % CurrentStateOfA being the A state variable automatically kept in the instance
-% main loop.
+% WOOPER main loop.
 % Hence 'aMethod' must have been defined as aMethod/3 instead of aMethod/2
 % (it is indeed 'aMethod(State,X,Y) -> [..]'), whereas from the outside it is
 % called with only two parameters specified (state not being included).
@@ -53,33 +52,41 @@
 % The usual content of the '-export([XXX]).' clause in a class module should be
 % dispatched in:
 %
-%    '-define(wooper_method_export,YYY).', to declare methods, ex: 
-% '-define(wooper_method_export,getAge/1,setAge/2,declareBirthday/1).'
+%    '-define( wooper_method_export, YYY ).', to declare methods, ex: 
+% '-define( wooper_method_export, getAge/1, setAge/2, declareBirthday/1 ).'
 % Zero arity is not possible since there is at least the 'State' first 
 % parameter. So one just increments the number of intended real 
 % function-specific parameters in this export. 
 % Ex: a function 'setAge' taking in input only one logical parameter, NewAge,
 % should actually be defined as 'setAge(State,NewAge) -> [..]' and therefore
-% declared as: '-define(wooper_method_export,a/1,setAge/2,b/2).'
+% declared as: '-define( wooper_method_export, a/1, setAge/2, b/2 ).'
 % Note: one should not forget, when overloading a method F/A, to specify it in
 % wooper_method_export, otherwise its closest ancestor method will be called
 % instead. In this case a warning is issued at compilation of the child class:
-% 'Warning: function F/A is unused.'
+% 'Warning: function F/A is unused.'; static methods can be declared also here. 
 %
-% '-define(wooper_construct_export,new/p,new_link/p,construct/p+1,toString/1).'
+%	'-define( wooper_construct_export, new/p, new_link/p, construct/p+1, ...).'
 % Ex:
-% '-define(wooper_construct_export,new/2,new_link/2,construct/3,toString/1).' 
-% to declare the appropriate construction-related functions (the two 'new', and
-% 'construct'), p being the number of parameters defined in the
-% wooper_construct_parameters variable.
+% '-define( wooper_construct_export, new/2, new_link/2, construct/3, ...).' 
+% to declare the appropriate construction-related functions (the 'new' 
+% variations and the 'construct' operator), p being the number of
+% parameters defined in the wooper_construct_parameters variable.
 % Only the relevant 'construct' function has to be actually defined by the
-% developer: new and new_lib are automatically defined appropriately
-% (see in this file). toString is optional but proved to be often convenient
-% for debugging method implementations
+% developer: all new variations are automatically defined appropriately
+% (see in this file). 
+% Declaring and implementing a toString/1 method is optional, but may be
+% convenient for the debugging of method implementations.
 %
-%    '-export([ZZZ]).', ex: '-export([example_fun/0, f/2]).' for usual exported
-% functions, that are not methods
-    
+%	'-export([ZZZ]).', ex: '-export([example_fun/0, f/2]).' for usual exported
+% functions, that are not methods.
+%
+% Note that the dispatching of functions into wooper_method_export,
+% wooper_construct_export and classical exports is done mainly for 
+% self-documenting purpose (they are all just translated into the usual 
+% export declarations).  
+%    
+
+
 
 % Shared code. 
 %
@@ -88,17 +95,18 @@
 
 % Example:
 % -module(class_Cat).
-% -define(wooper_superclasses,[class_Mammal,class_ViviparousBeing]).
-% -define(wooper_method_export,hasWhiskers/1,canEat/2).
-% -define(wooper_construct_parameters,Age,Gender,FurColor).
-% -define(wooper_construct_export,new/3,new_link/3,construct/4).
+% -define( wooper_superclasses, [class_Mammal,class_ViviparousBeing] ).
+% -define( wooper_method_export, hasWhiskers/1, canEat/2 ).
+% -define( wooper_construct_parameters, Age, Gender, FurColor ).
+% -define( wooper_construct_export, new/3, new_link/3, construct/4, ... ).
 % -include("wooper.hrl").
 % [...]
 % See also: class_Template.erl
+%
 
 
 
-% Allows to define WOOPER base variables and methods for that class:
+% Allows to define WOOPER base variables and methods for that class.
 
 
 
@@ -117,16 +125,19 @@
 % The attribute table (a hashtable) records all the data members of a given
 % instance, including all the inherited ones. 
 % The request sender member is used internally by WOOPER so that a request
-% method have a way of retrieving the corresponding client PID. This avoids
-% the client to specify its PID twice, one for WOOPER, one for the method, as
-% a method parameter, in the case the method itself needs the client PID, for
-% example to register it in a list in its own state. Thus a client does not have
-% to specify: 'MyServer ! {my_request,[self()],self()}', specifying
-% 'MyServer ! {my_request,[],self()}' is enough: the method will be able to
-% retrieve the client PID thanks to the request_sender member, automatically
+% method have a way of retrieving the corresponding caller PID. This avoids
+% the caller to specify its PID twice, one for WOOPER, one for the method, as
+% a method parameter, in the case the method itself needs the caller PID, for
+% example to register it in a list in its own state. Thus a caller does not have
+% to specify: 'MyInstance ! {my_request,[self()],self()}', specifying
+% 'MyInstance ! {my_request,[],self()}' is enough: the method will be able to
+% retrieve the caller PID thanks to the request_sender member, automatically
 % set by WOOPER. For non-request methods (oneways), WOOPER will set
 % request_sender to the atom 'undefined', to ensure the oneway crashes whenever
 % trying to use this request-specific information to send a message.
+% 
+% Therefore when you see the first parameter of a method, 'State', it is 
+% actually just an instance of the following record:
 -record( state_holder, {
 		virtual_table,
 		attribute_table,
@@ -165,17 +176,19 @@
 -ifdef(wooper_debug).
 
 	% These methods/functions are defined for all classes:
-	-define(WooperBaseMethods,get_class_name/0,get_class_name/1,
-		get_superclasses/0,get_superclasses/1,
-		executeRequest/3,executeRequest/2,executeOneway/3,executeOneway/2,
-		wooper_pop_from_attribute/2,
-		wooper_construct_and_run/1,wooper_construct_and_run_synchronous/2,
+	-define( WooperBaseMethods, get_class_name/0, get_class_name/1,
+		get_superclasses/0, get_superclasses/1,
+		executeRequest/2, executeRequest/3, executeOneway/2, executeOneway/3,
+		delete_any_process_in/2, wooper_destruct/1, 
+		wooper_pop_from_attribute/2, wooper_check_undefined/2,
+		wooper_construct_and_run/1, wooper_construct_and_run_synchronous/2,
 		wooper_get_all_attributes/1, 
-		is_wooper_debug/0,wooper_debug_listen/3,
-		wooper_display_state/1,wooper_display_virtual_table/1,
+		is_wooper_debug/0, wooper_debug_listen/3,
+		wooper_display_state/1, wooper_display_virtual_table/1,
 		wooper_display_instance/1,
-		wooper_get_state_description/1,wooper_get_virtual_table_description/1,
-		wooper_get_instance_description/1,wooper_display_loop_state/1).
+		wooper_get_state_description/1, wooper_get_virtual_table_description/1,
+		wooper_get_instance_description/1, wooper_display_loop_state/1 ).
+	
 	
 	-export([?WooperBaseMethods]).
 	
@@ -193,10 +206,10 @@
 		true.
 	
 	% In debug mode, method results are checked thanks to an additional atom:
-	-define(wooper_return_state_result(State,Result),
+	-define( wooper_return_state_result(State,Result),
 		{wooper_result,State,Result}).
 		
-	-define(wooper_return_state_only(State),{wooper_result,State}).
+	-define( wooper_return_state_only(State),{wooper_result,State}).
 
 
 	wooper_display_loop_state(State) ->
@@ -217,15 +230,16 @@
 
 	
 	% These methods/functions are defined for all classes:
-	-define(WooperBaseMethods,get_class_name/0,get_class_name/1,
-		get_superclasses/0,get_superclasses/1,
-		executeRequest/3,executeRequest/2,executeOneway/3,executeOneway/2,
-		wooper_pop_from_attribute/2,
-		wooper_construct_and_run/1,wooper_construct_and_run_synchronous/2,
+	-define( WooperBaseMethods, get_class_name/0, get_class_name/1,
+		get_superclasses/0, get_superclasses/1,
+		executeRequest/2, executeRequest/3, executeOneway/2, executeOneway/3,
+		delete_any_process_in/2, wooper_destruct/1, 
+		wooper_pop_from_attribute/2, wooper_check_undefined/2,
+		wooper_construct_and_run/1, wooper_construct_and_run_synchronous/2,
 		wooper_get_all_attributes/1,
-		is_wooper_debug/0,wooper_debug_listen/3,
-		wooper_display_state/1,wooper_display_virtual_table/1,
-		wooper_display_instance/1,wooper_display_loop_state/1).
+		is_wooper_debug/0, wooper_debug_listen/3,
+		wooper_display_state/1, wooper_display_virtual_table/1,
+		wooper_display_instance/1, wooper_display_loop_state/1 ).
 
 	-export([?WooperBaseMethods]).
 
@@ -255,6 +269,7 @@
 -endif.
 
 
+
 % Returns all the attributes of this instance, as a list of {attribute_name,
 % attribute_value} pairs.
 wooper_get_all_attributes(State) ->
@@ -263,10 +278,10 @@ wooper_get_all_attributes(State) ->
 
 
 % Helper function to test requests.
-% Allows to test from the shell a server by sending it requests
+% Allows to test from the shell an instance by sending it requests
 % (hence needing a receive whereas in the shell).
 % Available even when debug mode is off. 
-wooper_debug_listen(Pid,Action,Arguments) ->
+wooper_debug_listen( Pid, Action, Arguments ) ->
 	Pid ! {Action,Arguments,self()},
 	receive
 
@@ -290,6 +305,7 @@ wooper_debug_listen(Pid,Action,Arguments) ->
 get_class_name() ->
 	?className.
 
+
 % "Static method" (only a function) which returns the list of the 
 % superclasses for that class.
 get_superclasses() ->
@@ -306,28 +322,114 @@ get_superclasses(State) ->
 
 
 
+
+% The creation of an instance of a WOOPER class can be:
+%
+%  - either non-blocking or synchronous (and, if synchronous, with or 
+% without a time-out)
+%
+%  - either not linked or linked to the current process
+%
+%  - either local (on the current node) or remote (on another node)
+%
+
+
+% Following construction variations are always declared, for a constructor
+% expected to take N base parameters:
+% new/N, new_link/N, synchronous_new/N, synchronous_new_link/N
+
+% If use_synchronous_timed_new is defined, WOOPER adds:
+% synchronous_timed_new/N, synchronous_timed_new_link/N
+
+% If use_remote_new is defined, WOOPER adds:
+% remote_new/N+1, remote_new_link/N+1, remote_synchronous_new/N+1,
+% remote_synchronous_new_link/N+1.
+
+% Finally, if use_synchronous_timed_new *and* use_remote_new are defined,
+% WOOPER adds:
+% remote_synchronous_timed_new/N+1, remote_synchronous_timed_new_link/N+1.
+
+% Therefore for a template for a full-blown declaration would be:
+% (in  the next block, just search and replace with your text editor A with N,
+% and B with N+1)
+
+% Declaring all variations of WOOPER standard life-cycle operations:
+% (template pasted, just two replacements performed to update arities)
+%-define( wooper_construct_export, new/A, new_link/A, 
+%	synchronous_new/A, synchronous_new_link/A,
+%	synchronous_timed_new/A, synchronous_timed_new_link/A,
+%	remote_new/B, remote_new_link/B, remote_synchronous_new/B,
+%	remote_synchronous_new_link/B, remote_synchronous_timed_new/B,
+%	remote_synchronous_timed_new_link/B, construct/B ).
+
+% Note: delete/1 can be removed if no special destructor is to be defined.
+
+
+% There are construction operators that just take the construction parameters,
+% ?wooper_construct_parameters (like new/N), and other operators that take
+% an additional parameter, the target node (like remote_new/N+1).
+% 
+% As wooper_construct_parameters can be void
+% (i.e. declared as '-define(wooper_construct_parameters,).'), 
+% the declaration 'new( ?wooper_construct_parameters )' would be ok but
+% 'remote_new( Node,?wooper_construct_parameters )' would result in the
+% incorrect syntax 'remote_new( Node,)'.
+% A solution could be, depending on wooper_construct_parameters being 
+% void or not, to define either 'remote_new( Node )' (if void) or
+% 'remote_new( Node,?wooper_construct_parameters )' (if not void).
+% However the Erlang macros do not seem to support tests based on their value 
+% (we can only test whether they are defined or not), thus the
+% following convention has been used:
+
+% wooper_construct_parameters should be defined if and only if there is
+% at least one parameter to be declared.
+%
+% Therefore, in the case of a constructor taking two parameters, X and Y, 
+% we will have:
+%
+% -define(wooper_construct_parameters,X,Y).
+% ...
+% construct(State,?wooper_construct_parameters) ->
+% ...
+%
+% whereas in the case of a constructor taking no parameter, we will have:
+%
+% ...
+% construct(State) ->
+% ...
+%
+
+% i.e. there will be in this case no: '-define(wooper_construct_parameters,)'.
+
+
+% First case: wooper_construct_parameters is defined:
+
+-ifdef(wooper_construct_parameters).
+
 % Spawns a new instance for this class, using specified parameters to
 % construct it.
 % Returns the PID of the newly created instance.
 % Creation is asynchronous: new returns as soon as the creation is triggered,
 % without waiting for it to complete.
-new(?wooper_construct_parameters) ->
+new( ?wooper_construct_parameters ) ->
 	%io:format("new operator: spawning ~w:wooper_construct_and_run "
 	%	"with parameters ~w.~n", [?MODULE,[?wooper_construct_parameters]]), 
 	% Double-list: list with a list in it.
-	spawn(?MODULE, wooper_construct_and_run,
+	spawn( ?MODULE, wooper_construct_and_run,
 		[[?wooper_construct_parameters]] ).
 	
 
+
 % Spawns a new instance for this class and links it to the current process,
 % using specified parameters to construct it.
-% Returns the PID of the newly created instance.
+% Returns the PID of the newly created and linked instance.
 % Creation is asynchronous: new_link returns as soon as the creation is
 % triggered, without waiting for it to complete.
-new_link(?wooper_construct_parameters) ->
+new_link( ?wooper_construct_parameters ) ->
 	% Double-list: list with a list in it.
-	spawn_link(?MODULE, wooper_construct_and_run,
+	spawn_link( ?MODULE, wooper_construct_and_run,
 		[[?wooper_construct_parameters]] ).
+
 
 
 % Spawns a new instance for this class, using specified parameters to
@@ -335,12 +437,12 @@ new_link(?wooper_construct_parameters) ->
 % Returns the PID of the newly created instance.
 % Creation is synchronous: synchronous_new will return only when the created
 % process reports it is up and running.
-synchronous_new(?wooper_construct_parameters) ->
+synchronous_new( ?wooper_construct_parameters ) ->
 	%io:format("synchronous_new operator: spawning ~w:wooper_construct_and_run "
 	%	"with parameters ~w.~n", [?MODULE,[?wooper_construct_parameters]]), 
 	% Double-list: list with a list in it, and ++ used to allow for empty
 	% parameter list.
-	SpawnedPid = spawn(?MODULE, wooper_construct_and_run_synchronous,
+	SpawnedPid = spawn( ?MODULE, wooper_construct_and_run_synchronous,
 		[ [?wooper_construct_parameters], self() ] ),
 		
 	% Blocks until the spawned process answers:	
@@ -355,12 +457,11 @@ synchronous_new(?wooper_construct_parameters) ->
 % Spawns a new instance for this class and links it to the current process,
 % using specified parameters to construct it.
 % Returns the PID of the newly created instance.
-% Creation is synchronous: synchronous_new will return only when the created
-% process reports it is up and running.
-synchronous_new_link(?wooper_construct_parameters) ->
-	% Double-list: list with a list in it, and ++ used to allow for empty
-	% parameter list..
-	SpawnedPid= spawn_link(?MODULE, wooper_construct_and_run_synchronous,
+% Creation is synchronous: synchronous_new_link will return only when the
+% created process reports it is up and running.
+synchronous_new_link( ?wooper_construct_parameters ) ->
+	% Double-list: list with a list in it.
+	SpawnedPid= spawn_link( ?MODULE, wooper_construct_and_run_synchronous,
 		[ [?wooper_construct_parameters], self() ] ),
 	
 	% Blocks until the spawned process answers:	
@@ -376,22 +477,24 @@ synchronous_new_link(?wooper_construct_parameters) ->
 
 
 % Uncomment to activate synchronous new with time-out:
-% -define(use_synchronous_timed_new,).
+-define(use_synchronous_timed_new,).
 
 
 -ifdef(use_synchronous_timed_new).
 
+
 % The duration in milliseconds before a time-out is triggered after a created
-% instance does not seem to answer properly and on reasonable time:
+% instance does not seem to answer properly and after a reasonable duration:
 -define(synchronous_time_out,5000).
+			
 			
 % Spawns a new instance for this class, using specified parameters to
 % construct it.
 % Returns the PID of the newly created instance, or the time_out atom.
-% Creation is synchronous: synchronous_new will return only when the created
-% process reports it is up and running, or when a time-out occurs.
-synchronous_timed_new(?wooper_construct_parameters) ->
-	SpawnedPid = spawn(?MODULE, wooper_construct_and_run_synchronous,
+% Creation is synchronous: synchronous_timed_new will return only when the
+% created process reports it is up and running, or when a time-out occurs.
+synchronous_timed_new( ?wooper_construct_parameters ) ->
+	SpawnedPid = spawn( ?MODULE, wooper_construct_and_run_synchronous,
 		[ [?wooper_construct_parameters], self() ] ),
 		
 	% Blocks until the spawned process answers or a time-out occurs:	
@@ -406,24 +509,456 @@ synchronous_timed_new(?wooper_construct_parameters) ->
 		
 	end.
 
+
+
+% Spawns a new instance for this class, and links it to the current process,
+% using specified parameters to construct it.
+% Returns the PID of the newly created instance, or the time_out atom.
+% Creation is synchronous: synchronous_timed_new will return only when the
+% created process reports it is up and running, or when a time-out occurs.
+synchronous_timed_new_link( ?wooper_construct_parameters ) ->
+	SpawnedPid = spawn_link( ?MODULE, wooper_construct_and_run_synchronous,
+		[ [?wooper_construct_parameters], self() ] ),
+		
+	% Blocks until the spawned process answers or a time-out occurs:	
+	receive	
+		
+		{spawn_successful,SpawnedPid} ->
+			SpawnedPid
+	
+	after ?synchronous_time_out -> 
+	
+		time_out
+		
+	end.
+
+
+
 -endif. % use_synchronous_timed_new
 
 
 
+% If use_remote_new is defined, following construction variations will be
+% automatically defined (class implementor will have to declare them):
+%  - remote_new
+%  - remote_new_link
+%  - remote_synchronous_new
+%  - remote_synchronous_new_link
+%  - synchronous_timed_new
+%
+% The arity of these remote operators is equal to the one of their local
+% counterparts plus one: if having new/N, then having remote_new/N+1.
+% 
+
+
+
+% Uncomment to activate remote new constructions:
+-define(use_remote_new,).
+
 
 -ifdef(use_remote_new).
-					
+
+
 % Spawns a new instance for this class on specified interconnected node, using
 % specified parameters to construct it.
 % If Node does not exist, a useless pid is returned. 
 % Returns the PID of the newly created instance.
 % Creation is asynchronous: remote_new returns as soon as the creation is
 % triggered, without waiting for it to complete.
-remote_new(Node,?wooper_construct_parameters) ->
-	spawn(Node, ?MODULE, wooper_construct_and_run_synchronous,
+remote_new( Node, ?wooper_construct_parameters ) ->
+	spawn( Node, ?MODULE, wooper_construct_and_run,
 		[ [?wooper_construct_parameters], self() ] ).
 
+
+% Spawns a new instance for this class on specified interconnected node, 
+% and links it to the current process, using specified parameters to 
+% construct it.
+% If Node does not exist, a useless pid is returned. 
+% Returns the PID of the newly created instance.
+% Creation is asynchronous: remote_new_link returns as soon as the creation is
+% triggered, without waiting for it to complete.
+remote_new_link( Node, ?wooper_construct_parameters ) ->
+	spawn_link( Node, ?MODULE, wooper_construct_and_run,
+		[ [?wooper_construct_parameters], self() ] ).
+
+
+
+% Spawns a new instance for this class on specified interconnected node, 
+% using specified parameters to construct it.
+% Returns the PID of the newly created instance.
+% Creation is synchronous: remote_synchronous_new will return only 
+% when the created process reports it is up and running.
+remote_synchronous_new( Node, ?wooper_construct_parameters ) ->
+	%io:format("synchronous_new operator: spawning ~w:wooper_construct_and_run "
+	%	"with parameters ~w.~n", [?MODULE,[?wooper_construct_parameters]]), 
+	% Double-list: list with a list in it.
+	SpawnedPid = spawn( Node, ?MODULE, wooper_construct_and_run_synchronous,
+		[ [?wooper_construct_parameters], self() ] ),
+		
+	% Blocks until the spawned process answers:	
+	receive	
+		
+		{spawn_successful,SpawnedPid} ->
+			SpawnedPid
+	
+	end.
+	
+
+% Spawns a new instance for this class on specified interconnected node 
+% and links it to the current process, using specified parameters 
+% to construct it.
+% Returns the PID of the newly created instance.
+% Creation is synchronous: remote_synchronous_new_link will return only 
+% when the created process reports it is up and running.
+remote_synchronous_new_link( Node, ?wooper_construct_parameters ) ->
+	% Double-list: list with a list in it.
+	SpawnedPid= spawn_link( Node, ?MODULE, wooper_construct_and_run_synchronous,
+		[ [?wooper_construct_parameters], self() ] ),
+	
+	% Blocks until the spawned process answers:	
+	% (no risk of synchronous spawns mismatch, as each synchronous calls is
+	% waited for)
+	receive	
+		
+		{spawn_successful,SpawnedPid} ->
+			SpawnedPid
+	
+	end.
+
+
+
+-ifdef(use_synchronous_timed_new).
+
+
+% Spawns a new instance for this class on specified interconnected node, 
+% using specified parameters to construct it.
+% Returns the PID of the newly created instance, or the time_out atom.
+% Creation is synchronous: remote_synchronous_timed_new will return 
+% only when the created process reports it is up and running, or when
+% a time-out occurs.
+remote_synchronous_timed_new( Node, ?wooper_construct_parameters ) ->
+	SpawnedPid = spawn( Node, ?MODULE, wooper_construct_and_run_synchronous,
+		[ [?wooper_construct_parameters], self() ] ),
+		
+	% Blocks until the spawned process answers or a time-out occurs:	
+	receive	
+		
+		{spawn_successful,SpawnedPid} ->
+			SpawnedPid
+	
+	after ?synchronous_time_out -> 
+	
+		time_out
+		
+	end.
+
+
+
+% Spawns a new instance for this class on specified interconnected node, 
+% and links it to the current process, using specified parameters
+% to construct it.
+% Returns the PID of the newly created instance, or the time_out atom.
+% Creation is synchronous: remote_synchronous_timed_new_link will return
+% only when the created process reports it is up and running, or when 
+% a time-out occurs.
+remote_synchronous_timed_new_link( Node, ?wooper_construct_parameters ) ->
+	SpawnedPid = spawn_link( Node, ?MODULE,
+		 wooper_construct_and_run_synchronous,
+		[ [?wooper_construct_parameters], self() ] ),
+		
+	% Blocks until the spawned process answers or a time-out occurs:	
+	receive	
+		
+		{spawn_successful,SpawnedPid} ->
+			SpawnedPid
+	
+	after ?synchronous_time_out -> 
+	
+		time_out
+		
+	end.
+
+
+
+-endif. % use_synchronous_timed_new
+
 -endif. % use_remote_new
+
+
+
+
+
+
+
+-else. % -ifdef(wooper_construct_parameters).
+
+
+% Second case: wooper_construct_parameters is *not* defined:
+
+
+% Spawns a new instance for this class.
+% Returns the PID of the newly created instance.
+% Creation is asynchronous: new returns as soon as the creation is triggered,
+% without waiting for it to complete.
+new() ->
+	%io:format("new operator: spawning ~w:wooper_construct_and_run "
+	%	"with no parameter.~n", [?MODULE]), 
+	% Double-list: list with a list in it.
+	spawn( ?MODULE, wooper_construct_and_run, [[]] ).
+	
+
+
+% Spawns a new instance for this class and links it to the current process.
+% Returns the PID of the newly created and linked instance.
+% Creation is asynchronous: new_link returns as soon as the creation is
+% triggered, without waiting for it to complete.
+new_link() ->
+	% Double-list: list with a list in it.
+	spawn_link( ?MODULE, wooper_construct_and_run, [[]] ).
+
+
+
+% Spawns a new instance for this class.
+% Returns the PID of the newly created instance.
+% Creation is synchronous: synchronous_new will return only when the created
+% process reports it is up and running.
+synchronous_new() ->
+	%io:format("synchronous_new operator: spawning ~w:wooper_construct_and_run "
+	%	"with no parameter.~n", [?MODULE]), 
+	% Double-list: list with a list in it.
+	SpawnedPid = spawn( ?MODULE, wooper_construct_and_run_synchronous,
+		[ [], self() ] ),
+		
+	% Blocks until the spawned process answers:	
+	receive	
+		
+		{spawn_successful,SpawnedPid} ->
+			SpawnedPid
+	
+	end.
+	
+
+% Spawns a new instance for this class and links it to the current process.
+% Returns the PID of the newly created instance.
+% Creation is synchronous: synchronous_new_link will return only when the
+% created process reports it is up and running.
+synchronous_new_link() ->
+	% Double-list: list with a list in it.
+	SpawnedPid= spawn_link( ?MODULE, wooper_construct_and_run_synchronous,
+		[ [], self() ] ),
+	
+	% Blocks until the spawned process answers:	
+	% (no risk of synchronous spawns mismatch, as each synchronous calls is
+	% waited for)
+	receive	
+		
+		{spawn_successful,SpawnedPid} ->
+			SpawnedPid
+	
+	end.
+
+
+
+% Uncomment to activate synchronous new with time-out:
+-define(use_synchronous_timed_new,).
+
+
+-ifdef(use_synchronous_timed_new).
+
+
+% The duration in milliseconds before a time-out is triggered after a created
+% instance does not seem to answer properly and after a reasonable duration:
+-define(synchronous_time_out,5000).
+			
+			
+% Spawns a new instance for this class.
+% Returns the PID of the newly created instance, or the time_out atom.
+% Creation is synchronous: synchronous_timed_new will return only when the
+% created process reports it is up and running, or when a time-out occurs.
+synchronous_timed_new() ->
+	SpawnedPid = spawn( ?MODULE, wooper_construct_and_run_synchronous,
+		[ [], self() ] ),
+		
+	% Blocks until the spawned process answers or a time-out occurs:	
+	receive	
+		
+		{spawn_successful,SpawnedPid} ->
+			SpawnedPid
+	
+	after ?synchronous_time_out -> 
+	
+		time_out
+		
+	end.
+
+
+
+% Spawns a new instance for this class, and links it to the current process.
+% Returns the PID of the newly created instance, or the time_out atom.
+% Creation is synchronous: synchronous_timed_new will return only when the
+% created process reports it is up and running, or when a time-out occurs.
+synchronous_timed_new_link() ->
+	SpawnedPid = spawn_link( ?MODULE, wooper_construct_and_run_synchronous,
+		[ [], self() ] ),
+		
+	% Blocks until the spawned process answers or a time-out occurs:	
+	receive	
+		
+		{spawn_successful,SpawnedPid} ->
+			SpawnedPid
+	
+	after ?synchronous_time_out -> 
+	
+		time_out
+		
+	end.
+
+
+
+-endif. % use_synchronous_timed_new
+
+
+
+% If use_remote_new is defined, following construction variations will be
+% automatically defined (class implementor will have to declare them):
+%  - remote_new
+%  - remote_new_link
+%  - remote_synchronous_new
+%  - remote_synchronous_new_link
+%  - synchronous_timed_new
+%
+% The arity of these remote operators is equal to the one of their local
+% counterparts plus one: if having new/N, then having remote_new/N+1.
+
+
+
+
+% Uncomment to activate remote new constructions:
+-define(use_remote_new,).
+
+
+-ifdef(use_remote_new).
+
+
+% Spawns a new instance for this class on specified interconnected node.
+% If Node does not exist, a useless pid is returned. 
+% Returns the PID of the newly created instance.
+% Creation is asynchronous: remote_new returns as soon as the creation is
+% triggered, without waiting for it to complete.
+remote_new( Node ) ->
+	spawn( Node, ?MODULE, wooper_construct_and_run, [ [], self() ] ).
+
+
+% Spawns a new instance for this class on specified interconnected node, 
+% and links it to the current process.
+% If Node does not exist, a useless pid is returned. 
+% Returns the PID of the newly created instance.
+% Creation is asynchronous: remote_new_link returns as soon as the creation is
+% triggered, without waiting for it to complete.
+remote_new_link( Node ) ->
+	spawn_link( Node, ?MODULE, wooper_construct_and_run,
+		[ [], self() ] ).
+
+
+
+% Spawns a new instance for this class on specified interconnected node.
+% Returns the PID of the newly created instance.
+% Creation is synchronous: remote_synchronous_new will return only 
+% when the created process reports it is up and running.
+remote_synchronous_new( Node ) ->
+	%io:format("synchronous_new operator: spawning ~w:wooper_construct_and_run "
+	%	"with no parameter.~n", [?MODULE]), 
+	% Double-list: list with a list in it.
+	SpawnedPid = spawn( Node, ?MODULE, wooper_construct_and_run_synchronous,
+		[ [], self() ] ),
+		
+	% Blocks until the spawned process answers:	
+	receive	
+		
+		{spawn_successful,SpawnedPid} ->
+			SpawnedPid
+	
+	end.
+	
+
+% Spawns a new instance for this class on specified interconnected node 
+% and links it to the current process.
+% Returns the PID of the newly created instance.
+% Creation is synchronous: remote_synchronous_new_link will return only 
+% when the created process reports it is up and running.
+remote_synchronous_new_link( Node ) ->
+	% Double-list: list with a list in it.
+	SpawnedPid= spawn_link( Node, ?MODULE, wooper_construct_and_run_synchronous,
+		[ [], self() ] ),
+	
+	% Blocks until the spawned process answers:	
+	% (no risk of synchronous spawns mismatch, as each synchronous calls is
+	% waited for)
+	receive	
+		
+		{spawn_successful,SpawnedPid} ->
+			SpawnedPid
+	
+	end.
+
+
+
+-ifdef(use_synchronous_timed_new).
+
+
+% Spawns a new instance for this class on specified interconnected node.
+% Returns the PID of the newly created instance, or the time_out atom.
+% Creation is synchronous: remote_synchronous_timed_new will return 
+% only when the created process reports it is up and running, or when
+% a time-out occurs.
+remote_synchronous_timed_new( Node ) ->
+	SpawnedPid = spawn( Node, ?MODULE, wooper_construct_and_run_synchronous,
+		[ [], self() ] ),
+		
+	% Blocks until the spawned process answers or a time-out occurs:	
+	receive	
+		
+		{spawn_successful,SpawnedPid} ->
+			SpawnedPid
+	
+	after ?synchronous_time_out -> 
+	
+		time_out
+		
+	end.
+
+
+
+% Spawns a new instance for this class on specified interconnected node, 
+% and links it to the current process.
+% Returns the PID of the newly created instance, or the time_out atom.
+% Creation is synchronous: remote_synchronous_timed_new_link will return
+% only when the created process reports it is up and running, or when 
+% a time-out occurs.
+remote_synchronous_timed_new_link( Node ) ->
+	SpawnedPid = spawn_link( Node, ?MODULE,
+		 wooper_construct_and_run_synchronous, [ [], self() ] ),
+		
+	% Blocks until the spawned process answers or a time-out occurs:	
+	receive	
+		
+		{spawn_successful,SpawnedPid} ->
+			SpawnedPid
+	
+	after ?synchronous_time_out -> 
+	
+		time_out
+		
+	end.
+
+
+
+-endif. % use_synchronous_timed_new
+
+-endif. % use_remote_new
+
+
+-endif. % -ifdef(wooper_construct_parameters).
 
 
 
@@ -464,6 +999,9 @@ wooper_construct_and_run_synchronous(ParameterList,SpawnerPid) ->
 % State management section.
 
 
+% Note that these macros should be one-liners, otherwise their value would be
+% the first evaluated in the macro - not the last...
+
 
 % Sets specified attribute of the instance to the specified value, based from
 % specified state.
@@ -501,12 +1039,17 @@ wooper_construct_and_run_synchronous(ParameterList,SpawnerPid) ->
 	
 
 % Tells whether specified attribute exists, returns true or false.
+% Note: usually the best practise is to set all possible attributes from the
+% constructor, either to an appropriate value or to 'undefined', instead of
+% having instances with or without a given attribute.
 -define(hasAttribute(State,AttributeName),
 	hashtable:hasEntry( AttributeName, State#state_holder.attribute_table ) ).
 
 
 % Returns the value associated to specified named-designated attribute, if 
 % found, otherwise triggers a case clause crash.
+% Note: almost never used, as either the attribute can be obtained with 
+% getAttr/1 (as externally defined) or it is already bound to a variable.
 % See also: getAttr/1.
 -define(getAttribute(State,AttributeName),
 	hashtable:getEntry( AttributeName, State#state_holder.attribute_table ) ).
@@ -609,6 +1152,22 @@ wooper_construct_and_run_synchronous(ParameterList,SpawnerPid) ->
 ).
 
 
+% Assumes the specified attribute is a hashtable and adds the specified
+% key/value pair to it.
+% Several lines compacted into a rather impressive one-liner.
+-define(addKeyValueToAttribute(State,AttributeName,Key,Value),
+	#state_holder{
+		virtual_table   = State#state_holder.virtual_table,
+		attribute_table = hashtable:addEntry( AttributeName, 
+			hashtable:addEntry(Key,Value,
+				hashtable:getEntry( AttributeName,
+					State#state_holder.attribute_table )),
+			State#state_holder.attribute_table ),
+		request_sender  = State#state_holder.request_sender
+	}
+).
+
+
 
 % Removes the head from specified attribute, supposed to be a list, and 
 % returns a tuple {NewState,PoppedHead}.
@@ -622,7 +1181,8 @@ wooper_construct_and_run_synchronous(ParameterList,SpawnerPid) ->
 % Note: This cannot be a one-line macro, it has to be a function.
 %
 -define(popFromAttribute(State,AttributeName),
-	wooper_pop_from_attribute(State,AttributeName)).
+	wooper_pop_from_attribute(State,AttributeName)
+).
 
 
 % Helper function for the popFromAttribute macro.
@@ -636,6 +1196,37 @@ wooper_pop_from_attribute(State,AttributeName) ->
 		request_sender  = State#state_holder.request_sender	},
 		Head
 	}.	
+
+
+
+% Checks that the value of specified attribute is 'undefined'.
+% Triggers an exception otherwise.
+% Note: operates on a state called 'State'.
+% The check could be disabled in debug mode.
+% This results in function call, as a pure macro, if used more than
+% once in a function, would trigger warnings about unsage variables.
+-define(checkUndefined(Attribute),
+	wooper_check_undefined(State,Attribute)
+). 
+
+
+% Helper function for the checkUndefined macro.
+wooper_check_undefined(State,Attribute) -> 
+
+	case catch undefined = ?getAttr(Attribute) of
+
+		{'EXIT',{{badmatch,UnexpectedValue},Stack}} ->
+			% Attribute value was not equal to 'undefined':
+			throw( {attribute_was_not_undefined,{Attribute,UnexpectedValue},
+				Stack} );
+	
+		{'EXIT',Error} ->
+			% Other error (ex: unknown attribute):
+			throw( {attribute_error,Attribute,Error} );
+		
+		_Other ->
+			ok	
+	end.		
 
 
 
@@ -789,20 +1380,20 @@ wooper_main_loop(State) ->
 			
 		% Requests with response:
 		
-		% Server PID could be sent back as well to discriminate 
-		% received answers on the client side.
-		{ MethodAtom, ArgumentList, SenderPID } 
-				when is_pid(SenderPID) and is_list(ArgumentList) ->
+		% Instance PID could be sent back as well to discriminate 
+		% received answers on the caller side.
+		{ MethodAtom, ArgumentList, CallerPid } 
+				when is_pid(CallerPid) and is_list(ArgumentList) ->
 			?wooper_log_format( "Main loop (case A) for ~w: "
 				"request ~s with argument list ~w for ~w.~n", 
-				[self(), MethodAtom, ArgumentList, SenderPID] ),
-			SenderAwareState = State#state_holder{request_sender=SenderPID},
+				[self(), MethodAtom, ArgumentList, CallerPid] ),
+			SenderAwareState = State#state_holder{request_sender=CallerPid},
 			{ NewState, Result } = wooper_execute_method( MethodAtom,
 				SenderAwareState, ArgumentList ), 
-			%SenderPID ! { self(), Result }
-			SenderPID ! Result,
+			%CallerPid ! { self(), Result }
+			CallerPid ! Result,
 			
-			% Force a crash if server-side error detected: 
+			% Force a crash if instance-side error detected: 
 			case element(1,Result) of
 			
 				wooper_method_failed ->
@@ -823,17 +1414,17 @@ wooper_main_loop(State) ->
 		
 		% Auto-wrapping single arguments implies putting lists between
 		% double-brackets		
-		{ MethodAtom, Argument, SenderPID } when is_pid(SenderPID) ->
+		{ MethodAtom, Argument, CallerPid } when is_pid(CallerPid) ->
 			?wooper_log_format( "Main loop (case B) for ~w: "
 				"request ~s with argument ~w for ~w.~n", 
-				[self(), MethodAtom, Argument, SenderPID] ),
-			SenderAwareState = State#state_holder{request_sender=SenderPID},
+				[self(), MethodAtom, Argument, CallerPid] ),
+			SenderAwareState = State#state_holder{request_sender=CallerPid},
 			{ NewState, Result } = wooper_execute_method( MethodAtom,
 				SenderAwareState, [ Argument ] ), 
-			%SenderPID ! { self(), Result }
-			SenderPID ! Result,
+			%CallerPid ! { self(), Result }
+			CallerPid ! Result,
 			
-			% Force a crash if server-side error detected: 
+			% Force a crash if instance-side error detected: 
 			case element(1,Result) of
 			
 				wooper_method_failed ->
@@ -852,7 +1443,7 @@ wooper_main_loop(State) ->
 			wooper_main_loop(SenderAgnosticState);
 
 
-		% Oneway calls (no client PID sent, no answer sent back):
+		% Oneway calls (no caller PID sent, no answer sent back):
 		
 		% (either this method does not return anything, or the sender is not
 		% interested in the result)
@@ -866,12 +1457,21 @@ wooper_main_loop(State) ->
 			?wooper_log( "Main loop (case C) ended.~n" ),	
 			wooper_main_loop(NewState);
 		
+		{ synchronous_delete, CallerPid } ->
+			?wooper_log("Main loop: oneway synchronous delete.~n"),
+			% Triggers the recursive call of destructors in the inheritance
+			% graph (bottom-up):
+			wooper_destruct( State ),
+			CallerPid ! {deleted,self()},
+			deleted;
+			% (do nothing, loop ends here).		
+			
 		
 		% ping is always available and cannot be overriden:
-		{ ping, SenderPID } ->
+		{ ping, CallerPid } ->
 			?wooper_log_format( "Main loop (case D) for ~w: oneway ping.~n",
 				[self()]),
-			SenderPID ! {pong,self()},
+			CallerPid ! {pong,self()},
 			?wooper_log( "Main loop (case D) ended.~n" ),	
 			wooper_main_loop(State);
 		
@@ -889,22 +1489,11 @@ wooper_main_loop(State) ->
 			
 		delete ->
 			?wooper_log("Main loop: oneway delete.~n"),
-			case hashtable:lookupEntry( {delete,1},
-					State#state_holder.virtual_table) of 
-				
-				undefined ->
-					% Destructor not overriden, using default one:
-					%io:format( "Deleting ~w (default destructor).~n", 
-					%	[ self() ]),
-					deleted;
-				
-				{ value, LocatedModule } -> 
-					apply( LocatedModule, delete, [ State ] ),
-					deleted
-					
-				
-			% (do nothing, loop ended).		
-			end;
+			% Triggers the recursive call of destructors in the inheritance
+			% graph (bottom-up):
+			wooper_destruct( State ),
+			deleted;
+			% (do nothing, loop ends here).		
 			
 			
 		MethodAtom when is_atom(MethodAtom) ->
@@ -966,13 +1555,41 @@ wooper_retrieve_virtual_table() ->
 	
 	end.
 	
+
+% Calls recursively the destructors through the inheritance tree.
+% Each wooper_destruct function is purely local to the current module. 
+wooper_destruct( State ) ->			
+	% If a class-specific delete is defined, execute it, otherwise
+	% do nothing. Then recurse with higher-level destructors
+	% (maybe just storing delete/1 in the method table would be
+	% more efficient, see wooper_class_manager:get_virtual_table_for):
+	case lists:member( {delete,1}, module_info(exports) ) of
+	
+		true ->
+			?MODULE:delete(State);	 
+		
+		false ->
+			% Destructor not overriden, using default one:
+			%io:format( "Deleting ~w (default do-nothing destructor "
+			%	"for class ~w).~n", [ self(), ?MODULE ] )
+			ok
+				
+	end,
+	% Then automatically call the direct mother destructors.			
+	% Using foldr, not foldl: the destructors of mother classes
+	% are called in the reverse order compared to the order
+	% that was used for construction, for the sake of symmetry.
+	% Final state is dropped.
+	lists:foldr( 
+		fun(Class,NewState) -> apply(Class,wooper_destruct,[NewState]) end,
+		State, get_superclasses() ).
 	
 	
 	
 % Looks-up specified method (Method/Arity, ex: toString/0) to be found 
 % in heritance tree and returns either { methodFound, Module } with 
-% Module corresponding to the
-% class that implements that method, or an error.
+% Module corresponding to the class that implements that method, or an error, 
+% like: {hashtable_key_not_found,{aMethodName,AnUnexpectedArity}}.
 % Note: uses the pre-built virtual table for this class.
 wooper_lookupMethod(State,MethodAtom,Arity) ->
 	hashtable:lookupEntry( {MethodAtom,Arity},
@@ -1000,7 +1617,7 @@ wooper_lookupMethod(State,MethodAtom,Arity) ->
 % If its execution succeeds, then {wooper_result,Result} is returned, with 
 % Result being the actual result of the method call, with an updated state.
 % Finally, if the method does not return any result, the atom
-% 'wooper_method_returns_void' is returned, which allows a client that sent his
+% 'wooper_method_returns_void' is returned, which allows a caller that sent his
 % PID to be warned it is useless, as no answer should be expected.
 % The error logs have been added, as debugging faulty oneways is more difficult:
 % they cannot return any error to the caller, they can just crash and notify
@@ -1176,7 +1793,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 		
 		
 		% Method not found:	
-		undefined ->
+		{hashtable_key_not_found,{_MethodName,_Arity}} ->
 		
 			case State#state_holder.request_sender of
 					
@@ -1226,7 +1843,23 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 	end.
 
 
-% Note: the execute* functions might not have to return wooper_result.
+
+% Parameter-less request.
+executeRequest(State,RequestAtom) -> 
+
+	%io:format("executeRequest/2: executing ~s() from ~s.~n", 
+	%	[ RequestAtom , ?MODULE ]),
+			
+	% Auto-calling method:		
+	SenderAwareState = State#state_holder{request_sender=self()},
+	
+	% Correction checking by pattern-matching:
+	{ NewState, {wooper_result,Result} } = wooper_execute_method( RequestAtom,
+		SenderAwareState, [] ), 
+
+	% Returns:			
+	{NewState#state_holder{request_sender=undefined}, Result}.
+
 
 
 % Allows to call synchronously from the code of a given class its actual 
@@ -1257,7 +1890,7 @@ executeRequest(State,RequestAtom,ArgumentList) when is_list(ArgumentList) ->
 		SenderAwareState, ArgumentList ), 
 		
 	% Returns:			
-	{wooper_result,	NewState#state_holder{request_sender=undefined}, Result};
+	{NewState#state_holder{request_sender=undefined}, Result};
 	
 	
 % Here third parameter is not a list:
@@ -1275,25 +1908,25 @@ executeRequest(State,RequestAtom,StandaloneArgument) ->
 		SenderAwareState, [StandaloneArgument] ), 
 
 	% Returns:			
-	{wooper_result,	NewState#state_holder{request_sender=undefined}, Result}.
+	{NewState#state_holder{request_sender=undefined}, Result}.
 
 
 
-% Parameter-less request.
-executeRequest(State,RequestAtom) -> 
 
-	%io:format("executeRequest/2: executing ~s() from ~s.~n", 
-	%	[ RequestAtom , ?MODULE ]),
+% Parameter-less oneway.
+executeOneway(State,OnewayAtom) -> 
+
+	%io:format("executeOneway/2: executing ~s() from ~s.~n", 
+	%	[ OnewayAtom, ?MODULE ]),
 			
-	% Auto-calling method:		
-	SenderAwareState = State#state_holder{request_sender=self()},
+	% No request_sender to change with oneways.
 	
 	% Correction checking by pattern-matching:
-	{ NewState, {wooper_result,Result} } = wooper_execute_method( RequestAtom,
-		SenderAwareState, [] ), 
+	{ NewState, wooper_method_returns_void } =
+		wooper_execute_method( OnewayAtom, State, [] ), 
 
 	% Returns:			
-	{wooper_result,	NewState#state_holder{request_sender=undefined}, Result}.
+	NewState.
 
 
 		
@@ -1323,7 +1956,7 @@ executeOneway(State,OnewayAtom,ArgumentList) when is_list(ArgumentList) ->
 		wooper_execute_method( OnewayAtom, State, ArgumentList ), 
 	
 	% Returns:	
-	{wooper_result,NewState};
+	NewState;
 
 	
 % Here third parameter is not a list:
@@ -1340,25 +1973,7 @@ executeOneway(State,OnewayAtom,StandaloneArgument) ->
 		wooper_execute_method( OnewayAtom, State, [StandaloneArgument] ), 
 
 	% Returns:			
-	{wooper_result,	NewState}.
-
-
-% Parameter-less oneway.
-executeOneway(State,OnewayAtom) -> 
-
-	%io:format("executeOneway/2: executing ~s() from ~s.~n", 
-	%	[ OnewayAtom, ?MODULE ]),
-			
-	% No request_sender to change with oneways.
-	
-	% Correction checking by pattern-matching:
-	{ NewState, wooper_method_returns_void } =
-		wooper_execute_method( OnewayAtom, State, [] ), 
-
-	% Returns:			
-	{wooper_result,	NewState}.
-
-
+	NewState.
 
 
 
@@ -1384,7 +1999,7 @@ executeOneway(State,OnewayAtom) ->
 % If its execution succeeds, then {wooper_result,Result} is returned (with 
 % Result being the actual result of the method call) with an updated state.
 % Finally, if the method does not return any result, the atom
-% 'wooper_method_returns_void' is returns, which allows a client that sent his
+% 'wooper_method_returns_void' is returns, which allows a caller that sent his
 % PID to be warned it is useless, as no answer should be expected.
 wooper_execute_method(MethodAtom,State,Parameters) ->
 
@@ -1540,6 +2155,23 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 
 
 
+% Parameter-less request.
+executeRequest(State,RequestAtom) -> 
+
+	%io:format("executeRequest/2: executing ~s() from ~s.~n", 
+	%	[ RequestAtom , ?MODULE ]),
+			
+	% Auto-calling method:		
+	SenderAwareState = State#state_holder{request_sender=self()},
+	
+	% Correction checking by pattern-matching:
+	{ NewState, Result } = wooper_execute_method( RequestAtom,
+		SenderAwareState, [] ), 
+
+	% Returns:			
+	{NewState#state_holder{request_sender=undefined}, Result}.
+
+
 
 % Allows to call synchronously from the code of a given class its actual 
 % overriden methods (requests, here), including from child classes.
@@ -1568,7 +2200,7 @@ executeRequest(State,RequestAtom,ArgumentList) when is_list(ArgumentList) ->
 		SenderAwareState, ArgumentList ), 
 		
 	% Returns:			
-	{wooper_result,	NewState#state_holder{request_sender=undefined}, Result};
+	{NewState#state_holder{request_sender=undefined}, Result};
 	
 	
 	
@@ -1587,28 +2219,27 @@ executeRequest(State,RequestAtom,StandaloneArgument) ->
 		SenderAwareState, [StandaloneArgument] ), 
 
 	% Returns:			
-	{wooper_result,	NewState#state_holder{request_sender=undefined}, Result}.
+	{NewState#state_holder{request_sender=undefined}, Result}.
 
 
 
-% Parameter-less request.
-executeRequest(State,RequestAtom) -> 
 
-	%io:format("executeRequest/2: executing ~s() from ~s.~n", 
-	%	[ RequestAtom , ?MODULE ]),
+% Parameter-less oneway.
+executeOneway(State,OnewayAtom) -> 
+
+	%io:format("executeOneway/2: executing ~s() from ~s.~n", 
+	%	[ OnewayAtom, ?MODULE ]),
 			
-	% Auto-calling method:		
-	SenderAwareState = State#state_holder{request_sender=self()},
+	% No request_sender to change with oneways.
 	
-	% Correction checking by pattern-matching:
-	{ NewState, Result } = wooper_execute_method( RequestAtom,
-		SenderAwareState, [] ), 
+	% Less checking performed in release mode:
+	{ NewState, wooper_method_returns_void } = wooper_execute_method(
+		OnewayAtom,	State, [] ), 
 
 	% Returns:			
-	{wooper_result,	NewState#state_holder{request_sender=undefined}, Result}.
+	NewState.
 
-
-		
+	
 % Allows to call synchronously from the code of a given class its actual 
 % overriden methods (oneways, here), including from child classes.
 %
@@ -1635,7 +2266,7 @@ executeOneway(State,OnewayAtom,ArgumentList) when is_list(ArgumentList) ->
 		OnewayAtom,	State, ArgumentList ), 
 	
 	% Returns:	
-	{wooper_result,NewState};
+	NewState;
 
 	
 % Here third parameter is not a list:
@@ -1652,24 +2283,47 @@ executeOneway(State,OnewayAtom,StandaloneArgument) ->
 		OnewayAtom,	State, [StandaloneArgument] ), 
 
 	% Returns:			
-	{wooper_result,NewState}.
+	NewState.
 
-
-% Parameter-less oneway.
-executeOneway(State,OnewayAtom) -> 
-
-	%io:format("executeOneway/2: executing ~s() from ~s.~n", 
-	%	[ OnewayAtom, ?MODULE ]),
-			
-	% No request_sender to change with oneways.
-	
-	% Less checking performed in release mode:
-	{ NewState, wooper_method_returns_void } = wooper_execute_method(
-		OnewayAtom,	State, [] ), 
-
-	% Returns:			
-	{wooper_result,NewState}.
-		
-		
+				
 -endif.
+
+
+
+% Section for functions whose definitions do not change depending on the debug
+% mode.
+
+
+% Deletes the process(es) potentially stored in specified WOOPER attribute list.
+% Sets the corresponding attribute(s) to 'undefined', returns an updated state.
+% Ex: in a destructor:
+% delete_any_process_in(State, [first_pid,second_pid] ) or
+% delete_any_process_in(State, my_pid ).
+delete_any_process_in( _State, [] ) ->
+	ok;
+	
+delete_any_process_in( State, [PidAttribute|T] ) ->
+	NewState = case ?getAttr(PidAttribute) of
+	
+		undefined ->
+			State;
+		
+		Pid when is_pid(Pid) ->
+			Pid ! delete,
+			?setAttribute( State, PidAttribute, undefined )
+				
+	end,
+	delete_any_process_in( NewState, T );
+	
+delete_any_process_in( State, PidAttribute ) ->
+	case ?getAttr(PidAttribute) of
+	
+		undefined ->
+			State;
+		
+		Pid when is_pid(Pid) ->
+			Pid ! delete,
+			?setAttribute( State, PidAttribute, undefined )
+				
+	end.
 
