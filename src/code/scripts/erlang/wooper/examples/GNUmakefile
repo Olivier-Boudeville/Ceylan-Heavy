@@ -1,7 +1,8 @@
-CEYLAN_ERLANG_TOP = ../..
+WOOPER_TOP = ..
 
 
-include $(CEYLAN_ERLANG_TOP)/GNUmakerules.inc
+include $(WOOPER_TOP)/GNUmakesettings.inc
+
 
 HELPER_MODULES = \
 	$(COMMON_BEAM)/basic_utils.beam              \
