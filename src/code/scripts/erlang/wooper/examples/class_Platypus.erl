@@ -9,19 +9,27 @@
 % They are here the ones of the Mammal mother class (the ovoviviparous being 
 % constructor does not need any parameter) plus nozzle color.
 % These are class-specific data needing to be set in the constructor:
--define(wooper_construct_parameters,Age,Gender,FurColor,NozzleColor).
+-define(wooper_construct_parameters, Age, Gender, FurColor, NozzleColor ).
 
-% Construction-related exported operators:
--define(wooper_construct_export,new/4,new_link/4,
-	synchronous_new/4,synchronous_new_link/4,construct/5).
+
+% Declaring all variations of WOOPER standard life-cycle operations:
+% (template pasted, two replacements performed to update arities)
+-define( wooper_construct_export, new/4, new_link/4, 
+	synchronous_new/4, synchronous_new_link/4,
+	synchronous_timed_new/4, synchronous_timed_new_link/4,
+	remote_new/5, remote_new_link/5, remote_synchronous_new/5,
+	remote_synchronous_new_link/5, remote_synchronous_timed_new/5,
+	remote_synchronous_timed_new_link/5, construct/5 ).
+
 
 % Method declarations.
--define(wooper_method_export,getMeanEggsCount/1,getTeatCount/1,canEat/2,
-	getNozzleColor/1,getAlternateNames/1,popFirstAlternateName/1).
+-define(wooper_method_export, getMeanEggsCount/1, getTeatCount/1, canEat/2,
+	getNozzleColor/1, getAlternateNames/1, popFirstAlternateName/1 ).
 
 
 % Allows to define WOOPER base variables and methods for that class:
 -include("wooper.hrl").
+
 
 
 % Constructs a new Platypus.
