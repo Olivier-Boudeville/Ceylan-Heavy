@@ -1,8 +1,7 @@
-CEYLAN_ERLANG_TOP = ../..
+WOOPER_TOP = ..
 
 
-
-include $(CEYLAN_ERLANG_TOP)/GNUmakerules.inc
+include $(WOOPER_TOP)/GNUmakesettings.inc
 
 
 # Note: utils and hashtable will be recompiled in place (here) if not already
