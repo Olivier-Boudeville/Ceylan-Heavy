@@ -5,5 +5,5 @@ MODULES_DIRS = common wooper
 
 WOOPER_TOP = $(CEYLAN_ERLANG_TOP)/wooper
 
-include $(WOOPER_TOP)/GNUmakerules.inc
+include $(WOOPER_TOP)/GNUmakesettings.inc
 
