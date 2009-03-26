@@ -32,7 +32,7 @@ CEYLAN_ERLANG=`dirname $0`/../..
 
 
 # If logs are redirected to file:
-DEFAULT_LOG_FILE="Ceylan-Simulation.log"
+DEFAULT_LOG_FILE="Ceylan-run.log"
 
 be_verbose=1
 use_tcp_range=1
@@ -48,6 +48,7 @@ while [ $# -gt 0 ] ; do
 	
 	if [ "$1" = "-c" ] ; then
 		shift
+		#echo "  + specified cookie: $COOKIE"		
 		COOKIE="$1"
 		token_eaten=0
 	fi
@@ -93,6 +94,8 @@ while [ $# -gt 0 ] ; do
 	
 	if [ "$1" = "--eval" ] ; then
 		shift
+		# We can use -s instead, which would allow to send multiple commands
+		# in a row.
 		TO_EVAL="-eval $1"
 		EVAL_CONTENT="$1"
 		token_eaten=0
