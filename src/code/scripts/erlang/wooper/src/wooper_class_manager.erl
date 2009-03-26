@@ -22,7 +22,7 @@
 
 
 
--export([start/1,ping/1]).
+-export([ start/1, ping/1 ]).
 
 
 % For WooperClassManagerName:
@@ -76,13 +76,23 @@
 
 % Starts a new blank class manager.
 start(ClientPID) ->
+
 	display( io_lib:format( "Starting on node ~s (PID: ~w).~n", 
 		[ node(), self() ] ) ),
+
 	% Two first instances being created nearly at the same time might trigger
 	% the creation of two class managers, if the second instance detects no
 	% manager is registered while the first manager is created but not
 	% registered yet. That would result in superflous class managers. Up to one
 	% should exist.
+	% Note: as the register call cannot be performed at once (not an atomic
+	% operation), there must remain a tiny window for a race condition to
+	% happen). 
+	% Local registration only, as we want the instances to benefit from a 
+	% local direct reference to the same method table, rather waste memory
+	% with one copy of the table per instance.
+	% In a distributed context, there should be exactly one class manager
+	% per node.
 	case catch register( ?WooperClassManagerName, self() ) of
 	
 		true ->
@@ -132,10 +142,11 @@ loop(Tables) ->
 get_virtual_table_for(Module,Tables) ->
 	case hashtable:lookupEntry(Module,Tables) of 
 	
-		undefined ->
+		{hashtable_key_not_found,_Key} ->
 			% Time to create this virtual table and to store it:
 			display_table_creation( Module ),
 			ModuleTable = create_method_table_for( Module ),
+			% Here the table could be patched with delete/1, if defined.
 			{hashtable:addEntry( Module, ModuleTable, Tables ), ModuleTable };
 				
 			
@@ -163,7 +174,7 @@ create_method_table_for(TargetModule) ->
 % priority over the ones relative to Module. Hence methods redefined in child
 % classes are selected, rather than the ones of the mother class.
 update_method_table_with(Module,HashTable) ->
-	hashtable:merge( HashTable,create_method_table_for(Module) ).
+	hashtable:merge( HashTable, create_method_table_for(Module) ).
 
 
 % Tells whether the function Name/Arity should be registered into the method
@@ -171,6 +182,7 @@ update_method_table_with(Module,HashTable) ->
 select_function(_,0)                          -> false ;
 select_function(new,_)                        -> false ;
 select_function(construct,_)                  -> false ;
+select_function(delete,1)                     -> false ;
 select_function(wooper_construct_and_run,_)   -> false ;
 select_function(wooper_debug_listen,_)        -> false ;
 select_function(module_info,1)                -> false ;
