@@ -34,24 +34,24 @@ int main( int argc, char * argv[] )
 			"a greater than (>) and an ampersand (&)." ;
 		
 		LogPlug::info( "Testing HTML encoding, "
-			"which should be hereby visible : " 
+			"which should be hereby visible: " 
 			+ Ceylan::encodeToHTML( toBeConverted ) ) ;
 			
 		const string toBePhonetized = 
 			"The lazy cat quick jumps .. over the 4 brown OSDL errr ! Hum." ;
 				
 		LogPlug::info( "The sentence '" + toBePhonetized 
-			+ "' is phonetically converted to : '"
+			+ "' is phonetically converted to: '"
 			+ encodeToPhonetic( toBePhonetized ) + "'." ) ;
 			
 					
 		/* 
-		 * Bad idea : we want to be able to send HTML code in log messages,
+		 * Bad idea: we want to be able to send HTML code in log messages,
 		 * so automatic is mangling has been disabled.
 		 *
-		 * Hence the following string would mess up the HTML tags :
+		 * Hence the following string would mess up the HTML tags:
 		 *
-		 * LogPlug::info( "This is an implicit test of Ceylan::encodeToHTML : "
+		 * LogPlug::info( "This is an implicit test of Ceylan::encodeToHTML: "
 		 *  + toBeConverted
 		 *  + " since the log system should automatically correct them." ) ;	
 		 *
@@ -59,7 +59,7 @@ int main( int argc, char * argv[] )
 
 		const string toDemangle = "N3One3Two11ExampleFourE" ; 
 		
-		LogPlug::info( "Testing C++ symbol demangling of g++ 3.x encoding : "
+		LogPlug::info( "Testing C++ symbol demangling of g++ 3.x encoding: "
 			" the decoding of "	+  toDemangle + " is "  
 			+ Ceylan::demangleSymbol( toDemangle ) + "." ) ;
 		 
@@ -71,7 +71,7 @@ int main( int argc, char * argv[] )
 		
 		string testerCopy = tester ;
 		
-		// Different sizes is the interesting case :
+		// Different sizes is the interesting case:
 		
 		const string tobeReplaced = "the little red rooster" ;
 		const string replacement  = "the Wolf" ;
@@ -85,7 +85,7 @@ int main( int argc, char * argv[] )
 		 	
 		LogPlug::info( Ceylan::toString( 
 			static_cast<Ceylan::Uint32>( count ) )
-			+ " substitutions made, result is : " + tester ) ;
+			+ " substitutions made, result is: " + tester ) ;
 		
 		if ( count != 2 )
 			throw TestException( "Test for Ceylan::substituteInString failed, " 
@@ -101,7 +101,7 @@ int main( int argc, char * argv[] )
 		
 		LogPlug::info( Ceylan::toString( 
 				static_cast<Ceylan::Uint32>( count ) )
-			+ " substitutions made, result is : " + tester ) ;
+			+ " substitutions made, result is: " + tester ) ;
 		
 		if ( count != 2 )
 			throw TestException( "Test for Ceylan::substituteInString failed, " 
@@ -113,7 +113,7 @@ int main( int argc, char * argv[] )
 			throw TestException( "Test for Ceylan::substituteInString failed, " 
 				"involution was expected." ) ;
 		
-		LogPlug::info( "Testing reverse function : string [" + tobeReplaced	
+		LogPlug::info( "Testing reverse function: string [" + tobeReplaced	
 			+  "] would become [" + Ceylan::reverse( tobeReplaced ) + "]." ) ;
 			
 		LogPlug::info( "Testing formatting of list of strings." ) ;
@@ -129,26 +129,26 @@ int main( int argc, char * argv[] )
 			= TextDisplayable::GetOutputFormat() ;
 		
 		TextDisplayable::SetOutputFormat( TextDisplayable::html ) ;
-		LogPlug::info( "HTML formatting gives : " 
+		LogPlug::info( "HTML formatting gives: " 
 			+ Ceylan::formatStringList( l ) ) ;
 		
 		TextDisplayable::SetOutputFormat( TextDisplayable::rawText ) ;
-		LogPlug::info( "Raw formatting gives : "  
+		LogPlug::info( "Raw formatting gives: "  
 			+ Ceylan::formatStringList( l ) ) ;
 		
-		// Restore :
+		// Restore:
 		TextDisplayable::SetOutputFormat( previous ) ;
 		
 		string aPath = "/home/user/Projects/OSDL-loanized" ;
 		list<string> split = Ceylan::split( aPath, '/' ) ;
 		LogPlug::info( "Splitting path '" + aPath 
-			+ "' with separator '/' gives : "
+			+ "' with separator '/' gives: "
 			+ Ceylan::formatStringList( split ) ) ;
 			
 		LogPlug::info( "Now, reverse operation." ) ;
 			
 		string joiner = ", " ;
-		LogPlug::info( "Joining former list with '" + joiner + "' gives : '"
+		LogPlug::info( "Joining former list with '" + joiner + "' gives: '"
 			+ Ceylan::join( split, joiner ) + "'." ) ;
 		
 		
@@ -158,40 +158,40 @@ int main( int argc, char * argv[] )
 		string testWordSplit = "a b" ;		
 		split = Ceylan::splitIntoWords( testWordSplit ) ;
 		LogPlug::info( "Splitting '" + testWordSplit 
-			+ "' (one space) into words leads to : "
+			+ "' (one space) into words leads to: "
 			+ Ceylan::formatStringList( split, /* surround by ticks */ true ) 
 			+ " instead of a basic space-splitting algorithm "
-			"which would result in : " 
+			"which would result in: " 
 			+ Ceylan::formatStringList( Ceylan::split( testWordSplit, ' ' ), 
 				/* surround by ticks */ true ) ) ;
 			
 		testWordSplit = "a  b" ;
 		split = Ceylan::splitIntoWords( testWordSplit ) ;
 		LogPlug::info( "Splitting '" + testWordSplit 
-			+ "' (two spaces) into words leads to : "
+			+ "' (two spaces) into words leads to: "
 			+ Ceylan::formatStringList( split, /* surround by ticks */ true )
 			+ " instead of a basic space-splitting algorithm "
-			"which would result in : " 
+			"which would result in: " 
 			+ Ceylan::formatStringList( Ceylan::split( testWordSplit, ' ' ), 
 				/* surround by ticks */ true ) ) ;
 
 		testWordSplit = "a   b" ;
 		split = Ceylan::splitIntoWords( testWordSplit ) ;
 		LogPlug::info( "Splitting '" + testWordSplit 
-			+ "' (three spaces) into words leads to : "
+			+ "' (three spaces) into words leads to: "
 			+ Ceylan::formatStringList( split, /* surround by ticks */ true )
 			+ " instead of a basic space-splitting algorithm "
-			"which would result in : " 
+			"which would result in: " 
 			+ Ceylan::formatStringList( Ceylan::split( testWordSplit, ' ' ), 
 				/* surround by ticks */ true ) ) ;
 
 		testWordSplit = "a    b" ;
 		split = Ceylan::splitIntoWords( testWordSplit ) ;
 		LogPlug::info( "Splitting '" + testWordSplit 
-			+ "' (four spaces) into words leads to : "
+			+ "' (four spaces) into words leads to: "
 			+ Ceylan::formatStringList( split, /* surround by ticks */ true )
 			+ " instead of a basic space-splitting algorithm "
-			"which would result in : " 
+			"which would result in: " 
 			+ Ceylan::formatStringList( Ceylan::split( testWordSplit, ' ' ), 
 				/* surround by ticks */ true ) ) ;
 		
@@ -203,22 +203,34 @@ int main( int argc, char * argv[] )
 			"Bart Simpson on chalkboard in episode 2F09. "
 			"This is a long one indeed." ;
 		
-		LogPlug::info( "Splitting following text into paragraphs : '" 
+		LogPlug::info( "Splitting following text into paragraphs: '" 
 			+ fullText + "'." ) ;
 		
 		list<string> paragraphs = Ceylan::splitIntoParagraphs( fullText ) ;
 		for ( list<string>::const_iterator it = paragraphs.begin();
 				it != paragraphs.end(); it++ )
-			LogPlug::info( "New paragraph : '" + (*it) + "'." ) ;
+			LogPlug::info( "New paragraph: '" + (*it) + "'." ) ;
 			
-        LogPlug::info( "End of Ceylan utilities test." ) ;
+			
+		list<Ceylan::Uint32> intList ;
+		
+		intList.push_back( 3 ) ;
+		intList.push_back( 5 ) ;
+		intList.push_back( 8 ) ;
+		intList.push_back( 7 ) ;
+				
+		LogPlug::info( "Displaying integer list: " 
+			+ Ceylan::toString( intList ) ) ;
+			
+			
+        LogPlug::info( "End of Ceylan string utilities test." ) ;
 
  
     }
    
     catch ( const Ceylan::Exception & e )
     {
-        std::cerr << "Ceylan exception caught : "
+        std::cerr << "Ceylan exception caught: "
         	<< e.toString( Ceylan::high ) << std::endl ;
 		return Ceylan::ExitFailure ;
 
@@ -226,7 +238,7 @@ int main( int argc, char * argv[] )
 
     catch ( const std::exception & e )
     {
-        std::cerr << "Standard exception caught : " 
+        std::cerr << "Standard exception caught: " 
 			 << e.what() << std::endl ;
 		return Ceylan::ExitFailure ;
 
