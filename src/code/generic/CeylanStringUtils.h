@@ -16,6 +16,7 @@
 #define CEYLAN_DEBUG_STRING_TO_OBJECT 1
 
 
+
 /**
  * This part of the Ceylan namespace gathers some convenient string
  * manipulation facilities to be widely used.
@@ -431,7 +432,27 @@ namespace Ceylan
 	CEYLAN_DLL std::list<std::string> splitIntoParagraphs( 
 		const std::string & textToSplit ) throw() ;
 	
+
 	
+	/**
+	 * Returns a string describing the specified list.
+	 *
+	 */
+	template <typename T>
+	std::string toString( const std::list<T> & targetList )
+	{
+	
+		std::list<std::string> res ;
+		
+		for ( typename std::list<T>::const_iterator it = targetList.begin() ;
+				it != targetList.end(); it++ )
+			res.push_back( Ceylan::toString( *it ) ) ;	
+		
+		return "[ " + join( res, ", " ) + " ]" ;
+		
+	}
+
+
 	
 	/**
 	 * String to object (deserialization).
