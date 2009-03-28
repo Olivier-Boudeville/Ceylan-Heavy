@@ -23,8 +23,8 @@ INTERFACES_INTERFACES = \
 	CeylanEventListener.h                         \
 	CeylanEventSource.h                           \
 	CeylanGenericController.h                     \
-	CeylanGenericDefines.h                        \
 	CeylanGenericModel.h                          \
+	CeylanGenericMVCDefines.h                     \
 	CeylanGenericView.h                           \
 	CeylanHashable.h                              \
 	CeylanIdentifier.h                            \
