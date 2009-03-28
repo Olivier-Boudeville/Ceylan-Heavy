@@ -19,11 +19,11 @@
  * way round.
  *
  * Each operator has its counterpart, which allows to add a numerical value 
- * to a string in both orders : 'numerical + string' and also 
+ * to a string in both orders: 'numerical + string' and also 
  * 'string + numerical'.
  * 
- * Warning : a C++ compiler evaluates '"Four means " + 4' as 'char *' + 'int'
- * so it does pointer arithmetic and returns unexpected bytes : actually, it
+ * Warning: a C++ compiler evaluates '"Four means " + 4' as 'char *' + 'int'
+ * so it does pointer arithmetic and returns unexpected bytes: actually, it
  * returns the 'char *' starting with the space before "means", 4 characters
  * after the initial F.
  *
@@ -287,7 +287,7 @@ namespace Ceylan
 		
 	
 	
-	/// The hexadecimal digits : 0123456789ABCDEF.
+	/// The hexadecimal digits: 0123456789ABCDEF.
 	extern CEYLAN_DLL const std::string HexDigits ;
 	
 	
@@ -376,7 +376,7 @@ namespace Ceylan
     CEYLAN_DLL std::string toString( Ceylan::VerbosityLevels level ) 
 		throw( Exception ) ;
 	
-		 
+
 	/**
 	 * Converts the numerical value to a string.
 	 *
@@ -384,7 +384,7 @@ namespace Ceylan
 	 * interpreted as a numerical value, and not as a character, as it
 	 * would happen if toString was used.
 	 *
-	 * @example : a value of zero would display as 0, not as a non printable
+	 * @example: a value of zero would display as 0, not as a non printable
 	 * character.
 	 *
 	 */
@@ -421,7 +421,7 @@ namespace Ceylan
     CEYLAN_DLL void * stringToAddress( const std::string & addressString ) 
 		throw( Exception ) ;
 
-
+	
 }
 
 
