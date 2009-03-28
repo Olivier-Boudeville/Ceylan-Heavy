@@ -1,8 +1,21 @@
 #include "CeylanGenericView.h"
 
 using namespace Ceylan ;
+using namespace Ceylan::MVC ;
+
 
 using std::string ;
+
+
+/* 
+ * In this file following classes are implemented:
+ *
+ *   - BaseView
+ */
+
+
+
+// BaseView section.
 
 
 BaseView::BaseView() throw()
