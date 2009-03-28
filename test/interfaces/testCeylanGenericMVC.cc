@@ -2,6 +2,7 @@
 
 using namespace Ceylan ;
 using namespace Ceylan::Log ;
+using namespace Ceylan::MVC ;
 
 
 #include <iostream>    // for cerr, endl
@@ -12,31 +13,53 @@ using std::string ;
 
 
 
-class TestModel: public SingleViewGenericModel
+/*
+ * Here are tested all generic (usually template-based) MVC components of the
+ * lightweight generic MVC framework:
+ *
+ *  - models:
+ *    + NoViewGenericModel
+ *    + SingleViewGenericModel (SingleViewGenericModel<View> not tested yet,
+ * as usually not appropriate)
+ *    + MultipleViewGenericModel (MultipleViewGenericModel<View> not tested yet,
+ * as usually not appropriate) 
+ *    + SingleControllerNoViewGenericModel<Controller>
+ *
+ *  - views:
+ *    + 
+ *  
+ *  - controllers:
+ *    + 
+ *
+ */
+
+
+
+/// Testing NoViewModel.
+class TestNoViewModel: public NoViewModel
 {
 
 	public:
 	
-		TestModel( Ceylan::Uint8 initialState ):
-			SingleViewGenericModel(),
+		TestNoViewModel( Ceylan::Uint32 initialState ):
+			NoViewModel(),
 			_state( initialState )
 		{
 		
-			LogPlug::info( "Creating test model." ) ;
+			LogPlug::info( "Creating TestNoViewModel test model." ) ;
 			
 		}
-		
-		
-		~TestModel() throw()
+
+
+		~TestNoViewModel() throw()
 		{
 		
 			// View shall be automatically deallocated.
-			LogPlug::info( "Deleting test model." ) ;
+			LogPlug::info( "Deleting TestNoViewModel test model." ) ;
 			
 		}
 		
-		
-		Ceylan::Uint8 getTestingState() const throw()
+		Ceylan::Uint32 getTestingState() const throw()
 		{
 			
 			return _state ;
@@ -52,52 +75,202 @@ class TestModel: public SingleViewGenericModel
 		
 	private:
 	
-		Ceylan::Uint8 _state ;				
+		Ceylan::Uint32 _state ;				
+
+} ;
+
+
+
+/// Testing SingleViewModel.
+class TestSingleViewModel: public SingleViewModel
+{
+
+	public:
+	
+		TestSingleViewModel( Ceylan::Uint32 initialState ):
+			SingleViewModel(),
+			_state( initialState )
+		{
+		
+			LogPlug::info( "Creating TestSingleViewModel test model." ) ;
+			
+		}
+
+
+		~TestSingleViewModel() throw()
+		{
+		
+			// View shall be automatically deallocated.
+			LogPlug::info( "Deleting TestSingleViewModel test model." ) ;
+			
+		}
+		
+		Ceylan::Uint32 getTestingState() const throw()
+		{
+			
+			return _state ;
+		
+		}
+		
+		void update()
+		{
+		
+			_state += 1 ;
+			
+		}
+		
+	private:
+	
+		Ceylan::Uint32 _state ;				
 
 } ;
 
 
 
 
-class TestView: public SingleModelGenericView<TestModel>
+/**
+ * Testing the SingleModelGenericView template with the SingleViewModel model.
+ * This is a (generic) view associated to one model, which itself knows only
+ * one view (this one).
+ *
+ */
+class TestSingleModelWithSingleViewGenericView: 
+	public SingleModelGenericView<TestSingleViewModel>
 {
 
 	public:
 	
-	
-		TestView( TestModel & model ):
-			SingleModelGenericView<TestModel>( model )
+		TestSingleModelWithSingleViewGenericView( 
+				const TestSingleViewModel & model ) :
+			SingleModelGenericView<TestSingleViewModel>( model )
 		{
 
-			// Auto-registers in mother class constructor.
-			LogPlug::info( "Creating test view." ) ;
+			LogPlug::info( "Creating "
+				"TestSingleModelWithSingleViewGenericView test view." ) ;
 		
 		}
 		
 		
-		~TestView() throw()
+		~TestSingleModelWithSingleViewGenericView() throw()
 		{
 		
-			LogPlug::info( "Deleting test view." ) ;
+			LogPlug::info( "Deleting "
+				"TestSingleModelWithSingleViewGenericView test view." ) ;
+			
 		}
 		
 		
 		void render()
 		{
+			
+			LogPlug::info( "TestSingleModelWithSingleViewGenericView "
+				"instance is rendering for " + _model->toString()
+				+ ", whose state is " 
+				+ Ceylan::toString( _model->getTestingState() ) ) ;
+				
+		}	
 		
-			/*
-			 * This is the whole point of the template: being able to
-			 * access the model directly as a TestModel instance.
-			 *
-			 */
-			LogPlug::info( "Test view rendering model : state is "
-				+ Ceylan::toNumericalString( _model->getTestingState() ) 
-				+ "." ) ;
+} ;
+
+
+
+
+/// Testing MultipleViewModel.
+class TestMultipleViewModel: public MultipleViewModel
+{
+
+	public:
+	
+		TestMultipleViewModel( Ceylan::Uint32 initialState ):
+			MultipleViewModel(),
+			_state( initialState )
+		{
+		
+			LogPlug::info( "Creating TestMultipleViewModel test model." ) ;
 			
 		}
 
+
+		~TestMultipleViewModel() throw()
+		{
+		
+			// View shall be automatically deallocated.
+			LogPlug::info( "Deleting TestMultipleViewModel test model." ) ;
+			
+		}
+		
+		Ceylan::Uint32 getTestingState() const throw()
+		{
+			
+			return _state ;
+		
+		}
+		
+		void update()
+		{
+		
+			_state += 1 ;
+			
+		}
+		
+	private:
+	
+		Ceylan::Uint32 _state ;				
+
+} ;
+
+
+
+
+
+/**
+ * Testing the SingleModelGenericView template with the MultipleViewModel model.
+ * This is a (generic) view associated to one model, which itself can know
+ * any number of views.
+ *
+ */
+class TestSingleModelWithMultipleViewGenericView: 
+	public SingleModelGenericView<TestMultipleViewModel>
+{
+
+	public:
+	
+		TestSingleModelWithMultipleViewGenericView( 
+				const TestMultipleViewModel & model ) :
+			SingleModelGenericView<TestMultipleViewModel>( model )
+		{
+
+			LogPlug::info( "Creating "
+				"TestSingleModelWithMultipleViewGenericView test view." ) ;
+		
+		}
+		
+		
+		~TestSingleModelWithMultipleViewGenericView() throw()
+		{
+		
+			LogPlug::info( "Deleting "
+				"TestSingleModelWithMultipleViewGenericView test view." ) ;
+			
+		}
+		
+		
+		void render()
+		{
+			
+			LogPlug::info( "TestSingleModelWithMultipleViewGenericView "
+				"instance is rendering for: " + _model->toString()
+				+ ", whose state is " 
+				+ Ceylan::toString( _model->getTestingState() ) ) ;
+				
+		}	
 		
 } ;
+
+
+
+
+
 
 
 
@@ -118,19 +291,61 @@ int main( int argc, char * argv[] )
 		
 		LogPlug::info( "Starting testing lightweight MVC framework." ) ;
 		
-		TestModel & myModel = * new TestModel( 42 ) ;
 		
-		// Auto-registers to the model:
-		TestView & myView = * new TestView( myModel ) ;
-		
-		myView.render() ;
-		
-		myModel.update() ;
+		LogPlug::info( "Testing no view - one model." ) ;
 
-		myView.render() ;
+		TestNoViewModel & myNoViewModel = * new TestNoViewModel( 1 ) ;
 		
-		// Both are destroyed:
-		delete & myModel ;
+		myNoViewModel.update() ;
+		myNoViewModel.update() ;
+
+		delete & myNoViewModel ;
+		
+		
+		
+		LogPlug::info( "Testing one view - one model." ) ;
+
+		TestSingleViewModel & mySingleViewModel = 
+			* new TestSingleViewModel( 10 ) ;
+				
+		// Auto-registers to the model:
+		TestSingleModelWithSingleViewGenericView & mySingleModelView =
+			* new TestSingleModelWithSingleViewGenericView( 
+				mySingleViewModel ) ;
+				
+		mySingleModelView.render() ;
+		mySingleViewModel.update() ;
+		mySingleModelView.render() ;
+		
+		delete & mySingleViewModel ;
+		
+
+
+		LogPlug::info( "Testing multiple views - one model." ) ;
+
+		TestMultipleViewModel & myMultipleViewModel = 
+			* new TestMultipleViewModel( 100 ) ;
+			
+		TestSingleModelWithMultipleViewGenericView & myFirstMultiView = * new
+			TestSingleModelWithMultipleViewGenericView( myMultipleViewModel ) ;
+		
+		myFirstMultiView.render() ;
+		myMultipleViewModel.update() ;
+		myFirstMultiView.render() ;
+		
+		TestSingleModelWithMultipleViewGenericView & mySecondMultiView = * new
+			TestSingleModelWithMultipleViewGenericView( myMultipleViewModel ) ;
+			
+		myFirstMultiView.render() ;
+		mySecondMultiView.render() ;
+		
+		myMultipleViewModel.update() ;
+		
+		myFirstMultiView.render() ;
+		mySecondMultiView.render() ;
+		
+		delete & myMultipleViewModel ;
+		
 		
 		LogPlug::info( "End of lightweight MVC framework test." ) ;
 
