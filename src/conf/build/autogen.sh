@@ -439,7 +439,7 @@ generateCustom()
 	(libtool --version) < /dev/null > /dev/null 2>&1 || {
 		echo
 		echo "**Error**: You must have 'libtool' installed."
-		echo "You can get it from: ftp://ftp.gnu.org/pub/gnu/ or, if targeting OSDL, by using the LOANI script (in this case, source the OSDL-environment.sh file behorehand or use the --with-osdl-env-file option)." 
+		echo "You can get it from: ftp://ftp.gnu.org/pub/gnu/ or, if targeting OSDL, by using the LOANI script (in this case, source the OSDL-environment.sh file beforehand or use the --with-osdl-env-file option)." 
 		exit 20
    	}
 	
