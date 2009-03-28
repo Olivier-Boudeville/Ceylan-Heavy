@@ -129,6 +129,14 @@ namespace Ceylan
 
 
 
+	/*
+	 * All necessary templated variations of models should be defined below:
+	 *   - SingleViewGenericModel: a model with a single view
+	 *   - SingleControllerNoViewGenericModel: a model with a single controller
+	 * and no view
+	 *
+	 */
+
 
 	// Implementation of the SingleViewGenericModel template.
 
@@ -162,8 +170,7 @@ namespace Ceylan
 			 * needs its view, both cannot be satisfied.
 			 *
 			 */
-			explicit SingleViewGenericModel( 
-				const BaseView & view ) ;
+			explicit SingleViewGenericModel( const BaseView & view ) ;
 	
 	
 			/**
