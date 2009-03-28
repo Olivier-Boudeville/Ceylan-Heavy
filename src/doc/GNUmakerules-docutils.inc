@@ -1,12 +1,87 @@
 
 
-.PHONY: full-doc create-doc regenerate-doc make-doc-repository prepare-hook \
-	view-doc to-print \
-	clean clean-doc-repository info-doc-local
+.PHONY: doc doc-recurse info info-doc-local full-doc create-doc regenerate-doc \
+ make-doc-repository view-doc to-print clean clean-doc-repository              \
+ info-doc-local clean-generated clean-dot clean-log clean-gnuplot clean-png    \
+ clean-rst
+
 
 	
 # OVERALL_DOCUMENT_SOURCE and DOCUTILS_TOP should have been defined beforehand.
 
+
+
+
+# Generic rules.
+
+
+
+# Image section.
+
+# Not all python scripts generate images:
+PNG_FROM_PYTHON = $(patsubst %-png-generator.py,%.png,$(wildcard *-png-generator.py))
+
+PNG_FROM_PYTHON_NEGATED = $(patsubst %-png-generator.py,%-negated.png,$(wildcard *-png-generator.py))
+
+
+NEGATED_PNG = $(patsubst %.png,%-negated.png,$(wildcard *.png))
+
+%-negated.png: %.png
+	@echo "    Generating $@ from $< with $(IMAGE_MAGICK)"
+	@$(IMAGE_MAGICK) $< -negate $@
+
+
+
+# Graph rendering section.
+
+
+# To trigger the automatic rendering of a created graph, add 'VIEW_GRAPH=' 
+# at the end of the command line (ex : 'make MyFSM.png VIEW_GRAPH=')
+VIEW_GRAPH = no
+#VIEW_GRAPH =
+
+%.png: %.graph
+	@echo "     Generating $@ from graph $<"
+	@$(DOT) -o$@ -Tpng $<
+	@if [ "$(VIEW_GRAPH)" != "no" ] ; then $(IMG_VIEWER) $@ & fi
+
+GRAPH_SRC = $(wildcard *.graph)
+GRAPH_PNG = $(GRAPH_SRC:%.graph=%.png) 
+
+
+
+# Plot rendering section.
+
+%.dat: %.py
+	@echo "     Generating plot data $@ from $<"
+	@$(PYTHON) $<
+
+# To trigger the automatic rendering of a created plot, add 'VIEW_PLOT=' 
+# at the end of the command line (ex : 'make MyData.png VIEW_PLOT=')
+#VIEW_PLOT = yes
+VIEW_PLOT = no
+
+%.png: %.plot %.dat
+	@echo "     Generating plot $@"
+	@$(GNUPLOT) $<
+	@if [ "$(VIEW_PLOT)" != "no" ] ; then $(IMG_VIEWER) $@ & fi
+
+%.png: %.py
+	@echo "     Generating image $@ from $<"
+	@$(PYTHON) $<
+	@if [ "$(VIEW_PLOT)" != "no" ] ; then $(IMG_VIEWER) $@ & fi
+
+
+# Probably deprecated:
+%-generated.png: %.pdoc %.plotdoc
+	@echo "     Generating plot $@"
+	@$(GNUPLOT) $<
+	@if [ "$(VIEW_PLOT)" != "no" ] ; then $(IMG_VIEWER) $@ & fi
+
+
+
+
+# RST section.
 
 GENERATOR_LOG_FILE = "rst.log"
 	
@@ -28,7 +103,7 @@ PDF_GENERATED_FILES  = $(patsubst %.rst,%.pdf,$(RST_FILES))
 
 RST_GENERATED_FILES =  $(AUX_GENERATED_FILES) $(TEX_GENERATED_FILES)      \
 	$(OUT_GENERATED_FILES) $(LOG_GENERATED_FILES) $(HTML_GENERATED_FILES) \
-	$(PDF_GENERATED_FILES) rst.log   
+	$(PDF_GENERATED_FILES) $(GENERATOR_LOG_FILE)   
 
 
 #RST_GENERATOR = update-docutils.sh
@@ -38,7 +113,7 @@ PDF_VIEWER = /usr/bin/evince
 
 
 # To trigger the automatic rendering of a created PDF, add 'VIEW_PDF=' 
-# at the end of the command line (ex : 'make MyFSM.png VIEW_PDF=')
+# at the end of the command line (ex : 'make MyDoc.pdf VIEW_PDF=')
 VIEW_PDF = yes
 #VIEW_PDF = no
 
@@ -46,19 +121,43 @@ VIEW_PDF = yes
 %.pdf: %.rst
 	@echo "     Generating PDF documentation $@"
 	@if $(RST_GENERATOR) $< --pdf ; then if [ "$(VIEW_PDF)" != "no" ] ; then $(PDF_VIEWER) $@ & fi; fi
-	
+
+
 %.html: %.rst
 	@echo "     Generating HTML documentation $@"
-	$(RST_GENERATOR) $< $(CEYLAN_CSS)
+	@$(RST_GENERATOR) $< $(PROJECT_CSS)
 
 
+
+
+
+# Basic rules.
+
+
+
+doc: $(GRAPH_PNG) $(PNG_FROM_PYTHON) $(PNG_FROM_PYTHON_NEGATED) doc-recurse #$(PDF_GENERATED_FILES)
+
+
+
+
+info: info-doc-local
+
+
+info-doc-local:
+	@echo "OVERALL_DOCUMENT_SOURCE = $(OVERALL_DOCUMENT_SOURCE)"
+	@echo "OVERALL_DOCUMENT_TARGET = $(OVERALL_DOCUMENT_TARGET)"
+	@echo "PRINT_SERVER = $(PRINT_SERVER)"
+	
+
+	
 
 # Centralization of documentation sources is necessary, as the LateX generator
 # from docutils will not find images in directories otherwise.
 full-doc: create-doc
 
 
-create-doc: regenerate-doc clean-doc-repository make-doc-repository prepare-hook
+create-doc: regenerate-doc clean-doc-repository make-doc-repository \
+		prepare-doc-hook
 	@echo "     Generating full (PDF) documentation from $(OVERALL_DOCUMENT_SOURCE) in $(TMP_RST_REPOSITORY) (log in $(GENERATOR_LOG_FILE))"
 	@$(MAKE) $(TMP_RST_REPOSITORY)/$(OVERALL_DOCUMENT_TARGET) 2>&1 | tee $(GENERATOR_LOG_FILE)
 	
@@ -83,7 +182,9 @@ to-print: create-doc
 	@scp $(TMP_RST_REPOSITORY)/$(OVERALL_DOCUMENT_TARGET) $(PRINT_LOCATION) 
 		
 		
-clean: clean-doc-repository clean-generated
+clean: clean-doc-repository clean-generated clean-dot clean-log \
+ clean-gnuplot clean-png clean-rst
+
 
 
 clean-doc-repository:
@@ -95,13 +196,28 @@ clean-generated:
 	@echo "     Cleaning generated files"
 	-@rm -f $(RST_GENERATED_FILES)
 	
+
+
+
+# Some .png must be kept (ex: dia-exported ones).
+clean-dot:
+	-@if [ `basename $$PWD` != "doc" ]; then rm -f $(STATE_MACHINES_DIAGRAMS) *.map; fi
+
+
+clean-log:
+	-@rm -f *.log
+
+
+clean-gnuplot:
+	@# Let's hope we do not remove user files:
+	-@if [ `basename $$PWD` != "doc" ]; then rm -f *robe*.dat *robe*.p; fi
 	
-info: info-doc-local
-
-
-info-doc-local:
-	@echo "OVERALL_DOCUMENT_SOURCE = $(OVERALL_DOCUMENT_SOURCE)"
-	@echo "OVERALL_DOCUMENT_TARGET = $(OVERALL_DOCUMENT_TARGET)"
-	@echo "PRINT_SERVER = $(PRINT_SERVER)"
-
 	
+clean-png: 
+	-@rm -f $(GRAPH_PNG) $(PNG_FROM_PYTHON) $(PNG_FROM_PYTHON_NEGATED) $(NEGATED_PNG)
+	
+	
+clean-rst:
+	-@rm -f $(RST_GENERATED_FILES)
+	@if [ -d "$(TMP_RST_REPOSITORY)" ] ; then $(MAKE) clean-doc-repository; fi 
+
