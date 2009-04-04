@@ -45,7 +45,7 @@ See the <a href="ChangeLog.html" target="_blank">ChangeLog</a> corresponding to 
 
 <h3>General conventions</h3>
 <p>
-Not depending on the build platform (i.e. the platform the build toolchain will run on), Ceylan sources must be retrieved from <a href="#ceylansvn">SVN</a>
+Not depending on the build platform (i.e. the platform on which the build toolchain will run), Ceylan sources for developers must be retrieved from <a href="#ceylansvn">SVN</a>.
 </p>
 
 
@@ -61,11 +61,11 @@ If you are cross-compiling, then you should be on GNU/Linux and targeting the <a
 
 
 <p>
-In both cases (native/cross-compilation), for a clean and complete build, one should execute <code>trunk/src/conf/build/autogen.sh</code>, preferably run with the <code>-f</code> / <code>--full-test</code> option, as it builds and installs the library, and performs all available tests.
+In both cases (native or cross-compilation), for a clean and complete build, one should execute <code>trunk/src/conf/build/autogen.sh</code>, preferably run with the <code>-f</code> (or <code>--full-test</code>) option, as it builds and installs the library, and runs all available tests.
 </p>
 
 <p>
-To request a cross-compilation targeting the Nintendo DS, the <code>--nds</code> switch should be added. To run interactively (i.e. without using <code>autogen.sh</code>) the build system, one could use for example:
+To request a cross-compilation targeting the Nintendo DS, the <code>--nds</code> switch should be added. In this case, to run interactively (i.e. without using <code>autogen.sh</code>) the build system, one could use for example:
 <center>
     <table summary="Code" style="border: none">
         <tr>
@@ -73,7 +73,19 @@ To request a cross-compilation targeting the Nintendo DS, the <code>--nds</code>
             <div class="box">
 <code><pre>
 make -f Makefile.cross CROSS_TARGET=nintendo-ds all
+</pre></code>
+            </div>
+          </td>
+        </tr>
+    </table>
+</center>
 Using this kind of alias is quite useful then:
+<center>
+    <table summary="Code" style="border: none">
+        <tr>
+          <td>
+            <div class="box">
+<code><pre>
 alias mn='make -f Makefile.cross CROSS_TARGET=nintendo-ds'
 </pre></code>
             </div>
@@ -87,7 +99,7 @@ alias mn='make -f Makefile.cross CROSS_TARGET=nintendo-ds'
 
 <h3>For Windows platforms</h3>
 <p>
-In that case the fresh <a href="#ceylansvn">SVN</a> sources are expected to be used with the Visual C++ 2005 Express toolchain.
+In that case the fresh <a href="#ceylansvn">SVN</a> sources are expected to be used with the Visual C++ 2008 Express free toolchain.
 </p>
 
 
@@ -99,7 +111,7 @@ In that case the fresh <a href="#ceylansvn">SVN</a> sources are expected to be u
 The <code>trunk/src/conf/build/autogen.sh</code> script should be used with the <code>--nds</code> switch. This will pass to configure the relevant <code>--host=arm-nintendo-ds</code> specification and select the cross-compilation tools accordingly. For that the automatically downloaded <code>config.sub</code> is automatically patched to recognize the DS.
 </p>
 
-<p>Classical preprocessor template to handle the Nintendo DS case:
+<p>A classical preprocessor template to handle the Nintendo DS case is:
 <center>
     <table summary="Code" style="border: none">
         <tr>
@@ -145,13 +157,13 @@ The <code>trunk/src/conf/build/autogen.sh</code> script should be used with the 
 	<li><b></b>: </li>
 -->
 
-	<li><b>Anonymous check-out</b>: svn co https://ceylan.svn.sourceforge.net/svnroot/ceylan ceylan</li>
+	<li><b>Anonymous check-out</b>: <code>svn co https://ceylan.svn.sourceforge.net/svnroot/ceylan ceylan</code></li>
 
-	<li><b>User-based check-out</b>: svn co --username MyUserName https://ceylan.svn.sourceforge.net/svnroot/ceylan ceylan</li>
+	<li><b>User-based check-out</b>: <code>svn co --username MyUserName https://ceylan.svn.sourceforge.net/svnroot/ceylan ceylan</code></li>
 
 	<li>Make SVN <b>ignore</b> a file or a pattern of files: <code>svn propset svn:ignore myFile .</code> or <code>svn propset svn:ignore "*.log" logs/</code></li>
 	
-	<li><b>Deleting a full subtree</b>: svn rm https://ceylan.svn.sourceforge.net/svnroot/ceylan/branches --username=MyUserName</li>
+	<li><b>Deleting a full subtree</b>: <code>svn rm https://ceylan.svn.sourceforge.net/svnroot/ceylan/branches --username=MyUserName</code></li>
 	
 	
 </ul>
@@ -162,7 +174,7 @@ The <code>trunk/src/conf/build/autogen.sh</code> script should be used with the 
 <h3>Creating a new Sourceforge SVN repository</h3>
 
 <p>
-Read carefully first <a href="http://sourceforge.net/docman/display_doc.php?docid=31178&group_id=1#usage" target="_blank">Sourceforge dedicated documentation</a> and <a href="http://svnbook.red-bean.com/en/1.1/ch03s07.html#svn-ch-3-sect-7.3" target="_blank">SVN one</a>.
+Read carefully first the <a href="http://sourceforge.net/docman/display_doc.php?docid=31178&group_id=1#usage" target="_blank">Sourceforge dedicated documentation</a> and the <a href="http://svnbook.red-bean.com/en/1.1/ch03s07.html#svn-ch-3-sect-7.3" target="_blank">SVN one</a>.
 </p>
 
 <p> Then:
@@ -171,9 +183,11 @@ Read carefully first <a href="http://sourceforge.net/docman/display_doc.php?doci
 	<li><b></b>: </li>
 -->
 	<li><b>activate</b> SVN access for the Sourceforge project</li>
+	
 	<li><b>wait</b> until the DNS alias is created (ex: ping ceylan.svn.sourceforge.net)</li>
-	<li><b>execute</b> <code>svn import ceylan https://ceylan.svn.sourceforge.net/svnroot/ceylan --username=MyUserName</code> where ceylan is a directory containing only one directory, Ceylan, that itself contains the branches, tags, trunk directories.
-</li>
+	
+	<li><b>execute</b> <code>svn import ceylan https://ceylan.svn.sourceforge.net/svnroot/ceylan --username=MyUserName</code> where ceylan is a directory containing only one directory, Ceylan, that itself contains the branches, tags, trunk directories</li>
+	
 </ol>
 
 </p>
@@ -211,30 +225,37 @@ Some developing rules are to be enforced:
 -->
 	<li>no <b>system header</b> mentioned in Ceylan installed headers (hence no system-specific types such as mode_t in our headers): otherwise the API exposed by Ceylan would depend on these system headers, then on a config.h that should
 be installed to select them but may clash with others, and so on. This implies using opaque handle for forward-declared but undefined struct pointer such as <code>struct ceylan_mode_t ;</code></li>
-	<li>all <b>header include guards</b> are designed to not collide with other non-Ceylan headers: for example, <code>HAVE_CTIME</code> is to be replaced by <code>CEYLAN_USES_CTIME</code></li>
-	<li><b>pkg-config</b> should be used whenever available</li>
-	<li>in each module, <b>public headers</b> should be listed alphabetically (<code>use /bin/ls -1 *.h</code>) in CeylanMODULE_NAMEIncludes.h (ex: CeylanMathsIncludes.h)</li>
-	<li>no <b>inferior to (&lt;)</b> nor  <b>superior to (&gt;)</b> symbols in log messages if not used to specify HTML tags. Otherwise they would be interpreted as mark-up elements. So to delimit precisely strings, prefer using <code>'A specific message'</code> to <code>&lt;A specific message&gt;</code>
 
-</li>
-	<li>use <b>--consolePlug</b> if you are debugging the file layer, since <code>--classicalPlug</code> would use that layer for logging purpose otherwise. Use this latter classical plug to debug the log system, including the HTML aggregator. Finally, use <code>--HTMLPlug</code> for all other needs.</li>
+	<li>all <b>header include guards</b> are designed to not collide with other non-Ceylan headers: for example, <code>HAVE_CTIME</code> is to be replaced by <code>CEYLAN_USES_CTIME</code></li>
+	
+	<li><b>pkg-config</b> should be used whenever available</li>
+	
+	<li>in each module, <b>public headers</b> should be listed alphabetically (<code>use /bin/ls -1 *.h</code>) in CeylanMODULE_NAMEIncludes.h (ex: CeylanMathsIncludes.h)</li>
+	
+	<li>no <b>inferior to (&lt;)</b> nor  <b>superior to (&gt;)</b> symbols in log messages if not used to specify HTML tags. Otherwise they would be interpreted as mark-up elements. So to delimit precisely strings, prefer using <code>'A specific message'</code> to <code>&lt;A specific message&gt;</code></li>
+	
+	<li>use <b>--consolePlug</b> if you are debugging the file layer, since <code>--classicalPlug</code> would use that layer for logging purpose otherwise. Use this latter classical plug to debug the log system, including the HTML aggregator. Finally, use <code>--HTMLPlug</code> for all other needs</li>
+	
 	<li>to better understand <b>Locatable referentials</b>, see: <code>test/interface/testCeylanLocatable.cc</code></li>
+	
 </ol>
 </p>
+
+
 
 
 <a name="newrelease"></a>
 <h2>Releasing a new Ceylan x.y version</h2>
 
 <p>
-We suppose here that, with the previous version, the current version has been setup, hence we will create a release for current version and then prepare the setup for the next one.
+We suppose here that we will create a release for current version and then prepare the setup for the next one.
 </p>
 
 <p>
 
 
 <a name="release-before"></a>
-<h3>Release a Ceylan version</h3>
+<h3>Release of a Ceylan version</h3>
 
 <p>
 <code>x.y</code> designates here the version to release, which should be the in-development version once stabilized.
@@ -340,11 +361,11 @@ Now <code>x'.y'</code> designates the next version.
 	
     <li><a href="http://gcc.gnu.org/onlinedocs/libstdc++/27_io/howto.html" target="_blank">Using I/O with the STL</a></li>
 	
-    <li>How to make a source archive for the testing of Ceylan ? From the trunk, use <code>make dist</code> or, preferably, <code>make dist-bzip2</code></li>
+    <li>How to make a source archive for the testing of Ceylan? From the trunk, use <code>make dist</code> or, preferably, <code>make dist-bzip2</code></li>
 	
     <li>A backup of the SVN repository on Sourceforge should be regularly performed, thanks to: 
 	<center>
-    <table summary="Code" style="border : none">
+    <table summary="Code" style="border: none">
         <tr>
           <td>
             <div class="box">
@@ -366,7 +387,7 @@ rsync -av ceylan.svn.sourceforge.net::svn/ceylan/* .
   <br>
   <br>
 
-  <h3>Please react !</h3>
+  <h3>Please react!</h3>
 
   <p>If you have information more detailed or more recent than those
   presented in this document, if you noticed errors, neglects or points
@@ -379,7 +400,7 @@ rsync -av ceylan.svn.sourceforge.net::svn/ceylan/* .
       <center>
         [<a href="#_top_">Top</a>]<br>
         <br>
-        <em>Last update: Wednesday, March 12, 2008</em>
+        <em>Last update: Saturday, April 4, 2009</em>
       </center>
   
 </body>
