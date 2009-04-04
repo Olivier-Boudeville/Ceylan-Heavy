@@ -1,3 +1,4 @@
+
 # Root Makefile.am for the whole Ceylan package, including tests.
 
 # Requires following version of automake or newer:
@@ -76,6 +77,7 @@ update-basic-doc-files:
 	cd ${top_builddir}/src/doc/basic; $(MAKE) update-basic-doc-files 
 
 
+# Note: usually deprecated in favor of dist/dist-bzip2/dist-zip.
 source-release: update-basic-doc-files
 	@echo; echo "@CEYLAN_COMMAND_STYLE@    Making source release \
 	$(SRC_RELEASE_ARCHIVE_NAME):@CEYLAN_DEFAULT_STYLE@"; echo
@@ -99,7 +101,7 @@ snapshot:
 	@CEYLAN_DEFAULT_STYLE@"; echo
 	@svn co https://svn.sourceforge.net/svnroot/ceylan ceylan
 	@(cd ceylan/Ceylan/trunk/src/conf/build && ./autogen.sh --no-build \
-	&& cd ../../.. && rm -rf autom4te.cache )
+	&& cd ../../.. && /bin/rm -rf autom4te.cache )
 	@cd ceylan && tar cvhf - Ceylan | \
 	bzip2 > $(HOME)/Ceylan-@CEYLAN_VERSION@-svn-snapshot.tar.bz2 \
 	&& echo \
@@ -107,7 +109,7 @@ snapshot:
 	available at:" \
 	&& echo "      $(HOME)/Ceylan-@CEYLAN_VERSION@-svn-snapshot.tar.bz2 \
 	@CEYLAN_DEFAULT_STYLE@" && echo
-	-@rm -rf ceylan
+	-@/bin/rm -rf ceylan
 	
 	
 # Brute-force archiving with bzip2, see also the 'source-release' target.
@@ -115,6 +117,7 @@ snapshot:
 # To avoid uselessly fat archives, some cleaning has
 # to be done, but using cleanGeneratedConfigFiles.sh removes the 
 # Makefile being used itself.	
+# Note: usually deprecated in favor of dist/dist-bzip2/dist-zip.
 bz2:
 	@echo; echo "@CEYLAN_COMMAND_STYLE@    Saving all \
 	@PROJECT_NAME@-@CEYLAN_VERSION@ project \
@@ -131,6 +134,7 @@ bz2:
 	
 # Brute-force archiving with gzip, see also the 'source-release' target.
 # clean required not to archive test* executables:			
+# Note: usually deprecated in favor of dist/dist-bzip2/dist-zip.
 tgz:
 	@echo; echo "@CEYLAN_COMMAND_STYLE@    Saving all \
 	@PROJECT_NAME@-@CEYLAN_VERSION@ project \
@@ -146,6 +150,7 @@ tgz:
 
 
 
+
 ASTYLE      = `which astyle 2>/dev/null`
 ASTYLE_CONF = ${top_srcdir}/src/conf/doc/astyle.conf
 
@@ -157,7 +162,7 @@ style:
 	astyle tool not found.@CEYLAN_DEFAULT_STYLE@"; false ) 
 	@echo
 	@echo "    Do you really want to use astyle on each of \
-	the project files ? (y/n) [n]"; \
+	the project files? (y/n) [n]"; \
 	read value; if [ "$$value" == "y" ]; then \
 	echo; echo "@CEYLAN_COMMAND_STYLE@    Enforcing standard project style \
 	defined in $(ASTYLE_CONF) in source files:@CEYLAN_DEFAULT_STYLE@ "; \
@@ -190,7 +195,7 @@ stat:
 	echo "    "`echo $$s | awk '{print $$2}'` words; \
 	echo "    "`echo $$s | awk '{print $$3}'` characters \
 	"@CEYLAN_DEFAULT_STYLE@"; 
-	-@rm -f .wholeSrcContent.txt .srcFileList.txt
+	-@/bin/rm -f .wholeSrcContent.txt .srcFileList.txt
 
 
 help:
@@ -280,22 +285,22 @@ rm-svn:
 	@echo "@CEYLAN_CLEAN_STYLE@    Removing all SVN-related files from \
 	top source directory@CEYLAN_DEFAULT_STYLE@"
 	-@echo "    Do you really want to remove all SVN-related files, \
-	hence possibly loosing modifications not already checked-in ? (y/n) [n]"; \
+	hence possibly loosing modifications not already checked-in? (y/n) [n]"; \
 	read value; if [ "$$value" == "y" ]; then \
-	rm -rf `find ${top_srcdir} -name .svn -print 2>/dev/null`
+	/bin/rm -rf `find ${top_srcdir} -name .svn -print 2>/dev/null`
 
 
 clean-local:
 	@echo "@CEYLAN_CLEAN_STYLE@    Cleaning all from top build \
 	directory@CEYLAN_DEFAULT_STYLE@" 
-	-@cd ${top_builddir}; rm -f AUTHORS COPYING.LIB ChangeLog FAQ \
+	-@cd ${top_builddir}; /bin/rm -f AUTHORS COPYING.LIB ChangeLog FAQ \
 	INSTALL MAINTENERS NEWS	README THANKS TODO ceylan-?.?.tar.gz
 
 
 real-clean: clean-local
-	-@rm -f Makefile.in aclocal.m4 config.log configure configure.ac \
+	-@/bin/rm -f Makefile.in aclocal.m4 config.log configure configure.ac \
 	libtool config.status config.cache 
-	-@rm -rf autom4te.cache
+	-@/bin/rm -rf autom4te.cache
 
 
 # Only useful if the source and build directories are the same.
@@ -318,10 +323,10 @@ dist-hook:
 	echo "Test configure script not available, generate it first." ; exit 1 ; fi
 	@if test -f $(srcdir)/test/Makefile; then \
 	(cd $(srcdir)/test; make distclean); fi	
-	-@rm -rf $(srcdir)/test/autom4te* $(srcdir)/test/testsOutcome.txt
+	-@/bin/rm -rf $(srcdir)/test/autom4te* $(srcdir)/test/testsOutcome.txt
 	@cp -rp $(srcdir)/test $(distdir)
-	-@rm -rf `find $(distdir) -type d -name '.svn' -print`
-	-@cd $(distdir); rm -f config.log config.status libtool \
+	-@/bin/rm -rf `find $(distdir) -type d -name '.svn' -print`
+	-@cd $(distdir); /bin/rm -f config.log config.status libtool \
 	code/CeylanConfig.h
 	-@touch $(srcdir)/libtool.m4 $(srcdir)/ltdl.m4
 
@@ -329,13 +334,13 @@ dist-hook:
 uninstall-hook:
 	@echo; echo "@CEYLAN_INSTALL_STYLE@    Uninstalling all Ceylan shared \
 	files from $(DESTDIR)@CEYLAN_INSTALL_SHARED_DIR@ @CEYLAN_DEFAULT_STYLE@"
-	-@rm -rf $(DESTDIR)@CEYLAN_INSTALL_SHARED_DIR@
+	-@/bin/rm -rf $(DESTDIR)@CEYLAN_INSTALL_SHARED_DIR@
 
 
 RELEASE_FILES="ceylan-@CEYLAN_VERSION@.tar.gz ceylan-@CEYLAN_VERSION@.tar.bz2"
 
 
-upload-release: dist dist-bzip2
+upload-release: dist dist-bzip2 dist-zip
 	@echo; echo "@CEYLAN_COMMAND_STYLE@    Uploading release files $(RELEASE_FILES) to Sourceforge @CEYLAN_DEFAULT_STYLE@"
 	@rsync -avP -e ssh $(RELEASE_FILES) @CEYLAN_DEFAULT_SF_USER@@frs.sourceforge.net:uploads/
 
