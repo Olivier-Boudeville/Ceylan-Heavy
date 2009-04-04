@@ -5,43 +5,43 @@
 			
 * General FAQ
 
-	Q: How can I have more information about Ceylan in general ?
+	Q: How can I have more information about Ceylan in general?
 	A: See @CEYLAN_SF_URL@
 
-	Q:How can I have more information about this version of Ceylan ?
+	Q: How can I have more information about this particular version of Ceylan?
 	A: This is the @CEYLAN_FULL_VERSION@ version of the Ceylan library, corresponding to the dedicated documentation section at @CEYLAN_SF_VERSION_URL@
 
-	Q: What licence applies to the Ceylan library ? 
+	Q: What licence applies to the Ceylan library? 
 	A: See the COPYING.LIB file
 	
-	Q: When was released this Ceylan version ?
+	Q: When was released this Ceylan version?
 	A: It has been released on @CEYLAN_RELEASE_DATE@
 
 	
 * User FAQ
 
-	Q: How can I build the Ceylan library ? 
+	Q: How can I build the Ceylan library? 
 	A: See the INSTALL file
 		
-	Q: How can I report bugs ?
+	Q: How can I report bugs?
 	A: Send bug reports to the ceylan-bugs@lists.sourceforge.net mailing list
 	
-	Q: How can I have more informations about Ceylan ?
+	Q: How can I have more informations about Ceylan?
 	A: For general informations, visit @CEYLAN_SF_URL@. For in-depth version-related content, read the Ceylan user guide at @CEYLAN_SF_VERSION_URL@
 	
-	Q: What are the supported platforms ?
-	A: Core services are available for GNU/Linux, Solaris, FreeBSD, NetBSD, OpenBSD, Windows XP and Nintendo DS.
+	Q: What are the supported platforms?
+	A: Core services are available for GNU/Linux, Solaris, FreeBSD, NetBSD, OpenBSD, Windows XP and, to a lesser extent, Nintendo DS.
 	   Optional features are available for GNU/Linux, Solaris, FreeBSD, NetBSD, OpenBSD and some of them for Windows XP as well. Although networking is an optional feature, it is available for all supported platforms but the DS, for the moment.
 	
 		
-* Developper FAQ
+* Developer FAQ
 
-	Q: How can I regenerate the build system, with regards to the Autotools ? 
-	A: See the src/conf/build directory, notably autogen.sh
+	Q: How can I regenerate the build system, with regards to the Autotools? 
+	A: See the src/conf/build directory, notably the autogen.sh script
 
-	Q: When I use autogen.sh, I have following error : "libtoolize: cannot list files in `/usr/share/libtool/libltdl'"
+	Q: When I use autogen.sh, I have following error: "libtoolize: cannot list files in `/usr/share/libtool/libltdl'"
 	A: libltdl-specific files have to be installed. For Debian-based distributions, use : 'apt-get install libltdl3-dev'.
 	
-	Q: How can I have more developer informations ?
+	Q: How can I have more developer informations?
 	A: See our online developer guide for this version, located at @CEYLAN_SF_VERSION_URL@
 	
