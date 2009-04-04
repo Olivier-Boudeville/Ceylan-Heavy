@@ -1,19 +1,26 @@
                
 			  
-			     What has changed in Ceylan ?
+			     What has changed in Ceylan?
          
 		 
 	Organized release by release, from the latest to the oldest.
-	See ChangeLog file for more detailed informations.
+	See ChangeLog file for more detailed information.
 
 
-*** Main changes in Ceylan 0.7 [released on ] :
+*** Main changes in Ceylan 0.7 [released on Saturday, April 4, 2009]:
 	
 	* license extended, went from pure LGPL to disjunctive bi-license LGPL/GPL. It allows developers using GPL software to use Ceylan as well
 	
+	* many features were added, including a template-based alternative MVC framework
+	* some bugs have been fixed
+	
+	* lots of various scripts in shell and Erlang were added
+	
+	* WOOPER was updated
 
 
-*** Main changes in Ceylan 0.6 [released on Tuesday, October 2, 2007] :
+
+*** Main changes in Ceylan 0.6 [released on Tuesday, October 2, 2007]:
 	
 	* filesystem layer completely rewritten so that the same user code can be developed, not depending on the targeted platform (see filesystem managers)
 	
@@ -21,7 +28,7 @@
 	
 
 
-*** Main changes in Ceylan 0.5 [released on Sunday, March 25, 2007] :
+*** Main changes in Ceylan 0.5 [released on Sunday, March 25, 2007]:
 	
 	* new code base enriched for the needs of the upcoming OSDL 0.4
 	
@@ -35,19 +42,19 @@
 		
 			 
 			 
-*** Main changes in Ceylan 0.4 [released on Saturday, December 9, 2006] :
+*** Main changes in Ceylan 0.4 [released on Saturday, December 9, 2006]:
 	
 	* light-weight XML template-based parser added, able to read/write XML files and recreating a DOM-like tree structure in memory for easier management of structured data  	
 	
-	* three additional platforms are supported : Windows XP, Sun Solaris 9, OpenBSD 3.8. Network interoperability has been successfully checked with 32/64 bit platforms, big/little endian, Intel/AMD/Sparc  
+	* three additional platforms are supported: Windows XP, Sun Solaris 9, OpenBSD 3.8. Network interoperability has been successfully checked with 32/64 bit platforms, big/little endian, Intel/AMD/Sparc  
 		
 			 
 			 
-*** Main changes in Ceylan 0.3 [released on Tuesday, September 12, 2006] :
+*** Main changes in Ceylan 0.3 [released on Tuesday, September 12, 2006]:
 
 	* custom-made GNU makefiles replaced by fully autotool-based build system (automake, autoconf, libtool)
 	
-	* Ceylan platform-related feature system added, with eight first features available on the GNU/Linux platform, namely the support of : regular expressions, multithread, network, file descriptors, symbolic links, advanced file attribute, file locks and advanced process management
+	* Ceylan platform-related feature system added, with eight first features available on the GNU/Linux platform, namely the support of: regular expressions, multithread, network, file descriptors, symbolic links, advanced file attribute, file locks and advanced process management
 	
 	* migration from CVS to SVN
 	
@@ -55,7 +62,7 @@
 
 
 			 
-*** Main changes in Ceylan 0.2 [released in 2004] :
+*** Main changes in Ceylan 0.2 [released in 2004]:
 
 	* a lot more modules added
 	
@@ -63,7 +70,7 @@
 
 
 
-*** Main changes in Ceylan 0.1 [released in 2003] :
+*** Main changes in Ceylan 0.1 [released in 2003]:
 
 	* first Ceylan library built and tested
 
