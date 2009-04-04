@@ -1,3 +1,531 @@
+2009-03-26 22:27  wondersye
+
+	* src/code/scripts/erlang/wooper/GNUmakefile: send-release target added.
+
+2009-03-26 22:27  wondersye
+
+	* src/code/scripts/erlang/wooper/doc/GNUmakefile: export-doc target added.
+
+2009-03-26 22:26  wondersye
+
+	* src/code/scripts/erlang/wooper/doc/wooper.rst: Slight update.
+
+2009-03-26 22:26  wondersye
+
+	* src/code/scripts/erlang/GNUmakefile: Include fixed.
+
+2009-03-26 22:26  wondersye
+
+	* src/code/scripts/erlang/wooper/top-GNUmakefile-for-releases: File was lacking.
+
+2009-03-26 21:43  wondersye
+
+	* src/code/scripts/erlang/common/doc/GNUmakerules-docutils.inc: Link fixed.
+
+2009-03-26 21:11  wondersye
+
+	* src/code/scripts/shell/generate-docutils.sh: Improved generation.
+
+2009-03-26 21:11  wondersye
+
+	* src/code/scripts/shell/spell-check-rst-tree.sh: Added.
+
+2009-03-26 21:05  wondersye
+
+	* src/code/scripts/erlang/common/doc/GNUmakerules-docutils.inc: Linked to Ceylan base version.
+
+2009-03-26 21:05  wondersye
+
+	* src/code/scripts/erlang/common/doc/GNUmakerules-docutils.inc: Replaced by a link.
+
+2009-03-26 20:50  wondersye
+
+	* src/code/scripts/erlang/GNUmakefile, src/code/scripts/erlang/GNUmakerules.inc, src/code/scripts/erlang/GNUmakevars.inc: Newer and better make system integrated.
+
+2009-03-26 20:39  wondersye
+
+	* src/code/scripts/erlang/wooper/doc/wooper-example.dia, src/code/scripts/erlang/wooper/doc/wooper-example.png, src/code/scripts/erlang/wooper/doc/wooper.rst: Newer documentation integrated.
+
+2009-03-26 20:38  wondersye
+
+	* src/code/scripts/erlang/wooper/GNUmakerules.inc, src/code/scripts/erlang/wooper/GNUmakesettings.inc, src/code/scripts/erlang/wooper/GNUmakevars.inc: Newer and better make system integrated.
+
+2009-03-26 20:37  wondersye
+
+	* src/code/scripts/erlang/wooper/examples/class_Cat.erl: delete/1 added.
+
+2009-03-26 20:37  wondersye
+
+	* src/code/scripts/erlang/wooper/examples/class_Cat_test.erl: synchronous_delete tested.
+
+2009-03-26 20:36  wondersye
+
+	* src/code/scripts/erlang/wooper/examples/class_Mammal.erl: Newer template for new variations integrated.
+
+2009-03-26 20:36  wondersye
+
+	* src/code/scripts/erlang/wooper/examples/class_Reptile.erl: Newer template for new variations integrated.
+
+2009-03-26 20:35  wondersye
+
+	* src/code/scripts/erlang/wooper/examples/class_OvoviviparousBeing.erl: Newer template for new variations integrated.
+
+2009-03-26 20:35  wondersye
+
+	* src/code/scripts/erlang/wooper/examples/class_Template.erl.sample: Template updated.
+
+2009-03-26 20:35  wondersye
+
+	* src/code/scripts/erlang/wooper/examples/GNUmakefile: Newer and better make system integrated.
+
+2009-03-26 20:34  wondersye
+
+	* src/code/scripts/erlang/wooper/examples/class_Platypus.erl: Newer template for new variations integrated.
+
+2009-03-26 20:34  wondersye
+
+	* src/code/scripts/erlang/wooper/examples/class_ViviparousBeing.erl: Newer template for new variations integrated.
+
+2009-03-26 20:34  wondersye
+
+	* src/code/scripts/erlang/wooper/examples/class_Creature.erl: More examples added.
+
+2009-03-26 20:33  wondersye
+
+	* src/code/scripts/erlang/wooper/GNUmakefile: Release generation updated.
+
+2009-03-26 20:33  wondersye
+
+	* src/code/scripts/erlang/wooper/src/wooper_class_manager.erl: delete/1 not added any more in virtual table.
+
+2009-03-26 20:32  wondersye
+
+	* src/code/scripts/erlang/wooper/src/wooper_class_manager_test.erl: Slight reformatting.
+
+2009-03-26 20:31  wondersye
+
+	* src/code/scripts/erlang/wooper/src/GNUmakefile: Newer and better make system integrated.
+
+2009-03-26 20:31  wondersye
+
+	* src/code/scripts/erlang/wooper/src/class_Wooper_attribute_test.erl: Newer macros tested.
+
+2009-03-26 20:31  wondersye
+
+	* src/code/scripts/erlang/wooper/src/wooper.hrl: Major update, with more remote operations and attribute macros.
+
+2009-03-26 19:59  wondersye
+
+	* src/code/scripts/erlang/wooper/doc/README.txt: Updated.
+
+2009-03-26 19:58  wondersye
+
+	* src/code/scripts/erlang/wooper/doc/GNUmakefile: Newer and better make system integrated.
+
+2009-03-26 19:56  wondersye
+
+	* src/code/scripts/erlang/common/doc, src/code/scripts/erlang/common/doc/Ceylan-docutils.css, src/code/scripts/erlang/common/doc/GNUmakefile, src/code/scripts/erlang/common/doc/GNUmakerules-docutils.inc, src/code/scripts/erlang/common/src/generate-docutils.sh: Documentation procedure improved, links to more generic Ceylan files made so that the Erlang part is autonomous.
+
+2009-03-26 19:55  wondersye
+
+	* src/code/scripts/erlang/common/GNUmakefile: Newer and better make system integrated.
+
+2009-03-26 19:54  wondersye
+
+	* src/code/scripts/erlang/common/src/hashtable.erl: hashtable_key_not_found used for better error management.
+
+2009-03-26 19:53  wondersye
+
+	* src/code/scripts/erlang/common/src/GNUmakefile: Newer and better make system integrated.
+
+2009-03-26 19:53  wondersye
+
+	* src/code/scripts/erlang/common/src/launch-erl.sh: Comments updated.
+
+2009-03-26 19:52  wondersye
+
+	* src/code/scripts/erlang/common/src/basic_utils.erl: Reorganization according to themes.
+
+2009-03-26 19:52  wondersye
+
+	* src/code/scripts/erlang/common/src/basic_utils_test.erl: Test of random and of lists updated.
+
+2009-03-26 19:51  wondersye
+
+	* src/code/scripts/erlang/common/src/file_utils.erl: convert_to_filename improved, slight reformatting.
+
+2009-03-26 19:51  wondersye
+
+	* src/code/scripts/erlang/common/GNUmakevars.inc: All common variables specified.
+
+2009-03-26 19:50  wondersye
+
+	* src/code/scripts/erlang/common/GNUmakerules.inc: All Erlang non-WOOPER-related rules added here.
+
+2009-03-26 19:48  wondersye
+
+	* src/code/scripts/erlang/common/conf, src/code/scripts/erlang/common/conf/nedit.rc: Allows syntax highlightinh with Erlang and WOOPER.
+
+2009-03-26 19:47  wondersye
+
+	* src/code/scripts/erlang/common/GNUmakesettings.inc: Newer global settings file added.
+
+2009-03-16 21:39  wondersye
+
+	* test/autogen.sh: Error comments improved.
+
+2009-03-16 21:38  wondersye
+
+	* test/interfaces/Makefile.am: testCeylanGenericMVC added.
+
+2009-03-16 21:37  wondersye
+
+	* test/interfaces/testCeylanLocatable.cc: Slight reformatting.
+
+2009-03-16 21:36  wondersye
+
+	* test/interfaces/testCeylanMVCFramework.cc: Slight reformatting.
+
+2009-03-16 21:35  wondersye
+
+	* test/interfaces/testCeylanGenericMVC.cc: Test added.
+
+2009-03-16 21:33  wondersye
+
+	* src/code/interfaces/CeylanGenericController.cc, src/code/interfaces/CeylanGenericController.h, src/code/interfaces/CeylanGenericDefines.h, src/code/interfaces/CeylanGenericModel.cc, src/code/interfaces/CeylanGenericModel.h, src/code/interfaces/CeylanGenericView.cc, src/code/interfaces/CeylanGenericView.h: Templated lightweight MVC added.
+
+2009-03-16 21:29  wondersye
+
+	* src/code/generic/CeylanFunctor.h: Comments updated.
+
+2009-03-16 21:21  wondersye
+
+	* src/code/logs/CeylanLogPlugHTML.h: Comments updated.
+
+2009-03-16 21:20  wondersye
+
+	* src/code/system/CeylanSystem.cc: Doubled granularity seems more accurate. Comments updated.
+
+2009-03-16 21:19  wondersye
+
+	* src/code/interfaces/Makefile.am: CeylanGeneric* added.
+
+2009-03-16 21:19  wondersye
+
+	* src/code/interfaces/CeylanEventListener.cc: Slight reformatting.
+
+2009-03-16 21:18  wondersye
+
+	* src/code/interfaces/CeylanController.h: Comments updated.
+
+2009-03-16 21:18  wondersye
+
+	* src/code/interfaces/CeylanCallableEventSource.h: Slight reformatting.
+
+2009-03-16 21:17  wondersye
+
+	* src/code/interfaces/CeylanInterfacesIncludes.h: CeylanGeneric* added.
+
+2009-03-16 21:17  wondersye
+
+	* src/code/interfaces/CeylanView.cc: View::getModel added.
+
+2009-03-16 21:15  wondersye
+
+	* src/code/interfaces/CeylanLoadable.h: Comments updated.
+
+2009-03-16 21:14  wondersye
+
+	* src/code/interfaces/CeylanEventSource.h: Comments updated.
+
+2009-03-16 21:14  wondersye
+
+	* src/code/interfaces/CeylanTextDisplayable.h: Slight reformatting.
+
+2009-03-16 21:13  wondersye
+
+	* src/code/interfaces/CeylanModel.cc: removeAllListeners integrated. Slight reformatting.
+
+2009-03-16 21:12  wondersye
+
+	* src/code/interfaces/CeylanDisplayable.h: Comments updated.
+
+2009-03-16 21:11  wondersye
+
+	* src/code/interfaces/CeylanLocatable.cc: Slight reformatting.
+
+2009-03-16 21:11  wondersye
+
+	* src/code/interfaces/CeylanView.h: getModel added.
+
+2009-03-16 21:10  wondersye
+
+	* src/code/interfaces/CeylanModel.h: Comments updated. Slight reformatting.
+
+2009-03-16 21:09  wondersye
+
+	* src/code/interfaces/CeylanEventSource.cc: EventSource::removeAllListeners updated. Slight reformatting.
+
+2009-03-16 21:07  wondersye
+
+	* src/code/scripts/shell/apt-update.sh: Improved, non-interactive.
+
+2009-03-09 21:34  wondersye
+
+	* src/code/scripts/shell/tests/testRecordSpeech.sh: Outputs improved.
+
+2009-03-09 21:32  wondersye
+
+	* src/code/scripts/shell/resample.sh: Automatic attenuation added.
+
+2009-03-09 21:31  wondersye
+
+	* src/code/scripts/shell/trimSilence.sh: Comments removed.
+
+2009-03-09 20:52  wondersye
+
+	* src/code/system/CeylanSystem.cc: Slight reformatting.
+
+2009-03-09 20:51  wondersye
+
+	* src/code/scripts/shell/displayOpenGLInformations.sh: AIGLX better filtered.
+
+2009-03-09 20:50  wondersye
+
+	* src/code/system/CeylanSystem.h: Slight reformatting.
+
+2009-03-09 20:49  wondersye
+
+	* src/conf/build/autogen.sh: Options better commented.
+
+2009-03-09 19:37  wondersye
+
+	* src/code/scripts/shell/apt-update.sh: Added for convenience.
+
+2009-03-08 14:25  wondersye
+
+	* src/code/scripts/shell/resample.sh: Better comments added.
+
+2009-03-08 14:25  wondersye
+
+	* src/code/scripts/shell/record-speech.sh: Trimming and resampling added.
+
+2009-03-08 14:24  wondersye
+
+	* src/code/scripts/shell/Makefile.am: clean target added.
+
+2009-03-08 14:24  wondersye
+
+	* src/code/scripts/shell/tests/Makefile.am: clean target added.
+
+2009-03-08 14:23  wondersye
+
+	* src/code/scripts/shell/tests/testRecordSpeech.sh: Better outputs.
+
+2009-03-08 14:22  wondersye
+
+	* src/code/scripts/shell/trimSilence.sh: Better comments added.
+
+2009-03-08 14:11  wondersye
+
+	* src/code/scripts/shell/resample.sh: Smart resampling.
+
+2009-03-07 13:45  wondersye
+
+	* src/code/scripts/shell/trimSilence.sh: Works great thanks to sox.
+
+2009-03-06 21:00  wondersye
+
+	* src/code/scripts/shell/tests/testRecordSpeech.sh: Allows to test speeches.
+
+2009-03-06 10:44  wondersye
+
+	* src/code/scripts/shell/decrypt.sh: State of source file specified in outputs.
+
+2009-03-06 10:44  wondersye
+
+	* src/code/scripts/shell/crypt.sh: Source files discussed in outputs.
+
+2009-03-06 10:41  wondersye
+
+	* src/doc/web/main/MainCeylan.html: Updated.
+
+2009-03-06 10:40  wondersye
+
+	* src/doc/web/main/News.html: Updated.
+
+2009-03-06 10:39  wondersye
+
+	* src/doc/Makefile.am: MIRROR_WEB_USER updated.
+
+2009-03-03 20:51  wondersye
+
+	* src/doc/web/main/documentation/Documentation.html: Slight reformatting.
+
+2009-03-03 20:51  wondersye
+
+	* src/doc/web/main/documentation/DocMenu.html: Slight reformatting.
+
+2009-03-03 20:50  wondersye
+
+	* src/conf/environment/.bashrc.common: Usernames updated.
+
+2009-03-03 20:49  wondersye
+
+	* src/conf/environment/apache2.conf: Improved and more secure.
+
+2009-03-01 21:50  wondersye
+
+	* src/code/scripts/python/tree_file_compare.py: Search by name added.
+
+2009-03-01 17:37  wondersye
+
+	* src/code/scripts/python/tree_file_compare.py: Slight readability update.
+
+2009-03-01 09:45  wondersye
+
+	* src/code/scripts/shell/generateAwstatsReport.sh: Useful when called from logrotate.
+
+2009-03-01 09:44  wondersye
+
+	* src/code/scripts/shell/fix-SVN-user.sh: Added but actually not used yet.
+
+2009-03-01 09:42  wondersye
+
+	* src/code/scripts/shell/protectSpecialCharacters.sh: Script improved regarding outputs.
+
+2009-03-01 09:41  wondersye
+
+	* src/code/scripts/shell/replaceLineStartingBy.sh: Script improved, more reliable.
+
+2009-03-01 09:41  wondersye
+
+	* src/code/scripts/shell/iptables.rules-Gateway.sh: Logs disabled for gateways (too verbose).
+
+2009-03-01 09:40  wondersye
+
+	* src/code/scripts/shell/debian-updater.sh: Log file better be kept.
+
+2009-03-01 09:40  wondersye
+
+	* src/code/scripts/shell/displayUpsStatus.sh: Script improved.
+
+2009-03-01 09:39  wondersye
+
+	* src/code/scripts/shell/substitute.sh: Script improved.
+
+2009-03-01 09:39  wondersye
+
+	* src/code/scripts/shell/rmSVN.sh: Better warning message.
+
+2009-02-27 13:08  wondersye
+
+	* src/conf/environment/apache2.conf: First version added.
+
+2009-02-23 21:46  wondersye
+
+	* src/conf/environment/dnsmasq.conf, src/conf/environment/ntp.conf, src/conf/environment/proftpd.conf, src/conf/environment/smartd.conf, src/conf/environment/sshd_config, src/conf/environment/upsmon.conf: Config files added.
+
+2009-02-23 20:13  wondersye
+
+	* src/code/scripts/shell/debian-updater.sh: Mail sent in case of trouble.
+
+2009-02-22 19:25  wondersye
+
+	* src/code/scripts/shell/iptables.rules-TemporaryDisabling.sh: Slightly updated.
+
+2009-02-22 19:25  wondersye
+
+	* src/code/scripts/shell/iptables.rules-Gateway.sh: Outputs updated.
+
+2009-02-22 19:24  wondersye
+
+	* src/code/scripts/shell/smart-disk-reporter.sh: Comments updated.
+
+2009-02-22 19:24  wondersye
+
+	* src/code/scripts/shell/iptables.rules-LANBox.sh: Slightly improved.
+
+2009-02-22 19:23  wondersye
+
+	* src/code/scripts/shell/ups-state-reporter.sh: Works ok.
+
+2009-02-22 19:23  wondersye
+
+	* src/code/scripts/shell/hdparm-setter.sh: hdarm script not very conclusive.
+
+2009-02-22 19:22  wondersye
+
+	* src/code/scripts/shell/raid-disk-reporter.sh: Works ok.
+
+2009-02-21 21:58  wondersye
+
+	* src/code/scripts/shell/smart-disk-reporter.sh: This file works perfectly.
+
+2009-02-21 11:05  wondersye
+
+	* src/code/generic/CeylanTimestamp.h: Slight reformatting.
+
+2009-02-21 11:05  wondersye
+
+	* src/code/generic/CeylanUtils.h: ExitCode better managed.
+
+2009-02-21 11:04  wondersye
+
+	* src/code/generic/CeylanLocale.h: Current locale managed.
+
+2009-02-21 11:04  wondersye
+
+	* src/code/generic/CeylanUtils.cc: ExitCodes better managed.
+
+2009-02-21 11:04  wondersye
+
+	* src/code/generic/CeylanLocale.cc: Current locale managed.
+
+2009-02-21 11:02  wondersye
+
+	* src/code/maths/CeylanMathsBasic.h: Comments improved.
+
+2009-02-20 18:23  wondersye
+
+	* test/generic/Makefile.am, test/generic/testCeylanLocale.cc: Locale support tested.
+
+2009-02-20 18:22  wondersye
+
+	* src/code/generic/CeylanGenericIncludes.h, src/code/generic/CeylanLocale.cc, src/code/generic/CeylanLocale.h, src/code/generic/Makefile.am: First locale support added.
+
+2009-02-20 15:05  wondersye
+
+	* src/doc/web/Ceylan-0.7/CeylanMenu.html: API available again.
+
+2009-02-14 12:04  wondersye
+
+	* src/doc/Ceylan-0.7-changes.txt: Slith reformatting.
+
+2009-02-14 12:01  wondersye
+
+	* Makefile.am: upload-release target added.
+
+2009-02-14 11:59  wondersye
+
+	* src/doc/Makefile.am: CEYLAN_DEFAULT_SF_USER integrated.
+
+2009-02-14 11:58  wondersye
+
+	* src/conf/CeylanSettings.inc: Release date updated.
+
+2009-02-14 11:43  wondersye
+
+	* src/conf/build/configure-template.ac: CEYLAN_DEFAULT_SF_USER added.
+
+2009-02-14 11:40  wondersye
+
+	* src/conf/build/autogen.sh: Comments fixed.
+
+2009-02-14 11:14  wondersye
+
+	* src/doc/Ceylan-0.7-changes.txt, src/doc/Ceylan-0.7-release-notes.txt, src/doc/basic/ChangeLog, src/doc/basic/Makefile.am, src/doc/web/Ceylan-0.7/ChangeLog.html: Updated for the release-to-come.
+
 2009-02-13 18:05  wondersye
 
 	* src/code/scripts/shell/snapshot.sh: Improved outputs.
