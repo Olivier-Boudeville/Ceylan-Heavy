@@ -18,7 +18,9 @@ DIST_SUBDIRS = $(SUBDIRS)
 
 .PHONY: source-release update-basic-doc-files bz2 tgz style doc api stat    \
 	help hints info-files info-project-files info-library-sources           \
-	rm-svn clean-local real-clean clean-generated distclean-local
+	rm-svn clean-local real-clean clean-generated distclean-local           \
+	dist-hook uninstall-hook upload-releases $(RELEASE_FILES)               \
+	generate-releases
 
 
 # Source archive settings.
@@ -337,10 +339,24 @@ uninstall-hook:
 	-@/bin/rm -rf $(DESTDIR)@CEYLAN_INSTALL_SHARED_DIR@
 
 
-RELEASE_FILES="ceylan-@CEYLAN_VERSION@.tar.gz ceylan-@CEYLAN_VERSION@.tar.bz2"
+RELEASE_FILES = ceylan-@CEYLAN_VERSION@.tar.gz ceylan-@CEYLAN_VERSION@.tar.bz2 ceylan-@CEYLAN_VERSION@.zip
 
 
-upload-release: dist dist-bzip2 dist-zip
+upload-releases:
 	@echo; echo "@CEYLAN_COMMAND_STYLE@    Uploading release files $(RELEASE_FILES) to Sourceforge @CEYLAN_DEFAULT_STYLE@"
 	@rsync -avP -e ssh $(RELEASE_FILES) @CEYLAN_DEFAULT_SF_USER@@frs.sourceforge.net:uploads/
 
+
+$(RELEASE_FILES): generate-releases 
+
+# Apparently does not work if listed only as
+# generate-releases: dist-bzip2 dist-zip dist
+# (the release directory is removed and then next archive is empty)
+generate-releases: 
+	@$(MAKE) dist-bzip2 && $(MAKE) dist-zip && $(MAKE) dist
+
+
+info-releases:
+	@echo "RELEASE_FILES = $(RELEASE_FILES)"
+	
+	
