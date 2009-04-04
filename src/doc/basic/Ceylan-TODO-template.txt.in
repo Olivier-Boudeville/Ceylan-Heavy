@@ -14,19 +14,18 @@ First concern: add only functionnalities really needed, mainly by the OSDL proje
 
 * Build:
 
-	[2] update the embedded libltdl version
-	[1] support for the Intel icpc compiler
+	[1] add support for the Intel icpc compiler
 	
 		
 		
 * Generic functionnalities:
 
 	[5] ensure that a stripped-down version of the library can be used, at least to save some RAM space on the Nintendo DS
-	[4] add localization service (XML-based ?) to support various languages
+	[4] add localization service (XML-based?) to support various languages
 	[4] add security service, including encryption, private/public key (by means of other libraries)
-	[4] add word-generator service (or in OSDL ?)
-	[3] ensure modularity is effective, that it is simple to add new components or replace / specialize existing ones on a project-by-project basis
-	[3] set optimizing services (runtime profiling), hand-written or reused: look for available too
+	[4] add word-generator service (or in OSDL?)
+	[3] ensure modularity is effective, that it is simple to add new components or replace/specialize existing ones on a project-by-project basis
+	[3] set optimizing services (runtime profiling), hand-written or reused: look for what is available too
 	[2] add a configuration helper (settings registery), which is able to read and write various properties (almost already done thanks to our XML parser)
 	[2] use data compression algorithm (mainly lossless), to be used for files and network (by means of other libraries)
   	
@@ -40,15 +39,11 @@ First concern: add only functionnalities really needed, mainly by the OSDL proje
 
 
 * System:
-
-	[2] support abstract file systems (ex: file system in a file)
 	
 		
 	
 * Events:
 
-	[6] implement the Event service (reliable publish and subscribe event framework)
-	
 	
 		
 * Network:
@@ -87,7 +82,7 @@ First concern: add only functionnalities really needed, mainly by the OSDL proje
 
 * Log system:
 
-	[2] create a parser which add/remove, at will, log overhead
+	[2] create a parser which adds/removes, at will, log overhead
 	[2] support for format-strings as printf does it
 	[1] store log messages in an external file (classical or XML) so that localization is easier: no hard-coded sentences
 		
@@ -96,12 +91,13 @@ First concern: add only functionnalities really needed, mainly by the OSDL proje
 * Binding:	
 
 	[6] client using Ceylan, game server using Erlang, communicating with ASN.1
-	[1] python / C++ integration module, using Boost.python
+	[1] python / C++ integration module, using Boost.python, if ever needed
 	
 
 
 * Cross-platform:
 	
+	[5] add Microsof Vista and Seven support (port everything in Ceylan, not helper libs)
 	[4] add Mac OSX support (port everything in Ceylan, not helper libs)
 	[1] add AIX, IRIX, HP-UX platforms
 
@@ -111,5 +107,5 @@ First concern: add only functionnalities really needed, mainly by the OSDL proje
 
 	[3] use unit-testing as much as possible
 	[3] use Valgrind to check memory management
-	[1] use astyle to ensure source code uniformity (might be a bad idea) [only on contributed code ?]	
+	[0] use astyle to ensure source code uniformity (might be a bad idea) [only on contributed code?]	
 	
