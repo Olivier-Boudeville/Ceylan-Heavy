@@ -71,7 +71,7 @@ SF_PROJECT_NAME      = @UNIX_PROJECT_NAME@
 SF_SHELL_SERVER      = shell.@CEYLAN_SF_WEB_SERVER@
 SF_WEB_SERVER        = web.sourceforge.net
 
-SF_WEB_DIR           = /home/groups/`echo "$(SF_PROJECT_NAME)" | head -c 1`/`echo "$(SF_PROJECT_NAME)" | head -c 2`/"$(SF_PROJECT_NAME)"/htdocs
+SF_WEB_DIR           = htdocs
 
 SF_WEB_URL           = @CEYLAN_SF_URL@/index.html
 
@@ -136,7 +136,7 @@ SCP_OPT       = "-p -r"
 		
 .PHONY: all install doc build inc web links site common                    \
 	update-rst check-rst loani-archives api update-dox-look check-dot      \
-	fix-dox-conf  tidy transfer toSF toSF-rsync toSF-scp                   \
+	fix-dox-conf  tidy transfer toSF toSF-rsync toSF-scp log-to-SF-web     \
 	toMirror toMirror-rsync toMirror-scp check-scp remind-locations        \
 	info info-dirs info-files info-sf info-html info-tools                 \
 	clean clean-web cleanobjs cleandeps clean-install real-clean
@@ -300,7 +300,7 @@ toSF-rsync: site
 	[@CEYLAN_LOCAL_WEB_DIR@] using rsync@CEYLAN_DEFAULT_STYLE@"
 	@echo
 	@opt=$(RSYNC_OPT); $(RSYNC) $$opt @CEYLAN_LOCAL_WEB_DIR@/* \
-	@CEYLAN_DEFAULT_SF_USER@@$(SF_WEB_SERVER):$(SF_WEB_DIR)
+	@CEYLAN_DEFAULT_SF_USER@,@UNIX_PROJECT_NAME@@$(SF_WEB_SERVER):$(SF_WEB_DIR)
 	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark \
 	@PROJECT_NAME@'s website on Sourceforge at \
 	$(SF_WEB_URL)@CEYLAN_DEFAULT_STYLE@"
@@ -317,6 +317,12 @@ toSF-scp: check-scp site
 	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark \
 	@PROJECT_NAME@'s website on Sourceforge at \
 	$(SF_WEB_URL)@CEYLAN_DEFAULT_STYLE@"
+
+
+log-to-SF-web:
+	@echo
+	@echo "@CEYLAN_INSTALL_STYLE@    Logging to Sourceforge's @PROJECT_NAME@ shell@CEYLAN_DEFAULT_STYLE@"
+	@ssh -t @CEYLAN_DEFAULT_SF_USER@,@UNIX_PROJECT_NAME@@shell.sourceforge.net create
 
 
 toMirror:
