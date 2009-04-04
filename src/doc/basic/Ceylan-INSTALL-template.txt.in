@@ -1,6 +1,6 @@
 
 
-		Ceylan build and installation instructions
+		Ceylan Build and Installation Instructions
 		
 		
 The installation of Ceylan @CEYLAN_FULL_VERSION@ is detailed on the website, please refer to @CEYLAN_SF_URL@, notably at @CEYLAN_SF_VERSION_URL@ for everything specific to this @CEYLAN_VERSION@ version.
@@ -16,7 +16,8 @@ It is mainly a matter of:
 	su
 	make install
 
-With future releases, one may then enter :
+With future releases, one may then enter:
 	make installcheck
 
-The Ceylan mailing list dedicated to bug reports is not specified here on purpose, please read the documentation first !
+The Ceylan mailing list dedicated to bug reports is not specified here on purpose, please read the documentation first!
+
