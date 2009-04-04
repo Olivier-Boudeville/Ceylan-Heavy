@@ -1,3 +1,159 @@
+2009-04-04 17:28  wondersye
+
+	* Makefile.am: Updated to generate releases.
+
+2009-04-04 17:27  wondersye
+
+	* src/code/generic/CeylanDocMainPage.h: Doxygen doc updated.
+
+2009-04-04 17:26  wondersye
+
+	* src/code/Ceylan.h: Updated for doxygen generation.
+
+2009-04-04 17:26  wondersye
+
+	* src/doc/web/Ceylan-0.7/Ceylan.html: Content enriched.
+
+2009-04-04 17:25  wondersye
+
+	* src/doc/web/Ceylan-0.7/Ceylan-developerguide.html: Updated and slightly reformatted.
+
+2009-04-04 17:24  wondersye
+
+	* src/doc/web/index.html: Updated and slightly reformatted.
+
+2009-04-04 17:24  wondersye
+
+	* src/doc/web/main/MainCeylan.html: Updated and slightly reformatted.
+
+2009-04-04 17:23  wondersye
+
+	* src/doc/Makefile.am: API generation updated.
+
+2009-04-04 17:22  wondersye
+
+	* src/doc/basic/Ceylan-THANKS-template.txt.in: Updated and slightly reformatted.
+
+2009-04-04 17:21  wondersye
+
+	* src/doc/basic/Ceylan-FAQ-template.txt.in: Updated and slightly reformatted.
+
+2009-04-04 17:21  wondersye
+
+	* src/doc/basic/Ceylan-INSTALL-template.txt.in: Slightly reformatted.
+
+2009-04-04 17:20  wondersye
+
+	* src/doc/basic/Ceylan-TODO-template.txt.in: Updated and slightly reformatted.
+
+2009-04-04 17:20  wondersye
+
+	* src/doc/basic/Ceylan-AUTHORS-template.txt.in: Slightly reformatted.
+
+2009-04-04 17:19  wondersye
+
+	* src/doc/basic/Makefile.am: Updated to have ChangeLog generated.
+
+2009-04-04 17:19  wondersye
+
+	* src/doc/basic/ChangeLog: Updated for the Ceylan 0.7 version.
+
+2009-04-04 17:18  wondersye
+
+	* src/doc/basic/Ceylan-README-template.txt.in: Slightly reformatted.
+
+2009-04-04 17:17  wondersye
+
+	* src/doc/basic/Ceylan-NEWS-template.txt.in: Updated and slightly reformatted.
+
+2009-04-04 17:17  wondersye
+
+	* src/conf/doc/doxygen.conf.in: Options updated for the 1.5.8 version.
+
+2009-04-04 17:03  wondersye
+
+	* src/conf/build/configure-template.ac: DOXYGEN_VERSION updated.
+
+2009-04-04 17:01  wondersye
+
+	* src/conf/build/CeylanToolsSettings.inc.in: doxygen updated.
+
+2009-03-28 19:20  wondersye
+
+	* src/code/interfaces/CeylanGenericDefines.h, src/code/interfaces/CeylanGenericMVCDefines.h: CeylanGenericMVCDefines.h is a better name than CeylanGenericDefines.h.
+
+2009-03-28 19:19  wondersye
+
+	* test/interfaces/testCeylanGenericMVC.cc: Model and views tested.
+
+2009-03-28 19:18  wondersye
+
+	* test/interfaces/testCeylanObject.cc: Slight reformatting.
+
+2009-03-28 19:18  wondersye
+
+	* src/code/interfaces/Makefile.am: CeylanGenericMVCDefines.h is a better name than CeylanGenericDefines.h.
+
+2009-03-28 19:17  wondersye
+
+	* src/code/interfaces/CeylanGenericController.cc: Comments added.
+
+2009-03-28 19:17  wondersye
+
+	* src/code/interfaces/CeylanGenericView.h: BaseView and templates put in MVC namespace. Comments added.
+
+2009-03-28 19:16  wondersye
+
+	* src/code/interfaces/CeylanGenericView.cc: Commments added.
+
+2009-03-28 19:13  wondersye
+
+	* src/code/interfaces/CeylanGenericController.h: Namespace MVC now used, as appropriate
+
+2009-03-28 19:12  wondersye
+
+	* src/code/interfaces/CeylanGenericModel.cc: Implementation of non-templated models added.
+
+2009-03-28 19:12  wondersye
+
+	* src/code/interfaces/CeylanInterfacesIncludes.h: CeylanGenericMVCDefines.h is a better name than CeylanGenericDefines.h.
+
+2009-03-28 19:11  wondersye
+
+	* src/code/interfaces/CeylanGenericModel.h: Non-templated counterparts of all models added (templated ones not that useful).
+
+2009-03-28 11:26  wondersye
+
+	* src/code/generic/CeylanStringUtils.h: Templated toString added.
+
+2009-03-28 11:26  wondersye
+
+	* src/code/generic/CeylanOperators.h: Slight reformatting.
+
+2009-03-28 11:25  wondersye
+
+	* src/code/interfaces/CeylanGenericModel.h: Comments updated.
+
+2009-03-28 11:25  wondersye
+
+	* src/doc/GNUmakerules-docutils.inc: Major update: all doc-related rules are placed here and only here.
+
+2009-03-28 11:24  wondersye
+
+	* src/doc/web/main/documentation/wooper/index.html: Generated from .rst but kept also in VCS for safety.
+
+2009-03-28 11:23  wondersye
+
+	* src/doc/web/main/News.html: WOOPER 0.3 announced.
+
+2009-03-28 11:22  wondersye
+
+	* src/conf/build/autogen.sh: Typo fixed.
+
+2009-03-28 11:22  wondersye
+
+	* test/generic/testCeylanStringUtils.cc: Templated Ceylan::toString tested.
+
 2009-03-26 22:27  wondersye
 
 	* src/code/scripts/erlang/wooper/GNUmakefile: send-release target added.
