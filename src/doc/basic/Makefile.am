@@ -8,7 +8,10 @@
 
 
 # Change it to 'true' to have ChangeLog generated from SVN:
-CREATE_CHANGELOG = true
+# Note: the better organization is to run: 
+# 'make update-changelog CREATE_CHANGELOG=true' once and then generate
+# all the various needed archives.
+CREATE_CHANGELOG = false
 
 
 
