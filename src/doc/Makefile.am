@@ -135,8 +135,8 @@ SCP_OPT       = "-p -r"
 
 		
 .PHONY: all install doc build inc web links site common                    \
-	update-rst check-rst loani-archives api check-dot fix-dox-conf         \
-	tidy transfer toSF toSF-rsync toSF-scp                                 \
+	update-rst check-rst loani-archives api update-dox-look check-dot      \
+	fix-dox-conf  tidy transfer toSF toSF-rsync toSF-scp                   \
 	toMirror toMirror-rsync toMirror-scp check-scp remind-locations        \
 	info info-dirs info-files info-sf info-html info-tools                 \
 	clean clean-web cleanobjs cleandeps clean-install real-clean
@@ -235,15 +235,21 @@ api: check-dot fix-dox-conf
 	-@PATH=`pwd`/$(DOT_ROOT)/bin:$$PATH \
 	LD_LIBRARY_PATH=`pwd`/$(GCC_ROOT)/lib:$$LD_LIBRARY_PATH \
 	$(DOXYGEN) $(DOXYGEN_GENERATED_CONF)
+	@echo
+	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark \
+	@CEYLAN_CURRENT_VERSION_PREFIX@ API, which is located in: \
+file://$(DESTDIR)@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/index.html@CEYLAN_DEFAULT_STYLE@"
+	
+
+# Not run by default, as the native look of doxygen is actually better,
+# and more appropriate:
+update-dox-look:	
 	@rm -f $(DESTDIR)@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/doxygen.css
 	@cp -f $(srcdir)/web/common/css/doxygen-@PROJECT_NAME@.css \
 	$(DESTDIR)@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/doxygen.css 
 	@cp -f $(srcdir)/web/common/doxygen/*.png \
 	$(DESTDIR)@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html
 	@echo
-	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark \
-	@CEYLAN_CURRENT_VERSION_PREFIX@ API, which is located in: \
-file://$(DESTDIR)@CEYLAN_LOCAL_WEB_CURRENT_VERSION_API_DIR@/html/index.html@CEYLAN_DEFAULT_STYLE@"
 	
 			
 check-dot:
