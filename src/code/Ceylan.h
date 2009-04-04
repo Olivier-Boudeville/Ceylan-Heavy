@@ -6,12 +6,16 @@
  * This is the Ceylan library, a free portable high-level open-source 
  * general-purpose C++ library.
  *
- * Copyright (C) 2007 Olivier Boudeville.
+ * Copyright (C) 2007-2009 Olivier Boudeville (olivier.boudeville@esperide.com).
+ *
+ * The Ceylan library is released under a disjunctive bi-license LGPL/GPL
+ * (choose the one that you prefer). 
  *
  * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * modify it under the terms of the GNU General Public License or the
+ * GNU Lesser General Public License, as published by the Free Software
+ * Foundation; either version 2.1 of the Licenses, or (at your option) 
+ * any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,7 +28,7 @@
  * 
  * You can contact the author at olivier.boudeville@esperide.com
  *
- * More informations available in COPYING.LIB and at Ceylan's official website
+ * More information available in COPYING.LIB and at Ceylan's official website:
  * http://ceylan.sourceforge.net
  *
  */
@@ -78,13 +82,13 @@
  *
  * It the test fails (header and library versions cannot work together), at
  * runtime the issue will be detected thanks to the macro, and a message will
- * explain the situation, ex :
+ * explain the situation, ex:
  *
- * Fatal error : Ceylan is performing an emergency shutdown since an abnormal
- * situation occured. Ceylan library version currently linked (Libtool version :
+ * Fatal error: Ceylan is performing an emergency shutdown since an abnormal
+ * situation occured. Ceylan library version currently linked (Libtool version:
  * current interface number = 0, current revision number = 5, interface age = 0)
  * is not compatible with the one read from the Ceylan header files used to
- * compile this application (Libtool version : current interface number = 1,
+ * compile this application (Libtool version: current interface number = 1,
  * current revision number = 6, interface age = 0), aborting.
  *
  * @see CeylanConfig.h, CeylanConfigForWindows.h, and generic/CeylanUtils.h
