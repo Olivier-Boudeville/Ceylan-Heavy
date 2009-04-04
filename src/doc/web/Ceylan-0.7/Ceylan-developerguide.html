@@ -280,9 +280,9 @@ We suppose here that we will create a release for current version and then prepa
 
 	<li>under <code>trunk/src/conf/build</code>, use <code>autogen.sh --chain-test</code> to check everything is still working as expected: all the tests must always succeed, not depending on how many times they are run</li>
 	
-	<li>create a distribution with <code>./autogen.sh --only-prepare-dist</code>: it should produce an archive named <code>trunk/ceylan-x.y.tar.bz2</code>. Another approach is to use an already built Ceylan tree, and from the trunk to issue <code>make dist-bzip2</code> and  <code>make dist</code> (for tar.gz archive). Build the resulting package on as many other hosts as possible, at least one time on each supported platform. For example, <code>scp ceylan-x.y.tar.bz2 $TOSFCF && sfcf</code> to transfer the archive to Sourceforge's compile farm (if one day it comes back) and to log to their platform chooser</li>
+	<li>create release archives from an already built Ceylan tree: from the trunk, issue <code>make generate-releases</code>, it should create the tar.bez2, tar.gz and zip archives. Build the resulting package on as many other hosts as possible, at least one time on each supported platform. For example, <code>scp ceylan-x.y.tar.bz2 $TOSFCF && sfcf</code> to transfer the archive to Sourceforge's compile farm (if one day it comes back) and to log to their platform chooser</li>
 	
-	<li>extract both source archives in separate temporary directories, and check that there are no useless elements (generated files, deprecated content, etc.), and that all files are expected and up-to-date, and they have the same exact content</li>
+	<li>extract each source archive in a separate temporary directory, and check that there are no useless elements (generated files, deprecated content, etc.), and that all files are expected and up-to-date, and that they have the same exact content</li>
 
 	<li>regenerate the Sourceforge website, including the Ceylan API (under <code>src/doc</code>, <code>make api toSF</code>)
 </li>
@@ -302,15 +302,11 @@ We suppose here that we will create a release for current version and then prepa
     </table>
 </center>
 	</li>
-	
-	<li>create two distribution archives: <code>ceylan-x.y.tar.bz2</code> thanks to <code>cd trunk/src/conf/build; autogen.sh --only-prepare-dist</code> and <code>ceylan-x.y.tar.gz</code> thanks to <code>make dist</code> from <code>trunk</code>
-</li>
-		
-	<li>upload both distribution archives to <a href="http://sourceforge.net/projects/ceylan" target="_blank">Sourceforge</a>: select in the admin tab <code>File releases</code>, add a release to the <code>Ceylan</code> package (not the hidden <code>ceylan</code> package), name that release <code>Ceylan-x.y</code>, create it. Upload both release notes and ChangeLog from local tree (respectively from <code>trunk/src/doc/Ceylan-x.y-release-notes.txt</code> and from <code>trunk/ChangeLog</code>). Upload by anonymous FTP both archives to
-<code>upload.sourceforge.net</code> in the <code>incoming</code> directory (delete first through the web form any alreay hidden release with the same name). Add the archives from the web interface (Processor: <code>Platform-Independent)</code>, File Type: <code>Source .bz2</code> or <code>Source .gz</code>). Send a notice. Check everything from a non-logged browser. 
+			
+	<li>upload the previously created distribution archives to <a href="http://sourceforge.net/projects/ceylan" target="_blank">Sourceforge</a>: select in the admin tab <code>File releases</code>, add a release to the <code>Ceylan</code> package (not the hidden <code>ceylan</code> package), name that release <code>Ceylan-x.y</code>, create it. Upload both release notes and ChangeLog from local tree (respectively from <code>trunk/src/doc/Ceylan-x.y-release-notes.txt</code> and from <code>trunk/ChangeLog</code>). Upload archives thanks to <code>make upload-releases</code>. Add the archives from the web interface (Processor: <code>Platform-Independent)</code>, File Type: <code>Source .bz2</code>, <code>Source .gz</code> and <code>Source .zip</code>). Send a notice. Check everything from a non-logged browser. 
 </li>
 	
-	<li>wait of few hours so that Sourceforge mirrors for file releases are updated, then download both archives, check their content and build and run them with the tests, with <code>build-and-test-package.sh</code></li>
+	<li>wait of few hours so that Sourceforge mirrors for file releases are updated, then download all archives, check their content and build and run them with the tests, with <code>build-and-test-package.sh</code></li>
 	
 	<li>send a release notice to <code>ceylan-announces@lists.sourceforge.net</code></li>
 	
