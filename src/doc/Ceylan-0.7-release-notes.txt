@@ -1,8 +1,9 @@
-Created on Saturday, February 14, 2009.
+Created on Saturday, April 4, 2009.
  
 
 		Ceylan 0.7 release notes
-		
+
+Now released under a disjunctive bi-license LGPL/GPL (choose the one you prefer).
 
 This version is mainly a bug-fixes only release, as Ceylan is already stable and quite complete (see Ceylan-0.7-changes.txt and ChangeLog for more details).
 
