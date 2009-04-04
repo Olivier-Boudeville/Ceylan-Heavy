@@ -8,7 +8,7 @@
 
 
 # Change it to 'true' to have ChangeLog generated from SVN:
-CREATE_CHANGELOG=false
+CREATE_CHANGELOG = true
 
 
 
@@ -33,9 +33,10 @@ RAW_DOC_FILES = ${top_builddir}/AUTHORS ${top_builddir}/COPYING.LIB        \
 
 $(RAW_DOC_FILES): update-basic-doc-files
 
+
 update-basic-doc-files: update-changelog update-authors update-copying  \
 	update-faq update-install update-maint update-news update-readme    \
-	update-thanks update-todo 
+	update-thanks update-todo
 
 
 install-data-local: $(RAW_DOC_FILES) # update-changelog
@@ -60,7 +61,8 @@ update-changelog:
 	if [ ! -x "$(CHANGELOG_COMMAND)" ] ; then echo \
 	"@CEYLAN_WARNING_STYLE@    No ChangeLog tool \
 	available (svn2cl), nothing done@CEYLAN_DEFAULT_STYLE@"; \
-	else $(MAKE) effective-changelog-creation; fi; else \
+	else $(MAKE) effective-changelog-creation && \
+	/bin/cp -f ${srcdir}/ChangeLog ${top_builddir}; fi; else \
 	echo "@CEYLAN_WARNING_STYLE@ \
 	Creation of Change Logs from SVN \
 	is deactivated@CEYLAN_DEFAULT_STYLE@";  fi
@@ -176,5 +178,5 @@ real-clean:
 	Ceylan-TODO-template.txt Makefile.in
 	
 	
-${top_builddir}/ChangeLog: effective-changelog-creation
+${top_builddir}/ChangeLog ${srcdir}/ChangeLog: update-changelog
 
