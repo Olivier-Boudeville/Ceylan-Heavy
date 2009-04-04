@@ -58,7 +58,7 @@
  * Browse Ceylan's <a href="http://ceylan.sourceforge.net/" target="_blank">official website</a> or our <a href="http://ceylan.esperide.com" target="_blank">mirror</a>.
  *
  * Information about the latest Ceylan release can be found <a href="http://ceylan.sourceforge.net/Ceylan-latest/" target="_blank">here</a>
- * (<a href="http://ceylan.esperide.com/Ceylan-latest/" target="_blank">mirror</a>)
+ * (<a href="http://ceylan.esperide.com/Ceylan-latest/" target="_blank">mirror</a>).
  *
  */
 
