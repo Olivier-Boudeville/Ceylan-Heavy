@@ -48,17 +48,20 @@
  *
  * Defining topic-specific debug symbols (ex: CEYLAN_DEBUG_NETWORK_CLIENTS)
  * allows the implementation to perform supplementary tests and to display more
- * accurate and detailed informations about its run-time behaviour, as regard
+ * accurate and detailed information about its run-time behaviour, as regard
  * to selected debug matters. 
  *
  *
- * @subsection details More informations
+ * @subsection details More information
  * 
  *
  * Browse Ceylan's <a href="http://ceylan.sourceforge.net/" target="_blank">official website</a> or our <a href="http://ceylan.esperide.com" target="_blank">mirror</a>.
  *
  * Information about the latest Ceylan release can be found <a href="http://ceylan.sourceforge.net/Ceylan-latest/" target="_blank">here</a>
  * (<a href="http://ceylan.esperide.com/Ceylan-latest/" target="_blank">mirror</a>).
+ *
+ * Support can be obtained from ceylan-support@lists.sourceforge.net (one 
+ * must register first).
  *
  */
 
