@@ -97,7 +97,7 @@ h1 {
 
 
 h2 {
-  color: #000000 ;
+  color: #153788 ;
   font-size: 27px;
   background: transparent;
   text-align: left;
@@ -118,11 +118,11 @@ h3 {
 
 
 h4 {
-  color : #555555;
+  color : #1B77C5;
   font-size: 21px;
   margin-left: 10%;
   margin-right: 7%;
-  font-weight: normal;
+  font-weight: bold;
 }
 
 
@@ -289,7 +289,6 @@ table p, table dl, ol p, ul p, dl p, blockquote p, .note p, .note ul, .note ol, 
 
 
 tr {
-   background : #EEEEEE;
    font-family: arial, helvetica, sans-serif;
    font-size: 15px;
    border:thin;
@@ -298,7 +297,6 @@ tr {
 
 th { 
    color: #222222;
-   background : #BBBBBB;
    font-family: arial, helvetica, sans-serif; 
    font-weight: bold;
    font-size: 19px;
@@ -307,7 +305,7 @@ th {
 
 
 td {
-   background : #DDDDDD; 
+   background : #c4d3d4; 
    font-size: 15px;
 }
 
@@ -359,34 +357,24 @@ td a {
 
 
 a:link {
-  color:#222222; 
+  color:#153788; 
   background: transparent;
-  text-decoration:underline;
   font-weight: bold;
+  text-decoration: none;
   /*font-size: 110%;  */
 }
   
 
 a:visited {
-  color: #222222;
+  color: #1B77C5;
   background: transparent;
-  font-weight: bold;  
-  text-decoration:underline;
-}
-
-
-a:active {
-  color: #222222;
-  background: transparent;
-  font-weight: bold;  
-  text-decoration:underline;
+  font-weight: bold;
+  text-decoration: none;
 }
 
 
 a:hover { 
-  color:#222222;
   text-decoration:underline;
-  font-weight: bold; 
 }
 
 
