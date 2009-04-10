@@ -794,7 +794,7 @@ namespace Ceylan
 		 *
 		 * @note The computation is done one time for all. It may last up to
 		 * a few seconds. Next calls to this method will return almost
-		 * immediatly this precomputed value.
+		 * immediately this precomputed value.
 		 *
 		 * @note If the computer is loaded with other demanding processes,
 		 * then the computed time slice will not be the kernel basic time
@@ -814,10 +814,17 @@ namespace Ceylan
 		 * stable. The algorithm detects then a 8 ms granularity, which is 
 		 * recommended, as in the 4 ms stage (reached for requests between 0
 		 * and 4 ms), there is often a peak: asking for 0.5 ms yields a 
-		 * reproducible 25 ms sleep !
+		 * reproducible 25 ms sleeps!
+		 *
+		 * Hence requesting 0.9*granularity should yied a reliable minimal
+		 * waiting. Note that its duration will in most cases not be what was
+		 * requested.
+		 * For example, with a granularity reliably measured at 8 ms 
+		 * (ex: 7994 microsec), one should request 8000*0.9=7200 microsec and 
+		 * have a (reliable) 6500 microsec sleep instead.
 		 *
 		 * @note One may force a first call to this method to have the
-		 * granularity precomputed one time for all.
+		 * granularity precomputed one time for all, at start-up.
 		 *
 		 * @throw SystemException if the operation is not supported (file
 		 * descriptor feature is needed) or if the measurement failed.
