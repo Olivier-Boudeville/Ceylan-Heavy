@@ -9,7 +9,7 @@
 
 # Change it to 'true' to have ChangeLog generated from SVN:
 # Note: the better organization is to run: 
-# 'make update-changelog CREATE_CHANGELOG=true' once and then generate
+# 'make effective-changelog-creation' once and then generate
 # all the various needed archives.
 CREATE_CHANGELOG = false
 
