@@ -45,10 +45,10 @@ This user guide is not yet written. There are some informations here though, and
         <tr>
           <td>
                    <div class="box">
-                       <a href="#file-management">How does the file management work ?</a><br>
-                       <a href="#middleware">How does the middleware layer work ?</a><br>
+                       <a href="#file-management">How does the file management work?</a><br>
+                       <a href="#middleware">How does the middleware layer work?</a><br>
                        <a href="#scheduling">Understanding atomic sleeps and scheduling granularity</a><br>
-                       <a href="#ds-ipc">How does the IPC system for the Nintendo DS work ?</a><br>
+                       <a href="#ds-ipc">How does the IPC system for the Nintendo DS work?</a><br>
                        <a href="#hints">A few hints</a><br>
                        <a href="#advices">Some general advices</a>
 
@@ -69,7 +69,7 @@ This user guide is not yet written. There are some informations here though, and
 
 
 <a name="file-management"></a>
-<h3>How does the file management work ?</h3>
+<h3>How does the file management work?</h3>
 <p>
 The convention here is to separate access to disk-like data storage into three layers:
 <ul>
@@ -111,14 +111,14 @@ Having such abstractions allows to write programs that depend less on specific f
 <p>
 For example, the File factories (<code>Create</code>, <code>Open</code>) will hide most, if not all, platform-specific details:
 <center>
-    <table summary="Code" style="border : none">
+    <table summary="Code" style="border: none">
         <tr>
           <td>
             <div class="box">
 <code><pre>
 using namespace Ceylan::System ;
 File & myFile = File::Create( "Hello.txt" ) ;
-myFile.write( "Hello world !" ) ;
+myFile.write( "Hello world!" ) ;
 myFile.close() ;
 </pre></code>
             </div>
@@ -138,7 +138,7 @@ Actually this <code>File</code> class is abstract, and the factories return inst
 
 
 <a name="middleware"></a>
-<h3>How does the middleware layer work ?</h3>
+<h3>How does the middleware layer work?</h3>
 
 <p>
 A multiplexed server stream spawns a connection whenever a client connects to the listening socket.
@@ -231,7 +231,7 @@ Note that this discussion applies to platforms running a multitasking operating 
 
 
 <a name="ds-ipc"></a>
-<h3>How does the IPC system for the Nintendo DS work ?</h3>
+<h3>How does the IPC system for the Nintendo DS work?</h3>
 
 <h4>Overview</h4>
 <p>
@@ -300,7 +300,7 @@ After each command element has been written to the FIFO, the other ARM must be n
 
 <p>
 <center>
-    <table summary="a box" style="border : none">
+    <table summary="a box" style="border: none">
         <tr>
           <td>
             <div class="box">
@@ -343,7 +343,7 @@ virtual void sendComputeRequest() throw()
 <h5>ARM7 example</h5>
 <p>
 <center>
-    <table summary="a box" style="border : none">
+    <table summary="a box" style="border: none">
         <tr>
           <td>
             <div class="box">
@@ -391,7 +391,7 @@ No special protection against concurrent accesses has to be used here, as we are
 
 <p>To handle an ARM7 answer to a previous request:
 <center>
-    <table summary="a box" style="border : none">
+    <table summary="a box" style="border: none">
         <tr>
           <td>
             <div class="box">
@@ -428,7 +428,7 @@ virtual void MySpecializedFIFO::handleComputeAnswer( FIFOElement firstElement ) 
 or to answer to an ARM7 request:
 
 <center>
-    <table summary="a box" style="border : none">
+    <table summary="a box" style="border: none">
         <tr>
           <td>
             <div class="box">
@@ -475,7 +475,7 @@ virtual void MySpecializedFIFO::handleSumRequest() throw()
 <p>To activate the management of these two request handlers, just override the following method that way, knowing that a basic <code>handleUnexpectedApplicationCommand</code> is provided by default:
 
 <center>
-    <table summary="a box" style="border : none">
+    <table summary="a box" style="border: none">
         <tr>
           <td>
             <div class="box">
@@ -511,7 +511,7 @@ virtual void MySpecializedFIFO::handleReceivedApplicationCommand(
 <h5>ARM7 example</h5>
 <p>To handle a particular request:
 <center>
-    <table summary="a box" style="border : none">
+    <table summary="a box" style="border: none">
         <tr>
           <td>
             <div class="box">
@@ -544,7 +544,7 @@ void handleComputeRequest()
 
 <p>To activate the management of this request, redefine appropriately this function:
 <center>
-    <table summary="a box" style="border : none">
+    <table summary="a box" style="border: none">
         <tr>
           <td>
             <div class="box">
@@ -832,7 +832,7 @@ To avoid these shared informations, one just has to have them owned exclusively 
 <h2>Locatables and referential compositions</h2>
 
 <p>
-When dealing with objects in space (most often, 2D or 3D space), one has to keep track of where they are, and on what position. For example, a spaceship in 3D can be located in [ 30, 20, 50 ] and it can be oriented towards a distant star located at [ 30 000, 15 000, 1 000 ]. Usually, the location of a rigid-body object applies to its supposed center of gravity. This object is generally defined in its own local referential, the origin of which being its center of gravity, and its orientation is set so that the referential axis correspond to the object's main axis, for example its axis of symetry. Speaking of 3D orthonormal basis, our spaceship would therefore have its nose lined up with, say, the y=0 axis, whereas its wing (if any !) would be parallel to the x=0 axis.
+When dealing with objects in space (most often, 2D or 3D space), one has to keep track of where they are, and on what position. For example, a spaceship in 3D can be located in [ 30, 20, 50 ] and it can be oriented towards a distant star located at [ 30 000, 15 000, 1 000 ]. Usually, the location of a rigid-body object applies to its supposed center of gravity. This object is generally defined in its own local referential, the origin of which being its center of gravity, and its orientation is set so that the referential axis correspond to the object's main axis, for example its axis of symetry. Speaking of 3D orthonormal basis, our spaceship would therefore have its nose lined up with, say, the y=0 axis, whereas its wing (if any!) would be parallel to the x=0 axis.
 </p>
   
 <p>
@@ -1036,7 +1036,7 @@ For all internal issues about the Ceylan library, not related to the way it is u
 	<dd>This seems to be one of the way too many limitations of libtool: this wonderful tool manages, in some cases, to store in its scripts hardcoded full paths to other tools, which prevents from moving nearly anything afterwards. Rule of thumb: think carefully before choosing the directory where LOANI is to be run, so that nothing has to be moved afterwards.</dd>
  
  
-	<dt>My program crashes or never terminates, how can I see its logs nevertheless ?</dt>
+	<dt>My program crashes or never terminates, how can I see its logs nevertheless?</dt>
 	<dd>
 	<p>
 First, avoid using the HTML plug (do not execute <code>myOSDLProgram --HTMLPlug</code>, execute simply <code>myOSDLProgram</code>), because HTML plug needs a special final phase in order to gather all logs and generate the HTML set of pages accordingly. In both cases, crash or never-ending program, this phase would not take place and the log would not be available.
@@ -1062,12 +1062,12 @@ Not specifying any plug defaults to the classical plug, which writes logs direct
 	</dd>
  
  
- 	<dt>It seems that my program crashes because of Ceylan log system !</dt>
+ 	<dt>It seems that my program crashes because of Ceylan log system!</dt>
 	<dd>
 	<p>One can experiment a crash of his program, run it through a debugger, and see that the crash happens in Ceylan's code, for example a segmentation fault or an abort in: 
 <code>Ceylan::Log::LogMessage::getChannelName() const (this=0x80606c4) at CeylanLogMessage.cc:63</code>. On all the cases we studied, it was due to a faulty life cycle of the user code.</p>
 
-<p>For example, this error can happen when the user provides an object <code>a</code> to an object <code>b</code>, which takes ownership of <code>a</code>, and manages its life cycle. When <code>b</code> is destroyed, then it will destroy <code>a</code> too. If the user provides an automatic variable to <code>b</code> (say, <code>a</code>, defined as <code>A a ;</code>) instead of a specifically dynamically allocated object (say, <code>A & a = new A()</code>), then such crashes may happen. In most cases, the Ceylan log system, which has been stable and unchanged for months, is not guilty !
+<p>For example, this error can happen when the user provides an object <code>a</code> to an object <code>b</code>, which takes ownership of <code>a</code>, and manages its life cycle. When <code>b</code> is destroyed, then it will destroy <code>a</code> too. If the user provides an automatic variable to <code>b</code> (say, <code>a</code>, defined as <code>A a ;</code>) instead of a specifically dynamically allocated object (say, <code>A & a = new A()</code>), then such crashes may happen. In most cases, the Ceylan log system, which has been stable and unchanged for months, is not guilty!
 	</p>
 
 
@@ -1176,7 +1176,7 @@ If an error occurs while executing <code>make api</code> under <code>src/doc</co
   <br>
   <br>
 
-  <h3>Please react !</h3>
+  <h3>Please react!</h3>
 
   <p>If you have information more detailed or more recent than those
   presented in this document, if you noticed errors, neglects or points
@@ -1189,7 +1189,7 @@ If an error occurs while executing <code>make api</code> under <code>src/doc</co
       <center>
         [<a href="#_top_">Top</a>]<br>
         <br>
-        <em>Last update: Sunday, November 18, 2007</em>
+        <em>Last update: Sunday, April 5, 2009</em>
       </center>
   
 </body>
