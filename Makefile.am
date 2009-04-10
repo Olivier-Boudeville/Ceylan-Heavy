@@ -62,8 +62,7 @@ rpm: tgz
 	@rpm -ta $(PACKAGE)-$(VERSION).tar.gz
 
 
-# Here there will be rules to rebuild the export lists for BeOS, MacOS 
-# and Win32.
+# Here rules to rebuild the export lists for BeOS, MacOS and Win32 could exist.
 
 
 # Installs the libraries only, prevents from rebuilding applications:
@@ -79,11 +78,11 @@ update-basic-doc-files:
 	cd ${top_builddir}/src/doc/basic; $(MAKE) update-basic-doc-files 
 
 
-# Note: usually deprecated in favor of dist/dist-bzip2/dist-zip.
+# Note: usually deprecated in favor of generate-releases.
 source-release: update-basic-doc-files
 	@echo; echo "@CEYLAN_COMMAND_STYLE@    Making source release \
 	$(SRC_RELEASE_ARCHIVE_NAME):@CEYLAN_DEFAULT_STYLE@"; echo
-	-@cd test; if [ -f Makefile ] ; then make clean; fi
+	-@cd test; if [ -f Makefile ] ; then $(MAKE) clean; fi
 	@mkdir -p $(SRC_RELEASE_ARCHIVE_DIR); \
 	files=$(CEYLAN_PROJECT_FILES); cd $(top_srcdir)/.. ; \
 	tar cvf - $$files | \
@@ -119,7 +118,7 @@ snapshot:
 # To avoid uselessly fat archives, some cleaning has
 # to be done, but using cleanGeneratedConfigFiles.sh removes the 
 # Makefile being used itself.	
-# Note: usually deprecated in favor of dist/dist-bzip2/dist-zip.
+# Note: usually deprecated in favor of generate-releases.
 bz2:
 	@echo; echo "@CEYLAN_COMMAND_STYLE@    Saving all \
 	@PROJECT_NAME@-@CEYLAN_VERSION@ project \
@@ -136,7 +135,7 @@ bz2:
 	
 # Brute-force archiving with gzip, see also the 'source-release' target.
 # clean required not to archive test* executables:			
-# Note: usually deprecated in favor of dist/dist-bzip2/dist-zip.
+# Note: usually deprecated in favor of generate-releases.
 tgz:
 	@echo; echo "@CEYLAN_COMMAND_STYLE@    Saving all \
 	@PROJECT_NAME@-@CEYLAN_VERSION@ project \
@@ -324,7 +323,7 @@ dist-hook:
 	@if ! test -f $(srcdir)/test/configure; then \
 	echo "Test configure script not available, generate it first." ; exit 1 ; fi
 	@if test -f $(srcdir)/test/Makefile; then \
-	(cd $(srcdir)/test; make distclean); fi	
+	(cd $(srcdir)/test; $(MAKE) distclean); fi	
 	-@/bin/rm -rf $(srcdir)/test/autom4te* $(srcdir)/test/testsOutcome.txt
 	@cp -rp $(srcdir)/test $(distdir)
 	-@/bin/rm -rf `find $(distdir) -type d -name '.svn' -print`
@@ -342,12 +341,10 @@ uninstall-hook:
 RELEASE_FILES = ceylan-@CEYLAN_VERSION@.tar.gz ceylan-@CEYLAN_VERSION@.tar.bz2 ceylan-@CEYLAN_VERSION@.zip
 
 
-upload-releases:
+upload-releases: $(RELEASE_FILES)
 	@echo; echo "@CEYLAN_COMMAND_STYLE@    Uploading release files $(RELEASE_FILES) to Sourceforge @CEYLAN_DEFAULT_STYLE@"
 	@rsync -avP -e ssh $(RELEASE_FILES) @CEYLAN_DEFAULT_SF_USER@@frs.sourceforge.net:uploads/
 
-
-$(RELEASE_FILES): generate-releases 
 
 # Apparently does not work if listed only as
 # generate-releases: dist-bzip2 dist-zip dist
