@@ -1288,7 +1288,7 @@ void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 	waiter.tv_nsec = static_cast<long>( nanos ) ;
 
 	if ( ::nanosleep( & waiter, /* no remainder information wanted */ 0 ) != 0 )
-		throw SystemException( "System::basicSleep with nanosleep: "
+		throw SystemException( "System::basicSleep with nanosleep failed: "
 			+ Ceylan::System::explainError() ) ;
 
 #else // CEYLAN_USES_NANOSLEEP
@@ -1315,7 +1315,7 @@ void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 	if ( ::select( 0, static_cast<fd_set *>( 0 ),
 			static_cast<fd_set *>( 0 ), static_cast<fd_set *>( 0 ),
 			& timeout ) < 0 )
-		throw SystemException( "System::basicSleep with select: "
+		throw SystemException( "System::basicSleep with select failed: "
 			+ Ceylan::System::explainError() ) ;
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS
@@ -1379,9 +1379,10 @@ void Ceylan::System::atomicSleep() throw( SystemException )
 
 #endif // CEYLAN_DEBUG_SYSTEM
 
-
-	basicSleep( static_cast<Microsecond>(
-		marginDecreaseFactor * getSchedulingGranularity() ) ) ;
+	static Microsecond durationToRequest = static_cast<Microsecond>(
+		marginDecreaseFactor * getSchedulingGranularity() ) ;
+		
+	basicSleep( durationToRequest ) ;
 
 #endif // CEYLAN_ARCH_NINTENDO_DS		
 
@@ -1798,7 +1799,6 @@ Microsecond Ceylan::System::getActualDurationForSleep(
 
 
 
-
 Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 {
 
@@ -1815,11 +1815,11 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 	 */
 
 	static Microsecond granularity = 0 ;
-
+	
 	// Already computed? Return it!
 	if ( granularity != 0 )
 		return granularity ;
-
+	
 #if CEYLAN_DEBUG_SYSTEM
 
 	bool logMeasures = true ;
@@ -1839,10 +1839,11 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 	
 		logFile = & File::Create( logFilename ) ;
 		logFile->write( 
-			"# This file records the requested sleep durations (first column) "
-			"and the corresponding actual sleep durations (second column).\n"
+			"# This file records the requested sleep durations (first column)\n"
+			"# and the corresponding actual sleep durations (second column).\n"
 			"# The scheduling granularity can be usually guessed from it.\n"
-			"# One may use gnuplot to analyze the result.\n\n"   ) ;
+			"# One may use gnuplot to analyze the result,\n"
+			"# see test/system/testCeylanTime.cc.\n\n"   ) ;
 			
 		LogPlug::trace( "Ceylan::System::getSchedulingGranularity: "
 			"computing granularity now, and logging the result in the '"
@@ -1898,7 +1899,7 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 	while ( currentRequestedDuration < maximumPossibleDuration )
 	{
 
-		// Increase the duration:
+		// Increases the duration:
 		currentRequestedDuration += durationStep ;
 		
 		lastMeasuredDuration = currentMeasuredDuration ;
@@ -1923,7 +1924,7 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 		}
 		
 		
-		// Loop until a gentle slope is found (1%):
+		// Increases requested time until a gentle slope is found (0.5%):
 		if ( Ceylan::Maths::Abs( static_cast<Ceylan::Float32>(
 					currentMeasuredDuration - lastMeasuredDuration ) )
 				/ ( currentMeasuredDuration + lastMeasuredDuration ) < 0.005f )
@@ -1988,7 +1989,7 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 		/*
 		 * The 0.4 factor is here to ensure we do not request just more than
 		 * the time-slice, if we had surestimated it a bit, we could have 
-		 * two time slices.
+		 * two time slices instead.
 		 *
 		 */
 
@@ -1997,16 +1998,26 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 
 	}
 
-	granularity /= sampleCount ;
+	granularity = static_cast<Microsecond>( 
+		( granularity * 1.0f ) / sampleCount ) ;
 
 	/*
-	 * We suppose here that we interrupted the current time-slice at random
+	 * We supposed here that we interrupted the current time-slice at random
 	 * moments, therefore on average on its middle, hence the multiplication
-	 * by two:
+	 * by two: 'granularity *= 2 ;'. That was wrong as the real granularity
+	 * was correctly computed.
+	 *
+	 * We could instead use:
+	 * 'granularity = static_cast<Microsecond>( granularity * 1.5f );'
+	 * so that we do our best to request a duration in the middle of the fist
+	 * time-slice, to avoid the possibly unreliable first stage
+	 * (see the plots to better view the situation).
+	 *
+	 * Finally we kept the granularity as it was, which is by far the most
+	 * relevant.
 	 *
 	 */
-	granularity *= 2 ;
-	
+		
 	 
 #if CEYLAN_DEBUG_SYSTEM
 	LogPlug::debug( "Final returned scheduling granularity is "
