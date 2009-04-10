@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: Ceylan
+Description: A general-purpose C++ library
+Version: @CEYLAN_VERSION@
+Requires:
+Libs: -L${libdir} @CEYLAN_RPATH_LD_FLAGS@ -lCeylan -lm @LIBS@
+Cflags: -I${includedir}/Ceylan
