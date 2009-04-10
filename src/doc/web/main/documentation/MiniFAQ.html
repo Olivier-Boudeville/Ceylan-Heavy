@@ -5,8 +5,8 @@
 -->
 
 <!--    
-        Creation date : 2004, October 1.
-        Author : Olivier Boudeville (olivier.boudeville@online.fr)
+        Creation date: 2004, October 1.
+        Author: Olivier Boudeville (olivier.boudeville@online.fr)
 -->
 
 <html lang="EN">
@@ -44,7 +44,7 @@
 
 -->
 
-<dt>What is Ceylan ?</dt>
+<dt>What is Ceylan?</dt>
 
 <dd>
 <p>Ceylan is a <b>C++ open-source (LGPL/GPL) library</b> which provides basic core functionalities, listed below, and a set of optional features. 
@@ -57,7 +57,7 @@ Services integrated in the Ceylan library are the ones that should be useful to 
 </dd>
 
 
-<dt>What is its goal ?</dt>
+<dt>What is its goal?</dt>
 
 <dd>
 
@@ -71,7 +71,7 @@ Services integrated in the Ceylan library are the ones that should be useful to 
 </dd>
 
 
-<dt>What is the current state of Ceylan development ?</dt>
+<dt>What is the current state of Ceylan development?</dt>
 
 <dd>
 
@@ -85,10 +85,10 @@ Ceylan has been existing since the end of 2003, and was seldom under heavy devel
 <dd>
 
 
-<dt>What are the major core services that are provided by Ceylan ?</dt>
+<dt>What are the major core services that are provided by Ceylan?</dt>
 
 <dd>
-These core services are available in all Ceylan-supported platforms :
+These core services are available in all Ceylan-supported platforms:
 
 <ul>
 
@@ -115,23 +115,23 @@ These core services are available in all Ceylan-supported platforms :
 	<li><b>source/listener pattern</b> implemented (see <code>Ceylan::EventSource, Ceylan::EventListener and their callable counterpart</code>)
 	</li>
 	
-	<li>full <b>MVC</b> (Model-View-Controller) pattern, implemented using source/listener, with various flavours such as event notifications being either synchronous or not (see <code>Ceylan::Model, Ceylan::View, Ceylan::Controller, Ceylan::InputDevice</code>)
+	<li>full <b>MVC</b> (Model-View-Controller) framework, implemented using source/listener, with various flavours such as event notifications being either synchronous or not (see <code>Ceylan::Model, Ceylan::View, Ceylan::Controller, Ceylan::InputDevice</code>); an alternative lightweight template-based framework has been added
 	</li>
 	
-	<li><b>maths</b> services, including :
+	<li><b>maths</b> services, including:
 	
 		<ul>
 		
 			<li>basic <b>constants</b> (e, pi, sqrt(2), etc.) defined in various bases and with various precomputed versions (1/sqrt(2), pi/4, etc.), various epsilons defined for different floating-point datatypes (<code>see Ceylan::MathsBasic.h</code>)
 			</li>
 			
-			<li>numerous <b>basic operations</b> : nullity and comparisons for floating point values, floor, ceil, round, abs, min, max, exp, pow, etc.; trigonometric operations, conversions, etc. (<code>see Ceylan::MathsBasic.h</code>)
+			<li>numerous <b>basic operations</b>: nullity and comparisons for floating point values, floor, ceil, round, abs, min, max, exp, pow, etc.; trigonometric operations, conversions, etc. (<code>see Ceylan::MathsBasic.h</code>)
 			</li> 
 			
-			<li><b>linear algebra</b> : point, vector and matrices (2D,3D), classical and homogeneous, endormorphisms and related operations (comatrix, trace, determinant, adjoint, identity, diagonal, cofactor, projection, rotation, translation, automatic creation from endomorphism, etc.) with dedicated operators defined (with scalar, vector or matrices : equality, add, substract, multiply, transpose, inverse, dot-product, cross-product, magnitude, normalization, etc.). See : <code>Ceylan::Maths::Linear classes</code>
+			<li><b>linear algebra</b>: point, vector and matrices (2D,3D), classical and homogeneous, endormorphisms and related operations (comatrix, trace, determinant, adjoint, identity, diagonal, cofactor, projection, rotation, translation, automatic creation from endomorphism, etc.) with dedicated operators defined (with scalar, vector or matrices: equality, add, substract, multiply, transpose, inverse, dot-product, cross-product, magnitude, normalization, etc.). See: <code>Ceylan::Maths::Linear classes</code>
 			</li>
 			
-			<li><b>random</b> support : white noise generator, generator from user-defined probability density function, gaussian (normal) distribution, etc. with time-based seeding and optional precomputation of random value set (see <code>Ceylan::Maths::Random classes</code>)
+			<li><b>random</b> support: white noise generator, generator from user-defined probability density function, gaussian (normal) distribution, etc. with time-based seeding and optional precomputation of random value set (see <code>Ceylan::Maths::Random classes</code>)
 			</li>
 			
 		</ul>	
@@ -149,14 +149,14 @@ These core services are available in all Ceylan-supported platforms :
 	<li>set of <b>generic interfaces</b>, such as Displayable, Loggable, Measurable, Clonable, Countable, Lockable, Hashable, etc.
 	</li>
 	
-	<li>encapsulations :
+	<li>encapsulations:
 		<ul>
 			<li><b>basic datatypes</b>, including numerical ones, integer or floating-point, signed or not, with various explicit and checked sizes and ranges, including Ceylan::Uint64 (see <code>CeylanTypes.h</code>)
 			</li>
 			
 			<li>exceptions (see <code>Ceylan::Exception</code>)</li>
 			
-			<li>version numbers :
+			<li>version numbers:
 				<ul>
 					<li>three number scheme (see <code>Ceylan::Version</code>)</li>
 					<li>Libtool scheme (see <code>Ceylan::LibtoolVersion</code>)</li>
@@ -179,9 +179,9 @@ These core services are available in all Ceylan-supported platforms :
 
 
 
-<dt>What are the major optional services ("features") that are provided by Ceylan ?</dt>
+<dt>What are the major optional services ("features") that are provided by Ceylan?</dt>
 
-<dd>Not all Ceylan-supported platforms support these specific features :
+<dd>Not all Ceylan-supported platforms support these specific features:
 <ul>
 
 	<li><b>regular expressions</b> (see <code>Ceylan::RegExp</code>) [GNU/Linux, FreeBSD, NetBSD only]
@@ -193,9 +193,9 @@ These core services are available in all Ceylan-supported platforms :
 </ul>	
 </dd>
 	
-<dt>What are the supported platforms ?</dt>
+<dt>What are the supported platforms?</dt>
 <dd>
-Ceylan has been ported and tested on following platforms :
+Ceylan has been ported and tested on following platforms:
 <ul>
 
 	<li><b>GNU/Linux</b> (various distributions) [with gcc4.x]
@@ -214,17 +214,17 @@ Not all features are available on all platforms. Ceylan runs both on 32-bit and 
 
 
 
-<dt>What is the current stable version ?</dt>
+<dt>What is the current stable version?</dt>
 <dd>See the latest Ceylan version <a href="../../Ceylan-latest/index.html" target="_blank">pages</a>.
 </dd>
 
 
-<dt>How stable is Ceylan ?</dt>
+<dt>How stable is Ceylan?</dt>
 <dd>
-We do our best to track bugs and to ensure quality by :
+We do our best to track bugs and to ensure quality by:
 <ul>
 
-	<li>writing safe code, with real C++ constructs (ex : C++ casts, assignment and copy operators private by default, etc.)
+	<li>writing safe code, with real C++ constructs (ex: C++ casts, assignment and copy operators private by default, etc.)
 	</li>
 	
 	<li>using an exception hierarchy with explicit throw statements in signatures
@@ -245,17 +245,12 @@ We do our best to track bugs and to ensure quality by :
 
 
 
-
-<br>
-<br>
-<br>
-<br>
   
-<h3>Please react !</h3>
+<h3>Please react!</h3>
 
 <p>If you have information more detailed or more recent than those
 presented in this document, if you noticed errors, neglects or points
-insufficiently discussed, or if you would like to contribute and help us, even a little bit, <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20Mini%20FAQ">drop us a line</a> !</p>
+insufficiently discussed, or if you would like to contribute and help us, even a little bit, <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20Mini%20FAQ">drop us a line</a>!</p>
 
 <br>
 <br>
@@ -266,7 +261,7 @@ insufficiently discussed, or if you would like to contribute and help us, even a
   [<a href="#_top_">Top</a>]
   <br>
   <br>
-  <em>Last update :Monday, October 22, 2007</em>
+  <em>Last update: Sunday, April 5, 2009</em>
 </center>
 
 </body>
