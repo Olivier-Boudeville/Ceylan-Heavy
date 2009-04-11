@@ -240,7 +240,7 @@ Note: check the following log:" test/config.log
 			
 			if [ "$1" = "aclocal" ]; then
 				echo "
-Hint: look at the --ceylan-install-prefix option, with a parameter that could be similar to $HOME/Projects/LOANI-x.y/LOANI-installations/Ceylan-p.q"
+Hint: forgot to use the -g option? One may also look at the --ceylan-install-prefix option, with a parameter that could be similar to $HOME/Projects/LOANI-x.y/LOANI-installations/Ceylan-p.q"
   			fi
 			
 		fi
