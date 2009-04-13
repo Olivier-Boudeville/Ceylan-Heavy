@@ -1,3 +1,13 @@
+% 
+% Copyright (C) 2003-2009 Olivier Boudeville
+%
+% This file is part of the WOOPER examples.
+%
+% It has been placed in the public domain.
+%
+% Author: Olivier Boudeville (olivier.boudeville@esperide.com)
+
+
 % Unit tests for the Reptile class implementation.
 % See the class_Reptile.erl tested module.
 

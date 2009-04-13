@@ -1,7 +1,7 @@
 % 
 % Copyright (C) 2003-2009 Olivier Boudeville
 %
-% This file is part of the Ceylan Erlang library.
+% This file is part of the WOOPER library.
 %
 % This library is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License or
@@ -25,22 +25,4 @@
 %
 % Author: Olivier Boudeville (olivier.boudeville@esperide.com)
 
-
-% Unit tests for the executable_utils toolbox.
-% See the executable_utils.erl tested module.
--module(executable_utils_test).
-
--export([run/0]).
-
--define(Tested_module,executable_utils).
-
-
-
-run() ->
-
-	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
-	
-		
-	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
-	erlang:halt().
 
