@@ -1,12 +1,8 @@
-#ifndef CEYLAN_H_
-#define CEYLAN_H_
-
-
 /*
  * This is the Ceylan library, a free portable high-level open-source 
  * general-purpose C++ library.
  *
- * Copyright (C) 2007-2009 Olivier Boudeville (olivier.boudeville@esperide.com).
+ * Copyright (C) 2003-2009 Olivier Boudeville (olivier.boudeville@esperide.com)
  *
  * The Ceylan library is released under a disjunctive bi-license LGPL/GPL
  * (choose the one that you prefer). 
@@ -14,7 +10,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License or the
  * GNU Lesser General Public License, as published by the Free Software
- * Foundation; either version 2.1 of the Licenses, or (at your option) 
+ * Foundation; either version 3 of the Licenses, or (at your option) 
  * any later version.
  *
  * This library is distributed in the hope that it will be useful,
@@ -23,8 +19,8 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * License and the GNU General Public License along with the Ceylan library.
+ * If not, see <http://www.gnu.org/licenses/>.
  * 
  * You can contact the author at olivier.boudeville@esperide.com
  *
@@ -32,6 +28,10 @@
  * http://ceylan.sourceforge.net
  *
  */
+
+
+#ifndef CEYLAN_H_
+#define CEYLAN_H_
 
 
 /**
