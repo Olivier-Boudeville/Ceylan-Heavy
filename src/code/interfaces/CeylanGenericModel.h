@@ -338,6 +338,11 @@ namespace Ceylan
 		 * This generic model is linked to exactly one view, and knowing it is
 		 * only useful to manage its lifecycle.
 		 *
+		 * Note that using the non-templated version SingleViewModel is enough
+		 * in most cases, as a model generally does not need to trigger 
+		 * methods on its view, whereas the contrary is true (a view requests
+		 * the model for its current state at rendering time).
+		 *
 		 * @see testCeylanGenericMVC.cc for examples.
 		 *
 		 */
