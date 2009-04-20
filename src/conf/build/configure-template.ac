@@ -38,7 +38,6 @@ AM_INIT_AUTOMAKE([tar-ustar])
 # CEYLAN_USES_CONFIG_H instead.
 AC_CONFIG_HEADERS([ST_CONFIG_HEADER],[],[])
 CPPFLAGS="-DCEYLAN_USES_CONFIG_H $CPPFLAGS"
-AC_SUBST(CPPFLAGS)
 
 
 # CeylanConfig.h will be the only config header to be installed.
@@ -1576,6 +1575,14 @@ CheckNonBlockingSockets()
 # Maybe later: use CXXCOMPILE/CXXLINK to customize build output.
 
 
+# See the developer guide to understand why C++ exception specifications
+# are evil (therefore CEYLAN_EXCEPTION_SPEC is not to be replaced by 'throw'):
+# Note: macro not used anymore, for the sake of readability.
+#CPPFLAGS="$CPPFLAGS -D'CEYLAN_EXCEPTION_SPEC(E)=' -D'CEYLAN_EXCEPTIONS_SPEC(E1,E2)='"
+
+AC_SUBST(CPPFLAGS)
+
+
 
 # Make general checks:
 
@@ -1584,6 +1591,7 @@ CheckPlatform
 CheckRpath
 CheckEndianness
 CheckNonBlockingSockets
+
 
 # Enable/disable various features of the Ceylan library:
 
@@ -1602,6 +1610,8 @@ CheckFileLockFeature
 CheckAdvancedProcessManagementFeature
 CheckPluginFeature
 CheckSignalFeature
+
+
 
 
 AC_SUBST(SYSTEM_LIBS)
