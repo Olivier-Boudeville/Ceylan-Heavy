@@ -43,7 +43,6 @@ TextDisplayable::TextOutputFormat TextDisplayable::_OutputFormat = rawText ;
 
 const std::string TextDisplayable::ToString( 
 		list<TextDisplayable*> displayables, Ceylan::VerbosityLevels level ) 
-	throw()
 {
 
 	string res = "Description of TextDisplayable list is : " ;
@@ -59,22 +58,30 @@ const std::string TextDisplayable::ToString(
 }
 
 
-TextDisplayable::TextOutputFormat TextDisplayable::GetOutputFormat() throw()
+
+TextDisplayable::TextOutputFormat TextDisplayable::GetOutputFormat()
 {
+
 	return _OutputFormat ;
+	
 }
+
 
 
 void TextDisplayable::SetOutputFormat( TextOutputFormat newOutputFormat )
-	throw()
 {
+
 	_OutputFormat = newOutputFormat ;
+	
 }
 
 
+
 std::ostream & operator << ( std::ostream & os, 
-	const Ceylan::TextDisplayable & textDisplayable ) throw() 
+	const Ceylan::TextDisplayable & textDisplayable )
 {
+
     return os << textDisplayable.toString( high ) ;
+	
 }
 	
