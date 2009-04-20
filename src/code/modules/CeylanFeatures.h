@@ -70,7 +70,8 @@ namespace Ceylan
 			public:
 		
 				explicit FeatureNotAvailableException( 
-					const std::string & message ) throw() ;
+					const std::string & message ) ;
+					
 				virtual ~FeatureNotAvailableException() throw() ;
 	
 		} ;
@@ -205,39 +206,39 @@ namespace Ceylan
 		 * features is not supported.
 		 *
 		 */
-		CEYLAN_DLL void checkForSupportedFeatures( Ceylan::Flags featuresFlag ) 
-			throw( FeatureNotAvailableException ) ;
+		CEYLAN_DLL void checkForSupportedFeatures( 
+			Ceylan::Flags featuresFlag ) ;
 	
 	
 		/// Tells whether regular expressions are supported.
-		CEYLAN_DLL bool areRegularExpressionsSupported() throw() ;
+		CEYLAN_DLL bool areRegularExpressionsSupported() ;
 	
 		/// Tells whether multithreading is supported.
-		CEYLAN_DLL bool isMultithreadingSupported() throw() ;
+		CEYLAN_DLL bool isMultithreadingSupported() ;
 	
 		/// Tells whether network operations are supported.
-		CEYLAN_DLL bool isNetworkingSupported() throw() ;
+		CEYLAN_DLL bool isNetworkingSupported() ;
 	
 		/// Tells whether file descriptors are supported.
-		CEYLAN_DLL bool areFileDescriptorsSupported() throw() ;
+		CEYLAN_DLL bool areFileDescriptorsSupported() ;
 	
 		/// Tells whether symbolic links are supported.
-		CEYLAN_DLL bool areSymbolicLinksSupported() throw() ;
+		CEYLAN_DLL bool areSymbolicLinksSupported() ;
 	
 		/// Tells whether advanced file attributes are supported.
-		CEYLAN_DLL bool areAdvancedFileAttributesSupported() throw() ;
+		CEYLAN_DLL bool areAdvancedFileAttributesSupported() ;
 	
 		/// Tells whether file locks are supported.
-		CEYLAN_DLL bool areFileLocksSupported() throw() ;
+		CEYLAN_DLL bool areFileLocksSupported() ;
 		
 		/// Tells whether advanced process management is supported.
-		CEYLAN_DLL bool isAdvancedProcessManagementSupported() throw() ;
+		CEYLAN_DLL bool isAdvancedProcessManagementSupported() ;
 	
 		/// Tells whether plugins are supported.
-		CEYLAN_DLL bool arePluginsSupported() throw() ;
+		CEYLAN_DLL bool arePluginsSupported() ;
 	
 		/// Tells whether signals are supported.
-		CEYLAN_DLL bool areSignalsSupported() throw() ;
+		CEYLAN_DLL bool areSignalsSupported() ;
 	
 	
 		/**
@@ -245,7 +246,7 @@ namespace Ceylan
 		 * with the Ceylan version currently linked.
 		 *
 		 */
-		CEYLAN_DLL const std::string describeAvailableFeatures() throw() ;
+		CEYLAN_DLL const std::string describeAvailableFeatures() ;
 		
 		
  	}
