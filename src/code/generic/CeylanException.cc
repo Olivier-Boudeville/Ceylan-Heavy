@@ -32,11 +32,12 @@ using namespace Ceylan ;
 
 
 
-Exception::Exception( const string & reason ) throw() :
+Exception::Exception( const string & reason )  :
 	_reason( reason )
 {
     
 }
+
 
 
 Exception::~Exception() throw()
@@ -45,20 +46,31 @@ Exception::~Exception() throw()
 }
 
 
-const string Exception::toString( VerbosityLevels level ) const throw()
+
+const string Exception::toString( VerbosityLevels level ) const
+	
 {
+
     return ( _reason ) ;
+	
 }
+
 
 
 const char * Exception::what() const throw()
 {
+
 	return toString( Ceylan::high ).c_str() ;
+	
 }
 
 
-std::ostream & operator << ( std::ostream & os, const Exception & e ) throw()
+
+std::ostream & operator << ( std::ostream & os, const Exception & e )
+	
 {
+
     return os << e.toString( Ceylan::high ) ;
+	
 }
 
