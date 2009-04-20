@@ -61,14 +61,14 @@ namespace Ceylan
 
 
 			/// Do-nothing constructor.
-			Displayable() throw()
+			Displayable()
 			{
 			
 			}
 			
 			
 			/// Do-nothing virtual destructor.
-			virtual ~Displayable() throw()
+			virtual ~Displayable()
 			{
 			
 			}
