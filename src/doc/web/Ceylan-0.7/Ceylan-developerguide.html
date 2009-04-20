@@ -49,6 +49,34 @@ Not depending on the build platform (i.e. the platform on which the build toolch
 </p>
 
 
+<h4>Exception Specifications</h4>
+
+<p>
+<b>Never use exception specifications</b> anymore, and try to remove the ones still existing whenever applicable, i.e. almost everywhere except from some virtual destructors, like the ones inherited from <code>std::exception</code>.
+</p>
+
+<p>
+The reason for that choice comes from the fact that C++ exception handling is an epic failure, see <a href="http://www.gotw.ca/publications/mill22.htm" target="_blank">1</a>, <a href="http://www.linuxprogrammingblog.com/cpp-exception-specifications-are-evil" target="_blank">2</a> for more explanations.
+</p>
+
+<p>
+Previous recommendation was to replace all the explicit specifications whenever possible with our exception specification macro <code>CEYLAN_EXCEPTION_SPEC</code>, which was translated into an empty string (the macro was used so that this information would not be lost and could be reverted).
+</p>
+
+<p>
+For example, a declaration like <code>void f() throw(MyExceptionType)</code> would have become <code>void f() CEYLAN_EXCEPTION_SPEC(MyExceptionType)</code>. 
+</p>
+
+<p>
+For the sake of readability, we prefer now getting rid both of the <code>throw(XXX)</code> specifications and of <code>CEYLAN_EXCEPTION_SPEC</code>.
+</p>
+
+<p>
+The exceptions that can be thrown should only be documented in the function/method comments, with the <code>@throw</code> clause. Note that if no <code>@throw</code> clause is specified, then it means no exception at all is to be thrown.
+</p>
+
+
+
 <h3>When building from any non-Windows platform (i.e. UNIX)</h3>
 
 <p>
@@ -238,6 +266,7 @@ be installed to select them but may clash with others, and so on. This implies u
 	
 	<li>to better understand <b>Locatable referentials</b>, see: <code>test/interface/testCeylanLocatable.cc</code></li>
 	
+
 </ol>
 </p>
 
@@ -379,10 +408,7 @@ rsync -av ceylan.svn.sourceforge.net::svn/ceylan/* .
 
 </p>
 
-  <br>
-  <br>
-  <br>
-
+ 
   <h3>Please react!</h3>
 
   <p>If you have information more detailed or more recent than those
@@ -396,7 +422,7 @@ rsync -av ceylan.svn.sourceforge.net::svn/ceylan/* .
       <center>
         [<a href="#_top_">Top</a>]<br>
         <br>
-        <em>Last update: Saturday, April 4, 2009</em>
+        <em>Last update: Sunday, April 19, 2009</em>
       </center>
   
 </body>
