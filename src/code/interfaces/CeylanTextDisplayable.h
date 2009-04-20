@@ -64,14 +64,14 @@ namespace Ceylan
 
 
 			/// Do-nothing constructor.
-			TextDisplayable() throw()
+			TextDisplayable()
 			{
 			
 			}
 			
 			
 			/// Do-nothing virtual destructor.
-			virtual ~TextDisplayable() throw()
+			virtual ~TextDisplayable()
 			{
 			
 			}
@@ -88,7 +88,7 @@ namespace Ceylan
              *
              */
             virtual const std::string toString( Ceylan::VerbosityLevels level 
-				= Ceylan::high ) const throw() = 0 ;
+				= Ceylan::high ) const = 0 ;
 
 
 
@@ -111,7 +111,7 @@ namespace Ceylan
              */			
 			static const std::string ToString( 
 				std::list<TextDisplayable*> displayables,
-				Ceylan::VerbosityLevels level = Ceylan::high ) throw() ;
+				Ceylan::VerbosityLevels level = Ceylan::high ) ;
 				
 			
 			/**
@@ -127,7 +127,7 @@ namespace Ceylan
 			 * TextDisplayable instances.
 			 *
 			 */		
-			static TextOutputFormat GetOutputFormat() throw() ;
+			static TextOutputFormat GetOutputFormat() ;
 			
 			
 			/**
@@ -137,8 +137,7 @@ namespace Ceylan
 			 * @param newOutputFormat the new output format.
 			 *
 			 */
-			static void SetOutputFormat( TextOutputFormat newOutputFormat )
-				throw() ; 
+			static void SetOutputFormat( TextOutputFormat newOutputFormat ) ; 
 			
 			
 			
@@ -163,7 +162,7 @@ namespace Ceylan
 			 * Copy constructor cannot be private since needed in some cases
 			 * (ex: Vector instances).
 			 *
-			 * TextDisplayable( const TextDisplayable & source ) throw() ;
+			 * TextDisplayable( const TextDisplayable & source ) ;
 			 *
 			 */			 
 			
@@ -173,7 +172,7 @@ namespace Ceylan
 			 * in some cases (ex: Vector instances).
 			 *
 			 * TextDisplayable & operator = ( const TextDisplayable & source )
-			 * throw() ;
+			 * ;
 	    	 *
 			 */
 			 
@@ -193,7 +192,7 @@ namespace Ceylan
  * 
  */
 std::ostream & operator << ( std::ostream & os, 
-	const Ceylan::TextDisplayable & textDisplayable ) throw() ;
+	const Ceylan::TextDisplayable & textDisplayable ) ;
 	
 
 
