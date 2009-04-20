@@ -59,7 +59,7 @@ using namespace Ceylan::System ;
 
 
 DirectoryDelegatingException::DirectoryDelegatingException( 
-		const string & reason ) throw():
+		const string & reason ) :
 	DirectoryException( reason )
 {
 
@@ -76,7 +76,6 @@ DirectoryDelegatingException::DirectoryDelegatingException(
 
 
 bool Directory::Exists( const string & directoryPath ) 
-	throw( DirectoryException )
 {
 
 	// Let DirectoryLookupFailed and DirectoryDelegatingException propagate:
@@ -86,8 +85,8 @@ bool Directory::Exists( const string & directoryPath )
 }
 
 
+
 void Directory::Remove( const string & directoryPath, bool recursive ) 
-	throw( DirectoryException )
 {
 
 	// Let DirectoryRemoveFailed and DirectoryDelegatingException propagate:
@@ -97,8 +96,9 @@ void Directory::Remove( const string & directoryPath, bool recursive )
 }
 
 
+
 void Directory::Move( const string & sourceDirectoryname,
-	const string & targetDirectoryname ) throw( DirectoryException )
+	const string & targetDirectoryname )
 {
 
 	// Let DirectoryMoveFailed and DirectoryDelegatingException propagate:
@@ -108,8 +108,9 @@ void Directory::Move( const string & sourceDirectoryname,
 }	
 
 
+
 void Directory::Copy( const std::string & sourceDirectoryname,
-	const std::string & targetDirectoryname ) throw( DirectoryException )
+	const std::string & targetDirectoryname )
 {
 
 	// Let DirectoryCopyFailed and DirectoryDelegatingException propagate:
@@ -118,9 +119,9 @@ void Directory::Copy( const std::string & sourceDirectoryname,
 
 }	
 	
+	
 
 time_t Directory::GetLastChangeTime( const std::string & directoryPath ) 
-	throw( DirectoryException )
 {
 
 	/*
@@ -133,9 +134,9 @@ time_t Directory::GetLastChangeTime( const std::string & directoryPath )
 
 }	
 	
+	
 																
 bool Directory::IsAValidDirectoryPath( const string & directoryString ) 
-	throw( DirectoryException )
 {
 
 	// Let DirectoryDelegatingException propagate:
@@ -145,8 +146,9 @@ bool Directory::IsAValidDirectoryPath( const string & directoryString )
 }
 
 	
+	
 void Directory::RemoveLeadingSeparator( std::string & path ) 
-	throw( DirectoryException )
+
 {
 
 	// Let DirectoryDelegatingException propagate:
@@ -155,8 +157,8 @@ void Directory::RemoveLeadingSeparator( std::string & path )
 }
 					
 	
+	
 bool Directory::IsAbsolutePath( const string & path ) 
-	throw( DirectoryException )
 {
 
 	// Let DirectoryDelegatingException propagate:
@@ -165,7 +167,8 @@ bool Directory::IsAbsolutePath( const string & path )
 }
 
 
-string Directory::GetCurrentWorkingDirectoryPath() throw( DirectoryException )
+
+string Directory::GetCurrentWorkingDirectoryPath()
 {
 
 	// Let DirectoryGetCurrentFailed and DirectoryDelegatingException propagate:
@@ -175,8 +178,8 @@ string Directory::GetCurrentWorkingDirectoryPath() throw( DirectoryException )
 }
 
 
+
 void Directory::ChangeWorkingDirectory( const string & newWorkingDirectory )
-	throw( DirectoryException )
 {
 
 	// Let DirectoryChangeFailed and DirectoryDelegatingException propagate:
@@ -188,7 +191,6 @@ void Directory::ChangeWorkingDirectory( const string & newWorkingDirectory )
 
 
 list<string> Directory::SplitPath( const string & path ) 
-	throw( DirectoryException )
 {
 
 	// Let DirectoryDelegatingException propagate:
@@ -197,8 +199,8 @@ list<string> Directory::SplitPath( const string & path )
 }
 
 
+
 string Directory::JoinPath( const list<string> & pathElements ) 
-	throw( DirectoryException )
 {
 
 	// Let DirectoryDelegatingException propagate:
@@ -207,8 +209,9 @@ string Directory::JoinPath( const list<string> & pathElements )
 }
 
 
+
 string Directory::JoinPath( const string & firstPath, 
-	const std::string & secondPath ) throw( DirectoryException )
+	const std::string & secondPath )
 {
 
 	// Let DirectoryDelegatingException propagate:
@@ -218,8 +221,9 @@ string Directory::JoinPath( const string & firstPath,
 }
 
 
+
 void Directory::StripFilename( const string & path, string * base, 
-	string * file ) throw( DirectoryException )
+	string * file )
 {
 
 	// Let DirectoryDelegatingException propagate:
@@ -229,7 +233,8 @@ void Directory::StripFilename( const string & path, string * base,
 }
 
 
-Ceylan::Latin1Char Directory::GetSeparator() throw( DirectoryException )
+
+Ceylan::Latin1Char Directory::GetSeparator()
 {
 
 	// Let DirectoryDelegatingException propagate:
@@ -238,13 +243,15 @@ Ceylan::Latin1Char Directory::GetSeparator() throw( DirectoryException )
 }
 
 
-string Directory::GetSeparatorAsString() throw( DirectoryException )
+
+string Directory::GetSeparatorAsString()
 {
 
 	// Let DirectoryDelegatingException propagate:
 	return Ceylan::toString( GetSeparator() ) ;
 
 }
+
 
 
 
@@ -255,7 +262,6 @@ string Directory::GetSeparatorAsString() throw( DirectoryException )
 
 
 Directory & Directory::Create( const string & newDirectoryName ) 
-	throw( DirectoryException )
 {
 
 	return GetCorrespondingFileSystemManager().createDirectory( 
@@ -266,7 +272,6 @@ Directory & Directory::Create( const string & newDirectoryName )
 	
 					
 Directory & Directory::Open( const string & directoryName ) 
-	throw( DirectoryException )
 {
 
 	return GetCorrespondingFileSystemManager().openDirectory( 
@@ -297,7 +302,6 @@ Directory::~Directory() throw()
 
 
 void Directory::goDown( const string & subdirectoryName ) 
-	throw( DirectoryChangeFailed )
 {
 
 	 
@@ -352,7 +356,8 @@ void Directory::goDown( const string & subdirectoryName )
 }
 
 
-bool Directory::isValid() const throw( DirectoryException )
+
+bool Directory::isValid() const
 {
 
 	/*
@@ -365,7 +370,8 @@ bool Directory::isValid() const throw( DirectoryException )
 }
 
 
-const std::string & Directory::getPath() const throw()
+
+const std::string & Directory::getPath() const
 {
 
 	return _path ;
@@ -373,7 +379,8 @@ const std::string & Directory::getPath() const throw()
 }
 
 
-void Directory::removeLeadingSeparator() throw( DirectoryException )
+
+void Directory::removeLeadingSeparator()
 {
 	
 	/*
@@ -386,7 +393,8 @@ void Directory::removeLeadingSeparator() throw( DirectoryException )
 }
 
 
-const string Directory::toString( Ceylan::VerbosityLevels level ) const throw()
+
+const string Directory::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	return "Abstract directory referring to path '" + _path + "'" ;
@@ -403,8 +411,7 @@ const string Directory::toString( Ceylan::VerbosityLevels level ) const throw()
 // Protected section.
 
 
-Directory::Directory( const string & directoryName ) 
-		throw( DirectoryException ):
+Directory::Directory( const string & directoryName ) :
 	_path( directoryName )
 {
 
@@ -421,7 +428,7 @@ Directory::Directory( const string & directoryName )
 
 
 FileSystemManager & Directory::GetCorrespondingFileSystemManager()
-	throw( DirectoryDelegatingException )
+
 {
 
 	/*

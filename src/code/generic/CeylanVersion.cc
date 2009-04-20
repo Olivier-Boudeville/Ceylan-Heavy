@@ -40,7 +40,7 @@ using namespace Ceylan ;
 
 
 
-VersionException::VersionException( const std::string & message ) throw():
+VersionException::VersionException( const std::string & message ):
 	Ceylan::Exception( message )
 {
 
@@ -56,7 +56,7 @@ VersionException::~VersionException() throw()
 
 
 Version::Version( VersionNumber major, VersionNumber minor, 
-		VersionNumber release ) throw():
+		VersionNumber release ):
 	_major( major ),
 	_minor( minor ),
 	_release( release )
@@ -65,7 +65,8 @@ Version::Version( VersionNumber major, VersionNumber minor,
 }
 
 
-Version::Version( const std::string & versionText ) throw( VersionException )
+
+Version::Version( const std::string & versionText )
 {
 
 	std::list<string> numbers = Ceylan::split( versionText, '.' ) ;
@@ -127,46 +128,49 @@ Version::~Version() throw()
 
 
 
-Version::VersionNumber Version::getMajorNumber() const throw()
+Version::VersionNumber Version::getMajorNumber() const
 {
 	return _major ;
 }
 
 
-void Version::setMajorNumber( VersionNumber newNumber ) throw()
+
+void Version::setMajorNumber( VersionNumber newNumber )
 {
 	_major = newNumber ;
 }
 
 
 
-Version::VersionNumber Version::getMinorNumber() const throw()
+Version::VersionNumber Version::getMinorNumber() const
 {
 	return _minor ;
 }
 
 
-void Version::setMinorNumber( VersionNumber newNumber ) throw()
+
+void Version::setMinorNumber( VersionNumber newNumber )
 {
 	_minor = newNumber ;
 }
 
 
 
-Version::VersionNumber Version::getReleaseNumber() const throw()
+Version::VersionNumber Version::getReleaseNumber() const
 {
 	return _release ;
 }
 
 
-void Version::setReleaseNumber( VersionNumber newNumber ) throw()
+
+void Version::setReleaseNumber( VersionNumber newNumber )
 {
 	_release = newNumber ;
 }
 
 
+
 bool Version::isCompatibleWith( const Version & expectedVersion ) const 
-	throw( VersionException )
 {
  
 	return ( *this == expectedVersion ) ;
@@ -174,13 +178,15 @@ bool Version::isCompatibleWith( const Version & expectedVersion ) const
 }
 
 
-bool Version::canBeComparedWith( const Version & version ) const throw()
+
+bool Version::canBeComparedWith( const Version & version ) const
 {	
 	return ( version.isUsualVersionSchemeCompliant() ) ;
 }
 
 
-const string Version::toString( VerbosityLevels level ) const throw()
+
+const string Version::toString( VerbosityLevels level ) const
 {
 
 	string rawVersion = Ceylan::toNumericalString( _major ) + "." 
@@ -201,7 +207,8 @@ const string Version::toString( VerbosityLevels level ) const throw()
 }
 
 
-bool Version::isUsualVersionSchemeCompliant() const throw()
+
+bool Version::isUsualVersionSchemeCompliant() const
 {
 	return true ;
 }
@@ -236,6 +243,7 @@ bool operator < ( const Ceylan::Version & vFirst,
 	return false ;
 		
 }
+
 
 
 bool operator == ( const Ceylan::Version & vFirst, 

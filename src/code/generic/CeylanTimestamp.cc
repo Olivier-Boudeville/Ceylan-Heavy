@@ -56,7 +56,7 @@ using namespace Ceylan::System ;
 
 
 
-Timestamp::Timestamp() throw( UtilsException )
+Timestamp::Timestamp()
 {
 
 
@@ -171,7 +171,7 @@ Timestamp::~Timestamp() throw()
 
 
 
-const string Timestamp::toString( Ceylan::VerbosityLevels level ) const throw()
+const string Timestamp::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string result = '[' 
@@ -196,7 +196,7 @@ const string Timestamp::toString( Ceylan::VerbosityLevels level ) const throw()
 
 
 
-string Timestamp::DescribeDuration( Second duration ) throw()
+string Timestamp::DescribeDuration( Second duration )
 {
 
 	
@@ -293,12 +293,12 @@ string Timestamp::DescribeDuration( Second duration ) throw()
 
 
 
-bool Timestamp::operator < (Timestamp & second ) throw() 
+bool Timestamp::operator < (Timestamp & second ) 
 {
 
 	/*
 	 * Note that reverse comparisons (>) have to be done, otherwise
-	 * 8:13:00 < 8:12:59 for example !
+	 * 8:13:00 < 8:12:59 for example!
 	 *
 	 */
 	if ( _year < second._year )

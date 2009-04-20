@@ -48,13 +48,14 @@ namespace Ceylan
 	 * computer.
 	 *	
 	 * @note On a distributed system, one should check that clocks are, at 
-	 * least roughly (ex: thanks to NTP), in synch.
+	 * least roughly (ex: thanks to NTP), in synch or, preferably, rely on
+	 * an algorithm that can recreate an appropriate abstract overall time.
 	 *
 	 * @note To understand numerical conventions behind the time units, one can
 	 * have a look to UNIX 'ctime' manual, for example.
 	 *
 	 * @note The granularity (accuracy) of this timestamp implementation is 
-	 * one second, hence two timestamps may be exactly equal whereas they
+	 * only one second, hence two timestamps may be exactly equal whereas they
 	 * were not created at the same time.
 	 *
 	 * @see CeylanSystem.h for precise time measurement and fine-grained
@@ -75,7 +76,7 @@ namespace Ceylan
 			 * @throw UtilsException if the time could not be obtained.
 			 *
 			 */
-			Timestamp() throw( UtilsException ) ;
+			Timestamp() ;
 			
 			
 			/// Basic virtual destructor.
@@ -100,7 +101,7 @@ namespace Ceylan
 		     *
 		     */
 		    virtual const std::string toString( 
-				Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
+				Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 	
 	
 			/**
@@ -114,7 +115,7 @@ namespace Ceylan
 			 *
 			 */
 			static std::string DescribeDuration( 
-				Ceylan::System::Second duration ) throw() ;
+				Ceylan::System::Second duration ) ;
 			
 	
 			/**
@@ -122,7 +123,7 @@ namespace Ceylan
 			 * inferior to the one of second Timestamp.
 			 *
 			 */
-			bool operator < ( Timestamp & second ) throw() ;
+			bool operator < ( Timestamp & second ) ;
 
 			
 			/// Years are coded as pure numerical value, starting from 0 AC.
@@ -187,7 +188,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			Timestamp( const Timestamp & source ) throw() ;
+			Timestamp( const Timestamp & source ) ;
 			
 			
 			/**
@@ -197,7 +198,7 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			Timestamp & operator = ( const Timestamp & source ) throw() ;
+			Timestamp & operator = ( const Timestamp & source ) ;
 		
 			
 	} ;

@@ -46,7 +46,7 @@ namespace Ceylan
 	
 		public:
 		
-			VersionException( const std::string & message ) throw() ;
+			VersionException( const std::string & message ) ;
 			virtual ~VersionException() throw() ;
 	
 	} ;
@@ -54,7 +54,7 @@ namespace Ceylan
 
 
     /**
-     * Describes a version, with respect to the form :
+     * Describes a version, with respect to the form:
 	 * (major version).(minor version).(release or patch version)
 	 *
 	 * @see CeylanUtils.h for an actual use of this version facility, including 
@@ -87,7 +87,7 @@ namespace Ceylan
 			 *
              */
             explicit Version( VersionNumber major = 0, VersionNumber minor = 0, 
-				VersionNumber release = 0 ) throw() ;
+				VersionNumber release = 0 ) ;
 
 
             /**
@@ -96,14 +96,13 @@ namespace Ceylan
 			 * or null integers.
              *
              * @param versionText a string describing the version, 
-			 * ex : "1.15.216"
+			 * ex: "1.15.216"
 			 *
 			 * @throw VersionException if the string could not be transformed
 			 * into a valid version.
 			 *
              */
-            explicit Version( const std::string & versionText ) 
-				throw( VersionException ) ;
+            explicit Version( const std::string & versionText ) ;
 
 
 
@@ -113,18 +112,18 @@ namespace Ceylan
 
 
 			/// Returns the major number of this version identifier.
-			virtual VersionNumber getMajorNumber() const throw() ;
+			virtual VersionNumber getMajorNumber() const ;
 			
 			/// Sets the major number of this version identifier.
-			virtual void setMajorNumber( VersionNumber newNumber ) throw() ;
+			virtual void setMajorNumber( VersionNumber newNumber ) ;
 			
 			
 			
 			/// Returns the minor number of this version identifier.
-			virtual VersionNumber getMinorNumber() const throw() ;
+			virtual VersionNumber getMinorNumber() const ;
 			
 			/// Sets the minor number of this version identifier.
-			virtual void setMinorNumber( VersionNumber newNumber ) throw() ;
+			virtual void setMinorNumber( VersionNumber newNumber ) ;
 			
 			
 			
@@ -133,14 +132,14 @@ namespace Ceylan
 			 * identifier.
 			 *
 			 */
-			virtual VersionNumber getReleaseNumber() const throw() ;
+			virtual VersionNumber getReleaseNumber() const ;
 			
 			/**
 			 * Sets the release number (or patch number) of this version
 			 * identifier.
 			 *
 			 */
-			virtual void setReleaseNumber( VersionNumber newNumber ) throw() ;
+			virtual void setReleaseNumber( VersionNumber newNumber ) ;
 			
 			
 			/**
@@ -162,12 +161,12 @@ namespace Ceylan
 			 *
 			 * @throw VersionException if the comparison of the two versions 
 			 * cannot be done, for example in the case where they belong to
-			 * incompatible version schemes : this would be a meaningless
+			 * incompatible version schemes: this would be a meaningless
 			 * operation.
 			 *
 			 */
 			virtual bool isCompatibleWith( const Version & expectedVersion )
-				const throw( VersionException ) ;
+				const ;
 			
 
 			/**
@@ -181,7 +180,7 @@ namespace Ceylan
 			 *
 			 */
 			virtual bool canBeComparedWith( const Version & version )
-				const throw() ;
+				const ;
 			
 			
             /**
@@ -195,7 +194,7 @@ namespace Ceylan
              *
              */
             virtual const std::string toString( VerbosityLevels level = high )
-				const throw() ;
+				const ;
 
 
 
@@ -212,7 +211,7 @@ namespace Ceylan
 			 * versions, since their meaning differ.
 			 *
 			 */ 
-			virtual bool isUsualVersionSchemeCompliant() const throw() ;
+			virtual bool isUsualVersionSchemeCompliant() const ;
 			
 			
 
@@ -243,7 +242,7 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */
-			Version( const Version & source ) throw() ;
+			Version( const Version & source ) ;
 			
 			
 			/**
@@ -253,7 +252,7 @@ namespace Ceylan
 			 * called, implicitly or not.
 			 * 
 			 */			 
-			Version & operator = ( const Version & source ) throw() ;
+			Version & operator = ( const Version & source ) ;
 
 
     } ;
@@ -290,3 +289,4 @@ CEYLAN_DLL bool operator == ( const Ceylan::Version & vFirst,
 
 
 #endif // CEYLAN_VERSION_H_
+

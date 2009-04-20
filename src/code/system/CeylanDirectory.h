@@ -67,7 +67,7 @@ namespace Ceylan
 			public: 
 			
 				explicit DirectoryDelegatingException( 
-					const std::string & reason ) throw() ; 
+					const std::string & reason ) ; 
 					
 		} ;
 		
@@ -139,8 +139,7 @@ namespace Ceylan
 				 * filesystem manager not be retrieved as expected. 
 				 *
 				 */
-				static bool Exists( const std::string & directoryPath ) 
-					throw( DirectoryException ) ;
+				static bool Exists( const std::string & directoryPath ) ;
 				
 
 				/**
@@ -161,7 +160,7 @@ namespace Ceylan
 				 *
 				 */
 				static void Remove( const std::string & directoryPath, 
-					bool recursive = false ) throw( DirectoryException ) ;
+					bool recursive = false ) ;
 				
 				
 				/**
@@ -181,8 +180,7 @@ namespace Ceylan
 				 *
 				 */
 				static void Move( const std::string & sourceDirectoryname,
-						const std::string & targetDirectoryname ) 
-					throw( DirectoryException ) ;
+						const std::string & targetDirectoryname ) ;
 				
 				
 				/**
@@ -200,8 +198,7 @@ namespace Ceylan
 				 *
 				 */
 				static void Copy( const std::string & sourceDirectoryname,
-						const std::string & targetDirectoryname ) 
-					throw( DirectoryException ) ;
+						const std::string & targetDirectoryname ) ;
 
 
 				/**
@@ -217,8 +214,7 @@ namespace Ceylan
 				 *
 				 */
 				static time_t GetLastChangeTime( 
-						const std::string & directoryPath ) 
-					throw( DirectoryException ) ;
+						const std::string & directoryPath ) ;
 
 
 				/**
@@ -237,8 +233,7 @@ namespace Ceylan
 				 *
 				 */
 				static bool IsAValidDirectoryPath( 
-						const std::string & directoryString ) 
-					throw( DirectoryException ) ;
+						const std::string & directoryString ) ;
 
 
 				/**
@@ -254,8 +249,7 @@ namespace Ceylan
 				 * manager not be retrieved as expected. 
 				 *
 				 */
-				static void RemoveLeadingSeparator( std::string & path ) 
-					throw( DirectoryException ) ;
+				static void RemoveLeadingSeparator( std::string & path ) ;
 
 			
 				/**
@@ -270,8 +264,7 @@ namespace Ceylan
 				 * manager not be retrieved as expected. 
 				 *
 				 */
-				static bool IsAbsolutePath( const std::string & path ) 
-					throw( DirectoryException ) ;
+				static bool IsAbsolutePath( const std::string & path ) ;
 
 
 				/**
@@ -284,8 +277,7 @@ namespace Ceylan
 				 * manager not be retrieved as expected. 
 				 *
 				 */
-				static std::string GetCurrentWorkingDirectoryPath()	
-					throw( DirectoryException ) ;
+				static std::string GetCurrentWorkingDirectoryPath()	;
 
 
 				/**
@@ -302,8 +294,7 @@ namespace Ceylan
 				 *
 				 */
 				static void ChangeWorkingDirectory( 
-						const std::string & newWorkingDirectory )
-					throw( DirectoryException ) ;
+						const std::string & newWorkingDirectory ) ;
 
 
 
@@ -327,7 +318,7 @@ namespace Ceylan
 				 *
 				 */
 				static std::list<std::string> SplitPath( 
-					const std::string & path ) throw( DirectoryException ) ;
+					const std::string & path ) ;
 
 
 				/**
@@ -349,8 +340,7 @@ namespace Ceylan
 				 *
 				 */
 				static std::string JoinPath( 
-						const std::list<std::string> & pathElements ) 
-					throw( DirectoryException ) ;
+						const std::list<std::string> & pathElements ) ;
 					
 					
 
@@ -375,8 +365,7 @@ namespace Ceylan
 				 *
 				 */
 				static std::string JoinPath( const std::string & firstPath,
-						const std::string & secondPaththrow) 
-					throw( DirectoryException ) ;
+						const std::string & secondPaththrow) ;
 					
 					
 				/**
@@ -407,8 +396,7 @@ namespace Ceylan
 				 *
 				 */
 				static void StripFilename( const std::string & path,
-						std::string * base, std::string * file = 0 ) 
-					throw( DirectoryException )	;
+						std::string * base, std::string * file = 0 ) ;
 					
 					
 										
@@ -424,8 +412,7 @@ namespace Ceylan
 				 * manager not be retrieved as expected. 
 				 *
 				 */
-				static Ceylan::Latin1Char GetSeparator() 
-					throw( DirectoryException ) ;
+				static Ceylan::Latin1Char GetSeparator() ;
 
 
 				/**
@@ -442,8 +429,7 @@ namespace Ceylan
 				 * manager not be retrieved as expected. 
 				 *
 				 */
-				static std::string GetSeparatorAsString() 
-					throw( DirectoryException ) ;
+				static std::string GetSeparatorAsString() ;
 				
 				
 
@@ -469,8 +455,7 @@ namespace Ceylan
 				 *
 				 */
 				static Directory & Create( 
-						const std::string & newDirectoryName ) 
-					throw( DirectoryException ) ;
+						const std::string & newDirectoryName ) ;
 
 				
 				/**
@@ -493,8 +478,7 @@ namespace Ceylan
 				 *
 				 */
 				static Directory & Open( 
-						const std::string & directoryName = "" ) 
-					throw( DirectoryException ) ;
+						const std::string & directoryName = "" ) ;
 					
 
 
@@ -532,8 +516,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool hasDirectory( 
-						const std::string & subdirectoryName ) const
-					throw( DirectoryLookupFailed ) = 0 ;
+						const std::string & subdirectoryName ) const = 0 ;
 
 
 				/**
@@ -546,8 +529,7 @@ namespace Ceylan
 				 * not supported.
 				 *
 				 */
-				virtual bool hasFile( const std::string & fileName ) const
-					throw( DirectoryLookupFailed ) = 0 ;
+				virtual bool hasFile( const std::string & fileName ) const = 0 ;
 
 				
 				
@@ -561,8 +543,8 @@ namespace Ceylan
 				 * not supported.
 				 *
 				 */
-				virtual bool hasEntry( const std::string & entryName ) const
-					throw( DirectoryLookupFailed ) = 0 ;
+				virtual bool hasEntry( const std::string & entryName ) const 
+					= 0 ;
 
 
 
@@ -581,7 +563,7 @@ namespace Ceylan
 				 */
 				virtual void getSubdirectories( 
 						std::list<std::string> & subDirectories )
-					const throw( DirectoryLookupFailed ) = 0 ;
+					const = 0 ;
 
 
 				/**
@@ -595,7 +577,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual void getFiles( std::list<std::string> & files )
-					const throw( DirectoryLookupFailed ) = 0 ;
+					const = 0 ;
 
 
 				/**
@@ -620,7 +602,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual void getEntries( std::list<std::string> & entries )
-					const throw( DirectoryLookupFailed ) = 0 ;
+					const = 0 ;
 
 
 				/**
@@ -649,7 +631,7 @@ namespace Ceylan
 						std::list<std::string> & subDirectories,
 						std::list<std::string> & files,
 						std::list<std::string> & otherEntries )
-					const throw( DirectoryLookupFailed ) = 0 ;
+					const = 0 ;
 
 
 
@@ -670,8 +652,7 @@ namespace Ceylan
 				 * not supported.
 				 *
 				 */
-				virtual void goDown( const std::string & subdirectoryName )
-					throw( DirectoryChangeFailed ) ;
+				virtual void goDown( const std::string & subdirectoryName ) ;
 
 
 				/**
@@ -684,7 +665,7 @@ namespace Ceylan
 				 * supported.
 				 *
 				 */
-				virtual bool isValid() const throw( DirectoryException ) ;
+				virtual bool isValid() const ;
 
 
 				/**
@@ -693,7 +674,7 @@ namespace Ceylan
 				 * @return the path, with no leading separator.
 				 *
 				 */
-				virtual const std::string & getPath() const throw() ;
+				virtual const std::string & getPath() const ;
 
 
 				/**
@@ -704,8 +685,7 @@ namespace Ceylan
 				 * supported.
 				 *
 				 */
-				virtual void removeLeadingSeparator() 
-					throw( DirectoryException ) ;
+				virtual void removeLeadingSeparator() ;
 
 
 				/**
@@ -720,8 +700,7 @@ namespace Ceylan
 				 *
 				 */
 	            virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high )
-					const throw() ;
+						Ceylan::VerbosityLevels level = Ceylan::high ) const  ;
 
 
 
@@ -735,8 +714,7 @@ namespace Ceylan
 				 * Constructs a reference to the directory <b>directoryName</b>.
 				 *
 				 */
-				explicit Directory( const std::string & directoryName )
-					throw( DirectoryException ) ;
+				explicit Directory( const std::string & directoryName )	;
 
 
 
@@ -748,7 +726,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual FileSystemManager & getCorrespondingFileSystemManager()
-					const throw( DirectoryDelegatingException ) = 0 ;
+					const = 0 ;
 
 
 
@@ -770,8 +748,7 @@ namespace Ceylan
 				 * @throw DirectoryDelegatingException if the operation failed.
 				 *
 				 */
-				static FileSystemManager & GetCorrespondingFileSystemManager()
-					throw( DirectoryDelegatingException ) ;
+				static FileSystemManager & GetCorrespondingFileSystemManager() ;
 
 
 
@@ -785,7 +762,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				Directory( const Directory & source ) throw() ;
+				Directory( const Directory & source ) ;
 
 
 				/**
@@ -795,7 +772,7 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 *
 				 */
-				Directory & operator = ( const Directory & source ) throw() ;
+				Directory & operator = ( const Directory & source ) ;
 			
 
 		} ;
@@ -806,3 +783,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_DIRECTORY_H_
+
