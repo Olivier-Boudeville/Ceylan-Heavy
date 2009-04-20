@@ -65,7 +65,8 @@ namespace Ceylan
              * @param reason an explanation for this exception being raised.
              *
              */
-            explicit Exception( const std::string & reason ) throw() ;
+            explicit Exception( const std::string & reason )
+				 ;
 
 
             /// Basic virtual destructor.
@@ -83,7 +84,7 @@ namespace Ceylan
              *
              */
             virtual const std::string toString( VerbosityLevels level = high )
-				const throw() ;
+				const  ;
 
 
             /**
@@ -120,7 +121,7 @@ namespace Ceylan
 			 * Copy constructor could not be made private, since it has to be
 			 * called whenever any Exception is being thrown. 
 			 *
-			 * Exception( const Exception & source ) throw() ;
+			 * Exception( const Exception & source )  ;
 			 *
 			 */
 			
@@ -133,7 +134,8 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			Exception & operator = ( const Exception & source ) throw() ;
+			Exception & operator = ( const Exception & source )
+				 ;
 
 
     } ;
@@ -151,9 +153,9 @@ namespace Ceylan
  * @see toString.
  * 
  */
-std::ostream & operator << ( std::ostream & os, const Ceylan::Exception & e )
-	throw() ;
+std::ostream & operator << ( std::ostream & os, const Ceylan::Exception & e ) ;
 
 
 
 #endif // CEYLAN_EXCEPTION_H_
+
