@@ -49,7 +49,7 @@ namespace Ceylan
  		 *
 		 *
 		 * @note The virtual inheritance has been set for classes such as 
-		 * System::File which are both input and output streams : had the 
+		 * System::File which are both input and output streams: had the 
 		 * Stream class a data member, it would not be duplicated in a 
 		 * System::File instance (it would be allocated only once).
 		 *
@@ -63,7 +63,7 @@ namespace Ceylan
 	
 		
 				/// Basic constructor for InputStream, created not selected.
-				explicit InputOutputStream( bool blocking = true ) throw() ;
+				explicit InputOutputStream( bool blocking = true ) ;
 		
 		
 				/// Basic virtual destructor.
@@ -83,8 +83,7 @@ namespace Ceylan
 				 *
 				 */
             	virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 		
 	
@@ -100,7 +99,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				InputOutputStream( const InputOutputStream & source ) throw() ;
+				InputOutputStream( const InputOutputStream & source ) ;
 			
 			
 				/**
@@ -112,7 +111,7 @@ namespace Ceylan
 				 * 
 				 */			 
 				InputOutputStream & operator = ( 
-					const InputOutputStream & source ) throw() ;
+					const InputOutputStream & source ) ;
 	
 	
 	
@@ -126,3 +125,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_INPUT_OUTPUT_STREAM_H_
+

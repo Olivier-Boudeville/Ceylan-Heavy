@@ -120,32 +120,31 @@ const Size File::BigBufferSize   = 1<<19 ;
 	
 	
 	
-FileReadLockingFailed::FileReadLockingFailed( const string & reason ) 
-		throw():
+FileReadLockingFailed::FileReadLockingFailed( const string & reason ) :
 	FileException( reason )
 {
 
 }
 			
 	
-FileReadUnlockingFailed::FileReadUnlockingFailed( const string & reason ) 
-		throw():
+	
+FileReadUnlockingFailed::FileReadUnlockingFailed( const string & reason ) :
 	FileException( reason )
 {
 
 }
 				
 	
-FileWriteLockingFailed::FileWriteLockingFailed( const string & reason ) 
-		throw():
+	
+FileWriteLockingFailed::FileWriteLockingFailed( const string & reason ) :
 	FileException( reason )
 {
 
 }
 		
 		
-FileWriteUnlockingFailed::FileWriteUnlockingFailed( const string & reason )
-		throw():
+		
+FileWriteUnlockingFailed::FileWriteUnlockingFailed( const string & reason ) :
 	FileException( reason )
 {
 
@@ -153,8 +152,7 @@ FileWriteUnlockingFailed::FileWriteUnlockingFailed( const string & reason )
 			
 
 
-FileDelegatingException::FileDelegatingException( const string & reason )
-		throw():
+FileDelegatingException::FileDelegatingException( const string & reason ) :
 	FileException( reason )
 {
 
@@ -170,7 +168,6 @@ FileDelegatingException::FileDelegatingException( const string & reason )
 
 
 bool File::ExistsAsFileOrSymbolicLink( const string & filename ) 
-	throw( FileException )
 {
 
 	// Let FileLookupFailed and FileDelegatingException propagate:
@@ -180,8 +177,8 @@ bool File::ExistsAsFileOrSymbolicLink( const string & filename )
 }
 
 
-bool File::Exists( const string & filename ) 
-	throw( FileException )
+
+bool File::Exists( const string & filename ) 	
 {
 
 	// Let FileLookupFailed and FileDelegatingException propagate:
@@ -190,7 +187,8 @@ bool File::Exists( const string & filename )
 }
 
 
-void File::Remove( const string & filename ) throw( FileException )
+
+void File::Remove( const string & filename )
 {
 
 	// Let FileRemoveFailed and FileDelegatingException propagate:
@@ -199,8 +197,8 @@ void File::Remove( const string & filename ) throw( FileException )
 }
 
 
-void File::Move( const string & sourceFilename, const string & targetFilename ) 
-	throw( FileException )
+
+void File::Move( const string & sourceFilename, const string & targetFilename )	
 {
 
 	// Let FileMoveFailed and FileDelegatingException propagate:
@@ -209,9 +207,9 @@ void File::Move( const string & sourceFilename, const string & targetFilename )
 
 }
 	
+	
 										
-void File::Copy( const string & sourceFilename, const string & targetFilename ) 
-	throw( FileException )
+void File::Copy( const string & sourceFilename, const string & targetFilename )	
 {
 
 	// Let FileCopyFailed and FileDelegatingException propagate:
@@ -221,7 +219,8 @@ void File::Copy( const string & sourceFilename, const string & targetFilename )
 }
 
 
-Size File::GetSize( const string & filename ) throw( FileException )
+
+Size File::GetSize( const string & filename )
 {
 
 	// Let FileSizeRequestFailed and FileDelegatingException propagate:
@@ -230,7 +229,8 @@ Size File::GetSize( const string & filename ) throw( FileException )
 }
 
 
-time_t File::GetLastChangeTime( const string & filename ) throw( FileException )
+
+time_t File::GetLastChangeTime( const string & filename )
 {
 
 	/*
@@ -243,9 +243,9 @@ time_t File::GetLastChangeTime( const string & filename ) throw( FileException )
 
 }
 
+	
 						
 string File::TransformIntoValidFilename( const string & rawFilename ) 
-	throw( FileException )
 {
 
 	// Let FileDelegatingException propagates:
@@ -255,7 +255,8 @@ string File::TransformIntoValidFilename( const string & rawFilename )
 }
 
 
-void File::Touch( const string & filename ) throw( FileException )
+
+void File::Touch( const string & filename )
 {
 
 	// Let FileTouchFailed and FileDelegatingException propagate:
@@ -264,8 +265,8 @@ void File::Touch( const string & filename ) throw( FileException )
 }
 
 
+
 bool File::Diff( const string & firstFilename, const string & secondFilename ) 
-	throw( FileException )
 {
 
 	// Let FileDiffFailed and FileDelegatingException propagate:
@@ -285,7 +286,7 @@ bool File::Diff( const string & firstFilename, const string & secondFilename )
 
 
 File & File::Create( const std::string & filename, OpeningFlag createFlag,
-	PermissionFlag permissionFlag ) throw( FileException )
+	PermissionFlag permissionFlag )
 {
 
 	return GetCorrespondingFileSystemManager().createFile( filename, createFlag,
@@ -296,7 +297,6 @@ File & File::Create( const std::string & filename, OpeningFlag createFlag,
 
 
 File & File::Open( const std::string & filename, OpeningFlag openFlag ) 
-	throw( FileException )
 {
 
 	return GetCorrespondingFileSystemManager().openFile( filename, openFlag ) ;
@@ -331,7 +331,7 @@ File::~File() throw()
 
 										
 					
-const std::string & File::getName() const throw()
+const std::string & File::getName() const 
 { 
 
 	return _name ; 
@@ -345,7 +345,7 @@ const std::string & File::getName() const throw()
 // Locking section.
 
 
-void File::lockForReading() const throw( FileReadLockingFailed )
+void File::lockForReading() const
 {
 	
 	// Meant to be overriden:
@@ -356,7 +356,8 @@ void File::lockForReading() const throw( FileReadLockingFailed )
 }
 
 
-void File::unlockForReading() const throw( FileReadUnlockingFailed )
+
+void File::unlockForReading() const
 {
 
 	// Meant to be overriden:
@@ -367,7 +368,8 @@ void File::unlockForReading() const throw( FileReadUnlockingFailed )
 }
 
 
-void File::lockForWriting() const throw( FileWriteLockingFailed )
+
+void File::lockForWriting() const
 {
 
 	// Meant to be overriden:
@@ -378,7 +380,8 @@ void File::lockForWriting() const throw( FileWriteLockingFailed )
 }
 
 
-void File::unlockForWriting() const throw( FileWriteUnlockingFailed )
+
+void File::unlockForWriting() const
 {
 
 	// Meant to be overriden:
@@ -389,7 +392,8 @@ void File::unlockForWriting() const throw( FileWriteUnlockingFailed )
 }
 
 
-bool File::isLocked() const throw()
+
+bool File::isLocked() const 
 {
 
 	// Meant to be overriden:
@@ -399,7 +403,8 @@ bool File::isLocked() const throw()
 }
 
 
-Size File::size() const throw( FileException )
+
+Size File::size() const
 {
 
 	// Let FileSizeRequestFailed and FileDelegatingException propagate:
@@ -408,8 +413,8 @@ Size File::size() const throw( FileException )
 }
 
 
-void File::readExactLength( Ceylan::Byte * buffer, Size exactLength ) 
-	throw( InputStream::ReadFailedException )
+
+void File::readExactLength( Ceylan::Byte * buffer, Size exactLength )
 {
 
 	Size remainder = exactLength ;
@@ -460,7 +465,7 @@ void File::readExactLength( Ceylan::Byte * buffer, Size exactLength )
 
 
 
-bool File::hasAvailableData() const throw()
+bool File::hasAvailableData() const 
 {
 
 	return true ;
@@ -471,7 +476,6 @@ bool File::hasAvailableData() const throw()
 
 
 void File::open( OpeningFlag openFlag, PermissionFlag permissionFlag ) 
-	throw( FileException )
 {
 
 	if ( _openFlag != DoNotOpen )
@@ -487,7 +491,7 @@ void File::open( OpeningFlag openFlag, PermissionFlag permissionFlag )
 
 
 
-void File::remove() throw( FileException )
+void File::remove()
 {
 
 	try
@@ -509,7 +513,7 @@ void File::remove() throw( FileException )
 
 
 
-StreamID File::getInputStreamID() const throw()
+StreamID File::getInputStreamID() const 
 {
 
 	return getStreamID() ;
@@ -517,16 +521,18 @@ StreamID File::getInputStreamID() const throw()
 }
 
 
-StreamID File::getOutputStreamID() const throw()
+
+StreamID File::getOutputStreamID() const 
 {
 
 	return getStreamID() ;
 	
 }
+
 
 
 const std::string File::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+	const 
 {
 
 	return "File object for filename '" + _name + "'" ;
@@ -542,8 +548,7 @@ const std::string File::toString( Ceylan::VerbosityLevels level )
 
 
 File::File( const string & name, OpeningFlag openFlag, 
-	PermissionFlag permissions )
-		throw( FileException ):
+	PermissionFlag permissions ) :
 	InputOutputStream(),	
 	_name( name ),
 	_openFlag( openFlag ),
@@ -567,7 +572,6 @@ File::File( const string & name, OpeningFlag openFlag,
 
 
 FileSystemManager & File::GetCorrespondingFileSystemManager()
-	throw( FileDelegatingException )
 {
 
 	try
@@ -579,7 +583,7 @@ FileSystemManager & File::GetCorrespondingFileSystemManager()
 	catch( const FileSystemManagerException & e )
 	{
 		throw FileDelegatingException(
-			"File::GetCorrespondingFileSystemManager failed: "
+			"File::GetCorrespondingFileSystemManager failed: " 
 			+ e.toString() ) ;
 	}
 	

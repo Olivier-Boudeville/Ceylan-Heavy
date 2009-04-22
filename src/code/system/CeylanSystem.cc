@@ -142,8 +142,7 @@ extern const Ceylan::System::InterruptMask
 	Ceylan::System::AllInterruptsDisabled = 0 ;
 
 
-Ceylan::System::SystemException::SystemException( const string & message )
-		throw():
+Ceylan::System::SystemException::SystemException( const string & message ) :
 	Ceylan::Exception( message )
 {
 
@@ -159,7 +158,7 @@ Ceylan::System::SystemException::~SystemException() throw()
 
 
 
-Ceylan::System::IOException::IOException( const string & message ) throw():
+Ceylan::System::IOException::IOException( const string & message ) :
 	SystemException( message )
 {
 
@@ -168,7 +167,7 @@ Ceylan::System::IOException::IOException( const string & message ) throw():
 
 
 
-Ceylan::System::IOException::~IOException() throw()
+Ceylan::System::IOException::~IOException() throw() 
 {
 
 }
@@ -183,7 +182,7 @@ const Ceylan::Uint32 OneMillion = 1000000 ;
 
 
 
-ErrorCode Ceylan::System::getError() throw()
+ErrorCode Ceylan::System::getError() 
 {
 
 	return errno ;
@@ -193,7 +192,7 @@ ErrorCode Ceylan::System::getError() throw()
 
 
 
-string Ceylan::System::explainError( ErrorCode errorID ) throw()
+string Ceylan::System::explainError( ErrorCode errorID ) 
 {
 
 	return string( ::strerror( errorID ) ) ;
@@ -203,7 +202,7 @@ string Ceylan::System::explainError( ErrorCode errorID ) throw()
 
 
 
-string Ceylan::System::explainError() throw()
+string Ceylan::System::explainError() 
 {
 
 #ifdef CEYLAN_USES_STRERROR
@@ -221,7 +220,7 @@ string Ceylan::System::explainError() throw()
 
 
 
-string Ceylan::System::getShellName() throw()
+string Ceylan::System::getShellName() 
 {
 
 	return Ceylan::System::getEnvironmentVariable( "SHELL" ) ;
@@ -238,7 +237,7 @@ string Ceylan::System::getShellName() throw()
  */
 
 
-void Ceylan::System::InitializeInterrupts( bool force ) throw( SystemException )
+void Ceylan::System::InitializeInterrupts( bool force ) 
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -290,7 +289,6 @@ void Ceylan::System::InitializeInterrupts( bool force ) throw( SystemException )
 
 
 InterruptMask Ceylan::System::SetEnabledInterrupts( InterruptMask newMask )
-	throw( SystemException )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -316,7 +314,8 @@ InterruptMask Ceylan::System::SetEnabledInterrupts( InterruptMask newMask )
 }
 
 
-void Ceylan::System::InitializeIPC() throw( SystemException )
+
+void Ceylan::System::InitializeIPC() 
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -349,7 +348,6 @@ void Ceylan::System::InitializeIPC() throw( SystemException )
 
 
 Ceylan::Byte * Ceylan::System::CacheProtectedNew( Size numberOfBytes )
-	throw( SystemException )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -443,8 +441,7 @@ Ceylan::Byte * Ceylan::System::CacheProtectedNew( Size numberOfBytes )
 
 
 
-void Ceylan::System::CacheProtectedDelete( 
-	Ceylan::Byte * cacheProtectedBuffer ) throw( SystemException )
+void Ceylan::System::CacheProtectedDelete( Ceylan::Byte * cacheProtectedBuffer )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -511,8 +508,7 @@ void Ceylan::System::CacheProtectedDelete(
 
 
 
-
-bool Ceylan::System::HasAvailableData( FileDescriptor fd ) throw()
+bool Ceylan::System::HasAvailableData( FileDescriptor fd ) 
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -562,8 +558,7 @@ bool Ceylan::System::HasAvailableData( FileDescriptor fd ) throw()
 
 
 Size Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
-		Size toReadBytesNumber )
-	throw( IOException, Features::FeatureNotAvailableException )
+	Size toReadBytesNumber )
 {
 
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
@@ -704,8 +699,7 @@ Size Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
 
 
 Size Ceylan::System::FDWrite( FileDescriptor fd,
-		const Ceylan::Byte * dataBuffer, Size toWriteBytesNumber )
-	throw( IOException, Features::FeatureNotAvailableException )
+	const Ceylan::Byte * dataBuffer, Size toWriteBytesNumber )
 {
 
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
@@ -831,7 +825,7 @@ Size Ceylan::System::FDWrite( FileDescriptor fd,
 // Time section.
 
 
-Second Ceylan::System::getTime() throw( SystemException )
+Second Ceylan::System::getTime() 
 {
 
 #ifdef CEYLAN_USES_TIME
@@ -862,9 +856,7 @@ Second Ceylan::System::getTime() throw( SystemException )
 
 
 
-
 string Ceylan::System::timeToString( const time_t & t )
-	throw( SystemException )
 {
 
 #ifdef CEYLAN_USES_CTIME
@@ -891,11 +883,9 @@ string Ceylan::System::timeToString( const time_t & t )
 
 
 
-
 string Ceylan::System::durationToString(
 		Second startingSecond, Microsecond startingMicrosecond,
 		Second stoppingSecond, Microsecond stoppingMicrosecond )
-	throw( SystemException )
 {
 
 	// What a shame, I spent hours on this stupid code!
@@ -940,11 +930,9 @@ string Ceylan::System::durationToString(
 
 
 
-
 Microsecond Ceylan::System::getDurationBetween(
 		Second startingSecond, Microsecond startingMicrosecond,
 		Second stoppingSecond, Microsecond stoppingMicrosecond )
-	throw( SystemException )
 {
 
 
@@ -990,10 +978,7 @@ Microsecond Ceylan::System::getDurationBetween(
 
 
 
-
-void Ceylan::System::getPreciseTime( Second & seconds,
-		Microsecond & microsec )
-	throw( SystemException )
+void Ceylan::System::getPreciseTime( Second & seconds, Microsecond & microsec )
 {
 
 
@@ -1037,9 +1022,8 @@ void Ceylan::System::getPreciseTime( Second & seconds,
 
 
 
-
 Microsecond Ceylan::System::getAccuracyOfPreciseTime( Microsecond * minGap,
-	Microsecond * maxGap ) throw( SystemException )
+	Microsecond * maxGap ) 
 {
 
 	Ceylan::Uint32 numberOfMeasures = 100 ;
@@ -1135,8 +1119,7 @@ Microsecond Ceylan::System::getAccuracyOfPreciseTime( Microsecond * minGap,
 
 
 
-
-Microsecond Ceylan::System::getPreciseTimeCallDuration() throw()
+Microsecond Ceylan::System::getPreciseTimeCallDuration() 
 {
 
 	static Microsecond duration = 0 ;
@@ -1175,9 +1158,8 @@ Microsecond Ceylan::System::getPreciseTimeCallDuration() throw()
 
 
 
-
 void Ceylan::System::sleepForSeconds( Second seconds )
-	throw( SystemException )
+	
 {
 
 
@@ -1225,7 +1207,7 @@ void Ceylan::System::sleepForSeconds( Second seconds )
 
 
 
-bool Ceylan::System::areSubSecondSleepsAvailable() throw()
+bool Ceylan::System::areSubSecondSleepsAvailable() 
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -1253,8 +1235,7 @@ bool Ceylan::System::areSubSecondSleepsAvailable() throw()
 
 
 
-void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
-	throw( SystemException )
+void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )	
 {
 
 
@@ -1366,8 +1347,7 @@ void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 
 
 
-
-void Ceylan::System::atomicSleep() throw( SystemException )
+void Ceylan::System::atomicSleep() 
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -1417,8 +1397,7 @@ void Ceylan::System::atomicSleep() throw( SystemException )
 
 
 
-
-void Ceylan::System::basicSleep( Microsecond micros ) throw( SystemException )
+void Ceylan::System::basicSleep( Microsecond micros ) 
 {
 
 	// Split waiting time thanks to integer division:
@@ -1429,9 +1408,7 @@ void Ceylan::System::basicSleep( Microsecond micros ) throw( SystemException )
 
 
 
-
 bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
-	throw( SystemException )
 {
 
 
@@ -1748,9 +1725,8 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 
 
 
-
 bool Ceylan::System::smartSleepUntil( Second second, Microsecond micro )
-	throw( SystemException )
+	
 {
 
 	Second currentSecond ;
@@ -1785,10 +1761,9 @@ bool Ceylan::System::smartSleepUntil( Second second, Microsecond micro )
 
 
 
-
 Microsecond Ceylan::System::getActualDurationForSleep(
 		Microsecond requestedMicroseconds, Second requestedSeconds )
-	throw( SystemException )
+	
 {
 
 
@@ -1825,7 +1800,7 @@ Microsecond Ceylan::System::getActualDurationForSleep(
 
 
 
-Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
+Microsecond Ceylan::System::getSchedulingGranularity() 
 {
 
 
@@ -2063,8 +2038,7 @@ Microsecond Ceylan::System::getSchedulingGranularity() throw( SystemException )
 
 
 
-bool Ceylan::System::setLegacyStreamSynchronization( bool synchronized )
-	throw()
+bool Ceylan::System::setLegacyStreamSynchronization( bool synchronized )	
 {
 
 	/*

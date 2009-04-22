@@ -69,13 +69,14 @@ namespace Ceylan
 					public: 
 					
 						explicit OutputStreamException( 
-								const std::string & reason ) throw() : 
+								const std::string & reason ) : 
 							StreamException( reason )
 						{
 						
 						}
 						
 				} ;
+					
 						
 						
 				/// Exception thrown when a write operation failed.
@@ -84,13 +85,14 @@ namespace Ceylan
 					public: 
 					
 						explicit WriteFailedException( 
-								const std::string & reason ) throw() : 
+								const std::string & reason ) : 
 							OutputStreamException( reason )
 						{
 						
 						}
 								
 				} ;
+				
 				
 				
 				/**
@@ -101,7 +103,7 @@ namespace Ceylan
 				 * mode (if supported).
 				 *
 				 */
-				explicit OutputStream( bool blocking = true ) throw() ;
+				explicit OutputStream( bool blocking = true ) ;
 	
 	
 				/// Basic destructor.
@@ -116,8 +118,8 @@ namespace Ceylan
 				 * identifier yet.
 				 *
 				 */
-				virtual StreamID getOutputStreamID() const 
-					throw( OutputStreamException ) = 0 ;
+				virtual StreamID getOutputStreamID() const = 0 ;
+
 
 
 
@@ -141,8 +143,7 @@ namespace Ceylan
 				 * remember it has to be overloaded.
 				 *
 				 */
-				virtual Size write( const std::string & message ) 
-					throw( WriteFailedException ) ;
+				virtual Size write( const std::string & message ) ;
 
 
 				/**
@@ -158,7 +159,7 @@ namespace Ceylan
 				 * @return The number of bytes actually written, which 
 				 * should be equal to 'length'.
 				 *
-				 * @throw WriteFailed if a write error occurred.
+				 * @throw WriteFailedException if a write error occurred.
 				 *
 				 * @note This method is not pure virtual so that other methods
 				 * using it can be defined here. However its OutputStream
@@ -166,8 +167,7 @@ namespace Ceylan
 				 * remember it has to be overloaded.
 				 *
 				 */
-				virtual Size write( const Ceylan::Byte * buffer, 
-					Size length ) throw( WriteFailedException ) ;
+				virtual Size write( const Ceylan::Byte * buffer, Size length ) ;
 
 
 
@@ -181,8 +181,7 @@ namespace Ceylan
 				 * @throw WriteFailedException in case a system error occured.
 				 *
 				 */
-				virtual void writeSint8( Ceylan::Sint8 toWrite ) 
-					throw( WriteFailedException ) ;
+				virtual void writeSint8( Ceylan::Sint8 toWrite ) ;
 
 
 				/**
@@ -191,8 +190,7 @@ namespace Ceylan
 				 * @throw WriteFailedException in case a system error occured.
 				 *
 				 */
-				virtual void writeUint8( Ceylan::Uint8 toWrite ) 
-					throw( WriteFailedException ) ;
+				virtual void writeUint8( Ceylan::Uint8 toWrite ) ;
 
 
 
@@ -202,8 +200,7 @@ namespace Ceylan
 				 * @throw WriteFailedException in case a system error occured.
 				 *
 				 */
-				virtual void writeSint16( Ceylan::Sint16 toWrite ) 
-					throw( WriteFailedException ) ;
+				virtual void writeSint16( Ceylan::Sint16 toWrite ) ;
 
 
 				/**
@@ -212,8 +209,7 @@ namespace Ceylan
 				 * @throw WriteFailedException in case a system error occured.
 				 *
 				 */
-				virtual void writeUint16( Ceylan::Uint16 toWrite ) 
-					throw( WriteFailedException ) ;
+				virtual void writeUint16( Ceylan::Uint16 toWrite ) ;
 
 
 
@@ -223,8 +219,7 @@ namespace Ceylan
 				 * @throw WriteFailedException in case a system error occured.
 				 *
 				 */
-				virtual void writeSint32( Ceylan::Sint32 toWrite ) 
-					throw( WriteFailedException ) ;
+				virtual void writeSint32( Ceylan::Sint32 toWrite ) ;
 
 
 				/**
@@ -233,8 +228,7 @@ namespace Ceylan
 				 * @throw WriteFailedException in case a system error occured.
 				 *
 				 */
-				virtual void writeUint32( Ceylan::Uint32 toWrite ) 
-					throw( WriteFailedException ) ;
+				virtual void writeUint32( Ceylan::Uint32 toWrite ) ;
 
 
 
@@ -248,8 +242,7 @@ namespace Ceylan
 				 * @throw WriteFailedException in case a system error occured.
 				 *
 				 */
-				virtual void writeFloat32( Ceylan::Float32 toWrite ) 
-					throw( WriteFailedException ) ;
+				virtual void writeFloat32( Ceylan::Float32 toWrite ) ;
 
 
 				/**
@@ -258,8 +251,7 @@ namespace Ceylan
 				 * @throw WriteFailedException in case a system error occured.
 				 *
 				 */
-				virtual void writeFloat64( Ceylan::Float64 toWrite ) 
-					throw( WriteFailedException ) ;
+				virtual void writeFloat64( Ceylan::Float64 toWrite ) ;
 
 
 
@@ -274,8 +266,7 @@ namespace Ceylan
 				 * @throw WriteFailedException in case a system error occured.
 				 *
 				 */
-				virtual void writeString( const std::string & toWrite ) 
-					throw( WriteFailedException ) ;
+				virtual void writeString( const std::string & toWrite ) ;
 
 
 
@@ -293,8 +284,7 @@ namespace Ceylan
 				 *
 				 */
             	virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 
 
@@ -310,7 +300,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				OutputStream( const OutputStream & source ) throw() ;
+				OutputStream( const OutputStream & source ) ;
 			
 			
 				/**
@@ -321,8 +311,7 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				OutputStream & operator = ( const OutputStream & source )
-					throw() ;
+				OutputStream & operator = ( const OutputStream & source ) ;
 	
 	
 		} ;
@@ -333,3 +322,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_OUTPUT_STREAM_H_
+

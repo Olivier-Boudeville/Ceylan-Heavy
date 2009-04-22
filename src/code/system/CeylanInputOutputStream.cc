@@ -32,12 +32,13 @@ using namespace Ceylan::System ;
 
 
 
-InputOutputStream::InputOutputStream( bool blocking ) throw() :
+InputOutputStream::InputOutputStream( bool blocking ) :
 	InputStream( blocking ),
 	OutputStream( blocking )
 {
 
 }
+
 
 
 InputOutputStream::~InputOutputStream() throw()
@@ -46,8 +47,9 @@ InputOutputStream::~InputOutputStream() throw()
 }
 
 
+
 const std::string InputOutputStream::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+	const 
 {
 
 	return "InputOutputStream, which is both an" 
@@ -55,3 +57,4 @@ const std::string InputOutputStream::toString( Ceylan::VerbosityLevels level )
 		+ OutputStream::toString( level ) ;
 
 }
+

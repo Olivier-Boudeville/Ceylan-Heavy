@@ -49,11 +49,12 @@ using std::string ;
 
 
 
-OutputStream::OutputStream( bool blocking ) throw():
+OutputStream::OutputStream( bool blocking ) :
 	Stream( blocking )
 {
 
 }
+		
 		
 		
 OutputStream::~OutputStream() throw()
@@ -62,23 +63,23 @@ OutputStream::~OutputStream() throw()
 }
 
 
+
 Size OutputStream::write( const std::string & message ) 
-	throw( WriteFailedException )
 {
 
 	throw WriteFailedException( 
-		"In OutputStream::write (std::string based) failed : "
+		"In OutputStream::write (std::string based) failed: "
 		"this method should have been subclassed." ) ;
 
 }
 
 
+
 Size OutputStream::write( const Ceylan::Byte * buffer, Size length ) 
-	throw( WriteFailedException )
 {
 
 	throw WriteFailedException( 
-		"In OutputStream::write (buffer-based) failed : "
+		"In OutputStream::write (buffer-based) failed: "
 		"this method should have been subclassed." ) ;
 
 }
@@ -86,7 +87,6 @@ Size OutputStream::write( const Ceylan::Byte * buffer, Size length )
 	
 	
 void OutputStream::writeSint8( Ceylan::Sint8 toWrite ) 
-	throw( WriteFailedException )
 {
 
 	const Ceylan::Uint8 TypeSize = 1 ;
@@ -100,8 +100,8 @@ void OutputStream::writeSint8( Ceylan::Sint8 toWrite )
 }	
 
 
+
 void OutputStream::writeUint8( Ceylan::Uint8 toWrite ) 
-	throw( WriteFailedException )
 {
 
 	const Ceylan::Uint8 TypeSize = 1 ;
@@ -117,7 +117,6 @@ void OutputStream::writeUint8( Ceylan::Uint8 toWrite )
 
 
 void OutputStream::writeSint16( Ceylan::Sint16 toWrite ) 
-	throw( WriteFailedException )
 {
 
 	const Ceylan::Uint8 TypeSize = 2 ;
@@ -141,8 +140,8 @@ void OutputStream::writeSint16( Ceylan::Sint16 toWrite )
 }	
 
 
+
 void OutputStream::writeUint16( Ceylan::Uint16 toWrite ) 
-	throw( WriteFailedException )
 {
 
 	const Ceylan::Uint8 TypeSize = 2 ;
@@ -168,7 +167,6 @@ void OutputStream::writeUint16( Ceylan::Uint16 toWrite )
 
 
 void OutputStream::writeSint32( Ceylan::Sint32 toWrite ) 
-	throw( WriteFailedException )
 {
 
 	const Ceylan::Uint8 TypeSize = 4 ;
@@ -192,8 +190,8 @@ void OutputStream::writeSint32( Ceylan::Sint32 toWrite )
 }	
 
 
+
 void OutputStream::writeUint32( Ceylan::Uint32 toWrite ) 
-	throw( WriteFailedException )
 {
 
 	const Ceylan::Uint8 TypeSize = 4 ;
@@ -217,8 +215,8 @@ void OutputStream::writeUint32( Ceylan::Uint32 toWrite )
 }	
 
 
+
 void OutputStream::writeFloat32( Ceylan::Float32 toWrite ) 
-	throw( WriteFailedException )
 {
 
 	const Ceylan::Uint8 TypeSize = 4 ;
@@ -231,7 +229,7 @@ void OutputStream::writeFloat32( Ceylan::Float32 toWrite )
 	
 	Ceylan::Uint32 * tmp = reinterpret_cast<Ceylan::Uint32 *>( &toWrite ) ;
 	
-	// Updates 'toWrite' :
+	// Updates 'toWrite':
 	*tmp = ceylan_bswap_32( *tmp ) ;
 		
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
@@ -245,8 +243,8 @@ void OutputStream::writeFloat32( Ceylan::Float32 toWrite )
 }	
 
 
+
 void OutputStream::writeFloat64( Ceylan::Float64 toWrite ) 
-	throw( WriteFailedException )
 {
 
 	const Ceylan::Uint8 TypeSize = 8 ;
@@ -260,7 +258,7 @@ void OutputStream::writeFloat64( Ceylan::Float64 toWrite )
 
 	Ceylan::Uint64 * tmp = reinterpret_cast<Ceylan::Uint64 *>( & toWrite ) ;
 
-	// Updates 'toWrite' :
+	// Updates 'toWrite':
 
 #ifdef CEYLAN_FAKES_64_BIT_TYPE
 	
@@ -284,18 +282,18 @@ void OutputStream::writeFloat64( Ceylan::Float64 toWrite )
 }	
 
 
+
 void OutputStream::writeString( const string & toWrite )
-	throw( WriteFailedException )
 {
 
 	StringSize stringSize = toWrite.size() ;
 
 	if ( stringSize > Ceylan::Uint16Max )
-		throw WriteFailedException( "OutputStream::writeString : "
+		throw WriteFailedException( "OutputStream::writeString: "
 			"string '" + toWrite + "' is too long." ) ;
 	
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
-	Log::LogPlug::debug( "OutputStream::writeString : string size is "
+	Log::LogPlug::debug( "OutputStream::writeString: string size is "
 		+ Ceylan::toString( static_cast<Ceylan::Uint32>( stringSize ) )
 		+ " characters." ) ;
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
@@ -305,7 +303,7 @@ void OutputStream::writeString( const string & toWrite )
 	Size writeCount = write( toWrite.data(), stringSize ) ;
 	
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
-	LogPlug::debug( "OutputStream::writeString : wrote "
+	LogPlug::debug( "OutputStream::writeString: wrote "
 		+ Ceylan::toString( static_cast<Ceylan::Uint32>( writeCount ) ) 
 		+ " bytes." ) ;
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
@@ -316,8 +314,8 @@ void OutputStream::writeString( const string & toWrite )
 }
 
 
-const std::string OutputStream::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+
+const std::string OutputStream::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string res = "OutputStream whose ID is " 
@@ -328,3 +326,4 @@ const std::string OutputStream::toString( Ceylan::VerbosityLevels level )
 	return res ;
 	
 }
+

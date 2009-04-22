@@ -77,7 +77,7 @@ namespace Ceylan
 					public: 
 					
 						explicit InputStreamException( 
-								const std::string & reason ) throw() : 
+								const std::string & reason ) : 
 							StreamException( reason )
 						{
 						
@@ -93,7 +93,7 @@ namespace Ceylan
 					public: 
 					
 						explicit SelectFailedException( 
-								const std::string & reason ) throw() : 
+								const std::string & reason ) : 
 							InputStreamException( reason )
 						{
 						
@@ -109,7 +109,7 @@ namespace Ceylan
 					public: 
 					
 						explicit ReadFailedException( 
-								const std::string & reason ) throw() : 
+								const std::string & reason ) : 
 							InputStreamException( reason )
 						{
 						
@@ -130,7 +130,7 @@ namespace Ceylan
 					public: 
 					
 						explicit EOFException( 
-								const std::string & reason ) throw() : 
+								const std::string & reason ) : 
 							InputStreamException( reason )
 						{
 						
@@ -148,7 +148,7 @@ namespace Ceylan
 				 * mode (if supported).
 				 *
 				 */
-				explicit InputStream( bool blocking = true ) throw() ;
+				explicit InputStream( bool blocking = true ) ;
 		
 		
 				/// Basic virtual destructor.
@@ -157,7 +157,7 @@ namespace Ceylan
 		
 		
 				/// Tells if the stream has data to read.
-				bool isSelected() const throw() ;
+				bool isSelected() const ;
 		
 
 				/**
@@ -169,7 +169,7 @@ namespace Ceylan
 				 * set.
 				 *
 				 */
-				bool isFaulty() const throw() ;
+				bool isFaulty() const ;
 		
 						 
 		
@@ -181,8 +181,7 @@ namespace Ceylan
 				 * identifier yet.
 				 *
 				 */
-				virtual StreamID getInputStreamID() const 
-					throw( InputStreamException ) = 0 ;
+				virtual StreamID getInputStreamID() const = 0 ;
 
 
 				
@@ -200,7 +199,7 @@ namespace Ceylan
 				 */
             	virtual const std::string toString( 
 					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+						const ;
 
 
 
@@ -211,7 +210,7 @@ namespace Ceylan
 				 * Tells whether there is data available on input.
 				 *
 				 */
-				virtual bool hasAvailableData() const throw() = 0 ;
+				virtual bool hasAvailableData() const = 0 ;
 		
  				
 				/**
@@ -237,8 +236,7 @@ namespace Ceylan
 				 * false, after the actual reading.
 				 *
 				 */
-		 		virtual Size read( Ceylan::Byte * buffer, Size length ) 
-					throw( ReadFailedException ) ;
+		 		virtual Size read( Ceylan::Byte * buffer, Size length ) ;
 
 
                
@@ -249,8 +247,7 @@ namespace Ceylan
 				 * failed.
 				 *
 				 */
-				virtual void clearInput()
-					throw( InputStream::ReadFailedException ) ;
+				virtual void clearInput() ;
 
 
 
@@ -267,8 +264,7 @@ namespace Ceylan
 				 * bytes available than expected.
 				 *
 				 */
-				virtual Ceylan::Sint8 readSint8() 
-					throw( ReadFailedException, EOFException ) ;
+				virtual Ceylan::Sint8 readSint8() ;
 
 		
 				/**
@@ -279,8 +275,7 @@ namespace Ceylan
 				 * bytes available than expected.
 				 *
 				 */
-				virtual Ceylan::Uint8 readUint8() 
-					throw( ReadFailedException, EOFException ) ;
+				virtual Ceylan::Uint8 readUint8() ;
 
 		
 		
@@ -292,8 +287,7 @@ namespace Ceylan
 				 * bytes available than expected.
 				 *
 				 */
-				virtual Ceylan::Sint16 readSint16() 
-					throw( ReadFailedException, EOFException ) ;
+				virtual Ceylan::Sint16 readSint16() ;
 
 		
 				/**
@@ -304,8 +298,7 @@ namespace Ceylan
 				 * bytes available than expected.
 				 *
 				 */
-				virtual Ceylan::Uint16 readUint16() 
-					throw( ReadFailedException, EOFException ) ;
+				virtual Ceylan::Uint16 readUint16() ;
 
 
 
@@ -317,8 +310,7 @@ namespace Ceylan
 				 * bytes available than expected.
 				 *
 				 */
-				virtual Ceylan::Sint32 readSint32() 
-					throw( ReadFailedException, EOFException ) ;
+				virtual Ceylan::Sint32 readSint32() ;
 
 
 				/**
@@ -329,8 +321,7 @@ namespace Ceylan
 				 * bytes available than expected.
 				 *
 				 */
-				virtual Ceylan::Uint32 readUint32() 
-					throw( ReadFailedException, EOFException ) ;
+				virtual Ceylan::Uint32 readUint32() ;
 
 
 
@@ -346,8 +337,7 @@ namespace Ceylan
 				 * bytes available than expected.
 				 *
 				 */
-				virtual Ceylan::Float32 readFloat32() 
-					throw( ReadFailedException, EOFException ) ;
+				virtual Ceylan::Float32 readFloat32() ;
 
 
 				/**
@@ -358,8 +348,7 @@ namespace Ceylan
 				 * bytes available than expected.
 				 *
 				 */
-				virtual Ceylan::Float64 readFloat64() 
-					throw( ReadFailedException, EOFException ) ;
+				virtual Ceylan::Float64 readFloat64() ;
 
 
 
@@ -376,8 +365,7 @@ namespace Ceylan
 				 * bytes available than expected.
 				 *
 				 */
-				virtual void readString( std::string & result ) 
-					throw( ReadFailedException, EOFException ) ;
+				virtual void readString( std::string & result ) ;
 
 
 				/**
@@ -389,8 +377,7 @@ namespace Ceylan
 				 * that is read.
 				 *
 				 */
-				virtual void skipWhitespaces( Ceylan::Uint8 & firstNonSpace )
-					throw( ReadFailedException, EOFException ) ;
+				virtual void skipWhitespaces( Ceylan::Uint8 & firstNonSpace ) ;
 
 
 
@@ -414,8 +401,7 @@ namespace Ceylan
 				 * on this platform.
 				 * 				 
 				 */
-				static Ceylan::Uint16 Select( std::list<InputStream*> & is ) 
-					throw ( SelectFailedException ) ;
+				static Ceylan::Uint16 Select( std::list<InputStream*> & is ) ;
 		
 		
 				/**
@@ -436,8 +422,7 @@ namespace Ceylan
 				 * on this platform.
 				 *
 				 */
-				static Ceylan::Uint16 Test( std::list<InputStream*> & is )
-					throw( SelectFailedException ) ;
+				static Ceylan::Uint16 Test( std::list<InputStream*> & is ) ;
 
 	
 	
@@ -447,7 +432,7 @@ namespace Ceylan
 	
 	
 				/// Used to set the selection status of this stream.
-				virtual void setSelected( bool newStatus ) throw() ;
+				virtual void setSelected( bool newStatus ) ;
 
 
 				/**
@@ -456,7 +441,7 @@ namespace Ceylan
 				 * @param newFaultyState the new faulty state.
 				 *
 				 */
-				void setFaulty( bool newFaultyState = true ) throw() ;
+				void setFaulty( bool newFaultyState = true ) ;
 		
 		
 				/**
@@ -466,8 +451,7 @@ namespace Ceylan
 				 * specifically overriden.
 				 *
 				 */
-				virtual void setStreamID( StreamID newInputStreamID )
-					throw( InputStreamException )  ;
+				virtual void setStreamID( StreamID newInputStreamID ) ;
 	
 	
 	
@@ -492,7 +476,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				InputStream( const InputStream & source ) throw() ;
+				InputStream( const InputStream & source ) ;
 			
 			
 				/**
@@ -503,8 +487,7 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				InputStream & operator = ( const InputStream & source ) 
-					throw() ;
+				InputStream & operator = ( const InputStream & source ) ;
 	
 		
 		} ;
@@ -513,7 +496,7 @@ namespace Ceylan
 	
 }
 
-
 	
 
 #endif // CEYLAN_INPUT_STREAM_H_
+

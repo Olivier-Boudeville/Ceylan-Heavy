@@ -42,7 +42,7 @@
 
 
 
-// Not available in their C++ form :
+// Not available in their C++ form:
 extern "C"
 {
 
@@ -76,7 +76,7 @@ using namespace Ceylan::System ;
 
 
 
-Stream::Stream( bool blocking ) throw():
+Stream::Stream( bool blocking ) :
 	_isBlocking( blocking )
 {
 
@@ -89,7 +89,8 @@ Stream::~Stream() throw()
 }
 
 
-bool Stream::isBlocking() const throw()
+
+bool Stream::isBlocking() const
 {
 
 	return _isBlocking ;
@@ -97,8 +98,7 @@ bool Stream::isBlocking() const throw()
 }
 
 
-const std::string Stream::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+const std::string Stream::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	if ( _isBlocking )
@@ -109,7 +109,8 @@ const std::string Stream::toString( Ceylan::VerbosityLevels level )
 }
 
 	
-bool Stream::Close( FileDescriptor & fd ) throw( CloseException )
+	
+bool Stream::Close( FileDescriptor & fd )
 {
 
 
@@ -135,17 +136,17 @@ bool Stream::Close( FileDescriptor & fd ) throw( CloseException )
 			{
 			
 				case EBADF:
-					throw Stream::CloseException( "Ceylan::System::close : "
+					throw Stream::CloseException( "Ceylan::System::close: "
 						"file descriptor " + Ceylan::toString( fd ) 
 						+ " is invalid." ) ;
 						
 				case EIO:
-					throw Stream::CloseException( "Ceylan::System::close : "
+					throw Stream::CloseException( "Ceylan::System::close: "
 						"an I/O error occurred with file descriptor " 
 						+ Ceylan::toString( fd ) + "." ) ;
 							
 				default:
-					throw Stream::CloseException( "Ceylan::System::close : "
+					throw Stream::CloseException( "Ceylan::System::close: "
 						"unexpected error occurred with file descriptor " 
 						+ Ceylan::toString( fd ) + "." ) ;
 						
@@ -162,7 +163,7 @@ bool Stream::Close( FileDescriptor & fd ) throw( CloseException )
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
-	throw Stream::CloseException( "Ceylan::System::close : "
+	throw Stream::CloseException( "Ceylan::System::close: "
 		"file descriptor feature not available" ) ;
 
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
@@ -171,14 +172,14 @@ bool Stream::Close( FileDescriptor & fd ) throw( CloseException )
 }
 
 
+
 void Stream::setBlocking( bool newStatus ) 
-	throw( NonBlockingNotSupportedException )
 {
 
-	// To be overriden by child classes supporting it (ex : sockets) :
+	// To be overriden by child classes supporting it (ex: sockets):
 	if ( newStatus == false )
 		throw NonBlockingNotSupportedException( 
-			"Stream::setBlocking : this stream cannot be put in "
+			"Stream::setBlocking: this stream cannot be put in "
 			"non-blocking mode." ) ;
 
 }

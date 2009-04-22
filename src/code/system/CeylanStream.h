@@ -74,7 +74,7 @@ namespace Ceylan
 					public: 
 					
 						explicit StreamException( 
-								const std::string & reason ) throw() : 
+								const std::string & reason ) : 
 							IOException( reason )
 						{
 						
@@ -90,13 +90,14 @@ namespace Ceylan
 					public: 
 					
 						explicit CloseException( 
-								const std::string & reason ) throw() : 
+								const std::string & reason ) : 
 							StreamException( reason )
 						{
 						
 						}
 						
 				} ;
+				
 				
 				
 				/**
@@ -110,7 +111,7 @@ namespace Ceylan
 					public: 
 					
 						explicit NonBlockingNotSupportedException( 
-								const std::string & reason ) throw() : 
+								const std::string & reason ) : 
 							StreamException( reason )
 						{
 						
@@ -128,7 +129,7 @@ namespace Ceylan
 				 * mode (if supported).
 				 *
 				 */
-				explicit Stream( bool blocking = true ) throw() ;
+				explicit Stream( bool blocking = true ) ;
 	
 	
 				/// Basic virtual destructor.
@@ -141,7 +142,7 @@ namespace Ceylan
 				 * or in non-blocking mode (if false).
 				 *
 				 */
-				bool isBlocking() const throw() ;
+				bool isBlocking() const ;
 	
 	
 				/**
@@ -152,7 +153,7 @@ namespace Ceylan
 				 * @throw CloseException if the close operation failed.
 				 *
 				 */
-				virtual bool close() throw( CloseException ) = 0 ;
+				virtual bool close() = 0 ;
 				
 				
             	/**
@@ -168,8 +169,7 @@ namespace Ceylan
 				 *
 				 */
             	virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() = 0 ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const = 0 ;
 			
 			
 				/**
@@ -182,8 +182,7 @@ namespace Ceylan
 				 * @throw CloseException if the close operation failed.
 				 *
 				 */
-				static bool Close( FileDescriptor & fd ) 
-					throw( CloseException ) ;
+				static bool Close( FileDescriptor & fd ) ;
 
 
 
@@ -206,8 +205,7 @@ namespace Ceylan
 				 * override it.
 				 *
 				 */
-				virtual void setBlocking( bool newStatus )
-					throw( NonBlockingNotSupportedException ) ;
+				virtual void setBlocking( bool newStatus ) ;
 
 
 				/// Stores whether the stream is in blocking mode.
@@ -227,7 +225,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				Stream( const Stream & source ) throw() ;
+				Stream( const Stream & source ) ;
 			
 			
 				/**
@@ -238,8 +236,7 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				Stream & operator = ( const Stream & source )
-					throw() ;
+				Stream & operator = ( const Stream & source ) ;
 					
 					
 		} ;	
@@ -250,3 +247,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_STREAM_H_
+

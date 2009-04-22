@@ -98,27 +98,27 @@ namespace Ceylan
 		{ 
 			public: 
 			
-				explicit FileReadLockingFailed( 
-					const std::string & reason ) throw() ; 
+				explicit FileReadLockingFailed( const std::string & reason ) ; 
 		} ;
+
 
 
 		class CEYLAN_DLL FileReadUnlockingFailed: public FileException
 		{ 
 			public: 
 			
-				explicit FileReadUnlockingFailed( 
-					const std::string & reason ) throw() ; 
+				explicit FileReadUnlockingFailed( const std::string & reason ) ;
 		} ;
+
 
 
 		class CEYLAN_DLL FileWriteLockingFailed: public FileException
 		{ 
 			public: 
 			
-				explicit FileWriteLockingFailed( 
-					const std::string & reason ) throw() ; 
+				explicit FileWriteLockingFailed( const std::string & reason ) ; 
 		} ;
+
 
 
 		class CEYLAN_DLL FileWriteUnlockingFailed: public FileException
@@ -126,8 +126,9 @@ namespace Ceylan
 			public: 
 			
 				explicit FileWriteUnlockingFailed( 
-					const std::string & reason ) throw() ; 
+					const std::string & reason ) ; 
 		} ;
+
 
 
 		/**
@@ -141,8 +142,7 @@ namespace Ceylan
 		
 			public: 
 			
-				explicit FileDelegatingException( 
-					const std::string & reason ) throw() ; 
+				explicit FileDelegatingException( const std::string & reason ) ;
 					
 		} ;
 		
@@ -470,7 +470,7 @@ namespace Ceylan
 				 *
 				 */
 				static bool ExistsAsFileOrSymbolicLink( 
-						const std::string & filename ) throw( FileException ) ;
+						const std::string & filename ) ;
 
 
 				/**
@@ -490,8 +490,7 @@ namespace Ceylan
 				 * @note This method is an alias for ExistsAsFileOrSymbolicLink.
 				 *
 				 */
-				static bool Exists(	const std::string & filename ) 
-					throw( FileException ) ;
+				static bool Exists(	const std::string & filename ) ;
 
 
 
@@ -506,8 +505,7 @@ namespace Ceylan
 				 * could not be retrieved.
 				 *
 				 */
-				static void Remove( const std::string & filename ) 
-					throw( FileException ) ;
+				static void Remove( const std::string & filename ) ;
 				
 				
 				/**
@@ -526,8 +524,7 @@ namespace Ceylan
 				 *
 				 */
 				static void Move( const std::string & sourceFilename,
-						const std::string & targetFilename ) 
-					throw( FileException ) ;
+						const std::string & targetFilename ) ;
 
 
 				/**
@@ -543,8 +540,7 @@ namespace Ceylan
 				 *
 				 */
 				static void Copy( const std::string & sourceFilename,
-						const std::string & targetFilename ) 
-					throw( FileException ) ;
+						const std::string & targetFilename ) ;
 
 
 				/**
@@ -557,8 +553,7 @@ namespace Ceylan
 				 * if the relevant filesystem manager could not be retrieved.
 				 *
 				 */
-				static Size GetSize( const std::string & filename ) 
-					throw( FileException ) ;
+				static Size GetSize( const std::string & filename ) ;
 
 
 				/**
@@ -573,8 +568,8 @@ namespace Ceylan
 				 * could not be retrieved.
 				 *
 				 */
-				static time_t GetLastChangeTime( const std::string & filename ) 
-					throw( FileException ) ;
+				static time_t GetLastChangeTime( 
+					const std::string & filename ) ;
 
 
 				/**
@@ -588,7 +583,7 @@ namespace Ceylan
 				 *
 				 */
 				static std::string TransformIntoValidFilename( 
-					const std::string & rawFilename ) throw( FileException ) ;
+					const std::string & rawFilename ) ;
 
 
 				/**
@@ -611,8 +606,7 @@ namespace Ceylan
 				 * the relevant filesystem manager could not be retrieved.
 				 *
 				 */
-				static void Touch( const std::string & filename ) 
-					throw( FileException ) ;
+				static void Touch( const std::string & filename ) ;
 
 
 				/**
@@ -634,8 +628,7 @@ namespace Ceylan
 				 *
 				 */
 				static bool Diff( const std::string & firstFilename,
-						const std::string & secondFilename ) 
-					throw( FileException ) ;
+						const std::string & secondFilename ) ;
 
 
 				
@@ -684,9 +677,8 @@ namespace Ceylan
 				 *
 				 */
 				static File & Create( const std::string & filename, 
-						OpeningFlag createFlag = CreateToWriteBinary,
-						PermissionFlag permissionFlag = OwnerReadWrite ) 
-					throw( FileException ) ;
+					OpeningFlag createFlag = CreateToWriteBinary,
+					PermissionFlag permissionFlag = OwnerReadWrite ) ;
 
 				
 				
@@ -723,8 +715,7 @@ namespace Ceylan
 				 *
 				 */
 				static File & Open( const std::string & filename, 
-						OpeningFlag openFlag = OpenToReadBinary ) 
-					throw( FileException ) ;
+					OpeningFlag openFlag = OpenToReadBinary ) ;
 
 				
 				/**
@@ -750,14 +741,14 @@ namespace Ceylan
 
 
 				/// Returns this file's name.
-				const std::string & getName() const throw() ;
+				const std::string & getName() const ;
 
 				
 				/**
 				 * Returns true iff this file is open.
 				 *
 				 */
-				virtual bool isOpen() const throw() = 0 ;
+				virtual bool isOpen() const = 0 ;
 				
 				
 				/**
@@ -768,7 +759,7 @@ namespace Ceylan
 				 * @throw Stream::CloseException if the close operation failed.
 				 *
 				 */
-				virtual bool close() throw( Stream::CloseException ) = 0 ;
+				virtual bool close() = 0 ;
 
 
 				/**
@@ -779,8 +770,7 @@ namespace Ceylan
 				 * @throw FileException if the operation failed.
 				 *
 				 */
-				virtual void saveAs( const std::string & newName )
-					throw( FileException ) = 0 ;
+				virtual void saveAs( const std::string & newName ) = 0 ;
 
 
 
@@ -798,8 +788,7 @@ namespace Ceylan
 				 * this exception if called.
 				 *
 				 */
-				virtual void lockForReading() const 
-					throw( FileReadLockingFailed ) ;
+				virtual void lockForReading() const ;
 
 
 				/**
@@ -812,8 +801,7 @@ namespace Ceylan
 				 * this exception if called.
 				 *
 				 */
-				virtual void unlockForReading() const 
-					throw( FileReadUnlockingFailed ) ;
+				virtual void unlockForReading() const ;
 
 
 				/**
@@ -826,8 +814,7 @@ namespace Ceylan
 				 * this exception if called.
 				 *
 				 */
-				virtual void lockForWriting() const 
-					throw( FileWriteLockingFailed ) ;
+				virtual void lockForWriting() const ;
 
 
 				/**
@@ -840,8 +827,7 @@ namespace Ceylan
 				 * this exception if called.
 				 *
 				 */
-				virtual void unlockForWriting() const 
-					throw( FileWriteUnlockingFailed ) ;
+				virtual void unlockForWriting() const ;
 
 
 
@@ -856,7 +842,7 @@ namespace Ceylan
 				 * always false.
 				 *
 				 */
-				virtual bool isLocked() const throw() ;
+				virtual bool isLocked() const ;
 
 
 
@@ -873,7 +859,7 @@ namespace Ceylan
 				 * expected.
 				 *
 				 */
-				virtual Size size() const throw( FileException ) ;
+				virtual Size size() const ;
 
 
 				/**
@@ -883,8 +869,7 @@ namespace Ceylan
 				 * operation failed, or is not supported.
 				 *
 				 */
-				virtual time_t getLastChangeTime() const 
-					throw( FileLastChangeTimeRequestFailed ) = 0 ;
+				virtual time_t getLastChangeTime() const = 0 ;
 
 
 				/**
@@ -912,8 +897,7 @@ namespace Ceylan
 				 * this marker).
 				 *
 				 */
-		 		virtual Size read( Ceylan::Byte * buffer, Size maxLength ) 
-					throw( InputStream::ReadFailedException ) = 0 ;
+		 		virtual Size read( Ceylan::Byte * buffer, Size maxLength ) = 0 ;
 
 
 				/**
@@ -939,8 +923,7 @@ namespace Ceylan
 				 *
 				 */
 		 		virtual void readExactLength( Ceylan::Byte * buffer, 
-						Size exactLength ) 
-					throw( InputStream::ReadFailedException ) ;
+						Size exactLength ) ;
 
 
 				/**
@@ -949,7 +932,7 @@ namespace Ceylan
 				 * This methods returns always true for files.
 				 *
 				 */
-				virtual bool hasAvailableData() const throw() ;
+				virtual bool hasAvailableData() const ;
 				
 				
 				/**
@@ -965,8 +948,7 @@ namespace Ceylan
 				 * FileException, as it comes from an inherited interface.
 				 *
 				 */
-				virtual Size write( const std::string & message ) 
-					throw( OutputStream::WriteFailedException ) = 0 ;
+				virtual Size write( const std::string & message ) = 0 ;
 
 
 				/**
@@ -986,8 +968,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual Size write( const Ceylan::Byte * buffer, 
-						Size maxLength ) 
-					throw( OutputStream::WriteFailedException ) = 0 ;
+					Size maxLength ) = 0 ;
 
 
 
@@ -999,7 +980,7 @@ namespace Ceylan
 				 * @throw FileException if the operation failed.
 				 *
 				 */
-				virtual Position tell() throw( FileException ) = 0 ;
+				virtual Position tell() = 0 ;
 
 
 				/**
@@ -1011,8 +992,7 @@ namespace Ceylan
 				 * @throw FileException if the operation failed.
 				 *
 				 */
-				virtual void seek( Position targetPosition ) 
-                	throw( FileException ) = 0 ;
+				virtual void seek( Position targetPosition ) = 0 ;
 
 
 
@@ -1024,10 +1004,8 @@ namespace Ceylan
 				 * already opened, and FileOpeningFailed if an error occurred, 
 				 * if the operation failed or is not supported.
 				 */
-				virtual void open( 
-						OpeningFlag openFlag = CreateToWriteBinary, 
-						PermissionFlag permissionFlag = OwnerReadWrite )
-					throw( FileException ) ;
+				virtual void open( OpeningFlag openFlag = CreateToWriteBinary, 
+					PermissionFlag permissionFlag = OwnerReadWrite ) ;
 
 
 
@@ -1042,7 +1020,7 @@ namespace Ceylan
 				 * if the corresponding filesystem manager could not be used.
 				 *
 				 */
-				virtual void remove() throw( FileException ) ;
+				virtual void remove() ;
 
 
 
@@ -1057,7 +1035,7 @@ namespace Ceylan
 				 * be returned with the available features.
 				 *
 				 */
-				virtual StreamID getStreamID() const throw() = 0 ;
+				virtual StreamID getStreamID() const = 0 ;
 
 
 				/**
@@ -1065,7 +1043,7 @@ namespace Ceylan
 				 * the file descriptor feature is not available.
 				 *
 				 */
-				virtual StreamID getInputStreamID() const throw() ;
+				virtual StreamID getInputStreamID() const ;
 
 
 				/**
@@ -1073,7 +1051,7 @@ namespace Ceylan
 				 * the file descriptor feature is not available.
 				 *
 				 */
-				virtual StreamID getOutputStreamID() const throw() ;
+				virtual StreamID getOutputStreamID() const ;
 
 
             	/**
@@ -1089,8 +1067,7 @@ namespace Ceylan
 				 *
 				 */
             	virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 
 				/// Describes buffer size for usual I/O operations.
@@ -1132,9 +1109,8 @@ namespace Ceylan
 				 *
 				 */
 				explicit File( const std::string & name, 
-						OpeningFlag openFlag = CreateToWriteBinary,
-						PermissionFlag permissionFlag = OwnerReadWrite ) 
-					throw( FileException ) ;
+					OpeningFlag openFlag = CreateToWriteBinary,
+					PermissionFlag permissionFlag = OwnerReadWrite ) ;
 
 
 
@@ -1146,7 +1122,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual FileSystemManager & getCorrespondingFileSystemManager()
-					const throw( FileDelegatingException ) = 0 ;
+					const = 0 ;
 					
 
 
@@ -1156,19 +1132,21 @@ namespace Ceylan
 				 * @throw FileOpeningFailed if the operation failed.
 				 *
 				 */
-				virtual void reopen() throw( FileOpeningFailed ) = 0 ;
+				virtual void reopen() = 0 ;
 
 
 				/// Interprets the current state of this file.
-				virtual std::string interpretState() const throw() = 0 ;
+				virtual std::string interpretState() const = 0 ;
 
 
 
 				/// Name of the file.
 				std::string _name ;
 
+
 				/// Flags used for opening.
 				OpeningFlag _openFlag ;
+
 
 				/// Permissions used for opening.
 				PermissionFlag _permissions ;
@@ -1193,8 +1171,7 @@ namespace Ceylan
 				 * @throw FileDelegatingException if the operation failed.
 				 *
 				 */
-				static FileSystemManager & GetCorrespondingFileSystemManager()
-					throw( FileDelegatingException ) ;
+				static FileSystemManager & GetCorrespondingFileSystemManager() ;
 
 
 
@@ -1209,7 +1186,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				File( const File & source ) throw() ;
+				File( const File & source ) ;
 
 
 				/**
@@ -1220,7 +1197,7 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 *
 				 */
-				File & operator = ( const File & source ) throw() ;
+				File & operator = ( const File & source ) ;
 
 				
 

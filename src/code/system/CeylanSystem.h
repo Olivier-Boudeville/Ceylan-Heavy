@@ -130,8 +130,7 @@ namespace Ceylan
 		class CEYLAN_DLL SystemException: public Ceylan::Exception
 		{
 			public:
-				explicit SystemException( const std::string & message )
-					throw() ;
+				explicit SystemException( const std::string & message )	;
 				virtual ~SystemException() throw() ;
 
 		} ;
@@ -141,7 +140,7 @@ namespace Ceylan
 		class CEYLAN_DLL IOException: public SystemException
 		{
 			public:
-				IOException( const std::string & message ) throw() ;
+				IOException( const std::string & message ) ;
 				virtual ~IOException() throw() ;
 		} ;
 
@@ -178,11 +177,11 @@ namespace Ceylan
 
 
 		/// Returns the error ID (errno).
-		CEYLAN_DLL ErrorCode getError() throw() ;
+		CEYLAN_DLL ErrorCode getError() ;
 
 
 		/// Returns the diagnosis string corresponding to errorID (errno).
-		CEYLAN_DLL std::string explainError( ErrorCode errorID ) throw() ;
+		CEYLAN_DLL std::string explainError( ErrorCode errorID ) ;
 
 
 		/**
@@ -190,7 +189,7 @@ namespace Ceylan
 		 * (errno).
 		 *
 		 */
-		CEYLAN_DLL std::string explainError() throw() ;
+		CEYLAN_DLL std::string explainError() ;
 
 
 		/**
@@ -203,7 +202,7 @@ namespace Ceylan
 		 * use a misleading value.
 		 *
 		 */
-		CEYLAN_DLL std::string getShellName() throw() ;
+		CEYLAN_DLL std::string getShellName() ;
 
 
 
@@ -243,8 +242,7 @@ namespace Ceylan
 		 * exception will be thrown).
 		 *
 		 */
-		CEYLAN_DLL void InitializeInterrupts( bool force = false ) 
-			throw( SystemException ) ;
+		CEYLAN_DLL void InitializeInterrupts( bool force = false ) ;
 
 
 		/**
@@ -262,8 +260,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL InterruptMask SetEnabledInterrupts( 
-				InterruptMask newMask = AllInterruptsDisabled ) 
-			throw( SystemException ) ;
+				InterruptMask newMask = AllInterruptsDisabled ) ;
 
 
 		/**
@@ -280,8 +277,9 @@ namespace Ceylan
 		 * exception will be thrown).
 		 *
 		 */
-		CEYLAN_DLL void InitializeIPC() throw( SystemException ) ;
+		CEYLAN_DLL void InitializeIPC() ;
 		
+
 
 		/** 
 		 * Converts specified address, expected to be in main RAM, into a 
@@ -328,8 +326,7 @@ namespace Ceylan
 		 * memory.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Byte * CacheProtectedNew( Size numberOfBytes )
-			throw( SystemException ) ;
+		CEYLAN_DLL Ceylan::Byte * CacheProtectedNew( Size numberOfBytes ) ;
 
 
 		/**
@@ -342,8 +339,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL void CacheProtectedDelete( 
-				Ceylan::Byte * cacheProtectedBuffer )
-			throw( SystemException ) ;
+				Ceylan::Byte * cacheProtectedBuffer ) ;
 
 
 #if defined(CEYLAN_ARCH_NINTENDO_DS) && CEYLAN_ARCH_NINTENDO_DS == 1
@@ -389,7 +385,7 @@ namespace Ceylan
 		 * descriptor.
 		 *
 		 */
-		CEYLAN_DLL bool HasAvailableData( FileDescriptor fd ) throw() ;
+		CEYLAN_DLL bool HasAvailableData( FileDescriptor fd ) ;
 
 
 		/**
@@ -407,8 +403,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL Size FDRead( FileDescriptor fd, Ceylan::Byte * dataBuffer,
-				Size toReadBytesNumber )
-			throw( IOException, Features::FeatureNotAvailableException ) ;
+				Size toReadBytesNumber ) ;
 
 
 		/**
@@ -425,8 +420,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL Size FDWrite( FileDescriptor fd, 
-				const Ceylan::Byte * dataBuffer, Size toWriteBytesNumber )
-			throw( IOException, Features::FeatureNotAvailableException ) ;
+				const Ceylan::Byte * dataBuffer, Size toWriteBytesNumber ) ;
 
 
 
@@ -448,7 +442,7 @@ namespace Ceylan
 		 * @see Ceylan::Timestamp to easily access the correct local time.
 		 *
 		 */
-		CEYLAN_DLL Second getTime() throw( SystemException ) ;
+		CEYLAN_DLL Second getTime() ;
 
 
 		/**
@@ -460,8 +454,7 @@ namespace Ceylan
 		 * @see Ceylan::Timestamp to easily output the correct local time.
 		 *
 		 */
-		CEYLAN_DLL std::string timeToString( const time_t & t ) 
-			throw( SystemException ) ;
+		CEYLAN_DLL std::string timeToString( const time_t & t ) ;
 
 
 		/**
@@ -493,8 +486,7 @@ namespace Ceylan
 		 */
 		CEYLAN_DLL std::string durationToString(
 				Second startingSecond, Microsecond startingMicrosecond,
-				Second stoppingSecond, Microsecond stoppingMicrosecond )
-			throw( SystemException ) ;
+				Second stoppingSecond, Microsecond stoppingMicrosecond ) ;
 
 
 
@@ -522,8 +514,7 @@ namespace Ceylan
 		 */
 		CEYLAN_DLL Microsecond getDurationBetween(
 				Second startingSecond, Microsecond startingMicrosecond,
-				Second stoppingSecond, Microsecond stoppingMicrosecond )
-			throw( SystemException ) ;
+				Second stoppingSecond, Microsecond stoppingMicrosecond ) ;
 
 
 
@@ -556,7 +547,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL void getPreciseTime( Second & seconds, 
-			Microsecond & microsec ) throw( SystemException ) ;
+			Microsecond & microsec ) ;
 
 
 
@@ -593,8 +584,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL Microsecond getAccuracyOfPreciseTime( 
-				Microsecond * minGap = 0, Microsecond * maxGap = 0 ) 
-			throw( SystemException ) ;
+				Microsecond * minGap = 0, Microsecond * maxGap = 0 ) ;
 
 
 
@@ -609,7 +599,7 @@ namespace Ceylan
 		 * @return the mean duration of a call to getPreciseTime
 		 *
 		 */
-		CEYLAN_DLL Microsecond getPreciseTimeCallDuration() throw() ;
+		CEYLAN_DLL Microsecond getPreciseTimeCallDuration() ;
 
 
 
@@ -625,8 +615,7 @@ namespace Ceylan
 		 * @see basicSleep methods for far better accuracy.
 		 *
 		 */
-		CEYLAN_DLL void sleepForSeconds( Second secondCount ) 
-			throw( SystemException ) ;
+		CEYLAN_DLL void sleepForSeconds( Second secondCount ) ;
 
 
 
@@ -641,7 +630,7 @@ namespace Ceylan
 		 * etc., as otherwise a System exception might be thrown.
 		 *
 		 */
-		CEYLAN_DLL bool areSubSecondSleepsAvailable() throw() ;
+		CEYLAN_DLL bool areSubSecondSleepsAvailable() ;
 
 
 
@@ -665,7 +654,7 @@ namespace Ceylan
 		 * prior to calling this sleep method.
 		 *
 		 */
-		CEYLAN_DLL void atomicSleep() throw( SystemException ) ;
+		CEYLAN_DLL void atomicSleep() ;
 
 
 
@@ -696,8 +685,7 @@ namespace Ceylan
 		 * prior to calling this sleep method.
 		 *
 		 */
-		CEYLAN_DLL void basicSleep( Second secondCount, Nanosecond nanoCount )
-			throw( SystemException ) ;
+		CEYLAN_DLL void basicSleep( Second secondCount, Nanosecond nanoCount ) ;
 
 
 
@@ -707,8 +695,7 @@ namespace Ceylan
 		 * @see basicSleep( Second seconds, Nanosecond nanos )
 		 *
 		 */
-		CEYLAN_DLL void basicSleep( Microsecond micros ) 
-			throw( SystemException ) ;
+		CEYLAN_DLL void basicSleep( Microsecond micros ) ;
 
 
 
@@ -755,8 +742,8 @@ namespace Ceylan
 		 * prior to calling this sleep method.
 		 *
 		 */
-		CEYLAN_DLL bool smartSleep( Second secondCount, Microsecond microCount )
-			throw( SystemException ) ;
+		CEYLAN_DLL bool smartSleep( Second secondCount, 
+			Microsecond microCount ) ;
 
 
 
@@ -782,7 +769,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL bool smartSleepUntil( Second secondCount, 
-			Microsecond microCount ) throw( SystemException ) ;
+			Microsecond microCount ) ;
 
 
 
@@ -802,8 +789,8 @@ namespace Ceylan
 		 *
  		 */
 		CEYLAN_DLL Microsecond getActualDurationForSleep(
-				Microsecond requestedMicroseconds, Second requestedSeconds = 0 )
-			throw( SystemException ) ;
+				Microsecond requestedMicroseconds, 
+				Second requestedSeconds = 0 ) ;
 
 
 
@@ -856,8 +843,7 @@ namespace Ceylan
 		 * descriptor feature is needed) or if the measurement failed.
 		 *
 		 */
-		CEYLAN_DLL Microsecond getSchedulingGranularity() 
-			throw( SystemException ) ;
+		CEYLAN_DLL Microsecond getSchedulingGranularity() ;
 
 
 
@@ -883,8 +869,7 @@ namespace Ceylan
 		 * @note It is unclear whether file I/O can be impacted.
 		 *
 		 */
-		CEYLAN_DLL bool setLegacyStreamSynchronization( bool synchronized ) 
-			throw() ;
+		CEYLAN_DLL bool setLegacyStreamSynchronization( bool synchronized ) ;
 
 
 
@@ -896,3 +881,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_SYSTEM_H_
+
