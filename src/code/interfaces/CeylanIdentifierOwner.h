@@ -51,7 +51,7 @@ namespace Ceylan
 		public:
 				
 			explicit IdentifierNotAvailableException( 
-				const std::string & reason ) throw() ;
+				const std::string & reason ) ;
 				
 			virtual ~IdentifierNotAvailableException() throw() ;
 					
@@ -86,7 +86,7 @@ namespace Ceylan
 			 * Basic constructor, does not assign internal identifier.
 			 *
 			 */
-            IdentifierOwner() throw() ;
+            IdentifierOwner() ;
 
 
             /**
@@ -94,7 +94,8 @@ namespace Ceylan
              *
              * @param id the identifier this IdentifierOwner should have.
              */
-            explicit IdentifierOwner( const Identifier & id ) throw() ;
+            explicit IdentifierOwner( const Identifier & id ) ;
+
 
 
             /**
@@ -105,27 +106,37 @@ namespace Ceylan
             virtual ~IdentifierOwner() throw() ;
 
 
-            /// Returns this IdentifierOwner's identifier.
-            Identifier & getIdentifier() const 
-				throw( IdentifierNotAvailableException ) ;
+
+            /**
+			 * Returns this IdentifierOwner's identifier.
+			 *
+			 * @throw IdentifierNotAvailableException if the operation failed.
+			 *
+			 */
+            Identifier & getIdentifier() const ;
+
 
 
             /**
 			 * Sets this IdentifierOwner's identifier.
 			 *
+			 * @throw IdentifierNotAvailableException if the operation failed.
+			 *
 			 * @note This IdentifierOwner takes ownership of 
 			 * provided identifier.
 			 *
 			 */
-            void setIdentifier( Identifier & id ) 
-				throw( IdentifierNotAvailableException ) ;
+            void setIdentifier( Identifier & id ) ;
+
 
 
             /// Returns whether this IdentifierOwner has a stored identifier.
-            bool hasIdentifier() const throw() ;
+            bool hasIdentifier() const ;
+
 
             /// Deletes this IdentifierOwner's identifier.
-            void deleteIdentifier() throw() ;
+            void deleteIdentifier() ;
+
 
 
             /**
@@ -141,7 +152,7 @@ namespace Ceylan
              *
              */
 			virtual const std::string toString( 
-				Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
+				Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 	
 
@@ -160,7 +171,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			IdentifierOwner( const IdentifierOwner & source ) throw() ;
+			IdentifierOwner( const IdentifierOwner & source ) ;
 			
 			
 			/**
@@ -171,8 +182,7 @@ namespace Ceylan
 			 * operator is called, implicitly or not.
 			 *
 			 */			 
-			IdentifierOwner & operator = ( 
-				const IdentifierOwner & source ) throw() ;
+			IdentifierOwner & operator = ( const IdentifierOwner & source ) ;
 		
 			
 
@@ -182,3 +192,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_IDENTIFIER_OWNER_H_
+

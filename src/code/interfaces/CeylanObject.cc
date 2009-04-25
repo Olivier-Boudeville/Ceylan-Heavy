@@ -51,8 +51,7 @@ using namespace Ceylan::Log ;
 
 
 
-Object::Object( bool trackInstance, bool dropIdentifierOnExit ) 
-		throw( LogException ): 
+Object::Object( bool trackInstance, bool dropIdentifierOnExit ) : 
 	IdentifierOwner(),
 	Loggable( "Unknown object" ),
 	_trackInstance( trackInstance ) 
@@ -100,7 +99,7 @@ Object::~Object() throw()
 
 
 
-const std::string Object::getClassName() const throw()
+const std::string Object::getClassName() const
 {
 
     string className = typeid( * this ).name() ;
@@ -144,22 +143,25 @@ const std::string Object::getClassName() const throw()
 
 
 
-bool Object::isOfSameType( const Object & other ) const throw()
+bool Object::isOfSameType( const Object & other ) const
 {
+
     return ( getClassName() == other.getClassName() ) ;
+	
 }
 
 
 
-void Object::logState( Ceylan::VerbosityLevels level ) throw()
+void Object::logState( Ceylan::VerbosityLevels level )
 {
+
 	send( toString( level ) ) ;
+	
 }
 
 
 
 void Object::send( const string & message, LevelOfDetail levelOfDetail ) 
-	throw( LogException )
 {
 
 	CEYLAN_LOG( "Object::send: will send message " + message ) ;
@@ -194,8 +196,7 @@ void Object::send( const string & message, LevelOfDetail levelOfDetail )
 
 
 
-const string Object::toString( Ceylan::VerbosityLevels level ) 
-	const throw() 
+const string Object::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string result ;
@@ -216,7 +217,7 @@ const string Object::toString( Ceylan::VerbosityLevels level )
 	
 	
 	
-void Object::forgeIdentifier() throw( Log::LogException )
+void Object::forgeIdentifier()
 {
 	
 	CEYLAN_LOG( "Object::forgeIdentifier: new identifier required." ) ;
@@ -269,7 +270,7 @@ void Object::forgeIdentifier() throw( Log::LogException )
 
 
 
-void Object::dropIdentifier() throw()
+void Object::dropIdentifier()
 {
 
 	deleteIdentifier() ;

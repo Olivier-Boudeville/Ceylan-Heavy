@@ -45,7 +45,7 @@ using namespace Ceylan ;
 
 
 IdentifierNotAvailableException::IdentifierNotAvailableException(
-    	const string & message ) throw():
+    	const string & message ) :
 	Ceylan::Exception( message )
 {
 
@@ -59,12 +59,12 @@ IdentifierNotAvailableException::~IdentifierNotAvailableException() throw()
 
 
 
-IdentifierOwner::IdentifierOwner() throw():
+IdentifierOwner::IdentifierOwner() :
 	_id( 0 )
 {
 
-	
 	CEYLAN_LOG( "IdentifierOwner constructor" ) ;
+	
 }
 
 
@@ -79,8 +79,7 @@ IdentifierOwner::~IdentifierOwner() throw()
 
 
 
-Identifier & IdentifierOwner::getIdentifier() 
-	const throw( IdentifierNotAvailableException )
+Identifier & IdentifierOwner::getIdentifier() const
 {
 
     if ( _id != 0 )
@@ -99,7 +98,6 @@ Identifier & IdentifierOwner::getIdentifier()
 
 
 void IdentifierOwner::setIdentifier( Identifier & id )
-	throw( IdentifierNotAvailableException )
 {
 
     if ( _id != 0 )
@@ -117,7 +115,7 @@ void IdentifierOwner::setIdentifier( Identifier & id )
 
 
 
-bool IdentifierOwner::hasIdentifier() const throw()
+bool IdentifierOwner::hasIdentifier() const
 {
 
     return ( _id != 0 ) ;
@@ -126,9 +124,8 @@ bool IdentifierOwner::hasIdentifier() const throw()
 
 
 
-void IdentifierOwner::deleteIdentifier() throw()
+void IdentifierOwner::deleteIdentifier()
 {
-
 
 #if CEYLAN_DEBUG
 
@@ -155,7 +152,7 @@ void IdentifierOwner::deleteIdentifier() throw()
 
 
 
-const string IdentifierOwner::toString( VerbosityLevels level ) const throw()
+const string IdentifierOwner::toString( VerbosityLevels level ) const
 {
 
 	if ( _id != 0 )
@@ -170,4 +167,3 @@ const string IdentifierOwner::toString( VerbosityLevels level ) const throw()
 
 }
   
-

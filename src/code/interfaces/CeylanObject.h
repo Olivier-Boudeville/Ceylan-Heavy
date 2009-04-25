@@ -84,6 +84,8 @@ namespace Ceylan
 			 * Object::dropIdentifier would have to be done to rely on an
 			 * unmangled relevant identifier.
 			 *
+			 * @throwLog::LogException in case of failure.
+			 *
 			 * @note This object's identifier will not be computed as 
 			 * long as it is not needed.
 			 *
@@ -96,7 +98,8 @@ namespace Ceylan
 			 *
 			 */
             explicit Object( bool trackInstance = true, 
-				bool dropIdentifierOnExit = true ) throw( Log::LogException ) ;
+				bool dropIdentifierOnExit = true ) ;
+
 
 
             /**
@@ -105,6 +108,7 @@ namespace Ceylan
 			 *
 			 */
             virtual ~Object() throw() ;
+
 
 			
             /**
@@ -117,7 +121,6 @@ namespace Ceylan
 			 * @note the class name given by the compiler depends on the
 			 * compiler and its version. 
 			 *
-			 *
 			 * @example With g++ 3.x, the classname is prefixed with the
 			 * character length: Lockable classname would be actually
 			 * 8Lockable, Log would be 3Log.
@@ -125,7 +128,8 @@ namespace Ceylan
              * @see isOfSameType
              *
              */
-            virtual const std::string getClassName() const throw() ;
+            virtual const std::string getClassName() const ;
+
 
 
             /**
@@ -138,7 +142,8 @@ namespace Ceylan
              * @see getClassName
              *
              */
-            virtual bool isOfSameType( const Object & other ) const throw() ;
+            virtual bool isOfSameType( const Object & other ) const ;
+
 
 
 			/**
@@ -155,7 +160,8 @@ namespace Ceylan
 			 *
 			 */
 			virtual void logState( 
-				Ceylan::VerbosityLevels level = Ceylan::high ) throw() ;
+				Ceylan::VerbosityLevels level = Ceylan::high ) ;
+			
 			
 			
 		    /**
@@ -171,6 +177,8 @@ namespace Ceylan
 		     * @param levelOfDetail the level of detail of this message 
 			 * (level 5 by default).
 		     *
+			 * @throw Log::LogException if the operation failed.
+			 *
 			 * @note This method had to be overriden because when 
 			 * forging the identifier from the object constructor, the 
 			 * class name is mangled. So we delay the construction of 
@@ -188,9 +196,9 @@ namespace Ceylan
 		     */		
 			virtual void send( const std::string & message,
 				Log::LevelOfDetail levelOfDetail 
-					= Log::DefaultLevelOfDetailForMessage
-				) throw( Log::LogException ) ; 		
+					= Log::DefaultLevelOfDetailForMessage ) ; 		
 			
+						
 									
 			/**
 			 * Forges this object's identifier.
@@ -201,24 +209,24 @@ namespace Ceylan
 			 * not be forged.
 			 *
 			 */
-            virtual void forgeIdentifier() throw( Log::LogException ) ;	
+            virtual void forgeIdentifier() ;	
+
 
 
             /**
-             * Returns a user-friendly description of the state of 
+			 * Returns a user-friendly description of the state of 
 			 * this object.
-             *
+			 *
 			 * @param level the requested verbosity level.
 			 *
 			 * @note Text output format is determined from overall 
 			 * settings.
 			 *
 			 * @see TextDisplayable
-             *
-             */
+			 *
+			 */
 			virtual const std::string toString( 
-				Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+				Ceylan::VerbosityLevels level = Ceylan::high ) const  ;
 
 			
 			
@@ -234,7 +242,7 @@ namespace Ceylan
 			 * (the final child).
 			 *
 			 */
-			void dropIdentifier() throw() ;
+			void dropIdentifier() ;
 			
 		
 			/**
@@ -257,7 +265,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 *
 			 */			 
-			Object( const Object & source ) throw() ;
+			Object( const Object & source ) ;
 			
 			
 			/**
@@ -268,7 +276,7 @@ namespace Ceylan
 			 * operator is called, implicitly or not.
 			 * 
 			 */			 
-			Object & operator = ( const Object & source ) throw() ;
+			Object & operator = ( const Object & source ) ;
 		
 			
     } ;
@@ -278,3 +286,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_OBJECT_H_
+
