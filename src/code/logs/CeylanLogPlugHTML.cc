@@ -45,8 +45,8 @@ using namespace Ceylan::Log ;
 const string & LogPlugHTML::LogDirectorySuffix = "-logs" ;
 
 
+
 void LogPlugHTML::StartService( const string & plugInitiator, bool smart ) 
-	throw ( LogException )
 {
 		
 	CEYLAN_LOG( "Starting LogPlug HTML service: "
@@ -70,8 +70,7 @@ void LogPlugHTML::StartService( const string & plugInitiator, bool smart )
 	 *
 	 */
 	
-	LogPlug::Transport = 
-		new LogTransportListenerRaw( * LogPlug::Aggregator ) ;
+	LogPlug::Transport = new LogTransportListenerRaw( * LogPlug::Aggregator ) ;
 	
 	// Creates basic standard channels:
 	LogPlug::CreateBasicPlug() ;
@@ -80,6 +79,7 @@ void LogPlugHTML::StartService( const string & plugInitiator, bool smart )
 	LogPlug::StartService( plugInitiator ) ;
 
 }
+
 
 
 void LogPlugHTML::StopService() throw()
@@ -97,6 +97,7 @@ void LogPlugHTML::StopService() throw()
 	LogPlug::Aggregator = 0 ;
 	
 }
+
 
 
 const string LogPlugHTML::ToString( Ceylan::VerbosityLevels level ) throw()
@@ -118,12 +119,12 @@ const string LogPlugHTML::ToString( Ceylan::VerbosityLevels level ) throw()
  * Not even defined: 
  *
 
-
-LogPlugHTML::LogPlugHTML() throw( LogException )
+LogPlugHTML::LogPlugHTML()
 {
 	throw LogException( 
 		"Ceylan::Log::LogPlugHTML should not be instanciated." ) ;
 }
+
 
 
 LogPlugHTML::~LogPlugHTML() throw()

@@ -89,7 +89,7 @@ const string LogPlug::LogSystemNotInitialized =
 
 
 
-void LogPlug::SetInfoLogSource( LogSource & newInfoLogSource ) throw()
+void LogPlug::SetInfoLogSource( LogSource & newInfoLogSource )
 {
 
     InfoLogSource = & newInfoLogSource ;
@@ -98,7 +98,7 @@ void LogPlug::SetInfoLogSource( LogSource & newInfoLogSource ) throw()
 
 
 
-LogSource & LogPlug::GetInfoLogSource() throw()
+LogSource & LogPlug::GetInfoLogSource()
 {
 
     return * InfoLogSource ;
@@ -107,7 +107,7 @@ LogSource & LogPlug::GetInfoLogSource() throw()
 
 
 
-void LogPlug::SetTraceLogSource( LogSource & newTraceLogSource ) throw()
+void LogPlug::SetTraceLogSource( LogSource & newTraceLogSource )
 {
 
     TraceLogSource = & newTraceLogSource ;
@@ -116,7 +116,7 @@ void LogPlug::SetTraceLogSource( LogSource & newTraceLogSource ) throw()
 
 
 
-LogSource & LogPlug::GetTraceLogSource() throw()
+LogSource & LogPlug::GetTraceLogSource()
 {
 
     return * TraceLogSource ;
@@ -125,7 +125,7 @@ LogSource & LogPlug::GetTraceLogSource() throw()
 
 
 
-void LogPlug::SetDebugLogSource( LogSource & newDebugLogSource ) throw()
+void LogPlug::SetDebugLogSource( LogSource & newDebugLogSource )
 {
 
     DebugLogSource = & newDebugLogSource ;
@@ -134,7 +134,7 @@ void LogPlug::SetDebugLogSource( LogSource & newDebugLogSource ) throw()
 
 
 
-LogSource & LogPlug::GetDebugLogSource() throw()
+LogSource & LogPlug::GetDebugLogSource()
 {
 
     return * DebugLogSource ;
@@ -143,7 +143,7 @@ LogSource & LogPlug::GetDebugLogSource() throw()
 
 
 
-void LogPlug::SetWarningLogSource( LogSource & newWarningLogSource ) throw()
+void LogPlug::SetWarningLogSource( LogSource & newWarningLogSource )
 {
 
     WarningLogSource = & newWarningLogSource ;
@@ -152,7 +152,7 @@ void LogPlug::SetWarningLogSource( LogSource & newWarningLogSource ) throw()
 
 
 
-LogSource & LogPlug::GetWarningLogSource() throw()
+LogSource & LogPlug::GetWarningLogSource()
 {
 
     return * WarningLogSource ;
@@ -161,7 +161,7 @@ LogSource & LogPlug::GetWarningLogSource() throw()
 
 
 
-void LogPlug::SetErrorLogSource( LogSource & newErrorLogSource ) throw()
+void LogPlug::SetErrorLogSource( LogSource & newErrorLogSource )
 {
 
     ErrorLogSource = & newErrorLogSource ;
@@ -170,7 +170,7 @@ void LogPlug::SetErrorLogSource( LogSource & newErrorLogSource ) throw()
 
 
 
-LogSource & LogPlug::GetErrorLogSource() throw()
+LogSource & LogPlug::GetErrorLogSource()
 {
 
     return * ErrorLogSource ;
@@ -179,7 +179,7 @@ LogSource & LogPlug::GetErrorLogSource() throw()
 
 
 
-void LogPlug::SetFatalLogSource( LogSource & newFatalLogSource ) throw()
+void LogPlug::SetFatalLogSource( LogSource & newFatalLogSource )
 {
 
     FatalLogSource = & newFatalLogSource ;
@@ -188,7 +188,7 @@ void LogPlug::SetFatalLogSource( LogSource & newFatalLogSource ) throw()
 
 
 
-LogSource & LogPlug::GetFatalLogSource() throw()
+LogSource & LogPlug::GetFatalLogSource()
 {
 
     return * FatalLogSource ;
@@ -197,7 +197,7 @@ LogSource & LogPlug::GetFatalLogSource() throw()
 
 
 
-bool LogPlug::IsFatalLogSourceAvailable() throw()
+bool LogPlug::IsFatalLogSourceAvailable()
 {
 
 	return ( FatalLogSource != 0 ) ;
@@ -206,7 +206,7 @@ bool LogPlug::IsFatalLogSourceAvailable() throw()
 
 
 
-void LogPlug::SetLogRootLogSource( LogSource & newLogRootLogSource ) throw()
+void LogPlug::SetLogRootLogSource( LogSource & newLogRootLogSource )
 {
 
     LogrootLogSource = & newLogRootLogSource ;
@@ -215,7 +215,7 @@ void LogPlug::SetLogRootLogSource( LogSource & newLogRootLogSource ) throw()
 
 
 
-LogSource & LogPlug::GetLogRootLogSource() throw()
+LogSource & LogPlug::GetLogRootLogSource()
 {
 
     return * LogrootLogSource ;
@@ -224,7 +224,7 @@ LogSource & LogPlug::GetLogRootLogSource() throw()
 
 
 
-void LogPlug::SetTransport( LogTransport & newTransport ) throw()
+void LogPlug::SetTransport( LogTransport & newTransport )
 {
 
     Transport = & newTransport ;
@@ -233,7 +233,7 @@ void LogPlug::SetTransport( LogTransport & newTransport ) throw()
 
 
 
-LogTransport & LogPlug::GetTransport() throw()
+LogTransport & LogPlug::GetTransport()
 {
 
     return *Transport ;
@@ -242,7 +242,7 @@ LogTransport & LogPlug::GetTransport() throw()
 
 
 
-void LogPlug::SetListener( LogListener & newListener ) throw()
+void LogPlug::SetListener( LogListener & newListener )
 {
 
     Listener = & newListener ;
@@ -251,7 +251,7 @@ void LogPlug::SetListener( LogListener & newListener ) throw()
 
 
 
-LogListener & LogPlug::GetListener() throw()
+LogListener & LogPlug::GetListener()
 {
 
     return * Listener ;
@@ -260,7 +260,7 @@ LogListener & LogPlug::GetListener() throw()
 
 
 
-void LogPlug::SetAggregator( LogAggregator & newAggregator ) throw()
+void LogPlug::SetAggregator( LogAggregator & newAggregator )
 {
 
     Aggregator = & newAggregator ;
@@ -269,7 +269,7 @@ void LogPlug::SetAggregator( LogAggregator & newAggregator ) throw()
 
 
 
-LogAggregator & LogPlug::GetAggregator() throw()
+LogAggregator & LogPlug::GetAggregator()
 {
 
     return * Aggregator ;
@@ -278,7 +278,7 @@ LogAggregator & LogPlug::GetAggregator() throw()
 
 
 
-void LogPlug::CheckBlank() throw( LogException )
+void LogPlug::CheckBlank()
 {
 
     if ( LogrootLogSource != 0 )
@@ -327,7 +327,6 @@ void LogPlug::CheckBlank() throw( LogException )
 
 
 void LogPlug::SetFullExecutablePath( const string & plugInitiatorFullName )	
-	throw ( LogException )
 {
 
 	if ( FullExecutablePath.size() != 0 )
@@ -338,8 +337,9 @@ void LogPlug::SetFullExecutablePath( const string & plugInitiatorFullName )
         
 }
     
+  
     
-std::string LogPlug::GetFullExecutablePath() throw ( LogException )
+std::string LogPlug::GetFullExecutablePath() 
 {
     
 	if ( FullExecutablePath.size() == 0 )
@@ -353,7 +353,6 @@ std::string LogPlug::GetFullExecutablePath() throw ( LogException )
                     
                     
 std::string LogPlug::GetSpeakerNameFrom( const string & plugInitiatorFullName )
-	throw ( LogException )                    
 {
 
 	// plugInitiatorFullName is usually argv[0].
@@ -414,7 +413,7 @@ std::string LogPlug::GetSpeakerNameFrom( const string & plugInitiatorFullName )
 
 
     
-void LogPlug::CreateBasicPlug() throw( LogException )
+void LogPlug::CreateBasicPlug()
 {
 	
 	CEYLAN_LOG( "Creating default standard channels." ) ;
@@ -460,7 +459,7 @@ void LogPlug::CreateBasicPlug() throw( LogException )
 
 
 
-void LogPlug::CreateNullPlug() throw( LogException )
+void LogPlug::CreateNullPlug()
 {
 	
 	CEYLAN_LOG( "Creating muted null channels." ) ;
@@ -494,8 +493,7 @@ void LogPlug::CreateNullPlug() throw( LogException )
 
 
 
-
-void LogPlug::StartService( const string & plugCreator ) throw( LogException )
+void LogPlug::StartService( const string & plugCreator )
 {
 
 	SourceName = plugCreator ;
@@ -525,7 +523,7 @@ void LogPlug::StartService( const string & plugCreator ) throw( LogException )
 
 
 
-void LogPlug::StopService( bool warnIfAlreadyStopped ) throw()
+void LogPlug::StopService( bool warnIfAlreadyStopped )
 {
 
 	if ( InfoLogSource != 0 ) 
@@ -630,7 +628,7 @@ void LogPlug::StopService( bool warnIfAlreadyStopped ) throw()
 
 
 
-const string LogPlug::GetSourceName() throw()
+const string LogPlug::GetSourceName()
 {
 
 	return SourceName ;
@@ -639,9 +637,8 @@ const string LogPlug::GetSourceName() throw()
 
 
 
-const string LogPlug::ToString( Ceylan::VerbosityLevels level ) throw()
+const string LogPlug::ToString( Ceylan::VerbosityLevels level )
 {
-
 	
 	std::list<string> res ;
 		
@@ -703,8 +700,7 @@ const string LogPlug::ToString( Ceylan::VerbosityLevels level ) throw()
 
 
 
-void LogPlug::info( const string & message, LevelOfDetail levelOfDetail ) 
-	throw( LogException )
+void LogPlug::info( const string & message, LevelOfDetail levelOfDetail ) 	
 {
 
 #if CEYLAN_DEBUG
@@ -723,8 +719,7 @@ void LogPlug::info( const string & message, LevelOfDetail levelOfDetail )
 
 
 
-void LogPlug::trace( const string & message, LevelOfDetail levelOfDetail ) 
-	throw( LogException )
+void LogPlug::trace( const string & message, LevelOfDetail levelOfDetail ) 	
 {
 
 #if CEYLAN_DEBUG
@@ -743,8 +738,7 @@ void LogPlug::trace( const string & message, LevelOfDetail levelOfDetail )
 
 
 
-void LogPlug::debug( const string & message, LevelOfDetail levelOfDetail ) 
-	throw( LogException )
+void LogPlug::debug( const string & message, LevelOfDetail levelOfDetail ) 	
 {
 
 #if CEYLAN_DEBUG
@@ -763,8 +757,7 @@ void LogPlug::debug( const string & message, LevelOfDetail levelOfDetail )
 
 
 
-void LogPlug::warning( const string & message, LevelOfDetail levelOfDetail ) 
-	throw( LogException )
+void LogPlug::warning( const string & message, LevelOfDetail levelOfDetail ) 	
 {
 
 #if CEYLAN_DEBUG
@@ -783,8 +776,7 @@ void LogPlug::warning( const string & message, LevelOfDetail levelOfDetail )
 
 
 
-void LogPlug::error( const string & message, LevelOfDetail levelOfDetail ) 
-	throw( LogException )
+void LogPlug::error( const string & message, LevelOfDetail levelOfDetail ) 	
 {
 
 #if CEYLAN_DEBUG
@@ -803,8 +795,7 @@ void LogPlug::error( const string & message, LevelOfDetail levelOfDetail )
 
 
 
-void LogPlug::fatal( const string & message, LevelOfDetail levelOfDetail ) 
-	throw( LogException )
+void LogPlug::fatal( const string & message, LevelOfDetail levelOfDetail ) 	
 {
 
 #if CEYLAN_DEBUG
@@ -824,7 +815,6 @@ void LogPlug::fatal( const string & message, LevelOfDetail levelOfDetail )
 
 
 void LogPlug::logroot( const string & message, LevelOfDetail levelOfDetail ) 
-	throw( LogException )
 {
 
 #if CEYLAN_DEBUG
@@ -844,7 +834,7 @@ void LogPlug::logroot( const string & message, LevelOfDetail levelOfDetail )
 
 
 
-LogPlug::LogPlug() throw( LogException )
+LogPlug::LogPlug()
 {
 
 	throw LogException( 

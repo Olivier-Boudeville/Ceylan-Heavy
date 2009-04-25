@@ -62,7 +62,7 @@ namespace Ceylan
 				 * Constructs a MuteLogSource.
 				 *
 				 */
-				explicit MuteLogSource() throw() ;
+				explicit MuteLogSource() ;
 			
 				
 				
@@ -85,8 +85,7 @@ namespace Ceylan
 				virtual void send( 
 					const std::string & message,
 					LevelOfDetail levelOfDetail 
-						= DefaultLevelOfDetailForMessage 
-					) throw( LogException ) ; 
+						= DefaultLevelOfDetailForMessage ) ; 
 		
 			
 				/**
@@ -101,8 +100,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 								
 
@@ -118,7 +116,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				MuteLogSource( const MuteLogSource & source ) throw() ;
+				MuteLogSource( const MuteLogSource & source ) ;
 			
 			
 				/**
@@ -129,8 +127,7 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				MuteLogSource & operator = ( const MuteLogSource & source )
-					throw() ;
+				MuteLogSource & operator = ( const MuteLogSource & source ) ;
 				
 	
 		} ;

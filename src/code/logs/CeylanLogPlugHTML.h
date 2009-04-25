@@ -47,7 +47,7 @@ namespace Ceylan
 		
 		
 		/**
-		 * Where messages from a LogSource will be output : the first
+		 * Where messages from a LogSource will be output: the first
 		 * part of the LogTransport-LogListener pair.
 		 *
 		 */
@@ -55,7 +55,7 @@ namespace Ceylan
 		
 		
 		/**
-		 * Where messages from a LogSource will be received : the 
+		 * Where messages from a LogSource will be received: the 
 		 * second part of the LogTransport-LogListener pair, before
 		 * the LogAggregator.
 		 *
@@ -68,6 +68,7 @@ namespace Ceylan
 		 *
 		 */
 		class LogAggregator ;
+		
 		
 		
 		/**
@@ -113,6 +114,7 @@ namespace Ceylan
 		         * @param plugInitiator the name of the speaker, for 
 				 * instance argv[0].
 				 *
+				 * @throw LogException if the service could not be started.
 				 * @note plugInitiator will be used to create the
 				 * directory which will be containing all HTML log output.
 				 *
@@ -121,17 +123,17 @@ namespace Ceylan
 				 *
 		         */
 		        static void StartService( const std::string & plugInitiator, 
-					bool smart = true ) throw ( LogException ) ;
+					bool smart = true ) ;
 
 
 		        /// Stops the Log HTML service.
-		        static void StopService() throw() ;
+		        static void StopService() ;
 				
 				
 				/// Returns some informations about the HTML LogPlug's state.
 	           	static const std::string ToString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) ;
+				
 				
 					
 			protected:	
@@ -145,12 +147,13 @@ namespace Ceylan
 				 static const std::string & LogDirectorySuffix ;
 	
 	
+	
 			private:
 			
 			
 				/* 
 				
-				Not even declared to avoid : 
+				Not even declared to avoid: 
 				'warning: will never be executed'
 				/// LogPlug HTML should not be instanciated.
 				LogPlugHTML() throw( LogException )
@@ -171,7 +174,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				LogPlugHTML( const LogPlugHTML & source ) throw() ;
+				LogPlugHTML( const LogPlugHTML & source ) ;
 			
 			
 				/**
@@ -182,8 +185,7 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				LogPlugHTML & operator = ( const LogPlugHTML & source )
-					throw() ;
+				LogPlugHTML & operator = ( const LogPlugHTML & source ) ;
 				
 	
 		} ;	
@@ -194,6 +196,5 @@ namespace Ceylan
 
 
 
-
-
 #endif // CEYLAN_LOG_PLUG_HTML_H_
+

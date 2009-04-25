@@ -62,8 +62,7 @@ namespace Ceylan
 	
 	
 			/**
-			 * Aggregators must able to access to messages of log
-			 * channels.
+			 * Aggregators must able to access to messages of log channels.
 			 *
 			 */
 			friend class LogAggregator ;
@@ -88,7 +87,7 @@ namespace Ceylan
 		 	 	 * Creates a named Log channel.
 		 	 	 * 
 		 		 */
-				explicit LogChannel( const std::string & name ) throw() ;
+				explicit LogChannel( const std::string & name ) ;
 			
 	
 				/// Basic virtual destructor.
@@ -106,16 +105,18 @@ namespace Ceylan
 				 * @param check if true, raises a LogException if this
 				 * added message's channel does not match this channel.
 				 *
+				 * @throw LogException if the operation failed.
+				 *
 				 */
 				virtual void addMessage( LogMessage & message, 
-					bool check = true ) throw( LogException ) ;
+					bool check = true ) ;
 				
 				
 				/**
 				 * Returns this channel's name.
 				 *
 				 */
-				virtual const std::string getName() const throw() ;
+				virtual const std::string getName() const ;
 				
 					
 				/**
@@ -123,7 +124,7 @@ namespace Ceylan
 				 * currently gathered.
 				 *
 				 */
-				virtual MessageCount getMessageCount() const throw() ;
+				virtual MessageCount getMessageCount() const ;
 					
 											
 	            /**
@@ -139,8 +140,7 @@ namespace Ceylan
 				 *
 	             */
 				virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high )
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 				
 								
 				
@@ -182,7 +182,7 @@ namespace Ceylan
 				 * undefined constructor is called, implicitly or not.
 				 *
 				 */			 
-				LogChannel( const LogChannel & source ) throw() ;
+				LogChannel( const LogChannel & source ) ;
 			
 			
 				/**
@@ -193,7 +193,7 @@ namespace Ceylan
 				 * undefined operator is called, implicitly or not.
 				 *
 				 */			 
-				LogChannel & operator = ( const LogChannel & source ) throw() ;
+				LogChannel & operator = ( const LogChannel & source ) ;
 				
 				
 		} ;

@@ -78,7 +78,7 @@ namespace Ceylan
 				 * aggregator so that incoming log messages are sent to it.
 				 *
 				 */
-				explicit LogListener( LogAggregator & aggregator ) throw() ;
+				explicit LogListener( LogAggregator & aggregator ) ;
 				
 				
 				/// Basic virtual destructor.
@@ -97,8 +97,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high )
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 			
 			
 			
@@ -109,9 +108,10 @@ namespace Ceylan
 				 * Sends the received message to the internal 
 				 * aggregator.
 				 *
+				 * @throw LogException if the operation fails.
+				 *
 				 */
-				void sendToAggregator( LogMessage & message ) 
-					const throw( LogException ) ; 
+				void sendToAggregator( LogMessage & message ) const ; 
 				
 				
 				/**
@@ -134,7 +134,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				LogListener( const LogListener & source ) throw() ;
+				LogListener( const LogListener & source ) ;
 			
 			
 				/**
@@ -145,8 +145,8 @@ namespace Ceylan
 				 * undefined operator is called, implicitly or not.
 				 * 
 				 */			 
-				LogListener & operator = ( const LogListener & source ) 
-					throw() ;
+				LogListener & operator = ( const LogListener & source ) ;
+					
 					
 		} ;			
 	
@@ -154,4 +154,6 @@ namespace Ceylan
 
 } 
 
+
 #endif // CEYLAN_LOG_LISTENER_H_ 
+

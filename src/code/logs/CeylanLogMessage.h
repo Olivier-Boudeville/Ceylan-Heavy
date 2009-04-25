@@ -80,33 +80,35 @@ namespace Ceylan
 				LogMessage( const std::string & message, 
 					const std::string & channelName,
 					LevelOfDetail levelOfDetail, 
-					const Timestamp & timestamp ) throw() ;
+					const Timestamp & timestamp ) ;
+				
 				
 				
 				/**
 				 * Simpler LogMessage constructor, whose timestamp is
 				 * dated from this LogMessage creation.
 				 *
-				 * @throw UtilsException since timestamp creation may fail.
+				 * @throw LogException, since timestamp creation may fail.
 				 *
 				 */
 				LogMessage( const std::string & message, 
-						const std::string & channelName,
-						LevelOfDetail levelOfDetail 
-							= MaximumLevelOfDetailForMessage) 
-					throw( LogException ) ;
+					const std::string & channelName,
+					LevelOfDetail levelOfDetail 
+						= MaximumLevelOfDetailForMessage ) ;
 					
 					
 				/// Basic virtual destructor.
 				virtual ~LogMessage() throw() ;	
 
 
+
 				/// Returns this message's actual content.
-				virtual const std::string getContent() const throw() ;
+				virtual const std::string getContent() const ;
 
 
 				/// Returns this message's channel.
-				virtual const std::string getChannelName() const throw() ;
+				virtual const std::string getChannelName() const ;
+				
 				
 				
 				/**
@@ -115,20 +117,24 @@ namespace Ceylan
 				 *
 				 */
 				virtual void setChannelName( 
-					const std::string & newChannelName ) throw() ;
+					const std::string & newChannelName ) ;
+				
 				
 				
 				/// Returns this message's level of detail.				
-				virtual LevelOfDetail getLevelOfDetail() const throw() ;
+				virtual LevelOfDetail getLevelOfDetail() const ;
+				
 				
 				
 				/**
 				 * Returns this message's timestamp, but keep 
 				 * ownership of it.
 				 *
+				 * @throw LogException if the operation fails.
+				 *
 				 */
-				virtual const Timestamp & getTimestamp() 
-					const throw( LogException ) ;
+				virtual const Timestamp & getTimestamp() const ;
+				
 				
 				
 				/**
@@ -136,8 +142,8 @@ namespace Ceylan
 				 * log message.
 				 *
 				 */
-				virtual const std::string getPreformattedText() 
-					const throw() ;
+				virtual const std::string getPreformattedText() const ;
+				
 				
 				
 				/**
@@ -149,8 +155,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high )
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 		
 			
 			
@@ -160,14 +165,18 @@ namespace Ceylan
 				/// The Log message itself.
 				std::string _message ;
 				
+				
 				/// The Log message channel name.
 				std::string _channelName ;
+				
 				
 				/// This Log message's level of detail.
 				LevelOfDetail _levelOfDetail ;
 				
+				
 				/// This Log message's timestamp.
 				const Timestamp * _timestamp ;
+
 
 
 			private:
@@ -181,7 +190,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				LogMessage( const LogMessage & source ) throw() ;
+				LogMessage( const LogMessage & source ) ;
 			
 			
 				/**
@@ -192,7 +201,7 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				LogMessage & operator = ( const LogMessage & source ) throw() ;
+				LogMessage & operator = ( const LogMessage & source ) ;
 						
 		} ;
 		
@@ -202,3 +211,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_LOG_MESSAGE_H_
+

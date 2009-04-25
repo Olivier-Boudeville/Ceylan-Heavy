@@ -34,7 +34,7 @@ using namespace Ceylan::Log ;
 
 
 
-MuteLogSource::MuteLogSource() throw(): 
+MuteLogSource::MuteLogSource() : 
 	LogSource( "(muted)" )
 {
 
@@ -49,7 +49,7 @@ MuteLogSource::~MuteLogSource() throw()
 
 
 void MuteLogSource::send( const string & message, 
-	LevelOfDetail levelOfDetail ) throw( LogException ) 
+	LevelOfDetail levelOfDetail ) 
 {
 	
 	// Nothing must be done here.
@@ -58,8 +58,7 @@ void MuteLogSource::send( const string & message,
 
 
 
-const string MuteLogSource::toString( Ceylan::VerbosityLevels level ) 
-	const throw() 
+const string MuteLogSource::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	return "Mute Log source" ;

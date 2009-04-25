@@ -72,8 +72,7 @@ KnownPlugs LogHolder::DefaultPlug = classicalPlug ;
 
 
 LogHolder::LogHolder( Ceylan::Uint16 argCount, 
-	const char * const arguments[], bool immediateWrite ) 
-		throw( LogException ):
+		const char * const arguments[], bool immediateWrite ) :
 	_chosenPlug( DefaultPlug )
 {
 
@@ -210,8 +209,7 @@ LogHolder::~LogHolder() throw()
 
 
 
-const string LogHolder::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+const string LogHolder::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	switch( _chosenPlug )
@@ -243,7 +241,7 @@ const string LogHolder::toString( Ceylan::VerbosityLevels level )
 
 
 
-bool LogHolder::IsAKnownPlugOption( const std::string & option ) throw()
+bool LogHolder::IsAKnownPlugOption( const std::string & option )
 {
 
 	if ( option == ConsolePlugOption )

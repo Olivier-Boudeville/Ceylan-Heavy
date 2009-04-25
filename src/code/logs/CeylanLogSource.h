@@ -75,7 +75,7 @@ namespace Ceylan
 				 */
 				explicit LogSource( const std::string & name, 
 					LevelOfDetail levelOfDetail 
-						= DefaultLevelOfDetailForSource ) throw() ;
+						= DefaultLevelOfDetailForSource ) ;
 			
 			
 				/**
@@ -85,7 +85,7 @@ namespace Ceylan
 				 */
 				LogSource( const std::string & name, LogTransport & transport,
 					LevelOfDetail levelOfDetail 
-						= DefaultLevelOfDetailForSource ) throw() ;
+						= DefaultLevelOfDetailForSource ) ;
 	
 			
 				/**
@@ -97,7 +97,7 @@ namespace Ceylan
 				 */
 				explicit LogSource( LogTransport & transport, 
 					LevelOfDetail levelOfDetail 
-						= DefaultLevelOfDetailForSource ) throw() ;
+						= DefaultLevelOfDetailForSource ) ;
 				
 				
 				/// Basic virtual destructor.
@@ -110,24 +110,24 @@ namespace Ceylan
 				 * name.
 				 *
 				 */
-				bool hasChannelName() const throw() ;				
+				bool hasChannelName() const ;				
 				
 				
 				/// Sets this LogSource channel name.
-				void setChannelName( const std::string & channelName ) throw() ;
+				void setChannelName( const std::string & channelName ) ;
 		
 		
 				/// Returns this LogSource channel name.
-				std::string getChannelName() const throw() ;
+				std::string getChannelName() const ;
 				
 				
 				
 				/// Sets this LogSource level of detail of interest.
-				void setLevelOfDetail( LevelOfDetail newLevel ) throw() ;
+				void setLevelOfDetail( LevelOfDetail newLevel ) ;
 		
 		
 				/// Returns this LogSource channel name.
-				LevelOfDetail getLevelOfDetail() const throw() ;
+				LevelOfDetail getLevelOfDetail() const ;
 				
 				
 		
@@ -155,8 +155,7 @@ namespace Ceylan
 				virtual void send( 
 					const std::string & message,
 					LevelOfDetail levelOfDetail 
-						= DefaultLevelOfDetailForMessage 
-					) throw( LogException ) ; 
+						= DefaultLevelOfDetailForMessage ) ; 
 		
 		
 		        /**
@@ -185,22 +184,21 @@ namespace Ceylan
 					const std::string & channel,
 					const std::string & message,
 					LevelOfDetail levelOfDetail = DefaultLevelOfDetailForMessage
-					) const throw( LogException ) ; 
+					) const ; 
 			
 				
 				
 				
 				/// Sets a new Log transport for this LogSource.
-				virtual void setTransport( LogTransport & newTransport ) 
-					throw() ;
+				virtual void setTransport( LogTransport & newTransport ) ;
 				
 				
 				/// Returns this LogSource's Log transport.
-				virtual LogTransport * getTransport() const throw() ;
+				virtual LogTransport * getTransport() const ;
 				
 				
 				/// Tells whether this LogSource has a registered Log transport.
-				virtual bool hasTransport() const throw() ;
+				virtual bool hasTransport() const ;
 
 
 			
@@ -216,12 +214,11 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+						Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 								
 				/// The default level of detail of a Log source.
- 				static const LevelOfDetail DefaultLevelOfDetailForSource = 10  ;
+ 				static const LevelOfDetail DefaultLevelOfDetailForSource = 10 ;
 			
 			
 			
@@ -238,8 +235,7 @@ namespace Ceylan
 				virtual void directSend( const std::string & channel, 
 					const std::string & message,
 					LevelOfDetail levelOfDetail 
-						= DefaultLevelOfDetailForMessage ) 
-					const throw( LogException ) ; 
+						= DefaultLevelOfDetailForMessage ) const ; 
 				
 				
 				/// Stores this LogSource channel name.
@@ -255,7 +251,7 @@ namespace Ceylan
 				 * transport.
 				 *
 				 */
-				virtual void unlinkTransport() throw() ;
+				virtual void unlinkTransport() ;
 
 			
 				/// The LogTransport to be used for sending messages.
@@ -274,7 +270,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				LogSource( const LogSource & source ) throw() ;
+				LogSource( const LogSource & source ) ;
 			
 			
 				/**
@@ -285,7 +281,7 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				LogSource & operator = ( const LogSource & source ) throw() ;
+				LogSource & operator = ( const LogSource & source ) ;
 				
 	
 		} ;

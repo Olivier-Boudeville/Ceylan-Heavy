@@ -99,63 +99,60 @@ namespace Ceylan
 
 
 		        /// Assigns a LogSource for the default log channel info.
-		        static void SetInfoLogSource( LogSource & newInfoLogSource )
-					 throw() ;
+		        static void SetInfoLogSource( LogSource & newInfoLogSource ) ;
 
 
 		        /// Returns the LogSource for the default log channel info.
-		        static LogSource & GetInfoLogSource() throw() ;
+		        static LogSource & GetInfoLogSource() ;
 
 
 
 		        /// Assigns a LogSource for the default log channel trace.
-		        static void SetTraceLogSource( 
-					LogSource & newTraceLogSource )	throw() ;
+		        static void SetTraceLogSource( LogSource & newTraceLogSource ) ;
 
 
 		        /// Returns the LogSource for default log channel trace.
-		        static LogSource & GetTraceLogSource() throw() ;
+		        static LogSource & GetTraceLogSource() ;
 
 
 
 		        /// Assigns a LogSource for the default log channel debug.
-		        static void SetDebugLogSource( 
-					LogSource & newDebugLogSource )	throw() ;
+		        static void SetDebugLogSource( LogSource & newDebugLogSource ) ;
 
 
 		        /// Returns the LogSource for default log channel debug.
-		        static LogSource & GetDebugLogSource() throw() ;
+		        static LogSource & GetDebugLogSource() ;
 
 
 
 		        /// Assigns a LogSource for the default log channel warning.
 		        static void SetWarningLogSource( 
-					LogSource & newWarningLogSource ) throw() ;
+					LogSource & newWarningLogSource ) ;
 
 
 		        /// Returns the LogSource for default log channel warning.
-		        static LogSource & GetWarningLogSource() throw() ;
+		        static LogSource & GetWarningLogSource() ;
 
 
 
 		        /// Assigns a LogSource for the default log channel error.
 		        static void SetErrorLogSource( 
-					LogSource & newErrorLogSource ) throw() ;
+					LogSource & newErrorLogSource ) ;
 
 
 		        /// Returns the LogSource for default log channel error.
-		        static LogSource & GetErrorLogSource() throw() ;
+		        static LogSource & GetErrorLogSource() ;
 
 
 
 
 		        /// Assigns a LogSource for the default log channel fatal.
 		        static void SetFatalLogSource( 
-					LogSource & newFatalLogSource ) throw() ;
+					LogSource & newFatalLogSource ) ;
 
 
 		        /// Returns the LogSource for default log channel fatal.
-		        static LogSource & GetFatalLogSource() throw() ;
+		        static LogSource & GetFatalLogSource() ;
 
 
 				/**
@@ -163,48 +160,45 @@ namespace Ceylan
 				 * initialized.
 				 *
 				 */
-				static bool IsFatalLogSourceAvailable() throw() ;
+				static bool IsFatalLogSourceAvailable() ;
 
 
 
 
 		        /// Assigns a LogSource for the default log channel logroot.
 		        static void SetLogRootLogSource( 
-					LogSource & newLogRootLogSource ) throw() ;
+					LogSource & newLogRootLogSource ) ;
 
 
 		        /// Returns the LogSource for default log channel logroot.
-		        static LogSource & GetLogRootLogSource() throw() ;
+		        static LogSource & GetLogRootLogSource() ;
 
 
 
 		        /// Assigns a LogSource for the default log channel logroot.
-		        static void SetTransport( 
-					LogTransport & newTransport ) throw() ;
+		        static void SetTransport( LogTransport & newTransport ) ;
 
 
 		        /// Returns the log transport currently being used by the plug.
-		        static LogTransport & GetTransport() throw() ;
+		        static LogTransport & GetTransport() ;
 
 
 
 		        /// Assigns a LogSource for the default log channel logroot.
-		        static void SetListener( 
-					LogListener & newListener ) throw() ;
+		        static void SetListener( LogListener & newListener ) ;
 
 
 		        /// Returns the log Listener currently being used by the plug.
-		        static LogListener & GetListener() throw() ;
+		        static LogListener & GetListener() ;
 
 
 
 		        /// Assigns a LogSource for the default log channel logroot.
-		        static void SetAggregator( 
-					LogAggregator & newAggregator ) throw() ;
+		        static void SetAggregator( LogAggregator & newAggregator ) ;
 
 
 		        /// Returns the log Aggregator currently being used by the plug.
-		        static LogAggregator & GetAggregator() throw() ;
+		        static LogAggregator & GetAggregator() ;
 
 
 				/**
@@ -212,7 +206,7 @@ namespace Ceylan
 				 * transport, listener, aggregator being registered.
 				 *
 				 */
-				static void CheckBlank() throw ( LogException ) ;
+				static void CheckBlank() ;
 				
 				
                 /**
@@ -226,8 +220,8 @@ namespace Ceylan
                  *
                  */
                 static void SetFullExecutablePath( 
-                		const std::string & plugInitiatorFullName )	
-                    throw ( LogException ) ;
+                		const std::string & plugInitiatorFullName ) ;
+				
 				
                 
                 /**
@@ -238,8 +232,8 @@ namespace Ceylan
                  * yet.
                  *
                  */
-                static std::string GetFullExecutablePath()
-                	throw ( LogException ) ;
+                static std::string GetFullExecutablePath() ;
+				
 				
                 
                 /**
@@ -253,8 +247,7 @@ namespace Ceylan
                  *
                  */
                 static std::string GetSpeakerNameFrom(
-                		const std::string & plugInitiatorFullName )
-                    throw ( LogException ) ;
+                		const std::string & plugInitiatorFullName ) ;
                     
                     
 				/**
@@ -262,14 +255,15 @@ namespace Ceylan
 				 * provided a transport is already available.
 				 *
 				 */
-				static void CreateBasicPlug() throw ( LogException ) ;
+				static void CreateBasicPlug() ;
+				
 				
 				
 				/**
 				 * Creates a null plug, formed of muted channels.
 				 *
 				 */
-				static void CreateNullPlug() throw ( LogException ) ;
+				static void CreateNullPlug() ;
 				
 				
 				
@@ -288,8 +282,8 @@ namespace Ceylan
 				 * with no further encoding.
 				 *
 		         */
-		        static void StartService( const std::string & plugCreator )
-					throw ( LogException ) ;
+		        static void StartService( const std::string & plugCreator ) ;
+
 
 
 		        /**
@@ -302,17 +296,18 @@ namespace Ceylan
 				 * system.
 				 *
 				 */
-		        static void StopService( bool warnIfAlreadyStopped = true ) 
-					throw() ;
+		        static void StopService( bool warnIfAlreadyStopped = true ) ;
+				
 				
 				
 				/// Returns the source name with initiated the log plug.
-				static const std::string GetSourceName() throw() ;
+				static const std::string GetSourceName() ;
+				
 				
 				
 				/// Returns some informations about the LogPlug's state.
 	           	static const std::string ToString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) ;
 					
 					
 	        	/**
@@ -322,6 +317,7 @@ namespace Ceylan
 				 *
 		         */
 		        static const std::string LogSystemNotInitialized ;
+		
 		
 		
 			    /**
@@ -337,9 +333,8 @@ namespace Ceylan
 				 *
 			     */
 			    static void info( const std::string & message,
-			    		LevelOfDetail levelOfDetail 
-							= Log::MaximumLevelOfDetailForMessage ) 
-					throw( LogException ) ;
+			    	LevelOfDetail levelOfDetail 
+							= Log::MaximumLevelOfDetailForMessage ) ;
 
 
 			    /**
@@ -355,9 +350,9 @@ namespace Ceylan
 			     *
 			     */
 			    static void trace( const std::string & message,
-			    		LevelOfDetail levelOfDetail =
-							Log::DefaultLevelOfDetailForMessage ) 
-					throw( LogException ) ;
+			    	LevelOfDetail levelOfDetail =
+						Log::DefaultLevelOfDetailForMessage ) ;
+
 
 
 			    /**
@@ -372,9 +367,9 @@ namespace Ceylan
 			     *
 			     */
 			    static void debug( const std::string & message,
-			    		LevelOfDetail levelOfDetail =
-							Log::DefaultLevelOfDetailForMessage ) 
-					throw( LogException ) ;
+			    	LevelOfDetail levelOfDetail =
+						Log::DefaultLevelOfDetailForMessage ) ;
+
 
 
 			    /**
@@ -391,9 +386,9 @@ namespace Ceylan
 			     *
 			     */
 			    static void warning( const std::string & message,
-			    		LevelOfDetail levelOfDetail =
-							Log::MaximumLevelOfDetailForMessage ) 
-					throw( LogException ) ;
+			    	LevelOfDetail levelOfDetail =
+						Log::MaximumLevelOfDetailForMessage ) ;
+
 
 
 			    /**
@@ -411,9 +406,8 @@ namespace Ceylan
 			     *
 			     */
 			    static void error( const std::string & message,
-			    		LevelOfDetail levelOfDetail =
-							Log::MaximumLevelOfDetailForMessage ) 
-					throw( LogException ) ;
+			    	LevelOfDetail levelOfDetail =
+						Log::MaximumLevelOfDetailForMessage ) ;
 
 
 			    /**
@@ -431,9 +425,8 @@ namespace Ceylan
 			     *
 			     */
 			    static void fatal( const std::string & message,
-			    		LevelOfDetail levelOfDetail =
-							Log::MaximumLevelOfDetailForMessage ) 
-					throw( LogException ) ;
+			    	LevelOfDetail levelOfDetail =
+						Log::MaximumLevelOfDetailForMessage ) ;
 	
 	
 			    /**
@@ -451,9 +444,8 @@ namespace Ceylan
 			     *
 			     */
 			    static void logroot( const std::string & message,
-			    		LevelOfDetail levelOfDetail =
-							Log::MaximumLevelOfDetailForMessage ) 
-					throw( LogException ) ;
+			    	LevelOfDetail levelOfDetail =
+						Log::MaximumLevelOfDetailForMessage ) ;
 	
 	
 	
@@ -464,17 +456,22 @@ namespace Ceylan
 				/// Plug for the info channel. 
 				static LogSource * InfoLogSource ;
 				 
+				 
 				/// Plug for the trace channel. 
 				static LogSource * TraceLogSource ;
+				 
 				 
 				/// Plug for the debug channel. 
 				static LogSource * DebugLogSource ;
 				 
+				 
 				/// Plug for the warning channel. 
 				static LogSource * WarningLogSource ;
 				 
+				 
 				/// Plug for the error channel. 
 				static LogSource * ErrorLogSource ;
+				 
 				 
 				/// Plug for the fatal channel. 
 				static LogSource * FatalLogSource ;
@@ -486,6 +483,7 @@ namespace Ceylan
 				
 				/// Plug for the Log transport.
 				static LogTransport * Transport ;
+				
 				
 				
 				/**
@@ -518,7 +516,7 @@ namespace Ceylan
 			
 							
 				/// LogPlug should not instanciated, even as a mother class.
-				LogPlug() throw ( LogException )
+				LogPlug() 
 				
 #ifndef CEYLAN_RUNS_ON_WINDOWS
 				/*
@@ -551,7 +549,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				LogPlug( const LogPlug & source ) throw() ;
+				LogPlug( const LogPlug & source ) ;
 			
 			
 				/**
@@ -562,7 +560,7 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				LogPlug & operator = ( const LogPlug & source ) throw() ;
+				LogPlug & operator = ( const LogPlug & source ) ;
 				
 					
 		} ;	

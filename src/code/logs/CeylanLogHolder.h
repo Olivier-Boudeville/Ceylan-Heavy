@@ -165,7 +165,7 @@ namespace Ceylan
 		 		 */
 				LogHolder( Ceylan::Uint16 argCount, 
 					const char * const arguments[],
-					bool immediateWrite = true ) throw( LogException ) ;
+					bool immediateWrite = true ) ;
 			
 	
 				/// Basic virtual destructor.
@@ -182,9 +182,9 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high )
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 								
+				
 				
 				/**
 				 * Returns whether the specified option is a known plug 
@@ -195,8 +195,8 @@ namespace Ceylan
 				 * @example "--consolePlug" returns true.
 				 *
 				 */ 
-				static bool IsAKnownPlugOption( const std::string & option )
-					throw() ;
+				static bool IsAKnownPlugOption( const std::string & option ) ;
+					
 					
 									
 				/**
@@ -256,7 +256,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				LogHolder( const LogHolder & source ) throw() ;
+				LogHolder( const LogHolder & source ) ;
 			
 			
 				/**
@@ -267,7 +267,7 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				LogHolder & operator = ( const LogHolder & source ) throw() ;
+				LogHolder & operator = ( const LogHolder & source ) ;
 				
 								
 		} ;
@@ -275,6 +275,7 @@ namespace Ceylan
 	}
 
 }
+
 
 #endif // CEYLAN_LOG_HOLDER_H_
 

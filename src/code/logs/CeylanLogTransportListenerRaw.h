@@ -49,7 +49,7 @@ namespace Ceylan
 		
 		
 		/**
-		 * This class gathers the two endpoints of Log propagation : the
+		 * This class gathers the two endpoints of Log propagation: the
 		 * LogTransport (the beginning) and the LogListener (the end). 
 		 *
 		 * This particular implementation of the log system corresponds 
@@ -59,12 +59,13 @@ namespace Ceylan
 		 * to be propagated, so the only thing the instances of this 
 		 * class do is comply with the framework and simply takes a 
 		 * log message reference from a log source and gives it to the
-		 * aggregator : this is the most basic communication bus.
+		 * aggregator: this is the most basic communication bus.
 		 *
 		 */
 		class CEYLAN_DLL LogTransportListenerRaw : 
 			public LogTransport, public LogListener
 		{
+		
 
 			public:
 			
@@ -74,12 +75,12 @@ namespace Ceylan
 				 * aggregator so that incoming log messages are sent to it.
 				 *
 				 */
-				explicit LogTransportListenerRaw( LogAggregator & aggregator )
-					throw() ;
+				explicit LogTransportListenerRaw( LogAggregator & aggregator ) ;
 				
 				
 				/// Basic virtual destructor.
 				virtual ~LogTransportListenerRaw() throw() ;
+
 
 
 		        /**
@@ -90,10 +91,12 @@ namespace Ceylan
 				 * @note Here lies the trivial bridge between the 
 				 * transport side to the listener's one.
 				 *
+				 * @throw LogException if the operation fails.
+				 *
 		         */		
-				virtual void propagate( LogMessage & message ) 
-					throw( LogException ) ; 
+				virtual void propagate( LogMessage & message ) ; 
 					
+				
 				
 	            /**
 	             * Returns a user-friendly description of the state of
@@ -107,8 +110,7 @@ namespace Ceylan
 				 *
 	             */
 				virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high )
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 					
 					
 						
@@ -125,7 +127,7 @@ namespace Ceylan
 				 *
 				 */			 
 				LogTransportListenerRaw( 
-					const LogTransportListenerRaw & source ) throw() ;
+					const LogTransportListenerRaw & source ) ;
 			
 			
 				/**
@@ -137,7 +139,7 @@ namespace Ceylan
 				 *
 				 */			 
 				LogTransportListenerRaw & operator = ( 
-					const LogTransportListenerRaw & source ) throw() ;
+					const LogTransportListenerRaw & source ) ;
 				
 								
 		} ;			
@@ -148,3 +150,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_LOG_TRANSPORT_LISTENER_RAW_H_ 
+

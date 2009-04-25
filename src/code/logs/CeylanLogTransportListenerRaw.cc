@@ -39,7 +39,7 @@ using namespace Ceylan::Log ;
 
 
 LogTransportListenerRaw::LogTransportListenerRaw( 
-		LogAggregator & aggregator ) throw():
+		LogAggregator & aggregator ) :
 	LogTransport(),
 	LogListener( aggregator )
 {
@@ -56,7 +56,6 @@ LogTransportListenerRaw::~LogTransportListenerRaw() throw()
 
 
 void LogTransportListenerRaw::propagate( LogMessage & message ) 
-	throw( LogException )
 {
 
 	// Direct link through references, the communication bus is virtual:
@@ -66,8 +65,8 @@ void LogTransportListenerRaw::propagate( LogMessage & message )
 
 
 
-const string LogTransportListenerRaw::toString( 
-	Ceylan::VerbosityLevels level ) const throw()
+const string LogTransportListenerRaw::toString( Ceylan::VerbosityLevels level )
+	const 
 {
 
 	return "LogTransportListenerRaw: " + LogListener::toString( level ) ;

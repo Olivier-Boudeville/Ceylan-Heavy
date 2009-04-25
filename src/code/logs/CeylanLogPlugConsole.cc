@@ -45,7 +45,7 @@ using namespace Ceylan::Log ;
 
 
 void LogPlugConsole::StartService( const string & plugInitiator,  
-	bool immediateWrite, bool smart ) throw ( LogException )
+	bool immediateWrite, bool smart )
 {
 	
 	CEYLAN_LOG( "Starting LogPlug console service: "
@@ -54,7 +54,9 @@ void LogPlugConsole::StartService( const string & plugInitiator,
 	// Plug should start empty:
  	LogPlug::CheckBlank() ;
 
+
 	// Start by the end of the chain and go back to its beginning:
+	
 	
 	/*
 	 * Other StandardStream may be LogAggregatorConsole::Output or
@@ -85,7 +87,7 @@ void LogPlugConsole::StartService( const string & plugInitiator,
 
 
 
-void LogPlugConsole::StopService() throw()
+void LogPlugConsole::StopService()
 {
 	
 	LogPlug::StopService() ;
@@ -103,8 +105,7 @@ void LogPlugConsole::StopService() throw()
 
 
 
-const string LogPlugConsole::ToString( 
-	Ceylan::VerbosityLevels level ) throw()
+const string LogPlugConsole::ToString( Ceylan::VerbosityLevels level )
 {
 
 	string result = "LogSystem status: using console plug." ;

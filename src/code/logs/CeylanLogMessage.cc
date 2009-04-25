@@ -48,7 +48,7 @@ using namespace Ceylan::Log ;
 LogMessage::LogMessage( const string & message,	
 		const string & channelName,
 		LevelOfDetail levelOfDetail, 
-		const Timestamp & timestamp ) throw():
+		const Timestamp & timestamp ) :
 	_message( message ),
 	_channelName( channelName ),
 	_levelOfDetail( levelOfDetail ),
@@ -61,7 +61,7 @@ LogMessage::LogMessage( const string & message,
 
 LogMessage::LogMessage( const string & message,	
 		const string & channelName,
-		LevelOfDetail levelOfDetail ) throw( LogException ):
+		LevelOfDetail levelOfDetail ) :
 	_message( message ),
 	_channelName( channelName ),
 	_levelOfDetail( levelOfDetail )
@@ -96,7 +96,7 @@ LogMessage::~LogMessage() throw()
 
 
 
-const std::string LogMessage::getContent() const throw()
+const std::string LogMessage::getContent() const
 {
 
 	return _message ;
@@ -105,7 +105,7 @@ const std::string LogMessage::getContent() const throw()
 
 
 
-const std::string LogMessage::getChannelName() const throw()		
+const std::string LogMessage::getChannelName() const		
 {
 
 	return _channelName ;
@@ -114,7 +114,7 @@ const std::string LogMessage::getChannelName() const throw()
 
 
 
-void LogMessage::setChannelName( const string & newChannelName ) throw()
+void LogMessage::setChannelName( const string & newChannelName )
 {
 
 	_channelName = newChannelName ;
@@ -123,7 +123,7 @@ void LogMessage::setChannelName( const string & newChannelName ) throw()
 
 
 
-LevelOfDetail LogMessage::getLevelOfDetail() const throw()
+LevelOfDetail LogMessage::getLevelOfDetail() const
 {
 
 	return _levelOfDetail ;
@@ -132,14 +132,14 @@ LevelOfDetail LogMessage::getLevelOfDetail() const throw()
 
 		
 		
-const Timestamp & LogMessage::getTimestamp() const throw( LogException )
+const Timestamp & LogMessage::getTimestamp() const
 {
 
 #if CEYLAN_DEBUG
 
 	if ( _timestamp == 0 )
 		throw LogException( 
-			"LogMessage::getTimestamp failed: no Timestamp available." ) ;
+			"LogMessage::getTimestamp failed: no timestamp available." ) ;
 			
 #endif // CEYLAN_DEBUG
 	
@@ -149,7 +149,7 @@ const Timestamp & LogMessage::getTimestamp() const throw( LogException )
 
 
 
-const string LogMessage::getPreformattedText() const throw()
+const string LogMessage::getPreformattedText() const
 {
 
 #if CEYLAN_DEBUG
@@ -169,7 +169,7 @@ const string LogMessage::getPreformattedText() const throw()
 
 
 
-const string LogMessage::toString( Ceylan::VerbosityLevels level ) const throw()
+const string LogMessage::toString( Ceylan::VerbosityLevels level ) const
 {
 	
 #if CEYLAN_DEBUG

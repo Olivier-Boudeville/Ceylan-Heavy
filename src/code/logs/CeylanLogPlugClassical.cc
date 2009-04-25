@@ -43,8 +43,9 @@ using std::string ;
 using namespace Ceylan::Log ;
 
 
+
 void LogPlugClassical::StartService( const string & plugInitiatorName,  
-	bool immediateWrite, bool smart ) throw ( LogException )
+	bool immediateWrite, bool smart )
 {
 	
 	CEYLAN_LOG( "Starting LogPlug classical service: "
@@ -69,8 +70,7 @@ void LogPlugClassical::StartService( const string & plugInitiatorName,
 	 *
 	 */
 	
-	LogPlug::Transport = 
-		new LogTransportListenerRaw( * LogPlug::Aggregator ) ;	
+	LogPlug::Transport = new LogTransportListenerRaw( * LogPlug::Aggregator ) ;	
 	
 	// Creates basic standard channels:
 	LogPlug::CreateBasicPlug() ;
@@ -82,7 +82,7 @@ void LogPlugClassical::StartService( const string & plugInitiatorName,
 
 
 
-void LogPlugClassical::StopService() throw()
+void LogPlugClassical::StopService()
 {
 	
 	LogPlug::StopService() ;
@@ -100,8 +100,7 @@ void LogPlugClassical::StopService() throw()
 
 
 
-const string LogPlugClassical::ToString( 
-	Ceylan::VerbosityLevels level ) throw()
+const string LogPlugClassical::ToString( Ceylan::VerbosityLevels level )
 {
 
 	string result = "LogSystem status: using classical plug." ;

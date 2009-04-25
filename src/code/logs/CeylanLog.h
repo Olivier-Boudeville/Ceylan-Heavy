@@ -58,7 +58,7 @@ namespace Ceylan
 		 *
 		 * Ceylan's Log system uses interfaces defined in order to 
 		 * abstract, through an uniform paradigm, various log 
-		 * implementations : as being able to swap log implementations
+		 * implementations: as being able to swap log implementations
 		 * seamlessly is useful for programs and objects, they all make 
 		 * use of this Log interface to send their log messages. 
 		 * The interface in turn delegates log messages according to the
@@ -75,7 +75,7 @@ namespace Ceylan
 		 * Levels start from 1 (the most important level), and the higher a
 		 * level is, the less important the corresponding message is.
 		 *
-		 * Example : level 2 messages are considered as more important than
+		 * Example: level 2 messages are considered as more important than
 		 * level 3 ones.
 		 *
 		 * Log sources have also a level of detail, and they filter out 
@@ -84,27 +84,27 @@ namespace Ceylan
 		 * message is not important enough for that source.
 		 * 
 		 * Each Log listener has its own level of detail too
-		 * (default : level 10).
+		 * (default: level 10).
 		 *
 		 * A Log listener will output any message whose level is equal or
 		 * smaller than its current level of detail.
 		 *
-		 * Example : a listener with a registered level of detail of 4 will
+		 * Example: a listener with a registered level of detail of 4 will
 		 * output a message with a level of 3 or 4, but will not propagate 
 		 * a message whose level is 5 or higher.
 		 *
 		 * Incoming messages can be time-stamped if the corresponding Log
 		 * channel option is set.
 		 *
-		 * The six default log channels are :
+		 * The six default log channels are:
 		 * 
-		 *   1. info    : to gather informative messages for the user
-		 *   2. trace   : to know where the execution went
-		 *	 3. debug   : to help troubleshooting
-		 *   4. warning : to notify that a non-critical execution property 
+		 *   1. info   : to gather informative messages for the user
+		 *   2. trace  : to know where the execution went
+		 *	 3. debug  : to help troubleshooting
+		 *   4. warning: to notify that a non-critical execution property 
 		 * was not verified
-		 *	 5. error   : to track down non-fatal abnormal behaviours
-		 *   6. fatal   : to trace fatal abnormalities, just before the
+		 *	 5. error  : to track down non-fatal abnormal behaviours
+		 *   6. fatal  : to trace fatal abnormalities, just before the
 		 * immediate failure of the program.
 		 *
 		 * A shadow log channel exists, logroot, it is used by the log 
@@ -144,7 +144,7 @@ namespace Ceylan
 
 			public:
 	
-				explicit LogException( const std::string & reason ) throw() ;
+				explicit LogException( const std::string & reason ) ;
 					
 				virtual ~LogException() throw() ;
 
@@ -156,6 +156,5 @@ namespace Ceylan
 
 
 
-
-
 #endif // CEYLAN_LOG_H_
+

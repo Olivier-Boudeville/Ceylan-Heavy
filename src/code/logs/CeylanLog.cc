@@ -34,7 +34,7 @@ using namespace Ceylan::Log ;
 
 
 /**
- * Let's define in a centralized way informations shared at the 
+ * Let's define in a centralized way information shared at the 
  * framework level.
  *
  */
@@ -47,7 +47,7 @@ const LevelOfDetail Ceylan::Log::MaximumLevelOfDetailForListener =  0 ;
 
 
 
-LogException::LogException( const std::string & reason ) throw() :
+LogException::LogException( const std::string & reason ) :
  	Ceylan::Exception( reason ) 
 {
 

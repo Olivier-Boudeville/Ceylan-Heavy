@@ -64,32 +64,36 @@ namespace Ceylan
 			public:
 			
 			
+			
 				/**
 				 * Constructs a blank LogTransport.
 				 *
 				 * @see setTransport
 				 * 
 				 */
-				LogTransport() throw() ;
+				LogTransport() ;
 			
 				
 				/// Basic virtual destructor.
 				virtual ~LogTransport() throw() ;
 						
+				
 						
 		        /**
 		         * Propagates <b>message</b> to the relevant LogListener.
 		         *
 				 * @param message the message which is to be propagated
 				 *
+				 * @throw LogException should the operation fail.
+				 *
 				 * @note Most implementations, more elaborate that local
 				 * raw log transfers, should end up deallocating the 
 				 * specified message.
 		         *
 		         */		
-				virtual void propagate( LogMessage & message ) 
-					throw( LogException ) = 0 ; 
+				virtual void propagate( LogMessage & message ) = 0 ; 
 				
+						
 										
 	            /**
 	             * Returns a user-friendly description of the state of
@@ -103,9 +107,9 @@ namespace Ceylan
 				 *
 	             */
             	virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high )
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
+					
 					
 			private:
 			
@@ -118,7 +122,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				LogTransport( const LogTransport & source ) throw() ;
+				LogTransport( const LogTransport & source ) ;
 			
 			
 				/**
@@ -129,8 +133,8 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				LogTransport & operator = ( const LogTransport & source )
-					throw() ;
+				LogTransport & operator = ( const LogTransport & source ) ;
+	
 	
 		} ;
 	
@@ -142,3 +146,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_LOG_TRANSPORT_H_
+

@@ -48,7 +48,7 @@ namespace Ceylan
 		
 		
 		/**
-		 * Where messages from a LogSource will be output : the first 
+		 * Where messages from a LogSource will be output: the first 
 		 * part of the LogTransport-LogListener pair.
 		 *
 		 */
@@ -56,7 +56,7 @@ namespace Ceylan
 		
 		
 		/**
-		 * Where messages from a LogSource will be received : 
+		 * Where messages from a LogSource will be received: 
 		 * the second part of the LogTransport-LogListener pair, before
 		 * the LogAggregator.
 		 *
@@ -104,14 +104,15 @@ namespace Ceylan
 				 * named 'sourceName'.log, sourceName must be a valid 
 				 * prefix file name.
 				 *
+				 * @throw LogException if the service could not be started.
+				 *
 		         */
 		        static void StartService( const std::string & plugInitiator, 
-					bool immediateWrite = true, bool smart = true ) 
-						throw( LogException ) ;
+					bool immediateWrite = true, bool smart = true ) ;
 
 
 		        /// Stops the Log console service.
-		        static void StopService() throw() ;
+		        static void StopService() ;
 				
 				
 				/**
@@ -120,7 +121,7 @@ namespace Ceylan
 				 *
 				 */
 	           	static const std::string ToString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) ;
 				
 				
 					
@@ -130,7 +131,7 @@ namespace Ceylan
 
 				/* 
 				
-				Not even declared to avoid : 
+				Not even declared to avoid: 
 				'warning: will never be executed'
 				
 				/// LogPlug console should not be instanciated.
@@ -151,7 +152,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */			 
-				LogPlugConsole( const LogPlugConsole & source ) throw() ;
+				LogPlugConsole( const LogPlugConsole & source ) ;
 			
 			
 				/**
@@ -162,8 +163,7 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				LogPlugConsole & operator = ( 
-					const LogPlugConsole & source ) throw() ;
+				LogPlugConsole & operator = ( const LogPlugConsole & source ) ;
 				
 	
 		} ;	
@@ -174,6 +174,5 @@ namespace Ceylan
 
 
 
-
-
 #endif // CEYLAN_LOG_PLUG_CONSOLE_H_
+

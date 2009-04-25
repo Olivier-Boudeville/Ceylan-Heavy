@@ -34,7 +34,7 @@ using namespace Ceylan::Log ;
 
 
 
-LogTransport::LogTransport() throw() 
+LogTransport::LogTransport()
 {
 
 
@@ -49,8 +49,7 @@ LogTransport::~LogTransport() throw()
 
 
 
-const string LogTransport::toString( Ceylan::VerbosityLevels level ) 
-	const throw() 
+const string LogTransport::toString( Ceylan::VerbosityLevels level ) const 
 {
 
 	return "This LogTransport is a pure intermediary between "

@@ -42,8 +42,8 @@ using namespace Ceylan::Log ;
 
 
 
-LogListener::LogListener( LogAggregator & aggregator ) throw():
-		_aggregator( & aggregator )
+LogListener::LogListener( LogAggregator & aggregator ):
+	_aggregator( & aggregator )
 {
 
 }
@@ -57,8 +57,7 @@ LogListener::~LogListener() throw()
 
 
 
-const string LogListener::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+const string LogListener::toString( Ceylan::VerbosityLevels level ) const
 {
 	
 	if ( _aggregator == 0 )
@@ -76,8 +75,7 @@ const string LogListener::toString( Ceylan::VerbosityLevels level )
 
 
 
-void LogListener::sendToAggregator( LogMessage & message ) 
-	const throw( LogException )
+void LogListener::sendToAggregator( LogMessage & message ) const
 {
 
 #if CEYLAN_DEBUG

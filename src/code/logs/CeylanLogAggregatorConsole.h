@@ -121,13 +121,15 @@ namespace Ceylan
 				 * be smart and auto-correct messages with faulty 
 				 * classnames.
 				 *
+				 * @throw LogAggregatorException if the operation fails.
+				 *
 				 */
 				explicit LogAggregatorConsole( 
 					StandardStream consoleStream 
 						= LogAggregatorConsole::Output, 
 					bool immediateWrite = true,	
 					bool useGlobalLevelOfDetail = true,
-					bool beSmart = true ) throw( LogAggregatorException ) ;
+					bool beSmart = true ) ;
 					
 							
 				/**
@@ -145,11 +147,13 @@ namespace Ceylan
 				 * Aggregates all channel and log messages informations
 				 * in the console.
 				 *
+				 * @throw LogAggregatorException if the operation fails.
+				 *
 				 * @note this method does nothing if the immediate write
 				 * flag is turned on : work should be already done.
 				 *
 				 */
-				virtual void aggregate() throw( LogAggregatorException ) ;
+				virtual void aggregate() ;
 
 
 		        /**
@@ -163,9 +167,10 @@ namespace Ceylan
 		         * @param message the log message to be stored, the 
 				 * aggregator takes ownership of it.
 		         *
+				 * @throw LogException if the operation fails.
+				 *
 		         */		
-				virtual void store( LogMessage & message ) 
-					throw( LogException ) ; 
+				virtual void store( LogMessage & message ) ; 
 						
 										
 	            /**
@@ -181,8 +186,8 @@ namespace Ceylan
 				 *
 	             */
 				virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high )
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+
 
 
 			
@@ -196,9 +201,10 @@ namespace Ceylan
 				 * @param channel the log channel to output on the
 				 * console.
 				 *
+				 * @throw LogException if the operation fails.
+				 *
 				 */
-				virtual void write( const LogChannel & channel ) 
-					const throw( LogException ) ;
+				virtual void write( const LogChannel & channel ) const ;
 			
 			
 				/**
@@ -211,7 +217,7 @@ namespace Ceylan
 				 * writing mode is set.
 				 *
 				 */
-				virtual void write( const LogMessage & message ) const throw() ;
+				virtual void write( const LogMessage & message ) const ;
 			
 			
 				/// The identifier of the standard steam being used.
@@ -271,8 +277,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				LogAggregatorConsole( const LogAggregatorConsole & source )
-					throw() ;
+				LogAggregatorConsole( const LogAggregatorConsole & source ) ;
 			
 			
 				/**
@@ -284,7 +289,7 @@ namespace Ceylan
 				 * 
 				 */			 
 				LogAggregatorConsole & operator = ( 
-					const LogAggregatorConsole & source ) throw() ;
+					const LogAggregatorConsole & source ) ;
 				
 				
 		} ;
@@ -297,3 +302,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_LOG_AGGREGATOR_CONSOLE_H_
+

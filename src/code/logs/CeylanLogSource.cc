@@ -41,8 +41,7 @@ using namespace Ceylan::Log ;
 
 
 
-LogSource::LogSource( const string & name, LevelOfDetail levelOfDetail ) 
-		throw(): 
+LogSource::LogSource( const string & name, LevelOfDetail levelOfDetail ) : 
 	_channelName( name ), 
 	_level( DefaultLevelOfDetailForSource )
 {
@@ -52,7 +51,7 @@ LogSource::LogSource( const string & name, LevelOfDetail levelOfDetail )
 
 
 LogSource::LogSource( const string & name, LogTransport & transport,
-		LevelOfDetail levelOfDetail ) throw(): 
+		LevelOfDetail levelOfDetail ) : 
 	_channelName( name ), 
 	_level( DefaultLevelOfDetailForSource ),
 	_transport( & transport )  
@@ -62,8 +61,7 @@ LogSource::LogSource( const string & name, LogTransport & transport,
 
 
 
-LogSource::LogSource( LogTransport & transport,	LevelOfDetail levelOfDetail )
-		throw(): 
+LogSource::LogSource( LogTransport & transport,	LevelOfDetail levelOfDetail ) : 
 	_channelName(), 
 	_level( DefaultLevelOfDetailForSource ),
 	_transport( & transport )  
@@ -73,7 +71,7 @@ LogSource::LogSource( LogTransport & transport,	LevelOfDetail levelOfDetail )
 
 
 
-LogSource::~LogSource() throw() 
+LogSource::~LogSource() throw()
 {
 
 	unlinkTransport() ;
@@ -82,7 +80,7 @@ LogSource::~LogSource() throw()
 
 
 
-bool LogSource::hasChannelName() const throw()
+bool LogSource::hasChannelName() const 
 {
 
 	return ! _channelName.empty() ;
@@ -91,7 +89,7 @@ bool LogSource::hasChannelName() const throw()
 
 
 
-void LogSource::setChannelName( const string & channelName ) throw() 
+void LogSource::setChannelName( const string & channelName )  
 {
 
 	_channelName = channelName ;
@@ -100,7 +98,7 @@ void LogSource::setChannelName( const string & channelName ) throw()
 
 
 
-std::string LogSource::getChannelName() const throw() 
+std::string LogSource::getChannelName() const  
 {
 
 	return _channelName ;
@@ -109,7 +107,7 @@ std::string LogSource::getChannelName() const throw()
 
 
 
-void LogSource::setLevelOfDetail( LevelOfDetail newLevel ) throw() 
+void LogSource::setLevelOfDetail( LevelOfDetail newLevel )  
 {
 
 	_level = newLevel ;
@@ -118,7 +116,7 @@ void LogSource::setLevelOfDetail( LevelOfDetail newLevel ) throw()
 
 
 
-LevelOfDetail LogSource::getLevelOfDetail() const throw() 
+LevelOfDetail LogSource::getLevelOfDetail() const  
 {
 
 	return _level ;
@@ -127,8 +125,7 @@ LevelOfDetail LogSource::getLevelOfDetail() const throw()
 
 
 
-void LogSource::send( const string & message, 
-	LevelOfDetail levelOfDetail ) throw( LogException ) 
+void LogSource::send( const string & message, LevelOfDetail levelOfDetail ) 
 {
 	
 	/*
@@ -143,7 +140,7 @@ void LogSource::send( const string & message,
 
 
 void LogSource::sendToChannel( const string & channel, const string & message, 
-	LevelOfDetail levelOfDetail ) const throw( LogException ) 
+	LevelOfDetail levelOfDetail ) const 
 {
 	
 	if ( _level >= levelOfDetail )
@@ -165,7 +162,7 @@ void LogSource::sendToChannel( const string & channel, const string & message,
 
 
 void LogSource::directSend( const string & channel, const string & message, 
-	LevelOfDetail levelOfDetail ) const throw( LogException )  
+	LevelOfDetail levelOfDetail ) const  
 {
 
 #if CEYLAN_DEBUG_LOG
@@ -191,7 +188,7 @@ void LogSource::directSend( const string & channel, const string & message,
 
 
 
-void LogSource::setTransport( LogTransport & newTransport ) throw() 
+void LogSource::setTransport( LogTransport & newTransport )  
 {
 
 	if ( hasTransport() )
@@ -209,7 +206,7 @@ void LogSource::setTransport( LogTransport & newTransport ) throw()
 
 
 				
-LogTransport * LogSource::getTransport() const throw() 
+LogTransport * LogSource::getTransport() const  
 {
 
 	return _transport ;
@@ -218,7 +215,7 @@ LogTransport * LogSource::getTransport() const throw()
 
 
 				
-bool LogSource::hasTransport() const throw() 
+bool LogSource::hasTransport() const  
 {
 
 	return ( _transport != 0 ) ;
@@ -227,7 +224,7 @@ bool LogSource::hasTransport() const throw()
 
 
 
-const string LogSource::toString( Ceylan::VerbosityLevels level ) const throw() 
+const string LogSource::toString( Ceylan::VerbosityLevels level ) const  
 {
 
 	if ( hasChannelName() )
@@ -243,7 +240,7 @@ const string LogSource::toString( Ceylan::VerbosityLevels level ) const throw()
 
 
 
-void LogSource::unlinkTransport() throw()
+void LogSource::unlinkTransport() 
 {
 
 	/* 

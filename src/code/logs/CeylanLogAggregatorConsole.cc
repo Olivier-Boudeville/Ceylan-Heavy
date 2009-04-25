@@ -72,13 +72,12 @@ LogAggregatorConsole::LogAggregatorConsole(
 		StandardStream consoleStream,
 		bool immediateWrite,
 		bool useGlobalLevelOfDetail,
-		bool beSmart ) 
-	throw( LogAggregatorException )	: 
-		LogAggregator( beSmart, useGlobalLevelOfDetail ),
-		_streamNumber( consoleStream ),
-		_outputStream( 0 ),
-		_console( 0 ),
-		_immediateWrite( immediateWrite )
+		bool beSmart ) : 
+	LogAggregator( beSmart, useGlobalLevelOfDetail ),
+	_streamNumber( consoleStream ),
+	_outputStream( 0 ),
+	_console( 0 ),
+	_immediateWrite( immediateWrite )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -144,7 +143,7 @@ LogAggregatorConsole::~LogAggregatorConsole() throw()
 				"LogAggregatorConsole destructor: "
 				<< e.toString() << "." << std::endl ;
 				
-			// Never throw an exception from a destructor !		
+			// Never throw an exception from a destructor!		
 		}	
 		
 	}
@@ -181,7 +180,7 @@ LogAggregatorConsole::~LogAggregatorConsole() throw()
 
 
 
-void LogAggregatorConsole::aggregate() throw( LogAggregatorException ) 
+void LogAggregatorConsole::aggregate() 
 {
 
 
@@ -234,7 +233,7 @@ void LogAggregatorConsole::aggregate() throw( LogAggregatorException )
 
 
 
-void LogAggregatorConsole::store( LogMessage & message ) throw( LogException )
+void LogAggregatorConsole::store( LogMessage & message )
 {
 
 	CEYLAN_LOG( "Storing a new message " + message.toString() ) ;
@@ -284,8 +283,7 @@ void LogAggregatorConsole::store( LogMessage & message ) throw( LogException )
 	
 
 
-void LogAggregatorConsole::write( const LogChannel & channel ) 
-	const throw( LogException )
+void LogAggregatorConsole::write( const LogChannel & channel ) const
 {
 
 	CEYLAN_LOG( "Writing on console channel " + channel.toString() ) ;
@@ -306,7 +304,7 @@ void LogAggregatorConsole::write( const LogChannel & channel )
 
 
 
-void LogAggregatorConsole::write( const LogMessage & message ) const throw()
+void LogAggregatorConsole::write( const LogMessage & message ) const
 {
 
 	CEYLAN_LOG( "Writing on console message " + message.toString() ) ;
@@ -328,7 +326,7 @@ void LogAggregatorConsole::write( const LogMessage & message ) const throw()
 
 
 const string LogAggregatorConsole::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+	const
 {
 
 	string res = string( "This is LogAggregatorConsole in " )

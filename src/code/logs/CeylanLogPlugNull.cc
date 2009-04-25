@@ -43,7 +43,7 @@ using std::string ;
 using namespace Ceylan::Log ;
 
 
-void LogPlugNull::StartService() throw ( LogException )
+void LogPlugNull::StartService()
 {
 	
 	CEYLAN_LOG( "Starting LogPlug null service: "
@@ -61,7 +61,7 @@ void LogPlugNull::StartService() throw ( LogException )
 
 
 
-void LogPlugNull::StopService() throw()
+void LogPlugNull::StopService()
 {
 	
 	LogPlug::StopService() ;
@@ -70,8 +70,7 @@ void LogPlugNull::StopService() throw()
 
 
 
-const string LogPlugNull::ToString( 
-	Ceylan::VerbosityLevels level ) throw()
+const string LogPlugNull::ToString( Ceylan::VerbosityLevels level )
 {
 
 	string result = "LogSystem status: using null plug." ;

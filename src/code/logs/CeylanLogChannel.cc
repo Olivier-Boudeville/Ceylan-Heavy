@@ -46,7 +46,7 @@ using namespace Ceylan::Log ;
 
 
 
-LogChannel::LogChannel( const string & name ) throw():
+LogChannel::LogChannel( const string & name ):
 	_name( name )
 {
 
@@ -54,7 +54,7 @@ LogChannel::LogChannel( const string & name ) throw():
 
 
 
-LogChannel::~LogChannel() throw() 
+LogChannel::~LogChannel() throw()
 {
 
 	for ( list<LogMessage *>::iterator it = _messages.begin(); 
@@ -68,7 +68,6 @@ LogChannel::~LogChannel() throw()
 
 
 void LogChannel::addMessage( LogMessage & message, bool check ) 
-	throw( LogException )
 {
 
 	// Attempt to allow for more reentrancy in an IRQ-based system:
@@ -102,7 +101,7 @@ void LogChannel::addMessage( LogMessage & message, bool check )
 
 
 
-const string LogChannel::getName() const throw()
+const string LogChannel::getName() const
 {
 
 	return _name ;
@@ -111,7 +110,7 @@ const string LogChannel::getName() const throw()
 
 
 
-LogChannel::MessageCount LogChannel::getMessageCount() const throw()
+LogChannel::MessageCount LogChannel::getMessageCount() const
 {
 
 	/*
@@ -125,8 +124,7 @@ LogChannel::MessageCount LogChannel::getMessageCount() const throw()
 
 
 
-const string LogChannel::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+const string LogChannel::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string result = "LogChannel " + _name ;

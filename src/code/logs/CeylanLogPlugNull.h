@@ -97,12 +97,14 @@ namespace Ceylan
 		        /**
 		         * Starts the Log null service.
 				 *
+				 * @throw LogException if the operation fails.
+				 *
 		         */
-		        static void StartService() throw( LogException ) ;
+		        static void StartService() ;
 
 
 		        /// Stops the Log null service.
-		        static void StopService() throw() ;
+		        static void StopService() ;
 				
 				
 				/**
@@ -111,7 +113,7 @@ namespace Ceylan
 				 *
 				 */
 	           	static const std::string ToString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) ;
 				
 				
 					
@@ -128,7 +130,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */			 
-				LogPlugNull( const LogPlugNull & source ) throw() ;
+				LogPlugNull( const LogPlugNull & source ) ;
 			
 			
 				/**
@@ -139,8 +141,7 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				LogPlugNull & operator = ( 
-					const LogPlugNull & source ) throw() ;
+				LogPlugNull & operator = ( const LogPlugNull & source ) ;
 				
 	
 		} ;	

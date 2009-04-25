@@ -103,15 +103,18 @@ namespace Ceylan
 				 * named 'sourceName'.log, sourceName must be a valid 
 				 * prefix file name.
 				 *
+				 * @throw LogException if the service could not be started.
+				 *
 		         */
 		        static void StartService( 
                 	const std::string & plugInitiatorName, 
-					bool immediateWrite = true, bool smart = true ) 
-						throw( LogException ) ;
+					bool immediateWrite = true, bool smart = true ) ;
+
 
 
 		        /// Stops the Log classical service.
-		        static void StopService() throw() ;
+		        static void StopService() ;
+				
 				
 				
 				/**
@@ -120,7 +123,7 @@ namespace Ceylan
 				 *
 				 */
 	           	static const std::string ToString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) ;
 				
 				
 					
@@ -150,7 +153,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */			 
-				LogPlugClassical( const LogPlugClassical & source ) throw() ;
+				LogPlugClassical( const LogPlugClassical & source );
 			
 			
 				/**
@@ -162,7 +165,7 @@ namespace Ceylan
 				 * 
 				 */			 
 				LogPlugClassical & operator = ( 
-					const LogPlugClassical & source ) throw() ;
+					const LogPlugClassical & source ) ;
 				
 	
 		} ;	
