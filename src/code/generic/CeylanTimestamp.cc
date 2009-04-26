@@ -59,7 +59,6 @@ using namespace Ceylan::System ;
 Timestamp::Timestamp()
 {
 
-
 #if CEYLAN_ARCH_NINTENDO_DS
 	
 	/*
@@ -127,7 +126,6 @@ Timestamp::Timestamp()
 	_second = currentTime.tm_sec ;
 
 #else // CEYLAN_ARCH_WINDOWS
-
 
 
 	struct tm * currentTime =::localtime( & currentMeasuredTime ) ;
@@ -199,14 +197,12 @@ const string Timestamp::toString( Ceylan::VerbosityLevels level ) const
 string Timestamp::DescribeDuration( Second duration )
 {
 
-	
 	/* 
 	 * Seconds are Uint32, 4294967295 is their maximum value, it is more than
 	 * 136 years...
 	 *
 	 */
 	 
-	
 	const Second aMinute = 60 ;
 	const Second anHour  = 60  * aMinute ;
 	const Second aDay    = 24  * anHour  ;

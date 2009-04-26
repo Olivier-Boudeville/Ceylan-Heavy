@@ -31,6 +31,7 @@
 #include "CeylanXMLVisitor.h"     // for (XML) Visitor
 
 
+
 using namespace Ceylan ;
 using namespace Ceylan::XML ;
 
@@ -39,17 +40,19 @@ using std::map ;
 
 
 
+
 /*
- * To add in future releases, if necessary :
+ * To add in future releases, if necessary:
  *  XMLBinary, with Ceylan::Byte * _data and Ceylan::Uint32 _size
  *
  */
  
  
+ 
 // Exception section.
 
 
-XMLElementException::XMLElementException( const std::string & reason ) throw() :
+XMLElementException::XMLElementException( const std::string & reason ) :
 	XMLException( reason )
 {
 
@@ -63,13 +66,17 @@ XMLElementException::~XMLElementException() throw()
 
 
 
+
+
 // XMLElement section.
 
 
-XMLElement::XMLElement() throw()
+
+XMLElement::XMLElement()
 {
 
 }
+
 
 
 XMLElement::~XMLElement() throw()
@@ -78,8 +85,8 @@ XMLElement::~XMLElement() throw()
 }
 
 
-void XMLElement::saveTo( System::OutputStream & output ) const
-	throw( SerializationException )
+
+void XMLElement::saveTo( System::OutputStream & output ) const	
 {
 
 	output.write( toString() ) ;
@@ -89,21 +96,25 @@ void XMLElement::saveTo( System::OutputStream & output ) const
 
 
 
+
 // XMLMarkup section.
 
 
-XMLMarkup::XMLMarkup() throw():
+
+XMLMarkup::XMLMarkup() :
 	_name()
 {
 
 }
 
 
-XMLMarkup::XMLMarkup( const MarkupName & name ) throw():
+
+XMLMarkup::XMLMarkup( const MarkupName & name ) :
 	_name( name )
 {
 
 }
+
 
 
 XMLMarkup::~XMLMarkup() throw()
@@ -112,7 +123,8 @@ XMLMarkup::~XMLMarkup() throw()
 }
 
 
-MarkupName XMLMarkup::getMarkupName() const throw()
+
+MarkupName XMLMarkup::getMarkupName() const
 {
 
 	return _name ;
@@ -120,7 +132,8 @@ MarkupName XMLMarkup::getMarkupName() const throw()
 }
 
 
-string XMLMarkup::getClosingMarkup() const throw()
+
+string XMLMarkup::getClosingMarkup() const
 {
 
 	return "</" + _name + '>' ;
@@ -128,13 +141,17 @@ string XMLMarkup::getClosingMarkup() const throw()
 }
 
 
-bool XMLMarkup::hasAttribute( const string & name ) const throw()
+
+bool XMLMarkup::hasAttribute( const string & name ) const
 {
+
 	return ( _attributes.find( name ) != _attributes.end() ) ;
+	
 }
 
 
-string XMLMarkup::getAttribute( const string & name ) const throw()
+
+string XMLMarkup::getAttribute( const string & name ) const
 {
 
 	map<string,string>::const_iterator it = _attributes.find( name ) ;
@@ -147,8 +164,8 @@ string XMLMarkup::getAttribute( const string & name ) const throw()
 }
 
 
-void XMLMarkup::setAttribute( const string & name,
-	const string & value ) throw()
+
+void XMLMarkup::setAttribute( const string & name, const string & value )
 {
 
 	_attributes[ name ] = value ;
@@ -156,7 +173,8 @@ void XMLMarkup::setAttribute( const string & name,
 }
 
 
-AttributeMap & XMLMarkup::getAttributes() throw()
+
+AttributeMap & XMLMarkup::getAttributes()
 {
 
 	return _attributes ;
@@ -164,20 +182,21 @@ AttributeMap & XMLMarkup::getAttributes() throw()
 }
 
 
+
 void XMLMarkup::loadFrom( System::InputStream & input ) 
-	throw( SerializationException )
 {
 
 }
 
 
-void XMLMarkup::accept( Visitor & visitor ) throw( VisitException )
+
+void XMLMarkup::accept( Visitor & visitor )
 {
 
 	XMLVisitor * actualVisitor = dynamic_cast<XMLVisitor *>( & visitor ) ;
 	
 	if ( actualVisitor == 0 )
-		throw VisitException( "XMLMarkup::accept failed : "
+		throw VisitException( "XMLMarkup::accept failed: "
 			"specified visitor (" + visitor.toString() 
 			+ ") is not a XML-enabled visitor." ) ;
 			
@@ -186,7 +205,8 @@ void XMLMarkup::accept( Visitor & visitor ) throw( VisitException )
 }
 
 
-const string XMLMarkup::toString( Ceylan::VerbosityLevels level ) const throw()
+
+const string XMLMarkup::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string res = "<" + _name ;
@@ -201,21 +221,26 @@ const string XMLMarkup::toString( Ceylan::VerbosityLevels level ) const throw()
 
 
 
+
+
 // XMLText section.
 
 
-XMLText::XMLText() throw():
+
+XMLText::XMLText() :
 	_text()
 {
 
 }
 
 
-XMLText::XMLText( const std::string & text ) throw():
+
+XMLText::XMLText( const std::string & text ) :
 	_text( text )
 {
 
 }
+
 
 
 XMLText::~XMLText() throw()
@@ -224,7 +249,8 @@ XMLText::~XMLText() throw()
 }
 
 
-string XMLText::getText() const throw()
+
+string XMLText::getText() const
 {
 
 	return _text ;	
@@ -232,7 +258,8 @@ string XMLText::getText() const throw()
 }
 
 
-void XMLText::setText( const string & newText ) throw()
+
+void XMLText::setText( const string & newText )
 {
 
 	_text = newText ;
@@ -240,20 +267,21 @@ void XMLText::setText( const string & newText ) throw()
 }
 
 
+
 void XMLText::loadFrom( System::InputStream & input ) 
-	throw( SerializationException )
 {
 
 }
 
 
-void XMLText::accept( Visitor & visitor ) throw( VisitException )
+
+void XMLText::accept( Visitor & visitor )
 {
 
 	XMLVisitor * actualVisitor = dynamic_cast<XMLVisitor *>( & visitor ) ;
 	
 	if ( actualVisitor == 0 )
-		throw VisitException( "XMLText::accept failed : "
+		throw VisitException( "XMLText::accept failed: "
 			"specified visitor (" + visitor.toString() 
 			+ ") is not a XML-enabled visitor." ) ;
 			
@@ -262,7 +290,8 @@ void XMLText::accept( Visitor & visitor ) throw( VisitException )
 }
 
 
-const string XMLText::toString( Ceylan::VerbosityLevels level ) const throw()
+
+const string XMLText::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	return _text ;

@@ -56,11 +56,13 @@ namespace Ceylan
 			public:
 			
 			
-				ProtocolException( const std::string & message ) throw() ;
+				ProtocolException( const std::string & message ) ;
+				
 				virtual ~ProtocolException() throw() ;
 				
 		
 		} ;
+		
 		
 		
 		
@@ -106,7 +108,7 @@ namespace Ceylan
 				 * it when itself deleted.
 				 *
 				 */
-				ProtocolEndpoint( Marshaller & marshaller ) throw() ;
+				ProtocolEndpoint( Marshaller & marshaller ) ;
 				
 				
 				/// Virtual destructor.
@@ -127,8 +129,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 	
 	
 	
@@ -159,7 +160,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				ProtocolEndpoint( const ProtocolEndpoint & source ) throw() ;
+				ProtocolEndpoint( const ProtocolEndpoint & source ) ;
 
 
 				/**
@@ -171,7 +172,7 @@ namespace Ceylan
 				 *
 				 */
 				ProtocolEndpoint & operator = ( 
-					const ProtocolEndpoint & source ) throw() ;
+					const ProtocolEndpoint & source ) ;
 
 			
 		} ;
@@ -183,3 +184,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_PROTOCOL_ENDPOINT_H_
+

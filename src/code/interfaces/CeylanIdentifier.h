@@ -39,17 +39,19 @@ namespace Ceylan
 {
 
 
+
     /**
 	 * Mother class of all identifiers.
 	 *
-	 * @note Non-abstract child classes should implement :
-	 * bool operator==( const ChildIdentifier & otherIdentifier ) throw() ; 
+	 * @note Non-abstract child classes should implement:
+	 * 'bool operator==( const ChildIdentifier & otherIdentifier )'
 	 *
      * @see IdentifierOwner.
      *
      */
     class CEYLAN_DLL Identifier : public TextDisplayable
     {
+
 
         public:
 
@@ -77,11 +79,14 @@ namespace Ceylan
 			} ;
 
 
+
             /// Basic void constructor.
-            Identifier() throw() ;
+            Identifier() ;
+
 
             /// Basic destructor, to ensure it remains virtual.
             virtual ~Identifier() throw() ;
+			
 			
 			
             /**
@@ -96,7 +101,7 @@ namespace Ceylan
              *
              */
             virtual const std::string toString( Ceylan::VerbosityLevels 
-				level = Ceylan::high ) const throw() = 0 ;
+				level = Ceylan::high ) const = 0 ;
 
 
 
@@ -111,7 +116,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			Identifier( const Identifier & source ) throw() ;
+			Identifier( const Identifier & source ) ;
 			
 			
 			/**
@@ -122,7 +127,7 @@ namespace Ceylan
 			 * operator is called, implicitly or not.
 			 * 
 			 */			 
-			Identifier & operator = ( const Identifier & source ) throw() ;
+			Identifier & operator = ( const Identifier & source ) ;
 			
 	
     } ;
@@ -130,4 +135,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_IDENTIFIER_H_
+

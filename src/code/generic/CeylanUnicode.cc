@@ -44,25 +44,29 @@ using namespace Ceylan ;
  
  
  
-UnicodeString::UnicodeString() throw() :
+UnicodeString::UnicodeString() :
 	_buffer( 0 )
 {
 
 }
 
 
+
 UnicodeString::~UnicodeString() throw()
 {
+
 	if ( _buffer != 0 )
 		delete [] _buffer ;
+		
 }
 
 
-Ceylan::StringSize UnicodeString::size() const throw()
+
+Ceylan::StringSize UnicodeString::size() const
 {
 
 	/*
-	 * Empty strings can be coded two different ways : no buffer or a buffer 
+	 * Empty strings can be coded two different ways: no buffer or a buffer 
 	 * with only \0 in it.
 	 *
 	 */
@@ -82,7 +86,8 @@ Ceylan::StringSize UnicodeString::size() const throw()
 }
 
 
-UnicodeString & UnicodeString::copy( bool swap ) const throw()
+
+UnicodeString & UnicodeString::copy( bool swap ) const
 {
 
 	Ceylan::StringSize sourceSize = size() ;
@@ -123,7 +128,8 @@ UnicodeString & UnicodeString::copy( bool swap ) const throw()
 }
 
 
-void UnicodeString::setFromLatin1( const std::string & latin1String ) throw()
+
+void UnicodeString::setFromLatin1( const std::string & latin1String )
 {
  	
 	setCapacity( latin1String.size() ) ;
@@ -140,8 +146,9 @@ void UnicodeString::setFromLatin1( const std::string & latin1String ) throw()
 }
 	
 	
+	
 void UnicodeString::setFromUTF8( const std::string & utf8String, 
-	Ceylan::StringSize characterCount ) throw()
+	Ceylan::StringSize characterCount )
 {
 
 	/*
@@ -163,33 +170,33 @@ void UnicodeString::setFromUTF8( const std::string & utf8String,
 		
 		if ( uniChar >= 0xF0 )
 		{
-			uniChar  =  static_cast<Unicode>( (*it) & 0x07 ) << 18 ;
+			uniChar  = static_cast<Unicode>( (*it) & 0x07 ) << 18 ;
 			it++ ;
-			uniChar |=  static_cast<Unicode>( (*it) & 0x3F ) << 12 ;
+			uniChar |= static_cast<Unicode>( (*it) & 0x3F ) << 12 ;
 			it++ ;
-			uniChar |=  static_cast<Unicode>( (*it) & 0x3F ) <<  6 ;
+			uniChar |= static_cast<Unicode>( (*it) & 0x3F ) <<  6 ;
 			it++ ;
-			uniChar |=  static_cast<Unicode>( (*it) & 0x3F ) ;		
+			uniChar |= static_cast<Unicode>( (*it) & 0x3F ) ;		
 		
 		}
 		else
 		{
 			if ( uniChar >= 0xE0 ) 
 			{
-				uniChar  =  static_cast<Unicode>( (*it) & 0x0F ) << 12 ;
+				uniChar  = static_cast<Unicode>( (*it) & 0x0F ) << 12 ;
 				it++ ;
-				uniChar |=  static_cast<Unicode>( (*it) & 0x3F ) <<  6 ;
+				uniChar |= static_cast<Unicode>( (*it) & 0x3F ) <<  6 ;
 				it++ ;
-				uniChar |=  static_cast<Unicode>( (*it) & 0x3F ) ;
+				uniChar |= static_cast<Unicode>( (*it) & 0x3F ) ;
 			} 
 			else
 			{
 				if ( uniChar >= 0xC0 ) 
 				{
-					uniChar  =  static_cast<Unicode>( (*it) & 0x1F ) << 6 ;
-					uniChar |=  static_cast<Unicode>( (*it) & 0x3F ) ;
+					uniChar  = static_cast<Unicode>( (*it) & 0x1F ) << 6 ;
+					uniChar |= static_cast<Unicode>( (*it) & 0x3F ) ;
 				}
-				// else : one byte character in [0;0xC0[ , already managed.
+				// else: one byte character in [0;0xC0[ , already managed.
 			}
 		}
 
@@ -202,23 +209,28 @@ void UnicodeString::setFromUTF8( const std::string & utf8String,
 }
 
 
-const string UnicodeString::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+
+const string UnicodeString::toString( Ceylan::VerbosityLevels level ) const
 {
+
 	return "Unicode string made of " + Ceylan::toString( 
 		static_cast<Ceylan::Uint32>( size() ) ) 
 		+ " characters" ;
+		
 }
 
 
-Unicode UnicodeString::ConvertFromLatin1( Ceylan::Latin1Char latin1Char )
-	throw()
+
+Unicode UnicodeString::ConvertFromLatin1( Ceylan::Latin1Char latin1Char )	
 {
+
 	return static_cast<Unicode>( latin1Char ) ;
+	
 }
 
 
-void UnicodeString::setCapacity( Ceylan::StringSize newSize ) throw()
+
+void UnicodeString::setCapacity( Ceylan::StringSize newSize )
 {
 
 	if ( newSize == size() )

@@ -38,12 +38,14 @@ using namespace Ceylan::Log ;
 using namespace Ceylan::Middleware ;
 
 
+
 				
-ProtocolException::ProtocolException( const string & message ) throw() : 
+ProtocolException::ProtocolException( const string & message ) : 
 	MiddlewareException( message )
 {
 
 }
+
 
 
 ProtocolException::~ProtocolException() throw()			
@@ -53,13 +55,15 @@ ProtocolException::~ProtocolException() throw()
 
 
 
+
 				
-ProtocolEndpoint::ProtocolEndpoint( Marshaller & marshaller ) throw() :
+ProtocolEndpoint::ProtocolEndpoint( Marshaller & marshaller ) :
 	TextDisplayable(),
 	_marshaller( & marshaller )
 {
 
 }
+
 
 
 ProtocolEndpoint::~ProtocolEndpoint() throw()
@@ -70,11 +74,11 @@ ProtocolEndpoint::~ProtocolEndpoint() throw()
 }
 
 
-const string ProtocolEndpoint::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+
+const string ProtocolEndpoint::toString( Ceylan::VerbosityLevels level ) const
 {
 
-	return "Protocol endpoint using following marshaller : "
+	return "Protocol endpoint using following marshaller: "
 		+ _marshaller->toString( Ceylan::low ) ;
 	
 }

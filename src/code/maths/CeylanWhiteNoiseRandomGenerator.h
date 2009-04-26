@@ -38,10 +38,12 @@
 namespace Ceylan
 {
 
+
 	namespace Maths
 	{
 	
 	
+		/// Gathers all stochastic mechanisms.
 		namespace Random
 		{
 		
@@ -49,8 +51,8 @@ namespace Ceylan
 			
 			
 			/**
-			 * White noise generator : the probabilistic law of the 
-			 * output random values is uniform : each value should have
+			 * White noise generator: the probabilistic law of the 
+			 * output random values is uniform: each value should have
 			 * the same probability of showing up, in specified range. 
 			 *
 			 * Seed value for randon generators can be specified or forged
@@ -61,8 +63,10 @@ namespace Ceylan
 			{
 			
 			
+			
 				public:
 
+				
 				
 					/**
 					 * Creates a white noise generator which will produce
@@ -84,8 +88,9 @@ namespace Ceylan
 					 *
 					 */					 
 					WhiteNoiseGenerator( Sample lowerLimit, 
-						Sample upperLimit ) throw( MathsException ) ;
+						Sample upperLimit ) ;
 
+				
 				
 					/**
 					 * Creates a white noise generator which will produce
@@ -114,14 +119,14 @@ namespace Ceylan
 					 *
 					 */					 
 					WhiteNoiseGenerator( Sample lowerLimit, 
-							Sample upperLimit, Seed aSeed ) 
-						throw( MathsException ) ;
+						Sample upperLimit, Seed aSeed ) ;
 					
 					
 					
 					
             		/// Basic virtual destructor.
             		virtual ~WhiteNoiseGenerator() throw() ;
+					
 					
 					
 					/**
@@ -134,16 +139,18 @@ namespace Ceylan
 					 * not be determined.
 					 *
 					 */
-					virtual void generateSeedFromCurrentTime() 
-						throw( MathsException ) ;
+					virtual void generateSeedFromCurrentTime() ;
+					
 					
 					
 					/// Returns the next random value.
-					virtual RandomValue getNewValue() throw() ;
+					virtual RandomValue getNewValue() ;
+					
 					
 					
 					/// Resets the random generator with specified seed.
-					virtual void reset( Seed neeSeed ) throw() ;
+					virtual void reset( Seed neeSeed ) ;
+								
 										
 					
 	    	        /**
@@ -159,7 +166,7 @@ namespace Ceylan
 					 *
 					 */
             		virtual const std::string toString( 
-						VerbosityLevels level = high ) const throw() ;
+						VerbosityLevels level = high ) const ;
 				
 				
 				
@@ -172,7 +179,7 @@ namespace Ceylan
 					 * new value.
 					 *
 					 */
-					virtual void preCompute() throw( MathsException ) ;		
+					virtual void preCompute() ;		
 				
 				
 				
@@ -187,8 +194,7 @@ namespace Ceylan
 					 * undefined constructor is called, implicitly or not.
 					 * 
 					 */			 
-					WhiteNoiseGenerator( 
-						const WhiteNoiseGenerator & source ) throw() ;
+					WhiteNoiseGenerator( const WhiteNoiseGenerator & source ) ;
 			
 			
 					/**
@@ -198,13 +204,13 @@ namespace Ceylan
 					 * The compiler should complain whenever this 
 					 * undefined operator is called, implicitly or not.
 					 * 
-					 *
 					 */			 
 					WhiteNoiseGenerator & operator = ( 
-						const WhiteNoiseGenerator & source ) throw() ;
+						const WhiteNoiseGenerator & source ) ;
 					
 				
 			} ;
+			
 		
 		}
 		
@@ -213,4 +219,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_WHITE_NOISE_GENERATOR_H_
+

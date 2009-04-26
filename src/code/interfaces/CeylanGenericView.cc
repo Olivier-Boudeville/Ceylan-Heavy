@@ -37,6 +37,7 @@ using std::string ;
  * In this file following classes are implemented:
  *
  *   - BaseView
+ *
  */
 
 
@@ -44,7 +45,7 @@ using std::string ;
 // BaseView section.
 
 
-BaseView::BaseView() throw()
+BaseView::BaseView()
 {
 
 }
@@ -57,7 +58,8 @@ BaseView::~BaseView() throw()
 }
 
 
-const string BaseView::toString( Ceylan::VerbosityLevels level ) const throw()
+
+const string BaseView::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	return "Base view" ;

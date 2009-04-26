@@ -72,13 +72,14 @@ namespace Ceylan
 	
 				public:
 		
-					TextBufferException( const std::string & message ) throw(): 
+					TextBufferException( const std::string & message ) : 
 						StringUtilsException( message )
 					{		
 			
 					}
 			
-					virtual ~TextBufferException() throw()
+			
+					virtual ~TextBufferException() throw() 
 					{
 			
 					}	
@@ -120,12 +121,15 @@ namespace Ceylan
 			/// Abscissa index of a character in a buffer.	
 			typedef Ceylan::Uint8 CharAbscissa ;
 				
+				
 			/// Ordinate index of a character in a buffer.	
 			typedef Ceylan::Uint8 CharOrdinate ;
 			
 			
+			
 			/// Index of a text in buffer list.
 			typedef Ceylan::Uint32 TextIndex ;
+			
 			
 			/// Index of a preformatted line in a text.
 			typedef Ceylan::Uint32 LineIndex ;
@@ -152,7 +156,7 @@ namespace Ceylan
 			 *
 			 */		
 			TextBuffer( CharAbscissa screenWidth, CharOrdinate screenHeight,
-				TextLayout layout = Raw ) throw( TextBufferException ) ;
+				TextLayout layout = Raw ) ;
 			
 			
 			/// Virtual destructor.
@@ -166,7 +170,7 @@ namespace Ceylan
 			 * buffer.
 			 *
 			 */
-			virtual CharAbscissa getWidth() const throw() ;
+			virtual CharAbscissa getWidth() const ;
 		
 		
 			/**
@@ -174,13 +178,14 @@ namespace Ceylan
 			 * buffer.
 			 *
 			 */
-			virtual CharOrdinate getHeight() const throw() ;			
+			virtual CharOrdinate getHeight() const ;			
 			
 
 
 			/// Returns the text layout being currently used.
-			virtual TextLayout getTextLayout() const throw() ;
+			virtual TextLayout getTextLayout() const ;
 		
+			
 			
 			/**
 			 * Sets a new text layout.
@@ -191,15 +196,16 @@ namespace Ceylan
 			 * @throw TextBufferException if the operation failed.
 			 *
 			 */
-			virtual void setTextLayout( TextLayout newLayout ) 
-				throw( TextBufferException ) ;
+			virtual void setTextLayout( TextLayout newLayout ) ;
+
 
 
 			/**
 			 * Returns the current alinea width, in characters.
 			 *
 			 */
-			virtual CharAbscissa getAlineaWidth() const throw() ;
+			virtual CharAbscissa getAlineaWidth() const ;
+			
 			
 			
 			/**
@@ -209,8 +215,8 @@ namespace Ceylan
 			 * It can be null for no alinea at all.
 			 *
 			 */
-			virtual void setAlineaWidth( CharAbscissa newAlineaWidth )
-				throw() ;
+			virtual void setAlineaWidth( CharAbscissa newAlineaWidth ) ;
+				
 				
 				
 			/**
@@ -223,8 +229,8 @@ namespace Ceylan
 			 * @throw TextBufferException if the operation failed.
 			 *
 			 */
-			virtual void add( const std::string & text ) 
-				throw( TextBufferException ) ;
+			virtual void add( const std::string & text ) ;
+			
 			
 			
 			/**
@@ -233,7 +239,7 @@ namespace Ceylan
 			 * Removes all text content.
 			 *
 			 */
-			virtual void blank() throw() ;
+			virtual void blank() ;
 			
 			
 			
@@ -249,7 +255,8 @@ namespace Ceylan
 			 * @return true iff there was a text entry left indeed.
 			 *
 			 */
-			virtual bool jumpNextText() throw() ;
+			virtual bool jumpNextText() ;
+			
 			
 			
 			/**
@@ -260,7 +267,7 @@ namespace Ceylan
 			 * @return true iff there was a prior text entry indeed.
 			 *
 			 */
-			virtual bool jumpPreviousText() throw() ;
+			virtual bool jumpPreviousText() ;
 			
 			
 			
@@ -272,7 +279,8 @@ namespace Ceylan
 			 * @return true iff there was a line left indeed.
 			 *
 			 */
-			virtual bool jumpNextLine() throw() ;
+			virtual bool jumpNextLine() ;
+			
 			
 			
 			/**
@@ -288,7 +296,8 @@ namespace Ceylan
 			 * @return true iff there was a line left indeed.
 			 *
 			 */
-			virtual void jumpNextLineNoRefresh() throw() ;
+			virtual void jumpNextLineNoRefresh() ;
+			
 			
 			
 			/**
@@ -299,7 +308,7 @@ namespace Ceylan
 			 * @return true iff there was a line left indeed.
 			 *
 			 */
-			virtual bool jumpPreviousLine() throw() ;
+			virtual bool jumpPreviousLine() ;
 			
 			
 			
@@ -312,6 +321,7 @@ namespace Ceylan
 			 *
 			 */
 			typedef std::list<char *> TextGrid ;
+
 
 			 
 			/**
@@ -326,7 +336,7 @@ namespace Ceylan
 			 * they are blank.
 			 *
 			 */
-			virtual const TextGrid & getScreenLines() const throw() ;
+			virtual const TextGrid & getScreenLines() const ;
 						
 					
 						 
@@ -343,9 +353,9 @@ namespace Ceylan
 			 *
 			 */
 			virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+				Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 						
+			
 			
 			/// Number of spaces corresponding to one tabulation.
 			static const CharAbscissa TabSpacing = 4 ;
@@ -365,7 +375,8 @@ namespace Ceylan
 			 * invalidate line content.
 			 *
 			 */
-			virtual void recomputeGrids() throw() ;
+			virtual void recomputeGrids() ;
+			 
 			 
 			 
 			/**
@@ -375,7 +386,8 @@ namespace Ceylan
 			 * Recreates from scratch the list of line references.
 			 *
 			 */
-			void updateScreenLines() throw() ;
+			void updateScreenLines() ;
+			
 			
 			
 			/**
@@ -387,11 +399,11 @@ namespace Ceylan
 			 * @see deleteTextGrid
 			 *
 			 */
-			TextGrid & createTextGridFrom( const std::string & text ) throw() ;
+			TextGrid & createTextGridFrom( const std::string & text ) ;
 			
 			
 			/// Deletes a TextGrid.
-			void deleteTextGrid( TextGrid * grid ) throw()	;
+			void deleteTextGrid( TextGrid * grid ) 	;
 
 
 
@@ -403,8 +415,8 @@ namespace Ceylan
 			 * @note Ownership of the text grid is transferred to the caller.
 			 *
 			 */
-			TextGrid & createRawGridFrom( const std::string & text ) 
-				throw() ;
+			TextGrid & createRawGridFrom( const std::string & text ) ;
+
 
 
 			/**
@@ -415,8 +427,7 @@ namespace Ceylan
 			 * @note Ownership of the text grid is transferred to the caller.
 			 *
 			 */
-			TextGrid & createAdvancedGridFrom( const std::string & text ) 
-				throw() ;
+			TextGrid & createAdvancedGridFrom( const std::string & text ) ;
 
 			
 
@@ -425,7 +436,7 @@ namespace Ceylan
 			 * the end of text.
 			 *
 			 */
-			LineIndex getHeightFromCurrentPosition() const throw() ;
+			LineIndex getHeightFromCurrentPosition() const ;
 				
 
 			
@@ -452,13 +463,15 @@ namespace Ceylan
 
 #pragma warning( pop ) 
 				
+				
 			/**
 			 * Tells how many lines spread from the beggining of specified 
 			 * text entry to the end of text.
 			 *
 			 */
 			LineIndex getHeightFromEntry( 
-				ListOfTexts::const_iterator textIterator ) const throw() ;
+				ListOfTexts::const_iterator textIterator ) const ;
+				
 				
 				
 			/**
@@ -467,7 +480,7 @@ namespace Ceylan
 			 * @note Ownership of the line is transferred to the caller.
 			 *
 			 */
-			char * getNewLine() throw() ;
+			char * getNewLine() ;
 				
 
 /*
@@ -494,12 +507,15 @@ namespace Ceylan
 			/// The width of the character grid.
  			CharAbscissa _width ;
 			
+			
 			/// The ordinate of the character grid.
 			CharOrdinate _height ;
 			
 			
+			
 			/// Records the current text layout being used.
 			TextLayout _layout ;
+			
 			
 			/// The width, in characters, of a paragraph alinea.
  			CharAbscissa _alineaWidth ;
@@ -517,8 +533,10 @@ namespace Ceylan
 			/// The index of the text entry being rendered.
 			ListOfTexts::const_iterator _currentText ;
 			
+			
 			/// Index of a preformatted line in current rendered text grid.
 			TextGrid::const_iterator _currentLine ;			
+			
 			
 			/// The current screen, seen as a list of (at most _height) lines.	
 			TextGrid _screenLines ;
@@ -538,7 +556,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			TextBuffer( const TextBuffer & source ) throw() ;
+			TextBuffer( const TextBuffer & source ) ;
 			
 			
 			/**
@@ -549,7 +567,7 @@ namespace Ceylan
 			 * operator is called, implicitly or not.
 			 * 
 			 */			 
-			TextBuffer & operator = ( const TextBuffer & source ) throw() ;
+			TextBuffer & operator = ( const TextBuffer & source ) ;
 	
 	
 	} ;

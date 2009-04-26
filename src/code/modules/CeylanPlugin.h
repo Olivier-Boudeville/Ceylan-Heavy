@@ -38,13 +38,16 @@
 #define CEYLAN_SYMBOL_MARKER "_LTX_"
 
 
+
 /*
- * Is not accepted by the preprocessor :
+ * Is not accepted by the preprocessor:
  
 #define CEYLAN_PLUGIN_DECLARE_NAME(name) \
 #define plugin_name name
 
  */	
+
+
 	
 /**
  * Use this macro to declare a symbol which is to be exported by the plugin,
@@ -61,7 +64,7 @@
  *
  * @see ceylan-test-plugin.cc
  *
- * Is not accepted by the preprocessor :
+ * Is not accepted by the preprocessor:
  *
 #define CEYLAN_PLUGIN_EXPORTED_SYMBOL(symbol)\
 	#define symbol plugin_name##CEYLAN_SYMBOL_MARKER##symbol
@@ -81,7 +84,7 @@
  *
  * @see ceylan-test-plugin.cc
  *
- * Is not accepted by the preprocessor :
+ * Is not accepted by the preprocessor:
  *
 #define CEYLAN_PLUGIN_INTERNAL_SYMBOL(symbol)\
 	#define symbol _##plugin_name##_symbol
@@ -96,15 +99,17 @@ namespace Ceylan
 
 
 	/// Raised whenever a plugin-related operation failed.
-	class CEYLAN_DLL PluginException : public Ceylan::ModuleException
+	class CEYLAN_DLL PluginException: public Ceylan::ModuleException
 	{
 	
 		public:
 		
-			PluginException( const std::string & message ) throw() ;
+			PluginException( const std::string & message ) ;
+			
 			virtual ~PluginException() throw() ;
 	
 	} ;
+
 
 
 
@@ -120,7 +125,7 @@ namespace Ceylan
 	 * @note Our plugin system relies on ltdl.
 	 *
 	 */
-	class CEYLAN_DLL Plugin : public Ceylan::Module
+	class CEYLAN_DLL Plugin: public Ceylan::Module
 	{
 
 
@@ -167,14 +172,14 @@ namespace Ceylan
 			 *
 			 * @param filename the filename of the shared library that should
 			 * be loaded. If the filename has no directory component, the 
-			 * plugin will be searched through :
+			 * plugin will be searched through:
 			 *   1. user-defined search path, see PluginLocator
 			 *   2. libltdl's search path, which is the value of the 
 			 * environment variable LTDL_LIBRARY_PATH
 			 *   3. system-dependent library search path, for example on Linux
 			 * it is LD_LIBRARY_PATH. 
 			 * Different file name extensions will be appended to the file 
-			 * name until the plugin is found : the libtool archive extension
+			 * name until the plugin is found: the libtool archive extension
 			 * `.la', the extension used for native dynamic libraries on the
 			 * host platform, e.g., `.so', `.sl', etc. This lookup strategy 
 			 * was designed to allow programs that do not have knowledge 
@@ -196,7 +201,7 @@ namespace Ceylan
 			 *
 			 */
 			explicit Plugin( const std::string & filename = "",
-				bool autoPrefix = true ) throw( PluginException ) ;
+				bool autoPrefix = true ) ;
 	
 		
 			/// Virtual destructor.
@@ -210,7 +215,8 @@ namespace Ceylan
 			 * @throw ModuleException if the operation failed.
 			 *
 			 */
-            virtual std::string getEmbeddedName() throw( PluginException ) ;
+            virtual std::string getEmbeddedName() ;
+
 
 
             /**
@@ -219,8 +225,9 @@ namespace Ceylan
 			 * @throw ModuleException if the operation failed.
 			 *
 			 */
-            virtual std::string getFilename() const throw( ModuleException ) ;
+            virtual std::string getFilename() const ;
 
+			
 			
            /**
 			 * Returns the current reference count of this plugin.
@@ -231,8 +238,8 @@ namespace Ceylan
 			 * @throw ModuleException if the operation failed.
 			 *
 			 */
-            virtual ReferenceCount getReferenceCount() const 
-				throw( ModuleException ) ;
+            virtual ReferenceCount getReferenceCount() const ;
+		
 			
 			
 			/**
@@ -240,7 +247,8 @@ namespace Ceylan
 			 * shared object.
 			 *
 			 */
-			bool isOpen() const throw() ;
+			bool isOpen() const ;
+	
 	
 	
 			/**
@@ -255,8 +263,8 @@ namespace Ceylan
 			 * @see getFunctionSymbol, testCeylanPlugin.cc
 			 *
 			 */
-			void * getDataSymbol( const std::string & dataName ) const
-				throw( PluginException ) ;
+			void * getDataSymbol( const std::string & dataName ) const ;
+
 
 
 			/**
@@ -270,7 +278,7 @@ namespace Ceylan
 			 *
 			 * @see getDataSymbol, testCeylanPlugin.cc
 			 *
-			 * @example :
+			 * @example:
 			 * typedef Ceylan::Uint32 TestFunction( 
 			 *	const std::string & message ) ;
 			 * TestFunction * readFunction = reinterpret_cast<TestFunction *>(
@@ -278,8 +286,8 @@ namespace Ceylan
 			 *
 			 */
 			BasicFunctionPointer getFunctionSymbol( 
-					const std::string & functionName ) const
-				throw( PluginException ) ;
+					const std::string & functionName ) const ;
+		
 		
 			
 			/**
@@ -289,7 +297,8 @@ namespace Ceylan
 			 * or if the plugin could not be closed successfully.
 			 *
 			 */
-			void close() throw( PluginException ) ;
+			void close() ;
+		
 		
 		
 			/**
@@ -304,7 +313,8 @@ namespace Ceylan
 			 * @throw PluginException if the operation failed.
 			 *
 			 */
-			void makeResident() throw( PluginException ) ;
+			void makeResident() ;
+			
 			
 			
 			/**
@@ -315,18 +325,20 @@ namespace Ceylan
 			 * @throw PluginException if the operation failed.
 			 *
 			 */
-			bool isResident() const throw( PluginException ) ;
+			bool isResident() const ;
+			
 			
 			
 			/**
 			 * Returns the filename corresponding to this plugin, from the
 			 * loader point of view.
 			 *
-			 * This name (ex : ceylan-test-plugin.so) can be different from the
-			 * user-specified one (ex :ceylan-test-plugin).
+			 * This name (ex: ceylan-test-plugin.so) can be different from the
+			 * user-specified one (ex:ceylan-test-plugin).
 			 *
 			 */
 			const std::string & getFileName() const ;
+
 
 
             /**
@@ -340,7 +352,8 @@ namespace Ceylan
              *
              */
 			virtual const std::string toString( 
-				VerbosityLevels level = high ) const throw() ;
+				VerbosityLevels level = high ) const ;
+
 
 
 			/**
@@ -348,6 +361,7 @@ namespace Ceylan
 			 *
 			 */
 			static Ceylan::System::FileLocator PluginLocator ;
+
 
 
 			/**
@@ -362,6 +376,7 @@ namespace Ceylan
 			static const std::string SymbolMarker  ; 
 			
 			
+			
 			 
 		protected:
 					
@@ -373,7 +388,7 @@ namespace Ceylan
 			 * @throw PluginException if the operation failed.
 			 *
 			 */
-			virtual void retrieveMetadata() throw( PluginException ) ;
+			virtual void retrieveMetadata() ;
 			
 			
 			
@@ -386,6 +401,7 @@ namespace Ceylan
 			static Ceylan::Uint16 PluginSystemInitialized ;
 			
 			
+
 
 		private:
 		
@@ -415,7 +431,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			Plugin( const Plugin & source ) throw() ;
+			Plugin( const Plugin & source ) ;
 			
 			
 			/**
@@ -426,7 +442,7 @@ namespace Ceylan
 			 * called, implicitly or not.
 			 * 
 			 */			 
-			Plugin & operator = ( const Plugin & source ) throw() ;
+			Plugin & operator = ( const Plugin & source ) ;
 		
 
 
@@ -436,4 +452,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_PLUGIN_H_
+

@@ -38,6 +38,7 @@
 
 
 
+
 namespace Ceylan
 {
 
@@ -49,6 +50,7 @@ namespace Ceylan
 		class InputStream ;
 		
 	}
+	
 	
 	
 	namespace XML
@@ -70,8 +72,7 @@ namespace Ceylan
 	
 			public:
 		
-				explicit XMLParserException( const std::string & reason )
-					throw() ;
+				explicit XMLParserException( const std::string & reason ) ;
 					
 				virtual ~XMLParserException() throw() ;
 
@@ -82,6 +83,7 @@ namespace Ceylan
 
 		// Forward-declaration.
 		template <typename XMLElement> class Tree ;
+
 
 
 		/**
@@ -98,6 +100,7 @@ namespace Ceylan
 		 */
 		class CEYLAN_DLL XMLParser: public Ceylan::TextDisplayable
 		{
+		
 		
 		
 			public:
@@ -118,7 +121,8 @@ namespace Ceylan
 				 * file with that filename.
 				 *
 				 */
-				explicit XMLParser( const std::string & filename ) throw() ;
+				explicit XMLParser( const std::string & filename ) ;
+
 
 
 				/**
@@ -132,6 +136,7 @@ namespace Ceylan
 				
 				// Internal XML tree management.
 				
+				
 				 
 				/**
 				 * Returns whether this parser has an available XML tree.
@@ -139,8 +144,9 @@ namespace Ceylan
 				 * @return true iff there is an available XML tree.
 				 *
 				 */
-				virtual bool hasXMLTree() const throw() ;
+				virtual bool hasXMLTree() const ;
 					
+				
 					
 				/**
 				 * Returns the internal XML tree.
@@ -153,8 +159,8 @@ namespace Ceylan
 				 * which is still owned by this parser.
 				 *
 				 */
-				virtual XMLTree & getXMLTree() const 
-					throw( XMLParserException ) ;
+				virtual XMLTree & getXMLTree() const ;
+					
 					
 				
 				/**
@@ -167,7 +173,8 @@ namespace Ceylan
 				 * @note The parser takes ownership of the specified tree.
 				 *
 				 */
-				virtual void setXMLTree( XMLTree & newTree ) throw() ;
+				virtual void setXMLTree( XMLTree & newTree ) ;
+	
 	
 	
 				
@@ -188,7 +195,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual void saveToFile( const std::string & filename = "" )
-					const throw( XMLParserException ) ;
+					const ;
+	
 	
 	
 				/**
@@ -201,7 +209,7 @@ namespace Ceylan
 				 * incorrect XML syntaxes.
 				 *
 				 */
-				virtual void loadFromFile() throw( XMLParserException ) ;
+				virtual void loadFromFile() ;
 	
 	
 	
@@ -217,21 +225,25 @@ namespace Ceylan
 				 *
 				 */
 				 virtual const std::string toString( 
-			 			Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+			 		Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+
+
 
 
 
 				// Static section.
 				
 
+
 				/// Default XML encoding is ISO-8859-15 (Latin-1 with euro).
 				static std::string DefaultEncoding ;
+
 
 
 				/// All sequences that begin with a '<'.	
 				enum LowerThanSequence
 				{
+				
 				
 					/// XML declaration, for example: '<?xml version="1.0"?>'.
 					Declaration,
@@ -247,10 +259,12 @@ namespace Ceylan
 					
 					/// Unexpected XML element:
 					UnexpectedElement
+					
 				
 				} ;
 				
 				
+
 
 				/**
 				 * Reads a character from input stream, whereas previous read
@@ -268,9 +282,9 @@ namespace Ceylan
 				 *
 				 */
 				static LowerThanSequence InterpretLowerThanSequence( 
-						System::InputStream & input, Ceylan::Uint8 & readChar )
-					throw( System::InputStream::InputStreamException ) ;
+					System::InputStream & input, Ceylan::Uint8 & readChar ) ;
 					
+
 
 				/**
 				 * Returns a string describing the specified sequence.
@@ -279,7 +293,8 @@ namespace Ceylan
 				 *
 				 */
 				static std::string DescribeLowerThanSequence(
-					LowerThanSequence sequence ) throw() ;
+					LowerThanSequence sequence ) ;
+					
 					
 					
 				/**
@@ -296,9 +311,7 @@ namespace Ceylan
 				 *
 				 */
 				static void InterpretXMLDeclaration( 
-						System::InputStream & input ) 
-					throw( System::InputStream::InputStreamException, 
-						XMLParserException ) ;
+					System::InputStream & input );
 					
 					
 				/**
@@ -410,4 +423,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_XML_PARSER_H_
+

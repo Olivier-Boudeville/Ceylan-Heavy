@@ -161,7 +161,7 @@ const Flags Features::Signals = 0x00000200 ;
 
 
 FeatureNotAvailableException::FeatureNotAvailableException( 
-		const std::string & message )  :
+		const std::string & message ) :
 	Ceylan::Exception( message )
 {
 
@@ -170,7 +170,6 @@ FeatureNotAvailableException::FeatureNotAvailableException(
 
 
 FeatureNotAvailableException::~FeatureNotAvailableException() throw()
-	
 {
 
 }
@@ -179,7 +178,6 @@ FeatureNotAvailableException::~FeatureNotAvailableException() throw()
 
 void Features::checkForSupportedFeatures( Flags featuresFlag )
 {
-	
 	
 	string endOfMessage = " feature not supported by the version "
 		"of the Ceylan library currently linked." ;
@@ -243,7 +241,7 @@ void Features::checkForSupportedFeatures( Flags featuresFlag )
 	if ( featuresFlag & FileLocks )
 	{
 		if ( ! areFileLocksSupported() )
-			throw FeatureNotAvailableException( "File lock" + endOfMessage ) ;			
+			throw FeatureNotAvailableException( "File lock" + endOfMessage ) ;	
 	}
 
 

@@ -60,12 +60,13 @@ using namespace Ceylan::Maths ;
 
 
 
-MathsException::MathsException( const std::string & message ) throw():
+MathsException::MathsException( const std::string & message ) :
 	Ceylan::Exception( "Maths exception: " + message )
 {
 
 }
 
+	
 	
 MathsException::~MathsException() throw()
 {
@@ -80,14 +81,18 @@ MathsException::~MathsException() throw()
 const Ceylan::LongFloat Ceylan::Maths::E =
 	2.7182818284590452353602874713526625L ;
 	
+	
 const Ceylan::LongFloat Ceylan::Maths::Log2E = 
 	1.4426950408889634073599246810018922L ;
+
 
 const Ceylan::LongFloat Ceylan::Maths::Log10E = 
 	0.4342944819032518276511289189166051L ;
 
+
 const Ceylan::LongFloat Ceylan::Maths::LogE2 = 
 	0.6931471805599453094172321214581766L ;
+	
 	
 const Ceylan::LongFloat Ceylan::Maths::LogE10 = 
 	2.3025850929940456840179914546843642L ;
@@ -96,17 +101,22 @@ const Ceylan::LongFloat Ceylan::Maths::LogE10 =
 const Ceylan::LongFloat Ceylan::Maths::Pi = 
 	3.1415926535897932384626433832795029L ;
 	
+	
 const Ceylan::LongFloat Ceylan::Maths::Pi_div_2 = 
 	1.5707963267948966192313216916397514L ;
+	
 	
 const Ceylan::LongFloat Ceylan::Maths::Pi_div_4 = 
 	0.7853981633974483096156608458198757L ;
 	
+	
 const Ceylan::LongFloat Ceylan::Maths::One_div_Pi = 
 	0.3183098861837906715377675267450287L ;
 	
+	
 const Ceylan::LongFloat Ceylan::Maths::Two_div_Pi = 
 	0.6366197723675813430755350534900574L ;
+	
 	
 const Ceylan::LongFloat Ceylan::Maths::Two_div_sqrt_Pi = 
 	1.1283791670955125738961589031215452L ;
@@ -117,6 +127,7 @@ const Ceylan::LongFloat Ceylan::Maths::Sqrt_2 =
 	
 const Ceylan::LongFloat Ceylan::Maths::One_div_sqrt_2 = 
 	0.7071067811865475244008443621048490L ;
+	
 	
 	
 const Ceylan::LongFloat Ceylan::Maths::EpsilonFloat32   = 1.0e-7 ;			
@@ -130,104 +141,136 @@ const Ceylan::LongFloat Ceylan::Maths::Epsilon          = EpsilonFloat32 ;
 
 
 
-bool Ceylan::Maths::IsNull( Ceylan::Float32 x ) throw()
+bool Ceylan::Maths::IsNull( Ceylan::Float32 x )
 {
+
 	return Abs( x ) < EpsilonFloat32 ;
+	
 }
+
 
 
 bool Ceylan::Maths::IsNull( Ceylan::Float32 x, Ceylan::Float32 epsilon ) 
-	throw()
 {
+
 	return Abs( x ) < epsilon ;
+	
 }
 
 
 
-bool Ceylan::Maths::IsNull( Ceylan::Float64 x ) throw()
+
+bool Ceylan::Maths::IsNull( Ceylan::Float64 x )
 {
+
 	return Abs( x ) < EpsilonFloat64 ;
+	
 }
 
 
-bool Ceylan::Maths::IsNull( Ceylan::Float64 x, Ceylan::Float64 epsilon ) throw()
+
+bool Ceylan::Maths::IsNull( Ceylan::Float64 x, Ceylan::Float64 epsilon )
 {
+
 	return Abs( x ) < epsilon ;
+	
 }
 
 
 
-bool Ceylan::Maths::IsNull( Ceylan::LongFloat x ) throw()
+bool Ceylan::Maths::IsNull( Ceylan::LongFloat x )
 {
+
 	return Abs( x ) < EpsilonLongFloat ;
+	
 }
 
 
-bool Ceylan::Maths::IsNull( Ceylan::LongFloat x, Ceylan::LongFloat epsilon )
-	throw()
+
+bool Ceylan::Maths::IsNull( Ceylan::LongFloat x, Ceylan::LongFloat epsilon )	
 {
+
 	return Abs( x ) < epsilon ;
+	
 }
+
 
 
 
 // AreEqual section.
 
 
-bool Ceylan::Maths::AreEqual( Ceylan::Float32 x, Ceylan::Float32 y ) throw()
+bool Ceylan::Maths::AreEqual( Ceylan::Float32 x, Ceylan::Float32 y )
 {
+
 	return Abs( x - y ) < EpsilonFloat32 ;
-}
-
-
-bool Ceylan::Maths::AreEqual( Ceylan::Float32 x, Ceylan::Float32 y, 
-	Ceylan::Float32 epsilon ) throw()
-{
-	return Abs( x - y ) < epsilon ;
-}
-
-
-
-bool Ceylan::Maths::AreEqual( Ceylan::Float64 x, Ceylan::Float64 y ) throw()
-{
-	return Abs( x - y  ) < EpsilonFloat64 ;
-}
-
-
-bool Ceylan::Maths::AreEqual( Ceylan::Float64 x, Ceylan::Float64 y, 
-	Ceylan::Float64 epsilon ) throw()
-{
-	return Abs( x - y  ) < epsilon ;
-}
-
-
-bool Ceylan::Maths::AreExactlyEqual( Ceylan::Float64 x, Ceylan::Float64 y )
-	throw()
-{
-
-	// Do not now how to implement it reliably:
-	return Abs( x - y )< ( EpsilonLongFloat / 100 ) ;
 	
 }
 
 
-bool Ceylan::Maths::AreEqual( Ceylan::LongFloat x, Ceylan::LongFloat y ) 
-	throw()
+
+bool Ceylan::Maths::AreEqual( Ceylan::Float32 x, Ceylan::Float32 y, 
+	Ceylan::Float32 epsilon )
 {
-	return Abs( x - y  ) < EpsilonLongFloat ;
+
+	return Abs( x - y ) < epsilon ;
+	
 }
+
+
+
+bool Ceylan::Maths::AreEqual( Ceylan::Float64 x, Ceylan::Float64 y )
+{
+
+	return Abs( x - y  ) < EpsilonFloat64 ;
+	
+}
+
+
+
+bool Ceylan::Maths::AreEqual( Ceylan::Float64 x, Ceylan::Float64 y, 
+	Ceylan::Float64 epsilon )
+{
+
+	return Abs( x - y  ) < epsilon ;
+	
+}
+
+
+
+bool Ceylan::Maths::AreExactlyEqual( Ceylan::Float64 x, Ceylan::Float64 y )
+{
+
+
+	// Do not now how to implement it reliably:
+	return Abs( x - y )< ( EpsilonLongFloat / 100 ) ;
+	
+	
+}
+
+
+
+bool Ceylan::Maths::AreEqual( Ceylan::LongFloat x, Ceylan::LongFloat y ) 
+{
+
+	return Abs( x - y  ) < EpsilonLongFloat ;
+	
+}
+
 
 
 bool Ceylan::Maths::AreEqual( Ceylan::LongFloat x, Ceylan::LongFloat y, 
-	Ceylan::LongFloat epsilon ) throw()
+	Ceylan::LongFloat epsilon )
 {
+
 	return Abs( x - y  ) < epsilon ;
+	
 }
 
 
 
 
-Ceylan::Float32 Ceylan::Maths::Floor( Ceylan::Float32 x ) throw()
+Ceylan::Float32 Ceylan::Maths::Floor( Ceylan::Float32 x )
 {
 
 #ifdef CEYLAN_USES_FLOORF
@@ -243,7 +286,7 @@ Ceylan::Float32 Ceylan::Maths::Floor( Ceylan::Float32 x ) throw()
 	
 #else // CEYLAN_USES_FLOORF
 
-	// Use floor if neither roundf nor floorf is available (ex: Solaris):
+	// Use floor if neither roundf nor floorf is available (ex : Solaris):
 	return ::floor( x ) ;
 
 #endif // CEYLAN_USES_FLOORF
@@ -253,20 +296,26 @@ Ceylan::Float32 Ceylan::Maths::Floor( Ceylan::Float32 x ) throw()
 }
 
 
-Ceylan::Float64 Ceylan::Maths::Floor( Ceylan::Float64 x ) throw()
+
+Ceylan::Float64 Ceylan::Maths::Floor( Ceylan::Float64 x )
 {
+
 	return ::floor( x ) ;
+	
 }
 
 
-Ceylan::LongFloat Ceylan::Maths::Floor( Ceylan::LongFloat x ) throw()
+
+Ceylan::LongFloat Ceylan::Maths::Floor( Ceylan::LongFloat x )
 {
+
 	return ::floor( x ) ;
+	
 }
 
 
 
-Ceylan::Float32 Ceylan::Maths::Ceil( Ceylan::Float32 x ) throw()
+Ceylan::Float32 Ceylan::Maths::Ceil( Ceylan::Float32 x )
 {
 
 #ifdef CEYLAN_USES_CEILF
@@ -282,23 +331,30 @@ Ceylan::Float32 Ceylan::Maths::Ceil( Ceylan::Float32 x ) throw()
 }
 
 
-Ceylan::Float64 Ceylan::Maths::Ceil( Ceylan::Float64 x ) throw()
+
+Ceylan::Float64 Ceylan::Maths::Ceil( Ceylan::Float64 x )
 {
+
 	return ::ceil( x ) ;
+	
 }
 
 
-Ceylan::LongFloat Ceylan::Maths::Ceil( Ceylan::LongFloat x ) throw()
+
+Ceylan::LongFloat Ceylan::Maths::Ceil( Ceylan::LongFloat x )
 {
+
 	return ::ceil( x ) ;
+	
 }
+
 
 
 
 // Round section.
 
 
-Ceylan::Float32 Ceylan::Maths::Round( Ceylan::Float32 x ) throw()
+Ceylan::Float32 Ceylan::Maths::Round( Ceylan::Float32 x )
 {
 
 #ifdef CEYLAN_USES_ROUNDF 
@@ -314,7 +370,7 @@ Ceylan::Float32 Ceylan::Maths::Round( Ceylan::Float32 x ) throw()
 	
 #else // CEYLAN_USES_FLOORF
 
-	// Use floor if neither roundf nor floorf is available (ex: Solaris):
+	// Use floor if neither roundf nor floorf is available (ex : Solaris):
 	return ::floor( x ) ;
 
 #endif // CEYLAN_USES_FLOORF
@@ -324,8 +380,9 @@ Ceylan::Float32 Ceylan::Maths::Round( Ceylan::Float32 x ) throw()
 }
 
 
+
 Ceylan::Float32 Ceylan::Maths::Round( Ceylan::Float32 x, 
-	Ceylan::Uint8 precision ) throw()
+	Ceylan::Uint8 precision )
 {
 	
 	Ceylan::Float64 offset =::pow( static_cast<Ceylan::Float64>( 10 ),
@@ -337,7 +394,7 @@ Ceylan::Float32 Ceylan::Maths::Round( Ceylan::Float32 x,
 
 
 
-Ceylan::Float64 Ceylan::Maths::Round( Ceylan::Float64 x ) throw()
+Ceylan::Float64 Ceylan::Maths::Round( Ceylan::Float64 x )
 {
 
 #ifdef CEYLAN_USES_ROUND
@@ -353,7 +410,7 @@ Ceylan::Float64 Ceylan::Maths::Round( Ceylan::Float64 x ) throw()
 	
 #else // CEYLAN_USES_FLOORF
 
-	// Use floor if neither roundf nor floorf is available (ex: Solaris):
+	// Use floor if neither roundf nor floorf is available (ex : Solaris):
 	return ::floor( x ) ;
 
 #endif // CEYLAN_USES_FLOORF
@@ -363,19 +420,21 @@ Ceylan::Float64 Ceylan::Maths::Round( Ceylan::Float64 x ) throw()
 }
 
 
+
 Ceylan::Float64 Ceylan::Maths::Round( Ceylan::Float64 x, 
-	Ceylan::Uint8 precision ) throw()
+	Ceylan::Uint8 precision )
 {
 	
 	Ceylan::Float64 offset =::pow( static_cast<Ceylan::Float64>( 10 ),
 		precision ) ;
 	
 	return Round( offset * x ) / offset ;
+	
 }
 
 
 
-Ceylan::LongFloat Ceylan::Maths::Round( Ceylan::LongFloat x ) throw()
+Ceylan::LongFloat Ceylan::Maths::Round( Ceylan::LongFloat x )
 {
 
 #ifdef CEYLAN_USES_ROUND
@@ -391,7 +450,7 @@ Ceylan::LongFloat Ceylan::Maths::Round( Ceylan::LongFloat x ) throw()
 	
 #else // CEYLAN_USES_FLOORF
 
-	// Use floor if neither roundf nor floorf is available (ex: Solaris):
+	// Use floor if neither roundf nor floorf is available (ex : Solaris):
 	return ::floor( x ) ;
 
 #endif // CEYLAN_USES_FLOORF
@@ -401,47 +460,60 @@ Ceylan::LongFloat Ceylan::Maths::Round( Ceylan::LongFloat x ) throw()
 }
 
 
+
 Ceylan::LongFloat Ceylan::Maths::Round( Ceylan::LongFloat x, 
-	Ceylan::Uint8 precision ) throw()
+	Ceylan::Uint8 precision )
 {
 	
 	Ceylan::LongFloat offset =::pow( static_cast<Ceylan::Float64>( 10 ),
 		precision ) ;
 	
 	return static_cast<Ceylan::LongFloat>( Round( offset * x ) / offset ) ;
+
 }
 
 
 
-Ceylan::Sint8 Ceylan::Maths::Abs( Ceylan::Sint8 x ) throw()
+Ceylan::Sint8 Ceylan::Maths::Abs( Ceylan::Sint8 x )
 {
-	return ( x > 0 ) ? x: -x ;
+
+	return ( x > 0 ) ? x : -x ;
+	
 }
 
 
-Ceylan::Sint16 Ceylan::Maths::Abs( Ceylan::Sint16 x ) throw()
+
+Ceylan::Sint16 Ceylan::Maths::Abs( Ceylan::Sint16 x )
 {
-	return ( x > 0 ) ? x: -x ;
+
+	return ( x > 0 ) ? x : -x ;
+	
 }
 	
 		
-Ceylan::Sint32 Ceylan::Maths::Abs( Ceylan::Sint32 x ) throw()
+		
+Ceylan::Sint32 Ceylan::Maths::Abs( Ceylan::Sint32 x )
 {
+
 	return ::abs( x ) ;
+	
 }
+		
 		
 		
 Ceylan::SignedLongInteger Ceylan::Maths::Abs( Ceylan::SignedLongInteger x )
-	throw()
 {
+
 	return ::labs( x ) ;
+	
 }
+
 
 
 /* 
  * @note Disabled since ISO C++ does not support `long long'.
 
-long long int Ceylan::Maths::Abs( long long int x ) throw()
+long long int Ceylan::Maths::Abs( long long int x )
 {
 	return ::llabs( x ) ;
 }
@@ -449,7 +521,8 @@ long long int Ceylan::Maths::Abs( long long int x ) throw()
  */
  
 
-Ceylan::Float32 Ceylan::Maths::Abs( Ceylan::Float32 x ) throw()
+
+Ceylan::Float32 Ceylan::Maths::Abs( Ceylan::Float32 x )
 {
 
 #ifdef CEYLAN_USES_FABSF
@@ -465,194 +538,251 @@ Ceylan::Float32 Ceylan::Maths::Abs( Ceylan::Float32 x ) throw()
 }
 
 
-Ceylan::Float64 Ceylan::Maths::Abs( Ceylan::Float64 x ) throw()
+
+Ceylan::Float64 Ceylan::Maths::Abs( Ceylan::Float64 x )
 {
+
 	return ::fabs( x ) ;
+	
 }
 
 
-Ceylan::LongFloat Ceylan::Maths::Abs( Ceylan::LongFloat x ) throw() 
+
+Ceylan::LongFloat Ceylan::Maths::Abs( Ceylan::LongFloat x ) 
 {
+
 	return ::fabs( x ) ;
+	
 }
 
 
 
 
-Ceylan::Sint8 Ceylan::Maths::Min( Ceylan::Sint8 x, Ceylan::Sint8 y ) throw()
+Ceylan::Sint8 Ceylan::Maths::Min( Ceylan::Sint8 x, Ceylan::Sint8 y )
 {
-	return ( x < y ) ? x: y ;
-}
 
-
-Ceylan::Uint8 Ceylan::Maths::Min( Ceylan::Uint8 x, 
-	Ceylan::Uint8 y ) throw()
-{
-	return ( x < y ) ? x: y ;
-}
-
-
-Ceylan::Sint16 Ceylan::Maths::Min( Ceylan::Sint16 x, Ceylan::Sint16 y ) throw()
-{
-	return ( x < y ) ? x: y ;
-}
-
-
-Ceylan::Uint16 Ceylan::Maths::Min( Ceylan::Uint16 x, 
-	Ceylan::Uint16 y ) throw()
-{
-	return ( x < y ) ? x: y ;
+	return ( x < y ) ? x : y ;
+	
 }
 
 
 
-Ceylan::Sint32 Ceylan::Maths::Min( Ceylan::Sint32 x, Ceylan::Sint32 y ) throw()
+Ceylan::Uint8 Ceylan::Maths::Min( Ceylan::Uint8 x, Ceylan::Uint8 y )
 {
-	return ( x < y ) ? x: y ;
+
+	return ( x < y ) ? x : y ;
+	
 }
 
 
-Ceylan::Uint32 Ceylan::Maths::Min( Ceylan::Uint32 x, 
-	Ceylan::Uint32 y ) throw()
+
+Ceylan::Sint16 Ceylan::Maths::Min( Ceylan::Sint16 x, Ceylan::Sint16 y )
 {
-	return ( x < y ) ? x: y ;
+
+	return ( x < y ) ? x : y ;
+	
+}
+
+
+
+Ceylan::Uint16 Ceylan::Maths::Min( Ceylan::Uint16 x, Ceylan::Uint16 y )
+{
+
+	return ( x < y ) ? x : y ;
+	
+}
+
+
+
+Ceylan::Sint32 Ceylan::Maths::Min( Ceylan::Sint32 x, Ceylan::Sint32 y )
+{
+
+	return ( x < y ) ? x : y ;
+	
+}
+
+
+
+Ceylan::Uint32 Ceylan::Maths::Min( Ceylan::Uint32 x, Ceylan::Uint32 y )
+{
+
+	return ( x < y ) ? x : y ;
+	
 }
 
 
 
 Ceylan::SignedLongInteger Ceylan::Maths::Min( Ceylan::SignedLongInteger x,
-	Ceylan::SignedLongInteger y ) throw()
+	Ceylan::SignedLongInteger y )
 {
-	return ( x < y ) ? x: y ;
+
+	return ( x < y ) ? x : y ;
+	
 }
+
 
 
 Ceylan::UnsignedLongInteger Ceylan::Maths::Min( Ceylan::UnsignedLongInteger x, 
-	Ceylan::UnsignedLongInteger y ) throw()
+	Ceylan::UnsignedLongInteger y )
 {
-	return ( x < y ) ? x: y ;
+
+	return ( x < y ) ? x : y ;
+	
 }
+
 
 
 /* 
  * @note Disabled since ISO C++ does not support `long long'.
 
 
-long long int Ceylan::Maths::Min( long long int x, long long int y ) throw()
+long long int Ceylan::Maths::Min( long long int x, long long int y )
 {
-	return ( x < y ) ? x: y ;
+	return ( x < y ) ? x : y ;
 }
 
  */
  
+ 
 
-Ceylan::Float32 Ceylan::Maths::Min( Ceylan::Float32 x, Ceylan::Float32 y )
-	throw()
+Ceylan::Float32 Ceylan::Maths::Min( Ceylan::Float32 x, Ceylan::Float32 y )	
 {
-	return ( x < y ) ? x: y ;
+
+	return ( x < y ) ? x : y ;
+	
 }
+
 
 
 Ceylan::Float64 Ceylan::Maths::Min( Ceylan::Float64 x, Ceylan::Float64 y )
-	throw()
 {
-	return ( x < y ) ? x: y ;
+
+	return ( x < y ) ? x : y ;
+	
 }
+
 
 
 Ceylan::LongFloat Ceylan::Maths::Min( Ceylan::LongFloat x, Ceylan::LongFloat y )
-	throw()
 {
-	return ( x < y ) ? x: y ;
+
+	return ( x < y ) ? x : y ;
+	
 }
 
 
 
 
-Ceylan::Sint8 Ceylan::Maths::Max( Ceylan::Sint8 x, Ceylan::Sint8 y ) throw()
+Ceylan::Sint8 Ceylan::Maths::Max( Ceylan::Sint8 x, Ceylan::Sint8 y )
 {
-	return ( x > y ) ? x: y ;
-}
 
-
-Ceylan::Uint8 Ceylan::Maths::Max( Ceylan::Uint8 x, Ceylan::Uint8 y ) throw()
-{
-	return ( x > y ) ? x: y ;
-}
-
-
-Ceylan::Sint16 Ceylan::Maths::Max( Ceylan::Sint16 x, Ceylan::Sint16 y ) throw()
-{
-	return ( x > y ) ? x: y ;
-}
-
-
-Ceylan::Uint16 Ceylan::Maths::Max( Ceylan::Uint16 x, Ceylan::Uint16 y ) throw()
-{
-	return ( x > y ) ? x: y ;
+	return ( x > y ) ? x : y ;
+	
 }
 
 
 
-Ceylan::Sint32 Ceylan::Maths::Max( Ceylan::Sint32 x, Ceylan::Sint32 y ) throw()
+Ceylan::Uint8 Ceylan::Maths::Max( Ceylan::Uint8 x, Ceylan::Uint8 y )
 {
-	return ( x > y ) ? x: y ;
+
+	return ( x > y ) ? x : y ;
+	
 }
 
 
-Ceylan::Uint32 Ceylan::Maths::Max( Ceylan::Uint32 x, Ceylan::Uint32 y ) throw()
+
+Ceylan::Sint16 Ceylan::Maths::Max( Ceylan::Sint16 x, Ceylan::Sint16 y )
 {
-	return ( x > y ) ? x: y ;
+	
+	return ( x > y ) ? x : y ;
+	
 }
+
+
+
+Ceylan::Uint16 Ceylan::Maths::Max( Ceylan::Uint16 x, Ceylan::Uint16 y )
+{
+
+	return ( x > y ) ? x : y ;
+	
+}
+
+
+
+Ceylan::Sint32 Ceylan::Maths::Max( Ceylan::Sint32 x, Ceylan::Sint32 y )
+{
+	return ( x > y ) ? x : y ;
+}
+
+
+Ceylan::Uint32 Ceylan::Maths::Max( Ceylan::Uint32 x, Ceylan::Uint32 y )
+{
+
+	return ( x > y ) ? x : y ;
+	
+}
+
 
 
 Ceylan::SignedLongInteger Ceylan::Maths::Max( Ceylan::SignedLongInteger x,
-	Ceylan::SignedLongInteger y ) throw()
+	Ceylan::SignedLongInteger y )
 {
-	return ( x > y ) ? x: y ;
+
+	return ( x > y ) ? x : y ;
+	
 }
+
 
 
 Ceylan::UnsignedLongInteger Ceylan::Maths::Max( Ceylan::UnsignedLongInteger x,
-	Ceylan::UnsignedLongInteger y ) throw()
+	Ceylan::UnsignedLongInteger y )
 {
-	return ( x > y ) ? x: y ;
+
+	return ( x > y ) ? x : y ;
+	
 }
+
 
 
 /* 
  * @note Disabled since ISO C++ does not support `long long'.
 
-long long int Ceylan::Maths::Max( long long int x, long long int y ) throw()
+long long int Ceylan::Maths::Max( long long int x, long long int y )
 {
-	return ( x > y ) ? x: y ;
+	return ( x > y ) ? x : y ;
 }
 
  */
  
 
 Ceylan::Float32 Ceylan::Maths::Max( Ceylan::Float32 x, Ceylan::Float32 y )
-	throw()
 {
-	return ( x > y ) ? x: y ;
+
+	return ( x > y ) ? x : y ;
+	
 }
 
+
+
 Ceylan::Float64 Ceylan::Maths::Max( Ceylan::Float64 x, Ceylan::Float64 y )
-	throw()
 {
-	return ( x > y ) ? x: y ;
+
+	return ( x > y ) ? x : y ;
+	
 }
+
 
 
 Ceylan::LongFloat Ceylan::Maths::Max( Ceylan::LongFloat x, Ceylan::LongFloat y )
-	throw()
 {
-	return ( x > y ) ? x: y ;
+
+	return ( x > y ) ? x : y ;
+	
 }
 
 
 
-Ceylan::Float32 Ceylan::Maths::Exp( Ceylan::Float32 x ) throw() 
+Ceylan::Float32 Ceylan::Maths::Exp( Ceylan::Float32 x ) 
 {
 
 #ifdef CEYLAN_USES_EXPF
@@ -668,20 +798,26 @@ Ceylan::Float32 Ceylan::Maths::Exp( Ceylan::Float32 x ) throw()
 }
 
 
-Ceylan::Float64 Ceylan::Maths::Exp( Ceylan::Float64 x ) throw()
+
+Ceylan::Float64 Ceylan::Maths::Exp( Ceylan::Float64 x )
 {
+
 	return ::exp( x ) ;
+	
 }
 
 
-Ceylan::LongFloat Ceylan::Maths::Exp( Ceylan::LongFloat x ) throw()
+
+Ceylan::LongFloat Ceylan::Maths::Exp( Ceylan::LongFloat x )
 {
+
 	return ::exp( x ) ;
+	
 }
 
 
-Ceylan::Float32 Ceylan::Maths::Pow( Ceylan::Float32 x, Ceylan::Float32 y )
-	throw() 
+
+Ceylan::Float32 Ceylan::Maths::Pow( Ceylan::Float32 x, Ceylan::Float32 y )	 
 {
 
 #ifdef CEYLAN_USES_POWF
@@ -697,41 +833,53 @@ Ceylan::Float32 Ceylan::Maths::Pow( Ceylan::Float32 x, Ceylan::Float32 y )
 }
 
 
-Ceylan::Float64 Ceylan::Maths::Pow( Ceylan::Float64 x, Ceylan::Float64 y )
-	throw() 
+
+Ceylan::Float64 Ceylan::Maths::Pow( Ceylan::Float64 x, Ceylan::Float64 y )	 
 {
+
 	return ::pow( x, y ) ;
+	
 }
+
 
 
 Ceylan::LongFloat Ceylan::Maths::Pow( Ceylan::LongFloat x, Ceylan::LongFloat y )
-	throw() 
 {
+
 	return ::pow( x, y ) ;
+	
 }
 
 
 
-Ceylan::Float32 Ceylan::Maths::Pow2( Ceylan::Float32 x ) throw() 
+Ceylan::Float32 Ceylan::Maths::Pow2( Ceylan::Float32 x ) 
 {
+
 	return x * x ;
+	
 }
 
 
-Ceylan::Float64 Ceylan::Maths::Pow2( Ceylan::Float64 x ) throw() 
+
+Ceylan::Float64 Ceylan::Maths::Pow2( Ceylan::Float64 x ) 
 {
+
 	return x * x ;
+	
 }
 
 
-Ceylan::LongFloat Ceylan::Maths::Pow2( Ceylan::LongFloat x ) throw() 
+
+Ceylan::LongFloat Ceylan::Maths::Pow2( Ceylan::LongFloat x ) 
 {
+
 	return x * x ;
+	
 }
 
 
 
-Ceylan::Float32 Ceylan::Maths::Log( Ceylan::Float32 x ) throw() 
+Ceylan::Float32 Ceylan::Maths::Log( Ceylan::Float32 x ) 
 {
 
 #ifdef CEYLAN_USES_LOGF
@@ -747,21 +895,28 @@ Ceylan::Float32 Ceylan::Maths::Log( Ceylan::Float32 x ) throw()
 }
 
 
-Ceylan::Float64 Ceylan::Maths::Log( Ceylan::Float64 x ) throw()
+
+Ceylan::Float64 Ceylan::Maths::Log( Ceylan::Float64 x )
 {
+
 	return ::log( x ) ;
+	
 }
 
 
-Ceylan::LongFloat Ceylan::Maths::Log( Ceylan::LongFloat x ) throw()
+
+Ceylan::LongFloat Ceylan::Maths::Log( Ceylan::LongFloat x )
 {
+
 	return ::log( x ) ;
+	
 }
 
 
 
-Ceylan::Float32 Ceylan::Maths::Sqrt( Ceylan::Float32 x ) throw( MathsException )
+Ceylan::Float32 Ceylan::Maths::Sqrt( Ceylan::Float32 x )
 {
+
 	if ( x < 0 )
 		throw MathsException( 
 			"Sqrt( Ceylan::Float32 x ): parameter is negative ("
@@ -780,7 +935,8 @@ Ceylan::Float32 Ceylan::Maths::Sqrt( Ceylan::Float32 x ) throw( MathsException )
 }
 
 
-Ceylan::Float64 Ceylan::Maths::Sqrt( Ceylan::Float64 x ) throw( MathsException )
+
+Ceylan::Float64 Ceylan::Maths::Sqrt( Ceylan::Float64 x )
 {
 
 	if ( x < 0 )
@@ -793,8 +949,8 @@ Ceylan::Float64 Ceylan::Maths::Sqrt( Ceylan::Float64 x ) throw( MathsException )
 }
 
 
+
 Ceylan::LongFloat Ceylan::Maths::Sqrt( Ceylan::LongFloat x ) 
-	throw( MathsException )
 {
 
 	if ( x < 0 )
@@ -808,10 +964,11 @@ Ceylan::LongFloat Ceylan::Maths::Sqrt( Ceylan::LongFloat x )
 
 
 
+
 // Cosinus section.
 
 
-Ceylan::Float32 Ceylan::Maths::Cos( Ceylan::Float32 angle ) throw()
+Ceylan::Float32 Ceylan::Maths::Cos( Ceylan::Float32 angle )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS && defined(CEYLAN_RUNS_ON_ARM9)
@@ -819,7 +976,6 @@ Ceylan::Float32 Ceylan::Maths::Cos( Ceylan::Float32 angle ) throw()
 	int32 c = COS[(int)((angle * LUT_SIZE) / (2.0*Pi)) & LUT_MASK] ;
 
 	return f32tofloat( c ) ;
-	
 	
 #else // CEYLAN_ARCH_NINTENDO_DS && defined(CEYLAN_RUNS_ON_ARM9)
 
@@ -838,25 +994,31 @@ Ceylan::Float32 Ceylan::Maths::Cos( Ceylan::Float32 angle ) throw()
 }
 
 
-Ceylan::Float64 Ceylan::Maths::Cos( Ceylan::Float64 angle ) throw()
+
+Ceylan::Float64 Ceylan::Maths::Cos( Ceylan::Float64 angle )
 {
+
 	return ::cos( angle ) ;
+	
 }
 
 
-Ceylan::LongFloat Ceylan::Maths::Cos( Ceylan::LongFloat angle ) throw() 
+
+Ceylan::LongFloat Ceylan::Maths::Cos( Ceylan::LongFloat angle ) 
 {
+
 	return ::cos( angle ) ;
+	
 }
+
 
 
 
 // Sinus section.
 
 
-Ceylan::Float32 Ceylan::Maths::Sin( Ceylan::Float32 angle ) throw()
+Ceylan::Float32 Ceylan::Maths::Sin( Ceylan::Float32 angle )
 {
-
 
 #if CEYLAN_ARCH_NINTENDO_DS && defined(CEYLAN_RUNS_ON_ARM9)
 
@@ -882,16 +1044,22 @@ Ceylan::Float32 Ceylan::Maths::Sin( Ceylan::Float32 angle ) throw()
 
 
 
-Ceylan::Float64 Ceylan::Maths::Sin( Ceylan::Float64 angle ) throw()
+Ceylan::Float64 Ceylan::Maths::Sin( Ceylan::Float64 angle )
 {
+
 	return ::sin( angle ) ;
+	
 }
 
 
-Ceylan::LongFloat Ceylan::Maths::Sin( Ceylan::LongFloat angle ) throw() 
+
+Ceylan::LongFloat Ceylan::Maths::Sin( Ceylan::LongFloat angle ) 
 {
+
 	return ::sin( angle ) ;
+	
 }
+
 
 
 
@@ -899,9 +1067,8 @@ Ceylan::LongFloat Ceylan::Maths::Sin( Ceylan::LongFloat angle ) throw()
 // Tangent section.
 
 
-Ceylan::Float32 Ceylan::Maths::Tan( Ceylan::Float32 angle ) throw()
+Ceylan::Float32 Ceylan::Maths::Tan( Ceylan::Float32 angle )
 {
-
 
 #if CEYLAN_ARCH_NINTENDO_DS && defined(CEYLAN_RUNS_ON_ARM9)
 
@@ -927,35 +1094,43 @@ Ceylan::Float32 Ceylan::Maths::Tan( Ceylan::Float32 angle ) throw()
 
 
 
-Ceylan::Float64 Ceylan::Maths::Tan( Ceylan::Float64 angle ) throw()
+Ceylan::Float64 Ceylan::Maths::Tan( Ceylan::Float64 angle )
 {
+
 	return ::tan( angle ) ;
+	
 }
 
 
-Ceylan::LongFloat Ceylan::Maths::Tan( Ceylan::LongFloat angle ) throw() 
+
+Ceylan::LongFloat Ceylan::Maths::Tan( Ceylan::LongFloat angle ) 
 {
+
 	return ::tan( angle ) ;
+	
 }
+
 
 
 
 #if defined(CEYLAN_ARCH_NINTENDO_DS) && CEYLAN_ARCH_NINTENDO_DS == 1
 
+
 // Fixed-point section.
 
 
-Ceylan::Uint32 Ceylan::Maths::SqrtFixed( Ceylan::Uint32 x ) throw()
+Ceylan::Uint32 Ceylan::Maths::SqrtFixed( Ceylan::Uint32 x )
 {
 
 	return ::swiSqrt( x ) ;
 	
 }
 
+
 #ifdef CEYLAN_RUNS_ON_ARM9
 
 
-Ceylan::Sint32 Ceylan::Maths::CosFixed( Ceylan::Sint32 angle ) throw()
+Ceylan::Sint32 Ceylan::Maths::CosFixed( Ceylan::Sint32 angle )
 {
 
 	return COS[(int)((angle * LUT_SIZE) / (2.0*Pi)) & LUT_MASK] ;
@@ -963,7 +1138,8 @@ Ceylan::Sint32 Ceylan::Maths::CosFixed( Ceylan::Sint32 angle ) throw()
 }
 
 
-Ceylan::Sint32 Ceylan::Maths::SinFixed( Ceylan::Sint32 angle ) throw()
+
+Ceylan::Sint32 Ceylan::Maths::SinFixed( Ceylan::Sint32 angle )
 {
 
 	return SIN[(int)((angle * LUT_SIZE) / (2.0*Pi)) & LUT_MASK] ;
@@ -971,7 +1147,8 @@ Ceylan::Sint32 Ceylan::Maths::SinFixed( Ceylan::Sint32 angle ) throw()
 }
 
 
-Ceylan::Sint32 Ceylan::Maths::TanFixed( Ceylan::Sint32 angle ) throw()
+
+Ceylan::Sint32 Ceylan::Maths::TanFixed( Ceylan::Sint32 angle )
 {
 
 	return TAN[(int)((angle * LUT_SIZE) / (2.0*Pi)) & LUT_MASK] ;
@@ -984,19 +1161,21 @@ Ceylan::Sint32 Ceylan::Maths::TanFixed( Ceylan::Sint32 angle ) throw()
 #endif // defined(CEYLAN_ARCH_NINTENDO_DS) && CEYLAN_ARCH_NINTENDO_DS == 1
 
 
+
 // Other operations.
 
 
 
-AngleInRadians Ceylan::Maths::DegreeToRadian( 
-	AngleInDegrees angleInDegrees ) throw()
+AngleInRadians Ceylan::Maths::DegreeToRadian( AngleInDegrees angleInDegrees )
 {
+
 	return static_cast<AngleInRadians>( angleInDegrees * Pi / 180.0 ) ;
+	
 }
 
 
 
-Ceylan::Uint16 Ceylan::Maths::NextPowerOfTwo( Ceylan::Uint16 value ) throw()	
+Ceylan::Uint16 Ceylan::Maths::NextPowerOfTwo( Ceylan::Uint16 value )	
 {
 
 	// No overflow checking.
@@ -1013,15 +1192,16 @@ Ceylan::Uint16 Ceylan::Maths::NextPowerOfTwo( Ceylan::Uint16 value ) throw()
 
 
 
-bool Ceylan::Maths::IsAPowerOfTwo( Ceylan::Uint16 value ) throw()
+bool Ceylan::Maths::IsAPowerOfTwo( Ceylan::Uint16 value )
 {
+
 	return ( value == NextPowerOfTwo( value ) ) ;
+	
 }
 
 
 
-Ceylan::Uint16 Ceylan::Maths::NextMultipleOf( Uint16 multiple, Uint16 value )
-	throw()	
+Ceylan::Uint16 Ceylan::Maths::NextMultipleOf( Uint16 multiple, Uint16 value )	
 {
 
 	if ( value % multiple == 0 )
@@ -1036,12 +1216,13 @@ Ceylan::Uint16 Ceylan::Maths::NextMultipleOf( Uint16 multiple, Uint16 value )
 
 
 Ceylan::Maths::IntToIntFunctor::IntToIntFunctor( 
-		Ceylan::Sint32 creationParameter ) throw():
+		Ceylan::Sint32 creationParameter ) :
 	Functor(),	 
 	_creationParameter( creationParameter )
 {
 
 }
+
 
 
 Ceylan::Maths::IntToIntFunctor::~IntToIntFunctor() throw()
@@ -1050,9 +1231,12 @@ Ceylan::Maths::IntToIntFunctor::~IntToIntFunctor() throw()
 }
 
 
+
 const string Ceylan::Maths::IntToIntFunctor::toString( 
-	Ceylan::VerbosityLevels level ) const throw()
+	Ceylan::VerbosityLevels level ) const
 {
+
 	return "IntToIntFunctor functor" ;
+	
 }
 

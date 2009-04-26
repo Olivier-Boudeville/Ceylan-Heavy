@@ -34,11 +34,12 @@ using namespace Ceylan ;
 
 
 
-ClonableException::ClonableException( const std::string & message ) throw() :
-	Exception( "Clonable exception : " + message )
+ClonableException::ClonableException( const std::string & message ) :
+	Exception( "Clonable exception: " + message )
 {
 
 }			
+
 
 
 ClonableException::~ClonableException() throw()

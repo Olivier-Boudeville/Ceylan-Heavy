@@ -39,9 +39,9 @@ namespace Ceylan
 
 
 	
-
 	// A Visitable is visited by Visitor instances.
 	class Visitable ;
+
 
 
 	/**
@@ -65,20 +65,19 @@ namespace Ceylan
 
 
 			/// Default empty constructor.
-			Visitor() throw() ;
+			Visitor() ;
 
 
 			/**
 			 * Visits a concrete Visitable.
 			 *
-			 * @note Should be declared on the actual visitor (ex : a 
+			 * @note Should be declared on the actual visitor (ex: a 
 			 * XMLVisitor) as it must specify the actual visitables it can
-			 * visit (ex : XML markup, XML text, etc.), and not a more generic
+			 * visit (ex: XML markup, XML text, etc.), and not a more generic
 			 * type.
 			 *
 			 
-			virtual void visit( MyFirstConcreteVisitable & concreteVisitable ) 
-				throw( VisitException ) ;
+			virtual void visit( MyFirstConcreteVisitable & concreteVisitable ) ;
 	
 			 */
 
@@ -94,9 +93,7 @@ namespace Ceylan
 			 *
 			 */
 			 virtual const std::string toString( 
-			 	Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
-
-
+			 	Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 
 
@@ -112,7 +109,7 @@ namespace Ceylan
 			 * @note Made to avoid unwanted hidden clone of the Singleton.
 			 *
 			 */			 
-			Visitor( const Visitor & source ) throw() ;
+			Visitor( const Visitor & source ) ;
 			
 			
 			/**
@@ -122,7 +119,7 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			Visitor & operator = ( const Visitor & source ) throw() ;
+			Visitor & operator = ( const Visitor & source ) ;
 			
 
 	} ;
@@ -130,4 +127,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_VISITOR_H_
+

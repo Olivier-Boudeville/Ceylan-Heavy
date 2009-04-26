@@ -37,6 +37,7 @@
 
 
 
+
 namespace Ceylan
 {
 
@@ -64,7 +65,7 @@ namespace Ceylan
 			 * @note Beware of counter-intuitive operator priorities.
 			 *
 			 * @note Some methods could be gathered in this abstract
-			 * class, instead of child classes (ex : setAllElementsTo
+			 * class, instead of child classes (ex: setAllElementsTo
 			 * could use the Dimensions attribute so that this method
 			 * could be generically defined). 
 			 * The problem is however that Dimensions should be static,
@@ -86,15 +87,18 @@ namespace Ceylan
 				public:
 				
 				
+				
 					/**
 					 * Constructs a new matrix.
 					 *
 					 */
-					Matrix() throw() ;
+					Matrix() ;
+				
 				
 				
 					/// Basic virtual destructor.
 					virtual ~Matrix() throw() ;
+					
 					
 					
 					/**
@@ -102,7 +106,8 @@ namespace Ceylan
 					 *(all elements zeroed).
 					 *
 					 */
-					virtual void nullify() throw() ;
+					virtual void nullify() ;
+					
 					
 					
 					/**
@@ -110,8 +115,8 @@ namespace Ceylan
 					 * commonValue.
 					 *
 					 */
-					virtual void setAllElementsTo( Real commonValue ) 
-						throw() = 0 ;
+					virtual void setAllElementsTo( Real commonValue ) = 0 ;
+
 
 					
 					/**
@@ -119,12 +124,13 @@ namespace Ceylan
 					 * Index ranges from 0 to Dimensions-1 for both
 					 * dimensions.
 					 *
-					 * @note An emergency shutdown is triggered if index
-					 * is out of bounds.
+					 * @throw MathsException if index is out of bounds and if
+					 * in debug mode.
 					 *
 					 */
 					virtual Real getElementAt( MatrixIndex abscissa, 
-						MatrixIndex ordinate ) const throw() = 0 ;
+						MatrixIndex ordinate ) const = 0 ;
+					
 					
 					
 					/**
@@ -132,16 +138,18 @@ namespace Ceylan
 					 * Index ranges from 0 to Dimensions-1 for both
 					 * dimensions.
 					 *
-					 * @note An emergency shutdown is triggered if index
-					 * is out of bounds.
+					 * @throw MathsException if index is out of bounds and if
+					 * in debug mode.
 					 *
 					 */
 					virtual void setElementAt( MatrixIndex abscissa, 
-						MatrixIndex ordinate, Real newValue ) throw() = 0 ;
+						MatrixIndex ordinate, Real newValue ) = 0 ;
+					
 					
 					
 					/// Sets this matrix to the identity matrix.
-					virtual void setToIdentity() throw() ;
+					virtual void setToIdentity() ;
+					
 					
 					
 					/**
@@ -149,20 +157,23 @@ namespace Ceylan
 					 * whose diagonal term is diagonalTerm.
 					 *
 					 */
-					virtual void setToDiagonal( Real diagonalTerm ) 
-						throw() = 0 ;
+					virtual void setToDiagonal( Real diagonalTerm )	= 0 ;
+					
 					
 					
 					/// Tranposes this matrix.
-					virtual void transpose() throw() = 0 ;
+					virtual void transpose() = 0 ;
+					
 					
 					
 					/// Computes this matrix's trace.
-					virtual Real trace() const throw() = 0 ;
+					virtual Real trace() const = 0 ;
+					
 					
 					
 					/// Computes this matrix's determinant.
-					virtual Real determinant() const throw() = 0 ;
+					virtual Real determinant() const = 0 ;
+							
 									
 							
 					/**
@@ -178,15 +189,16 @@ namespace Ceylan
 					 *
 					 */
              		virtual const std::string toString( 
-						VerbosityLevels level = high ) const throw() ;
+						VerbosityLevels level = high ) const ;
 					 
 				 
-					 /**
-					  * Tells what is the dimension for this Matrix.
-					  *
-					  * @note To be redefined by each Matrix child class.
-					  *
-					  */
+				 
+					/**
+					 * Tells what is the dimension for this Matrix.
+					 *
+					 * @note To be redefined by each Matrix child class.
+					 *
+					 */
 					 static const MatrixIndex Dimensions = 0 ;
 					
 				

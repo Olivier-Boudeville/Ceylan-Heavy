@@ -49,7 +49,7 @@ namespace Ceylan
 	 * count.
 	 *
 	 * @note This can only tell how many objects implementing this interface 
-	 * are alive at any given time, no matter what their actual class is : one
+	 * are alive at any given time, no matter what their actual class is: one
 	 * cannot tell which they are, what is their type. 
 	 * So it gives the number of elements of a set, not its elements.
 	 * Some more work is therefore needed to track down objects that should be 
@@ -69,8 +69,10 @@ namespace Ceylan
 		public:
 
 
+
 			/// Records rhe number of instances.
 			typedef Ceylan::Uint32 InstanceCount ;
+			
 			
 			
 			/**
@@ -83,11 +85,13 @@ namespace Ceylan
 			 * (CEYLAN_DEBUG_LOG flag) to have those informations displayed.
 			 *
 			 */
-			explicit Countable( bool verbose = true ) throw() ;
+			explicit Countable( bool verbose = true ) ;
+			
 			
 			
 			/// The virtual destructor decrements the reference count.
 			virtual ~Countable() throw() ;
+			
 			
 			
          	/**
@@ -98,11 +102,13 @@ namespace Ceylan
              *
              */
             static const std::string ToString( 
-				Ceylan::VerbosityLevels level = Ceylan::high ) throw() ;	
+				Ceylan::VerbosityLevels level = Ceylan::high ) ;	
+			
 			
 			
 			/// Returns the current instance count.
-			static InstanceCount GetInstanceCount() throw() ;
+			static InstanceCount GetInstanceCount() ;
+			
 			
 			
 			/**
@@ -110,7 +116,7 @@ namespace Ceylan
 			 * this run.
 			 *
 			 */
-			static InstanceCount GetMaximumInstanceCount() throw() ;
+			static InstanceCount GetMaximumInstanceCount() ;
 			
 				
 				
@@ -129,8 +135,10 @@ namespace Ceylan
 			/// The current reference count.
 			static InstanceCount ReferenceCount ;	
 			
+			
 			/// The maximum reference count that has been already reached.
 			static InstanceCount MaximumReferenceCount ;	
+			
 			
 			/// The prefix used when instance counts are logged.
 			static const std::string LogPrefix ;	
@@ -143,7 +151,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			Countable( const Countable & source ) throw() ;
+			Countable( const Countable & source ) ;
 			
 			
 			/**
@@ -153,12 +161,13 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			Countable & operator = ( const Countable & source ) throw() ;
+			Countable & operator = ( const Countable & source ) ;
 				
 	} ; 
 
-	
+
 }
 
 
 #endif // CEYLAN_COUNTABLE_H_
+

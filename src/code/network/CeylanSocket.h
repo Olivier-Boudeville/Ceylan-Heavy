@@ -32,8 +32,10 @@
 #include "CeylanFeatures.h"          // for FeatureNotAvailableException
 #include "CeylanTypes.h"             // for Ceylan::Uint32
 
-// for SystemException, FileDescriptor, etc. :
+
+// for SystemException, FileDescriptor, etc.:
 #include "CeylanSystem.h"            
+
 
 
 
@@ -41,13 +43,16 @@ namespace Ceylan
 {
 
 
+
 	namespace Network
 	{
 
 
 
+
 		/// Sockets have to handle IP address about their peers and themselves.
 		class IPAddress ;
+		
 		
 		
 		/**
@@ -63,12 +68,14 @@ namespace Ceylan
 		 */
 		class SystemSpecificSocketAddress ;
 		
+		
 
 		/**
 		 * Port number, as specified for sockets.
 		 *
 		 */
 		typedef Ceylan::Uint32 Port ;
+		
 		
 		
 		
@@ -83,8 +90,9 @@ namespace Ceylan
 		 * @see DatagramSocket when available
 		 *
 		 */
-		class CEYLAN_DLL Socket: public System::InputOutputStream
+		class CEYLAN_DLL Socket : public System::InputOutputStream
 		{			
+			
 			
 			public:
 		
@@ -96,8 +104,7 @@ namespace Ceylan
 				{ 
 					public: 
 					
-						explicit SocketException( const std::string & reason )
-							throw() ;
+						explicit SocketException( const std::string & reason ) ;
 						
 						virtual ~SocketException() throw() ; 
 							
@@ -105,10 +112,13 @@ namespace Ceylan
 		
 		
 		
+		
 				// No public constructor for Socket.
+		
 		
 				/// Virtual destructor.
 				virtual ~Socket() throw() ;
+				
 				
 
 				/**
@@ -116,11 +126,13 @@ namespace Ceylan
 				 * peer.
 				 *
 				 */
-				virtual bool isConnected() const throw() = 0 ;
+				virtual bool isConnected() const = 0 ;
+
 
 
 
 				// Read section.
+				
 				
 				
 				/**
@@ -128,8 +140,9 @@ namespace Ceylan
 				 * on the file descriptor used for transport.
 				 *
 				 */
-				virtual bool hasAvailableData() const throw() ;
+				virtual bool hasAvailableData() const ;
 
+				
 								 
 				/**
 				 * Reads up to maxLength bytes from this socket to specified
@@ -148,12 +161,13 @@ namespace Ceylan
 				 *
 				 */
 		 		virtual System::Size read( char * buffer, 
-						System::Size maxLength ) 
-					throw( InputStream::ReadFailedException ) ;
+					System::Size maxLength ) ;
 				
 
 				
+				
 				// Write section.
+				
 				
 		
 				/**
@@ -167,8 +181,8 @@ namespace Ceylan
 				 * @throw WriteFailedException if a write error occurred.
 				 *
 				 */
-				virtual System::Size write( const std::string & message ) 
-					throw( OutputStream::WriteFailedException ) ;
+				virtual System::Size write( const std::string & message ) ;
+
 
 
 				/**
@@ -186,8 +200,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual System::Size write( const char * buffer, 
-						System::Size maxLength ) 
-					throw( OutputStream::WriteFailedException ) ;
+					System::Size maxLength ) ;
 
 		
 
@@ -205,9 +218,8 @@ namespace Ceylan
 				 * @see getFileDescriptorForTransport
 				 *
 				 */
-				System::FileDescriptor getOriginalFileDescriptor() const 
-					throw( SocketException,
-						Features::FeatureNotAvailableException ) ;
+				System::FileDescriptor getOriginalFileDescriptor() const ;
+	
 	
 					
 				/** 
@@ -227,8 +239,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual System::FileDescriptor getFileDescriptorForTransport()
-					const throw( SocketException,
-						Features::FeatureNotAvailableException ) ;
+					const ;
 							
 							
 
@@ -238,7 +249,8 @@ namespace Ceylan
 				 * @throw SocketException if this operation failed.
 				 *
 				 */
-				virtual Port getLocalPort() const throw( SocketException ) ;
+				virtual Port getLocalPort() const ;
+		
 		
 		
 				/**
@@ -249,7 +261,7 @@ namespace Ceylan
 				 * if this socket is not connected.
 				 *
 				 */
-				virtual Port getPeerPort() const throw( SocketException ) ;
+				virtual Port getPeerPort() const ;
 		
 		
 							
@@ -266,8 +278,8 @@ namespace Ceylan
 				 * @throw SocketException if this operation failed.
 				 *
 				 */
-				virtual IPAddress * getLocalIPAddress() const 
-					throw( SocketException ) ;
+				virtual IPAddress * getLocalIPAddress() const ;
+		
 		
 		
 				/**
@@ -278,8 +290,7 @@ namespace Ceylan
 				 * if this socket is not connected.
 				 *
 				 */
-				virtual IPAddress * getPeerIPAddress() const 
-					throw( SocketException ) ;
+				virtual IPAddress * getPeerIPAddress() const ;
 		
 		
 		
@@ -291,8 +302,8 @@ namespace Ceylan
 				 * or if the file descriptor feature is not available.
 				 *
 				 */
-				virtual System::StreamID getInputStreamID() const 
-					throw( InputStreamException ) ;
+				virtual System::StreamID getInputStreamID() const ;
+
 
 
 				/**
@@ -303,8 +314,8 @@ namespace Ceylan
 				 * or if the file descriptor feature is not available.
 				 *
 				 */
-				virtual System::StreamID getOutputStreamID() const
-					throw( OutputStreamException) ;
+				virtual System::StreamID getOutputStreamID() const ;
+
 
 
             	/**
@@ -320,12 +331,13 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+
 
 
 
 			protected:
+
 
 
 				/**
@@ -338,8 +350,8 @@ namespace Ceylan
 				 * @throw SocketException if the operation failed.
 				 *
 				 */
-				explicit Socket( bool blocking = true ) 
-					throw( SocketException ) ;
+				explicit Socket( bool blocking = true ) ;
+
 
 
 				/**
@@ -354,8 +366,8 @@ namespace Ceylan
 				 * @throw SocketException if the operation failed.
 				 *
 				 */
-				Socket( Port localPort, bool blocking = true ) 
-					throw( SocketException ) ;
+				Socket( Port localPort, bool blocking = true ) ;
+		
 		
 		
 				/**
@@ -366,12 +378,12 @@ namespace Ceylan
 				 * FeatureNotAvailableException if the network feature
 				 * is not available.
 				 *
-				virtual SystemSpecificSocketAddress & getAddress()
-					throw( SocketException,
-						Features::FeatureNotAvailableException ) ;
+				 
+				virtual SystemSpecificSocketAddress & getAddress() ;
 		
 				 */
 	
+		
 		
 				/** 
 				 * Creates the socket associated with the port <b>port</b>.
@@ -381,11 +393,11 @@ namespace Ceylan
 				 * @throw SocketException if the operation failed.
 				 *
 				 * @note It is the place where socket attributes are 
-				 * effectively set (ex : non-blocking).
+				 * effectively set (ex: non-blocking).
 				 *
 				 */
-				virtual void createSocket( Port localPort ) 
-					throw( SocketException ) = 0 ;
+				virtual void createSocket( Port localPort ) = 0 ;
+		
 		
 		
 				/** 
@@ -396,8 +408,9 @@ namespace Ceylan
 				 * @throw CloseException if the close operation failed.
 				 *
 				 */
-				virtual bool close() throw( Stream::CloseException ) ;
+				virtual bool close() ;
 
+		
 		
 				/**
 				 * Sets the blocking mode of this socket.
@@ -410,8 +423,9 @@ namespace Ceylan
 				 * failed.
 				 *
 				 */
-				virtual void setBlocking( bool newStatus )
-					throw( NonBlockingNotSupportedException ) ;
+				virtual void setBlocking( bool newStatus ) ;
+
+
 
 
 				/**
@@ -426,6 +440,7 @@ namespace Ceylan
 				 */
 				Port _port ;
 				
+				
 		
 				/**
 				 * The system-specific socket address for this socket.
@@ -437,6 +452,7 @@ namespace Ceylan
 				 *
 				 */
 				SystemSpecificSocketAddress * _address ;
+
 
 				
 				/**
@@ -458,8 +474,10 @@ namespace Ceylan
 
 
 
+
 			private:
 
+	
 	
 				/**
 				 * Copy constructor made private to ensure that it will 
@@ -469,7 +487,8 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				Socket( const Socket & source ) throw() ;
+				Socket( const Socket & source ) ;
+
 
 
 				/**
@@ -480,14 +499,18 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 *
 				 */
-				Socket & operator = ( const Socket & source ) throw() ;
+				Socket & operator = ( const Socket & source ) ;
+
 
 
 		} ;
+		
 
 	}
 	
 }	
 
 
+
 #endif // CEYLAN_SOCKET_H_
+

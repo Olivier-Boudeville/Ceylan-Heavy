@@ -28,11 +28,13 @@
 #define CEYLAN_SERVER_STREAM_SOCKET_H_
 
 
+
 #include "CeylanStreamSocket.h"      // for inheritance
 #include "CeylanTypes.h"             // for Ceylan::Uint32
 #include "CeylanSystem.h"            // for FileDescriptor
 
 #include <string>
+
 
 
 
@@ -51,6 +53,7 @@ namespace Ceylan
 		 *
 		 */
 		class AnonymousStreamSocket ;
+		
 		
 		
 		/**
@@ -81,6 +84,7 @@ namespace Ceylan
 			typedef Ceylan::Uint32 ConnectionCount ;
 			
 
+
 			public:
 	
 
@@ -96,7 +100,7 @@ namespace Ceylan
 					public: 
 					
 						explicit ServerStreamSocketException( 
-							const std::string & reason ) throw() ;
+							const std::string & reason ) ;
 						
 						virtual ~ServerStreamSocketException() throw() ; 
 							
@@ -121,12 +125,13 @@ namespace Ceylan
 				 *
 				 */
 				explicit ServerStreamSocket( Port serverPort, 
-						bool reuse = true, bool blocking = false )
-					throw( SocketException ) ;
+						bool reuse = true, bool blocking = false ) ;
 	
+				
 				
 				/// Virtual destructor.
 				virtual ~ServerStreamSocket() throw() ;
+	
 	
 	
 				/**
@@ -139,7 +144,8 @@ namespace Ceylan
 				 * @see requestToStop()
 				 *
 				 */
-				virtual void run() throw( ServerStreamSocketException ) ;
+				virtual void run() ;
+				
 				
 				
 				/**
@@ -154,8 +160,7 @@ namespace Ceylan
 				 * @throw ServerStreamSocketException on failure.
 				 *
 				 */
-				virtual AnonymousStreamSocket * accept() 
-					throw( ServerStreamSocketException ) = 0  ;
+				virtual AnonymousStreamSocket * accept() = 0  ;
 			
 	
 
@@ -165,7 +170,7 @@ namespace Ceylan
 				 * @throw SocketException if this operation failed.
 				 *
 				 */
-				virtual Port getLocalPort() const throw( SocketException ) ;
+				virtual Port getLocalPort() const ;
 	
 	
 	
@@ -175,8 +180,9 @@ namespace Ceylan
 				 *
 				 */
 				virtual ConnectionCount getMaximumPendingConnectionsCount()
-					const throw() ;
+					const ;
 
+					
 					
 				/**
 				 * Sets the current maximum number of pending connections
@@ -184,7 +190,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual void setMaximumPendingConnectionsCount( 
-					ConnectionCount newMax ) throw() ;	
+					ConnectionCount newMax ) ;	
+
 
 
 				/**
@@ -210,8 +217,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 	
 	
 	
@@ -229,8 +235,8 @@ namespace Ceylan
 				 * including if bind or listen failed.
 				 *
 				 */
-				virtual void prepareToAccept() 
-					throw( ServerStreamSocketException ) ;
+				virtual void prepareToAccept() ;
+		
 		
 		
 				/** 
@@ -241,8 +247,8 @@ namespace Ceylan
 				 * @throw ServerStreamSocketException if the operation failed.
 				 *
 				 */
-				virtual void cleanAfterAccept()
-					throw( ServerStreamSocketException ) ;
+				virtual void cleanAfterAccept() ;
+		
 		
 		
 				/** 
@@ -253,8 +259,8 @@ namespace Ceylan
 				 * @throw CloseException if the close operation failed.
 				 *
 				 */
-				virtual bool closeAcceptedConnections() 
-					throw( Stream::CloseException ) = 0 ;
+				virtual bool closeAcceptedConnections() = 0 ;
+		
 		
 		
 				/**
@@ -281,8 +287,8 @@ namespace Ceylan
 				 * Otherwise, if the server stops accepting connections after
 				 * the one being processed, any other connection initiated 
 				 * after the current one was begun will wait till this latter
-				 * is terminated, and will have this exception thrown :
-				 * StreamSocket::read failed : Ceylan::System::FDRead failed :
+				 * is terminated, and will have this exception thrown:
+				 * StreamSocket::read failed: Ceylan::System::FDRead failed:
 				 * Connection reset by peer, since the server refuses upcoming
 				 * connections.
 				 *
@@ -294,8 +300,8 @@ namespace Ceylan
 				 * @see testCeylanSequentialServerStream.cc
 				 *
 				 */
-				virtual void accepted( AnonymousStreamSocket & newConnection )
-					throw( ServerStreamSocketException ) ;
+				virtual void accepted( AnonymousStreamSocket & newConnection ) ;
+
 
 
 				/**
@@ -303,7 +309,8 @@ namespace Ceylan
 				 * no later than any current connection is over.
 				 *
 				 */
-				virtual bool isRequestedToStop() const throw() ;
+				virtual bool isRequestedToStop() const ;
+				
 				
 				
 				/**
@@ -313,8 +320,9 @@ namespace Ceylan
 				 * Multiple stop requests can be sent.
 				 *
 				 */
-				virtual void requestToStop() throw() ;
+				virtual void requestToStop() ;
 				 
+
 
 
 				/**
@@ -323,6 +331,7 @@ namespace Ceylan
 				 *
 				 */
 				bool _bound ;
+
 
 
 
@@ -338,6 +347,7 @@ namespace Ceylan
 				 * 
 				 */
 				bool _stopRequested ;
+				
 				
 				
 				/**
@@ -359,8 +369,8 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				ServerStreamSocket( const ServerStreamSocket & source ) 
-					throw() ;
+				ServerStreamSocket( const ServerStreamSocket & source ) ;
+
 
 
 				/**
@@ -372,11 +382,12 @@ namespace Ceylan
 				 *
 				 */
 				ServerStreamSocket & operator = ( 
-					const ServerStreamSocket & source )	throw() ;
+					const ServerStreamSocket & source )	;
 
 		
 		
 		} ;
+		
 		
 	}
 	
@@ -384,4 +395,6 @@ namespace Ceylan
 
 
 
+
 #endif // CEYLAN_SERVER_STREAM_SOCKET_H_
+

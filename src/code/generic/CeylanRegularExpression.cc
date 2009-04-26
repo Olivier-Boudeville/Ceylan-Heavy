@@ -55,8 +55,7 @@ using namespace Ceylan::Features ;
 
 
 
-RegExp::RegExp( const string & toAnalyze ) 
-		throw( Features::FeatureNotAvailableException ) :
+RegExp::RegExp( const string & toAnalyze ) :
 	_toAnalyze( toAnalyze )
 {
 
@@ -66,7 +65,7 @@ RegExp::RegExp( const string & toAnalyze )
 	
 #else // CEYLAN_USES_REGEX
 
-	throw FeatureNotAvailableException( "RegExp constructor : "
+	throw FeatureNotAvailableException( "RegExp constructor: "
 		"regular expression support feature not available" ) ;
 		
 #endif // CEYLAN_USES_REGEX
@@ -74,19 +73,24 @@ RegExp::RegExp( const string & toAnalyze )
 }
 
 
+
 RegExp::~RegExp() throw()
 {
+
 }
 
 
-bool RegExp::isXMLName() const throw( Features::FeatureNotAvailableException )
+
+bool RegExp::isXMLName() const
 {
+
 	return matches( "^([a-z]|[A-Z]|[_]|[:]{1,1})" ) ;
+	
 }
+
 
 
 bool RegExp::matches( const string & pattern ) const
-	throw( Features::FeatureNotAvailableException )
 {
 
 #if CEYLAN_USES_REGEX
@@ -104,7 +108,7 @@ bool RegExp::matches( const string & pattern ) const
 	
 #else // CEYLAN_USES_REGEX
 
-	throw FeatureNotAvailableException( "RegExp::matches : "
+	throw FeatureNotAvailableException( "RegExp::matches: "
 		"regular expression support feature not available" ) ;
 
 #endif // CEYLAN_USES_REGEX

@@ -36,11 +36,12 @@ using namespace Ceylan ;
 
 
 
-EventException::EventException( const std::string & reason ) throw() :
-	Ceylan::Exception( "Event exception : " + reason )
+EventException::EventException( const std::string & reason ) :
+	Ceylan::Exception( "Event exception: " + reason )
 {
 
 }
+
 
 
 EventException::~EventException() throw()
@@ -50,20 +51,29 @@ EventException::~EventException() throw()
 
 
 
-Event::Event( EventSource & source ) throw() :
+
+
+Event::Event( EventSource & source ) :
 	_source( & source )
 {
 
 }
 
 
+
 Event::~Event() throw()
 {
+
 	// _source not owned.
+	
 }
 
 
-const string Event::toString( Ceylan::VerbosityLevels level ) const throw() 
+
+const string Event::toString( Ceylan::VerbosityLevels level ) const
 {
+
 	return "Event originating from source " + _source->toString() ;
+	
 }
+

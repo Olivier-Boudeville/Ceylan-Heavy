@@ -44,15 +44,17 @@ namespace Ceylan
 	// Listeners listen to events.
 	class Event ;
 
+
 	// Listeners are linked to event sources.	
 	class EventSource ;
+
 
 
     /**
      * Interface which should be implemented by all objects that are able to
 	 * listen to events from at least one source.
 	 *
-	 * Event listeners are linked to event sources, but do not own them :
+	 * Event listeners are linked to event sources, but do not own them:
 	 * sources have independent life cycle, even though a vanishing source
 	 * should inform its listener that it is disappearing.
 	 *
@@ -68,8 +70,10 @@ namespace Ceylan
         public:
 					
 					
+					
 			/// Basic constructor, not registered to any event source.
-			EventListener() throw() ;
+			EventListener() ;
+			
 			
 			
 			/**
@@ -77,8 +81,9 @@ namespace Ceylan
 			 * to the specified event source.
 			 *
 			 */
-			explicit EventListener( EventSource & source ) throw() ;
+			explicit EventListener( EventSource & source ) ;
 			
+				
 						
 			/**
 			 * Virtual destructor, performs automatic unsubscribing from all
@@ -86,6 +91,7 @@ namespace Ceylan
 			 *
 			 */
 			virtual ~EventListener() throw() ;
+			
 			
 			
 			/**
@@ -98,8 +104,8 @@ namespace Ceylan
 			 * specified event source.
 			 *
 			 */
-			virtual void subscribeTo( EventSource & source ) 
-				throw( EventException ) ;
+			virtual void subscribeTo( EventSource & source ) ;
+			
 			
 			
 			/**
@@ -116,8 +122,8 @@ namespace Ceylan
 			 * to the event source.
 			 *
 			 */
-			virtual void unsubscribeFrom( EventSource & source ) 
-				throw( EventException ) ;
+			virtual void unsubscribeFrom( EventSource & source ) ;
+				
 						
 			
 			/**
@@ -125,7 +131,8 @@ namespace Ceylan
 			 * forthcoming event will be received from any.
 			 *
 			 */
-			virtual void unsubscribeFromAllSources() throw() ;
+			virtual void unsubscribeFromAllSources() ;
+
 
 
 			/**
@@ -163,8 +170,8 @@ namespace Ceylan
 			 * the event source.
 			 *
 			 */
-			virtual void forgetSource( EventSource & source ) 
-				throw( EventException ) ;
+			virtual void forgetSource( EventSource & source ) ;
+			
 			
 			
 			/**
@@ -178,7 +185,8 @@ namespace Ceylan
 			 * will take care of its life cycle.
 			 *
 			 */
-			 virtual void beNotifiedOf( const Event & newEvent ) throw() = 0 ;
+			 virtual void beNotifiedOf( const Event & newEvent ) = 0 ;
+
 
 				
 			/**
@@ -189,9 +197,10 @@ namespace Ceylan
 			 * the internal one.
 			 *
 			 */
-			std::list<EventSource *> getSources() const throw() ;
+			std::list<EventSource *> getSources() const ;
 			
 			 	
+				
 			/**
 			 * Returns a user-friendly description of the state of this object.
 			 *
@@ -200,8 +209,9 @@ namespace Ceylan
 			 *
 			 */
 			virtual const std::string toString( 
-				Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
+				Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 					
+		
 		
 		
 		protected:
@@ -237,7 +247,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			EventListener( const EventListener & source ) throw() ;
+			EventListener( const EventListener & source ) ;
 			
 			
 			/**
@@ -248,8 +258,7 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			EventListener & operator = ( const EventListener & source ) 
-				throw() ;
+			EventListener & operator = ( const EventListener & source ) ;
 				
 				 			
     } ;	
@@ -259,3 +268,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_EVENT_LISTENER_H_
+

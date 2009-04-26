@@ -47,14 +47,18 @@ namespace Ceylan
 		{
 
 
+
 			// Used by 2D homogeneous matrices.
 			class Vector2 ;
+
 
 			// Homogeneous ones are special cases.
 			class Matrix2 ;
 			
+			
 			// Used by 3D homogeneous matrices.
 			class Tripoint ;
+
 
 			// Used by 3D homogeneous matrices.
 			class Vector3 ;
@@ -85,7 +89,7 @@ namespace Ceylan
 			 *
 			 * @note The operations on homogeneous matrices take into 
 			 * account the fact that their bottom row is filled with zeroes
-			 * but the last element, which is equal to one : they optimize
+			 * but the last element, which is equal to one: they optimize
 			 * computations using that hypothesis, that should be always
 			 * enforced. Otherwise computations would be erroneous.
 			 *
@@ -103,19 +107,21 @@ namespace Ceylan
 			{
 
 				
+				
 				/**
-				 * Multiplies efficiently two homogeneous matrices :
+				 * Multiplies efficiently two homogeneous matrices:
 				 * HomogeneousMatrix3 result = m1 * m2.
 				 *
 				 */
 				CEYLAN_DLL friend HomogeneousMatrix3 operator * ( 
 					const HomogeneousMatrix3 & hm1, 
-					const HomogeneousMatrix3 & hm2 ) throw() ;
+					const HomogeneousMatrix3 & hm2 ) ;
+				
 				
 				
 				/**
 				 * Multiplies an homogeneous 3x3 matrix by a 2D vector,
-				 * returning another 2D vector : 
+				 * returning another 2D vector: 
 				 * Vector2 result = hm3 * v2.
 				 *
 				 * @note This obviously has a meaning only for homogeneous
@@ -123,10 +129,13 @@ namespace Ceylan
 				 *
 				 */
 				CEYLAN_DLL friend Vector2 operator * ( 
-					const HomogeneousMatrix3 & hm, const Vector2 & v ) throw() ;
+					const HomogeneousMatrix3 & hm, const Vector2 & v ) ;
+				
+				
 				
 
 				public:
+				
 				
 				
 					/**
@@ -139,9 +148,10 @@ namespace Ceylan
 					 * example) matrix.
 					 *
 					 */
-					explicit HomogeneousMatrix3( 
+					HomogeneousMatrix3( 
 						const Maths::Linear::Matrix2 & r, 
-						const Maths::Linear::Vector2 & v ) throw() ;
+						const Maths::Linear::Vector2 & v ) ;
+					
 					
 					
 					/**
@@ -154,14 +164,15 @@ namespace Ceylan
 					 *
 					 */
 					HomogeneousMatrix3( AngleInDegrees angle, 
-						const Maths::Linear::Vector2 & v ) throw() ;
+						const Maths::Linear::Vector2 & v ) ;
 					
+				
 				
 					/**
 					 * Constructs a new homogenous 3x3 matrix with 
 					 * specified elements.
 					 *
-					 * This matrix can be seen as the following block matrix :
+					 * This matrix can be seen as the following block matrix:
 					 * [ r, t; 0, 1 ], where r = [ r0, r1; r2, r3 ] is a 2x2
 					 * matrix and t = [ t0; t1 ] a 2D vector.
 					 *
@@ -170,9 +181,9 @@ namespace Ceylan
 					 *
 					 */
 					explicit HomogeneousMatrix3( 
-							 Real r0 = 0, Real r1 = 0, Real r2 = 0, 
-							 Real r3 = 0, Real t0 = 0, Real t1 = 0 ) 
-						throw() ;
+						Real r0 = 0, Real r1 = 0, Real r2 = 0, 
+						Real r3 = 0, Real t0 = 0, Real t1 = 0 )	;
+				
 				
 				
 					/** 
@@ -188,11 +199,14 @@ namespace Ceylan
 					 */
 					/*
 					HomogeneousMatrix3( 
-						const HomogeneousMatrix3 & source )	throw() ;
+						const HomogeneousMatrix3 & source )	;
 					*/
+					
+					
 					
 					/// Basic virtual destructor.
 					virtual ~HomogeneousMatrix3() throw() ;
+	
 	
 	
 										
@@ -209,7 +223,8 @@ namespace Ceylan
 					 *
 					 */
              		virtual const std::string toString( 
-						VerbosityLevels level = high ) const throw() ;
+						VerbosityLevels level = high ) const ;
+						
 									
 					 
 					 /**
@@ -217,6 +232,7 @@ namespace Ceylan
 					  *
 					  */
 					 static const MatrixIndex Dimensions = 3 ;
+					 
 					 
 					 
 					/**
@@ -231,6 +247,7 @@ namespace Ceylan
 					 
 
 
+
 				protected:
 				
 				
@@ -240,7 +257,8 @@ namespace Ceylan
 					 * to all zero but a final one.
 					 *
 					 */
-					virtual void setBottomRow() throw() ;
+					virtual void setBottomRow() ;
+					
 					
 					
 					/**
@@ -250,8 +268,8 @@ namespace Ceylan
 					 * Assigns specified Vector2 to the top of last column.
 					 *
 					 */
-					 virtual void setTranslationVector( const Vector2 & v )
-					 	throw() ;
+					 virtual void setTranslationVector( const Vector2 & v )	;
+					 
 					 
 					 
 					/**
@@ -261,9 +279,9 @@ namespace Ceylan
 					 * Assigns specified Matrix2 on top-left position.
 					 *
 					 */
-					 virtual void setRotationMatrix( const Matrix2 & m ) 
-					 	throw() ;
+					 virtual void setRotationMatrix( const Matrix2 & m ) ;
 					 					 
+					
 					
 					/**
 					 * Sets this homogeneous matrix in its canonical form, 
@@ -277,8 +295,7 @@ namespace Ceylan
 					 * @throw LinearException if bottom-right element is zero.
 					 *
 					 */
-					virtual void setInCanonicalForm() 
-						throw( LinearException ) ;  
+					virtual void setInCanonicalForm() ;  
 						
 
 			} ;
@@ -290,4 +307,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_HOMOGENEOUS_MATRIX_3_H_
+

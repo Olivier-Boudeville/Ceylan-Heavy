@@ -43,18 +43,20 @@ using namespace Ceylan::Maths ;
 using namespace Ceylan::Maths::Random ;
 
 
+
 #ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"            // for CEYLAN_DEBUG_RANDOM and al
 #endif // CEYLAN_USES_CONFIG_H
+
 
 
 /// Default seed for random generators.
 const Seed RandomGenerator::DefaultSeed = 1 ;
 
 
+
 RandomGenerator::RandomGenerator( Sample lowerLimit, Sample upperLimit, 
-	Seed aSeed )
-		throw( MathsException ) :
+		Seed aSeed ) :
 	_lowerLimit( lowerLimit ), 
 	_upperLimit( upperLimit ), 
 	_seed( aSeed ) 
@@ -65,7 +67,7 @@ RandomGenerator::RandomGenerator( Sample lowerLimit, Sample upperLimit,
 #endif // CEYLAN_DEBUG_RANDOM
 
 	if ( _lowerLimit >= _upperLimit )
-		throw MathsException( "RandomGenerator : lower limit (" 
+		throw MathsException( "RandomGenerator: lower limit (" 
 			+ Ceylan::toString( _lowerLimit ) 
 			+ " is not strictly inferior to upper limit ("
 			+ Ceylan::toString( _upperLimit ) + ")." ) ; 
@@ -78,7 +80,9 @@ RandomGenerator::RandomGenerator( Sample lowerLimit, Sample upperLimit,
 	 * RandomGenerator::preCompute, not their own overriden version.
 	 *
 	 */
+	 
 }
+
 
 
 RandomGenerator::~RandomGenerator() throw()  
@@ -91,7 +95,8 @@ RandomGenerator::~RandomGenerator() throw()
 }
 
 
-const string RandomGenerator::toString( VerbosityLevels level ) const throw()
+
+const string RandomGenerator::toString( VerbosityLevels level ) const
 {
 
 	return "Random generator output ranging from "
@@ -102,7 +107,9 @@ const string RandomGenerator::toString( VerbosityLevels level ) const throw()
 }
 
 
-RandomGenerator::RandomGenerator( const RandomGenerator & original ) throw() :
+
+
+RandomGenerator::RandomGenerator( const RandomGenerator & original ) :
 	Object(),
 	_lowerLimit( original._lowerLimit ), _upperLimit( original._upperLimit ), 
 	_seed( original._seed )  

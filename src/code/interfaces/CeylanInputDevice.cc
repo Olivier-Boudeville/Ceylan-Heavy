@@ -43,7 +43,8 @@ using namespace Ceylan::Log ;
 
 
 
-InputDevice::InputDevice() throw() :
+
+InputDevice::InputDevice() :
 	TextDisplayable(),
 	_controller( 0 )
 {
@@ -51,7 +52,8 @@ InputDevice::InputDevice() throw() :
 }
 
 
-InputDevice::InputDevice( Controller & controller  ) throw() :
+
+InputDevice::InputDevice( Controller & controller ) :
 	TextDisplayable(),
 	_controller( & controller )
 {
@@ -62,34 +64,41 @@ InputDevice::InputDevice( Controller & controller  ) throw() :
 
 InputDevice::~InputDevice() throw()
 {
-	// Controller not owned.	
+
+	// Controller not owned.
+		
 }
 
 
-bool InputDevice::isLinkedToController() const throw()
+
+bool InputDevice::isLinkedToController() const
 {
+
 	return ( _controller != 0 ) ;
+	
 }
 
 
-Controller & InputDevice::getController() const throw( EventException )
+
+Controller & InputDevice::getController() const
 {
 
 	if ( _controller == 0 )
 		throw EventException( 
-			"InputDevice::getController : not linked to any controller." ) ;
+			"InputDevice::getController: not linked to any controller." ) ;
 	
 	return * _controller ;
 		
 }
 
 
+
 void InputDevice::setController( Controller & controller ) 
-	throw( EventException )
 {
 
 	if ( _controller != 0 )
-		throw EventException( "InputDevice::setController : already linked with controller "
+		throw EventException( 
+			"InputDevice::setController: already linked with controller "
 			+ _controller->toString() ) ;
 	
 	_controller = & controller ;		
@@ -97,7 +106,8 @@ void InputDevice::setController( Controller & controller )
 }
 
 
-bool InputDevice::dropController() throw() 
+
+bool InputDevice::dropController()
 {
 
 	if ( _controller != 0 )
@@ -111,14 +121,15 @@ bool InputDevice::dropController() throw()
 }
 
 
-const string InputDevice::toString( Ceylan::VerbosityLevels level ) 
-	const throw() 
+
+const string InputDevice::toString( Ceylan::VerbosityLevels level ) const
 {
 	
 	if ( _controller == 0 )
 		return "Input device currently not linked to any controller" ;
 	else
-		return "Input device currently linked with following controller : "
+		return "Input device currently linked with following controller: "
 			+ _controller->toString( level ) ;
 				
 }
+

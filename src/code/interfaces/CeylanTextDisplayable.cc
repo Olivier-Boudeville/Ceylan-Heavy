@@ -36,16 +36,17 @@ using std::string ;
 using namespace Ceylan ;
 
 
+
 // Output format defaults to raw text.
 TextDisplayable::TextOutputFormat TextDisplayable::_OutputFormat = rawText ;
 
 
 
 const std::string TextDisplayable::ToString( 
-		list<TextDisplayable*> displayables, Ceylan::VerbosityLevels level ) 
+	list<TextDisplayable*> displayables, Ceylan::VerbosityLevels level ) 
 {
 
-	string res = "Description of TextDisplayable list is : " ;
+	string res = "Description of TextDisplayable list is: " ;
 	
 	list<string> descriptionList ;
 	 

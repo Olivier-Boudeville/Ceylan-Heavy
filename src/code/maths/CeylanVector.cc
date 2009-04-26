@@ -36,23 +36,30 @@ using namespace Ceylan::Maths::Linear ;
 
 
 
-Vector::Vector() throw() 
+Vector::Vector()
 {
+
 }
+
 
 
 Vector::~Vector() throw() 
 {
+
 }
 
 
-void Vector::nullify() throw()
+
+void Vector::nullify()
 {
+
 	setAllElementsTo( 0 ) ;
+	
 }
 
 	
-const string Vector::toString( VerbosityLevels level ) const throw()
+	
+const string Vector::toString( VerbosityLevels level ) const
 {
 
 	return "Abstract vector" ;

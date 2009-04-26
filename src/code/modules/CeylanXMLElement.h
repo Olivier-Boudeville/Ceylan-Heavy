@@ -38,30 +38,33 @@
 
 
 
+
 namespace Ceylan
 {
+
 
 
 	namespace XML
 	{
 	
 
+
 		/**
 		 * Exception to be raised when an operation on an XML element 
 		 * failed.
 		 *
 		 */
-		class CEYLAN_DLL XMLElementException : public XMLException
+		class CEYLAN_DLL XMLElementException: public XMLException
 		{
 	
 			public:
 		
-				explicit XMLElementException( const std::string & reason )
-					throw() ;
+				explicit XMLElementException( const std::string & reason ) ;
 					
 				virtual ~XMLElementException() throw() ;
 
 		} ;
+
 
 
 
@@ -71,7 +74,7 @@ namespace Ceylan
 		 * XML elements can be markups, text, binary content, etc.
 		 *
 		 */
-		class CEYLAN_DLL XMLElement : public TextDisplayable, 
+		class CEYLAN_DLL XMLElement: public TextDisplayable, 
 			public Serializable, public Visitable
 		{
 
@@ -83,11 +86,12 @@ namespace Ceylan
 				 * Creates an empty XML element.
 				 *
 				 */
-				XMLElement() throw() ;
+				XMLElement() ;
 				
 				
 				/// Virtual destructor.
 				virtual ~XMLElement() throw() ;
+
 
 
 				/*
@@ -95,6 +99,7 @@ namespace Ceylan
 				 * pure virtual here.
 				 *
 				 */
+				
 				
 				
 				/**
@@ -106,9 +111,9 @@ namespace Ceylan
 				 * @throw SerializationException if the operation failed.
 				 *
 				 */
-				virtual void saveTo( System::OutputStream & output ) 
-					const throw( SerializationException ) ;
+				virtual void saveTo( System::OutputStream & output ) const ;
 				
+				 
 				 
 				 
 			private:
@@ -124,7 +129,7 @@ namespace Ceylan
 				 * @note Made to avoid unwanted hidden clone of the Singleton.
 				 *
 				 */			 
-				XMLElement( const XMLElement & source ) throw() ;
+				XMLElement( const XMLElement & source ) ;
 			
 			
 				/**
@@ -134,15 +139,17 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				XMLElement & operator = ( const XMLElement & source ) throw() ;
+				XMLElement & operator = ( const XMLElement & source ) ;
 				
 				
 		} ;
 		
 		
 		
+		
 		/// Various XML elements accept XML visitors.
 		class XMLVisitor ;
+		
 		
 		
 		/**
@@ -155,7 +162,7 @@ namespace Ceylan
 		 * represented through the XML tree.
 		 *
 		 */
-		class CEYLAN_DLL XMLMarkup : public XMLElement
+		class CEYLAN_DLL XMLMarkup: public XMLElement
 		{
 
 			public:
@@ -166,7 +173,7 @@ namespace Ceylan
 				 * Creates an empty XML markup.
 				 *
 				 */
-				XMLMarkup() throw() ;
+				XMLMarkup() ;
 				
 
 				/**
@@ -176,12 +183,13 @@ namespace Ceylan
 				 * markup <para>.
 				 *
 				 */
-				explicit XMLMarkup( const MarkupName & name ) throw() ;
+				explicit XMLMarkup( const MarkupName & name ) ;
 				
 				
 				
 				/// Virtual destructor.
 				virtual ~XMLMarkup() throw() ;
+
 
 
 				/**
@@ -191,7 +199,8 @@ namespace Ceylan
 				 * the returned name.
 				 *
 				 */
-				virtual MarkupName getMarkupName() const throw() ; 
+				virtual MarkupName getMarkupName() const ; 
+
 
 
 				/**
@@ -201,7 +210,8 @@ namespace Ceylan
 				 * the closing one.
 				 *
 				 */
-				virtual std::string getClosingMarkup() const throw() ; 
+				virtual std::string getClosingMarkup() const ; 
+				
 				
 				
 				 
@@ -215,8 +225,8 @@ namespace Ceylan
 				 * for this markup.
 				 *
 				 */
-				virtual bool hasAttribute( const AttributeName & name ) 
-					const throw() ;
+				virtual bool hasAttribute( const AttributeName & name ) const ;
+			
 					
 					
 				/**
@@ -230,8 +240,9 @@ namespace Ceylan
 				 *
 				 */
 				virtual AttributeValue getAttribute( 
-					const AttributeName & name ) const throw() ;
+					const AttributeName & name ) const ;
 					
+				
 				
 				/**
 				 * Adds specified name-value pair as an attribute of this
@@ -247,7 +258,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual void setAttribute( const AttributeName & name,
-					const AttributeValue & value ) throw() ;
+					const AttributeValue & value ) ;
+					
 					
 					
 				/**
@@ -257,15 +269,19 @@ namespace Ceylan
 				 * markup from outside, for example when reading an XML file.
 				 *
 				 */
-				virtual AttributeMap & getAttributes() throw() ;
+				virtual AttributeMap & getAttributes() ;
 				 	
+					
+					
 					
 				
 				// Serializable section.
 
 
+
 				// The saveTo method is inherited from XMLElement as is .
 
+			
 			
 				/**
 				 * Loads a new instance state from specified stream.
@@ -276,13 +292,13 @@ namespace Ceylan
 				 * @throw SerializationException if the operation failed.
 				 *
 				 */
-				virtual void loadFrom( System::InputStream & input ) 
-					throw( SerializationException ) ;
+				virtual void loadFrom( System::InputStream & input ) ;
+
 
 
 				/**
 				 * Allows given visitor to visit this object, thanks to a 
-				 * callback : 'visitor.visit( *this ) ;'
+				 * callback: 'visitor.visit( *this ) ;'
 				 *
 				 * Implements the Visitable interface.
 				 *
@@ -290,8 +306,8 @@ namespace Ceylan
 				 * otherwise a VisitException is thrown.
 				 *
 				 */
-				virtual void accept( Visitor & visitor ) 
-					throw( VisitException ) ;
+				virtual void accept( Visitor & visitor ) ;
+
 
 
 				/**
@@ -306,8 +322,7 @@ namespace Ceylan
 				 *
 				 */
 				 virtual const std::string toString( 
-			 			Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+			 		Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 
 
@@ -326,7 +341,7 @@ namespace Ceylan
  * 
  */
 #pragma warning( push )
-#pragma warning( disable : 4251 )
+#pragma warning( disable: 4251 )
 			
 				/**
 				 * Attributes of a XML markup, sort of tagged values, i.e. 
@@ -336,6 +351,7 @@ namespace Ceylan
 				AttributeMap _attributes ;
 
 #pragma warning( pop ) 			
+
 
 
 			private:
@@ -351,7 +367,7 @@ namespace Ceylan
 				 * @note Made to avoid unwanted hidden clone of the Singleton.
 				 *
 				 */			 
-				XMLMarkup( const XMLMarkup & source ) throw() ;
+				XMLMarkup( const XMLMarkup & source ) ;
 			
 			
 				/**
@@ -361,7 +377,7 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				XMLMarkup & operator = ( const XMLMarkup & source ) throw() ;
+				XMLMarkup & operator = ( const XMLMarkup & source ) ;
 				
 				
 		} ;
@@ -375,7 +391,7 @@ namespace Ceylan
 		 * A text is an eligible content for a markup.
 		 *
 		 */
-		class CEYLAN_DLL XMLText : public XMLElement
+		class CEYLAN_DLL XMLText: public XMLElement
 		{
 
 			public:
@@ -386,14 +402,14 @@ namespace Ceylan
 				 * Creates an empty XML text.
 				 *
 				 */
-				XMLText() throw() ;
+				XMLText() ;
 				
 
 				/**
 				 * Creates a XML text from specified string.
 				 *
 				 */
-				explicit XMLText( const std::string & text ) throw() ;
+				explicit XMLText( const std::string & text ) ;
 				
 				
 				
@@ -404,7 +420,7 @@ namespace Ceylan
 	
 				/**
 				 * Allows given visitor to visit this object, thanks to a 
-				 * callback : 'visitor.visit( *this ) ;'
+				 * callback: 'visitor.visit( *this ) ;'
 				 *
 				 * Implements the Visitable interface.
 				 *
@@ -412,24 +428,24 @@ namespace Ceylan
 				 * otherwise a VisitException is thrown.
 				 *
 				 */
-				virtual void accept( Visitor & visitor ) 
-					throw( VisitException ) ;
+				virtual void accept( Visitor & visitor ) ;
 
-
-				
+	
 					
 				/**
 				 * Returns the text in this element.
 				 *
 				 */
-				virtual std::string getText() const throw() ;
+				virtual std::string getText() const ;
 					
+				
 				
 				/**
 				 * Sets the text of this element.
 				 *
 				 */
-				virtual void setText( const std::string & newText ) throw() ;
+				virtual void setText( const std::string & newText ) ;
+					
 					
 					
 					
@@ -437,8 +453,10 @@ namespace Ceylan
 				// Serializable section.
 
 
+
 				// The saveTo method is inherited from XMLElement as is .
 				
+			
 			
 				/**
 				 * Loads a new instance state from specified stream.
@@ -449,8 +467,7 @@ namespace Ceylan
 				 * @throw SerializationException if the operation failed.
 				 *
 				 */
-				virtual void loadFrom( System::InputStream & input ) 
-					throw( SerializationException ) ;
+				virtual void loadFrom( System::InputStream & input ) ;
 
 
 
@@ -466,8 +483,8 @@ namespace Ceylan
 				 *
 				 */
 				 virtual const std::string toString( 
-			 			Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+			 		Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+
 
 
 
@@ -476,6 +493,7 @@ namespace Ceylan
 			
 				/// Text of this element.
 				std::string _text ;
+				
 				
 			
 
@@ -493,7 +511,8 @@ namespace Ceylan
 				 * @note Made to avoid unwanted hidden clone of the Singleton.
 				 *
 				 */			 
-				XMLText( const XMLText & source ) throw() ;
+				XMLText( const XMLText & source ) ;
+			
 			
 			
 				/**
@@ -503,7 +522,8 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				XMLText & operator = ( const XMLText & source ) throw() ;
+				XMLText & operator = ( const XMLText & source ) ;
+				
 				
 				
 		} ;
@@ -512,6 +532,7 @@ namespace Ceylan
 	}
 	
 }	
+
 
 
 #endif // CEYLAN_XML_ELEMENT_H_

@@ -35,10 +35,11 @@ using std::string ;
 
 
 
-SmartResource::SmartResource() throw()
+SmartResource::SmartResource()
 {
 
 }
+
 
 
 SmartResource::~SmartResource() throw()
@@ -47,10 +48,11 @@ SmartResource::~SmartResource() throw()
 }
 
 
-const string SmartResource::toString( Ceylan::VerbosityLevels level ) 
-	const throw() 
+const string SmartResource::toString( Ceylan::VerbosityLevels level ) const 
 {
+
 	return "Smart Ressource at '" 
 		+ Ceylan::toString( static_cast<const void *>( this ) ) + "'" ;
+		
 }
 

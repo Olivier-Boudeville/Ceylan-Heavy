@@ -35,6 +35,7 @@
 
 
 
+
 namespace Ceylan
 {
 
@@ -55,7 +56,7 @@ namespace Ceylan
 		 * connected client managed by a dedicated protocol server.
 		 *
 		 * Following methods have to be subclassed so that the multiplexed 
-		 * server can perform its specific task :
+		 * server can perform its specific task:
 		 *   - accepted, which must associate a specific protocol server to
 		 * the AnonymousProtocolAwareStreamSocket instance created for a
 		 * newly accepted connection 
@@ -73,6 +74,7 @@ namespace Ceylan
 		class CEYLAN_DLL MultiplexedProtocolBasedStreamServer: 
 			public MultiplexedServerStreamSocket
 		{
+
 		
 
 			public:
@@ -93,9 +95,9 @@ namespace Ceylan
 				 *
 				 */
 				explicit MultiplexedProtocolBasedStreamServer( 
-						Port listeningPort, bool reuse = true )	
-					throw( SocketException ) ;
+					Port listeningPort, bool reuse = true )	;
 	
+				
 				
 				/// Virtual destructor.
 				virtual ~MultiplexedProtocolBasedStreamServer() throw() ;
@@ -118,8 +120,8 @@ namespace Ceylan
 				 * @see stop
 				 *
 				 */
-				virtual AnonymousStreamSocket * accept() 
-					throw( ServerStreamSocketException ) ;
+				virtual AnonymousStreamSocket * accept() ;
+	
 	
 
 				/**
@@ -132,7 +134,7 @@ namespace Ceylan
 				 * instance it is given, which includes setting its associated
 				 * protocol server.
 				 *
-				 * @example :
+				 * @example:
 				 * 
 				 * void MyActualServer::accepted( 
 				 *    AnonymousStreamSocket & newConnection )
@@ -158,8 +160,8 @@ namespace Ceylan
 				 * @see testCeylanMultiLwProtocolServer.cc
 				 *
 				 */
-				virtual void accepted( AnonymousStreamSocket & newConnection )
-					throw( ServerStreamSocketException ) ;
+				virtual void accepted( AnonymousStreamSocket & newConnection ) ;
+
 
 
 				/**
@@ -199,8 +201,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool handleConnection( 
-						AnonymousStreamSocket & connection )
-					throw( MultiplexedServerStreamSocketException ) ;
+					AnonymousStreamSocket & connection ) ;
+
 				
 
 				/**
@@ -211,8 +213,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual void closeConnection( 
-						AnonymousStreamSocket & connection )
-					throw( MultiplexedServerStreamSocketException ) ;
+					AnonymousStreamSocket & connection ) ;
+	
 	
 	
             	/**
@@ -228,13 +230,14 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString(
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+	
 	
 
 
 			private:
 	
+			
 			
 				/**
 				 * Copy constructor made private to ensure that it will 
@@ -245,8 +248,8 @@ namespace Ceylan
 				 *
 				 */
 				MultiplexedProtocolBasedStreamServer( 
-						const MultiplexedProtocolBasedStreamServer & source )
-					throw() ;
+					const MultiplexedProtocolBasedStreamServer & source ) ;
+
 
 
 				/**
@@ -258,11 +261,12 @@ namespace Ceylan
 				 *
 				 */
 				MultiplexedProtocolBasedStreamServer & operator = ( 
-						const MultiplexedProtocolBasedStreamServer & source )
-					throw() ;
+					const MultiplexedProtocolBasedStreamServer & source ) ;
+		
 		
 		
 		} ;
+		
 		
 	}
 	
@@ -271,3 +275,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_MULTIPLEXED_PROTOCOL_BASED_STREAM_SERVER_H_
+

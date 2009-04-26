@@ -76,15 +76,18 @@ namespace Ceylan
 			 * Constructs an empty Unicode string.
 			 *
 			 */
-			UnicodeString() throw() ;
+			UnicodeString() ;
+			
 			
 			
 			/// Virtual destructor.
 			virtual ~UnicodeString() throw() ;
 			
 			
+			
 			/// Returns the number of characters in this Unicode string.
-			virtual StringSize size() const throw() ;
+			virtual StringSize size() const ;
+			
 			
 			
 			/**
@@ -95,7 +98,8 @@ namespace Ceylan
 			 * which will have to deallocate it when not useful anymore.
 			 *
 			 */
-			virtual UnicodeString & copy( bool swap = false ) const throw() ;
+			virtual UnicodeString & copy( bool swap = false ) const ;
+		
 		
 		
 			/**
@@ -105,8 +109,8 @@ namespace Ceylan
 			 * copied and encoded in Unicode in this string.
 			 *
 			 */
-			virtual void setFromLatin1( const std::string & latin1String )
-				throw() ;
+			virtual void setFromLatin1( const std::string & latin1String ) ;
+			
 			
 			
 			/**
@@ -121,7 +125,8 @@ namespace Ceylan
 			 *
 			 */
 			virtual void setFromUTF8( const std::string & utf8String, 
-				StringSize characterCount ) throw() ;
+				StringSize characterCount ) ;
+			
 			
 			
 			/**
@@ -135,7 +140,7 @@ namespace Ceylan
 	         *
 	         */
 		 	virtual const std::string toString( 
-				Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
+				Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 			
 			
 			
@@ -143,12 +148,13 @@ namespace Ceylan
 			
 			
 			/// Converts specified Latin-1 encoded character to Unicode.
-			static Unicode ConvertFromLatin1( Ceylan::Latin1Char latin1Char )
-				 throw() ;
+			static Unicode ConvertFromLatin1( Ceylan::Latin1Char latin1Char ) ;
+			
 			
 			
 			
 		protected:
+		
 		
 		
 			/**
@@ -158,11 +164,13 @@ namespace Ceylan
 			 * @note The memory is allocated but the content is undefined.
 			 *
 			 */
-			virtual void setCapacity( StringSize newSize ) throw() ;
+			virtual void setCapacity( StringSize newSize ) ;
+			
 			
 			
 			/// The buffer storing Unicode characters.
 			Unicode * _buffer ;
+			
 			
 			
 			
@@ -177,7 +185,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			UnicodeString( const UnicodeString & source ) throw() ;
+			UnicodeString( const UnicodeString & source ) ;
 		
 		
 			/**
@@ -188,8 +196,7 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			UnicodeString & operator = ( const UnicodeString & source ) 
-				throw() ;
+			UnicodeString & operator = ( const UnicodeString & source ) ;
 			
 	
 	} ;
@@ -197,4 +204,7 @@ namespace Ceylan
 
 }
 
+
+
 #endif // CEYLAN_UNICODE_H_
+

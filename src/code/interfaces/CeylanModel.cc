@@ -50,7 +50,7 @@ using namespace Ceylan::Log ;
 
 
 
-MVCEvent::MVCEvent( EventSource & source ) throw() :
+MVCEvent::MVCEvent( EventSource & source ) :
 	Event( source )
 {
 
@@ -65,7 +65,7 @@ MVCEvent::~MVCEvent() throw()
 
 
 
-Model::Model() throw() :
+Model::Model() :
 	CallableEventSource(), 
 	CallerEventListener()
 {
@@ -89,7 +89,7 @@ Model::~Model() throw()
 
 
 
-void Model::addView( View & newView ) throw( EventException )
+void Model::addView( View & newView )
 {
 
 	// Model will send events to views:
@@ -99,7 +99,7 @@ void Model::addView( View & newView ) throw( EventException )
 
 
 
-void Model::removeView( View & view ) throw( EventException )
+void Model::removeView( View & view )
 {
 
 	remove( view ) ;
@@ -108,7 +108,7 @@ void Model::removeView( View & view ) throw( EventException )
 
 
 
-void Model::removeAllViews() throw() 
+void Model::removeAllViews()
 {
 
 	removeAllListeners() ;
@@ -118,7 +118,6 @@ void Model::removeAllViews() throw()
 
 
 void Model::subscribeToController( Controller & newController ) 
-	throw( EventException )
 {
 
 	// Model will listen to controller:
@@ -129,7 +128,6 @@ void Model::subscribeToController( Controller & newController )
 
 
 void Model::unsubscribeFromController( Controller & controller ) 
-	throw( EventException )
 {
 
 	unsubscribeFrom( controller ) ;
@@ -138,7 +136,7 @@ void Model::unsubscribeFromController( Controller & controller )
 
 
 
-void Model::unsubscribeFromAllControllers() throw() 
+void Model::unsubscribeFromAllControllers()
 {
 
 	unsubscribeFromAllSources() ;
@@ -147,7 +145,7 @@ void Model::unsubscribeFromAllControllers() throw()
 
 
 
-const string Model::toString( Ceylan::VerbosityLevels level ) const throw() 
+const string Model::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string result ;
@@ -174,7 +172,7 @@ const string Model::toString( Ceylan::VerbosityLevels level ) const throw()
 
 
 
-void Model::notifyAllViews( const MVCEvent & newMVCEvent ) throw()
+void Model::notifyAllViews( const MVCEvent & newMVCEvent )
 {
 
 	notifyAllListeners( newMVCEvent ) ;

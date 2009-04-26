@@ -33,6 +33,7 @@
 #include <string>
 
 
+
 namespace Ceylan
 {
 
@@ -45,11 +46,14 @@ namespace Ceylan
 		{
 
 			
+			
 			// Substracts them to have vectors.			
 			class Tripoint ;
 
+
 			// Transform vectors.
 			class Matrix3 ;
+
 
 
 			/**
@@ -69,8 +73,10 @@ namespace Ceylan
 				/// Must access to each other's coordinates.				
 				friend class Tripoint ;
 
+
 				/// Must access to each other's coordinates.
 				friend class Matrix3 ;
+				
 				
 				
 				/** 
@@ -78,7 +84,8 @@ namespace Ceylan
 				 *
 				 */
 				CEYLAN_DLL friend bool operator == ( const Vector3 & v1, 
-					const Vector3 & v2 ) throw() ;
+					const Vector3 & v2 ) ;
+						
 						
 						
 				/** 
@@ -86,7 +93,8 @@ namespace Ceylan
 				 *
 				 */
 				CEYLAN_DLL friend bool operator != ( const Vector3 & v1, 
-					const Vector3 & v2 ) throw() ;
+					const Vector3 & v2 ) ;
+
 
 
 				/** Translates a 3D point of specified 3D vector: 
@@ -94,7 +102,8 @@ namespace Ceylan
 				 *
 				 */
 				CEYLAN_DLL friend Tripoint operator + ( const Tripoint & t, 
-					const Vector3 & v ) throw() ;
+					const Vector3 & v ) ;
+				
 				
 				
 				/** 
@@ -103,16 +112,17 @@ namespace Ceylan
 				 *
 				 */
 				CEYLAN_DLL friend Tripoint operator - ( const Tripoint & t, 
-					const Vector3 & v ) throw();
+					const Vector3 & v ) ;
 	
+				
 				
 				/** 
 				 * Transforms a 3D point into a 3D vector, which will
 				 * have the same coordinates.
 				 *
 				 */
-				CEYLAN_DLL friend Vector3 vectorize( const Tripoint & t )
-					throw() ;
+				CEYLAN_DLL friend Vector3 vectorize( const Tripoint & t ) ;
+				
 				
 				
 				/** 
@@ -121,7 +131,8 @@ namespace Ceylan
 				 *
 				 */
 				CEYLAN_DLL friend Vector3 vectorize( const Tripoint & t1, 
-					const Tripoint & t2 ) throw() ;
+					const Tripoint & t2 ) ;
+
 
 
 				/** 
@@ -129,7 +140,8 @@ namespace Ceylan
 				 *
 				 */
 				CEYLAN_DLL friend Vector3 operator + ( const Vector3 & v1, 
-					const Vector3 & v2 ) throw() ;
+					const Vector3 & v2 ) ;
+					
 					
 
 				/** 
@@ -137,15 +149,17 @@ namespace Ceylan
 				 *
 				 */			
 				CEYLAN_DLL friend Vector3 operator - ( const Vector3 & v1, 
-					const Vector3 & v2 ) throw() ;
+					const Vector3 & v2 ) ;
 	
+				
 				
 				/** 
 				 * Multiplies v by coefficient lambda: result = lamba.v.
 				 *
 				 */
 				CEYLAN_DLL friend Vector3 operator * ( Real lambda, 
-					const Vector3 & v ) throw()  ;
+					const Vector3 & v )  ;
+				
 				
 				
 				/** 
@@ -153,8 +167,9 @@ namespace Ceylan
 				 *
 				 */
 				CEYLAN_DLL friend Vector3 operator * ( const Matrix3 & m, 
-					const Vector3 & v ) throw() ;
+					const Vector3 & v ) ;
 	
+				
 				
 				/** 
 				 * Computes the dot product of v1 and v2: 
@@ -162,7 +177,7 @@ namespace Ceylan
 				 *
 				 */
 				CEYLAN_DLL friend Real operator | ( const Vector3 & v1, 
-					const Vector3 & v2 ) throw()  ;
+					const Vector3 & v2 )  ;
 
 
 				/** 
@@ -171,15 +186,15 @@ namespace Ceylan
 				 *
 				 */
 				CEYLAN_DLL friend Vector3 operator ^ ( const Vector3 & v1, 
-					const Vector3 & v2 ) throw() ;
+					const Vector3 & v2 ) ;
+				
 				
 				
 				/** 
 				 * Returns the magnitude of specified vector.
 				 *
 				 */
-				CEYLAN_DLL friend Real operator ~ ( const Vector3 & v ) 
-					throw() ;
+				CEYLAN_DLL friend Real operator ~ ( const Vector3 & v ) ;
 				
 				
 				
@@ -194,17 +209,18 @@ namespace Ceylan
 					 * the null vector.
 					 *
 					 */
-					explicit Vector3( Real x0 = 0, Real x1 = 0, 
-						Real x2 = 0 ) throw() ;
+					explicit Vector3( Real x0 = 0, Real x1 = 0, Real x2 = 0 ) ;
+				
 				
 				
 					/// Basic virtual destructor.
 					virtual ~Vector3() throw() ;
 					
 					
+					
 					/// Reassigns this vector's coordinates.
-					virtual void setTo( Real x0, Real x1, 
-						Real x2 ) throw() ;
+					virtual void setTo( Real x0, Real x1, Real x2 ) ;
+
 
 
 					/** 
@@ -212,7 +228,8 @@ namespace Ceylan
 					 * (all coordinates zeroed).
 					 *
 					 */
-					virtual void nullify() throw() ;
+					virtual void nullify() ;
+					
 					
 					
 					/** 
@@ -220,31 +237,33 @@ namespace Ceylan
 					 * commonValue.
 					 *
 					 */
-					virtual void setAllElementsTo( Real commonValue ) throw() ;
+					virtual void setAllElementsTo( Real commonValue ) ;
+
 
 
 					/**
 					 * Returns indexed element. 
 					 * Index ranges from 0 to Dimensions-1.
 					 *
-					 * @note An emergency shutdown is triggered if 
-					 * index is out of bounds.
+					 * @throw MathsException if index is out of bounds and if
+					 * in debug mode.
 					 *
 					 */
-					virtual Real getElementAt( MatrixIndex index ) 
-						const throw() ;
+					virtual Real getElementAt( MatrixIndex index ) const ;
+					
 					
 					
 					/**
 					 * Sets indexed element to specified value. 
 					 * Index ranges from 0 to Dimensions-1.
 					 *
-					 * @note An emergency shutdown is triggered if 
-					 * index is out of bounds.
+					 * @throw MathsException if index is out of bounds and if
+					 * in debug mode.
 					 *
 					 */
 					virtual void setElementAt( MatrixIndex index, 
-						Real newValue ) throw() ;
+						Real newValue ) ;
+				
 				
 					
 					/**
@@ -255,7 +274,8 @@ namespace Ceylan
 					 * normalized.
 					 *
 					 */
-					virtual void normalize() throw( LinearException ) ;
+					virtual void normalize() ;
+
 
 
 					/**
@@ -264,7 +284,8 @@ namespace Ceylan
 					 * @see operator ~
 					 *
 					 */
-					virtual Real magnitude() const throw() ;
+					virtual Real magnitude() const ;
+
 
 					
 					/**
@@ -280,7 +301,8 @@ namespace Ceylan
 					 *
 					 */
              		virtual const std::string toString( 
-						VerbosityLevels level = high ) const throw() ;
+						VerbosityLevels level = high ) const ;
+					 
 					 
 					 
 					/**
@@ -288,6 +310,7 @@ namespace Ceylan
 					 *
 					 */
 					static const MatrixIndex Dimensions = 3 ;
+
 
 
 					 
@@ -302,14 +325,16 @@ namespace Ceylan
 			} ;
 
 			
+			
 			/*
 			 * g++ seems to require this outside declaration, only for this
 			 * particular operator though!
 			 *
 			 */
 			CEYLAN_DLL Real operator | ( const Vector3 & v1, 
-					const Vector3 & v2 ) throw()  ;
+				const Vector3 & v2 )  ;
 					
+				
 					
 			/*
 			 * g++ seems to require this outside declaration, only for this
@@ -317,13 +342,15 @@ namespace Ceylan
 			 *
 			 */
 			CEYLAN_DLL Vector3 operator ^ ( const Vector3 & v1, 
-					const Vector3 & v2 ) throw() ;
+				const Vector3 & v2 ) ;
+					
 					
 		}
 		
 	}
 	
 }
+
 
 
 #endif // CEYLAN_VECTOR_3_H_

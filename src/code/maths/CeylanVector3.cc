@@ -31,7 +31,7 @@
 
 #include "CeylanLogPlug.h"    // for LogPlug
 #include "CeylanOperators.h"  // for toString
-#include "CeylanUtils.h"      // for emergencyShutdown
+
 
 #ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"     // for CEYLAN_DEBUG
@@ -58,69 +58,84 @@ using Ceylan::Maths::Real ;
 
 
 
-Vector3::Vector3( Real x0, Real x1, Real x2 ) throw() 
+
+Vector3::Vector3( Real x0, Real x1, Real x2 ) 
 {
+
 	_vec[0] = x0 ;
 	_vec[1] = x1 ;
 	_vec[2] = x2 ;	
+	
 }
 
 
-Vector3::~Vector3() throw() 
+
+Vector3::~Vector3() throw()
 {
 
 }
 
 
 
-void Vector3::setTo( Real x0, Real x1, Real x2 ) throw()
+void Vector3::setTo( Real x0, Real x1, Real x2 )
 {
+
 	_vec[0] = x0 ;
 	_vec[1] = x1 ;
 	_vec[2] = x2 ;	
+	
 }
 
 
-void Vector3::nullify() throw()
+
+void Vector3::nullify()
 {
+
 	setAllElementsTo( 0 ) ;
+	
 }
 
 
-void Vector3::setAllElementsTo( Real commonValue ) throw()
+
+void Vector3::setAllElementsTo( Real commonValue )
 {
+
 
 	for ( MatrixIndex i = 0 ; i < Dimensions ; i++ )
 	{	
 		_vec[i] = 0 ;
 	}
 	
+	
 }
 
 
-Real Vector3::getElementAt( MatrixIndex index ) const throw()
+
+Real Vector3::getElementAt( MatrixIndex index ) const
 {
 
 #if CEYLAN_DEBUG
 
 	if ( index >= Dimensions )
-		Ceylan::emergencyShutdown( 
-			"Vector3::getElementAt : index out of bounds." ) ;
+		throw MathsException( 
+			"Vector3::getElementAt: index out of bounds." ) ;
 		
 #endif // CEYLAN_DEBUG 
 		
 	return _vec[ index ] ;
+	
 }
 
 
-void Vector3::setElementAt( MatrixIndex index, Real newValue ) throw()
+
+void Vector3::setElementAt( MatrixIndex index, Real newValue )
 {
 
 #if CEYLAN_DEBUG
 
 	if ( index >= Dimensions )
-		Ceylan::emergencyShutdown( 
-			"Vector3::setElementAt : index out of bounds." ) ;
+		throw MathsException( 
+			"Vector3::setElementAt: index out of bounds." ) ;
 		
 #endif // CEYLAN_DEBUG 
 
@@ -129,14 +144,15 @@ void Vector3::setElementAt( MatrixIndex index, Real newValue ) throw()
 }
 
 
-void Vector3::normalize() throw( LinearException ) 
+
+void Vector3::normalize() 
 {
 	 
 	Real mag = magnitude() ; 
 	
 	if ( IsNull( mag ) )
 		throw LinearException( 
-			"Vector3::normalize : null vector cannot be normalized." ) ;
+			"Vector3::normalize: null vector cannot be normalized." ) ;
 	
 	Real factor = static_cast<Real>( 1.0 ) / mag ;
 	
@@ -148,7 +164,8 @@ void Vector3::normalize() throw( LinearException )
 }
 
 
-Real Vector3::magnitude()const throw()
+
+Real Vector3::magnitude() const
 {
 
 	// Not using Pow, might be faster this way.
@@ -165,7 +182,8 @@ Real Vector3::magnitude()const throw()
 }
 
 
-const string Vector3::toString( VerbosityLevels level ) const throw()
+
+const string Vector3::toString( VerbosityLevels level ) const
 {
 
 	string res ;
@@ -190,7 +208,7 @@ const string Vector3::toString( VerbosityLevels level ) const throw()
 		return res ;
 	}
 
-	// Non-HTML format requested :
+	// Non-HTML format requested:
 	
 	if ( level == high )
 	{
@@ -214,7 +232,7 @@ const string Vector3::toString( VerbosityLevels level ) const throw()
 
     	if ( oss.fail() )
 		{
-			string message = "Vector3::toString : conversion error." ;
+			string message = "Vector3::toString: conversion error." ;
         	Log::LogPlug::error( message ) ;
 			return message ;
 		}
@@ -226,7 +244,7 @@ const string Vector3::toString( VerbosityLevels level ) const throw()
 	else
 	{
 	
-		res = "Vector3 : [ " ;
+		res = "Vector3: [ " ;
 		
     	for ( MatrixIndex i = 0; i < Dimensions; i++ )
 		{
@@ -238,14 +256,15 @@ const string Vector3::toString( VerbosityLevels level ) const throw()
 		
 	}
 				
-	// Useless but avoids warnings :
+	// Useless but avoids warnings:
 	return res ;
 	
 }
 
 
+
 bool Ceylan::Maths::Linear::operator == ( const Vector3 & v1, 
-	const Vector3 & v2 ) throw()
+	const Vector3 & v2 )
 {
 
    	for ( MatrixIndex i = 0; i < Vector3::Dimensions; i++ )
@@ -265,16 +284,20 @@ bool Ceylan::Maths::Linear::operator == ( const Vector3 & v1,
 
 }
 
+		
 			
 bool Ceylan::Maths::Linear::operator != ( const Vector3 & v1, 
-	const Vector3 & v2 ) throw() 
+	const Vector3 & v2 ) 
 {
+
 	return ( ! ( v1 == v2 ) ) ;
+	
 }
 
 
+
 Vector3 Ceylan::Maths::Linear::operator + ( const Vector3 & v1 , 
-	const Vector3 & v2 ) throw()
+	const Vector3 & v2 )
 {
 
 	Vector3 result ;
@@ -289,8 +312,9 @@ Vector3 Ceylan::Maths::Linear::operator + ( const Vector3 & v1 ,
 }
 
 
+
 Vector3 Ceylan::Maths::Linear::operator - ( const Vector3 & v1 , 
-	const Vector3 & v2 ) throw()
+	const Vector3 & v2 )
 {
 
 	Vector3 result ;
@@ -305,8 +329,9 @@ Vector3 Ceylan::Maths::Linear::operator - ( const Vector3 & v1 ,
 }
 
 
+
 Vector3 Ceylan::Maths::Linear::operator * ( Real lambda, 
-	const Vector3 & v ) throw()
+	const Vector3 & v )
 {
 
 	Vector3 result ;
@@ -321,8 +346,9 @@ Vector3 Ceylan::Maths::Linear::operator * ( Real lambda,
 }
 
 
+
 Vector3 Ceylan::Maths::Linear::operator * ( const Matrix3 & m, 
-	const Vector3 & v ) throw()
+	const Vector3 & v )
 {
 
 	Vector3 result ;
@@ -336,8 +362,9 @@ Vector3 Ceylan::Maths::Linear::operator * ( const Matrix3 & m,
 }
 
 
+
 Vector3 Ceylan::Maths::Linear::operator ^ ( const Vector3 & v1 , 
-	const Vector3 & v2 ) throw()
+	const Vector3 & v2 )
 {
 
 	// Meaningless if Dimension is not 3.
@@ -353,14 +380,18 @@ Vector3 Ceylan::Maths::Linear::operator ^ ( const Vector3 & v1 ,
 }
 
 
-Real Ceylan::Maths::Linear::operator ~ ( const Vector3 & v ) throw()
+
+Real Ceylan::Maths::Linear::operator ~ ( const Vector3 & v )
 {
+
 	return v.magnitude() ;
+	
 }
 
 
+
 Real Ceylan::Maths::Linear::operator | ( const Vector3 & v1 , 
-	const Vector3 & v2 ) throw()
+	const Vector3 & v2 )
 {
 
 	Real result = 0 ;

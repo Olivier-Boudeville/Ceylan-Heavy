@@ -38,12 +38,14 @@ using namespace Ceylan ;
 using namespace Ceylan::Log ;
 
 
-Lockable::LockException::LockException( const string & reason ) 
-		throw() :
+
+
+Lockable::LockException::LockException( const string & reason ) :
 	Ceylan::Exception( reason ) 
 {
 
 }
+
 
 
 Lockable::LockException::~LockException() throw()
@@ -53,17 +55,19 @@ Lockable::LockException::~LockException() throw()
 
 
 
+
 // Public section.
 
 
-Lockable::Lockable() throw() : 
+Lockable::Lockable() : 
 	_locked( false )  
 {
 
 }
 
 
-Lockable::~Lockable() throw() 
+
+Lockable::~Lockable() throw()
 {
 
 	try 
@@ -72,7 +76,7 @@ Lockable::~Lockable() throw()
 		if ( mustBeLocked() && _locked )
 		{
 	
-			LogPlug::warning( "Ceylan Lockable destructor : "
+			LogPlug::warning( "Ceylan Lockable destructor: "
 				"Lockable instance was still holding a lock at "
 				"deallocation, this lock has been released.") ;
 			
@@ -83,22 +87,25 @@ Lockable::~Lockable() throw()
 	catch( const Lockable::LockException & e )
 	{
 
-		LogPlug::error( "Ceylan Lockable destructor : "
+		LogPlug::error( "Ceylan Lockable destructor: "
 			"unable to unlock Lockable whereas "
-			"it seemed to be locked : " + e.toString() ) ;	
+			"it seemed to be locked: " + e.toString() ) ;	
 	}
 
 }
 
 
 
-bool Lockable::mustBeLocked() const throw() 
+bool Lockable::mustBeLocked() const 
 {
+
 	return true ;
+	
 }
 
 
-void Lockable::lock() throw( LockException )
+
+void Lockable::lock()
 {
 
 	if ( mustBeLocked() )
@@ -117,13 +124,13 @@ void Lockable::lock() throw( LockException )
 		
 	}
 	
-	// else : does not need to be locked, do nothing.
+	// else: does not need to be locked, do nothing.
 	
 }
 
 
 
-void Lockable::unlock() throw( LockException )
+void Lockable::unlock()
 {
 
 	if ( mustBeLocked() )
@@ -141,25 +148,29 @@ void Lockable::unlock() throw( LockException )
 		
 	}	
 	
-	// else : does not need to be locked (hence unlocked), do nothing.
+	// else: does not need to be locked (hence unlocked), do nothing.
 	
 }
 
 
-const string Lockable::toString( Ceylan::VerbosityLevels level ) const throw()
+
+const string Lockable::toString( Ceylan::VerbosityLevels level ) const
 {
+
 	if ( _locked )
 		return "Lockable currently locked" ;
 	else
-		return "Lockable currently not locked" ;		
+		return "Lockable currently not locked" ;	
+			
 }
+
 
 
 
 // Protected section.
 
 
-void Lockable::postLock() throw( LockException ) 
+void Lockable::postLock() 
 {
 
 	// Override me.
@@ -167,10 +178,12 @@ void Lockable::postLock() throw( LockException )
 }
 
 
-void Lockable::preUnlock() throw( LockException ) 
+
+void Lockable::preUnlock() 
 {
 
 	// Override me.
 
 }
+
 

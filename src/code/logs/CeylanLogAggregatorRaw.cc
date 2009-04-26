@@ -52,13 +52,13 @@ LogAggregatorRaw::LogAggregatorRaw(
 		const string & logFilename,
 		bool immediateWrite,
 		bool useGlobalLevelOfDetail,
-		bool beSmart ) 
-	throw( LogAggregatorException )	: 
-		LogAggregator( beSmart, useGlobalLevelOfDetail ),
-		_logFilename( logFilename ),
-		_outputFile( 0 ),
-		_immediateWrite( immediateWrite )
+		bool beSmart ) : 
+	LogAggregator( beSmart, useGlobalLevelOfDetail ),
+	_logFilename( logFilename ),
+	_outputFile( 0 ),
+	_immediateWrite( immediateWrite )
 {
+
 
 	try 
 	{
@@ -81,8 +81,10 @@ LogAggregatorRaw::LogAggregatorRaw(
 	} 
 	catch( const System::FileCreationFailed & e )
 	{
+	
 		throw LogAggregatorException( "LogAggregatorRaw constructor: "
 			"could not create LogAggregatorRaw output file: " + e.toString() ) ;
+
 	}	
 
 }
@@ -111,7 +113,7 @@ LogAggregatorRaw::~LogAggregatorRaw() throw()
 				"LogAggregatorRaw destructor: "
 				<< e.toString() << "." << std::endl ;
 				
-			// Never throw an exception from a destructor !		
+			// Never throw an exception from a destructor!		
 		}	
 		
 	}
@@ -124,7 +126,7 @@ LogAggregatorRaw::~LogAggregatorRaw() throw()
 
 
 
-void LogAggregatorRaw::aggregate() throw( LogAggregatorException ) 
+void LogAggregatorRaw::aggregate()  
 {
 
 	std::cout << "Logs can be inspected in file " 
@@ -156,7 +158,7 @@ void LogAggregatorRaw::aggregate() throw( LogAggregatorException )
 
 
 
-void LogAggregatorRaw::store( LogMessage & message ) throw( LogException )
+void LogAggregatorRaw::store( LogMessage & message )
 {
 
 	CEYLAN_LOG( "Storing a new message " + message.toString() ) ;
@@ -179,8 +181,8 @@ void LogAggregatorRaw::store( LogMessage & message ) throw( LogException )
 }
 	
 
-void LogAggregatorRaw::write( const LogChannel & channel ) 
-	const throw( LogException )
+
+void LogAggregatorRaw::write( const LogChannel & channel ) const
 {
 
 	CEYLAN_LOG( "Writing on disk channel " + channel.toString() ) ;
@@ -203,8 +205,8 @@ void LogAggregatorRaw::write( const LogChannel & channel )
 }
 
 
+
 void LogAggregatorRaw::write( const LogMessage & message ) const
-	throw( LogException )
 {
 
 	CEYLAN_LOG( "Writing on disk message " + message.toString() ) ;
@@ -228,8 +230,8 @@ void LogAggregatorRaw::write( const LogMessage & message ) const
 }
 
 
-const string LogAggregatorRaw::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+
+const string LogAggregatorRaw::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	return string( "This is LogAggregatorRaw in " )

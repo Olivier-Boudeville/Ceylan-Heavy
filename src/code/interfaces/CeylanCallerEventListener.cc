@@ -42,18 +42,20 @@ using namespace Ceylan::Log ;
 
 
 
-CallerEventListener::CallerEventListener() throw() :
+CallerEventListener::CallerEventListener() :
 	EventListener()
 {
 
 }
 
 
-CallerEventListener::CallerEventListener( EventSource & source ) throw() :
+
+CallerEventListener::CallerEventListener( EventSource & source ) :
 	EventListener( source )
 {
 
 }
+
 
 
 CallerEventListener::~CallerEventListener() throw() 
@@ -63,8 +65,10 @@ CallerEventListener::~CallerEventListener() throw()
 
 
 const string CallerEventListener::toString( Ceylan::VerbosityLevels level )
-	const throw() 
+	const
 {
+
 	return "Caller " + EventListener::toString( level ) ;
+	
 }
 

@@ -39,6 +39,7 @@
 namespace Ceylan
 {
 
+
 	namespace Maths
 	{
 	
@@ -75,10 +76,12 @@ namespace Ceylan
 			
 			
 					/// Basic constructor.
-					ProbabilityFunction() throw() ;
+					ProbabilityFunction() ;
+				
 				
 					/// Basic virtual destructor;
 					virtual ~ProbabilityFunction() throw() ;
+				
 				
 				
 					/**
@@ -87,7 +90,8 @@ namespace Ceylan
 					 *
 					 */
 					virtual Probability operator() ( Sample aSample ) 
-						const throw() = 0 ;
+						const = 0 ;
+
 
 
 					/**
@@ -103,11 +107,12 @@ namespace Ceylan
 					 *
 					 */
             		virtual const std::string toString( 
-						VerbosityLevels level = high ) const throw() = 0 ;
+						VerbosityLevels level = high ) const = 0 ;
 						
 						
 									
  			} ;			
+			
 							
 		}
 		
@@ -116,4 +121,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_PROBABILITY_H_
+

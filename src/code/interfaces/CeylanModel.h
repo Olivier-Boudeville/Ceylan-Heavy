@@ -39,6 +39,7 @@ namespace Ceylan
 {
 
 
+
 	/**
 	 * Specialized event exchanged through Model-View-Controller (MVC)
 	 * framework.
@@ -60,7 +61,8 @@ namespace Ceylan
 		
 		
 			/// Source should be either a Controller or a Model.
-			explicit MVCEvent( EventSource & source ) throw() ;
+			explicit MVCEvent( EventSource & source ) ;
+			
 			
 			/// Virtual destructor.
 			virtual ~MVCEvent() throw() ;
@@ -78,7 +80,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			MVCEvent( const MVCEvent & source ) throw() ;
+			MVCEvent( const MVCEvent & source ) ;
 			
 			
 			/**
@@ -90,14 +92,16 @@ namespace Ceylan
 			 * 
 			 *
 			 */			 
-			MVCEvent & operator = ( const MVCEvent & source ) throw() ;
+			MVCEvent & operator = ( const MVCEvent & source ) ;
 				
 	} ;
 	
 	
 
+
 	// Models may have views.
 	class View ;
+
 
 	// Models may listen to controllers.	
 	class Controller ;
@@ -137,11 +141,12 @@ namespace Ceylan
 					
 					
 			/// Basic constructor.
-			explicit Model() throw() ;
+			explicit Model() ;
 					
 									
 			/// Basic virtual destructor.
 			virtual ~Model() throw() ;
+			
 			
 			
 			/**
@@ -150,7 +155,8 @@ namespace Ceylan
 			 * @throw EventException if view was already registered.
 			 *
 			 */
-			virtual void addView( View & newView ) throw( EventException ) ;
+			virtual void addView( View & newView ) ;
+			
 			
 			
 			/**
@@ -159,7 +165,8 @@ namespace Ceylan
 			 * @throw EventException if view was not already registered.
 			 *
 			 */
-			virtual void removeView( View & view ) throw( EventException ) ;
+			virtual void removeView( View & view ) ;
+			
 			
 			
 			/**
@@ -172,7 +179,7 @@ namespace Ceylan
 			 * by this call.
 			 *
 			 */
-			virtual void removeAllViews() throw() ;
+			virtual void removeAllViews() ;
 			
 			
 			
@@ -183,8 +190,8 @@ namespace Ceylan
 			 * @throw EventException if model was already registered.
 			 *
 			 */
-			virtual void subscribeToController( Controller & newController ) 
-				throw( EventException ) ;
+			virtual void subscribeToController( Controller & newController ) ;
+			
 			
 			
 			/**
@@ -193,15 +200,15 @@ namespace Ceylan
 			 * @throw EventException if model was not already registered.
 			 *
 			 */
-			virtual void unsubscribeFromController( Controller & controller ) 
-				throw( EventException ) ;
+			virtual void unsubscribeFromController( Controller & controller ) ;
+			
 			
 			
 			/**
 			 * Unregisters all registered controllers.
 			 *
 			 */
-			virtual void unsubscribeFromAllControllers() throw() ;
+			virtual void unsubscribeFromAllControllers() ;
 			
 
 				
@@ -216,8 +223,7 @@ namespace Ceylan
              *
              */
 			virtual const std::string toString( 
-				Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+				Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 					
 					
 		
@@ -231,9 +237,9 @@ namespace Ceylan
 			 * will take care of its life cycle.
 			 *
 			 */
-			 virtual void notifyAllViews( const MVCEvent & newMVCEvent ) 
-			 	throw() ;
+			 virtual void notifyAllViews( const MVCEvent & newMVCEvent ) ;
 		
+
 
 
 		private:
@@ -247,7 +253,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 *
 			 */			 
-			Model( const Model & source ) throw() ;
+			Model( const Model & source ) ;
 			
 			
 			/**
@@ -258,7 +264,7 @@ namespace Ceylan
 			 * operator is called, implicitly or not.
 			 * 
 			 */			 
-			Model & operator = ( const Model & source ) throw() ;
+			Model & operator = ( const Model & source ) ;
 			
 					 			
     } ;	

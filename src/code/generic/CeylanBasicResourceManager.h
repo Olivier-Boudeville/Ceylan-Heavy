@@ -43,13 +43,14 @@
 #include <iostream>                 // for ostringstream
 
 
+
 namespace Ceylan
 {
 
 
 	
 	/**
-	 * Manages basically a set of Resource instances : the basic Resource
+	 * Manages basically a set of Resource instances: the basic Resource
 	 * manager can store and afterwards retrieve resources on behalf of the
 	 * caller, which will be able to associate a key, whose type is
 	 * user-defined, to each resource.
@@ -62,13 +63,13 @@ namespace Ceylan
 	 * management of static user resources, such as sounds, textures, maps, 
 	 * geometries, etc.
 	 *
-	 * A Resource manager handles the life cycle of its resources : it takes
+	 * A Resource manager handles the life cycle of its resources: it takes
 	 * their ownership, which means it will delete them when itself deleted.
 	 * From the user's point of view, giving a Resource to the manager thanks
 	 * to the 'takeOwnershipOf' method is an alternative to deleting the
 	 * resource. By no means should the caller delete a managed Resource.
 	 * Modifying them after having given them this way to the manager is not
-	 * recommended : the caller should forget any pointer or reference to the
+	 * recommended: the caller should forget any pointer or reference to the
 	 * Resources it sent to the manager, so that these resources remain
 	 * unaltered and can be directly retrieved 'as are' by various cache users.
 	 *
@@ -79,7 +80,7 @@ namespace Ceylan
 	 *
 	 * The basic Resource manager has no quota to respect, it will store all
 	 * given Resources regardless of the resulting size in memory, and will 
-	 * make them available (as const resources), as long as the manager exists :
+	 * make them available (as const resources), as long as the manager exists:
 	 * a basic manager will never forget any resource while still alive.
 	 *
 	 * There are different use cases for such a manager, depending on what is 
@@ -87,7 +88,7 @@ namespace Ceylan
 	 * for cached resources to be cloned or not.
 	 *
 	 * If we take the example of a font rendering system, then this type of
-	 * cache could be useful when the blitting of a glyph is requested : first
+	 * cache could be useful when the blitting of a glyph is requested: first
 	 * the specified glyph is rendered into a new surface, then it is blitted
 	 * on, say, the screen. Instead of deallocating the surface after use, the
 	 * blit function could pass it to an appropriate resource manager, which
@@ -122,12 +123,14 @@ namespace Ceylan
 			 * too much.
 			 *
 			 */
-			explicit BasicResourceManager() throw() ;
+			explicit BasicResourceManager() ;
+  
   
  
  			/// Virtual destructor, deletes all resources still in cache.
  			virtual ~BasicResourceManager() throw() ;
 	
+		
 		
 			/**
 			 * Puts specified resource in cache, associated with specified key,
@@ -153,7 +156,8 @@ namespace Ceylan
 			 *
 			 */
 			virtual void takeOwnershipOf( const Key & key, 
-				const Resource & resource ) throw( ResourceManagerException ) ;
+				const Resource & resource ) ;
+			
 			
 			
 			/**
@@ -164,8 +168,8 @@ namespace Ceylan
 			 * associated with a key.
 			 *
 			 */
-			virtual bool isKeyAlreadyAssociated( const Key & key ) 
-				const throw() ;
+			virtual bool isKeyAlreadyAssociated( const Key & key ) const ;
+			
 			
 			
 			/**
@@ -186,8 +190,9 @@ namespace Ceylan
 			 * Maybe the volatile keyword should be used for such attributes.
 			 *
 			 */
-			 virtual const Resource * get( const Key & key ) throw() ;
+			 virtual const Resource * get( const Key & key ) ;
 			 						
+			 
 			 
 			/**
 			 * Removes and deletes all resources currently in cache.
@@ -195,8 +200,9 @@ namespace Ceylan
 			 * Cache statistics are not modified.
 			 *
 			 */
-			virtual void flush() throw() ;
+			virtual void flush() ;
 						
+			
 			
 			/**
 			 * Returns a user-friendly description of the state of this object.
@@ -209,8 +215,9 @@ namespace Ceylan
 			 *
 			 */
 			 virtual const std::string toString( 
-			 	Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
+			 	Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
+			
 			
 			
 		protected:
@@ -243,8 +250,7 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			BasicResourceManager( const BasicResourceManager & source ) 
-				throw() ;
+			BasicResourceManager( const BasicResourceManager & source ) ;
 			
 			
 			/**
@@ -256,23 +262,25 @@ namespace Ceylan
 			 * 
 			 */			 
 			BasicResourceManager & operator = ( 
-				const BasicResourceManager & source ) throw() ;
+				const BasicResourceManager & source ) ;
 			
 			
 	} ;
 
 
 
-	// Public section : implementation.
+
+	// Public section: implementation.
 
 
 	template <typename Key>
-	BasicResourceManager<Key>::BasicResourceManager() throw() :
+	BasicResourceManager<Key>::BasicResourceManager() :
 		ResourceManager<Key>(),
 		_entries()
 	{
 	
 	}	
+
 
 				
 	template <typename Key>
@@ -288,14 +296,14 @@ namespace Ceylan
 		
 	}	
 			
+			
 		
 	template <typename Key>
 	void BasicResourceManager<Key>::takeOwnershipOf( const Key & key, 
-			const Resource & resource ) 
-		throw( ResourceManagerException )	
+		const Resource & resource ) 	
 	{
 
-		// Look-up any previous entry :
+		// Look-up any previous entry:
 		typename std::map<Key, const Resource *>::const_iterator it =
 			_entries.find( key ) ;
 			
@@ -303,13 +311,13 @@ namespace Ceylan
 		{
 			/*
 			 * Key type not known, using streams to get as much information as
-			 * possible :
+			 * possible:
 			 *
 			 */
 			std::ostringstream os ;
 			os << key ;
 			throw ResourceManagerException(
-				"BasicResourceManager<Key>::takeOwnershipOf : key '"
+				"BasicResourceManager<Key>::takeOwnershipOf: key '"
 				+ os.str() + "' already associated with ressource '" 
 				+ resource.toString() + "'." ) ;
 		}	
@@ -319,19 +327,21 @@ namespace Ceylan
 	}
 
 
+
 	template <typename Key>
 	bool BasicResourceManager<Key>::isKeyAlreadyAssociated( const Key & key )
-		const throw()
+		const
 	{
 
-		// Look-up any previous entry :
+		// Look-up any previous entry:
 		return ( _entries.find( key ) != _entries.end() ) ;
 
 	}
 	
 
+
 	template <typename Key>
-	const Resource * BasicResourceManager<Key>::get( const Key & key ) throw()
+	const Resource * BasicResourceManager<Key>::get( const Key & key )
 	{
 	
 		typename std::map<Key, const Resource *>::const_iterator it =
@@ -351,8 +361,9 @@ namespace Ceylan
 	}
 
 	
+	
 	template <typename Key>
-	void BasicResourceManager<Key>::flush() throw()
+	void BasicResourceManager<Key>::flush()
 	{
 	
 		for ( typename std::map<Key, const Resource *>::const_iterator it =
@@ -365,10 +376,11 @@ namespace Ceylan
 		
 	}
 	
+	
 
 	template <typename Key>
 	const std::string BasicResourceManager<Key>::toString( 
-		VerbosityLevels level ) const throw()
+		VerbosityLevels level ) const
 	{
 		
 		std::string res = "Basic Resource manager currently managing " ;
@@ -405,7 +417,7 @@ namespace Ceylan
 		if ( resourceCount == 0 )
 			return res ;
 			
-		res += ". Displaying current cached entrie(s) : " ;
+		res += ". Displaying current cached entrie(s): " ;
 		
 		Ceylan::Uint32 count = 0 ;
 		std::list<std::string> entries ;
@@ -428,3 +440,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_BASIC_RESOURCE_MANAGER_H_
+

@@ -40,6 +40,7 @@ namespace Ceylan
 {
 
 
+
     /**
      * Interface that every Displayable able to show a textual representation
 	 * of itself should implement. 
@@ -71,7 +72,7 @@ namespace Ceylan
 			
 			
 			/// Do-nothing virtual destructor.
-			virtual ~TextDisplayable()
+			virtual ~TextDisplayable() throw()
 			{
 			
 			}
@@ -113,6 +114,7 @@ namespace Ceylan
 				std::list<TextDisplayable*> displayables,
 				Ceylan::VerbosityLevels level = Ceylan::high ) ;
 				
+				
 			
 			/**
 			 * Defines what text output formats for TextDisplayable instances
@@ -122,12 +124,14 @@ namespace Ceylan
 			enum TextOutputFormat { rawText, html } ;
 
 
+
 			/**
 			 * Returns the current overall text format to be used by
 			 * TextDisplayable instances.
 			 *
 			 */		
 			static TextOutputFormat GetOutputFormat() ;
+			
 			
 			
 			/**
@@ -182,6 +186,7 @@ namespace Ceylan
 
 }
 
+
 	
 /**
  * Operator used to display easily a TextDisplayable into an output stream.
@@ -194,7 +199,6 @@ namespace Ceylan
 std::ostream & operator << ( std::ostream & os, 
 	const Ceylan::TextDisplayable & textDisplayable ) ;
 	
-
 
 
 #endif // CEYLAN_TEXT_DISPLAYABLE_H_

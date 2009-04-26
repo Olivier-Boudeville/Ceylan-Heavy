@@ -38,7 +38,7 @@ using namespace Ceylan ;
 
 
 LibtoolVersion::LibtoolVersion( VersionNumber current, 
-		VersionNumber revision, VersionNumber age ) throw( VersionException ):
+		VersionNumber revision, VersionNumber age ) :
 	Version( current, revision, age )
 {
 
@@ -48,8 +48,7 @@ LibtoolVersion::LibtoolVersion( VersionNumber current,
 
 
 
-LibtoolVersion::LibtoolVersion( const std::string & versionText ) 
-		throw( VersionException ):
+LibtoolVersion::LibtoolVersion( const std::string & versionText ) :
 	Version( versionText )
 {
 
@@ -66,7 +65,7 @@ LibtoolVersion::~LibtoolVersion() throw()
 
 
 
-Version::VersionNumber LibtoolVersion::getCurrentInterfaceNumber() const throw()
+Version::VersionNumber LibtoolVersion::getCurrentInterfaceNumber() const
 {
 
 	return _major ;
@@ -76,7 +75,6 @@ Version::VersionNumber LibtoolVersion::getCurrentInterfaceNumber() const throw()
 
 
 void LibtoolVersion::setCurrentInterfaceNumber( VersionNumber newCurrent )
-	throw()
 {
 
 	_major = newCurrent ;
@@ -85,8 +83,7 @@ void LibtoolVersion::setCurrentInterfaceNumber( VersionNumber newCurrent )
 
 
 
-Version::VersionNumber LibtoolVersion::getRevisionInterfaceNumber() 
-	const throw()
+Version::VersionNumber LibtoolVersion::getRevisionInterfaceNumber() const
 {
 
 	return _minor ;
@@ -96,7 +93,6 @@ Version::VersionNumber LibtoolVersion::getRevisionInterfaceNumber()
 
 
 void LibtoolVersion::setRevisionInterfaceNumber( VersionNumber newRevision )
-	throw()
 {
 
 	_minor = newRevision ;
@@ -105,7 +101,7 @@ void LibtoolVersion::setRevisionInterfaceNumber( VersionNumber newRevision )
 
 
 
-Version::VersionNumber LibtoolVersion::getInterfaceAge() const throw()
+Version::VersionNumber LibtoolVersion::getInterfaceAge() const
 {
 
 	return _release ;
@@ -114,7 +110,7 @@ Version::VersionNumber LibtoolVersion::getInterfaceAge() const throw()
 
 
 
-void LibtoolVersion::setInterfaceAge( VersionNumber newAge ) throw()
+void LibtoolVersion::setInterfaceAge( VersionNumber newAge )
 {
 
 	_release = newAge ;
@@ -123,8 +119,7 @@ void LibtoolVersion::setInterfaceAge( VersionNumber newAge ) throw()
 
 
 
-bool LibtoolVersion::isCompatibleWith( const Version & expectedVersion ) const
-	throw( VersionException )
+bool LibtoolVersion::isCompatibleWith( const Version & expectedVersion ) const	
 {
   	
  	if ( ! canBeComparedWith( expectedVersion ) )
@@ -169,9 +164,8 @@ bool LibtoolVersion::isCompatibleWith( const Version & expectedVersion ) const
 
 
 
-const string LibtoolVersion::toString( VerbosityLevels level ) const throw()
+const string LibtoolVersion::toString( VerbosityLevels level ) const
 {
-
 
 	string rawVersion = Version::toString( low ) ;
 			
@@ -191,7 +185,7 @@ const string LibtoolVersion::toString( VerbosityLevels level ) const throw()
 
 
 
-bool LibtoolVersion::isUsualVersionSchemeCompliant() const throw()
+bool LibtoolVersion::isUsualVersionSchemeCompliant() const
 {
 
 	return false ;
@@ -200,7 +194,7 @@ bool LibtoolVersion::isUsualVersionSchemeCompliant() const throw()
 
 
 
-bool LibtoolVersion::canBeComparedWith( const Version & version ) const throw()
+bool LibtoolVersion::canBeComparedWith( const Version & version ) const
 {	
 	
 	// Only Libtool versions can be compared with Libtool versions:
@@ -211,7 +205,7 @@ bool LibtoolVersion::canBeComparedWith( const Version & version ) const throw()
 
 
 
-void LibtoolVersion::checkConsistency() const throw( VersionException )
+void LibtoolVersion::checkConsistency() const 
 {
 
 	/*

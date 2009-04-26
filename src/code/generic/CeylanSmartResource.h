@@ -38,7 +38,6 @@ namespace Ceylan
 {
 
 
-
 	/**
 	 * Smart Resources are advanced resources, able to determine their size 
 	 * and clone themselves at will, for example so that they can be cached
@@ -60,11 +59,13 @@ namespace Ceylan
 		public Resource, public Measurable, public Clonable
 	{
 	
+	
 		public:
 		
 			
 			/// Creates a new resource.
-			SmartResource() throw() ;
+			SmartResource() ;
+			
 			
 			/// Virtual destructor.
 			virtual ~SmartResource() throw() ;
@@ -81,7 +82,7 @@ namespace Ceylan
              *
              */
 			virtual const std::string toString( 
-				Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
+				Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 
 			
@@ -96,7 +97,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			SmartResource( const SmartResource & source ) throw() ;
+			SmartResource( const SmartResource & source ) ;
 			
 			
 			/**
@@ -107,8 +108,7 @@ namespace Ceylan
 			 * 
 			 *
 			 */			 
-			SmartResource & operator = ( const SmartResource & source ) 
-				throw() ;
+			SmartResource & operator = ( const SmartResource & source ) ;
 				
 			
 	} ;
@@ -116,4 +116,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_SMART_RESOURCE_H_
+

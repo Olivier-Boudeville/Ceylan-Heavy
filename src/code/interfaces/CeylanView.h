@@ -38,11 +38,14 @@ namespace Ceylan
 {
 
 
+
 	// Forward declaration.
 	class MVCEvent ;
 	
+	
 	// Forward declaration.	
 	class Model ;
+
 
 
     /**
@@ -71,13 +74,14 @@ namespace Ceylan
 
 
         public:
-					
+				
 							
 			/**
 			 * Constructs a view, not linked to any model.
 			 *
 			 */
-			View() throw() ;
+			View() ;
+				
 				
 													
 			/**
@@ -87,11 +91,13 @@ namespace Ceylan
 			 * listener not always deals with 'const' sources.
 			 *
 			 */
-			explicit View( Model & model ) throw() ;
+			explicit View( Model & model ) ;
+					
 					
 									
 			/// Basic virtual destructor.
 			virtual ~View() throw() ;
+			
 			
 			
 			/**
@@ -99,7 +105,8 @@ namespace Ceylan
 			 * it is linked to.
 			 *
 			 */
-			virtual void renderModel() throw() = 0 ;
+			virtual void renderModel() = 0 ;
+			
 			
 				
             /**
@@ -113,7 +120,8 @@ namespace Ceylan
              *
              */
 			virtual const std::string toString( 
-				Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
+				Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+				
 				
 		
 		protected:
@@ -129,7 +137,7 @@ namespace Ceylan
 			 * registered by this view.
 			 *
 			 */
-			virtual Model &	getModel() throw( EventException ) ;		
+			virtual Model &	getModel() ;		
 		
 		
 			/*
@@ -138,6 +146,7 @@ namespace Ceylan
 			 * inherited from the EventListener mother class.
 			 *
 			 */
+
 
 
 		private:
@@ -150,7 +159,7 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			View( const View & source ) throw() ;
+			View( const View & source ) ;
 			
 			
 			/**
@@ -160,7 +169,7 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			View & operator = ( const View & source ) throw() ;
+			View & operator = ( const View & source ) ;
 
 			
 					 			

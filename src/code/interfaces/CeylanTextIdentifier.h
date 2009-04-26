@@ -38,6 +38,7 @@ namespace Ceylan
 {
 
 
+
     /**
 	 * Text-only identifiers.
 	 *
@@ -52,7 +53,8 @@ namespace Ceylan
 
 
             /// Basic void constructor.
-            explicit TextIdentifier() throw() ;
+            TextIdentifier() ;
+
 
 
             /**
@@ -60,11 +62,13 @@ namespace Ceylan
 			 * string.
 			 *
 			 */
-            explicit TextIdentifier( const std::string & id ) throw() ;
+            explicit TextIdentifier( const std::string & id ) ;
 			
 						
-           /// Basic destructor, to ensure it remains virtual.
+						
+            /// Basic destructor, to ensure it remains virtual.
             virtual ~TextIdentifier() throw() ;
+		
 			
 			
             /**
@@ -78,11 +82,11 @@ namespace Ceylan
              *
              */
             virtual const std::string toString( 
-				Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
+				Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 
-			/// Compares to text identifiers.
-			bool operator==( const TextIdentifier & otherIdentifier ) throw() ;
+			/// Compares two text identifiers.
+			bool operator==( const TextIdentifier & otherIdentifier ) ;
 			
 			
 			
@@ -104,7 +108,7 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			TextIdentifier( const TextIdentifier & source ) throw() ;
+			TextIdentifier( const TextIdentifier & source ) ;
 			
 			
 			/**
@@ -114,8 +118,7 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			TextIdentifier & operator = ( const TextIdentifier & source )
-				throw() ;
+			TextIdentifier & operator = ( const TextIdentifier & source ) ;
 				
 				
     } ;
@@ -123,4 +126,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_TEXT_IDENTIFIER_H_
+

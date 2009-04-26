@@ -48,10 +48,9 @@ namespace Ceylan
 	
 		public:
 		
-			explicit LoadableException( const std::string & message ) throw() ;
+			explicit LoadableException( const std::string & message ) ;
 			
-			virtual ~LoadableException() throw() ;
-			
+			virtual ~LoadableException() throw() ;	
 	
 	} ;
 	
@@ -104,13 +103,13 @@ namespace Ceylan
 			 * @throw LoadableException if the operation failed.
 			 *
 			 */
-			explicit Loadable( const std::string & contentFilePath ) 
-				throw( LoadableException ) ;
+			explicit Loadable( const std::string & contentFilePath ) ;
 			
 			
 			
 			/// Virtual destructor.
 			virtual ~Loadable() throw() ;
+			
 			
 			
             /**
@@ -122,7 +121,8 @@ namespace Ceylan
 			 * @throw LoadableException whenever the loading fails.
 			 *
 			 */
-            virtual bool load() throw( LoadableException ) = 0 ;
+            virtual bool load() = 0 ;
+		
 		
 		
             /**
@@ -134,14 +134,15 @@ namespace Ceylan
 			 * @throw LoadableException whenever the unloading fails.
 			 *
 			 */
-            virtual bool unload() throw( LoadableException ) = 0 ;
+            virtual bool unload() = 0 ;
 		
+
 
 			/**
 			 * Returns the path to the associated content file.
 			 *
 			 */
-			virtual const std::string & getContentPath() const throw() ;
+			virtual const std::string & getContentPath() const ;
 
 
 
@@ -163,7 +164,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			Loadable( const Loadable & source ) throw() ;
+			Loadable( const Loadable & source ) ;
 			
 			
 			/**
@@ -173,7 +174,7 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			Loadable & operator = ( const Loadable & source ) throw() ;
+			Loadable & operator = ( const Loadable & source ) ;
 			
 
     } ;
@@ -201,14 +202,17 @@ namespace Ceylan
 		public:
 		
 		
+		
 			/**
 			 * Creates a new loadable instance, whose content file is designated
 			 * by the specified filename, but does not load anything.
 			 *
+			 * @throw LoadableException if the creation failed.
+			 *
 			 */
-			explicit LoadableWithContent( const std::string & contentFilePath ) 
-				throw( LoadableException ) ;
+			explicit LoadableWithContent( const std::string & contentFilePath );
 				
+		
 				
 			/**
 			 * Virtual destructor.
@@ -236,7 +240,8 @@ namespace Ceylan
 			 * Ceylan::Byte pointer.
 			 *
 			 */
-            virtual bool load() throw( LoadableException ) = 0 ;
+            virtual bool load() = 0 ;
+		
 		
 		
             /**
@@ -251,7 +256,8 @@ namespace Ceylan
 			 * content can be specific to the content.
 			 *
 			 */
-            virtual bool unload() throw( LoadableException ) = 0 ;
+            virtual bool unload() = 0 ;
+
 
 
             /**
@@ -269,8 +275,7 @@ namespace Ceylan
 			 * @throw LoadableException whenever the reloading fails.
 			 *
 			 */
-            virtual bool reload( bool forceLoad = false ) 
-				throw( LoadableException ) ;
+            virtual bool reload( bool forceLoad = false ) ;
 
 
 			
@@ -278,7 +283,8 @@ namespace Ceylan
 			 * Returns true iff the content is already loaded.
 			 *
 			 */
-			virtual bool hasContent() const throw() ;
+			virtual bool hasContent() const ;
+			
 			
 			
 			/**
@@ -291,7 +297,8 @@ namespace Ceylan
 			 * @note Ownership of the content is kept by this instance.
 			 *
 			 */
-			virtual Content & getExistingContent() throw( LoadableException ) ;
+			virtual Content & getExistingContent() ;
+			
 			
 			
 			/**
@@ -304,8 +311,8 @@ namespace Ceylan
 			 * @note Ownership of the content is kept by this instance.
 			 *
 			 */
-			virtual const Content & getExistingContentAsConst() const 
-				throw( LoadableException ) ;
+			virtual const Content & getExistingContentAsConst() const ;
+			
 			
 			
 			/**
@@ -317,7 +324,8 @@ namespace Ceylan
 			 * @note Ownership of the content is kept by this instance.
 			 *
 			 */
-			virtual Content & getContent() throw( LoadableException ) ;
+			virtual Content & getContent() ;
+			
 			
 			
 			/**
@@ -335,8 +343,7 @@ namespace Ceylan
 			 * @see getExistingContentAsConst
 			 *
 			 */
-			virtual const Content & getContentAsConst() 
-				throw( LoadableException ) ;
+			virtual const Content & getContentAsConst() ;
 			
 			
 
@@ -358,7 +365,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			LoadableWithContent( const LoadableWithContent & source ) throw() ;
+			LoadableWithContent( const LoadableWithContent & source ) ;
 			
 			
 			/**
@@ -369,10 +376,11 @@ namespace Ceylan
 			 * 
 			 */			 
 			LoadableWithContent & operator = ( 
-				const LoadableWithContent & source ) throw() ;
+				const LoadableWithContent & source ) ;
 
     } ;
 			
+
 
 
 	// Implementation of the LoadableWithContent template.
@@ -380,8 +388,7 @@ namespace Ceylan
 	
 	template <typename Content>
 	LoadableWithContent<Content>::LoadableWithContent( 
-		const std::string & contentFilePath ) 
-			throw( LoadableException ):
+			const std::string & contentFilePath ) :
 		Loadable( contentFilePath ),
 		_content( 0 )		 				
 	{
@@ -394,6 +401,7 @@ namespace Ceylan
 			load() ;
 		
 		 */	
+		 
 	}
 	
 	
@@ -424,7 +432,6 @@ namespace Ceylan
 	
 	template <typename Content>
 	bool LoadableWithContent<Content>::reload( bool forceLoad ) 
-		throw( LoadableException )	
 	{
 	
 		if ( hasContent() )
@@ -453,7 +460,7 @@ namespace Ceylan
 	
 	
 	template <typename Content>
-	bool LoadableWithContent<Content>::hasContent() const throw()
+	bool LoadableWithContent<Content>::hasContent() const
 	{
 	
 		return ( _content != 0 ) ;
@@ -464,7 +471,6 @@ namespace Ceylan
 	
 	template <typename Content>
 	Content & LoadableWithContent<Content>::getExistingContent() 
-		throw( LoadableException ) 
 	{
 	
 		if ( ! hasContent() )
@@ -476,10 +482,11 @@ namespace Ceylan
 			
 	}
 		
+	
 		
 	template <typename Content>
 	const Content & LoadableWithContent<Content>::getExistingContentAsConst()
-		const throw( LoadableException ) 
+		const 
 	{
 	
 		if ( ! hasContent() )
@@ -495,7 +502,6 @@ namespace Ceylan
 
 	template <typename Content>
 	Content & LoadableWithContent<Content>::getContent() 
-		throw( LoadableException )	
 	{
 
 		if ( ! hasContent() )
@@ -505,10 +511,10 @@ namespace Ceylan
 				
 	}
 	
+	
 		
 	template <typename Content>
 	const Content & LoadableWithContent<Content>::getContentAsConst()
-		throw( LoadableException )	
 	{
 
 		if ( ! hasContent() )
@@ -521,6 +527,7 @@ namespace Ceylan
 		
 
 }
+
 
 
 #endif // CEYLAN_LOADABLE_H_

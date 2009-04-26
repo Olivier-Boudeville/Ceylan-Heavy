@@ -70,19 +70,22 @@ namespace Ceylan
 				 *
 				 * @param trackInstance tells whether the created instances's
 				 * lifecycle is to be watched through the log system 
-				 * (ex : deallocation notice).
+				 * (ex: deallocation notice).
 				 *
 				 */
-				explicit Loggable( const std::string & name ) throw() ;
+				explicit Loggable( const std::string & name ) ;
+
 
 				
 				/// Basic virtual destructor, closes the underlying log channel.
 				virtual ~Loggable() throw() ;
 				
 				
+				
 				/// Sets this Logable channel name.
-				void setChannelName( const std::string & channelName ) throw() ;
+				void setChannelName( const std::string & channelName ) ;
 					
+				
 				
 				
 				// Static section.
@@ -95,7 +98,8 @@ namespace Ceylan
 				 *
 				 */
 				static bool IsALoggableChannelName( 
-					const std::string & channelName ) throw() ;		
+					const std::string & channelName ) ;		
+					
 					
 						
 				/**
@@ -105,13 +109,14 @@ namespace Ceylan
 				 *
 				 */
 				static const std::string GetEmbeddedChannelName( 
-					const std::string & fullChannelName ) throw() ;		
+					const std::string & fullChannelName ) ;		
 					
+			
 			
 				/**
 				 * The protocol prefix for Loggable, in the way URL are built. 
 				 *
-				 * @example : 'http://', 'ftp://', etc.
+				 * @example: 'http://', 'ftp://', etc.
 				 *
 				 */
 				static const std::string ProtocolName ;
@@ -129,7 +134,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				Loggable( const Loggable & source ) throw() ;
+				Loggable( const Loggable & source ) ;
 			
 			
 				/**
@@ -140,7 +145,7 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				Loggable & operator = ( const Loggable & source ) throw() ;
+				Loggable & operator = ( const Loggable & source ) ;
 
 							
 		} ; 
@@ -150,4 +155,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_LOGGABLE_H_
+

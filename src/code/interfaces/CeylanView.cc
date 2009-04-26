@@ -49,7 +49,7 @@ using namespace Ceylan::Log ;
 
 
 
-View::View() throw() :
+View::View() :
 	CallerEventListener()
 {
 
@@ -57,7 +57,7 @@ View::View() throw() :
 
 
 
-View::View( Model & model ) throw() :
+View::View( Model & model ) :
 	CallerEventListener( static_cast<EventSource &>( model ) )
 {
 
@@ -76,7 +76,7 @@ View::~View() throw()
 
 
 
-const string View::toString( Ceylan::VerbosityLevels level ) const throw() 
+const string View::toString( Ceylan::VerbosityLevels level ) const
 {
 	
 	if ( _sources.empty() )
@@ -91,8 +91,10 @@ const string View::toString( Ceylan::VerbosityLevels level ) const throw()
 
 
 
+
 // Protected section.
-Model & View::getModel() throw( EventException )
+
+Model & View::getModel()
 {
 
 	if ( _sources.size() != 1 )

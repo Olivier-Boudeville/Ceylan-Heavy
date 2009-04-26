@@ -54,7 +54,8 @@ namespace Ceylan
 	
 	
 	/// Returns the version of the Ceylan library currently linked.
-	CEYLAN_DLL const Ceylan::LibtoolVersion & GetVersion() throw() ;
+	CEYLAN_DLL const Ceylan::LibtoolVersion & GetVersion() ;
+	
 	
 	
 	/** 
@@ -96,10 +97,13 @@ namespace Ceylan
 	 * @see SDL (SDL_endian.h) for assembly-optimized versions.
 	 *
 	 */
-	inline Ceylan::Uint16 swapBytes( Ceylan::Uint16 arg ) throw()
+	inline Ceylan::Uint16 swapBytes( Ceylan::Uint16 arg )
 	{
+	
 		return static_cast<Ceylan::Uint16>( (arg<<8) | (arg>>8) ) ;
+		
 	}
+	
 	
 	
 	/// Exception raised by common utils services. 
@@ -108,11 +112,12 @@ namespace Ceylan
 	
 		public:
 		
-			UtilsException( const std::string & message ) throw(): 
+			UtilsException( const std::string & message ): 
 				Exception( message )
 			{		
 			
 			}
+		
 			
 			virtual ~UtilsException() throw()
 			{
@@ -136,11 +141,12 @@ namespace Ceylan
 	
 		public:
 		
-			CommandLineParseException( const std::string & message ) throw(): 
+			CommandLineParseException( const std::string & message ): 
 				UtilsException( message )
 			{		
 			
 			}
+			
 			
 			virtual ~CommandLineParseException() throw()
 			{
@@ -174,18 +180,22 @@ namespace Ceylan
 	 */
 	CEYLAN_DLL void parseCommandLineOptions( std::string & readExecutableName ,
 		std::list<std::string> & readOptions, 
-		Ceylan::Uint16 argumentCount, char ** argumentVector ) throw() ;
+		Ceylan::Uint16 argumentCount, char ** argumentVector ) ;
+		
 		
 		
 	// Codes to be returned by executables on exit.
 	typedef Ceylan::Sint16 ExitCode ;
 	
+	
 	/// Return value to be used on success.
 	extern CEYLAN_DLL const ExitCode ExitSuccess ;
 
 
+
 	/// Return value to be used on failure (any non zero value could be used).
 	extern CEYLAN_DLL const ExitCode ExitFailure ;
+
 
 
 	/**
@@ -197,6 +207,7 @@ namespace Ceylan
 	 *
 	 */
 	extern CEYLAN_DLL const ExitCode ExitDebugFailure ;
+	
 	
 	
 	/**
@@ -211,7 +222,7 @@ namespace Ceylan
 	 * done only in debug mode.
 	 *
 	 */
-	CEYLAN_DLL void emergencyShutdown( const std::string & message ) throw()
+	CEYLAN_DLL void emergencyShutdown( const std::string & message )
 
 #ifndef CEYLAN_RUNS_ON_WINDOWS
 				/*
@@ -230,7 +241,9 @@ namespace Ceylan
 
 
 
+
 	// Some keyboard events facilities.
+
 
 
 	/**
@@ -245,7 +258,8 @@ namespace Ceylan
 	 * be called regularly outside of this function (ex: once per main loop).
 	 *
 	 */
-	CEYLAN_DLL bool keyboardHit() throw( UtilsException ) ;
+	CEYLAN_DLL bool keyboardHit() ;
+
 
 
 	/// Corresponds to a read character.
@@ -267,50 +281,64 @@ namespace Ceylan
   	/// The keypad 'X' of the Nintendo DS.
 	extern CEYLAN_DLL const DSBinaryInput ButtonX ;
 	
+	
   	/// The keypad 'Y' of the Nintendo DS.
 	extern CEYLAN_DLL const DSBinaryInput ButtonY ;
+	
 	
 	
   	/// The keypad 'A' of the Nintendo DS.
 	extern CEYLAN_DLL const DSBinaryInput ButtonA ;
 	
+	
   	/// The keypad 'B' of the Nintendo DS.
 	extern CEYLAN_DLL const DSBinaryInput ButtonB ;
+	
 	
 	
   	/// The keypad 'START' of the Nintendo DS.
 	extern CEYLAN_DLL const DSBinaryInput ButtonStart ;
 	
+	
   	/// The keypad 'SELECT' of the Nintendo DS.
 	extern CEYLAN_DLL const DSBinaryInput ButtonSelect ;
+
 
 
   	/// The keypad 'left' of the Nintendo DS cursor.
 	extern CEYLAN_DLL const DSBinaryInput ButtonLeft ;
 	
+	
   	/// The keypad 'right' of the Nintendo DS cursor.
 	extern CEYLAN_DLL const DSBinaryInput ButtonRight ;
+	
 	
 	
   	/// The keypad 'up' of the Nintendo DS cursor.
 	extern CEYLAN_DLL const DSBinaryInput ButtonUp ;
 	
+	
   	/// The keypad 'down' of the Nintendo DS cursor.
 	extern CEYLAN_DLL const DSBinaryInput ButtonDown ;
+
 
 
   	/// The left shoulder button of the Nintendo DS.
 	extern CEYLAN_DLL const DSBinaryInput ShoulderButtonLeft ;
 	
+	
   	/// The right shoulder button of the Nintendo DS.
 	extern CEYLAN_DLL const DSBinaryInput ShoulderButtonRight ;
+	
 	
 	
   	/// The pen down (stylus touches touchscreen) of the Nintendo DS.
 	extern CEYLAN_DLL const DSBinaryInput StylusContact ;
 	
+	
   	/// The lid status (open/closed) of the Nintendo DS.
 	extern CEYLAN_DLL const DSBinaryInput LidOpen ;
+
 
 
   	/// Gathers all buttons and stylus contact (everything but the lid).
@@ -332,7 +360,8 @@ namespace Ceylan
 	 * be performed correctly.
 	 *
 	 */
-	CEYLAN_DLL KeyChar getChar() throw( UtilsException ) ;
+	CEYLAN_DLL KeyChar getChar() ;
+
 
 
 	/**
@@ -342,6 +371,7 @@ namespace Ceylan
 	 *
 	 */
 	extern CEYLAN_DLL const std::string DefaultWaitForKeyMessage ;
+
 
 
 	/**
@@ -362,7 +392,8 @@ namespace Ceylan
 	 *
 	 */
 	CEYLAN_DLL KeyChar waitForKey( const std::string & message 
-		= DefaultWaitForKeyMessage ) throw( UtilsException ) ;
+		= DefaultWaitForKeyMessage ) ;
+
 
 	
 	/**
@@ -392,7 +423,7 @@ namespace Ceylan
 	 */
 	template<class T, class Element>
 	void split(	const T & toSplit, const Element & delimiter, 
-		std::list<T> & result ) throw() 
+		std::list<T> & result )
 	{
 	
 		typename T::const_iterator beginOfSlice = toSplit.begin() ;
@@ -461,7 +492,7 @@ namespace Ceylan
 	 */
 	template<class T, class Predicate>
 	void split_if( const T & toSplit, Predicate & predicate, 
-		std::list<T> & result ) throw()
+		std::list<T> & result )
 	{
 	
 		typename T::const_iterator beginOfSlice = toSplit.begin() ;
@@ -492,7 +523,7 @@ namespace Ceylan
 	 * @note Might be useful for light debugging.
 	 *
 	 */
-	CEYLAN_DLL void checkpoint( const std::string & message = "" ) throw() ;
+	CEYLAN_DLL void checkpoint( const std::string & message = "" ) ;
 	
 	
 	/**
@@ -503,7 +534,7 @@ namespace Ceylan
 	 * @note Might be useful for light debugging.
 	 *
 	 */
-	CEYLAN_DLL void breakpoint( const std::string & message = "" ) throw() ;
+	CEYLAN_DLL void breakpoint( const std::string & message = "" ) ;
 	
 			 
 }
@@ -511,3 +542,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_UTILS_H_
+

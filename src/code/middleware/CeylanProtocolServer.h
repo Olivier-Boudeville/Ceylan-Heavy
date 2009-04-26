@@ -38,6 +38,7 @@ namespace Ceylan
 {
 
 
+
 	namespace Middleware
 	{
 
@@ -72,11 +73,13 @@ namespace Ceylan
 		 * (see Marshaller::retrieveData)
 		 *
 		 */
-		class CEYLAN_DLL ProtocolServer: public ProtocolEndpoint
+		class CEYLAN_DLL ProtocolServer : public ProtocolEndpoint
 		{
 		
 		
+		
 			public:
+			
 			
 			
 				/**
@@ -89,11 +92,13 @@ namespace Ceylan
 				 * marshaller when itself deleted.
 				 *
 				 */
-				ProtocolServer( Marshaller & marshaller ) throw() ;
+				ProtocolServer( Marshaller & marshaller ) ;
+				
 				
 				
 				/// Virtual destructor.
 				virtual ~ProtocolServer() throw() ;
+				
 				
 				
 				/**
@@ -125,8 +130,8 @@ namespace Ceylan
 				 * @see testCeylanMultiLwProtocolServer.cc
 				 *
 				 */
-				virtual bool notifyDataAvailability() 
-					throw( ProtocolException ) = 0 ;
+				virtual bool notifyDataAvailability() = 0 ;
+					
 					
 
 				/**
@@ -141,7 +146,8 @@ namespace Ceylan
 				 * between protocol objects and communication objects.
 				 * 
 				 */
-				virtual bool isShutdownRequested() const throw() ;
+				virtual bool isShutdownRequested() const ;
+				
 				
 					
             	/**
@@ -157,12 +163,13 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+	
 	
 	
 	
 			protected:
+
 
 
 				/**
@@ -171,7 +178,8 @@ namespace Ceylan
 				 * exchange is terminated.
 				 *
 				 */
-				virtual void askForShutdown() throw() ;
+				virtual void askForShutdown() ;
+
 
 
 				/**
@@ -201,7 +209,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				ProtocolServer( const ProtocolServer & source ) throw() ;
+				ProtocolServer( const ProtocolServer & source ) ;
 
 
 				/**
@@ -212,12 +220,12 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 *
 				 */
-				ProtocolServer & operator = ( const ProtocolServer & source )
-					throw() ;
+				ProtocolServer & operator = ( const ProtocolServer & source ) ;
 
 		
 		
 		} ;
+		
 		
 	}
 	
@@ -226,3 +234,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_PROTOCOL_SERVER_H_
+

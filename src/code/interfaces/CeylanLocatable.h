@@ -61,10 +61,12 @@ namespace Ceylan
 	
 		public:
 		
-			LocatableException( const std::string & message ) throw() ;
+			LocatableException( const std::string & message ) ;
+			
 			virtual ~LocatableException() throw() ;
 	
 	} ;
+
 
 
 
@@ -78,10 +80,12 @@ namespace Ceylan
 	
 		public:
 		
-			explicit ReferentialChangedEvent( EventSource & source ) throw() ;
+			explicit ReferentialChangedEvent( EventSource & source ) ;
+			
 			virtual ~ReferentialChangedEvent() throw() ;
 	
 	} ;
+
 
 
 
@@ -107,26 +111,26 @@ namespace Ceylan
 	 * orientation.
 	 * 
 	 * The dimension of the matrix depends on the space into which the 
-	 * Locatable is defined (ex : 2D, 3D), and on whether an homogeneous
+	 * Locatable is defined (ex: 2D, 3D), and on whether an homogeneous
 	 * matrix is used. In this case, the matrix dimension must be
-	 * incremented : for instance, Locatable instances in a 2D world should 
+	 * incremented: for instance, Locatable instances in a 2D world should 
 	 * embed two 3x3 homogeneous matrices.
 	 *
 	 * A referential is defined by both a point in space and a set of 
-	 * angles or vectors that indicates its orientation : from that 
+	 * angles or vectors that indicates its orientation: from that 
 	 * information, the relevant transformation (combination of translations
 	 * and rotations) can be computed.
 	 *
 	 * The local referential is a matrix Mlf that transforms points expressed
 	 * in the local referential Pl into points expressed in the father 
-	 * referential Pf : Pf = Mlf.Pl  
+	 * referential Pf: Pf = Mlf.Pl  
 	 *
 	 * The referentials are organized as a tree, where the children of a
 	 * node have referentials that are defined relatively to this node's
 	 * referential. 
 	 *
 	 * There may be only one tree, therefore one root, so that taking into
-	 * account the camera is easier : the global matrix, root of the 
+	 * account the camera is easier: the global matrix, root of the 
 	 * referential hierarchy, may have for matrix the camera's one, so that the
 	 * computed global matrices have all the necessary transformations
 	 * registered, in order to perform all steps at once, including camera
@@ -137,10 +141,10 @@ namespace Ceylan
 	 * Starting from a situation where all global referentials are 
 	 * up-to-date, a change of a node (its local referential changes 
 	 * relatively to its father) into the Locatable hierarchy triggers 
-	 * the following : its up-to-date state is set to false, therefore
+	 * the following: its up-to-date state is set to false, therefore
 	 * preventing the use of its now outdated global referential, and 
 	 * all the subtree it is the root of is recursively set as 
-	 * 'not up-to-date'. A property flows from it : there is no need to
+	 * 'not up-to-date'. A property flows from it: there is no need to
 	 * propagate 'not up-to-date' status when encountering a node which 
 	 * was already not up-to-date, since all its children must already be 
 	 * in 'not up-to-date' state. 
@@ -160,12 +164,12 @@ namespace Ceylan
 	 * @note Some methods, such as 
 	 * <code>setCenter(const Point & newCenter)</code> could be proposed  
 	 * here, but it would involve dynamic casting, which may fail 
-	 * (ex : <code>myPoint2D.setCenter( aPoint3D )</code>), 
+	 * (ex: <code>myPoint2D.setCenter( aPoint3D )</code>), 
 	 * therefore they all would have to throw exceptions, which should would
 	 * have to be caught, etc. 
 	 * To avoid such complications, these operators are defined specifically
 	 * for each child class, instead of being defined generally in this 
-	 * root abstract class : a simpler approach is to define them 
+	 * root abstract class: a simpler approach is to define them 
 	 * appropriately, at the right level, the implementation one.
 	 *
 	 * @note Always remember to call <code>setUpToDateState(false)</code>
@@ -177,6 +181,7 @@ namespace Ceylan
 	
 
 		public:
+
 
 			
 			/**
@@ -193,7 +198,8 @@ namespace Ceylan
 			 * non-const operation.
 			 *
 			 */
-			explicit Locatable( Locatable & fatherLocatable ) throw() ;
+			explicit Locatable( Locatable & fatherLocatable ) ;
+			
 			
 			
 			/**
@@ -201,7 +207,8 @@ namespace Ceylan
 			 * therefore considered as an absolute one.
 			 *
 			 */
-			Locatable() throw() ;
+			Locatable() ;
+
 
 
 			/**
@@ -230,8 +237,9 @@ namespace Ceylan
 			 * referential, hence will deallocate it when appropriate.
 			 *
 			 */
-			explicit Locatable( Locatable & fatherLocatable, 
-				Maths::Linear::Matrix & localReferential ) throw() ;
+			Locatable( Locatable & fatherLocatable, 
+				Maths::Linear::Matrix & localReferential ) ;
+			
 			
 			
 			/**
@@ -245,8 +253,7 @@ namespace Ceylan
 			 * referential.
 			 *			 
 			 */
-			explicit Locatable( Maths::Linear::Matrix & localReferential )
-				throw() ;
+			explicit Locatable( Maths::Linear::Matrix & localReferential ) ;
 
 			
 			/// Virtual destructor.
@@ -264,7 +271,8 @@ namespace Ceylan
 			 * corresponds to the camera matrix.
 			 *
 			 */
-			virtual bool isAbsolute() const throw() ;
+			virtual bool isAbsolute() const ;
+			
 			
 			
 			/**
@@ -273,7 +281,8 @@ namespace Ceylan
 			 * @note It should be the case in most situations.
 			 *
 			 */
-			virtual bool hasLocalReferential() const throw() ;
+			virtual bool hasLocalReferential() const ;
+			
 			
 			
 			/**
@@ -284,8 +293,8 @@ namespace Ceylan
 			 * @throw LocatableException if no local referential is available.
 			 *
 			 */
-			virtual Maths::Linear::Matrix & getLocalReferential() const 
-				throw( LocatableException ) ;
+			virtual Maths::Linear::Matrix & getLocalReferential() const ;
+		
 		
 		
 			/**
@@ -295,8 +304,9 @@ namespace Ceylan
 			 *
 			 */
 			virtual void setLocalReferential( 
-				Maths::Linear::Matrix & newGlobalReferential ) throw() ; 
+				Maths::Linear::Matrix & newGlobalReferential ) ; 
 				
+			
 			
 			/**
 			 * Blanks local referential, so that its matrix is the null matrix.
@@ -307,7 +317,8 @@ namespace Ceylan
 			 * depend on the inner matrix.
 			 *
 			 */	
-			virtual void blankLocalReferential() throw() = 0 ;
+			virtual void blankLocalReferential() = 0 ;
+			
 			
 				
 			/**
@@ -315,8 +326,9 @@ namespace Ceylan
 			 * available.
 			 *
 			 */
-			virtual bool hasGlobalReferential() const throw() ;
+			virtual bool hasGlobalReferential() const ;
 			
+		
 		
 			/**
 			 * Returns this Locatable's referential, expressed in global
@@ -325,13 +337,15 @@ namespace Ceylan
 			 * @return the internal up-to-date global referential. It is still
 			 * owned by the Locatable.
 			 *
+			 * @throw LocatableException if no referential is available.
+			 *
 			 * @note Everything necessary is done to return the global
 			 * referential, be it already available, up-to-date, etc., or 
 			 * not.
 			 *
 			 */
-			virtual Maths::Linear::Matrix & getGlobalReferential()
-				throw( LocatableException ) ;
+			virtual Maths::Linear::Matrix & getGlobalReferential() ;
+		
 		
 		
 			/**
@@ -341,7 +355,8 @@ namespace Ceylan
 			 * are up-to-date, bounds included.
 			 *
 			 */
-			virtual bool isUpToDate() const throw() ;
+			virtual bool isUpToDate() const ;
+			
 			
 			
 			/**
@@ -350,8 +365,9 @@ namespace Ceylan
 			 * referential tree.
 			 *
 			 */
-			virtual void setUpToDateState( bool newState ) throw() ;
+			virtual void setUpToDateState( bool newState ) ;
 
+			  
 			  
 			/**
 			 * Notifies this Locatable of a new event.
@@ -363,8 +379,9 @@ namespace Ceylan
 			 * which will take care of its life cycle.
 			 *
 			 */
-			virtual void beNotifiedOf( const Event & newEvent ) throw() ;
+			virtual void beNotifiedOf( const Event & newEvent ) ;
 
+			 
 			 
             /**
              * Returns a user-friendly description of the state of this object.
@@ -377,7 +394,8 @@ namespace Ceylan
              *
              */
              virtual const std::string toString( 
-			 	VerbosityLevels level = high ) const throw() ;
+			 	VerbosityLevels level = high ) const ;
+				
 				
 				
 				
@@ -391,7 +409,8 @@ namespace Ceylan
 			 * ReferentialChangedEvent to this Locatable's children.
 			 *
 			 */
-			 virtual void changed() throw() ;
+			 virtual void changed() ;
+			 
 			 
 			
 			/**
@@ -405,23 +424,24 @@ namespace Ceylan
 			 * precomputed transformation. 
 			 *
 			 * @note This is a pure virtual method since only the relevant 
-			 * Matrix type shall be called (ex : Matrix3).
+			 * Matrix type shall be called (ex: Matrix3).
 			 *
 			 */ 
 			virtual void updateFromFather( 
-				const Maths::Linear::Matrix & upToDateFatherReferential )
-					throw() = 0 ;
+				const Maths::Linear::Matrix & upToDateFatherReferential ) = 0 ;
+			
 			
 			
 			/**
-			 * Detaches this Locatable from its father :  their referentials
+			 * Detaches this Locatable from its father:  their referentials
 			 * will not be synchronized anymore.
 			 *
 			 * @throw LocatableException if this Locatable had no father 
 			 * or was not linked to it.
 			 *
 			 */
-			virtual void detachFromFather() throw( LocatableException ) ;
+			virtual void detachFromFather() ;
+			
 			
 			
 			/**
@@ -431,9 +451,13 @@ namespace Ceylan
 			 * to ease toString management.
 			 *
 			 */
-			virtual const std::string describe( VerbosityLevels level ) 
-				const throw() ;
+			virtual const std::string describe( VerbosityLevels level ) const ;
 				
+			 
+			 
+			 
+			// Data member section.
+			
 			 
 			/**
 			 * This referential's father, if any.
@@ -470,7 +494,7 @@ namespace Ceylan
 			
 			/**
 			 * This internal event is allocated the first time this Locatable
-			 * changes its referential, one time for all : for next changes,
+			 * changes its referential, one time for all: for next changes,
 			 * that same event will be changed accordingly abd then 
 			 * propagated again.
 			 *
@@ -499,7 +523,7 @@ namespace Ceylan
 			 * this parameter is not 'const'.
 			 *
 			 */			 
-			//Locatable( const Locatable & source ) throw() ;
+			//Locatable( const Locatable & source ) ;
 			
 			
 			/**
@@ -510,7 +534,7 @@ namespace Ceylan
 			 * operator is called, implicitly or not.
 			 * 
 			 */			 
-			Locatable & operator = ( const Locatable & source ) throw() ;
+			Locatable & operator = ( const Locatable & source ) ;
 		
 				
 	} ;
@@ -519,5 +543,5 @@ namespace Ceylan
 	
 
 
-
 #endif // CEYLAN_LOCATABLE_H_
+

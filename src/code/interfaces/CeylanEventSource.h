@@ -36,6 +36,7 @@
 #include <list>
 
 
+
 namespace Ceylan
 {
 
@@ -48,8 +49,10 @@ namespace Ceylan
 }
 
 
+
 namespace Ceylan
 {
+
 
 
     /**
@@ -62,7 +65,7 @@ namespace Ceylan
 	 * To do so, they may keep their last message, forge a new 
 	 * summary event on purpose, etc.
 	 *
-	 * Any listener can be registered at most one time to an event source :
+	 * Any listener can be registered at most one time to an event source:
 	 * attempt of multiple registrations result in an exception.
 	 *
 	 * @note The event source / listener framework is also known as 
@@ -76,10 +79,12 @@ namespace Ceylan
 
 
         public:
+				
 					
 					
 			/// Basic constructor with no listener registered.
-			EventSource() throw() ;
+			EventSource() ;
+				
 				
 				
 			/**
@@ -87,11 +92,13 @@ namespace Ceylan
 			 * registered.
 			 *
 			 */
-			explicit EventSource( EventListener & listener ) throw() ;
+			explicit EventSource( EventListener & listener ) ;
+				
 				
 									
 			/// Basic virtual destructor.
 			virtual ~EventSource() throw() ;
+			
 			
 			
 			/**
@@ -102,8 +109,8 @@ namespace Ceylan
 			 * to the event source.
 			 *
 			 */
-			virtual void add( EventListener & listener ) 
-				throw( EventException ) ;
+			virtual void add( EventListener & listener ) ;
+			
 			
 			
 			/**
@@ -119,10 +126,10 @@ namespace Ceylan
 			 * listener side, not on the source one.
 			 *
 			 * @see Ceylan::EventListener::unsubscribeFrom
-			 
+			 *
 			 */
-			virtual void remove( const EventListener & listener ) 
-				throw( EventException ) ;
+			virtual void remove( const EventListener & listener ) ;
+
 
 
 			/**
@@ -138,8 +145,9 @@ namespace Ceylan
 			 * @see Ceylan::EventListener::unsubscribeFromAllSources
 			 *
 			 */
-			virtual void removeAllListeners() throw() ;
+			virtual void removeAllListeners() ;
 							
+				
 				
             /**
              * Returns a user-friendly description of the state of 
@@ -154,7 +162,7 @@ namespace Ceylan
              *
              */
 			virtual const std::string toString( 
-				Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
+				Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 			
 			
 					
@@ -168,8 +176,7 @@ namespace Ceylan
 			 * @note This source takes ownership of this event.
 			 *
 			 */
-			 virtual void notifyAllListeners( const Event & newEvent ) 
-			 	throw() ;
+			 virtual void notifyAllListeners( const Event & newEvent ) ;
 
 
 			/**
@@ -177,8 +184,8 @@ namespace Ceylan
 			 * source.
 			 *
 			 */
-			virtual bool isRegistered( const EventListener & listener ) 
-				throw() ;
+			virtual bool isRegistered( const EventListener & listener ) ;
+
 			
 /*
  * Takes care of the awful issue of Windows DLL with templates.
@@ -212,7 +219,7 @@ namespace Ceylan
 			 * implicitly or not.
 			 * 
 			 */			 
-			EventSource( const EventSource & source ) throw() ;
+			EventSource( const EventSource & source ) ;
 			
 			
 			/**
@@ -223,7 +230,7 @@ namespace Ceylan
 			 * operator is called, implicitly or not.
 			 * 
 			 */			 
-			EventSource & operator = ( const EventSource & source ) throw() ;
+			EventSource & operator = ( const EventSource & source ) ;
 					
 						
     } ;	
@@ -233,3 +240,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_EVENT_SOURCE_H_
+

@@ -42,11 +42,12 @@ Singleton * Singleton::_InternalSingleton = 0 ;
 
 
 
-SingletonException::SingletonException( const string & reason ) throw() :
+SingletonException::SingletonException( const string & reason ) :
 	Ceylan::Exception( reason )
 {
 
 }
+
 
 
 SingletonException::~SingletonException() throw()
@@ -56,19 +57,23 @@ SingletonException::~SingletonException() throw()
 
 
 
-Singleton & Singleton::GetSingleton() throw()
+Singleton & Singleton::GetSingleton()
 {
 
     if ( Singleton::_InternalSingleton == 0 )
     {
+	
         LogPlug::debug( 
 			"No Singleton available for getSingleton, creating new one" ) ;
         Singleton::_InternalSingleton = new Singleton() ;
+		
     }
     else
     {
+	
         LogPlug::debug( "Returning already constructed instance "
 			"of Singleton, no creation" ) ;
+			
     }
 
     LogPlug::debug( "Returning Singleton instance "
@@ -79,18 +84,19 @@ Singleton & Singleton::GetSingleton() throw()
 }
 
 
-void Singleton::DeleteSingleton() throw()
+
+void Singleton::DeleteSingleton()
 {
 
     if ( Singleton::_InternalSingleton != 0 )
     {
-        LogPlug::debug( "deleteSingleton : effective deleting." ) ;
+        LogPlug::debug( "deleteSingleton: effective deleting." ) ;
         delete Singleton::_InternalSingleton ;
 		Singleton::_InternalSingleton = 0 ;
     }
     else
     {
-        LogPlug::debug( "deleteSingleton : no deleting needed." ) ;
+        LogPlug::debug( "deleteSingleton: no deleting needed." ) ;
     }
 
 }
@@ -100,16 +106,21 @@ void Singleton::DeleteSingleton() throw()
 // Protected section.
 
 
-Singleton::Singleton() throw()
+Singleton::Singleton()
 {
-    LogPlug::debug( "Creation of a Singleton instance : "
+
+    LogPlug::debug( "Creation of a Singleton instance: "
 		+ Ceylan::toString( this ) ) ;
+		
 }
+
 
 
 Singleton::~Singleton() throw()
 {
-    LogPlug::debug( "Warning : destruction of a Singleton instance : "
+
+    LogPlug::debug( "Warning: destruction of a Singleton instance: "
 		+ Ceylan::toString( this ) ) ;
+		
 }
 

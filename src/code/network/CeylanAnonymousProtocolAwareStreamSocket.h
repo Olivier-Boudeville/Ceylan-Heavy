@@ -42,6 +42,7 @@ namespace Ceylan
 	namespace Middleware
 	{
 
+
 		/*
 		 * An anonymous protocol-aware stream sockets triggers a protocol 
 		 * server.
@@ -81,6 +82,7 @@ namespace Ceylan
 			public:
 	
 	
+	
 				/**
 				 * Constructs a new server-side socket dedicated to an
 				 * accepted connection, and links it with a protocol server
@@ -104,9 +106,9 @@ namespace Ceylan
 				 *
 				 */
 				AnonymousProtocolAwareStreamSocket( 
-						System::FileDescriptor listeningFD,
-						Middleware::ProtocolServer & protocolServerToTrigger ) 
-					throw( SocketException ) ;
+					System::FileDescriptor listeningFD,
+					Middleware::ProtocolServer & protocolServerToTrigger ) ;
+	
 	
 				
 				/**
@@ -129,8 +131,8 @@ namespace Ceylan
 				 *
 				 */
 				explicit AnonymousProtocolAwareStreamSocket( 
-						System::FileDescriptor listeningFD ) 
-					throw( SocketException ) ;
+					System::FileDescriptor listeningFD ) ;
+	
 	
 				
 				/// Virtual destructor.
@@ -146,7 +148,8 @@ namespace Ceylan
 				 * socket.
 				 *
 				 */
-				virtual bool hasProtocolServer() const throw() ;
+				virtual bool hasProtocolServer() const ;
+
 
 	
 				/**
@@ -157,8 +160,8 @@ namespace Ceylan
 				 * is associated with this socket.
 				 *
 				 */
-				virtual Middleware::ProtocolServer & getProtocolServer() 
-					throw( AnonymousStreamSocketException ) ;
+				virtual Middleware::ProtocolServer & getProtocolServer() ;
+				
 				
 				
 				/**
@@ -172,7 +175,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual void setProtocolServer( 
-					Middleware::ProtocolServer & newProtocolServer ) throw() ;
+					Middleware::ProtocolServer & newProtocolServer ) ;
 				
 				
 				
@@ -189,14 +192,14 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 	
 	
 	
 	
 			protected:
 
+		
 		
 				/**
 				 * The protocol server this socket is associated with.
@@ -206,6 +209,7 @@ namespace Ceylan
 				 */
 				Middleware::ProtocolServer * _protocolServer ;
 				
+		
 				
 				
 			private:
@@ -221,8 +225,8 @@ namespace Ceylan
 				 *
 				 */
 				AnonymousProtocolAwareStreamSocket( 
-						const AnonymousProtocolAwareStreamSocket & source ) 
-					throw() ;
+					const AnonymousProtocolAwareStreamSocket & source ) ;
+
 
 
 				/**
@@ -234,12 +238,11 @@ namespace Ceylan
 				 *
 				 */
 				AnonymousProtocolAwareStreamSocket & operator = ( 
-						const AnonymousProtocolAwareStreamSocket & source )	
-					throw() ;
-
+					const AnonymousProtocolAwareStreamSocket & source )	;
 		
 		
 		} ;
+		
 		
 	}
 	
@@ -248,3 +251,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_ANONYMOUS_PROTOCOL_AWARE_STREAM_SOCKET_H_
+

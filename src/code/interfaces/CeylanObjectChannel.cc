@@ -45,22 +45,26 @@ using std::list ;
 using namespace Ceylan::Log ;
 
 
-ObjectChannel::ObjectChannel( const string & channelName ) 
-		throw( LogException ) :
+
+ObjectChannel::ObjectChannel( const string & channelName ) :
 	LogChannel( "Uninitialized object channel" ),
 	_linkedObjectID( 0 )
 {
 
 	try 
 	{
+	
 		_linkedObjectID = & 
 			ObjectIdentifier::generateFromChannelName( channelName ) ;
+			
 	} 
 	catch( const Identifier::IdentifierException & e )
 	{
-		throw LogException( "ObjectChannel constructor : "
+	
+		throw LogException( "ObjectChannel constructor: "
 			"unable to construct channel identifier from " 
-			+ channelName + " : " + e.toString() ) ;
+			+ channelName + ": " + e.toString() ) ;
+			
 	}
 	
 	_name = _linkedObjectID->toString() ;
@@ -68,8 +72,10 @@ ObjectChannel::ObjectChannel( const string & channelName )
 }
 
 
+
 ObjectChannel::~ObjectChannel() throw() 
 {
+
 	for ( list<LogMessage *>::iterator it = _messages.begin(); 
 		it != _messages.end(); it++ )
 	{
@@ -80,11 +86,12 @@ ObjectChannel::~ObjectChannel() throw()
 	
 	if ( _linkedObjectID != 0 )
 		delete _linkedObjectID ;
+		
 }
 
 
+
 void ObjectChannel::addMessage( LogMessage & message, bool check ) 
-	throw( LogException )
 {
 
 	if ( check ) 
@@ -93,7 +100,7 @@ void ObjectChannel::addMessage( LogMessage & message, bool check )
 		if ( Loggable::GetEmbeddedChannelName( 
 				message.getChannelName() ) != _name )
 			throw LogException( 
-				"ObjectChannel::addMessage : trying to add to ObjectChannel "
+				"ObjectChannel::addMessage: trying to add to ObjectChannel "
 				+ _name + " a log message whose registered ObjectChannel is "
 				+ Loggable::GetEmbeddedChannelName( message.getChannelName() )
 				+ " (not " + _name + ")." ) ;	
@@ -104,21 +111,21 @@ void ObjectChannel::addMessage( LogMessage & message, bool check )
 }
 
 
+
 ObjectIdentifier & ObjectChannel::getObjectIdentifier() const 
-	throw( LogException )
 {
 
 	if ( _linkedObjectID != 0 )
 		return * _linkedObjectID ;
 	
 	throw LogException( 
-		"ObjectChannel::getObjectIdentifier : no identifier to return." ) ;
+		"ObjectChannel::getObjectIdentifier: no identifier to return." ) ;
 	
 }
 
 
-const string ObjectChannel::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+
+const string ObjectChannel::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string result = "ObjectChannel " + _name ;
@@ -127,12 +134,12 @@ const string ObjectChannel::toString( Ceylan::VerbosityLevels level )
 		return result + " contains no message." ;
 	
 	if ( _messages.size() == 1 )
-		result += " contains only one message : " ;
+		result += " contains only one message: " ;
 	else
 		result += " contains " 
 			+ Ceylan::toString( 
 				static_cast<Ceylan::Uint32>( _messages.size() ) ) 
-			+ " messages : " ;
+			+ " messages: " ;
 	
 	list<string> messageList ;
 	 	
@@ -144,7 +151,7 @@ const string ObjectChannel::toString( Ceylan::VerbosityLevels level )
 
 		if ( ! (*it) )
 		{
-			CEYLAN_LOG( "Error, ObjectChannel::toString : "
+			CEYLAN_LOG( "Error, ObjectChannel::toString: "
 				"null pointer in message list, skipping." ) ;
 			break ;
 		}	
@@ -158,3 +165,4 @@ const string ObjectChannel::toString( Ceylan::VerbosityLevels level )
 	return result + formatStringList( messageList ) ;
 	
 }	
+

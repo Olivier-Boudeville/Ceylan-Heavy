@@ -29,15 +29,18 @@
 using namespace Ceylan ;
 
 
-Visitor::Visitor() throw()
+
+Visitor::Visitor()
 {
 
 }
 
 
-const std::string Visitor::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+
+const std::string Visitor::toString( Ceylan::VerbosityLevels level ) const
 {
+
 	return "Visitor instance" ;
+	
 }
 

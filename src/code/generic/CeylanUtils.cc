@@ -84,7 +84,7 @@ extern const Ceylan::DSBinaryInput Ceylan::StylusContact       = KEY_TOUCH ;
 extern const Ceylan::DSBinaryInput Ceylan::LidOpen             = KEY_LID ;
 
 
-// Lid is not deemd a user input:
+// Lid status change is not deemed a user input:
 extern const Ceylan::DSBinaryInput Ceylan::AllUserInputs = ButtonX | ButtonY 
 	| ButtonA | ButtonB | ButtonStart | ButtonSelect 
 	| ButtonLeft | ButtonRight | ButtonUp | ButtonDown 
@@ -133,7 +133,7 @@ using namespace Ceylan::Log ;
 
 #define CEYLAN_DEBUG_VERSION 0
 
-const Ceylan::LibtoolVersion & Ceylan::GetVersion() throw()
+const Ceylan::LibtoolVersion & Ceylan::GetVersion()
 {
 
 
@@ -145,12 +145,16 @@ const Ceylan::LibtoolVersion & Ceylan::GetVersion() throw()
 	
 	try
 	{
+	
 		ceylanVersion = new LibtoolVersion( CEYLAN_LIBTOOL_VERSION ) ;
+		
 	}
 	catch( const Ceylan::Exception & e )
 	{
+	
 		Ceylan::emergencyShutdown( "Ceylan::GetVersion failed: "
 			+ e.toString() ) ;
+			
 	}	
 		
 	return * ceylanVersion ;
@@ -166,9 +170,10 @@ const Ceylan::LibtoolVersion & Ceylan::GetVersion() throw()
 }
 
 
+
 void Ceylan::parseCommandLineOptions( std::string & readExecutableName, 
 	list<string> & readOptions, Ceylan::Uint16 argumentCount, 
-	char ** argumentVector ) throw()
+	char ** argumentVector )
 {
 
 	readExecutableName = string( argumentVector[0] ) ;
@@ -179,7 +184,8 @@ void Ceylan::parseCommandLineOptions( std::string & readExecutableName,
 }
 
 
-void Ceylan::emergencyShutdown( const string & message ) throw() 
+
+void Ceylan::emergencyShutdown( const string & message ) 
 {
 
 	string outputMessage = "Fatal error: "
@@ -201,7 +207,8 @@ void Ceylan::emergencyShutdown( const string & message ) throw()
 }
 
 
-bool Ceylan::keyboardHit() throw( UtilsException )	
+
+bool Ceylan::keyboardHit()	
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -307,7 +314,8 @@ bool Ceylan::keyboardHit() throw( UtilsException )
 }
 
 
-KeyChar Ceylan::getChar() throw( UtilsException )
+
+KeyChar Ceylan::getChar()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -403,7 +411,8 @@ KeyChar Ceylan::getChar() throw( UtilsException )
 }
 
 
-KeyChar Ceylan::waitForKey( const string & message ) throw( UtilsException ) 
+
+KeyChar Ceylan::waitForKey( const string & message ) 
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -467,7 +476,8 @@ KeyChar Ceylan::waitForKey( const string & message ) throw( UtilsException )
 }
 
 
-void Ceylan::checkpoint( const std::string & message ) throw()
+
+void Ceylan::checkpoint( const std::string & message )
 {
  
  	static Ceylan::Uint32 checkpointCount = 1 ;
@@ -484,7 +494,8 @@ void Ceylan::checkpoint( const std::string & message ) throw()
 }
 
 
-void Ceylan::breakpoint( const std::string & message ) throw()
+
+void Ceylan::breakpoint( const std::string & message )
 {
  
  	static Ceylan::Uint32 breakpointCount = 1 ;

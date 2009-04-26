@@ -54,26 +54,29 @@ namespace Ceylan
 		
 		
 		
-			/// This exception is raised when lock gets misused.
+			/// This exception is raised when a lock gets misused.
 			class CEYLAN_DLL LockException : public Ceylan::Exception
 			{
 			
 				public :
 				
-					explicit LockException( 
-						const std::string & reason ) throw() ;
+					explicit LockException( const std::string & reason ) ;
+					
 					virtual ~LockException() throw() ;
 				
 			} ;
 			
 			
+			
 					
 			/// Basic constructor, Lockable comes unlocked.
-			Lockable() throw() ;
+			Lockable() ;
+			
 			
 			
 			/// Basic virtual destructor, unlocks Lockable if locked.
 			virtual ~Lockable() throw() ;
+			
 			
 			
 			/**
@@ -82,7 +85,7 @@ namespace Ceylan
 			 * Some Lockable may be locked or not, depending on the
 			 * actual context. 
 			 *
-			 * @example, video surfaces can behave according to two ways :
+			 * @example, video surfaces can behave according to two ways:
 			 * software ones must be locked, whereas hardware ones do
 			 * not need that.
 			 *
@@ -90,7 +93,8 @@ namespace Ceylan
 			 * when locking is conditional.
 			 *
 			 */
-			virtual bool mustBeLocked() const throw() ;
+			virtual bool mustBeLocked() const ;
+			
 			
 			
 			/**
@@ -100,8 +104,9 @@ namespace Ceylan
 			 * reasons.
 			 *
 			 */
-			inline bool isLocked() const throw() ;
+			inline bool isLocked() const ;
 					
+			
 			
 			/**
 			 * Locks the Lockable. 
@@ -123,7 +128,7 @@ namespace Ceylan
 			 * @see isLocked, postLock, unlock
 			 *
 			 */
-			virtual void lock() throw( LockException ) ;
+			virtual void lock() ;
 							
 				
 			
@@ -148,8 +153,9 @@ namespace Ceylan
 			 * @see isLocked, preUnlock, lock
 			 *
 			 */
-			virtual void unlock() throw( LockException ) ;
+			virtual void unlock() ;
 	    
+		
 		
             /**
              * Returns an user-friendly description of the state
@@ -164,12 +170,13 @@ namespace Ceylan
              *
              */
             virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-				const throw() ;
+				Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+		
 		
 		
 		
 		protected:
+
 
 
 			/**
@@ -183,7 +190,8 @@ namespace Ceylan
 			 * @throw LockException if the effective locking failed.
 			 *
 			 */
-			 virtual void postLock() throw( LockException ) ;
+			 virtual void postLock() ;
+				
 				
 			
 			/**
@@ -197,7 +205,7 @@ namespace Ceylan
 			 * @throw LockException if the effective unlocking failed.
 			 *
 			 */
-			 virtual void preUnlock() throw( LockException ) ;
+			 virtual void preUnlock() ;
 		
 
 
@@ -222,7 +230,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			Lockable( const Lockable & source ) throw() ;
+			Lockable( const Lockable & source ) ;
 			
 			
 			/**
@@ -233,16 +241,18 @@ namespace Ceylan
 			 * operator is called, implicitly or not.
 			 * 
 			 */			 
-			Lockable & operator = ( const Lockable & source ) throw() ;
+			Lockable & operator = ( const Lockable & source ) ;
 			
    		
-			
     } ;
 
 
-	bool Lockable::isLocked() const throw() 
+
+	bool Lockable::isLocked() const 
 	{
+	
 		return  _locked ;
+		
 	}
 	
 
@@ -251,3 +261,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_LOCKABLE_H_
+

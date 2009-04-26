@@ -34,10 +34,12 @@ using namespace Ceylan::Network ;
 
 
 
-IPAddress::IPAddress() throw() : Ceylan::TextDisplayable() 
+IPAddress::IPAddress(): 
+	Ceylan::TextDisplayable() 
 {
 
 }
+
 
 
 IPAddress::~IPAddress() throw()
@@ -46,17 +48,21 @@ IPAddress::~IPAddress() throw()
 }
 
 
-const string IPAddress::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+
+const string IPAddress::toString( Ceylan::VerbosityLevels level ) const
 {
+
 	return "Abstract IP address" ;
+	
 }
 
 
-bool IPAddress::IsValid( const std::string IPString ) throw() 
+
+bool IPAddress::IsValid( const std::string IPString ) 
 {
 
-	// Abstract addresses cannot be valid :
+	// Abstract addresses cannot be valid:
 	return false ;
 	
 }	
+

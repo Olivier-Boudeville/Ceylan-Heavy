@@ -29,7 +29,6 @@
 
 #include "CeylanOperators.h"
 #include "CeylanWhiteNoiseRandomGenerator.h" // for WhiteNoiseGenerator
-#include "CeylanUtils.h"                     // for emergencyShutdown
 #include "CeylanStringUtils.h"               // for formatStringList
 #include "CeylanLogPlug.h"                   // for LogPlug
 
@@ -54,21 +53,23 @@ using namespace Ceylan::Maths::Random ;
 
 
 
+
+
 RandomGeneratorFromPDF::RandomGeneratorFromPDF( 
-	const ProbabilityFunction & pdf, 
-	Sample lowerLimit, Sample upperLimit, Seed aSeed ) 
-		throw( MathsException ) :
+		const ProbabilityFunction & pdf, 
+		Sample lowerLimit, Sample upperLimit, Seed aSeed ) :
 	RandomGenerator( lowerLimit, upperLimit, aSeed ), 
 	_pdf( & pdf ), 
 	_whiteNoiseGenerator( 0 ),
 	_probabilitiesTable( 0 ) 
 {
 	
-	LogPlug::trace( "Maths::RandomGeneratorFromPDF constructor called." ) ;
+	//LogPlug::trace( "Maths::RandomGeneratorFromPDF constructor called." ) ;
 
 	preCompute() ;
 
 }
+
 
 
 RandomGeneratorFromPDF::~RandomGeneratorFromPDF() throw()
@@ -88,14 +89,14 @@ RandomGeneratorFromPDF::~RandomGeneratorFromPDF() throw()
 }
 
 
-RandomValue RandomGeneratorFromPDF::getNewValue() throw()
-{
 
+RandomValue RandomGeneratorFromPDF::getNewValue() 
+{
 
 #if CEYLAN_DEBUG
 
 	if ( _whiteNoiseGenerator == 0 )
-		Ceylan::emergencyShutdown( "RandomGeneratorFromPDF::getNewValue : "
+		throw MathsException( "RandomGeneratorFromPDF::getNewValue: "
 			"no white noise generator available." ) ;
 			
 #endif // CEYLAN_DEBUG
@@ -103,7 +104,7 @@ RandomValue RandomGeneratorFromPDF::getNewValue() throw()
 	Sample uniformRandomValue = _whiteNoiseGenerator->getNewValue() ;
 	
 	/*
-	LogPlug::debug( "RandomGeneratorFromPDF::getNewValue : "
+	LogPlug::debug( "RandomGeneratorFromPDF::getNewValue: "
 		"white noise generator drew " 
 		+ Ceylan::toString( uniformRandomValue ) ) ;
 	*/
@@ -112,7 +113,7 @@ RandomValue RandomGeneratorFromPDF::getNewValue() throw()
 	
 	/*
 	LogPlug::debug( "Comparing " + Ceylan::toString( uniformRandomValue )
-		+ " with " + Ceylan::toString( _sampleRangesTable[ count ] ) + " : " ) ;
+		+ " with " + Ceylan::toString( _sampleRangesTable[ count ] ) + ": " ) ;
 	*/
 		
 	while ( uniformRandomValue > _sampleRangesTable[ count ] )
@@ -125,24 +126,26 @@ RandomValue RandomGeneratorFromPDF::getNewValue() throw()
 	if ( static_cast<Sample>( res ) >= _upperLimit )
 	{
 
-		LogPlug::error( "RandomGeneratorFromPDF::getNewValue : value "
+		LogPlug::error( "RandomGeneratorFromPDF::getNewValue: value "
 			+ Ceylan::toString( res ) 
 			+ " was drawn, whereas upper excluded limit is " 
 			+ Ceylan::toString( _upperLimit ) ) ;
 
 		try
 		{
+		
 			displayProbabilities() ;
+			
 		}
 		catch ( const Ceylan::Exception & e )
 		{
-			LogPlug::error( "RandomGeneratorFromPDF::getNewValue : "
-				"additional error : " + e.toString() ) ;
+			LogPlug::error( "RandomGeneratorFromPDF::getNewValue: "
+				"additional error: " + e.toString() ) ;
 		}
 		
 
-		Ceylan::emergencyShutdown( "RandomGeneratorFromPDF::getNewValue : "
-			"incorrect random value returned : " 
+		throw MathsException( "RandomGeneratorFromPDF::getNewValue: "
+			"incorrect random value returned: " 
 			+ Ceylan::toString( res ) + "." ) ;
 
 	}
@@ -153,26 +156,27 @@ RandomValue RandomGeneratorFromPDF::getNewValue() throw()
 }
 
 
-void RandomGeneratorFromPDF::reset( Seed newSeed ) throw() 
+
+void RandomGeneratorFromPDF::reset( Seed newSeed )  
 {
 
 	if ( _whiteNoiseGenerator != 0 )
 		_whiteNoiseGenerator->reset( newSeed ) ;
 	else
-		LogPlug::warning( "RandomGeneratorFromPDF::reset : "
+		LogPlug::warning( "RandomGeneratorFromPDF::reset: "
 			"no white noise generator available, none reset." ) ;
 			
 }
 
 
-const string RandomGeneratorFromPDF::displayProbabilities() 
-	const throw( MathsException )
+
+const string RandomGeneratorFromPDF::displayProbabilities() const
 {
 
 
 	if ( _probabilitiesTable == 0 )
 		throw MathsException( 
-			"RandomGeneratorFromPDF::displayProbabilities : "
+			"RandomGeneratorFromPDF::displayProbabilities: "
 			"no probability table available." ) ;
 			
 	list<string> l ;	
@@ -181,14 +185,14 @@ const string RandomGeneratorFromPDF::displayProbabilities()
 	Probability currentProbability ;
 	
 
-	// Should never be reached :
+	// Should never be reached:
 	Probability minProbability = 1000 ;
 	Sample sampleMin = 0 ;
 	
 	Probability maxProbability = 0 ;
 	Sample sampleMax = 0 ;
 	
-	string result = "Probability table is : " ;
+	string result = "Probability table is: " ;
 	 
 	for ( Sample sample = _lowerLimit; sample < _upperLimit; sample++ )
 	{
@@ -197,7 +201,7 @@ const string RandomGeneratorFromPDF::displayProbabilities()
 		
 		l.push_back( "Probability to realize sample " 
 			+ Ceylan::toString( sample )
-			+ " : " + Ceylan::toString( 100 * currentProbability )
+			+ ": " + Ceylan::toString( 100 * currentProbability )
 			+ " %." ) ;
 			
 		sum += _probabilitiesTable[ sample - _lowerLimit ] ;
@@ -216,9 +220,13 @@ const string RandomGeneratorFromPDF::displayProbabilities()
 		
 		
 	}
+	
+
+
+#if CEYLAN_DEBUG
 		
 	LogPlug::debug( 
-		"Displaying corresponding look-up sample range table :" ) ;
+		"Displaying corresponding look-up sample range table:" ) ;
 		
 	for ( Sample sample = _lowerLimit; sample < _upperLimit; sample++ )
 	{
@@ -228,6 +236,9 @@ const string RandomGeneratorFromPDF::displayProbabilities()
 	
 	LogPlug::debug( "Upper bound to White noise random values is " 
 		+ Ceylan::toString( RAND_MAX ) ) ;
+
+#endif // CEYLAN_DEBUG
+
 
 	return result + Ceylan::formatStringList( l ) 
 		+ "Probabilities sum up to "
@@ -243,9 +254,9 @@ const string RandomGeneratorFromPDF::displayProbabilities()
 
 }
 
+
 						
-const string RandomGeneratorFromPDF::toString( VerbosityLevels level ) 
-	const throw()
+const string RandomGeneratorFromPDF::toString( VerbosityLevels level ) const 
 {
 	
 	string base = "Probability Density Function-based random generator, " ;
@@ -261,33 +272,34 @@ const string RandomGeneratorFromPDF::toString( VerbosityLevels level )
 			+ RandomGenerator::toString( level ) ;	
 	}
 	
-	// Useless but avoids warnings :
+	// Useless but avoids warnings:
 	return base ;
 		
 }
 
 
-void RandomGeneratorFromPDF::preCompute() throw( MathsException ) 
+
+void RandomGeneratorFromPDF::preCompute() 
 {
 	
-	LogPlug::trace( "RandomGeneratorFromPDF::preCompute called." ) ;
+	//LogPlug::trace( "RandomGeneratorFromPDF::preCompute called." ) ;
 	
 	/*
 	 * Creates internally-used white noise generator, with 
-	 * maximum sample span :
+	 * maximum sample span:
 	 *
 	 */
 	_whiteNoiseGenerator = new WhiteNoiseGenerator( 0, RAND_MAX ) ;
 	
 	if ( _whiteNoiseGenerator == 0 )
-		throw MathsException( "RandomGeneratorFromPDF::preCompute : "
+		throw MathsException( "RandomGeneratorFromPDF::preCompute: "
 			"allocation of internal white noise generator failed." ) ;
 		
 	if ( _pdf == 0 )
-		throw MathsException( "RandomGeneratorFromPDF::preCompute : "
+		throw MathsException( "RandomGeneratorFromPDF::preCompute: "
 			"no probability density function available" ) ;
 			
-	LogPlug::trace( "Creating probability table." ) ;
+	//LogPlug::trace( "Creating probability table." ) ;
 
 	/*
 	 * We have to populate the uniform (white noise) sample space 
@@ -298,7 +310,7 @@ void RandomGeneratorFromPDF::preCompute() throw( MathsException )
 	_probabilitiesTable = new Probability[ _upperLimit - _lowerLimit ] ;
 	
 	if ( _probabilitiesTable == 0 )
-		throw MathsException( "RandomGeneratorFromPDF::preCompute : "
+		throw MathsException( "RandomGeneratorFromPDF::preCompute: "
 			"not enough memory to allocate probability table." ) ;
 	
 	Probability probaTemp ;
@@ -313,7 +325,7 @@ void RandomGeneratorFromPDF::preCompute() throw( MathsException )
 
 	/*
 	 * Normalize the probability table, so that the sum of probabilities 
-	 * equals 1 :
+	 * equals 1:
 	 *
 	 */
 	
@@ -321,12 +333,12 @@ void RandomGeneratorFromPDF::preCompute() throw( MathsException )
 		_probabilitiesTable[ sample - _lowerLimit ] /= toNormalize ;
 	
 	
-	// Now records which area each sample needs in uniform space :
+	// Now records which area each sample needs in uniform space:
 	
 	_sampleRangesTable = new Sample[ _upperLimit - _lowerLimit ] ;
 	
 	if ( _sampleRangesTable == 0 )
-		throw MathsException( "RandomGeneratorFromPDF::preCompute : "
+		throw MathsException( "RandomGeneratorFromPDF::preCompute: "
 			"not enough memory to allocate probability table." ) ;
 
 	Sample sampleIndex = 0 ;
@@ -342,7 +354,7 @@ void RandomGeneratorFromPDF::preCompute() throw( MathsException )
 	/*
 	 * Ensures that rounding does not cause latest sample range to be
 	 * lower than the maximum value that the white noise generator can
-	 * draw (RAND_MAX) :
+	 * draw (RAND_MAX):
 	 *
 	 */
 	_sampleRangesTable[ _upperLimit - _lowerLimit - 1 ] = RAND_MAX ;
@@ -352,7 +364,7 @@ void RandomGeneratorFromPDF::preCompute() throw( MathsException )
 	_probabilitiesTable = 0 ;
 	*/
 	
-	LogPlug::trace( "RandomGeneratorFromPDF::preCompute ended." ) ;
+	//LogPlug::trace( "RandomGeneratorFromPDF::preCompute ended." ) ;
 
 }
 

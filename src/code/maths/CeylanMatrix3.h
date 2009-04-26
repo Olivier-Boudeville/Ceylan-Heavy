@@ -48,12 +48,15 @@ namespace Ceylan
 		{
 
 			
+			
 			// Applied to matrices.
 			class Tripoint ;
+
 
 			// Applied to matrices.
 			class Vector3 ;
 		
+			
 			
 			/**
 			 * Three-dimensional square matrix (3x3), whose coordinates
@@ -79,9 +82,11 @@ namespace Ceylan
 				/// Must access to each other's coordinates.				
 				friend class Tripoint ;
 
+
 				/// Must access to each other's coordinates.
 				friend class Vector3 ;
 				
+
 
 				/** 
 				 * Tells whether the two matrices have the 
@@ -95,7 +100,8 @@ namespace Ceylan
 				 *
 				 */
 				CEYLAN_DLL friend bool operator == ( const Matrix3 & m1, 
-					const Matrix3 & m2 ) throw() ;
+					const Matrix3 & m2 ) ;
+								
 								
 								
 				/** 
@@ -109,7 +115,8 @@ namespace Ceylan
 				 *
 				 */
 				CEYLAN_DLL friend bool operator != ( const Matrix3 & m1, 
-					const Matrix3 & m2 ) throw() ;
+					const Matrix3 & m2 ) ;
+
 
 
 				/**  
@@ -117,7 +124,8 @@ namespace Ceylan
 				 *
 				 */
 				CEYLAN_DLL friend Matrix3 operator + ( const Matrix3 & m1, 
-					const Matrix3 & m2 ) throw() ;
+					const Matrix3 & m2 ) ;
+				
 				
 				
 				/**  
@@ -125,7 +133,8 @@ namespace Ceylan
 				 *
 				 */					
 				CEYLAN_DLL friend Matrix3 operator - ( const Matrix3 & m1, 
-					const Matrix3 & m2 ) throw() ;
+					const Matrix3 & m2 ) ;
+				
 				
 				
 				/**  
@@ -133,7 +142,8 @@ namespace Ceylan
 				 *
 				 */									
 				CEYLAN_DLL friend Matrix3 operator * ( const Matrix3 & m1, 
-					const Matrix3 & m2 ) throw() ;
+					const Matrix3 & m2 ) ;
+				
 				
 				
 				/**  
@@ -141,7 +151,8 @@ namespace Ceylan
 				 *
 				 */							
 				CEYLAN_DLL friend Matrix3 operator * ( Real lambda, 
-					const Matrix3 & m ) throw() ;
+					const Matrix3 & m ) ;
+				
 				
 				
 				/**
@@ -151,8 +162,8 @@ namespace Ceylan
 				 * @throw LinearException if the matrix is singuler.
 				 *
 				 */
-				CEYLAN_DLL friend Matrix3 operator ! ( const Matrix3 & m ) 
-					throw( LinearException ) ;
+				CEYLAN_DLL friend Matrix3 operator ! ( const Matrix3 & m ) ;
+				
 				
 				
 				/**  
@@ -160,8 +171,8 @@ namespace Ceylan
 				 * to this matrix.
 				 *
 				 */
-				CEYLAN_DLL friend Matrix3 operator ~ ( const Matrix3 & m )
-					throw() ;
+				CEYLAN_DLL friend Matrix3 operator ~ ( const Matrix3 & m ) ;
+
 
 
 				/** 	
@@ -169,7 +180,8 @@ namespace Ceylan
 				 *
 				 */
 				CEYLAN_DLL friend Vector3 operator * ( const Matrix3 & m , 
-					const Vector3 & v ) throw() ;
+					const Vector3 & v ) ;
+
 
 
 
@@ -187,7 +199,8 @@ namespace Ceylan
 							 Real x0 = 0, Real x1 = 0, Real x2 = 0,
 							 Real y0 = 0, Real y1 = 0, Real y2 = 0,
 							 Real z0 = 0, Real z1 = 0, Real z2 = 0
-						) throw() ;
+					) ;
+				
 				
 				
 					/** 
@@ -198,11 +211,13 @@ namespace Ceylan
 					 * to return a Matrix3 on the stack.
 					 *
 					 */
-					Matrix3( const Matrix3 & source ) throw() ;
+					Matrix3( const Matrix3 & source ) ;
+					
 					
 					
 					/// Basic virtual destructor.
 					virtual ~Matrix3() throw() ;
+					
 					
 					
 					/**
@@ -213,7 +228,8 @@ namespace Ceylan
 							 Real x0 = 0, Real x1 = 0, Real x2 = 0,
 							 Real y0 = 0, Real y1 = 0, Real y2 = 0,
 							 Real z0 = 0, Real z1 = 0, Real z2 = 0
-						) throw() ;
+					) ;
+					
 					
 					
 					/**
@@ -224,15 +240,17 @@ namespace Ceylan
 					 *
 					 */
 					virtual void setColumn( MatrixIndex columnNumber, 
-						const Vector3 & newColumn )	throw() ;
+						const Vector3 & newColumn )	;
 
+					
 					
 					/**
 					 * Sets this matrix so that all its elements equal
 					 * commonValue.
 					 *
 					 */
-					virtual void setAllElementsTo( Real commonValue ) throw() ;
+					virtual void setAllElementsTo( Real commonValue ) ;
+					
 					
 
 					/**
@@ -240,12 +258,13 @@ namespace Ceylan
 					 * Index ranges from 0 to Dimensions-1 for both 
 					 * dimensions.
 					 *
-					 * @note An emergency shutdown is triggered if 
-					 * index is out of bounds.
+					 * @throw MathsException if index is out of bounds and if
+					 * in debug mode.
 					 *
 					 */
 					virtual Real getElementAt( MatrixIndex abscissa, 
-						MatrixIndex ordinate ) const throw() ;
+						MatrixIndex ordinate ) const ;
+					
 					
 					
 					/**
@@ -253,16 +272,18 @@ namespace Ceylan
 					 * Index ranges from 0 to Dimensions-1 for both 
 					 * dimensions.
 					 *
-					 * @note An emergency shutdown is triggered if 
-					 * index is out of bounds.
+					 * @throw MathsException if index is out of bounds and if
+					 * in debug mode.
 					 *
 					 */
 					virtual void setElementAt( MatrixIndex abscissa, 
-						MatrixIndex ordinate, Real newValue ) throw() ;
+						MatrixIndex ordinate, Real newValue ) ;
+
 
 					
 					/// Sets this matrix to the identity matrix.
-					virtual void setToIdentity() throw() ;
+					virtual void setToIdentity() ;
+					
 					
 					
 					/**
@@ -270,18 +291,24 @@ namespace Ceylan
 					 * whose diagonal term is diagonalTerm.
 					 *
 					 */
-					virtual void setToDiagonal( Real diagonalTerm ) throw() ;
+					virtual void setToDiagonal( Real diagonalTerm ) ;
+					
 					
 					
 					/// Tranposes this matrix.
-					virtual void transpose() throw() ;
+					virtual void transpose() ;
+					
+					
 					
 					/// Computes this matrix's trace.
-					virtual Real trace() const throw() ;
+					virtual Real trace() const ;
+					
+					
 					
 					/// Computes this matrix's determinant.
-					virtual Real determinant() const throw() ;					
+					virtual Real determinant() const ;					
 												
+					
 					
 					/**
 					 * Returns a user-friendly description of the state
@@ -296,20 +323,24 @@ namespace Ceylan
 					 *
 					 */
              		virtual const std::string toString( 
-						VerbosityLevels level = high ) const throw() ;
+						VerbosityLevels level = high ) const ;
 				 
+					
+					
 					
 					
 					// Static section.
 					
 					
-					 /// Returns the cofactor matrix. 
-					static Matrix3 Cofactor( const Matrix3 & m ) throw() ;
+					/// Returns the cofactor matrix. 
+					static Matrix3 Cofactor( const Matrix3 & m ) ;
 					 
 					 
-					 /// Returns the adjoint matrix. 
-					static Matrix3 Adjoint( const Matrix3 & m ) throw() ;
 					 
+					/// Returns the adjoint matrix. 
+					static Matrix3 Adjoint( const Matrix3 & m ) ;
+					 
+
 
 					/**
 					 * Returns the matrix corresponding to specified
@@ -323,8 +354,9 @@ namespace Ceylan
 					 *
 					 */
 					template<typename T>
-					static Matrix3 CreateFrom( T endomorphism ) throw()
+					static Matrix3 CreateFrom( T endomorphism ) 
 					{
+					
 						Matrix3 result ;
 	
 						Vector3 v( 1, 0, 0 ) ;
@@ -340,14 +372,16 @@ namespace Ceylan
 						result.setColumn( 2, v ) ;
 	
 						return result ;
+						
 					}
 					
 					 
-					 /**
-					  * Tells what is the dimension for this Matrix.
-					  *
-					  */
-					 static const MatrixIndex Dimensions = 3 ;
+					 
+					/**
+					 * Tells what is the dimension for this Matrix.
+					 *
+					 */
+					static const MatrixIndex Dimensions = 3 ;
 					 
 					 					
 					
@@ -362,13 +396,14 @@ namespace Ceylan
 			} ;
 			
 			
+			
 			/*
 			 * g++ seems to require this outside declaration, only for this
 			 * particular operator though!
 			 *
 			 */
-			CEYLAN_DLL Matrix3 operator ! ( const Matrix3 & m ) 
-				throw( LinearException ) ;
+			CEYLAN_DLL Matrix3 operator ! ( const Matrix3 & m ) ;
+		
 				
 		}
 		
@@ -377,4 +412,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_MATRIX_3_H_
+

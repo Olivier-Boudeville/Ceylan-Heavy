@@ -31,7 +31,8 @@
 #include "CeylanOperators.h"     // for toString
 #include "CeylanNetwork.h"       // for getSocketError
 
-// for SystemSpecificSocketAddress :
+
+// for SystemSpecificSocketAddress:
 #include "CeylanSystemSpecificSocketAddress.h"  
 
 
@@ -80,18 +81,19 @@ using std::string ;
 
 
 /*
- * Avoid ::htonl, use directy htonl since it is a macro on some platforms
- * (ex : NetBSD)
+ * Avoid::htonl, use directy htonl since it is a macro on some platforms
+ * (ex: NetBSD)
  *
  */
 
 
 
-AnonymousStreamSocket::AnonymousStreamSocketException::AnonymousStreamSocketException( const std::string & reason ) throw():
+AnonymousStreamSocket::AnonymousStreamSocketException::AnonymousStreamSocketException( const std::string & reason ) :
 	StreamSocketException( reason )
 {
 
 }
+
 
 
 AnonymousStreamSocket::AnonymousStreamSocketException::~AnonymousStreamSocketException() throw()
@@ -102,11 +104,12 @@ AnonymousStreamSocket::AnonymousStreamSocketException::~AnonymousStreamSocketExc
 
 
 AnonymousStreamSocket::NonBlockingAcceptException::NonBlockingAcceptException(
-		const std::string & reason ) throw():
+		const std::string & reason ) :
 	AnonymousStreamSocketException( reason )
 {
 
 }
+
 
 
 AnonymousStreamSocket::NonBlockingAcceptException::~NonBlockingAcceptException()
@@ -118,23 +121,21 @@ AnonymousStreamSocket::NonBlockingAcceptException::~NonBlockingAcceptException()
 
 
 AnonymousStreamSocket::AnonymousStreamSocket( 
-	Ceylan::System::FileDescriptor listeningFD, 
-	bool blocking, bool sacrificeThroughputToPacketTiming ) 
-		throw( SocketException ):
+		Ceylan::System::FileDescriptor listeningFD, 
+		bool blocking, bool sacrificeThroughputToPacketTiming ) :
 	StreamSocket( /* blocking */ true,
 		sacrificeThroughputToPacketTiming )
 {
 
 #if CEYLAN_USES_NETWORK
 	
-
-	LogPlug::debug( "AnonymousStreamSocket constructor : "
+	LogPlug::debug( "AnonymousStreamSocket constructor: "
 		"ready to accept a new connection using listening file descriptor " 
 		+ Ceylan::toString( listeningFD ) + "." ) ;
 
 #if CEYLAN_ARCH_WINDOWS
 
-	// socklen_t is lacking :
+	// socklen_t is lacking:
 	int addressSize = sizeof( _address->_socketAddress ) ;
 
 #else // CEYLAN_ARCH_WINDOWS
@@ -147,10 +148,10 @@ AnonymousStreamSocket::AnonymousStreamSocket(
 	/*
 	 * A time-out could be added, in case the connection request was cancelled
 	 * after the select but before this accept, if ever blocking sockets 
-	 * were chosen (non-blocking are to be preferred anyway) :
+	 * were chosen (non-blocking are to be preferred anyway):
 	 *
 	 */
-	_originalFD = static_cast<System::FileDescriptor>( ::accept( listeningFD, 
+	_originalFD = static_cast<System::FileDescriptor>(::accept( listeningFD, 
 		reinterpret_cast<sockaddr *>( & _address->_socketAddress ),
 		& addressSize ) ) ;
 
@@ -169,11 +170,11 @@ AnonymousStreamSocket::AnonymousStreamSocket(
 			
 			/*
 			 * With non-blocking sockets, accept with no available connection
-			 * returns EAGAIN :
+			 * returns EAGAIN:
 			 *
 			 */
 			throw NonBlockingAcceptException( 
-				"AnonymousStreamSocket constructor : "
+				"AnonymousStreamSocket constructor: "
 				"no available connection found." ) ;
 				
 		}
@@ -181,17 +182,17 @@ AnonymousStreamSocket::AnonymousStreamSocket(
 		{
 		
 			throw AnonymousStreamSocketException(
-				"AnonymousStreamSocket constructor failed : " 
+				"AnonymousStreamSocket constructor failed: " 
 				+ System::explainError() ) ;
 		}
 				
 	}
 	
 	
-	LogPlug::debug( "AnonymousStreamSocket constructor : "
+	LogPlug::debug( "AnonymousStreamSocket constructor: "
 		"new connection accepted." ) ;
 
-	// This new file descriptor comes blocking :
+	// This new file descriptor comes blocking:
 	if ( blocking == false )
 		setBlocking( false ) ;
 	
@@ -202,12 +203,13 @@ AnonymousStreamSocket::AnonymousStreamSocket(
 #else // CEYLAN_USES_NETWORK
 
 	throw AnonymousStreamSocketException( 
-		"AnonymousStreamSocket constructor failed : "
+		"AnonymousStreamSocket constructor failed: "
 		"network support not available." ) ; 
 	
 #endif // CEYLAN_USES_NETWORK
 	
 }
+
 
 
 AnonymousStreamSocket::~AnonymousStreamSocket() throw()
@@ -218,14 +220,18 @@ AnonymousStreamSocket::~AnonymousStreamSocket() throw()
 }
 
 
-bool AnonymousStreamSocket::isConnected() const throw()
+
+bool AnonymousStreamSocket::isConnected() const
 {
+
 	return true ;
+	
 }
 
 
+
 const std::string AnonymousStreamSocket::toString( 
-	Ceylan::VerbosityLevels level ) const throw()
+	Ceylan::VerbosityLevels level ) const
 {
 
 #if CEYLAN_USES_NETWORK

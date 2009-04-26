@@ -37,8 +37,10 @@
 
 
 
+
 namespace Ceylan
 {
+
 
 	namespace Maths
 	{
@@ -48,6 +50,7 @@ namespace Ceylan
 		{
 		
 		
+		
 			/// Seeds are initial values used for random generators.
 			typedef unsigned int Seed ;
 			
@@ -55,6 +58,7 @@ namespace Ceylan
 			/// The type of the results of a random generator.
 			typedef unsigned int RandomValue ;
 			
+				
 				
 			/**
 			 * Abstract mother class of all kinds of random generators.
@@ -69,7 +73,6 @@ namespace Ceylan
 			
 				public:
 				
-
 
 				
 					/**
@@ -88,22 +91,24 @@ namespace Ceylan
 					 * inferior to upperLimit.
 					 *
 					 */					 
-					explicit RandomGenerator( Sample lowerLimit, 
-						Sample upperLimit, Seed aSeed = DefaultSeed ) 
-							throw( MathsException ) ;
+					RandomGenerator( Sample lowerLimit, Sample upperLimit, 
+						Seed aSeed = DefaultSeed ) ;
 					
 					
             		/// Basic virtual destructor.
             		virtual ~RandomGenerator() throw() ;
 					
 					
+					
 					/// Returns the next random value.
-					virtual RandomValue getNewValue() throw() = 0 ;
+					virtual RandomValue getNewValue() = 0 ;
+					
 					
 					
 					/// Resets the random generator with specified seed.
-					virtual void reset( Seed newSeed ) throw() = 0 ;
+					virtual void reset( Seed newSeed ) = 0 ;
 					
+									
 										
 	    	        /**
 	    	         * Returns a user-friendly description of the state
@@ -118,8 +123,9 @@ namespace Ceylan
 					 *
 					 */
             		virtual const std::string toString( 
-						VerbosityLevels level = high ) const throw() ;
+						VerbosityLevels level = high ) const ;
 							
+
 
 					
 					// Static section.
@@ -129,8 +135,10 @@ namespace Ceylan
 					static const Seed DefaultSeed ;
 
 
+
 				
 				protected:
+					
 					
 				
 					/**
@@ -138,7 +146,8 @@ namespace Ceylan
 					 * new value.  
 					 *
 					 */
-					virtual void preCompute() throw( MathsException ) = 0 ;		
+					virtual void preCompute()  = 0 ;		
+					
 					
 					
 					/**
@@ -147,6 +156,7 @@ namespace Ceylan
 					 *
 					 */
 					Sample _lowerLimit ;
+					
 					
 					
 					/**
@@ -158,6 +168,7 @@ namespace Ceylan
 					Sample _upperLimit ;
 
 
+
 					/**
 					 * The seed which was used to initialize the 
 					 * generator.
@@ -167,18 +178,17 @@ namespace Ceylan
 										
 					
 					
+					
 				private:
 				
 				
+				
 					/**
-					 * Copy constructor made private to ensure that it
-					 * will be never called.
-					 *
-					 * The compiler should complain whenever this 
-					 * undefined constructor is called, implicitly or not.
+					 * Copy constructor  specifically defined.
 					 * 
 					 */			 
-					RandomGenerator( const RandomGenerator & source ) throw() ;
+					RandomGenerator( const RandomGenerator & source ) ;
+			
 			
 			
 					/**
@@ -191,11 +201,11 @@ namespace Ceylan
 					 *
 					 */			 
 					RandomGenerator & operator = ( 
-						const RandomGenerator & source ) throw() ;
-					
-								
+						const RandomGenerator & source ) ;
+							
 			
 			} ;
+			
 								
 		}
 		
@@ -204,4 +214,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_RANDOM_GENERATOR_H_
+

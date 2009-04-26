@@ -63,6 +63,7 @@ const char   ObjectIdentifier::Separator = '/' ;
 const string ObjectIdentifier::PIDTag    = "PID-" ;
 
 
+
 /**
  * The pattern must match for instance
  * "sonata/PID-1444/N6Ceylan6ObjectE/0x8050fd0".
@@ -75,8 +76,7 @@ const string ObjectIdentifier::Pattern =  "^([0-2]{0,1}[0-9]{0,1}[0-9]{1,1}"
 
 
 
-Ceylan::Log::ObjectIdentifier::ObjectIdentifier( const Object & object ) 
-		throw( IdentifierException ):
+Ceylan::Log::ObjectIdentifier::ObjectIdentifier( const Object & object ) :
 	TextIdentifier(),
 	_hostname(),
 	_pid(),
@@ -126,7 +126,7 @@ Ceylan::Log::ObjectIdentifier::ObjectIdentifier( const Object & object )
 
 
 ObjectIdentifier::ObjectIdentifier(	const std::string & hostname, Pid pid,
-		const std::string & className, const void * address) throw():
+		const std::string & className, const void * address) :
 	_hostname( hostname ),
 	_pid( pid ),
 	_className( className ),
@@ -139,14 +139,15 @@ ObjectIdentifier::ObjectIdentifier(	const std::string & hostname, Pid pid,
 
 ObjectIdentifier::~ObjectIdentifier() throw()
 {
-	// Nothing to delete, especially not _address !
+
+	// Nothing to delete, especially not _address!
 
 }
 
 
 
 bool ObjectIdentifier::differentButMatches( const ObjectIdentifier & otherID )
-	const throw()
+	const
 {
 
 	/*
@@ -182,8 +183,7 @@ bool ObjectIdentifier::differentButMatches( const ObjectIdentifier & otherID )
 
 
 
-const string ObjectIdentifier::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+const string ObjectIdentifier::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	return _hostname + Separator + PIDTag + _pid + Separator 		 
@@ -194,7 +194,7 @@ const string ObjectIdentifier::toString( Ceylan::VerbosityLevels level )
 
 
 ObjectIdentifier & ObjectIdentifier::generateFromChannelName( 
-	const string & channelName ) throw ( IdentifierException ) 
+	const string & channelName )
 {
 
 	/*
@@ -256,7 +256,7 @@ ObjectIdentifier & ObjectIdentifier::generateFromChannelName(
 	
 	/*
 	 * Disabled since its core dumps in re_exec ()
-	 * (poorly written re library !)
+	 * (poorly written re library!)
 	 *
 	 *
 	RegExp pidRegExp( pidString ) ;
@@ -273,7 +273,6 @@ ObjectIdentifier & ObjectIdentifier::generateFromChannelName(
 	
 	try 
 	{
-	
 	
 		pid = static_cast<Pid>( 
 			Ceylan::stringToUnsignedLong( pidString.substr( 4 ) ) ) ;

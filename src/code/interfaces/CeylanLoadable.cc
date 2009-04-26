@@ -34,7 +34,7 @@ using namespace Ceylan ;
 
 
 
-LoadableException::LoadableException( const std::string & message ) throw() :
+LoadableException::LoadableException( const std::string & message ) :
 	Exception( "Loadable exception: " + message )
 {
 
@@ -48,11 +48,11 @@ LoadableException::~LoadableException() throw()
 			
 
 
+
 // Implementation of the Loadable mother class.
 
 
-Loadable::Loadable( const std::string & contentFilePath ) 
-		throw( LoadableException ):
+Loadable::Loadable( const std::string & contentFilePath ) :
 	_contentPath( contentFilePath )
 {
 
@@ -67,7 +67,7 @@ Loadable::~Loadable() throw()
 
 
 
-const std::string & Loadable::getContentPath() const throw()
+const std::string & Loadable::getContentPath() const
 {
 
 	return _contentPath ;

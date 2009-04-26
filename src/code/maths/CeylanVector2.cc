@@ -32,7 +32,6 @@
 
 #include "CeylanLogPlug.h"    			 // for LogPlug
 #include "CeylanOperators.h"  			 // for toString
-#include "CeylanUtils.h"      			 // for emergencyShutdown
 
 #ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"                // for CEYLAN_DEBUG
@@ -60,34 +59,44 @@ using Ceylan::Maths::Real ;
 
 
 
-Vector2::Vector2( Real x0, Real x1 ) throw() 
+
+Vector2::Vector2( Real x0, Real x1 ) 
 {
+
 	_vec[0] = x0 ;
 	_vec[1] = x1 ;
+	
 }
 
 
-Vector2::~Vector2() throw() 
+
+Vector2::~Vector2() throw()
 {
 
 }
 
 
 
-void Vector2::setTo( Real x0, Real x1 ) throw()
+void Vector2::setTo( Real x0, Real x1 )
 {
+
 	_vec[0] = x0 ;
 	_vec[1] = x1 ;
+	
 }
 
 
-void Vector2::nullify() throw()
+
+void Vector2::nullify()
 {
+
 	setAllElementsTo( 0 ) ;
+	
 }
 
 
-void Vector2::setAllElementsTo( Real commonValue ) throw()
+
+void Vector2::setAllElementsTo( Real commonValue )
 {
 
 	for ( MatrixIndex i = 0; i < Dimensions; i++ )
@@ -98,26 +107,33 @@ void Vector2::setAllElementsTo( Real commonValue ) throw()
 }
 
 
-Real Vector2::getX() const throw()
+
+Real Vector2::getX() const
 {
+
 	return _vec[ 0 ] ;
+	
 }
 
 
-Real Vector2::getY() const throw()
+
+Real Vector2::getY() const
 {
+
 	return _vec[ 1 ] ;
+	
 }
 
 
-Real Vector2::getElementAt( MatrixIndex index ) const throw()
+
+Real Vector2::getElementAt( MatrixIndex index ) const
 {
 
 #if CEYLAN_DEBUG
 
 	if ( index >= Dimensions )
-		Ceylan::emergencyShutdown( 
-			"Vector2::getElementAt : index out of bounds." ) ;
+		throw MathsException( 
+			"Vector2::getElementAt: index out of bounds." ) ;
 			
 #endif // CEYLAN_DEBUG 
 		
@@ -126,14 +142,15 @@ Real Vector2::getElementAt( MatrixIndex index ) const throw()
 }
 
 
-void Vector2::setElementAt( MatrixIndex index, Real newValue ) throw()
+
+void Vector2::setElementAt( MatrixIndex index, Real newValue )
 {
 
 #if CEYLAN_DEBUG
 
 	if ( index >= Dimensions )
-		Ceylan::emergencyShutdown( 
-			"Vector2::setElementAt : index out of bounds." ) ;
+		throw MathsException( 
+			"Vector2::setElementAt: index out of bounds." ) ;
 		
 #endif // CEYLAN_DEBUG
 
@@ -142,14 +159,15 @@ void Vector2::setElementAt( MatrixIndex index, Real newValue ) throw()
 }
 
 
-void Vector2::normalize() throw( LinearException ) 
+
+void Vector2::normalize() 
 {
 
 	Real mag = magnitude() ; 
 	
 	if ( IsNull( mag ) )
 		throw LinearException( 
-			"Vector2::normalize : null vector cannot be normalized." ) ;
+			"Vector2::normalize: null vector cannot be normalized." ) ;
 	
 	Real factor = static_cast<Real>( 1.0 ) / mag ;
 	
@@ -161,7 +179,8 @@ void Vector2::normalize() throw( LinearException )
 }
 
 
-Real Vector2::magnitude()const throw()
+
+Real Vector2::magnitude()const
 {
 
 	// Not using Pow, might be faster this way.
@@ -178,7 +197,8 @@ Real Vector2::magnitude()const throw()
 }
 
 
-const string Vector2::toString( VerbosityLevels level ) const throw()
+
+const string Vector2::toString( VerbosityLevels level ) const
 {
 
 	string res ;
@@ -205,7 +225,7 @@ const string Vector2::toString( VerbosityLevels level ) const throw()
 		
 	}
 
-	// Non-HTML format requested :
+	// Non-HTML format requested:
 	
 	if ( level == high )
 	{
@@ -229,7 +249,7 @@ const string Vector2::toString( VerbosityLevels level ) const throw()
 
     	if ( oss.fail() )
 		{
-			string message = "Vector2::toString : conversion error." ;
+			string message = "Vector2::toString: conversion error." ;
         	Log::LogPlug::error( message ) ;
 			return message ;
 		}
@@ -241,26 +261,27 @@ const string Vector2::toString( VerbosityLevels level ) const throw()
 	else
 	{
 	
-		res = "Vector2 : [ " ;
+		res = "Vector2: [ " ;
 		
     	for ( MatrixIndex i = 0; i < Dimensions; i++ )
 		{
 			res += Ceylan::toString( _vec[i] ) 
-				+ ( ( i == Dimensions-1 ) ? " ]" : " ; " ) ; 
+				+ ( ( i == Dimensions-1 ) ? " ]": " ; " ) ; 
 		}		
 		
 		return res ;
 		
 	}
 	
-	// Useless but avoids warnings :
+	// Useless but avoids warnings:
 	return res ;
 	
 }
 
 
+
 bool Ceylan::Maths::Linear::operator == ( const Vector2 & v1, 
-	const Vector2 & v2 ) throw()
+	const Vector2 & v2 )
 {
 
    	for ( MatrixIndex i = 0 ; i < Vector2::Dimensions ; i++ )
@@ -280,16 +301,20 @@ bool Ceylan::Maths::Linear::operator == ( const Vector2 & v1,
 
 }
 
+
 			
 bool Ceylan::Maths::Linear::operator != ( const Vector2 & v1, 
-	const Vector2 & v2 ) throw() 
+	const Vector2 & v2 ) 
 {
+
 	return ( ! ( v1 == v2 ) ) ;
+	
 }
 
 
-Vector2 Ceylan::Maths::Linear::operator + ( const Vector2 & v1 , 
-	const Vector2 & v2 ) throw()
+
+Vector2 Ceylan::Maths::Linear::operator + ( const Vector2 & v1, 
+	const Vector2 & v2 )
 {
 
 	Vector2 result ;
@@ -304,8 +329,9 @@ Vector2 Ceylan::Maths::Linear::operator + ( const Vector2 & v1 ,
 }
 
 
-Vector2 Ceylan::Maths::Linear::operator - ( const Vector2 & v1 , 
-	const Vector2 & v2 ) throw()
+
+Vector2 Ceylan::Maths::Linear::operator - ( const Vector2 & v1, 
+	const Vector2 & v2 )
 {
 
 	Vector2 result ;
@@ -320,8 +346,9 @@ Vector2 Ceylan::Maths::Linear::operator - ( const Vector2 & v1 ,
 }
 
 
+
 Vector2 Ceylan::Maths::Linear::operator * ( Real lambda, 
-	const Vector2 & v ) throw()
+	const Vector2 & v )
 {
 
 	Vector2 result ;
@@ -336,8 +363,9 @@ Vector2 Ceylan::Maths::Linear::operator * ( Real lambda,
 }
 
 
-Vector2 Ceylan::Maths::Linear::operator * ( const Matrix2 & m , 
-	const Vector2 & v ) throw()
+
+Vector2 Ceylan::Maths::Linear::operator * ( const Matrix2 & m, 
+	const Vector2 & v )
 {
 
 	Vector2 result ;
@@ -351,13 +379,14 @@ Vector2 Ceylan::Maths::Linear::operator * ( const Matrix2 & m ,
 }
 
 
+
 Vector2 Ceylan::Maths::Linear::operator * ( const HomogeneousMatrix3 & m, 
-	const Vector2 & v ) throw()
+	const Vector2 & v )
 {
 
 	Vector2 result ;
 	
-	// Optimized to take part of 0 and 1 of the homogeneous matrix :
+	// Optimized to take part of 0 and 1 of the homogeneous matrix:
 	
    	for ( MatrixIndex j = 0 ; j < Vector2::Dimensions ; j++ )
 	{
@@ -375,21 +404,25 @@ Vector2 Ceylan::Maths::Linear::operator * ( const HomogeneousMatrix3 & m,
 
 
 
+
 /*
  * No 'Vector2 Ceylan::Maths::Linear::operator ^ ( const Vector2 & v1 ,
- * const Vector2 & v2 ) throw()' can exist.
+ * const Vector2 & v2 )' can exist.
  *
  */
 
 
-Real Ceylan::Maths::Linear::operator ~ ( const Vector2 & v ) throw()
+Real Ceylan::Maths::Linear::operator ~ ( const Vector2 & v )
 {
+
 	return v.magnitude() ;
+	
 }
 
 
-Real Ceylan::Maths::Linear::operator | ( const Vector2 & v1 , 
-	const Vector2 & v2 ) throw()
+
+Real Ceylan::Maths::Linear::operator | ( const Vector2 & v1, 
+	const Vector2 & v2 )
 {
 
 	Real result = 0 ;

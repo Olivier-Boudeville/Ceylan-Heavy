@@ -146,15 +146,18 @@ namespace Ceylan
 	        public:
 	
 	
+	
 				/**
 				 * Constructs a model, not linked to any view or controller.
 				 *
 				 */
-				BaseModel() throw() ;
+				BaseModel() ;
+	
 	
 	
 				/// Basic virtual destructor.
 				virtual ~BaseModel() throw() ;
+
 
 
 				/**
@@ -173,8 +176,8 @@ namespace Ceylan
 				 * themselves to the models).
 				 *
 				 */
-				virtual void addView( const BaseView & view )
-					const throw( GenericMVCException ) = 0 ;
+				virtual void addView( const BaseView & view ) const = 0 ;
+	
 	
 	
 	            /**
@@ -190,7 +193,7 @@ namespace Ceylan
 	             */
 				virtual const std::string toString(
 						Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+					const ;
 	
 	
 
@@ -205,7 +208,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				BaseModel( const BaseModel & source ) throw() ;
+				BaseModel( const BaseModel & source ) ;
 	
 	
 				/**
@@ -215,9 +218,8 @@ namespace Ceylan
 				 * is called, implicitly or not.
 				 *
 				 */
-				BaseModel & operator = ( const BaseModel & source ) throw() ;
+				BaseModel & operator = ( const BaseModel & source ) ;
 
-	
 	
 	    } ;
 
@@ -243,15 +245,18 @@ namespace Ceylan
 	        public:
 	
 	
+	
 				/**
 				 * Constructs a model, not linked to any view or controller.
 				 *
 				 */
-				NoViewModel() throw() ;
+				NoViewModel() ;
+	
 	
 	
 				/// Basic virtual destructor.
 				virtual ~NoViewModel() throw() ;
+
 
 
 				/**
@@ -265,8 +270,8 @@ namespace Ceylan
 				 * themselves to the models).
 				 *
 				 */
-				virtual void addView( const BaseView & view )
-					const throw( GenericMVCException ) ;
+				virtual void addView( const BaseView & view ) const  ;
+	
 	
 	
 	            /**
@@ -281,8 +286,7 @@ namespace Ceylan
 	             *
 	             */
 				virtual const std::string toString(
-						Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 	
 	
 
@@ -297,7 +301,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				NoViewModel( const NoViewModel & source ) throw() ;
+				NoViewModel( const NoViewModel & source ) ;
 	
 	
 				/**
@@ -307,8 +311,7 @@ namespace Ceylan
 				 * is called, implicitly or not.
 				 *
 				 */
-				NoViewModel & operator = ( const NoViewModel & source )
-					throw() ;
+				NoViewModel & operator = ( const NoViewModel & source ) ;
 
 	
 	    } ;
@@ -400,8 +403,7 @@ namespace Ceylan
 				 * @throw GenericMVCException if a view was already registered.
 				 *
 				 */
-				virtual void setView( const ActualView & view )
-					 throw( GenericMVCException ) ;
+				virtual void setView( const ActualView & view ) ;
 	
 	
 	
@@ -425,8 +427,7 @@ namespace Ceylan
 				 * as its name is clearer than this inherited one.
 				 *
 				 */
-				virtual void addView( const ActualView & view )
-					 const throw( GenericMVCException ) ;
+				virtual void addView( const ActualView & view ) const ;
 	
 	
 	
@@ -442,8 +443,7 @@ namespace Ceylan
 	             *
 	             */
 				virtual const std::string toString(
-						Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 
 
@@ -473,7 +473,7 @@ namespace Ceylan
 				 *
 				 */
 				SingleViewGenericModel(
-					const SingleViewGenericModel & source )	throw() ;
+					const SingleViewGenericModel & source ) ;
 	
 	
 				/**
@@ -484,7 +484,8 @@ namespace Ceylan
 				 *
 				 */
 				SingleViewGenericModel & operator = (
-					const SingleViewGenericModel & source ) throw() ;
+					const SingleViewGenericModel & source ) ;
+
 
 	    } ;
 	
@@ -532,7 +533,6 @@ namespace Ceylan
 		template <typename ActualView>
 		void
 		SingleViewGenericModel<ActualView>::setView( const ActualView & view )
-			throw( GenericMVCException )
 		{
 		
 			addView( view ) ;
@@ -544,7 +544,7 @@ namespace Ceylan
 		template <typename ActualView>
 		void
 		SingleViewGenericModel<ActualView>::addView( const ActualView & view )
-			const throw( GenericMVCException )
+			const 
 		{
 		
 			if ( _view != 0 )
@@ -563,7 +563,7 @@ namespace Ceylan
 		template <typename ActualView>
 		const std::string
 		SingleViewGenericModel<ActualView>::toString(
-			Ceylan::VerbosityLevels level ) const throw()
+			Ceylan::VerbosityLevels level ) const 
 		{
 	
 			if ( _view != 0 )
@@ -629,6 +629,7 @@ namespace Ceylan
 			public:
 	
 	
+	
 				/**
 				 * Creates a new generic model, which will be linked to
 				 * specified view, whose ownership is taken, and to no
@@ -642,6 +643,7 @@ namespace Ceylan
 				explicit SingleViewModel( const BaseView & view ) ;
 	
 	
+	
 				/**
 				 * Creates a new generic model, which will be linked afterwards
 				 * to a view and to no controller.
@@ -651,7 +653,7 @@ namespace Ceylan
 				 * cannot be specified directly when creating this model.
 				 *
 				 */
-				explicit SingleViewModel() ;
+				SingleViewModel() ;
 	
 	
 	
@@ -682,8 +684,7 @@ namespace Ceylan
 				 * themselves to the models).
 				 *
 				 */
-				virtual void setView( const BaseView & view )
-					 throw( GenericMVCException ) ;
+				virtual void setView( const BaseView & view ) ;
 	
 	
 	
@@ -707,8 +708,7 @@ namespace Ceylan
 				 * as its name is clearer than this inherited one.
 				 *
 				 */
-				virtual void addView( const BaseView & view )
-					const throw( GenericMVCException ) ;
+				virtual void addView( const BaseView & view ) const ;
 	
 	
 	
@@ -724,8 +724,7 @@ namespace Ceylan
 	             *
 	             */
 				virtual const std::string toString(
-						Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 
 
@@ -754,7 +753,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				SingleViewModel( const SingleViewModel & source ) throw() ;
+				SingleViewModel( const SingleViewModel & source ) ;
 	
 	
 				/**
@@ -764,8 +763,9 @@ namespace Ceylan
 				 * is called, implicitly or not.
 				 *
 				 */
-				SingleViewModel & operator = (
-					const SingleViewModel & source ) throw() ;
+				SingleViewModel & operator = ( 
+					const SingleViewModel & source ) ;
+					
 
 	    } ;
 	
@@ -797,7 +797,9 @@ namespace Ceylan
 		class MultipleViewGenericModel: public BaseModel
 		{
 	
+	
 			public:
+	
 	
 	
 				/**
@@ -811,6 +813,7 @@ namespace Ceylan
 				 *
 				 */
 				explicit MultipleViewGenericModel( const ActualView & view ) ;
+	
 	
 	
 				/**
@@ -827,6 +830,7 @@ namespace Ceylan
 					const std::list<const ActualView *> & views ) ;
 	
 	
+	
 				/**
 				 * Creates a new generic model, which will be linked afterwards
 				 * to views, and to no controller.
@@ -837,7 +841,8 @@ namespace Ceylan
 				 * this model.
 				 *
 				 */
-				explicit MultipleViewGenericModel() ;
+				MultipleViewGenericModel() ;
+	
 	
 	
 				/**
@@ -861,8 +866,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual void setViews( 
-						const std::list<const ActualView *> & views )
-					 throw( GenericMVCException ) ;
+					const std::list<const ActualView *> & views ) ;
 	
 	
 	
@@ -880,8 +884,7 @@ namespace Ceylan
 				 * themselves to the models).
 				 *
 				 */
-				virtual void addView( const ActualView & view )
-					 const throw( GenericMVCException ) ;
+				virtual void addView( const ActualView & view ) const  ;
 	
 	
 	
@@ -897,8 +900,7 @@ namespace Ceylan
 	             *
 	             */
 				virtual const std::string toString(
-						Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 
 
@@ -925,7 +927,7 @@ namespace Ceylan
 				 *
 				 */
 				MultipleViewGenericModel(
-					const MultipleViewGenericModel & source )	throw() ;
+					const MultipleViewGenericModel & source ) ;
 	
 	
 				/**
@@ -936,7 +938,7 @@ namespace Ceylan
 				 *
 				 */
 				MultipleViewGenericModel & operator = (
-					const MultipleViewGenericModel & source ) throw() ;
+					const MultipleViewGenericModel & source ) ;
 
 
 	    } ;
@@ -989,8 +991,7 @@ namespace Ceylan
 	
 		template <typename ActualView>
 		void MultipleViewGenericModel<ActualView>::setViews( 
-				const std::list<const ActualView *> & views )
-			throw( GenericMVCException )
+			const std::list<const ActualView *> & views )
 		{
 			
 			if ( ! _views.empty() )
@@ -1007,7 +1008,7 @@ namespace Ceylan
 		template <typename ActualView>
 		void
 		MultipleViewGenericModel<ActualView>::addView( const ActualView & view )
-			const throw( GenericMVCException )
+			const 
 		{
 
 			_views.push_back( & view ) ;
@@ -1019,7 +1020,7 @@ namespace Ceylan
 		template <typename ActualView>
 		const std::string
 		MultipleViewGenericModel<ActualView>::toString(
-			Ceylan::VerbosityLevels level ) const throw()
+			Ceylan::VerbosityLevels level ) const 
 		{
 	
 			if ( _views.empty() )
@@ -1101,7 +1102,9 @@ namespace Ceylan
 		class CEYLAN_DLL MultipleViewModel: public BaseModel
 		{
 	
+	
 			public:
+	
 	
 	
 				/**
@@ -1143,7 +1146,7 @@ namespace Ceylan
 				 * this model.
 				 *
 				 */
-				explicit MultipleViewModel() ;
+				MultipleViewModel() ;
 	
 	
 	
@@ -1168,8 +1171,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual void setViews( 
-						const std::list<const BaseView *> & views )
-					 throw( GenericMVCException ) ;
+					const std::list<const BaseView *> & views ) ;
 	
 	
 	
@@ -1188,7 +1190,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual void addView( const BaseView & view )
-					 const throw( GenericMVCException ) ;
+					 const  ;
 	
 	
 	
@@ -1204,8 +1206,7 @@ namespace Ceylan
 	             *
 	             */
 				virtual const std::string toString(
-						Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 
 
@@ -1231,8 +1232,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				MultipleViewModel(
-					const MultipleViewModel & source )	throw() ;
+				MultipleViewModel( const MultipleViewModel & source ) ;
 	
 	
 				/**
@@ -1242,8 +1242,8 @@ namespace Ceylan
 				 * is called, implicitly or not.
 				 *
 				 */
-				MultipleViewModel & operator = (
-					const MultipleViewModel & source ) throw() ;
+				MultipleViewModel & operator = ( 
+					const MultipleViewModel & source ) ;
 
 
 	    } ;
@@ -1274,7 +1274,9 @@ namespace Ceylan
 		class SingleControllerNoViewGenericModel: public BaseModel
 		{
 	
+	
 			public:
+	
 	
 	
 				/**
@@ -1294,6 +1296,7 @@ namespace Ceylan
 					const ActualController & controller ) ;
 	
 	
+	
 				/**
 				 * Creates a new generic model, which will be linked afterwards
 				 * to a controller and to no view.
@@ -1304,7 +1307,8 @@ namespace Ceylan
 				 * this model.
 				 *
 				 */
-				explicit SingleControllerNoViewGenericModel() ;
+				SingleControllerNoViewGenericModel() ;
+		
 		
 		
 				/**
@@ -1312,6 +1316,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual ~SingleControllerNoViewGenericModel() throw() ;
+	
 	
 	
 	            /**
@@ -1326,8 +1331,7 @@ namespace Ceylan
 	             *
 	             */
 				virtual const std::string toString(
-						Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 
 
@@ -1357,8 +1361,7 @@ namespace Ceylan
 				 *
 				 */
 				SingleControllerNoViewGenericModel(
-						const SingleControllerNoViewGenericModel & source )	
-					throw() ;
+					const SingleControllerNoViewGenericModel & source ) ;
 	
 	
 				/**
@@ -1369,8 +1372,8 @@ namespace Ceylan
 				 *
 				 */
 				SingleControllerNoViewGenericModel & operator = (
-						const SingleControllerNoViewGenericModel & source ) 
-					throw() ;
+					const SingleControllerNoViewGenericModel & source ) ;
+
 
 	    } ;
 	
@@ -1420,7 +1423,7 @@ namespace Ceylan
 		template <typename ActualController>
 		const std::string
 		SingleControllerNoViewGenericModel<ActualController>::toString(
-			Ceylan::VerbosityLevels level ) const throw()
+			Ceylan::VerbosityLevels level ) const 
 		{
 	
 			if ( _controller != 0 )

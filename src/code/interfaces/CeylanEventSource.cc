@@ -47,7 +47,7 @@ using namespace Ceylan::Log ;
 
 
 
-EventSource::EventSource() throw() :
+EventSource::EventSource() :
 	_listeners()
 	//,_events()
 {
@@ -56,11 +56,13 @@ EventSource::EventSource() throw() :
 
 
 
-EventSource::EventSource( EventListener & listener ) throw() :
+EventSource::EventSource( EventListener & listener ) :
 	_listeners()
 	//,_events()
 {
+
 	add( listener ) ;
+	
 }
 
 
@@ -113,7 +115,7 @@ EventSource::~EventSource() throw()
 
 
 
-void EventSource::add( EventListener & listener ) throw( EventException )
+void EventSource::add( EventListener & listener )
 {
 
 	for ( list<EventListener *>::const_iterator it = _listeners.begin();
@@ -138,7 +140,6 @@ void EventSource::add( EventListener & listener ) throw( EventException )
 
 
 void EventSource::remove( const EventListener & listener ) 
-	throw( EventException )
 {
 
 	/*
@@ -200,7 +201,7 @@ void EventSource::remove( const EventListener & listener )
 
 
 
-void EventSource::removeAllListeners() throw()
+void EventSource::removeAllListeners()
 {
 
 	// Avoid the use of iterators that could be invalidated:
@@ -211,8 +212,7 @@ void EventSource::removeAllListeners() throw()
 
 
 
-const string EventSource::toString( Ceylan::VerbosityLevels level ) 
-	const throw() 
+const string EventSource::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	if ( _listeners.empty() )
@@ -249,7 +249,7 @@ const string EventSource::toString( Ceylan::VerbosityLevels level )
 
 
 
-bool EventSource::isRegistered( const EventListener & listener ) throw()
+bool EventSource::isRegistered( const EventListener & listener )
 {
 
 	for ( list<EventListener *>::const_iterator it = _listeners.begin();
@@ -267,7 +267,7 @@ bool EventSource::isRegistered( const EventListener & listener ) throw()
 
 
 
-void EventSource::notifyAllListeners( const Event & newEvent ) throw() 
+void EventSource::notifyAllListeners( const Event & newEvent )
 {
 
 	// _events.push_back( & newEvent ) ;

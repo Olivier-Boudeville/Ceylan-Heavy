@@ -82,15 +82,18 @@ namespace Ceylan
 	        public:
 	
 	
+	
 				/**
 				 * Constructs a controller, not linked to any model.
 				 *
 				 */
-				BaseController() throw() ;
+				BaseController() ;
+	
 	
 	
 				/// Basic virtual destructor.
 				virtual ~BaseController() throw() ;
+	
 	
 	
 	            /**
@@ -105,8 +108,7 @@ namespace Ceylan
 	             *
 	             */
 				virtual const std::string toString(
-						Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+						Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 	
 	
 
@@ -121,7 +123,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				BaseController( const BaseController & source ) throw() ;
+				BaseController( const BaseController & source ) ;
 	
 	
 				/**
@@ -131,8 +133,7 @@ namespace Ceylan
 				 * is called, implicitly or not.
 				 *
 				 */
-				BaseController & operator = ( const BaseController & source )
-					throw() ;
+				BaseController & operator = ( const BaseController & source ) ;
 
 	
 	

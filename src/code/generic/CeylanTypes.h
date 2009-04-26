@@ -119,6 +119,7 @@ namespace Ceylan
 	extern CEYLAN_DLL Ceylan::Sint8 Sint8Max /* =  127 */  ;
 
 
+
 	/**
 	 * Unsigned 8-bit int (unsigned char, GLubyte, GLboolean).
 	 * 
@@ -131,6 +132,7 @@ namespace Ceylan
 	
 	extern CEYLAN_DLL Ceylan::Uint8 Uint8Min /* =   0 */ ;
 	extern CEYLAN_DLL Ceylan::Uint8 Uint8Max /* = 255 */ ;
+
 
 
 	/**
@@ -180,6 +182,7 @@ namespace Ceylan
 	extern CEYLAN_DLL Ceylan::Sint16 Sint16Max /* =  32767  */ ;
 
 
+
 	/**
 	 * Unsigned 16-bit int (unsigned short, GLushort). 
 	 *
@@ -216,6 +219,7 @@ namespace Ceylan
 	extern CEYLAN_DLL Ceylan::Sint32 Sint32Max /* =  2147483647  */ ;
 	
 	
+	
 	/**
 	 * Unsigned 32-bit int (unsigned int, GLuint, GLenum, GLbitfield). 	
 	 *
@@ -248,6 +252,7 @@ namespace Ceylan
 	extern CEYLAN_DLL Ceylan::SignedLongInteger SignedLongIntegerMax ;
 	
 	
+	
 	/**
 	 * Variable able to store very large positive integer values.
 	 *
@@ -272,7 +277,7 @@ namespace Ceylan
 	 * @see Low level APIs which manage them (ex: SDL, with SDL_types.h).
 	 *
 	 * @note Our definitions for 64-bit data types come directly from SDL
-	 * (http://www.libsdl.org), many thanks to the SDL community !
+	 * (http://www.libsdl.org), many thanks to the SDL community!
 	 *
 	 * We did not want Ceylan to depend on any other non-system library, we
 	 * therefore chose not to include SDL headers here. 
@@ -291,6 +296,7 @@ namespace Ceylan
 	 * web sites: htpp://libsdl.org and http://ceylan.sourceforge.net
 	 *
 	 */
+	 
    
 /*
  * Identifies whether there exists a suitable 64-bit type: 
@@ -357,14 +363,14 @@ namespace Ceylan
 #endif // CEYLAN_64_BIT_TYPE
 
 
-/*
- * From here normally Ceylan::Uint64 and Ceylan::Sint64 can be used in 
- * all cases.
- *
- *
- */
+
+	/*
+	 * From here normally Ceylan::Uint64 and Ceylan::Sint64 can be used in
+	 * all cases.
+	 *
+	 *
+	 */
 	 
-	
 	
 	/**
 	 * Now, floating point numbers.
@@ -495,6 +501,7 @@ namespace Ceylan
 	typedef Ceylan::Uint16 Count ;
 	
 	
+	
 	/**
 	 * Variable able to store element for list.
 	 *
@@ -505,6 +512,7 @@ namespace Ceylan
 	 *
 	 */
 	typedef std::list<Ceylan::Uint16>::size_type ListSize ;	
+	
 	
 	
 	/// Flags, fields of 32 bits. 
@@ -547,4 +555,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_TYPES_H_
+

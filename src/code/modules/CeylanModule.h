@@ -48,7 +48,7 @@ namespace Ceylan
 	
 		public:
 		
-			ModuleException( const std::string & message ) throw() ;
+			ModuleException( const std::string & message ) ;
 			virtual ~ModuleException() throw() ;
 	
 	} ;
@@ -70,6 +70,7 @@ namespace Ceylan
 
 
         public:
+
 
 
             /**
@@ -108,7 +109,8 @@ namespace Ceylan
 				const std::string & author, 
 				const std::string & authorMail, 
 				const Ceylan::Version & version,
-				const std::string & licence ) throw () ;
+				const std::string & licence ) ;
+
 
 
 			/**
@@ -117,11 +119,13 @@ namespace Ceylan
 			 * the object creation, ex: Ceylan::Plugin.
 			 *
 			 */
-			Module() throw() ;
+			Module() ;
+			
 			
 			
             /// Basic virtual destructor.
             virtual ~Module() throw() ;
+
 
 
             /**
@@ -130,7 +134,8 @@ namespace Ceylan
 			 * @throw ModuleException if the operation failed.
 			 *
 			 */
-            virtual std::string getName() const throw( ModuleException ) ;
+            virtual std::string getName() const ;
+
 
 
             /**
@@ -139,60 +144,62 @@ namespace Ceylan
 			 * @throw ModuleException if the operation failed.
 			 *
 			 */
-            virtual void setName( const std::string & name )
-				throw( ModuleException ) ;
+            virtual void setName( const std::string & name ) ;
 
 
 
             /// Returns this module's description.
-            virtual std::string getDescription() const throw() ;
+            virtual std::string getDescription() const ;
 
 
             /// Sets this module's description.
-            virtual void setDescription( const std::string & description )
-				throw() ;
+            virtual void setDescription( const std::string & description ) ;
 
 
 
             /// Returns this module's home page URL.
-            virtual std::string getHomePage() const throw() ;
+            virtual std::string getHomePage() const ;
+
 
             /// Sets this module's home page URL.
-            virtual void setHomePage( const std::string & homePage ) throw() ;
+            virtual void setHomePage( const std::string & homePage ) ;
 
 
 
             /// Returns this module's author.
-            virtual std::string getAuthor() const throw() ;
+            virtual std::string getAuthor() const ;
+
 
             /// Sets this module's author.
-            virtual void setAuthor( const std::string & author ) throw() ;
+            virtual void setAuthor( const std::string & author ) ;
 
 
 
             /// Returns this module's author e-mail address.
-            virtual std::string getAuthorMail() const throw() ;
+            virtual std::string getAuthorMail() const ;
+
 
             /// Sets this module's author e-mail address.
-            virtual void setAuthorMail( const std::string & authorMail ) 
-				throw() ;
+            virtual void setAuthorMail( const std::string & authorMail ) ;
 
 
 
             /// Returns this module's full version.
-            virtual const Ceylan::Version & getVersion() const throw() ;
+            virtual const Ceylan::Version & getVersion() const ;
+
 
             /// Sets this module's version, which is copied internally.
-            virtual void setVersion( const Ceylan::Version & version ) 
-				throw() ;
+            virtual void setVersion( const Ceylan::Version & version ) ;
 
 
 
             /// Returns this module's release licence.
-            virtual std::string getLicence() const throw() ;
+            virtual std::string getLicence() const ;
+
 
             /// Sets this module's release licence.
-            virtual void setLicence( const std::string & licence ) throw() ;
+            virtual void setLicence( const std::string & licence ) ;
+
 
 
             /**
@@ -206,7 +213,7 @@ namespace Ceylan
              *
              */
 			virtual const std::string toString( 
-				VerbosityLevels level = high ) const throw() ;
+				VerbosityLevels level = high ) const ;
 
 
 
@@ -218,17 +225,22 @@ namespace Ceylan
 			/// Name of the module.
             std::string _name ;
 			
+			
 			/// Human-friendly description of the module.
             std::string _description ;
+			
 			
 			/// URL of the module's documentation, if any.
             std::string _homepageURL ;
 
+
 			/// Full Name of the proud author.
             std::string _author ;
 			
+			
 			/// Mail address of the proud author.
             std::string _authorMail ;
+
 
 			/// Full version number.
             Ceylan::Version _version ;
@@ -251,7 +263,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			explicit Module( const Module & source ) throw() ;
+			explicit Module( const Module & source ) ;
 			
 			
 			/**
@@ -262,7 +274,7 @@ namespace Ceylan
 			 * operator is called, implicitly or not.
 			 * 
 			 */			 
-			Module & operator = ( const Module & source ) throw() ;
+			Module & operator = ( const Module & source ) ;
 			
 
     } ;

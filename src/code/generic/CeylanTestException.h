@@ -52,7 +52,7 @@ namespace Ceylan
              * @param reason an explanation for this exception being raised.
              *
              */
-            explicit TestException( const std::string & reason ) throw() ;
+            explicit TestException( const std::string & reason ) ;
 
 
             /// Basic virtual destructor.
@@ -66,3 +66,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_TEST_EXCEPTION_H_
+

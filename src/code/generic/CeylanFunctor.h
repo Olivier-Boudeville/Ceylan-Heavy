@@ -39,6 +39,7 @@ namespace Ceylan
 {		
 
 
+
 		/**
 		 * A functor is an object that behaves as a function, thanks 
 		 * to the overloading of operator (). 
@@ -76,10 +77,10 @@ namespace Ceylan
 			
 			
 				/// Do-nothing constructor.
-				Functor() throw() ;
+				Functor() ;
 				
 				
-				/// Virtual destructor;
+				/// Virtual destructor.
 				virtual ~Functor() throw() ;
 				
 
@@ -87,7 +88,7 @@ namespace Ceylan
 				 * The operator a functor is defined for:
 
 				/// The callable method.
-				virtual X operator() ( Y y ) throw() = 0 ;
+				virtual X operator() ( Y y ) = 0 ;
 
 				 *
 				 */
@@ -106,8 +107,8 @@ namespace Ceylan
 				 *
 	             */
 		 		virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+ 
  
  
 			private:
@@ -118,7 +119,7 @@ namespace Ceylan
 				 * prevent calls such as:
 				 * 'CreateFrom( Linear::Rotation2DFunctor( angle )'.
 				 *
-				 *	Functor( const Functor & source ) throw() ;
+				 *	Functor( const Functor & source ) ;
 				 *
 				 */
 			
@@ -131,7 +132,8 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				Functor & operator = ( const Functor & source ) throw() ;
+				Functor & operator = ( const Functor & source ) ;
+			
 							
 		} ;
 		

@@ -41,6 +41,7 @@ namespace Ceylan
 {
 
 
+
     /**
      * This Exception class should be the mother of all exceptions raised by 
 	 * the Ceylan library.
@@ -65,12 +66,12 @@ namespace Ceylan
              * @param reason an explanation for this exception being raised.
              *
              */
-            explicit Exception( const std::string & reason )
-				 ;
+            explicit Exception( const std::string & reason ) ;
 
 
             /// Basic virtual destructor.
             virtual ~Exception() throw() ;
+
 
 
             /**
@@ -85,6 +86,7 @@ namespace Ceylan
              */
             virtual const std::string toString( VerbosityLevels level = high )
 				const  ;
+
 
 
             /**
@@ -134,13 +136,13 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			Exception & operator = ( const Exception & source )
-				 ;
+			Exception & operator = ( const Exception & source ) ;
 
 
     } ;
 
 }
+
 
 
 /**

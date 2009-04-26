@@ -38,7 +38,8 @@ using std::list ;
 using namespace Ceylan ;
 
 
-LocalizationException::LocalizationException( const string & reason ) throw() :
+
+LocalizationException::LocalizationException( const string & reason ) :
 	Ceylan::Exception( reason )
 {
 
@@ -69,7 +70,7 @@ const std::string GermanLocaleName  = "german" ;
 
 
 
-LocalizationSettings::LocalizationSettings() throw( LocalizationException ):
+LocalizationSettings::LocalizationSettings() :
 	_currentLocale( 0 )
 {
 
@@ -85,10 +86,8 @@ LocalizationSettings::~LocalizationSettings() throw()
 
 
 void LocalizationSettings::addSupportedLocale( LocaleCode code )
-	throw( LocalizationException )
 {
 	
-		
 	// Adds only if not already there:		
 	if ( ! isSupported( code ) )
 		_supportedLocales.push_back( code ) ;
@@ -96,8 +95,8 @@ void LocalizationSettings::addSupportedLocale( LocaleCode code )
 }
 
 
+
 void LocalizationSettings::addSupportedLocale( const string & localeName )
-	throw( LocalizationException )
 {
 
 	if ( ! IsAKnownLocale( localeName ) )
@@ -111,7 +110,7 @@ void LocalizationSettings::addSupportedLocale( const string & localeName )
 
 
 
-bool LocalizationSettings::isSupported( LocaleCode code ) throw()
+bool LocalizationSettings::isSupported( LocaleCode code )
 {
 	
 	return ( std::find( _supportedLocales.begin(), _supportedLocales.end(), 
@@ -121,7 +120,7 @@ bool LocalizationSettings::isSupported( LocaleCode code ) throw()
 
 
 
-bool LocalizationSettings::isSupported( const std::string & localeName ) throw()
+bool LocalizationSettings::isSupported( const std::string & localeName )
 {
 
 	if ( ! IsAKnownLocale( localeName ) )
@@ -134,8 +133,7 @@ bool LocalizationSettings::isSupported( const std::string & localeName ) throw()
 
 
 				
-const std::list<LocaleCode> & LocalizationSettings::getSupportedLocales() 
-	const throw()
+const std::list<LocaleCode> & LocalizationSettings::getSupportedLocales() const
 {
 
 	return _supportedLocales ;
@@ -144,8 +142,7 @@ const std::list<LocaleCode> & LocalizationSettings::getSupportedLocales()
 
 
 
-
-bool LocalizationSettings::hasCurrentLocale() const throw()
+bool LocalizationSettings::hasCurrentLocale() const
 {
 
 	return ( _currentLocale != 0 ) ;
@@ -155,7 +152,6 @@ bool LocalizationSettings::hasCurrentLocale() const throw()
 
 
 LocaleCode LocalizationSettings::getCurrentLocaleCode() const 
-	throw( LocalizationException )
 {
 
 	if ( _currentLocale == 0 )
@@ -168,8 +164,7 @@ LocaleCode LocalizationSettings::getCurrentLocaleCode() const
 
 				
 				
-const std::string & LocalizationSettings::getCurrentLocaleName() const 
-	throw( LocalizationException )				
+const std::string & LocalizationSettings::getCurrentLocaleName() const
 {
 
 	return GetLocaleNameFromCode( getCurrentLocaleCode() ) ;
@@ -179,7 +174,6 @@ const std::string & LocalizationSettings::getCurrentLocaleName() const
 				
 								
 void LocalizationSettings::setCurrentLocale( LocaleCode code ) 
-	throw( LocalizationException )
 {
 
 	if ( ! isSupported( code ) )
@@ -193,8 +187,7 @@ void LocalizationSettings::setCurrentLocale( LocaleCode code )
 														
 
 
-void LocalizationSettings::setCurrentLocale( const std::string & localeName ) 
-	throw( LocalizationException )
+void LocalizationSettings::setCurrentLocale( const std::string & localeName )	
 {
 
 	setCurrentLocale( GetLocaleCodeFromName( localeName ) ) ;
@@ -203,8 +196,7 @@ void LocalizationSettings::setCurrentLocale( const std::string & localeName )
 														
 
 
-const std::string LocalizationSettings::toString( VerbosityLevels level ) 
-	const throw()
+const std::string LocalizationSettings::toString( VerbosityLevels level ) const
 {
 
 	if ( _supportedLocales.empty() )
@@ -230,7 +222,7 @@ const std::string LocalizationSettings::toString( VerbosityLevels level )
 
 
 
-bool LocalizationSettings::IsAKnownLocale( const string & localeName ) throw()
+bool LocalizationSettings::IsAKnownLocale( const string & localeName )
 {
 
 	// Clumsy and stupid, as C++ is: (could also use GetLocaleCodeFromName)
@@ -246,7 +238,7 @@ bool LocalizationSettings::IsAKnownLocale( const string & localeName ) throw()
 
 
 LocaleCode LocalizationSettings::GetLocaleCodeFromName( 
-	const string & localeName ) throw( LocalizationException )
+	const string & localeName ) 
 {
 
 	if ( localeName == EnglishLocaleName )
@@ -267,7 +259,7 @@ LocaleCode LocalizationSettings::GetLocaleCodeFromName(
 				
 				
 const std::string & LocalizationSettings::GetLocaleNameFromCode( 
-	LocaleCode code ) throw( LocalizationException )				
+	LocaleCode code ) 				
 {
 
 	switch( code )

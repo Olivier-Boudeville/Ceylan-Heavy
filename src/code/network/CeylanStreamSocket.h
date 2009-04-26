@@ -59,22 +59,24 @@ namespace Ceylan
 		{
 
 			
-			
 			public:
 		
+				
 				
 				/// Mother class for all stream socket-related exceptions.
 				class CEYLAN_DLL StreamSocketException: 
 					public SocketException
 				{ 
+				
 					public: 
 					
 						explicit StreamSocketException( 
-							const std::string & reason ) throw() ;
+							const std::string & reason ) ;
 						
 						virtual ~StreamSocketException() throw() ; 
 							
 				} ;
+		
 		
 		
 				/**
@@ -101,8 +103,8 @@ namespace Ceylan
 				 *
 				 */
 				explicit StreamSocket( bool blocking = true, 
-						bool sacrificeThroughputToPacketTiming = false ) 
-					throw( SocketException ) ; 
+						bool sacrificeThroughputToPacketTiming = false ) ; 
+		
 		
 
 				/**
@@ -128,12 +130,13 @@ namespace Ceylan
 				 *
 				 */
 				StreamSocket( Port localPort, bool blocking = true,
-						bool sacrificeThroughputToPacketTiming = false ) 
-					throw( SocketException ) ;
+					bool sacrificeThroughputToPacketTiming = false ) ;
 		
+
 
 				/// Virtual destructor.
 				virtual ~StreamSocket() throw() ;
+				
 				
 				
 				/**
@@ -147,9 +150,9 @@ namespace Ceylan
 				 * failed.
 				 *
 				 */
-				virtual void setBlocking( bool newStatus )
-					throw( NonBlockingNotSupportedException ) ;
+				virtual void setBlocking( bool newStatus ) ;
 	
+		
 		
             	/**
             	 * Returns an user-friendly description of the state of
@@ -164,9 +167,9 @@ namespace Ceylan
 				 *
 				 */
             	virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 			
+				
 				
 				
 			protected:
@@ -179,8 +182,8 @@ namespace Ceylan
 				 * @throw SocketException if the operation failed.
 				 *
 				 */
-				virtual void createSocket( Port port ) 
-					throw( SocketException )  ;
+				virtual void createSocket( Port port ) ;
+					
 					
 
 				/**
@@ -194,8 +197,8 @@ namespace Ceylan
 				 * should be used on most situations.
 				 *
 				 */
-				virtual void setNagleAlgorithmTo( bool activated ) 
-					throw( StreamSocketException ) ;
+				virtual void setNagleAlgorithmTo( bool activated ) ;
+
 
 
 				/**
@@ -220,6 +223,8 @@ namespace Ceylan
 				bool _nagleAlgorithmDeactivated ;
 				
 		
+		
+		
 			private:
 
 				
@@ -231,7 +236,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				StreamSocket( const StreamSocket & source ) throw() ;
+				StreamSocket( const StreamSocket & source ) ;
 
 
 				/**
@@ -242,14 +247,17 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 *
 				 */
-				StreamSocket & operator = ( const StreamSocket & source )
-					throw() ;
+				StreamSocket & operator = ( const StreamSocket & source ) ;
+
 
 		} ;
+		
 
 	}
 	
 }	
 
 
+
 #endif // CEYLAN_STREAM_SOCKET_H_
+

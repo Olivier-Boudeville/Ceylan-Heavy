@@ -41,6 +41,7 @@ namespace Ceylan
 {
 
 
+
     /**
      * This abstract mother class, root of the whole Ceylan object's 
 	 * hierarchy, plays a very similar role to java.lang.Object, namely

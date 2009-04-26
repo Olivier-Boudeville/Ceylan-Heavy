@@ -43,7 +43,7 @@ const string Loggable::ProtocolName = "loggable" ;
 
 
 
-Loggable::Loggable( const string & name ) throw(): 
+Loggable::Loggable( const string & name ) : 
 	LogSource( LogPlug::GetTransport() )
 {
 
@@ -60,7 +60,7 @@ Loggable::~Loggable() throw()
 
 
 
-void Loggable::setChannelName( const std::string & channelName ) throw()
+void Loggable::setChannelName( const std::string & channelName )
 {
 
 	LogSource::setChannelName( ProtocolName + Ceylan::URI::ProtocolSeparator 
@@ -70,7 +70,7 @@ void Loggable::setChannelName( const std::string & channelName ) throw()
 
 
 
-bool Loggable::IsALoggableChannelName( const string & channelName ) throw()
+bool Loggable::IsALoggableChannelName( const string & channelName )
 {
 
 	return ( Ceylan::URI::getProtocolName( channelName,
@@ -81,7 +81,6 @@ bool Loggable::IsALoggableChannelName( const string & channelName ) throw()
 
 
 const string Loggable::GetEmbeddedChannelName( const string & fullChannelName )
-	throw()
 {	
 
 	// Removes protocol separator (typically: '//')

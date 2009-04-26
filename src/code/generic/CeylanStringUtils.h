@@ -64,7 +64,7 @@ namespace Ceylan
 	
 		public:
 		
-			StringUtilsException( const std::string & message ) throw(): 
+			StringUtilsException( const std::string & message ) : 
 				Exception( message )
 			{		
 			
@@ -84,6 +84,7 @@ namespace Ceylan
 	 *
 	 */
 	typedef Ceylan::Uint8 Latin1Char ;
+	
 	
 	
 	/**
@@ -133,7 +134,8 @@ namespace Ceylan
 	 */	
 	CEYLAN_DLL std::string formatStringList( 
 		const std::list<std::string> & stringList,
-		bool surroundByTicks = false ) throw() ;
+		bool surroundByTicks = false ) ;
+	
 	
 	
 	/**
@@ -154,7 +156,7 @@ namespace Ceylan
 	 */	
 	CEYLAN_DLL std::string formatStringMap( 
 		const std::map<std::string, std::string> & stringMap,
-		bool surroundByTicks = false ) throw() ;
+		bool surroundByTicks = false ) ;
 	
 	
 	
@@ -173,8 +175,8 @@ namespace Ceylan
 	 * this platform.
 	 *
 	 */
-	CEYLAN_DLL void display( const std::string & message ) 
-		throw( StringUtilsException ) ;
+	CEYLAN_DLL void display( const std::string & message ) ;
+
 
 
 	/**
@@ -184,8 +186,7 @@ namespace Ceylan
 	 * this platform.
 	 *
 	 */
-	CEYLAN_DLL void displayError( const std::string & errorMessage ) 
-		throw( StringUtilsException ) ;
+	CEYLAN_DLL void displayError( const std::string & errorMessage ) ;
 
 
 
@@ -194,8 +195,9 @@ namespace Ceylan
 	 * <b>aString</b>.
 	 *
 	 */
-	CEYLAN_DLL StringSize countChars( 
-		const std::string & aString, char targetChar ) throw() ;
+	CEYLAN_DLL StringSize countChars( const std::string & aString, 
+		char targetChar ) ;
+
 
 
 	/**
@@ -204,7 +206,8 @@ namespace Ceylan
 	 * Example: "Ceylan" becomes "nalyeC"
 	 *
 	 */
-	CEYLAN_DLL std::string reverse( const std::string & source ) throw() ;
+	CEYLAN_DLL std::string reverse( const std::string & source ) ;
+
 
 
 	/**
@@ -231,7 +234,7 @@ namespace Ceylan
 	 * <pre>
 	 * void aStupidFunction( char * name ) ;
 	 *
-	 * const string aString = "Ceylan rocks !" ;
+	 * const string aString = "Ceylan rocks!" ;
 	 * char * convertedString = Ceylan::getNonConstCharFrom( aString ) ;
 	 * aStupidFunction( convertedString ) ;
 	 * delete [] convertedString ;
@@ -244,8 +247,8 @@ namespace Ceylan
 	 * </pre>
 	 *
 	 */
-	 CEYLAN_DLL char * getNonConstCharFrom( const std::string & source ) 
-		throw() ;
+	 CEYLAN_DLL char * getNonConstCharFrom( const std::string & source ) ;
+	 
 	 
 	 
 	/**
@@ -256,9 +259,10 @@ namespace Ceylan
 	 *
 	 */
 	CEYLAN_DLL StringSize substituteInString( 
-			std::string & targetString, 
-			const std::string & toBeReplaced, 
-			const std::string & replacement ) throw() ;
+		std::string & targetString, 
+		const std::string & toBeReplaced, 
+		const std::string & replacement ) ;
+		
 		
 		
 	/**
@@ -270,10 +274,11 @@ namespace Ceylan
 	 *
 	 */
 	CEYLAN_DLL std::string substituteIn( 
-			const std::string & sourceString, 
-			const std::string & toBeReplaced, 
-			const std::string & replacement ) throw() ;
+		const std::string & sourceString, 
+		const std::string & toBeReplaced, 
+		const std::string & replacement ) ;
 		
+
 
 	/**
 	 * Returns whether specified character is a letter, 
@@ -284,7 +289,8 @@ namespace Ceylan
 	 * @return true iff targetChar is a letter.
 	 *
 	 */
-	CEYLAN_DLL bool isLetter( char targetChar ) throw() ;
+	CEYLAN_DLL bool isLetter( char targetChar ) ;
+
 
 
 	/**
@@ -295,7 +301,8 @@ namespace Ceylan
 	 * @return true iff targetChar is a figure.
 	 *
 	 */
-	CEYLAN_DLL bool isFigure( char targetChar ) throw() ;
+	CEYLAN_DLL bool isFigure( char targetChar ) ;
+
 
 
 	/**
@@ -307,7 +314,8 @@ namespace Ceylan
 	 * @return true iff targetChar is a letter or a figure.
 	 *
 	 */
-	CEYLAN_DLL bool isAlphanumeric( char targetChar ) throw() ;
+	CEYLAN_DLL bool isAlphanumeric( char targetChar ) ;
+
 
 
 	/**
@@ -320,7 +328,8 @@ namespace Ceylan
 	 * @return true iff targetChar is a punctuation character.
 	 *
 	 */
-	CEYLAN_DLL bool isPunctuation( char targetChar ) throw() ;
+	CEYLAN_DLL bool isPunctuation( char targetChar ) ;
+
 
 
 	/**
@@ -332,7 +341,7 @@ namespace Ceylan
 	 * @return true iff targetChar is a whitespace character.
 	 *
 	 */
-	CEYLAN_DLL bool isWhitespace( char targetChar ) throw() ;
+	CEYLAN_DLL bool isWhitespace( char targetChar ) ;
 
 
 
@@ -341,7 +350,8 @@ namespace Ceylan
 	 * other characters being left untouched. 
 	 *
 	 */
-	CEYLAN_DLL std::string toUppercase( const std::string & text ) throw() ;
+	CEYLAN_DLL std::string toUppercase( const std::string & text ) ;
+		
 		
 		
 	/**
@@ -350,7 +360,8 @@ namespace Ceylan
 	 * corresponding HTML codes.
 	 *
 	 */	
-	CEYLAN_DLL std::string encodeToHTML( const std::string & message ) throw() ;
+	CEYLAN_DLL std::string encodeToHTML( const std::string & message ) ;
+	
 	
 	
 	/**
@@ -364,8 +375,8 @@ namespace Ceylan
 	 * in uppercase and lowercase.
 	 *
 	 */
-	CEYLAN_DLL std::string encodeToPhonetic( const std::string & message ) 
-		throw() ;
+	CEYLAN_DLL std::string encodeToPhonetic( const std::string & message ) ;
+		
 		
 		
 	/**
@@ -378,9 +389,9 @@ namespace Ceylan
 	 * version 3.x or higher. The mangling can be changed is newer g++ versions.
 	 *
 	 */	
-	CEYLAN_DLL std::string demangleSymbol( const std::string & symbol ) 
-		throw() ;
+	CEYLAN_DLL std::string demangleSymbol( const std::string & symbol ) ;
 			 	
+		
 		
 	/**
 	 * Splits <b>stringToSplit</b> according to character <b>splittingChar</b>.
@@ -392,7 +403,8 @@ namespace Ceylan
 	 *
 	 */
 	CEYLAN_DLL std::list<std::string> split( const std::string & stringToSplit, 
-		char splittingChar ) throw() ;
+		char splittingChar ) ;
+
 
 
 	/**
@@ -406,8 +418,9 @@ namespace Ceylan
 	 */
 	/*
 	std::list<std::string> split( const std::string & stringToSplit, 
-		 std::string splittingString ) throw() ;
+		 std::string splittingString ) ;
 	*/
+
 
 
 	/**
@@ -420,8 +433,9 @@ namespace Ceylan
 	 *
 	 */
 	CEYLAN_DLL std::string join( const std::list<std::string> & toJoin, 
-		const std::string & joiningString ) throw() ;
+		const std::string & joiningString ) ;
 	
+
 
 	/**
 	 * Splits the specified sentence into a list of words.
@@ -440,7 +454,8 @@ namespace Ceylan
 	 * 
 	 */
 	CEYLAN_DLL std::list<std::string> splitIntoWords( 
-		const std::string & sentenceToSplit ) throw() ;
+		const std::string & sentenceToSplit ) ;
+
 
 
 	/**
@@ -456,7 +471,7 @@ namespace Ceylan
 	 * 
 	 */
 	CEYLAN_DLL std::list<std::string> splitIntoParagraphs( 
-		const std::string & textToSplit ) throw() ;
+		const std::string & textToSplit )  ;
 	
 
 	
@@ -505,6 +520,7 @@ namespace Ceylan
 #endif // CEYLAN_DEBUG_STRING_TO_OBJECT
 
 	}
+	
 	
 
 }

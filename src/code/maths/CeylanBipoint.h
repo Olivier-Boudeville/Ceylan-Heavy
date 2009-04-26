@@ -46,11 +46,14 @@ namespace Ceylan
 		{
 
 			
+			
 			// Substraction of two Bipoint instances.
 			class Vector2 ;
 
+
 			// Matrix to use with Bipoint instances.			
 			class Matrix2 ;
+
 
 
 			/**
@@ -74,8 +77,10 @@ namespace Ceylan
 				/// Must access to each other's coordinates.				
 				friend class Vector2 ;
 
+
 				/// Must access to each other's coordinates.					
 				friend class Matrix2 ;
+				
 				
 				
 				/**
@@ -90,7 +95,8 @@ namespace Ceylan
 				 *
 				 */
 				CEYLAN_DLL friend bool operator == ( const Bipoint & t1, 
-					const Bipoint & t2 ) throw() ;
+					const Bipoint & t2 ) ;
+				
 				
 				
 				/** 
@@ -104,46 +110,52 @@ namespace Ceylan
 				 *
 				 */
 				CEYLAN_DLL friend bool operator != ( const Bipoint & t1, 
-					const Bipoint & t2 ) throw() ;
+					const Bipoint & t2 ) ;
+				
 				
 				
 				/**
-				 * Translates a 2D point of specified 2D vector : 
+				 * Translates a 2D point of specified 2D vector: 
 				 * result = t + v.
 				 *
 				 */
 				CEYLAN_DLL friend Bipoint operator + ( const Bipoint & t, 
-					const Vector2 & v ) throw() ;
+					const Vector2 & v ) ;
+				
 				
 				
 				/**
-				 * Translates a 2D point of specified opposite 2D vector :
+				 * Translates a 2D point of specified opposite 2D vector:
 				 * result = t - v.
 				 *
 				 */
 				CEYLAN_DLL friend Bipoint operator - ( const Bipoint & t, 
-					const Vector2 & v ) throw();
+					const Vector2 & v ) ;
+				
+				
 				
 				/**
 				 * Transforms a 2D point into a 2D vector, which will 
 				 * have the same coordinates.
 				 *
 				 */
-				CEYLAN_DLL friend Vector2 vectorize( const Bipoint & t ) 
-					throw() ;
+				CEYLAN_DLL friend Vector2 vectorize( const Bipoint & t ) ;
+				
 				
 				
 				/**
-				 * Constructs a 2D vector from two 2D points : 
+				 * Constructs a 2D vector from two 2D points: 
 				 * result = t2 - t1.
 				 *
 				 */
 				CEYLAN_DLL friend Vector2 vectorize( const Bipoint & t1, 
-					const Bipoint & t2 ) throw() ;
+					const Bipoint & t2 ) ;
 
+				
 				
 
 				public:
+				
 				
 				
 					/**
@@ -153,15 +165,17 @@ namespace Ceylan
 					 * null vector.
 					 *
 					 */
-					explicit Bipoint( Real x0 = 0, Real x1 = 0 ) throw() ;
+					explicit Bipoint( Real x0 = 0, Real x1 = 0 ) ;
+				
 				
 				
 					/// Basic virtual destructor.
 					virtual ~Bipoint() throw() ;
 					
 					
+					
 					/// Reassigns this Bipoint's coordinates.
-					virtual void setTo( Real x0, Real x1 ) throw() ;
+					virtual void setTo( Real x0, Real x1 ) ;
 
 
 
@@ -170,38 +184,42 @@ namespace Ceylan
 					 * commonValue.
 					 *
 					 */
-					virtual void setAllElementsTo( Real commonValue ) throw() ;
+					virtual void setAllElementsTo( Real commonValue ) ;
+
 
 
 					/// Returns the abscissa of this point.
-					virtual Real getX() const throw() ;
+					virtual Real getX() const ;
+					
 					
 					/// Returns the ordinate of this point.
-					virtual Real getY() const throw() ;
+					virtual Real getY() const ;
+					
 					
 					
 					/**
 					 * Returns indexed element. 
 					 * Index ranges from 0 to Dimensions-1.
 					 *
-					 * @note An emergency shutdown is triggered if index 
-					 * is out of bounds.
+					 * @throw MathsException if index is out of bounds, and 
+					 * if in debug mode.
 					 *
 					 */
-					virtual Real getElementAt( MatrixIndex index ) 
-						const throw() ;
+					virtual Real getElementAt( MatrixIndex index ) const ;
+					
 					
 					
 					/**
 					 * Sets indexed element to specified value. 
 					 * Index ranges from 0 to Dimensions-1.
 					 *
-					 * @note An emergency shutdown is triggered if index 
-					 * is out of bounds.
+					 * @throw MathsException if index is out of bounds, and 
+					 * if in debug mode.
 					 *
 					 */
 					virtual void setElementAt( MatrixIndex index, 
-						Real newValue ) throw() ;
+						Real newValue ) ;
+					
 					
 					
 					/**
@@ -217,7 +235,8 @@ namespace Ceylan
 					 *
 					 */
              		virtual const std::string toString( 
-						VerbosityLevels level = high ) const throw() ;
+						VerbosityLevels level = high ) const ;
+					 
 					 
 
 					/**
@@ -225,8 +244,9 @@ namespace Ceylan
 					 *
 					 */
 					static Real Distance( const Bipoint & first, 
-						const Bipoint & second ) throw() ;
+						const Bipoint & second ) ;
 					
+
 
 					/**
 					 * Returns the square of the distance between the two
@@ -237,7 +257,8 @@ namespace Ceylan
 					 *
 					 */
 					static Real DistancePow2( const Bipoint & first, 
-						const Bipoint & second ) throw() ;
+						const Bipoint & second ) ;
+					
 					
 					
 					/**
@@ -245,6 +266,7 @@ namespace Ceylan
 					 *
 					 */
 					static const MatrixIndex Dimensions = 2 ;
+					 
 					 
 					 
 				protected:
@@ -264,4 +286,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_BIPOINT_H_
+

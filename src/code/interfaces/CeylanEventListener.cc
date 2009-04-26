@@ -46,7 +46,7 @@ using namespace Ceylan::Log ;
 
 
 
-EventListener::EventListener() throw() :
+EventListener::EventListener() :
 	_sources()
 {
 
@@ -54,10 +54,12 @@ EventListener::EventListener() throw() :
 
 
 
-EventListener::EventListener( EventSource & source ) throw() :
+EventListener::EventListener( EventSource & source ) :
 	_sources()
 {
+
 	subscribeTo( source ) ;	
+	
 }
 
 
@@ -82,7 +84,7 @@ EventListener::~EventListener() throw()
 
 
 
-void EventListener::subscribeTo( EventSource & source ) throw( EventException )
+void EventListener::subscribeTo( EventSource & source )
 {
 
 	for ( list<EventSource *>::const_iterator it = _sources.begin();
@@ -109,7 +111,6 @@ void EventListener::subscribeTo( EventSource & source ) throw( EventException )
 
 
 void EventListener::unsubscribeFrom( EventSource & source ) 
-	throw( EventException )
 {
 
 	list<EventSource *>::iterator it ;
@@ -156,7 +157,7 @@ void EventListener::unsubscribeFrom( EventSource & source )
 
 
 
-void EventListener::unsubscribeFromAllSources() throw()
+void EventListener::unsubscribeFromAllSources()
 {
 		
 	for ( list<EventSource *>::iterator it = _sources.begin(); 
@@ -188,7 +189,6 @@ void EventListener::unsubscribeFromAllSources() throw()
 
 
 void EventListener::forgetSource( EventSource & source ) 
-	throw( EventException )
 {
 
 
@@ -223,7 +223,7 @@ void EventListener::forgetSource( EventSource & source )
 
 
 
-list<EventSource *> EventListener::getSources() const throw()
+list<EventSource *> EventListener::getSources() const
 {
 
 	return _sources ;
@@ -232,8 +232,7 @@ list<EventSource *> EventListener::getSources() const throw()
 
 
 
-const string EventListener::toString( Ceylan::VerbosityLevels level ) 
-	const throw() 
+const string EventListener::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	if ( _sources.empty() )

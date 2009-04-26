@@ -45,7 +45,7 @@ namespace Ceylan
 
 		public:
 	
-			explicit SingletonException( const std::string & reason ) throw() ;
+			explicit SingletonException( const std::string & reason ) ;
 			virtual ~SingletonException() throw() ;
 			
 	} ;
@@ -60,7 +60,7 @@ namespace Ceylan
 	 * This class should be templated so that it can be used with any class 
 	 * that has to have only one instance at any time.
 	 *
-	 * Another possible implementation would be :
+	 * Another possible implementation would be:
 	 *
 	 * static AClass::singleton()
 	 * {
@@ -86,11 +86,11 @@ namespace Ceylan
 			 * deallocate the Singleton.
 	         *
 	         */
-	        static Singleton & GetSingleton() throw() ;
+	        static Singleton & GetSingleton() ;
 
 
 			/// Removes the shared Singleton.
-	        static void DeleteSingleton() throw() ;
+	        static void DeleteSingleton() ;
 
 
 
@@ -98,7 +98,7 @@ namespace Ceylan
 
 
 	        /// Basic constructor.
-	        Singleton() throw() ;
+	        Singleton() ;
 
 
 	        /// Basic virtual destructor.
@@ -118,7 +118,7 @@ namespace Ceylan
 			 * @note Made to avoid unwanted hidden clone of the Singleton.
 			 *
 			 */			 
-			Singleton( const Singleton & source ) throw() ;
+			Singleton( const Singleton & source ) ;
 			
 			
 			/**
@@ -128,7 +128,7 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			Singleton & operator = ( const Singleton & source ) throw() ;
+			Singleton & operator = ( const Singleton & source ) ;
 
 
 	        /// The internal single instance.
@@ -143,3 +143,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_SINGLETON_H_
+

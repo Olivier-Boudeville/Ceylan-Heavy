@@ -35,14 +35,17 @@
 #include <string>
 
 
+
+
 namespace Ceylan
 {
+
 
 
 	/**
 	 * Optional features can be requested and used, if available.
 	 *
-	 * Current known features are :
+	 * Current known features are:
 	 *  - regular expression support
 	 *  - multithreading support
 	 *  - networking support
@@ -64,7 +67,7 @@ namespace Ceylan
 		 * platform for the currently linked Ceylan library.
 		 *
 		 */
-		class CEYLAN_DLL FeatureNotAvailableException : public Ceylan::Exception
+		class CEYLAN_DLL FeatureNotAvailableException: public Ceylan::Exception
 		{
 	
 			public:
@@ -77,13 +80,15 @@ namespace Ceylan
 		} ;
 
 
+
+
 		/**
 		 * This is the list of Ceylan features that might be available.
 		 * They are often available on a per-platform basis, even though each
 		 * available feature can be disabled on request, at the library build
 		 * time.
 		 *
-		 * @example The recommended usage for user code is the following :
+		 * @example The recommended usage for user code is the following:
 		 * Ceylan::CheckForSupportedFeatures( MyFeature 
 		 *	  | MyOtherFeature | AnotherWantedFeature ) ;
 		 *
@@ -103,6 +108,7 @@ namespace Ceylan
 		extern CEYLAN_DLL const Ceylan::Flags RegularExpressions ;
 
 
+
 		/**
 		 * Designates the multithreading support feature.
 		 *
@@ -115,6 +121,7 @@ namespace Ceylan
 		 *
 		 */ 
 		extern CEYLAN_DLL const Ceylan::Flags Multithreading ;
+
 
 
 		/**
@@ -130,6 +137,7 @@ namespace Ceylan
 		extern CEYLAN_DLL const Ceylan::Flags Networking ;
 
 
+
 		/**
 		 * Designates the file descriptor feature.
 		 *
@@ -140,6 +148,7 @@ namespace Ceylan
 		 *
 		 */
 		extern CEYLAN_DLL const Ceylan::Flags FileDescriptors ;
+
 
 
 		/**
@@ -153,15 +162,17 @@ namespace Ceylan
 		extern CEYLAN_DLL const Ceylan::Flags SymbolicLinks ;
 
 
+
 		/**
 		 * Designates the advanced file attribute feature, which includes
-		 * the management, for filesystem elements, of additional :
+		 * the management, for filesystem elements, of additional:
 		 *   - opening flags (non-blocking/synchronous) 
-		 *   - file attributes (beyond 'owner' permissions : 'group'
+		 *   - file attributes (beyond 'owner' permissions: 'group'
 		 * and 'other').
 		 *
 		 */
 		extern CEYLAN_DLL const Ceylan::Flags AdvancedFileAttributes ;
+
 
 
 		/**
@@ -169,6 +180,7 @@ namespace Ceylan
 		 *
 		 */
 		extern CEYLAN_DLL const Ceylan::Flags FileLocks ;
+
 
 
 		/**
@@ -179,11 +191,13 @@ namespace Ceylan
 		extern CEYLAN_DLL const Ceylan::Flags AdvancedProcessManagement ;
 
 
+
 		/**
 		 * Designates the plugin feature, for dynamic loading a shared objects.
 		 *
 		 */
 		extern CEYLAN_DLL const Ceylan::Flags Plugins ;
+
 
 
 		/**
@@ -200,45 +214,55 @@ namespace Ceylan
 		 * supports the specified feature(s).
 		 *
 		 * @param featuresFlag an OR'd flag of the requested features, for 
-		 * example : 'MyFeature | MyOtherFeature'
+		 * example: 'MyFeature | MyOtherFeature'
 		 *
 		 * @throw FeatureNotAvailableException if at least one of the specified
 		 * features is not supported.
 		 *
 		 */
-		CEYLAN_DLL void checkForSupportedFeatures( 
-			Ceylan::Flags featuresFlag ) ;
+		CEYLAN_DLL void checkForSupportedFeatures( Ceylan::Flags featuresFlag );
+	
 	
 	
 		/// Tells whether regular expressions are supported.
 		CEYLAN_DLL bool areRegularExpressionsSupported() ;
 	
+	
 		/// Tells whether multithreading is supported.
 		CEYLAN_DLL bool isMultithreadingSupported() ;
+	
 	
 		/// Tells whether network operations are supported.
 		CEYLAN_DLL bool isNetworkingSupported() ;
 	
+	
 		/// Tells whether file descriptors are supported.
 		CEYLAN_DLL bool areFileDescriptorsSupported() ;
+	
 	
 		/// Tells whether symbolic links are supported.
 		CEYLAN_DLL bool areSymbolicLinksSupported() ;
 	
+	
 		/// Tells whether advanced file attributes are supported.
 		CEYLAN_DLL bool areAdvancedFileAttributesSupported() ;
+	
 	
 		/// Tells whether file locks are supported.
 		CEYLAN_DLL bool areFileLocksSupported() ;
 		
+		
 		/// Tells whether advanced process management is supported.
 		CEYLAN_DLL bool isAdvancedProcessManagementSupported() ;
+	
 	
 		/// Tells whether plugins are supported.
 		CEYLAN_DLL bool arePluginsSupported() ;
 	
+	
 		/// Tells whether signals are supported.
 		CEYLAN_DLL bool areSignalsSupported() ;
+	
 	
 	
 		/**
@@ -254,4 +278,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_FEATURES_H_
+

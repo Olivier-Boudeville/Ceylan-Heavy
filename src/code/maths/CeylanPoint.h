@@ -79,23 +79,27 @@ namespace Ceylan
 				public:
 				
 				
+				
 					/**
 					 * Constructs a new point.
 					 *
 					 */
-					explicit Point() throw() ;
+					Point() ;
+			
 				
 				
 					/// Basic virtual destructor.
 					virtual ~Point() throw() ;
 					
 
+
 					/**
 					 * Sets this Point to the null Point (all coordinates
 					 * zeroed).
 					 *
 					 */
-					virtual void nullify() throw() ;
+					virtual void nullify() ;
+					
 					
 					
 					/**
@@ -103,32 +107,33 @@ namespace Ceylan
 					 * commonValue.
 					 *
 					 */
-					virtual void setAllElementsTo( Real commonValue ) 
-						throw() = 0 ;
+					virtual void setAllElementsTo( Real commonValue ) = 0 ;
+					
 					
 					
 					/**
 					 * Returns indexed element. 
 					 * Index ranges from 0 to Dimensions-1.
 					 *
-					 * @note An emergency shutdown is triggered if index 
-					 * is out of bounds.
+					 * @throw MathsException if index is out of bounds and if
+					 * in debug mode.
 					 *
 					 */
-					virtual Real getElementAt( MatrixIndex index ) 
-						const throw() = 0 ;
+					virtual Real getElementAt( MatrixIndex index ) const = 0 ;
+					
 					
 					
 					/**
 					 * Sets indexed element to specified value. 
 					 * Index ranges from 0 to Dimensions-1.
 					 *
-					 * @note An emergency shutdown is triggered if index 
-					 * is out of bounds.
+					 * @throw MathsException if index is out of bounds and if
+					 * in debug mode.
 					 *
 					 */
 					virtual void setElementAt( MatrixIndex index, 
-						Real newValue ) throw() = 0 ;
+						Real newValue ) = 0 ;
+					
 					
 					 
 					/**
@@ -144,7 +149,8 @@ namespace Ceylan
 					 *
 					 */
             		virtual const std::string toString( 
-						VerbosityLevels level = high ) const throw() ;
+						VerbosityLevels level = high ) const ;
+				
 				
 					 
 					/**
@@ -153,8 +159,10 @@ namespace Ceylan
 					 */
 					static const MatrixIndex Dimensions = 0 ;
 					
+					
 
 			} ;
+			
 
 		}
 		
@@ -163,4 +171,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_POINT_H_
+

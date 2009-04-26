@@ -34,19 +34,16 @@ using namespace Ceylan ;
 
 
 SerializationException::SerializationException( 
-		const std::string & reason ) throw() :
+		const std::string & reason ) :
 	Ceylan::Exception( reason ) 
 {
 
 }	
 
 
+
 SerializationException::~SerializationException() throw()
 {
 
 }
-
-
-
-
 

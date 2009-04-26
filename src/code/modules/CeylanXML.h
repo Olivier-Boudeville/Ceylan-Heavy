@@ -35,13 +35,14 @@
 
 
 
+
 namespace Ceylan
 {
 
 
+
 	/**
 	 * Gathers all XML-related operations, including parsing. 
-	 *
 	 *
 	 */
 	namespace XML
@@ -58,10 +59,11 @@ namespace Ceylan
 	
 			public:
 		
-				explicit XMLException( const std::string & reason ) throw() ;
+				explicit XMLException( const std::string & reason ) ;
 				virtual ~XMLException() throw() ;
 
 		} ;
+		
 		
 		
 		/// Name of an XML markup.
@@ -70,6 +72,7 @@ namespace Ceylan
 
 		/// Name of an XML attribute.
 		typedef std::string AttributeName ;
+		
 		
 		/// Value of an XML attribute.
 		typedef std::string AttributeValue ;
@@ -88,20 +91,26 @@ namespace Ceylan
 		/// The '<' character.
 		const char LowerThan       = '<' ;
 				
+				
 		/// The '>' character.
 		const char HigherThan      = '>' ;
+			
 			
 		/// The '"' character.
 		const char DoubleQuote     = '"' ;
 			
+			
 		/// The '=' character.
 		const char Equal           = '=' ;
+			
 			
 		/// The '?' character.
 		const char QuestionMark    = '?' ;
 			
+			
 		/// The '!' character.
 		const char ExclamationMark = '!' ;
+			
 			
 		/// The '/' character.
 		const char Slash           = '/' ;
@@ -121,6 +130,7 @@ namespace Ceylan
 
 
 }	
+
 
 
 #endif // CEYLAN_XML_H_

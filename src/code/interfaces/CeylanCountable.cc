@@ -44,10 +44,12 @@ using namespace Ceylan ;
 Countable::InstanceCount Countable::ReferenceCount = 0 ;
 Countable::InstanceCount Countable::MaximumReferenceCount = 0 ;
 
+
 const string Countable::LogPrefix = "[Instance count]" ;
 
 
-Countable::Countable( bool verbose ) throw() : 
+
+Countable::Countable( bool verbose ) : 
 	_verbose( verbose ) 
 {
 
@@ -64,6 +66,7 @@ Countable::Countable( bool verbose ) throw() :
 	}
 			
 }
+
 
 
 Countable::~Countable() throw()
@@ -85,21 +88,30 @@ Countable::~Countable() throw()
 }
 
 
-const string Countable::ToString( Ceylan::VerbosityLevels level ) throw()
+
+const string Countable::ToString( Ceylan::VerbosityLevels level )
 {
+
 	return "Current Countable count is " + Ceylan::toString( ReferenceCount )
 		+ ", maximum was " + Ceylan::toString( MaximumReferenceCount ) ;
+		
 }
 
 
-Countable::InstanceCount Countable::GetInstanceCount() throw()
+
+Countable::InstanceCount Countable::GetInstanceCount()
 {
+
 	return ReferenceCount ;
+	
 }
 
 
-Countable::InstanceCount Countable::GetMaximumInstanceCount() throw()
+
+Countable::InstanceCount Countable::GetMaximumInstanceCount()
 {
+
 	return MaximumReferenceCount ;
+	
 }
 

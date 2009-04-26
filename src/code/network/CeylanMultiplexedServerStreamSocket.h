@@ -28,6 +28,7 @@
 #define CEYLAN_MULTIPLEXED_SERVER_STREAM_SOCKET_H_
 
 
+
 #include "CeylanServerStreamSocket.h" // for inheritance
 #include "CeylanSystem.h"             // for FileDescriptor
 
@@ -55,7 +56,7 @@ namespace Ceylan
 		 * connection-triggered sockets, each one corresponding to a 
 		 * connected client.
 		 *
-		 * This server basically manages n+1 sockets : the listening one, 
+		 * This server basically manages n+1 sockets: the listening one, 
 		 * which, whenever incoming connections are accepted, leads to a 
 		 * new socket being created, and n simultaneously connected
 		 * sockets, each one being viewed as an anonymous socket dedicated to
@@ -70,10 +71,10 @@ namespace Ceylan
 		 * not apply to any of the transport streams.
 		 *
 		 * Following methods have to be subclassed so that the server can
-		 * perform its specific task :
+		 * perform its specific task:
 		 *   - handleConnection
 		 *
-		 * Following methods may be subclassed for specific servers :
+		 * Following methods may be subclassed for specific servers:
 		 *   - accepted
 		 *
 		 * Inherited read/write methods communicate with the listening socket, 
@@ -81,7 +82,7 @@ namespace Ceylan
 		 * therefore would need to be specifically chosen thanks to the 
 		 * interface.
 		 *
-		 * @note Such servers are designed to be data-driven : they block
+		 * @note Such servers are designed to be data-driven: they block
 		 * most of the time, waiting for incoming requests, but they cannot
 		 * perform actions on their own, in the background, between two
 		 * requests. 
@@ -92,8 +93,10 @@ namespace Ceylan
 		{
 		
 
+
 			public:
 	
+
 
 				/**
 				 * Mother class for all stream socket-related exceptions, 
@@ -106,10 +109,10 @@ namespace Ceylan
 					public: 
 					
 						explicit MultiplexedServerStreamSocketException( 
-							const std::string & reason ) throw() ;
+							const std::string & reason ) ;
 						
 						virtual ~MultiplexedServerStreamSocketException()
-							 throw() ; 
+							throw() ; 
 							
 				} ;
 
@@ -127,10 +130,9 @@ namespace Ceylan
 					public: 
 					
 						explicit NetworkServerShutdownException( 
-							const std::string & reason ) throw() ;
+							const std::string & reason ) ;
 						
-						virtual ~NetworkServerShutdownException()
-							 throw() ; 
+						virtual ~NetworkServerShutdownException() throw() ; 
 				
 				} ;
 				
@@ -150,11 +152,13 @@ namespace Ceylan
 				 *
 				 */
 				explicit MultiplexedServerStreamSocket( Port listeningPort, 
-						bool reuse = true )	throw( SocketException ) ;
+					bool reuse = true )	;
+	
 	
 				
 				/// Virtual destructor.
 				virtual ~MultiplexedServerStreamSocket() throw() ;
+	
 	
 
 				/**
@@ -162,7 +166,8 @@ namespace Ceylan
 				 * client.
 				 *
 				 */
-				virtual bool isConnected() const throw() ;
+				virtual bool isConnected() const ;
+	
 	
 	
 				/**
@@ -175,7 +180,8 @@ namespace Ceylan
 				 * @see requestToStop()
 				 *
 				 */
-				virtual void run() throw( ServerStreamSocketException ) ;
+				virtual void run() ;
+	
 	
 	
 				/**
@@ -197,8 +203,7 @@ namespace Ceylan
 				 * @see stop
 				 *
 				 */
-				virtual AnonymousStreamSocket * accept() 
-					throw( ServerStreamSocketException ) ;
+				virtual AnonymousStreamSocket * accept() ;
 	
 
 
@@ -255,8 +260,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool handleConnection( 
-						AnonymousStreamSocket & connection )
-					throw( MultiplexedServerStreamSocketException ) = 0 ;
+					AnonymousStreamSocket & connection ) = 0 ;
+				
 				
 					
 				/**
@@ -267,8 +272,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual void closeConnection( 
-						AnonymousStreamSocket & connection )
-					throw( MultiplexedServerStreamSocketException ) ;
+					AnonymousStreamSocket & connection ) ;
+	
 	
 	
             	/**
@@ -284,8 +289,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString(
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high )	const ;
+	
 	
 	
 	
@@ -304,8 +309,7 @@ namespace Ceylan
 				 * overriden) closeConnection method.
 				 *
 				 */
-				virtual bool closeAcceptedConnections() 
-					throw( Stream::CloseException ) ;
+				virtual bool closeAcceptedConnections() ;
 				 
 
 /* 
@@ -316,7 +320,7 @@ namespace Ceylan
  * 
  */
 #pragma warning( push )
-#pragma warning( disable : 4251 )
+#pragma warning( disable: 4251 )
 
 				/**
 				 * The list of current accepted connection-based anonymous 
@@ -345,7 +349,8 @@ namespace Ceylan
 				 *
 				 */
 				MultiplexedServerStreamSocket( 
-					const MultiplexedServerStreamSocket & source ) throw() ;
+					const MultiplexedServerStreamSocket & source ) ;
+
 
 
 				/**
@@ -357,7 +362,7 @@ namespace Ceylan
 				 *
 				 */
 				MultiplexedServerStreamSocket & operator = ( 
-					const MultiplexedServerStreamSocket & source ) throw() ;
+					const MultiplexedServerStreamSocket & source ) ;
 		
 		
 		} ;
@@ -369,3 +374,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_MULTIPLEXED_SERVER_STREAM_SOCKET_H_
+

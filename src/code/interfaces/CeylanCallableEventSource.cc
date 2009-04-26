@@ -40,7 +40,7 @@ using namespace Ceylan::Log ;
 
 
 
-CallableEventSource::CallableEventSource() throw() :
+CallableEventSource::CallableEventSource() :
 	EventSource()
 {
 
@@ -48,28 +48,30 @@ CallableEventSource::CallableEventSource() throw() :
 
 
 
-CallableEventSource::CallableEventSource( EventListener & listener ) throw() :
+CallableEventSource::CallableEventSource( EventListener & listener ) :
 	EventSource( listener )
 {
 	
 }
 
 
+
 CallableEventSource::~CallableEventSource() throw()
 {
-	// Nothing specific for callable sources.	 	
+
+	// Nothing specific for callable sources.	
+	 	
 }
 
 
 
 const string CallableEventSource::toString( Ceylan::VerbosityLevels level ) 
-	const throw() 
+	const 
 {
 
-	// The sentence makes sense :
-	return "Callable Event Source. This specialized " 
+	// The sentence makes sense:
+	return "Callable Event Source. This is a specialized " 
 		+ EventSource::toString( level ) ;
 
 }
-
 

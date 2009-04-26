@@ -49,18 +49,22 @@ using namespace Ceylan::Log ;
 
 
 
-Controller::Controller() throw() :
+Controller::Controller() :
 	CallableEventSource()
 {
 
 }
 
 
-Controller::Controller( Model & model ) throw() :
+
+Controller::Controller( Model & model ) :
 	CallableEventSource()
 {
+
 	model.subscribeTo( * this ) ;
+	
 }
+
 
 
 Controller::~Controller() throw()
@@ -75,8 +79,8 @@ Controller::~Controller() throw()
 }
 
 
-const string Controller::toString( Ceylan::VerbosityLevels level ) 
-	const throw() 
+
+const string Controller::toString( Ceylan::VerbosityLevels level ) const 
 {
 	
 	if ( _listeners.empty() )
@@ -87,3 +91,4 @@ const string Controller::toString( Ceylan::VerbosityLevels level )
 		+ " model(s) subscribed" ;
 				
 }
+

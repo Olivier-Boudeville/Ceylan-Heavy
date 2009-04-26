@@ -82,7 +82,7 @@ void LogPlugHTML::StartService( const string & plugInitiator, bool smart )
 
 
 
-void LogPlugHTML::StopService() throw()
+void LogPlugHTML::StopService()
 {
 
 	LogPlug::StopService() ;
@@ -100,7 +100,7 @@ void LogPlugHTML::StopService() throw()
 
 
 
-const string LogPlugHTML::ToString( Ceylan::VerbosityLevels level ) throw()
+const string LogPlugHTML::ToString( Ceylan::VerbosityLevels level )
 {
 
 	string result = "LogSystem status: using HTML plug" ;

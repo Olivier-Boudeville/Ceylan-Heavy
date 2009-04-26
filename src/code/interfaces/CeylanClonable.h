@@ -45,7 +45,7 @@ namespace Ceylan
 	
 		public:
 		
-			explicit ClonableException( const std::string & message ) throw() ;
+			explicit ClonableException( const std::string & message ) ;
 			
 			virtual ~ClonableException() throw() ;
 			
@@ -65,7 +65,7 @@ namespace Ceylan
 		
 
 			/// Basic constructor.
-			Clonable() throw()
+			Clonable()
 			{
 			
 			}
@@ -87,7 +87,7 @@ namespace Ceylan
 			 * @throw ClonableException whenever the cloning fails.
 			 *
 			 */
-            virtual Clonable & clone() const throw( ClonableException ) = 0 ;
+            virtual Clonable & clone() const = 0 ;
 		
 		
 			
@@ -101,7 +101,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			Clonable( const Clonable & source ) throw() ;
+			Clonable( const Clonable & source ) ;
 			
 			
 			/**
@@ -111,7 +111,7 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			Clonable & operator = ( const Clonable & source ) throw() ;
+			Clonable & operator = ( const Clonable & source ) ;
 		
 			
 

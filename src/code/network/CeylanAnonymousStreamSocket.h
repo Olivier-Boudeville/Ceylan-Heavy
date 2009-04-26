@@ -35,6 +35,7 @@
 
 
 
+
 namespace Ceylan
 {
 
@@ -71,10 +72,11 @@ namespace Ceylan
 				class AnonymousStreamSocketException: 
 					public StreamSocketException
 				{ 
+				
 					public: 
 					
 						explicit AnonymousStreamSocketException( 
-							const std::string & reason ) throw() ;
+							const std::string & reason ) ;
 						
 						virtual ~AnonymousStreamSocketException() throw() ; 
 							
@@ -93,11 +95,12 @@ namespace Ceylan
 					public: 
 					
 						explicit NonBlockingAcceptException( 
-							const std::string & reason ) throw() ;
+							const std::string & reason ) ;
 						
 						virtual ~NonBlockingAcceptException() throw() ; 
 							
 				} ;
+
 
 
 	
@@ -132,10 +135,10 @@ namespace Ceylan
 				 *
 				 */
 				explicit AnonymousStreamSocket( 
-						System::FileDescriptor listeningFD,
-						bool blocking = true,
-						bool sacrificeThroughputToPacketTiming = false ) 
-					throw( SocketException ) ;
+					System::FileDescriptor listeningFD,
+					bool blocking = true,
+					bool sacrificeThroughputToPacketTiming = false ) ;
+	
 	
 				
 				/// Virtual destructor.
@@ -152,7 +155,7 @@ namespace Ceylan
 				 * connection exists, hence this method always returns true.
 				 *
 				 */
-				virtual bool isConnected() const throw() ;
+				virtual bool isConnected() const ;
 
 			
 	
@@ -169,17 +172,11 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 	
 	
 	
 	
-			protected:
-
-						
-
-
 			private:
 	
 				
@@ -192,8 +189,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				AnonymousStreamSocket( const AnonymousStreamSocket & source ) 
-					throw() ;
+				AnonymousStreamSocket( const AnonymousStreamSocket & source ) ;
 
 
 				/**
@@ -205,11 +201,12 @@ namespace Ceylan
 				 *
 				 */
 				AnonymousStreamSocket & operator = ( 
-					const AnonymousStreamSocket & source )	throw() ;
+					const AnonymousStreamSocket & source );
 
 		
 		
 		} ;
+		
 		
 	}
 	
@@ -218,3 +215,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_ANONYMOUS_STREAM_SOCKET_H_
+

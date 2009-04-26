@@ -35,30 +35,40 @@ using namespace Ceylan::Maths::Linear ;
 
 
 
-Matrix::Matrix() throw() 
+
+Matrix::Matrix() 
 {
 	
 }
 
 
-Matrix::~Matrix() throw() 
+
+Matrix::~Matrix() throw()
 {
+
 }
 
 
-void Matrix::nullify() throw()
+
+void Matrix::nullify()
 {
+
 	setAllElementsTo( 0 ) ;
+	
 }
 
 
-void Matrix::setToIdentity() throw()
+
+void Matrix::setToIdentity()
 {
+
 	setToDiagonal( 1 ) ;
+	
 }
 
 
-const string Matrix::toString( VerbosityLevels level ) const throw()
+
+const string Matrix::toString( VerbosityLevels level ) const
 {
 	
 	return "Abstract matrix"  ;	

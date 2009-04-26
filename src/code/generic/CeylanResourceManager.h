@@ -38,11 +38,12 @@
 #include <string>
 
 
+
 namespace Ceylan
 {
 
 
-	
+
 	/**
 	 * Exception to be raised when a Resource manager encounters an abnormal
 	 * situation.
@@ -53,8 +54,7 @@ namespace Ceylan
 	
 		public:
 		
-			explicit ResourceManagerException( const std::string & reason )
-				throw() ;
+			explicit ResourceManagerException( const std::string & reason )	;
 				
 			virtual ~ResourceManagerException() throw() ;
 	
@@ -63,7 +63,7 @@ namespace Ceylan
 	
 	
 	/**
-	 * Manages a set of Resource instances : the Resource manager can store 
+	 * Manages a set of Resource instances: the Resource manager can store 
 	 * and afterwards retrieve resources on behalf of the caller, which will
 	 * associate a key, whose type is user-defined, to each resource.
 	 *
@@ -76,13 +76,13 @@ namespace Ceylan
 	 *
 	 * This abstract manager is the mother class of all resource managers.
 	 *
-	 * A Resource manager handles the life cycle of its resources : it takes
+	 * A Resource manager handles the life cycle of its resources: it takes
 	 * their ownership, which means it will delete them when itself deleted or
 	 * flushed.
 	 * From the user's point of view, giving a Resource to the manager is an
 	 * alternative to deleting the resource.
 	 * By no means should the caller delete a managed Resource. Modifying them
-	 * after having given them to the manager is not recommended : the caller
+	 * after having given them to the manager is not recommended: the caller
 	 * should forget any pointer or reference to the Resources it sent to the
 	 * manager.
 	 *
@@ -93,7 +93,7 @@ namespace Ceylan
 	 *
 	 * The Resource manager has no quota to respect, it will store all given
 	 * Resources regardless of the resulting size in memory, and will make 
-	 * them available (as const), as long as the manager exists : it will
+	 * them available (as const), as long as the manager exists: it will
 	 * never forget any resource while still alive.
 	 *
 	 * There are different use cases for such a cache, depending on what is
@@ -101,7 +101,7 @@ namespace Ceylan
 	 * for cached resources to be cloned or not.
 	 *
 	 * If we take the example of a font rendering system, then this type of
-	 * cache could be useful when the blitting of a glyph is requested : first
+	 * cache could be useful when the blitting of a glyph is requested: first
 	 * the specified glyph is rendered into a new surface, then it is blitted
 	 * on, say, the screen. 
 	 * Instead of deallocating the surface after use, the blit function could
@@ -120,10 +120,10 @@ namespace Ceylan
 	 * have the same parameters, respectively it should be 'Resource' and
 	 * 'SmartResource'), this abstract class is needed.
 	 *
-	 * In all templates inheriting from this one, the data members (ex :
+	 * In all templates inheriting from this one, the data members (ex:
 	 * _cacheHits) should be specified as 'this->_cacheHits' or
 	 * 'Ceylan::ResourceManager<Key>::_cacheHits', since otherwise the compiler
-	 * would not search for these member names in this mother class : it may
+	 * would not search for these member names in this mother class: it may
 	 * not contain a '_cacheHits' member for all 'Key' choice, because of
 	 * template specialization that may occur.
 	 *
@@ -138,11 +138,13 @@ namespace Ceylan
 		public:
 		
 			
+			
 			/**
 			 * Creates an abstract Resource manager.
 			 *
 			 */
-			explicit ResourceManager() throw() ;
+			explicit ResourceManager() ;
+  
   
  
  			/**
@@ -150,8 +152,10 @@ namespace Ceylan
 			 *
 			 * @note Each child class should have its destructor call the
 			 * 'flush' method.
+			 *
 			 */
  			virtual ~ResourceManager() throw() ;
+	
 	
 					
 			/**
@@ -162,8 +166,8 @@ namespace Ceylan
 			 * associated with a key.
 			 *
 			 */
-			virtual bool isKeyAlreadyAssociated( const Key & key ) 
-				const throw() = 0 ;
+			virtual bool isKeyAlreadyAssociated( const Key & key ) const = 0 ;
+			
 			
 			
 			/**
@@ -183,8 +187,9 @@ namespace Ceylan
 			 * in cache entries might be updated.
 			 *
 			 */
-			 virtual const Resource * get( const Key & key ) throw() = 0 ;
+			 virtual const Resource * get( const Key & key ) = 0 ;
 			 						
+			 
 			 
 			/**
 			 * Removes and deletes all resources currently in cache.
@@ -194,7 +199,8 @@ namespace Ceylan
 			 * @note Should be called in the destructor of each child class.
 			 *
 			 */
-			virtual void flush() throw() = 0 ;
+			virtual void flush() = 0 ;
+					
 						
 			
 			/**
@@ -208,7 +214,7 @@ namespace Ceylan
 			 *
 			 */
 			 virtual const std::string toString( 
-			 	Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
+			 	Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 			
 			
@@ -236,7 +242,6 @@ namespace Ceylan
 		private:
 		
 		
-		
 			/**
 			 * Copy constructor made private to ensure that it will never be 
 			 * called.
@@ -244,7 +249,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			ResourceManager( const ResourceManager & source ) throw() ;
+			ResourceManager( const ResourceManager & source ) ;
 			
 			
 			/**
@@ -254,19 +259,18 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			ResourceManager & operator = ( const ResourceManager & source )
-				throw() ;
+			ResourceManager & operator = ( const ResourceManager & source )	;
 			
 			
 	} ;
 
 
 
-	/// Public section : implementation.
+	/// Public section: implementation.
 
 
 	template <typename Key>
-	ResourceManager<Key>::ResourceManager() throw() :
+	ResourceManager<Key>::ResourceManager() :
 		_cacheHits( 0 ),
 		_cacheMisses( 0 )
 	{
@@ -277,17 +281,19 @@ namespace Ceylan
 	template <typename Key>
 	ResourceManager<Key>::~ResourceManager() throw()
 	{
+	
 		/*
 		 * Cannot be called at this level since 'flush()' is
 		 * implementation-dependent.
 		 *
 		 */
+		 
 	}	
 			
 			
 	template <typename Key>
 	const std::string ResourceManager<Key>::toString( VerbosityLevels level )
-		const throw()
+		const
 	{
 		
 		std::string res = "Abstract Resource manager" ;		
@@ -298,15 +304,16 @@ namespace Ceylan
 		Ceylan::Uint32 total = _cacheHits + _cacheMisses ;
 		
 		return res + ". The average cache success is " 
-				+ Ceylan::toNumericalString( 
-					static_cast<Ceylan::Uint8>( 
-						( 100.0f * _cacheHits ) / total ) )
-				+ "% (" + Ceylan::toString( _cacheHits ) + " cache hit(s) for " 
-				+ Ceylan::toString( _cacheMisses ) + " cache miss(es))" ;
+			+ Ceylan::toNumericalString( static_cast<Ceylan::Uint8>( 
+				( 100.0f * _cacheHits ) / total ) )
+			+ "% (" + Ceylan::toString( _cacheHits ) + " cache hit(s) for " 
+			+ Ceylan::toString( _cacheMisses ) + " cache miss(es))" ;
+				
 	}
 	
 	
 }
+
 
 
 #endif // CEYLAN_RESOURCE_MANAGER_H_

@@ -34,11 +34,12 @@ using namespace Ceylan::Middleware ;
 
 
 
-MiddlewareException::MiddlewareException( const string & message ) throw() :
+MiddlewareException::MiddlewareException( const string & message ) :
 	 Ceylan::Exception( message )
 {
 
 }
+
 
 
 MiddlewareException::~MiddlewareException() throw()

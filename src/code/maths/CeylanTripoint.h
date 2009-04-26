@@ -31,6 +31,7 @@
 #include "CeylanPoint.h"		// for Point
 #include "CeylanLinear.h"		// for Real, LinearException
 
+
 #include <string>
 
 
@@ -47,11 +48,14 @@ namespace Ceylan
 		{
 
 			
+			
 			// Result of Tripoint substraction.
 			class Vector3 ;
 
+
 			// Used by Tripoint.			
 			class Matrix3 ;
+
 
 
 			/**
@@ -75,8 +79,10 @@ namespace Ceylan
 				/// Must access to each other's coordinates.				
 				friend class Vector3 ;
 
+
 				/// Must access to each other's coordinates.
 				friend class Matrix3 ;
+				
 				
 				
 				/** 
@@ -90,7 +96,8 @@ namespace Ceylan
 				 * @see Maths::AreRelativelyEqual.
 				 */
 				CEYLAN_DLL friend bool operator == ( const Tripoint & t1, 
-					const Tripoint & t2 ) throw() ;
+					const Tripoint & t2 ) ;
+				
 				
 				
 				/** 
@@ -98,24 +105,28 @@ namespace Ceylan
 				 *
 				 */
 				CEYLAN_DLL friend bool operator != ( const Tripoint & t1, 
-					const Tripoint & t2 ) throw() ;
+					const Tripoint & t2 ) ;
+				
+				
 				
 				/** 
-				 * Translates a 3D point of specified 3D vector : 
+				 * Translates a 3D point of specified 3D vector: 
 				 * result = t + v.
 				 *
 				 */
 				CEYLAN_DLL friend Tripoint operator + ( const Tripoint & t, 
-					const Vector3 & v ) throw() ;
+					const Vector3 & v ) ;
+					
 					
 				
 				/** 
-				 * Translates a 3D point of specified opposite 3D vector :
+				 * Translates a 3D point of specified opposite 3D vector:
 				 * result = t - v.
 				 *
 				 */
 				CEYLAN_DLL friend Tripoint operator - ( const Tripoint & t, 
-					const Vector3 & v ) throw();
+					const Vector3 & v ) ;
+				
 				
 				
 				/** 
@@ -123,17 +134,18 @@ namespace Ceylan
 				 * have exactly the same coordinates.
 				 *
 				 */
-				CEYLAN_DLL friend Vector3 vectorize( 
-					const Tripoint & t ) throw() ;
+				CEYLAN_DLL friend Vector3 vectorize( const Tripoint & t ) ;
+				
 				
 				
 				/** 
-				 * Constructs a 3D vector from two 3D points : 
+				 * Constructs a 3D vector from two 3D points: 
 				 * result = t2 - t1.
 				 *
 				 */
 				CEYLAN_DLL friend Vector3 vectorize( const Tripoint & t1, 
-					const Tripoint & t2 ) throw() ;
+					const Tripoint & t2 ) ;
+
 
 
 
@@ -147,48 +159,52 @@ namespace Ceylan
 					 * null vector.
 					 *
 					 */
-					explicit Tripoint( Real x0 = 0, Real x1 = 0, 
-						Real x2 = 0 ) throw() ;
+					explicit Tripoint( Real x0 = 0, Real x1 = 0, Real x2 = 0 ) ;
+				
 				
 				
 					/// Basic virtual destructor.
 					virtual ~Tripoint() throw() ;
 					
 					
+					
 					/// Reassigns this tripoint's coordinates.
-					virtual void setTo( Real x0, Real x1, Real x2 ) throw() ;
+					virtual void setTo( Real x0, Real x1, Real x2 ) ;
 				
+					
 					
 					/**
 					 * Sets this point so that all its elements equal
 					 * commonValue.
 					 *
 					 */
-					virtual void setAllElementsTo( Real commonValue ) throw() ;
+					virtual void setAllElementsTo( Real commonValue ) ;
+			
 			
 					
 					/**
 					 * Returns indexed element. 
 					 * Index ranges from 0 to Dimensions-1.
 					 *
-					 * @note An emergency shutdown is triggered if index 
-					 * is out of bounds.
+					 * @throw MathsException if index is out of bounds and if
+					 * in debug mode.
 					 *
 					 */
-					virtual Real getElementAt( MatrixIndex index ) 
-						const throw() ;
+					virtual Real getElementAt( MatrixIndex index ) const ;
+					
 					
 					
 					/**
 					 * Sets indexed element to specified value. 
 					 * Index ranges from 0 to Dimensions-1.
 					 *
-					 * @note An emergency shutdown is triggered if index
-					 * is out of bounds.
+					 * @throw MathsException if index is out of bounds and if
+					 * in debug mode.
 					 *
 					 */
 					virtual void setElementAt( MatrixIndex index, 
-						Real newValue ) throw() ;
+						Real newValue ) ;
+					
 					
 					
 					/**
@@ -204,7 +220,8 @@ namespace Ceylan
 					 *
 					 */
              		virtual const std::string toString( 
-						VerbosityLevels level = high ) const throw() ;
+						VerbosityLevels level = high ) const ;
+				
 				
 					 
 					/**
@@ -224,6 +241,7 @@ namespace Ceylan
 
 
 			} ;
+			
 
 		}
 		
@@ -232,4 +250,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_TRIPOINT_H_
+

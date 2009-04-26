@@ -100,7 +100,7 @@ namespace Ceylan
 			public:
 	
 	
-				GenericMVCException( const std::string & message ) throw() :
+				GenericMVCException( const std::string & message ) :
 					Ceylan::Exception( message )
 				{
 	
@@ -119,6 +119,7 @@ namespace Ceylan
 
 	
 }	
+
 
 
 #endif // CEYLAN_GENERIC_MVC_DEFINES_H_

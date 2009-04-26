@@ -34,6 +34,8 @@
 #include <string>
 
 
+
+
 namespace Ceylan
 {
 
@@ -45,15 +47,19 @@ namespace Ceylan
 		namespace Linear
 		{
 
+
 			
 			// Substracts them to have vectors.			
 			class Bipoint ;
 
+
 			// Transforms vectors.
 			class Matrix2 ;
 
+
 			// Special cases of 3D matrices.
 			class HomogeneousMatrix3 ;
+
 
 
 			/**
@@ -63,7 +69,7 @@ namespace Ceylan
 			 * @note Beware of counter-intuitive operator priorities.
 			 *
 			 */
-			class CEYLAN_DLL Vector2 : public Vector
+			class CEYLAN_DLL Vector2: public Vector
 			{
 
 
@@ -73,8 +79,10 @@ namespace Ceylan
 				/// Must access to each other's coordinates.				
 				friend class Bipoint ;
 
+
 				/// Must access to each other's coordinates.					
 				friend class Matrix2 ;
+				
 				
 				
 				/** 
@@ -82,7 +90,8 @@ namespace Ceylan
 				 *
 				 */
 				CEYLAN_DLL friend bool operator == ( const Vector2 & v1, 
-					const Vector2 & v2 ) throw() ;
+					const Vector2 & v2 ) ;
+						
 						
 						
 				/** 
@@ -91,25 +100,28 @@ namespace Ceylan
 				 *
 				 */
 				CEYLAN_DLL friend bool operator != ( const Vector2 & v1, 
-					const Vector2 & v2 ) throw() ;
+					const Vector2 & v2 ) ;
+
 
 
 				/** 
-				 * Translates a 2D point of specified 2D vector : 
+				 * Translates a 2D point of specified 2D vector: 
 				 * result = t + v.
 				 *
 				 */
 				CEYLAN_DLL friend Bipoint operator + ( const Bipoint & t, 
-					const Vector2 & v ) throw() ;
+					const Vector2 & v ) ;
+				
 				
 				
 				/** 
-				 * Translates a 2D point of specified opposite 2D vector :
+				 * Translates a 2D point of specified opposite 2D vector:
 				 * result = t - v.
 				 *
 				 */
 				CEYLAN_DLL friend Bipoint operator - ( const Bipoint & t, 
-					const Vector2 & v ) throw();
+					const Vector2 & v ) ;
+	
 	
 				
 				/** 
@@ -117,80 +129,89 @@ namespace Ceylan
 				 * have the same coordinates.
 				 *
 				 */
-				CEYLAN_DLL friend Vector2 vectorize( const Bipoint & t ) 
-					throw() ;
+				CEYLAN_DLL friend Vector2 vectorize( const Bipoint & t ) ;
+				
 				
 				
 				/** 
-				 * Constructs a 2D vector from two 2D points : 
+				 * Constructs a 2D vector from two 2D points: 
 				 * result = t1 - t2.
 				 *
 				 */
 				CEYLAN_DLL friend Vector2 vectorize( const Bipoint & t1, 
-					const Bipoint & t2 ) throw() ;
+					const Bipoint & t2 ) ;
+
 
 
 				/** 
-				 * Adds two vectors : result = v1 + v2.
+				 * Adds two vectors: result = v1 + v2.
 				 *
 				 */
 				CEYLAN_DLL friend Vector2 operator + ( const Vector2 & v1, 
-					const Vector2 & v2 ) throw() ;
+					const Vector2 & v2 ) ;
+
 
 
 				/** 
-				 * Substracts two vectors : result = v1 - v2.
+				 * Substracts two vectors: result = v1 - v2.
 				 *
 				 */			
 				CEYLAN_DLL friend Vector2 operator - ( const Vector2 & v1, 
-					const Vector2 & v2 ) throw() ;
+					const Vector2 & v2 ) ;
 	
 				
+				
 				/** 
-				 * Multiplies v by coefficient lambda : 
+				 * Multiplies v by coefficient lambda: 
 				 * result = lamba.v.
 				 *
 				 */
 				CEYLAN_DLL friend Vector2 operator * ( Real lambda, 
-					const Vector2 & v ) throw()  ;
+					const Vector2 & v ) ;
+				
 				
 				
 				/** 
-				 * Applies vector v to matrix m : 
+				 * Applies vector v to matrix m: 
 				 * result = m.v
 				 *
 				 */
 				CEYLAN_DLL friend Vector2 operator * ( const Matrix2 & m, 
-					const Vector2 & v ) throw() ;
+					const Vector2 & v ) ;
+	
 	
 	
 				/** 
-				 * Applies vector v to homogeneous matrix hm : 
+				 * Applies vector v to homogeneous matrix hm: 
 				 * result = hm.v
 				 *
 				 */
 				CEYLAN_DLL friend Vector2 operator * ( 
-					const HomogeneousMatrix3 & m, const Vector2 & v ) throw() ;
+					const HomogeneousMatrix3 & m, const Vector2 & v ) ;
+
 
 
 				/** 
-				 * Computes the dot product of v1 and v2 : 
+				 * Computes the dot product of v1 and v2: 
 				 * result = v1 (dotproduct) v2.
 				 *
 				 */
 				CEYLAN_DLL friend Real operator | ( const Vector2 & v1, 
-					const Vector2 & v2 ) throw()  ;
+					const Vector2 & v2 ) ;
+
+
 
 				// Cross product is a non-sense in 2D.
 				
+				
 				/// Returns the magnitude of specified vector.
-				CEYLAN_DLL friend Real operator ~ ( 
-					const Vector2 & v ) throw() ;
+				CEYLAN_DLL friend Real operator ~ ( const Vector2 & v ) ;
 				
 				
 				
 
 				public:
+				
 				
 				
 					/**
@@ -200,15 +221,18 @@ namespace Ceylan
 					 * the null vector.
 					 *
 					 */
-					explicit Vector2( Real x0 = 0, Real x1 = 0 ) throw() ;
+					explicit Vector2( Real x0 = 0, Real x1 = 0 ) ;
+				
 				
 				
 					/// Basic virtual destructor.
 					virtual ~Vector2() throw() ;
 					
 					
+					
 					/// Reassigns this vector's coordinates.
-					virtual void setTo( Real x0, Real x1 ) throw() ;
+					virtual void setTo( Real x0, Real x1 ) ;
+
 
 
 					/**
@@ -216,7 +240,8 @@ namespace Ceylan
 					 * (all coordinates zeroed).
 					 *
 					 */
-					virtual void nullify() throw() ;
+					virtual void nullify() ;
+	
 	
 					
 					/**
@@ -224,38 +249,43 @@ namespace Ceylan
 					 * commonValue.
 					 *
 					 */
-					virtual void setAllElementsTo( Real commonValue ) throw() ;
+					virtual void setAllElementsTo( Real commonValue ) ;
+
 
 
 					/// Returns the abscissa of this vector.
-					virtual Real getX() const throw() ;
+					virtual Real getX() const ;
+					
+					
 					
 					/// Returns the ordinate of this vector.
-					virtual Real getY() const throw() ;
+					virtual Real getY() const ;
+
 
 
 					/**
 					 * Returns indexed element. 
 					 * Index ranges from 0 to Dimensions-1.
 					 *
-					 * @note An emergency shutdown is triggered if index 
-					 * is out of bounds.
+					 * @throw MathsException if index is out of bounds and if
+					 * in debug mode.
 					 *
 					 */
-					virtual Real getElementAt( MatrixIndex index ) 
-						const throw() ;
+					virtual Real getElementAt( MatrixIndex index ) const ;
+					
 					
 					
 					/**
 					 * Sets indexed element to specified value. 
 					 * Index ranges from 0 to Dimensions-1.
 					 *
-					 * @note An emergency shutdown is triggered if 
-					 * index is out of bounds.
+					 * @throw MathsException if index is out of bounds and if
+					 * in debug mode.
 					 *
 					 */
 					virtual void setElementAt( MatrixIndex index, 
-						Real newValue ) throw() ;
+						Real newValue ) ;
+					
 					
 					
 					/**
@@ -266,7 +296,8 @@ namespace Ceylan
 					 * normalized.
 					 *
 					 */
-					virtual void normalize() throw( LinearException ) ;
+					virtual void normalize() ;
+
 
 
 					/**
@@ -275,7 +306,8 @@ namespace Ceylan
 					 * @see operator ~
 					 *
 					 */
-					virtual Real magnitude() const throw() ;
+					virtual Real magnitude() const ;
+
 
 					
 					/**
@@ -291,7 +323,8 @@ namespace Ceylan
 					 *
 					 */
              		virtual const std::string toString( 
-						VerbosityLevels level = high ) const throw() ;
+						VerbosityLevels level = high ) const ;
+
 
 
 					/**
@@ -311,6 +344,7 @@ namespace Ceylan
 
 
 			} ;
+			
 
 		}
 		
@@ -319,4 +353,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_VECTOR_2_H_
+

@@ -32,6 +32,7 @@
 #include "CeylanMemoryStream.h"       // for MemoryStream
 
 
+
 using std::string ;
 
 using namespace Ceylan ;
@@ -40,17 +41,20 @@ using namespace Ceylan::System ;
 using namespace Ceylan::Middleware ;
 
 
+
 #ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"             // for configure-time settings
 #endif // CEYLAN_USES_CONFIG_H
 	
 	
 			
-MarshallException::MarshallException( const string & message ) throw() : 
+MarshallException::MarshallException( const string & message ) : 
 	MiddlewareException( message )
 {
 
 }
+
+
 
 MarshallException::~MarshallException() throw()			
 {
@@ -59,24 +63,30 @@ MarshallException::~MarshallException() throw()
 
 
 
-DecodeException::DecodeException( const string & message ) throw() : 
+
+DecodeException::DecodeException( const string & message ) : 
 	MarshallException( message )
 {
 
 }
 
-DecodeException::~DecodeException() throw()			
+
+
+DecodeException::~DecodeException() throw() 			
 {
 
 }
 
 
 
-EncodeException::EncodeException( const string & message ) throw() : 
+
+EncodeException::EncodeException( const string & message ) : 
 	MarshallException( message )
 {
 
 }
+
+
 
 EncodeException::~EncodeException() throw()			
 {
@@ -87,7 +97,7 @@ EncodeException::~EncodeException() throw()
 
 
 Marshaller::Marshaller( System::InputOutputStream & lowerLevelStream,
-		System::Size bufferedSize ) throw() :
+		System::Size bufferedSize ) :
 	TextDisplayable(),
 	_lowerLevelStream( & lowerLevelStream ),
 	_bufferStream( 0 )
@@ -99,7 +109,8 @@ Marshaller::Marshaller( System::InputOutputStream & lowerLevelStream,
 }
 
 
-Marshaller::~Marshaller() throw()
+
+Marshaller::~Marshaller() throw() 
 {
 
 	// _lowerLevelStream not owned.
@@ -110,24 +121,24 @@ Marshaller::~Marshaller() throw()
 }
 
 
-System::Size Marshaller::retrieveData( System::Size requestedSize ) 
-	throw( DecodeException )
+
+System::Size Marshaller::retrieveData( System::Size requestedSize )
 {
 
 
 #if CEYLAN_DEBUG_MARSHALLERS			
-	LogPlug::trace( "Marshaller::retrieveData : " 
+	LogPlug::trace( "Marshaller::retrieveData: " 
 		+ Ceylan::toString( 
 			static_cast<Ceylan::Uint32>( requestedSize ) ) 
 		+ " byte(s) requested." ) ;
 #endif // CEYLAN_DEBUG_MARSHALLERS
 	
 	if ( ! isBuffered() )
-		throw DecodeException( "Marshaller::retrieveData : "
+		throw DecodeException( "Marshaller::retrieveData: "
 			"no buffer available for this operation." ) ;
 
 	if ( requestedSize > _bufferStream->getSize()  )
-		throw DecodeException( "Marshaller::retrieveData : "
+		throw DecodeException( "Marshaller::retrieveData: "
 			"buffer too small, requesting " 
 			+ Ceylan::toString( 
 				static_cast<Ceylan::Uint32>( requestedSize ) ) 
@@ -142,7 +153,7 @@ System::Size Marshaller::retrieveData( System::Size requestedSize )
 	 
 	if ( requestedSize > 
 			( _bufferStream->getSize() - _bufferStream->getBlockLength() ) )
-		throw DecodeException( "Marshaller::retrieveData : "
+		throw DecodeException( "Marshaller::retrieveData: "
 			"no enough space left in buffer, requesting " 
 			+ Ceylan::toString( static_cast<Ceylan::Uint32>( requestedSize ) )
 			+ " bytes whereas free space in buffer is "
@@ -154,7 +165,7 @@ System::Size Marshaller::retrieveData( System::Size requestedSize )
 	/*
 	 * Here we know there is enough free space, we have to make sure that
 	 * the requested size is available in one chunk, not split by the end of
-	 * buffer :
+	 * buffer:
 	 *
 	 * (we always request the full free size, even if requestedSize is not zero,
 	 * as it cannot lead to asking for fewer bytes than requested)
@@ -168,7 +179,7 @@ System::Size Marshaller::retrieveData( System::Size requestedSize )
 	
 		/*
 		 * We have here to move first the block of already read data to the 
-		 * beginning of buffer :
+		 * beginning of buffer:
 		 *
 		 */
 		_bufferStream->moveFilledBlockToBufferStart() ;
@@ -182,18 +193,18 @@ System::Size Marshaller::retrieveData( System::Size requestedSize )
 	{
 	
 #if CEYLAN_DEBUG_MARSHALLERS			
-		LogPlug::debug( "Marshaller::retrieveData : will try to read " 
+		LogPlug::debug( "Marshaller::retrieveData: will try to read " 
 			+ Ceylan::toString( 
 				static_cast<Ceylan::Uint32>( targetFreeSize ) ) 
 			+ " actual byte(s)." ) ;
 #endif // CEYLAN_DEBUG_MARSHALLERS
 			
-		// Avoid useless buffer copy thanks to in-place writing :	
+		// Avoid useless buffer copy thanks to in-place writing:	
 		readSize = _lowerLevelStream->read(
 			_bufferStream->getAddressOfNextFreeChunk(), targetFreeSize ) ;
 
 #if CEYLAN_DEBUG_MARSHALLERS			
-		LogPlug::debug( "Marshaller::retrieveData : read " 
+		LogPlug::debug( "Marshaller::retrieveData: read " 
 			+ Ceylan::toString( 
 				static_cast<Ceylan::Uint32>( readSize ) )
 			+ " actual byte(s)." ) ;
@@ -202,12 +213,12 @@ System::Size Marshaller::retrieveData( System::Size requestedSize )
 	}
 	catch( const InputStream::ReadFailedException & e )
 	{
-		throw DecodeException( "Marshaller::retrieveData : " + e.toString() ) ;
+		throw DecodeException( "Marshaller::retrieveData: " + e.toString() ) ;
 	}
 
 
 	if ( readSize == 0 )
-		LogPlug::error( "Marshaller::retrieveData : read zero byte "
+		LogPlug::error( "Marshaller::retrieveData: read zero byte "
 			"from lower-level stream (abnormal, as should be selected)." ) ;
 			
 	try
@@ -218,13 +229,13 @@ System::Size Marshaller::retrieveData( System::Size requestedSize )
 	}
 	catch( const MemoryStream::MemoryStreamException & e )
 	{
-		throw DecodeException( "Marshaller::retrieveData has a bug : "
+		throw DecodeException( "Marshaller::retrieveData has a bug: "
 			+ e.toString() ) ;
 	}
 
 	
 #if CEYLAN_DEBUG_MARSHALLERS			
-	LogPlug::trace( "Marshaller::retrieveData : " 
+	LogPlug::trace( "Marshaller::retrieveData: " 
 		+ Ceylan::toString( static_cast<Ceylan::Uint32>( readSize ) )
 		+ " byte(s) read, "	+ Ceylan::toString( 
 			static_cast<Ceylan::Uint32>( _bufferStream->getBlockLength() ) ) 
@@ -236,15 +247,15 @@ System::Size Marshaller::retrieveData( System::Size requestedSize )
 }
 
 
-const string Marshaller::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+
+const string Marshaller::toString( Ceylan::VerbosityLevels level ) const 
 {
 
 	string res = "Marshaller using as underlying lower-level stream "
 		+ _lowerLevelStream->toString( level )  ;
 	
 	if ( _bufferStream != 0 )
-		res += ". This marshaller has following internal buffered stream : "
+		res += ". This marshaller has following internal buffered stream: "
 			+ _bufferStream->toString( level ) ;
 	else
 		res += ". This marshaller has no internal buffered stream" ;

@@ -45,8 +45,7 @@ namespace Ceylan
 
 		public:
 
-			explicit LocalizationException( const std::string & reason ) 
-				throw() ;
+			explicit LocalizationException( const std::string & reason ) ;
 			virtual ~LocalizationException() throw() ;
 
 	} ;
@@ -72,8 +71,7 @@ namespace Ceylan
              * Constructs an instance to localization settings.
 			 *
              */
-            explicit LocalizationSettings() 
-				throw( LocalizationException ) ;
+            explicit LocalizationSettings() ;
 
 
             /// Virtual destructor.
@@ -91,8 +89,8 @@ namespace Ceylan
 			 * known one.
 			 *
 			 */
-			virtual void addSupportedLocale( LocaleCode code )
-				throw( LocalizationException ) ;
+			virtual void addSupportedLocale( LocaleCode code ) ;
+			
 			
 			
 			/**
@@ -102,8 +100,7 @@ namespace Ceylan
 			 * known one.
 			 *
 			 */
-			virtual void addSupportedLocale( const std::string & localeName )
-				throw( LocalizationException ) ;
+			virtual void addSupportedLocale( const std::string & localeName ) ;
 			
 			
 			
@@ -112,22 +109,23 @@ namespace Ceylan
 			 * supported.
 			 *
 			 */
-			virtual bool isSupported( LocaleCode code ) throw() ;
+			virtual bool isSupported( LocaleCode code ) ;
+			
 			
 			
 			/**
 			 * Returns true iff the specified locale is supported.
 			 *
 			 */
-			virtual bool isSupported( const std::string & localeName ) throw() ;
+			virtual bool isSupported( const std::string & localeName ) ;
 			
+			 
 			 
 			/**
 			 * Returns the list of the codes of all supported locales.
 			 *
 			 */
-			virtual const std::list<LocaleCode> & getSupportedLocales() 
-				const throw() ;
+			virtual const std::list<LocaleCode> & getSupportedLocales() const ;
 			
 			
 			
@@ -137,7 +135,7 @@ namespace Ceylan
 			
 			
 			/// Returns true iff a current locale is set.
-			virtual bool hasCurrentLocale() const throw() ;
+			virtual bool hasCurrentLocale() const ;
 			
 			
 			/**
@@ -146,8 +144,8 @@ namespace Ceylan
 			 * @throw LocalizationException if none is set.
 			 *
 			 */
-			virtual LocaleCode getCurrentLocaleCode() const 
-				throw( LocalizationException ) ;
+			virtual LocaleCode getCurrentLocaleCode() const	;
+			
 			
 			
 			/**
@@ -156,8 +154,7 @@ namespace Ceylan
 			 * @throw LocalizationException if none is set.
 			 *
 			 */
-			virtual const std::string & getCurrentLocaleName() const 
-				throw( LocalizationException ) ;
+			virtual const std::string & getCurrentLocaleName() const ;
 			
 			
 			
@@ -167,8 +164,7 @@ namespace Ceylan
 			 * @throw LocalizationException if the operation failed.
 			 *
 			 */
-			virtual void setCurrentLocale( LocaleCode code ) 
-				throw( LocalizationException ) ;
+			virtual void setCurrentLocale( LocaleCode code ) ;
 			
 			
 			/**
@@ -177,9 +173,7 @@ namespace Ceylan
 			 * @throw LocalizationException if the operation failed.
 			 *
 			 */
-			virtual void setCurrentLocale( const std::string & localeName ) 
-				throw( LocalizationException ) ;
-			
+			virtual void setCurrentLocale( const std::string & localeName ) ;
 			
 			
 			
@@ -194,7 +188,7 @@ namespace Ceylan
              *
              */
             virtual const std::string toString( VerbosityLevels level = high )
-				const throw() ;
+				const ;
 
 
 
@@ -202,8 +196,7 @@ namespace Ceylan
 			 * Returns true iff the specified locale name is a known locale.
 			 *
 			 */
-			static bool IsAKnownLocale( const std::string & localeName ) 
-				throw() ;
+			static bool IsAKnownLocale( const std::string & localeName ) ;
 				
 				
 			/**
@@ -215,8 +208,7 @@ namespace Ceylan
 			 *
 			 */
 			static LocaleCode GetLocaleCodeFromName( 
-					const std::string & localeName ) 
-				throw( LocalizationException ) ;	
+					const std::string & localeName ) ;	
 			
 			
 			/**
@@ -227,8 +219,8 @@ namespace Ceylan
 			 * correspond to any known locale.
 			 *
 			 */
-			static const std::string & GetLocaleNameFromCode( LocaleCode code ) 
-				throw( LocalizationException ) ;	
+			static const std::string & GetLocaleNameFromCode( 
+				LocaleCode code ) ;	
 			
 			
 			
@@ -240,13 +232,19 @@ namespace Ceylan
 
 
 
+
         protected:
 
 
+			/// The list of supported locales.
 			std::list<LocaleCode> _supportedLocales ;
 
+
+			/// The current locale in use.
 			LocaleCode _currentLocale ;
 			
+
+
 
 		private:
 		
@@ -258,8 +256,8 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */
-			LocalizationSettings( const LocalizationSettings & source ) 
-				throw() ;
+			LocalizationSettings( const LocalizationSettings & source ) ;
+			
 			
 			
 			/**
@@ -270,7 +268,7 @@ namespace Ceylan
 			 * 
 			 */			 
 			LocalizationSettings & operator = ( 
-				const LocalizationSettings & source ) throw() ;
+				const LocalizationSettings & source ) ;
 
 
     } ;

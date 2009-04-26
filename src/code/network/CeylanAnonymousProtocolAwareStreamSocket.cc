@@ -47,7 +47,7 @@ using std::string ;
 
 AnonymousProtocolAwareStreamSocket::AnonymousProtocolAwareStreamSocket( 
 		System::FileDescriptor listeningFD, 
-		ProtocolServer & protocolServerToTrigger ) throw( SocketException ):
+		ProtocolServer & protocolServerToTrigger ) :
 	AnonymousStreamSocket( listeningFD ),
 	_protocolServer( & protocolServerToTrigger )
 {
@@ -57,8 +57,9 @@ AnonymousProtocolAwareStreamSocket::AnonymousProtocolAwareStreamSocket(
 }
 
 
+
 AnonymousProtocolAwareStreamSocket::AnonymousProtocolAwareStreamSocket( 
-		System::FileDescriptor listeningFD ) throw( SocketException ):
+		System::FileDescriptor listeningFD ) :
 	AnonymousStreamSocket( listeningFD, /* blocking */ false ),
 	_protocolServer( 0 )
 {
@@ -66,6 +67,7 @@ AnonymousProtocolAwareStreamSocket::AnonymousProtocolAwareStreamSocket(
 	// Here the connection is accepted.
 	
 }
+
 
 
 AnonymousProtocolAwareStreamSocket::~AnonymousProtocolAwareStreamSocket()
@@ -78,7 +80,8 @@ AnonymousProtocolAwareStreamSocket::~AnonymousProtocolAwareStreamSocket()
 }
 
 
-bool AnonymousProtocolAwareStreamSocket::hasProtocolServer() const throw()
+
+bool AnonymousProtocolAwareStreamSocket::hasProtocolServer() const
 {
 
 	return _protocolServer != 0 ;
@@ -86,13 +89,13 @@ bool AnonymousProtocolAwareStreamSocket::hasProtocolServer() const throw()
 }
 
 
+
 ProtocolServer & AnonymousProtocolAwareStreamSocket::getProtocolServer()
-	throw( AnonymousStreamSocketException )
-{
+	{
 
 	if ( _protocolServer == 0 )
 		throw AnonymousStreamSocketException(
-			"AnonymousProtocolAwareStreamSocket::getProtocolServer : "
+			"AnonymousProtocolAwareStreamSocket::getProtocolServer: "
 			"no available protocol server." ) ;
 			
 	return * _protocolServer ;
@@ -100,8 +103,9 @@ ProtocolServer & AnonymousProtocolAwareStreamSocket::getProtocolServer()
 }
 
 
+
 void AnonymousProtocolAwareStreamSocket::setProtocolServer( 
-	ProtocolServer & newProtocolServer ) throw()
+	ProtocolServer & newProtocolServer )
 {
 
 	if (  _protocolServer != 0 )
@@ -112,8 +116,9 @@ void AnonymousProtocolAwareStreamSocket::setProtocolServer(
 }
 
 
+
 const std::string AnonymousProtocolAwareStreamSocket::toString( 
-	Ceylan::VerbosityLevels level ) const throw()
+	Ceylan::VerbosityLevels level ) const
 {
 		
 	string res= "AnonymousProtocolAwareStreamSocket" ;
@@ -122,7 +127,7 @@ const std::string AnonymousProtocolAwareStreamSocket::toString(
 	{
 	
 		/*
-		 * Avoid cycles in toString calls :
+		 * Avoid cycles in toString calls:
 		 * AnonymousProtocolAwareStreamSocket -> ProtocolServer 
 		 * -> ProtocolEndpoint -> Marshaller 
 		 * -> AnonymousProtocolAwareStreamSocket

@@ -34,7 +34,6 @@
 
 #include "CeylanLogPlug.h"       // for LogPlug
 #include "CeylanOperators.h"     // for toString
-#include "CeylanUtils.h"         // for emergencyShutdown
 
 
 #ifdef CEYLAN_USES_CONFIG_H
@@ -63,7 +62,8 @@ using namespace Ceylan::Maths::Linear ;
 using Ceylan::Maths::Real ;
 
 
-Matrix2::Matrix2( Real x0, Real x1, Real y0, Real y1 ) throw() 
+
+Matrix2::Matrix2( Real x0, Real x1, Real y0, Real y1 ) 
 {
 
 	_mat[0][0] = x0 ;  
@@ -74,7 +74,8 @@ Matrix2::Matrix2( Real x0, Real x1, Real y0, Real y1 ) throw()
 }
 
 
-Matrix2::Matrix2( const Matrix2 & source ) throw():
+
+Matrix2::Matrix2( const Matrix2 & source ) :
 	Matrix()
 {
 
@@ -85,13 +86,15 @@ Matrix2::Matrix2( const Matrix2 & source ) throw():
 }
 
 
-Matrix2::~Matrix2() throw() 
+
+Matrix2::~Matrix2() throw()
 {
 
 }
 
 
-void Matrix2::setTo( Real x0, Real x1, Real y0, Real y1 ) throw()
+
+void Matrix2::setTo( Real x0, Real x1, Real y0, Real y1 )
 {
 
 	_mat[0][0] = x0 ;  
@@ -102,8 +105,8 @@ void Matrix2::setTo( Real x0, Real x1, Real y0, Real y1 ) throw()
 }
 
 
-void Matrix2::setColumn( MatrixIndex columnNumber, 
-	const Vector2 & newColumn ) throw()
+
+void Matrix2::setColumn( MatrixIndex columnNumber, const Vector2 & newColumn )
 {
 
 	for ( MatrixIndex i = 0 ; i < Dimensions ; i++ )
@@ -112,7 +115,8 @@ void Matrix2::setColumn( MatrixIndex columnNumber,
 }
 
 
-void Matrix2::setAllElementsTo( Real commonValue ) throw()
+
+void Matrix2::setAllElementsTo( Real commonValue )
 {
 
 	for ( MatrixIndex j = 0 ;  j < Dimensions ; j++ )
@@ -122,15 +126,14 @@ void Matrix2::setAllElementsTo( Real commonValue ) throw()
 }
 
 
-Real Matrix2::getElementAt( MatrixIndex abscissa, 
-	MatrixIndex ordinate ) const throw()
+
+Real Matrix2::getElementAt( MatrixIndex abscissa, MatrixIndex ordinate ) const
 {
 
 #if CEYLAN_DEBUG
 
 	if ( abscissa >= Dimensions || ordinate >= Dimensions )
-		Ceylan::emergencyShutdown( 
-			"Matrix2::getElementAt: index out of bounds." ) ;
+		throw MathsException( "Matrix2::getElementAt: index out of bounds." ) ;
 			
 #endif // CEYLAN_DEBUG
 		
@@ -139,15 +142,15 @@ Real Matrix2::getElementAt( MatrixIndex abscissa,
 }
 
 
+
 void Matrix2::setElementAt( MatrixIndex abscissa, 
-	MatrixIndex ordinate, Real newValue ) throw()
+	MatrixIndex ordinate, Real newValue )
 {
 
 #if CEYLAN_DEBUG
 
 	if ( abscissa >= Dimensions || ordinate >= Dimensions )
-		Ceylan::emergencyShutdown( 
-			"Matrix2::setElementAt: index out of bounds." ) ;
+		throw MathsException( "Matrix2::setElementAt: index out of bounds." ) ;
 
 #endif // CEYLAN_DEBUG
 		
@@ -156,13 +159,16 @@ void Matrix2::setElementAt( MatrixIndex abscissa,
 }
 
 
-void Matrix2::setToIdentity() throw()
+
+void Matrix2::setToIdentity()
 {
-	setToDiagonal( 1 ) ; 
+
+	setToDiagonal( 1 ) ;
+	 
 }
 
 
-void Matrix2::setToDiagonal( Real diagonalTerm ) throw()
+void Matrix2::setToDiagonal( Real diagonalTerm )
 {
 
 	for ( MatrixIndex j = 0 ;  j < Dimensions ; j++ )
@@ -173,7 +179,7 @@ void Matrix2::setToDiagonal( Real diagonalTerm ) throw()
 
 
 
-void Matrix2::transpose() throw()
+void Matrix2::transpose()
 {
 
 	/*
@@ -200,7 +206,8 @@ void Matrix2::transpose() throw()
 }
 
 
-Real Matrix2::trace() const throw()
+
+Real Matrix2::trace() const
 {
 
 	Real sum = 0 ;
@@ -213,15 +220,18 @@ Real Matrix2::trace() const throw()
 }
 
 
-Real Matrix2::determinant() const throw()
+
+Real Matrix2::determinant() const
 {
+
 	// x0 * y1 - x1 * y0:
 	return _mat[0][0] * _mat[1][1] - _mat[0][1] * _mat[1][0] ;
 
 }
 
 
-const string Matrix2::toString( VerbosityLevels level ) const throw()
+
+const string Matrix2::toString( VerbosityLevels level ) const
 {
 
 	string res ;
@@ -283,7 +293,8 @@ const string Matrix2::toString( VerbosityLevels level ) const throw()
 }
 
 
-Matrix2 Matrix2::Cofactor( const Matrix2 & m ) throw() 
+
+Matrix2 Matrix2::Cofactor( const Matrix2 & m ) 
 {
 		
 	Matrix2 result ;
@@ -298,25 +309,31 @@ Matrix2 Matrix2::Cofactor( const Matrix2 & m ) throw()
 }
 
 
-Matrix2 Matrix2::Adjoint( const Matrix2 & m ) throw() 
+
+Matrix2 Matrix2::Adjoint( const Matrix2 & m ) 
 {
+
 	Matrix2 result = Cofactor( m ) ;
 	result.transpose() ;
 	return result ;
 	
 	// or: return ~ Cofactor( m ) ;
+	
 }
 
 
-Matrix2 Matrix2::CreateFromRotation( AngleInDegrees angle ) throw() 
+
+Matrix2 Matrix2::CreateFromRotation( AngleInDegrees angle ) 
 {
+
 	return CreateFrom( Linear::Rotation2DFunctor( angle ) ) ;
+	
 }
 
 
 
 bool Ceylan::Maths::Linear::operator == ( const Matrix2 & m1, 
-	const Matrix2 & m2 ) throw()
+	const Matrix2 & m2 )
 {
 
 	for ( MatrixIndex j = 0;  j < Matrix2::Dimensions; j++ )
@@ -331,17 +348,20 @@ bool Ceylan::Maths::Linear::operator == ( const Matrix2 & m1,
 	
 }
 
+
 			
 bool Ceylan::Maths::Linear::operator != ( const Matrix2 & m1, 
-	const Matrix2 & m2 ) throw() 
+	const Matrix2 & m2 ) 
 {
+
 	return ( ! ( m1 == m2 ) ) ;
+	
 }
 
 
 
 Matrix2 Ceylan::Maths::Linear::operator + ( const Matrix2 & m1, 
-	const Matrix2 & m2 ) throw()
+	const Matrix2 & m2 )
 {
 
 	Matrix2 result ;
@@ -355,8 +375,9 @@ Matrix2 Ceylan::Maths::Linear::operator + ( const Matrix2 & m1,
 }
 
 
+
 Matrix2 Ceylan::Maths::Linear::operator - ( const Matrix2 & m1, 
-	const Matrix2 & m2 ) throw()
+	const Matrix2 & m2 )
 {
 
 	Matrix2 result ;
@@ -370,8 +391,9 @@ Matrix2 Ceylan::Maths::Linear::operator - ( const Matrix2 & m1,
 }
 
 
+
 Matrix2 Ceylan::Maths::Linear::operator * ( const Matrix2 & m1, 
-	const Matrix2 & m2 ) throw()
+	const Matrix2 & m2 )
 {
 
 	Matrix2 result ;
@@ -386,8 +408,8 @@ Matrix2 Ceylan::Maths::Linear::operator * ( const Matrix2 & m1,
 }
 
 
-Matrix2 Ceylan::Maths::Linear::operator * ( Real lambda, 
-	const Matrix2 & m ) throw()
+
+Matrix2 Ceylan::Maths::Linear::operator * ( Real lambda, const Matrix2 & m )
 {
 
 	Matrix2 result ;
@@ -401,8 +423,8 @@ Matrix2 Ceylan::Maths::Linear::operator * ( Real lambda,
 }
 
 
+
 Matrix2 Ceylan::Maths::Linear::operator ! ( const Matrix2 & m ) 
-	throw( LinearException )
 {
 
 	// Compute the inverse matrix, mi, so that m.mi = I2.
@@ -426,7 +448,8 @@ Matrix2 Ceylan::Maths::Linear::operator ! ( const Matrix2 & m )
 }
 
 
-Matrix2 Ceylan::Maths::Linear::operator ~ ( const Matrix2 & m ) throw()
+
+Matrix2 Ceylan::Maths::Linear::operator ~ ( const Matrix2 & m )
 {
 
 	// Computes the transposed matrix.

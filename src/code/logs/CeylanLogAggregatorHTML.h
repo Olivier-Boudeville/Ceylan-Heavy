@@ -78,6 +78,7 @@ namespace Ceylan
 		class CEYLAN_DLL LogAggregatorHTML: public LogAggregator
 		{
 		
+		
 			public:
 							
 			
@@ -100,16 +101,19 @@ namespace Ceylan
 				 * be smart and auto-correct messages with faulty classnames
 				 * due to C++ name mangling.
 				 *
+				 * @throw LogAggregatorException if the construction failed.
+				 *
 				 */
 				explicit LogAggregatorHTML( 
 					const std::string & callerDescription,
 					const std::string & logDirectoryName, 
-					bool useGlobalLevelOfDetail = true,	bool beSmart = true ) 
-						throw( LogAggregatorException ) ;
+					bool useGlobalLevelOfDetail = true,	bool beSmart = true ) ;
+					
 					
 							
 				/// Basic virtual destructor.
 				virtual ~LogAggregatorHTML() throw() ;
+		
 		
 						 
 				/**
@@ -120,8 +124,11 @@ namespace Ceylan
 				 * flag is turned on: work should be already done in this 
 				 * case.
 				 *
+				 * @throw LogAggregatorException if the operation failed.
+				 *
 				 */
-				virtual void aggregate() throw( LogAggregatorException ) ;
+				virtual void aggregate() ;
+
 
 
 		        /**
@@ -135,9 +142,11 @@ namespace Ceylan
 		         * @param message the log message to be stored, the 
 				 * aggregator takes ownership of it.
 		         *
+				 * @throw LogException if the operation failed.
+				 *
 		         */		
-				virtual void store( LogMessage & message ) 
-					throw( LogException ) ; 
+				virtual void store( LogMessage & message ) ; 
+				
 						
 						
 				/**
@@ -152,8 +161,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high )
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+
 
 
 
@@ -164,6 +173,7 @@ namespace Ceylan
 				static const LevelOfDetail DefaultGlobalLevelOfDetail ; 
 	
 	
+	
 				/**
 				 * The suffix to add to log output HTML page filenames,
 				 * typically ".html".
@@ -171,6 +181,7 @@ namespace Ceylan
 				 */
 				static const std::string HTMLPageSuffix ;
 
+			
 			
 			
 			protected:
@@ -189,8 +200,8 @@ namespace Ceylan
 				 * @throw LogException if the write operation failed.
 				 *
 				 */
-				virtual void write( const LogChannel & channel ) 
-					const throw( LogException ) ;
+				virtual void write( const LogChannel & channel ) const ;
+			
 			
 			
 				/**
@@ -206,7 +217,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual void write( const LogMessage & message, 
-					System::File & targetFile ) const throw( LogException ) ;
+					System::File & targetFile ) const ;
+			
 			
 			
 				/**
@@ -220,7 +232,8 @@ namespace Ceylan
 				 *
 				 */
 				static void WriteChannelHeader( const LogChannel & channel, 
-					System::File & targetFile ) throw( LogException ) ;
+					System::File & targetFile ) ;
+			
 			
 			
 				/**
@@ -236,7 +249,7 @@ namespace Ceylan
 				 *
 				 */
 				static void WriteChannelFooter( const LogChannel & channel, 
-					System::File & targetFile ) throw( LogException ) ;
+					System::File & targetFile ) ;
 			
 			
 			
@@ -315,7 +328,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				LogAggregatorHTML( const LogAggregatorHTML & source ) throw() ;
+				LogAggregatorHTML( const LogAggregatorHTML & source ) ;
 			
 			
 				/**
@@ -327,7 +340,7 @@ namespace Ceylan
 				 * 
 				 */			 
 				LogAggregatorHTML & operator = ( 
-					const LogAggregatorHTML & source ) throw() ;
+					const LogAggregatorHTML & source ) ;
 					
 				
 		} ;
@@ -340,3 +353,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_LOG_AGGREGATOR_HTML_H_
+

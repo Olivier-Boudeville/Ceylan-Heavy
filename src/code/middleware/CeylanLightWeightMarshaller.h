@@ -33,10 +33,13 @@
 #include "CeylanMemoryStream.h"     // for MemoryStream
 
 
+
 namespace Ceylan
 {
 
-
+	
+	
+	/// Gathers all client/server constructs.
 	namespace Middleware
 	{
 
@@ -53,7 +56,7 @@ namespace Ceylan
 		 * sides of the channel, no matter their respective endiannesses are.
 		 *
 		 * To do so, a pivot format is chosen, and both sides ensure that it is
-		 * respected : the sender converts its own format to the pivot one, the
+		 * respected: the sender converts its own format to the pivot one, the
 		 * result goes through the network layer, and the receiver converts it
 		 * from the pivot format to its own format.
 		 *
@@ -71,8 +74,9 @@ namespace Ceylan
 		 * light-weight insofar as it is just an empty "letter-box" interface.
 		 * 
 		 */
-		class CEYLAN_DLL LightWeightMarshaller: public Marshaller
+		class CEYLAN_DLL LightWeightMarshaller : public Marshaller
 		{
+		
 		
 		
 			public:
@@ -97,12 +101,13 @@ namespace Ceylan
 				 */
 				explicit LightWeightMarshaller(
 					System::InputOutputStream & lowerLevelStream,
-					System::Size bufferedSize = 0 ) throw() ;
+					System::Size bufferedSize = 0 ) ;
 				
 				
 				/// Virtual destructor.
 				virtual ~LightWeightMarshaller() throw() ;
 				
+					
 					
 				
 				/*
@@ -116,6 +121,7 @@ namespace Ceylan
 				// Decode integer types subsection.
 				
 				
+				
 				/**
 				 * Returns a Ceylan::Sint8 decoded from internal stream.
 				 *
@@ -124,9 +130,9 @@ namespace Ceylan
 				 * including if there are fewer bytes available than expected.
 				 *
 				 */
-				virtual Ceylan::Sint8 decodeSint8() 
-					throw( DecodeException, System::IOException ) ;
+				virtual Ceylan::Sint8 decodeSint8() ;
 
+		
 		
 				/**
 				 * Returns a Ceylan::Uint8 decoded from internal stream.
@@ -136,8 +142,7 @@ namespace Ceylan
 				 * including if there are fewer bytes available than expected.
 				 *
 				 */
-				virtual Ceylan::Uint8 decodeUint8() 
-					throw( DecodeException, System::IOException ) ;
+				virtual Ceylan::Uint8 decodeUint8() ;
 
 		
 		
@@ -149,9 +154,9 @@ namespace Ceylan
 				 * including if there are fewer bytes available than expected.
 				 *
 				 */
-				virtual Ceylan::Sint16 decodeSint16() 
-					throw( DecodeException, System::IOException ) ;
+				virtual Ceylan::Sint16 decodeSint16() ;
 
+		
 		
 				/**
 				 * Returns a Ceylan::Uint16 decoded from internal stream.
@@ -161,8 +166,7 @@ namespace Ceylan
 				 * including if there are fewer bytes available than expected.
 				 *
 				 */
-				virtual Ceylan::Uint16 decodeUint16() 
-					throw( DecodeException, System::IOException ) ;
+				virtual Ceylan::Uint16 decodeUint16() ;
 
 
 
@@ -174,8 +178,8 @@ namespace Ceylan
 				 * including if there are fewer bytes available than expected.
 				 *
 				 */
-				virtual Ceylan::Sint32 decodeSint32() 
-					throw( DecodeException, System::IOException ) ;
+				virtual Ceylan::Sint32 decodeSint32() ;
+
 
 
 				/**
@@ -186,13 +190,14 @@ namespace Ceylan
 				 * including if there are fewer bytes available than expected.
 				 *
 				 */
-				virtual Ceylan::Uint32 decodeUint32() 
-					throw( DecodeException, System::IOException ) ;
+				virtual Ceylan::Uint32 decodeUint32() ;
+
 
 
 
 
 				// Decode floating-point types subsection.
+				
 				
 				
 				/**
@@ -203,8 +208,8 @@ namespace Ceylan
 				 * including if there are fewer bytes available than expected.
 				 *
 				 */
-				virtual Ceylan::Float32 decodeFloat32() 
-					throw( DecodeException, System::IOException ) ;
+				virtual Ceylan::Float32 decodeFloat32() ;
+
 
 
 				/**
@@ -215,8 +220,8 @@ namespace Ceylan
 				 * including if there are fewer bytes available than expected.
 				 *
 				 */
-				virtual Ceylan::Float64 decodeFloat64() 
-					throw( DecodeException, System::IOException ) ;
+				virtual Ceylan::Float64 decodeFloat64() ;
+
 
 
 
@@ -236,8 +241,7 @@ namespace Ceylan
 				 * including if there are fewer bytes available than expected.
 				 *
 				 */
-				virtual void decodeString( std::string & result ) 
-					throw( DecodeException, System::IOException ) ;
+				virtual void decodeString( std::string & result ) ;
 				
 				
 				
@@ -256,6 +260,7 @@ namespace Ceylan
 				// Encode integer types subsection.
 
 
+
 				/**
 				 * Encodes a Ceylan::Sint8 to internal stream.
 				 *
@@ -263,8 +268,8 @@ namespace Ceylan
 				 * or IOException if a transport protocol error occured.
 				 *
 				 */
-				virtual void encodeSint8( Ceylan::Sint8 toEncode ) 
-					throw( EncodeException, System::IOException ) ;
+				virtual void encodeSint8( Ceylan::Sint8 toEncode ) ;
+
 
 
 				/**
@@ -274,8 +279,8 @@ namespace Ceylan
 				 * or IOException if a transport protocol error occured.
 				 *
 				 */
-				virtual void encodeUint8( Ceylan::Uint8 toEncode ) 
-					throw( EncodeException, System::IOException ) ;
+				virtual void encodeUint8( Ceylan::Uint8 toEncode ) ;
+
 
 
 
@@ -286,8 +291,8 @@ namespace Ceylan
 				 * or IOException if a transport protocol error occured.
 				 *
 				 */
-				virtual void encodeSint16( Ceylan::Sint16 toEncode ) 
-					throw( EncodeException, System::IOException ) ;
+				virtual void encodeSint16( Ceylan::Sint16 toEncode ) ;
+
 
 
 				/**
@@ -297,8 +302,8 @@ namespace Ceylan
 				 * or IOException if a transport protocol error occured.
 				 *
 				 */
-				virtual void encodeUint16( Ceylan::Uint16 toEncode ) 
-					throw( EncodeException, System::IOException ) ;
+				virtual void encodeUint16( Ceylan::Uint16 toEncode ) ;
+
 
 
 
@@ -309,8 +314,8 @@ namespace Ceylan
 				 * or IOException if a transport protocol error occured.
 				 *
 				 */
-				virtual void encodeSint32( Ceylan::Sint32 toEncode ) 
-					throw( EncodeException, System::IOException ) ;
+				virtual void encodeSint32( Ceylan::Sint32 toEncode ) ;
+
 
 
 				/**
@@ -320,8 +325,8 @@ namespace Ceylan
 				 * or IOException if a transport protocol error occured.
 				 *
 				 */
-				virtual void encodeUint32( Ceylan::Uint32 toEncode ) 
-					throw( EncodeException, System::IOException ) ;
+				virtual void encodeUint32( Ceylan::Uint32 toEncode ) ;
+
 
 
 
@@ -336,8 +341,8 @@ namespace Ceylan
 				 * or IOException if a transport protocol error occured.
 				 *
 				 */
-				virtual void encodeFloat32( Ceylan::Float32 toEncode ) 
-					throw( EncodeException, System::IOException ) ;
+				virtual void encodeFloat32( Ceylan::Float32 toEncode ) ;
+
 
 
 				/**
@@ -347,8 +352,8 @@ namespace Ceylan
 				 * or IOException if a transport protocol error occured.
 				 *
 				 */
-				virtual void encodeFloat64( Ceylan::Float64 toEncode ) 
-					throw( EncodeException, System::IOException ) ;
+				virtual void encodeFloat64( Ceylan::Float64 toEncode ) ;
+
 
 
 
@@ -364,8 +369,7 @@ namespace Ceylan
 				 * or IOException if a transport protocol error occured.
 				 *
 				 */
-				virtual void encodeString( std::string & toEncode ) 
-					throw( EncodeException, System::IOException ) ;
+				virtual void encodeString( std::string & toEncode ) ;
 
 
 
@@ -384,8 +388,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+	
 	
 	
 	
@@ -403,7 +407,6 @@ namespace Ceylan
 				 *
 				 */
 				inline System::InputOutputStream & getEffectiveStream()
-					throw()
 				{
 				
 					if ( isBuffered() ) 
@@ -426,8 +429,8 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				LightWeightMarshaller( const LightWeightMarshaller & source )
-					throw() ;
+				LightWeightMarshaller( const LightWeightMarshaller & source ) ;
+
 
 
 				/**
@@ -439,16 +442,19 @@ namespace Ceylan
 				 *
 				 */
 				LightWeightMarshaller & operator = ( 
-					const LightWeightMarshaller & source ) throw() ;
+					const LightWeightMarshaller & source ) ;
 
 			
 		
 		
 		} ;
 		
+		
 	}
 	
 }		
 
 
+
 #endif // CEYLAN_LIGHT_WEIGHT_MARSHALLER_H_
+

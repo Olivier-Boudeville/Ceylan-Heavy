@@ -34,7 +34,6 @@
 
 #include "CeylanLogPlug.h"              // for LogPlug
 #include "CeylanOperators.h"            // for toString
-#include "CeylanUtils.h"                // for emergencyShutdown
 #include "CeylanTextDisplayable.h"      // for GetOutputFormat
 
 #ifdef CEYLAN_USES_CONFIG_H
@@ -58,14 +57,15 @@ using namespace Ceylan::Maths::Linear ;
 
 
 
+
 HomogeneousMatrix3::HomogeneousMatrix3( const Matrix2 & r, 
-	const Vector2 & v ) throw()
+	const Vector2 & v )
 {
 
-	// Top-left r matrix :
+	// Top-left r matrix:
 	setRotationMatrix( r ) ;
 	
-	// Top-right v vector :
+	// Top-right v vector:
 	setTranslationVector( v ) ;
 		
 	setBottomRow() ;	
@@ -73,17 +73,18 @@ HomogeneousMatrix3::HomogeneousMatrix3( const Matrix2 & r,
 }
 
 
+
 HomogeneousMatrix3::HomogeneousMatrix3( Real r0, Real r1, Real r2, Real r3,
-	Real t0, Real t1 ) throw()
+	Real t0, Real t1 )
 {
 
-	// Top-left r matrix :
+	// Top-left r matrix:
 	_mat[0][0] = r0 ;  
 	_mat[1][0] = r1 ;    
 	_mat[0][1] = r2 ;    
 	_mat[1][1] = r3 ;    
 
-	// Top-right v vector :
+	// Top-right v vector:
 	_mat[2][0] = t0 ;
 	_mat[2][1] = t1 ; 
 		
@@ -92,23 +93,29 @@ HomogeneousMatrix3::HomogeneousMatrix3( Real r0, Real r1, Real r2, Real r3,
 }
 
 
+
 HomogeneousMatrix3::HomogeneousMatrix3( AngleInDegrees angle, 
-	const Maths::Linear::Vector2 & v ) throw()
+	const Maths::Linear::Vector2 & v )
 {
+
 	setRotationMatrix( Matrix2::CreateFromRotation( angle ) ) ;
 	setTranslationVector( v ) ;
-	setBottomRow() ;	
+	setBottomRow() ;
+		
 }
 
 
-HomogeneousMatrix3::~HomogeneousMatrix3() throw() 
+
+HomogeneousMatrix3::~HomogeneousMatrix3() throw()
 {
 
 	// No dynamic member.
+	
 }
 
 
-const string HomogeneousMatrix3::toString( VerbosityLevels level ) const throw()
+
+const string HomogeneousMatrix3::toString( VerbosityLevels level ) const
 {
 
 
@@ -136,7 +143,7 @@ const string HomogeneousMatrix3::toString( VerbosityLevels level ) const throw()
 		
 	}
 
-	// Non-HTML format requested :
+	// Non-HTML format requested:
 	
 	ostringstream oss ;
 
@@ -149,7 +156,7 @@ const string HomogeneousMatrix3::toString( VerbosityLevels level ) const throw()
   	  		oss << ( ( i == 0 ) ? "[ " : " " )
          	 	<< std::setw(5) 
 				<< _mat[i][j] 
-				<< ( ( i== Dimensions-1 ) ? " ]\n" : " ") ;
+				<< ( ( i == Dimensions-1 ) ? " ]\n" : " ") ;
    	oss << endl ;
 
     res = oss.str() ;
@@ -159,7 +166,7 @@ const string HomogeneousMatrix3::toString( VerbosityLevels level ) const throw()
 
     if ( oss.fail() )
 	{
-		string message = "HomogeneousMatrix3::toString : conversion error." ;
+		string message = "HomogeneousMatrix3::toString: conversion error." ;
        	Log::LogPlug::error( message ) ;
 		return message ;
 	}
@@ -171,36 +178,43 @@ const string HomogeneousMatrix3::toString( VerbosityLevels level ) const throw()
 }
 
 
-void HomogeneousMatrix3::setBottomRow() throw()
+
+void HomogeneousMatrix3::setBottomRow()
 {
 
-	// Bottom zeroes :
+	// Bottom zeroes:
 	_mat[0][2] = 0 ; 
 	_mat[1][2] = 0 ;
 	
-	// Bottom-right one :
+	// Bottom-right one:
 	_mat[2][2] = 1 ;
 
 }
 
 
-void HomogeneousMatrix3::setTranslationVector( const Vector2 & v ) throw() 
+void HomogeneousMatrix3::setTranslationVector( const Vector2 & v ) 
 {
+
 	_mat[2][0] = v.getElementAt( 0 ) ;
 	_mat[2][1] = v.getElementAt( 1 ) ; 
+	
 }
 
 
-void HomogeneousMatrix3::setRotationMatrix( const Matrix2 & m ) throw()
+
+void HomogeneousMatrix3::setRotationMatrix( const Matrix2 & m )
 {
+
 	_mat[0][0] = m.getElementAt( 0, 0 ) ;  
 	_mat[1][0] = m.getElementAt( 1, 0 ) ;    
 	_mat[0][1] = m.getElementAt( 0, 1 ) ;    
-	_mat[1][1] = m.getElementAt( 1, 1 ) ;    
+	_mat[1][1] = m.getElementAt( 1, 1 ) ;
+	    
 }
 
 
-void HomogeneousMatrix3::setInCanonicalForm() throw( LinearException )
+
+void HomogeneousMatrix3::setInCanonicalForm()
 {
 
 	// Works for homogeneous matrices of all size.
@@ -208,20 +222,22 @@ void HomogeneousMatrix3::setInCanonicalForm() throw( LinearException )
 	Real bottomRightElement = _mat[Dimensions-1][Dimensions-1] ;
 	
 	if ( IsNull( bottomRightElement ) )
-		throw LinearException( "HomogeneousMatrix3::setInCanonicalForm : "
+		throw LinearException( "HomogeneousMatrix3::setInCanonicalForm: "
 			"bottom-right element is zero or almost." ) ;
 			
 	if ( AreRelativelyEqual<Real>( bottomRightElement, 1 ) )
 	{
-		// Nothing to do !
+	
+		// Nothing to do!
 		return ;
+		
 	}		
 	
 	// The multiply-by-a-real operator could also be used.
 
 	/*
 	 * Optimized thanks to the homogenous form 
-	 * (see the 'j < Dimensions - 1' ) :
+	 * (see the 'j < Dimensions - 1' ):
 	 *
 	 */
 	for ( MatrixIndex j = 0;  j < Dimensions - 1; j++ )
@@ -235,30 +251,31 @@ void HomogeneousMatrix3::setInCanonicalForm() throw( LinearException )
 }
 
 
+
 HomogeneousMatrix3 Ceylan::Maths::Linear::operator * ( 
 	const HomogeneousMatrix3 & m1, 
-	const HomogeneousMatrix3 & m2 ) throw()
+	const HomogeneousMatrix3 & m2 )
 {
 
 	/*
-	 * Matrix block-multiplication teaches us that :
+	 * Matrix block-multiplication teaches us that:
 	 * result = [ r, v; 0, 1 ] = 
 	 * [ a, b ; 0, 1 ] * [ a', b' ; 0, 1 ] = [ a.a', ab'+b ; 0, 1 ] 
 	 *
 	 * Therefore, multiplication of HomogeneousMatrix3 returns a
-	 * HomogeneousMatrix3, whose computation can be optimized by blocks :
+	 * HomogeneousMatrix3, whose computation can be optimized by blocks:
 	 *
 	 */
 
 	HomogeneousMatrix3 result ;
 	
-	// r = a.a' : 	
+	// r = a.a': 	
 	for ( MatrixIndex j = 0; j < Matrix2::Dimensions; j++ )
 		for ( MatrixIndex i = 0; i < Matrix2::Dimensions; i++ )
 			for ( MatrixIndex k = 0; k < Matrix2::Dimensions; k++ )
 				result._mat[i][j] += m1._mat[k][j] * m2._mat[i][k] ;
 	
-	// v = ab'+ b :
+	// v = ab'+ b:
 	
 	for ( MatrixIndex j = 0 ; j < Matrix2::Dimensions ; j++ )
 	{

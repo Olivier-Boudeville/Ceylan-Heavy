@@ -44,10 +44,10 @@ namespace Ceylan
 
 
 
-
-		/// A ClientStreamSocket owns a HostDNSEntry :
+		/// A ClientStreamSocket owns a HostDNSEntry:
 		class HostDNSEntry ;
 		
+
 
 		/**
 		 * Client-side implementation of connection-based socket.
@@ -77,14 +77,16 @@ namespace Ceylan
 				class CEYLAN_DLL ClientStreamSocketException: 
 					public StreamSocketException
 				{ 
+				
 					public: 
 					
 						explicit ClientStreamSocketException( 
-							const std::string & reason ) throw() ;
+							const std::string & reason ) ;
 						
 						virtual ~ClientStreamSocketException() throw() ; 
 							
 				} ;
+
 
 
 	
@@ -94,11 +96,13 @@ namespace Ceylan
 				 * @throw SocketException if socket creation failed.
 				 *
 				 */
-				ClientStreamSocket() throw( SocketException ) ;
+				ClientStreamSocket() ;
+	
 	
 	
 				/// Virtual destructor.
 				virtual ~ClientStreamSocket() throw() ;
+	
 	
 	
 				/**
@@ -106,7 +110,8 @@ namespace Ceylan
 				 * server.
 				 *
 				 */
-				virtual bool isConnected() const throw() ;
+				virtual bool isConnected() const ;
+				
 				
 				
 				/**
@@ -127,8 +132,8 @@ namespace Ceylan
 				 * @throw SocketException if the operation failed. 	
 				 * If no server is available at the target endpoint, this
 				 * method will fail with a SocketException carrying the 
-				 * message "Connection refused", ex : 
-				 * "could not connect to IP 127.0.0.1 for host 'localhost' :
+				 * message "Connection refused", ex: 
+				 * "could not connect to IP 127.0.0.1 for host 'localhost':
 				 * Connection refused". The same error will occur if there
 				 * is a server at the endpoint but its queue of pending 
 				 * connections is full.
@@ -137,8 +142,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual void connect( const std::string & serverHostname, 
-						Port serverPort )
-					throw( SocketException ) ;
+					Port serverPort ) ;
+
 
 
 				/**
@@ -151,7 +156,7 @@ namespace Ceylan
 				 * @see isConnected
 				 *
 				 */
-				virtual void disconnect() throw( SocketException ) ;
+				virtual void disconnect() ;
 
 		
 		
@@ -163,7 +168,8 @@ namespace Ceylan
 				 * if this socket is not connected.
 				 *
 				 */
-				virtual Port getPeerPort() const throw( SocketException ) ;
+				virtual Port getPeerPort() const ;
+	
 	
 	
             	/**
@@ -179,8 +185,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+	
 	
 	
 	
@@ -201,20 +207,22 @@ namespace Ceylan
 				 * @throw ClientStreamSocketException on failure.
 				 *
 				 */
-				virtual void connected() 
-					throw( ClientStreamSocketException ) ;
+				virtual void connected() ;
 	
 
 				/// Returns the hostname of the server.
-				const std::string & getServerName() const throw() ;
+				const std::string & getServerName() const ;
+	
 	
 	
 	
 			private:
 	
+	
 				
 				/// The hostname of the server this socket is to be linked to.
 				std::string _serverHostName ;
+	
 	
 				/**
 				 * DNS record for linked server.
@@ -226,6 +234,7 @@ namespace Ceylan
 				HostDNSEntry * _serverHostInfo ;
 	
 	
+	
 				/**
 				 * Copy constructor made private to ensure that it will 
 				 * be never called.
@@ -234,8 +243,8 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				ClientStreamSocket( 
-					const ClientStreamSocket & source ) throw() ;
+				ClientStreamSocket( const ClientStreamSocket & source ) ;
+
 
 
 				/**
@@ -247,14 +256,17 @@ namespace Ceylan
 				 *
 				 */
 				ClientStreamSocket & operator = ( 
-					const ClientStreamSocket & source )	throw() ;
+					const ClientStreamSocket & source )	;
 					
 					
 		} ;
+
 
 	}
 	
 } 
 
 
+
 #endif // CEYLAN_CLIENT_STREAM_SOCKET_H_
+

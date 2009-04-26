@@ -59,11 +59,13 @@ namespace Ceylan
 		public :
 				
 			explicit SerializationException( 
-				const std::string & reason ) throw() ;
+				const std::string & reason ) ;
+				
 			virtual ~SerializationException() throw() ;
 				
 	} ;
 	
+
 
 
     /**
@@ -81,7 +83,7 @@ namespace Ceylan
 
 
 			/// Do-nothing constructor.
-			Serializable() throw()
+			Serializable()
 			{
 			
 			}
@@ -104,8 +106,8 @@ namespace Ceylan
 			 * @throw SerializationException if the operation failed.
 			 *
 			 */
-			virtual void saveTo( System::OutputStream & output ) 
-				const throw( SerializationException ) = 0 ;
+			virtual void saveTo( System::OutputStream & output ) const  = 0 ;
+			
 				
 			
 			/**
@@ -116,16 +118,16 @@ namespace Ceylan
 			 * @throw SerializationException if the operation failed.
 			 *
 			 */
-			virtual void loadFrom( System::InputStream & input ) 
-				throw( SerializationException ) = 0 ;
+			virtual void loadFrom( System::InputStream & input ) = 0 ;
 				
 			
+			
 			/*
-			 * A recommended factory :
+			 * A recommended factory:
 			 *
 			 
-			static Serializable & CreateFrom( System::InputStream & input ) 
-				throw( SerializationException ) ;
+			static Serializable & CreateFrom( System::InputStream & input ) ;
+			
 			 *
 			 */
 			 
@@ -144,7 +146,7 @@ namespace Ceylan
 			 * 
 			 *
 			 */			 
-			Serializable( const Serializable & source ) throw() ;
+			Serializable( const Serializable & source ) ;
 			
 			
 			/**
@@ -156,7 +158,7 @@ namespace Ceylan
 			 * 
 			 *
 			 */			 
-			Serializable & operator = ( const Serializable & source ) throw() ;
+			Serializable & operator = ( const Serializable & source ) ;
 		
 			 
     } ;
@@ -164,4 +166,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_SERIALIZABLE_H_
+

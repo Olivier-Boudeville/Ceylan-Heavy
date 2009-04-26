@@ -36,6 +36,7 @@
 #include <list>
 
 
+
 namespace Ceylan
 {
 
@@ -58,6 +59,7 @@ namespace Ceylan
 		
 		// What a LogAggregator aggregates.
 		class LogMessage ;
+		
 		
 		
 		/**
@@ -92,7 +94,7 @@ namespace Ceylan
 					public:
 					
 						explicit LogAggregatorException( 
-							const std::string & message ) throw() ;	
+							const std::string & message ) ;	
 							
 						virtual ~LogAggregatorException() throw() ;
 						
@@ -121,11 +123,12 @@ namespace Ceylan
 				 *
 				 */
 				explicit LogAggregator( bool useGlobalLevelOfDetail = true, 
-					bool beSmart = true ) throw() ;
+					bool beSmart = true ) ;
 					
 							
 				/// Basic virtual destructor.
 				virtual ~LogAggregator() throw() ;
+		
 		
 				
 				/**
@@ -134,23 +137,28 @@ namespace Ceylan
 				 *
 				 */
 				virtual LogChannel & createBasicChannel( 
-					const std::string & channelName ) throw( LogException ) ;
+					const std::string & channelName ) ;
 
+				
 				
 				/**
 				 * Creates, if possible, a new object channel 
 				 * corresponding to the specified Loggable message.
 				 */
 				virtual ObjectChannel & createObjectChannel( 
-					LogMessage & message ) throw( LogException ) ;
+					LogMessage & message ) ;
+
 
 
 				/**
 				 * Aggregates all channel and log messages informations in the 
 				 * implementation's fashion.
 				 *
+				 * @throw LogAggregatorException if the operation fails.
+				 *
 				 */
-				virtual void aggregate() throw( LogAggregatorException ) = 0 ;
+				virtual void aggregate() = 0 ;
+				
 				
 					
 				/**
@@ -162,7 +170,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool hasChannel( const std::string & channelName ) 
-					const throw( LogException ) ;
+					const ;
+					
 					
 					
 				/**
@@ -178,8 +187,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual LogChannel * findChannel( 
-						const std::string & channelName ) 
-					const throw( LogException ) ;
+					const std::string & channelName ) const ;
+				 
 				 
 				 
 				/**
@@ -197,11 +206,13 @@ namespace Ceylan
 				 *
 				 */
 				virtual void transferChannel( LogChannel & source, 
-					LogChannel & target ) throw( LogException ) ;
+					LogChannel & target ) ;
+				 
 				 
 				
 				/// Removes completly a log channel. 
-				virtual void removeChannel( LogChannel & target ) throw() ;
+				virtual void removeChannel( LogChannel & target ) ;
+				
 				
 				
 		        /**
@@ -212,8 +223,8 @@ namespace Ceylan
 				 * aggregator takes ownership of it.
 		         *
 		         */		
-				virtual void store( LogMessage & message ) 
-					throw( LogException ) ; 
+				virtual void store( LogMessage & message ) ; 
+			
 			
 			
 	            /**
@@ -228,13 +239,14 @@ namespace Ceylan
 				 *
 	             */
 				virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+					
 					
 
 				/// Default value for the aggregator-wide level of detail.
 				static const LevelOfDetail DefaultGlobalLevelOfDetail ;
 				
+				 
 				 
 			
 			protected:
@@ -252,8 +264,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual LogChannel * findBasicChannel( 
-						const std::string & basicChannelName ) 
-					const throw( LogException ) ;
+					const std::string & basicChannelName ) const ;
+			
 			
 			
 				/**
@@ -270,8 +282,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual ObjectChannel * findObjectChannel( 
-						const std::string & nonPrefixedChannelName ) 
-					const throw( LogException ) ;
+					const std::string & nonPrefixedChannelName ) const ;
+			
 			
 			
 				/**
@@ -280,8 +292,8 @@ namespace Ceylan
 				 * new channel.
 				 *
 				 */
-				virtual void createBasicChannelFrom( LogMessage & message )
-					throw( LogException ) ;
+				virtual void createBasicChannelFrom( LogMessage & message ) ;
+				
 				
 				
 				/**
@@ -301,8 +313,8 @@ namespace Ceylan
 				 * So sending messages from destructors should be avoided.
 				 *
 				 */
-				virtual void createLoggableChannelFrom( LogMessage & message ) 
-					throw( LogException ) ;
+				virtual void createLoggableChannelFrom( LogMessage & message ) ;
+				
 				
 				
 		        /**
@@ -314,9 +326,9 @@ namespace Ceylan
 				 * the aggregator takes ownership of it.
 		         *
 		         */		
-				virtual void storeBasicMessage( LogMessage & basicLogMessage ) 
-					throw( LogException ) ; 
-			
+				virtual void storeBasicMessage( LogMessage & basicLogMessage ) ;
+				
+				
 				
 		        /**
 		         * Classify and stores object log message
@@ -328,7 +340,8 @@ namespace Ceylan
 		         *
 		         */		
 				virtual void storeObjectMessage( 
-					LogMessage & objectLogMessage ) throw( LogException ) ; 
+					LogMessage & objectLogMessage ) ; 
+			
 			
 			
 				/**
@@ -336,7 +349,7 @@ namespace Ceylan
 				 * specified message.
 				 *
 				 */
-				virtual void demangle( LogMessage & objectLogMessage ) throw() ;
+				virtual void demangle( LogMessage & objectLogMessage ) ;
 
 
 				
@@ -350,7 +363,7 @@ namespace Ceylan
 				 *
 				 */
 				 virtual Ceylan::VerbosityLevels 
-				 	getOverallVerbosityLevel() const throw() ;
+				 	getOverallVerbosityLevel() const ;
 				 
 				 
 				 /**
@@ -363,8 +376,7 @@ namespace Ceylan
 			  	  *
 				  */
 				 virtual Ceylan::VerbosityLevels getMessageVerbosityLevel( 
-				 		const LogMessage & message ) 
-				 	const throw() ;			 
+				 		const LogMessage & message ) const ;			 
 				
 				
 				
@@ -375,7 +387,7 @@ namespace Ceylan
 				 */
 				static Ceylan::VerbosityLevels
 					ConvertListenerLevelOfDetailToVerbosityLevel( 
-						LevelOfDetail level ) throw() ; 
+						LevelOfDetail level ) ; 
 				
 				
 				/**
@@ -385,7 +397,7 @@ namespace Ceylan
 				 */
 				static Ceylan::VerbosityLevels
 					ConvertMessageLevelOfDetailToVerbosityLevel( 
-						LevelOfDetail level ) throw() ; 
+						LevelOfDetail level ) ; 
 				
 				
 #pragma warning( push )
@@ -435,7 +447,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				LogAggregator( const LogAggregator & source ) throw() ;
+				LogAggregator( const LogAggregator & source ) ;
 			
 			
 				/**
@@ -446,8 +458,7 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				LogAggregator & operator = ( const LogAggregator & source )
-					throw() ;
+				LogAggregator & operator = ( const LogAggregator & source )	;
 				
 				
 				
@@ -461,3 +472,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_LOG_AGGREGATOR_H_
+

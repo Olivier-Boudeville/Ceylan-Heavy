@@ -88,7 +88,6 @@ const std::string Ceylan::BatchTestOption = "--batch" ;
 
 
 StringSize Ceylan::countChars( const string & aString, char targetChar )
-	throw()
 {
 
 	StringSize charCount = 0 ;
@@ -105,7 +104,7 @@ StringSize Ceylan::countChars( const string & aString, char targetChar )
 
 
 
-std::string Ceylan::reverse( const std::string & source ) throw() 
+std::string Ceylan::reverse( const std::string & source ) 
 {
 
 	StringSize count = source.size() ;
@@ -129,7 +128,7 @@ std::string Ceylan::reverse( const std::string & source ) throw()
 
 
 
-char * Ceylan::getNonConstCharFrom( const std::string & source ) throw()
+char * Ceylan::getNonConstCharFrom( const std::string & source )
 {
 
 	// One more character for the trailing '0':
@@ -178,7 +177,7 @@ char * Ceylan::getNonConstCharFrom( const std::string & source ) throw()
 
 
 StringSize Ceylan::substituteInString( string & targetString, 
-	const string & toBeReplaced, const string & replacement ) throw()
+	const string & toBeReplaced, const string & replacement )
 {
 
 	StringSize substitutionCount = 0 ;
@@ -228,7 +227,7 @@ StringSize Ceylan::substituteInString( string & targetString,
 
 
 string Ceylan::substituteIn( const string & sourceString, 
-	const string & toBeReplaced, const string & replacement ) throw()
+	const string & toBeReplaced, const string & replacement )
 {
 
 	string res = sourceString ;
@@ -241,7 +240,7 @@ string Ceylan::substituteIn( const string & sourceString,
 	
 	
 
-bool Ceylan::isLetter( char targetChar ) throw()
+bool Ceylan::isLetter( char targetChar )
 {
 
 	if ( ::isalpha( targetChar ) ) 
@@ -253,7 +252,7 @@ bool Ceylan::isLetter( char targetChar ) throw()
 
 
 
-bool Ceylan::isFigure( char targetChar ) throw()
+bool Ceylan::isFigure( char targetChar )
 {
 
 	if ( ::isalpha( targetChar ) ) 
@@ -265,7 +264,7 @@ bool Ceylan::isFigure( char targetChar ) throw()
 
 
 
-bool Ceylan::isAlphanumeric( char targetChar ) throw()
+bool Ceylan::isAlphanumeric( char targetChar )
 {
 
 	if ( ::isalnum( targetChar ) ) 
@@ -277,7 +276,7 @@ bool Ceylan::isAlphanumeric( char targetChar ) throw()
 
 
 
-bool Ceylan::isPunctuation( char targetChar ) throw()
+bool Ceylan::isPunctuation( char targetChar )
 {
 
 	if ( ::ispunct( targetChar ) )
@@ -289,7 +288,7 @@ bool Ceylan::isPunctuation( char targetChar ) throw()
 
 
 
-bool Ceylan::isWhitespace( char targetChar ) throw()
+bool Ceylan::isWhitespace( char targetChar )
 {
 
 	if ( ::iswspace( targetChar ) ) 
@@ -301,7 +300,7 @@ bool Ceylan::isWhitespace( char targetChar ) throw()
 
 
 
-string Ceylan::toUppercase( const std::string & text ) throw()
+string Ceylan::toUppercase( const std::string & text )
 {
 
 	string result ;
@@ -319,8 +318,9 @@ string Ceylan::toUppercase( const std::string & text ) throw()
 
 
 
-string Ceylan::encodeToHTML( const std::string & message ) throw()
+string Ceylan::encodeToHTML( const std::string & message )
 {
+
 	string result ;
 	
 	for ( string::const_iterator it = message.begin(); 
@@ -363,10 +363,11 @@ string Ceylan::encodeToHTML( const std::string & message ) throw()
 
 
 
-string Ceylan::encodeToPhonetic( const std::string & message ) throw()
+string Ceylan::encodeToPhonetic( const std::string & message )
 {
 
 	const std::string phonetics[26] = {
+	
 		"alpha",
 		"bravo",
 		"charlie",
@@ -392,7 +393,9 @@ string Ceylan::encodeToPhonetic( const std::string & message ) throw()
 		"whisky",
 		"x-ray",
 		"yankee",
-		"zulu" } ;
+		"zulu"
+	
+	} ;
 	
 	bool firstLetter = true ;	
 	string result ;
@@ -423,7 +426,7 @@ string Ceylan::encodeToPhonetic( const std::string & message ) throw()
 
 
 
-string Ceylan::demangleSymbol( const std::string & symbol ) throw()
+string Ceylan::demangleSymbol( const std::string & symbol )
 {
 	
 	
@@ -485,7 +488,7 @@ string Ceylan::demangleSymbol( const std::string & symbol ) throw()
 		
 		if ( numString.empty() )
 		{
-			// Abnormal, a misleading symbol such as NxyzE ?
+			// Abnormal, a misleading symbol such as NxyzE?
 			return symbol ;
 		}
 		
@@ -494,7 +497,7 @@ string Ceylan::demangleSymbol( const std::string & symbol ) throw()
 
 		if ( num + count > shortenSize )
 		{
-			// Abnormal, a misleading symbol such as N99xyzE ?
+			// Abnormal, a misleading symbol such as N99xyzE?
 			return symbol ;			
 		} 
 		
@@ -537,9 +540,7 @@ string Ceylan::demangleSymbol( const std::string & symbol ) throw()
 
 
 
-
 list<string> Ceylan::split( const string & stringToSplit, char splittingChar )
-	throw()
 {
 
 	list<string> result ;
@@ -584,7 +585,7 @@ list<string> Ceylan::split( const string & stringToSplit, char splittingChar )
 
 /* STL + templates = stupid nightmare
 list<string> Ceylan::split( const string & stringToSplit, 
-	const string & splittingString ) throw()
+	const string & splittingString )
 {
 
 	list<string> result ;
@@ -598,8 +599,7 @@ list<string> Ceylan::split( const string & stringToSplit,
 
 
 
-string Ceylan::join( const list<string> & toJoin, 
-	const string & joiningString ) throw()
+string Ceylan::join( const list<string> & toJoin, const string & joiningString )
 {
 
 	// Copying the whole list (and poping it) would not be efficient.
@@ -627,7 +627,7 @@ string Ceylan::join( const list<string> & toJoin,
 
 
 
-list<string> Ceylan::splitIntoWords( const string & sentenceToSplit ) throw()
+std::list<string> Ceylan::splitIntoWords( const string & sentenceToSplit )
 {
 	
 	/*
@@ -685,7 +685,7 @@ list<string> Ceylan::splitIntoWords( const string & sentenceToSplit ) throw()
 		else
 		{
 		
-			// Here we have a non-empty word. End of space sequence ?
+			// Here we have a non-empty word. End of space sequence?
 			
 			if ( voidItemCount > 0 )
 			{
@@ -714,7 +714,7 @@ list<string> Ceylan::splitIntoWords( const string & sentenceToSplit ) throw()
 
 
 
-list<string> Ceylan::splitIntoParagraphs( const string & textToSplit ) throw()
+std::list<string> Ceylan::splitIntoParagraphs( const string & textToSplit )
 {
 
 	return Ceylan::split( textToSplit, '\n' ) ;
@@ -723,8 +723,8 @@ list<string> Ceylan::splitIntoParagraphs( const string & textToSplit ) throw()
 
 
 
-string Ceylan::formatStringList( const list<string> & stringList, 
-	bool surroundByTicks ) throw()
+std::string Ceylan::formatStringList( const list<string> & stringList, 
+	bool surroundByTicks )
 {
 
 	if ( stringList.empty() )
@@ -768,9 +768,9 @@ string Ceylan::formatStringList( const list<string> & stringList,
 
 
 
-string Ceylan::formatStringMap( 
+std::string Ceylan::formatStringMap( 
 	const std::map<std::string, std::string> & stringMap, 
-	bool surroundByTicks ) throw()
+	bool surroundByTicks )
 {
 
 	if ( stringMap.empty() )
@@ -818,7 +818,7 @@ string Ceylan::formatStringMap(
 
 
 
-void Ceylan::display( const string & message ) throw( StringUtilsException )
+void Ceylan::display( const string & message )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -845,8 +845,7 @@ void Ceylan::display( const string & message ) throw( StringUtilsException )
 
 
 
-void Ceylan::displayError( const string & errorMessage ) 
-	throw( StringUtilsException )
+void Ceylan::displayError( const string & errorMessage )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS

@@ -38,12 +38,14 @@
 namespace Ceylan
 {
 
+
 	namespace Maths
 	{
 	
 	
 		namespace Random
 		{
+		
 		
 		
 			/**
@@ -69,27 +71,28 @@ namespace Ceylan
 					 * @throw MathsException if sigma is zero.
 					 *
 					 */
-					NormalProbabilityFunction( Sample mean, Deviation sigma ) 
-						throw( MathsException ) ;
+					NormalProbabilityFunction( Sample mean, Deviation sigma ) ;
+				
 				
 				
 					/// Basic virtual destructor.
 					virtual ~NormalProbabilityFunction() throw() ;
 				
 				
+				
 					/**
 					 * The callable method, returns the probability 
 					 * that this sample is realized.
 					 *
-					 * For normal law, it is :
+					 * For normal law, it is:
 					 * 
 					 * P(x) = exp( -1/2*((x-mean)/sigma)²) 
 					 *            / (sigma * sqrt(2.Pi))
 					 *
 					 */
-					virtual Probability operator() ( Sample aSample ) 
-						const throw() ;
+					virtual Probability operator() ( Sample aSample ) const ;
 		
+					
 					
 					/**
 					 * Returns a user-friendly description of the state 
@@ -104,21 +107,25 @@ namespace Ceylan
 					 *
 					 */
             		virtual const std::string toString( 
-						VerbosityLevels level = high ) const throw() ;
+						VerbosityLevels level = high ) const ;
 
 		
 		
 				protected:
 			
 			
+			
 					/// The mean value for the normal law.
 					Sample _mean ;
+				
 				
 					/// The standard deviation for the normal law.
 					Deviation _sigma ;
 					
+					
 							
- 			} ;	
+ 			} ;
+				
 											
 		}
 		
@@ -127,4 +134,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_NORMAL_PROBABILITY_H_
+

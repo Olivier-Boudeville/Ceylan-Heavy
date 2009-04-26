@@ -31,7 +31,8 @@
 #include "CeylanOperators.h"   // for operators
 #include "CeylanNetwork.h"     // for explainSocketError
 
-// for SystemSpecificSocketAddress :
+
+// for SystemSpecificSocketAddress:
 #include "CeylanSystemSpecificSocketAddress.h"  
 
 
@@ -41,7 +42,8 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
-// Not available in their C++ form :
+
+// Not available in their C++ form:
 extern "C"
 {
 
@@ -103,6 +105,8 @@ extern "C"
 
 }
 
+
+
 using namespace Ceylan::System ;
 using namespace Ceylan::Network ;
 using namespace Ceylan::Log ;
@@ -112,12 +116,14 @@ using std::string ;
 
 
 
+
 StreamSocket::StreamSocketException::StreamSocketException( 
-		const std::string & reason ) throw():
+		const std::string & reason ) :
 	SocketException( reason )
 {
 
 }
+
 
 
 StreamSocket::StreamSocketException::~StreamSocketException() throw()
@@ -129,8 +135,7 @@ StreamSocket::StreamSocketException::~StreamSocketException() throw()
 
 	
 StreamSocket::StreamSocket( bool blocking, 
-			bool sacrificeThroughputToPacketTiming ) 
-		throw( Socket::SocketException ) :
+		bool sacrificeThroughputToPacketTiming ) :
 	Socket( blocking ),	
 	_nagleAlgorithmDeactivated( sacrificeThroughputToPacketTiming )
 {
@@ -147,7 +152,7 @@ StreamSocket::StreamSocket( bool blocking,
 	
 #else // CEYLAN_USES_NETWORK
 
-	throw SocketException( "StreamSocket empty constructor failed : "
+	throw SocketException( "StreamSocket empty constructor failed: "
 		"network support not available." ) ; 
 	
 #endif // CEYLAN_USES_NETWORK
@@ -155,8 +160,9 @@ StreamSocket::StreamSocket( bool blocking,
 }
 
 
+
 StreamSocket::StreamSocket( Port port, bool blocking, 
-		bool sacrificeThroughputToPacketTiming ) throw( SocketException ):
+		bool sacrificeThroughputToPacketTiming ) :
 	Socket( port, blocking ),
 	_nagleAlgorithmDeactivated( sacrificeThroughputToPacketTiming )
 {
@@ -165,17 +171,18 @@ StreamSocket::StreamSocket( Port port, bool blocking,
 	
 #if CEYLAN_USES_NETWORK
 
-	// It could not be called from Socket mother class :
+	// It could not be called from Socket mother class:
 	createSocket( _port ) ;
 
 #else // CEYLAN_USES_NETWORK
 
-	throw SocketException( "StreamSocket port-based constructor failed : "
+	throw SocketException( "StreamSocket port-based constructor failed: "
 		"network support not available." ) ; 
 	
 #endif // CEYLAN_USES_NETWORK
 
 }
+
 
 
 StreamSocket::~StreamSocket() throw()
@@ -190,7 +197,8 @@ StreamSocket::~StreamSocket() throw()
 }
 
 
-void StreamSocket::createSocket( Port port ) throw( SocketException )
+
+void StreamSocket::createSocket( Port port )
 {
 
 #if CEYLAN_USES_NETWORK
@@ -201,28 +209,28 @@ void StreamSocket::createSocket( Port port ) throw( SocketException )
 
 	_originalFD = static_cast<System::FileDescriptor>(
 		::socket( 
-			/* domain : IPv4 */ AF_INET, 
+			/* domain: IPv4 */ AF_INET, 
 			/* type */ SOCK_STREAM,	
-			/* protocol : TCP */ IPPROTO_TCP ) ) ;
+			/* protocol: TCP */ IPPROTO_TCP ) ) ;
 
 	if ( _originalFD == INVALID_SOCKET )
-		throw SocketException( "StreamSocket::createSocket failed : "
+		throw SocketException( "StreamSocket::createSocket failed: "
 		+ Network::explainSocketError() ) ;
 
 #else // CEYLAN_ARCH_WINDOWS
 
-	_originalFD = ::socket( /* domain : IPv4 */ PF_INET, 
-		/* type */ SOCK_STREAM,	/* protocol : TCP */ 0 ) ;
+	_originalFD =::socket( /* domain: IPv4 */ PF_INET, 
+		/* type */ SOCK_STREAM,	/* protocol: TCP */ 0 ) ;
 	
 	if ( _originalFD == -1 )
-		throw SocketException( "StreamSocket::createSocket failed : "
+		throw SocketException( "StreamSocket::createSocket failed: "
 			+ System::explainError() ) ;
 
 #endif // CEYLAN_ARCH_WINDOWS
 
 	
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
-	LogPlug::debug( "StreamSocket::createSocket : "
+	LogPlug::debug( "StreamSocket::createSocket: "
 		"this socket, whose original file descriptor is " 
 		+ Ceylan::toString( _originalFD ) + ", will be associated to port " 
 		+ Ceylan::toString( _port ) + "." ) ;
@@ -234,7 +242,7 @@ void StreamSocket::createSocket( Port port ) throw( SocketException )
 		
 		/*
 		 * Was recorded but not done since the descriptor is only available
-		 * now :
+		 * now:
 		 *
 		 */
 		try
@@ -243,8 +251,8 @@ void StreamSocket::createSocket( Port port ) throw( SocketException )
 		}	
 		catch( Stream::NonBlockingNotSupportedException & e )
 		{
-			throw SocketException( "Socket port-less constructor : "
-				"unable to set this socket in non-blocking mode : "
+			throw SocketException( "Socket port-less constructor: "
+				"unable to set this socket in non-blocking mode: "
 				+ e.toString() ) ;
 		}
 	}	
@@ -257,7 +265,7 @@ void StreamSocket::createSocket( Port port ) throw( SocketException )
 	 * be performed just before the connect phase.
 	 */
 
-	// Blanks and initializes inherited address :
+	// Blanks and initializes inherited address:
 	_address->blank() ;
 					
 	_address->_socketAddress.sin_family = 
@@ -268,15 +276,15 @@ void StreamSocket::createSocket( Port port ) throw( SocketException )
 #else // CEYLAN_USES_NETWORK
 
 	throw Features::FeatureNotAvailableException( 
-		"StreamSocket::createSocket : network support not available." ) ;
+		"StreamSocket::createSocket: network support not available." ) ;
 		
 #endif // CEYLAN_USES_NETWORK
 
 }
 
 
-void StreamSocket::setNagleAlgorithmTo( bool activated ) 
-	throw( StreamSocketException )
+
+void StreamSocket::setNagleAlgorithmTo( bool activated )
 {
 
 
@@ -288,7 +296,7 @@ void StreamSocket::setNagleAlgorithmTo( bool activated )
 	
 #if CEYLAN_USES_NETWORK
 
-	LogPlug::debug( "StreamSocket::setNagleAlgorithmTo : "
+	LogPlug::debug( "StreamSocket::setNagleAlgorithmTo: "
 		"setting the algorithm to " 
 		+ Ceylan::toString( activated ) ) ;
 
@@ -303,16 +311,16 @@ void StreamSocket::setNagleAlgorithmTo( bool activated )
 #if CEYLAN_ARCH_WINDOWS
 
 
-	// Sets the Nagle algorithm for send coalescing :
+	// Sets the Nagle algorithm for send coalescing:
 
 	/*
-	 * Avoid warning C4312 : 
-	 * "'reinterpret_cast' : conversion from 'int' to 'const char *' 
+	 * Avoid warning C4312: 
+	 * "'reinterpret_cast': conversion from 'int' to 'const char *' 
 	 * of greater size", no better work-around.
 	 *
 	 */
 #pragma warning( push )
-#pragma warning( disable : 4312 )
+#pragma warning( disable: 4312 )
 
 	if ( ::setsockopt( 
 			/* target socket */ getFileDescriptorForTransport(), 
@@ -321,7 +329,7 @@ void StreamSocket::setNagleAlgorithmTo( bool activated )
 			/* option value */ reinterpret_cast<const char *>( optionValue ),
 			/* option length */ sizeof( int ) ) == SOCKET_ERROR )
 		throw StreamSocketException( 
-			"StreamSocket::setNagleAlgorithmTo failed : "
+			"StreamSocket::setNagleAlgorithmTo failed: "
 			+ Network::explainSocketError() ) ;
 
 #pragma warning( pop )
@@ -335,22 +343,23 @@ void StreamSocket::setNagleAlgorithmTo( bool activated )
 			/* option value */ reinterpret_cast<const char *>( optionValue ),
 			/* option length */ sizeof( int ) ) == -1 )
 		throw StreamSocketException( 
-			"StreamSocket::setNagleAlgorithmTo failed : "
+			"StreamSocket::setNagleAlgorithmTo failed: "
 			+ explainError() ) ;
 
 #endif // CEYLAN_ARCH_WINDOWS
 
 #else // CEYLAN_USES_NETWORK
 
-	throw StreamSocketException( "StreamSocket::setNagleAlgorithmTo : "
+	throw StreamSocketException( "StreamSocket::setNagleAlgorithmTo: "
 		"network support not available." ) ;
 		
 #endif // CEYLAN_USES_NETWORK
 
 }
 
-const std::string StreamSocket::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+
+
+const std::string StreamSocket::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string res = "Stream" + Socket::toString( level ) ;
@@ -370,7 +379,6 @@ const std::string StreamSocket::toString( Ceylan::VerbosityLevels level )
 	
 
 void StreamSocket::setBlocking( bool newStatus )
-	throw( NonBlockingNotSupportedException )
 {
 
 #if CEYLAN_USES_NETWORK
@@ -380,35 +388,35 @@ void StreamSocket::setBlocking( bool newStatus )
 
 	if ( getOriginalFileDescriptor() == 0 )
 		throw NonBlockingNotSupportedException( 
-			"StreamSocket::setBlocking : null descriptor, "
-				"socket not created yet ?" ) ;
+			"StreamSocket::setBlocking: null descriptor, "
+				"socket not created yet?" ) ;
 	
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 
 
 #if CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS
 
-	// Yes, retrieve current flags :
-	int currentFDState = ::fcntl( getOriginalFileDescriptor(),
+	// Yes, retrieve current flags:
+	int currentFDState =::fcntl( getOriginalFileDescriptor(),
 		F_GETFL, 0 ) ;
 
 	if ( currentFDState < 0 )
 		throw NonBlockingNotSupportedException( 
-			"StreamSocket::setBlocking : retrieving attributes failed : " 
+			"StreamSocket::setBlocking: retrieving attributes failed: " 
 			+ System::explainError() ) ;
 
 #endif // CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS
 	
 
-	// Set newer flags :
+	// Set newer flags:
 	if ( newStatus )
 	{
 
-		// Here we set to blocking :
+		// Here we set to blocking:
 
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS	
 
-		LogPlug::trace( "StreamSocket::setBlocking : "
+		LogPlug::trace( "StreamSocket::setBlocking: "
 			"setting a non-blocking socket to blocking, "
 			"using file descriptor #" 
 			+ Ceylan::toString( getOriginalFileDescriptor() )
@@ -423,8 +431,8 @@ void StreamSocket::setBlocking( bool newStatus )
 		if ( ::fcntl( getOriginalFileDescriptor(), F_SETFL, 
 				currentFDState & (~O_NONBLOCK) ) < 0 )
 			throw NonBlockingNotSupportedException( 
-				"StreamSocket::setBlocking : "
-				"setting to blocking with fcntl failed : " 
+				"StreamSocket::setBlocking: "
+				"setting to blocking with fcntl failed: " 
 				+ System::explainError() ) ;
 
 #else // CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS
@@ -436,8 +444,8 @@ void StreamSocket::setBlocking( bool newStatus )
 		if ( ::ioctlsocket( getOriginalFileDescriptor(), FIONBIO,
 				&nonBlockingMode ) == SOCKET_ERROR )
 			throw NonBlockingNotSupportedException( 
-				"StreamSocket::setBlocking : "
-				"setting to blocking with ioctlsocket failed : " 
+				"StreamSocket::setBlocking: "
+				"setting to blocking with ioctlsocket failed: " 
 				+ Network::explainSocketError() ) ;	
 
 #else // CEYLAN_ARCH_WINDOWS
@@ -445,8 +453,8 @@ void StreamSocket::setBlocking( bool newStatus )
 		int nonBlockingFlag = 0 ;
 		if ( ::ioctl( getOriginalFileDescriptor(), FIONBIO, &nonBlockingFlag ) )
 			throw NonBlockingNotSupportedException( 
-				"StreamSocket::setBlocking : "
-				"setting to blocking with ioctl failed : " 
+				"StreamSocket::setBlocking: "
+				"setting to blocking with ioctl failed: " 
 				+ System::explainError() ) ;		
 
 #endif // CEYLAN_ARCH_WINDOWS
@@ -461,7 +469,7 @@ void StreamSocket::setBlocking( bool newStatus )
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 	
 		LogPlug::trace( 
-			"StreamSocket::setBlocking : "
+			"StreamSocket::setBlocking: "
 			"setting a blocking socket to non-blocking, "
 			"using file descriptor #" 
 			+ Ceylan::toString( getOriginalFileDescriptor() )
@@ -476,8 +484,8 @@ void StreamSocket::setBlocking( bool newStatus )
 		if ( ::fcntl( getOriginalFileDescriptor(), F_SETFL, 
 				currentFDState | O_NONBLOCK ) < 0 )
 			throw NonBlockingNotSupportedException( 
-				"StreamSocket::setBlocking : "
-				"setting to non-blocking with fcntl failed : " 
+				"StreamSocket::setBlocking: "
+				"setting to non-blocking with fcntl failed: " 
 				+ System::explainError() ) ;
 
 #else // CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS
@@ -489,8 +497,8 @@ void StreamSocket::setBlocking( bool newStatus )
 		if ( ::ioctlsocket( getOriginalFileDescriptor(), FIONBIO,
 				&nonBlockingMode ) == SOCKET_ERROR )
 			throw NonBlockingNotSupportedException( 
-				"StreamSocket::setBlocking : "
-				"setting to non-blocking with ioctlsocket failed : " 
+				"StreamSocket::setBlocking: "
+				"setting to non-blocking with ioctlsocket failed: " 
 				+ Network::explainSocketError() ) ;	
 
 #else // CEYLAN_ARCH_WINDOWS
@@ -498,8 +506,8 @@ void StreamSocket::setBlocking( bool newStatus )
 		int nonBlockingFlag = 1 ;
 		if ( ::ioctl( getOriginalFileDescriptor(), FIONBIO, &nonBlockingFlag ) )
 			throw NonBlockingNotSupportedException( 
-				"StreamSocket::setBlocking : "
-				"setting to non-blocking with ioctl failed : " 
+				"StreamSocket::setBlocking: "
+				"setting to non-blocking with ioctl failed: " 
 				+ System::explainError() ) ;			
 
 #endif // CEYLAN_ARCH_WINDOWS
@@ -513,7 +521,7 @@ void StreamSocket::setBlocking( bool newStatus )
 #else // CEYLAN_USES_NETWORK	
 		
 	throw NonBlockingNotSupportedException( 
-		"StreamSocket::setBlocking failed : network support not available." ) ; 
+		"StreamSocket::setBlocking failed: network support not available." ) ; 
 			
 #endif // CEYLAN_USES_NETWORK	
 

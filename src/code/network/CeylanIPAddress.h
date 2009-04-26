@@ -44,14 +44,15 @@ namespace Ceylan
 	{
 
 
+
 		/// Exception dedicated to the IP addressing.
-		class CEYLAN_DLL IPAddressException : public NetworkException
+		class CEYLAN_DLL IPAddressException: public NetworkException
 		{
 		
 			public:
 			
 			
-				explicit IPAddressException( const std::string message ) :
+				explicit IPAddressException( const std::string message ):
 					NetworkException( message )
 				{
 				
@@ -61,32 +62,37 @@ namespace Ceylan
 		
 
 
+
 		/**
 		 * Handles abstract IP (Internet Protocol) addresses.
 		 *
-		 * @todo Add informations from netinet/in.h (ex : IN_CLASSA).
+		 * @todo Add informations from netinet/in.h (ex: IN_CLASSA).
 		 *
 		 */		
-		class CEYLAN_DLL IPAddress : public TextDisplayable
+		class CEYLAN_DLL IPAddress: public TextDisplayable
 		{
+
 
 			public:
 			
+
 		
 				/// Basic constructor.
-				IPAddress() throw() ;
+				IPAddress() ;
 			
 			
 				/// Basic virtual destructor.
 				virtual ~IPAddress() throw() ;
 			
+
 			
 				/**
-				 * Returns the actual type of the IP address, for example :
+				 * Returns the actual type of the IP address, for example:
 				 * IPv4.
 				 *
 				 */
-				virtual NetworkAddressType getType() const throw() = 0 ;
+				virtual NetworkAddressType getType() const = 0 ;
+				
 				
 				
 	            /**
@@ -104,8 +110,7 @@ namespace Ceylan
 				 *
 	             */
 				virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 				
 					
 					
@@ -115,7 +120,8 @@ namespace Ceylan
 				 * @note For abstract IPAddress, always returns false.
 				 *
 				 */
-				static bool IsValid( const std::string IPString ) throw() ;
+				static bool IsValid( const std::string IPString ) ;
+			
 			
 			
 			
@@ -127,13 +133,14 @@ namespace Ceylan
 				 * NetworkException otherwise.
 				 *
 				 */
-				virtual void validate() const throw( IPAddressException ) = 0 ;
+				virtual void validate() const = 0 ;
 
 
 
 
 			private:
 				
+			
 			
 				/**
 				 * Copy constructor made private to ensure that it will 
@@ -143,7 +150,8 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */			 
-				IPAddress( const IPAddress & source ) throw() ;
+				IPAddress( const IPAddress & source ) ;
+			
 			
 			
 				/**
@@ -154,7 +162,7 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				IPAddress & operator = ( const IPAddress & source ) throw() ;
+				IPAddress & operator = ( const IPAddress & source ) ;
 			
 				
 		} ;
@@ -165,4 +173,7 @@ namespace Ceylan
 	
 }
 
+
+
 #endif // CEYLAN_IP_ADDRESS_H_
+

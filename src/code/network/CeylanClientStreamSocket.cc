@@ -32,7 +32,7 @@
 #include "CeylanStream.h"             // for CloseException
 #include "CeylanOperators.h"          // for toString
 
-// for SystemSpecificSocketAddress :
+// for SystemSpecificSocketAddress:
 #include "CeylanSystemSpecificSocketAddress.h"  
 
 
@@ -64,6 +64,7 @@ extern "C"
 
 }
 
+
 using std::string ;
 
 using namespace Ceylan::System ;
@@ -75,7 +76,7 @@ using namespace Ceylan ;
 
 
 ClientStreamSocket::ClientStreamSocketException::ClientStreamSocketException( 
-		const std::string & reason ) throw():
+		const std::string & reason ) :
 	StreamSocketException( reason )
 {
 
@@ -92,8 +93,7 @@ ClientStreamSocket::ClientStreamSocketException::~ClientStreamSocketException()
 
 
 
-ClientStreamSocket::ClientStreamSocket() 
-		throw( Socket::SocketException ) :
+ClientStreamSocket::ClientStreamSocket() :
 	StreamSocket(),
 	_serverHostName(),
 	_serverHostInfo( 0 )
@@ -103,12 +103,13 @@ ClientStreamSocket::ClientStreamSocket()
 
 #else // CEYLAN_USES_NETWORK
 
-	throw SocketException( "ClientStreamSocket constructor : "
+	throw SocketException( "ClientStreamSocket constructor: "
 		"network feature not available." ) ;
 		
 #endif // CEYLAN_USES_NETWORK
 
 }
+
 
 
 ClientStreamSocket::~ClientStreamSocket() throw()
@@ -122,7 +123,8 @@ ClientStreamSocket::~ClientStreamSocket() throw()
 }
 
 
-bool ClientStreamSocket::isConnected() const throw()
+
+bool ClientStreamSocket::isConnected() const
 {
 
 	return _serverHostInfo != 0 ;
@@ -130,23 +132,24 @@ bool ClientStreamSocket::isConnected() const throw()
 }
 
 
+
 void ClientStreamSocket::connect( const string & serverHostname, 
-	Port serverPort ) throw( SocketException )
+	Port serverPort ) 
 {
 
 #if CEYLAN_USES_NETWORK
 
 	if ( isConnected() )
-		throw SocketException( "ClientStreamSocket::connect : "
+		throw SocketException( "ClientStreamSocket::connect: "
 			"socket already connected" ) ;
 			
 	_serverHostName = serverHostname ;
 
-	// Blanks inherited address before filling it with the server address :
+	// Blanks inherited address before filling it with the server address:
 	_address->blank() ;
 	
 	/*
-	 * Creates the socket and fills sin_family and sin_port :
+	 * Creates the socket and fills sin_family and sin_port:
 	 * (createSocket implemented in StreamSocket class)
 	 *
 	 */
@@ -158,37 +161,36 @@ void ClientStreamSocket::connect( const string & serverHostname,
 	}
 	catch(  const NetworkException & e )
 	{
-		throw ClientStreamSocketException( "ClientStreamSocket::connect : "
+		throw ClientStreamSocketException( "ClientStreamSocket::connect: "
 			"DNS look-up failed for server '" + _serverHostName 
-			+ "' : " + e.toString() ) ;
+			+ "': " + e.toString() ) ;
 	}
 	
 	
 	/*
 	 * Here we choose to use only the first IP address found from the 
-	 * hostname  :
+	 * hostname :
 	 *
 	 */
 	IPAddressvFour * serverIP = dynamic_cast<IPAddressvFour *>( 
 		* _serverHostInfo->getAddresses().begin() ) ;
 		
 	if ( serverIP == 0 )
-		throw ClientStreamSocketException( "ClientStreamSocket::connect : "
+		throw ClientStreamSocketException( "ClientStreamSocket::connect: "
 			"could not determine an IPv4 address from host '" 
 				+ _serverHostName + "'." ) ;
 	
 	
-	
-	// It is actually something like an unsigned long (see man inet_ntoa) :
+	// It is actually something like an unsigned long (see man inet_ntoa):
 	struct in_addr binaryIP ;
 		
 #if CEYLAN_ARCH_WINDOWS
-	binaryIP.s_addr = ::inet_addr( serverIP->toString().c_str() ) ;
+	binaryIP.s_addr =::inet_addr( serverIP->toString().c_str() ) ;
 	if ( binaryIP.s_addr == INADDR_NONE )
 #else // CEYLAN_ARCH_WINDOWS
 	if ( ::inet_aton( serverIP->toString().c_str(), &binaryIP ) == 0 )
 #endif // CEYLAN_ARCH_WINDOWS
-		throw ClientStreamSocketException( "ClientStreamSocket::connect : "
+		throw ClientStreamSocketException( "ClientStreamSocket::connect: "
 			"could not forge a network address from IP " 
 			+ serverIP->toString() + " of host '" 
 				+ _serverHostName + "'." ) ;
@@ -199,34 +201,34 @@ void ClientStreamSocket::connect( const string & serverHostname,
 		setNagleAlgorithmTo( false ) ; 
 
 #if CEYLAN_DEBUG_NETWORK_CLIENTS
-	LogPlug::trace( "ClientStreamSocket::connect : connecting to "
+	LogPlug::trace( "ClientStreamSocket::connect: connecting to "
 		+ _serverHostName + ":" + Ceylan::toString( serverPort )
 		+ " with local file descriptor " 
 		+ Ceylan::toString( getOriginalFileDescriptor() ) ) ;
 #endif // CEYLAN_DEBUG_NETWORK_CLIENTS
 
-	// No need for a ::bind call before a connect :	
+	// No need for a::bind call before a connect:	
 	if ( ::connect( getOriginalFileDescriptor(),
 			reinterpret_cast<sockaddr *>( & _address->_socketAddress ),
 			sizeof( sockaddr_in ) ) < 0 )
-		throw ClientStreamSocketException( "ClientStreamSocket::connect : "
+		throw ClientStreamSocketException( "ClientStreamSocket::connect: "
 			"could not connect to IP " 
 			+ serverIP->toString() + " for host '" 
 			+ _serverHostName + "' on port " + Ceylan::toString( serverPort )
-			+ " : " + System::explainError() ) ;
+			+ ": " + System::explainError() ) ;
 
 #if CEYLAN_DEBUG_NETWORK_CLIENTS
-	LogPlug::trace( "ClientStreamSocket::connect : successfully connected." ) ;
+	LogPlug::trace( "ClientStreamSocket::connect: successfully connected." ) ;
 #endif // CEYLAN_DEBUG_NETWORK_CLIENTS
 	
-	// Once connected, call the user-supplied code :
+	// Once connected, call the user-supplied code:
 	connected() ;
 
 	disconnect() ;
 	
 #else // CEYLAN_USES_NETWORK
 
-	throw SocketException( "ClientStreamSocket::connect : "
+	throw SocketException( "ClientStreamSocket::connect: "
 		"network feature not available." ) ;
 		
 #endif // CEYLAN_USES_NETWORK
@@ -234,15 +236,16 @@ void ClientStreamSocket::connect( const string & serverHostname,
 }
 
 
-void ClientStreamSocket::disconnect() throw( SocketException )
+
+void ClientStreamSocket::disconnect()
 {
 
 #if CEYLAN_DEBUG_NETWORK_CLIENTS
-	LogPlug::trace( "ClientStreamSocket::disconnect : disconnecting now." ) ;
+	LogPlug::trace( "ClientStreamSocket::disconnect: disconnecting now." ) ;
 #endif // CEYLAN_DEBUG_NETWORK_CLIENTS
 	
 	if ( ! isConnected() )
-		throw SocketException( "ClientStreamSocket::disconnect : "
+		throw SocketException( "ClientStreamSocket::disconnect: "
 			"this socket was not already connected." ) ;
 		
 	delete _serverHostInfo ;
@@ -250,12 +253,12 @@ void ClientStreamSocket::disconnect() throw( SocketException )
 		
 	try
 	{
-		// Inherited from Socket :
+		// Inherited from Socket:
 		close() ;
 	}	
 	catch( const Stream::CloseException & e )
 	{
-		throw SocketException( "ClientStreamSocket::disconnect failed : "
+		throw SocketException( "ClientStreamSocket::disconnect failed: "
 			+ e.toString() ) ;
 	}
 	
@@ -264,14 +267,18 @@ void ClientStreamSocket::disconnect() throw( SocketException )
 }
 
 
-Port ClientStreamSocket::getPeerPort() const throw( SocketException )
+
+Port ClientStreamSocket::getPeerPort() const
 {
+
 	return _port ;
+	
 }
 
 
+
 const std::string ClientStreamSocket::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+	const
 {
 
 	string res ;
@@ -289,19 +296,21 @@ const std::string ClientStreamSocket::toString( Ceylan::VerbosityLevels level )
 }	
 
 
-void ClientStreamSocket::connected() throw( ClientStreamSocketException )
+
+void ClientStreamSocket::connected()
 {
 
 #if CEYLAN_DEBUG_NETWORK_CLIENTS
 	// Empty implementation made to be overriden.
-	LogPlug::debug( "ClientStreamSocket::connected : "
+	LogPlug::debug( "ClientStreamSocket::connected: "
 		"connection up and running." ) ;
 #endif // CEYLAN_DEBUG_NETWORK_CLIENTS
 	
 }
 
 
-const std::string & ClientStreamSocket::getServerName() const throw()
+
+const std::string & ClientStreamSocket::getServerName() const
 {
 
 	return _serverHostName ;

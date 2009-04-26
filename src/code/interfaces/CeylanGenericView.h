@@ -94,15 +94,18 @@ namespace Ceylan
 	        public:
 	
 	
+	
 				/**
 				 * Constructs a view, not linked to any model.
 				 *
 				 */
-				BaseView() throw() ;
+				BaseView() ;
+	
 	
 	
 				/// Basic virtual destructor.
 				virtual ~BaseView() throw() ;
+	
 	
 	
 				/**
@@ -113,6 +116,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual void render() = 0 ;
+	
 	
 	
 	            /**
@@ -127,8 +131,7 @@ namespace Ceylan
 	             *
 	             */
 				virtual const std::string toString(
-						Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 	
 	
 
@@ -143,7 +146,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				BaseView( const BaseView & source ) throw() ;
+				BaseView( const BaseView & source ) ;
 	
 	
 				/**
@@ -153,7 +156,7 @@ namespace Ceylan
 				 * is called, implicitly or not.
 				 *
 				 */
-				BaseView & operator = ( const BaseView & source ) throw() ;
+				BaseView & operator = ( const BaseView & source ) ;
 
 	
 	
@@ -186,7 +189,9 @@ namespace Ceylan
 		class SingleModelGenericView: public BaseView
 		{
 	
+	
 			public:
+	
 	
 	
 				/**
@@ -223,8 +228,7 @@ namespace Ceylan
 	             *
 	             */
 				virtual const std::string toString(
-						Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 
 
@@ -246,8 +250,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				SingleModelGenericView( const SingleModelGenericView & source )
-					throw() ;
+				SingleModelGenericView( const SingleModelGenericView & source );
 	
 	
 				/**
@@ -258,9 +261,10 @@ namespace Ceylan
 				 *
 				 */
 				SingleModelGenericView & operator = (
-					const SingleModelGenericView & source ) throw() ;
+					const SingleModelGenericView & source ) ;
 
 	    } ;
+	
 	
 	
 	
@@ -278,6 +282,7 @@ namespace Ceylan
 		}
 	
 	
+	
 		template <typename ActualModel>
 		SingleModelGenericView<ActualModel>::~SingleModelGenericView() throw()
 		{
@@ -287,9 +292,10 @@ namespace Ceylan
 		}
 	
 	
+	
 		template <typename ActualModel>
 		const std::string SingleModelGenericView<ActualModel>::toString(
-			Ceylan::VerbosityLevels level ) const throw()
+			Ceylan::VerbosityLevels level ) const
 		{
 	
 			return "Single-model generic view associated to "

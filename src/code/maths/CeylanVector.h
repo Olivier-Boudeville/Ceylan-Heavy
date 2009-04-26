@@ -35,12 +35,14 @@
 #include <string>
 
 
+
 namespace Ceylan
 {
 
 
 	namespace Maths
 	{
+
 
 
 		namespace Linear
@@ -57,7 +59,7 @@ namespace Ceylan
 			 * @note Beware of counter-intuitive operator priorities.
 			 *
 			 * @note Some methods could be gathered in this abstract class,
-			 * instead of child classes (ex : setAllElementsTo could use
+			 * instead of child classes (ex: setAllElementsTo could use
 			 * the Dimensions attribute so that this method could be 
 			 * generically defined). The problem is however that Dimensions
 			 * should be static, but it would not be overloaded by child
@@ -71,22 +73,24 @@ namespace Ceylan
 			 * exactly duplicated.
 			 *
 			 */
-			class CEYLAN_DLL Vector : public TextDisplayable
+			class CEYLAN_DLL Vector: public TextDisplayable
 			{
 		
 
 				public:
 				
 				
+				
 					/**
 					 * Constructs a new vector. 
 					 *
 					 */
-					 Vector() throw() ;
+					Vector() ;
 				
 				
 					/// Basic virtual destructor.
 					virtual ~Vector() throw() ;
+					
 					
 					
 					/**
@@ -94,7 +98,8 @@ namespace Ceylan
 					 * zeroed).
 					 *
 					 */
-					virtual void nullify() throw() ;
+					virtual void nullify() ;
+					
 					
 					
 					/**
@@ -102,9 +107,9 @@ namespace Ceylan
 					 * commonValue.
 					 *
 					 */
-					virtual void setAllElementsTo( Real commonValue ) 
-						throw() = 0 ;
+					virtual void setAllElementsTo( Real commonValue ) = 0 ;
 					
+						
 						
 					/**
 					 * Normalizes this vector, so that its norm equals one.
@@ -113,7 +118,8 @@ namespace Ceylan
 					 * since it is the only one that cannot be normalized.
 					 *
 					 */
-					virtual void normalize() throw( LinearException ) = 0 ;
+					virtual void normalize() = 0 ;
+
 
 
 					/**
@@ -122,7 +128,8 @@ namespace Ceylan
 					 * @see operator ~
 					 *
 					 */
-					virtual Real magnitude() const throw() = 0 ;
+					virtual Real magnitude() const = 0 ;
+
 
 					
 					/**
@@ -138,7 +145,8 @@ namespace Ceylan
 					 *
 					 */
             		virtual const std::string toString( 
-						VerbosityLevels level = high ) const throw() ;
+						VerbosityLevels level = high ) const ;
+					 
 					 
 					 
 					/**
@@ -146,9 +154,11 @@ namespace Ceylan
 					 *
 					 */
 					static const MatrixIndex Dimensions = 0 ;
+				
 								
 
 			} ;
+			
 
 		}
 		
@@ -157,4 +167,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_VECTOR_H_
+

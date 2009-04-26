@@ -60,6 +60,7 @@ namespace Ceylan
 			class Vector2 ;
 			
 
+
 			/**
 			 * Functor encapsulating a 2D endomorphism.
 			 * Functors are especially useful when the endomorphism can be
@@ -83,15 +84,18 @@ namespace Ceylan
 				public:
 				
 				
+				
 					/**
 					 * Constructs a new functor encapsulating a 2D endomorphism.
 					 *
 					 */
-					Endomorphism2DFunctor() throw() ;
+					Endomorphism2DFunctor() ;
+				
 				
 				
 					/// Basic virtual destructor.
 					virtual ~Endomorphism2DFunctor() throw() ;
+					
 					
 					
 					/**
@@ -99,9 +103,9 @@ namespace Ceylan
 					 * value corresponding to v.
 					 *
 					 */
-					virtual Vector2 operator() ( const Vector2 & v ) 
-						throw() = 0 ;
+					virtual Vector2 operator() ( const Vector2 & v ) = 0 ;
 												
+							
 								
 					/**
 					 * Returns a user-friendly description of the state 
@@ -116,10 +120,11 @@ namespace Ceylan
 					 *
 					 */
              		virtual const std::string toString( 
-						VerbosityLevels level = high ) const throw() ;
+						VerbosityLevels level = high ) const ;
 					 
 
 			} ;
+			
 			
 			
 
@@ -130,7 +135,9 @@ namespace Ceylan
 			class CEYLAN_DLL Rotation2DFunctor : public Endomorphism2DFunctor
 			{
 			
+			
 				public:
+			
 				
 				
 					/**
@@ -145,19 +152,22 @@ namespace Ceylan
 					 * constructor will do it.
 				 	 *
 				 	 */
-					explicit Rotation2DFunctor( AngleInDegrees angle ) throw() ;
+					explicit Rotation2DFunctor( AngleInDegrees angle ) ;
+			
 			
 			
 					/// Virtual destructor.
 					virtual ~Rotation2DFunctor() throw() ;
 					
 			
+			
 					/**
 					 * The callable method, returning the projection of v 
 					 * on the axis.
 					 *
 					 */
-					virtual Vector2 operator() ( const Vector2 & v ) throw()  ;
+					virtual Vector2 operator() ( const Vector2 & v )  ;
+			
 			
 			
 					/**
@@ -173,18 +183,21 @@ namespace Ceylan
 					 *
 					 */
              		virtual const std::string toString( 
-						VerbosityLevels level = high ) const throw() ;
+						VerbosityLevels level = high ) const ;
 						
+					
 						
 				protected:
 				
 									
 					/// The rotation angle, in radian.
 					AngleInRadians _angle ;	
+					
 						
 			} ;			
 			
 						
+			
 			
 			/**
 			 * Functor encapsulating a 3D endomorphism.
@@ -206,18 +219,22 @@ namespace Ceylan
 			{
 
 
+
 				public:
+				
 				
 				
 					/**
 					 * Constructs a new functor encapsulating a 3D endomorphism.
 					 *
 					 */
-					Endomorphism3DFunctor() throw() ;
+					Endomorphism3DFunctor() ;
+				
 				
 				
 					/// Basic virtual destructor.
 					virtual ~Endomorphism3DFunctor() throw() ;
+					
 					
 					
 					/**
@@ -225,8 +242,8 @@ namespace Ceylan
 					 * value corresponding to v.
 					 *
 					 */
-					virtual Vector3 operator() ( 
-						const Vector3 & v ) throw() = 0 ;
+					virtual Vector3 operator() ( const Vector3 & v ) = 0 ;
+						
 												
 								
 					/**
@@ -242,10 +259,11 @@ namespace Ceylan
 					 *
 					 */
              		virtual const std::string toString( 
-						VerbosityLevels level = high ) const throw() ;
+						VerbosityLevels level = high ) const ;
 					 
 
 			} ;
+			
 			
 			
 			
@@ -257,7 +275,9 @@ namespace Ceylan
 				public Endomorphism3DFunctor
 			{
 			
+			
 				public:
+				
 				
 				
 					/**
@@ -268,12 +288,13 @@ namespace Ceylan
 					 * constructor will do it.
 				 	 *
 				 	 */
-					explicit LineProjection3DFunctor( 
-						const Vector3 & axis ) throw() ;
+					explicit LineProjection3DFunctor( const Vector3 & axis ) ;
+			
 			
 			
 					/// Virtual destructor.
 					~LineProjection3DFunctor() throw() ;
+					
 					
 			
 					/**
@@ -281,7 +302,8 @@ namespace Ceylan
 					 * v on the axis.
 					 *
 					 */
-					virtual Vector3 operator() ( const Vector3 & v ) throw()  ;
+					virtual Vector3 operator() ( const Vector3 & v )  ;
+			
 			
 			
 					/**
@@ -297,15 +319,18 @@ namespace Ceylan
 					 *
 					 */
              		virtual const std::string toString( 
-						VerbosityLevels level = high ) const throw() ;
+						VerbosityLevels level = high ) const ;
+						
 						
 						
 				protected:
+				
 				
 					/// The normalized axis.
 					Vector3 _axis ;		
 						
 			} ;
+			
 			
 			
 			
@@ -316,6 +341,7 @@ namespace Ceylan
 			 */
 			class CEYLAN_DLL Rotation3DFunctor : public Endomorphism3DFunctor
 			{
+			
 			
 				public:
 				
@@ -333,19 +359,22 @@ namespace Ceylan
 				 	 *
 				 	 */
 					explicit Rotation3DFunctor( const Vector3 & axis, 
-						AngleInDegrees angle ) throw() ;
+						AngleInDegrees angle ) ;
+			
 			
 			
 					/// Virtual destructor.
 					virtual ~Rotation3DFunctor() throw() ;
 					
 			
+			
 					/**
 					 * The callable method, returning the projection of 
 					 * v on the axis.
 					 *
 					 */
-					virtual Vector3 operator() ( const Vector3 & v ) throw()  ;
+					virtual Vector3 operator() ( const Vector3 & v )  ;
+			
 			
 			
 					/**
@@ -361,14 +390,16 @@ namespace Ceylan
 					 *
 					 */
              		virtual const std::string toString( 
-						VerbosityLevels level = high ) const throw() ;
+						VerbosityLevels level = high ) const ;
 						
 						
 						
 				protected:
 				
+				
 					/// The normalized axis.
 					Vector3 _axis ;	
+					
 					
 					/// The rotation angle, in radians.
 					AngleInRadians _angle ;	
@@ -383,4 +414,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_ENDOMORPHISM_H_
+

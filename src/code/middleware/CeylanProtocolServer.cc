@@ -31,18 +31,20 @@
 
 using std::string ;
 
+
 using namespace Ceylan ;
 using namespace Ceylan::Log ;
 using namespace Ceylan::Middleware ;
 
 
 
-ProtocolServer::ProtocolServer( Marshaller & marshaller ) throw() :
+ProtocolServer::ProtocolServer( Marshaller & marshaller ) :
 	ProtocolEndpoint( marshaller ),
 	_shutdownRequested( false )
 {
 
 }
+
 
 
 ProtocolServer::~ProtocolServer() throw()
@@ -51,7 +53,8 @@ ProtocolServer::~ProtocolServer() throw()
 }
 
 
-bool ProtocolServer::isShutdownRequested() const throw()
+
+bool ProtocolServer::isShutdownRequested() const
 {
 
 	return _shutdownRequested ;
@@ -59,8 +62,8 @@ bool ProtocolServer::isShutdownRequested() const throw()
 }
 
 
-const string ProtocolServer::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+
+const string ProtocolServer::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string res = "Protocol server, which is a " 
@@ -78,7 +81,8 @@ const string ProtocolServer::toString( Ceylan::VerbosityLevels level )
 }
 
 
-void ProtocolServer::askForShutdown() throw()
+
+void ProtocolServer::askForShutdown()
 {
 
 	_shutdownRequested = true ;

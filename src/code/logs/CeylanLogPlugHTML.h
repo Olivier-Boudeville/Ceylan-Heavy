@@ -38,6 +38,7 @@
 namespace Ceylan
 {
 
+
 	namespace Log
 	{
 
@@ -156,8 +157,7 @@ namespace Ceylan
 				Not even declared to avoid: 
 				'warning: will never be executed'
 				/// LogPlug HTML should not be instanciated.
-				LogPlugHTML() throw( LogException )
-					__attribute__ ((noreturn)) ;
+				LogPlugHTML() __attribute__ ((noreturn)) ;
 
 				
 				/// This destructor will be never called.

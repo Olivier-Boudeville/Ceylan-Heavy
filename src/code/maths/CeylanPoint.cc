@@ -35,24 +35,33 @@ using namespace Ceylan::Maths::Linear ;
 
 
 
-Point::Point() throw() 
+Point::Point()
 {
+
 }
+
 
 
 Point::~Point() throw() 
 {
+
 }
 
 
-void Point::nullify() throw()
+
+void Point::nullify()
 {
+
 	setAllElementsTo( 0 ) ;
+	
 }
 
 
-const string Point::toString( VerbosityLevels level ) const throw()
+
+const string Point::toString( VerbosityLevels level ) const
 {
+
 	return "Abstract point" ;
+	
 }
 

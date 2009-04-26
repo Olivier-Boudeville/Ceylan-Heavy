@@ -74,14 +74,16 @@ namespace Ceylan
 			 * getGlobalReferential method should be callable on it.
 			 *
 			 */
-			explicit Locatable2D( Locatable2D & fatherLocatable ) throw() ;
+			explicit Locatable2D( Locatable2D & fatherLocatable ) ;
+			
 			
 			
 			/**
 			 * Basic constructor, no local nor father referential registered.
 			 *
 			 */
-			Locatable2D() throw() ;
+			Locatable2D() ;
+
 
 
 			/**
@@ -109,7 +111,8 @@ namespace Ceylan
 			 *
 			 */
 			Locatable2D( Locatable2D & fatherLocatable, 
-				Maths::Linear::Matrix & localReferential ) throw() ;
+				Maths::Linear::Matrix & localReferential ) ;
+			
 			
 			
 			/**
@@ -123,12 +126,13 @@ namespace Ceylan
 			 * referential.
 			 *
 			 */
-			explicit Locatable2D( Maths::Linear::Matrix & localReferential )
-				throw() ;
+			explicit Locatable2D( Maths::Linear::Matrix & localReferential ) ;
 
+			
 			
 			/// Virtual destructor.
 			virtual ~Locatable2D() throw() ;			
+			
 			
 			
 			/**
@@ -140,8 +144,8 @@ namespace Ceylan
 			 * 'conflicting return type specified'.
 			 * 
 			 */
-			virtual Maths::Linear::Matrix & getLocalReferential() const
-				throw( LocatableException ) ;
+			virtual Maths::Linear::Matrix & getLocalReferential() const ;
+			
 			
 
 			/**
@@ -151,23 +155,24 @@ namespace Ceylan
 			 * @note If no referential was existing, a new one is created.
 			 *
 			 */	
-			virtual void blankLocalReferential() throw() ;
+			virtual void blankLocalReferential() ;
+
 
 
 			/**
 			 * Returns the center of this Locatable, expressed in father 
 			 * space. 
 			 *
-			 * Coordinates are modified according to the homogeneous factor :
+			 * Coordinates are modified according to the homogeneous factor:
 			 * they are normalized.
 			 *
 			 * @throw LocatableException if no relevant local referential
 			 * was available, or if the homogeneous factor is zero.
 			 *
 			 */
-			virtual Ceylan::Maths::Linear::Bipoint getCenter() const 
-				throw( LocatableException ) ;
+			virtual Ceylan::Maths::Linear::Bipoint getCenter() const ;
 			 
+			
 			 
 			/**
 			 * Sets the center of the local referential. 
@@ -181,8 +186,8 @@ namespace Ceylan
 			 *
 			 */
 			virtual void setCenter( 
-					const Ceylan::Maths::Linear::Bipoint & newCenter ) 
-				throw( LocatableException ) ;
+				const Ceylan::Maths::Linear::Bipoint & newCenter ) ;
+			
 			
 			
 			/**
@@ -199,8 +204,8 @@ namespace Ceylan
 			 */
 			virtual void setCenter( 
 					Ceylan::Maths::Real newX = 0, 
-					Ceylan::Maths::Real newY = 0 )
-				throw( LocatableException ) ;
+					Ceylan::Maths::Real newY = 0 ) ;
+			
 			
 			
             /**
@@ -215,11 +220,12 @@ namespace Ceylan
              *
              */
              virtual const std::string toString( VerbosityLevels level = high )
-			 	const throw() ;
+			 	const ;
 				
 				
 		
 		protected:
+		
 		
 		
 			/**
@@ -235,22 +241,22 @@ namespace Ceylan
 			 *
 			 */ 
 			virtual void updateFromFather( 
-					const Maths::Linear::Matrix & upToDateFatherReferential )
-				throw() ;
+				const Maths::Linear::Matrix & upToDateFatherReferential ) ;
+			
 			
 			
 			/**
 			 * Helper non-virtual inline method to easily retrieve the 
 			 * internal matrix with correct (already casted) type 
-			 * (ex : HomogeneousMatrix3, not Matrix).
+			 * (ex: HomogeneousMatrix3, not Matrix).
 			 *
 			 */	
 			inline Ceylan::Maths::Linear::HomogeneousMatrix3 & 
-				getLocalMatrix() const throw( LocatableException )
+				getLocalMatrix() const 
 			{
 			
 				if ( _localReferential == 0 )
-					throw LocatableException( "Locatable2D::getLocalMatrix : "
+					throw LocatableException( "Locatable2D::getLocalMatrix: "
 						"no local matrix available." ) ;
 						
 				Ceylan::Maths::Linear::HomogeneousMatrix3 * temp = 
@@ -258,12 +264,13 @@ namespace Ceylan
 						_localReferential ) ;
 				
 				if ( temp == 0 )
-					throw LocatableException( "Locatable2D::getLocalMatrix : "
+					throw LocatableException( "Locatable2D::getLocalMatrix: "
 						"was not an HomogeneousMatrix3 instance." ) ;
 				
 				return * temp ;
 					
 			}
+			
 							
 	} ;
 
@@ -271,4 +278,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_LOCATABLE_2D_H_
+

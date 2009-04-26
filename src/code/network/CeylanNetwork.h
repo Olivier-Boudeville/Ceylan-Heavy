@@ -40,6 +40,7 @@
 namespace Ceylan
 {
 
+
 	
 	/**
 	 * Basic network management, which is an optional Ceylan feature.
@@ -54,12 +55,14 @@ namespace Ceylan
 	
 	
 		/// Exception class for network services.
-		class CEYLAN_DLL NetworkException : public Ceylan::Exception
+		class CEYLAN_DLL NetworkException: public Ceylan::Exception
 		{
+		
 			public:
-				explicit NetworkException( const std::string & message ) 
-					throw() ;
+				explicit NetworkException( const std::string & message ) ;
+				
 				virtual ~NetworkException() throw() ;
+				
 		} ;
 		
 		
@@ -71,18 +74,20 @@ namespace Ceylan
 		enum NetworkAddressType
 		{
 		
-			// Known also as AF_INET :
+			// Known also as AF_INET:
 			IPv4,
 			
-			// Known also as AF_INET6 :			
+			// Known also as AF_INET6:			
 			IPv6
 
 		
 		} ;
 		
 		
-		// HostDNSEntry records IP addresses :
+		
+		// HostDNSEntry records IP addresses:
 		class IPAddress ;
+		
 		
 		
 		/**
@@ -91,8 +96,9 @@ namespace Ceylan
 		 * @note Do not expect this class to be reentrant at all.
 		 *
 		 */
-		class CEYLAN_DLL HostDNSEntry : public Ceylan::TextDisplayable
+		class CEYLAN_DLL HostDNSEntry: public Ceylan::TextDisplayable
 		{
+		
 		
 		
 			/**
@@ -106,6 +112,7 @@ namespace Ceylan
 			 *
 			 */
 			struct SystemSpecificHostEntry ;
+		
 			
 			
 			public:
@@ -123,8 +130,8 @@ namespace Ceylan
 				 * @see RFC 1884 for the description of IPv6 addresses.
 				 *
 				 */
-				explicit HostDNSEntry( const std::string & hostName ) 
-					throw( NetworkException ) ;
+				explicit HostDNSEntry( const std::string & hostName ) ;
+		
 		
 		
 				/**
@@ -140,12 +147,13 @@ namespace Ceylan
 				 * @see IPAddressvFour
 				 *
 				 */
-				explicit HostDNSEntry( const IPAddress & ip ) 
-					throw( NetworkException ) ;
+				explicit HostDNSEntry( const IPAddress & ip ) ;
+		
 		
 		
 				/// Basic virtual destructor.
 				virtual ~HostDNSEntry() throw() ;
+		
 		
 		
 				/**
@@ -154,8 +162,8 @@ namespace Ceylan
 				 * @throw NetworkException if the operation failed.
 				 *
 				 */
-				std::string getOfficialHostName() const 
-					throw( NetworkException ) ;
+				std::string getOfficialHostName() const ;
+				
 				
 				
 				/**
@@ -165,7 +173,8 @@ namespace Ceylan
 				 * who will have to deallocate it when finished with it.
 				 *
 				 */
-				std::list<std::string> & getAliasList() const throw() ;
+				std::list<std::string> & getAliasList() const ;
+				
 				
 				
 				/**
@@ -176,7 +185,8 @@ namespace Ceylan
 				 * in the address (alias) list.
 				 *
 				 */
-				NetworkAddressType getAddressType() const throw() ;
+				NetworkAddressType getAddressType() const ;
+				
 				
 				
 				/**
@@ -186,7 +196,8 @@ namespace Ceylan
 				 * who will have to deallocate it when finished with it.
 				 *
 				 */
-				std::list<IPAddress *> & getAddresses() const throw() ;
+				std::list<IPAddress *> & getAddresses() const ;
+				
 				
 				
 	            /**
@@ -201,12 +212,13 @@ namespace Ceylan
 				 *
 	             */
 	            virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high )
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+
 
 
 				/// The maximum number of characters of an hostname.
 				static const Ceylan::Uint16 HostNameMaxLength ;
+
 
 
 
@@ -217,14 +229,16 @@ namespace Ceylan
 				 * Helper method shared by constructors.
 				 *
 				 */
-				virtual void manageHostEntry() throw( NetworkException ) ;
+				virtual void manageHostEntry() ;
 				
+
 				
 				/**
 				 * The system-specific DNS host entry being used internally.
 				 *
 				 */				 
 				SystemSpecificHostEntry * _internalEntry ;
+
 
 
 
@@ -240,7 +254,8 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */			 
-				HostDNSEntry( const HostDNSEntry & source ) throw() ;
+				HostDNSEntry( const HostDNSEntry & source ) ;
+
 			
 			
 				/**
@@ -251,8 +266,7 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				HostDNSEntry & operator = ( const HostDNSEntry & source )
-					throw() ;
+				HostDNSEntry & operator = ( const HostDNSEntry & source ) ;
 				
 							
 		} ;
@@ -265,8 +279,8 @@ namespace Ceylan
 		
 		
 		/// Returns local host's name, not including the domain name.
-		CEYLAN_DLL const std::string getLocalHostName() 
-			throw( NetworkException ) ;
+		CEYLAN_DLL const std::string getLocalHostName() ;
+		
 		
 		
 		/**
@@ -279,8 +293,8 @@ namespace Ceylan
 		 * the operation is not supported on the running platform.
 		 *
 		 */
-		CEYLAN_DLL void setLocalHostName( const std::string & newHostName )
-			throw( NetworkException ) ;
+		CEYLAN_DLL void setLocalHostName( const std::string & newHostName ) ;
+			
 			
 		
 		/**
@@ -290,18 +304,19 @@ namespace Ceylan
 		 * if no appropriate name is found. For example, on Linux systems, 
 		 * if NIS is not in use, this method reads the content of
 		 * /proc/sys/kernel/domainname, which might be "(none)" or an empty
-		 * string : in both of these last cases, an empty string is returned.
+		 * string: in both of these last cases, an empty string is returned.
 		 *
 		 * @throw NetworkException if the operation failed.
 		 *
 		 */
-		CEYLAN_DLL const std::string getLocalHostDomainName() 
-			throw( NetworkException ) ;
+		CEYLAN_DLL const std::string getLocalHostDomainName() ;
+		
 		
 		
 		/// Sets local host's domain name.
 		CEYLAN_DLL void setLocalHostDomainName( 
-			const std::string & newHostName ) throw( NetworkException ) ;
+			const std::string & newHostName ) ;
+			
 					
 
 		/**
@@ -310,7 +325,7 @@ namespace Ceylan
 		 * Tries to gather most useful information about host name, 
 		 * including FQDN. 
 		 *
-		 * If the FQDN does not teach anything (ex : 'localhost.localdomain'),
+		 * If the FQDN does not teach anything (ex: 'localhost.localdomain'),
 		 * the local host name will be returned, and the domain name, if 
 		 * relevant, will be appended to it, after a dot (hence may return
 		 * 'rainbow', or 'rainbow.esperide.com' for example).
@@ -319,8 +334,7 @@ namespace Ceylan
 		 * performed too.
 		 *
 		 */
-		CEYLAN_DLL const std::string getMostPreciseLocalHostName() 
-			throw( NetworkException ) ;
+		CEYLAN_DLL const std::string getMostPreciseLocalHostName() ;
 
 
 
@@ -337,8 +351,8 @@ namespace Ceylan
 		 * @throw NetworkException if the search or the conversion failed.
 		 *
 		 */
-		CEYLAN_DLL const std::string getFQDNFromIP( const IPAddress & ip )
-			throw( NetworkException ) ;
+		CEYLAN_DLL const std::string getFQDNFromIP( const IPAddress & ip ) ;
+
 
 
 		/**
@@ -349,19 +363,21 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL const std::string getFQDNFromIPv4( 
-			const std::string & ipString ) throw( NetworkException ) ;
+			const std::string & ipString ) ;
+
 
 
 		/**
 		 * Returns the fully qualified domain name (FQDN) of specified host.
 		 *
 		 * @param hostName the name of host to create a DNS description for. 
-		 * It is a host name (ex : "esperide.com"), not a stringified IP
+		 * It is a host name (ex: "esperide.com"), not a stringified IP
 		 * address.
 		 *
 		 */
 		CEYLAN_DLL const std::string getFQDNFromHostname( 
-			const std::string & hostname ) throw( NetworkException ) ;
+			const std::string & hostname ) ;
+
 
 
 		/**
@@ -372,7 +388,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL const std::string getFQDNFromDNSEntry( 
-			const HostDNSEntry & entry ) throw( NetworkException ) ;
+			const HostDNSEntry & entry ) ;
 
 
 			
@@ -385,8 +401,8 @@ namespace Ceylan
 		 * @see Ceylan::Features::RegularExpressions
 		 *
 		 */
-		CEYLAN_DLL bool isAValidHostName( const std::string & hostnameString ) 
-			throw() ;
+		CEYLAN_DLL bool isAValidHostName( const std::string & hostnameString ) ;
+		
 		
 
 		/**
@@ -397,6 +413,7 @@ namespace Ceylan
 		typedef int SocketError ;
 
 		
+		
 		/**
 		 * Returns a string describing the error associated with the
 		 * specified error code.
@@ -404,14 +421,16 @@ namespace Ceylan
 		 * @param errorCode the socket error that should be translated.
 		 *
 		 */
-		CEYLAN_DLL std::string interpretSocketError( SocketError errorCode ) 
-			throw() ;
+		CEYLAN_DLL std::string interpretSocketError( SocketError errorCode ) ;
+
+
 
 		/// Returns the latest socket error.
-		CEYLAN_DLL SocketError getSocketError() throw() ;
+		CEYLAN_DLL SocketError getSocketError() ;
+
 
 		/// Returns the diagnosis string corresponding to latest socket error.
-		CEYLAN_DLL std::string explainSocketError() throw() ;
+		CEYLAN_DLL std::string explainSocketError() ;
 
 
 
@@ -420,10 +439,11 @@ namespace Ceylan
 		
 		/*
 		 * Using here the only configuration-specific preprocessor symbol that
-		 * may exist in Ceylan public headers :
+		 * may exist in Ceylan public headers:
 		 *
 		 */
 #ifdef CEYLAN_RUNS_ON_WINDOWS
+
 
 
 		/**
@@ -436,20 +456,26 @@ namespace Ceylan
 		class CEYLAN_DLL NetworkManager
 		{
 
+
 			public:
 
+
 				/// Initializes the network subsystem.
-				NetworkManager() throw( NetworkException ) ;
+				NetworkManager() ;
+
 
 				/// Closes the network subsystem.
 				~NetworkManager() throw() ;
 
 
+
 			private:
+
 
 
 				/// The overall singleton-like manager instance.
 				static NetworkManager _Manager ;
+
 
 				/**
 				 * Copy constructor made private to ensure that it will 
@@ -459,8 +485,8 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				NetworkManager( const NetworkManager & source ) 
-					throw() ;
+				NetworkManager( const NetworkManager & source ) ;
+
 
 
 				/**
@@ -471,12 +497,12 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 *
 				 */
-				NetworkManager & operator = ( 
-					const NetworkManager & source )	throw() ;
+				NetworkManager & operator = ( const NetworkManager & source ) ;
 
 
 		} ;
 
+		
 		
 #endif // CEYLAN_RUNS_ON_WINDOWS
 

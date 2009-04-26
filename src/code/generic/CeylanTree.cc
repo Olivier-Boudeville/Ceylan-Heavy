@@ -29,11 +29,12 @@
 using namespace Ceylan ;
 
 
-TreeException::TreeException( const std::string & reason ) throw() :
+TreeException::TreeException( const std::string & reason ) :
 	Exception( reason )
 {
 
 }
+
 
 
 TreeException::~TreeException() throw()

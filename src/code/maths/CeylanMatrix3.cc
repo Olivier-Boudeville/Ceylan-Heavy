@@ -33,7 +33,6 @@
 
 #include "CeylanLogPlug.h"    // for LogPlug
 #include "CeylanOperators.h"  // for toString
-#include "CeylanUtils.h"      // for emergencyShutdown
 
 
 #ifdef CEYLAN_USES_CONFIG_H
@@ -62,7 +61,7 @@ using Ceylan::Maths::Real ;
 
 
 Matrix3::Matrix3( Real x0, Real x1, Real x2, 
-	Real y0, Real y1, Real y2, Real z0, Real z1, Real z2 ) throw() 
+	Real y0, Real y1, Real y2, Real z0, Real z1, Real z2 )
 {
 
 	_mat[0][0] = x0 ;  
@@ -78,9 +77,11 @@ Matrix3::Matrix3( Real x0, Real x1, Real x2,
 }
 
 
-Matrix3::Matrix3( const Matrix3 & source ) throw():
+
+Matrix3::Matrix3( const Matrix3 & source ) :
 	Matrix()
 {
+
 	for ( MatrixIndex j = 0;  j < Dimensions; j++ )
 		for ( MatrixIndex i = 0; i < Dimensions; i++ )
 			_mat[i][j] = source._mat[i][j] ;
@@ -88,14 +89,16 @@ Matrix3::Matrix3( const Matrix3 & source ) throw():
 }
 
 
-Matrix3::~Matrix3() throw() 
+
+Matrix3::~Matrix3() throw()
 {
 
 }
 
 
+
 void Matrix3::setTo( Real x0, Real x1, Real x2, 
-	Real y0, Real y1, Real y2, Real z0, Real z1, Real z2 ) throw()
+	Real y0, Real y1, Real y2, Real z0, Real z1, Real z2 )
 {
 
 	_mat[0][0] = x0 ;  
@@ -111,8 +114,9 @@ void Matrix3::setTo( Real x0, Real x1, Real x2,
 }
 
 
+
 void Matrix3::setColumn( MatrixIndex columnNumber, 
-	const Vector3 & newColumn ) throw()
+	const Vector3 & newColumn )
 {
 
 	for ( MatrixIndex i = 0; i < Dimensions; i++ )
@@ -121,7 +125,8 @@ void Matrix3::setColumn( MatrixIndex columnNumber,
 }
 
 
-void Matrix3::setAllElementsTo( Real commonValue ) throw()
+
+void Matrix3::setAllElementsTo( Real commonValue )
 {
 
 	for ( MatrixIndex j = 0;  j < Dimensions; j++ )
@@ -131,15 +136,15 @@ void Matrix3::setAllElementsTo( Real commonValue ) throw()
 }
 
 
+
 Real Matrix3::getElementAt( MatrixIndex abscissa, 
-	MatrixIndex ordinate ) const throw()
+	MatrixIndex ordinate ) const
 {
 
 #if CEYLAN_DEBUG
 
 	if ( abscissa >= Dimensions || ordinate >= Dimensions )
-		Ceylan::emergencyShutdown( 
-			"Matrix3::getElementAt : index out of bounds." ) ;
+		throw MathsException( "Matrix3::getElementAt: index out of bounds." ) ;
 			
 #endif // CEYLAN_DEBUG
 		
@@ -148,15 +153,15 @@ Real Matrix3::getElementAt( MatrixIndex abscissa,
 }
 
 
+
 void Matrix3::setElementAt( MatrixIndex abscissa, MatrixIndex ordinate, 
-	Real newValue ) throw()
+	Real newValue )
 {
 
 #if CEYLAN_DEBUG
 
 	if ( abscissa >= Dimensions || ordinate >= Dimensions )
-		Ceylan::emergencyShutdown( 
-			"Matrix3::setElementAt : index out of bounds." ) ;
+		throw MathsException( "Matrix3::setElementAt: index out of bounds." ) ;
 			
 #endif // CEYLAN_DEBUG
 		
@@ -165,13 +170,17 @@ void Matrix3::setElementAt( MatrixIndex abscissa, MatrixIndex ordinate,
 }
 
 
-void Matrix3::setToIdentity() throw()
+
+void Matrix3::setToIdentity()
 {
+
 	setToDiagonal( 1 ) ; 
+	
 }
 
 
-void Matrix3::setToDiagonal( Real diagonalTerm ) throw()
+
+void Matrix3::setToDiagonal( Real diagonalTerm )
 {
 
 	for ( MatrixIndex j = 0; j < Dimensions; j++ )
@@ -181,7 +190,8 @@ void Matrix3::setToDiagonal( Real diagonalTerm ) throw()
 }
 
 
-void Matrix3::transpose() throw()
+
+void Matrix3::transpose()
 {
 
 	// Computes the transposed matrix.
@@ -199,7 +209,8 @@ void Matrix3::transpose() throw()
 }
 
 
-Real Matrix3::trace() const throw()
+
+Real Matrix3::trace() const
 {
 
 	Real sum = 0 ;
@@ -212,7 +223,8 @@ Real Matrix3::trace() const throw()
 }
 
 
-Real Matrix3::determinant() const throw()
+
+Real Matrix3::determinant() const
 {
 
 	return _mat[0][0] * ( _mat[1][1] * _mat[2][2] - _mat[1][2] * _mat[2][1] )
@@ -222,9 +234,9 @@ Real Matrix3::determinant() const throw()
 }
 
 
-const string Matrix3::toString( VerbosityLevels level ) const throw()
-{
 
+const string Matrix3::toString( VerbosityLevels level ) const
+{
 
 	string res ;
 
@@ -250,7 +262,7 @@ const string Matrix3::toString( VerbosityLevels level ) const throw()
 		return res ;
 	}
 
-	// Non-HTML format requested :
+	// Non-HTML format requested:
 	
 	ostringstream oss ;
 
@@ -273,7 +285,7 @@ const string Matrix3::toString( VerbosityLevels level ) const throw()
 
     if ( oss.fail() )
 	{
-		string message = "Matrix3::toString : conversion error." ;
+		string message = "Matrix3::toString: conversion error." ;
        	Log::LogPlug::error( message ) ;
 		return message ;
 	}
@@ -285,7 +297,8 @@ const string Matrix3::toString( VerbosityLevels level ) const throw()
 }
 
 
-Matrix3 Matrix3::Cofactor( const Matrix3 & m ) throw() 
+
+Matrix3 Matrix3::Cofactor( const Matrix3 & m )
 {
 	
 	Matrix3 result ;
@@ -322,20 +335,22 @@ Matrix3 Matrix3::Cofactor( const Matrix3 & m ) throw()
 }
 
 
-Matrix3 Matrix3::Adjoint( const Matrix3 & m ) throw() 
+
+Matrix3 Matrix3::Adjoint( const Matrix3 & m )
 {
+
 	Matrix3 result = Cofactor( m ) ;
 	result.transpose() ;
 	return result ;
 	
-	// or : return ~ Cofactor( m ) ;
+	// or: return ~ Cofactor( m ) ;
 	
 }
 
 
 
 bool Ceylan::Maths::Linear::operator == ( const Matrix3 & m1, 
-	const Matrix3 & m2 ) throw()
+	const Matrix3 & m2 )
 {
 
 	for ( MatrixIndex j = 0;  j < Matrix3::Dimensions; j++ )
@@ -350,17 +365,20 @@ bool Ceylan::Maths::Linear::operator == ( const Matrix3 & m1,
 	
 }
 
+
 			
 bool Ceylan::Maths::Linear::operator != ( const Matrix3 & m1, 
-	const Matrix3 & m2 ) throw() 
+	const Matrix3 & m2 )
 {
+
 	return ( ! ( m1 == m2 ) ) ;
+	
 }
 
 
 
 Matrix3 Ceylan::Maths::Linear::operator + ( const Matrix3 & m1, 
-	const Matrix3 & m2 ) throw()
+	const Matrix3 & m2 )
 {
 
 	Matrix3 result ;
@@ -374,8 +392,9 @@ Matrix3 Ceylan::Maths::Linear::operator + ( const Matrix3 & m1,
 }
 
 
+
 Matrix3 Ceylan::Maths::Linear::operator - ( const Matrix3 & m1, 
-	const Matrix3 & m2 ) throw()
+	const Matrix3 & m2 )
 {
 
 	Matrix3 result ;
@@ -389,8 +408,9 @@ Matrix3 Ceylan::Maths::Linear::operator - ( const Matrix3 & m1,
 }
 
 
+
 Matrix3 Ceylan::Maths::Linear::operator * ( const Matrix3 & m1, 
-	const Matrix3 & m2 ) throw()
+	const Matrix3 & m2 )
 {
 
 	Matrix3 result ;
@@ -405,8 +425,8 @@ Matrix3 Ceylan::Maths::Linear::operator * ( const Matrix3 & m1,
 }
 
 
-Matrix3 Ceylan::Maths::Linear::operator * ( Real lambda, 
-	const Matrix3 & m ) throw()
+
+Matrix3 Ceylan::Maths::Linear::operator * ( Real lambda, const Matrix3 & m )
 {
 
 	Matrix3 result ;
@@ -420,8 +440,8 @@ Matrix3 Ceylan::Maths::Linear::operator * ( Real lambda,
 }
 
 
+
 Matrix3 Ceylan::Maths::Linear::operator ! ( const Matrix3 & m ) 
-	throw( LinearException )
 {
 
 	// Compute the inverse matrix, mi, so that m.mi = I3.
@@ -434,12 +454,13 @@ Matrix3 Ceylan::Maths::Linear::operator ! ( const Matrix3 & m )
 		return (1/d) * ~ Matrix3::Cofactor( m ) ;
 	else 
  		throw LinearException( 
-			"Matrix3 : inverse operator ('!') : singular matrix." ) ;
+			"Matrix3: inverse operator ('!'): singular matrix." ) ;
 
 }
 
 
-Matrix3 Ceylan::Maths::Linear::operator ~ ( const Matrix3 & m ) throw()
+
+Matrix3 Ceylan::Maths::Linear::operator ~ ( const Matrix3 & m )
 {
 
 	// Computes the transposed matrix.

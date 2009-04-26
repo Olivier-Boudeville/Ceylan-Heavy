@@ -32,7 +32,7 @@ using namespace Ceylan ;
 
 
 
-Exception::Exception( const string & reason )  :
+Exception::Exception( const string & reason ) :
 	_reason( reason )
 {
     

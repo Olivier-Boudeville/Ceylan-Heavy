@@ -37,17 +37,21 @@ using namespace Ceylan ;
 
 
 
-Hashable::Hashable() throw() 
+Hashable::Hashable() 
 {
+
 }
+
 
 
 Hashable::~Hashable() throw() 
 {
+
 }
 
 
-const string Hashable::toString( VerbosityLevels level ) const throw()
+
+const string Hashable::toString( VerbosityLevels level ) const
 {
 
 	if ( level == Ceylan::low )
@@ -63,8 +67,8 @@ const string Hashable::toString( VerbosityLevels level ) const throw()
 }	
 		
 
+
 WeakHashCode Hashable::GetWeakHashCode( const std::string & stringToHash )
-	throw()
 {
 
 	WeakHashCode hash = 0 ;
@@ -82,11 +86,12 @@ WeakHashCode Hashable::GetWeakHashCode( const std::string & stringToHash )
 	}
 
 	return hash ;
+	
 }
 
 
+
 StrongHashCode Hashable::GetStrongHashCode( const std::string & stringToHash )
-	throw()
 {
 
 	StrongHashCode hash = 0 ;
@@ -104,5 +109,6 @@ StrongHashCode Hashable::GetStrongHashCode( const std::string & stringToHash )
 	}
 
 	return hash ;
+	
 }
 

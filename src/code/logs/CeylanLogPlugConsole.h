@@ -135,8 +135,7 @@ namespace Ceylan
 				'warning: will never be executed'
 				
 				/// LogPlug console should not be instanciated.
-				LogPlugConsole() throw( LogException ) 
-					__attribute__ ((noreturn)) ;
+				LogPlugConsole() __attribute__ ((noreturn)) ;
 				
 				/// This destructor will be never called.
 				virtual ~LogPlugConsole() throw() ;

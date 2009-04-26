@@ -44,7 +44,7 @@ using std::string ;
 // BaseController section.
 
 
-BaseController::BaseController() throw()
+BaseController::BaseController()
 {
 
 }
@@ -58,8 +58,7 @@ BaseController::~BaseController() throw()
 
 
 
-const string BaseController::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+const string BaseController::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	return "Base controller" ;

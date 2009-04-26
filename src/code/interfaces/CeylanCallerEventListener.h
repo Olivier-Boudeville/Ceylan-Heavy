@@ -46,6 +46,7 @@ namespace Ceylan
 	class EventSource ;
 
 
+
     /**
      * This specialized event listener does not provide any more method than
 	 * basic event listeners do. 
@@ -65,7 +66,8 @@ namespace Ceylan
 					
 					
 			/// Basic constructor, not registered to any event source.
-			CallerEventListener() throw() ;
+			CallerEventListener() ;
+			
 			
 			
 			/**
@@ -73,7 +75,8 @@ namespace Ceylan
 			 * to the event source.
 			 *
 			 */
-			explicit CallerEventListener( EventSource & source ) throw() ;
+			explicit CallerEventListener( EventSource & source ) ;
+			
 			
 						
 			/**
@@ -83,6 +86,7 @@ namespace Ceylan
 			 */
 			virtual ~CallerEventListener() throw() ;
 			
+				
 					 	
             /**
              * Returns a user-friendly description of the state of this object.
@@ -95,7 +99,7 @@ namespace Ceylan
              *
              */
  			virtual const std::string toString( 
-				Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
+				Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 					
 				
 
@@ -109,7 +113,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			CallerEventListener( const CallerEventListener & source ) throw() ;
+			CallerEventListener( const CallerEventListener & source ) ;
 			
 			
 			/**
@@ -120,7 +124,7 @@ namespace Ceylan
 			 *
 			 */			 
 			CallerEventListener & operator = ( 
-				const CallerEventListener & source ) throw() ;
+				const CallerEventListener & source ) ;
 				
 				 			
     } ;	
@@ -130,3 +134,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_CALLER_EVENT_LISTENER_H_
+

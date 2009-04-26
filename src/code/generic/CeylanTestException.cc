@@ -32,7 +32,7 @@ using namespace Ceylan ;
 
 
 
-TestException::TestException( const string & reason ) throw() :
+TestException::TestException( const string & reason ) :
 	Exception ( "Test failure: " + reason )
 {
 

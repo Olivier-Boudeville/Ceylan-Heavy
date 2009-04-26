@@ -30,11 +30,13 @@ using namespace Ceylan ;
 
 
 
-VisitException::VisitException( const std::string & reason ) throw():
+
+VisitException::VisitException( const std::string & reason ) :
 	Ceylan::Exception( reason ) 
 {
 
 }
+
 
 
 VisitException::~VisitException() throw()
@@ -45,10 +47,12 @@ VisitException::~VisitException() throw()
 
 
 
-Visitable::Visitable() throw()
+
+Visitable::Visitable()
 {
 
 }
+
 
 
 Visitable::~Visitable() throw()
@@ -59,11 +63,10 @@ Visitable::~Visitable() throw()
 
 
 /*
- * Example of what the method should look like in child classes :
+ * Example of what the method should look like in child classes:
  *
  
-void Visitable::accept( Visitor & visitor ) throw( VisitException )
-{
+void Visitable::accept( Visitor & visitor )
 
 	visitor.visit( *this ) ;
 	

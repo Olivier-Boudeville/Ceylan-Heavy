@@ -38,6 +38,7 @@
 namespace Ceylan
 {
 
+
 	namespace Maths
 	{
 	
@@ -45,9 +46,11 @@ namespace Ceylan
 		namespace Random
 		{
 		
+		
 			
 			// Needed internally.
 			class WhiteNoiseGenerator ;
+			
 			
 			
 			/**
@@ -90,23 +93,26 @@ namespace Ceylan
 					 * inferior to upperLimit.
 					 *
 					 */					 
-					explicit RandomGeneratorFromPDF( 
+					RandomGeneratorFromPDF( 
 							const ProbabilityFunction & pdf, 
 							Sample lowerLimit, Sample upperLimit, 
-							Seed aSeed = DefaultSeed ) 
-						throw( MathsException ) ;
+							Seed aSeed = DefaultSeed ) ;
+					
 					
 					
             		/// Basic virtual destructor.
             		virtual ~RandomGeneratorFromPDF() throw() ;
 					
 					
+					
 					/// Returns the next random value.
-					virtual RandomValue getNewValue() throw() ;
+					virtual RandomValue getNewValue() ;
+					
 					
 					
 					/// Resets the random generator with specified seed.
-					virtual void reset( Seed neeSeed ) throw() ;
+					virtual void reset( Seed neeSeed ) ;
+						
 						
 										
 					/**
@@ -117,8 +123,8 @@ namespace Ceylan
 					 * is available.
 					 *
 					 */
-					 virtual const std::string displayProbabilities() 
-					 	const throw( MathsException ) ;
+					 virtual const std::string displayProbabilities() const  ;
+					 
 					 
 					 
 					/**
@@ -134,27 +140,32 @@ namespace Ceylan
 					 *
 					 */
             		virtual const std::string toString( 
-						VerbosityLevels level = high ) const throw() ;
+						VerbosityLevels level = high ) const ;
 				
 			
 								
+								
 				protected:
 					
+				
 				
 					/**
 					 * Does the computation necessary to determine next
 					 * new value.  
 					 *
 					 */
-					virtual void preCompute() throw( MathsException ) ;	
+					virtual void preCompute()  ;	
+					
 					
 					
 					/// Internal link to probability function.
 					ProbabilityFunction const * _pdf ;
 					
 					
+					
 					/// Internal white noise random generator.
 					WhiteNoiseGenerator * _whiteNoiseGenerator ;
+					
 					
 					
 					/**
@@ -163,6 +174,7 @@ namespace Ceylan
 					 *
 					 */
 					Probability * _probabilitiesTable ;
+				
 				
 				
 					/**
@@ -174,6 +186,7 @@ namespace Ceylan
 					
 					
 			} ;
+			
 		
 		}
 		
@@ -182,4 +195,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_RANDOM_GENERATOR_FROM_PDF_H_
+

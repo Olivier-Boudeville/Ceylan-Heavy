@@ -52,7 +52,7 @@ const std::string Ceylan::HexDigits = "0123456789ABCDEF" ;
 
 /**
  * For all these operators, using an internal static string instead of a string
- * would be faster, but the code would then not be reentrant : a mutex should be
+ * would be faster, but the code would then not be reentrant: a mutex should be
  * added in this case.
  *
  * @see MutexHolder.
@@ -61,7 +61,6 @@ const std::string Ceylan::HexDigits = "0123456789ABCDEF" ;
 
 
 string operator + ( const string & s, Ceylan::Sint8 i ) 
-	throw( Ceylan::Exception )
 {
 
     ostringstream oss ;
@@ -92,8 +91,8 @@ string operator + ( const string & s, Ceylan::Sint8 i )
 }
 
 
+
 string operator + ( Ceylan::Sint8 i, const string & s ) 
-	throw( Ceylan::Exception )
 {
 
     ostringstream oss ;
@@ -124,8 +123,8 @@ string operator + ( Ceylan::Sint8 i, const string & s )
 }
 
 
+
 string operator + ( const string & s, Ceylan::Uint8 i ) 
-	throw( Ceylan::Exception )
 {
 
     ostringstream oss ;
@@ -147,7 +146,6 @@ string operator + ( const string & s, Ceylan::Uint8 i )
 	{
         throw Ceylan::Exception( "Conversion error in Ceylan operator "
 			"const string & + Ceylan::Uint8 -> string." ) ;
-
 	}
 	
 #endif // CEYLAN_DEBUG
@@ -157,8 +155,8 @@ string operator + ( const string & s, Ceylan::Uint8 i )
 }
 
 
+
 string operator + ( Ceylan::Uint8 i, const string & s ) 
-	throw( Ceylan::Exception )
 {
 
     ostringstream oss ;
@@ -180,7 +178,6 @@ string operator + ( Ceylan::Uint8 i, const string & s )
 	{
         throw Ceylan::Exception( "Conversion error in Ceylan operator "
 			"Ceylan::Uint8 + const string & +-> string." ) ;
-
 	}
 	
 #endif // CEYLAN_DEBUG
@@ -191,9 +188,7 @@ string operator + ( Ceylan::Uint8 i, const string & s )
 
 
 
-
-string operator + ( const string & s, Ceylan::Sint16 i ) 
-	throw( Ceylan::Exception )
+string operator + ( const string & s, Ceylan::Sint16 i )	
 {
 
     ostringstream oss ;
@@ -219,8 +214,8 @@ string operator + ( const string & s, Ceylan::Sint16 i )
 }
 
 
-string operator + ( Ceylan::Sint16 i, const string & s ) 
-	throw( Ceylan::Exception )
+
+string operator + ( Ceylan::Sint16 i, const string & s ) 	
 {
 
     ostringstream oss ;
@@ -246,8 +241,8 @@ string operator + ( Ceylan::Sint16 i, const string & s )
 }
 
 
-string operator + ( const string & s, Ceylan::Uint16 i ) 
-	throw( Ceylan::Exception )
+
+string operator + ( const string & s, Ceylan::Uint16 i ) 	
 {
 
     ostringstream oss ;
@@ -273,8 +268,8 @@ string operator + ( const string & s, Ceylan::Uint16 i )
 }
 
 
+
 string operator + ( Ceylan::Uint16 i, const string & s ) 
-	throw( Ceylan::Exception )
 {
 
     ostringstream oss ;
@@ -291,7 +286,6 @@ string operator + ( Ceylan::Uint16 i, const string & s )
 	{
         throw Ceylan::Exception( "Conversion error in Ceylan operator "
 			"Ceylan::Uint16 + const string & -> string." ) ;
-
 	}
 	
 #endif // CEYLAN_DEBUG
@@ -302,9 +296,7 @@ string operator + ( Ceylan::Uint16 i, const string & s )
 
 
 
-
 string operator + ( const string & s, Ceylan::Sint32 i ) 
-	throw( Ceylan::Exception )
 {
 
     ostringstream oss ;
@@ -330,8 +322,8 @@ string operator + ( const string & s, Ceylan::Sint32 i )
 }
 
 
+
 string operator + ( Ceylan::Sint32 i, const string & s ) 
-	throw( Ceylan::Exception )
 {
 
     ostringstream oss ;
@@ -357,8 +349,8 @@ string operator + ( Ceylan::Sint32 i, const string & s )
 }
 
 
+
 string operator + ( const string & s, Ceylan::Uint32 i ) 
-	throw( Ceylan::Exception )
 {
 
     ostringstream oss ;
@@ -384,8 +376,8 @@ string operator + ( const string & s, Ceylan::Uint32 i )
 }
 
 
-string operator + ( Ceylan::Uint32 i, const string & s ) 
-	throw( Ceylan::Exception )
+
+string operator + ( Ceylan::Uint32 i, const string & s ) 	
 {
 
     ostringstream oss ;
@@ -414,16 +406,15 @@ string operator + ( Ceylan::Uint32 i, const string & s )
 
 /*
  * No serialization of Uint64 and Sint64 for the moment.
- 
+ *
  
 string operator + ( const std::string & s, Ceylan::Sint64 i ) 
-	throw( Ceylan::Exception )
 {
 
 }	
 	
+	
 string operator + ( Ceylan::Sint64 i, const std::string & s ) 
-	throw( Ceylan::Exception )
 {
 
 }	
@@ -431,14 +422,14 @@ string operator + ( Ceylan::Sint64 i, const std::string & s )
 
 
 string operator + ( const std::string & s, Ceylan::Uint64 i ) 
-	throw( Ceylan::Exception )
 {
 
 }	
 	
+
 	
 string operator + ( Ceylan::Uint64 i, const std::string & s ) 
-	throw( Ceylan::Exception )
+	
 {
 
 }	
@@ -451,7 +442,6 @@ string operator + ( Ceylan::Uint64 i, const std::string & s )
 
 
 string operator + ( const string & s, Ceylan::SignedLongInteger i ) 
-	throw( Ceylan::Exception )
 {
 
     ostringstream oss ;
@@ -477,8 +467,8 @@ string operator + ( const string & s, Ceylan::SignedLongInteger i )
 }
 
 
+
 string operator + ( Ceylan::SignedLongInteger i, const string & s ) 
-	throw( Ceylan::Exception )
 {
 
     ostringstream oss ;
@@ -504,8 +494,8 @@ string operator + ( Ceylan::SignedLongInteger i, const string & s )
 }
 
 
+
 string operator + ( const string & s, Ceylan::UnsignedLongInteger i ) 
-	throw( Ceylan::Exception )
 {
 
     ostringstream oss ;
@@ -531,8 +521,8 @@ string operator + ( const string & s, Ceylan::UnsignedLongInteger i )
 }
 
 
+
 string operator + ( Ceylan::UnsignedLongInteger i, const string & s ) 
-	throw( Ceylan::Exception )
 {
 
     ostringstream oss ;
@@ -560,9 +550,7 @@ string operator + ( Ceylan::UnsignedLongInteger i, const string & s )
 
 
 
-
 string operator + ( const string & s, Ceylan::Float32 i ) 
-	throw( Ceylan::Exception )
 {
 
     ostringstream oss ;
@@ -588,8 +576,8 @@ string operator + ( const string & s, Ceylan::Float32 i )
 }
 
 
+
 string operator + ( Ceylan::Float32 i, const string & s ) 
-	throw( Ceylan::Exception )
 {
 
     ostringstream oss ;
@@ -617,7 +605,6 @@ string operator + ( Ceylan::Float32 i, const string & s )
 
 
 string operator + ( const string & s, Ceylan::Float64 i ) 
-	throw( Ceylan::Exception )
 {
 
     ostringstream oss ;
@@ -643,8 +630,8 @@ string operator + ( const string & s, Ceylan::Float64 i )
 }
 
 
+
 string operator + ( Ceylan::Float64 i, const string & s ) 
-	throw( Ceylan::Exception )
 {
 
     ostringstream oss ;
@@ -677,7 +664,6 @@ string operator + ( Ceylan::Float64 i, const string & s )
  */
 
 string operator + ( const string & s, Ceylan::LongFloat i ) 
-	throw( Ceylan::Exception )
 {
 
     ostringstream oss ;
@@ -703,8 +689,8 @@ string operator + ( const string & s, Ceylan::LongFloat i )
 }
 
 
+
 string operator + ( Ceylan::LongFloat i, const string & s ) 
-	throw( Ceylan::Exception )
 {
 
     ostringstream oss ;
@@ -730,8 +716,8 @@ string operator + ( Ceylan::LongFloat i, const string & s )
 }
 
 
+
 string operator + ( const string & s, const void * p ) 
-	throw( Ceylan::Exception )
 {
 
     ostringstream oss ;
@@ -757,8 +743,8 @@ string operator + ( const string & s, const void * p )
 }
 
 
+
 string operator + ( const void * p, const string & s ) 
-	throw( Ceylan::Exception )
 {
 
     ostringstream oss ;
@@ -787,13 +773,18 @@ string operator + ( const void * p, const string & s )
 
 string operator + ( const string & a, const char * b )
 {
+
     return a + string( b ) ;
+	
 }
 
 
-string operator+( const char * a, const string & b )
+
+string operator + ( const char * a, const string & b )
 {
+
     return string( a ) + b ;
+	
 }
 
 
@@ -801,11 +792,11 @@ string operator+( const char * a, const string & b )
 
 
 
-// In namespace Ceylan, conversions to string :
+// In namespace Ceylan, conversions to string:
 
 
 
-string Ceylan::toString( const void * pointer ) throw( Ceylan::Exception )
+string Ceylan::toString( const void * pointer ) 
 {
 
     ostringstream oss ;
@@ -821,8 +812,7 @@ string Ceylan::toString( const void * pointer ) throw( Ceylan::Exception )
     if ( oss.fail() )
 	{
         throw Ceylan::Exception( "Conversion error in method "
-			"Ceylan::toString : const void * -> string."
-        ) ;
+			"Ceylan::toString: const void * -> string." ) ;
 	}
 	
 #endif // CEYLAN_DEBUG
@@ -832,7 +822,8 @@ string Ceylan::toString( const void * pointer ) throw( Ceylan::Exception )
 }
 
 
-string Ceylan::toString( bool value ) throw()
+
+string Ceylan::toString( bool value )
 {
 
     if ( value )
@@ -847,8 +838,8 @@ string Ceylan::toString( bool value ) throw()
 }
 
 
+
 string Ceylan::toString( Ceylan::Sint8 value, bool bitField ) 
-	throw( Ceylan::Exception )
 {
 
 	if ( bitField )
@@ -870,7 +861,7 @@ string Ceylan::toString( Ceylan::Sint8 value, bool bitField )
     if ( oss.fail() )
 	{
         throw Ceylan::Exception( "Conversion error in method "
-			"Ceylan::toString : Ceylan::Sint8 -> string." ) ;
+			"Ceylan::toString: Ceylan::Sint8 -> string." ) ;
 	}
 	
 #endif // CEYLAN_DEBUG
@@ -880,8 +871,8 @@ string Ceylan::toString( Ceylan::Sint8 value, bool bitField )
 }
 
 
-string Ceylan::toString( Ceylan::Uint8 value, bool bitField ) 
-	throw( Ceylan::Exception )
+
+string Ceylan::toString( Ceylan::Uint8 value, bool bitField ) 	
 {
 
 	if ( bitField )
@@ -902,8 +893,7 @@ string Ceylan::toString( Ceylan::Uint8 value, bool bitField )
     if ( oss.fail() )
 	{
         throw Ceylan::Exception( "Conversion error in method "
-			"Ceylan::toString : Ceylan::Uint8 -> string."
-        ) ;
+			"Ceylan::toString: Ceylan::Uint8 -> string." ) ;
 	}
 	
 #endif // CEYLAN_DEBUG
@@ -913,8 +903,8 @@ string Ceylan::toString( Ceylan::Uint8 value, bool bitField )
 }
 
 
-string Ceylan::toString( Ceylan::Sint16 value, bool bitField ) 
-	throw( Ceylan::Exception )
+
+string Ceylan::toString( Ceylan::Sint16 value, bool bitField ) 	
 {
 
 	if ( bitField )
@@ -935,7 +925,7 @@ string Ceylan::toString( Ceylan::Sint16 value, bool bitField )
     if ( oss.fail() )
 	{
         throw Ceylan::Exception( "Conversion error in method "
-			"Ceylan::toString : Ceylan::Sint16 -> string." ) ;
+			"Ceylan::toString: Ceylan::Sint16 -> string." ) ;
 	}
 	
 #endif // CEYLAN_DEBUG
@@ -945,8 +935,8 @@ string Ceylan::toString( Ceylan::Sint16 value, bool bitField )
 }
 
 
-string Ceylan::toString( Ceylan::Uint16 value, bool bitField ) 
-	throw( Ceylan::Exception )
+
+string Ceylan::toString( Ceylan::Uint16 value, bool bitField )	
 {
 
 	if ( bitField )
@@ -967,8 +957,7 @@ string Ceylan::toString( Ceylan::Uint16 value, bool bitField )
     if ( oss.fail() )
 	{
         throw Ceylan::Exception( "Conversion error in method "
-			"Ceylan::toString : Ceylan::Uint16 -> string."
-        ) ;
+			"Ceylan::toString: Ceylan::Uint16 -> string." ) ;
 	}
 	
 #endif // CEYLAN_DEBUG
@@ -978,8 +967,8 @@ string Ceylan::toString( Ceylan::Uint16 value, bool bitField )
 }
 
 
-string Ceylan::toString( Ceylan::Sint32 value, bool bitField ) 
-	throw( Ceylan::Exception )
+
+string Ceylan::toString( Ceylan::Sint32 value, bool bitField )	
 {
 
 	if ( bitField )
@@ -1000,8 +989,7 @@ string Ceylan::toString( Ceylan::Sint32 value, bool bitField )
     if ( oss.fail() )
 	{
         throw Ceylan::Exception( "Conversion error in method "
-			"Ceylan::toString : Ceylan::Sint32 -> string."
-        ) ;
+			"Ceylan::toString: Ceylan::Sint32 -> string." ) ;
 	}
 	
 #endif // CEYLAN_DEBUG
@@ -1009,10 +997,10 @@ string Ceylan::toString( Ceylan::Sint32 value, bool bitField )
     return ( res ) ;
 
 }
+
 
 
 string Ceylan::toString( Ceylan::Uint32 value, bool bitField ) 
-	throw( Ceylan::Exception )
 {
 
 	if ( bitField )
@@ -1033,8 +1021,7 @@ string Ceylan::toString( Ceylan::Uint32 value, bool bitField )
     if ( oss.fail() )
 	{
         throw Ceylan::Exception( "Conversion error in method "
-			"Ceylan::toString : Ceylan::Uint32 -> string."
-        ) ;
+			"Ceylan::toString: Ceylan::Uint32 -> string." ) ;
 	}
 	
 #endif // CEYLAN_DEBUG
@@ -1044,8 +1031,8 @@ string Ceylan::toString( Ceylan::Uint32 value, bool bitField )
 }
 
 
-string Ceylan::toString( UnsignedLongInteger value, bool bitField ) 
-	throw( Ceylan::Exception )
+
+string Ceylan::toString( UnsignedLongInteger value, bool bitField )	
 {
 
     string res ;
@@ -1079,8 +1066,7 @@ string Ceylan::toString( UnsignedLongInteger value, bool bitField )
     if ( oss.fail() )
 	{
         throw Ceylan::Exception( "Conversion error in method "
-			"Ceylan::toString : UnsignedLongInteger -> string."
-        ) ;
+			"Ceylan::toString: UnsignedLongInteger -> string." ) ;
 	}
 	
 #endif // CEYLAN_DEBUG
@@ -1090,8 +1076,8 @@ string Ceylan::toString( UnsignedLongInteger value, bool bitField )
 }
 
 
-string Ceylan::toString( SignedLongInteger value, bool bitField ) 
-	throw( Ceylan::Exception )
+
+string Ceylan::toString( SignedLongInteger value, bool bitField ) 	
 {
 
     string res ;
@@ -1133,8 +1119,7 @@ string Ceylan::toString( SignedLongInteger value, bool bitField )
     if ( oss.fail() )
 	{
         throw Ceylan::Exception( "Conversion error in method "
-			"Ceylan::toString : SignedLongInteger -> string."
-        ) ;
+			"Ceylan::toString: SignedLongInteger -> string." ) ;
 	}
 	
 #endif // CEYLAN_DEBUG
@@ -1144,8 +1129,9 @@ string Ceylan::toString( SignedLongInteger value, bool bitField )
 }
 
 
+
 string Ceylan::toHexString( Ceylan::UnsignedLongInteger value, bool prefix, 
-	Ceylan::Uint8 minDigits ) throw()
+	Ceylan::Uint8 minDigits )
 {
 
 	string res ;
@@ -1177,8 +1163,8 @@ string Ceylan::toHexString( Ceylan::UnsignedLongInteger value, bool prefix,
 }
  
 
-string Ceylan::toString( Ceylan::Float32 value, Ceylan::Uint8 precision ) 
-	throw( Ceylan::Exception )
+
+string Ceylan::toString( Ceylan::Float32 value, Ceylan::Uint8 precision ) 	
 {
 
     ostringstream oss ;
@@ -1196,8 +1182,7 @@ string Ceylan::toString( Ceylan::Float32 value, Ceylan::Uint8 precision )
     if ( oss.fail() )
 	{
         throw Ceylan::Exception( "Conversion error in method "
-			"Ceylan::toString : Ceylan::Float32 -> string."
-        ) ;
+			"Ceylan::toString: Ceylan::Float32 -> string." ) ;
 	}
 	
 #endif // CEYLAN_DEBUG
@@ -1207,8 +1192,8 @@ string Ceylan::toString( Ceylan::Float32 value, Ceylan::Uint8 precision )
 }
 
 
-string Ceylan::toString( Ceylan::Float64 value, Ceylan::Uint8 precision ) 
-	throw( Ceylan::Exception )
+
+string Ceylan::toString( Ceylan::Float64 value, Ceylan::Uint8 precision )	
 {
     ostringstream oss ;
 
@@ -1224,8 +1209,7 @@ string Ceylan::toString( Ceylan::Float64 value, Ceylan::Uint8 precision )
     if ( oss.fail() )
 	{
         throw Ceylan::Exception( "Conversion error in method "
-			"Ceylan::toString : Ceylan::Float64 -> string."
-        ) ;
+			"Ceylan::toString: Ceylan::Float64 -> string." ) ;
 	}
 	
 #endif // CEYLAN_DEBUG
@@ -1233,6 +1217,7 @@ string Ceylan::toString( Ceylan::Float64 value, Ceylan::Uint8 precision )
     return ( res ) ;
 
 }
+
 
 
 
@@ -1241,8 +1226,7 @@ string Ceylan::toString( Ceylan::Float64 value, Ceylan::Uint8 precision )
  *
  */
  
-string Ceylan::toString( Ceylan::LongFloat value, Ceylan::Uint8 precision ) 
-	throw( Ceylan::Exception )
+string Ceylan::toString( Ceylan::LongFloat value, Ceylan::Uint8 precision )	
 {
     ostringstream oss ;
 
@@ -1259,8 +1243,7 @@ string Ceylan::toString( Ceylan::LongFloat value, Ceylan::Uint8 precision )
     if ( oss.fail() )
 	{
         throw Ceylan::Exception( "Conversion error in method "
-			"Ceylan::toString : Ceylan::LongFloat -> string."
-        ) ;
+			"Ceylan::toString: Ceylan::LongFloat -> string." ) ;
 	}
 	
 #endif // CEYLAN_DEBUG
@@ -1270,7 +1253,8 @@ string Ceylan::toString( Ceylan::LongFloat value, Ceylan::Uint8 precision )
 }
 
 
-string Ceylan::toString( Ceylan::VerbosityLevels level ) throw( Exception )
+
+string Ceylan::toString( Ceylan::VerbosityLevels level )
 {
 
 	switch( level )
@@ -1290,7 +1274,7 @@ string Ceylan::toString( Ceylan::VerbosityLevels level ) throw( Exception )
 				
 		default:
 			throw Ceylan::Exception( "Conversion error in method "
-				"Ceylan::toString : Ceylan::VerbosityLevels -> string : "
+				"Ceylan::toString: Ceylan::VerbosityLevels -> string: "
 				"unknown verbosity level." ) ;
 			break ;
 				
@@ -1299,7 +1283,8 @@ string Ceylan::toString( Ceylan::VerbosityLevels level ) throw( Exception )
 }
 
 
-string Ceylan::toNumericalString( Uint8 number ) throw( Ceylan::Exception )
+
+string Ceylan::toNumericalString( Uint8 number ) 
 {
 
     ostringstream oss ;
@@ -1316,8 +1301,7 @@ string Ceylan::toNumericalString( Uint8 number ) throw( Ceylan::Exception )
     if ( oss.fail() )
 	{
         throw Ceylan::Exception( "Conversion error in method "
-			"Ceylan::toNumericalString : Uint8 -> string."
-        ) ;
+			"Ceylan::toNumericalString: Uint8 -> string." ) ;
 	}
 	
 #endif // CEYLAN_DEBUG
@@ -1327,7 +1311,8 @@ string Ceylan::toNumericalString( Uint8 number ) throw( Ceylan::Exception )
 }
 
 
-string Ceylan::toString( char character ) throw( Exception )
+
+string Ceylan::toString( char character )
 {
 
 	string res ;
@@ -1340,8 +1325,7 @@ string Ceylan::toString( char character ) throw( Exception )
 
 
 
-int Ceylan::stringToUnsignedLong( 
-	const string & numericalString ) throw( Exception )
+int Ceylan::stringToUnsignedLong( const string & numericalString )
 {
 	
 	int result ;
@@ -1362,8 +1346,8 @@ int Ceylan::stringToUnsignedLong(
 }
 
 
+
 void * Ceylan::stringToAddress( const string & addressString ) 
-	throw( Exception )
 {
 	
 	void * result ;
@@ -1375,7 +1359,7 @@ void * Ceylan::stringToAddress( const string & addressString )
     if ( iss.fail() )
 	{
 		throw Ceylan::Exception( 
-			"Ceylan::stringToAddress : conversion error while operating on '" 
+			"Ceylan::stringToAddress: conversion error while operating on '" 
 			+ addressString + "'." ) ;
 	}
 	

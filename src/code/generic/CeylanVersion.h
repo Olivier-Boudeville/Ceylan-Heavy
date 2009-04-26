@@ -271,7 +271,7 @@ namespace Ceylan
  *
  */
 CEYLAN_DLL bool operator < ( const Ceylan::Version & vfirst, 
-	const Ceylan::Version & vsecond ) /* throw( VersionException ) */ ;
+	const Ceylan::Version & vsecond ) ;
 
 
 /**
@@ -284,7 +284,7 @@ CEYLAN_DLL bool operator < ( const Ceylan::Version & vfirst,
  *
  */
 CEYLAN_DLL bool operator == ( const Ceylan::Version & vFirst, 
-	const Ceylan::Version & vSecond ) /* throw( VersionException ) */ ;
+	const Ceylan::Version & vSecond ) ;
 
 
 

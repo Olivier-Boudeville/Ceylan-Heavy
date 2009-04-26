@@ -62,7 +62,7 @@ using namespace Ceylan::Log ;
 
 
 TextBuffer::TextBuffer( CharAbscissa screenWidth, CharOrdinate screenHeight,
-		TextLayout layout ) throw( TextBufferException ):
+		TextLayout layout ) :
 	_width( screenWidth ),
 	_height( screenHeight ),
 	_layout( layout ),
@@ -86,7 +86,7 @@ TextBuffer::~TextBuffer() throw()
 	
 	
 
-TextBuffer::CharAbscissa TextBuffer::getWidth() const throw()		
+TextBuffer::CharAbscissa TextBuffer::getWidth() const		
 {
 
 	return _width ;
@@ -95,7 +95,7 @@ TextBuffer::CharAbscissa TextBuffer::getWidth() const throw()
 
 
 
-TextBuffer::CharOrdinate TextBuffer::getHeight() const throw()		
+TextBuffer::CharOrdinate TextBuffer::getHeight() const		
 {
 
 	return _height ;
@@ -104,7 +104,7 @@ TextBuffer::CharOrdinate TextBuffer::getHeight() const throw()
 
 
 
-TextBuffer::TextLayout TextBuffer::getTextLayout() const throw()
+TextBuffer::TextLayout TextBuffer::getTextLayout() const
 {
 
 	return _layout ;
@@ -114,7 +114,7 @@ TextBuffer::TextLayout TextBuffer::getTextLayout() const throw()
 
 
 void TextBuffer::setTextLayout( TextLayout newLayout ) 
-	throw( TextBufferException )
+	
 {
 
 
@@ -129,7 +129,7 @@ void TextBuffer::setTextLayout( TextLayout newLayout )
 
 
 	
-TextBuffer::CharAbscissa TextBuffer::getAlineaWidth() const throw()
+TextBuffer::CharAbscissa TextBuffer::getAlineaWidth() const
 {
 
 	return _alineaWidth ;
@@ -137,7 +137,8 @@ TextBuffer::CharAbscissa TextBuffer::getAlineaWidth() const throw()
 }
 
 
-void TextBuffer::setAlineaWidth( CharAbscissa newAlineaWidth ) throw()
+
+void TextBuffer::setAlineaWidth( CharAbscissa newAlineaWidth )
 {
 
 	_alineaWidth = newAlineaWidth ;
@@ -146,7 +147,7 @@ void TextBuffer::setAlineaWidth( CharAbscissa newAlineaWidth ) throw()
 
 
 
-void TextBuffer::add( const std::string & text ) throw( TextBufferException )
+void TextBuffer::add( const std::string & text ) 
 {
 
 
@@ -179,7 +180,7 @@ void TextBuffer::add( const std::string & text ) throw( TextBufferException )
 
 
 
-void TextBuffer::blank() throw()
+void TextBuffer::blank()
 {
 	
 	// Removes all text:
@@ -194,11 +195,12 @@ void TextBuffer::blank() throw()
 
 
 
+
 // Screen positioning section.
 
 
 
-bool TextBuffer::jumpNextText() throw()
+bool TextBuffer::jumpNextText()
 {
 	
 	ListOfTexts::const_iterator nextText = _currentText ;
@@ -225,7 +227,7 @@ bool TextBuffer::jumpNextText() throw()
 
 
 
-bool TextBuffer::jumpPreviousText() throw()
+bool TextBuffer::jumpPreviousText()
 {
 	
 	if ( _currentText != _textEntries.begin() )
@@ -249,7 +251,7 @@ bool TextBuffer::jumpPreviousText() throw()
 
 
 
-bool TextBuffer::jumpNextLine() throw()
+bool TextBuffer::jumpNextLine()
 {
 		
 	if ( getHeightFromCurrentPosition() <= _height )
@@ -304,7 +306,7 @@ bool TextBuffer::jumpNextLine() throw()
 
 
 
-void TextBuffer::jumpNextLineNoRefresh() throw()
+void TextBuffer::jumpNextLineNoRefresh()
 {
 		
 	if ( getHeightFromCurrentPosition() <= _height )
@@ -330,12 +332,11 @@ void TextBuffer::jumpNextLineNoRefresh() throw()
 		
 	}
 	
-	
 }
 
 
 
-bool TextBuffer::jumpPreviousLine() throw()
+bool TextBuffer::jumpPreviousLine()
 {
 	
 	bool moved ;
@@ -401,7 +402,7 @@ bool TextBuffer::jumpPreviousLine() throw()
 
 
 
-const TextBuffer::TextGrid & TextBuffer::getScreenLines() const throw()
+const TextBuffer::TextGrid & TextBuffer::getScreenLines() const
 {
 
 	return _screenLines ;
@@ -410,8 +411,7 @@ const TextBuffer::TextGrid & TextBuffer::getScreenLines() const throw()
 
 
 
-const std::string TextBuffer::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+const std::string TextBuffer::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string res = "Text buffer of width " + Ceylan::toNumericalString( _width )
@@ -487,7 +487,7 @@ const std::string TextBuffer::toString( Ceylan::VerbosityLevels level )
 // Protected section.
 
 
-void TextBuffer::recomputeGrids() throw()
+void TextBuffer::recomputeGrids()
 {
 
 	 
@@ -512,7 +512,7 @@ void TextBuffer::recomputeGrids() throw()
 
 
 
-void TextBuffer::updateScreenLines() throw()
+void TextBuffer::updateScreenLines()
 {
 
 	_screenLines.clear() ;
@@ -568,7 +568,7 @@ void TextBuffer::updateScreenLines() throw()
 
 
 TextBuffer::TextGrid & TextBuffer::createTextGridFrom( 
-	const std::string & text ) throw()
+	const std::string & text )
 {
 
 	TextBuffer::TextGrid * res ;
@@ -600,8 +600,7 @@ TextBuffer::TextGrid & TextBuffer::createTextGridFrom(
 
 
 
-TextBuffer::TextGrid & TextBuffer::createRawGridFrom( 
-	const std::string & text ) throw()
+TextBuffer::TextGrid & TextBuffer::createRawGridFrom( const std::string & text )
 {
 
 			
@@ -669,7 +668,7 @@ TextBuffer::TextGrid & TextBuffer::createRawGridFrom(
 
 
 TextBuffer::TextGrid & TextBuffer::createAdvancedGridFrom( 
-	const std::string & text ) throw()
+	const std::string & text )
 {
 
 	TextGrid * res = new std::list<char *> ;
@@ -810,7 +809,7 @@ TextBuffer::TextGrid & TextBuffer::createAdvancedGridFrom(
 		 * anywhere before the line's end.
 		 * Hence we check that 'words' is not empty.
 		 *
-		 * Zero word or only one word ? Do nothing special to justify text.
+		 * Zero word or only one word? Do nothing special to justify text.
 		 * 
 		 */
 		if ( ( _layout == Justified ) && ! words.empty() && wordCount > 1 )
@@ -942,8 +941,7 @@ TextBuffer::TextGrid & TextBuffer::createAdvancedGridFrom(
 
 
 
-TextBuffer::LineIndex TextBuffer::getHeightFromCurrentPosition() 
-	const throw()
+TextBuffer::LineIndex TextBuffer::getHeightFromCurrentPosition() const
 {
 
 	LineIndex count = 0 ;
@@ -979,7 +977,7 @@ TextBuffer::LineIndex TextBuffer::getHeightFromCurrentPosition()
 
 	
 TextBuffer::LineIndex TextBuffer::getHeightFromEntry( 
-	ListOfTexts::const_iterator textIterator ) const throw()
+	ListOfTexts::const_iterator textIterator ) const
 {
 
 	LineIndex count = 0 ;
@@ -999,7 +997,7 @@ TextBuffer::LineIndex TextBuffer::getHeightFromEntry(
 	
 	
 
-char * TextBuffer::getNewLine() throw()
+char * TextBuffer::getNewLine()
 {
 
 	char * res = new char[ _width ] ;
@@ -1012,7 +1010,7 @@ char * TextBuffer::getNewLine() throw()
 
 
 
-void TextBuffer::deleteTextGrid( TextGrid * grid ) throw()
+void TextBuffer::deleteTextGrid( TextGrid * grid )
 {
 
 	// Deletes the list elements then the list itself:

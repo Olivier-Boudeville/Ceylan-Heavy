@@ -42,7 +42,7 @@ using namespace Ceylan::Log ;
 
 
 
-ModuleException::ModuleException( const std::string & message ) throw():
+ModuleException::ModuleException( const std::string & message ) :
 	Ceylan::Exception( message )
 {
 
@@ -64,15 +64,15 @@ Module::Module( const string  & name,
                 const string  & author, 
 				const string  & authorMail,
                 const Version & version, 
-				const string  & licence ) throw():
-		Object(),
-        _name( name ),
-        _description( description ),
-        _homepageURL( homepageURL ),
-        _author( author ),
-        _authorMail( authorMail ),
-        _version(),
-		_licence( licence )
+				const string  & licence ) :
+	Object(),
+	_name( name ),
+	_description( description ),
+	_homepageURL( homepageURL ),
+	_author( author ),
+	_authorMail( authorMail ),
+	_version(),
+	_licence( licence )
 {
 	
 	setVersion( version ) ;
@@ -83,15 +83,15 @@ Module::Module( const string  & name,
 
 
 
-Module::Module() throw():
-		Object(),
-        _name(),
-        _description(),
-        _homepageURL(),
-        _author(),
-        _authorMail(),
-        _version(),
-		_licence()
+Module::Module() :
+	Object(),
+	_name(),
+	_description(),
+	_homepageURL(),
+	_author(),
+	_authorMail(),
+	_version(),
+	_licence()
 {
 		
     send( "Creating a blank module" ) ;
@@ -109,7 +109,7 @@ Module::~Module() throw()
 
 
 
-string Module::getName() const throw( ModuleException )
+string Module::getName() const
 {
 
     return _name ;
@@ -118,7 +118,7 @@ string Module::getName() const throw( ModuleException )
 
 
 
-void Module::setName( const string & name ) throw( ModuleException )
+void Module::setName( const string & name )
 {
 
     _name = name ;
@@ -127,7 +127,7 @@ void Module::setName( const string & name ) throw( ModuleException )
 
 
 
-string Module::getDescription() const throw()
+string Module::getDescription() const 
 {
 
     return _description ;
@@ -136,7 +136,7 @@ string Module::getDescription() const throw()
 
 
 
-void Module::setDescription( const string & description ) throw()
+void Module::setDescription( const string & description ) 
 {
 
     _description = description ;
@@ -145,7 +145,7 @@ void Module::setDescription( const string & description ) throw()
 
 
 
-string Module::getHomePage() const throw()
+string Module::getHomePage() const 
 {
 
     return _homepageURL ;
@@ -153,7 +153,8 @@ string Module::getHomePage() const throw()
 }
 
 
-void Module::setHomePage( const string & homePage ) throw()
+
+void Module::setHomePage( const string & homePage ) 
 {
 
     _homepageURL = homePage ;
@@ -162,7 +163,7 @@ void Module::setHomePage( const string & homePage ) throw()
 
 
 
-string Module::getAuthor() const throw()
+string Module::getAuthor() const 
 {
 
     return _author ;
@@ -171,7 +172,7 @@ string Module::getAuthor() const throw()
 
 
 
-void Module::setAuthor( const string & author ) throw()
+void Module::setAuthor( const string & author ) 
 {
 
     _author = author ;
@@ -180,7 +181,7 @@ void Module::setAuthor( const string & author ) throw()
 
 
 
-string Module::getAuthorMail() const throw()
+string Module::getAuthorMail() const 
 {
 
     return _authorMail ;
@@ -189,7 +190,7 @@ string Module::getAuthorMail() const throw()
 
 
 
-void Module::setAuthorMail( const string & authorMail ) throw()
+void Module::setAuthorMail( const string & authorMail ) 
 {
 
     _authorMail = authorMail ;
@@ -198,7 +199,7 @@ void Module::setAuthorMail( const string & authorMail ) throw()
 
 
 
-const Version & Module::getVersion() const throw()
+const Version & Module::getVersion() const 
 {
 
     return _version ;
@@ -206,7 +207,8 @@ const Version & Module::getVersion() const throw()
 }
 
 
-void Module::setVersion( const Version & version ) throw()
+
+void Module::setVersion( const Version & version ) 
 {
 
 	_version.setMajorNumber(   version.getMajorNumber()   ) ;
@@ -218,7 +220,7 @@ void Module::setVersion( const Version & version ) throw()
 
 
 
-string Module::getLicence() const throw()
+string Module::getLicence() const 
 {
 
     return _licence ;
@@ -226,7 +228,8 @@ string Module::getLicence() const throw()
 }
 
 
-void Module::setLicence( const string & licence ) throw()
+
+void Module::setLicence( const string & licence ) 
 {
 
     _licence = licence ;
@@ -235,7 +238,7 @@ void Module::setLicence( const string & licence ) throw()
 
 
 
-const string Module::toString( VerbosityLevels level ) const throw()
+const string Module::toString( VerbosityLevels level ) const 
 {
 
     string res ;

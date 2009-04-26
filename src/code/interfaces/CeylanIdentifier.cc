@@ -30,13 +30,16 @@
 using namespace Ceylan ;
 
 
-Identifier::Identifier() throw()
+
+Identifier::Identifier()
 {
 
 }
+
 
 
 Identifier::~Identifier() throw()
 {
 
 }
+

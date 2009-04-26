@@ -51,6 +51,7 @@ namespace Ceylan
     typedef Ceylan::Uint8 WeakHashCode ;
 
 
+
     /**
 	 * Definition of a strong hash code.
 	 *
@@ -78,22 +79,27 @@ namespace Ceylan
     class CEYLAN_DLL Hashable : public TextDisplayable
     {
 
+
         public:
 
 
+
 			/// Basic constructor.
-			Hashable() throw() ;
+			Hashable() ;
+			
 			
 			/// Basic virtual destructor.
 			virtual ~Hashable() throw() ;
 
+
 			
 			/// Returns the current weak hash code for this Hashable.
-            virtual WeakHashCode getWeakHashCode() const throw() = 0 ;
+            virtual WeakHashCode getWeakHashCode() const = 0 ;
 
 
 			/// Returns the current strong hash code for this Hashable.
-            virtual StrongHashCode getStrongHashCode() const throw() = 0 ;
+            virtual StrongHashCode getStrongHashCode() const = 0 ;
+
 
 
             /**
@@ -107,7 +113,8 @@ namespace Ceylan
              *
              */
 			virtual const std::string toString( VerbosityLevels level = high )
-				const throw() ;
+				const ;
+
 
 
 			/**
@@ -116,7 +123,8 @@ namespace Ceylan
 			 *
 			 */
 			static WeakHashCode GetWeakHashCode( 
-				const std::string & stringToHash ) throw() ;
+				const std::string & stringToHash ) ;
+			
 			
 			
 			/**
@@ -125,7 +133,8 @@ namespace Ceylan
 			 *
 			 */
 			static StrongHashCode GetStrongHashCode( 
-				const std::string & stringToHash ) throw() ;
+				const std::string & stringToHash ) ;
+
 
 
 
@@ -141,7 +150,8 @@ namespace Ceylan
 			 * 
 			 *
 			 */			 
-			Hashable( const Hashable & source ) throw() ;
+			Hashable( const Hashable & source ) ;
+			
 			
 			
 			/**
@@ -153,14 +163,14 @@ namespace Ceylan
 			 * 
 			 *
 			 */			 
-			Hashable & operator = ( const Hashable & source ) throw() ;
+			Hashable & operator = ( const Hashable & source ) ;
 		
-
-	
 			
     } ;
 
 }
 
 
+
 #endif // CEYLAN_HASHABLE_H_
+

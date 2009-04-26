@@ -44,10 +44,11 @@ namespace Ceylan
 	{
 	
 		public:
-			explicit ResourceException( const std::string & reason ) throw() ;
+			explicit ResourceException( const std::string & reason ) ;
 			virtual ~ResourceException() throw() ;
 	
 	} ;
+
 
 
 
@@ -68,7 +69,8 @@ namespace Ceylan
 		
 			
 			/// Creates a new resource.
-			Resource() throw() ;
+			Resource() ;
+			
 			
 			/// Virtual destructor.
 			virtual ~Resource() throw() ;
@@ -85,12 +87,11 @@ namespace Ceylan
              *
              */
 			virtual const std::string toString( 
-				Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
+				Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 
 			
 		private:	
-		
 		
 		
 			/**
@@ -100,7 +101,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			Resource( const Resource & source ) throw() ;
+			Resource( const Resource & source ) ;
 			
 			
 			/**
@@ -110,7 +111,7 @@ namespace Ceylan
 			 * called, implicitly or not.
 			 * 
 			 */			 
-			Resource & operator = ( const Resource & source ) throw() ;
+			Resource & operator = ( const Resource & source ) ;
 			
 			
 	} ;
@@ -118,4 +119,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_RESOURCE_H_
+

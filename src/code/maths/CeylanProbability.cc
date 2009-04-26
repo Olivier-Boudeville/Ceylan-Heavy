@@ -34,15 +34,18 @@ using namespace Ceylan::Maths::Random ;
 
 
 
-ProbabilityFunction::ProbabilityFunction() throw() :
+
+ProbabilityFunction::ProbabilityFunction() :
 	Ceylan::Functor()
 {
 
 }
 
 
+
 ProbabilityFunction::~ProbabilityFunction() throw()
 {
 
 }
+
 

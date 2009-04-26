@@ -54,7 +54,8 @@ namespace Ceylan
 			public:
 			
 			
-				MiddlewareException( const std::string & message ) throw() ;
+				MiddlewareException( const std::string & message ) ;
+				
 				virtual ~MiddlewareException() throw() ;
 				
 		
@@ -67,3 +68,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_MIDDLEWARE_H_
+

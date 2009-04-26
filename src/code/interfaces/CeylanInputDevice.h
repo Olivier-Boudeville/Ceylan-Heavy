@@ -44,6 +44,7 @@ namespace Ceylan
 	class Controller ;
 
 
+
     /**
      * Input devices are sending informations to controllers so that they 
 	 * can animate the MVC framework.
@@ -71,13 +72,15 @@ namespace Ceylan
 
         public:
 			
+			
 					
 			/**
 			 * Constructs an abstract input device not linked to any 
 			 * controller.
 			 *
 			 */
-			InputDevice() throw() ;
+			InputDevice() ;
+				
 						
 													
 			/**
@@ -85,15 +88,18 @@ namespace Ceylan
 			 * to the specified controller.
 			 *
 			 */
-			explicit InputDevice( Controller & controller ) throw() ;
+			explicit InputDevice( Controller & controller ) ;
 						
+				
 									
 			/// Basic virtual destructor.
 			virtual ~InputDevice() throw() ;
 			
 			
+			
 			/// Tells whether this input device is linked to a controller.
-			virtual bool isLinkedToController() const throw() ;
+			virtual bool isLinkedToController() const ;
+			
 			
 			
 			/**
@@ -105,8 +111,9 @@ namespace Ceylan
 			 * @see isLinkedToController
 			 *
 			 */
-			virtual Controller & getController() const throw( EventException ) ;
+			virtual Controller & getController() const ;
 			
+			 
 			 
 			/**
 			 * Set the controller this input device should send 
@@ -120,8 +127,8 @@ namespace Ceylan
 			 * @see dropController
 			 *
 			 */
-			virtual void setController( Controller & controller ) 
-				throw( EventException ) ;
+			virtual void setController( Controller & controller ) ;
+			 
 			 
 			 
 			/**
@@ -131,7 +138,8 @@ namespace Ceylan
 			 * input device.
 			 *
 			 */
-			virtual bool dropController() throw() ;			 
+			virtual bool dropController() ;			 
+			 
 			 
 						
             /**
@@ -145,7 +153,7 @@ namespace Ceylan
              *
              */
 			virtual const std::string toString( 
-				Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
+				Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 					
 		
 		
@@ -172,7 +180,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			InputDevice( const InputDevice & source ) throw() ;
+			InputDevice( const InputDevice & source ) ;
 			
 			
 			/**
@@ -183,7 +191,7 @@ namespace Ceylan
 			 * operator is called, implicitly or not.
 			 * 
 			 */			 
-			InputDevice & operator = ( const InputDevice & source ) throw() ;
+			InputDevice & operator = ( const InputDevice & source ) ;
 		
 			
 					 			

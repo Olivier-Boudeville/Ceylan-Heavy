@@ -42,7 +42,7 @@ namespace Ceylan
 	 *
 	 * To analyze a string, construct a RegExp object.
 	 *
-	 * @example :
+	 * @example:
 	 * <pre>
 	 * RegExp re( "www.host.com" ) ;
 	 * ...
@@ -76,12 +76,12 @@ namespace Ceylan
 			 * support feature is not available.
 			 *
 			 */
-			explicit RegExp( const std::string & toAnalyze )
-				throw( Features::FeatureNotAvailableException ) ;
+			explicit RegExp( const std::string & toAnalyze ) ;
 
 
 			/// Basic virtual destructor.
 			virtual ~RegExp() throw() ;
+
 
 
 			/**
@@ -92,8 +92,8 @@ namespace Ceylan
 			 * support feature is not available.
 			 *
 			 */
-			virtual bool matches( const std::string & pattern ) const 
-				throw( Features::FeatureNotAvailableException ) ;
+			virtual bool matches( const std::string & pattern ) const ;
+
 
 
 			/**
@@ -105,8 +105,7 @@ namespace Ceylan
 			 * @todo move to XML module.
 			 *
 			 */
-			virtual bool isXMLName() const 
-				throw( Features::FeatureNotAvailableException ) ;
+			virtual bool isXMLName() const ;
 
 
 
@@ -123,4 +122,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_REGULAR_EXPRESSION_H_
+

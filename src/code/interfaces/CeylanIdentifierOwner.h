@@ -134,6 +134,7 @@ namespace Ceylan
             bool hasIdentifier() const ;
 
 
+
             /// Deletes this IdentifierOwner's identifier.
             void deleteIdentifier() ;
 
@@ -159,6 +160,7 @@ namespace Ceylan
 		private:
 
 
+
 			/// The owned identifier.
             Identifier * _id ;
 		
@@ -172,6 +174,7 @@ namespace Ceylan
 			 * 
 			 */			 
 			IdentifierOwner( const IdentifierOwner & source ) ;
+			
 			
 			
 			/**
@@ -189,6 +192,7 @@ namespace Ceylan
     } ;
 
 }
+
 
 
 #endif // CEYLAN_IDENTIFIER_OWNER_H_

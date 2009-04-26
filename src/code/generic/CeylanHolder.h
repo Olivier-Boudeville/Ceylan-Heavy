@@ -71,6 +71,7 @@ namespace Ceylan
 		public:
 		
 			
+			
 			/**
 			 * Creates an Holder instance holding specified reference.
 			 *
@@ -78,8 +79,9 @@ namespace Ceylan
 			 * set to match the one of this holder instance.
 			 *
 			 */
-			explicit Holder( Held & heldReference ) throw() ;
+			explicit Holder( Held & heldReference ) ;
   
+ 
  
  			/**
 			 * Non-virtual destructor, deletes its held object.
@@ -88,15 +90,17 @@ namespace Ceylan
  			~Holder() throw() ;
 	
 					
+					
 			/**
 			 * Returns the held reference.
 			 *
 			 */
-			Held & get() const throw() ;
+			Held & get() const ;
 			
 			
 			/// Returns a reference to the held instance.
 			Held & operator*() const ;
+
 
 			/// Returns a pointer to the held instance.
 			Held * operator->() const ;
@@ -117,7 +121,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			Holder( const Holder & source ) throw() ;
+			Holder( const Holder & source ) ;
 			
 			
 			/**
@@ -127,18 +131,18 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			Holder & operator = ( const Holder & source ) throw() ;
+			Holder & operator = ( const Holder & source ) ;
 			
 			
 	} ;
 
 
 
-	/// Public section : implementation.
+	/// Public section: implementation.
 
 
 	template <typename Held>
-	Holder<Held>::Holder( Held & heldReference ) throw() :
+	Holder<Held>::Holder( Held & heldReference ) :
 		_held( & heldReference )
 	{
 	
@@ -155,7 +159,7 @@ namespace Ceylan
 				
 				
 	template <typename Held>
-	Held & Holder<Held>::get() const throw()
+	Held & Holder<Held>::get() const
 	{
 
 		return *Holder<Held>::_held ;
@@ -182,6 +186,7 @@ namespace Ceylan
 	
 	
 }
+
 
 
 #endif // CEYLAN_HOLDER_H_

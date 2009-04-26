@@ -54,7 +54,7 @@ using std::string ;
 // BaseModel section.
 
 
-BaseModel::BaseModel() throw()
+BaseModel::BaseModel()
 {
 
 }
@@ -67,7 +67,8 @@ BaseModel::~BaseModel() throw()
 }
 
 
-const string BaseModel::toString( Ceylan::VerbosityLevels level ) const throw()
+
+const string BaseModel::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	return "Base model" ;
@@ -81,7 +82,7 @@ const string BaseModel::toString( Ceylan::VerbosityLevels level ) const throw()
 // NoViewModel section.
 
 
-NoViewModel::NoViewModel() throw()
+NoViewModel::NoViewModel()
 {
 
 }
@@ -96,7 +97,6 @@ NoViewModel::~NoViewModel() throw()
 
 
 void NoViewModel::addView( const BaseView & view ) const
-	throw( GenericMVCException )
 {
 
 	throw GenericMVCException( "NoViewModel::addView failed: "
@@ -106,8 +106,7 @@ void NoViewModel::addView( const BaseView & view ) const
 
 
 	
-const string NoViewModel::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+const string NoViewModel::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	return "View-less model" ;
@@ -154,7 +153,6 @@ SingleViewModel::~SingleViewModel() throw()
 
 
 void SingleViewModel::setView( const BaseView & view )
-	throw( GenericMVCException )
 {
 
 	addView( view ) ;
@@ -164,7 +162,6 @@ void SingleViewModel::setView( const BaseView & view )
 
 	
 void SingleViewModel::addView( const BaseView & view ) const 
-	throw( GenericMVCException )
 {
 
 	if ( _view != 0 )
@@ -178,8 +175,7 @@ void SingleViewModel::addView( const BaseView & view ) const
 
 
 	
-const string SingleViewModel::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+const string SingleViewModel::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	if ( _view != 0 )
@@ -252,7 +248,7 @@ MultipleViewModel::~MultipleViewModel() throw()
 
 
 void MultipleViewModel::setViews( 
-	const std::list<const BaseView *> & views ) throw( GenericMVCException )
+	const std::list<const BaseView *> & views )
 {
 
 	if ( ! _views.empty() )
@@ -266,7 +262,6 @@ void MultipleViewModel::setViews(
 
 	
 void MultipleViewModel::addView( const BaseView & view ) const
-	throw( GenericMVCException )
 {
 
 	const_cast<MultipleViewModel *>( this )->_views.push_back( & view ) ;
@@ -275,8 +270,7 @@ void MultipleViewModel::addView( const BaseView & view ) const
 
 
 	
-const string MultipleViewModel::toString( Ceylan::VerbosityLevels level )
-	const throw()
+const string MultipleViewModel::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	if ( _views.empty() )

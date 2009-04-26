@@ -32,13 +32,14 @@
 #include "CeylanTextDisplayable.h"    // for TextDisplayable
 
 
+
 /**
  * Advanced pointer template, counting its references and deleting the 
  * contained resource as soon as no one refers to it. 
  *
  * Significantly simpler than shared pointers of Boost (see CeylanSmartPointer
  * in unstable section), these counted pointers do not deal with multithread
- * (therefore, no lightweight mutex needed !) nor with circular references 
+ * (therefore, no lightweight mutex needed!) nor with circular references 
  * (no weak_ptr counterpart).
  *
  * Advanced raw pointer, but basic shared pointer. Mimics the STL names.
@@ -116,7 +117,7 @@ namespace Ceylan
 	 *    CountedPointer<Mutex> p = new Mutex() ;
 	 * 
 	 *    if ( condition )
-	 *    	throw Exception() ;  // no problemo !
+	 *    	throw Exception() ;  // no problemo!
 	 *    else
 	 *      return false ;
 	 * }
@@ -136,6 +137,7 @@ namespace Ceylan
 
 			/// The counted object (wrapped resource) type.
 			typedef T ElementType ;    
+
 
 
 			/**
@@ -163,7 +165,9 @@ namespace Ceylan
 
 	            setReferent( ( resourcePointer == 0 ) ? 
 					& staticRef: new Referent( resourcePointer ) ) ;
+					
 	        }
+
 
 
 			/**
@@ -173,11 +177,14 @@ namespace Ceylan
 			 * referent.
 			 *
 			 */
-			CountedPointer( const CountedPointer<T> & source ):
+			CountedPointer( const CountedPointer<T> & source ) :
 				Ceylan::TextDisplayable()
 			{
+			
 				setReferent( source._referent ) ;
+				
 			}
+
 
 
 			/**
@@ -210,6 +217,7 @@ namespace Ceylan
 			}
 
 
+
 			/**
 			 * Destructor of a counted pointer, decreases the reference count
 			 * which may lead to deallocation of resource.
@@ -220,9 +228,12 @@ namespace Ceylan
 			 */
 			~CountedPointer() throw()
 			{
+			
 				release() ;
+				
 			}
 
+			
 			
 			/**
 			 * Dereferences the counted pointer to access the wrapped resource,
@@ -231,9 +242,12 @@ namespace Ceylan
 			 */
 			ElementType & operator*() const
 			{
+			
 				return * get() ;
+				
 			}
 
+			
 			
 			/**
 			 * Returns the wrapped resource pointer.
@@ -241,8 +255,11 @@ namespace Ceylan
 			 */
 			ElementType * operator->() const
 			{
+			
 				return get() ;
+				
 			}
+
 
 
 			/**
@@ -251,8 +268,11 @@ namespace Ceylan
 			 */
 			ElementType * get() const
 			{
+			
 				return _referent->_resourcePointer ;
+				
 			}
+
 
 
 			/**
@@ -262,8 +282,11 @@ namespace Ceylan
 			 */
 			bool isUnique() const
 			{
+			
 				return ( _referent->_refCount == 1 ) ;
+				
 			}
+
 
 			
 			/**
@@ -272,8 +295,11 @@ namespace Ceylan
 			 */
 			ReferenceCount getReferenceCount() const
 			{
-				return _referent->_refCount ;			
+			
+				return _referent->_refCount ;
+							
 			}
+
 
 
            	/**
@@ -283,7 +309,7 @@ namespace Ceylan
              *
            	 */
             virtual const std::string toString( VerbosityLevels level = high )
-				const throw() 
+				const
 			{
 			
 				if ( _referent != 0 )
@@ -320,8 +346,10 @@ namespace Ceylan
 			
 				if ( isUnique() )
 				{
+				
 				    // Nothing to do.
 					return ;
+					
 				}	
 
 
@@ -338,7 +366,7 @@ namespace Ceylan
 				/*
 				 * Throws out of isolate, if error creating element occurs.
 				 *
-				 * Supposes a copy construct for templated type exists !
+				 * Supposes a copy construct for templated type exists!
 				 *
 				 */
 				ElementType * newElement = new ElementType( * get() ) ;
@@ -404,8 +432,10 @@ namespace Ceylan
 
              ~Referent() throw()
              {
+			 
 			 	// The actual only place where the wrapped resource is deleted:
                 delete _resourcePointer ;
+				
              }
 			 
 
@@ -422,6 +452,7 @@ namespace Ceylan
          } * _referent ;                
 
 
+
 		 /**
 		  * Each CountedPointer has therefore a member: 
 		  * Referent * _referent ; 
@@ -430,6 +461,7 @@ namespace Ceylan
 
 
          // Simple methods to reference and release representations.
+
 
 
          /*
@@ -451,6 +483,7 @@ namespace Ceylan
          }
 
 
+
 		/**
 		 * Sets the referent for this counter pointer.
 		 * Increments the reference count.
@@ -464,6 +497,7 @@ namespace Ceylan
             ( _referent = refPointer )->_refCount++ ;
 			
         }
+
 
 
 		/**
@@ -498,3 +532,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_COUNTED_POINTER_H_
+

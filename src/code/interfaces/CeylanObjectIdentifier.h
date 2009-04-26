@@ -39,12 +39,15 @@ namespace Ceylan
 {
 
 
+
 	// Object instances have to rely on identifiers.
 	class Object ;
 
 	
+	
 	namespace Log
 	{
+	
 			
 		
 		/**
@@ -64,6 +67,7 @@ namespace Ceylan
 		
 			public:
 					
+					
 						
 				/**
 				 * Generates, from a class name, the corresponding Object
@@ -74,8 +78,8 @@ namespace Ceylan
 				 * @note Use that constructor when object is available.
 				 *
 				 */
-				explicit ObjectIdentifier( const Object & object ) 
-					throw( IdentifierException ) ;
+				explicit ObjectIdentifier( const Object & object ) ;
+				
 				
 				
 				/**
@@ -96,11 +100,13 @@ namespace Ceylan
 				 */
 				ObjectIdentifier( const std::string & hostname, 
 					Ceylan::System::Pid pid, const std::string & className,
-					const void * address ) throw() ;
+					const void * address ) ;
+				
 				
 				
 				/// Basic virtual destructor.
 				virtual ~ObjectIdentifier() throw() ;
+			
 			
 			
 				/**
@@ -120,8 +126,9 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool differentButMatches( 
-					const ObjectIdentifier & otherID ) const throw() ;
+					const ObjectIdentifier & otherID ) const ;
 	
+				
 				
 	            /**
 	             * Returns a user-friendly description of the state of this
@@ -135,8 +142,7 @@ namespace Ceylan
 				 *
 	             */
 				virtual const std::string toString( 
-					Ceylan::VerbosityLevels level 
-						= Ceylan::high ) const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 	
 	
 	
@@ -146,7 +152,7 @@ namespace Ceylan
 				
 				/**
 				 * Generates the object identifier from specified channel 
-				 * name : converts a channel name, which can be found for
+				 * name: converts a channel name, which can be found for
 				 * instance carried by a log message, to an object identifier.
 				 *
 				 * @throw IdentifierException if unable to demangle the 
@@ -162,15 +168,16 @@ namespace Ceylan
 				 *
 				 */
 				static ObjectIdentifier & generateFromChannelName( 
-					const std::string & channelName ) 
-						throw ( IdentifierException ) ;
+					const std::string & channelName ) ;
 				
 				
 				/// Separator inside an Object identifier.
 				static const char Separator ;
 	
+	
 				/// Prefix marker in Objet identifier for hosting PID.
 				static const std::string PIDTag ;
+			
 			
 				/// The pattern matching all Object identifiers.
 				static const std::string Pattern ;
@@ -183,8 +190,10 @@ namespace Ceylan
 				/// The hostname of this identifier.
 				std::string _hostname ;
 				
+				
 				/// The PID of the hosting process of the referenced object.
 				System::Pid _pid ;
+				
 				
 				/// The class name of the referenced object.
 				std::string _className ;
@@ -205,5 +214,8 @@ namespace Ceylan
 
 
 }
+
+				
 				
 #endif // CEYLAN_OBJECT_IDENTIFIER_H_
+

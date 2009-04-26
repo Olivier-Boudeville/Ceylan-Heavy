@@ -33,6 +33,7 @@
 #include <string>
 
 
+
 namespace Ceylan
 {
 
@@ -47,7 +48,7 @@ namespace Ceylan
 	
 		public:
 		
-			explicit VisitException( const std::string & reason ) throw() ;
+			explicit VisitException( const std::string & reason ) ;
 			
 			virtual ~VisitException() throw() ;
 			
@@ -74,17 +75,22 @@ namespace Ceylan
 		public:
 
 
+
 			/// Default empty constructor.
-			Visitable() throw() ;
+			Visitable() ;
+
 
 
 			/// Virtual destructor.
 			virtual ~Visitable() throw() ;
 
 
+
 			/**
 			 * Allows given visitor to visit this object, thanks to a 
-			 * callback : 'visitor.visit( *this ) ;'
+			 * callback: 'visitor.visit( *this ) ;'
+			 *
+			 * @throw VisitException if the visit failed.
 			 *
 			 * @note This method cannot be implemented here, as the visitor 
 			 * must declare its 'visit' method which must accept a specific 
@@ -92,10 +98,7 @@ namespace Ceylan
 			 * Otherwise, there would be ambiguous calls. 
 			 *
 			 */
-			virtual void accept( Visitor & visitor ) 
-				throw( VisitException ) = 0 ;
-
-
+			virtual void accept( Visitor & visitor ) = 0 ;
 
 
 
@@ -111,7 +114,7 @@ namespace Ceylan
 			 * @note Made to avoid unwanted hidden clone of the Singleton.
 			 *
 			 */			 
-			Visitable( const Visitable & source ) throw() ;
+			Visitable( const Visitable & source ) ;
 			
 			
 			/**
@@ -121,7 +124,7 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			Visitable & operator = ( const Visitable & source ) throw() ;
+			Visitable & operator = ( const Visitable & source ) ;
 
 
 	} ;
@@ -129,4 +132,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_VISITABLE_H_
+

@@ -32,19 +32,22 @@ using std::string ;
 using namespace Ceylan ;
 
 
-TextIdentifier::TextIdentifier() throw() : 
+
+TextIdentifier::TextIdentifier() : 
 	Identifier()
 {
 
 }
 
 
-TextIdentifier::TextIdentifier( const std::string & id ) throw() : 
+
+TextIdentifier::TextIdentifier( const std::string & id ) : 
 	Identifier(), 
 	_id( id )
 {
 
 }
+
 
 
 TextIdentifier::~TextIdentifier() throw()
@@ -53,15 +56,20 @@ TextIdentifier::~TextIdentifier() throw()
 }
 
 
-bool TextIdentifier::operator==( const TextIdentifier & otherIdentifier )
-	throw()
+
+bool TextIdentifier::operator == ( const TextIdentifier & otherIdentifier )
 {
+
 	return ( _id == otherIdentifier._id ) ;
+	
 }
 
 
-const string TextIdentifier::toString( Ceylan::VerbosityLevels level ) 
-	const throw() 
+
+const string TextIdentifier::toString( Ceylan::VerbosityLevels level ) const 
 {
+
 	return _id ;
+	
 }	
+

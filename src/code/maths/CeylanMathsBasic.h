@@ -42,8 +42,10 @@ namespace Ceylan
 {
 
 
+	/// Contains all maths-related operations and constants.
 	namespace Maths
 	{
+	
 	
 	
 		/*
@@ -75,8 +77,10 @@ namespace Ceylan
 		 *
 		 */
 
+
 		/// Generic signed integer data.
 		typedef Ceylan::Sint32 IntegerData ;
+		
 		
 		
 		/**
@@ -89,6 +93,7 @@ namespace Ceylan
 		typedef Ceylan::Float32 Real ;
 		
 		
+		
 		/**
 		 * Angles, expressed in degrees.
 		 *
@@ -97,6 +102,7 @@ namespace Ceylan
 		 */
 		typedef Ceylan::Float32 AngleInDegrees ;
 		
+
 
 		/**
 		 * Angles, expressed in radians.
@@ -107,6 +113,7 @@ namespace Ceylan
 		typedef Ceylan::Float32 AngleInRadians ;
 		
 		
+		
 		/**
 		 * Integer percentage values, which should range from 0 to 100, 
 		 * both included.
@@ -114,6 +121,7 @@ namespace Ceylan
 		 */
 		typedef Ceylan::Uint8 Percentage ;
 	
+		
 		
 		/**
 		 * Unit for frequencies (Hz). 
@@ -126,6 +134,7 @@ namespace Ceylan
 		 */
 		typedef Ceylan::Uint32 Hertz ;
 
+
 		
 		/**
 		 * Ratio unit, should store floating point values between 0 and 1.
@@ -134,16 +143,20 @@ namespace Ceylan
 		typedef Ceylan::Float32 Ratio ;
 		
 		
+		
+		
 		/// Exception for Maths-related issues.
 		class CEYLAN_DLL MathsException: public Ceylan::Exception
 		{
 		
 			public:
 			
-				explicit MathsException( const std::string & message ) throw() ;
+				explicit MathsException( const std::string & message ) ;
+				
 				virtual ~MathsException() throw() ;
 		
 		} ;
+		
 		
 		
 		
@@ -163,12 +176,14 @@ namespace Ceylan
 		extern CEYLAN_DLL const Ceylan::LongFloat E ;
 
 
+
 		/**
 		 * The number log_2(e).
 		 * (used to be the M_LOG2E maths.h constant).
 		 *
 		 */
 		extern CEYLAN_DLL const Ceylan::LongFloat Log2E ;
+	
 	
 	
 		/**
@@ -179,6 +194,7 @@ namespace Ceylan
 		extern CEYLAN_DLL const Ceylan::LongFloat Log10E ;
 	
 	
+	
 		/**
 		 * The number log_e(2) = ln(2). 
 		 * (used to be the M_LN2 maths.h constant).
@@ -187,12 +203,14 @@ namespace Ceylan
 		extern CEYLAN_DLL const Ceylan::LongFloat LogE2 ;
 	
 	
+	
 		/**
 		 * The number log_e(10) = ln(10) 
 		 * (used to be the M_LN10 maths.h constant).
 		 *
 		 */
 		extern CEYLAN_DLL const Ceylan::LongFloat LogE10 ;
+
 
 
 
@@ -207,12 +225,14 @@ namespace Ceylan
 		extern CEYLAN_DLL const Ceylan::LongFloat Pi ;
 	
 	
+	
 		/** 
 		 * The number pi/2. 
 		 * (used to be the M_PI_2 maths.h constant).
 		 *
 		 */
 		extern CEYLAN_DLL const Ceylan::LongFloat Pi_div_2 ;
+	
 	
 	
 		/** 
@@ -223,12 +243,14 @@ namespace Ceylan
 		extern CEYLAN_DLL const Ceylan::LongFloat Pi_div_4 ;
 	
 	
+	
 		/** 
 		 * The number 1/pi. 
 		 * (used to be the M_1_PI maths.h constant).
 		 *
 		 */
 		extern CEYLAN_DLL const Ceylan::LongFloat One_div_Pi ;
+	
 	
 	
 		/** 
@@ -239,12 +261,14 @@ namespace Ceylan
 		extern CEYLAN_DLL const Ceylan::LongFloat Two_div_Pi ;
 	
 	
+	
 		/** 
 		 * The number 2/sqrt(pi). 
 		 * (used to be the M_2_SQRTPI maths.h constant).
 		 *
 		 */
 		extern CEYLAN_DLL const Ceylan::LongFloat Two_div_sqrt_Pi ;
+	
 	
 	
 	
@@ -260,12 +284,14 @@ namespace Ceylan
 		extern CEYLAN_DLL const Ceylan::LongFloat Sqrt_2 ;
 	
 	
+	
 		/** 
 		 * The number 1/sqrt(2). 
 		 * (used to be the M_SQRT1_2 maths.h constant).
 		 *
 		 */
 		extern CEYLAN_DLL const Ceylan::LongFloat One_div_sqrt_2 ;
+	
 	
 	
 		/**
@@ -276,12 +302,14 @@ namespace Ceylan
 		extern CEYLAN_DLL const Ceylan::LongFloat EpsilonFloat32 ;
 
 
+
 		/**
 		 * A very small number, used for floating point comparisons: 
 		 * two numbers x and y are deemed equal if | x - y | < EpsilonFloat64
 		 *
 		 */
 		extern CEYLAN_DLL const Ceylan::LongFloat EpsilonFloat64 ;
+
 
 
 		/**
@@ -292,6 +320,7 @@ namespace Ceylan
 		extern CEYLAN_DLL const Ceylan::LongFloat EpsilonLongFloat ;
 
 
+
 		/**
 		 * A very small number, used for floating point comparisons:
 		 * two numbers x and y are deemed equal if | x - y | < Epsilon
@@ -299,6 +328,7 @@ namespace Ceylan
 		 */
 		extern CEYLAN_DLL const Ceylan::LongFloat Epsilon ;
 
+		
 		
 		
 		
@@ -314,7 +344,7 @@ namespace Ceylan
 		 * | x | < EpsilonFloat32.
 		 *
 		 */
-		CEYLAN_DLL bool IsNull( Ceylan::Float32 x ) throw() ;
+		CEYLAN_DLL bool IsNull( Ceylan::Float32 x ) ;
 
 		
 		/** 
@@ -322,8 +352,7 @@ namespace Ceylan
 		 * | x | < epsilon.
 		 *
 		 */
-		CEYLAN_DLL bool IsNull( Ceylan::Float32 x, Ceylan::Float32 epsilon )
-			throw() ;
+		CEYLAN_DLL bool IsNull( Ceylan::Float32 x, Ceylan::Float32 epsilon ) ;
 		
 		
 		
@@ -332,7 +361,8 @@ namespace Ceylan
 		 * | x | < EpsilonFloat64.
 		 *
 		 */
-		CEYLAN_DLL bool IsNull( Ceylan::Float64 x ) throw() ;
+		CEYLAN_DLL bool IsNull( Ceylan::Float64 x ) ;
+		
 		
 		
 		/** 
@@ -340,8 +370,7 @@ namespace Ceylan
 		 * | x | < epsilon.
 		 *
 		 */
-		CEYLAN_DLL bool IsNull( Ceylan::Float64 x, Ceylan::Float64 epsilon ) 
-			throw() ;
+		CEYLAN_DLL bool IsNull( Ceylan::Float64 x, Ceylan::Float64 epsilon ) ;
 		
 		
 		
@@ -350,7 +379,8 @@ namespace Ceylan
 		 * | x | < EpsilonLongFloat.
 		 *
 		 */
-		CEYLAN_DLL bool IsNull( Ceylan::LongFloat x ) throw() ;
+		CEYLAN_DLL bool IsNull( Ceylan::LongFloat x ) ;
+		
 		
 		
 		/** 
@@ -359,7 +389,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL bool IsNull( Ceylan::LongFloat x, 
-			Ceylan::LongFloat epsilon ) throw() ;
+			Ceylan::LongFloat epsilon ) ;
 		
 		
 		
@@ -373,8 +403,8 @@ namespace Ceylan
 		 * | x - y | < EpsilonFloat32.
 		 *
 		 */
-		CEYLAN_DLL bool AreEqual( Ceylan::Float32 x, Ceylan::Float32 y ) 
-			throw() ;
+		CEYLAN_DLL bool AreEqual( Ceylan::Float32 x, Ceylan::Float32 y ) ;
+		
 		
 		
 		/** 
@@ -383,7 +413,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL bool AreEqual( Ceylan::Float32 x, Ceylan::Float32 y, 
-			Ceylan::Float32 epsilon ) throw() ;
+			Ceylan::Float32 epsilon ) ;
 		
 		
 		
@@ -392,8 +422,8 @@ namespace Ceylan
 		 * | x - y | < EpsilonFloat64.
 		 *
 		 */
-		CEYLAN_DLL bool AreEqual( Ceylan::Float64 x, Ceylan::Float64 y ) 
-			throw() ;
+		CEYLAN_DLL bool AreEqual( Ceylan::Float64 x, Ceylan::Float64 y ) ;
+		
 		
 		
 		/** 
@@ -402,8 +432,9 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL bool AreEqual( Ceylan::Float64 x, Ceylan::Float64 y, 
-			Ceylan::Float64 epsilon ) throw() ;
+			Ceylan::Float64 epsilon ) ;
 		
+
 
 		/** 
 		 * Tells whether x and y are exactly 'equal': x == y, with no compile
@@ -416,8 +447,8 @@ namespace Ceylan
 		 * or != is unsafe.
 		 *
 		 */
-		CEYLAN_DLL bool AreExactlyEqual( Ceylan::Float64 x, Ceylan::Float64 y ) 
-			throw() ;
+		CEYLAN_DLL bool AreExactlyEqual( Ceylan::Float64 x, 
+			Ceylan::Float64 y ) ;
 		
 		
 		/** 
@@ -425,9 +456,9 @@ namespace Ceylan
 		 * | x - y | < EpsilonLongFloat.
 		 *
 		 */
-		CEYLAN_DLL bool AreEqual( Ceylan::LongFloat x, Ceylan::LongFloat y )
-			throw() ;
+		CEYLAN_DLL bool AreEqual( Ceylan::LongFloat x, Ceylan::LongFloat y ) ;
 
+		
 		
 		/** 
 		 * Tells whether x and y are 'equal' as floating point numbers: 
@@ -435,7 +466,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL bool AreEqual( Ceylan::LongFloat x, Ceylan::LongFloat y, 
-			Ceylan::LongFloat epsilon ) throw() ;
+			Ceylan::LongFloat epsilon ) ;
 		
 	
 	
@@ -455,7 +486,7 @@ namespace Ceylan
 		 * tests against zero, and EpsilonFloat32 for the relative test.
 		 *
 		 */
-		template <typename T> bool AreRelativelyEqual( T x, T y ) throw()
+		template <typename T> bool AreRelativelyEqual( T x, T y ) 
 		{
 		
 		
@@ -488,6 +519,7 @@ namespace Ceylan
 		
 		
 		
+		
 		/**
 		 * Relative comparison with user-supplied epsilon.
 		 *
@@ -503,7 +535,7 @@ namespace Ceylan
 		 *
 		 */
 		template <typename T> bool AreRelativelyEqual( T x, T y, 
-			Ceylan::LongFloat epsilon ) throw()
+			Ceylan::LongFloat epsilon ) 
 		{
 		
 		
@@ -530,6 +562,7 @@ namespace Ceylan
 			return ( Abs( x - y ) / ( x + y ) < epsilon ) ;
 			
 		}
+		
 		
 		
 		
@@ -564,7 +597,8 @@ namespace Ceylan
 		 * @example Floor(1.6)  =  1
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float32 Floor( Ceylan::Float32 x ) throw() ;
+		CEYLAN_DLL Ceylan::Float32 Floor( Ceylan::Float32 x ) ;
+
 
 		
 		/**
@@ -584,7 +618,8 @@ namespace Ceylan
 		 * @example Floor(1.6)  =  1
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float64 Floor( Ceylan::Float64 x ) throw() ;
+		CEYLAN_DLL Ceylan::Float64 Floor( Ceylan::Float64 x ) ;
+		
 		
 		
 		/**
@@ -604,7 +639,7 @@ namespace Ceylan
 		 * @example Floor(1.6)  =  1
 		 *
 		 */
-		CEYLAN_DLL Ceylan::LongFloat Floor( Ceylan::LongFloat x ) throw() ;
+		CEYLAN_DLL Ceylan::LongFloat Floor( Ceylan::LongFloat x ) ;
 		
 		
 		
@@ -626,7 +661,8 @@ namespace Ceylan
 		 * @example Ceil(1.6)  =  2
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float32 Ceil( Ceylan::Float32 x ) throw() ;
+		CEYLAN_DLL Ceylan::Float32 Ceil( Ceylan::Float32 x ) ;
+		
 		
 		
 		/**
@@ -646,7 +682,8 @@ namespace Ceylan
 		 * @example Ceil(1.6)  =  2
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float64 Ceil( Ceylan::Float64 x ) throw() ;
+		CEYLAN_DLL Ceylan::Float64 Ceil( Ceylan::Float64 x ) ;
+
 
 		
 		/**
@@ -666,7 +703,8 @@ namespace Ceylan
 		 * @example Ceil(1.6)  =  2
 		 *
 		 */
-		CEYLAN_DLL Ceylan::LongFloat Ceil( Ceylan::LongFloat x ) throw() ;
+		CEYLAN_DLL Ceylan::LongFloat Ceil( Ceylan::LongFloat x ) ;
+		
 		
 		
 		
@@ -696,7 +734,8 @@ namespace Ceylan
 		 * is not available, floor will be used instead.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float32 Round( Ceylan::Float32 x ) throw() ;
+		CEYLAN_DLL Ceylan::Float32 Round( Ceylan::Float32 x ) ;
+
 
 
 		/**
@@ -734,7 +773,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL Ceylan::Float32 Round( Ceylan::Float32 x, 
-			Ceylan::Uint8 precision ) throw() ;
+			Ceylan::Uint8 precision ) ;
 
 		
 		
@@ -761,7 +800,8 @@ namespace Ceylan
 		 * is not available, floor will be used instead.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float64 Round( Ceylan::Float64 x ) throw() ;
+		CEYLAN_DLL Ceylan::Float64 Round( Ceylan::Float64 x ) ;
+
 
 
 		/**
@@ -801,7 +841,8 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL Ceylan::Float64 Round( Ceylan::Float64 x, 
-			Ceylan::Uint8 precision ) throw() ;
+			Ceylan::Uint8 precision ) ;
+				
 				
 				
 		
@@ -828,7 +869,8 @@ namespace Ceylan
 		 * is not available, floor will be used instead.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::LongFloat Round( Ceylan::LongFloat x ) throw() ;
+		CEYLAN_DLL Ceylan::LongFloat Round( Ceylan::LongFloat x ) ;
+
 
 
 		/**
@@ -868,8 +910,9 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL Ceylan::LongFloat Round( Ceylan::LongFloat x, 
-			Ceylan::Uint8 precision ) throw() ;
+			Ceylan::Uint8 precision ) ;
 	
+		
 			
 				
 		/// Absolute value, polluted by ambiguous calls:
@@ -878,17 +921,21 @@ namespace Ceylan
 		// Integer signed types:
 
 		/// Computes the absolute value of specified argument.
-		CEYLAN_DLL Ceylan::Sint8 Abs( Ceylan::Sint8 x ) throw() ;		
+		CEYLAN_DLL Ceylan::Sint8 Abs( Ceylan::Sint8 x ) ;		
+		
 		
 		/// Computes the absolute value of specified argument.
-		CEYLAN_DLL Ceylan::Sint16 Abs( Ceylan::Sint16 x ) throw() ;
+		CEYLAN_DLL Ceylan::Sint16 Abs( Ceylan::Sint16 x ) ;
+				
 				
 		/// Computes the absolute value of specified argument.
-		CEYLAN_DLL Ceylan::Sint32 Abs( Ceylan::Sint32 x ) throw() ;
+		CEYLAN_DLL Ceylan::Sint32 Abs( Ceylan::Sint32 x ) ;
+				
 				
 		/// Computes the absolute value of specified argument.
 		CEYLAN_DLL Ceylan::SignedLongInteger Abs( 
-			Ceylan::SignedLongInteger x ) throw() ;
+			Ceylan::SignedLongInteger x ) ;
+		
 		
 		
 		/**
@@ -897,19 +944,24 @@ namespace Ceylan
 		 * @note Disabled since ISO C++ does not support `long long'.
 		 *
 		 */
-		//long long int Abs( long long int x ) throw() ;
+		//long long int Abs( long long int x ) ;
+		
 		
 		
 		// Floating point types:
 		 
+		 
 		/// Computes the absolute value of specified argument.
-		CEYLAN_DLL Ceylan::Float32 Abs( Ceylan::Float32 x ) throw() ;
+		CEYLAN_DLL Ceylan::Float32 Abs( Ceylan::Float32 x ) ;
+		
 		
 		/// Computes the absolute value of specified argument.
-		CEYLAN_DLL Ceylan::Float64 Abs( Ceylan::Float64 x ) throw() ;
+		CEYLAN_DLL Ceylan::Float64 Abs( Ceylan::Float64 x ) ;
+		
 		
 		/// Computes the absolute value of specified argument.
-		CEYLAN_DLL Ceylan::LongFloat Abs( Ceylan::LongFloat x ) throw() ;
+		CEYLAN_DLL Ceylan::LongFloat Abs( Ceylan::LongFloat x ) ;
+		
 		
 		
 		/// Min:
@@ -922,11 +974,12 @@ namespace Ceylan
 		 *
 		 */
 		template<typename T>
-		T Min( T x, T y ) throw()
+		T Min( T x, T y ) 
 		{
-			return ( ( x < y ) ? x: y ) ;
+			return ( ( x < y ) ? x : y ) ;
 				
 		}
+
 
 
 		/**
@@ -938,7 +991,7 @@ namespace Ceylan
 		 *
 		 */
 		template<typename T>
-		T Min( T x, T y, T z ) throw()
+		T Min( T x, T y, T z ) 
 		{
 		
 			if ( x < y ) 
@@ -948,28 +1001,20 @@ namespace Ceylan
 								
 		}
 
+
 		
 		// Integer signed and unsigned types:
 
+
 		/**
 		 * Returns the minimum value of specified parameters.
 		 *
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Sint8 Min( Ceylan::Sint8 x, Ceylan::Sint8 y ) 
-			throw() ;		
+		CEYLAN_DLL Ceylan::Sint8 Min( Ceylan::Sint8 x, Ceylan::Sint8 y ) ;		
 
 		
-		/**
-		 * Returns the minimum value of specified parameters.
-		 *
-		 * @note No macro used to avoid nasty side effects.
-		 *
-		 */
-		CEYLAN_DLL Ceylan::Uint8 Min( Ceylan::Uint8 x, Ceylan::Uint8 y ) 
-			throw() ;		
-		
 		
 		/**
 		 * Returns the minimum value of specified parameters.
@@ -977,9 +1022,19 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Sint16 Min( Ceylan::Sint16 x, Ceylan::Sint16 y ) 
-			throw() ;
+		CEYLAN_DLL Ceylan::Uint8 Min( Ceylan::Uint8 x, Ceylan::Uint8 y ) ;		
+		
+		
+		
+		/**
+		 * Returns the minimum value of specified parameters.
+		 *
+		 * @note No macro used to avoid nasty side effects.
+		 *
+		 */
+		CEYLAN_DLL Ceylan::Sint16 Min( Ceylan::Sint16 x, Ceylan::Sint16 y ) ;
 			
+		
 			
 		/**
 		 * Returns the minimum value of specified parameters.
@@ -987,8 +1042,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Uint16 Min( Ceylan::Uint16 x, Ceylan::Uint16 y ) 
-			throw() ;
+		CEYLAN_DLL Ceylan::Uint16 Min( Ceylan::Uint16 x, Ceylan::Uint16 y ) ;
+	
 				
 				
 		/**
@@ -997,8 +1052,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Sint32 Min( Ceylan::Sint32 x, Ceylan::Sint32 y )
-			throw() ;
+		CEYLAN_DLL Ceylan::Sint32 Min( Ceylan::Sint32 x, Ceylan::Sint32 y ) ;
+	
 	
 		
 		/**
@@ -1007,8 +1062,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Uint32 Min( Ceylan::Uint32 x, Ceylan::Uint32 y )
-			throw() ;
+		CEYLAN_DLL Ceylan::Uint32 Min( Ceylan::Uint32 x, Ceylan::Uint32 y ) ;
+		
 		
 				
 		/**
@@ -1018,7 +1073,8 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL Ceylan::SignedLongInteger Min( Ceylan::SignedLongInteger x,
-			Ceylan::SignedLongInteger y ) throw() ;
+			Ceylan::SignedLongInteger y ) ;
+
 
 				
 		/**
@@ -1029,7 +1085,8 @@ namespace Ceylan
 		 */
 		CEYLAN_DLL Ceylan::UnsignedLongInteger Min( 
 			Ceylan::UnsignedLongInteger x,
-			Ceylan::UnsignedLongInteger y ) throw() ;
+			Ceylan::UnsignedLongInteger y ) ;
+	
 	
 		
 		/**
@@ -1040,7 +1097,8 @@ namespace Ceylan
 		 * @note Disabled since ISO C++ does not support `long long'.
 		 *
 		 */
-		//long long int Min( long long int x, long long int y ) throw() ;
+		//long long int Min( long long int x, long long int y ) ;
+		
 		
 		
 		
@@ -1053,8 +1111,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float32 Min( Ceylan::Float32 x, Ceylan::Float32 y ) 
-			throw() ;
+		CEYLAN_DLL Ceylan::Float32 Min( Ceylan::Float32 x, Ceylan::Float32 y ) ;
+
 
 		
 		/**
@@ -1063,9 +1121,9 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float64 Min( Ceylan::Float64 x, Ceylan::Float64 y ) 
-			throw() ;
+		CEYLAN_DLL Ceylan::Float64 Min( Ceylan::Float64 x, Ceylan::Float64 y ) ;
 
+		
 		
 		/**
 		 * Returns the minimum value of specified parameters.
@@ -1074,7 +1132,8 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL Ceylan::LongFloat Min( Ceylan::LongFloat x, 
-			Ceylan::LongFloat y ) throw() ;
+			Ceylan::LongFloat y ) ;
+		
 		
 		
 		
@@ -1089,12 +1148,13 @@ namespace Ceylan
 		 *
 		 */
 		template<typename T>
-		T Max( T x, T y ) throw()
+		T Max( T x, T y ) 
 		{
 			return ( ( x > y ) ? x: y ) ;
 				
 		}
 
+		
 		
 		// Integer signed and unsigned types:
 
@@ -1105,19 +1165,9 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Sint8 Max( Ceylan::Sint8 x, Ceylan::Sint8 y ) 
-			throw() ;		
+		CEYLAN_DLL Ceylan::Sint8 Max( Ceylan::Sint8 x, Ceylan::Sint8 y ) ;		
 
 		
-		/**
-		 * Returns the maximum value of specified parameters.
-		 *
-		 * @note No macro used to avoid nasty side effects.
-		 *
-		 */
-		CEYLAN_DLL Ceylan::Uint8 Max( Ceylan::Uint8 x, Ceylan::Uint8 y ) 
-			throw() ;		
-		
 		
 		/**
 		 * Returns the maximum value of specified parameters.
@@ -1125,8 +1175,18 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Sint16 Max( Ceylan::Sint16 x, Ceylan::Sint16 y )
-			throw() ;
+		CEYLAN_DLL Ceylan::Uint8 Max( Ceylan::Uint8 x, Ceylan::Uint8 y ) ;		
+		
+		
+		
+		/**
+		 * Returns the maximum value of specified parameters.
+		 *
+		 * @note No macro used to avoid nasty side effects.
+		 *
+		 */
+		CEYLAN_DLL Ceylan::Sint16 Max( Ceylan::Sint16 x, Ceylan::Sint16 y ) ;
+		
 			
 			
 		/**
@@ -1135,8 +1195,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Uint16 Max( Ceylan::Uint16 x, Ceylan::Uint16 y )
-			throw() ;
+		CEYLAN_DLL Ceylan::Uint16 Max( Ceylan::Uint16 x, Ceylan::Uint16 y ) ;
+		
 				
 				
 		/**
@@ -1145,8 +1205,8 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Sint32 Max( Ceylan::Sint32 x, Ceylan::Sint32 y )
-			throw() ;
+		CEYLAN_DLL Ceylan::Sint32 Max( Ceylan::Sint32 x, Ceylan::Sint32 y ) ;
+	
 	
 		
 		/**
@@ -1155,9 +1215,9 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Uint32 Max( Ceylan::Uint32 x, Ceylan::Uint32 y )
-			throw() ;
+		CEYLAN_DLL Ceylan::Uint32 Max( Ceylan::Uint32 x, Ceylan::Uint32 y ) ;
 		
+				
 				
 		/**
 		 * Returns the maximum value of specified parameters.
@@ -1166,7 +1226,8 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL Ceylan::SignedLongInteger Max( Ceylan::SignedLongInteger x,
-			Ceylan::SignedLongInteger y ) throw() ;
+			Ceylan::SignedLongInteger y ) ;
+
 
 				
 		/**
@@ -1177,7 +1238,8 @@ namespace Ceylan
 		 */
 		CEYLAN_DLL Ceylan::UnsignedLongInteger Max( 
 			Ceylan::UnsignedLongInteger x,
-			Ceylan::UnsignedLongInteger y ) throw() ;
+			Ceylan::UnsignedLongInteger y ) ;
+	
 	
 		
 		/**
@@ -1188,7 +1250,8 @@ namespace Ceylan
 		 * @note Disabled since ISO C++ does not support `long long'.
 		 *
 		 */
-		//long long int Max( long long int x, long long int y ) throw() ;
+		//long long int Max( long long int x, long long int y ) ;
+		
 		
 		
 		
@@ -1201,9 +1264,9 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float32 Max( Ceylan::Float32 x, Ceylan::Float32 y ) 
-			throw() ;
+		CEYLAN_DLL Ceylan::Float32 Max( Ceylan::Float32 x, Ceylan::Float32 y ) ;
 
+		
 		
 		/**
 		 * Returns the maximum value of specified parameters.
@@ -1211,9 +1274,9 @@ namespace Ceylan
 		 * @note No macro used to avoid nasty side effects.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float64 Max( Ceylan::Float64 x, Ceylan::Float64 y ) 
-			throw() ;
+		CEYLAN_DLL Ceylan::Float64 Max( Ceylan::Float64 x, Ceylan::Float64 y ) ;
 
+	
 		
 		/**
 		 * Returns the maximum value of specified parameters.
@@ -1222,10 +1285,11 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL Ceylan::LongFloat Max( Ceylan::LongFloat x, 
-			Ceylan::LongFloat y ) throw() ;
+			Ceylan::LongFloat y ) ;
 		
 			
 
+	
 				
 		// Exponentials:
 		
@@ -1235,53 +1299,61 @@ namespace Ceylan
 		 * raised to the power of x.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float32 Exp( Ceylan::Float32 x ) throw() ;
+		CEYLAN_DLL Ceylan::Float32 Exp( Ceylan::Float32 x ) ;
 		
+	
 		
 		/**
 		 * Computes the value of e (the base of natural logarithms) 
 		 * raised to the power of x.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float64 Exp( Ceylan::Float64 x ) throw() ;
+		CEYLAN_DLL Ceylan::Float64 Exp( Ceylan::Float64 x ) ;
 		
+	
 		
 		/**
 		 * Computes the value of e (the base of natural logarithms)
 		 * raised to the power of x.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::LongFloat Exp( Ceylan::LongFloat x ) throw() ;
+		CEYLAN_DLL Ceylan::LongFloat Exp( Ceylan::LongFloat x ) ;
 		
 		
+	
 		
 		// Power:
 		
 		/// Computes the value of x raised to the power of y.
-		CEYLAN_DLL Ceylan::Float32 Pow( Ceylan::Float32 x, Ceylan::Float32 y ) 
-			throw() ;
+		CEYLAN_DLL Ceylan::Float32 Pow( Ceylan::Float32 x, Ceylan::Float32 y ) ;
+	
 		
 		/// Computes the value of x raised to the power of y.		
-		CEYLAN_DLL Ceylan::Float64 Pow( Ceylan::Float64 x, 
-			Ceylan::Float64 y ) throw() ;
+		CEYLAN_DLL Ceylan::Float64 Pow( Ceylan::Float64 x, Ceylan::Float64 y ) ;
+		
 		
 		/// Computes the value of x raised to the power of y.		
 		CEYLAN_DLL Ceylan::LongFloat Pow( Ceylan::LongFloat x, 
-			Ceylan::LongFloat y ) throw() ;
+			Ceylan::LongFloat y ) ;
+	
 		
 		
 		
 		// Power of two:
+	
 		
 		/// Computes the value of x² (x*x).
-		CEYLAN_DLL Ceylan::Float32 Pow2( Ceylan::Float32 x ) throw() ;
+		CEYLAN_DLL Ceylan::Float32 Pow2( Ceylan::Float32 x ) ;
+	
 		
 		/// Computes the value of x² (x*x).		
-		CEYLAN_DLL Ceylan::Float64 Pow2( Ceylan::Float64 x ) throw() ;
+		CEYLAN_DLL Ceylan::Float64 Pow2( Ceylan::Float64 x ) ;
+	
 		
 		/// Computes the value of x² (x*x).		
-		CEYLAN_DLL Ceylan::LongFloat Pow2( Ceylan::LongFloat x ) throw() ;
+		CEYLAN_DLL Ceylan::LongFloat Pow2( Ceylan::LongFloat x ) ;
 		
+	
 			
 			
 		// Logarithm:
@@ -1293,7 +1365,18 @@ namespace Ceylan
 		 * @note The argument must be strictly positive.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float32 Log( Ceylan::Float32 x ) throw() ;
+		CEYLAN_DLL Ceylan::Float32 Log( Ceylan::Float32 x ) ;
+		
+	
+		
+		/**
+		 * Computes the value of the natural logarithm of argument x.
+		 *
+		 * @note The argument must be strictly positive.
+		 *
+		 */
+		CEYLAN_DLL Ceylan::Float64 Log( Ceylan::Float64 x ) ;
+	
 		
 		
 		/**
@@ -1302,47 +1385,43 @@ namespace Ceylan
 		 * @note The argument must be strictly positive.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float64 Log( Ceylan::Float64 x ) throw() ;
+		CEYLAN_DLL Ceylan::LongFloat Log( Ceylan::LongFloat x ) ;
 		
-		
-		/**
-		 * Computes the value of the natural logarithm of argument x.
-		 *
-		 * @note The argument must be strictly positive.
-		 *
-		 */
-		CEYLAN_DLL Ceylan::LongFloat Log( Ceylan::LongFloat x ) throw() ;
-		
+	
 		
 				
 		// Square root:
 		
 		
 		/**
-		 * Computes the non-negative square root of x, throw an 
-		 * exception if x is negative.
+		 * Computes the non-negative square root of x.
+		 *
+		 * @throw MathsException if x is negative.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float32 Sqrt( Ceylan::Float32 x ) 
-			throw( MathsException ) ;
+		CEYLAN_DLL Ceylan::Float32 Sqrt( Ceylan::Float32 x ) ;
+		
 		
 		
 		/**
-		 * Computes the non-negative square root of x, throw an 
-		 * exception if x is negative.
+		 * Computes the non-negative square root of x.
+		 *
+		 * @throw MathsException if x is negative.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float64 Sqrt( Ceylan::Float64 x ) 
-			throw( MathsException ) ;
+		CEYLAN_DLL Ceylan::Float64 Sqrt( Ceylan::Float64 x ) ;
+		
 		
 		
 		/**
-		 * Computes the non-negative square root of x, throw an 
-		 * exception if x is negative.
+		 * Computes the non-negative square root of x.
+ 		 *
+		 * @throw MathsException if x is negative.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::LongFloat Sqrt( Ceylan::LongFloat x ) 
-			throw( MathsException ) ;
+		CEYLAN_DLL Ceylan::LongFloat Sqrt( Ceylan::LongFloat x ) ;
+			
+			
 			
 			
 		
@@ -1361,16 +1440,8 @@ namespace Ceylan
 		 * @note Uses a look-up table on the ARM9 Nintendo DS.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float32 Cos( Ceylan::Float32 angle ) throw() ;
+		CEYLAN_DLL Ceylan::Float32 Cos( Ceylan::Float32 angle ) ;
 		
-		
-		/**
-		 * Computes the cosine of 'angle', where angle is given in radians.
-		 *
-		 * @return a value between -1 and 1.
-		 *
-		 */
-		CEYLAN_DLL Ceylan::Float64 Cos( Ceylan::Float64 angle ) throw() ;
 		
 		
 		/**
@@ -1379,8 +1450,19 @@ namespace Ceylan
 		 * @return a value between -1 and 1.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::LongFloat Cos( Ceylan::LongFloat angle ) throw() ;
+		CEYLAN_DLL Ceylan::Float64 Cos( Ceylan::Float64 angle ) ;
 		
+		
+		
+		/**
+		 * Computes the cosine of 'angle', where angle is given in radians.
+		 *
+		 * @return a value between -1 and 1.
+		 *
+		 */
+		CEYLAN_DLL Ceylan::LongFloat Cos( Ceylan::LongFloat angle ) ;
+		
+
 
 
 		
@@ -1395,16 +1477,8 @@ namespace Ceylan
 		 * @note Uses a look-up table on the ARM9 Nintendo DS.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float32 Sin( Ceylan::Float32 angle ) throw() ;
+		CEYLAN_DLL Ceylan::Float32 Sin( Ceylan::Float32 angle ) ;
 		
-		
-		/**
-		 * Computes the sine of 'angle', where angle is given in radians.
-		 *
-		 * @return a value between -1 and 1.
-		 *
-		 */
-		CEYLAN_DLL Ceylan::Float64 Sin( Ceylan::Float64 angle ) throw() ;
 		
 		
 		/**
@@ -1413,7 +1487,18 @@ namespace Ceylan
 		 * @return a value between -1 and 1.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::LongFloat Sin( Ceylan::LongFloat angle ) throw() ;
+		CEYLAN_DLL Ceylan::Float64 Sin( Ceylan::Float64 angle ) ;
+		
+		
+		
+		/**
+		 * Computes the sine of 'angle', where angle is given in radians.
+		 *
+		 * @return a value between -1 and 1.
+		 *
+		 */
+		CEYLAN_DLL Ceylan::LongFloat Sin( Ceylan::LongFloat angle ) ;
+		
 		
 		
 	
@@ -1429,16 +1514,8 @@ namespace Ceylan
 		 * @note Uses a look-up table on the ARM9 Nintendo DS.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Float32 Tan( Ceylan::Float32 angle ) throw() ;
+		CEYLAN_DLL Ceylan::Float32 Tan( Ceylan::Float32 angle ) ;
 		
-		
-		/**
-		 * Computes the tangent of 'angle', where angle is given in radians.
-		 *
-		 * @return the tangent.
-		 *
-		 */
-		CEYLAN_DLL Ceylan::Float64 Tan( Ceylan::Float64 angle ) throw() ;
 		
 		
 		/**
@@ -1447,7 +1524,17 @@ namespace Ceylan
 		 * @return the tangent.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::LongFloat Tan( Ceylan::LongFloat angle ) throw() ;
+		CEYLAN_DLL Ceylan::Float64 Tan( Ceylan::Float64 angle ) ;
+		
+		
+		
+		/**
+		 * Computes the tangent of 'angle', where angle is given in radians.
+		 *
+		 * @return the tangent.
+		 *
+		 */
+		CEYLAN_DLL Ceylan::LongFloat Tan( Ceylan::LongFloat angle ) ;
 		
 	
 		
@@ -1462,7 +1549,7 @@ namespace Ceylan
 		 * Computes the fixed-point non-negative square root of x.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Uint32 SqrtFixed( Ceylan::Uint32 x ) throw() ;
+		CEYLAN_DLL Ceylan::Uint32 SqrtFixed( Ceylan::Uint32 x ) ;
 		
 
  		
@@ -1477,7 +1564,7 @@ namespace Ceylan
 		 * @note Uses a look-up table on the ARM9 Nintendo DS.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Sint32 CosFixed( Ceylan::Sint32 angle ) throw() ;
+		CEYLAN_DLL Ceylan::Sint32 CosFixed( Ceylan::Sint32 angle ) ;
 
 
 		/**
@@ -1488,7 +1575,7 @@ namespace Ceylan
 		 * @note Uses a look-up table on the ARM9 Nintendo DS.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Sint32 SinFixed( Ceylan::Sint32 angle ) throw() ;
+		CEYLAN_DLL Ceylan::Sint32 SinFixed( Ceylan::Sint32 angle ) ;
 	
 
 		/**
@@ -1500,13 +1587,14 @@ namespace Ceylan
 		 * @note Uses a look-up table on the ARM9 Nintendo DS.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Sint32 TanFixed( Ceylan::Sint32 angle ) throw() ;
+		CEYLAN_DLL Ceylan::Sint32 TanFixed( Ceylan::Sint32 angle ) ;
 	
 		
 #endif // CEYLAN_RUNS_ON_ARM9
 
 
 #endif // defined(CEYLAN_ARCH_NINTENDO_DS) && CEYLAN_ARCH_NINTENDO_DS == 1
+
 
 
 		
@@ -1516,7 +1604,8 @@ namespace Ceylan
 		 *
 		 */		
 		CEYLAN_DLL AngleInRadians DegreeToRadian( 
-			AngleInDegrees angleInDegrees ) throw() ;
+			AngleInDegrees angleInDegrees ) ;
+		
 		
 		
 		/**
@@ -1534,14 +1623,16 @@ namespace Ceylan
 		 * @note No overflow checking is done.
 		 *
 		 */
-		CEYLAN_DLL Uint16 NextPowerOfTwo( Uint16 value ) throw() ;
+		CEYLAN_DLL Uint16 NextPowerOfTwo( Uint16 value ) ;
 	
+		
 		
 		/**
 		 * Tells whether the specified value is a power of two.
 		 *
 		 */
-		CEYLAN_DLL bool IsAPowerOfTwo( Uint16 value ) throw() ;	
+		CEYLAN_DLL bool IsAPowerOfTwo( Uint16 value ) ;	
+
 
 
 		
@@ -1562,8 +1653,7 @@ namespace Ceylan
 		 * NextMultipleOf( 8, 16 ) == 16.
 		 *
 		 */
-		CEYLAN_DLL Uint16 NextMultipleOf( Uint16 multiple, Uint16 value )
-			throw() ;
+		CEYLAN_DLL Uint16 NextMultipleOf( Uint16 multiple, Uint16 value ) ;
 		
 			
 		
@@ -1581,17 +1671,21 @@ namespace Ceylan
 			public:
 			
 			
+			
 				/// Basic constructor.
 				explicit IntToIntFunctor( 
-					Ceylan::Sint32 creationParameter ) throw() ;
+					Ceylan::Sint32 creationParameter ) ;
+				
 				
 				/// Basic virtual destructor;
 				virtual ~IntToIntFunctor() throw() ;
 				
+				
 				/// The callable method.
 				virtual Ceylan::Sint32 operator() ( 
-					Ceylan::Sint32 callParameter ) throw() = 0 ;
+					Ceylan::Sint32 callParameter ) = 0 ;
 	
+		
 		
 	            /**
 	             * Returns a user-friendly description of the state of
@@ -1606,8 +1700,8 @@ namespace Ceylan
 				 *
 	             */
 		 		virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+		
 		
 		
 			protected:
@@ -1628,4 +1722,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_MATHS_BASIC_H_
+

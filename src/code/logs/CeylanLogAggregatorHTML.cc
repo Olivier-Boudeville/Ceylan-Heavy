@@ -71,12 +71,11 @@ LogAggregatorHTML::LogAggregatorHTML(
 		const string & callerDescription,
 		const string & logDirectoryName,
 		bool useGlobalLevelOfDetail,
-		bool beSmart ) 
-	throw( LogAggregatorException )	: 
-		LogAggregator( beSmart, useGlobalLevelOfDetail ),
-		_callerDescription( callerDescription ),
-		_logDirectoryName( logDirectoryName ),
-		_outputDirectory( 0 )
+		bool beSmart ) :
+	LogAggregator( beSmart, useGlobalLevelOfDetail ),
+	_callerDescription( callerDescription ),
+	_logDirectoryName( logDirectoryName ),
+	_outputDirectory( 0 )
 {
 
 		
@@ -105,6 +104,7 @@ LogAggregatorHTML::LogAggregatorHTML(
 }
 
 
+
 LogAggregatorHTML::~LogAggregatorHTML() throw() 
 {
 
@@ -126,7 +126,7 @@ LogAggregatorHTML::~LogAggregatorHTML() throw()
 			std::cerr << "Error while aggregating logs "
 				"in LogAggregatorHTML destructor: "
 				<< e.toString() << std::endl ;
-			// Never throw an exception from a destructor !		
+			// Never throw an exception from a destructor!		
 		}
 			
 	}
@@ -137,7 +137,8 @@ LogAggregatorHTML::~LogAggregatorHTML() throw()
 }
 
 
-void LogAggregatorHTML::aggregate() throw( LogAggregatorException ) 
+
+void LogAggregatorHTML::aggregate() 
 {
 
 	CEYLAN_LOG( "LogAggregatorHTML aggregation started" ) ; 
@@ -255,7 +256,8 @@ void LogAggregatorHTML::aggregate() throw( LogAggregatorException )
 }
 
 
-void LogAggregatorHTML::store( LogMessage & message ) throw( LogException )
+
+void LogAggregatorHTML::store( LogMessage & message )
 {
 
 	CEYLAN_LOG( "Storing a new message " + message.toString() ) ;
@@ -266,9 +268,10 @@ void LogAggregatorHTML::store( LogMessage & message ) throw( LogException )
 }
 
 
-const string LogAggregatorHTML::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+
+const string LogAggregatorHTML::toString( Ceylan::VerbosityLevels level ) const
 {
+
 	return "This is an HTML log aggregator. " 
 		+ LogAggregator::toString( level ) ;
 
@@ -281,8 +284,7 @@ const string LogAggregatorHTML::toString( Ceylan::VerbosityLevels level )
 // Write section.
 
 
-void LogAggregatorHTML::write( const LogChannel & channel )
-	const throw( LogException )
+void LogAggregatorHTML::write( const LogChannel & channel ) const
 {
 
 	CEYLAN_LOG( "Writing on disk channel " + channel.toString() ) ;
@@ -297,7 +299,7 @@ void LogAggregatorHTML::write( const LogChannel & channel )
 	
 	WriteChannelHeader( channel, logChannelPageHolderFile.get() ) ;
 		
-	// Level of detail globally overriden ?
+	// Level of detail globally overridden?
 	if ( _useGlobalLevelOfDetail )			
 		sourceLevelOfDetail = _globalLevelOfDetail ;
 	else
@@ -326,8 +328,9 @@ void LogAggregatorHTML::write( const LogChannel & channel )
 }
 
 
+
 void LogAggregatorHTML::write( const LogMessage & message, 
-	Ceylan::System::File & targetFile ) const throw( LogException )
+	Ceylan::System::File & targetFile ) const
 {
 
 	CEYLAN_LOG( "Writing on disk message " + message.toString() ) ;
@@ -356,8 +359,9 @@ void LogAggregatorHTML::write( const LogMessage & message,
 }
 
 
+
 void LogAggregatorHTML::WriteChannelHeader( const LogChannel & channel,
-	Ceylan::System::File & targetFile ) throw( LogException )
+	Ceylan::System::File & targetFile )
 {
 
 	string newHeader = ChannelHeader ;
@@ -381,8 +385,9 @@ void LogAggregatorHTML::WriteChannelHeader( const LogChannel & channel,
 }
 
 
+
 void LogAggregatorHTML::WriteChannelFooter( const LogChannel & channel,
-	Ceylan::System::File & targetFile ) throw( LogException )
+	Ceylan::System::File & targetFile )
 {
 
 	string newFooter = ChannelFooter ;

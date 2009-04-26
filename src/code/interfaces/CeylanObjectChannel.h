@@ -36,12 +36,14 @@
 #include <list>
 
 
+
 namespace Ceylan
 {
 
 
 	namespace Log
 	{
+			
 			
 			
 		// An object channed has an object identifier.	
@@ -71,13 +73,16 @@ namespace Ceylan
 				 * by the log message from which this ObjectChannel 
 				 * is spawned.
 				 *
+				 * @throw LogException if the creation failed.
+				 *
 		 		 */
-				explicit ObjectChannel( const std::string & channelName ) 
-					throw( LogException ) ;
+				explicit ObjectChannel( const std::string & channelName ) ;
+			
 			
 	
 				/// Basic virtual destructor.
 				virtual ~ObjectChannel() throw() ;
+
 
 
 				/**
@@ -95,14 +100,22 @@ namespace Ceylan
 				 * the protocol prefix is taken into account when 
 				 * matching the message's channel name and this channel name.
 				 *
+				 * @throw LogException if the operation failed.
+				 *
 				 */
 				virtual void addMessage( LogMessage & message, 
-					bool check = true ) throw( LogException ) ;
+					bool check = true ) ;
 
 
-				/// Returns this ObjectChannel's Object identifier.
-				virtual ObjectIdentifier & getObjectIdentifier() 
-					const throw( LogException ) ;
+
+				/**
+				 * Returns this ObjectChannel's Object identifier.
+				 *
+				 * @throw LogException if the operation failed.
+				 *
+				 */
+				virtual ObjectIdentifier & getObjectIdentifier() const ;
+				
 				
 				
 	            /**
@@ -118,8 +131,7 @@ namespace Ceylan
 				 *
 	             */
 				virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 				
 				
 								
@@ -146,7 +158,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				ObjectChannel( const ObjectChannel & source ) throw() ;
+				ObjectChannel( const ObjectChannel & source ) ;
 			
 			
 				/**
@@ -157,8 +169,8 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				ObjectChannel & operator = ( const ObjectChannel & source )
-					throw() ;
+				ObjectChannel & operator = ( const ObjectChannel & source ) ;
+
 
 		} ;
 
@@ -166,4 +178,7 @@ namespace Ceylan
 
 }
 
+
+
 #endif // CEYLAN_OBJECT_CHANNEL_H_
+

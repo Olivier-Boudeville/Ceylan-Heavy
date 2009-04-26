@@ -32,7 +32,6 @@
 
 #include "CeylanLogPlug.h"    // for LogPlug
 #include "CeylanOperators.h"  // for toString
-#include "CeylanUtils.h"      // for emergencyShutdown
 
 
 #ifdef CEYLAN_USES_CONFIG_H
@@ -59,30 +58,37 @@ using namespace Ceylan::Maths::Linear ;
 using Ceylan::Maths::Real ;
 
 
-Tripoint::Tripoint( Real x0, Real x1, Real x2 ) throw() 
+
+Tripoint::Tripoint( Real x0, Real x1, Real x2 ) 
 {
+
 	_coordinates[0] = x0 ;
 	_coordinates[1] = x1 ;
 	_coordinates[2] = x2 ;	
+	
 }
 
 
-Tripoint::~Tripoint() throw() 
+
+Tripoint::~Tripoint() throw()
 {
 
 }
 
 
 
-void Tripoint::setTo( Real x0, Real x1, Real x2 ) throw()
+void Tripoint::setTo( Real x0, Real x1, Real x2 )
 {
+
 	_coordinates[0] = x0 ;
 	_coordinates[1] = x1 ;
 	_coordinates[2] = x2 ;	
+	
 }
 
 
-void Tripoint::setAllElementsTo( Real commonValue ) throw()
+
+void Tripoint::setAllElementsTo( Real commonValue )
 {
 
 	for ( MatrixIndex i = 0; i < Dimensions; i++ )
@@ -93,14 +99,15 @@ void Tripoint::setAllElementsTo( Real commonValue ) throw()
 }
 
 
-Real Tripoint::getElementAt( MatrixIndex index ) const throw()
+
+Real Tripoint::getElementAt( MatrixIndex index ) const
 {
 
 #if CEYLAN_DEBUG
 
 	if ( index >= Dimensions )
-		Ceylan::emergencyShutdown( 
-			"Tripoint::getElementAt : index out of bounds." ) ;
+		throw MathsException( 
+			"Tripoint::getElementAt: index out of bounds." ) ;
 			
 #endif // CEYLAN_DEBUG
 		
@@ -109,14 +116,15 @@ Real Tripoint::getElementAt( MatrixIndex index ) const throw()
 }
 
 
-void Tripoint::setElementAt( MatrixIndex index, Real newValue ) throw()
+
+void Tripoint::setElementAt( MatrixIndex index, Real newValue )
 {
 
 #if CEYLAN_DEBUG
 
 	if ( index >= Dimensions )
-		Ceylan::emergencyShutdown( 
-			"Tripoint::setElementAt : index out of bounds." ) ;
+		throw MathsException( 
+			"Tripoint::setElementAt: index out of bounds." ) ;
 		
 #endif // CEYLAN_DEBUG
 
@@ -125,7 +133,8 @@ void Tripoint::setElementAt( MatrixIndex index, Real newValue ) throw()
 }
 
 
-const string Tripoint::toString( VerbosityLevels level ) const throw()
+
+const string Tripoint::toString( VerbosityLevels level ) const
 {
 
 	string res ;
@@ -150,7 +159,7 @@ const string Tripoint::toString( VerbosityLevels level ) const throw()
 		return res ;
 	}
 
-	// Non-HTML format requested :
+	// Non-HTML format requested:
 	
 	if ( level == high )
 	{
@@ -174,7 +183,7 @@ const string Tripoint::toString( VerbosityLevels level ) const throw()
 
     	if ( oss.fail() )
 		{
-			string message = "Tripoint::toString : conversion error." ;
+			string message = "Tripoint::toString: conversion error." ;
         	Log::LogPlug::error( message ) ;
 			return message ;
 		}
@@ -186,29 +195,27 @@ const string Tripoint::toString( VerbosityLevels level ) const throw()
 	else
 	{
 	
-		res = "Tripoint : [ " ;
+		res = "Tripoint: [ " ;
 		
     	for ( MatrixIndex i = 0; i < Dimensions; i++ )
 		{
 			res += Ceylan::toString( _coordinates[i] ) 
-				+ ( ( i == Dimensions-1 ) ? " ]" : " ; " ) ; 
+				+ ( ( i == Dimensions-1 ) ? " ]": " ; " ) ; 
 		}		
 		
 		return res ;
 		
 	}
 	
-	// Useless but avoids warnings :
+	// Useless but avoids warnings:
 	return res ;
 				
 }
 
 
 
-
-
 bool Ceylan::Maths::Linear::operator == ( const Tripoint & t1, 
-	const Tripoint & t2 ) throw()
+	const Tripoint & t2 )
 {
 
    	for ( MatrixIndex i = 0; i < Tripoint::Dimensions; i++ )
@@ -229,16 +236,20 @@ bool Ceylan::Maths::Linear::operator == ( const Tripoint & t1,
 	
 }
 
+		
 			
 bool Ceylan::Maths::Linear::operator != ( const Tripoint & t1, 
-	const Tripoint & t2 ) throw() 
+	const Tripoint & t2 ) 
 {
+
 	return ( ! ( t1 == t2 ) ) ;
+	
 }
 
 
+
 Tripoint Ceylan::Maths::Linear::operator + ( const Tripoint & t , 
-	const Vector3 & v ) throw()
+	const Vector3 & v )
 {
 
 	Tripoint result ;
@@ -253,8 +264,9 @@ Tripoint Ceylan::Maths::Linear::operator + ( const Tripoint & t ,
 }
 
 
+
 Tripoint Ceylan::Maths::Linear::operator - ( const Tripoint & t , 
-	const Vector3 & v ) throw()
+	const Vector3 & v )
 {
 
 	Tripoint result ;
@@ -269,7 +281,8 @@ Tripoint Ceylan::Maths::Linear::operator - ( const Tripoint & t ,
 }
 
 
-Vector3 Ceylan::Maths::Linear::vectorize( const Tripoint & t ) throw()
+
+Vector3 Ceylan::Maths::Linear::vectorize( const Tripoint & t )
 {
 
 	Vector3 result ;
@@ -284,8 +297,9 @@ Vector3 Ceylan::Maths::Linear::vectorize( const Tripoint & t ) throw()
 }
 
 
+
 Vector3 Ceylan::Maths::Linear::vectorize( const Tripoint & t1, 
-	const Tripoint & t2 ) throw()
+	const Tripoint & t2 )
 {
 
 	Vector3 result ;

@@ -40,6 +40,7 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
+
 using namespace Ceylan::System ;
 using namespace Ceylan::Network ;
 using namespace Ceylan::Log ;
@@ -52,9 +53,9 @@ using std::set ;
 
 
 
+
 MultiplexedProtocolBasedStreamServer::MultiplexedProtocolBasedStreamServer( 
-	Port listeningPort, bool reuse )
-		throw( SocketException ):
+		Port listeningPort, bool reuse ) :
 	MultiplexedServerStreamSocket( listeningPort, reuse )
 {
 
@@ -63,8 +64,9 @@ MultiplexedProtocolBasedStreamServer::MultiplexedProtocolBasedStreamServer(
 }
 
 
+
 MultiplexedProtocolBasedStreamServer::~MultiplexedProtocolBasedStreamServer()
-	throw()
+	throw()	
 {
 
 	// Not anything special to do here.	
@@ -72,8 +74,8 @@ MultiplexedProtocolBasedStreamServer::~MultiplexedProtocolBasedStreamServer()
 }
 
 
+
 AnonymousStreamSocket * MultiplexedProtocolBasedStreamServer::accept() 
-	throw( ServerStreamSocketException )
 {
 
 #if CEYLAN_USES_NETWORK
@@ -83,8 +85,8 @@ AnonymousStreamSocket * MultiplexedProtocolBasedStreamServer::accept()
 
 
 #if CEYLAN_DEBUG_NETWORK_SERVERS
-	LogPlug::trace( "MultiplexedProtocolBasedStreamServer::accept : "
-		"will accept now connections, state is : " + toString() ) ;
+	LogPlug::trace( "MultiplexedProtocolBasedStreamServer::accept: "
+		"will accept now connections, state is: " + toString() ) ;
 #endif // CEYLAN_DEBUG_NETWORK_SERVERS
 	
 	
@@ -94,7 +96,7 @@ AnonymousStreamSocket * MultiplexedProtocolBasedStreamServer::accept()
 	{
 	
 		/*
-		 * Accepts the connection, by passing the listening file descriptor :
+		 * Accepts the connection, by passing the listening file descriptor:
 		 *
 		 * No particular protocol server can be set here, see
 		 * the customizeProtocolFor method.
@@ -108,7 +110,7 @@ AnonymousStreamSocket * MultiplexedProtocolBasedStreamServer::accept()
 	{
 
 		LogPlug::warning( "MultiplexedProtocolBasedStreamServer::accept "
-			"cancelled : " + e.toString() ) ;
+			"cancelled: " + e.toString() ) ;
 			
 		return 0 ;
 		
@@ -116,7 +118,7 @@ AnonymousStreamSocket * MultiplexedProtocolBasedStreamServer::accept()
 	catch( const SocketException & e )
 	{
 		throw MultiplexedServerStreamSocketException( 
-			"MultiplexedProtocolBasedStreamServer::accept failed : "
+			"MultiplexedProtocolBasedStreamServer::accept failed: "
 			+ e.toString() ) ;
 	}	
 
@@ -124,27 +126,27 @@ AnonymousStreamSocket * MultiplexedProtocolBasedStreamServer::accept()
 		
 
 #if CEYLAN_DEBUG_NETWORK_SERVERS
-	LogPlug::trace( "MultiplexedProtocolBasedStreamServer::accept : "
+	LogPlug::trace( "MultiplexedProtocolBasedStreamServer::accept: "
 		"new connection accepted by the anonymous socket." ) ;
 #endif // CEYLAN_DEBUG_NETWORK_SERVERS
 
 	
 	/*
 	 * The user-supplied accepted method must link a protocol server to the
-	 * newly created AnonymousProtocolAwareStreamSocket :
+	 * newly created AnonymousProtocolAwareStreamSocket:
 	 *
 	 */
 	accepted( *protocolSocket ) ;
 	
 	if ( ! protocolSocket->hasProtocolServer() )
 		throw MultiplexedServerStreamSocketException( 
-			"MultiplexedProtocolBasedStreamServer::accept : "
+			"MultiplexedProtocolBasedStreamServer::accept: "
 			"the user-overriden accepted() method did not set "
-			"a protocol server to : " + protocolSocket->toString() ) ;
+			"a protocol server to: " + protocolSocket->toString() ) ;
 			
 			
 #if CEYLAN_DEBUG_NETWORK_SERVERS
-	LogPlug::trace( "MultiplexedProtocolBasedStreamServer::accept : "
+	LogPlug::trace( "MultiplexedProtocolBasedStreamServer::accept: "
 		"connection registered" ) ;
 #endif // CEYLAN_DEBUG_NETWORK_SERVERS
 
@@ -158,7 +160,7 @@ AnonymousStreamSocket * MultiplexedProtocolBasedStreamServer::accept()
 
 
 	throw ServerStreamSocketException( 
-		"MultiplexedProtocolBasedStreamServer::accept : "
+		"MultiplexedProtocolBasedStreamServer::accept: "
 		"network feature not available." ) ;
 		
 		
@@ -167,24 +169,23 @@ AnonymousStreamSocket * MultiplexedProtocolBasedStreamServer::accept()
 }
 
 
+
 void MultiplexedProtocolBasedStreamServer::accepted( 
-		AnonymousStreamSocket & newConnection )
-	throw( ServerStreamSocketException )
+	AnonymousStreamSocket & newConnection )
 {
 
 	throw ServerStreamSocketException(
-		"MultiplexedProtocolBasedStreamServer::accepted : "
+		"MultiplexedProtocolBasedStreamServer::accepted: "
 		"this method must be overriden by the user "
 		"(and it must set a protocol server of the new connection socket)." ) ;
 		
 }
 
 
-bool MultiplexedProtocolBasedStreamServer::handleConnection( 
-		AnonymousStreamSocket & connection )
-	throw( MultiplexedServerStreamSocketException )
-{
 
+bool MultiplexedProtocolBasedStreamServer::handleConnection( 
+	AnonymousStreamSocket & connection )
+{
 
 #if CEYLAN_DEBUG_NETWORK_SERVERS
 	LogPlug::trace( "MultiplexedProtocolBasedStreamServer::handleConnection "
@@ -211,19 +212,19 @@ bool MultiplexedProtocolBasedStreamServer::handleConnection(
 	{
 	
 		throw MultiplexedServerStreamSocketException(
-			"MultiplexedProtocolBasedStreamServer::handleConnection : "
+			"MultiplexedProtocolBasedStreamServer::handleConnection: "
 			+ e.toString() ) ;
 			 
 	}	
 	catch( const Middleware::ProtocolException & e )
 	{
 	
-		// Do not kill the server for a connection-level error :
+		// Do not kill the server for a connection-level error:
 		LogPlug::error(
-			"MultiplexedProtocolBasedStreamServer::handleConnection : "
+			"MultiplexedProtocolBasedStreamServer::handleConnection: "
 			+ e.toString() + ". Killing the connection." ) ;
 			
-		// .. but kill the connection :
+		// .. but kill the connection:
 		return false ;	
 			 
 	}
@@ -231,9 +232,9 @@ bool MultiplexedProtocolBasedStreamServer::handleConnection(
 }
 
 
+
 void MultiplexedProtocolBasedStreamServer::closeConnection( 
-		AnonymousStreamSocket & connection )
-	throw( MultiplexedServerStreamSocketException )
+	AnonymousStreamSocket & connection )	
 {
 
 	if ( _currentConnections.find( &connection ) != _currentConnections.end() )
@@ -256,14 +257,15 @@ void MultiplexedProtocolBasedStreamServer::closeConnection(
 	}
 	else
 		throw MultiplexedServerStreamSocketException( 
-			"MultiplexedServerStreamSocket::closeConnection : "
-			"unable to find following connection : " + connection.toString() ) ;
+			"MultiplexedServerStreamSocket::closeConnection: "
+			"unable to find following connection: " + connection.toString() ) ;
 
 }
 
 
+
 const std::string MultiplexedProtocolBasedStreamServer::toString(
-	Ceylan::VerbosityLevels level ) const throw()
+	Ceylan::VerbosityLevels level ) const 
 {
 
 #if CEYLAN_USES_NETWORK
@@ -284,7 +286,7 @@ const std::string MultiplexedProtocolBasedStreamServer::toString(
 					it++ )
 			connectionDescriptions.push_back( (*it)->toString( level ) ) ;
 	
-		res += " managing currently following connection(s) : "
+		res += " managing currently following connection(s): "
 			+ Ceylan::formatStringList( connectionDescriptions ) ;
 			
 	}	

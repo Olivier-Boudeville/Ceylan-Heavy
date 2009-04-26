@@ -56,6 +56,8 @@ namespace Ceylan
 	}
 
 
+
+
 	namespace Middleware
 	{
 
@@ -65,17 +67,19 @@ namespace Ceylan
 		 * Exception to be raised whenever a protocol-related issue arises.
 		 *
 		 */
-		class CEYLAN_DLL MarshallException : public MiddlewareException 
+		class CEYLAN_DLL MarshallException: public MiddlewareException 
 		{
 		
 			public:
 			
 			
-				MarshallException( const std::string & message ) throw() ;
+				MarshallException( const std::string & message ) ;
+				
 				virtual ~MarshallException() throw() ;
 				
 		
 		} ;
+
 
 
 
@@ -84,17 +88,20 @@ namespace Ceylan
 		 * into a higher-level construct.
 		 *
 		 */
-		class CEYLAN_DLL DecodeException : public MarshallException 
+		class CEYLAN_DLL DecodeException: public MarshallException 
 		{
 		
 			public:
 			
 			
-				DecodeException( const std::string & message ) throw() ;
+				DecodeException( const std::string & message ) ;
+				
 				virtual ~DecodeException() throw() ;
 				
 		
 		} ;
+
+
 
 
 		/**
@@ -102,17 +109,19 @@ namespace Ceylan
 		 * be encoded into a bitstream.
 		 *
 		 */
-		class CEYLAN_DLL EncodeException : public MarshallException 
+		class CEYLAN_DLL EncodeException: public MarshallException 
 		{
 		
 			public:
 			
 			
-				EncodeException( const std::string & message ) throw() ;
+				EncodeException( const std::string & message ) ;
+				
 				virtual ~EncodeException() throw() ;
 				
 		
 		} ;
+
 
 
 
@@ -147,7 +156,7 @@ namespace Ceylan
 		 * this may or may not be make sense.
 		 * 
 		 * For example, ASN marshalling is PDU-based (it handles only full
-		 * structures), hence fine-grain (ex : Uint32) encoding is 
+		 * structures), hence fine-grain (ex: Uint32) encoding is 
 		 * meaningless with it.
 		 *
 		 */
@@ -178,8 +187,7 @@ namespace Ceylan
 				 */
 				explicit Marshaller( 
 					System::InputOutputStream & lowerLevelStream,
-					System::Size bufferedSize = 0 )
-					throw() ;
+					System::Size bufferedSize = 0 ) ;
 				
 				
 				
@@ -229,7 +237,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual System::Size retrieveData( 
-					System::Size requestedSize = 0 ) throw( DecodeException ) ;
+					System::Size requestedSize = 0 ) ;
 				 
 				
 				
@@ -246,13 +254,13 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 	
 	
 	
 	
 			protected:
+
 
 
 				/**
@@ -263,10 +271,14 @@ namespace Ceylan
 				System::InputOutputStream * _lowerLevelStream ;
 
 
-				inline bool isBuffered() const throw()
+
+				inline bool isBuffered() const
 				{
+				
 					return _bufferStream != 0 ;
+					
 				}
+				
 				
 				
 				/**
@@ -292,7 +304,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				Marshaller( const Marshaller & source ) throw() ;
+				Marshaller( const Marshaller & source ) ;
 
 
 				/**
@@ -303,17 +315,19 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 *
 				 */
-				Marshaller & operator = ( const Marshaller & source )
-					throw() ;
+				Marshaller & operator = ( const Marshaller & source ) ;
 
 			
 		
 		
 		} ;
 		
+		
 	}
 	
 }		
 
 
+
 #endif // CEYLAN_MARSHALLER_H_
+

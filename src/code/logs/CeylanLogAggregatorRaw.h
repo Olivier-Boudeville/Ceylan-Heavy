@@ -101,13 +101,16 @@ namespace Ceylan
 				 * be smart and auto-correct messages with faulty 
 				 * classnames.
 				 *
+				 * @throw LogAggregatorException if the operation failed.
+				 *
 				 */
 				explicit LogAggregatorRaw( 
 					const std::string & logFilename, 
 					bool immediateWrite = true,	
 					bool useGlobalLevelOfDetail = true,
-					bool beSmart = true ) throw( LogAggregatorException ) ;
+					bool beSmart = true ) ;
 					
+							
 							
 				/**
 				 * Virtual destructor.
@@ -119,20 +122,24 @@ namespace Ceylan
 				 */
 				virtual ~LogAggregatorRaw() throw() ;
 		
+		
 						 
 				/**
 				 * Aggregates all channel and log messages informations
 				 * in the aggregator file.
 				 *
+				 * @throw LogAggregatorException if the operation failed.
+				 *
 				 * @note this method does nothing if the immediate write
 				 * flag is turned on : work should be already done.
 				 *
 				 */
-				virtual void aggregate() throw( LogAggregatorException ) ;
+				virtual void aggregate() ;
+
 
 
 		        /**
-		         * Classify and stores <b>message</b> internally, 
+		         * Classifies and stores <b>message</b> internally, 
 				 * according to the corresponding channels they contain.
 		         *
 				 * @note this implementation, if immediateWrite mode was
@@ -142,9 +149,11 @@ namespace Ceylan
 		         * @param message the log message to be stored, the 
 				 * aggregator takes ownership of it.
 		         *
+				 * @throw LogException if the operation failed.
+				 *
 		         */		
-				virtual void store( LogMessage & message ) 
-					throw( LogException ) ; 
+				virtual void store( LogMessage & message ) ; 
+					
 						
 										
 	            /**
@@ -160,9 +169,9 @@ namespace Ceylan
 				 *
 	             */
 				virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high )
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 	
+			
 			
 			
 			protected:
@@ -178,8 +187,8 @@ namespace Ceylan
 				 * @throw LogException if the write operation failed.
 				 *
 				 */
-				virtual void write( const LogChannel & channel ) 
-					const throw( LogException ) ;
+				virtual void write( const LogChannel & channel ) const ;
+			
 			
 			
 				/**
@@ -194,8 +203,8 @@ namespace Ceylan
 				 * @throw LogException if the write operation failed.
 				 *
 				 */
-				virtual void write( const LogMessage & message ) const 
-					throw( LogException ) ;
+				virtual void write( const LogMessage & message ) const ;
+			
 			
 			
 				/**
@@ -206,8 +215,10 @@ namespace Ceylan
 				std::string _logFilename ;				
 				
 				
+				
 				/// The file where aggregations will take place.
 				System::File * _outputFile ;
+				
 				
 				
 				/**
@@ -216,6 +227,7 @@ namespace Ceylan
 				 *
 				 */
 				bool _immediateWrite ; 
+				
 				
 				
 
@@ -230,7 +242,8 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				LogAggregatorRaw( const LogAggregatorRaw & source ) throw() ;
+				LogAggregatorRaw( const LogAggregatorRaw & source ) ;
+			
 			
 			
 				/**
@@ -242,7 +255,7 @@ namespace Ceylan
 				 * 
 				 */			 
 				LogAggregatorRaw & operator = ( 
-					const LogAggregatorRaw & source ) throw() ;
+					const LogAggregatorRaw & source ) ;
 				
 				
 		} ;
@@ -255,3 +268,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_LOG_AGGREGATOR_RAW_H_
+

@@ -32,8 +32,9 @@
 #include "CeylanNetwork.h"                      // for explainSocketError
 
 
-// for SystemSpecificSocketAddress :
+// for SystemSpecificSocketAddress:
 #include "CeylanSystemSpecificSocketAddress.h"  
+
 
 
 
@@ -43,7 +44,8 @@
 
 
 
-// Not available in their C++ form :
+
+// Not available in their C++ form:
 extern "C"
 {
 
@@ -91,10 +93,11 @@ extern "C"
 #include <winsock2.h>
 #endif // CEYLAN_USES_WINSOCK2_H
 
-// We need to link to the Winsock2 library :
+// We need to link to the Winsock2 library:
 #pragma comment (lib , "ws2_32.lib")
 
 }
+
 
  
  
@@ -109,11 +112,12 @@ using std::string ;
 
 
 
-Socket::SocketException::SocketException( const std::string & reason ) throw():
+Socket::SocketException::SocketException( const std::string & reason ) :
 	SystemException( reason )
 {
 
 }
+
 
 
 Socket::SocketException::~SocketException() throw()
@@ -122,10 +126,10 @@ Socket::SocketException::~SocketException() throw()
 }
 
 
+
 	
-// Is protected :
-Socket::Socket( bool blocking ) 
-		throw( Socket::SocketException ) :
+// Is protected:
+Socket::Socket( bool blocking ) :
 	InputOutputStream( true ),
 	_port( 0 ),
 	_address( 0 ),
@@ -140,7 +144,7 @@ Socket::Socket( bool blocking )
 	 * @note As long as the socket is not really created (i.e. it has a
 	 * non-null file descriptor), it cannot be set really to non-blocking.
 	 *
-	 * Here the non-blocking request is recorded but not performed yet :
+	 * Here the non-blocking request is recorded but not performed yet:
 	 *
 	 */	 
 	if ( ! blocking )
@@ -149,7 +153,7 @@ Socket::Socket( bool blocking )
 			
 #else // CEYLAN_USES_NETWORK
 
-	throw SocketException( "Socket empty constructor failed : "
+	throw SocketException( "Socket empty constructor failed: "
 		"network support not available." ) ; 
 	
 #endif // CEYLAN_USES_NETWORK
@@ -157,7 +161,8 @@ Socket::Socket( bool blocking )
 }
 
 
-Socket::Socket( Port port, bool blocking ) throw( SocketException ):
+
+Socket::Socket( Port port, bool blocking ) :
 	InputOutputStream( blocking ),
 	_port( port ) ,
 	_address( 0 ),
@@ -167,10 +172,10 @@ Socket::Socket( Port port, bool blocking ) throw( SocketException ):
 #if CEYLAN_USES_NETWORK
 	
 	/*
-	 * Cannot use here : 'createSocket( _port ) ;' since it would call
+	 * Cannot use here: 'createSocket( _port ) ;' since it would call
 	 * Socket::createSocket in spite of any overloading.
 	 *
-	 * Therefore child classes (ex : CeylanStreamSocket) should call this
+	 * Therefore child classes (ex: CeylanStreamSocket) should call this
 	 * method in their own constructor.
 	 *
 	 * Setting the socket to non-blocking mode, if requested, should be done
@@ -185,7 +190,7 @@ Socket::Socket( Port port, bool blocking ) throw( SocketException ):
 	
 #else // CEYLAN_USES_NETWORK
 
-	throw SocketException( "Socket port-based constructor failed : "
+	throw SocketException( "Socket port-based constructor failed: "
 		"network support not available." ) ; 
 	
 #endif // CEYLAN_USES_NETWORK
@@ -193,19 +198,20 @@ Socket::Socket( Port port, bool blocking ) throw( SocketException ):
 }
 
 
+
 Socket::~Socket() throw()
 {
 
 #if CEYLAN_USES_NETWORK
 
-	// No destructor should throw exception :
+	// No destructor should throw exception:
 	try
 	{
 		close() ;
 	}
 	catch( const Stream::CloseException	& e )
 	{
-		LogPlug::error( "Socket destructor failed : " + e.toString() ) ;
+		LogPlug::error( "Socket destructor failed: " + e.toString() ) ;
 	}
 		
 	if ( _address != 0 )
@@ -216,7 +222,8 @@ Socket::~Socket() throw()
 }
 
 
-bool Socket::hasAvailableData() const throw()
+
+bool Socket::hasAvailableData() const 
 {
 
 #if CEYLAN_USES_NETWORK
@@ -228,7 +235,7 @@ bool Socket::hasAvailableData() const throw()
 	catch( const Ceylan::Exception & e )
 	{
 	
-		LogPlug::error( "Socket::hasAvailableData failed : "
+		LogPlug::error( "Socket::hasAvailableData failed: "
 			+ e.toString() ) ;
 			
 		return false ;	
@@ -237,7 +244,7 @@ bool Socket::hasAvailableData() const throw()
 
 #else // CEYLAN_USES_NETWORK
 
-	LogPlug::error( "Socket::hasAvailableData failed : "
+	LogPlug::error( "Socket::hasAvailableData failed: "
 		"network support not available." ) ;
 
 	return false ;
@@ -247,8 +254,8 @@ bool Socket::hasAvailableData() const throw()
 }
 
 
+
 Size Socket::read( char * buffer, Size maxLength ) 
-	throw( InputStream::ReadFailedException )
 {
 
 #if CEYLAN_USES_NETWORK
@@ -259,33 +266,32 @@ Size Socket::read( char * buffer, Size maxLength )
 		setSelected( false ) ;
 
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
-		LogPlug::debug( "Socket::read : using file descriptor "
+		LogPlug::debug( "Socket::read: using file descriptor "
 			+ Ceylan::toString( getFileDescriptorForTransport() ) ) ;
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 			
-		// FDRead can throw IOException and FeatureNotAvailableException :
+		// FDRead can throw IOException and FeatureNotAvailableException:
 		return System::FDRead( getFileDescriptorForTransport(), 
 			buffer, maxLength ) ;
 			
 	}
 	catch( const Ceylan::Exception & e )
 	{
-		throw ReadFailedException( "Socket::read failed : " + e.toString() ) ;
+		throw ReadFailedException( "Socket::read failed: " + e.toString() ) ;
 	}	
 
 #else // CEYLAN_USES_NETWORK	
 
 	throw ReadFailedException( 
-		"Socket::read failed : network support not available." ) ;
+		"Socket::read failed: network support not available." ) ;
 	
 #endif // CEYLAN_USES_NETWORK	
-
 
 }
 
 
+
 Size Socket::write( const string & message ) 
-	throw( OutputStream::WriteFailedException )
 {
 
 #if CEYLAN_USES_NETWORK
@@ -296,27 +302,27 @@ Size Socket::write( const string & message )
 	
 	try
 	{
-		// FDWrite can throw IOException and FeatureNotAvailableException :
+		// FDWrite can throw IOException and FeatureNotAvailableException:
 		n = System::FDWrite( getFileDescriptorForTransport(), 
 			message.c_str(), messageSize ) ;
 	}
 	catch( const Ceylan::Exception & e )
 	{
-		throw WriteFailedException( "Socket::write (std::string) failed : " 
+		throw WriteFailedException( "Socket::write (std::string) failed: " 
 			+ e.toString() ) ;
 	}	
 
-	// Actually if this method returns a value, it is messageSize :
+	// Actually if this method returns a value, it is messageSize:
 	
 	if ( n < messageSize )
-		throw WriteFailedException( "Socket::write (std::string) failed : " 
+		throw WriteFailedException( "Socket::write (std::string) failed: " 
 			+ System::explainError() ) ;
 
 	return n ;
 
 #else // if CEYLAN_USES_NETWORK	
 	
-	throw WriteFailedException( "Socket::write (std::string) failed : "
+	throw WriteFailedException( "Socket::write (std::string) failed: "
 		"network support not available." ) ;
 			
 #endif // if CEYLAN_USES_NETWORK	
@@ -324,8 +330,8 @@ Size Socket::write( const string & message )
 }
 
 
+
 Size Socket::write( const char * buffer, Size maxLength ) 
-	throw( OutputStream::WriteFailedException )
 {
 
 #if CEYLAN_USES_NETWORK
@@ -339,21 +345,21 @@ Size Socket::write( const char * buffer, Size maxLength )
 	}
 	catch( const Ceylan::Exception & e )
 	{
-		throw WriteFailedException( "Socket::write (char *) failed : " 
+		throw WriteFailedException( "Socket::write (char *) failed: " 
 			+ e.toString() ) ;
 	}	
 
-	// Actually if this method returns a value, it is maxLength :
+	// Actually if this method returns a value, it is maxLength:
 
 	if ( n < maxLength )
-		throw WriteFailedException( "Socket::write (char *) failed : " 
+		throw WriteFailedException( "Socket::write (char *) failed: " 
 			+ System::explainError() ) ;
 
 	return n ;
 
 #else // CEYLAN_USES_NETWORK	
 
-	throw WriteFailedException( "Socket::write (char *) failed : " 
+	throw WriteFailedException( "Socket::write (char *) failed: " 
 		"network support not available." ) ;
 	
 #endif // CEYLAN_USES_NETWORK	
@@ -361,8 +367,8 @@ Size Socket::write( const char * buffer, Size maxLength )
 }
 
 
-FileDescriptor Socket::getOriginalFileDescriptor() const
-	throw( SocketException, Features::FeatureNotAvailableException )
+
+FileDescriptor Socket::getOriginalFileDescriptor() const	
 {
 
 #if CEYLAN_USES_NETWORK
@@ -372,26 +378,26 @@ FileDescriptor Socket::getOriginalFileDescriptor() const
 #else // CEYLAN_USES_NETWORK
 
 	throw Features::FeatureNotAvailableException( 
-		"Socket::getOriginalFileDescriptor : network support not available." ) ;
+		"Socket::getOriginalFileDescriptor: network support not available." ) ;
 		
 #endif // CEYLAN_USES_NETWORK
 
 }
+
 
 
 FileDescriptor Socket::getFileDescriptorForTransport() const
-	throw( SocketException, Features::FeatureNotAvailableException )
 {
 
 #if CEYLAN_USES_NETWORK
 
-	// Basic sockets use the original (and only) file descriptor :
+	// Basic sockets use the original (and only) file descriptor:
 	return _originalFD ;
 				
 #else // CEYLAN_USES_NETWORK
 
 	throw Features::FeatureNotAvailableException( 
-		"Socket::getOriginalFileDescriptor : network support not available." ) ;
+		"Socket::getOriginalFileDescriptor: network support not available." ) ;
 		
 #endif // CEYLAN_USES_NETWORK
 
@@ -399,38 +405,45 @@ FileDescriptor Socket::getFileDescriptorForTransport() const
 
 
 
-Port Socket::getLocalPort() const throw( SocketException )
+Port Socket::getLocalPort() const 
 {
-	//throw SocketException( "Socket::getLocalPort : not implemented yet." ) ;
-	return 0 ;
-}
 
-
-Port Socket::getPeerPort() const throw( SocketException )
-{
-	//throw SocketException( "Socket::getPeerPort : not implemented yet." ) ;
-	return 0 ;
+	throw SocketException( "Socket::getLocalPort: not implemented yet." ) ;
+	
 }
 
 
 
-IPAddress * Socket::getLocalIPAddress() const throw( SocketException )
+Port Socket::getPeerPort() const 
 {
+
+	throw SocketException( "Socket::getPeerPort: not implemented yet." ) ;
+	
+}
+
+
+
+IPAddress * Socket::getLocalIPAddress() const 
+{
+
 	throw SocketException( 
-		"Socket::getLocalIPAddress : not implemented yet." ) ;
+		"Socket::getLocalIPAddress: not implemented yet." ) ;
+		
 }
 
 
-IPAddress * Socket::getPeerIPAddress() const throw( SocketException )
+
+IPAddress * Socket::getPeerIPAddress() const 
 {
+
 	throw SocketException( 
-		"Socket::getPeerIPAddress : not implemented yet." ) ;
+		"Socket::getPeerIPAddress: not implemented yet." ) ;
 
 }
 
 
 
-StreamID Socket::getInputStreamID() const throw( InputStreamException )
+StreamID Socket::getInputStreamID() const
 {
 
 #if CEYLAN_USES_NETWORK
@@ -441,21 +454,23 @@ StreamID Socket::getInputStreamID() const throw( InputStreamException )
 	}
 	catch( const Ceylan::Exception & e )
 	{
-		throw InputStreamException( "Socket::getInputStreamID failed : "
+		throw InputStreamException( "Socket::getInputStreamID failed: "
 			+ e.toString() ) ;
 	}
 	
 	
 #else // CEYLAN_USES_NETWORK
 
-	throw SocketException( "Socket::getInputStreamID failed : "
+	throw SocketException( "Socket::getInputStreamID failed: "
 		"network feature not available." ) ;
 		
 #endif // CEYLAN_USES_NETWORK
+
 }
 
 
-StreamID Socket::getOutputStreamID() const throw( OutputStreamException )
+
+StreamID Socket::getOutputStreamID() const
 {
 
 #if CEYLAN_USES_NETWORK
@@ -466,22 +481,23 @@ StreamID Socket::getOutputStreamID() const throw( OutputStreamException )
 	}
 	catch( const Ceylan::Exception & e )
 	{
-		throw OutputStreamException( "Socket::getOutputStreamID failed : "
+		throw OutputStreamException( "Socket::getOutputStreamID failed: "
 			+ e.toString() ) ;
 	}
 	
 	
 #else // CEYLAN_USES_NETWORK
 
-	throw SocketException( "Socket::getOutputStreamID failed : "
+	throw SocketException( "Socket::getOutputStreamID failed: "
 		"network feature not available." ) ;
 		
 #endif // CEYLAN_USES_NETWORK
+
 }
 
 
-const std::string Socket::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+
+const std::string Socket::toString( Ceylan::VerbosityLevels level ) const 
 {
 
 	string res ;
@@ -525,14 +541,16 @@ const std::string Socket::toString( Ceylan::VerbosityLevels level )
 
 
 
+
 // Protected section.
+
 
 
 // Constructors are defined at the top of this file.
 
 					
 						
-bool Socket::close() throw( Stream::CloseException )
+bool Socket::close()
 {
 
 #if CEYLAN_USES_NETWORK
@@ -545,7 +563,7 @@ bool Socket::close() throw( Stream::CloseException )
 		return false ;
 
 	if ( ::closesocket( _originalFD ) == SOCKET_ERROR )
-		throw Stream::CloseException( "Socket::close failed : " 
+		throw Stream::CloseException( "Socket::close failed: " 
 			+ Network::explainSocketError() ) ;
 	
 	_originalFD = 0 ;
@@ -565,7 +583,7 @@ bool Socket::close() throw( Stream::CloseException )
 
 #else // CEYLAN_USES_NETWORK	
 
-	LogPlug::error( "Socket::close failed : "
+	LogPlug::error( "Socket::close failed: "
 		"network support not available." ) ; 
 		
 	return false ;
@@ -575,11 +593,11 @@ bool Socket::close() throw( Stream::CloseException )
 }
 
 
+
 void Socket::setBlocking( bool newStatus )
-	throw( NonBlockingNotSupportedException )
 {
 
-	// Needs to be overriden, otherwise would throw an exception :
+	// Needs to be overriden, otherwise would throw an exception:
 	_isBlocking = newStatus ;
 	
 	/*

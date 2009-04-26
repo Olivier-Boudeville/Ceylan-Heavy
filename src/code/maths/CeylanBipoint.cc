@@ -29,7 +29,6 @@
 
 #include "CeylanLogPlug.h"              // for LogPlug
 #include "CeylanOperators.h"            // for toString
-#include "CeylanUtils.h"                // for emergencyShutdown
 #include "CeylanTextDisplayable.h"      // for GetOutputFormat
 
 #include "CeylanVector2.h"              // for Vector2
@@ -60,27 +59,34 @@ using Ceylan::Maths::Real ;
 
 
 
-Bipoint::Bipoint( Real x0, Real x1 ) throw() 
+Bipoint::Bipoint( Real x0, Real x1 ) 
 {
+
 	_coordinates[0] = x0 ;
 	_coordinates[1] = x1 ;
-}
-
-
-Bipoint::~Bipoint() throw() 
-{
+	
 }
 
 
 
-void Bipoint::setTo( Real x0, Real x1 ) throw()
+Bipoint::~Bipoint() throw()
 {
+
+}
+
+
+
+void Bipoint::setTo( Real x0, Real x1 )
+{
+
 	_coordinates[0] = x0 ;
 	_coordinates[1] = x1 ;
+	
 }
 
 
-void Bipoint::setAllElementsTo( Real commonValue ) throw()
+
+void Bipoint::setAllElementsTo( Real commonValue )
 {
 
 	for ( MatrixIndex i = 0 ; i < Dimensions ; i++ )
@@ -92,42 +98,46 @@ void Bipoint::setAllElementsTo( Real commonValue ) throw()
 
 
 
-Real Bipoint::getX() const throw()
+
+Real Bipoint::getX() const
 {
 	return _coordinates[ 0 ] ;
 }
 
 
-Real Bipoint::getY() const throw()
+
+Real Bipoint::getY() const
 {
 	return _coordinates[ 1 ] ;
 }
 
 
 
-Real Bipoint::getElementAt( MatrixIndex index ) const throw()
+
+Real Bipoint::getElementAt( MatrixIndex index ) const
 {
 
 #if CEYLAN_DEBUG
 
 	if ( index >= Dimensions )
-		Ceylan::emergencyShutdown( 
-			"Bipoint::getElementAt : index out of bounds." ) ;
-			
+		throw MathsException( "Bipoint::getElementAt: index out of bounds." ) ;
+
 #endif // CEYLAN_DEBUG
 		
 	return _coordinates[ index ] ;
+	
 }
 
 
-void Bipoint::setElementAt( MatrixIndex index, Real newValue ) throw()
+
+void Bipoint::setElementAt( MatrixIndex index, Real newValue )
 {
 
 #if CEYLAN_DEBUG
 
 	if ( index >= Dimensions )
-		Ceylan::emergencyShutdown( 
-			"Bipoint::setElementAt : index out of bounds." ) ;
+		throw MathsException( "Bipoint::setElementAt: index out of bounds." ) ;
+		
 #endif // CEYLAN_DEBUG
 
 	_coordinates[ index ] = newValue ;
@@ -136,7 +146,7 @@ void Bipoint::setElementAt( MatrixIndex index, Real newValue ) throw()
 
 
 
-const string Bipoint::toString( VerbosityLevels level ) const throw()
+const string Bipoint::toString( VerbosityLevels level ) const
 {
 
 	string res ;
@@ -162,7 +172,7 @@ const string Bipoint::toString( VerbosityLevels level ) const throw()
 		
 	}
 
-	// Non-HTML format requested, raw text assumed :
+	// Non-HTML format requested, raw text assumed:
 	
 	if ( level == high )
 	{
@@ -187,7 +197,7 @@ const string Bipoint::toString( VerbosityLevels level ) const throw()
 
     	if ( oss.fail() )
 		{
-			string message = "Bipoint::toString : conversion error." ;
+			string message = "Bipoint::toString: conversion error." ;
         	Log::LogPlug::error( message ) ;
 			return message ;
 		}
@@ -199,41 +209,47 @@ const string Bipoint::toString( VerbosityLevels level ) const throw()
 	else
 	{
 	
-		res = "Bipoint : [ " ;
+		res = "Bipoint: [ " ;
 		
     	for ( MatrixIndex i = 0; i < Dimensions; i++ )
 		{
 			res += Ceylan::toString( _coordinates[i] ) 
-				+ ( ( i == Dimensions-1 ) ? " ]" : " ; " ) ; 
+				+ ( ( i == Dimensions-1 ) ? " ]": " ; " ) ; 
 		}		
 		
 		return res ;
 		
 	}
 	
-	// Useless but avoids warnings :
+	// Useless but avoids warnings:
 	return res ;
 				
 }
 
 
-Real Bipoint::Distance( const Bipoint & first, const Bipoint & second ) throw()
+
+Real Bipoint::Distance( const Bipoint & first, const Bipoint & second )
 {
+
 	return Sqrt( Pow2( second.getX() - first.getX() ) 
 		+ Pow2( second.getY() - first.getY() ) ) ;
+		
 }
+
 
 
 Real Bipoint::DistancePow2( const Bipoint & first, const Bipoint & second )
-	throw()
 {
+
 	return Pow2( second.getX() - first.getX() ) 
 		+ Pow2( second.getY() - first.getY() ) ;
+		
 }
 
 
+
 bool Ceylan::Maths::Linear::operator == ( 
-	const Bipoint & t1, const Bipoint & t2 ) throw()
+	const Bipoint & t1, const Bipoint & t2 )
 {
 
    	for ( MatrixIndex i = 0; i < Bipoint::Dimensions; i++ )
@@ -253,16 +269,20 @@ bool Ceylan::Maths::Linear::operator == (
 	
 }
 
+		
 			
 bool Ceylan::Maths::Linear::operator != ( const Bipoint & t1, 
-	const Bipoint & t2 ) throw() 
+	const Bipoint & t2 ) 
 {
+
 	return ( ! ( t1 == t2 ) ) ;
+	
 }
 
 
+
 Bipoint Ceylan::Maths::Linear::operator + ( const Bipoint & t , 
-	const Vector2 & v ) throw()
+	const Vector2 & v )
 {
 
 	Bipoint result ;
@@ -277,8 +297,9 @@ Bipoint Ceylan::Maths::Linear::operator + ( const Bipoint & t ,
 }
 
 
+
 Bipoint Ceylan::Maths::Linear::operator - ( const Bipoint & t, 
-	const Vector2 & v ) throw()
+	const Vector2 & v )
 {
 
 	Bipoint result ;
@@ -293,7 +314,8 @@ Bipoint Ceylan::Maths::Linear::operator - ( const Bipoint & t,
 }
 
 
-Vector2 Ceylan::Maths::Linear::vectorize( const Bipoint & t ) throw()
+
+Vector2 Ceylan::Maths::Linear::vectorize( const Bipoint & t )
 {
 
 	Vector2 result ;
@@ -308,8 +330,9 @@ Vector2 Ceylan::Maths::Linear::vectorize( const Bipoint & t ) throw()
 }
 
 
+
 Vector2 Ceylan::Maths::Linear::vectorize( const Bipoint & t1, 
-	const Bipoint & t2 ) throw()
+	const Bipoint & t2 )
 {
 
 	Vector2 result ;

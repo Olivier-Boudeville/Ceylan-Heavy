@@ -54,7 +54,7 @@ namespace Ceylan
 
 		
 			/// Creates a new Measurable resource.
-			Measurable() throw() ;
+			Measurable() ;
 			
 			
 			/// Virtual destructor.
@@ -71,7 +71,7 @@ namespace Ceylan
 			 * members. The overall sum is the size to return.
 			 * 
 			 */
-			virtual Ceylan::System::Size getSizeInMemory() const throw() = 0 ;
+			virtual Ceylan::System::Size getSizeInMemory() const = 0 ;
 			
 			
 			
@@ -86,7 +86,8 @@ namespace Ceylan
              *
              */
             virtual const std::string toString( 
-				Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
+				Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+
 
 
 		private:
@@ -100,7 +101,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			Measurable( const Measurable & source ) throw() ;
+			Measurable( const Measurable & source ) ;
 			
 			
 			/**
@@ -111,7 +112,7 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			Measurable & operator = ( const Measurable & source ) throw() ;
+			Measurable & operator = ( const Measurable & source ) ;
 
 
 	} ;
@@ -119,4 +120,7 @@ namespace Ceylan
 
 }
 
+
+
 #endif // CEYLAN_MEASURABLE_H_
+

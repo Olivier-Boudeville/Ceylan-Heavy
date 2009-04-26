@@ -34,12 +34,14 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
+
 using std::string ;
 
 using namespace Ceylan ;
 using namespace Ceylan::Log ;
 using namespace Ceylan::System ;
 using namespace Ceylan::Middleware ;
+
 
 
 /*
@@ -52,17 +54,19 @@ using namespace Ceylan::Middleware ;
 
 LightWeightMarshaller::LightWeightMarshaller( 
 		System::InputOutputStream & lowerLevelStream,
-		System::Size bufferedSize ) throw() :
+		System::Size bufferedSize ) :
 	Marshaller( lowerLevelStream, bufferedSize )
 {
 
 }
 
 
+
 LightWeightMarshaller::~LightWeightMarshaller() throw()
 {
 
 }
+
 
 
 
@@ -78,11 +82,12 @@ LightWeightMarshaller::~LightWeightMarshaller() throw()
  */
 
 
+
 // Decode integer types subsection.
 
 
-Ceylan::Sint8 LightWeightMarshaller::decodeSint8() 
-	throw( DecodeException, IOException )
+
+Ceylan::Sint8 LightWeightMarshaller::decodeSint8() 	
 {
 
 	return getEffectiveStream().readSint8() ;
@@ -92,8 +97,8 @@ Ceylan::Sint8 LightWeightMarshaller::decodeSint8()
 }
 
 
-Ceylan::Uint8 LightWeightMarshaller::decodeUint8() 
-	throw( DecodeException, IOException )
+
+Ceylan::Uint8 LightWeightMarshaller::decodeUint8() 	
 {
 
 	return getEffectiveStream().readUint8() ;
@@ -102,9 +107,10 @@ Ceylan::Uint8 LightWeightMarshaller::decodeUint8()
 	
 }
 
+
+
 					
-Ceylan::Sint16 LightWeightMarshaller::decodeSint16() 
-	throw( DecodeException, IOException )					
+Ceylan::Sint16 LightWeightMarshaller::decodeSint16() 						
 {
 
 	return getEffectiveStream().readSint16() ;
@@ -113,9 +119,9 @@ Ceylan::Sint16 LightWeightMarshaller::decodeSint16()
 	
 }
 
+
 										
-Ceylan::Uint16 LightWeightMarshaller::decodeUint16() 
-	throw( DecodeException, IOException )
+Ceylan::Uint16 LightWeightMarshaller::decodeUint16() 	
 {
 
 	return getEffectiveStream().readUint16() ;
@@ -124,9 +130,10 @@ Ceylan::Uint16 LightWeightMarshaller::decodeUint16()
 	
 }
 
+
+
 					
-Ceylan::Sint32 LightWeightMarshaller::decodeSint32() 
-	throw( DecodeException, IOException )
+Ceylan::Sint32 LightWeightMarshaller::decodeSint32() 	
 {
 
 	return getEffectiveStream().readSint32() ;
@@ -137,8 +144,7 @@ Ceylan::Sint32 LightWeightMarshaller::decodeSint32()
 
 					
 					
-Ceylan::Uint32 LightWeightMarshaller::decodeUint32() 
-	throw( DecodeException, IOException )
+Ceylan::Uint32 LightWeightMarshaller::decodeUint32() 	
 {
 
 	return getEffectiveStream().readUint32() ;
@@ -150,7 +156,6 @@ Ceylan::Uint32 LightWeightMarshaller::decodeUint32()
 					
 					
 Ceylan::Float32 LightWeightMarshaller::decodeFloat32() 
-	throw( DecodeException, IOException )
 {
 
 	return getEffectiveStream().readFloat32() ;
@@ -159,10 +164,10 @@ Ceylan::Float32 LightWeightMarshaller::decodeFloat32()
 	
 }
 
+	
 					
 															
-Ceylan::Float64 LightWeightMarshaller::decodeFloat64() 
-	throw( DecodeException, IOException )
+Ceylan::Float64 LightWeightMarshaller::decodeFloat64() 	
 {
 
 	return getEffectiveStream().readFloat64() ;
@@ -171,9 +176,9 @@ Ceylan::Float64 LightWeightMarshaller::decodeFloat64()
 	
 }
 
+
 					
 void LightWeightMarshaller::decodeString( std::string & result ) 
-	throw( DecodeException, IOException )
 {
 
 	getEffectiveStream().readString( result ) ;
@@ -183,6 +188,7 @@ void LightWeightMarshaller::decodeString( std::string & result )
 }
 
 					
+		
 						
 				
 /*
@@ -195,10 +201,12 @@ void LightWeightMarshaller::decodeString( std::string & result )
  */
 
 
+
+
 // Encode integer types subsection.
 
+
 void LightWeightMarshaller::encodeSint8( Ceylan::Sint8 toEncode )
-	throw( EncodeException, System::IOException )
 {
 
 	_lowerLevelStream->writeSint8( toEncode ) ;
@@ -208,8 +216,8 @@ void LightWeightMarshaller::encodeSint8( Ceylan::Sint8 toEncode )
 }
 
 
+
 void LightWeightMarshaller::encodeUint8( Ceylan::Uint8 toEncode ) 
-	throw( EncodeException, System::IOException )
 {
 
 	_lowerLevelStream->writeUint8( toEncode ) ;
@@ -218,9 +226,10 @@ void LightWeightMarshaller::encodeUint8( Ceylan::Uint8 toEncode )
 	
 }
 
+
+
 					
 void LightWeightMarshaller::encodeSint16( Ceylan::Sint16 toEncode ) 
-	throw( EncodeException, System::IOException )
 {
 
 	_lowerLevelStream->writeSint16( toEncode ) ;
@@ -228,10 +237,10 @@ void LightWeightMarshaller::encodeSint16( Ceylan::Sint16 toEncode )
 	// We let IOException instances propagate.
 	
 }
+	
 					
 					
-void LightWeightMarshaller::encodeUint16( Ceylan::Uint16 toEncode ) 
-	throw( EncodeException, System::IOException )					
+void LightWeightMarshaller::encodeUint16( Ceylan::Uint16 toEncode )
 {
 
 	_lowerLevelStream->writeUint16( toEncode ) ;
@@ -240,9 +249,10 @@ void LightWeightMarshaller::encodeUint16( Ceylan::Uint16 toEncode )
 	
 }
 
+
+	
 					
-void LightWeightMarshaller::encodeSint32( Ceylan::Sint32 toEncode ) 
-	throw( EncodeException, System::IOException )
+void LightWeightMarshaller::encodeSint32( Ceylan::Sint32 toEncode )	
 {
 
 	_lowerLevelStream->writeSint32( toEncode ) ;
@@ -251,9 +261,9 @@ void LightWeightMarshaller::encodeSint32( Ceylan::Sint32 toEncode )
 	
 }
 			
+	
 					
-void LightWeightMarshaller::encodeUint32( Ceylan::Uint32 toEncode ) 
-	throw( EncodeException, System::IOException )
+void LightWeightMarshaller::encodeUint32( Ceylan::Uint32 toEncode ) 	
 {
 
 	_lowerLevelStream->writeUint32( toEncode ) ;
@@ -262,9 +272,9 @@ void LightWeightMarshaller::encodeUint32( Ceylan::Uint32 toEncode )
 	
 }
 					
+	
 					
-void LightWeightMarshaller::encodeFloat32( Ceylan::Float32 toEncode ) 
-	throw( EncodeException, System::IOException )
+void LightWeightMarshaller::encodeFloat32( Ceylan::Float32 toEncode ) 	
 {
 
 	_lowerLevelStream->writeFloat32( toEncode ) ;
@@ -272,10 +282,10 @@ void LightWeightMarshaller::encodeFloat32( Ceylan::Float32 toEncode )
 	// We let IOException instances propagate.
 	
 }
+	
 					
 										
 void LightWeightMarshaller::encodeFloat64( Ceylan::Float64 toEncode ) 
-	throw( EncodeException, System::IOException )
 {
 
 	_lowerLevelStream->writeFloat64( toEncode ) ;
@@ -284,9 +294,9 @@ void LightWeightMarshaller::encodeFloat64( Ceylan::Float64 toEncode )
 	
 }
 
+	
 																				
 void LightWeightMarshaller::encodeString( std::string & toEncode ) 
-	throw( EncodeException, System::IOException )
 {
 
 	_lowerLevelStream->writeString( toEncode ) ;
@@ -298,7 +308,7 @@ void LightWeightMarshaller::encodeString( std::string & toEncode )
 																				
 			
 const string LightWeightMarshaller::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+	const 
 {
 
 	return "LightWeight" + Marshaller::toString( level ) ;

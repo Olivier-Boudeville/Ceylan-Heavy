@@ -33,7 +33,8 @@
 #include "CeylanAnonymousStreamSocket.h" // for AnonymousStreamSocket
 
 
-// for SystemSpecificSocketAddress :
+
+// for SystemSpecificSocketAddress:
 #include "CeylanSystemSpecificSocketAddress.h"  
 
 
@@ -79,8 +80,8 @@ using std::string ;
 
 
 /*
- * Avoid ::htonl, use directy htonl since it is a macro on some platforms
- * (ex : NetBSD)
+ * Avoid::htonl, use directy htonl since it is a macro on some platforms
+ * (ex: NetBSD)
  *
  * @see http://www.amk.ca/python/howto/sockets/ for many socket programming
  * tips.
@@ -90,11 +91,12 @@ using std::string ;
 
 
 ServerStreamSocket::ServerStreamSocketException::ServerStreamSocketException( 
-		const std::string & reason ) throw():
+		const std::string & reason ) :
 	StreamSocketException( reason )
 {
 
 }
+
 
 
 ServerStreamSocket::ServerStreamSocketException::~ServerStreamSocketException()
@@ -106,8 +108,7 @@ ServerStreamSocket::ServerStreamSocketException::~ServerStreamSocketException()
 
 
 ServerStreamSocket::ServerStreamSocket( Port serverPort, bool reuse, 
-	bool blocking )
-		throw( SocketException ):
+		bool blocking ) :
 	StreamSocket( serverPort, blocking ),
 	_bound( false ),
 	_stopRequested( false ),
@@ -119,11 +120,11 @@ ServerStreamSocket::ServerStreamSocket( Port serverPort, bool reuse,
 	if ( reuse )
 	{
 	
-		// Reuse option set to non-zero to enable option :
+		// Reuse option set to non-zero to enable option:
 		int reuseOption = 1 ;
 		
 		/*
-		 * See : man 7 socket or man 7 ip.
+		 * See: man 7 socket or man 7 ip.
 		 *
 		 * The SO_REUSEADDR socket option must be set prior to executing bind,
 		 * to have any effect.
@@ -135,20 +136,21 @@ ServerStreamSocket::ServerStreamSocket( Port serverPort, bool reuse,
 			/* option value buffer */ reinterpret_cast<char *>( &reuseOption ), 
 			/* option buffer length */ sizeof( reuseOption ) ) != 0 )
 				throw ServerStreamSocketException( 
-					"ServerStreamSocket constructor : "
-					"could not set reuse option on listening socket : "
+					"ServerStreamSocket constructor: "
+					"could not set reuse option on listening socket: "
 					+ System::explainError() ) ;
 	}
 	
 #else // CEYLAN_USES_NETWORK
 
 	throw ServerStreamSocketException( 
-		"ServerStreamSocket constructor failed : "
+		"ServerStreamSocket constructor failed: "
 		"network support not available." ) ; 
 	
 #endif // CEYLAN_USES_NETWORK
 	
 }
+
 
 
 ServerStreamSocket::~ServerStreamSocket() throw()
@@ -159,7 +161,8 @@ ServerStreamSocket::~ServerStreamSocket() throw()
 }
 
 
-void ServerStreamSocket::run() throw( ServerStreamSocketException )
+
+void ServerStreamSocket::run()
 {
 
 
@@ -168,7 +171,7 @@ void ServerStreamSocket::run() throw( ServerStreamSocketException )
 #endif // CEYLAN_DEBUG_NETWORK_SERVERS
 	 
 	
-	// Records the total number of created connections :
+	// Records the total number of created connections:
 	Ceylan::Uint32 connectionCount = 0 ;
 	
 	while ( ! isRequestedToStop() )
@@ -177,7 +180,7 @@ void ServerStreamSocket::run() throw( ServerStreamSocketException )
 		connectionCount++ ;
 		
 #if CEYLAN_DEBUG_NETWORK_SERVERS
-		LogPlug::info( "ServerStreamSocket::run : waiting for connection #" 
+		LogPlug::info( "ServerStreamSocket::run: waiting for connection #" 
 			+ Ceylan::toString( connectionCount ) ) ;
 #endif // CEYLAN_DEBUG_NETWORK_SERVERS
 		accept() ;
@@ -191,7 +194,8 @@ void ServerStreamSocket::run() throw( ServerStreamSocketException )
 }
 
 
-Port ServerStreamSocket::getLocalPort() const throw( SocketException )
+
+Port ServerStreamSocket::getLocalPort() const
 {
 	return _port ;
 }
@@ -199,7 +203,7 @@ Port ServerStreamSocket::getLocalPort() const throw( SocketException )
 
 
 ServerStreamSocket::ConnectionCount
-		ServerStreamSocket::getMaximumPendingConnectionsCount() const throw()
+	ServerStreamSocket::getMaximumPendingConnectionsCount() const
 {
 
 	return _maximumPendingConnectionsCount ;
@@ -207,8 +211,9 @@ ServerStreamSocket::ConnectionCount
 }	
 					
 
+
 void ServerStreamSocket::setMaximumPendingConnectionsCount( 
-	ConnectionCount newMax ) throw()
+	ConnectionCount newMax )
 {
 	_maximumPendingConnectionsCount = newMax ;
 }	
@@ -216,7 +221,7 @@ void ServerStreamSocket::setMaximumPendingConnectionsCount(
 
 
 const std::string ServerStreamSocket::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+	const
 {
 
 #if CEYLAN_USES_NETWORK
@@ -257,7 +262,8 @@ const std::string ServerStreamSocket::toString( Ceylan::VerbosityLevels level )
 }	
 						
 
-void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
+
+void ServerStreamSocket::prepareToAccept()
 {
 
 
@@ -276,13 +282,13 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 
 	if ( _bound )
 		throw ServerStreamSocketException(
-			"ServerStreamSocket::prepareToAccept : socket already bound" ) ;
+			"ServerStreamSocket::prepareToAccept: socket already bound" ) ;
 				
 	_address->_socketAddress.sin_addr.s_addr = htonl( 
 		/* Address to accept any incoming connection */ INADDR_ANY ) ;
 
 	/*
-	 * Could be instead : 
+	 * Could be instead: 
 	 *
 	 * hostent * localHost = gethostbyname( "" ) ;
 	 * char* localIP = inet_ntoa( *(struct in_addr *)*localHost->h_addr_list ) ;
@@ -298,7 +304,7 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 	{
 
 #if CEYLAN_DEBUG_NETWORK_SERVERS
-		LogPlug::debug( "ServerStreamSocket::prepareToAccept : "
+		LogPlug::debug( "ServerStreamSocket::prepareToAccept: "
 			"bind attempt #" + Ceylan::toString( bindAttemptCount + 1 ) ) ;
 #endif // CEYLAN_DEBUG_NETWORK_SERVERS
 	
@@ -308,14 +314,14 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 				sizeof( sockaddr_in ) ) == 0 ) 
 			break ;
 	
-		// 0.5 second waiting :
+		// 0.5 second waiting:
 		Thread::Sleep( 0 /* second */, 500000 /* microseconds */ ) ;
 	
 	}
 	
 	if ( bindAttemptCount == maxBindAttemptCount )
 		throw ServerStreamSocketException(
-			"ServerStreamSocket::prepareToAccept : bind attempts failed : "
+			"ServerStreamSocket::prepareToAccept: bind attempts failed: "
 			+ System::explainError() ) ;
 
 	if ( _nagleAlgorithmDeactivated )
@@ -324,7 +330,7 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
  	_bound = true ;
 				
 #if CEYLAN_DEBUG_NETWORK_SERVERS
-	LogPlug::debug( "ServerStreamSocket::prepareToAccept : "
+	LogPlug::debug( "ServerStreamSocket::prepareToAccept: "
 		"bind succeeded." ) ;
 #endif // CEYLAN_DEBUG_NETWORK_SERVERS
 	
@@ -332,18 +338,18 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 	if ( ::listen( getOriginalFileDescriptor(), 
 			_maximumPendingConnectionsCount ) != 0 )
 		throw ServerStreamSocketException(
-			"ServerStreamSocket::prepareToAccept : listen failed : "
+			"ServerStreamSocket::prepareToAccept: listen failed: "
 			+ System::explainError() ) ;
 
 #if CEYLAN_DEBUG_NETWORK_SERVERS
-	LogPlug::debug( "ServerStreamSocket::prepareToAccept : "
+	LogPlug::debug( "ServerStreamSocket::prepareToAccept: "
 		"listen succeeded." ) ;
 #endif // CEYLAN_DEBUG_NETWORK_SERVERS
 
 
 #else // CEYLAN_USES_NETWORK
 
-	throw ServerStreamSocketException( "ServerStreamSocket::prepareToAccept : "
+	throw ServerStreamSocketException( "ServerStreamSocket::prepareToAccept: "
 		"no network support available." ) ;
 	
 #endif // CEYLAN_USES_NETWORK	
@@ -352,7 +358,7 @@ void ServerStreamSocket::prepareToAccept() throw( ServerStreamSocketException )
 
 
 
-void ServerStreamSocket::cleanAfterAccept() throw( ServerStreamSocketException )
+void ServerStreamSocket::cleanAfterAccept()
 {
 
 
@@ -366,7 +372,7 @@ void ServerStreamSocket::cleanAfterAccept() throw( ServerStreamSocketException )
 	
 #else // CEYLAN_USES_NETWORK
 
-	throw ServerStreamSocketException( "ServerStreamSocket::cleanAfterAccept : "
+	throw ServerStreamSocketException( "ServerStreamSocket::cleanAfterAccept: "
 		"no network support available." ) ;
 	
 #endif // CEYLAN_USES_NETWORK	
@@ -375,27 +381,30 @@ void ServerStreamSocket::cleanAfterAccept() throw( ServerStreamSocketException )
 
 
 			
-void ServerStreamSocket::accepted( AnonymousStreamSocket & newConnection )
-	throw( ServerStreamSocketException )
+void ServerStreamSocket::accepted( AnonymousStreamSocket & newConnection )	
 {
 
 	// Empty implementation, made to be overriden.
 	
 #if CEYLAN_DEBUG_NETWORK_SERVERS
-	LogPlug::debug( "ServerStreamSocket::accepted : "
-		"connection up and running : " + newConnection.toString() ) ;
+	LogPlug::debug( "ServerStreamSocket::accepted: "
+		"connection up and running: " + newConnection.toString() ) ;
 #endif // CEYLAN_DEBUG_NETWORK_SERVERS
 		
 }
 
 
-bool ServerStreamSocket::isRequestedToStop() const throw()
+
+bool ServerStreamSocket::isRequestedToStop() const
 {
+
 	return _stopRequested ;
+	
 }			
 
 
-void ServerStreamSocket::requestToStop() throw()
+
+void ServerStreamSocket::requestToStop()
 {
 
 #if CEYLAN_DEBUG_NETWORK_SERVERS

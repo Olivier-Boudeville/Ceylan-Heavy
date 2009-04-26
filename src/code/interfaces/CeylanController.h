@@ -38,9 +38,9 @@ namespace Ceylan
 {
 
 
-
 	// Controllers send MVC events.
 	class MVCEvent ;
+	
 	
 	// Models received MVC events from controllers.	
 	class Model ;
@@ -89,19 +89,22 @@ namespace Ceylan
 			 * Constructs a controller not linked to any model.
 			 *
 			 */
-			Controller() throw() ;
+			Controller() ;
 						
+					
 													
 			/**
 			 * Constructs a controller that will send events to the specified
 			 * model.
 			 *
 			 */
-			explicit Controller( Model & model ) throw() ;
+			explicit Controller( Model & model ) ;
 						
+							
 									
 			/// Basic virtual destructor.
 			virtual ~Controller() throw() ;
+			
 			
 						
             /**
@@ -115,7 +118,7 @@ namespace Ceylan
              *
              */
 			virtual const std::string toString( 
-				Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
+				Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 					
 					
 					
@@ -130,7 +133,7 @@ namespace Ceylan
 			 * constructor is called, implicitly or not.
 			 * 
 			 */			 
-			Controller( const Controller & source ) throw() ;
+			Controller( const Controller & source ) ;
 			
 			
 			/**
@@ -141,7 +144,7 @@ namespace Ceylan
 			 * operator is called, implicitly or not.
 			 * 
 			 */			 
-			Controller & operator = ( const Controller & source ) throw() ;
+			Controller & operator = ( const Controller & source ) ;
 		
 			
 					 			

@@ -49,15 +49,16 @@ using namespace Ceylan::Maths::Random ;
 using namespace Ceylan::Log ;
 
 
+
 #ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"         // for CEYLAN_DEBUG_RANDOM and al
 #endif // CEYLAN_USES_CONFIG_H
 
 
 
+
 WhiteNoiseGenerator::WhiteNoiseGenerator( Sample lowerLimit, 
-	Sample upperLimit ) 
-		throw( MathsException ) :
+		Sample upperLimit ) :
 	RandomGenerator( lowerLimit, upperLimit ) 
 {
 
@@ -75,9 +76,9 @@ WhiteNoiseGenerator::WhiteNoiseGenerator( Sample lowerLimit,
 }
 
 
+
 WhiteNoiseGenerator::WhiteNoiseGenerator( Sample lowerLimit, 
-	Sample upperLimit, Seed aSeed ) 
-		throw( MathsException ) :
+		Sample upperLimit, Seed aSeed )	:
 	RandomGenerator( lowerLimit, upperLimit, aSeed ) 
 {
 
@@ -98,7 +99,8 @@ WhiteNoiseGenerator::~WhiteNoiseGenerator() throw()
 }
 
 
-void WhiteNoiseGenerator::generateSeedFromCurrentTime() throw( MathsException )
+
+void WhiteNoiseGenerator::generateSeedFromCurrentTime() 
 {
 
 	try
@@ -113,16 +115,19 @@ void WhiteNoiseGenerator::generateSeedFromCurrentTime() throw( MathsException )
 	}
 	catch( const SystemException & e )
 	{
+	
 		throw MathsException( 
-			"WhiteNoiseGenerator::generateSeedFromCurrentTime : "
-			"unable to forge random seed from current time : " 
+			"WhiteNoiseGenerator::generateSeedFromCurrentTime: "
+			"unable to forge random seed from current time: " 
 			+ e.toString() ) ;
+			
 	}
 	
 }	 	
 
 
-RandomValue WhiteNoiseGenerator::getNewValue() throw()
+
+RandomValue WhiteNoiseGenerator::getNewValue()
 {
 
 	// rand returns int.
@@ -134,7 +139,8 @@ RandomValue WhiteNoiseGenerator::getNewValue() throw()
 }
 
 
-void WhiteNoiseGenerator::reset( Seed newSeed ) throw() 
+
+void WhiteNoiseGenerator::reset( Seed newSeed ) 
 {
 
 	_seed = newSeed ;
@@ -143,17 +149,17 @@ void WhiteNoiseGenerator::reset( Seed newSeed ) throw()
 }
 
 
-const string WhiteNoiseGenerator::toString( VerbosityLevels level ) 
-	const throw()
+
+const string WhiteNoiseGenerator::toString( VerbosityLevels level ) const
 {
 
-	return "White noise generator. " 
-		+ RandomGenerator::toString( level ) ;
+	return "White noise generator. " + RandomGenerator::toString( level ) ;
 		
 }
 
 
-void WhiteNoiseGenerator::preCompute() throw( MathsException ) 
+
+void WhiteNoiseGenerator::preCompute()  
 {
 
 	// Initialize new sequence with seed.

@@ -48,11 +48,12 @@ using namespace Ceylan::Maths::Linear ;
 
 
 
-LocatableException::LocatableException( const string & message ) throw() :
+LocatableException::LocatableException( const string & message ) :
 	Ceylan::Exception( "Locatable exception: " + message )
 {
 
 }
+
 
 
 LocatableException::~LocatableException() throw()
@@ -63,12 +64,12 @@ LocatableException::~LocatableException() throw()
 
 
 
-ReferentialChangedEvent::ReferentialChangedEvent( EventSource & source ) 
-		throw() :
+ReferentialChangedEvent::ReferentialChangedEvent( EventSource & source ) :
 	Event( source )
 {
 
 }
+
 
 
 ReferentialChangedEvent::~ReferentialChangedEvent() throw()
@@ -83,7 +84,7 @@ ReferentialChangedEvent::~ReferentialChangedEvent() throw()
 
 
 
-Locatable::Locatable( Locatable & fatherLocatable ) throw() :
+Locatable::Locatable( Locatable & fatherLocatable ) :
 	EventSource(),
 	EventListener(),
 	_father( & fatherLocatable ),
@@ -92,6 +93,7 @@ Locatable::Locatable( Locatable & fatherLocatable ) throw() :
 	_changedEvent( 0 ),
 	_isUpToDate( false )
 {
+
 
 	/*
 	 * Registers this Locatable to its father, so that this one can 
@@ -116,7 +118,7 @@ Locatable::Locatable( Locatable & fatherLocatable ) throw() :
 
 
 
-Locatable::Locatable() throw() :
+Locatable::Locatable() :
 	_father( 0 ),	
 	_localReferential( 0 ),
 	_globalReferential( 0 ),
@@ -128,8 +130,7 @@ Locatable::Locatable() throw() :
 
 
 
-Locatable::Locatable( Locatable & fatherLocatable, Matrix & localReferential )
-		throw() :
+Locatable::Locatable( Locatable & fatherLocatable, Matrix & localReferential ) :
 	_father( & fatherLocatable ),
 	_localReferential( & localReferential ),
 	_globalReferential( 0 ),
@@ -145,18 +146,22 @@ Locatable::Locatable( Locatable & fatherLocatable, Matrix & localReferential )
 	 */
 	try
 	{
+	
 		subscribeTo( * _father ) ;
+		
 	}
 	catch( const EventException	& e )
 	{
+	
 		LogPlug::error( "Locatable constructor failed: " + e.toString() ) ;	
+		
 	}
 	
 }
 
 
 
-Locatable::Locatable( Matrix & localReferential ) throw() :
+Locatable::Locatable( Matrix & localReferential ) :
 	_father( 0 ),	
 	_localReferential( & localReferential ),
 	_globalReferential( 0 ),
@@ -201,12 +206,11 @@ Locatable::~Locatable() throw()
 	if ( _changedEvent != 0 )
 		delete _changedEvent ;
 			
-	
 }
 
 
 
-bool Locatable::isAbsolute() const throw()
+bool Locatable::isAbsolute() const
 {
 
 	return ( _father == 0 ) ;
@@ -215,7 +219,7 @@ bool Locatable::isAbsolute() const throw()
 
 
 
-bool Locatable::hasLocalReferential() const throw()
+bool Locatable::hasLocalReferential() const
 {
 
 	return ( _localReferential != 0 ) ;
@@ -224,7 +228,7 @@ bool Locatable::hasLocalReferential() const throw()
 
 
 
-Matrix & Locatable::getLocalReferential() const throw( LocatableException )
+Matrix & Locatable::getLocalReferential() const
 {
 
 	if ( _localReferential == 0 )
@@ -237,7 +241,7 @@ Matrix & Locatable::getLocalReferential() const throw( LocatableException )
 
 
 
-void Locatable::setLocalReferential( Matrix & newGlobalReferential ) throw() 
+void Locatable::setLocalReferential( Matrix & newGlobalReferential ) 
 {
 
 	_localReferential = & newGlobalReferential ;
@@ -246,7 +250,7 @@ void Locatable::setLocalReferential( Matrix & newGlobalReferential ) throw()
 
 
 
-bool Locatable::hasGlobalReferential() const throw()
+bool Locatable::hasGlobalReferential() const
 {
 
 	return _globalReferential != 0 ; 
@@ -255,7 +259,7 @@ bool Locatable::hasGlobalReferential() const throw()
 
 
 
-Matrix & Locatable::getGlobalReferential() throw( LocatableException ) 
+Matrix & Locatable::getGlobalReferential() 
 {
 	
 	if ( _isUpToDate )
@@ -317,7 +321,7 @@ Matrix & Locatable::getGlobalReferential() throw( LocatableException )
 
 
 
-bool Locatable::isUpToDate() const throw()
+bool Locatable::isUpToDate() const
 {
 
 	return _isUpToDate ;
@@ -326,7 +330,7 @@ bool Locatable::isUpToDate() const throw()
 
 
 
-void Locatable::setUpToDateState( bool newState ) throw()
+void Locatable::setUpToDateState( bool newState )
 {
 
 	/*
@@ -354,7 +358,7 @@ void Locatable::setUpToDateState( bool newState ) throw()
 
 
 
-void Locatable::beNotifiedOf( const Event & newEvent ) throw()
+void Locatable::beNotifiedOf( const Event & newEvent )
 {
 
 	if ( dynamic_cast<const ReferentialChangedEvent *>( & newEvent ) != 0 )
@@ -366,7 +370,7 @@ void Locatable::beNotifiedOf( const Event & newEvent ) throw()
 
 
 
-const string Locatable::toString( VerbosityLevels level ) const throw()
+const string Locatable::toString( VerbosityLevels level ) const
 {
 
 	string res ;
@@ -382,7 +386,7 @@ const string Locatable::toString( VerbosityLevels level ) const throw()
 
 
 
-void Locatable::changed() throw() 
+void Locatable::changed()
 {
 
 	// Force recomputation of global referential for next time:
@@ -401,7 +405,7 @@ void Locatable::changed() throw()
 
 
 
-void Locatable::detachFromFather() throw( LocatableException )
+void Locatable::detachFromFather()
 {
 
 	if ( _father == 0 ) 
@@ -423,7 +427,7 @@ void Locatable::detachFromFather() throw( LocatableException )
 
 
 
-const string Locatable::describe( VerbosityLevels level ) const throw()
+const string Locatable::describe( VerbosityLevels level ) const
 {
 
 	string res ;

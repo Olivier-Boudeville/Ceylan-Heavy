@@ -38,7 +38,7 @@ namespace Ceylan
 
 
     /**
-     * Describes a Libtool interface version, with respect to the form :
+     * Describes a Libtool interface version, with respects the form:
 	 * (current version).(revision version).(age)
 	 *
 	 * @see http://www.gnu.org/software/libtool/manual.html#Libtool-versioning
@@ -52,6 +52,7 @@ namespace Ceylan
         public:
 
 
+
             /**
              * Constructs a new Libtool version identifier.
              *
@@ -61,13 +62,13 @@ namespace Ceylan
 			 *
              * @param age the age version interface number.
 			 *
-			 * @throw VersionException if the string could not be transformed
-			 * into a valid Libtool version.
+			 * @throw VersionException if this cannot be a valid Libtool 
+			 * version.
 			 *
              */
             explicit LibtoolVersion( VersionNumber current = 0, 
-					VersionNumber revision = 0, VersionNumber age= 0 )
-				throw( Ceylan::VersionException ) ;
+					VersionNumber revision = 0, VersionNumber age= 0 ) ;
+
 
 
             /**
@@ -76,14 +77,13 @@ namespace Ceylan
 			 * positive or null integers.
              *
              * @param versionText a string describing the version, 
-			 * ex : "2.15.1"
+			 * ex: "2.15.1"
 			 *
 			 * @throw VersionException if the string could not be transformed
 			 * into a valid Libtool version.
 			 *
              */
-            explicit LibtoolVersion( const std::string & versionText ) 
-				throw( Ceylan::VersionException ) ;
+            explicit LibtoolVersion( const std::string & versionText ) ;
 
 
 
@@ -96,7 +96,8 @@ namespace Ceylan
 			 * Returns the current interface version of this version identifier.
 			 *
 			 */
-			virtual VersionNumber getCurrentInterfaceNumber() const throw() ;
+			virtual VersionNumber getCurrentInterfaceNumber() const ;
+			
 			
 			
 			/**
@@ -105,14 +106,14 @@ namespace Ceylan
 			 * @note Consistency of the Libtool version is not checked.
 			 *
 			 */
-			virtual void setCurrentInterfaceNumber( VersionNumber newCurrent )
-				throw() ;
+			virtual void setCurrentInterfaceNumber( VersionNumber newCurrent ) ;
 			
 			
 			
 			/// Returns the revision number of this version identifier.
-			virtual VersionNumber getRevisionInterfaceNumber() const throw() ;
+			virtual VersionNumber getRevisionInterfaceNumber() const ;
 			
+		
 			
 			/**
 			 * Sets the revision interface number of this version identifier.
@@ -120,8 +121,8 @@ namespace Ceylan
 			 * @note Consistency of the Libtool version is not checked.
 			 *
 			 */
-			virtual void setRevisionInterfaceNumber( VersionNumber newRevision )
-				throw() ;
+			virtual void setRevisionInterfaceNumber( 
+				VersionNumber newRevision ) ;
 			
 			
 			
@@ -130,7 +131,8 @@ namespace Ceylan
 			 * identifier.
 			 *
 			 */
-			virtual VersionNumber getInterfaceAge() const throw() ;
+			virtual VersionNumber getInterfaceAge() const ;
+			
 			
 			
 			/**
@@ -140,7 +142,8 @@ namespace Ceylan
 			 * @note Consistency of the Libtool version is not checked.
 			 *
 			 */
-			virtual void setInterfaceAge( VersionNumber newAge ) throw() ;
+			virtual void setInterfaceAge( VersionNumber newAge ) ;
+			
 			
 			
 			/**
@@ -166,12 +169,13 @@ namespace Ceylan
 			 *
 			 * @throw VersionException if the comparison of the two versions 
 			 * cannot be done, for example in the case where they belong to
-			 * incompatible version schemes : this would be a meaningless
+			 * incompatible version schemes: this would be a meaningless
 			 * operation.
 			 *
 			 */
 			virtual bool isCompatibleWith( const Version & expectedVersion )
-				const throw( VersionException ) ;
+				const ;
+			
 			
 			
 			/**
@@ -184,8 +188,8 @@ namespace Ceylan
 			 * @note This method is public so that the operators can use it.
 			 *
 			 */
-			virtual bool canBeComparedWith( const Version & version )
-				const throw() ;
+			virtual bool canBeComparedWith( const Version & version ) const ;
+		
 				
 				
             /**
@@ -199,11 +203,12 @@ namespace Ceylan
              *
              */
             virtual const std::string toString( VerbosityLevels level = high )
-				const throw() ;
+				const ;
 
 
 
         protected:
+
 
 
 			/**
@@ -211,14 +216,16 @@ namespace Ceylan
 			 * not be mixed with basic versions, since their meaning differ.
 			 *
 			 */ 
-			virtual bool isUsualVersionSchemeCompliant() const throw() ;
+			virtual bool isUsualVersionSchemeCompliant() const ;
 
 			
 			/**
-			 * Raises an exception iff the Libtool version is not consitent.
+			 * Raises an exception iff the Libtool version is not consistent.
+			 *
+			 * @throw VersionException if Libtool version is not consistent.
 			 *
 			 */
-			virtual void checkConsistency() const throw( VersionException ) ;
+			virtual void checkConsistency() const ;
 			
 			 
 			
@@ -232,7 +239,7 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */
-			LibtoolVersion( const LibtoolVersion & source ) throw() ;
+			LibtoolVersion( const LibtoolVersion & source ) ;
 			
 			
 			/**
@@ -242,8 +249,7 @@ namespace Ceylan
 			 * called, implicitly or not.
 			 * 
 			 */			 
-			LibtoolVersion & operator = ( const LibtoolVersion & source )
-				throw() ;
+			LibtoolVersion & operator = ( const LibtoolVersion & source ) ;
 
 
     } ;
@@ -253,3 +259,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_LIBTOOL_VERSION_H_
+

@@ -54,7 +54,7 @@ using namespace Ceylan::Log ;
 
 
 LogAggregator::LogAggregatorException::LogAggregatorException( 
-		const string & message ) throw(): 
+		const string & message ) : 
 	LogException( message )
 {
 
@@ -76,11 +76,10 @@ const LevelOfDetail LogAggregator::DefaultGlobalLevelOfDetail
 	
 							
 LogAggregator::LogAggregator( bool beSmart, 
-		bool useGlobalLevelOfDetail ) throw(): 
+		bool useGlobalLevelOfDetail ) : 
 	_beSmart( beSmart ),
 	_useGlobalLevelOfDetail( useGlobalLevelOfDetail ),
 	_globalLevelOfDetail( DefaultGlobalLevelOfDetail )
-
 {
 
 	CEYLAN_LOG( "LogAggregator constructor." ) ;
@@ -89,7 +88,7 @@ LogAggregator::LogAggregator( bool beSmart,
 
 
 
-LogAggregator::~LogAggregator() throw() 
+LogAggregator::~LogAggregator() throw()  
 {
 
 	CEYLAN_LOG( "LogAggregator destructor called." ) ;
@@ -108,8 +107,7 @@ LogAggregator::~LogAggregator() throw()
 
 
 
-LogChannel & LogAggregator::createBasicChannel( 
-	const string & channelName ) throw( LogException )
+LogChannel & LogAggregator::createBasicChannel( const string & channelName )
 {
 	
 #if CEYLAN_DEBUG
@@ -131,8 +129,7 @@ LogChannel & LogAggregator::createBasicChannel(
 
 
 
-ObjectChannel & LogAggregator::createObjectChannel( 
-	LogMessage & message ) throw( LogException )
+ObjectChannel & LogAggregator::createObjectChannel( LogMessage & message )
 {
 
 	string realChannelName = Loggable::GetEmbeddedChannelName(
@@ -162,7 +159,6 @@ ObjectChannel & LogAggregator::createObjectChannel(
 
 
 bool LogAggregator::hasChannel( const std::string & channelName ) const 
-	throw( LogException )
 {
 
 	return ( findChannel( channelName ) != 0 ) ;
@@ -172,8 +168,7 @@ bool LogAggregator::hasChannel( const std::string & channelName ) const
 
 
 
-LogChannel * LogAggregator::findChannel( const string & channelName ) 
-	const throw( LogException )
+LogChannel * LogAggregator::findChannel( const string & channelName ) const
 {
 
 
@@ -197,8 +192,7 @@ LogChannel * LogAggregator::findChannel( const string & channelName )
 
 
 
-void LogAggregator::transferChannel( LogChannel & source, 
-	LogChannel & target ) throw( LogException )
+void LogAggregator::transferChannel( LogChannel & source, LogChannel & target )
 {
 
 
@@ -260,16 +254,19 @@ void LogAggregator::transferChannel( LogChannel & source,
 
 
 
-void LogAggregator::removeChannel( LogChannel & target ) throw()
+void LogAggregator::removeChannel( LogChannel & target ) 
 {
+
 	CEYLAN_LOG( "Removing channel " + target.getName() ) ;
+	
 	_channelList.remove( & target ) ;
 	delete & target ;
+	
 }
 
 
 
-void LogAggregator::store( LogMessage & message ) throw( LogException ) 
+void LogAggregator::store( LogMessage & message ) 
 {
 	
 	CEYLAN_LOG( "LogAggregator::store: incoming message " 
@@ -293,7 +290,7 @@ void LogAggregator::store( LogMessage & message ) throw( LogException )
 	
 				
 LogChannel * LogAggregator::findBasicChannel( 
-	const string & basicChannelName ) const throw( LogException )
+	const string & basicChannelName ) const
 {
 
 	CEYLAN_LOG( "LogAggregator::findBasicChannel: "
@@ -340,9 +337,8 @@ LogChannel * LogAggregator::findBasicChannel(
 	
 					
 ObjectChannel * LogAggregator::findObjectChannel( 
-	const string & nonPrefixedChannelName ) const throw( LogException )
+	const string & nonPrefixedChannelName ) const
 {
-
 
 	CEYLAN_LOG( "LogAggregator::findObjectChannel: "
 		"searching object channels for " + nonPrefixedChannelName ) ;
@@ -370,6 +366,7 @@ ObjectChannel * LogAggregator::findObjectChannel(
 			if ( objChannel->getName() == nonPrefixedChannelName )
 				return objChannel ;
 		}
+		
 	}
 	
 	/*
@@ -380,6 +377,7 @@ ObjectChannel * LogAggregator::findObjectChannel(
 		+ nonPrefixedChannelName + " found." ) ;
 
 	*/
+	
 	return 0 ;
 		
 }
@@ -387,7 +385,6 @@ ObjectChannel * LogAggregator::findObjectChannel(
 
 
 void LogAggregator::createBasicChannelFrom( LogMessage & message ) 
-	throw( LogException ) 
 {
 
 	/*
@@ -403,8 +400,7 @@ void LogAggregator::createBasicChannelFrom( LogMessage & message )
 
 
 
-void LogAggregator::createLoggableChannelFrom( LogMessage & message ) 
-	throw( LogException )
+void LogAggregator::createLoggableChannelFrom( LogMessage & message )	
 {
 
 	// If it is not a smart aggregator, just store and forget: 
@@ -538,7 +534,7 @@ void LogAggregator::createLoggableChannelFrom( LogMessage & message )
 				
 				/*
 				 * Do not forget to add this incoming message which
-				 * triggered the transfer !
+				 * triggered the transfer!
 				 *
 				 */
 				newChannel.addMessage( message ) ;
@@ -589,7 +585,6 @@ void LogAggregator::createLoggableChannelFrom( LogMessage & message )
 
 
 void LogAggregator::storeBasicMessage( LogMessage & basicLogMessage ) 
-	throw( LogException )
 {	
 
 	CEYLAN_LOG( "LogAggregator::storeBasicMessage: message aimed at " 
@@ -620,11 +615,10 @@ void LogAggregator::storeBasicMessage( LogMessage & basicLogMessage )
 
 
 
-void LogAggregator::storeObjectMessage( 
-	LogMessage & objectLogMessage ) throw( LogException )
+void LogAggregator::storeObjectMessage( LogMessage & objectLogMessage )
 {
 	
-	// Maybe the relevant object channel already exists ?	
+	// Maybe the relevant object channel already exists?	
 	
 	// First, auto-correct any mangled class name:
 	demangle( objectLogMessage ) ;
@@ -685,7 +679,7 @@ void LogAggregator::storeObjectMessage(
 
 
 
-void LogAggregator::demangle( LogMessage & objectLogMessage ) throw()
+void LogAggregator::demangle( LogMessage & objectLogMessage ) 
 {
 
 
@@ -753,12 +747,12 @@ void LogAggregator::demangle( LogMessage & objectLogMessage ) throw()
 
 
 
-Ceylan::VerbosityLevels LogAggregator::getOverallVerbosityLevel() const throw()
+Ceylan::VerbosityLevels LogAggregator::getOverallVerbosityLevel() const 
 {
 
 	LevelOfDetail level ;
 	
-	// Level of detail globally overriden ?
+	// Level of detail globally overriden?
 	if ( _useGlobalLevelOfDetail )			
 	{
 		level = _globalLevelOfDetail ;
@@ -784,13 +778,13 @@ Ceylan::VerbosityLevels LogAggregator::getOverallVerbosityLevel() const throw()
 
 				 
 Ceylan::VerbosityLevels LogAggregator::getMessageVerbosityLevel( 
-	const LogMessage & message ) const throw()
+	const LogMessage & message ) const 
 {
 
 	LevelOfDetail level ;
 	
 	
-	// Level of detail globally overriden ?
+	// Level of detail globally overriden?
 	if ( _useGlobalLevelOfDetail )			
 	{
 		level = _globalLevelOfDetail ;
@@ -818,7 +812,7 @@ Ceylan::VerbosityLevels LogAggregator::getMessageVerbosityLevel(
 					
 Ceylan::VerbosityLevels 
 		LogAggregator::ConvertListenerLevelOfDetailToVerbosityLevel(
-	LevelOfDetail level ) throw()
+	LevelOfDetail level ) 
 {
 	
 	/*
@@ -850,7 +844,7 @@ Ceylan::VerbosityLevels
 
 Ceylan::VerbosityLevels 
 		LogAggregator::ConvertMessageLevelOfDetailToVerbosityLevel(
-	LevelOfDetail level ) throw()
+	LevelOfDetail level ) 
 {
 	
 	/*
@@ -875,8 +869,7 @@ Ceylan::VerbosityLevels
 
 
 
-const string LogAggregator::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+const string LogAggregator::toString( Ceylan::VerbosityLevels level ) const 
 {
 
 	return string( "LogAggregator is up and running, is " )

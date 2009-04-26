@@ -79,22 +79,25 @@ extern "C"
 }
 
 
+
 // Templates cannot be declared to have 'C' linkage:
 #ifdef CEYLAN_USES_WS2TCPIP_H
 #include <ws2tcpip.h>  // for getaddrinfo
 #endif // CEYLAN_USES_WS2TCPIP_H
 
 
+
 /*
  * Useful documentation resources:
- *   - http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winsock/winsock/porting_socket_applications_to_winsock.asp
- *   - http://tangentsoft.net/wskfaq/
+ *  - http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winsock/winsock/porting_socket_applications_to_winsock.asp
+ *  - http://tangentsoft.net/wskfaq/
  *		* http://tangentsoft.net/wskfaq/articles/bsd-compatibility.html
  *
  *
  * Maybe a ping facility could be provided (see IPPROTO_ICMP).
  *
  */
+
 
 
 using namespace Ceylan::Network ;
@@ -105,11 +108,12 @@ using namespace std ;
 
 
 
-NetworkException::NetworkException( const string & message ) throw():
+NetworkException::NetworkException( const string & message ) :
 	Ceylan::Exception( message )
 {
 
 }
+
 
 
 NetworkException::~NetworkException() throw()
@@ -122,7 +126,9 @@ NetworkException::~NetworkException() throw()
 const Ceylan::Uint16 Ceylan::Network::HostDNSEntry::HostNameMaxLength = 256 ;
 
 
+
 #ifdef CEYLAN_USES_WS2TCPIP_H
+
 
 /**
  * Avoid exposing system-dependent ws2tcpip.h in the headers:
@@ -138,7 +144,7 @@ struct HostDNSEntry::SystemSpecificHostEntry
 	 */
 	struct addrinfo* _entryList ;
 
-	SystemSpecificHostEntry() throw():
+	SystemSpecificHostEntry():
 		_entryList( 0 )
 	{
 	
@@ -165,7 +171,7 @@ struct HostDNSEntry::SystemSpecificHostEntry
 
 	hostent * _entry ;
 	
-	SystemSpecificHostEntry() throw():
+	SystemSpecificHostEntry():
 		_entry( 0 )
 	{
 	
@@ -192,8 +198,7 @@ struct HostDNSEntry::SystemSpecificHostEntry
  
 
 
-HostDNSEntry::HostDNSEntry( const std::string & hostName )
-		throw( NetworkException ):
+HostDNSEntry::HostDNSEntry( const std::string & hostName ) :
 	_internalEntry( 0 )
 {
 
@@ -237,7 +242,7 @@ HostDNSEntry::HostDNSEntry( const std::string & hostName )
 
 	_internalEntry = new SystemSpecificHostEntry ;
 	
-	_internalEntry->_entry = ::gethostbyname( hostName.c_str() ) ;
+	_internalEntry->_entry =::gethostbyname( hostName.c_str() ) ;
 	
 	// Hard to factor code without creating a string most often useless:
 	if ( _internalEntry->_entry == 0 )
@@ -263,7 +268,7 @@ HostDNSEntry::HostDNSEntry( const std::string & hostName )
 
 		
 			
-HostDNSEntry::HostDNSEntry( const IPAddress & ip ) throw( NetworkException )
+HostDNSEntry::HostDNSEntry( const IPAddress & ip ) 
 {
 
 #ifdef CEYLAN_USES_WS2TCPIP_H
@@ -301,7 +306,7 @@ HostDNSEntry::HostDNSEntry( const IPAddress & ip ) throw( NetworkException )
 			"the conversion of " + ip.toString() + " to binary IP failed." ) ;
 	
 	if ( ip.getType() == Network::IPv4 )
-		_internalEntry->_entry = ::gethostbyaddr( 
+		_internalEntry->_entry =::gethostbyaddr( 
 			reinterpret_cast<const char *>( &binaryIp ), 
 			sizeof(in_addr), AF_INET ) ;
 	else
@@ -358,7 +363,6 @@ HostDNSEntry::~HostDNSEntry() throw()
 
 
 string HostDNSEntry::getOfficialHostName() const 
-	throw( NetworkException )
 {
 
 #ifdef CEYLAN_USES_WS2TCPIP_H
@@ -388,7 +392,7 @@ string HostDNSEntry::getOfficialHostName() const
 
 
 
-list<string> & HostDNSEntry::getAliasList() const throw()
+list<string> & HostDNSEntry::getAliasList() const
 {
 
 #ifdef CEYLAN_USES_WS2TCPIP_H
@@ -443,7 +447,7 @@ list<string> & HostDNSEntry::getAliasList() const throw()
 
 
 
-NetworkAddressType HostDNSEntry::getAddressType() const throw()
+NetworkAddressType HostDNSEntry::getAddressType() const
 {
 
 #ifdef CEYLAN_USES_WS2TCPIP_H
@@ -504,7 +508,7 @@ NetworkAddressType HostDNSEntry::getAddressType() const throw()
 
 
 
-list<IPAddress *> & HostDNSEntry::getAddresses() const throw()
+list<IPAddress *> & HostDNSEntry::getAddresses() const
 {
 
 #ifdef CEYLAN_USES_WS2TCPIP_H
@@ -538,7 +542,7 @@ list<IPAddress *> & HostDNSEntry::getAddresses() const throw()
 	
 			case PF_INET:
 				currentEffectiveAddress = & currentAddressStruct->sin_addr ;	
-				decodedAddress = ::inet_ntoa( *currentEffectiveAddress ) ;
+				decodedAddress =::inet_ntoa( *currentEffectiveAddress ) ;
 				if ( decodedAddress != 0 )
 					res.push_back( 
 						new IPAddressvFour( string( decodedAddress ) ) ) ;	
@@ -630,8 +634,7 @@ list<IPAddress *> & HostDNSEntry::getAddresses() const throw()
 
 
 
-const string HostDNSEntry::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+const string HostDNSEntry::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string res ;
@@ -698,7 +701,7 @@ const string HostDNSEntry::toString( Ceylan::VerbosityLevels level )
 
 
 
-void HostDNSEntry::manageHostEntry() throw( NetworkException )
+void HostDNSEntry::manageHostEntry() 
 {
 
 #ifdef CEYLAN_USES_WS2TCPIP_H
@@ -759,11 +762,13 @@ void HostDNSEntry::manageHostEntry() throw( NetworkException )
 
 
 
+
+
 // Separate functions.
 
 
 
-const string Ceylan::Network::getLocalHostName() throw( NetworkException )
+const string Ceylan::Network::getLocalHostName() 
 {
 
 #ifdef CEYLAN_USES_WINSOCK2_H
@@ -806,8 +811,7 @@ const string Ceylan::Network::getLocalHostName() throw( NetworkException )
 
 
 
-void Ceylan::Network::setLocalHostName( const string & newHostName )
-	throw( NetworkException )
+void Ceylan::Network::setLocalHostName( const string & newHostName )	
 {
 
 #ifdef CEYLAN_USES_SETHOSTNAME
@@ -847,7 +851,7 @@ void Ceylan::Network::setLocalHostName( const string & newHostName )
 
 
 
-const string Ceylan::Network::getLocalHostDomainName() throw( NetworkException )
+const string Ceylan::Network::getLocalHostDomainName() 
 {
 
 #ifdef CEYLAN_USES_GETDOMAINNAME
@@ -876,8 +880,7 @@ const string Ceylan::Network::getLocalHostDomainName() throw( NetworkException )
 
 
 
-void Ceylan::Network::setLocalHostDomainName( const string & newDomainName )
-	throw( NetworkException )
+void Ceylan::Network::setLocalHostDomainName( const string & newDomainName )	
 {
 
 #ifdef CEYLAN_USES_SETDOMAINNAME
@@ -893,14 +896,12 @@ void Ceylan::Network::setLocalHostDomainName( const string & newDomainName )
 		"not available on this platform." ) ;
 		
 #endif // CEYLAN_USES_SETDOMAINNAME
-			
 
 }
 
 
 
-const string Ceylan::Network::getMostPreciseLocalHostName() 
-	throw( NetworkException )
+const string Ceylan::Network::getMostPreciseLocalHostName()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -1011,8 +1012,7 @@ const string Ceylan::Network::getMostPreciseLocalHostName()
 		
 				
 const string Ceylan::Network::getFQDNFromIP( const IPAddress & ip )
-	throw( NetworkException )
-{
+	{
 
 	HostDNSEntry searched( ip ) ;
 	
@@ -1023,7 +1023,6 @@ const string Ceylan::Network::getFQDNFromIP( const IPAddress & ip )
 			
 			
 const string Ceylan::Network::getFQDNFromIPv4( const std::string & ipString )
-	throw( NetworkException ) 
 {
 
 	IPAddressvFour ip( ipString ) ;
@@ -1035,7 +1034,7 @@ const string Ceylan::Network::getFQDNFromIPv4( const std::string & ipString )
 			
 									
 const string Ceylan::Network::getFQDNFromHostname( 
-	const std::string & hostname ) throw( NetworkException )
+	const std::string & hostname ) 
 {
 
 	HostDNSEntry searched( hostname ) ;
@@ -1047,7 +1046,6 @@ const string Ceylan::Network::getFQDNFromHostname(
 
 
 const string Ceylan::Network::getFQDNFromDNSEntry( const HostDNSEntry & entry )
-	throw( NetworkException ) 
 {
 
 	string current ;
@@ -1092,7 +1090,7 @@ const string Ceylan::Network::getFQDNFromDNSEntry( const HostDNSEntry & entry )
 
 
 
-bool Ceylan::Network::isAValidHostName( const string & hostnameString ) throw()
+bool Ceylan::Network::isAValidHostName( const string & hostnameString )
 {
 
 #if CEYLAN_USES_REGEX
@@ -1123,7 +1121,6 @@ bool Ceylan::Network::isAValidHostName( const string & hostnameString ) throw()
  * 
  */
 string Ceylan::Network::interpretSocketError( SocketError errorCode ) 
-	throw()
 {
 
 #if CEYLAN_ARCH_WINDOWS
@@ -1422,7 +1419,7 @@ string Ceylan::Network::interpretSocketError( SocketError errorCode )
 
 
 
-SocketError Ceylan::Network::getSocketError() throw()
+SocketError Ceylan::Network::getSocketError()
 {
 
 #if CEYLAN_ARCH_WINDOWS
@@ -1442,7 +1439,7 @@ SocketError Ceylan::Network::getSocketError() throw()
 
 
 
-std::string Ceylan::Network::explainSocketError() throw()
+std::string Ceylan::Network::explainSocketError()
 {
 
 #if CEYLAN_ARCH_WINDOWS
@@ -1460,6 +1457,7 @@ std::string Ceylan::Network::explainSocketError() throw()
 
 
 
+
 // NetworkManager section.
 
 
@@ -1467,7 +1465,7 @@ std::string Ceylan::Network::explainSocketError() throw()
 
 NetworkManager NetworkManager::_Manager ;
 
-NetworkManager::NetworkManager() throw( NetworkException ) 
+NetworkManager::NetworkManager()  
 {
 
 #if CEYLAN_DEBUG_SYSTEM

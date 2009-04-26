@@ -48,7 +48,9 @@ namespace Ceylan
 	{
 
 		public:
-			explicit EventException( const std::string & reason ) throw() ;
+		
+			explicit EventException( const std::string & reason ) ;
+			
 			virtual ~EventException() throw() ;
 			
 	} ;
@@ -57,6 +59,7 @@ namespace Ceylan
 	
 	// They send events.
 	class EventSource ;
+	
 	
 	
     /**
@@ -83,11 +86,13 @@ namespace Ceylan
 			 * of course they do not own it.
 			 *
 			 */
-			explicit Event( EventSource & source ) throw() ;
+			explicit Event( EventSource & source ) ;
 			
+						
 						
 			/// Basic virtual destructor.
 			virtual ~Event() throw() ;
+
 
 							
             /**
@@ -101,7 +106,7 @@ namespace Ceylan
              *
              */
 			virtual const std::string toString( 
-				Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
+				Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 			
 					
 		
@@ -127,7 +132,7 @@ namespace Ceylan
 			 * 
 			 *
 			 */			 
-			Event( const Event & source ) throw() ;
+			Event( const Event & source ) ;
 			
 			
 			/**
@@ -138,7 +143,7 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			Event & operator = ( const Event & source ) throw() ;
+			Event & operator = ( const Event & source ) ;
 			
 			 			
     } ;	
@@ -148,3 +153,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_EVENT_H_
+

@@ -55,7 +55,7 @@ namespace Ceylan
 	
 		public:
 		
-			explicit TreeException( const std::string & reason ) throw() ;
+			explicit TreeException( const std::string & reason ) ;
 
 			virtual ~TreeException() throw() ;
 	
@@ -78,34 +78,35 @@ namespace Ceylan
 	
 		public:
 		
-			explicit TreeVisitor() throw() ;
+			explicit TreeVisitor() ;
 
 			virtual ~TreeVisitor() throw() ;
 
 
 			/// Action to perform when visiting a tree node.
-			virtual void visit( Tree<Content> & tree ) 
-				throw( VisitException ) = 0 ;
+			virtual void visit( Tree<Content> & tree ) = 0 ;
+
 
 			/// Action to perform when visiting the content of a tree node.
-			virtual void visit( Content & content ) 
-				throw( VisitException ) = 0 ;
+			virtual void visit( Content & content ) = 0 ;
 
-	
 	} ;
 
 
+
 	template <typename Content>
-	TreeVisitor<Content>::TreeVisitor() throw()
+	TreeVisitor<Content>::TreeVisitor()
 	{
 
 	}
+	
 
 	template <typename Content>
 	TreeVisitor<Content>::~TreeVisitor() throw()
 	{
 
 	}
+
 
 
 	/// The height of a node, measured from its root.
@@ -122,10 +123,9 @@ namespace Ceylan
 	class /* CEYLAN_DLL */ TreeHeightAwareVisitor : public Ceylan::Visitor
 	{
 	
+	
 		public:
 		
-		
-			
 			
 			
 			/**
@@ -133,8 +133,7 @@ namespace Ceylan
 			 * node.
 			 *
 			 */
-			explicit TreeHeightAwareVisitor() 
-				throw() ;
+			explicit TreeHeightAwareVisitor() ;
 
 
 			/// Virtual destructor.
@@ -150,7 +149,8 @@ namespace Ceylan
 			 * use a single variable, or a stack, etc.
 			 *
 			 */
-			virtual Height getHeight() const throw() ;
+			virtual Height getHeight() const ;
+
 
 
 			/**
@@ -161,7 +161,8 @@ namespace Ceylan
 			 * use a single variable, or a stack, etc.
 			 *
 			 */
-			virtual void incrementHeight() throw() ;
+			virtual void incrementHeight() ;
+			
 			
 			
 			/**
@@ -172,7 +173,8 @@ namespace Ceylan
 			 * use a single variable, or a stack, etc.
 			 *
 			 */
-			virtual void decrementHeight() throw() ;
+			virtual void decrementHeight() ;
+			
 			
 			
 			/** 
@@ -181,28 +183,27 @@ namespace Ceylan
 			 * @param tree the tree node to visit.
 			 *
 			 * @note This declaration is commented out, so that multiple 
-			 * Content child classes can be visited : otherwise their visit
+			 * Content child classes can be visited: otherwise their visit
 			 * method would clash with this one, and hide it.
 			 *
 			 *
 			 
-			virtual void visit( Tree<Content> & tree ) 
-				throw( VisitException ) = 0 ;
+			virtual void visit( Tree<Content> & tree ) = 0 ;
 
 			 */
+
 
 
 			/**
 			 * Action to perform when visiting the content of a tree node.
 			 *
 			 * @note This declaration is commented out, so that multiple 
-			 * Content child classes can be visited : otherwise their visit
+			 * Content child classes can be visited: otherwise their visit
 			 * method would clash with this one, and hide it.
 			 *
 			 * 
 			 
-			virtual void visit( Content & content ) 
-				throw( VisitException ) = 0 ;
+			virtual void visit( Content & content ) = 0 ;
 			
 			 */
 			 
@@ -212,10 +213,11 @@ namespace Ceylan
 
 
 	template <typename Content>
-	TreeHeightAwareVisitor<Content>::TreeHeightAwareVisitor() throw()
+	TreeHeightAwareVisitor<Content>::TreeHeightAwareVisitor()
 	{
 
 	}
+
 
 
 	template <typename Content>
@@ -225,29 +227,32 @@ namespace Ceylan
 	}
 
 
+
 	template <typename Content>
-	Height TreeHeightAwareVisitor<Content>::getHeight() const throw()
+	Height TreeHeightAwareVisitor<Content>::getHeight() const
 	{
 	
-		// Override me !
+		// Override me!
 		return 0 ;
 	}
 
 
+
 	template <typename Content>
-	void TreeHeightAwareVisitor<Content>::incrementHeight() throw()
+	void TreeHeightAwareVisitor<Content>::incrementHeight()
 	{
 	
-		// Override me !
+		// Override me!
 
 	}
 
 
+
 	template <typename Content>
-	void TreeHeightAwareVisitor<Content>::decrementHeight() throw()
+	void TreeHeightAwareVisitor<Content>::decrementHeight()
 	{
 	
-		// Override me !
+		// Override me!
 
 	}
 
@@ -256,7 +261,7 @@ namespace Ceylan
 
 	/**
 	 * Template defining generically trees, parametrized by a
-	 * content datatype (typename Content) : each tree node will
+	 * content datatype (typename Content): each tree node will
 	 * contain its instance of Content, for example this templated tree
 	 * may instanciated with Content == std::string.
 	 *
@@ -288,7 +293,8 @@ namespace Ceylan
 			 * with an empty local content.
 			 *
 			 */
-			Tree() throw() ;
+			explicit Tree() ;
+
 
 
 			/**
@@ -301,8 +307,9 @@ namespace Ceylan
 			 * will deallocate it when itself deallocated.
 			 *
 			 */
-			explicit Tree( Content & content ) throw() ;
+			explicit Tree( Content & content ) ;
 
+			
 			
 			/**
 			 * Virtual destructor, deletes all tree, including the subtrees
@@ -312,13 +319,14 @@ namespace Ceylan
 			virtual ~Tree() throw() ;
 
 
+
 			
 			// Visitor section.
 			
 
 			/**
 			 * Allows given visitor to visit this object, thanks to a 
-			 * callback : 'visitor.visit( *this ) ;'
+			 * callback: 'visitor.visit( *this ) ;'
 			 *
 			 * Implements the Visitable interface.
 			 *
@@ -326,8 +334,8 @@ namespace Ceylan
 			 * the specified visitor is no a tree height-aware visitor.
 			 *
 			 */
-			virtual void accept( Visitor & visitor ) 
-				throw( VisitException ) ;
+			virtual void accept( Visitor & visitor ) ;
+
 
 
 
@@ -341,7 +349,8 @@ namespace Ceylan
 			 * @return true iff this node owns a content instance.
 			 *
 			 */
-			virtual bool hasContent() const throw() ;
+			virtual bool hasContent() const ;
+			
 			
 			 
 			/**
@@ -353,7 +362,8 @@ namespace Ceylan
 			 * @see hasContent
 			 *
 			 */ 
-			virtual Content & getContent() throw( TreeException ) ;  
+			virtual Content & getContent() ;  
+			 
 			 
 			 
 			/**
@@ -367,8 +377,8 @@ namespace Ceylan
 			 * @see hasContent
 			 *
 			 */ 
-			virtual void setContent( Content & newContent ) 
-				throw( TreeException ) ;  
+			virtual void setContent( Content & newContent ) ;  
+			 
 			 
 			 
 			
@@ -379,7 +389,8 @@ namespace Ceylan
 			 * Returns the list of sons (subtrees) of this tree.
 			 *
 			 */
-			virtual const SubTreeList & getSons() const throw() ;
+			virtual const SubTreeList & getSons() const ;
+
 
 
 			/**
@@ -391,7 +402,8 @@ namespace Ceylan
 			 * @return the father tree, if found, otherwise a null pointer.
 			 *
 			 */
-			virtual Tree * getFather( Tree & child ) throw() ;
+			virtual Tree * getFather( Tree & child ) ;
+
 
 
 			/**
@@ -405,7 +417,8 @@ namespace Ceylan
 			 * @note This tree takes ownership of the specified subtree.
 			 *
 			 */
-			virtual void addSon( Tree & subtree ) throw( TreeException ) ;
+			virtual void addSon( Tree & subtree ) ;
+
 
 
 			/**
@@ -429,7 +442,8 @@ namespace Ceylan
 			 *
 			 */
 			virtual void traverseDepthFirst( TreeVisitor<Content> & treeVisitor,
-				bool visitContent = true ) throw( TreeException ) ;
+				bool visitContent = true ) ;
+
 
 
 			/**
@@ -454,7 +468,7 @@ namespace Ceylan
 			 */
 			virtual void traverseBreadthFirst( 
 				TreeVisitor<Content> & treeVisitor,
-				bool visitContent = true ) throw( TreeException ) ;
+				bool visitContent = true ) ;
 
 
 
@@ -465,8 +479,9 @@ namespace Ceylan
 			 *
 			 */
 			virtual void appendSonsContents( 
-				std::list<Content *> & toBeAugmented ) throw() ;
+				std::list<Content *> & toBeAugmented ) ;
 				
+
 
 
 			// Content-based navigation section.
@@ -483,7 +498,8 @@ namespace Ceylan
 			 * was found.
 			 *
 			 */
-			virtual Tree * getNodeOf( const Content & content ) throw() ;
+			virtual Tree * getNodeOf( const Content & content ) ;
+			
 			
 			
 			/**
@@ -497,7 +513,7 @@ namespace Ceylan
 			 * has a father but it is not associated with any content.
 			 *
 			 * @note This is an expensive method, as it may traverse the full
-			 * tree : this kind of tree has nodes that are not required to
+			 * tree: this kind of tree has nodes that are not required to
 			 * keep track of their father. Hence needing to use this method
 			 * might be the sign of a poor design.
 			 *
@@ -506,8 +522,7 @@ namespace Ceylan
 			 * value.
 			 *
 			 */
-			virtual Content * getFatherContent( const Content & content )
-				throw() ;
+			virtual Content * getFatherContent( const Content & content ) ;
 				
 
 
@@ -521,7 +536,8 @@ namespace Ceylan
 			 *
 			 */
 			virtual void appendSonsContentsOf( const Content & content,
-				std::list<Content *> & toBeAugmented ) throw() ;
+				std::list<Content *> & toBeAugmented ) ;
+				
 				
 
 			/**
@@ -535,7 +551,8 @@ namespace Ceylan
 			 *
 			 */
 			 virtual const std::string toString( 
-			 	Ceylan::VerbosityLevels level = Ceylan::high ) const throw() ;
+			 	Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+
 
 
 
@@ -568,6 +585,7 @@ namespace Ceylan
 #pragma warning( pop ) 			
 
 
+
 		private:
 
 
@@ -580,7 +598,7 @@ namespace Ceylan
 			 * @note Made to avoid unwanted hidden clone of the Singleton.
 			 *
 			 */			 
-			Tree( const Tree & source ) throw() ;
+			Tree( const Tree & source ) ;
 			
 			
 			/**
@@ -590,18 +608,19 @@ namespace Ceylan
 			 * is called, implicitly or not.
 			 * 
 			 */			 
-			Tree & operator = ( const Tree & source ) throw() ;
+			Tree & operator = ( const Tree & source ) ;
 
 
 	} ;
 
 
 
-// Public section : implementation.
+
+// Public section: implementation.
 
 
 	template <typename Content>
-	Tree<Content>::Tree() throw() :
+	Tree<Content>::Tree() :
 		_content( 0 ),
 		_sons()
 	{
@@ -609,14 +628,16 @@ namespace Ceylan
 	}	
 
 
+
 	template <typename Content>
-	Tree<Content>::Tree( Content & content ) throw() :
+	Tree<Content>::Tree( Content & content ) :
 		_content( &content ),
 		_sons()
 	{
 	
 	}	
 
+			
 				
 	template <typename Content>
 	Tree<Content>::~Tree() throw()
@@ -631,7 +652,7 @@ namespace Ceylan
 			delete (*it) ;
 		}
 
-		// Useless but maybe safer for debugging :
+		// Useless but maybe safer for debugging:
 		_sons.clear() ;
 	
 	}
@@ -639,20 +660,21 @@ namespace Ceylan
 
 
 	template <typename Content>
-	const std::list< Tree<Content>* > & Tree<Content>::getSons() const throw()
+	const std::list< Tree<Content>* > & Tree<Content>::getSons() const
 	{
+	
 		return _sons ;
+		
 	}
 	
 
+
 	template <typename Content>
 	Tree<Content> * Tree<Content>::getFather( Tree<Content> & child ) 
-		throw()
 	{
 	
-	
 		/*
-		 * Algorithm : 
+		 * Algorithm: 
 		 *  - traverse the tree from the root
 		 *  - from a given node, look at the sons
 		 *  - if specified child is found, return it
@@ -666,7 +688,7 @@ namespace Ceylan
 				return this ;
 		
 		
-		// Recurse if next level had not that content :
+		// Recurse if next level had not that content:
 		for ( typename SubTreeList::iterator it = _sons.begin();
 				it != _sons.end(); it++ )
 		{		
@@ -677,13 +699,12 @@ namespace Ceylan
 		
 		return 0 ;
 		  
-	
 	}
 	
 	
+	
 	template <typename Content>
-	void Tree<Content>::accept( Visitor & visitor ) 
-		throw( VisitException )
+	void Tree<Content>::accept( Visitor & visitor ) 	
 	{
 		
 		//Ceylan::Log::LogPlug::trace( "Tree<Content>::accept" ) ;
@@ -692,7 +713,7 @@ namespace Ceylan
 			dynamic_cast<TreeHeightAwareVisitor<Content> *>( &visitor ) ;
 			
 		if ( actualVisitor == 0 )
-			throw VisitException( "Tree<Content>::accept failed : "
+			throw VisitException( "Tree<Content>::accept failed: "
 				"the visitor (" + visitor.toString() + ") is not a "
 				"TreeHeightAwareVisitor." ) ;
 				
@@ -702,10 +723,10 @@ namespace Ceylan
 					
 		/*
 		 * When the height-aware visitor will visit a content that may
-		 * enclose other contents (ex : for XML, a XML markup), it will
+		 * enclose other contents (ex: for XML, a XML markup), it will
 		 * call its incrementHeight method, which may push an information
 		 * that identifies this content, so that the next call to
-		 * decrementHeight will pop it and handle the closing (ex : add
+		 * decrementHeight will pop it and handle the closing (ex: add
 		 * the closing XML markup).
 		 *
 		 * That same information can be pushed on a stack directly when the
@@ -715,14 +736,14 @@ namespace Ceylan
 		 * As it can only by popped later at the decrementHeight call, which
 		 * does not depend on the content and thus will pop it in all cases,
 		 * in the cases where nothing special is to be saved when height is
-		 * decremented, a blank element (ex : string) could be pushed on
+		 * decremented, a blank element (ex: string) could be pushed on
 		 * that stack and ignored later when popped.
 		 *
 		 * This way each content can be visited only once, and with no special
 		 * behaviour towards the visitor, such as returning a special value.
 		 *
 		 * Note that a stack is useful as soon as we are in such recursive
-		 * patterns, as nested calls should not prevent from :
+		 * patterns, as nested calls should not prevent from:
 		 *   - closing back what has be opened when going deeper in the tree, 
 		 * notably if the closing depends on the opened element 
 		 *	 - keeping track of the height, as some algorithm depends not only
@@ -734,7 +755,7 @@ namespace Ceylan
 		 
 		actualVisitor->incrementHeight() ;
 
-		// Then recurse :
+		// Then recurse:
 		for ( typename SubTreeList::iterator it = _sons.begin();
 				it != _sons.end(); it++ )
 			(*it)->accept( *actualVisitor ) ;
@@ -746,30 +767,31 @@ namespace Ceylan
 	
 	
 	template <typename Content>
-	bool Tree<Content>::hasContent() const throw()
+	bool Tree<Content>::hasContent() const
 	{
 	
 		return ( _content != 0 ) ;
 	
 	}
 			
+		
 			 
 	template <typename Content>
-	Content & Tree<Content>::getContent() throw( TreeException )
+	Content & Tree<Content>::getContent() 
 	{
 	
 		if ( _content == 0 )
-			throw TreeException( "Tree<Content>::getContent : "
+			throw TreeException( "Tree<Content>::getContent: "
 				"no available content to return." ) ;
 		
 		return *_content ;		
 	
 	}
 			 
+		
 			 
 	template <typename Content>
-	void Tree<Content>::setContent( Content & newContent ) 
-		throw( TreeException )
+	void Tree<Content>::setContent( Content & newContent ) 	
 	{
 	
 		if ( _content != 0 )
@@ -781,17 +803,15 @@ namespace Ceylan
 	
 	
 	
-	
 	template <typename Content>
-	void Tree<Content>::addSon( Tree<Content> & subtree ) 
-		throw( Ceylan::TreeException )
+	void Tree<Content>::addSon( Tree<Content> & subtree ) 	
 	{
 		
 		for ( typename SubTreeList::const_iterator it = _sons.begin();
 				it != _sons.end(); it++ )
 			if ( *it == &subtree )
-				throw Ceylan::TreeException( "Tree<Content>::addSon : "
-					"following son was already registered : "
+				throw Ceylan::TreeException( "Tree<Content>::addSon: "
+					"following son was already registered: "
 					+ subtree.toString() ) ;
 
 		_sons.push_back( &subtree ) ;
@@ -799,17 +819,18 @@ namespace Ceylan
 	}
 
 
+
 	template <typename Content>
 	void Tree<Content>::traverseDepthFirst( TreeVisitor<Content> & treeVisitor,
-		bool visitContent ) throw( TreeException )
+		bool visitContent ) 
 	{
 	
-		// First recurse :
+		// First recurse:
 		for ( typename SubTreeList::iterator it = _sons.begin();
 				it != _sons.end(); it++ )
 			(*it)->traverseDepthFirst( treeVisitor, visitContent ) ;
 
-		// Then apply :
+		// Then apply:
 		treeVisitor.visit( *this ) ;
 
 		if ( visitContent && _content != 0 )
@@ -818,19 +839,19 @@ namespace Ceylan
 	}
 
 
+
 	template <typename Content>
 	void Tree<Content>::traverseBreadthFirst( 
-			TreeVisitor<Content> & treeVisitor,	bool visitContent ) 
-		throw( TreeException )
+			TreeVisitor<Content> & treeVisitor,	bool visitContent ) 	
 	{
 	
-		// Apply :
+		// Apply:
 		treeVisitor.visit( *this ) ;
 
 		if ( visitContent && _content != 0 )
 			treeVisitor.visit( *_content ) ;
 
-		// Then recurse :
+		// Then recurse:
 		for ( typename SubTreeList::iterator it = _sons.begin();
 				it != _sons.end(); it++ )
 			(*it)->traverseBreadthFirst( treeVisitor, visitContent ) ;
@@ -838,9 +859,10 @@ namespace Ceylan
 	}
 
 
+
 	template <typename Content>
 	void Tree<Content>::appendSonsContents( 
-		std::list<Content *> & toBeAugmented ) throw()
+		std::list<Content *> & toBeAugmented )
 	{
 	
 		for ( typename SubTreeList::iterator it = _sons.begin();
@@ -856,15 +878,16 @@ namespace Ceylan
 	}
 
 
+
 	template <typename Content>
-	Tree<Content> * Tree<Content>::getNodeOf( const Content & content ) throw()
+	Tree<Content> * Tree<Content>::getNodeOf( const Content & content )
 	{
 	
-		// Found at this level ?
+		// Found at this level?
 		if ( this->_content == & content )
 			return this ;
 		
-		// Otherwise recurse to next level :
+		// Otherwise recurse to next level:
 		for ( typename SubTreeList::iterator it = _sons.begin();
 				it != _sons.end(); it++ )
 		{		
@@ -878,13 +901,13 @@ namespace Ceylan
 	}
 	
 	
+	
 	template <typename Content>
-	Content * Tree<Content>::getFatherContent( const Content & content )
-		throw()
+	Content * Tree<Content>::getFatherContent( const Content & content )	
 	{
 	
 		/*
-		 * Algorithm : 
+		 * Algorithm: 
 		 *  - traverse the tree from the root
 		 *  - from a given node, look at the sons
 		 *  - if specified content is found, return the current content
@@ -898,7 +921,7 @@ namespace Ceylan
 				return /* might be null */ this->_content ;
 		
 		
-		// Recurse if next level had not that content :
+		// Recurse if next level had not that content:
 		for ( typename SubTreeList::iterator it = _sons.begin();
 				it != _sons.end(); it++ )
 		{		
@@ -912,32 +935,34 @@ namespace Ceylan
 	}
 	
 	
+	
 	template <typename Content>
 	void Tree<Content>::appendSonsContentsOf( const Content & content,
-		std::list<Content *> & toBeAugmented ) throw()
+		std::list<Content *> & toBeAugmented )
 	{
 	
 		Tree<Content> * father = this->getNodeOf( content ) ;
 		
-		// Associated node found ?
+		// Associated node found?
 		if ( father == 0 )
 			return ;
 			
-		// Yes, let's return its son contents :
+		// Yes, let's return its son contents:
 		father->appendSonsContents( toBeAugmented ) ;
 			
 	}	
+	
 			
 			
 	template <typename Content>
 	const std::string Tree<Content>::toString( Ceylan::VerbosityLevels level )
-		const throw()
+		const
 	{
 
 		std::string res = "Tree " ;
 
 		if ( _content !=0 )
-			res += "whose local content is : "
+			res += "whose local content is: "
 				+ _content->toString( level ) ;
 		else
 			res += "with no local content" ;
@@ -945,7 +970,7 @@ namespace Ceylan
 		if ( _sons.empty() )
 			return res + ". No registred subtree" ;
 
-		res += ". Following subtrees are registered : " ;
+		res += ". Following subtrees are registered: " ;
 
 		std::list<std::string> subtrees ;
 
@@ -957,10 +982,11 @@ namespace Ceylan
 
 		return res + Ceylan::formatStringList( subtrees ) ;
 
-
 	}
+
 
 }
 
 
 #endif // CEYLAN_TREE_H_
+

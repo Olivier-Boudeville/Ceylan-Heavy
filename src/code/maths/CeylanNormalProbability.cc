@@ -37,18 +37,20 @@ using namespace Ceylan::Maths::Random ;
 
 
 
+
 NormalProbabilityFunction::NormalProbabilityFunction( Sample mean, 
-	Deviation sigma ) throw( MathsException ) :
+		Deviation sigma ) :
 	ProbabilityFunction(),
 	_mean( mean ),
 	_sigma( sigma )
 {
 
 	if ( Maths::IsNull( _sigma ) )
-		throw MathsException( "NormalProbabilityFunction constructor : "
+		throw MathsException( "NormalProbabilityFunction constructor: "
 			"standard deviation (sigma) must not be null or almost." ) ;
 
 }
+
 
 
 NormalProbabilityFunction::~NormalProbabilityFunction() throw() 
@@ -57,12 +59,12 @@ NormalProbabilityFunction::~NormalProbabilityFunction() throw()
 }
 
 
-Probability NormalProbabilityFunction::operator() ( Sample aSample ) 
-	const throw()
+
+Probability NormalProbabilityFunction::operator() ( Sample aSample ) const
 {
 
 	/*
-	 * Gaussian law : 
+	 * Gaussian law: 
 	 * P(x) = exp( -1/2*((x-mean)/sigma)²) / (sigma * sqrt(2.Pi))
 	 *
 	 */
@@ -74,12 +76,15 @@ Probability NormalProbabilityFunction::operator() ( Sample aSample )
 }
 
 
+
 const string NormalProbabilityFunction::toString( 
-	VerbosityLevels level ) const throw()
+	VerbosityLevels level ) const
 {
+
 	return "Normal probability function whose mean is " 
 		+ Ceylan::toString( _mean ) 
 		+ " and whose standard deviation is " 
 		+ Ceylan::toString( _sigma ) ;
+		
 }
 

@@ -45,53 +45,54 @@ using std::string ;
 using namespace Ceylan::Network ;
 
 
+
 IPAddressvFour::IPAddressvFour( 
 	IPvFourComponent first,	
 	IPvFourComponent second, 
 	IPvFourComponent third, 
-	IPvFourComponent fourth	) throw( IPAddressException ) :
+	IPvFourComponent fourth	) :
 		IPAddress(),
 		_first ( first  ),
 		_second( second ),
 		_third ( third  ),
 		_fourth( fourth )
 {
+
 	validate() ;
+
 }
 
 
+
 IPAddressvFour::IPAddressvFour(	const string & IPString ) 
-	throw( IPAddressException )
 {
 
 	stringstream ss ;
 
 	ss << IPString ;
 
-	// To avoid reading '112' as three chars instead of one Ceylan::Uint8 :
+	// To avoid reading '112' as three chars instead of one Ceylan::Uint8:
 	Ceylan::Uint16 element ;
 	
-	// Get rid with 'ch' of the dots between elements :
+	// Get rid with 'ch' of the dots between elements:
 	char ch ;
 
 	ss >> element ;
 	
 	/*
-	 * Error code if conversion failed (overflow) must be tested :	
+	 * Error code if conversion failed (overflow) must be tested:	
 	 * (otherwise 'element' might be overflowed and finish into [0,255])
 	 *
 	 */
 	if ( ss.fail() )
 		throw IPAddressException( 
-			"IPAddressvFour : unable to construct an IPv4 instance "
-			"from invalid IP string '" + IPString 
-			+ "' : conversion error" ) ;
+			"IPAddressvFour: unable to construct an IPv4 instance "
+			"from invalid IP string '" + IPString + "': conversion error" ) ;
 		
 	if ( element > 255 )
 		throw IPAddressException( 
-			"IPAddressvFour : unable to construct an IPv4 instance "
-			"from invalid IP string '" + IPString 
-			+ "' : read too high element : " 
+			"IPAddressvFour: unable to construct an IPv4 instance "
+			"from invalid IP string '" + IPString + "': read too high element: "
 			+ Ceylan::toString( element ) + "." ) ;
 	else
 		_first = static_cast<IPvFourComponent>( element ) ;		
@@ -102,51 +103,50 @@ IPAddressvFour::IPAddressvFour(	const string & IPString )
 
 	if ( ss.fail() )
 		throw IPAddressException( 
-			"IPAddressvFour : unable to construct an IPv4 instance "
-			"from invalid IP string '" + IPString 
-			+ "' : conversion error" ) ;
+			"IPAddressvFour: unable to construct an IPv4 instance "
+			"from invalid IP string '" + IPString + "': conversion error" ) ;
 
 	if ( element > 255 )
 		throw IPAddressException( 
-			"IPAddressvFour : unable to construct an IPv4 instance "
+			"IPAddressvFour: unable to construct an IPv4 instance "
 			"from invalid IP string '" + IPString 
-			+ "' : read too high element : " 
+			+ "': read too high element: " 
 			+ Ceylan::toString( element ) + "." ) ;
 	else
 		_second = static_cast<IPvFourComponent>( element ) ;		
+		
 	ss >> ch ;
 
 	ss >> element ;
 
 	if ( ss.fail() )
 		throw IPAddressException( 
-			"IPAddressvFour : unable to construct an IPv4 instance "
-			"from invalid IP string '" + IPString 
-			+ "' : conversion error" ) ;
+			"IPAddressvFour: unable to construct an IPv4 instance "
+			"from invalid IP string '" + IPString + "': conversion error" ) ;
 
 	if ( element > 255 )
 		throw IPAddressException( 
-			"IPAddressvFour : unable to construct an IPv4 instance "
+			"IPAddressvFour: unable to construct an IPv4 instance "
 			"from invalid IP string '" + IPString 
-			+ "' : read too high element : " 
+			+ "': read too high element: " 
 			+ Ceylan::toString( element ) + "." ) ;
 	else
 		_third = static_cast<IPvFourComponent>( element ) ;		
+
 	ss >> ch ;
 
 	ss >> element ;
 
 	if ( ss.fail() )
 		throw IPAddressException( 
-			"IPAddressvFour : unable to construct an IPv4 instance "
-			"from invalid IP string '" + IPString 
-			+ "' : conversion error" ) ;
+			"IPAddressvFour: unable to construct an IPv4 instance "
+			"from invalid IP string '" + IPString + "': conversion error" ) ;
 
 	if ( element > 255 )
 		throw IPAddressException( 
-			"IPAddressvFour : unable to construct an IPv4 instance "
+			"IPAddressvFour: unable to construct an IPv4 instance "
 			"from invalid IP string '" + IPString 
-			+ "' : read too high element : " 
+			+ "': read too high element: " 
 			+ Ceylan::toString( element ) + "." ) ;
 	else
 		_fourth = static_cast<IPvFourComponent>( element ) ;		
@@ -160,10 +160,10 @@ IPAddressvFour::IPAddressvFour(	const string & IPString )
 		ss >> remainder ;
 		
 		throw IPAddressException( 
-			"IPAddressvFour : unable to construct an IPv4 instance "
+			"IPAddressvFour: unable to construct an IPv4 instance "
 			"from invalid IP string '" + IPString 
-			+ "' (too many elements, still having '"
-			+ remainder + "')." ) ;
+			+ "' (too many elements, still having '" + remainder + "')." ) ;
+	
 	}
 	
 	
@@ -177,7 +177,7 @@ IPAddressvFour::IPAddressvFour(	const string & IPString )
 	{
 	
 		throw IPAddressException( 
-		"IPAddressvFour : unable to construct an IPv4 instance "
+			"IPAddressvFour: unable to construct an IPv4 instance "
 			"from invalid IP string '" + IPString + "'." ) ;
 			
 	}
@@ -185,29 +185,37 @@ IPAddressvFour::IPAddressvFour(	const string & IPString )
 }
 
 
-IPAddressvFour::~IPAddressvFour()  throw()
+
+IPAddressvFour::~IPAddressvFour() throw()
 {
 
 }
 
-NetworkAddressType IPAddressvFour::getType() const throw()
+
+
+NetworkAddressType IPAddressvFour::getType() const
 {
+
 	return Network::IPv4 ;
+
 }
 
-const string IPAddressvFour::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+
+
+const string IPAddressvFour::toString( Ceylan::VerbosityLevels level ) const
 {
+
 	return Ceylan::toNumericalString( _first  ) + '.'
 		 + Ceylan::toNumericalString( _second ) + '.'
 		 + Ceylan::toNumericalString( _third  ) + '.'
 		 + Ceylan::toNumericalString( _fourth ) ;
+
 }
 
 
-bool IPAddressvFour::IsValidIPv4( const string & ipString ) throw()
-{
 
+bool IPAddressvFour::IsValidIPv4( const string & ipString )
+{
 
 #if CEYLAN_USES_REGEX
 
@@ -221,7 +229,7 @@ bool IPAddressvFour::IsValidIPv4( const string & ipString ) throw()
 
 #endif // CEYLAN_USES_REGEX
 	
-	// Let's validate the string by creating an IPAddressvFour instance from it :
+	// Let's validate the string by creating an IPAddressvFour instance from it:
 	try
 	{
 		IPAddressvFour testAddress( ipString ) ;
@@ -244,16 +252,17 @@ bool IPAddressvFour::IsValidIPv4( const string & ipString ) throw()
 }
 
 
-void IPAddressvFour::validate() const throw( IPAddressException )
+
+void IPAddressvFour::validate() const 
 {
 
 	/*
-	 * Always within range thanks to the IPvFourComponent data-type :
+	 * Always within range thanks to the IPvFourComponent data-type:
 	  
 	if ( ! ( _first <= 255 && _second <= 255 
 			&& _third <= 255 && _fourth <= 255 ) )
-		throw IPAddressException( "IPAddressvFour::validate : "
-			"invalid IPv4 address : " + toString() ) ;
+		throw IPAddressException( "IPAddressvFour::validate: "
+			"invalid IPv4 address: " + toString() ) ;
 	
 	 * 
 	 * Hence nothing special to check.
@@ -261,3 +270,4 @@ void IPAddressvFour::validate() const throw( IPAddressException )
 	 */
 	 
 }
+
