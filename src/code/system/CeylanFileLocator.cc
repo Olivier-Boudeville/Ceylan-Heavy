@@ -33,14 +33,17 @@
 #include "CeylanEnvironmentVariables.h"  // for getEnvironmentVariable
 
 
+
 #ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"                // for CEYLAN_DEBUG_DEMANGLE, etc.
 #endif // CEYLAN_USES_CONFIG_H
 
 
+
 #if CEYLAN_ARCH_NINTENDO_DS
 #include "CeylanConfigForNintendoDS.h"   // for iprintf, CEYLAN_DS_LOG
 #endif // CEYLAN_ARCH_NINTENDO_DS
+
 
 
 using std::string ;
@@ -50,14 +53,14 @@ using namespace Ceylan::System ;
 using namespace Ceylan::Log ;
 
 
+
 /*
  * UNIX path separator is ':', Windows one is ';'.
  *
  */
 
 
-FileLocatorException::FileLocatorException( const std::string & message )
-		throw():
+FileLocatorException::FileLocatorException( const std::string & message ) :
 	SystemException( message )
 {
 
@@ -72,15 +75,15 @@ FileLocatorException::~FileLocatorException() throw()
 
 
 
-FileLocator::FileLocator() throw():
+FileLocator::FileLocator() :
 	_paths()
 {
 
 }
 
 
-FileLocator::FileLocator( const string & variableName, char separator ) 
-		throw():
+
+FileLocator::FileLocator( const string & variableName, char separator ) :
 	_paths()
 {
 
@@ -107,6 +110,7 @@ FileLocator::FileLocator( const string & variableName, char separator )
 } 
 
 
+
 FileLocator::~FileLocator() throw()
 {
 
@@ -114,7 +118,7 @@ FileLocator::~FileLocator() throw()
 
 
 
-bool FileLocator::addPath( const string & newPath ) throw() 
+bool FileLocator::addPath( const string & newPath ) 
 {
 	
 	for ( list<string>::const_iterator it = _paths.begin(); 
@@ -130,7 +134,7 @@ bool FileLocator::addPath( const string & newPath ) throw()
 
 
 
-bool FileLocator::addPaths( const std::list<std::string> & paths ) throw() 
+bool FileLocator::addPaths( const std::list<std::string> & paths ) 
 {
 	
 	bool res = false ;
@@ -146,7 +150,7 @@ bool FileLocator::addPaths( const std::list<std::string> & paths ) throw()
 
 
 bool FileLocator::addPathsFromEnvironmentVariable( 
-	const std::string & variableName, char separator ) throw()
+	const std::string & variableName, char separator )
 {	
 
 	return addPaths( Ceylan::split( getEnvironmentVariable( variableName ),
@@ -156,7 +160,7 @@ bool FileLocator::addPathsFromEnvironmentVariable(
 
 	
 	
-bool FileLocator::removePath( const string & pathToRemove ) throw()
+bool FileLocator::removePath( const string & pathToRemove )
 {
 
 	for ( list<string>::const_iterator it = _paths.begin(); 
@@ -175,7 +179,6 @@ bool FileLocator::removePath( const string & pathToRemove ) throw()
 
 
 string FileLocator::find( const string & filename ) const 
-	throw( FileLocatorException ) 
 {
 
 	string fullPath ;
@@ -199,7 +202,7 @@ string FileLocator::find( const string & filename ) const
 
 
 
-const std::list<std::string> & FileLocator::getPaths() const throw()
+const std::list<std::string> & FileLocator::getPaths() const
 {
 
 	return _paths ;
@@ -209,7 +212,6 @@ const std::list<std::string> & FileLocator::getPaths() const throw()
 
 
 const string FileLocator::toString( Ceylan::VerbosityLevels level ) const
-	throw()
 {
 	
 	if ( _paths.empty() ) 

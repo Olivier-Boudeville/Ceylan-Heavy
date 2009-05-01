@@ -40,10 +40,10 @@ using namespace Ceylan::Log ;
 
 
 AnonymousInputOutputStream::AnonymousInputOutputStream()
-		throw( Stream::StreamException )
 {
 
 }
+
 
 
 AnonymousInputOutputStream::~AnonymousInputOutputStream() throw()
@@ -52,10 +52,12 @@ AnonymousInputOutputStream::~AnonymousInputOutputStream() throw()
 }
 
 
+
 const std::string AnonymousInputOutputStream::toString( 
-	Ceylan::VerbosityLevels level ) const throw()
+	Ceylan::VerbosityLevels level ) const
 {
 
 	return "AnonymousInputOutputStream" ;
 		
 }
+

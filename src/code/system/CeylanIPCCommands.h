@@ -68,6 +68,7 @@ typedef FIFOCommandID ARM9CommandID ;
  
  
  
+ 
 // Section dedicated to commands from the ARM9 to the ARM7.
  
  
@@ -81,6 +82,7 @@ typedef FIFOCommandID ARM9CommandID ;
 extern CEYLAN_DLL const ARM9CommandID HelloToTheARM7 ;
 
 
+
 /**
  * Sends a ping to the ARM7, which is expected to return a pong command.
  *
@@ -90,6 +92,7 @@ extern CEYLAN_DLL const ARM9CommandID HelloToTheARM7 ;
  *
  */
 extern CEYLAN_DLL const ARM9CommandID PingARM7 ;
+
 
 
 /**
@@ -103,6 +106,7 @@ extern CEYLAN_DLL const ARM9CommandID PingARM7 ;
 extern CEYLAN_DLL const ARM9CommandID StatusInitRequest ;
 
 
+
 /**
  * Tells the ARM7 to stop its FIFO and its report mechanism.
  *
@@ -111,6 +115,7 @@ extern CEYLAN_DLL const ARM9CommandID StatusInitRequest ;
  *
  */
 extern CEYLAN_DLL const ARM9CommandID ShutdownIPCRequest ;
+
 
 
 /**
@@ -123,6 +128,7 @@ extern CEYLAN_DLL const ARM9CommandID ShutdownIPCRequest ;
  *
  */
 extern CEYLAN_DLL const ARM9CommandID BatteryStatusRequest ;
+
 
 
 /**

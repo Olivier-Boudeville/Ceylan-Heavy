@@ -42,6 +42,7 @@ namespace Ceylan
 {
 
 
+
 	namespace System
 	{
 
@@ -72,7 +73,7 @@ namespace Ceylan
 					public: 
 					
 						explicit MemoryStreamException( 
-							const std::string & reason ) throw() ;
+							const std::string & reason ) ;
 						
 						virtual ~MemoryStreamException() throw() ; 
 							
@@ -86,7 +87,7 @@ namespace Ceylan
 				 * @param bufferSize the size in bytes of the buffer.
 				 *
 				 */
-				explicit MemoryStream( Size bufferSize ) throw() ;
+				explicit MemoryStream( Size bufferSize ) ;
 
 
 
@@ -102,11 +103,13 @@ namespace Ceylan
 				virtual ~MemoryStream() throw() ;
 
 
+
 				/**
 				 * Blanks the buffer so that it is emptied.
 				 *
 				 */
-				virtual void blank() throw() ;
+				virtual void blank() ;
+				 
 				 
 
 				/**
@@ -118,7 +121,7 @@ namespace Ceylan
 				 * including if the file was not already opened.
 				 *
 				 */
-				virtual bool close() throw( Stream::CloseException ) ;
+				virtual bool close() ;
 
 
 
@@ -129,7 +132,7 @@ namespace Ceylan
 				 * @see getSize
 				 *
 				 */
-				virtual Size getSize() const throw() ;
+				virtual Size getSize() const ;
 
 
 				
@@ -149,15 +152,15 @@ namespace Ceylan
 				 * @throw ReadFailed if a read error occurred.
 				 *
 				 */
-		 		virtual Size read( Ceylan::Byte * buffer, Size maxLength ) 
-					throw( InputStream::ReadFailedException ) ;
+		 		virtual Size read( Ceylan::Byte * buffer, Size maxLength )  ;
+
 
 
 				/**
 				 * Tells whether there is data available on input.
 				 *
 				 */
-				virtual bool hasAvailableData() const throw() ;
+				virtual bool hasAvailableData() const ;
 				
 			
 				
@@ -169,11 +172,11 @@ namespace Ceylan
 				 * @return The number of bytes actually written, which 
 				 * should be equal to the size of the string or lower.
 				 *
-				 * @throw WriteFailed if a write error occurred.
+				 * @throw WriteFailedException if a write error occurred.
 				 *
 				 */
-				virtual Size write( const std::string & message ) 
-					throw( OutputStream::WriteFailedException ) ;
+				virtual Size write( const std::string & message ) ;
+
 
 
 				/**
@@ -187,17 +190,17 @@ namespace Ceylan
 				 * @return The number of bytes actually written, which 
 				 * should be equal to maxLength.
 				 *
-				 * @throw WriteFailed if a write error occurred.
+				 * @throw WriteFailedException if a write error occurred.
 				 *
 				 */
 				virtual Size write( const Ceylan::Byte * buffer, 
-						Size maxLength ) 
-					throw( OutputStream::WriteFailedException ) ;
+					Size maxLength ) ;
 
 				
 				
 				
 				// Lower-level access section.
+
 
 
 				/**
@@ -209,7 +212,8 @@ namespace Ceylan
 				 * @see getSize
 				 *
 				 */
-				virtual Index getIndexOfNextFreeChunk() const throw() ;
+				virtual Index getIndexOfNextFreeChunk() const ;
+				
 				
 				
 				/**
@@ -221,7 +225,8 @@ namespace Ceylan
 				 * @see getSize
 				 *
 				 */
-				virtual Byte * getAddressOfNextFreeChunk() const throw() ;
+				virtual Byte * getAddressOfNextFreeChunk() const ;
+				
 				
 				
 				/**
@@ -234,15 +239,17 @@ namespace Ceylan
 				 * @see getSize
 				 *
 				 */
-				virtual Size getSizeOfNextFreeChunk() const throw() ;
+				virtual Size getSizeOfNextFreeChunk() const ;
+				
 				
 
 				/// Returns the current index of filled block in buffer.
-				virtual Index getBlockIndex() const throw() ;
+				virtual Index getBlockIndex() const ;
+
 
 
 				/// Returns the current length of filled block in buffer.
-				virtual Size getBlockLength() const throw() ;
+				virtual Size getBlockLength() const ;
 
 
 
@@ -254,8 +261,8 @@ namespace Ceylan
 				 * is in [0;getSize()[
 				 *
 				 */
-				virtual Ceylan::Byte getElementAt( Index targetIndex ) 
-					const throw() ;
+				virtual Ceylan::Byte getElementAt( Index targetIndex ) const ;
+					
 					
 					
 				/**
@@ -273,8 +280,8 @@ namespace Ceylan
 				 * big for the remaining space. 
 				 *
 				 */
-				virtual void increaseFilledBlockOf( Size bytesAdded )
-					throw( MemoryStreamException ) ;
+				virtual void increaseFilledBlockOf( Size bytesAdded ) ;
+
 
 
 				/**
@@ -286,8 +293,8 @@ namespace Ceylan
 				 * read, it will still make one block in buffer.
 				 *
 				 */
-				virtual void moveFilledBlockToBufferStart()
-					throw( MemoryStreamException ) ;
+				virtual void moveFilledBlockToBufferStart() ;
+
 
 
 
@@ -301,15 +308,8 @@ namespace Ceylan
 				 * @return the StreamID, generated from the value of this.
 				 *
 				 */
-				virtual StreamID getStreamID() const throw() ;
+				virtual StreamID getStreamID() const ;
 
-
-				/**
-				 * Returns this file descriptor for this file, or -1 if 
-				 * the file descriptor feature is not available.
-				 *
-				 */
-				virtual StreamID getInputStreamID() const throw() ;
 
 
 				/**
@@ -317,7 +317,17 @@ namespace Ceylan
 				 * the file descriptor feature is not available.
 				 *
 				 */
-				virtual StreamID getOutputStreamID() const throw() ;
+				virtual StreamID getInputStreamID() const ;
+
+
+
+				/**
+				 * Returns this file descriptor for this file, or -1 if 
+				 * the file descriptor feature is not available.
+				 *
+				 */
+				virtual StreamID getOutputStreamID() const ;
+
 
 
             	/**
@@ -336,8 +346,7 @@ namespace Ceylan
 				 *
 				 */
             	virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 
 
@@ -383,7 +392,8 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				MemoryStream( const MemoryStream & source ) throw() ;
+				MemoryStream( const MemoryStream & source ) ;
+
 
 
 				/**
@@ -394,16 +404,18 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 *
 				 */
-				MemoryStream & operator = ( const MemoryStream & source )
-					throw() ;
+				MemoryStream & operator = ( const MemoryStream & source ) ;
 
 
 
 		} ;
 		
 	}
+	
 
 }
 
 
+
 #endif // CEYLAN_MEMORY_STREAM_H_
+

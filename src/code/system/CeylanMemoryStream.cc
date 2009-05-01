@@ -43,13 +43,13 @@ extern "C"
 #include <string.h>            // for memcpy
 #endif // CEYLAN_USES_STRING_H
 
-
 }
 
 
 #include <climits>
 
-// Set to 1 to debug memory stream : 
+
+// Set to 1 to debug memory stream: 
 #define CEYLAN_DEBUG_MEMORY_STREAM 0
 
 #if CEYLAN_DEBUG_MEMORY_STREAM
@@ -62,6 +62,7 @@ extern "C"
 
 #endif // CEYLAN_DEBUG_MEMORY_STREAM 
 
+
 using std::string ;
 
 
@@ -73,11 +74,12 @@ using namespace Ceylan::Log ;
 
 
 MemoryStream::MemoryStreamException::MemoryStreamException( 
-		const string & reason ) throw() :
+		const string & reason ) :
 	SystemException( reason )
 {
 
 }
+
 
 
 MemoryStream::MemoryStreamException::~MemoryStreamException() throw()
@@ -87,7 +89,7 @@ MemoryStream::MemoryStreamException::~MemoryStreamException() throw()
 
 
 
-MemoryStream::MemoryStream( Size bufferSize ) throw():
+MemoryStream::MemoryStream( Size bufferSize ) :
 	InputOutputStream(),
 	_size( bufferSize ),
 	_index( 0 ),
@@ -100,6 +102,7 @@ MemoryStream::MemoryStream( Size bufferSize ) throw():
 }
 
 
+
 MemoryStream::~MemoryStream() throw()
 {
 
@@ -108,7 +111,8 @@ MemoryStream::~MemoryStream() throw()
 }
 
 
-void MemoryStream::blank() throw()
+
+void MemoryStream::blank()
 {
 
 	_index = 0 ;
@@ -117,7 +121,8 @@ void MemoryStream::blank() throw()
 }
 
 
-bool MemoryStream::close() throw( Stream::CloseException )
+
+bool MemoryStream::close()
 {
 
 	return false ;
@@ -125,7 +130,8 @@ bool MemoryStream::close() throw( Stream::CloseException )
 }
 
 
-Size MemoryStream::getSize() const throw()
+
+Size MemoryStream::getSize() const
 {
 
 	return _size ;
@@ -133,28 +139,28 @@ Size MemoryStream::getSize() const throw()
 }
 
 
+
 Size MemoryStream::read( Ceylan::Byte * buffer, Size maxLength ) 
-	throw( InputStream::ReadFailedException )
 {
 
 #ifdef CEYLAN_USES_MEMCPY
 
 	DISPLAY_DEBUG_MEMORY_STREAM( "MemoryStream::read of " 
-		+ Ceylan::toString( maxLength ) + " byte(s), begin : " + toString() ) ;
+		+ Ceylan::toString( maxLength ) + " byte(s), begin: " + toString() ) ;
 	
 	
 	/*
-	 * Must not read what has not been written yet :
+	 * Must not read what has not been written yet:
 	 *
 	 * Apparently the left part of the modulo (%) must not be negative,
-	 * otherwise result is wrong :
+	 * otherwise result is wrong:
 	 *
 	 */
 
-	// Never read past the write index : 
+	// Never read past the write index: 
 	if ( maxLength > _len )
-		throw ReadFailedException( "MemoryStream::read : "
-			"attempt to read more than available in the buffer : "
+		throw ReadFailedException( "MemoryStream::read: "
+			"attempt to read more than available in the buffer: "
 			+ toString() ) ;
 
 	/*
@@ -168,10 +174,10 @@ Size MemoryStream::read( Ceylan::Byte * buffer, Size maxLength )
 	{
 	
 		DISPLAY_DEBUG_MEMORY_STREAM( 
-			"MemoryStream::read : two blocks needed" ) ;
+			"MemoryStream::read: two blocks needed" ) ;
 	
 		/* 
-		 * Most complex case : first read from read index to end of buffer,
+		 * Most complex case: first read from read index to end of buffer,
 		 * then from beginning to the rest of requested data (before write 
 		 * index in all cases).
 		 *
@@ -186,9 +192,9 @@ Size MemoryStream::read( Ceylan::Byte * buffer, Size maxLength )
 	{
 		
 		DISPLAY_DEBUG_MEMORY_STREAM( 
-			"MemoryStream::read : one block is enough" ) ;
+			"MemoryStream::read: one block is enough" ) ;
 		
-		// Simple case : one block.
+		// Simple case: one block.
 		::memcpy( buffer, _buffer + _index, maxLength ) ;
 	
 	}
@@ -199,19 +205,19 @@ Size MemoryStream::read( Ceylan::Byte * buffer, Size maxLength )
 	
 	/*
 	 * Prefer having index at the beginning of buffer to have a bigger 
-	 * usable free block :
+	 * usable free block:
 	 *
 	 */
 	if ( _len == 0 )
 		_index = 0 ;
 			
-	DISPLAY_DEBUG_MEMORY_STREAM( "MemoryStream::read end : " + toString() ) ;
+	DISPLAY_DEBUG_MEMORY_STREAM( "MemoryStream::read end: " + toString() ) ;
 	
 	return maxLength ;
 	
 #else // CEYLAN_USES_MEMCPY
 
-	throw InputStream::ReadFailedException( "MemoryStream::read : "
+	throw InputStream::ReadFailedException( "MemoryStream::read: "
 		"not supported on this platform" ) ;
 		
 #endif // CEYLAN_USES_MEMCPY
@@ -219,14 +225,17 @@ Size MemoryStream::read( Ceylan::Byte * buffer, Size maxLength )
 }
 
 
-bool MemoryStream::hasAvailableData() const throw()
+
+bool MemoryStream::hasAvailableData() const
 {
+
 	return _len > 0 ;
+	
 }
 
 
+
 Size MemoryStream::write( const string & message ) 
-	throw( OutputStream::WriteFailedException )
 {
 
 	return write( message.c_str(), message.size() ) ;
@@ -234,34 +243,34 @@ Size MemoryStream::write( const string & message )
 }
 
 
+
 Size MemoryStream::write( const Ceylan::Byte * buffer, Size maxLength ) 
-	throw( OutputStream::WriteFailedException )
 {
 	
 	DISPLAY_DEBUG_MEMORY_STREAM( "MemoryStream::write of " 
-		+ Ceylan::toString( maxLength ) + " byte(s), begin : " + toString() ) ;
+		+ Ceylan::toString( maxLength ) + " byte(s), begin: " + toString() ) ;
 
 	
 	/*
-	 * Must not write on what has not been read yet :
+	 * Must not write on what has not been read yet:
 	 *
 	 * Apparently the left part of the modulo (%) must not be negative,
-	 * otherwise result is wrong :
+	 * otherwise result is wrong:
 	 *
 	 */
 	 
 	Size maxPossibleWriteSize = _size - _len ;
 				
-	DISPLAY_DEBUG_MEMORY_STREAM( "Max size for writing : " 
+	DISPLAY_DEBUG_MEMORY_STREAM( "Max size for writing: " 
 		+ Ceylan::toString( maxPossibleWriteSize ) ) ;
 		
-	// Never read past the write index : 
+	// Never read past the write index: 
 	if ( maxLength > maxPossibleWriteSize )
-		throw WriteFailedException( "MemoryStream::write : "
+		throw WriteFailedException( "MemoryStream::write: "
 			"attempt to write more than free space in buffer (which is "
 			+ Ceylan::toString( 
 				static_cast<Ceylan::Uint32>( maxPossibleWriteSize ) )
-			+ " byte(s)) : " + toString() ) ;
+			+ " byte(s)): " + toString() ) ;
 
 	/*
 	 * Either the write index plus the requested size is before the end of 
@@ -276,10 +285,10 @@ Size MemoryStream::write( const Ceylan::Byte * buffer, Size maxLength )
 	{
 		
 		DISPLAY_DEBUG_MEMORY_STREAM( 
-			"MemoryStream::write : two blocks needed" ) ;
+			"MemoryStream::write: two blocks needed" ) ;
 	
 		/* 
-		 * Most complex case : first write from write index to end of buffer,
+		 * Most complex case: first write from write index to end of buffer,
 		 * then from beginning to the rest of requested data.
 		 *
 		 */
@@ -292,9 +301,9 @@ Size MemoryStream::write( const Ceylan::Byte * buffer, Size maxLength )
 	{
 
 		DISPLAY_DEBUG_MEMORY_STREAM( 
-			"MemoryStream::write : one block is enough" ) ;
+			"MemoryStream::write: one block is enough" ) ;
 		
-		// Simple case : one block.
+		// Simple case: one block.
 		::memcpy( _buffer + endOfBlock, buffer, maxLength ) ;
 		
 		
@@ -302,7 +311,7 @@ Size MemoryStream::write( const Ceylan::Byte * buffer, Size maxLength )
 	
 	_len += maxLength ;
 
-	DISPLAY_DEBUG_MEMORY_STREAM( "MemoryStream::write end : " + toString() ) ;
+	DISPLAY_DEBUG_MEMORY_STREAM( "MemoryStream::write end: " + toString() ) ;
 	
 	return maxLength ;
 	
@@ -310,10 +319,11 @@ Size MemoryStream::write( const Ceylan::Byte * buffer, Size maxLength )
 
 
 
+
 // Lower-level access section.
 
 
-MemoryStream::Index MemoryStream::getIndexOfNextFreeChunk() const throw()
+MemoryStream::Index MemoryStream::getIndexOfNextFreeChunk() const
 {
 
 	return ( _index + _len ) % _size ;
@@ -321,7 +331,8 @@ MemoryStream::Index MemoryStream::getIndexOfNextFreeChunk() const throw()
 }
 
 
-Ceylan::Byte * MemoryStream::getAddressOfNextFreeChunk() const throw()
+
+Ceylan::Byte * MemoryStream::getAddressOfNextFreeChunk() const
 {
 
 	return _buffer + getIndexOfNextFreeChunk() ;
@@ -329,7 +340,8 @@ Ceylan::Byte * MemoryStream::getAddressOfNextFreeChunk() const throw()
 }
 
 
-Size MemoryStream::getSizeOfNextFreeChunk() const throw()
+
+Size MemoryStream::getSizeOfNextFreeChunk() const
 {
 
 	if ( ( _index + _len ) > _size )
@@ -340,14 +352,17 @@ Size MemoryStream::getSizeOfNextFreeChunk() const throw()
 }
 
 
-MemoryStream::Index MemoryStream::getBlockIndex() const throw()
+
+MemoryStream::Index MemoryStream::getBlockIndex() const
 { 
 
 	return _index ; 
 	
 }
 
-Size MemoryStream::getBlockLength() const throw()
+
+
+Size MemoryStream::getBlockLength() const
 { 
 
 	return _len ; 
@@ -355,7 +370,8 @@ Size MemoryStream::getBlockLength() const throw()
 }
 
 
-Ceylan::Byte MemoryStream::getElementAt( Index targetIndex ) const throw()
+
+Ceylan::Byte MemoryStream::getElementAt( Index targetIndex ) const
 {
 
 	return _buffer[ targetIndex % _size ] ;
@@ -363,19 +379,20 @@ Ceylan::Byte MemoryStream::getElementAt( Index targetIndex ) const throw()
 }
 
 
+
 void MemoryStream::increaseFilledBlockOf( Size bytesAdded ) 
-	throw( MemoryStreamException )
 {
 
 	if ( bytesAdded > getSizeOfNextFreeChunk() )
-		throw MemoryStreamException( "MemoryStream::increaseFilledBlockOf : "
+		throw MemoryStreamException( "MemoryStream::increaseFilledBlockOf: "
 			" would not fit in buffer." ) ;
 	_len +=	bytesAdded ;	
 	
 }
 	
+
 	
-void MemoryStream::moveFilledBlockToBufferStart() throw( MemoryStreamException )
+void MemoryStream::moveFilledBlockToBufferStart()
 {
 
 	if ( _index == 0 )
@@ -383,26 +400,26 @@ void MemoryStream::moveFilledBlockToBufferStart() throw( MemoryStreamException )
 	
 	/*
 	 * Here the index is not at the beginning, hence it must be moved.
-	 * Some cases are hard to handle :
+	 * Some cases are hard to handle:
 	 *
-	 * indices : 12345    must become 12345
-	 * values  : CDEAB                ABCDE
+	 * indices: 12345    must become 12345
+	 * values : CDEAB                ABCDE
 	 * (elements are replacing other elements)
-	 * hence a very rudimentary approach is used, with an intermediate buffer : 
+	 * hence a very rudimentary approach is used, with an intermediate buffer: 
 	 *
 	 */
 	Ceylan::Byte * _permutedBuffer = new Ceylan::Byte[ _size ] ;
 	
-	// Two cases : one whole block to translate, or two chunks to merge :
+	// Two cases: one whole block to translate, or two chunks to merge:
 	if ( _index + _len > _size )
 	{
 	
-		// Two chunks, first goes from _index to end of buffer :
+		// Two chunks, first goes from _index to end of buffer:
 		Size firstChunkSize = _size - _index ;
 		
 		::memcpy( _permutedBuffer, _buffer + _index, firstChunkSize ) ;
 		
-		// Second had wrapped-around the end of buffer :
+		// Second had wrapped-around the end of buffer:
 		::memcpy( _permutedBuffer + firstChunkSize, _buffer, 
 			_len - firstChunkSize ) ;
 		
@@ -410,7 +427,7 @@ void MemoryStream::moveFilledBlockToBufferStart() throw( MemoryStreamException )
 	else
 	{
 	
-		// Only one block, easy :
+		// Only one block, easy:
 		::memcpy( _permutedBuffer, _buffer + _index, _len ) ;
 		
 	}
@@ -426,7 +443,8 @@ void MemoryStream::moveFilledBlockToBufferStart() throw( MemoryStreamException )
 }
 
 
-StreamID MemoryStream::getStreamID() const throw()
+
+StreamID MemoryStream::getStreamID() const
 {
 
 	/*
@@ -435,7 +453,7 @@ StreamID MemoryStream::getStreamID() const throw()
 	 * Basically we are trying to convert a pointer to an int, gcc on
 	 * Linux will not accept Ceylan::Uint32 to become Ceylan::Uint64,
 	 * whereas Visual C++ on 32 bit will find a pointer truncation
-	 * from 'const MemoryStream * const' to Ceylan::Uint32 :
+	 * from 'const MemoryStream * const' to Ceylan::Uint32:
 	 *
 	 */
 #if CEYLAN_ARCH_WINDOWS
@@ -458,20 +476,26 @@ StreamID MemoryStream::getStreamID() const throw()
 }
 
 
-StreamID MemoryStream::getInputStreamID() const throw()
+
+StreamID MemoryStream::getInputStreamID() const
 {
+
 	return getStreamID() ;
+	
 }
 
 
-StreamID MemoryStream::getOutputStreamID() const throw()
+
+StreamID MemoryStream::getOutputStreamID() const
 {
+
 	return getStreamID() ;
+	
 }
 
 
-const std::string MemoryStream::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+
+const std::string MemoryStream::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string res = "MemoryStream object of size " 
@@ -486,7 +510,7 @@ const std::string MemoryStream::toString( Ceylan::VerbosityLevels level )
 	if ( level != Ceylan::high )
 		return res ;
 	
-	res += ". Displaying buffer content : [ " ;
+	res += ". Displaying buffer content: [ " ;
 	
 	for ( Index i = 0 ; i < _size-1 ; i++ )
 	{

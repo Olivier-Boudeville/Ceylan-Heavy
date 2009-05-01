@@ -36,6 +36,8 @@
 #include <list>
 
 
+
+
 namespace Ceylan
 {
 
@@ -51,10 +53,11 @@ namespace Ceylan
 		
 			public:
 			
-				FileLocatorException( const std::string & message ) throw() ;
+				FileLocatorException( const std::string & message ) ;
 				virtual ~FileLocatorException() throw() ;
 			
 		} ;
+		
 		
 		
 	
@@ -77,8 +80,10 @@ namespace Ceylan
 			public:
 		
 		
+		
 				/// Creates a new empty file locator.
-				FileLocator() throw() ;
+				FileLocator() ;
+				
 				
 				
 				/**
@@ -90,11 +95,13 @@ namespace Ceylan
 				 *
 				 */
 				explicit FileLocator( const std::string & variableName, 
-					char separator = ':' ) throw() ;
+					char separator = ':' ) ;
+				
 				
 				
 				/// Virtual destructor.
 				virtual ~FileLocator() throw() ;
+				
 				
 				
 				/**
@@ -106,7 +113,8 @@ namespace Ceylan
 				 * @return true iff the added path was not already listed.
 				 *
 				 */
-				virtual bool addPath( const std::string & newPath ) throw() ;
+				virtual bool addPath( const std::string & newPath ) ;
+				
 				
 				
 				/**
@@ -118,8 +126,8 @@ namespace Ceylan
 				 * @return true iff at least one path was not already listed.
 				 *
 				 */
-				virtual bool addPaths( const std::list<std::string> & paths )
-					throw() ;
+				virtual bool addPaths( const std::list<std::string> & paths ) ;
+		
 		
 		
 				/**
@@ -137,8 +145,9 @@ namespace Ceylan
 				 */
 				virtual bool addPathsFromEnvironmentVariable( 
 					const std::string & variableName,
-					char separator = ':' ) throw() ;
+					char separator = ':' ) ;
 					
+				 
 				 
 				/**
 				 * Removes specified path from the set of directories of the
@@ -150,8 +159,8 @@ namespace Ceylan
 				 * and therefore has been removed.
 				 *
 				 */
-				virtual bool removePath( const std::string & pathToRemove )
-					throw() ;
+				virtual bool removePath( const std::string & pathToRemove ) ;
+				
 				
 				
 				/**
@@ -169,13 +178,14 @@ namespace Ceylan
 				 * this file is not found through recorded directories.
 				 *
 				 */
-				virtual std::string find( const std::string & filename ) const 
-					throw( FileLocatorException ) ;
+				virtual std::string find( const std::string & filename ) 
+					const ;
+				
 				
 				
 				/// Returns the internal list of paths managed by the locator.
-				virtual const std::list<std::string> & getPaths() const 
-					throw() ;
+				virtual const std::list<std::string> & getPaths() const ;
+					
 					
 					 
 				/**
@@ -190,8 +200,8 @@ namespace Ceylan
 	             *
 	             */
 		 		virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+			
 			
 			
 			
@@ -214,7 +224,10 @@ namespace Ceylan
 #pragma warning( pop ) 			
 			
 			
+			
+			
 			private:
+			
 			
 			
 				/**
@@ -226,7 +239,8 @@ namespace Ceylan
 				 * 
 				 *
 				 */			 
-				FileLocator( const FileLocator & source ) throw() ;
+				FileLocator( const FileLocator & source ) ;
+			
 			
 			
 				/**
@@ -237,8 +251,8 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 *
 				 */			 
-				FileLocator & operator = ( const FileLocator & source ) 
-					throw() ;
+				FileLocator & operator = ( const FileLocator & source )  ;
+				
 				
 				
 		} ;
@@ -246,8 +260,9 @@ namespace Ceylan
 	
 	}
 
-
 }
 
  
+ 
 #endif // CEYLAN_FILE_LOCATOR_H_
+

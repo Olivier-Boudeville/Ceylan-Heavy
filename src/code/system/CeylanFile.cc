@@ -61,6 +61,7 @@ const OpeningFlag File::NonBlocking   = 0x0040 ;
 const OpeningFlag File::Synchronous   = 0x0080 ;
 
 
+
 // Special cases:
 
 const OpeningFlag File::CreateToWriteBinary = 
@@ -328,9 +329,7 @@ File::~File() throw()
 
 
 
-
-										
-					
+				
 const std::string & File::getName() const 
 { 
 
@@ -459,7 +458,7 @@ void File::readExactLength( Ceylan::Byte * buffer, Size exactLength )
 	if ( readFailures == maxReadFailures )
 		throw InputStream::ReadFailedException( 
 			"File::readExactLength: unable to read requested bytes, maybe "
-			"trying to read a binary file not opened in Binary mode ?" ) ;
+			"trying to read a binary file not opened in Binary mode?" ) ;
 
 }
 
@@ -548,7 +547,7 @@ const std::string File::toString( Ceylan::VerbosityLevels level )
 
 
 File::File( const string & name, OpeningFlag openFlag, 
-	PermissionFlag permissions ) :
+		PermissionFlag permissions ) :
 	InputOutputStream(),	
 	_name( name ),
 	_openFlag( openFlag ),
@@ -587,7 +586,5 @@ FileSystemManager & File::GetCorrespondingFileSystemManager()
 			+ e.toString() ) ;
 	}
 	
-	
 }
-
 

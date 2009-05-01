@@ -28,6 +28,7 @@
 #define CEYLAN_ARM7_CODES_H_
 
 
+
 /*
  * This file only applies to the Nintendo DS.
  *
@@ -35,6 +36,7 @@
  
  
 #if defined(CEYLAN_ARCH_NINTENDO_DS) && CEYLAN_ARCH_NINTENDO_DS == 1
+
 
 
 /**
@@ -47,6 +49,7 @@
  *
  */
 #define CEYLAN_SAFE_FIFO 0
+
 
 
 /*
@@ -100,6 +103,7 @@ typedef Ceylan::Uint8 FIFOCommandID ;
 
 #include "nds.h" /* for uint16 and al */
 
+
 /**
  * Describes an ARM7 status word.
  *
@@ -110,6 +114,7 @@ typedef Ceylan::Uint8 FIFOCommandID ;
 typedef uint16 ARM7StatusWord ;
 
 
+
 /**
  * Describes an ARM7 error word.
  *
@@ -118,6 +123,7 @@ typedef uint16 ARM7StatusWord ;
  *
  */
 typedef uint16 ARM7ErrorCode ;
+
 
 
 /**
@@ -131,9 +137,12 @@ typedef uint16 ARM7ErrorCode ;
 typedef uint8 FIFOCommandID ;
 
 
+
 #endif // USE_FULL_CEYLAN_FOR_ARM7
 
+
 #endif // defined(CEYLAN_ARCH_NINTENDO_DS)
+
 
 
 
@@ -146,20 +155,26 @@ typedef uint8 FIFOCommandID ;
 /* This value is left unused, as it may appear in case of technical problem */
 extern CEYLAN_DLL const ARM7StatusWord StatusVoluntarilyLeftBlank ;
 
+
 /* ARM7 running normally */
 extern CEYLAN_DLL const ARM7StatusWord ARM7Running ;
+
 
 /* ARM7 in error (see the error code for interpretation) */
 extern CEYLAN_DLL const ARM7StatusWord ARM7InError ;
 
+
 /* ARM7 IPC shutdown */
 extern CEYLAN_DLL const ARM7StatusWord ARM7IPCShutdown ;
+
 
 /* If no ARM7 status is available (ex: before being set) */
 extern CEYLAN_DLL const ARM7StatusWord NoStatusAvailable ;
 
+
 /* If no ARM7 status variable is available (ex: before being allocated) */
 extern CEYLAN_DLL const ARM7StatusWord NoStatusVariableAvailable ;
+
 
 /* 
  * If no ARM7 status is available due to a status reset (ex: because of
@@ -177,65 +192,86 @@ extern CEYLAN_DLL const ARM7StatusWord StatusReset ;
  *
  */
 
+
 /* This value is left unused, as it may appear in case of technical problem */
 extern CEYLAN_DLL const ARM7ErrorCode ErrorVoluntarilyLeftBlank ;
+
 
 /* ARM7 received an unknown system (Ceylan-specific) command */
 extern CEYLAN_DLL const ARM7ErrorCode UnexpectedSystemCommand ;
 
+
 /* ARM7 received an unknown external library-specific command */
 extern CEYLAN_DLL const ARM7ErrorCode UnexpectedExternalLibraryCommand ;
+
 
 /* ARM7 received an unknown user (application-specific) command */
 extern CEYLAN_DLL const ARM7ErrorCode UnexpectedApplicationCommand ;
 
+
 /* ARM7 detected a FIFO error while reading */
 extern CEYLAN_DLL const ARM7ErrorCode FIFOErrorWhileReading ;
+
 
 /* ARM7 detected a FIFO error while writing */
 extern CEYLAN_DLL const ARM7ErrorCode FIFOErrorWhileWriting ;
 
+
 /* ARM7 has no error registered */
 extern CEYLAN_DLL const ARM7ErrorCode NoError ;
+
 
 /* If no ARM7 error variable is available (ex: before being allocated) */
 extern CEYLAN_DLL const ARM7ErrorCode NoErrorVariableAvailable ;
 
+
 /* If the ARM7 tried to manage more than one command at a time */
 extern CEYLAN_DLL const ARM7ErrorCode CommandOverlapping ;
+
 
 /* If the ARM7 received an empty (HelloToTheARM7) command */
 extern CEYLAN_DLL const ARM7ErrorCode UnexpectedBehaviour ;
 
+
 /* If the ARM7 received an IPC start command whereas already started */
 extern CEYLAN_DLL const ARM7ErrorCode IPCAlreadyStarted ;
+
 
 /* If the ARM7 received an IPC stop command whereas not running */
 extern CEYLAN_DLL const ARM7ErrorCode IPCAlreadyStopped ;
 
+
 /* If the ARM7 had an IRQ_IPC_SYNC triggered whereas its input FIFO is empty */
 extern CEYLAN_DLL const ARM7ErrorCode AwokenWithNothingToRead ;
+
 
 /* If the ARM7 detected the initial status, set by the ARM9, is incorrect */
 extern CEYLAN_DLL const ARM7ErrorCode IncorrectInitialStatus ;
 
+
 /* If the ARM7 detected the initial error, set by the ARM9, is incorrect */
 extern CEYLAN_DLL const ARM7ErrorCode IncorrectInitialError ;
+
 
 /* If no ARM7 status is available (ex: before being set) */
 extern CEYLAN_DLL const ARM7ErrorCode NoErrorAvailable ;
 
+
 /* If a received command had an unexpected embedded count */
 extern CEYLAN_DLL const ARM7ErrorCode UnexpectedCommandCount ;
+
 
 /* If a received answer to an application command is incorrect (generic) */
 extern CEYLAN_DLL const ARM7ErrorCode IncorrectApplicationAnswer ;
 
+
 /* ARM7 made a time-out while reading */
 extern CEYLAN_DLL const ARM7ErrorCode FIFOTimeOutWhileReading ;
 
+
 /* ARM7 made a time-out while writing */
 extern CEYLAN_DLL const ARM7ErrorCode FIFOTimeOutWhileWriting ;
+
 
 
 #endif // CEYLAN_ARM7_CODES_H_

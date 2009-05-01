@@ -49,11 +49,12 @@ namespace Ceylan
 		
 			public:
 			
-				explicit RunnableException( const std::string message ) 
-					throw() ;
+				explicit RunnableException( const std::string message ) ;
+				
 				virtual ~RunnableException() throw() ; 			
 							
 		} ;
+		
 		
 	
 		/**
@@ -89,16 +90,20 @@ namespace Ceylan
 			public:
 			
 			
+			
 				/// Constructs an anonymous Runnable.
-				Runnable() throw() ;
+				Runnable() ;
 
 
-				// Constructs a Runnable whose name is <b>name</b>.
-				explicit Runnable( const std::string & name ) throw() ;
+
+				// Constructs a Runnable whose name is the one specified.
+				explicit Runnable( const std::string & name ) ;
+				
 				
 				
 				// Basic virtual destructor.
 				virtual ~Runnable() throw() ;
+
 
 
 				/**
@@ -108,11 +113,13 @@ namespace Ceylan
 				 * be run.
 				 *
 				 */
-				virtual void run() throw( RunnableException ) = 0 ;
+				virtual void run() = 0 ;
+				
 				
 				
 				/// Returns the name string.
-				const std::string & getName() const throw() ;
+				const std::string & getName() const ;
+				
 				
 
             	/**
@@ -128,13 +135,16 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() = 0 ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const = 0 ;
 
 				
 				
 			private:
 			
+
+				/// The name of the Runnable.
+				std::string _name ;
+
 
 				/**
 				 * Copy constructor made private to ensure that it 
@@ -144,7 +154,8 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				Runnable( const Runnable & source ) throw() ;
+				Runnable( const Runnable & source ) ;
+			
 			
 			
 				/**
@@ -155,18 +166,16 @@ namespace Ceylan
 				 * undefined operator is called, implicitly or not.
 				 *
 				 */			 
-				Runnable & operator = ( const Runnable & source ) throw() ;
-				
-				
-				/// The name of the Runnable.
-				std::string _name ;
+				Runnable & operator = ( const Runnable & source ) ;
 				
 				
 		} ;
+		
 
 	}
 	
 }
+
 
 
 #endif // CEYLAN_RUNNABLE_H_

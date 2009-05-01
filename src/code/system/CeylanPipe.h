@@ -49,7 +49,7 @@ namespace Ceylan
 		 * usable pipes.
 		 *
 		 * @see following feature symbols to spot the actual support 
-		 * beforehand : Features::areFileDescriptorsSupported
+		 * beforehand: Features::areFileDescriptorsSupported
 		 *
 		 */
 		class CEYLAN_DLL Pipe: public InputOutputStream 
@@ -58,34 +58,37 @@ namespace Ceylan
 	
 			public:
 		
+		
 
 				/// Mother class for all file-related exceptions.
 				class PipeException: public SystemException
 				{ 
 					public: 
 					
-						explicit PipeException( const std::string & reason )
-							throw() ;
+						explicit PipeException( const std::string & reason ) ;
 						
-						virtual ~PipeException() throw() ; 
+						virtual ~PipeException() throw() ;
+						 
 				} ;
+
 
 
 				class CouldNotCreate: public PipeException
 				{ 
 					public: 
 					
-						explicit CouldNotCreate( 
-								const std::string & reason ) throw() ; 
+						explicit CouldNotCreate( const std::string & reason ) ;
+						 
 				} ;
+
 
 
 				class ReadFailed: public InputStream::ReadFailedException
 				{ 
 					public: 
 					
-						explicit ReadFailed( 
-								const std::string & reason ) throw() ; 
+						explicit ReadFailed( const std::string & reason ) ;
+						 
 				} ;
 
 
@@ -94,8 +97,8 @@ namespace Ceylan
 				{ 
 					public: 
 					
-						explicit WriteFailed( 
-								const std::string & reason ) throw() ; 
+						explicit WriteFailed( const std::string & reason ) ;
+						 
 				} ;
 		
 		
@@ -108,7 +111,7 @@ namespace Ceylan
 				 * if the file descriptor feature is not available.
 				 *
 				 */
-				Pipe() throw( CouldNotCreate ) ;
+				Pipe() ;
 		
 		
 				/**
@@ -120,7 +123,7 @@ namespace Ceylan
 				 * descriptor feature is not available.
 				 *
 				 */
-				explicit Pipe( const Pipe & other ) throw( PipeException ) ;
+				explicit Pipe( const Pipe & other ) ;
 
 
 				/// Virtual destructor.
@@ -141,11 +144,11 @@ namespace Ceylan
 				 * @return The number of bytes actually read, which should
 				 * be maxLength or lower.
 				 *
-				 * @throw ReadFailed if a read error occurred.
+				 * @throw ReadFailedException if a read error occurred.
 				 *
 				 */
-		 		virtual Size read( char * buffer, Size maxLength ) 
-					throw( InputStream::ReadFailedException ) ;
+		 		virtual Size read( char * buffer, Size maxLength ) ;
+
 
 
 				/**
@@ -156,11 +159,11 @@ namespace Ceylan
 				 * @return The number of bytes actually written, which 
 				 * should be equal to the size of the string or lower.
 				 *
-				 * @throw WriteFailed if a write error occurred.
+				 * @throw WriteFailedException if a write error occurred.
 				 *
 				 */
-				virtual Size write( const std::string & message ) 
-					throw( OutputStream::WriteFailedException ) ;
+				virtual Size write( const std::string & message ) ;
+	
 	
 		
 				/**
@@ -174,23 +177,25 @@ namespace Ceylan
 				 * @return The number of bytes actually written, which 
 				 * should be equal to maxLength.
 				 *
-				 * @throw WriteFailed if a write error occurred.
+				 * @throw WriteFailedException if a write error occurred.
 				 *
 				 */
-				virtual Size write( const char * buffer, Size maxLength ) 
-					throw( OutputStream::WriteFailedException ) ;
+				virtual Size write( const char * buffer, Size maxLength ) ;
+		
 		
 		
 				/**
 				 * Tells whether there is data available on input.
 				 *
 				 */
-				virtual bool hasAvailableData() const throw() ;
+				virtual bool hasAvailableData() const ;
+		
 		
 		
 				/// Clears up the input data stream
-				virtual void clearInput() throw() ;
+				virtual void clearInput() ;
 		
+				
 				
 				/**
 				 * Closes the pipe.
@@ -200,12 +205,15 @@ namespace Ceylan
 				 * @throw CloseException if the close operation failed.
 				 *
 				 */
-				virtual bool close() throw( Stream::CloseException ) ;
+				virtual bool close() ;
 		
 		
-				virtual StreamID getInputStreamID() const throw() ;
+				/// Returns the identifier of the input stream.
+				virtual StreamID getInputStreamID() const ;
 		
-				virtual StreamID getOutputStreamID() const throw() ;
+		
+				/// Returns the identifier of the output stream.
+				virtual StreamID getOutputStreamID() const ;
 
 
 
@@ -214,10 +222,11 @@ namespace Ceylan
 
 
 				/// Returns the input stream file descriptor.
-				FileDescriptor getReadFileDescriptor() const throw() ;
+				FileDescriptor getReadFileDescriptor() const ;
+		
 		
 				/// Returns the output stream file descriptor.
-				FileDescriptor getWriteFileDescriptor() const throw() ;
+				FileDescriptor getWriteFileDescriptor() const ;
 	
 	
 	
@@ -229,8 +238,9 @@ namespace Ceylan
 				 * Copy constructor is not private here, and is explicity 
 				 * defined.
 				 *
-				Pipe( const Pipe & source ) throw() ;
+				Pipe( const Pipe & source ) ;
 				 */			 
+			
 			
 			
 				/**
@@ -241,7 +251,8 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				Pipe & operator = ( const Pipe & source ) throw() ;
+				Pipe & operator = ( const Pipe & source ) ;
+	
 	
 	
 				/**
@@ -249,12 +260,16 @@ namespace Ceylan
 				 *
 				 */
 				mutable FileDescriptor _fd[ 2 ] ;
+				
 		
 		} ;	
+		
 
 	}
 
 }
 
 
+
 #endif // CEYLAN_PIPE_H_
+

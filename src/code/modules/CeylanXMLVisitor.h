@@ -40,6 +40,7 @@
 
 
 
+
 namespace Ceylan
 {
 
@@ -54,6 +55,7 @@ namespace Ceylan
 		
 		
 	}
+	
 	
 	
 
@@ -76,8 +78,7 @@ namespace Ceylan
 	
 			public:
 		
-				explicit XMLVisitorException( const std::string & reason )
-					throw() ;
+				explicit XMLVisitorException( const std::string & reason ) ;
 					
 				virtual ~XMLVisitorException() throw() ;
 
@@ -89,9 +90,12 @@ namespace Ceylan
 		class XMLMarkup ;
 		
 		
+		
 		/// A XML visitor can visit XML texts.		
 		class XMLText ;
 		
+
+
 
 		/**
 		 * Generic XML visitor.
@@ -111,7 +115,8 @@ namespace Ceylan
 				 * Creates an empty XML visitor.
 				 *
 				 */
-				XMLVisitor() throw() ;
+				XMLVisitor() ;
+
 
 
 				/**
@@ -119,6 +124,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual ~XMLVisitor() throw() ;
+	
 	
 	
 				/**
@@ -129,13 +135,13 @@ namespace Ceylan
 				 * @throw VisitException if this visit failed.
 				 *
 				 * @note The markup is not 'const' to allow for visitors able
-				 * to change the visited elements, ex : a searching visitor
+				 * to change the visited elements, ex: a searching visitor
 				 * may need to return a list of non-const markups.
 				 *
 				 */
-				virtual void visit( XMLMarkup & xmlMarkup ) 
-					throw( VisitException ) = 0 ;
+				virtual void visit( XMLMarkup & xmlMarkup ) = 0 ;
 				
+	
 	
 				/**
 				 * Visits specified XML text and processes it.
@@ -145,12 +151,11 @@ namespace Ceylan
 				 * @throw VisitException if this visit failed.
 				 *
 				 * @note The text is not 'const' to allow for visitors able
-				 * to change the visited elements, ex : a searching visitor
+				 * to change the visited elements, ex: a searching visitor
 				 * may need to return a list of non-const texts.
 				 *
 				 */
-				virtual void visit( XMLText & xmlText ) 
-					throw( VisitException ) = 0 ;
+				virtual void visit( XMLText & xmlText ) = 0 ;
 				
 	
 			
@@ -166,17 +171,13 @@ namespace Ceylan
 				 *
 				 */
 				 virtual const std::string toString( 
-			 			Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
-
-
-
-			protected:
+			 		Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 				
 
 
 			private:
+
 
 
 				/**
@@ -189,7 +190,8 @@ namespace Ceylan
 				 * @note Made to avoid unwanted hidden clone of the Singleton.
 				 *
 				 */			 
-				XMLVisitor( const XMLVisitor & source ) throw() ;
+				XMLVisitor( const XMLVisitor & source ) ;
+			
 			
 			
 				/**
@@ -199,7 +201,7 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				XMLVisitor & operator = ( const XMLVisitor & source ) throw() ;
+				XMLVisitor & operator = ( const XMLVisitor & source ) ;
 
 
 		} ;
@@ -235,7 +237,8 @@ namespace Ceylan
 				 * destroyed.
 				 *
 				 */
-				XMLSavingVisitor( System::OutputStream & output ) throw() ;
+				XMLSavingVisitor( System::OutputStream & output ) ;
+
 
 
 				/**
@@ -245,16 +248,19 @@ namespace Ceylan
 				virtual ~XMLSavingVisitor() throw() ;
 	
 	
+	
 				/// Returns current height.
-				virtual Height getHeight() const throw() ;
+				virtual Height getHeight() const ;
 
 
 				/// Increments current height.
-				virtual void incrementHeight() throw() ;
+				virtual void incrementHeight() ;
+			
 			
 				/// Decrements current height.
-				virtual void decrementHeight() throw() ;
+				virtual void decrementHeight() ;
 	
+
 
 				/**
 				 * Visits specified XML markup and saves it to the internal
@@ -268,8 +274,7 @@ namespace Ceylan
 				 * markup would by 'const'.
 				 *
 				 */
-				virtual void visit( XMLMarkup & xmlMarkup ) 
-					throw( VisitException ) ;
+				virtual void visit( XMLMarkup & xmlMarkup ) ;
 				
 				
 	
@@ -285,8 +290,7 @@ namespace Ceylan
 				 * text would by 'const'.
 				 *
 				 */
-				virtual void visit( XMLText & xmlText ) 
-					throw( VisitException ) ;
+				virtual void visit( XMLText & xmlText ) ;
 				
 	
 			
@@ -302,8 +306,8 @@ namespace Ceylan
 				 *
 				 */
 				 virtual const std::string toString( 
-			 			Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+			 		Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+		
 		
 				
 				/// The offset for serialized XLM elements.
@@ -336,6 +340,7 @@ namespace Ceylan
 #pragma warning( pop ) 			
 			
 
+
 			private:
 
 
@@ -349,7 +354,7 @@ namespace Ceylan
 				 * @note Made to avoid unwanted hidden clone of the Singleton.
 				 *
 				 */			 
-				XMLSavingVisitor( const XMLSavingVisitor & source ) throw() ;
+				XMLSavingVisitor( const XMLSavingVisitor & source ) ;
 			
 			
 				/**
@@ -360,12 +365,14 @@ namespace Ceylan
 				 * 
 				 */			 
 				XMLSavingVisitor & operator = ( 
-					const XMLSavingVisitor & source ) throw() ;
+					const XMLSavingVisitor & source ) ;
 					
 					
 		} ;			
 				
 				
+			
+			
 			
 		/**
 		 * XML visitor dedicated to the searching in an XML tree of specific
@@ -393,8 +400,8 @@ namespace Ceylan
 				 * for example 'para'.
 				 *
 				 */
-				XMLSearchingVisitor( MarkupName & searchedMarkupName ) 
-					throw() ;
+				XMLSearchingVisitor( MarkupName & searchedMarkupName ) ;
+
 
 
 				/**
@@ -403,17 +410,18 @@ namespace Ceylan
 				 */
 				virtual ~XMLSearchingVisitor() throw() ;
 		
+		
 				
 				/**
 				 * Find the XML markups from the visited tree that match the
 				 * markup name specified in the constructor of this visitor.
 				 *
 				 * @note The target tree must have been visited first so that
-				 * nodes have been already searched, for example :
+				 * nodes have been already searched, for example:
 				 * <pre>
 				 * XMLSearchingVisitor myXMLSearchingVisitor( "ul" ) ;
 				 * myXMLTree.accept( myXMLSearchingVisitor ) ; 
-				 * // Here the visitor has computed the list, then :
+				 * // Here the visitor has computed the list, then:
 				 * std::list<XMLMarkup *> * myList = &
 				 *	 myXMLSearchingVisitor.getMatchingMarkups() ;
 				 * ...
@@ -435,9 +443,9 @@ namespace Ceylan
 				 * returned.
 				 *
 				 */
-				std::list<XMLMarkup *> & getMatchingMarkups() 
-					throw( VisitException ) ;
+				std::list<XMLMarkup *> & getMatchingMarkups() ;
 
+				
 				
 				/**
 				 * Visits specified XML markup and records it if it matches
@@ -448,8 +456,7 @@ namespace Ceylan
 				 * @throw VisitException if the visit failed.
 				 *
 				 */
-				virtual void visit( XMLMarkup & xmlMarkup ) 
-					throw( VisitException ) ;
+				virtual void visit( XMLMarkup & xmlMarkup ) ;
 				
 				
 	
@@ -461,8 +468,7 @@ namespace Ceylan
 				 * @throw VisitException if this visit failed.
 				 *
 				 */
-				virtual void visit( XMLText & xmlText ) 
-					throw( VisitException ) ;
+				virtual void visit( XMLText & xmlText ) ;
 				
 	
 			
@@ -478,8 +484,7 @@ namespace Ceylan
 				 *
 				 */
 				 virtual const std::string toString( 
-			 			Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const throw() ;
+			 		Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 						
 		
 		
@@ -506,6 +511,7 @@ namespace Ceylan
 
 #pragma warning( pop ) 			
 				
+				
 
 			private:
 
@@ -520,8 +526,8 @@ namespace Ceylan
 				 * @note Made to avoid unwanted hidden clone of the Singleton.
 				 *
 				 */			 
-				XMLSearchingVisitor( const XMLSearchingVisitor & source )
-					throw() ;
+				XMLSearchingVisitor( const XMLSearchingVisitor & source ) ;
+			
 			
 			
 				/**
@@ -532,7 +538,8 @@ namespace Ceylan
 				 * 
 				 */			 
 				XMLSearchingVisitor & operator = ( 
-					const XMLSearchingVisitor & source ) throw() ;
+					const XMLSearchingVisitor & source ) ;
+					
 					
 					
 		} ;			
@@ -544,4 +551,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_XML_VISITOR_H_
+

@@ -36,6 +36,7 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
+
 // Not available in their C++ form:
 extern "C"
 {
@@ -50,6 +51,7 @@ extern "C"
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
+
 
 #include <cstdlib>
 
@@ -84,11 +86,12 @@ using namespace Ceylan::Log ;
 
 
 
-LibfatFileException::LibfatFileException( const string & reason ) throw():
+LibfatFileException::LibfatFileException( const string & reason ) :
 	FileException( reason )
 {
 
 }
+
 
 
 LibfatFileException::~LibfatFileException() throw()
@@ -96,6 +99,8 @@ LibfatFileException::~LibfatFileException() throw()
 
 }
 
+	
+	
 	
 		
 // LibfatFile implementation.
@@ -136,7 +141,7 @@ LibfatFile::~LibfatFile() throw()
 	
 
 
-bool LibfatFile::isOpen() const throw()
+bool LibfatFile::isOpen() const
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -161,7 +166,7 @@ bool LibfatFile::isOpen() const throw()
 
 
 
-bool LibfatFile::close() throw( Stream::CloseException )
+bool LibfatFile::close()
 {
 
 	if ( ! isOpen() )
@@ -213,7 +218,7 @@ bool LibfatFile::close() throw( Stream::CloseException )
 
 
 
-void LibfatFile::saveAs( const string & newName ) throw( FileException )
+void LibfatFile::saveAs( const string & newName )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -259,7 +264,6 @@ void LibfatFile::saveAs( const string & newName ) throw( FileException )
 
 
 time_t LibfatFile::getLastChangeTime() const 
-	throw( FileLastChangeTimeRequestFailed )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -295,7 +299,6 @@ time_t LibfatFile::getLastChangeTime() const
 
 
 Size LibfatFile::read( Ceylan::Byte * buffer, Size maxLength ) 
-	throw( InputStream::ReadFailedException )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -336,7 +339,6 @@ Size LibfatFile::read( Ceylan::Byte * buffer, Size maxLength )
 
 
 Size LibfatFile::write( const string & message ) 
-	throw( OutputStream::WriteFailedException )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -375,7 +377,6 @@ Size LibfatFile::write( const string & message )
 
 
 Size LibfatFile::write( const Ceylan::Byte * buffer, Size maxLength ) 
-	throw( OutputStream::WriteFailedException )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -413,9 +414,7 @@ Size LibfatFile::write( const Ceylan::Byte * buffer, Size maxLength )
 
 
 
-
-
-Position LibfatFile::tell() throw( FileException )
+Position LibfatFile::tell()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -443,7 +442,7 @@ Position LibfatFile::tell() throw( FileException )
 
 
 
-void LibfatFile::seek( Position targetPosition ) throw( FileException )
+void LibfatFile::seek( Position targetPosition )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -478,7 +477,6 @@ void LibfatFile::seek( Position targetPosition ) throw( FileException )
 
 
 void LibfatFile::serialize( FileDescriptor fd ) const 
-	throw( LibfatFileException )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -505,8 +503,8 @@ void LibfatFile::serialize( FileDescriptor fd ) const
 }
 
 
+
 FileDescriptor LibfatFile::getFileDescriptor() const 
-	throw( LibfatFileException )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -533,8 +531,7 @@ FileDescriptor LibfatFile::getFileDescriptor() const
 
 
 
-
-StreamID LibfatFile::getStreamID() const throw()
+StreamID LibfatFile::getStreamID() const
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -561,8 +558,7 @@ StreamID LibfatFile::getStreamID() const throw()
 
 
 
-const std::string LibfatFile::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+const std::string LibfatFile::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string res = "Libfat file object for filename '" + _name + "'" ;
@@ -584,7 +580,7 @@ const std::string LibfatFile::toString( Ceylan::VerbosityLevels level )
 
 
 LibfatFile & LibfatFile::Create( const std::string & filename, 
-		OpeningFlag createFlag ) throw( FileException )
+	OpeningFlag createFlag )
 {
 
 	// Ensures creation is requested:
@@ -592,9 +588,10 @@ LibfatFile & LibfatFile::Create( const std::string & filename,
 
 }
 
+
 					
 LibfatFile & LibfatFile::Open( const std::string & filename, 
-	OpeningFlag openFlag ) throw( FileException )
+	OpeningFlag openFlag )
 {
 
 	// Ensures creation is not requested:
@@ -608,8 +605,7 @@ LibfatFile & LibfatFile::Open( const std::string & filename,
 // Protected section.
 
 
-LibfatFile::LibfatFile( const string & name, OpeningFlag openFlag ) 
-		throw( FileException ):
+LibfatFile::LibfatFile( const string & name, OpeningFlag openFlag ) :
 	File( name, openFlag, /* permissions ignored with libfat */ OwnerReadWrite )
 {
 
@@ -643,11 +639,11 @@ LibfatFile::LibfatFile( const string & name, OpeningFlag openFlag )
 
 
 
+
 // Implementations of inherited methods.
 
 
-FileSystemManager & LibfatFile::getCorrespondingFileSystemManager()
-	const throw( FileDelegatingException )
+FileSystemManager & LibfatFile::getCorrespondingFileSystemManager() const
 {
 
 	try
@@ -669,7 +665,7 @@ FileSystemManager & LibfatFile::getCorrespondingFileSystemManager()
 	
 	
 	
-void LibfatFile::reopen() throw( FileOpeningFailed )
+void LibfatFile::reopen()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -702,7 +698,7 @@ void LibfatFile::reopen() throw( FileOpeningFailed )
 
 
 
-string LibfatFile::interpretState() const throw()
+string LibfatFile::interpretState() const
 {
 
 	return "LibfatFile uses file descriptor " + Ceylan::toString( _fdes ) ;
@@ -716,7 +712,6 @@ string LibfatFile::interpretState() const throw()
 
 
 int LibfatFile::ConvertToFileDescriptorOpenFlag( OpeningFlag openFlag ) 
-	throw( ConversionFailed )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -788,8 +783,8 @@ int LibfatFile::ConvertToFileDescriptorOpenFlag( OpeningFlag openFlag )
 
 	
 	
-void LibfatFile::FromFDtoFD( FileDescriptor from, FileDescriptor to,
-	Size length ) throw( LibfatFileException )
+void LibfatFile::FromFDtoFD( FileDescriptor from, FileDescriptor to, 
+	Size length )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS

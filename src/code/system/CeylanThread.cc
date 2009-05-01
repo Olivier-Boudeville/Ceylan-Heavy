@@ -37,6 +37,7 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
+
 extern "C"
 {
 
@@ -53,6 +54,7 @@ extern "C"
 #endif // CEYLAN_USES_SYS_TIME_H
 
 }
+
 
 #include <cerrno>
 #include <list>
@@ -77,6 +79,7 @@ using namespace Ceylan::Features ;
 
 
 
+
 #ifdef CEYLAN_USES_PTHREAD_H
 
 extern "C"
@@ -90,7 +93,9 @@ extern "C"
 // Avoid exposing system-dependent pthread_t in the headers:
 struct Thread::SystemSpecificThreadIdentifier
 {
+
 	pthread_t _thread ;
+	
 } ;
 
 
@@ -98,7 +103,9 @@ struct Thread::SystemSpecificThreadIdentifier
 // Avoid exposing system-dependent pthread_attr_t in the headers:
 struct Thread::SystemSpecificThreadAttribute
 {
+
 	pthread_attr_t _threadAttribute ;
+	
 } ;
 
 
@@ -106,8 +113,11 @@ struct Thread::SystemSpecificThreadAttribute
 // Avoid exposing system-dependent pthread_cond_t in the headers:
 struct Thread::SystemSpecificThreadCondition
 {
+
 	pthread_cond_t _threadCondition ;
+	
 } ;
+
 
 
 
@@ -127,14 +137,17 @@ struct Thread::SystemSpecificThreadCondition
 Synchronized<ThreadCount> * Thread::_Number 
 	= new Synchronized<ThreadCount>( 0 ) ;
 	
+	
 
 #else // 	CEYLAN_USES_PTHREAD_H
+
 
 // Not used, no Mutex available thus avoid creating Synchronized instances:
 Synchronized<ThreadCount> * Thread::_Number = 0 ;
 
 
 #endif // CEYLAN_USES_PTHREAD_H
+
 
 
 
@@ -156,11 +169,13 @@ namespace
 		#endif // CEYLAN_DEBUG_THREADS
 
 		Thread::Run( * reinterpret_cast<Thread * >( threadObject ) ) ;
+
 		return 0 ;
 		
 	}
 
 }
+
 
 
 #ifdef CEYLAN_USES_PTHREAD_H
@@ -183,8 +198,10 @@ struct Mutex::SystemSpecificMutexType
 
 
 
-Thread::Thread() throw( FeatureNotAvailableException ):
-	Runnable( "UnnamedThread" ),
+
+
+Thread::Thread() :
+	Runnable( "Anonymous thread" ),
 	_id( 0 ),
 	_attr( 0 ),
 	_terminated( false ),
@@ -214,8 +231,7 @@ Thread::Thread() throw( FeatureNotAvailableException ):
 
 
 
-Thread::Thread( const string & name ) 
-		throw( Features::FeatureNotAvailableException ):
+Thread::Thread( const string & name ) : 
 	Runnable( name ),
 	_id( 0 ),
 	_attr( 0 ),
@@ -279,7 +295,6 @@ Thread::~Thread() throw()
 		delete _attr ;
 		_attr = 0 ;
 	}
-	
 		
 #endif // CEYLAN_USES_THREADS
 	
@@ -287,7 +302,7 @@ Thread::~Thread() throw()
 
 
 
-void Thread::run() throw( RunnableException )
+void Thread::run()
 {
 
 #ifdef CEYLAN_USES_PTHREAD_H
@@ -327,7 +342,7 @@ void Thread::run() throw( RunnableException )
 
 
 
-void Thread::askToStop() throw()
+void Thread::askToStop()
 {
 
 #if CEYLAN_DEBUG_THREADS
@@ -341,42 +356,52 @@ void Thread::askToStop() throw()
 
 
 
-Thread::SystemSpecificThreadIdentifier & Thread::id() const throw()
+Thread::SystemSpecificThreadIdentifier & Thread::id() const
 { 
+
 	return *_id ; 
+	
 }
 
 
 
 bool Thread::isClean() const
 { 
-	return _clean.getValue() ;  
+
+	return _clean.getValue() ;
+	  
 }
 
 
 
-bool Thread::isRunning() const throw()
+bool Thread::isRunning() const
 { 
-	return _running.getValue() ; 
+
+	return _running.getValue() ;
+	 
 }
 
 
 
-bool Thread::hasTerminated() const throw()
+bool Thread::hasTerminated() const
 { 
+
 	return _terminated ; 
+	
 }
 
 
 
 bool Thread::stopDemanded() const
 { 
+
 	return _mustStop ; 
+	
 }
 
 
 
-void Thread::waitUntilOver() throw()
+void Thread::waitUntilOver()
 {
 
 #ifdef CEYLAN_USES_PTHREAD_H
@@ -397,8 +422,7 @@ void Thread::waitUntilOver() throw()
 
 
 
-const string Thread::toString( Ceylan::VerbosityLevels level )
-	const throw()
+const string Thread::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string res = "Thread whose Thread ID is " ; 
@@ -454,10 +478,11 @@ const string Thread::toString( Ceylan::VerbosityLevels level )
 
 
 
+
 // Static section.
 
 
-Ceylan::System::ThreadCount Thread::GetNumberOfThreads() throw()
+Ceylan::System::ThreadCount Thread::GetNumberOfThreads()
 {
 
 	if ( _Number != 0 )
@@ -470,7 +495,6 @@ Ceylan::System::ThreadCount Thread::GetNumberOfThreads() throw()
 
 
 void Thread::Sleep( System::Second seconds,	System::Microsecond microseconds )
-	throw( ThreadException )
 {
 
 #if CEYLAN_DEBUG_THREADS
@@ -494,7 +518,7 @@ void Thread::Sleep( System::Second seconds,	System::Microsecond microseconds )
 
 
 
-void Thread::Run( Thread & thread ) throw()
+void Thread::Run( Thread & thread )
 {
 
 #ifdef CEYLAN_USES_PTHREAD_H
@@ -531,7 +555,7 @@ void Thread::Run( Thread & thread ) throw()
 // Waiter inner class section.
 
 
-Thread::Waiter::Waiter() throw( FeatureNotAvailableException ):
+Thread::Waiter::Waiter() :
 	Mutex(),
 	_condition()
 {
@@ -581,9 +605,8 @@ Thread::Waiter::~Waiter() throw()
 
 
 
-bool Thread::Waiter::wait( System::Second seconds ) throw()
+bool Thread::Waiter::wait( System::Second seconds )
 {
-
 
 	bool ret = true ;
 
@@ -636,7 +659,7 @@ bool Thread::Waiter::wait( System::Second seconds ) throw()
 
 #if CEYLAN_DEBUG_THREADS
 		LogPlug::debug( "Thread::Waiter::wait: "
-			"... condition variable signaled !" ) ;
+			"... condition variable signaled!" ) ;
 #endif // CEYLAN_DEBUG_THREADS
 
 		unlock() ;
@@ -645,7 +668,6 @@ bool Thread::Waiter::wait( System::Second seconds ) throw()
 #if CEYLAN_DEBUG_THREADS
 		LogPlug::debug( "Thread::Waiter::wait: waiting mutex unlocked." ) ;
 #endif // CEYLAN_DEBUG_THREADS
-
 
 	}
 	
@@ -657,7 +679,7 @@ bool Thread::Waiter::wait( System::Second seconds ) throw()
 
 
 
-bool Thread::Waiter::signal() throw()
+bool Thread::Waiter::signal()
 {
 
 #ifdef CEYLAN_USES_PTHREAD_H
@@ -686,7 +708,7 @@ bool Thread::Waiter::signal() throw()
 
 
 
-bool Thread::Waiter::broadcast() throw()
+bool Thread::Waiter::broadcast()
 {
 
 #ifdef CEYLAN_USES_PTHREAD_H
@@ -694,7 +716,7 @@ bool Thread::Waiter::broadcast() throw()
 	lock() ;
 
 #if CEYLAN_DEBUG_THREADS
-	LogPlug::debug( "Thread::Waiter::signal: waiter mutex is broadcasted" ) ;
+	LogPlug::debug( "Thread::Waiter::broadcast: waiter mutex is broadcasted" ) ;
 #endif // CEYLAN_DEBUG_THREADS
 
 	bool ret = ( ::pthread_cond_broadcast( 
@@ -715,11 +737,12 @@ bool Thread::Waiter::broadcast() throw()
 
 
 
+
 // Protected section.
 
 
 
-void Thread::cancel() throw()
+void Thread::cancel()
 {
 
 #ifdef CEYLAN_USES_PTHREAD_H
@@ -739,7 +762,7 @@ void Thread::cancel() throw()
 
 
 
-void Thread::cleanup() throw()
+void Thread::cleanup()
 {
 
 #if CEYLAN_DEBUG_THREADS
@@ -752,7 +775,7 @@ void Thread::cleanup() throw()
 
 
 
-void Thread::setRunning( bool newRunningStatus ) throw() 
+void Thread::setRunning( bool newRunningStatus ) 
 { 
 
 #if CEYLAN_DEBUG_THREADS
@@ -766,7 +789,7 @@ void Thread::setRunning( bool newRunningStatus ) throw()
 
 
 
-void Thread::threadCreationFailed( ErrorCode error ) throw( ThreadException )
+void Thread::threadCreationFailed( ErrorCode error )
 {
 
 	throw ThreadException( "Thread::threadCreationFailed: "

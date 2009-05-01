@@ -35,12 +35,16 @@
 #include "CeylanTextBuffer.h"        // for CharAbscissa and al
 
 
+
+
 namespace Ceylan
 {
 
 
+
 	namespace System
 	{
+	
 	
 	
 	
@@ -67,12 +71,14 @@ namespace Ceylan
 				static const TextBuffer::CharAbscissa UnlimitedWidth = 0 ;
 				
 				
+				
 				/**
 				 * Use this constant when terminal supports unlimited height
 				 * (i.e. performs line-scrolling).
 				 *
 				 */
 				static const TextBuffer::CharOrdinate UnlimitedHeight = 0 ;
+				
 				
 				
 				
@@ -86,7 +92,7 @@ namespace Ceylan
 					public: 
 					
 						explicit ConsoleException( 
-								const std::string & reason ) throw() : 
+								const std::string & reason ) : 
 							SystemException( reason )
 						{
 						
@@ -94,6 +100,7 @@ namespace Ceylan
 						
 				} ;
 						
+					
 						
 						
 				/**
@@ -125,8 +132,7 @@ namespace Ceylan
 				 * supported.
 				 *
 				 */
-				explicit Console( bool startInForeground = true ) 
-					throw( ConsoleException ) ;
+				explicit Console( bool startInForeground = true ) ;
 			
 			
 			
@@ -167,12 +173,13 @@ namespace Ceylan
 						 TextBuffer::TextLayout   layout,
 						 bool                     useBottomScreen = true,
 						 bool                     useSubCore = true,
-						 bool                     startInForeground = true )
-					throw( ConsoleException ) ;
+						 bool                     startInForeground = true ) ;
 	
 	
-				/// Destructor.
+	
+				/// Virtual destructor.
 				virtual ~Console() throw() ;
+
 
 
 				/**
@@ -188,13 +195,16 @@ namespace Ceylan
 				 *  - button Y: toggle text layout (raw/justified/word-wrapped)
 				 *  - button A: quit
 				 *
+				 * @throw ConsoleException if the operation failed.
+				 *
 				 */
-				virtual void goInteractive() throw( ConsoleException ) ; 
+				virtual void goInteractive() ; 
 
 				
 
 				/// Returns the text layout being currently used.
-				virtual TextBuffer::TextLayout getTextLayout() const throw() ;
+				virtual TextBuffer::TextLayout getTextLayout() const ;
+			
 			
 			
 				/**
@@ -206,8 +216,7 @@ namespace Ceylan
 				 * @throw ConsoleException if the operation failed.
 				 *
 				 */
-				virtual void setTextLayout( TextBuffer::TextLayout newLayout ) 
-					throw( ConsoleException ) ;
+				virtual void setTextLayout( TextBuffer::TextLayout newLayout ) ;
 
 
 
@@ -223,7 +232,8 @@ namespace Ceylan
 				 * @return true iff there was a text left indeed.
 				 *
 				 */
-				virtual bool jumpNextText() throw() ;
+				virtual bool jumpNextText() ;
+
 
 
 				/**
@@ -234,7 +244,7 @@ namespace Ceylan
 				 * @return true iff there was a prior text indeed.
 				 *
 				 */
-				virtual bool jumpPreviousText() throw() ;
+				virtual bool jumpPreviousText() ;
 
 
 
@@ -246,7 +256,8 @@ namespace Ceylan
 				 * @return true iff there was a line left indeed.
 				 *
 				 */
-				virtual bool jumpNextLine() throw() ;
+				virtual bool jumpNextLine() ;
+				
 				
 
 				/**
@@ -257,7 +268,7 @@ namespace Ceylan
 				 * @return true iff there was a line left indeed.
 				 *
 				 */
-				virtual bool jumpPreviousLine() throw() ;
+				virtual bool jumpPreviousLine() ;
 				
 
 
@@ -271,8 +282,8 @@ namespace Ceylan
 				 * @throw ConsoleException if the operation failed.
 				 *
 				 */
-				virtual void addInBuffer( const std::string & text ) 
-					throw( ConsoleException ) ;
+				virtual void addInBuffer( const std::string & text ) ;
+
 
 
 				/** 
@@ -281,11 +292,14 @@ namespace Ceylan
 				 * @throw ConsoleException if the operation failed.
 				 *
 				 */
-				virtual void blankBuffer() throw( ConsoleException ) ;
+				virtual void blankBuffer() ;
+
+
 
 
 
 				// Render section.
+
 
 
 				/**
@@ -301,8 +315,8 @@ namespace Ceylan
 				 * @throw ConsoleException if the operation failed.
 				 *
 				 */
-				virtual void setToForeground( bool toForeground = true ) 
-					throw( ConsoleException ) ; 
+				virtual void setToForeground( bool toForeground = true ) ; 
+
 
 
 				/**
@@ -312,7 +326,8 @@ namespace Ceylan
 				 * @throw ConsoleException if the operation failed.
 				 *
 				 */
-				virtual void render() throw( ConsoleException ) ; 
+				virtual void render() ; 
+				
 				
 				
             	/**
@@ -328,8 +343,8 @@ namespace Ceylan
 				 *
 				 */
             	virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+
 
 				
 				/**
@@ -346,9 +361,8 @@ namespace Ceylan
 				 *
 				 */
 				static void SetKeyRepeat( 
-						Millisecond durationBeforeFirstRepeat = 300,
-						Millisecond durationBetweenRepeats    = 100 ) 
-					throw( ConsoleException ) ;
+					Millisecond durationBeforeFirstRepeat = 300,
+					Millisecond durationBetweenRepeats    = 100 ) ;
 				
 				
 				
@@ -373,17 +387,19 @@ namespace Ceylan
 				 * have been modified outside of this method, thus without it
 				 * knowing about them). Default is to rely on the method memory.
 				 *
+				 * @throw ConsoleException if the operation failed.
+				 *
 				 */
 				static void Initialize( bool useBottomScreen = true,
-						bool useSubCore = true, bool force = false ) 
-					throw( ConsoleException ) ;
+						bool useSubCore = true, bool force = false ) ;
+				
 				
 				
 				/**
 				 * Escape sequences for color backgrounds in terminal.
 				 *
 				 * Just use for example:
-				 *  cout << Console::BackgroundColor::Yellow << "Hello !" ;
+				 *  cout << Console::BackgroundColor::Yellow << "Hello!" ;
 				 *
 				 * @note Some color names may relate to the same actual colors
 				 * (ex: Grey and Black).
@@ -411,7 +427,7 @@ namespace Ceylan
 				 * Escape sequences for color foregrounds in terminal.
 				 *
 				 * Just use for example:
-				 *  cout << Console::ForegroundColor::Red << "Hello !" ;
+				 *  cout << Console::ForegroundColor::Red << "Hello!" ;
 				 *
 				 * @note Some color names may relate to the same actual colors
 				 * (ex: Grey and Black).
@@ -472,6 +488,8 @@ namespace Ceylan
 				 * @param useSubCore tells whether the main or the sub 2D
 				 * engine should be used (default: sub core).
 				 *
+				 * @throw ConsoleException if the operation failed.
+				 *
 				 */
 				virtual void initConsole( 
 						TextBuffer::CharAbscissa startingX,
@@ -480,17 +498,19 @@ namespace Ceylan
 						TextBuffer::CharOrdinate height,
 						TextBuffer::TextLayout   layout,
 						bool                     useBottomScreen = true,
-						bool                     useSubCore = true )
-					throw( ConsoleException ) ; 
+						bool                     useSubCore = true ) ; 
 
 				
 				
 				TextBuffer::CharAbscissa _xstart ;
+				
 				TextBuffer::CharOrdinate _ystart ;
+				
 				
 				
 				/// Buffer storing all the texts.
 				TextBuffer * _buffer ;
+				
 				
 				
 				/**
@@ -500,8 +520,10 @@ namespace Ceylan
 				 */
 				bool _inForeground ;
 				
+				
 				/// Tells whether any bottom screen should be used.
 				bool _useBottomScreen ;
+				
 				
 				/// Tells whether any sub rendering core should be used.
 				bool _useSubCore ;
@@ -520,7 +542,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				Console( const Console & source ) throw() ;
+				Console( const Console & source ) ;
 			
 			
 				/**
@@ -531,15 +553,17 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				Console & operator = ( const Console & source )
-					throw() ;
+				Console & operator = ( const Console & source ) ;
 	
 	
 		} ;
+		
 				
 	}	
 		
 }
 
 
+
 #endif // CEYLAN_CONSOLE_H_
+

@@ -38,8 +38,10 @@ namespace Ceylan
 {
 	
 
+
 	namespace System
 	{
+	
 	
 	
 		// Some environment variables facilities.
@@ -47,7 +49,8 @@ namespace Ceylan
 
 		/// Returns whether the specified environment variable is set.
 		CEYLAN_DLL bool isEnvironmentVariableSet( 
-			const std::string & variableName ) throw() ;
+			const std::string & variableName ) ;
+
 
 
 		/**
@@ -59,7 +62,8 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL const std::string getEnvironmentVariable( 
-			const std::string & variableName ) throw( UtilsException ) ;
+			const std::string & variableName ) ;
+	
 	
 	
 		/**
@@ -72,7 +76,8 @@ namespace Ceylan
 		 */
 		CEYLAN_DLL void setEnvironmentVariable( 
 			const std::string & variableName, 
-			const std::string & variableValue ) throw( UtilsException ) ;
+			const std::string & variableValue ) ;
+	
 	
 		
 		/**
@@ -82,7 +87,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL void unsetEnvironmentVariable( 
-			const std::string & variableName ) throw( UtilsException ) ;
+			const std::string & variableName ) ;
 	
 
 
@@ -90,4 +95,7 @@ namespace Ceylan
 	
 }
 
+
+
 #endif // CEYLAN_ENVIRONMENT_VARIABLES_H_
+

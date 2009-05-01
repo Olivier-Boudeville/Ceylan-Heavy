@@ -49,6 +49,7 @@ using std::string ;
 using std::list ;
 
 
+
 // Not available in their C++ form:
 extern "C"
 {
@@ -80,8 +81,10 @@ extern "C"
 using namespace Ceylan::System ;
 
 
+
 StandardFileSystemManager *
 	StandardFileSystemManager::_StandardFileSystemManager = 0 ;
+
 
 
 #if CEYLAN_ARCH_WINDOWS
@@ -100,11 +103,12 @@ const Ceylan::Latin1Char StandardFileSystemManager::Separator = '/'  ;
 
 
 
+
 // Implementation of the FileSystemManager mother class.
 
 
-bool StandardFileSystemManager::existsAsEntry( const string & entryPath ) 
-	const throw( EntryLookupFailed )
+
+bool StandardFileSystemManager::existsAsEntry( const string & entryPath ) const
 {
 
 #ifdef CEYLAN_USES_STAT
@@ -138,7 +142,6 @@ bool StandardFileSystemManager::existsAsEntry( const string & entryPath )
 
 void StandardFileSystemManager::createSymbolicLink( 
 	const string & linkTarget, const string & linkName )
-	throw( SymlinkFailed )
 {
 
 #if CEYLAN_USES_SYMBOLIC_LINKS
@@ -156,13 +159,11 @@ void StandardFileSystemManager::createSymbolicLink(
 		
 #endif // CEYLAN_USES_SYMBOLIC_LINKS
 
-
 }
 
 
 
-time_t StandardFileSystemManager::getEntryChangeTime( 
-	const string & entryPath ) throw( GetChangeTimeFailed )
+time_t StandardFileSystemManager::getEntryChangeTime( const string & entryPath )
 {
 
 #ifdef CEYLAN_USES_STAT
@@ -202,6 +203,7 @@ time_t StandardFileSystemManager::getEntryChangeTime(
 		+ System::explainError() ) ;
 
 }
+		
 					
 
 
@@ -209,15 +211,17 @@ time_t StandardFileSystemManager::getEntryChangeTime(
 // Accessors to FilesystemManager constants.
 
 
-const string & StandardFileSystemManager::getRootDirectoryPrefix() const throw()
+
+const string & StandardFileSystemManager::getRootDirectoryPrefix() const
 {
 
 	return RootDirectoryPrefix ;
 	
 }
 
+	 
 	    	   					
-Ceylan::Latin1Char StandardFileSystemManager::getSeparator() const throw()
+Ceylan::Latin1Char StandardFileSystemManager::getSeparator() const
 {
 
 	return Separator ;
@@ -234,7 +238,6 @@ Ceylan::Latin1Char StandardFileSystemManager::getSeparator() const throw()
 
 File & StandardFileSystemManager::createFile( const string & filename, 
 		OpeningFlag createFlag,	PermissionFlag permissionFlag ) 
-	throw( FileException )
 {
 
 	return StandardFile::Create( filename, createFlag, permissionFlag ) ;
@@ -244,7 +247,7 @@ File & StandardFileSystemManager::createFile( const string & filename,
 
 
 File & StandardFileSystemManager::openFile( const string & filename, 
-	OpeningFlag openFlag ) throw( FileException )
+	OpeningFlag openFlag )
 {
 
 	return StandardFile::Open( filename, openFlag ) ;
@@ -254,7 +257,7 @@ File & StandardFileSystemManager::openFile( const string & filename,
 
 
 bool StandardFileSystemManager::existsAsFileOrSymbolicLink( 
-	const string & filename ) const throw( FileLookupFailed )
+	const string & filename ) const
 {
 
 #ifdef CEYLAN_USES_STAT
@@ -295,13 +298,11 @@ bool StandardFileSystemManager::existsAsFileOrSymbolicLink(
 
 #endif // CEYLAN_USES_STAT
 	 	 
-	 
 }
 
 
 
 void StandardFileSystemManager::removeFile( const string & filename ) 
-	throw( FileRemoveFailed )
 {
 
 #ifdef CEYLAN_USES_UNLINK	
@@ -328,14 +329,13 @@ void StandardFileSystemManager::removeFile( const string & filename )
 #endif // CEYLAN_USES__UNLINK
 
 #endif // CEYLAN_USES_UNLINK	
-
-		
+	
 }
 
 
 
 void StandardFileSystemManager::moveFile( const string & sourceFilename,
-	const string & targetFilename ) throw( FileMoveFailed )
+	const string & targetFilename )
 {
 
 #ifdef CEYLAN_USES_RENAME
@@ -375,7 +375,7 @@ void StandardFileSystemManager::moveFile( const string & sourceFilename,
 
 
 void StandardFileSystemManager::copyFile( const string & sourceFilename, 
-	const string & targetFilename ) throw( FileCopyFailed )
+	const string & targetFilename )
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
@@ -416,7 +416,7 @@ void StandardFileSystemManager::copyFile( const string & sourceFilename,
 	 *
 	 * targetFile._fstream << sourceFile._fstream.rdbuf() ;
 	 *
-	 *  - or something adapted from (slower ?) - 
+	 *  - or something adapted from (slower?) - 
 	 *
 	 * while ( true) 
      * {
@@ -518,7 +518,6 @@ void StandardFileSystemManager::copyFile( const string & sourceFilename,
 
 
 Size StandardFileSystemManager::getSize( const string & filename ) 
-	throw( FileSizeRequestFailed )
 {
 
 #ifdef CEYLAN_USES_STAT
@@ -570,7 +569,7 @@ Size StandardFileSystemManager::getSize( const string & filename )
 	
 	
 time_t StandardFileSystemManager::getLastChangeTimeFile( 
-	const string & filename ) throw( FileLastChangeTimeRequestFailed )
+	const string & filename )
 {
 
 #ifdef CEYLAN_USES_STAT
@@ -611,7 +610,6 @@ time_t StandardFileSystemManager::getLastChangeTimeFile(
 
 
 void StandardFileSystemManager::touch( const string & filename ) 
-	throw( FileTouchFailed )
 {
 
 #ifdef CEYLAN_USES_UTIME
@@ -640,6 +638,7 @@ void StandardFileSystemManager::touch( const string & filename )
 }
 
 
+		
 									
 	
 // Directory-related section.
@@ -649,7 +648,7 @@ void StandardFileSystemManager::touch( const string & filename )
 
 										
 Directory & StandardFileSystemManager::createDirectory( 
-	const string & newDirectoryName ) throw( DirectoryException )
+	const string & newDirectoryName )
 {
 
 	return StandardDirectory::Create( newDirectoryName ) ;
@@ -659,7 +658,7 @@ Directory & StandardFileSystemManager::createDirectory(
 	
 					
 Directory & StandardFileSystemManager::openDirectory( 
-	const string & directoryName ) throw( DirectoryException )
+	const string & directoryName )
 {
 
 	return StandardDirectory::Open( directoryName ) ;
@@ -669,7 +668,7 @@ Directory & StandardFileSystemManager::openDirectory(
 	
 						
 bool StandardFileSystemManager::existsAsDirectory( 
-	const string & directoryPath ) const throw( DirectoryLookupFailed )
+	const string & directoryPath ) const
 {
 
 #ifdef CEYLAN_USES_STAT
@@ -732,13 +731,12 @@ bool StandardFileSystemManager::existsAsDirectory(
 
 #endif // CEYLAN_USES_STAT
 
-
 }
 
 
 
 void StandardFileSystemManager::removeDirectory( const string & directoryPath, 
-	bool recursive ) throw( DirectoryRemoveFailed )
+	bool recursive )
 {	
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -888,8 +886,7 @@ void StandardFileSystemManager::removeDirectory( const string & directoryPath,
 
 
 void StandardFileSystemManager::moveDirectory( 
-		const string & sourceDirectoryPath, const string & targetDirectoryPath )
-	throw( DirectoryMoveFailed )
+	const string & sourceDirectoryPath, const string & targetDirectoryPath )
 {
 
 
@@ -932,8 +929,7 @@ void StandardFileSystemManager::moveDirectory(
 
 
 void StandardFileSystemManager::copyDirectory( 
-		const string & sourceDirectoryPath, const string & targetDirectoryPath )
-	throw( DirectoryCopyFailed )
+	const string & sourceDirectoryPath, const string & targetDirectoryPath )
 {
 
 	throw DirectoryCopyFailed( "StandardFileSystemManager::copyDirectory: "
@@ -944,7 +940,7 @@ void StandardFileSystemManager::copyDirectory(
 
 
 time_t StandardFileSystemManager::getLastChangeTimeDirectory( 
-	const string & directoryPath ) throw( DirectoryLastChangeTimeRequestFailed )
+	const string & directoryPath )
 {
 
 #ifdef CEYLAN_USES_STAT
@@ -985,7 +981,7 @@ time_t StandardFileSystemManager::getLastChangeTimeDirectory(
 	
 
 bool StandardFileSystemManager::isAValidDirectoryPath( 
-	const string & directoryString ) throw()
+	const string & directoryString )
 {
 
 #if CEYLAN_USES_REGEX
@@ -1008,7 +1004,7 @@ bool StandardFileSystemManager::isAValidDirectoryPath(
 			
 				
 			
-bool StandardFileSystemManager::isAbsolutePath( const string & path ) throw()
+bool StandardFileSystemManager::isAbsolutePath( const string & path )
 {
 
 	if ( path.empty() )
@@ -1037,10 +1033,8 @@ bool StandardFileSystemManager::isAbsolutePath( const string & path ) throw()
 
 #else // CEYLAN_ARCH_WINDOWS
 
-
 	return ( path[0] == Separator ) ;
 	
-
 #endif // CEYLAN_ARCH_WINDOWS
 
 }	
@@ -1048,9 +1042,7 @@ bool StandardFileSystemManager::isAbsolutePath( const string & path ) throw()
 			
 			
 std::string StandardFileSystemManager::getCurrentWorkingDirectoryPath()	
-	throw( DirectoryGetCurrentFailed )
 {
-
 
 #ifdef CEYLAN_USES_GETCWD
 
@@ -1144,7 +1136,7 @@ std::string StandardFileSystemManager::getCurrentWorkingDirectoryPath()
 
 
 void StandardFileSystemManager::changeWorkingDirectory( 
-	const string & newWorkingDirectory ) throw( DirectoryChangeFailed )
+	const string & newWorkingDirectory )
 {
 
 #ifdef CEYLAN_USES_CHDIR
@@ -1167,8 +1159,7 @@ void StandardFileSystemManager::changeWorkingDirectory(
 
 #endif // CEYLAN_USES_CHDIR
 
-
-		// The indendation is correct, we are after a 'if' !
+		// The indendation is correct, we are after a 'if'!
 		throw DirectoryChangeFailed(
 			"StandardFileSystemManager::changeWorkingDirectory: "
 			"unable to change current working directory to "
@@ -1179,11 +1170,12 @@ void StandardFileSystemManager::changeWorkingDirectory(
 
 
 
+
 // StandardFileSystemManager own section.
 
 
 const string StandardFileSystemManager::toString( 
-	Ceylan::VerbosityLevels level ) const throw()
+	Ceylan::VerbosityLevels level ) const
 {
 
 	return "Standard filesystem manager" ;
@@ -1192,12 +1184,12 @@ const string StandardFileSystemManager::toString(
 	
 
 
+
 // Static section.
 
 
 StandardFileSystemManager &
-		StandardFileSystemManager::GetStandardFileSystemManager() 
-	throw( StandardFileSystemManagerException )
+	StandardFileSystemManager::GetStandardFileSystemManager() 
 {
 
 	if ( _StandardFileSystemManager == 0 )
@@ -1209,7 +1201,7 @@ StandardFileSystemManager &
 	
 	
 	
-void StandardFileSystemManager::RemoveStandardFileSystemManager() throw()
+void StandardFileSystemManager::RemoveStandardFileSystemManager()
 {
 
 	if ( _StandardFileSystemManager != 0 )
@@ -1230,9 +1222,7 @@ void StandardFileSystemManager::RemoveStandardFileSystemManager() throw()
 
 
 StandardFileSystemManager::StandardFileSystemManager() 
-	throw( StandardFileSystemManagerException )
 {
-
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
@@ -1264,7 +1254,6 @@ StandardFileSystemManager::~StandardFileSystemManager() throw()
 
 
 FileDescriptor StandardFileSystemManager::Duplicate( FileDescriptor fd ) 
-	throw( DuplicateFailed )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS

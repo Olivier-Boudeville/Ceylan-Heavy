@@ -79,8 +79,10 @@
 
 /* Type definitions */
 
+
 /** One of the 16 entries of the FIFO. */
 typedef uint32 FIFOElement ;
+
 
 /** Describes a number of FIFO commands. */
 typedef uint8 FIFOCommandCount ;
@@ -89,8 +91,10 @@ typedef uint8 FIFOCommandCount ;
 /** For buffers. */
 typedef char Byte ;
 
+
 /** For buffers. */
 typedef uint32 BufferSize ;
+
 
 
 /** Masks describing which interrupts are enabled. */
@@ -105,6 +109,7 @@ extern const InterruptMask AllInterruptsDisabled ;
 void atomicSleep() ;
 
 
+
 /**
  * Sets the ARM7 status word, for the ARM9.
  *
@@ -113,6 +118,7 @@ void atomicSleep() ;
  *
  */
 void setStatusWord( ARM7StatusWord newStatus ) ;
+
 
 
 /**
@@ -126,12 +132,14 @@ void setStatusWord( ARM7StatusWord newStatus ) ;
 void setError( ARM7ErrorCode newError ) ;
 
 
+
 /**
  * Unset any previous error status, for example when the error code has been
  * taken into account already.
  *
  */
 void unsetErrorStatus() ;
+
 
 
 /** Creates a FIFO element appropriate to begin a command for the ARM9. */ 
@@ -154,16 +162,20 @@ FIFOElement prepareFIFOCommand( FIFOCommandID id ) ;
 InterruptMask setEnabledInterrupts( InterruptMask newMask ) ;
 
 
+
 /** Warns the ARM9 that a new command has been sent by the ARM7 on the FIFO. */
 void notifyCommandToARM9() ;
+
 
 
 
 /* I/O section. */
 
 
+
 /** Reads an element from the ARM7 FIFO, supposing there is at least one. */
 FIFOElement read() ;
+
 
 /** Reads an element from the ARM7 FIFO, waiting if needed until there is one.*/
 FIFOElement readBlocking() ;
@@ -216,8 +228,9 @@ void handleReceivedApplicationCommand( FIFOCommandID commandID,
 	FIFOElement element ) ;
 
 
-/* Initializes Ceylan and its prerequesites. */
+/* Initializes Ceylan and its prerequisites. */
 void initCeylan() ;
+
 
 
 #endif // CEYLAN_ARM7_BASE_H_

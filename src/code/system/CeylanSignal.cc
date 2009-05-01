@@ -44,7 +44,7 @@ extern "C"
 
 
 /*
- * Maybe later : 
+ * Maybe later: 
  *  - use sigaction instead of signal
  *  - support the signals not in the POSIX.1 standard but described in SUSv2
  * and SUSv3 / POSIX 1003.1-2001, including real-time signals.
@@ -74,8 +74,10 @@ const Ceylan::System::Signal::SignalHandler
 #endif // CEYLAN_USES_SIGNAL_H
 
 
-/// Shortcut notation :
+
+/// Shortcut notation:
 typedef Ceylan::System::Signal::SignalNumber Sig ;
+
 
 
 #ifdef CEYLAN_USES_SIGNAL_H
@@ -109,7 +111,7 @@ const Sig Ceylan::System::Signal::Termination			 = SIGTERM ;
 
 #if CEYLAN_ARCH_WINDOWS
 
-// Fake values since symbols have to be defined :
+// Fake values since symbols have to be defined:
 
 const Sig Ceylan::System::Signal::HangUp                 = 1  ;
 const Sig Ceylan::System::Signal::QuitFromKeyboard  	 = 3  ;
@@ -146,7 +148,7 @@ const Sig Ceylan::System::Signal::TtyOutput 			 = SIGTTOU ;
 #else // CEYLAN_USES_SIGNAL_H
 
 
-// Fake values since symbols have to be defined :
+// Fake values since symbols have to be defined:
 
 const Sig Ceylan::System::Signal::HangUp                 = 1  ;
 const Sig Ceylan::System::Signal::InterruptFromKeyboard  = 2  ;
@@ -168,6 +170,7 @@ const Sig Ceylan::System::Signal::TtyStopped			 = 17 ;
 const Sig Ceylan::System::Signal::TtyInput  			 = 18 ;
 const Sig Ceylan::System::Signal::TtyOutput 			 = 19 ;
 
+
 #endif // CEYLAN_USES_SIGNAL_H
 
 
@@ -177,11 +180,13 @@ using namespace Ceylan::System::Signal ;
 using std::string ;
 
 
-SignalException::SignalException( const string & reason ) throw() :
+
+SignalException::SignalException( const string & reason ) :
 	SystemException( reason )
 {
 
 }
+
 
 
 SignalException::~SignalException() throw()
@@ -191,8 +196,10 @@ SignalException::~SignalException() throw()
 
  
  
+ 
+ 
 void Ceylan::System::Signal::setHandler( SignalNumber signalNumber,
-	SignalHandler newHandler ) throw( SignalException )
+	SignalHandler newHandler )
 {
 
 #if CEYLAN_USES_SIGNALS
@@ -204,7 +211,7 @@ void Ceylan::System::Signal::setHandler( SignalNumber signalNumber,
 		
 #else // CEYLAN_USES_SIGNALS
 
-	throw SignalException( "Signal::setHandler : "
+	throw SignalException( "Signal::setHandler: "
 		"signal feature not available." ) ;
 		
 #endif // CEYLAN_USES_SIGNALS
@@ -212,8 +219,8 @@ void Ceylan::System::Signal::setHandler( SignalNumber signalNumber,
 }
 
 
+
 void Ceylan::System::Signal::setToDefaultHandler( SignalNumber signalNumber )
-	throw( SignalException )
 {
 
 	setHandler( signalNumber, DefaultHandler ) ;
@@ -221,8 +228,8 @@ void Ceylan::System::Signal::setToDefaultHandler( SignalNumber signalNumber )
 }
 
 
+
 void Ceylan::System::Signal::ignore( SignalNumber signalNumber ) 
-	throw( SignalException )
 {
 
 	setHandler( signalNumber, IgnoringHandler ) ;
@@ -230,8 +237,8 @@ void Ceylan::System::Signal::ignore( SignalNumber signalNumber )
 }
 
 
+
 void Ceylan::System::Signal::raise( SignalNumber signalNumber ) 
-	throw( SignalException )
 {
 
 #if CEYLAN_USES_SIGNALS
@@ -240,17 +247,16 @@ void Ceylan::System::Signal::raise( SignalNumber signalNumber )
 		
 #else // CEYLAN_USES_SIGNALS
 
-	throw SignalException( "Signal::raise : signal feature not available." ) ;
+	throw SignalException( "Signal::raise: signal feature not available." ) ;
 		
 #endif // CEYLAN_USES_SIGNALS
 
 }
 
 
-const std::string Ceylan::System::Signal::toString( 
-	SignalNumber signalNumber ) throw()
-{
 
+const std::string Ceylan::System::Signal::toString( SignalNumber signalNumber )
+{
 
 #if CEYLAN_USES_SIGNALS
 
@@ -313,16 +319,14 @@ const std::string Ceylan::System::Signal::toString(
 	if ( signalNumber == Ceylan::System::Signal::TtyOutput )
 		return "tty output for background process (SIGTTOU)" ;
 
-
 	return "unknown signal (abnormal)" ;		
 		
 
 #else // CEYLAN_USES_SIGNALS
 
-	return "Signal::toString : signal feature not available." ;
+	return "Signal::toString: signal feature not available." ;
 		
 #endif // CEYLAN_USES_SIGNALS
 				
 }
-
 

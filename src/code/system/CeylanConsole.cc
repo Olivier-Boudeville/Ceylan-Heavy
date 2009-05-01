@@ -108,7 +108,8 @@ const char * const Console::InvisibleImageOff = "\033[28m" ;
 
 
 
-Console::Console( bool startInForeground ) throw( ConsoleException ):	
+
+Console::Console( bool startInForeground ) :	
 	_buffer( 0 ),
 	_inForeground( false )
 {
@@ -144,15 +145,15 @@ Console::Console( bool startInForeground ) throw( ConsoleException ):
 	
 }
 
+
 		
 Console::Console(
 	TextBuffer::CharAbscissa startingX, TextBuffer::CharOrdinate startingY,
 	TextBuffer::CharAbscissa width, TextBuffer::CharOrdinate height,
 	TextBuffer::TextLayout layout, bool useBottomScreen, bool useSubCore,
-	bool startInForeground ) 
-		throw( ConsoleException ):
-	_buffer( 0 ),
-	_inForeground( false )
+	bool startInForeground ) :
+		_buffer( 0 ),
+		_inForeground( false )
 {
 
 	initConsole( startingX, startingY, width, height, layout,
@@ -192,7 +193,7 @@ Console::~Console() throw()
 
 
 
-void Console::goInteractive() throw( ConsoleException )
+void Console::goInteractive()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -277,7 +278,7 @@ void Console::goInteractive() throw( ConsoleException )
 
 
 
-Ceylan::TextBuffer::TextLayout Console::getTextLayout() const throw()
+Ceylan::TextBuffer::TextLayout Console::getTextLayout() const
 {
 
 	return _buffer->getTextLayout() ;
@@ -285,8 +286,8 @@ Ceylan::TextBuffer::TextLayout Console::getTextLayout() const throw()
 }
 
 
+
 void Console::setTextLayout( TextBuffer::TextLayout newLayout ) 
-	throw( ConsoleException )
 {
 
 	try
@@ -310,7 +311,7 @@ void Console::setTextLayout( TextBuffer::TextLayout newLayout )
 
 
 
-bool Console::jumpNextText() throw()
+bool Console::jumpNextText()
 {
 
 	// _buffer should be already allocated.
@@ -328,7 +329,8 @@ bool Console::jumpNextText() throw()
 }
 
 
-bool Console::jumpPreviousText() throw()
+
+bool Console::jumpPreviousText()
 {
 
 	// _buffer should be already allocated.
@@ -347,7 +349,7 @@ bool Console::jumpPreviousText() throw()
 
 
 
-bool Console::jumpNextLine() throw()
+bool Console::jumpNextLine()
 {
 
 	// _buffer should be already allocated.
@@ -365,7 +367,8 @@ bool Console::jumpNextLine() throw()
 }
 
 
-bool Console::jumpPreviousLine() throw()
+
+bool Console::jumpPreviousLine()
 {
 
 	// _buffer should be already allocated.
@@ -384,7 +387,7 @@ bool Console::jumpPreviousLine() throw()
 
 
 
-void Console::addInBuffer( const std::string & text ) throw( ConsoleException )
+void Console::addInBuffer( const std::string & text )
 {
 
 	// _buffer should be already allocated.
@@ -395,7 +398,8 @@ void Console::addInBuffer( const std::string & text ) throw( ConsoleException )
 }
 
 
-void Console::blankBuffer() throw( ConsoleException )	
+
+void Console::blankBuffer()	
 {
 
 	// _buffer should be already allocated.
@@ -406,7 +410,7 @@ void Console::blankBuffer() throw( ConsoleException )
 
 
 					
-void Console::setToForeground( bool toForeground ) throw( ConsoleException )
+void Console::setToForeground( bool toForeground )
 {
 
 	// No transition, nothing done:
@@ -435,7 +439,7 @@ void Console::setToForeground( bool toForeground ) throw( ConsoleException )
 
 
 
-void Console::render() throw( ConsoleException )
+void Console::render()
 {
 
 	if ( _buffer == 0 || _inForeground == false )
@@ -497,8 +501,7 @@ void Console::render() throw( ConsoleException )
 
 
 				
-const std::string Console::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+const std::string Console::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string res = "Console whose upper-left corner is at ("
@@ -517,7 +520,7 @@ const std::string Console::toString( Ceylan::VerbosityLevels level )
 
 
 void Console::SetKeyRepeat( Millisecond durationBeforeFirstRepeat, 
-	Millisecond durationBetweenRepeats ) throw( ConsoleException )
+	Millisecond durationBetweenRepeats )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -561,7 +564,6 @@ void Console::SetKeyRepeat( Millisecond durationBeforeFirstRepeat,
 
 
 void Console::Initialize( bool useBottomScreen, bool useSubCore, bool force ) 
-	throw( ConsoleException )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -655,21 +657,19 @@ void Console::Initialize( bool useBottomScreen, bool useSubCore, bool force )
 	// Nothing special to do.
 	
 #endif // CEYLAN_ARCH_NINTENDO_DS
-	
 
 }
 
 
 
 void Console::initConsole( 
-		TextBuffer::CharAbscissa startingX, 
-		TextBuffer::CharOrdinate startingY,
-		TextBuffer::CharAbscissa width, 
-		TextBuffer::CharOrdinate height,
-		TextBuffer::TextLayout   layout,
-		bool useBottomScreen,
-		bool useSubCore ) 
-	throw( ConsoleException )
+	TextBuffer::CharAbscissa startingX, 
+	TextBuffer::CharOrdinate startingY,
+	TextBuffer::CharAbscissa width, 
+	TextBuffer::CharOrdinate height,
+	TextBuffer::TextLayout   layout,
+	bool useBottomScreen,
+	bool useSubCore ) 
 {
 
 	if ( _buffer != 0 )
@@ -699,8 +699,7 @@ void Console::initConsole(
 	_xstart = startingX ;
 	_ystart = startingY ;
 	
-	CEYLAN_CONSOLE_LOG( "Console created") ;
+	CEYLAN_CONSOLE_LOG( "Console created" ) ;
 
 }
 
-	

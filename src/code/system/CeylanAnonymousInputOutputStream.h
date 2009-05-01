@@ -32,8 +32,11 @@
 #include "CeylanStream.h"                // for StreamException
 
 
+
+
 namespace Ceylan 
 {
+
 
 
 	namespace System 
@@ -64,8 +67,11 @@ namespace Ceylan
 				/**
 				 * Basic constructor for AnonymousInputOutputStream.
 				 *
+				 * @throw Stream::StreamException if the construction failed.
+				 *
 				 */
-				AnonymousInputOutputStream() throw( Stream::StreamException ) ;
+				AnonymousInputOutputStream() ;
+		
 		
 		
 				/// Basic virtual destructor, closes the file descriptor.
@@ -86,13 +92,14 @@ namespace Ceylan
 				 *
 				 */
             	virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+
 
 
 
 
 			private:
+
 
 
 				/**
@@ -104,7 +111,7 @@ namespace Ceylan
 				 * 
 				 */			 
 				AnonymousInputOutputStream( 
-					const AnonymousInputOutputStream & source )	throw() ;
+					const AnonymousInputOutputStream & source )	;
 			
 			
 				/**
@@ -116,11 +123,12 @@ namespace Ceylan
 				 * 
 				 */			 
 				AnonymousInputOutputStream & operator = ( 
-					const AnonymousInputOutputStream & source ) throw() ;
+					const AnonymousInputOutputStream & source ) ;
 	
 	
 	
 		} ;
+		
 					
 	}
 	
@@ -130,3 +138,4 @@ namespace Ceylan
 	
 
 #endif // CEYLAN_ANONYMOUS_INPUT_OUTPUT_STREAM_H_
+

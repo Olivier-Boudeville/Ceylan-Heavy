@@ -41,6 +41,7 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
+
 // Not available in their C++ form:
 extern "C"
 {
@@ -63,6 +64,7 @@ extern "C"
 
 }
 
+
 #include <cstdlib>
 
 #include <cerrno>    // for EINTR, ENOLCK, etc.
@@ -72,6 +74,7 @@ extern "C"
 #ifndef PATH_MAX
 #define PATH_MAX 256
 #endif // PATH_MAX
+
 
 
 /*
@@ -119,7 +122,6 @@ LibfatDirectory::~LibfatDirectory() throw()
 
 
 bool LibfatDirectory::hasDirectory( const string & subdirectoryName ) const
-	throw( DirectoryLookupFailed )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -177,7 +179,6 @@ bool LibfatDirectory::hasDirectory( const string & subdirectoryName ) const
 
 
 bool LibfatDirectory::hasFile( const string & fileName ) const
-	throw( DirectoryLookupFailed )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -230,7 +231,6 @@ bool LibfatDirectory::hasFile( const string & fileName ) const
 
 
 bool LibfatDirectory::hasEntry( const string & entryName ) const
-	throw( DirectoryLookupFailed )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -285,8 +285,7 @@ bool LibfatDirectory::hasEntry( const string & entryName ) const
 
 			
 					
-void LibfatDirectory::getSubdirectories( list<string> & subDirectories )
-	const throw( DirectoryLookupFailed )
+void LibfatDirectory::getSubdirectories( list<string> & subDirectories ) const
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -335,8 +334,7 @@ void LibfatDirectory::getSubdirectories( list<string> & subDirectories )
 
 					
 										
-void LibfatDirectory::getFiles( list<string> & files )
-	const throw( DirectoryLookupFailed )
+void LibfatDirectory::getFiles( list<string> & files ) const
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -383,8 +381,7 @@ void LibfatDirectory::getFiles( list<string> & files )
 
 	
 					
-void LibfatDirectory::getEntries( list<string> & entries )
-	const throw( DirectoryLookupFailed )
+void LibfatDirectory::getEntries( list<string> & entries ) const
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -430,8 +427,7 @@ void LibfatDirectory::getEntries( list<string> & entries )
 
 					
 void LibfatDirectory::getSortedEntries( list<string> & subDirectories,
-		list<string> & files, list<string> & otherEntries )
-	const throw( DirectoryLookupFailed )
+	list<string> & files, list<string> & otherEntries ) const
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -490,8 +486,7 @@ void LibfatDirectory::getSortedEntries( list<string> & subDirectories,
 
 					
 					
-const string LibfatDirectory::toString( Ceylan::VerbosityLevels level )
-	const throw()
+const string LibfatDirectory::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	return "Libfat directory referring to path '" + _path + "'" ;
@@ -505,7 +500,6 @@ const string LibfatDirectory::toString( Ceylan::VerbosityLevels level )
 
 
 LibfatDirectory & LibfatDirectory::Create( const string & newDirectoryName )
-	throw( DirectoryException )
 {
 
 	return * new LibfatDirectory( newDirectoryName, /* create */ true ) ;
@@ -515,7 +509,6 @@ LibfatDirectory & LibfatDirectory::Create( const string & newDirectoryName )
 
 					
 LibfatDirectory & LibfatDirectory::Open( const string & directoryName ) 
-	throw( DirectoryException )
 {
 
 	return * new LibfatDirectory( directoryName, /* create */ false ) ;
@@ -525,7 +518,7 @@ LibfatDirectory & LibfatDirectory::Open( const string & directoryName )
 
 			
 LibfatDirectory::LibfatDirectory( const string & directoryName,
-		bool create ) throw( DirectoryException ):
+		bool create ) :
 	Directory( directoryName )
 {
 
@@ -632,13 +625,13 @@ LibfatDirectory::LibfatDirectory( const string & directoryName,
 	
 }
 
+	
 			
 					
 // Protected section.
 
 
-FileSystemManager & LibfatDirectory::getCorrespondingFileSystemManager()
-	const throw( DirectoryDelegatingException )
+FileSystemManager & LibfatDirectory::getCorrespondingFileSystemManager() const
 {
 
 	try
@@ -659,8 +652,8 @@ FileSystemManager & LibfatDirectory::getCorrespondingFileSystemManager()
 }
 
 
-void LibfatDirectory::secureCorrespondingFileSystemManager()
-	const throw( DirectoryDelegatingException )
+
+void LibfatDirectory::secureCorrespondingFileSystemManager() const
 {
 
 	try
@@ -679,5 +672,4 @@ void LibfatDirectory::secureCorrespondingFileSystemManager()
 	}	
 
 }
-
-																			
+																	

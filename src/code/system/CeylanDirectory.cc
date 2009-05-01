@@ -68,7 +68,9 @@ DirectoryDelegatingException::DirectoryDelegatingException(
 
 
 
+
 // Directory implementation section.
+
 
 
 
@@ -255,6 +257,7 @@ string Directory::GetSeparatorAsString()
 
 
 
+
 // Constructors are in protected section.	
 
 
@@ -287,6 +290,7 @@ Directory::~Directory() throw()
 	// Nothing special here for abstract directories.
 
 }
+
 
 
 
@@ -407,7 +411,6 @@ const string Directory::toString( Ceylan::VerbosityLevels level ) const
 
 
 
-
 // Protected section.
 
 
@@ -428,7 +431,6 @@ Directory::Directory( const string & directoryName ) :
 
 
 FileSystemManager & Directory::GetCorrespondingFileSystemManager()
-
 {
 
 	/*

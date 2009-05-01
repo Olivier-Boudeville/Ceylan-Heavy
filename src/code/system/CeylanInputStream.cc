@@ -121,14 +121,18 @@ InputStream::~InputStream() throw()
 
 bool InputStream::isSelected() const
 {
+
 	return _isSelected ;
+	
 }
 
 
 
 bool InputStream::isFaulty() const
 {
+
 	return _isFaulty ;
+	
 }	
 
 
@@ -977,7 +981,9 @@ Ceylan::Uint16 InputStream::Test( list<InputStream*> & is )
 
 
 
+
 // Protected section.
+
 
 
 void InputStream::setSelected( bool newStatus )

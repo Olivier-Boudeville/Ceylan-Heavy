@@ -34,9 +34,11 @@
 #include "CeylanOperators.h"   // for toString
 
 
+
 #ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"      // for configure-time feature settings
 #endif // CEYLAN_USES_CONFIG_H
+
 
 
 /*
@@ -84,6 +86,7 @@ FileSystemManager * FileSystemManager::_CurrentDefaultFileSystemManager = 0 ;
 
 
 
+
 // Public section.
 
 
@@ -96,7 +99,6 @@ FileSystemManager * FileSystemManager::_CurrentDefaultFileSystemManager = 0 ;
 
 
 bool FileSystemManager::ExistsAsEntry( const std::string & entryPath ) 
-	throw( FileSystemManagerException )
 {
 
 	// Let FileSystemManagerDelegatingException and EntryLookupFailed:
@@ -105,8 +107,9 @@ bool FileSystemManager::ExistsAsEntry( const std::string & entryPath )
 }
 
 
+
 void FileSystemManager::CreateSymbolicLink( const string & linkTarget, 
-	const string & linkName ) throw( FileSystemManagerException )
+	const string & linkName )
 {
 
 	// Let FileSystemManagerDelegatingException and SymlinkFailed:
@@ -116,8 +119,8 @@ void FileSystemManager::CreateSymbolicLink( const string & linkTarget,
 }
 
 
+
 time_t FileSystemManager::GetEntryChangeTime( const string & entryPath )
-	throw( FileSystemManagerException )
 {
 
 	// Let FileSystemManagerDelegatingException and GetChangeTimeFailed:
@@ -131,8 +134,7 @@ time_t FileSystemManager::GetEntryChangeTime( const string & entryPath )
 // Accessors to FilesystemManager constants.
 
 
-const string & FileSystemManager::GetRootDirectoryPrefix() 
-	throw( FileSystemManagerDelegatingException )
+const string & FileSystemManager::GetRootDirectoryPrefix() 	
 {
 
 	// Let FileSystemManagerDelegatingException propagate:
@@ -140,9 +142,9 @@ const string & FileSystemManager::GetRootDirectoryPrefix()
 	
 }
 
+
 						
-Ceylan::Latin1Char FileSystemManager::GetSeparator() 
-	throw( FileSystemManagerDelegatingException )
+Ceylan::Latin1Char FileSystemManager::GetSeparator() 	
 {
 
 	// Let FileSystemManagerDelegatingException propagate:
@@ -150,9 +152,9 @@ Ceylan::Latin1Char FileSystemManager::GetSeparator()
 	
 }
 
+
 						
 string FileSystemManager::GetSeparatorAsString() 
-	throw( FileSystemManagerDelegatingException )
 {
 
 	// Let FileSystemManagerDelegatingException propagate:
@@ -160,9 +162,9 @@ string FileSystemManager::GetSeparatorAsString()
 	
 }
 
+	
 						
 const string & FileSystemManager::GetAliasForCurrentDirectory()	
-	throw( FileSystemManagerDelegatingException )
 {
 
 	// Let FileSystemManagerDelegatingException propagate:
@@ -170,9 +172,9 @@ const string & FileSystemManager::GetAliasForCurrentDirectory()
 	
 }
 	
+	
 						
 const string & FileSystemManager::GetAliasForParentDirectory() 
-	throw( FileSystemManagerDelegatingException )
 {
 
 	// Let FileSystemManagerDelegatingException propagate:
@@ -192,8 +194,7 @@ const string & FileSystemManager::GetAliasForParentDirectory()
 // For FileSystemManager (other methods are pure virtual):
 
 
-const std::string & FileSystemManager::getAliasForCurrentDirectory()
-	const throw()
+const std::string & FileSystemManager::getAliasForCurrentDirectory() const
 {
 
 	// Made to be overriden if necessary:
@@ -201,9 +202,9 @@ const std::string & FileSystemManager::getAliasForCurrentDirectory()
 	
 }
 					
+	
 					
-const std::string & FileSystemManager::getAliasForParentDirectory()
-	const throw()
+const std::string & FileSystemManager::getAliasForParentDirectory() const
 {
 
 	// Made to be overriden if necessary:
@@ -213,7 +214,7 @@ const std::string & FileSystemManager::getAliasForParentDirectory()
 					
 
 
-std::string FileSystemManager::getSeparatorAsString() const throw()
+std::string FileSystemManager::getSeparatorAsString() const
 {
 
 	return Ceylan::toString( getSeparator() ) ;
@@ -230,7 +231,7 @@ std::string FileSystemManager::getSeparatorAsString() const throw()
 
 
 std::string FileSystemManager::transformIntoValidFilename( 
-	const string & rawFilename ) throw()
+	const string & rawFilename )
 {
 
 	// For MS-DOS/Windows, one may look at gcc 'dosck' as well.
@@ -291,7 +292,7 @@ std::string FileSystemManager::transformIntoValidFilename(
 	
 	
 bool FileSystemManager::diff( const std::string & firstFilename,
-	const std::string & secondFilename ) throw( FileDiffFailed )
+	const std::string & secondFilename )
 {
 
 	try
@@ -373,7 +374,7 @@ bool FileSystemManager::diff( const std::string & firstFilename,
 
 
 
-void FileSystemManager::removeLeadingSeparator( std::string & path ) throw()
+void FileSystemManager::removeLeadingSeparator( std::string & path )
 {
 
 	if ( path[ path.size() - 1 ] == getSeparator() )
@@ -383,7 +384,7 @@ void FileSystemManager::removeLeadingSeparator( std::string & path ) throw()
 
 
 					
-list<string> FileSystemManager::splitPath( const string & path ) throw()
+list<string> FileSystemManager::splitPath( const string & path )
 {
 
 	/*
@@ -438,7 +439,7 @@ list<string> FileSystemManager::splitPath( const string & path ) throw()
 
 
 
-string FileSystemManager::joinPath( const list<string> & pathElements ) throw()
+string FileSystemManager::joinPath( const list<string> & pathElements )
 {
 
 	list<string>::const_iterator it = pathElements.begin() ;
@@ -456,8 +457,9 @@ string FileSystemManager::joinPath( const list<string> & pathElements ) throw()
 }
 
 
+
 string FileSystemManager::joinPath( const string & firstPath, 
-	const std::string & secondPath ) throw()
+	const std::string & secondPath )
 {
 
 	return firstPath + getSeparatorAsString() + secondPath ;
@@ -467,7 +469,7 @@ string FileSystemManager::joinPath( const string & firstPath,
 
 
 void FileSystemManager::stripFilename( const string & path, string * base, 
-	string * file ) throw()
+	string * file )
 {
 
 	if ( base != 0 )
@@ -507,8 +509,7 @@ void FileSystemManager::stripFilename( const string & path, string * base,
 // FileSystemManager own section.
 
 
-const string FileSystemManager::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+const string FileSystemManager::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	return "Abstract filesystem manager" ;
@@ -523,7 +524,7 @@ const string FileSystemManager::toString( Ceylan::VerbosityLevels level )
 
 
 
-bool FileSystemManager::IsDefaultFileSystemManagerSet() throw()
+bool FileSystemManager::IsDefaultFileSystemManagerSet()
 {
 
 	return ( _CurrentDefaultFileSystemManager != 0 ) ;
@@ -531,9 +532,10 @@ bool FileSystemManager::IsDefaultFileSystemManagerSet() throw()
 }
 
 
+
 void FileSystemManager::SetDefaultFileSystemManager( 
-		FileSystemManager & newDefaultFileSystemManager,
-        bool deallocatePreviousIfAny ) throw()
+	FileSystemManager & newDefaultFileSystemManager,
+	bool deallocatePreviousIfAny )
 {
 
 	if ( deallocatePreviousIfAny )
@@ -556,8 +558,8 @@ void FileSystemManager::SetDefaultFileSystemManager(
 }
 
 
+
 void FileSystemManager::SetDefaultFileSystemManagerToPlatformDefault()
-	throw( FileSystemManagerException )
 {
 
 	
@@ -600,9 +602,9 @@ void FileSystemManager::SetDefaultFileSystemManagerToPlatformDefault()
 
 }
 	
+	
 						
 FileSystemManager & FileSystemManager::GetExistingDefaultFileSystemManager() 
-	throw( FileSystemManagerException )
 {
 
 	if ( _CurrentDefaultFileSystemManager == 0 )
@@ -615,8 +617,8 @@ FileSystemManager & FileSystemManager::GetExistingDefaultFileSystemManager()
 }
 	
 
+
 FileSystemManager & FileSystemManager::GetAnyDefaultFileSystemManager() 
-	throw( FileSystemManagerException )
 {
 
 	if ( _CurrentDefaultFileSystemManager == 0 )
@@ -625,9 +627,10 @@ FileSystemManager & FileSystemManager::GetAnyDefaultFileSystemManager()
 	return *_CurrentDefaultFileSystemManager ;	
 
 }
+	
 					
 	
-void FileSystemManager::RemoveDefaultFileSystemManager() throw()
+void FileSystemManager::RemoveDefaultFileSystemManager()
 {
 
 	if ( _CurrentDefaultFileSystemManager != 0 )
@@ -642,13 +645,15 @@ void FileSystemManager::RemoveDefaultFileSystemManager() throw()
 
 
 
+
 // Protected section.
 
 
-FileSystemManager::FileSystemManager() throw( FileSystemManagerException )
+FileSystemManager::FileSystemManager()
 {
 
 }
+
 
 
 FileSystemManager::~FileSystemManager() throw()

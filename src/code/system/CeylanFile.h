@@ -54,6 +54,7 @@ namespace Ceylan
 		class FileSystemManager ;
 		
 		
+		
 		/**
 		 * File opening openFlags, they can be OR'ed.
 		 *
@@ -92,6 +93,7 @@ namespace Ceylan
 		 * (InputOutputStream) cannot follow this rule.
 		 *
 		 */
+		 
 		 
 
 		class CEYLAN_DLL FileReadLockingFailed: public FileException
@@ -148,6 +150,7 @@ namespace Ceylan
 		
 
 
+
 		/**
 		 * Abstract file mother class, so that programs can always manipulate
 		 * Ceylan::File instances, whereas per-platform specialized classes are
@@ -202,8 +205,10 @@ namespace Ceylan
 				// Allows read operations on the opened file. 
 				static const OpeningFlag Read ;
 				
+				
 				// Allows write operations on the opened file.
 				static const OpeningFlag Write ;
+				
 				
 				
 				/**
@@ -219,15 +224,19 @@ namespace Ceylan
 				// Truncates file to length zero when opening.
 				static const OpeningFlag TruncateFile ;
 				
+				
 				// Seeks to the end of the file before each write operation.
 				static const OpeningFlag AppendFile ;
+				
 				
 								
 				// Opens the file in binary rather than in text mode.
 				static const OpeningFlag Binary ;
 				
+				
 				// Does not open the underlying file object.
 				static const OpeningFlag DoNotOpen ;
+				
 				
 				
 				/*
@@ -262,6 +271,7 @@ namespace Ceylan
 				static const OpeningFlag NonBlocking ;
 				
 				
+				
 				/**
 				 * Opens the file in synchronous mode.
 				 *
@@ -276,6 +286,7 @@ namespace Ceylan
 				 */
 				static const OpeningFlag Synchronous ;
 				
+				
 
 
 				/*
@@ -287,11 +298,16 @@ namespace Ceylan
 				/// Allows its owner to read the created file.
 				static const PermissionFlag OwnerRead ;
 				
+				
+				
 				/// Allows its owner to write to the created file.
 				static const PermissionFlag OwnerWrite ;
 
+
+
 				/// Allows its owner to execute the created file.
 				static const PermissionFlag OwnerExec ;
+				
 				
 				
 				/**
@@ -302,6 +318,7 @@ namespace Ceylan
 				static const PermissionFlag OwnerReadWrite ;
 				
 				
+
 				/**
 				 * Provided for convenience: 
 				 * OwnerReadWriteExec = OwnerReadWrite | OwnerExec.
@@ -331,6 +348,7 @@ namespace Ceylan
 				static const PermissionFlag GroupRead ;
 				
 				
+				
 				/**
 				 * Allows the group to write the created file.
 				 *
@@ -351,6 +369,7 @@ namespace Ceylan
 				static const PermissionFlag GroupExec ;
 				
 				
+				
 				/**
 				 * Provided for convenience: 
 				 * GroupReadWrite = GroupRead | GroupWrite.
@@ -360,6 +379,7 @@ namespace Ceylan
 				 *
 				 */
 				static const PermissionFlag GroupReadWrite ;
+				
 				
 				
 				/**
@@ -383,6 +403,7 @@ namespace Ceylan
 				 */
 
 
+
 				/**
 				 * Allows the others (not owner, not group) to read the 
 				 * created file.
@@ -392,6 +413,7 @@ namespace Ceylan
 				 *
 				 */
 				static const PermissionFlag OthersRead ;
+				
 				
 				
 				/**
@@ -405,6 +427,7 @@ namespace Ceylan
 				static const PermissionFlag OthersWrite ;
 
 
+
 				/**
 				 * Allows the others (not owner, not group) to execute
 				 * the created file.
@@ -416,6 +439,7 @@ namespace Ceylan
 				static const PermissionFlag OthersExec ;
 				
 				
+				
 				/**
 				 * Provided for convenience: 
 				 * OthersReadWrite = OthersRead | OthersWrite.
@@ -425,6 +449,7 @@ namespace Ceylan
 				 *
 				 */
 				static const PermissionFlag OthersReadWrite ;
+				
 				
 				
 				/**
@@ -470,7 +495,8 @@ namespace Ceylan
 				 *
 				 */
 				static bool ExistsAsFileOrSymbolicLink( 
-						const std::string & filename ) ;
+					const std::string & filename ) ;
+
 
 
 				/**
@@ -508,6 +534,7 @@ namespace Ceylan
 				static void Remove( const std::string & filename ) ;
 				
 				
+				
 				/**
 				 * Moves specified file on filesystem.
 				 *
@@ -527,6 +554,7 @@ namespace Ceylan
 						const std::string & targetFilename ) ;
 
 
+
 				/**
 				 * Copies the file on filesystem.
 				 *
@@ -543,6 +571,7 @@ namespace Ceylan
 						const std::string & targetFilename ) ;
 
 
+
 				/**
 				 * Returns the size, in bytes, of the specified file.
 				 *
@@ -554,6 +583,7 @@ namespace Ceylan
 				 *
 				 */
 				static Size GetSize( const std::string & filename ) ;
+
 
 
 				/**
@@ -572,6 +602,7 @@ namespace Ceylan
 					const std::string & filename ) ;
 
 
+
 				/**
 				 * Takes specified <b>rawFilename</b> and tries to transform it 
 				 * so that the result should be a valid name, from the
@@ -584,6 +615,7 @@ namespace Ceylan
 				 */
 				static std::string TransformIntoValidFilename( 
 					const std::string & rawFilename ) ;
+
 
 
 				/**
@@ -609,6 +641,7 @@ namespace Ceylan
 				static void Touch( const std::string & filename ) ;
 
 
+
 				/**
 				 * Tells whether the two specified files have exactly the same
 				 * content (byte-wise).
@@ -631,6 +664,7 @@ namespace Ceylan
 						const std::string & secondFilename ) ;
 
 
+				
 				
 				
 				// Factory section.
@@ -717,6 +751,7 @@ namespace Ceylan
 				static File & Open( const std::string & filename, 
 					OpeningFlag openFlag = OpenToReadBinary ) ;
 
+
 				
 				/**
 				 * Destroys the file reference object, does not remove the
@@ -744,11 +779,13 @@ namespace Ceylan
 				const std::string & getName() const ;
 
 				
+				
 				/**
 				 * Returns true iff this file is open.
 				 *
 				 */
 				virtual bool isOpen() const = 0 ;
+				
 				
 				
 				/**
@@ -760,6 +797,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool close() = 0 ;
+
 
 
 				/**
@@ -775,8 +813,10 @@ namespace Ceylan
 
 
 
+
 				// Locking section.
 				
+				 
 				 
 				/**
 				 * Locks the file for reading.
@@ -789,6 +829,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual void lockForReading() const ;
+
 
 
 				/**
@@ -804,6 +845,7 @@ namespace Ceylan
 				virtual void unlockForReading() const ;
 
 
+
 				/**
 				 * Locks the file for writing.
 				 *
@@ -817,6 +859,7 @@ namespace Ceylan
 				virtual void lockForWriting() const ;
 
 
+
 				/**
 				 * Unlocks the file for writing.
 				 *
@@ -828,6 +871,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual void unlockForWriting() const ;
+
 
 
 
@@ -862,6 +906,7 @@ namespace Ceylan
 				virtual Size size() const ;
 
 
+
 				/**
 				 * Returns the latest change time of this standard file.
 				 *
@@ -870,6 +915,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual time_t getLastChangeTime() const = 0 ;
+
 
 
 				/**
@@ -900,6 +946,7 @@ namespace Ceylan
 		 		virtual Size read( Ceylan::Byte * buffer, Size maxLength ) = 0 ;
 
 
+
 				/**
 				 * Reads exactly exactLength bytes from this file to specified
 				 * buffer.
@@ -926,6 +973,7 @@ namespace Ceylan
 						Size exactLength ) ;
 
 
+
 				/**
 				 * Tells whether there is data available on input.
 				 *
@@ -933,6 +981,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool hasAvailableData() const ;
+				
 				
 				
 				/**
@@ -949,6 +998,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual Size write( const std::string & message ) = 0 ;
+
 
 
 				/**
@@ -981,6 +1031,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual Position tell() = 0 ;
+
 
 
 				/**
@@ -1025,6 +1076,7 @@ namespace Ceylan
 
 
 
+
 				// Interface implementation.
 
 
@@ -1038,6 +1090,7 @@ namespace Ceylan
 				virtual StreamID getStreamID() const = 0 ;
 
 
+
 				/**
 				 * Returns this file descriptor for this file, or -1 if 
 				 * the file descriptor feature is not available.
@@ -1046,12 +1099,14 @@ namespace Ceylan
 				virtual StreamID getInputStreamID() const ;
 
 
+
 				/**
 				 * Returns this file descriptor for this file, or -1 if 
 				 * the file descriptor feature is not available.
 				 *
 				 */
 				virtual StreamID getOutputStreamID() const ;
+
 
 
             	/**
@@ -1070,12 +1125,15 @@ namespace Ceylan
 					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 
+
 				/// Describes buffer size for usual I/O operations.
 				static const Size UsualBufferSize ;
+				
 				
 				/// Describes buffer size for significant I/O operations.
 				static const Size BigBufferSize ;
 				
+
 
 
 			protected:
@@ -1144,8 +1202,10 @@ namespace Ceylan
 				std::string _name ;
 
 
+
 				/// Flags used for opening.
 				OpeningFlag _openFlag ;
+
 
 
 				/// Permissions used for opening.
@@ -1175,7 +1235,9 @@ namespace Ceylan
 
 
 
+
 			private:
+
 
 
 				/**
@@ -1187,6 +1249,7 @@ namespace Ceylan
 				 *
 				 */
 				File( const File & source ) ;
+
 
 
 				/**
@@ -1203,9 +1266,11 @@ namespace Ceylan
 
 		} ;
 		
+		
 	}
 
 }
+
 
 
 #endif // CEYLAN_FILE_H_

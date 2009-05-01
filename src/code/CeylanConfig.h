@@ -138,6 +138,11 @@
 #define CEYLAN_DEBUG_THREADS  0 
 #endif
 
+/* Define to 1 if debug mode for XML is to be enabled */
+#ifndef CEYLAN_DEBUG_XML 
+#define CEYLAN_DEBUG_XML  0 
+#endif
+
 /* Define to 1 if you have the `abs' function. */
 #ifndef CEYLAN_USES_ABS 
 #define CEYLAN_USES_ABS  1 

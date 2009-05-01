@@ -68,6 +68,7 @@ extern "C"
 #endif // CEYLAN_USES_SYS_SELECT_H
 
 }
+   
        
 using std::string ;
 
@@ -77,7 +78,7 @@ using namespace Ceylan ;
 
 
 
-Pipe::PipeException::PipeException( const string & reason ) throw():
+Pipe::PipeException::PipeException( const string & reason ) :
 	SystemException( reason )
 {
 
@@ -94,22 +95,23 @@ Pipe::PipeException::~PipeException() throw()
 // Numerous child classes:	
 			
 
-Pipe::CouldNotCreate::CouldNotCreate( const string & reason ) 
-		throw():
+Pipe::CouldNotCreate::CouldNotCreate( const string & reason ) :
 	Pipe::PipeException( reason )
 {
 
 }
 		
 
-Pipe::ReadFailed::ReadFailed( const string & reason ) throw():
+
+Pipe::ReadFailed::ReadFailed( const string & reason ) :
 	InputStream::ReadFailedException( reason )
 {
 
 }
+	
 				
 	
-Pipe::WriteFailed::WriteFailed( const string & reason ) throw():
+Pipe::WriteFailed::WriteFailed( const string & reason ) :
 	OutputStream::WriteFailedException( reason )
 {
 
@@ -118,7 +120,7 @@ Pipe::WriteFailed::WriteFailed( const string & reason ) throw():
 
 
 
-Pipe::Pipe() throw( Pipe::CouldNotCreate ):
+Pipe::Pipe() :
 	InputOutputStream()
 {
 
@@ -151,7 +153,7 @@ Pipe::Pipe() throw( Pipe::CouldNotCreate ):
 
 
 
-Pipe::Pipe( const Pipe & other ) throw( PipeException ):
+Pipe::Pipe( const Pipe & other ) :
 	Stream(),
 	InputOutputStream()
 {
@@ -202,8 +204,8 @@ Pipe::~Pipe() throw()
 }
 
 
+
 Size Pipe::read( char * buffer, Size maxLength ) 
-	throw( InputStream::ReadFailedException )
 {
 
 	setSelected( false ) ;
@@ -221,8 +223,8 @@ Size Pipe::read( char * buffer, Size maxLength )
 }
 
 
+
 Size Pipe::write( const string & message ) 
-	throw( OutputStream::WriteFailedException )
 {
 
 	return write( message.c_str(), message.size() ) ;
@@ -230,8 +232,8 @@ Size Pipe::write( const string & message )
 }
 
 
+
 Size Pipe::write( const char * buffer, Size maxLength ) 
-	throw( OutputStream::WriteFailedException )
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
@@ -255,7 +257,8 @@ Size Pipe::write( const char * buffer, Size maxLength )
 }
 
 
-bool Pipe::hasAvailableData() const throw()
+
+bool Pipe::hasAvailableData() const
 {
 
 	return System::HasAvailableData( _fd[ 0 ] ) ;
@@ -263,7 +266,8 @@ bool Pipe::hasAvailableData() const throw()
 }
 
 
-void Pipe::clearInput() throw()
+
+void Pipe::clearInput()
 {
 
 	char c ;
@@ -274,7 +278,8 @@ void Pipe::clearInput() throw()
 }
 
 
-bool Pipe::close() throw( Stream::CloseException )
+
+bool Pipe::close()
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
@@ -296,30 +301,42 @@ bool Pipe::close() throw( Stream::CloseException )
 }
 
 
-StreamID Pipe::getInputStreamID() const throw()
+
+StreamID Pipe::getInputStreamID() const
 {
+
 	return getReadFileDescriptor() ;
+	
 }
 
 
-StreamID Pipe::getOutputStreamID() const throw()
+
+StreamID Pipe::getOutputStreamID() const
 {
+
 	return getOutputStreamID() ;
+	
 }
+
 
 
 
 // Protected section.
 
 
-FileDescriptor Pipe::getReadFileDescriptor() const throw()
+FileDescriptor Pipe::getReadFileDescriptor() const
 {
+
 	return _fd[ 0 ] ;
+	
 }
 
 
-FileDescriptor Pipe::getWriteFileDescriptor() const throw()
+
+FileDescriptor Pipe::getWriteFileDescriptor() const
 {
+
 	return _fd[ 1 ] ;
+	
 }
 

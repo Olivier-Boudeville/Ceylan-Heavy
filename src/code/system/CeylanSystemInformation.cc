@@ -53,6 +53,7 @@ using namespace Ceylan::System ;        // for SystemException
 #include "CeylanConfigForNintendoDS.h"  // for FIFO defines, etc.
 #include "CeylanFIFO.h"                 // for FIFO
 
+
 // Needed to know free and used memory:
 extern "C" 
 {
@@ -61,6 +62,7 @@ extern "C"
 #include <malloc.h>
 
 }
+
 
 /// End of static code and data:
 extern u8 __end__[] ;        
@@ -93,7 +95,6 @@ extern "C"
 
 
 UnsignedLongInteger Ceylan::System::getSecondsSinceSystemBoot() 
-	throw( SystemException )
 { 
 	
 #ifdef CEYLAN_USES_SYSINFO
@@ -130,7 +131,6 @@ UnsignedLongInteger Ceylan::System::getSecondsSinceSystemBoot()
 
 
 Ceylan::Uint32 Ceylan::System::getTotalProcessCount() 
-	throw( SystemException )
 { 
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -176,7 +176,6 @@ Ceylan::Uint32 Ceylan::System::getTotalProcessCount()
 
 
 UnsignedLongInteger Ceylan::System::getTotalSystemMemorySize() 
-	throw( SystemException )
 { 
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -223,7 +222,6 @@ UnsignedLongInteger Ceylan::System::getTotalSystemMemorySize()
 
 
 UnsignedLongInteger Ceylan::System::getFreeSystemMemorySize() 
-	throw( SystemException )
 { 
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -231,7 +229,7 @@ UnsignedLongInteger Ceylan::System::getFreeSystemMemorySize()
 	/*
 	 * @see http://forum.gbadev.org/viewtopic.php?t=14438
 	 *
-	 * Thanks Cydrak !
+	 * Thanks Cydrak!
 	 *
 	 */
    struct mallinfo mi = mallinfo() ;
@@ -277,7 +275,6 @@ UnsignedLongInteger Ceylan::System::getFreeSystemMemorySize()
 
 
 UnsignedLongInteger Ceylan::System::getUsedSystemMemorySize() 
-	throw( SystemException )
 { 
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -285,7 +282,7 @@ UnsignedLongInteger Ceylan::System::getUsedSystemMemorySize()
 	/*
 	 * @see http://forum.gbadev.org/viewtopic.php?t=14438
 	 *
-	 * Thanks Cydrak !
+	 * Thanks Cydrak!
 	 *
 	 */
    struct mallinfo mi = mallinfo() ;
@@ -305,7 +302,6 @@ UnsignedLongInteger Ceylan::System::getUsedSystemMemorySize()
 
 
 UnsignedLongInteger Ceylan::System::getTotalSwapMemorySize() 
-	throw( SystemException )
 { 
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -351,7 +347,6 @@ UnsignedLongInteger Ceylan::System::getTotalSwapMemorySize()
 
 
 UnsignedLongInteger Ceylan::System::getFreeSwapMemorySize() 
-	throw( SystemException )
 { 
 	
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -397,7 +392,6 @@ UnsignedLongInteger Ceylan::System::getFreeSwapMemorySize()
 
 
 UnsignedLongInteger Ceylan::System::getTotalHighMemorySize() 
-	throw( SystemException )
 { 
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -443,7 +437,6 @@ UnsignedLongInteger Ceylan::System::getTotalHighMemorySize()
 
 
 UnsignedLongInteger Ceylan::System::getFreeHighMemorySize() 
-	throw( SystemException )
 { 
 	
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -489,7 +482,6 @@ UnsignedLongInteger Ceylan::System::getFreeHighMemorySize()
 
 
 UnsignedLongInteger Ceylan::System::getSharedMemorySize() 
-	throw( SystemException )
 { 
 	
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -536,7 +528,6 @@ UnsignedLongInteger Ceylan::System::getSharedMemorySize()
 
 
 UnsignedLongInteger Ceylan::System::getBuffersMemorySize() 
-	throw( SystemException )
 { 
 	
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -587,7 +578,7 @@ UnsignedLongInteger Ceylan::System::getBuffersMemorySize()
 
 
 
-string Ceylan::System::GetUserName() throw( SystemException )
+string Ceylan::System::GetUserName()
 { 
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -628,7 +619,7 @@ string Ceylan::System::GetUserName() throw( SystemException )
 
 
 
-BatteryStatus Ceylan::System::GetBatteryStatus() throw( SystemException )
+BatteryStatus Ceylan::System::GetBatteryStatus()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -663,7 +654,7 @@ BatteryStatus Ceylan::System::GetBatteryStatus() throw( SystemException )
 
 
 
-DSType Ceylan::System::GetDSType() throw( SystemException )
+DSType Ceylan::System::GetDSType()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -698,12 +689,13 @@ DSType Ceylan::System::GetDSType() throw( SystemException )
 
 
 
+
 // OpenGL-related section.
 
 
 /*
  * OpenGL contexts should never be lost, but it happens with buggy
- * vendor-specific OpenGL implementations (on purpose ?).
+ * vendor-specific OpenGL implementations (on purpose?).
  *
  * On Windows, the OpenGL contexts can be lost when:
  *   - window resizing/changing resolutions, including going to fullscreen
@@ -721,7 +713,7 @@ DSType Ceylan::System::GetDSType() throw( SystemException )
  */
 
 
-bool Ceylan::System::openGLContextsCanBeLost() throw( SystemException )
+bool Ceylan::System::openGLContextsCanBeLost()
 {
 
 	return openGLContextsLostOnResize() 
@@ -732,9 +724,8 @@ bool Ceylan::System::openGLContextsCanBeLost() throw( SystemException )
 
 
 
-bool Ceylan::System::openGLContextsLostOnResize() throw( SystemException )
+bool Ceylan::System::openGLContextsLostOnResize()
 {
-
  
 #if CEYLAN_ARCH_WINDOWS
 
@@ -757,15 +748,12 @@ bool Ceylan::System::openGLContextsLostOnResize() throw( SystemException )
  
 #endif // CEYLAN_ARCH_WINDOWS
 
-
 }
 
 
 
 bool Ceylan::System::openGLContextsLostOnApplicationSwitch() 
-	throw( SystemException )
 {
-
 	 
 #if CEYLAN_ARCH_WINDOWS
 
@@ -788,15 +776,12 @@ bool Ceylan::System::openGLContextsLostOnApplicationSwitch()
  
 #endif // CEYLAN_ARCH_WINDOWS
 
-
 }
 
 
 
 bool Ceylan::System::openGLContextsLostOnColorDepthChange() 
-	throw( SystemException )
 {
-
 
 #if CEYLAN_ARCH_WINDOWS
 
@@ -818,7 +803,6 @@ bool Ceylan::System::openGLContextsLostOnColorDepthChange()
 
  
 #endif // CEYLAN_ARCH_WINDOWS
-
 
 }
 

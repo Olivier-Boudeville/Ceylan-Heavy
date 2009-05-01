@@ -47,12 +47,14 @@ namespace Ceylan
 	{
 
 
+
 		/*
 		 * Each Directory child class is linked to a corresponding filesystem
 		 * manager child class.
 		 *
 		 */
 		class FileSystemManager ;
+		
 		
 
 		/**
@@ -142,6 +144,7 @@ namespace Ceylan
 				static bool Exists( const std::string & directoryPath ) ;
 				
 
+
 				/**
 				 * Removes the directory from disk.
 				 *
@@ -163,6 +166,7 @@ namespace Ceylan
 					bool recursive = false ) ;
 				
 				
+				
 				/**
 				 * Moves specified directory on filesystem.
 				 *
@@ -180,7 +184,8 @@ namespace Ceylan
 				 *
 				 */
 				static void Move( const std::string & sourceDirectoryname,
-						const std::string & targetDirectoryname ) ;
+					const std::string & targetDirectoryname ) ;
+				
 				
 				
 				/**
@@ -198,7 +203,8 @@ namespace Ceylan
 				 *
 				 */
 				static void Copy( const std::string & sourceDirectoryname,
-						const std::string & targetDirectoryname ) ;
+					const std::string & targetDirectoryname ) ;
+
 
 
 				/**
@@ -214,7 +220,8 @@ namespace Ceylan
 				 *
 				 */
 				static time_t GetLastChangeTime( 
-						const std::string & directoryPath ) ;
+					const std::string & directoryPath ) ;
+
 
 
 				/**
@@ -233,7 +240,8 @@ namespace Ceylan
 				 *
 				 */
 				static bool IsAValidDirectoryPath( 
-						const std::string & directoryString ) ;
+					const std::string & directoryString ) ;
+
 
 
 				/**
@@ -252,6 +260,7 @@ namespace Ceylan
 				static void RemoveLeadingSeparator( std::string & path ) ;
 
 			
+			
 				/**
 				 * Tells whether specified path is an absolute path.
 				 *
@@ -267,6 +276,7 @@ namespace Ceylan
 				static bool IsAbsolutePath( const std::string & path ) ;
 
 
+
 				/**
 				 * Returns the current working directory name.
 				 *
@@ -278,6 +288,7 @@ namespace Ceylan
 				 *
 				 */
 				static std::string GetCurrentWorkingDirectoryPath()	;
+
 
 
 				/**
@@ -319,6 +330,7 @@ namespace Ceylan
 				 */
 				static std::list<std::string> SplitPath( 
 					const std::string & path ) ;
+
 
 
 				/**
@@ -365,7 +377,8 @@ namespace Ceylan
 				 *
 				 */
 				static std::string JoinPath( const std::string & firstPath,
-						const std::string & secondPaththrow) ;
+					const std::string & secondPath ) ;
+					
 					
 					
 				/**
@@ -415,6 +428,7 @@ namespace Ceylan
 				static Ceylan::Latin1Char GetSeparator() ;
 
 
+
 				/**
 				 * Returns the directory separator, in the form of a string.
 				 *
@@ -437,6 +451,7 @@ namespace Ceylan
 				// Factory subsection.
 
 
+
 				/**
 				 * Returns a Directory reference on a directory newly created
 				 * on disk.
@@ -455,7 +470,8 @@ namespace Ceylan
 				 *
 				 */
 				static Directory & Create( 
-						const std::string & newDirectoryName ) ;
+					const std::string & newDirectoryName ) ;
+
 
 				
 				/**
@@ -478,7 +494,7 @@ namespace Ceylan
 				 *
 				 */
 				static Directory & Open( 
-						const std::string & directoryName = "" ) ;
+					const std::string & directoryName = "" ) ;
 					
 
 
@@ -503,6 +519,7 @@ namespace Ceylan
 				// Directory content subsection.
 				
 				
+				
 				/**
 				 * Tells whether the directory has a direct subdirectory named 
 				 * <b>subdirectoryName</b>.
@@ -516,7 +533,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool hasDirectory( 
-						const std::string & subdirectoryName ) const = 0 ;
+					const std::string & subdirectoryName ) const = 0 ;
+
 
 
 				/**
@@ -562,8 +580,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual void getSubdirectories( 
-						std::list<std::string> & subDirectories )
-					const = 0 ;
+					std::list<std::string> & subDirectories ) const = 0 ;
+
 
 
 				/**
@@ -578,6 +596,7 @@ namespace Ceylan
 				 */
 				virtual void getFiles( std::list<std::string> & files )
 					const = 0 ;
+
 
 
 				/**
@@ -605,6 +624,7 @@ namespace Ceylan
 					const = 0 ;
 
 
+
 				/**
 				 * Returns the names of all direct entries of any type of 
 				 * this directory (including files and directories), in the
@@ -628,10 +648,9 @@ namespace Ceylan
 				 *
 				 */
 				virtual void getSortedEntries( 
-						std::list<std::string> & subDirectories,
-						std::list<std::string> & files,
-						std::list<std::string> & otherEntries )
-					const = 0 ;
+					std::list<std::string> & subDirectories,
+					std::list<std::string> & files,
+					std::list<std::string> & otherEntries ) const = 0 ;
 
 
 
@@ -655,6 +674,7 @@ namespace Ceylan
 				virtual void goDown( const std::string & subdirectoryName ) ;
 
 
+
 				/**
 				 * Tells whether the reference on the directory is valid.
 				 *
@@ -668,6 +688,7 @@ namespace Ceylan
 				virtual bool isValid() const ;
 
 
+
 				/**
 				 * Returns the path of the directory which is referred to.
 				 *
@@ -675,6 +696,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string & getPath() const ;
+
 
 
 				/**
@@ -686,6 +708,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual void removeLeadingSeparator() ;
+
 
 
 				/**
@@ -700,7 +723,7 @@ namespace Ceylan
 				 *
 				 */
 	            virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high ) const  ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const  ;
 
 
 
@@ -739,6 +762,7 @@ namespace Ceylan
 				std::string _path ;
 
 
+
 				/**
 				 * Returns the filesystem manager that should be used by 
 				 * Directory static methods, which is the default manager.
@@ -752,7 +776,9 @@ namespace Ceylan
 
 
 
+
 			private:
+
 
 
 				/**
@@ -776,10 +802,12 @@ namespace Ceylan
 			
 
 		} ;
+		
 
 	}
 
 }
+
 
 
 #endif // CEYLAN_DIRECTORY_H_

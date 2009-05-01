@@ -33,6 +33,8 @@
 
 
 
+
+
 namespace Ceylan 
 {
 
@@ -61,6 +63,7 @@ namespace Ceylan
 
 			public:
 	
+	
 		
 				/// Basic constructor for InputStream, created not selected.
 				explicit InputOutputStream( bool blocking = true ) ;
@@ -69,6 +72,7 @@ namespace Ceylan
 				/// Basic virtual destructor.
 				virtual ~InputOutputStream() throw() ;
 		
+			
 			
             	/**
             	 * Returns an user-friendly description of the state of
@@ -102,6 +106,7 @@ namespace Ceylan
 				InputOutputStream( const InputOutputStream & source ) ;
 			
 			
+			
 				/**
 				 * Assignment operator made private to ensure that it will 
 				 * be never called.
@@ -116,11 +121,11 @@ namespace Ceylan
 	
 	
 		} ;
+		
 					
 	}
 	
 }
-
 
 
 

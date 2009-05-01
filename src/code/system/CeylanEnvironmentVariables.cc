@@ -44,16 +44,17 @@ using namespace Ceylan::System ;
 
 
 bool Ceylan::System::isEnvironmentVariableSet( const string & variableName )
-	throw()
 {
+
 	return ( ! getEnvironmentVariable( variableName ).empty() ) ;
+	
 }
 
 
-const string Ceylan::System::getEnvironmentVariable( 
-	const string & variableName ) throw( UtilsException )
-{
 
+const string Ceylan::System::getEnvironmentVariable( 
+	const string & variableName )
+{
 
 #ifdef CEYLAN_USES_GETENV
 	
@@ -76,12 +77,14 @@ const string Ceylan::System::getEnvironmentVariable(
 	if ( ::_dupenv_s( &returnedString, &returnedLength, 
 			variableName.c_str() ) != 0 )
 		throw UtilsException( 
-			"Ceylan::System::getEnvironmentVariable failed : "
+			"Ceylan::System::getEnvironmentVariable failed: "
 			+ System::explainError() ) ;
 	if ( returnedString == 0 )
 	{
-		// Not found :
+	
+		// Not found:
 		return "" ;
+		
 	}
 	else
 	{
@@ -94,7 +97,7 @@ const string Ceylan::System::getEnvironmentVariable(
 
 #else // CEYLAN_USES__DUPENV_S
 
-	throw UtilsException( "Ceylan::System::getEnvironmentVariable : "
+	throw UtilsException( "Ceylan::System::getEnvironmentVariable: "
 		"not available on this platform." ) ;
 
 #endif // CEYLAN_USES__DUPENV_S
@@ -104,8 +107,9 @@ const string Ceylan::System::getEnvironmentVariable(
 }
 
 
+
 void Ceylan::System::setEnvironmentVariable( const string & variableName, 
-	const string & variableValue ) throw( UtilsException )
+	const string & variableValue )
 {
 	
 	// setenv could be used as well.
@@ -116,21 +120,21 @@ void Ceylan::System::setEnvironmentVariable( const string & variableName,
 	char * newEnv = new char[ envString.size() + 1 ] ;
 	
 	/*
-	 * Maybe to be preferred for C-style compliance : 
+	 * Maybe to be preferred for C-style compliance: 
 	 * char * newEnv = static_cast<char *>( ::malloc( envString.size() + 1 ) ) ;
 	 *
 	 */
 	
 	envString.copy( newEnv, envString.size() );
 	newEnv[ envString.size() ] = 0 ;
-	// or : ::strcpy( newEnv, envString.c_str() ) ;
+	// or: ::strcpy( newEnv, envString.c_str() ) ;
 	
 	if ( ::putenv( newEnv ) != 0 )
 	{
 		// Maybe newEnv should be freed.
-		throw Ceylan::UtilsException( "Ceylan::SetEnvironmentVariable : "
+		throw Ceylan::UtilsException( "Ceylan::SetEnvironmentVariable: "
 			"unable to set the value of environment variable [" 
-			+ variableName + "] to [" + variableValue + "] : "
+			+ variableName + "] to [" + variableValue + "]: "
 			+ System::explainError() ) ;
 	}
 	
@@ -149,16 +153,16 @@ void Ceylan::System::setEnvironmentVariable( const string & variableName,
 
 	if ( ::_putenv_s( variableName.c_str(), variableValue.c_str() ) != 0 )
 	{
-		throw Ceylan::UtilsException( "Ceylan::SetEnvironmentVariable : "
+		throw Ceylan::UtilsException( "Ceylan::SetEnvironmentVariable: "
 			"unable to set the value of environment variable [" 
-			+ variableName + "] to [" + variableValue + "] : "
+			+ variableName + "] to [" + variableValue + "]: "
 			+ System::explainError() ) ;
 	}
 	
 #else // CEYLAN_USES__PUTENV_S
 
 
-	throw UtilsException( "Ceylan::System::setEnvironmentVariable : "
+	throw UtilsException( "Ceylan::System::setEnvironmentVariable: "
 		"not available on this platform." ) ;
 
 #endif // CEYLAN_USES__PUTENV_S
@@ -168,8 +172,8 @@ void Ceylan::System::setEnvironmentVariable( const string & variableName,
 }	
 
 
+
 void Ceylan::System::unsetEnvironmentVariable( const string & variableName )
-	throw( UtilsException )
 {
 
 #ifdef CEYLAN_USES_UNSETENV

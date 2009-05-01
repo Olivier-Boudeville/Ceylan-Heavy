@@ -34,11 +34,14 @@ using namespace Ceylan::URI ;
 
 using std::string ;
 
+
+
 const std::string Ceylan::URI::ProtocolSeparator( "://" ) ;
 
 
 
-const string Ceylan::URI::getProtocolName( const string & fullURI ) throw()
+
+const string Ceylan::URI::getProtocolName( const string & fullURI )
 {
 
 	return getProtocolName( fullURI, ProtocolSeparator ) ;
@@ -46,15 +49,16 @@ const string Ceylan::URI::getProtocolName( const string & fullURI ) throw()
 }
 
 
+
 const string Ceylan::URI::getProtocolName( const string & fullURI,
-	const string & protocolSeparator ) throw()
+	const string & protocolSeparator )
 {
 
 	Ceylan::StringSize endOfPrefix = fullURI.find( protocolSeparator ) ;
 
 	if ( endOfPrefix == string::npos )
 	{
-			// No protocol separator found (such as ://), returns empty string
+			// No protocol separator found (such as '://'), returns empty string
 			return "" ;
 	}
 
@@ -63,7 +67,8 @@ const string Ceylan::URI::getProtocolName( const string & fullURI,
 }
 
 
-const string Ceylan::URI::getEmbeddedURI( const string & fullURI ) throw()
+
+const string Ceylan::URI::getEmbeddedURI( const string & fullURI )
 {
 
 	return getEmbeddedURI( fullURI, ProtocolSeparator ) ;
@@ -71,8 +76,9 @@ const string Ceylan::URI::getEmbeddedURI( const string & fullURI ) throw()
 }	
 
 
+
 const string Ceylan::URI::getEmbeddedURI( const string & fullURI,
-	const string & protocolSeparator ) throw()
+	const string & protocolSeparator )
 {
 
 	Ceylan::StringSize endOfPrefix = fullURI.find( protocolSeparator ) ;
@@ -80,8 +86,8 @@ const string Ceylan::URI::getEmbeddedURI( const string & fullURI,
 	if ( endOfPrefix == string::npos )
 	{
 			/*
-			 * No protocol separator found (such as ://), return
-			 * whole string :
+			 * No protocol separator found (such as '://'), return
+			 * whole string:
 			 *
 			 */
 			return fullURI ;
@@ -90,3 +96,4 @@ const string Ceylan::URI::getEmbeddedURI( const string & fullURI,
 	return fullURI.substr( endOfPrefix + protocolSeparator.size() ) ;
 
 }
+

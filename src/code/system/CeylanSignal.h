@@ -48,8 +48,10 @@ namespace Ceylan
 {
 
 
+
 	namespace System
 	{
+	
 	
 	
 		namespace Signal 
@@ -61,8 +63,7 @@ namespace Ceylan
 			{ 
 				public: 
 				
-					explicit SignalException( const std::string & reason )
-						throw() ;
+					explicit SignalException( const std::string & reason ) ;
 					
 					virtual ~SignalException() throw() ; 
 						
@@ -70,12 +71,15 @@ namespace Ceylan
 	
 	
 	
+	
 			/// SignalHandler is a pointer to function.
 			typedef void (*SignalHandler)(int) ;
 		
 		
+		
 			/// Pre-defined handler which ignores signals.
 			extern CEYLAN_DLL const SignalHandler IgnoringHandler ;
+		
 		
 		
 			/**
@@ -88,8 +92,10 @@ namespace Ceylan
 		
 		
 		
+		
 			/// Signal numbers, as described in the original POSIX.1 standard.
 			typedef Ceylan::Uint16 SignalNumber ;
+		
 		
 		
 			/**
@@ -102,6 +108,7 @@ namespace Ceylan
 			extern CEYLAN_DLL const SignalNumber HangUp ;
 	
 	
+	
 			/**
 			 * Interrupt from keyboard (SIGINT).
 			 *
@@ -109,6 +116,7 @@ namespace Ceylan
 			 *
 			 */
 			extern CEYLAN_DLL const SignalNumber InterruptFromKeyboard ;
+	
 	
 	
 			/**
@@ -120,6 +128,7 @@ namespace Ceylan
 			extern CEYLAN_DLL const SignalNumber QuitFromKeyboard ;
 	
 	
+	
 			/**
 			 * Illegal Instruction (SIGILL).
 			 *
@@ -127,6 +136,7 @@ namespace Ceylan
 			 *
 			 */
 			extern CEYLAN_DLL const SignalNumber IllegalInstruction ;
+	
 	
 	
 			/**
@@ -138,6 +148,7 @@ namespace Ceylan
 			extern CEYLAN_DLL const SignalNumber Abort ;
 	
 	
+	
 			/**
 			 * Floating point exception (SIGFPE).
 			 *
@@ -145,6 +156,7 @@ namespace Ceylan
 			 *
 			 */
 			extern CEYLAN_DLL const SignalNumber FloatingPointException ;
+	
 	
 	
 			/**
@@ -158,6 +170,7 @@ namespace Ceylan
 			extern CEYLAN_DLL const SignalNumber Kill ;
 	
 	
+	
 			/**
 			 * Invalid memory reference (SIGSEGV).
 			 *
@@ -165,6 +178,7 @@ namespace Ceylan
 			 *
 			 */
 			extern CEYLAN_DLL const SignalNumber InvalidMemoryReference ;
+	
 	
 	
 			/**
@@ -176,6 +190,7 @@ namespace Ceylan
 			extern CEYLAN_DLL const SignalNumber BrokenPipe ;
 	
 	
+	
 			/**
 			 * Timer signal from alarm (SIGALRM).
 			 *
@@ -183,6 +198,7 @@ namespace Ceylan
 			 *
 			 */
 			extern CEYLAN_DLL const SignalNumber TimerSignal ;
+	
 	
 	
 			/**
@@ -194,6 +210,7 @@ namespace Ceylan
 			extern CEYLAN_DLL const SignalNumber Termination ;
 	
 	
+	
 			/**
 			 * First user-defined signal (SIGUSR1).
 			 *
@@ -201,6 +218,7 @@ namespace Ceylan
 			 *
 			 */
 			extern CEYLAN_DLL const SignalNumber FirstUserDefined ;
+	
 	
 	
 			/**
@@ -212,6 +230,7 @@ namespace Ceylan
 			extern CEYLAN_DLL const SignalNumber SecondUserDefined ;
 	
 	
+	
 			/**
 			 * Child stopped or terminated (SIGCHLD).
 			 *
@@ -221,6 +240,7 @@ namespace Ceylan
 			extern CEYLAN_DLL const SignalNumber ChildEnded ;
 	
 	
+	
 			/**
 			 * Continue if stopped (SIGCONT).
 			 *
@@ -228,6 +248,7 @@ namespace Ceylan
 			 *
 			 */
 			extern CEYLAN_DLL const SignalNumber Continue ;
+	
 	
 	
 			/**
@@ -241,6 +262,7 @@ namespace Ceylan
 			extern CEYLAN_DLL const SignalNumber Stop ;
 	
 	
+	
 			/**
 			 * Stop typed at tty (SIGTSTP).
 			 *
@@ -250,6 +272,7 @@ namespace Ceylan
 			extern CEYLAN_DLL const SignalNumber TtyStopped ;
 	
 	
+	
 			/**
 			 * tty input for background process (SIGTTIN).
 			 *
@@ -257,6 +280,7 @@ namespace Ceylan
 			 *
 			 */
 			extern CEYLAN_DLL const SignalNumber TtyInput ;
+	
 	
 	
 			/**
@@ -276,9 +300,9 @@ namespace Ceylan
 			 * if signal support is not available.
 			 *
 			 */
-			CEYLAN_DLL void setToDefaultHandler( SignalNumber signalNumber )
-				throw( SignalException ) ;
+			CEYLAN_DLL void setToDefaultHandler( SignalNumber signalNumber ) ;
 	
+
 
 			/**
 			 * Ignores specified signal from now on.
@@ -287,9 +311,9 @@ namespace Ceylan
 			 * if signal support is not available.
 			 *
 			 */
-			CEYLAN_DLL void ignore( SignalNumber signalNumber ) 
-				throw( SignalException ) ;
+			CEYLAN_DLL void ignore( SignalNumber signalNumber ) ;
 
+	
 	
 			/**
 			 * Sets a new handler for the specified signal type.
@@ -299,19 +323,20 @@ namespace Ceylan
 			 *
 			 */
 			CEYLAN_DLL void setHandler( SignalNumber signalNumber, 
-				SignalHandler newHandler ) throw( SignalException ) ;
+				SignalHandler newHandler ) ;
+	
 	
 	
 			/**
-			 * Raises the specified signal : sends the signal to the current
+			 * Raises the specified signal: sends the signal to the current
 			 * process.
 			 *
 			 * @throw SignalException iff the operation failed, including
 			 * if signal support is not available.
 			 *
 			 */
-			CEYLAN_DLL void raise( SignalNumber signalNumber ) 
-				throw( SignalException ) ;
+			CEYLAN_DLL void raise( SignalNumber signalNumber ) ;
+
 
 	
             /**
@@ -320,11 +345,10 @@ namespace Ceylan
 			 * @param signal the signal to describe.
 			 *
 			 */
-			CEYLAN_DLL const std::string toString( SignalNumber signalNumber ) 
-				throw() ;
+			CEYLAN_DLL const std::string toString( SignalNumber signalNumber ) ;
 
 
-	
+
 		}
 		
 	}
@@ -334,3 +358,4 @@ namespace Ceylan
 	
 	
 #endif // CEYLAN_SIGNAL_H_
+

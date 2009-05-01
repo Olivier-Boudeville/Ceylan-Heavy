@@ -45,12 +45,12 @@ using std::list ;
 
 
 
-XMLVisitorException::XMLVisitorException( 
-		const std::string & reason ) throw() : 
+XMLVisitorException::XMLVisitorException( const std::string & reason ) : 
 	XMLException( reason )
 {
 
 }
+
 
 
 XMLVisitorException::~XMLVisitorException() throw()
@@ -62,12 +62,13 @@ XMLVisitorException::~XMLVisitorException() throw()
 
 
 
+
 // XMLVisitor section.
 
 
 
 
-XMLVisitor::XMLVisitor() throw()
+XMLVisitor::XMLVisitor()
 {
 
 }
@@ -79,13 +80,13 @@ XMLVisitor::~XMLVisitor() throw()
 }
 
 
-const string XMLVisitor::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+const string XMLVisitor::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	return "XML visitor" ;
 
 }
+
 
 
 
@@ -96,11 +97,13 @@ const string XMLVisitor::toString( Ceylan::VerbosityLevels level )
 string XMLSavingVisitor::OffsetForMarkup = "\t" ;
 
 
-XMLSavingVisitor::XMLSavingVisitor( System::OutputStream & output ) throw():
+
+XMLSavingVisitor::XMLSavingVisitor( System::OutputStream & output ) :
 	_output( &output )
 {
 
 }
+
 
 
 XMLSavingVisitor::~XMLSavingVisitor() throw()
@@ -111,7 +114,8 @@ XMLSavingVisitor::~XMLSavingVisitor() throw()
 }
 
 
-void XMLSavingVisitor::incrementHeight() throw()
+
+void XMLSavingVisitor::incrementHeight()
 {
 
 	//Log::LogPlug::trace( "XMLSavingVisitor::incrementHeight" ) ;
@@ -125,13 +129,17 @@ void XMLSavingVisitor::incrementHeight() throw()
 }
 
 
-Ceylan::Height XMLSavingVisitor::getHeight() const throw()
+
+Ceylan::Height XMLSavingVisitor::getHeight() const
 {
+
 	return static_cast<Ceylan::Height>( _markupsToClose.size() ) ;
+	
 }
 
 
-void XMLSavingVisitor::decrementHeight() throw()
+
+void XMLSavingVisitor::decrementHeight()
 {
 	
 	//Log::LogPlug::trace( "XMLSavingVisitor::decrementHeight" ) ;
@@ -149,12 +157,11 @@ void XMLSavingVisitor::decrementHeight() throw()
 	
 	_output->write( popped + EndOfLine ) ;
 
-	
 }
 
 
+
 void XMLSavingVisitor::visit( XMLMarkup & xmlMarkup ) 
-	throw( VisitException )
 {
 	
 	/*
@@ -173,13 +180,12 @@ void XMLSavingVisitor::visit( XMLMarkup & xmlMarkup )
 	xmlMarkup.saveTo( *_output ) ;
 	
 	_output->writeUint8( EndOfLine ) ;
-	
 		
 }	
 
 
+
 void XMLSavingVisitor::visit( XMLText & xmlText ) 
-	throw( VisitException )
 {
 	
 	/*
@@ -198,13 +204,12 @@ void XMLSavingVisitor::visit( XMLText & xmlText )
 	xmlText.saveTo( *_output ) ;
 	
 	_output->writeUint8( EndOfLine ) ;
-	
 		
 }	
 
+		
 				
-const string XMLSavingVisitor::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+const string XMLSavingVisitor::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string res = "XML saving visitor, " ;
@@ -225,8 +230,7 @@ const string XMLSavingVisitor::toString( Ceylan::VerbosityLevels level )
 	}
 	else
 	{
-		res += "has " 
-			+ Ceylan::toString( 
+		res += "has " + Ceylan::toString( 
 				static_cast<Ceylan::Uint32>( _markupsToClose.size() ) )
 			+ " element(s)" ;
 	}
@@ -237,15 +241,17 @@ const string XMLSavingVisitor::toString( Ceylan::VerbosityLevels level )
 
 
 
+
+
 // XMLSearchingVisitor section.
 
 
-XMLSearchingVisitor::XMLSearchingVisitor( 
-		MarkupName & searchedMarkup ) throw():
+XMLSearchingVisitor::XMLSearchingVisitor( MarkupName & searchedMarkup ) :
 	_searchedMarkup( searchedMarkup )
 {
 
 }
+
 
 
 XMLSearchingVisitor::~XMLSearchingVisitor() throw()
@@ -256,8 +262,8 @@ XMLSearchingVisitor::~XMLSearchingVisitor() throw()
 }
 
 
+
 list<XMLMarkup *> & XMLSearchingVisitor::getMatchingMarkups() 
-	throw( VisitException )
 {
 
 	return _matchingNodes ;
@@ -265,8 +271,8 @@ list<XMLMarkup *> & XMLSearchingVisitor::getMatchingMarkups()
 }
 
 
+
 void XMLSearchingVisitor::visit( XMLMarkup & xmlMarkup ) 
-	throw( VisitException )
 {
 
 	if ( xmlMarkup.getMarkupName() == _searchedMarkup )
@@ -274,20 +280,22 @@ void XMLSearchingVisitor::visit( XMLMarkup & xmlMarkup )
 
 }
 
+
 	
-void XMLSearchingVisitor::visit( XMLText & xmlText ) 
-	throw( VisitException )
+void XMLSearchingVisitor::visit( XMLText & xmlText ) 	
 {
 
 	// Nothing to do for texts.
 	
 }
 	
+
 	
 const string XMLSearchingVisitor::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+	const
 {
 
 	return "XMLSearchingVisitor" ;
 	
 }
+

@@ -45,8 +45,8 @@ using namespace Ceylan::System ;
 using namespace Ceylan::Log ;
 
 
-AnonymousInputStream::AnonymousInputStream( FileDescriptor fd )
-		throw( StreamException ):
+
+AnonymousInputStream::AnonymousInputStream( FileDescriptor fd ) :
 	_fdes( fd )
 {
 
@@ -54,12 +54,13 @@ AnonymousInputStream::AnonymousInputStream( FileDescriptor fd )
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
-	throw StreamException( "AnonymousInputStream constructor : "
+	throw StreamException( "AnonymousInputStream constructor: "
 		"file descriptor feature not available." ) ;
 		
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
 
 }
+
 
 
 AnonymousInputStream::~AnonymousInputStream() throw()
@@ -68,19 +69,22 @@ AnonymousInputStream::~AnonymousInputStream() throw()
 }
 
 
+
 StreamID AnonymousInputStream::getInputStreamID() const
-	throw( InputStreamException )
 {
 
 	return static_cast<StreamID>( _fdes ) ;
+	
 }
 
 
+
 const std::string AnonymousInputStream::toString( 
-	Ceylan::VerbosityLevels level ) const throw()
+	Ceylan::VerbosityLevels level ) const
 {
 
 	return "AnonymousInputStream whose file descriptor is "
 		+ Ceylan::toString( _fdes ) ;
 		
 }
+

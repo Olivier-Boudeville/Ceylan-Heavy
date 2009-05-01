@@ -36,6 +36,7 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
+
 // Not available in their C++ form:
 extern "C"
 {
@@ -57,13 +58,14 @@ extern "C"
 #include <unistd.h>            // for stat
 #endif // CEYLAN_USES_UNISTD_H
 
-
 }
+
 
 
 #include <cerrno>    // for EINTR, ENOLCK, etc.
 #include <cstdio>    // for unlink, ftell, etc.
 #include <fstream>   // for this class
+
 
 
 /*
@@ -75,6 +77,7 @@ extern "C"
  * one.
  * 
  */
+
 
 
 using std::fstream ;
@@ -91,6 +94,7 @@ using namespace Ceylan::System ;
 using namespace Ceylan::Log ;
 
 
+
 /*
  * We will be using here either file-descriptor based file I/O, or the one
  * offered by the C++ Standard Library (fstream and al).
@@ -105,6 +109,7 @@ using namespace Ceylan::Log ;
 	#define CEYLAN_USES_FILE_DESCRIPTORS 0
 #endif // CEYLAN_USES_FILE_DESCRIPTORS 
 */
+
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
@@ -134,17 +139,19 @@ struct StandardFile::SystemSpecificPermissionFlag
 
 
 
-StandardFileException::StandardFileException( const string & reason ) throw():
+StandardFileException::StandardFileException( const string & reason ) :
 	FileException( reason )
 {
 
 }
 
 
+
 StandardFileException::~StandardFileException() throw()
 {
 
 }
+	
 	
 	
 	
@@ -183,7 +190,7 @@ StandardFile::~StandardFile() throw()
 // Implementation of instance methods inherited from File.	
 	
 
-bool StandardFile::isOpen() const throw()
+bool StandardFile::isOpen() const
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -209,7 +216,7 @@ bool StandardFile::isOpen() const throw()
 
 
 
-bool StandardFile::close() throw( Stream::CloseException )
+bool StandardFile::close()
 {
 
 	if ( ! isOpen() )
@@ -259,7 +266,7 @@ bool StandardFile::close() throw( Stream::CloseException )
 
 
 
-void StandardFile::saveAs( const string & newName ) throw( FileException )
+void StandardFile::saveAs( const string & newName )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -308,7 +315,7 @@ void StandardFile::saveAs( const string & newName ) throw( FileException )
 
 
 
-void StandardFile::lockForReading() const throw( FileReadLockingFailed )
+void StandardFile::lockForReading() const
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -368,7 +375,7 @@ void StandardFile::lockForReading() const throw( FileReadLockingFailed )
 
 
 
-void StandardFile::unlockForReading() const throw( FileReadUnlockingFailed )
+void StandardFile::unlockForReading() const
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -422,7 +429,7 @@ void StandardFile::unlockForReading() const throw( FileReadUnlockingFailed )
 
 
 
-void StandardFile::lockForWriting() const throw( FileWriteLockingFailed )
+void StandardFile::lockForWriting() const
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -476,7 +483,7 @@ void StandardFile::lockForWriting() const throw( FileWriteLockingFailed )
 
 
 
-void StandardFile::unlockForWriting() const throw( FileWriteUnlockingFailed )
+void StandardFile::unlockForWriting() const
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -531,7 +538,7 @@ void StandardFile::unlockForWriting() const throw( FileWriteUnlockingFailed )
 
 
 
-bool StandardFile::isLocked() const throw()
+bool StandardFile::isLocked() const
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -578,7 +585,6 @@ bool StandardFile::isLocked() const throw()
 
 
 time_t StandardFile::getLastChangeTime() const 
-	throw( FileLastChangeTimeRequestFailed )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -614,7 +620,6 @@ time_t StandardFile::getLastChangeTime() const
 
 
 Size StandardFile::read( Ceylan::Byte * buffer, Size maxLength ) 
-	throw( InputStream::ReadFailedException )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -640,8 +645,7 @@ Size StandardFile::read( Ceylan::Byte * buffer, Size maxLength )
 		throw InputStream::ReadFailedException( 
 			"StandardFile::read failed for file '" + _name + "': " 
 			+ e.toString() ) ;
-	}
-		
+	}		
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS	
 
@@ -695,7 +699,6 @@ Size StandardFile::read( Ceylan::Byte * buffer, Size maxLength )
 
 
 Size StandardFile::write( const string & message ) 
-	throw( OutputStream::WriteFailedException )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -736,8 +739,7 @@ Size StandardFile::write( const string & message )
 
 
 
-
-Position StandardFile::tell() throw( FileException )
+Position StandardFile::tell()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -785,7 +787,7 @@ Position StandardFile::tell() throw( FileException )
 
 
 
-void StandardFile::seek( Position targetPosition ) throw( FileException )
+void StandardFile::seek( Position targetPosition )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -824,7 +826,6 @@ void StandardFile::seek( Position targetPosition ) throw( FileException )
 
 
 Size StandardFile::write( const Ceylan::Byte * buffer, Size maxLength ) 
-	throw( OutputStream::WriteFailedException )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -919,11 +920,11 @@ Size StandardFile::write( const Ceylan::Byte * buffer, Size maxLength )
 
 
 
+
 // StandardFile-specific methods.
 
 
 void StandardFile::serialize( FileDescriptor fd ) const 
-	throw( StandardFileException )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -952,7 +953,6 @@ void StandardFile::serialize( FileDescriptor fd ) const
 
 
 FileDescriptor StandardFile::getFileDescriptor() const 
-	throw( StandardFileException )
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
@@ -972,7 +972,7 @@ FileDescriptor StandardFile::getFileDescriptor() const
 
 
 
-StreamID StandardFile::getStreamID() const throw()
+StreamID StandardFile::getStreamID() const
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
@@ -990,8 +990,7 @@ StreamID StandardFile::getStreamID() const throw()
 
 
 
-const std::string StandardFile::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+const std::string StandardFile::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string res = "Standard file object for filename '" + _name + "'" ;
@@ -1023,7 +1022,7 @@ const std::string StandardFile::toString( Ceylan::VerbosityLevels level )
 
 
 
-string StandardFile::InterpretState( const ifstream & inputFile ) throw()
+string StandardFile::InterpretState( const ifstream & inputFile )
 {
 
 	if ( inputFile.good() )
@@ -1046,7 +1045,7 @@ string StandardFile::InterpretState( const ifstream & inputFile ) throw()
 
 
 
-string StandardFile::InterpretState( const fstream & file ) throw()
+string StandardFile::InterpretState( const fstream & file )
 {
 
 	if ( file.good() )
@@ -1070,8 +1069,7 @@ string StandardFile::InterpretState( const fstream & file ) throw()
 
 
 StandardFile & StandardFile::Create( const std::string & filename, 
-		OpeningFlag createFlag,	PermissionFlag permissionFlag ) 
-	throw( FileException )
+	OpeningFlag createFlag,	PermissionFlag permissionFlag ) 
 {
 
 	// Ensures creation is requested:
@@ -1083,7 +1081,7 @@ StandardFile & StandardFile::Create( const std::string & filename,
 
 					
 StandardFile & StandardFile::Open( const std::string & filename, 
-	OpeningFlag openFlag ) throw( FileException )
+	OpeningFlag openFlag )
 {
 
 	// Ensures creation is not requested:
@@ -1099,7 +1097,7 @@ StandardFile & StandardFile::Open( const std::string & filename,
 
 
 StandardFile::StandardFile( const string & name, OpeningFlag openFlag, 
-		PermissionFlag permissions ) throw( FileException ):
+		PermissionFlag permissions ) :
 	File( name, openFlag, permissions )
 {
 
@@ -1126,8 +1124,7 @@ StandardFile::StandardFile( const string & name, OpeningFlag openFlag,
 // Implementations of inherited methods.
 
 
-FileSystemManager & StandardFile::getCorrespondingFileSystemManager()
-	const throw( FileDelegatingException )
+FileSystemManager & StandardFile::getCorrespondingFileSystemManager() const
 {
 
 	try
@@ -1149,7 +1146,7 @@ FileSystemManager & StandardFile::getCorrespondingFileSystemManager()
 	
 	
 	
-void StandardFile::reopen() throw( FileOpeningFailed )
+void StandardFile::reopen()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -1220,7 +1217,7 @@ void StandardFile::reopen() throw( FileOpeningFailed )
 
 
 
-string StandardFile::interpretState() const throw()
+string StandardFile::interpretState() const
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
@@ -1237,10 +1234,11 @@ string StandardFile::interpretState() const throw()
 
 
 
+
 // Conversion helper subsection.
 
+
 int StandardFile::ConvertToFileDescriptorOpenFlag( OpeningFlag openFlag ) 
-	throw( ConversionFailed )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -1318,9 +1316,8 @@ int StandardFile::ConvertToFileDescriptorOpenFlag( OpeningFlag openFlag )
 
 					
 void StandardFile::ConvertToFileDescriptorPermissionFlag( 
-		PermissionFlag permissionFlag, 
-		struct SystemSpecificPermissionFlag & returned ) 
-	throw( ConversionFailed )
+	PermissionFlag permissionFlag, 
+	struct SystemSpecificPermissionFlag & returned ) 
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -1387,8 +1384,7 @@ void StandardFile::ConvertToFileDescriptorPermissionFlag(
 
 					
 ios_base::openmode StandardFile::ConvertToStreamOpenFlag( 
-		OpeningFlag openFlag, const std::string & filename ) 
-	throw( ConversionFailed )
+	OpeningFlag openFlag, const std::string & filename ) 
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -1474,7 +1470,7 @@ ios_base::openmode StandardFile::ConvertToStreamOpenFlag(
 	
 	
 void StandardFile::FromFDtoFD( FileDescriptor from, FileDescriptor to,
-	Size length ) throw( StandardFileException )
+	Size length )
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS

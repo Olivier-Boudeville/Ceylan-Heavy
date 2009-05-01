@@ -28,11 +28,14 @@
 #define CEYLAN_UNIFORM_RESOURCE_IDENTIFIER_H_
 
 
+
 #include <string>
+
 
 
 namespace Ceylan
 {
+
 
 
 	/**
@@ -47,11 +50,12 @@ namespace Ceylan
 	{
 	
 	
+	
 		/**
 		 * The protocol separator, between the protocol name and the
 		 * embedded URI.
 		 *
-		 * Example : the protocol separator in
+		 * Example: the protocol separator in
 		 * 'http://osdl.sourceforge.net' is '://'. It is the usual one.
 		 *
 		 */
@@ -64,13 +68,14 @@ namespace Ceylan
 		 *
 		 * @note returns an empty string if no protocol name is found.
 		 *
-		 * @example : 'http://osdl.sourceforge.net' returns 'http'
+		 * @example: 'http://osdl.sourceforge.net' returns 'http'
 		 *
 		 * @see getEmbeddedURI, ProtocolSeparator
 		 *
 		 */
 		CEYLAN_DLL const std::string getProtocolName( 
-			const std::string & fullURI ) throw() ;  
+			const std::string & fullURI ) ;  
+
 
 		 
 		/**
@@ -78,15 +83,14 @@ namespace Ceylan
 		 *
 		 * @note returns an empty string if no protocol name is found.
 		 *
-		 * @example : 'http://osdl.sourceforge.net' returns 'http'
+		 * @example: 'http://osdl.sourceforge.net' returns 'http'
 		 *
 		 * @see getEmbeddedURI, ProtocolSeparator
 		 *
 		 */
 		CEYLAN_DLL const std::string getProtocolName( 
-				const std::string & fullURI, 
-		 		const std::string & protocolSeparator ) 
-			throw() ;  
+			const std::string & fullURI, 
+		 	const std::string & protocolSeparator ) ;  
 
 
 
@@ -94,34 +98,38 @@ namespace Ceylan
 		 * Returns the URI after having removed the protocol informations, 
 		 * i.e. the protocol name and the protocol separator.
 		 *
-		 * @example : 'http://ceylan.sourceforge.net' returns 
+		 * @example: 'http://ceylan.sourceforge.net' returns 
 		 *'ceylan.sourceforge.net'
 		 *
 		 * @see getProtocolName, ProtocolSeparator
 		 *
 		 */
 		CEYLAN_DLL const std::string getEmbeddedURI( 
-			const std::string & fullURI ) throw() ;  
+			const std::string & fullURI ) ;  
+	
 	
 	
 		/**
 		 * Returns the URI after having removed the protocol informations, 
 		 * i.e. the protocol name and the protocol separator.
 		 *
-		 * @example : 'http://ceylan.sourceforge.net' returns 
+		 * @example: 'http://ceylan.sourceforge.net' returns 
 		 *'ceylan.sourceforge.net'
 		 *
 		 * @see getProtocolName, ProtocolSeparator
 		 *
 		 */
 		CEYLAN_DLL const std::string getEmbeddedURI( 
-				const std::string & fullURI,
-		 		const std::string & protocolSeparator ) 
-			throw() ;  
+			const std::string & fullURI,
+		 	const std::string & protocolSeparator ) ;  
+			
 	
 	}
+	
 	
 }	
 
 
+
 #endif // CEYLAN_UNIFORM_RESOURCE_IDENTIFIER_H_
+

@@ -36,6 +36,7 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
+
 extern "C"
 {
 
@@ -99,10 +100,11 @@ extern "C"
  *
  */
 
-// Native 64-bit support ? 
+// Native 64-bit support? 
 #ifndef CEYLAN_FAKES_64_BIT_TYPE
 
-// Yes ? This macro is enough:
+
+// Yes? This macro is enough:
 
 #define ceylan_bswap_64(x) \
 	 ((((x) & 0xff00000000000000ull) >> 56)      \
@@ -120,6 +122,7 @@ extern "C"
 
 
 
+
 namespace Ceylan
 {
 
@@ -132,7 +135,7 @@ namespace Ceylan
 	 * Ceylan::Sint64. 
 	 *
 	 */
-	inline void byteswap( Ceylan::Uint64 & toSwap ) throw()
+	inline void byteswap( Ceylan::Uint64 & toSwap )
 	{
 
 #ifdef CEYLAN_FAKES_64_BIT_TYPE
@@ -174,6 +177,7 @@ namespace Ceylan
 
 
 #endif // CEYLAN_USES_BYTESWAP_H
+
 
 
 #endif // CEYLAN_ENDIANNESS_H_

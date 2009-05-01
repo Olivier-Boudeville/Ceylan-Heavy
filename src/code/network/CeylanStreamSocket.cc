@@ -389,7 +389,7 @@ void StreamSocket::setBlocking( bool newStatus )
 	if ( getOriginalFileDescriptor() == 0 )
 		throw NonBlockingNotSupportedException( 
 			"StreamSocket::setBlocking: null descriptor, "
-				"socket not created yet?" ) ;
+			"socket not created yet?" ) ;
 	
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 
@@ -397,8 +397,7 @@ void StreamSocket::setBlocking( bool newStatus )
 #if CEYLAN_USES_FCNTL_FOR_NONBLOCKING_SOCKETS
 
 	// Yes, retrieve current flags:
-	int currentFDState =::fcntl( getOriginalFileDescriptor(),
-		F_GETFL, 0 ) ;
+	int currentFDState =::fcntl( getOriginalFileDescriptor(), F_GETFL, 0 ) ;
 
 	if ( currentFDState < 0 )
 		throw NonBlockingNotSupportedException( 

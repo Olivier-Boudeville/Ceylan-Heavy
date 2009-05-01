@@ -47,6 +47,7 @@
 
 
 
+
 // Not available in their C++ form:
 extern "C"
 {
@@ -61,6 +62,7 @@ extern "C"
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
+
 
 
 using std::string ;
@@ -95,8 +97,7 @@ const Ceylan::Latin1Char LibfatFileSystemManager::Separator = '/'  ;
  */
 				
 
-bool LibfatFileSystemManager::existsAsEntry( const string & entryPath ) 
-	const throw( EntryLookupFailed )
+bool LibfatFileSystemManager::existsAsEntry( const string & entryPath ) const
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -122,14 +123,12 @@ bool LibfatFileSystemManager::existsAsEntry( const string & entryPath )
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
-
 }
 
 
 
 void LibfatFileSystemManager::createSymbolicLink( 
 	const string & linkTarget, const string & linkName )
-	throw( SymlinkFailed )
 {
 
 	throw SymlinkFailed( "LibfatFileSystemManager::createSymbolicLink: "
@@ -140,7 +139,7 @@ void LibfatFileSystemManager::createSymbolicLink(
 
 
 time_t LibfatFileSystemManager::getEntryChangeTime( 
-	const string & entryPath ) throw( GetChangeTimeFailed )
+	const string & entryPath )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -181,15 +180,16 @@ time_t LibfatFileSystemManager::getEntryChangeTime(
 // Accessors to FilesystemManager constants.
 
 
-const string & LibfatFileSystemManager::getRootDirectoryPrefix() const throw()
+const string & LibfatFileSystemManager::getRootDirectoryPrefix() const
 {
 
 	return RootDirectoryPrefix ;
 	
 }
 
+
 	    	   					
-Ceylan::Latin1Char LibfatFileSystemManager::getSeparator() const throw()
+Ceylan::Latin1Char LibfatFileSystemManager::getSeparator() const
 {
 
 	return Separator ;
@@ -205,8 +205,7 @@ Ceylan::Latin1Char LibfatFileSystemManager::getSeparator() const throw()
 
 
 File & LibfatFileSystemManager::createFile( const string & filename, 
-		OpeningFlag createFlag,	PermissionFlag permissionFlag ) 
-	throw( FileException )
+	OpeningFlag createFlag,	PermissionFlag permissionFlag ) 
 {
 
 	return LibfatFile::Create( filename, createFlag 
@@ -217,7 +216,7 @@ File & LibfatFileSystemManager::createFile( const string & filename,
 
 
 File & LibfatFileSystemManager::openFile( const string & filename, 
-	OpeningFlag openFlag ) throw( FileException )
+	OpeningFlag openFlag )
 {
 
 	return LibfatFile::Open( filename, openFlag ) ;
@@ -227,7 +226,7 @@ File & LibfatFileSystemManager::openFile( const string & filename,
 
 
 bool LibfatFileSystemManager::existsAsFileOrSymbolicLink( 
-	const string & filename ) const throw( FileLookupFailed )
+	const string & filename ) const
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -264,7 +263,6 @@ bool LibfatFileSystemManager::existsAsFileOrSymbolicLink(
 
 
 void LibfatFileSystemManager::removeFile( const string & filename ) 
-	throw( FileRemoveFailed )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -293,13 +291,12 @@ void LibfatFileSystemManager::removeFile( const string & filename )
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
-
 }
 
 
 
 void LibfatFileSystemManager::moveFile( const string & sourceFilename,
-	const string & targetFilename ) throw( FileMoveFailed )
+	const string & targetFilename )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -329,13 +326,12 @@ void LibfatFileSystemManager::moveFile( const string & sourceFilename,
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
-
 }
 
 
 
 void LibfatFileSystemManager::copyFile( const string & sourceFilename, 
-	const string & targetFilename ) throw( FileCopyFailed )
+	const string & targetFilename )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -382,7 +378,6 @@ void LibfatFileSystemManager::copyFile( const string & sourceFilename,
 
 
 Size LibfatFileSystemManager::getSize( const string & filename ) 
-	throw( FileSizeRequestFailed )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -416,8 +411,7 @@ Size LibfatFileSystemManager::getSize( const string & filename )
 
 	
 	
-time_t LibfatFileSystemManager::getLastChangeTimeFile( 
-	const string & filename ) throw( FileLastChangeTimeRequestFailed )
+time_t LibfatFileSystemManager::getLastChangeTimeFile( const string & filename )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -453,8 +447,8 @@ time_t LibfatFileSystemManager::getLastChangeTimeFile(
 }	
 
 
+
 void LibfatFileSystemManager::touch( const string & filename ) 
-	throw( FileTouchFailed )
 {
 
 	// no ::utime available.
@@ -474,7 +468,7 @@ void LibfatFileSystemManager::touch( const string & filename )
 
 										
 Directory & LibfatFileSystemManager::createDirectory( 
-	const string & newDirectoryName ) throw( DirectoryException )
+	const string & newDirectoryName )
 {
 
 	return LibfatDirectory::Create( newDirectoryName ) ;
@@ -484,7 +478,7 @@ Directory & LibfatFileSystemManager::createDirectory(
 	
 					
 Directory & LibfatFileSystemManager::openDirectory( 
-	const string & directoryName ) throw( DirectoryException )
+	const string & directoryName )
 {
 
 	return LibfatDirectory::Open( directoryName ) ;
@@ -494,7 +488,7 @@ Directory & LibfatFileSystemManager::openDirectory(
 	
 						
 bool LibfatFileSystemManager::existsAsDirectory( 
-	const string & directoryPath ) const throw( DirectoryLookupFailed )
+	const string & directoryPath ) const
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -528,7 +522,7 @@ bool LibfatFileSystemManager::existsAsDirectory(
 
 
 void LibfatFileSystemManager::removeDirectory( const string & directoryPath, 
-	bool recursive ) throw( DirectoryRemoveFailed )
+	bool recursive )
 {	
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -632,8 +626,7 @@ void LibfatFileSystemManager::removeDirectory( const string & directoryPath,
 
 
 void LibfatFileSystemManager::moveDirectory( 
-		const string & sourceDirectoryPath, const string & targetDirectoryPath )
-	throw( DirectoryMoveFailed )
+	const string & sourceDirectoryPath, const string & targetDirectoryPath )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -677,9 +670,8 @@ void LibfatFileSystemManager::moveDirectory(
 
 
 
-void LibfatFileSystemManager::copyDirectory( 
-		const string & sourceDirectoryPath, const string & targetDirectoryPath )
-	throw( DirectoryCopyFailed )
+void LibfatFileSystemManager::copyDirectory( const string & sourceDirectoryPath,
+	const string & targetDirectoryPath )
 {
 
 	throw DirectoryCopyFailed( "LibfatFileSystemManager::copyDirectory: "
@@ -690,7 +682,7 @@ void LibfatFileSystemManager::copyDirectory(
 
 
 time_t LibfatFileSystemManager::getLastChangeTimeDirectory( 
-	const string & directoryPath ) throw( DirectoryLastChangeTimeRequestFailed )
+	const string & directoryPath )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -724,13 +716,12 @@ time_t LibfatFileSystemManager::getLastChangeTimeDirectory(
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
-
 }
 
 	
 
 bool LibfatFileSystemManager::isAValidDirectoryPath( 
-	const string & directoryString ) throw()
+	const string & directoryString )
 {
 
 	// A priori correct:
@@ -739,7 +730,8 @@ bool LibfatFileSystemManager::isAValidDirectoryPath(
 }	
 			
 		
-bool LibfatFileSystemManager::isAbsolutePath( const string & path ) throw()
+		
+bool LibfatFileSystemManager::isAbsolutePath( const string & path )
 {
 
 	return ( path[0] == Separator ) ;
@@ -749,7 +741,6 @@ bool LibfatFileSystemManager::isAbsolutePath( const string & path ) throw()
 			
 			
 std::string LibfatFileSystemManager::getCurrentWorkingDirectoryPath()	
-	throw( DirectoryGetCurrentFailed )
 {
 
 	return _currentWorkingDirectory ;
@@ -759,7 +750,7 @@ std::string LibfatFileSystemManager::getCurrentWorkingDirectoryPath()
 
 
 void LibfatFileSystemManager::changeWorkingDirectory( 
-	const string & newWorkingDirectory ) throw( DirectoryChangeFailed )
+	const string & newWorkingDirectory )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -792,7 +783,6 @@ void LibfatFileSystemManager::changeWorkingDirectory(
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
-
 }	
 
 
@@ -802,7 +792,7 @@ void LibfatFileSystemManager::changeWorkingDirectory(
 
 					
 const string LibfatFileSystemManager::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+	const
 {
 
 	return "Libfat filesystem manager whose current working directory is '"
@@ -812,12 +802,12 @@ const string LibfatFileSystemManager::toString( Ceylan::VerbosityLevels level )
 
 
 
+
 // Static section.
 
 
 
 LibfatFileSystemManager & LibfatFileSystemManager::GetLibfatFileSystemManager() 
-	throw( LibfatFileSystemManagerException )
 {
 
 	if ( _LibfatFileSystemManager == 0 )
@@ -827,9 +817,9 @@ LibfatFileSystemManager & LibfatFileSystemManager::GetLibfatFileSystemManager()
 	
 }
 	
+
 	
 void LibfatFileSystemManager::SecureLibfatFileSystemManager() 
-	throw( LibfatFileSystemManagerException )
 {
 
 	if ( _LibfatFileSystemManager == 0 )
@@ -839,7 +829,7 @@ void LibfatFileSystemManager::SecureLibfatFileSystemManager()
 	
 	
 	
-void LibfatFileSystemManager::RemoveLibfatFileSystemManager() throw()
+void LibfatFileSystemManager::RemoveLibfatFileSystemManager()
 {
 
 	if ( _LibfatFileSystemManager != 0 )
@@ -859,8 +849,7 @@ void LibfatFileSystemManager::RemoveLibfatFileSystemManager() throw()
 
 
 
-LibfatFileSystemManager::LibfatFileSystemManager() 
-		throw( LibfatFileSystemManagerException ):
+LibfatFileSystemManager::LibfatFileSystemManager() :
 	_currentWorkingDirectory( Ceylan::toString( Separator ) )
 {
 
@@ -882,7 +871,6 @@ LibfatFileSystemManager::LibfatFileSystemManager()
 			/* set as default for stdio file device*/ true ) == false )
 		throw LibfatFileSystemManagerException( 
 			"LibfatFileSystemManager constructor: initialization failed" ) ;
-	
 
 #endif // CEYLAN_RUNS_ON_ARM7
 

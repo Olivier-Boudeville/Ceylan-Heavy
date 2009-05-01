@@ -78,6 +78,17 @@ using namespace Ceylan::Log ;
 using std::string ;
 
 
+#ifdef DEBUG_NETWORK_SERVERS
+
+#define DISPLAY_NET_DEBUG(message) LogPlug::trace(message )
+
+#else // DEBUG_NETWORK_SERVERS
+
+#define DISPLAY_NET_DEBUG(message)
+
+#endif // DEBUG_NETWORK_SERVERS
+
+
 
 /*
  * Avoid::htonl, use directy htonl since it is a macro on some platforms
@@ -104,6 +115,7 @@ ServerStreamSocket::ServerStreamSocketException::~ServerStreamSocketException()
 {
 
 }
+
 
 
 
@@ -165,11 +177,7 @@ ServerStreamSocket::~ServerStreamSocket() throw()
 void ServerStreamSocket::run()
 {
 
-
-#if CEYLAN_DEBUG_NETWORK_SERVERS
-	LogPlug::trace( "Entering in ServerStreamSocket::run" ) ;
-#endif // CEYLAN_DEBUG_NETWORK_SERVERS
-	 
+	DISPLAY_NET_DEBUG( "Entering in ServerStreamSocket::run" ) ;
 	
 	// Records the total number of created connections:
 	Ceylan::Uint32 connectionCount = 0 ;
@@ -178,26 +186,25 @@ void ServerStreamSocket::run()
 	{	
 	
 		connectionCount++ ;
-		
-#if CEYLAN_DEBUG_NETWORK_SERVERS
-		LogPlug::info( "ServerStreamSocket::run: waiting for connection #" 
+
+		DISPLAY_NET_DEBUG( "ServerStreamSocket::run: waiting for connection #" 
 			+ Ceylan::toString( connectionCount ) ) ;
-#endif // CEYLAN_DEBUG_NETWORK_SERVERS
+
 		accept() ;
 		
 	}
 	
-#if CEYLAN_DEBUG_NETWORK_SERVERS
-	LogPlug::trace( "Exiting from ServerStreamSocket::run" ) ;
-#endif // CEYLAN_DEBUG_NETWORK_SERVERS
-
+	DISPLAY_NET_DEBUG( "Exiting from ServerStreamSocket::run" ) ;
+	
 }
 
 
 
 Port ServerStreamSocket::getLocalPort() const
 {
+
 	return _port ;
+	
 }
 
 
@@ -276,9 +283,7 @@ void ServerStreamSocket::prepareToAccept()
 	 *
 	 */
 
-#if CEYLAN_DEBUG_NETWORK_SERVERS
-	LogPlug::trace( "Entering ServerStreamSocket::prepareToAccept" ) ;
-#endif // CEYLAN_DEBUG_NETWORK_SERVERS
+	DISPLAY_NET_DEBUG( "Entering ServerStreamSocket::prepareToAccept" ) ;
 
 	if ( _bound )
 		throw ServerStreamSocketException(
@@ -303,10 +308,8 @@ void ServerStreamSocket::prepareToAccept()
 	for ( ; bindAttemptCount < maxBindAttemptCount; bindAttemptCount++ )
 	{
 
-#if CEYLAN_DEBUG_NETWORK_SERVERS
-		LogPlug::debug( "ServerStreamSocket::prepareToAccept: "
+	DISPLAY_NET_DEBUG( "ServerStreamSocket::prepareToAccept: "
 			"bind attempt #" + Ceylan::toString( bindAttemptCount + 1 ) ) ;
-#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 	
 		if ( ::bind( getOriginalFileDescriptor(), 
 				reinterpret_cast<sockaddr *>( 
@@ -329,11 +332,7 @@ void ServerStreamSocket::prepareToAccept()
 
  	_bound = true ;
 				
-#if CEYLAN_DEBUG_NETWORK_SERVERS
-	LogPlug::debug( "ServerStreamSocket::prepareToAccept: "
-		"bind succeeded." ) ;
-#endif // CEYLAN_DEBUG_NETWORK_SERVERS
-	
+	DISPLAY_NET_DEBUG( "ServerStreamSocket::prepareToAccept: bind succeeded." );
 	
 	if ( ::listen( getOriginalFileDescriptor(), 
 			_maximumPendingConnectionsCount ) != 0 )
@@ -341,11 +340,9 @@ void ServerStreamSocket::prepareToAccept()
 			"ServerStreamSocket::prepareToAccept: listen failed: "
 			+ System::explainError() ) ;
 
-#if CEYLAN_DEBUG_NETWORK_SERVERS
-	LogPlug::debug( "ServerStreamSocket::prepareToAccept: "
+	DISPLAY_NET_DEBUG( "ServerStreamSocket::prepareToAccept: "
 		"listen succeeded." ) ;
-#endif // CEYLAN_DEBUG_NETWORK_SERVERS
-
+		
 
 #else // CEYLAN_USES_NETWORK
 
@@ -364,9 +361,7 @@ void ServerStreamSocket::cleanAfterAccept()
 
 #if CEYLAN_USES_NETWORK
 
-#if CEYLAN_DEBUG_NETWORK_SERVERS
-	LogPlug::trace( "Entering ServerStreamSocket::cleanAfterAccept" ) ;
-#endif // CEYLAN_DEBUG_NETWORK_SERVERS
+	DISPLAY_NET_DEBUG( "Entering ServerStreamSocket::cleanAfterAccept" ) ;
 	
 	closeAcceptedConnections() ;
 	
@@ -385,11 +380,9 @@ void ServerStreamSocket::accepted( AnonymousStreamSocket & newConnection )
 {
 
 	// Empty implementation, made to be overriden.
-	
-#if CEYLAN_DEBUG_NETWORK_SERVERS
-	LogPlug::debug( "ServerStreamSocket::accepted: "
+
+	DISPLAY_NET_DEBUG( "ServerStreamSocket::accepted: "
 		"connection up and running: " + newConnection.toString() ) ;
-#endif // CEYLAN_DEBUG_NETWORK_SERVERS
 		
 }
 
@@ -407,9 +400,7 @@ bool ServerStreamSocket::isRequestedToStop() const
 void ServerStreamSocket::requestToStop()
 {
 
-#if CEYLAN_DEBUG_NETWORK_SERVERS
-	LogPlug::trace( "ServerStreamSocket::requestToStop" ) ;
-#endif // CEYLAN_DEBUG_NETWORK_SERVERS
+	DISPLAY_NET_DEBUG( "ServerStreamSocket::requestToStop" ) ;
 
 	_stopRequested = true ;
 	

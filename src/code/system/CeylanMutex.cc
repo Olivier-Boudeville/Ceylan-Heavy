@@ -52,9 +52,9 @@ using namespace Ceylan::System ;
 
 #ifdef CEYLAN_USES_PTHREAD_H
 
-// Duplicate definition, see : CeylanThread.cc
+// Duplicate definition, see: CeylanThread.cc
 
-// Avoid exposing system-dependent pthread_mutex_t in the headers :
+// Avoid exposing system-dependent pthread_mutex_t in the headers:
 struct Mutex::SystemSpecificMutexType
 {
 	pthread_mutex_t _mutex ;
@@ -73,7 +73,7 @@ struct Mutex::SystemSpecificMutexType
  */
 
 
-Mutex::Mutex() throw( Features::FeatureNotAvailableException ) :
+Mutex::Mutex() :
 	Lockable(),
 	_internalMutex( 0 )
 {
@@ -87,11 +87,12 @@ Mutex::Mutex() throw( Features::FeatureNotAvailableException ) :
 #else // CEYLAN_USES_PTHREAD_H
 
 	throw Features::FeatureNotAvailableException( 
-		"Mutex constructor : multithreading feature not available" ) ;
+		"Mutex constructor: multithreading feature not available" ) ;
 		
 #endif //CEYLAN_USES_PTHREAD_H
  	
 }
+
 
 
 Mutex::~Mutex() throw()
@@ -104,7 +105,7 @@ Mutex::~Mutex() throw()
 		
 	delete _internalMutex ;
 	
-	// Useless but may ease multithreading debugging :
+	// Useless but may ease multithreading debugging:
 	_internalMutex = 0 ;
 	
 #endif // CEYLAN_USES_PTHREAD_H
@@ -112,16 +113,19 @@ Mutex::~Mutex() throw()
 }
 
 
-void Mutex::lock() throw( LockException )
+
+void Mutex::lock()
 {
 
 	// Must be redefined as (trying to) lock an already locked mutex is legal.
 	_locked = true ;
 	postLock() ;
+	
 }
 
 
-void Mutex::unlock() throw( LockException )
+
+void Mutex::unlock()
 {
 	
 	// The mutex handles itself the lock logic and error management.
@@ -131,7 +135,8 @@ void Mutex::unlock() throw( LockException )
 }
 
 
-void Mutex::postLock() throw( LockException )
+
+void Mutex::postLock()
 {
 	
 #ifdef CEYLAN_USES_PTHREAD_H
@@ -163,7 +168,7 @@ void Mutex::postLock() throw( LockException )
 		}
 		
 		throw LockException( 
-			"Mutex::postLock : effective locking failed : "
+			"Mutex::postLock: effective locking failed: "
 			+ errorMessage ) ;
 		
 	
@@ -174,7 +179,8 @@ void Mutex::postLock() throw( LockException )
 }
 
 
-void Mutex::preUnlock() throw( LockException )
+
+void Mutex::preUnlock()
 {
 
 #ifdef CEYLAN_USES_PTHREAD_H
@@ -207,7 +213,7 @@ void Mutex::preUnlock() throw( LockException )
 		}
 		
 		throw LockException( 
-			"Mutex::preUnlock : effective unlocking failed : "
+			"Mutex::preUnlock: effective unlocking failed: "
 			+ errorMessage ) ;
 		
 	
@@ -218,17 +224,20 @@ void Mutex::preUnlock() throw( LockException )
 }
 
 
-const std::string Mutex::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+
+const std::string Mutex::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	return "Mutex, which is " + Lockable::toString( level ) ;
 	
 }	
 					
+
 					
-Mutex::SystemSpecificMutexType & Mutex::getMutexReference() throw()
+Mutex::SystemSpecificMutexType & Mutex::getMutexReference()
 {
+
 	return *_internalMutex ;
+	
 }
 

@@ -38,6 +38,7 @@
 #include <iosfwd>
 
 
+
 /*
  * Some Ceylan-using libraries or programs have to know the endianess :
  * 
@@ -49,6 +50,8 @@
  *
  */
 #define CEYLAN_DETECTED_LITTLE_ENDIAN 1
+
+
 
 
 namespace Ceylan
@@ -67,6 +70,7 @@ namespace Ceylan
 	{
 
 
+
 		/**
 		 * Returns the uptime, the number of seconds since the 
 		 * system booted.
@@ -75,8 +79,7 @@ namespace Ceylan
 		 * for this platform.
 		 *
 		 */
-		CEYLAN_DLL UnsignedLongInteger getSecondsSinceSystemBoot() 
-			throw( SystemException ) ; 
+		CEYLAN_DLL UnsignedLongInteger getSecondsSinceSystemBoot() ; 
 
 
 
@@ -87,9 +90,7 @@ namespace Ceylan
 		 * for this platform.
 		 *
 		 */
-		CEYLAN_DLL Ceylan::Uint32 getTotalProcessCount() 
-			throw( SystemException ) ; 
-
+		CEYLAN_DLL Ceylan::Uint32 getTotalProcessCount() ; 
 
 
 
@@ -100,8 +101,8 @@ namespace Ceylan
 		 * for this platform.
 		 *
 		 */
-		CEYLAN_DLL UnsignedLongInteger getTotalSystemMemorySize() 
-			throw( SystemException ) ; 
+		CEYLAN_DLL UnsignedLongInteger getTotalSystemMemorySize() ; 
+
 
 
 		/**
@@ -114,8 +115,8 @@ namespace Ceylan
 		 * @see getUsedSystemMemorySize
 		 *
 		 */
-		CEYLAN_DLL UnsignedLongInteger getFreeSystemMemorySize() 
-			throw( SystemException ) ; 
+		CEYLAN_DLL UnsignedLongInteger getFreeSystemMemorySize() ; 
+
 
 
 		/**
@@ -128,8 +129,8 @@ namespace Ceylan
 		 * @see getFreeSystemMemorySize
 		 *
 		 */
-		CEYLAN_DLL UnsignedLongInteger getUsedSystemMemorySize() 
-			throw( SystemException ) ; 
+		CEYLAN_DLL UnsignedLongInteger getUsedSystemMemorySize() ; 
+
 
 
 		/**
@@ -139,8 +140,8 @@ namespace Ceylan
 		 * for this platform.
 		 *
 		 */
-		CEYLAN_DLL UnsignedLongInteger getTotalSwapMemorySize() 
-			throw( SystemException ) ; 
+		CEYLAN_DLL UnsignedLongInteger getTotalSwapMemorySize() ; 
+
 
 
 		/**
@@ -151,8 +152,7 @@ namespace Ceylan
 		 * for this platform.
 		 *
 		 */
-		CEYLAN_DLL UnsignedLongInteger getFreeSwapMemorySize() 
-			throw( SystemException ) ; 
+		CEYLAN_DLL UnsignedLongInteger getFreeSwapMemorySize() ; 
 
 
 
@@ -163,8 +163,8 @@ namespace Ceylan
 		 * for this platform.
 		 *
 		 */
-		CEYLAN_DLL UnsignedLongInteger getTotalHighMemorySize() 
-			throw( SystemException ) ; 
+		CEYLAN_DLL UnsignedLongInteger getTotalHighMemorySize() ; 
+
 
 
 		/**
@@ -175,8 +175,7 @@ namespace Ceylan
 		 * for this platform.
 		 *
 		 */
-		CEYLAN_DLL UnsignedLongInteger getFreeHighMemorySize() 
-			throw( SystemException ) ; 
+		CEYLAN_DLL UnsignedLongInteger getFreeHighMemorySize() ; 
 
 
 
@@ -187,8 +186,8 @@ namespace Ceylan
 		 * for this platform.
 		 *
 		 */
-		CEYLAN_DLL UnsignedLongInteger getSharedMemorySize() 
-			throw( SystemException ) ; 
+		CEYLAN_DLL UnsignedLongInteger getSharedMemorySize() ; 
+
 
 
 		/**
@@ -199,12 +198,14 @@ namespace Ceylan
 		 * for this platform.
 		 *
 		 */
-		CEYLAN_DLL UnsignedLongInteger getBuffersMemorySize() 
-			throw( SystemException ) ; 
+		CEYLAN_DLL UnsignedLongInteger getBuffersMemorySize() ; 
+
+
 
 
 
 		// User-data related section, notably for the Nintendo DS.
+		
 		
 
 		/**
@@ -220,9 +221,10 @@ namespace Ceylan
 		 * On the NoCachGBA emulator, an empty string is returned.
 		 *
 		 */
-		CEYLAN_DLL std::string GetUserName() throw( SystemException ) ; 
+		CEYLAN_DLL std::string GetUserName() ; 
 		
 		
+
 
 		/**
 		 * Describes the status of the battery (if any).
@@ -243,6 +245,7 @@ namespace Ceylan
 		} ;
 
 
+
 		/**
 		 * Returns the current battery status.
 		 *
@@ -255,7 +258,7 @@ namespace Ceylan
 		 * blocked (polling) until the ARM7 answers.
 		 *
 		 */
-		CEYLAN_DLL BatteryStatus GetBatteryStatus() throw( SystemException ) ;
+		CEYLAN_DLL BatteryStatus GetBatteryStatus() ;
 
 
 
@@ -279,6 +282,7 @@ namespace Ceylan
 		} ;
 
 
+
 		/**
 		 * Returns the type of the DS running the program.
 		 *
@@ -288,12 +292,14 @@ namespace Ceylan
 		 * blocked (polling) until the ARM7 answers.
 		 *
 		 */
-		CEYLAN_DLL DSType GetDSType() throw( SystemException ) ;
+		CEYLAN_DLL DSType GetDSType() ;
 				  
 		
 
 
+
 		// OpenGL-related section.
+
 
 
 		/**
@@ -312,7 +318,7 @@ namespace Ceylan
 		 * @throw SystemException on error, or if not known for this platform.
 		 *
 		 */
-		CEYLAN_DLL bool openGLContextsCanBeLost() throw( SystemException ) ; 
+		CEYLAN_DLL bool openGLContextsCanBeLost() ; 
 
 
 
@@ -324,7 +330,8 @@ namespace Ceylan
 		 * @throw SystemException on error, or if not known for this platform.
 		 *
 		 */
-		CEYLAN_DLL bool openGLContextsLostOnResize() throw( SystemException ) ; 
+		CEYLAN_DLL bool openGLContextsLostOnResize() ; 
+
 
 
 		/**
@@ -335,8 +342,8 @@ namespace Ceylan
 		 * @throw SystemException on error, or if not known for this platform.
 		 *
 		 */
-		CEYLAN_DLL bool openGLContextsLostOnApplicationSwitch() 
-			throw( SystemException ) ; 
+		CEYLAN_DLL bool openGLContextsLostOnApplicationSwitch() ; 
+
 
 
 		/**
@@ -346,8 +353,8 @@ namespace Ceylan
 		 * @throw SystemException on error, or if not known for this platform.
 		 *
 		 */
-		CEYLAN_DLL bool openGLContextsLostOnColorDepthChange() 
-			throw( SystemException ) ; 
+		CEYLAN_DLL bool openGLContextsLostOnColorDepthChange() ; 
+
 
 
 	}
@@ -358,3 +365,4 @@ namespace Ceylan
 
 
 #endif  // CEYLAN_SYSTEM_INFORMATION_H_
+

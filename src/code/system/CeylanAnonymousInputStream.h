@@ -41,6 +41,7 @@ namespace Ceylan
 	{
 	
 	
+	
 		/**
  		 * Abstract anonymous input stream class used in IPC.
  		 *
@@ -68,12 +69,13 @@ namespace Ceylan
 				 * if the file descriptor feature is not available.
 				 *
 				 */
-				explicit AnonymousInputStream( FileDescriptor fd )
-					 throw( StreamException ) ;
+				explicit AnonymousInputStream( FileDescriptor fd ) ;
+		
 		
 		
 				/// Basic virtual destructor.
 				virtual ~AnonymousInputStream() throw() ;
+		
 		
 		
 				/**
@@ -84,8 +86,8 @@ namespace Ceylan
 				 * identifier yet.
 				 *
 				 */
-				virtual StreamID getInputStreamID() const 
-					throw( InputStreamException ) ;
+				virtual StreamID getInputStreamID() const ;
+
 
 
             	/**
@@ -101,8 +103,7 @@ namespace Ceylan
 				 *
 				 */
             	virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 
 
@@ -110,8 +111,10 @@ namespace Ceylan
 			private:
 
 
+
 				/// Stores the file descriptor of this stream.
 				FileDescriptor _fdes ;
+
 
 
 				/**
@@ -122,8 +125,8 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				AnonymousInputStream( const AnonymousInputStream & source )
-					throw() ;
+				AnonymousInputStream( const AnonymousInputStream & source ) ;
+			
 			
 			
 				/**
@@ -135,17 +138,18 @@ namespace Ceylan
 				 * 
 				 */			 
 				AnonymousInputStream & operator = ( 
-					const AnonymousInputStream & source ) throw() ;
+					const AnonymousInputStream & source ) ;
 	
 	
 	
 		} ;
+		
 					
 	}
 	
 }
 
 
-	
 
 #endif // CEYLAN_ANONYMOUS_INPUT_STREAM_H_
+

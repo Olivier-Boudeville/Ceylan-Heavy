@@ -32,12 +32,15 @@
 
 
 
+
 namespace Ceylan
 {
 
 
+
 	namespace System
 	{
+
 
 
 		/**
@@ -57,6 +60,7 @@ namespace Ceylan
 		class /* CEYLAN_DLL */ Synchronized
 		{
 
+
 			public:
 
 
@@ -67,11 +71,13 @@ namespace Ceylan
 				 * used the 'explicit' keyword.
 				 *
 				 */
-				Synchronized( X value ) throw() :
+				Synchronized( X value ) :
 					_value( value )
 				{
 
 				}
+
+
 
 				/*
 				~Synchronized() throw() 
@@ -80,9 +86,10 @@ namespace Ceylan
 				}
 				*/
 
+
+
 				/// Sets value.
 				Synchronized & setValue( const volatile X & value )
-					throw( Lockable::LockException )
 				{
 
 					 _mutex.lock() ;
@@ -94,33 +101,44 @@ namespace Ceylan
 				}
 
 
+
 				/// Returns the current value.
-				const volatile X & getValue() const volatile throw()
+				const volatile X & getValue() const volatile
 				{
+				
 					return _value ;
+					
 				}
 
+
+				
 				
 				// Operators.
 
 
+
 				/// Assignment operator.
 				Synchronized & operator = ( const X & value )
-					throw( Lockable::LockException )
 				{
+				
 					return setValue( value ) ;
+					
 				}
+
 
 
 				/// Conversion operator.
-				operator X () const volatile throw()
+				operator X () const volatile
 				{
+				
 					return _value ;
+					
 				}
 
 
-				/// Prefixed increment operator  (ex : ++x).
-				X operator ++() throw( Lockable::LockException )
+
+				/// Prefixed increment operator  (ex: ++x).
+				X operator ++()
 				{
 
 					_mutex.lock() ;
@@ -132,15 +150,19 @@ namespace Ceylan
 				}
 
 
-				/// Postfixed increment operator (ex : x++).
-				X operator ++(int) throw( Lockable::LockException )
+
+				/// Postfixed increment operator (ex: x++).
+				X operator ++(int)
 				{
+				
 					return operator ++() ;
+					
 				}
 
 
-				/// Prefixed decrement operator (ex : --x).
-				X operator --() throw( Lockable::LockException )
+
+				/// Prefixed decrement operator (ex: --x).
+				X operator --()
 				{
 
 					_mutex.lock() ;
@@ -151,16 +173,18 @@ namespace Ceylan
 				}
 
 
-				/// Postfixed decrement operator (ex : x--).
+
+				/// Postfixed decrement operator (ex: x--).
 				X operator --(int)
-					throw( Lockable::LockException )
 				{
 					return operator --() ;
 				}
 
 
 
+
 			private:
+
 
 
 				/// The synchronized resource.
@@ -177,20 +201,21 @@ namespace Ceylan
 				 * will be never called.
 				 *
 				 */
-				Synchronized() throw() ;
+				Synchronized() ;
 
 
 				/**
 				 * Copy constructor made private to ensure that it
 				 * will be never called.
 				 *
-				 * Calls such as : <code>Synchronized<int> number = 0 ;</code>
-				 * should be rewritten in :
+				 * Calls such as: <code>Synchronized<int> number = 0 ;</code>
+				 * should be rewritten in:
 				 * <code>Synchronized<int> number( 0 ) ;</code> otherwise
 				 * a copy constructor would be needed.
 				 *
 				 */
-				Synchronized( const Synchronized & source ) throw() ;
+				Synchronized( const Synchronized & source ) ;
+
 
 
 				/**
@@ -201,11 +226,12 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 *
 				 */
-				Synchronized & operator = ( const Synchronized & source )
-					throw() ;
+				Synchronized & operator = ( const Synchronized & source ) ;
 
 
 		} ;
+
+
 
 
 
@@ -223,6 +249,7 @@ namespace Ceylan
 		class /* CEYLAN_DLL */ Synchronized<bool>
 		{
 
+
 			public:
 
 
@@ -233,16 +260,16 @@ namespace Ceylan
 				 * used the 'explicit' keyword.
 				 *
 				 */
-				Synchronized( bool value ) throw() :
+				Synchronized( bool value ) :
 					_value( value )
 				{
 
 				}
 
 
+
 				/// Sets value.
 				Synchronized & setValue( const volatile bool & value )
-					throw( Lockable::LockException )
 				{
 
 					 _mutex.lock() ;
@@ -254,38 +281,47 @@ namespace Ceylan
 				}
 
 
+
 				/// Returns the current value.
-				const volatile bool & getValue() const volatile throw()
+				const volatile bool & getValue() const volatile
 				{
+				
 					return _value ;
+					
 				}
 
+				
 				
 				// Operators.
 
 
 				/// Assignment operator.
 				Synchronized & operator = ( const bool & value )
-					throw( Lockable::LockException )
 				{
+				
 					return setValue( value ) ;
+					
 				}
+
 
 
 				/// Conversion operator.
-				operator bool () const volatile throw()
+				operator bool () const volatile
 				{
+				
 					return _value ;
+					
 				}
 
 
+
 				/**
-				 * Prefixed increment operator  (ex : ++x).
+				 * Prefixed increment operator  (ex: ++x).
 				 * 
 				 * Here, reverses the logical value of the bool.
 				 *
 				 */
-				bool operator ++() throw( Lockable::LockException )
+				bool operator ++()
 				{
 
 					_mutex.lock() ;
@@ -297,20 +333,24 @@ namespace Ceylan
 				}
 
 
-				/// Postfixed increment operator (ex : x++).
-				bool operator ++(int) throw( Lockable::LockException )
+
+				/// Postfixed increment operator (ex: x++).
+				bool operator ++(int)
 				{
+				
 					return operator ++() ;
+					
 				}
 
 
+
 				/**
-				 * Prefixed decrement operator  (ex : --x).
+				 * Prefixed decrement operator  (ex: --x).
 				 * 
 				 * Here, reverses the logical value of the bool.
 				 *
 				 */
-				bool operator --() throw( Lockable::LockException )
+				bool operator --()
 				{
 
 					_mutex.lock() ;
@@ -321,12 +361,16 @@ namespace Ceylan
 				}
 
 
-				/// Postfixed decrement operator (ex : x--).
+
+				/// Postfixed decrement operator (ex: x--).
 				bool operator --(int)
-					throw( Lockable::LockException )
 				{
+				
 					return operator --() ;
+					
 				}
+
+
 
 
 		private:
@@ -335,8 +379,10 @@ namespace Ceylan
 				/// The synchronized resource.
 				volatile bool _value ;
 
+
 				/// The protecting mutex.
 				Mutex _mutex ;
+
 
 
 				/**
@@ -344,20 +390,22 @@ namespace Ceylan
 				 * will be never called.
 				 *
 				 */
-				Synchronized() throw() ;
+				Synchronized() ;
+
 
 
 				/**
 				 * Copy constructor made private to ensure that it
 				 * will be never called.
 				 *
-				 * Calls such as : <code>Synchronized<int> number = 0 ;</code>
-				 * should be rewritten in :
+				 * Calls such as: <code>Synchronized<int> number = 0 ;</code>
+				 * should be rewritten in:
 				 * <code>Synchronized<int> number( 0 ) ;</code> otherwise
 				 * a copy constructor would be needed.
 				 *
 				 */
-				Synchronized( const Synchronized & source ) throw() ;
+				Synchronized( const Synchronized & source ) ;
+
 
 
 				/**
@@ -368,8 +416,8 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 *
 				 */
-				Synchronized & operator = ( const Synchronized & source )
-					throw() ;
+				Synchronized & operator = ( const Synchronized & source ) ;
+
 
 		} ;
 
@@ -378,4 +426,6 @@ namespace Ceylan
 }
 
 
+
 #endif // CEYLAN_SYNCHRONIZED_H_
+

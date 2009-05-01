@@ -36,6 +36,7 @@
 
 
 
+
 namespace Ceylan
 {
 
@@ -90,11 +91,12 @@ namespace Ceylan
 		 */
 		class CEYLAN_DLL FileManagementException: public SystemException
 		{
+		
 				
 			public:
 
 				explicit FileManagementException( 
-						const std::string & reason ):
+						const std::string & reason ) :
 					SystemException( reason )
 				{
 						
@@ -110,6 +112,7 @@ namespace Ceylan
 
 
 
+
 		/*
 		 * Three specific child classes for FileManagementException: 
 		 *   - FileSystemException (defined in FileSystemManager)
@@ -119,20 +122,21 @@ namespace Ceylan
 		 */
 		
 		
+		
 		/// Thrown when filesystem operations failed.
 		class CEYLAN_DLL FileSystemException: public FileManagementException
 		{ 
 		
 			public: 
 			
-				explicit FileSystemException( 
-						const std::string & reason ) throw():
+				explicit FileSystemException( const std::string & reason ) :
 					FileManagementException( reason )
 				{
 				
 				}								
 						
 		} ;
+
 
 		
 		/// Thrown when the conversion of a filesystem object failed.
@@ -141,13 +145,14 @@ namespace Ceylan
 		
 			public: 
 			
-				explicit ConversionFailed( const std::string & reason ) throw():
+				explicit ConversionFailed( const std::string & reason ) :
 					FileSystemException( reason )
 				{
 				
 				}								
 					
 		} ;
+
 
 
 		/// Thrown when the duplication of a filesystem object failed.
@@ -156,13 +161,14 @@ namespace Ceylan
 		
 			public: 
 			
-				explicit DuplicateFailed( const std::string & reason ) throw():
+				explicit DuplicateFailed( const std::string & reason ) :
 					FileSystemException( reason )
 				{
 				
 				}								
 					
 		} ;
+
 
 
 		/**
@@ -178,9 +184,11 @@ namespace Ceylan
 		class CEYLAN_DLL FileException: public FileManagementException
 		{ 
 		
+		
 			public: 
 			
-				explicit FileException( const std::string & reason ) throw():
+			
+				explicit FileException( const std::string & reason ) :
 					FileManagementException( reason )
 				{
 				
@@ -188,6 +196,7 @@ namespace Ceylan
 						
 		} ;
 		
+
 
 
 
@@ -201,8 +210,7 @@ namespace Ceylan
 		
 			public:
 				
-				explicit FileCreationFailed( 
-						const std::string & reason ) throw():
+				explicit FileCreationFailed( const std::string & reason ) :
 					FileException( reason )
 				{
 				
@@ -210,6 +218,7 @@ namespace Ceylan
 					 
 						
 		} ;
+		
 		
 		
 		/// Raised at first by FileSystemManager and file-specific.
@@ -218,8 +227,7 @@ namespace Ceylan
 		
 			public:
 				
-				explicit FileOpeningFailed( 
-						const std::string & reason ) throw():
+				explicit FileOpeningFailed( const std::string & reason ) :
 					FileException( reason )
 				{
 				
@@ -227,6 +235,7 @@ namespace Ceylan
 					 
 						
 		} ;
+		
 		
 		
 		/// Raised at first by FileSystemManager and file-specific.
@@ -235,8 +244,7 @@ namespace Ceylan
 		
 			public:
 				
-				explicit FileAlreadyOpened( 
-						const std::string & reason ) throw():
+				explicit FileAlreadyOpened( const std::string & reason ) :
 					FileException( reason )
 				{
 				
@@ -245,6 +253,7 @@ namespace Ceylan
 						
 		} ;
 		
+	
 		
 		/// Raised at first by FileSystemManager and file-specific.
 		class CEYLAN_DLL FileLookupFailed: public FileException
@@ -252,8 +261,7 @@ namespace Ceylan
 		
 			public:
 				
-				explicit FileLookupFailed( 
-						const std::string & reason ) throw():
+				explicit FileLookupFailed( const std::string & reason ) :
 					FileException( reason )
 				{
 				
@@ -261,6 +269,7 @@ namespace Ceylan
 					 
 						
 		} ;
+		
 		
 		
 		/// Raised at first by FileSystemManager and file-specific.
@@ -269,8 +278,7 @@ namespace Ceylan
 		
 			public:
 				
-				explicit FileRemoveFailed( 
-						const std::string & reason ) throw():
+				explicit FileRemoveFailed( const std::string & reason ) :
 					FileException( reason )
 				{
 				
@@ -278,6 +286,7 @@ namespace Ceylan
 					 
 						
 		} ;
+		
 		
 		
 		/// Raised at first by FileSystemManager and file-specific.
@@ -286,7 +295,7 @@ namespace Ceylan
 		
 			public:
 				
-				explicit FileMoveFailed( const std::string & reason ) throw():
+				explicit FileMoveFailed( const std::string & reason ) :
 					FileException( reason )
 				{
 				
@@ -294,6 +303,7 @@ namespace Ceylan
 					 
 						
 		} ;
+	
 	
 	
 		/// Raised at first by FileSystemManager and file-specific.
@@ -302,7 +312,7 @@ namespace Ceylan
 		
 			public:
 				
-				explicit FileCopyFailed( const std::string & reason ) throw():
+				explicit FileCopyFailed( const std::string & reason ) :
 					FileException( reason )
 				{
 				
@@ -310,6 +320,7 @@ namespace Ceylan
 					 
 						
 		} ;
+	
 	
 	
 		/// Raised at first by FileSystemManager and file-specific.
@@ -318,8 +329,7 @@ namespace Ceylan
 		
 			public:
 				
-				explicit FileSizeRequestFailed( 
-						const std::string & reason ) throw():
+				explicit FileSizeRequestFailed( const std::string & reason ) :
 					FileException( reason )
 				{
 				
@@ -327,6 +337,7 @@ namespace Ceylan
 					 
 						
 		} ;
+
 
 
 		/// Raised at first by FileSystemManager and file-specific.
@@ -336,7 +347,7 @@ namespace Ceylan
 			public:
 				
 				explicit FileLastChangeTimeRequestFailed( 
-						const std::string & reason ) throw():
+						const std::string & reason ) :
 					FileException( reason )
 				{
 				
@@ -344,6 +355,7 @@ namespace Ceylan
 					 
 						
 		} ;
+
 
 
 		/// Raised at first by FileSystemManager and file-specific.
@@ -352,7 +364,7 @@ namespace Ceylan
 		
 			public:
 				
-				explicit FileTouchFailed( const std::string & reason ) throw():
+				explicit FileTouchFailed( const std::string & reason ) :
 					FileException( reason )
 				{
 				
@@ -362,13 +374,14 @@ namespace Ceylan
 		} ;
 
 
+
 		/// Raised at first by FileSystemManager and file-specific.
 		class CEYLAN_DLL FileDiffFailed: public FileException
 		{
 		
 			public:
 				
-				explicit FileDiffFailed( const std::string & reason ) throw():
+				explicit FileDiffFailed( const std::string & reason ) :
 					FileException( reason )
 				{
 				
@@ -382,6 +395,7 @@ namespace Ceylan
 
 
 		// Directory section.
+		
 		
 		
 		/**
@@ -399,8 +413,7 @@ namespace Ceylan
 		
 			public: 
 			
-				explicit DirectoryException( 
-						const std::string & reason ) throw():
+				explicit DirectoryException( const std::string & reason ) :
 					FileManagementException( reason )
 				{
 				
@@ -420,8 +433,7 @@ namespace Ceylan
 		
 			public:
 				
-				explicit DirectoryCreationFailed( 
-						const std::string & reason ) throw():
+				explicit DirectoryCreationFailed( const std::string & reason ) :
 					DirectoryException( reason )
 				{
 				
@@ -429,6 +441,7 @@ namespace Ceylan
 					 
 						
 		} ;
+		
 		
 		
 		/// Raised at first by FileSystemManager and directory-specific.
@@ -437,8 +450,7 @@ namespace Ceylan
 		
 			public:
 				
-				explicit DirectoryOpeningFailed( 
-						const std::string & reason ) throw():
+				explicit DirectoryOpeningFailed( const std::string & reason ) :
 					DirectoryException( reason )
 				{
 				
@@ -446,6 +458,7 @@ namespace Ceylan
 					 
 						
 		} ;
+		
 		
 		
 		/// Raised at first by FileSystemManager and directory-specific.
@@ -454,8 +467,7 @@ namespace Ceylan
 		
 			public:
 				
-				explicit DirectoryLookupFailed( 
-						const std::string & reason ) throw():
+				explicit DirectoryLookupFailed( const std::string & reason ) :
 					DirectoryException( reason )
 				{
 				
@@ -465,14 +477,14 @@ namespace Ceylan
 		} ;
 		
 		
+		
 		/// Raised at first by FileSystemManager and directory-specific.
 		class CEYLAN_DLL DirectoryRemoveFailed: public DirectoryException
 		{
 		
 			public:
 				
-				explicit DirectoryRemoveFailed( 
-						const std::string & reason ) throw():
+				explicit DirectoryRemoveFailed( const std::string & reason ) :
 					DirectoryException( reason )
 				{
 				
@@ -489,8 +501,7 @@ namespace Ceylan
 		
 			public:
 				
-				explicit DirectoryMoveFailed( const std::string & reason )
-						throw():
+				explicit DirectoryMoveFailed( const std::string & reason ) :
 					DirectoryException( reason )
 				{
 				
@@ -498,6 +509,7 @@ namespace Ceylan
 					 
 						
 		} ;
+	
 	
 	
 		/// Raised at first by FileSystemManager and directory-specific.
@@ -506,8 +518,7 @@ namespace Ceylan
 		
 			public:
 				
-				explicit DirectoryCopyFailed( const std::string & reason )
-						throw():
+				explicit DirectoryCopyFailed( const std::string & reason ) :
 					DirectoryException( reason )
 				{
 				
@@ -515,6 +526,7 @@ namespace Ceylan
 					 
 						
 		} ;
+		
 		
 
 		/// Raised at first by FileSystemManager and directory-specific.
@@ -525,7 +537,7 @@ namespace Ceylan
 			public:
 				
 				explicit DirectoryLastChangeTimeRequestFailed( 
-						const std::string & reason ) throw():
+						const std::string & reason ) :
 					DirectoryException( reason )
 				{
 				
@@ -533,6 +545,7 @@ namespace Ceylan
 					 
 						
 		} ;
+
 
 		
 		/// Raised at first by FileSystemManager and directory-specific.
@@ -542,7 +555,7 @@ namespace Ceylan
 			public:
 				
 				explicit DirectoryGetCurrentFailed( 
-						const std::string & reason ) throw():
+					const std::string & reason ) :
 					DirectoryException( reason )
 				{
 				
@@ -552,14 +565,14 @@ namespace Ceylan
 		} ;
 		
 		
+		
 		/// Raised at first by FileSystemManager and directory-specific.
 		class CEYLAN_DLL DirectoryChangeFailed: public DirectoryException
 		{
 		
 			public:
 				
-				explicit DirectoryChangeFailed( 
-						const std::string & reason ) throw():
+				explicit DirectoryChangeFailed( const std::string & reason ) :
 					DirectoryException( reason )
 				{
 				

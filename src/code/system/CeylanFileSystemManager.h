@@ -44,6 +44,7 @@ namespace Ceylan
 {
 
 
+
 	namespace System
 	{
 	
@@ -61,7 +62,7 @@ namespace Ceylan
 			public: 
 			
 				explicit FileSystemManagerException( 
-						const std::string & reason ) throw():
+						const std::string & reason ) :
 					FileSystemException( reason )
 				{
 				
@@ -84,14 +85,14 @@ namespace Ceylan
 		
 			public: 
 			
-				explicit EntryLookupFailed( const std::string & reason )
-						throw():
+				explicit EntryLookupFailed( const std::string & reason ) :
 					FileSystemManagerException( reason )
 				{
 				
 				}								
 					
 		} ;
+		
 		
 	
 		class CEYLAN_DLL SymlinkFailed: public FileSystemManagerException
@@ -99,8 +100,7 @@ namespace Ceylan
 		
 			public: 
 			
-				explicit SymlinkFailed( const std::string & reason )
-						throw():
+				explicit SymlinkFailed( const std::string & reason ) :
 					FileSystemManagerException( reason )
 				{
 				
@@ -109,13 +109,13 @@ namespace Ceylan
 		} ;
 	
 	
+	
 		class CEYLAN_DLL GetChangeTimeFailed: public FileSystemManagerException
 		{ 
 		
 			public: 
 			
-				explicit GetChangeTimeFailed( const std::string & reason )
-						throw():
+				explicit GetChangeTimeFailed( const std::string & reason ) :
 					FileSystemManagerException( reason )
 				{
 				
@@ -132,13 +132,14 @@ namespace Ceylan
 			public: 
 			
 				explicit FileSystemManagerDelegatingException( 
-						const std::string & reason ) throw():
+						const std::string & reason ) :
 					FileSystemManagerException( reason )
 				{
 				
 				}								
 					
 		} ;
+	
 	
 	
 		
@@ -197,8 +198,8 @@ namespace Ceylan
 				 * be retrieved.
 				 *
 				 */
-				static bool ExistsAsEntry( const std::string & entryPath ) 
-					throw( FileSystemManagerException ) ;
+				static bool ExistsAsEntry( const std::string & entryPath ) ;
+
 
 
 				/**
@@ -219,8 +220,8 @@ namespace Ceylan
 				 *
 				 */
 				static void CreateSymbolicLink( const std::string & linkTarget,
-						const std::string & linkName ) 
-					throw( FileSystemManagerException ) ;
+					const std::string & linkName ) ;
+
 
 
 				/**
@@ -239,8 +240,7 @@ namespace Ceylan
 				 *
 				 */
 				static time_t GetEntryChangeTime( 
-						const std::string & entryPath )
-					throw( FileSystemManagerException ) ;
+					const std::string & entryPath ) ;
 
 
 
@@ -260,8 +260,8 @@ namespace Ceylan
 				 * retrieved.
 				 *
 				 */
-				static const std::string & GetRootDirectoryPrefix() 
-					throw( FileSystemManagerDelegatingException ) ;
+				static const std::string & GetRootDirectoryPrefix() ;
+	
 	
 	
 				/**
@@ -276,8 +276,8 @@ namespace Ceylan
 				 * retrieved.
 				 *
 				 */
-				static Ceylan::Latin1Char GetSeparator() 
-					throw( FileSystemManagerDelegatingException ) ;
+				static Ceylan::Latin1Char GetSeparator() ;
+
 
 
 				/**
@@ -294,8 +294,8 @@ namespace Ceylan
 				 * retrieved.
 				 *
 				 */
-				static std::string GetSeparatorAsString() 
-					throw( FileSystemManagerDelegatingException ) ;
+				static std::string GetSeparatorAsString() ;
+
 
 
 				/**
@@ -311,8 +311,8 @@ namespace Ceylan
 				 * retrieved.
 				 *
 				 */
-				static const std::string & GetAliasForCurrentDirectory()
-					throw( FileSystemManagerDelegatingException ) ;
+				static const std::string & GetAliasForCurrentDirectory() ;
+	
 	
 
 				/**
@@ -328,13 +328,14 @@ namespace Ceylan
 				 * retrieved.
 				 *
 				 */
-				static const std::string & GetAliasForParentDirectory()
-					throw( FileSystemManagerDelegatingException ) ;
+				static const std::string & GetAliasForParentDirectory() ;
+				
 				
 				
 				
 				
 				// Second, the overridable implementation methods.				
+				
 				
 				
 				/**
@@ -350,7 +351,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool existsAsEntry( const std::string & entryPath ) 
-					const throw( EntryLookupFailed ) = 0 ;
+					const = 0 ;
+
 
 
 				/**
@@ -366,7 +368,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual void createSymbolicLink( const std::string & linkTarget,
-					const std::string & linkName ) throw( SymlinkFailed ) = 0 ;
+					const std::string & linkName ) = 0 ;
+
 
 
 				/**
@@ -380,8 +383,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual time_t getEntryChangeTime( 
-						const std::string & entryPath )
-					throw( GetChangeTimeFailed ) = 0 ;
+					const std::string & entryPath ) = 0 ;
 
 
 
@@ -396,7 +398,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string & getRootDirectoryPrefix()
-					const throw() = 0 ;
+					const = 0 ;
+	
 	
 	
 				/**
@@ -405,7 +408,8 @@ namespace Ceylan
 				 * @example Slash or backslash, i.e. '/' or '\'.
 				 *
 				 */
-				virtual Ceylan::Latin1Char getSeparator() const throw() = 0 ;
+				virtual Ceylan::Latin1Char getSeparator() const  = 0 ;
+
 
 
 				/**
@@ -416,7 +420,8 @@ namespace Ceylan
 				 * @example Slash or backslash, i.e. '/' or '\'.
 				 *
 				 */
-				virtual std::string getSeparatorAsString() const throw() ;
+				virtual std::string getSeparatorAsString() const ;
+
 
 
 				/**
@@ -426,8 +431,9 @@ namespace Ceylan
 				 * this default implementation.
 				 *
 				 */
-				virtual const std::string & getAliasForCurrentDirectory()
-					const throw() ;
+				virtual const std::string & getAliasForCurrentDirectory() 
+					const ;
+	
 	
 
 				/**
@@ -438,13 +444,14 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string & getAliasForParentDirectory()
-					const throw() ;
+					const ;
 	
 
 
 
 
 				// File-related section.
+				
 				
 				
 				/**
@@ -474,9 +481,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual File & createFile( const std::string & filename, 
-						OpeningFlag createFlag = File::CreateToWriteBinary,
-						PermissionFlag permissionFlag = File::OwnerReadWrite ) 
-					throw( FileException ) = 0 ;
+					OpeningFlag createFlag = File::CreateToWriteBinary,
+					PermissionFlag permissionFlag = File::OwnerReadWrite ) = 0 ;
 
 				
 				
@@ -500,9 +506,9 @@ namespace Ceylan
 				 *
 				 */
 				virtual File & openFile( const std::string & filename, 
-						OpeningFlag openFlag = File::OpenToReadBinary ) 
-					throw( FileException ) = 0 ;
+					OpeningFlag openFlag = File::OpenToReadBinary ) = 0 ;
 				
+					
 					
 				/**
 				 * Tells whether the regular file or symbolic link 
@@ -519,8 +525,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool existsAsFileOrSymbolicLink( 
-						const std::string & filename ) const 
-					throw( FileLookupFailed ) = 0 ;
+					const std::string & filename ) const = 0 ;
+
 
 
 				/**
@@ -532,8 +538,8 @@ namespace Ceylan
 				 * supported on this platform.
 				 *
 				 */
-				virtual void removeFile( const std::string & filename ) 
-					throw( FileRemoveFailed ) = 0 ;
+				virtual void removeFile( const std::string & filename ) = 0 ;
+
 
 
 				/**
@@ -550,8 +556,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual void moveFile( const std::string & sourceFilename,
-						const std::string & targetFilename ) 
-					throw( FileMoveFailed ) = 0 ;
+					const std::string & targetFilename ) = 0 ;
+
 
 
 				/**
@@ -566,8 +572,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual void copyFile( const std::string & sourceFilename,
-						const std::string & targetFilename ) 
-					throw( FileCopyFailed ) = 0 ;
+					const std::string & targetFilename ) = 0 ;
 
 
 
@@ -580,8 +585,8 @@ namespace Ceylan
 				 * file not found) or is not supported on this platform.
 				 *
 				 */
-				virtual Size getSize( const std::string & filename ) 
-					throw( FileSizeRequestFailed ) = 0 ;
+				virtual Size getSize( const std::string & filename ) = 0 ;
+
 
 
 				/**
@@ -595,8 +600,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual time_t getLastChangeTimeFile( 
-						const std::string & filename ) 
-					throw( FileLastChangeTimeRequestFailed ) = 0 ;
+					const std::string & filename ) = 0 ;
+
 
 
 				/**
@@ -610,7 +615,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual std::string transformIntoValidFilename( 
-					const std::string & rawFilename ) throw() ;
+					const std::string & rawFilename ) ;
+
 
 
 				/**
@@ -632,8 +638,7 @@ namespace Ceylan
 				 * supported on this platform.
 				 *
 				 */
-				virtual void touch( const std::string & filename ) 
-					throw( FileTouchFailed ) = 0 ;
+				virtual void touch( const std::string & filename ) = 0 ;
 
 
 
@@ -655,8 +660,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool diff( const std::string & firstFilename,
-						const std::string & secondFilename ) 
-					throw( FileDiffFailed ) ;
+					const std::string & secondFilename ) ;
 
 
 		
@@ -667,6 +671,7 @@ namespace Ceylan
 
 				// Factory-related subsection.
 
+				
 				
 				/**
 				 * Returns a Directory reference on a directory newly created
@@ -684,9 +689,9 @@ namespace Ceylan
 				 *
 				 */
 				virtual Directory & createDirectory( 
-						const std::string & newDirectoryName ) 
-					throw( DirectoryException ) = 0 ;
+					const std::string & newDirectoryName ) = 0 ;
 
+				
 				
 				/**
 				 * Returns a Directory reference on specified already-existing
@@ -706,8 +711,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual Directory & openDirectory( 
-						const std::string & directoryName = "" ) 
-					throw( DirectoryException ) = 0 ;
+					const std::string & directoryName = "" ) = 0 ;
+					
 					
 
 				/**
@@ -726,8 +731,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool existsAsDirectory( 
-						const std::string & directoryPath ) const
-					throw( DirectoryLookupFailed ) = 0 ;
+					const std::string & directoryPath ) const = 0 ;
+
 
 
 				/**
@@ -745,10 +750,9 @@ namespace Ceylan
 				 * is not supported.
 				 *
 				 */
-				virtual void removeDirectory( 
-						const std::string & directoryPath, 
-						bool recursive = false ) 
-					throw( DirectoryRemoveFailed ) = 0 ;
+				virtual void removeDirectory( const std::string & directoryPath,
+					bool recursive = false ) = 0 ;
+
 
 
 				/**
@@ -766,9 +770,9 @@ namespace Ceylan
 				 *
 				 */
 				virtual void moveDirectory( 
-						const std::string & sourceDirectoryPath,
-						const std::string & targetDirectoryPath ) 
-					throw( DirectoryMoveFailed ) = 0 ;
+					const std::string & sourceDirectoryPath,
+					const std::string & targetDirectoryPath ) = 0 ;
+
 
 
 				/**
@@ -784,9 +788,9 @@ namespace Ceylan
 				 *
 				 */
 				virtual void copyDirectory( 
-						const std::string & sourceDirectoryPath,
-						const std::string & targetDirectoryPath ) 
-					throw( DirectoryCopyFailed ) = 0 ;
+					const std::string & sourceDirectoryPath,
+					const std::string & targetDirectoryPath ) = 0 ;
+
 
 
 				/**
@@ -800,9 +804,9 @@ namespace Ceylan
 				 *
 				 */
 				virtual time_t getLastChangeTimeDirectory( 
-						const std::string & directoryPath ) 
-					throw( DirectoryLastChangeTimeRequestFailed ) = 0 ;
-					
+					const std::string & directoryPath ) = 0 ;
+				
+				
 					
 				/**
 				 * Returns whether specified string is a valid directory path.
@@ -816,7 +820,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool isAValidDirectoryPath( 
-					const std::string & directoryString ) throw() = 0 ;
+					const std::string & directoryString ) = 0 ;
+			
 			
 			
 				/**
@@ -826,8 +831,8 @@ namespace Ceylan
 				 * @param path the path that will be modified.
 				 *
 				 */
-				virtual void removeLeadingSeparator( std::string & path ) 
-					throw() ;
+				virtual void removeLeadingSeparator( std::string & path ) ;
+			
 			
 			
 				/**
@@ -836,8 +841,8 @@ namespace Ceylan
 				 * @param path the path that may be absolute.
 				 *
 				 */
-				virtual bool isAbsolutePath( const std::string & path ) 
-					throw() = 0 ;
+				virtual bool isAbsolutePath( const std::string & path ) = 0 ;
+			
 			
 			
 				/**
@@ -847,8 +852,8 @@ namespace Ceylan
 				 * or is not supported on the target platform.
 				 *
 				 */
-				virtual std::string getCurrentWorkingDirectoryPath()	
-					throw( DirectoryGetCurrentFailed ) = 0 ;
+				virtual std::string getCurrentWorkingDirectoryPath() = 0 ;
+
 
 
 				/**
@@ -862,8 +867,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual void changeWorkingDirectory( 
-						const std::string & newWorkingDirectory )
-					throw( DirectoryChangeFailed ) = 0 ;
+					const std::string & newWorkingDirectory )= 0 ;
+
 
 
 
@@ -886,7 +891,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual std::list<std::string> splitPath( 
-					const std::string & path ) throw() ;
+					const std::string & path ) ;
+
 
 
 				/**
@@ -904,7 +910,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual std::string joinPath( 
-					const std::list<std::string> & pathElements ) throw() ;
+					const std::list<std::string> & pathElements ) ;
+
 
 
 				/**
@@ -924,7 +931,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual std::string joinPath( const std::string & firstPath,
-					const std::string & secondPath ) throw() ;
+					const std::string & secondPath ) ;
+
 
 
 				/**
@@ -949,7 +957,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual void stripFilename( const std::string & path,
-					std::string * base, std::string * file = 0 ) throw() ;
+					std::string * base, std::string * file = 0 ) ;
 
 
 
@@ -969,8 +977,7 @@ namespace Ceylan
 				 *
 				 */
 	            virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high )
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 	
 	
 			
@@ -1000,7 +1007,7 @@ namespace Ceylan
 				 * available.
 				 *
 				 */
-				static bool IsDefaultFileSystemManagerSet() throw() ;
+				static bool IsDefaultFileSystemManagerSet() ;
 			
 
 		
@@ -1015,7 +1022,8 @@ namespace Ceylan
 				 */
 				static void SetDefaultFileSystemManager( 
 					FileSystemManager & newDefaultFileSystemManager,
-                    bool deallocatePreviousIfAny = true ) throw() ;
+                    bool deallocatePreviousIfAny = true ) ;
+		
 		
 		
 				/**
@@ -1035,8 +1043,8 @@ namespace Ceylan
 				 * or is not supported.
 				 *
 				 */
-				static void SetDefaultFileSystemManagerToPlatformDefault()
-					throw( FileSystemManagerException ) ;
+				static void SetDefaultFileSystemManagerToPlatformDefault() ;
+			
 			
 			
 				/**
@@ -1049,8 +1057,9 @@ namespace Ceylan
 				 * @see GetAnyDefaultFileSystemManager
 				 *
 				 */
-				static FileSystemManager & GetExistingDefaultFileSystemManager()
-					throw( FileSystemManagerException ) ;
+				static FileSystemManager & 
+					GetExistingDefaultFileSystemManager() ;
+
 
 			
 				/**
@@ -1076,20 +1085,21 @@ namespace Ceylan
 				 * @see GetExistingDefaultFileSystemManager
 				 *
 				 */
-				static FileSystemManager & GetAnyDefaultFileSystemManager() 
-					throw( FileSystemManagerException ) ;
+				static FileSystemManager & GetAnyDefaultFileSystemManager() ;
+
 
 
 				/**
 				 * Removes the current default filesystem manager, if any.
 				 *
 				 */
-				static void RemoveDefaultFileSystemManager() throw() ;
+				static void RemoveDefaultFileSystemManager() ;
 				
 				
 			
 			
 			protected:
+
 
 
 				/**
@@ -1101,7 +1111,8 @@ namespace Ceylan
 				 * @throw FileSystemManagerException if the operation failed.
 				 *
 				 */
-				FileSystemManager() throw( FileSystemManagerException ) ;
+				FileSystemManager() ;
+
 
 
 				/**
@@ -1167,7 +1178,8 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				FileSystemManager( const FileSystemManager & source ) throw() ;
+				FileSystemManager( const FileSystemManager & source ) ;
+			
 			
 			
 				/**
@@ -1179,15 +1191,17 @@ namespace Ceylan
 				 * 
 				 */			 
 				FileSystemManager & operator = ( 
-					const FileSystemManager & source ) throw() ;
+					const FileSystemManager & source ) ;
 					
 				
 
 		} ;
 
+
 	}
 
 }
+
 
 
 

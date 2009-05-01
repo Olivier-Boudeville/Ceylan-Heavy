@@ -45,11 +45,12 @@
 
 
 /*
- * Private non-exported non-installed headers : 
- *   - CeylanSystemSpecificSocket.h : for portability, only for internal
+ * Private non-exported non-installed headers: 
+ *   - CeylanSystemSpecificSocket.h: for portability, only for internal
  * purposes
  *
  */
 
 
 #endif // CEYLAN_NETWORK_INCLUDES_H_
+

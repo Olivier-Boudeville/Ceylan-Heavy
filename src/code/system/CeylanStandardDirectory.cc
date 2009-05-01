@@ -40,6 +40,7 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
+
 // None of them is available in standard include:
 extern "C"
 {
@@ -108,6 +109,7 @@ const mode_t basicDirectory = S_IRWXU ;
 #endif // CEYLAN_USES_ADVANCED_FILE_ATTRIBUTES		
 
 
+
 /*
  * ::stat is used often here.
  * Maybe check specifically CEYLAN_USES_SYS_STAT_H, short of having
@@ -140,9 +142,7 @@ StandardDirectory::~StandardDirectory() throw()
 
 
 bool StandardDirectory::hasDirectory( const string & subdirectoryName ) const
-	throw( DirectoryLookupFailed )
 {
-
 
 #ifdef CEYLAN_USES_STAT
 
@@ -222,9 +222,7 @@ bool StandardDirectory::hasDirectory( const string & subdirectoryName ) const
 
 
 bool StandardDirectory::hasFile( const string & fileName ) const
-	throw( DirectoryLookupFailed )
 {
-
 
 #ifdef CEYLAN_USES_STAT
 
@@ -300,13 +298,11 @@ bool StandardDirectory::hasFile( const string & fileName ) const
 
 #endif // CEYLAN_USES_STAT
 
-
 }
 
 
 
 bool StandardDirectory::hasEntry( const string & entryName ) const
-	throw( DirectoryLookupFailed )
 {
 
 #ifdef CEYLAN_USES_STAT
@@ -369,10 +365,8 @@ bool StandardDirectory::hasEntry( const string & entryName ) const
 }
 
 
-			
-					
-void StandardDirectory::getSubdirectories( list<string> & subDirectories )
-	const throw( DirectoryLookupFailed )
+							
+void StandardDirectory::getSubdirectories( list<string> & subDirectories ) const
 {
 
 #ifdef CEYLAN_USES_DIRENT_H
@@ -428,8 +422,7 @@ void StandardDirectory::getSubdirectories( list<string> & subDirectories )
 
 					
 										
-void StandardDirectory::getFiles( list<string> & files )
-	const throw( DirectoryLookupFailed )
+void StandardDirectory::getFiles( list<string> & files ) const
 {
 
 #ifdef CEYLAN_USES_DIRENT_H
@@ -485,10 +478,8 @@ void StandardDirectory::getFiles( list<string> & files )
 
 	
 					
-void StandardDirectory::getEntries( list<string> & entries )
-	const throw( DirectoryLookupFailed )
+void StandardDirectory::getEntries( list<string> & entries ) const
 {
-
 
 #ifdef CEYLAN_USES_DIRENT_H
 	
@@ -539,14 +530,12 @@ void StandardDirectory::getEntries( list<string> & entries )
 	
 #endif // CEYLAN_USES_DIRENT_H
 
-
 }
 
 
 					
 void StandardDirectory::getSortedEntries( list<string> & subDirectories,
-		list<string> & files, list<string> & otherEntries )
-	const throw( DirectoryLookupFailed )
+		list<string> & files, list<string> & otherEntries ) const
 {
 
 #ifdef CEYLAN_USES_DIRENT_H
@@ -640,8 +629,7 @@ void StandardDirectory::getSortedEntries( list<string> & subDirectories,
 
 										
 					
-const string StandardDirectory::toString( Ceylan::VerbosityLevels level )
-	const throw()
+const string StandardDirectory::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	return "Standard directory referring to path '" + _path + "'" ;
@@ -649,13 +637,14 @@ const string StandardDirectory::toString( Ceylan::VerbosityLevels level )
 }
 					
 		
+			
 					
 					
 // Factory section.										
 
 
+
 StandardDirectory & StandardDirectory::Create( const string & newDirectoryName )
-	throw( DirectoryException )
 {
 
 	return * new StandardDirectory( newDirectoryName, /* create */ true ) ;
@@ -665,7 +654,6 @@ StandardDirectory & StandardDirectory::Create( const string & newDirectoryName )
 
 					
 StandardDirectory & StandardDirectory::Open( const string & directoryName ) 
-	throw( DirectoryException )
 {
 
 	return * new StandardDirectory( directoryName, /* create */ false ) ;
@@ -675,16 +663,14 @@ StandardDirectory & StandardDirectory::Open( const string & directoryName )
 
 			
 StandardDirectory::StandardDirectory( const string & directoryName,
-		bool create ) throw( DirectoryException ):
+		bool create ) :
 	Directory( directoryName )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
 		
-
 	throw DirectoryCreationFailed( "StandardDirectory constructor: "
 		"not supported on the Nintendo DS platform." ) ;
-
 	
 #else // CEYLAN_ARCH_NINTENDO_DS
 
@@ -824,13 +810,13 @@ StandardDirectory::StandardDirectory( const string & directoryName,
 	
 }
 
+		
 			
 					
 // Protected section.
 
 
-FileSystemManager & StandardDirectory::getCorrespondingFileSystemManager()
-	const throw( DirectoryDelegatingException )
+FileSystemManager & StandardDirectory::getCorrespondingFileSystemManager() const
 {
 
 	try

@@ -583,8 +583,7 @@ bool Socket::close()
 
 #else // CEYLAN_USES_NETWORK	
 
-	LogPlug::error( "Socket::close failed: "
-		"network support not available." ) ; 
+	LogPlug::error( "Socket::close failed: network support not available." ) ; 
 		
 	return false ;
 	

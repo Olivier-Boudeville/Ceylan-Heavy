@@ -31,7 +31,7 @@
 #include "CeylanSynchronized.h"   // for Synchronized template
 #include "CeylanRunnable.h"       // for inheritance
 #include "CeylanMutex.h"          // for Waiter inheritance
-#include "CeylanSystem.h"         // for time units (ex : Second) 
+#include "CeylanSystem.h"         // for time units (ex: Second) 
 #include "CeylanFeatures.h"       // for FeatureNotAvailableException
 
 
@@ -39,13 +39,16 @@
 
 
 
+
 namespace Ceylan
 {
+
 
 
 	namespace System
 	{
 
+		
 		
 		/// Data type to store numbers of threads.
 		typedef Ceylan::Uint32 ThreadCount ;
@@ -56,7 +59,7 @@ namespace Ceylan
 		 * Basic abstract class for threaded objects.
 		 *
 		 * @note No thread object will be created unless the multithreading
-		 * feature is supported : Thread constructors will otherwise throw
+		 * feature is supported: Thread constructors will otherwise throw
 		 * FeatureNotAvailableException instances.
 		 *
 		 * @see Feature::isMultithreadingSupported
@@ -66,6 +69,7 @@ namespace Ceylan
 		 */
 		class CEYLAN_DLL Thread: public Runnable
 		{
+
 
 
 			/**
@@ -81,6 +85,7 @@ namespace Ceylan
 			struct SystemSpecificThreadIdentifier ;
 			
 			
+			
 			/**
 			 * Opaque handle for forward-declared but undefined struct
 			 * pointer to system thread attribute, used to avoid including 
@@ -92,6 +97,7 @@ namespace Ceylan
 			 *
 			 */
 			struct SystemSpecificThreadAttribute ;
+			
 			
 			
 			/**
@@ -108,7 +114,9 @@ namespace Ceylan
 			
 			
 			
+			
 			public:
+
 
 
 
@@ -122,9 +130,7 @@ namespace Ceylan
 				
 					public:
 
-						explicit ThreadException( 
-							const std::string & message )
-								throw() :
+						explicit ThreadException( const std::string & message ):
 							SystemException( message )
 						{
 						
@@ -140,6 +146,7 @@ namespace Ceylan
 
 
 
+
 				/**
 				 * Constructs an anonymous thread.
 				 *
@@ -147,7 +154,8 @@ namespace Ceylan
 				 * feature is not available.
 				 *
 				 */
-				Thread() throw( Features::FeatureNotAvailableException ) ;
+				Thread() ;
+
 
 
 				/**
@@ -157,12 +165,13 @@ namespace Ceylan
 				 * feature is not available.
 				 *
 				 */
-				explicit Thread( const std::string & name ) 
-					throw( Features::FeatureNotAvailableException ) ;
+				explicit Thread( const std::string & name ) ;
+
 
 
 				/// Basic destructor.
 				virtual ~Thread() throw() ;
+
 
 
 				/**
@@ -171,7 +180,7 @@ namespace Ceylan
 				 * It creates a new POSIX thread which calls the
 				 * method start().
 				 *
-				 * @example :
+				 * @example:
 				 * <pre>
 				 * Thread * myThread = new ThreadSubClass() ;
 				 * myThread->run() ;
@@ -182,11 +191,13 @@ namespace Ceylan
 				 * is not supported.
 				 *
 				 */
-				virtual void run() throw( RunnableException ) ;
+				virtual void run() ;
+
 
 
 				/// The start point for the newly created thread.
-				virtual void start() throw() = 0 ;
+				virtual void start() = 0 ;
+
 
 
 				/**
@@ -199,12 +210,12 @@ namespace Ceylan
 				 * stop running.
 				 * Thus it can terminate its critical work, before exiting.
 				 * Hence this method does not make the thread stop, it does 
-				 * ask it to stop in the hope it will be heard : if the thread
+				 * ask it to stop in the hope it will be heard: if the thread
 				 * does not invoke the stopDemanded() method systematically,
 				 * it will never know about this request.
 				 *
 				 *
-				 * @example Thread start() method :
+				 * @example Thread start() method:
 				 * <pre>
 				 * ...
 				 *
@@ -219,34 +230,40 @@ namespace Ceylan
 				 * @see cancel()
 				 *
 				 */
-				virtual void askToStop() throw() ;
+				virtual void askToStop() ;
+
 
 
 				/// Returns this Thread's unique id.
-				SystemSpecificThreadIdentifier & id() const throw() ;
+				SystemSpecificThreadIdentifier & id() const ;
+
 
 
 				/// Returns this thread's clean state.
 				bool isClean() const ;
 
 
+
 				/// Tells whether the thread is running.
-				bool isRunning() const throw() ;
+				bool isRunning() const ;
+
 
 
 				/// Tells whether the thread has terminated its run.
-				bool hasTerminated() const throw() ;
+				bool hasTerminated() const ;
+
 
 
 				/// Tells whether the thread has been asked to stop.
 				bool stopDemanded() const ;
 
 
+
 				/**
 				 * Suspends the calling thread until the instance's thread 
 				 * has stopped.
 				 *
-				 * @example :
+				 * @example:
 				 * <pre>
 				 *
 				 * Thread * myThread = new ThreadSubClass() ;
@@ -261,7 +278,8 @@ namespace Ceylan
 				 * available.
 				 *
 				 */
-				void waitUntilOver() throw() ;
+				void waitUntilOver() ;
+
 
 
             	/**
@@ -277,19 +295,21 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+
 
 
 
 				// Static section.
 				
 				
+				
 				/**
 				 * Returns the number of Thread objects currently existing.
 				 *
 				 */
-				static ThreadCount GetNumberOfThreads() throw() ;
+				static ThreadCount GetNumberOfThreads() ;
+
 
 
 				/**
@@ -305,8 +325,8 @@ namespace Ceylan
 				 *
 				 */
 				static void Sleep( System::Second seconds,
-						System::Microsecond microseconds = 0 )
-					throw( ThreadException ) ;
+					System::Microsecond microseconds = 0 ) ;
+
 
 
 				/**
@@ -316,7 +336,8 @@ namespace Ceylan
 				 * available.
 				 *
 				 */
-				static void Run( Thread & thread ) throw()  ;
+				static void Run( Thread & thread ) ;
+
 
 
 
@@ -325,26 +346,26 @@ namespace Ceylan
 				 *
 				 * This inner class operates like a thread condition.
 				 *
-				 * @example :
+				 * @example:
 				 * <pre>
 				 *
 				 * static Thread::Waiter waiter ;
 				 * static bool ok = false ;
 				 *
-				 * thread #1 :
+				 * thread #1:
 				 *
 				 *   // Blocks the thread until ok is true.
 				 *   while( ! ok ) 
 				 *		waiter.wait() ;
 				 *
-				 * thread #2 :
+				 * thread #2:
 				 *
-				 *   // Do what you need to do :
+				 *   // Do what you need to do:
 				 *   ...
-				 *   // Modify the shared value ok :
+				 *   // Modify the shared value ok:
 				 *   ok = true ;
 				 *
-				 *   // Restart the waiting thread 1 :
+				 *   // Restart the waiting thread 1:
 				 *   waiter.signal() ;
 				 *
 				 * </pre>
@@ -357,6 +378,7 @@ namespace Ceylan
 					public:
 
 
+
 						/**
 						 * Basic constructor.
 						 *
@@ -367,12 +389,13 @@ namespace Ceylan
 						 * @see Feature::isMultithreadingSupported
 						 *
 						 */
-						Waiter() 
-							throw( Features::FeatureNotAvailableException ) ;
+						Waiter() ;
+
 
 
 						/// Basic non-virtual destructor.
 						~Waiter() throw() ;
+
 
 
 						/**
@@ -388,7 +411,8 @@ namespace Ceylan
 						 * if the multithreading feature is not available.
 						 *
 						 */
-						bool wait( System::Second seconds = 0 ) throw() ;
+						bool wait( System::Second seconds = 0 ) ;
+
 
 
 						/**
@@ -399,7 +423,8 @@ namespace Ceylan
 						 * not available. 
 						 *
 						 */
-						bool signal() throw() ;
+						bool signal() ;
+
 
 
 						/**
@@ -410,11 +435,13 @@ namespace Ceylan
 						 * not available. 
 						 *
 						 */
-						bool broadcast() throw() ;
+						bool broadcast() ;
+
 
 
 
 					private:
+
 
 
 						/**
@@ -426,7 +453,8 @@ namespace Ceylan
 						 * or not.
 						 *
 						 */
-						Waiter( const Waiter & source ) throw() ;
+						Waiter( const Waiter & source ) ;
+
 
 
 						/**
@@ -437,7 +465,8 @@ namespace Ceylan
 						 * undefined operator is called, implicitly or not.
 						 *
 						 */
-						Waiter & operator = ( const Waiter & source ) throw() ;
+						Waiter & operator = ( const Waiter & source ) ;
+
 
 
 						/**
@@ -453,7 +482,9 @@ namespace Ceylan
 
 
 
+
 			protected:
+
 
 
 				/**
@@ -468,7 +499,7 @@ namespace Ceylan
 				 * @note one should preferably use askToStop / stopDemanded /
 				 * waitUntilOver.
 				 *
-				 * @example :
+				 * @example:
 				 * <pre>
 				 *
 				 * class MyThread: public Thread
@@ -494,7 +525,8 @@ namespace Ceylan
 				 * </pre>
 				 *
 				 */
-				void cancel() throw() ;
+				void cancel() ;
+
 
 
 				/**
@@ -502,20 +534,23 @@ namespace Ceylan
 				 * It is executed by the launching thread.
 				 *
 				 */
-				virtual void cleanup() throw() ;
+				virtual void cleanup() ;
+
 
 				
 				/// Sets the running status.
-				void setRunning( bool newRunningStatus ) throw() ;
+				void setRunning( bool newRunningStatus ) ;
+
 
 
 				/// Called whenever the thread creation fails.
-				virtual void threadCreationFailed( int error ) 
-					throw( ThreadException ) ;
+				virtual void threadCreationFailed( int error ) ;
+
 
 
 
 			private:
+
 
 
 				/**
@@ -526,7 +561,8 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				Thread( const Thread & source ) throw() ;
+				Thread( const Thread & source ) ;
+
 
 
 				/**
@@ -537,11 +573,13 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 *
 				 */
-				Thread & operator = ( const Thread & source ) throw() ;
+				Thread & operator = ( const Thread & source ) ;
+
 
 
 				/// This thread's unique system-specific identifier.
 				SystemSpecificThreadIdentifier * _id ;
+
 
 
 				/// This thread's system-specific attribute.
@@ -570,12 +608,15 @@ namespace Ceylan
 
 				//template class CEYLAN_DLL Ceylan::System::Synchronized<bool> ;
 
+
+
 				/**
 				 * Tells whether this thread has terminated, i.e. if its
 				 * <code>cancel</code> method has already been called.
 				 *
 				 */
 				Ceylan::System::Synchronized<bool> _terminated ;
+				
 				
 				
 				/**
@@ -586,11 +627,13 @@ namespace Ceylan
 				Ceylan::System::Synchronized<bool> _clean ;
 				
 				
+				
 				/**
 				 * Tells whether this thread is currently running.
 				 *
 				 */
 				Ceylan::System::Synchronized<bool> _running ;
+				
 				
 				
 				/**
@@ -603,6 +646,7 @@ namespace Ceylan
 #pragma warning( pop ) 
 
 
+
 				/**
 				 * Number of the currently existing thread instances.
 				 *
@@ -611,6 +655,7 @@ namespace Ceylan
 
 
 		} ;
+		
 
 	}
 
@@ -619,3 +664,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_THREAD_H_
+

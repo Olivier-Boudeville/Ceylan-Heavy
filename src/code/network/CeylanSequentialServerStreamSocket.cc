@@ -49,8 +49,20 @@ using std::string ;
 
 
 
+#ifdef DEBUG_NETWORK_SERVERS
 
-SequentialServerStreamSocket::SequentialServerStreamSocketException::SequentialServerStreamSocketException( const std::string & reason ) throw():
+#define DISPLAY_NET_DEBUG(message) LogPlug::trace(message )
+
+#else // DEBUG_NETWORK_SERVERS
+
+#define DISPLAY_NET_DEBUG(message)
+
+#endif // DEBUG_NETWORK_SERVERS
+
+
+
+
+SequentialServerStreamSocket::SequentialServerStreamSocketException::SequentialServerStreamSocketException( const std::string & reason ) :
 	ServerStreamSocketException( reason )
 {
 
@@ -64,11 +76,14 @@ SequentialServerStreamSocket::SequentialServerStreamSocketException::~Sequential
 
 
 
+
+
 // SequentialServerStreamSocket class.
 
 
+
 SequentialServerStreamSocket::SequentialServerStreamSocket( Port listeningPort, 
-		bool reuse ) throw( SocketException ):
+		bool reuse ) :
 	ServerStreamSocket( listeningPort, reuse, /* blocking */ true ),
 	_currentConnection( 0 )
 {
@@ -79,12 +94,13 @@ SequentialServerStreamSocket::SequentialServerStreamSocket( Port listeningPort,
 #else // CEYLAN_USES_NETWORK
 
 	throw SequentialServerStreamSocketException( 
-		"SequentialServerStreamSocket constructor failed : "
+		"SequentialServerStreamSocket constructor failed: "
 		"network support not available." ) ; 
 	
 #endif // CEYLAN_USES_NETWORK
 	
 }
+
 
 
 SequentialServerStreamSocket::~SequentialServerStreamSocket() throw()
@@ -94,14 +110,16 @@ SequentialServerStreamSocket::~SequentialServerStreamSocket() throw()
 
 	// The main listening socket is taken care of in mother classes.
 	
-	// No destructor should throw exception :
+	// No destructor should throw exception:
 	try
 	{
+	
 		closeAcceptedConnections() ;
+		
 	}
 	catch( const Stream::CloseException	& e )
 	{
-		LogPlug::error( "SequentialServerStreamSocket destructor failed : " 
+		LogPlug::error( "SequentialServerStreamSocket destructor failed: " 
 			+ e.toString() ) ;
 	}
 	
@@ -110,7 +128,8 @@ SequentialServerStreamSocket::~SequentialServerStreamSocket() throw()
 }
 
 
-bool SequentialServerStreamSocket::isConnected() const throw()
+
+bool SequentialServerStreamSocket::isConnected() const
 {
 
 	return _currentConnection != 0 ;
@@ -118,23 +137,23 @@ bool SequentialServerStreamSocket::isConnected() const throw()
 }
 
 
+
 AnonymousStreamSocket * SequentialServerStreamSocket::accept() 
-	throw( ServerStreamSocketException )
 {
 
 #if CEYLAN_USES_NETWORK
 
 	if ( _currentConnection != 0 )
 		throw SequentialServerStreamSocketException( 
-			"SequentialServerStreamSocket::accept : "
+			"SequentialServerStreamSocket::accept: "
 			"a connection is still active" ) ;
 			
 	if ( ! _bound )
 		prepareToAccept() ;
 
 
-	LogPlug::trace( "SequentialServerStreamSocket::accept : "
-		"will accept now connections, state is : " + toString() ) ;
+	DISPLAY_NET_DEBUG( "SequentialServerStreamSocket::accept: "
+		"will accept now connections, state is: " + toString() ) ;
 	
 	/*
 	 * One can notice that constructing next AnonymousStreamSocket implies
@@ -147,7 +166,7 @@ AnonymousStreamSocket * SequentialServerStreamSocket::accept()
 	try
 	{
 	
-		// Accepts the connection, by passing the listening file descriptor :
+		// Accepts the connection, by passing the listening file descriptor:
 		_currentConnection = new AnonymousStreamSocket( 
 			getOriginalFileDescriptor() ) ;
 			
@@ -155,17 +174,17 @@ AnonymousStreamSocket * SequentialServerStreamSocket::accept()
 	catch( const SocketException & e )
 	{
 		throw SequentialServerStreamSocketException( 
-			"SequentialServerStreamSocket::accept failed : "
+			"SequentialServerStreamSocket::accept failed: "
 			+ e.toString() ) ;
 	}	
 		
-	LogPlug::trace( "SequentialServerStreamSocket::accept : "
-		"new connection accepted, will be taken care of now : "
+	DISPLAY_NET_DEBUG( "SequentialServerStreamSocket::accept: "
+		"new connection accepted, will be taken care of now: "
 		+ _currentConnection->toString() ) ;
 		
 	accepted( *_currentConnection ) ;
 	
-	LogPlug::trace( "SequentialServerStreamSocket::accept : "
+	DISPLAY_NET_DEBUG( "SequentialServerStreamSocket::accept: "
 		"connection terminated, cleaning up afterwards" ) ;
 	
 	cleanAfterAccept() ;
@@ -176,7 +195,7 @@ AnonymousStreamSocket * SequentialServerStreamSocket::accept()
 
 
 	throw ServerStreamSocketException( 
-		"SequentialServerStreamSocket::accept : "
+		"SequentialServerStreamSocket::accept: "
 		"network feature not available." ) ;
 		
 			
@@ -185,8 +204,9 @@ AnonymousStreamSocket * SequentialServerStreamSocket::accept()
 }
 
 
+
 FileDescriptor SequentialServerStreamSocket::getFileDescriptorForTransport()
-	const throw( SocketException, Features::FeatureNotAvailableException )
+	const
 {
 
 #if CEYLAN_USES_NETWORK
@@ -195,14 +215,14 @@ FileDescriptor SequentialServerStreamSocket::getFileDescriptorForTransport()
 		return _currentConnection->getOriginalFileDescriptor() ;
 	else	
 		throw SequentialServerStreamSocketException( 
-			 "SequentialServerStreamSocket::getFileDescriptorForTransport : "
+			 "SequentialServerStreamSocket::getFileDescriptorForTransport: "
 			 "no available connection." ) ;
 		
 			
 #else // CEYLAN_USES_NETWORK
 
 	throw Features::FeatureNotAvailableException( 
-		"SequentialServerStreamSocket::getFileDescriptorForTransport : "
+		"SequentialServerStreamSocket::getFileDescriptorForTransport: "
 		"network support not available." ) ;
 		
 #endif // CEYLAN_USES_NETWORK
@@ -212,7 +232,7 @@ FileDescriptor SequentialServerStreamSocket::getFileDescriptorForTransport()
 
 
 const std::string SequentialServerStreamSocket::toString(
-	Ceylan::VerbosityLevels level ) const throw()
+	Ceylan::VerbosityLevels level ) const
 {
 
 	string res = "SequentialServerStreamSocket " ;
@@ -221,7 +241,7 @@ const std::string SequentialServerStreamSocket::toString(
 
 
 	if ( _currentConnection != 0 )
-		res += "with a running connection : " 
+		res += "with a running connection: " 
 			+ _currentConnection->toString( level ) ;
 	else
 		res += "not connected to any peer" ;
@@ -241,8 +261,8 @@ const std::string SequentialServerStreamSocket::toString(
 }	
 						
 
+
 bool SequentialServerStreamSocket::closeAcceptedConnections() 
-	throw( Stream::CloseException )
 {
 
 	if ( _currentConnection != 0 )

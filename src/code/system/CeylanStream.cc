@@ -98,6 +98,7 @@ bool Stream::isBlocking() const
 }
 
 
+
 const std::string Stream::toString( Ceylan::VerbosityLevels level ) const
 {
 
@@ -112,7 +113,6 @@ const std::string Stream::toString( Ceylan::VerbosityLevels level ) const
 	
 bool Stream::Close( FileDescriptor & fd )
 {
-
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
@@ -167,7 +167,6 @@ bool Stream::Close( FileDescriptor & fd )
 		"file descriptor feature not available" ) ;
 
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
-
 
 }
 

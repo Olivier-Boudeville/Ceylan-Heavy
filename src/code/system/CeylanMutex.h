@@ -42,6 +42,7 @@ namespace Ceylan
 {
 
 
+
 	namespace System
 	{
 
@@ -61,6 +62,7 @@ namespace Ceylan
 		 */
 		class CEYLAN_DLL Mutex : public Ceylan::Lockable
 		{
+
 
 
 			/**
@@ -87,7 +89,7 @@ namespace Ceylan
 				 * multithreading feature is available.
 				 *
 				 */
-				Mutex() throw( Features::FeatureNotAvailableException ) ;
+				Mutex() ;
 
 
 				/// Basic virtual destructor.
@@ -104,10 +106,13 @@ namespace Ceylan
 				 * It will handle the locking process and will call the
 				 * 'postLock' method afterwards.
 				 *
+				 * @throw LockException if the operation failed.
+				 *
 				 * @see isLocked, postLock, unlock
 				 *
 				 */
-				virtual void lock() throw( LockException ) ;
+				virtual void lock() ;
+
 
 
 				/**
@@ -119,10 +124,12 @@ namespace Ceylan
 				 * It will handle the unlocking process and will call the
 				 * 'preUnlock' method afterwards.
 				 *
+				 * @throw LockException if the operation failed.
+				 *
 				 * @see isLocked, preUnlock, lock
 				 *
 				 */
-				virtual void unlock() throw( LockException ) ;
+				virtual void unlock() ;
 
 
 
@@ -138,8 +145,7 @@ namespace Ceylan
 				 *
 	             */
 	            virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high )
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const  ;
 
 
 
@@ -153,7 +159,8 @@ namespace Ceylan
 				 * @throw LockException if the effective locking failed.
 				 *
 				 */
-				 virtual void postLock() throw( LockException ) ;
+				virtual void postLock() ;
+
 
 
 				/**
@@ -162,11 +169,12 @@ namespace Ceylan
 				 * @throw LockException if the effective locking failed.
 				 *
 				 */
-			 	virtual void preUnlock() throw( LockException ) ;
+			 	virtual void preUnlock() ;
+
 
 
 				/// Returns the reference on the mutex itself.
-				SystemSpecificMutexType & getMutexReference() throw() ;
+				SystemSpecificMutexType & getMutexReference() ;
 
 
 
@@ -185,7 +193,8 @@ namespace Ceylan
 				 * as it is owned (not used) by its Mutex object.
 				 *
 				 */
-				Mutex( const Mutex & source ) throw() ;
+				Mutex( const Mutex & source ) ;
+
 
 
 				/**
@@ -196,19 +205,20 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 *
 				 */
-				Mutex & operator = ( const Mutex & source ) throw() ;
+				Mutex & operator = ( const Mutex & source ) ;
 
 
 				/// The internal mutex type, depending on the platform.
 		 		SystemSpecificMutexType * _internalMutex ;
 
 
-
 		} ;
+		
 
 	}
 
 }
+
 
 
 #endif // CEYLAN_MUTEX_H_

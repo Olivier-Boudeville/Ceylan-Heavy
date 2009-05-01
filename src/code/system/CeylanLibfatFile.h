@@ -53,8 +53,7 @@ namespace Ceylan
 
 			public: 
 	       
-				explicit LibfatFileException( 
-					const std::string & reason ) throw() ;
+				explicit LibfatFileException( const std::string & reason ) ;
 	    	   
 				virtual ~LibfatFileException() throw() ; 
 	    		   
@@ -83,7 +82,6 @@ namespace Ceylan
 		
 
 
-
 			public:
 
 
@@ -102,14 +100,17 @@ namespace Ceylan
 
 
 
+
 				// Implementation of instance methods inherited from File.
+
 
 
 				/**
 				 * Returns true iff this file is open.
 				 *
 				 */
-				virtual bool isOpen() const throw() ;
+				virtual bool isOpen() const ;
+
 
 
 				/**
@@ -120,7 +121,8 @@ namespace Ceylan
 				 * @throw Stream::CloseException if the close operation failed.
 				 *
 				 */
-				virtual bool close() throw( Stream::CloseException ) ;
+				virtual bool close() ;
+
 
 
 				/**
@@ -131,8 +133,7 @@ namespace Ceylan
 				 * @throw FileException if the operation failed.
 				 *
 				 */
-				virtual void saveAs( const std::string & newName )
-					throw( FileException ) ;
+				virtual void saveAs( const std::string & newName ) ;
 
 
 
@@ -147,7 +148,9 @@ namespace Ceylan
 				 */
 
 
+
 				// size method inherited from File.
+
 
 				 
 				/**
@@ -157,8 +160,8 @@ namespace Ceylan
 				 * operation failed.
 				 *
 				 */
-				virtual time_t getLastChangeTime() const 
-					throw( FileLastChangeTimeRequestFailed ) ;
+				virtual time_t getLastChangeTime() const ;
+
 
 
 				/**
@@ -186,13 +189,15 @@ namespace Ceylan
 				 * this marker).
 				 *
 				 */
-		 		virtual Size read( Ceylan::Byte * buffer, Size maxLength ) 
-					throw( InputStream::ReadFailedException ) ;
+		 		virtual Size read( Ceylan::Byte * buffer, Size maxLength )  ;
 
 				
+				
 				// readExactLength inherited.
+						
 								
 				// hasAvailableData inherited.
+				
 				
 				
 				/**
@@ -208,8 +213,8 @@ namespace Ceylan
 				 * FileException, as it comes from an inherited interface.
 				 *
 				 */
-				virtual Size write( const std::string & message ) 
-					throw( OutputStream::WriteFailedException ) ;
+				virtual Size write( const std::string & message ) ;
+
 
 
 				/**
@@ -229,8 +234,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual Size write( const Ceylan::Byte * buffer, 
-						Size maxLength ) 
-					throw( OutputStream::WriteFailedException ) ;
+					Size maxLength ) ;
+
 
 
 				/**
@@ -241,7 +246,8 @@ namespace Ceylan
 				 * @throw FileException if the operation failed.
 				 *
 				 */
-				virtual Position tell() throw( FileException ) ;
+				virtual Position tell() ;
+
 
 
 				/**
@@ -253,8 +259,7 @@ namespace Ceylan
 				 * @throw FileException if the operation failed.
 				 *
 				 */
-				virtual void seek( Position targetPosition ) 
-                	throw( FileException ) ;
+				virtual void seek( Position targetPosition ) ;
 
 
 
@@ -272,8 +277,8 @@ namespace Ceylan
 				 * @throw LibfatFileException if the operation failed.
 				 *		 
 				 */
-				virtual void serialize( FileDescriptor fd ) const
-					throw( LibfatFileException ) ;
+				virtual void serialize( FileDescriptor fd ) const ;
+				
 				
 				
 				/**
@@ -282,8 +287,7 @@ namespace Ceylan
 				 * @throw LibfatFileException if the operation failed.
 				 *
 				 */
-				FileDescriptor getFileDescriptor() const 
-					throw( LibfatFileException ) ;
+				FileDescriptor getFileDescriptor() const ;
 
 
 
@@ -298,13 +302,14 @@ namespace Ceylan
 				 * @return the StreamID.
 				 *
 				 */
-				virtual StreamID getStreamID() const throw() ;
+				virtual StreamID getStreamID() const ;
 
 
 
 				// getInputStreamID inherited.
 				
 				// getOutputStreamID inherited.
+				
 				
 				
             	/**
@@ -320,8 +325,7 @@ namespace Ceylan
 				 *
 				 */
             	virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 								
 
@@ -360,8 +364,7 @@ namespace Ceylan
 				 *
 				 */
 				static LibfatFile & Create( const std::string & filename, 
-						OpeningFlag createFlag = CreateToWriteBinary ) 
-					throw( FileException ) ;
+					OpeningFlag createFlag = CreateToWriteBinary ) ;
 
 				
 				
@@ -384,12 +387,13 @@ namespace Ceylan
 				 *
 				 */
 				static LibfatFile & Open( const std::string & filename, 
-						OpeningFlag openFlag = OpenToReadBinary ) 
-					throw( FileException ) ;
+					OpeningFlag openFlag = OpenToReadBinary ) ;
 				
+		
 		
 				
 			protected:
+
 
 
 				/**
@@ -423,8 +427,7 @@ namespace Ceylan
 				 *
 				 */
 				explicit LibfatFile( const std::string & name, 
-						OpeningFlag openFlag = CreateToWriteBinary ) 
-					throw( FileException ) ;
+					OpeningFlag openFlag = CreateToWriteBinary ) ;
 
 
 
@@ -453,16 +456,14 @@ namespace Ceylan
 				 * per-platform constructors.
 				 *
 				 */
-				LibfatFile(   
-						const std::string & name, 
-						Size length, 
-						FileDescriptor fd )
-					throw( FileException ) ;
+				LibfatFile( const std::string & name, Size length, 
+					FileDescriptor fd ) ;
 
 								 
 
 
 				// Implementations of inherited methods.
+				
 				
 				
 				/**
@@ -472,7 +473,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual FileSystemManager & getCorrespondingFileSystemManager()
-					const throw( FileDelegatingException ) ;
+					const ;
+
 
 
 				/**
@@ -481,11 +483,12 @@ namespace Ceylan
 				 * @throw FileOpeningFailed if the operation failed.
 				 *
 				 */
-				virtual void reopen() throw( FileOpeningFailed ) ;
+				virtual void reopen() ;
+
 
 
 				/// Interprets the current state of this file.
-				std::string interpretState() const throw() ;
+				std::string interpretState() const ;
 				
 
 				
@@ -507,7 +510,7 @@ namespace Ceylan
 				 *
 				 */
 				static int ConvertToFileDescriptorOpenFlag( 
-					OpeningFlag openFlag ) throw( ConversionFailed ) ;  
+					OpeningFlag openFlag ) ;  
 				
 
 
@@ -524,7 +527,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				LibfatFile( const LibfatFile & source ) throw() ;
+				LibfatFile( const LibfatFile & source ) ;
 
 
 				/**
@@ -535,8 +538,7 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 *
 				 */
-				LibfatFile & operator = ( const LibfatFile & source )
-					throw() ;
+				LibfatFile & operator = ( const LibfatFile & source ) ;
 
 
 
@@ -553,8 +555,8 @@ namespace Ceylan
 				 *
 				 */
 				static void FromFDtoFD( FileDescriptor from, 
-						FileDescriptor to, Size length )
-					throw( LibfatFileException ) ;
+					FileDescriptor to, Size length ) ;
+
 
 
 				/**
@@ -566,9 +568,12 @@ namespace Ceylan
 
 		} ;
 		
+		
 	}
 
 }
 
 
+
 #endif // CEYLAN_LIBFAT_FILE_H_
+

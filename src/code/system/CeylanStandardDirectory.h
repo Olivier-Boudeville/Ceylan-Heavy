@@ -47,6 +47,7 @@ namespace Ceylan
 	{
 
 
+
 		/*
 		 * Each Directory child class is linked to a corresponding filesystem
 		 * manager child class, here it is the standard one.
@@ -72,7 +73,9 @@ namespace Ceylan
 		{
 
 
+
 			public:
+
 
 
 				/**
@@ -110,8 +113,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool hasDirectory( 
-						const std::string & subdirectoryName ) const
-					throw( DirectoryLookupFailed ) ;
+					const std::string & subdirectoryName ) const ;
+
 
 
 				/**
@@ -124,8 +127,8 @@ namespace Ceylan
 				 * not supported.
 				 *
 				 */
-				virtual bool hasFile( const std::string & fileName ) const
-					throw( DirectoryLookupFailed ) ;
+				virtual bool hasFile( const std::string & fileName ) const ;
+
 
 
 				/**
@@ -141,8 +144,7 @@ namespace Ceylan
 				 * not supported.
 				 *
 				 */
-				virtual bool hasEntry( const std::string & entryName ) const
-					throw( DirectoryLookupFailed ) ;
+				virtual bool hasEntry( const std::string & entryName ) const ;
 
 
 
@@ -161,8 +163,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual void getSubdirectories( 
-						std::list<std::string> & subDirectories )
-					const throw( DirectoryLookupFailed ) ;
+					std::list<std::string> & subDirectories ) const ;
+
 
 
 				/**
@@ -176,8 +178,8 @@ namespace Ceylan
 				 * is not supported.
 				 *
 				 */
-				virtual void getFiles( std::list<std::string> & files )
-					const throw( DirectoryLookupFailed ) ;
+				virtual void getFiles( std::list<std::string> & files ) const ;
+
 
 
 				/**
@@ -196,7 +198,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual void getEntries( std::list<std::string> & entries )
-					const throw( DirectoryLookupFailed ) ;
+					const ;
+
 
 
 				/**
@@ -224,8 +227,7 @@ namespace Ceylan
 				virtual void getSortedEntries( 
 						std::list<std::string> & subDirectories,
 						std::list<std::string> & files,
-						std::list<std::string> & otherEntries )
-					const throw( DirectoryLookupFailed ) ;
+						std::list<std::string> & otherEntries ) const ;
 
 
 
@@ -248,13 +250,13 @@ namespace Ceylan
 				 *
 				 */
 	            virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high )
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 
 
 
 				// Factory section.
+
 
 
 				/**
@@ -274,9 +276,9 @@ namespace Ceylan
 				 *
 				 */
 				static StandardDirectory & Create( 
-						const std::string & newDirectoryName ) 
-					throw( DirectoryException ) ;
+					const std::string & newDirectoryName ) ;
 
+				
 				
 				/**
 				 * Returns a StandardDirectory reference on specified
@@ -298,8 +300,7 @@ namespace Ceylan
 				 *
 				 */
 				static StandardDirectory & Open( 
-						const std::string & directoryName = "" ) 
-					throw( DirectoryException ) ;
+					const std::string & directoryName = "" ) ;
 					
 					
 
@@ -323,9 +324,9 @@ namespace Ceylan
 				 *
 				 */
 				explicit StandardDirectory( 
-						const std::string & directoryName = "",
-						bool create = true ) 
-					throw( DirectoryException ) ;
+					const std::string & directoryName = "", 
+					bool create = true ) ;
+
 
 				
 					
@@ -342,7 +343,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual FileSystemManager & getCorrespondingFileSystemManager()
-					const throw( DirectoryDelegatingException ) ;
+					const ;
 
 
 
@@ -354,6 +355,7 @@ namespace Ceylan
 				static const std::string RootDirectoryPrefix ;
 
 
+
 				/**
 				 * Current directory name alias.
 				 *
@@ -361,6 +363,7 @@ namespace Ceylan
 				 *
 				 */
 				static const std::string CurrentDirectoryAlias ;
+
 
 
 				/**
@@ -372,6 +375,7 @@ namespace Ceylan
 				static const std::string UpperDirectoryAlias ;
 
 
+
 				/**
 				 * Directory separator.
 				 * @example Slash or backslash.
@@ -380,7 +384,9 @@ namespace Ceylan
 
 
 
+
 			private:
+
 
 
 				/**
@@ -390,7 +396,8 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				StandardDirectory( const StandardDirectory & source ) throw() ;
+				StandardDirectory( const StandardDirectory & source ) ;
+
 
 
 				/**
@@ -401,8 +408,7 @@ namespace Ceylan
 				 *
 				 */
 				StandardDirectory & operator = ( 
-					const StandardDirectory & source ) throw() ;
-
+					const StandardDirectory & source ) ;
 
 
 		} ;
@@ -411,6 +417,7 @@ namespace Ceylan
 	}
 
 }
+
 
 
 #endif // CEYLAN_STANDARD_DIRECTORY_H_

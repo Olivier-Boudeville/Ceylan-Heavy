@@ -35,6 +35,7 @@
 
 
 
+
 namespace Ceylan
 {
 
@@ -106,13 +107,14 @@ namespace Ceylan
 				 * on the server side.
 				 *
 				 */
-				class SequentialServerStreamSocketException: 
+				class SequentialServerStreamSocketException : 
 					public ServerStreamSocketException
 				{ 
+				
 					public: 
 					
 						explicit SequentialServerStreamSocketException( 
-							const std::string & reason ) throw() ;
+							const std::string & reason ) ;
 						
 						virtual ~SequentialServerStreamSocketException() 
 							throw() ; 
@@ -134,11 +136,13 @@ namespace Ceylan
 				 *
 				 */
 				explicit SequentialServerStreamSocket( Port listeningPort, 
-					bool reuse = true )	throw( SocketException ) ;
+					bool reuse = true )	;
 	
+				
 				
 				/// Virtual destructor.
 				virtual ~SequentialServerStreamSocket() throw() ;
+	
 	
 
 				/**
@@ -146,7 +150,7 @@ namespace Ceylan
 				 * client.
 				 *
 				 */
-				virtual bool isConnected() const throw() ;
+				virtual bool isConnected() const ;
 
 					
 				
@@ -162,9 +166,9 @@ namespace Ceylan
 				 * @throw ServerStreamSocketException on failure.
 				 *
 				 */
-				virtual AnonymousStreamSocket * accept() 
-					throw( ServerStreamSocketException )  ;
+				virtual AnonymousStreamSocket * accept() ;
 	
+
 
 				/**
 				 * Returns the new file descriptor, obtained after accept(),
@@ -183,9 +187,9 @@ namespace Ceylan
 				 *
 				 */
 				virtual System::FileDescriptor getFileDescriptorForTransport()
-					const throw( SocketException, 
-						Features::FeatureNotAvailableException ) ;
+					const ;
 		
+	
 	
             	/**
             	 * Returns a user-friendly description of the state of 
@@ -200,15 +204,14 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+	
 	
 	
 	
 			protected:
 
 				
-		
 				/** 
 				 * Closes any accepted connection, including its socket.
 				 *
@@ -217,9 +220,9 @@ namespace Ceylan
 				 * @throw CloseException if the close operation failed.
 				 *
 				 */
-				virtual bool closeAcceptedConnections() 
-					throw( Stream::CloseException ) ;
+				virtual bool closeAcceptedConnections() ;
 				 
+
 
 
 			private:
@@ -247,7 +250,7 @@ namespace Ceylan
 				 *
 				 */
 				SequentialServerStreamSocket( 
-					const SequentialServerStreamSocket & source ) throw() ;
+					const SequentialServerStreamSocket & source ) ;
 
 
 				/**
@@ -259,7 +262,7 @@ namespace Ceylan
 				 *
 				 */
 				SequentialServerStreamSocket & operator = ( 
-					const SequentialServerStreamSocket & source ) throw() ;
+					const SequentialServerStreamSocket & source ) ;
 
 		
 		
@@ -272,3 +275,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_SEQUENTIAL_SERVER_STREAM_SOCKET_H_
+

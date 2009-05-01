@@ -110,8 +110,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool hasDirectory( 
-						const std::string & subdirectoryName ) const
-					throw( DirectoryLookupFailed ) ;
+					const std::string & subdirectoryName ) const ;
+
 
 
 				/**
@@ -124,8 +124,8 @@ namespace Ceylan
 				 * not supported.
 				 *
 				 */
-				virtual bool hasFile( const std::string & fileName ) const
-					throw( DirectoryLookupFailed ) ;
+				virtual bool hasFile( const std::string & fileName ) const ;
+
 
 
 				/**
@@ -141,8 +141,7 @@ namespace Ceylan
 				 * not supported.
 				 *
 				 */
-				virtual bool hasEntry( const std::string & entryName ) const
-					throw( DirectoryLookupFailed ) ;
+				virtual bool hasEntry( const std::string & entryName ) const ;
 
 
 
@@ -161,8 +160,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual void getSubdirectories( 
-						std::list<std::string> & subDirectories )
-					const throw( DirectoryLookupFailed ) ;
+					std::list<std::string> & subDirectories ) const ;
+
 
 
 				/**
@@ -176,8 +175,8 @@ namespace Ceylan
 				 * is not supported.
 				 *
 				 */
-				virtual void getFiles( std::list<std::string> & files )
-					const throw( DirectoryLookupFailed ) ;
+				virtual void getFiles( std::list<std::string> & files ) const ;
+
 
 
 				/**
@@ -196,7 +195,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual void getEntries( std::list<std::string> & entries )
-					const throw( DirectoryLookupFailed ) ;
+					const ;
+
 
 
 				/**
@@ -222,10 +222,9 @@ namespace Ceylan
 				 *
 				 */
 				virtual void getSortedEntries( 
-						std::list<std::string> & subDirectories,
-						std::list<std::string> & files,
-						std::list<std::string> & otherEntries )
-					const throw( DirectoryLookupFailed ) ;
+					std::list<std::string> & subDirectories,
+					std::list<std::string> & files,
+					std::list<std::string> & otherEntries ) const ;
 
 
 
@@ -248,13 +247,13 @@ namespace Ceylan
 				 *
 				 */
 	            virtual const std::string toString( 
-						Ceylan::VerbosityLevels level = Ceylan::high )
-					const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 
 
 
 				// Factory section.
+
 
 
 				/**
@@ -274,9 +273,9 @@ namespace Ceylan
 				 *
 				 */
 				static LibfatDirectory & Create( 
-						const std::string & newDirectoryName ) 
-					throw( DirectoryException ) ;
+					const std::string & newDirectoryName ) ;
 
+				
 				
 				/**
 				 * Returns a LibfatDirectory reference on specified
@@ -298,8 +297,7 @@ namespace Ceylan
 				 *
 				 */
 				static LibfatDirectory & Open( 
-						const std::string & directoryName = "" ) 
-					throw( DirectoryException ) ;
+					const std::string & directoryName = "" ) ;
 					
 					
 
@@ -323,10 +321,10 @@ namespace Ceylan
 				 *
 				 */
 				explicit LibfatDirectory( 
-						const std::string & directoryName = "",
-						bool create = true ) 
-					throw( DirectoryException ) ;
+					const std::string & directoryName = "",
+					bool create = true ) ;
 
+				
 				
 					
 			protected:
@@ -343,7 +341,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual FileSystemManager & getCorrespondingFileSystemManager()
-					const throw( DirectoryDelegatingException ) ;
+					const ;
+
 
 
 				/**
@@ -356,8 +355,8 @@ namespace Ceylan
 				 * @throw DirectoryDelegatingException if the operation failed.
 				 *
 				 */
-				virtual void secureCorrespondingFileSystemManager()
-					const throw( DirectoryDelegatingException ) ;
+				virtual void secureCorrespondingFileSystemManager() const ;
+
 
 
 				/**
@@ -366,6 +365,7 @@ namespace Ceylan
 				 *
 				 */
 				static const std::string RootDirectoryPrefix ;
+
 
 
 				/**
@@ -377,6 +377,7 @@ namespace Ceylan
 				static const std::string CurrentDirectoryAlias ;
 
 
+
 				/**
 				 * Upper directory alias.
 				 *
@@ -386,11 +387,13 @@ namespace Ceylan
 				static const std::string UpperDirectoryAlias ;
 
 
+
 				/**
 				 * Directory separator.
 				 * @example Slash or backslash.
 				 */
 				static const char Separator ;
+
 
 
 
@@ -404,7 +407,8 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 *
 				 */
-				LibfatDirectory( const LibfatDirectory & source ) throw() ;
+				LibfatDirectory( const LibfatDirectory & source ) ;
+
 
 
 				/**
@@ -415,7 +419,7 @@ namespace Ceylan
 				 *
 				 */
 				LibfatDirectory & operator = ( 
-					const LibfatDirectory & source ) throw() ;
+					const LibfatDirectory & source ) ;
 
 
 
@@ -425,6 +429,7 @@ namespace Ceylan
 	}
 
 }
+
 
 
 #endif // CEYLAN_LIBFAT_DIRECTORY_H_

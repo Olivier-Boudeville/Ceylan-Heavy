@@ -129,7 +129,7 @@ namespace Ceylan
 				 * @throw SocketException if the operation failed.
 				 *
 				 */
-				StreamSocket( Port localPort, bool blocking = true,
+				explicit StreamSocket( Port localPort, bool blocking = true,
 					bool sacrificeThroughputToPacketTiming = false ) ;
 		
 

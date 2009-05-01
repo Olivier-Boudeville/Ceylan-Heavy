@@ -29,7 +29,7 @@
 
 
 
-// It is a private header, hence configuration settings can be used here :
+// It is a private header, hence configuration settings can be used here:
 
 #ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"      // for configure-time feature settings
@@ -39,7 +39,7 @@
 #if CEYLAN_USES_NETWORK
 
 
-// Not available in their C++ form :
+// Not available in their C++ form:
 extern "C"
 {
 
@@ -73,6 +73,7 @@ namespace Ceylan
 {
 
 
+
 	namespace Network
 	{
 
@@ -94,7 +95,7 @@ namespace Ceylan
 
 
 				/// Basic constructor, starts with a blank address.
-				SystemSpecificSocketAddress() throw()
+				SystemSpecificSocketAddress()
 				{
 					blank() ;
 				}
@@ -108,14 +109,14 @@ namespace Ceylan
 
 
 				/// Blanks this address.
-				void blank() throw()
+				void blank()
 				{
 
-					// Clean up this structure :
+					// Clean up this structure:
 
 #ifdef CEYLAN_USES_MEMSET
 
-					// System V-style :
+					// System V-style:
 					::memset( & _socketAddress, 0 ,
 						sizeof( _socketAddress ) ) ;
 
@@ -124,7 +125,7 @@ namespace Ceylan
 
 #ifdef CEYLAN_USES_BZERO
 
-					// BSD-style :
+					// BSD-style:
 					::bzero( & _socketAddress, sizeof( _socketAddress ) ) ;
 
 #else // CEYLAN_USES_BZERO
@@ -156,7 +157,7 @@ namespace Ceylan
 				 *
 				 */
 				SystemSpecificSocketAddress(
-			 		const SystemSpecificSocketAddress & source ) throw() ;
+			 		const SystemSpecificSocketAddress & source ) ;
 
 
 				/**
@@ -168,10 +169,11 @@ namespace Ceylan
 				 *
 				 */
 				SystemSpecificSocketAddress & operator = (
-					const SystemSpecificSocketAddress & source ) throw() ;
+					const SystemSpecificSocketAddress & source ) ;
 
 
 		} ;
+		
 
 	}
 
@@ -183,3 +185,4 @@ namespace Ceylan
 
 
 #endif // CEYLAN_SYSTEM_SPECIFIC_SOCKET_ADDRESS_H_
+

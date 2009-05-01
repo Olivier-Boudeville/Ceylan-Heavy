@@ -41,6 +41,7 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
+
 extern "C"
 {
 
@@ -79,6 +80,7 @@ extern "C"
 #include <cerrno>
 
 
+
 using std::string ;
 using std::list ;
 
@@ -108,7 +110,7 @@ bool Process::_Saved = false ;
 
 
 
-ProcessException::ProcessException( const string message ) throw():
+ProcessException::ProcessException( const string message ) :
 	RunnableException( message )
 {
 
@@ -124,7 +126,7 @@ ProcessException::~ProcessException() throw()
 
 
 
-Process::Process() throw():
+Process::Process() :
 	Runnable(),
 	_id     ( 0 ),
 	_error  ( 0 )
@@ -134,7 +136,7 @@ Process::Process() throw():
 
 
 
-Process::Process( const string & name ) throw():
+Process::Process( const string & name ) :
 	Runnable( name ),
 	_id     ( 0 ),
 	_error  ( 0 )
@@ -151,7 +153,7 @@ Process::~Process() throw()
 
 
 
-void Process::run() throw( RunnableException )
+void Process::run()
 {
 
 #if CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
@@ -172,9 +174,12 @@ void Process::run() throw( RunnableException )
 
 	if ( _id == 0 )
 	{
+	
 		// We are the forked child. getpid is expected to be non-negative:
 		_id = ::getpid() ;
+		
 		start() ;
+		
 	}
 
 	// We are the forked father.
@@ -190,9 +195,8 @@ void Process::run() throw( RunnableException )
 
 
 
-void Process::kill() throw( ProcessException )
+void Process::kill()
 {
-
 
 #if CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
 
@@ -225,7 +229,7 @@ void Process::kill() throw( ProcessException )
 
 
 
-bool Process::isRunning() const throw( ProcessException )
+bool Process::isRunning() const
 {
 
 #if CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
@@ -255,8 +259,7 @@ bool Process::isRunning() const throw( ProcessException )
 
 
 
-const string Process::toString( Ceylan::VerbosityLevels level )
-	const throw()
+const string Process::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	return "Process whose PID is " + Ceylan::toString( _id ) ;
@@ -269,7 +272,7 @@ const string Process::toString( Ceylan::VerbosityLevels level )
 // Static section.
 
 
-Pid Process::GetHostingPID() throw( ProcessException )
+Pid Process::GetHostingPID()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -304,7 +307,7 @@ Pid Process::GetHostingPID() throw( ProcessException )
 
 
 
-Pid Process::GetParentID() throw( ProcessException )
+Pid Process::GetParentID()
 {
 
 #ifdef CEYLAN_USES_GETPID
@@ -323,7 +326,7 @@ Pid Process::GetParentID() throw( ProcessException )
 
 
 Process::ExitReason Process::WaitChildProcess( const Process & childProcess,
-	ErrorCode * executionInfo ) throw( ProcessException )
+	ErrorCode * executionInfo )
 {
 
 #ifdef CEYLAN_USES_WAITPID
@@ -378,7 +381,7 @@ Process::ExitReason Process::WaitChildProcess( const Process & childProcess,
 
 
 
-string Process::GetOwner() throw( ProcessException )
+string Process::GetOwner()
 {
 
 #if CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
@@ -414,12 +417,10 @@ void Process::RunExecutable(
 	const list<string> & argv,
 	const string & stdoutFilename,
 	const string & stderrFilename,
-	const string & stdinFilename ) throw( ProcessException )
+	const string & stdinFilename )
 {
 
-
 #if CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
-
 
 	// Constructs the argument list:
 
@@ -488,7 +489,6 @@ void Process::RunExecutable(
 
 
 bool Process::RedirectStdout( const string & filename ) 
-	throw( ProcessException )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -535,7 +535,7 @@ bool Process::RedirectStdout( const string & filename )
 
 
 
-bool Process::RedirectStdout( OutputStream & os ) throw( ProcessException )
+bool Process::RedirectStdout( OutputStream & os )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -563,7 +563,6 @@ bool Process::RedirectStdout( OutputStream & os ) throw( ProcessException )
 
 
 bool Process::RedirectStderr( const string & filename ) 
-	throw( ProcessException )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -610,7 +609,7 @@ bool Process::RedirectStderr( const string & filename )
 
 
 
-bool Process::RedirectStderr( OutputStream & os ) throw( ProcessException )
+bool Process::RedirectStderr( OutputStream & os )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -637,7 +636,7 @@ bool Process::RedirectStderr( OutputStream & os ) throw( ProcessException )
 
 
 
-bool Process::RedirectStdin( const string & filename ) throw( ProcessException )
+bool Process::RedirectStdin( const string & filename )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -685,7 +684,7 @@ bool Process::RedirectStdin( const string & filename ) throw( ProcessException )
 
 
 
-bool Process::RedirectStdin( InputStream & is ) throw( ProcessException )
+bool Process::RedirectStdin( InputStream & is )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -712,8 +711,7 @@ bool Process::RedirectStdin( InputStream & is ) throw( ProcessException )
 
 
 
-
-void Process::processCreationFailed() throw( ProcessException )
+void Process::processCreationFailed()
 {
 
 	throw ProcessException( "Ceylan::Process:: process creation failed: "
@@ -723,7 +721,7 @@ void Process::processCreationFailed() throw( ProcessException )
 
 
 
-Ceylan::Uint32 Process::GetTime() throw( ProcessException )
+Ceylan::Uint32 Process::GetTime()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -772,7 +770,7 @@ Ceylan::Uint32 Process::GetTime() throw( ProcessException )
 
 
 
-void Process::SaveState( int argc, char ** argv ) throw()
+void Process::SaveState( int argc, char ** argv )
 {
 
 	_Path = Directory::GetCurrentWorkingDirectoryPath() ;
@@ -787,7 +785,7 @@ void Process::SaveState( int argc, char ** argv ) throw()
 
 
 
-void Process::Restart() throw( ProcessException )
+void Process::Restart()
 {
 
 	if ( ! _Saved )
@@ -813,8 +811,7 @@ void Process::Restart() throw( ProcessException )
 
 
 
-bool Process::DuplicateStream( FileDescriptor FDOld, 
-	FileDescriptor FDNew ) throw( Features::FeatureNotAvailableException )
+bool Process::DuplicateStream( FileDescriptor FDOld, FileDescriptor FDNew )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS

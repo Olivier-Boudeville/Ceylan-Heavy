@@ -37,6 +37,8 @@
 #include <list>
 
 
+
+
 namespace Ceylan
 {
 
@@ -67,6 +69,7 @@ namespace Ceylan
 		
 		
 		
+		
 		/**
 		 * Records the known types of network addresses.
 		 *
@@ -85,8 +88,10 @@ namespace Ceylan
 		
 		
 		
+		
 		// HostDNSEntry records IP addresses:
 		class IPAddress ;
+		
 		
 		
 		

@@ -41,6 +41,7 @@
 
 
 
+
 namespace Ceylan
 {
 
@@ -63,6 +64,7 @@ namespace Ceylan
 		typedef size_t Size ;
 
 
+
 		/**
 		 * Unsigned position, in bytes, for example for file operations.
 		 *
@@ -70,10 +72,12 @@ namespace Ceylan
 		typedef long Position ;
 
 
+
 		/**
 		 * Signed size, in bytes, for example for file operations.
 		 *
 		 */
+		 
 		 
 		/*
 		 * Using here the only configuration-specific preprocessor symbol that
@@ -104,11 +108,13 @@ namespace Ceylan
 		typedef Uint32 Second ;
 
 
+
 		/**
 		 * Records milliseconds, which last 10^¯3 second.
 		 *
 		 */
 		typedef Uint32 Millisecond ;
+
 
 
 		/**
@@ -118,11 +124,13 @@ namespace Ceylan
 		typedef Uint32 Microsecond ;
 
 
+
 		/**
 		 * Records nanoseconds, which last 10^¯9 second.
 		 *
 		 */
 		typedef Uint32 Nanosecond ;
+
 
 
 
@@ -136,6 +144,7 @@ namespace Ceylan
 		} ;
 
 
+
 		/// Exception raised when basic input/output operation fails.
 		class CEYLAN_DLL IOException: public SystemException
 		{
@@ -143,6 +152,7 @@ namespace Ceylan
 				IOException( const std::string & message ) ;
 				virtual ~IOException() throw() ;
 		} ;
+
 
 
 
@@ -176,12 +186,15 @@ namespace Ceylan
 		typedef int ErrorCode ;
 
 
+
 		/// Returns the error ID (errno).
 		CEYLAN_DLL ErrorCode getError() ;
 
 
+
 		/// Returns the diagnosis string corresponding to errorID (errno).
 		CEYLAN_DLL std::string explainError( ErrorCode errorID ) ;
+
 
 
 		/**
@@ -190,6 +203,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL std::string explainError() ;
+
 
 
 		/**
@@ -221,12 +235,15 @@ namespace Ceylan
 		typedef int InterruptMask ;
 
 
+
 		/// To specify that all interrupts are to disabled (null value).
 		extern CEYLAN_DLL const InterruptMask AllInterruptsDisabled ;
 		
 		
+		
 		/// Signature of an interrupt handler.
 		typedef void (* IRQHandler)( void ) ;
+		
 		
 
 		/**
@@ -245,6 +262,7 @@ namespace Ceylan
 		CEYLAN_DLL void InitializeInterrupts( bool force = false ) ;
 
 
+
 		/**
 		 * On platforms supporting it (ex: the Nintendo DS on the ARM9),
 		 * sets the current set of interrupts enabled.
@@ -260,7 +278,8 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL InterruptMask SetEnabledInterrupts( 
-				InterruptMask newMask = AllInterruptsDisabled ) ;
+			InterruptMask newMask = AllInterruptsDisabled ) ;
+
 
 
 		/**
@@ -294,7 +313,7 @@ namespace Ceylan
 		 *
 		 */
 		template <typename T>
-		T* ConvertToNonCacheable( T * sourceAddress ) throw()
+		T* ConvertToNonCacheable( T * sourceAddress )
 		{
 		
 			return reinterpret_cast<T*>(
@@ -329,6 +348,7 @@ namespace Ceylan
 		CEYLAN_DLL Ceylan::Byte * CacheProtectedNew( Size numberOfBytes ) ;
 
 
+
 		/**
 		 * Deallocates the specified cache-protected buffer.
 		 *
@@ -339,7 +359,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL void CacheProtectedDelete( 
-				Ceylan::Byte * cacheProtectedBuffer ) ;
+			Ceylan::Byte * cacheProtectedBuffer ) ;
 
 
 #if defined(CEYLAN_ARCH_NINTENDO_DS) && CEYLAN_ARCH_NINTENDO_DS == 1
@@ -377,6 +397,7 @@ namespace Ceylan
 
 		
 
+
 		// IO section.
 		
 		
@@ -386,6 +407,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL bool HasAvailableData( FileDescriptor fd ) ;
+
 
 
 		/**
@@ -403,7 +425,8 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL Size FDRead( FileDescriptor fd, Ceylan::Byte * dataBuffer,
-				Size toReadBytesNumber ) ;
+			Size toReadBytesNumber ) ;
+
 
 
 		/**
@@ -420,7 +443,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL Size FDWrite( FileDescriptor fd, 
-				const Ceylan::Byte * dataBuffer, Size toWriteBytesNumber ) ;
+			const Ceylan::Byte * dataBuffer, Size toWriteBytesNumber ) ;
 
 
 
@@ -431,6 +454,7 @@ namespace Ceylan
 		 * @see Ceylan::Timestamp to easily access the correct local time.
 		 *
 		 */
+
 
 
 		/**
@@ -445,6 +469,7 @@ namespace Ceylan
 		CEYLAN_DLL Second getTime() ;
 
 
+
 		/**
 		 * Converts the time moment into a human readable string.
 		 *
@@ -455,6 +480,7 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL std::string timeToString( const time_t & t ) ;
+
 
 
 		/**
@@ -485,8 +511,8 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL std::string durationToString(
-				Second startingSecond, Microsecond startingMicrosecond,
-				Second stoppingSecond, Microsecond stoppingMicrosecond ) ;
+			Second startingSecond, Microsecond startingMicrosecond,
+			Second stoppingSecond, Microsecond stoppingMicrosecond ) ;
 
 
 
@@ -496,6 +522,7 @@ namespace Ceylan
 		 *
 		 */
 		extern CEYLAN_DLL const Second MaximumDurationWithMicrosecondAccuracy ; 
+		
 		
 		
 		/**
@@ -513,8 +540,8 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL Microsecond getDurationBetween(
-				Second startingSecond, Microsecond startingMicrosecond,
-				Second stoppingSecond, Microsecond stoppingMicrosecond ) ;
+			Second startingSecond, Microsecond startingMicrosecond,
+			Second stoppingSecond, Microsecond stoppingMicrosecond ) ;
 
 
 
@@ -789,8 +816,8 @@ namespace Ceylan
 		 *
  		 */
 		CEYLAN_DLL Microsecond getActualDurationForSleep(
-				Microsecond requestedMicroseconds, 
-				Second requestedSeconds = 0 ) ;
+			Microsecond requestedMicroseconds, 
+			Second requestedSeconds = 0 ) ;
 
 
 

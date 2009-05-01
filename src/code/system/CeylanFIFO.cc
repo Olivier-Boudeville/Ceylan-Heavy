@@ -79,7 +79,7 @@ using namespace Ceylan ;
  *
  * @note If ever a variable is read in the main function and in an IRQ handler,
  * by all means declare it as volatile. The other ARM is not the only cause
- * of using this qualifier, it is useful for IRQ handler as well !
+ * of using this qualifier, it is useful for IRQ handler as well!
  *
  * Code called from an IRQ handler (ex: handle*) does not need to be 
  * specifically protected, execution-wise, as interrupts are disabled during
@@ -95,11 +95,12 @@ FIFO * FIFO::_FIFO = 0 ;
 
 
 
-FIFO::FIFOException::FIFOException( const string & reason ) throw():
+FIFO::FIFOException::FIFOException( const string & reason ) :
 	SystemException( reason )
 {
 
 }
+
 
 
 FIFO::FIFOException::~FIFOException() throw()
@@ -111,14 +112,15 @@ FIFO::FIFOException::~FIFOException() throw()
 
 			
 
-FIFO::FIFOFull::FIFOFull( const string & reason ) throw():
+FIFO::FIFOFull::FIFOFull( const string & reason ) :
 	FIFO::FIFOException( reason )
 {
 
 }
 		
 
-FIFO::FIFOEmpty::FIFOEmpty( const string & reason ) throw():
+
+FIFO::FIFOEmpty::FIFOEmpty( const string & reason ) :
 	FIFO::FIFOException( reason )
 {
 
@@ -127,7 +129,7 @@ FIFO::FIFOEmpty::FIFOEmpty( const string & reason ) throw():
 				
 
 
-FIFO::FIFO() throw( FIFOException ):
+FIFO::FIFO():
 	_arm7StatusWordPointer( 0 ),
 	_arm7ErrorCodePointer( 0 ),
 	_localCommandCount( 0 ),
@@ -420,7 +422,7 @@ FIFO::~FIFO() throw()
 // Activation section.
 
 
-bool FIFO::isActive() const throw()
+bool FIFO::isActive() const
 {
 
 	return _activated ;
@@ -429,7 +431,7 @@ bool FIFO::isActive() const throw()
 
 
 
-void FIFO::activate() throw( FIFOException )
+void FIFO::activate()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -610,7 +612,7 @@ void FIFO::activate() throw( FIFOException )
 
 
 
-void FIFO::deactivate() throw()
+void FIFO::deactivate()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -683,10 +685,11 @@ void FIFO::deactivate() throw()
 
 
 
+
 // Status word and error code section.
 
 
-ARM7StatusWord FIFO::getLastARM7StatusWord() throw()
+ARM7StatusWord FIFO::getLastARM7StatusWord()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -711,7 +714,7 @@ ARM7StatusWord FIFO::getLastARM7StatusWord() throw()
 
 
 
-string FIFO::interpretLastARM7StatusWord() throw()
+string FIFO::interpretLastARM7StatusWord()
 {
 
 	ARM7StatusWord status = getLastARM7StatusWord() ;
@@ -751,7 +754,7 @@ string FIFO::interpretLastARM7StatusWord() throw()
 
 
 
-ARM7ErrorCode FIFO::getLastARM7ErrorCode() throw()
+ARM7ErrorCode FIFO::getLastARM7ErrorCode()
 {
 
 	// Null pointer results in NoError (0):
@@ -768,7 +771,7 @@ ARM7ErrorCode FIFO::getLastARM7ErrorCode() throw()
 
 
 
-string FIFO::interpretLastARM7ErrorCode() throw()
+string FIFO::interpretLastARM7ErrorCode()
 {
 
 	ARM7ErrorCode error = getLastARM7ErrorCode() ;
@@ -852,7 +855,7 @@ string FIFO::interpretLastARM7ErrorCode() throw()
 
 
 
-void FIFO::sendBatteryStatusRequest() throw( FIFOException )
+void FIFO::sendBatteryStatusRequest()
 {
 
 	InterruptMask previous = SetEnabledInterrupts( AllInterruptsDisabled ) ;
@@ -872,7 +875,7 @@ void FIFO::sendBatteryStatusRequest() throw( FIFOException )
 
 
 
-BatteryStatus FIFO::getBatteryStatus() throw( FIFOException )					
+BatteryStatus FIFO::getBatteryStatus()					
 {
 
 	Ceylan::Uint8 sleepCount = 10 ;
@@ -895,7 +898,7 @@ BatteryStatus FIFO::getBatteryStatus() throw( FIFOException )
 
 
 
-void FIFO::sendDSTypeRequest() throw( FIFOException )
+void FIFO::sendDSTypeRequest()
 {
 
 	InterruptMask previous = SetEnabledInterrupts( AllInterruptsDisabled ) ;
@@ -915,7 +918,7 @@ void FIFO::sendDSTypeRequest() throw( FIFOException )
 
 
 
-DSType FIFO::getDSType() throw( FIFOException )					
+DSType FIFO::getDSType()					
 {
 
 	Ceylan::Uint8 sleepCount = 10 ;
@@ -938,8 +941,7 @@ DSType FIFO::getDSType() throw( FIFOException )
 
 
 
-const std::string FIFO::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+const std::string FIFO::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string res ;
@@ -981,7 +983,7 @@ const std::string FIFO::toString( Ceylan::VerbosityLevels level )
 
 
 
-FIFOCommandID FIFO::GetFIFOCommandIDFrom( const FIFOElement & element ) throw()
+FIFOCommandID FIFO::GetFIFOCommandIDFrom( const FIFOElement & element )
 {
 
 	return ( element & 0xff000000 ) >> 24 ;
@@ -991,7 +993,7 @@ FIFOCommandID FIFO::GetFIFOCommandIDFrom( const FIFOElement & element ) throw()
 
 
 FIFOCommandCount FIFO::GetFIFOCommandCountFrom( 
-	const FIFOElement & element ) throw()
+	const FIFOElement & element )
 {
 
 	return ( element & 0x00ff0000 ) >> 16 ;
@@ -1000,7 +1002,7 @@ FIFOCommandCount FIFO::GetFIFOCommandCountFrom(
 
 
 
-FIFOCommandCount FIFO::GetARM7ProcessedCount() throw()
+FIFOCommandCount FIFO::GetARM7ProcessedCount()
 {
 	
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -1026,7 +1028,7 @@ FIFOCommandCount FIFO::GetARM7ProcessedCount() throw()
 
 
 
-FIFOCommandCount FIFO::GetARM9ProcessedCount() throw()
+FIFOCommandCount FIFO::GetARM9ProcessedCount()
 {
 	
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -1125,7 +1127,7 @@ FIFO & FIFO::GetFIFO() throw ( FIFOException )
 
 
 
-bool FIFO::RemoveFIFO() throw()
+bool FIFO::RemoveFIFO()
 {
 
 	if ( _FIFO != 0 )
@@ -1146,10 +1148,11 @@ bool FIFO::RemoveFIFO() throw()
 
 
 
+
 // Protected section.
 
 
-void FIFO::handleReceivedCommand() throw()
+void FIFO::handleReceivedCommand()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -1174,7 +1177,7 @@ void FIFO::handleReceivedCommand() throw()
 	while ( dataAvailableForReading() )
 	{
 	 		
-	 	// readBlocking instead of read: increased safety ?
+	 	// readBlocking instead of read: increased safety?
 		firstElement = readBlocking() ;
 
 #if CEYLAN_SAFE_FIFO
@@ -1243,7 +1246,7 @@ void FIFO::handleReceivedCommand() throw()
 
 
 void FIFO::handleReceivedSystemSpecificCommand( FIFOCommandID commandID, 
-	FIFOElement firstElement ) throw()
+	FIFOElement firstElement )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -1303,7 +1306,7 @@ void FIFO::handleReceivedSystemSpecificCommand( FIFOCommandID commandID,
 
 
 void FIFO::handleReceivedIntegratingLibrarySpecificCommand( 
-	FIFOCommandID commandID, FIFOElement firstElement ) throw()
+	FIFOCommandID commandID, FIFOElement firstElement )
 {
 
 	// Made to be overriden.
@@ -1322,7 +1325,7 @@ void FIFO::handleReceivedIntegratingLibrarySpecificCommand(
 
 
 void FIFO::handleReceivedApplicationCommand( FIFOCommandID commandID, 
-	FIFOElement firstElement ) throw()
+	FIFOElement firstElement )
 {
 
 	/*
@@ -1335,7 +1338,8 @@ void FIFO::handleReceivedApplicationCommand( FIFOCommandID commandID,
 }
 
 
-void FIFO::handleUnexpectedApplicationCommand( FIFOCommandID commandID ) throw()
+
+void FIFO::handleUnexpectedApplicationCommand( FIFOCommandID commandID )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -1350,7 +1354,7 @@ void FIFO::handleUnexpectedApplicationCommand( FIFOCommandID commandID ) throw()
 
 
 	
-FIFOElement FIFO::prepareFIFOCommand( FIFOCommandID id ) throw()
+FIFOElement FIFO::prepareFIFOCommand( FIFOCommandID id )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -1383,7 +1387,7 @@ FIFOElement FIFO::prepareFIFOCommand( FIFOCommandID id ) throw()
 
 
 
-void FIFO::notifyCommandToARM7() throw()
+void FIFO::notifyCommandToARM7()
 {
 
 	_sentCount++ ;
@@ -1393,7 +1397,7 @@ void FIFO::notifyCommandToARM7() throw()
 
 
 
-void FIFO::sendSynchronizeInterruptToARM7() throw()
+void FIFO::sendSynchronizeInterruptToARM7()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -1424,7 +1428,7 @@ void FIFO::sendSynchronizeInterruptToARM7() throw()
 
 
 
-bool FIFO::dataAvailableForReading() const throw()
+bool FIFO::dataAvailableForReading() const
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -1442,7 +1446,7 @@ bool FIFO::dataAvailableForReading() const throw()
 
 
 
-bool FIFO::spaceAvailableForWriting() const throw()
+bool FIFO::spaceAvailableForWriting() const
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -1460,7 +1464,7 @@ bool FIFO::spaceAvailableForWriting() const throw()
 
 
 
-FIFOElement FIFO::read() throw( FIFOException )
+FIFOElement FIFO::read()
 {
 
 	// LogPlug::trace( "FIFO read" ) ;
@@ -1501,7 +1505,7 @@ FIFOElement FIFO::read() throw( FIFOException )
 
 
 
-FIFOElement FIFO::readBlocking() throw( FIFOException )
+FIFOElement FIFO::readBlocking()
 {
 
 	// LogPlug::trace( "FIFO readBlocking" ) ;
@@ -1527,7 +1531,7 @@ FIFOElement FIFO::readBlocking() throw( FIFOException )
 	if ( attemptCount == 0 )
 	{
 	
-		LogPlug::warning( "FIFO::readBlocking: never ending ?" ) ;
+		LogPlug::warning( "FIFO::readBlocking: never ending?" ) ;
 
 		// Triggers the ARM7 if it can help to make some FIFO room:
 		sendSynchronizeInterruptToARM7() ;
@@ -1570,7 +1574,7 @@ FIFOElement FIFO::readBlocking() throw( FIFOException )
 
 
 
-void FIFO::write( FIFOElement toSend ) throw( FIFOException )
+void FIFO::write( FIFOElement toSend )
 {
 
 	// LogPlug::trace( "FIFO write" ) ;
@@ -1605,7 +1609,7 @@ void FIFO::write( FIFOElement toSend ) throw( FIFOException )
 
 
 
-void FIFO::writeBlocking( FIFOElement toSend ) throw( FIFOException )
+void FIFO::writeBlocking( FIFOElement toSend )
 {
 
 	// LogPlug::trace( "FIFO writeBlocking" ) ;
@@ -1633,7 +1637,7 @@ void FIFO::writeBlocking( FIFOElement toSend ) throw( FIFOException )
 	if ( attemptCount == 0 )
 	{
 	
-		LogPlug::warning( "FIFO::writeBlocking: never ending ?" ) ;
+		LogPlug::warning( "FIFO::writeBlocking: never ending?" ) ;
 		
 		// Triggers the ARM7 if it can help to make some FIFO room:
 		sendSynchronizeInterruptToARM7() ;
@@ -1670,7 +1674,7 @@ void FIFO::writeBlocking( FIFOElement toSend ) throw( FIFOException )
 
 
 
-FIFOCommandCount FIFO::getProcessedCount() const throw()
+FIFOCommandCount FIFO::getProcessedCount() const
 {
 
 	return ( _processedCount & 0x0f ) ;
@@ -1679,7 +1683,7 @@ FIFOCommandCount FIFO::getProcessedCount() const throw()
 
 
 
-FIFOCommandCount FIFO::getSentCount() const throw()
+FIFOCommandCount FIFO::getSentCount() const
 {
 
 	return ( _sentCount & 0x0f ) ;
@@ -1688,7 +1692,7 @@ FIFOCommandCount FIFO::getSentCount() const throw()
 
 
 
-void FIFO::incrementProcessedCount() throw() 
+void FIFO::incrementProcessedCount() 
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -1824,7 +1828,7 @@ void FIFO::ManageReceivedCommand()
 
 
 
-string FIFO::DescribeCommand( FIFOElement element ) throw()
+string FIFO::DescribeCommand( FIFOElement element )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS

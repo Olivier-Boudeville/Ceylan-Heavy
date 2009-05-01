@@ -40,6 +40,7 @@
 
 
 
+
 extern "C"
 {
 
@@ -108,6 +109,7 @@ using namespace std ;
 
 
 
+
 NetworkException::NetworkException( const string & message ) :
 	Ceylan::Exception( message )
 {
@@ -120,6 +122,7 @@ NetworkException::~NetworkException() throw()
 {
 
 }
+
 
 
 
@@ -144,7 +147,7 @@ struct HostDNSEntry::SystemSpecificHostEntry
 	 */
 	struct addrinfo* _entryList ;
 
-	SystemSpecificHostEntry():
+	SystemSpecificHostEntry() :
 		_entryList( 0 )
 	{
 	
@@ -171,7 +174,7 @@ struct HostDNSEntry::SystemSpecificHostEntry
 
 	hostent * _entry ;
 	
-	SystemSpecificHostEntry():
+	SystemSpecificHostEntry() :
 		_entry( 0 )
 	{
 	
@@ -186,6 +189,7 @@ struct HostDNSEntry::SystemSpecificHostEntry
 
 
 
+
 /*
  * Some of HostDNSEntry methods will return bogus values 
  * (ex: empty structures) whenever called whereas system-specific 
@@ -196,6 +200,7 @@ struct HostDNSEntry::SystemSpecificHostEntry
  *
  */
  
+
 
 
 HostDNSEntry::HostDNSEntry( const std::string & hostName ) :
@@ -825,7 +830,7 @@ void Ceylan::Network::setLocalHostName( const string & newHostName )
 	 */
 	const char * buf = newHostName.c_str() ;
 	if ( ::sysinfo( SI_SET_HOSTNAME, const_cast<char *>( buf ),
-			newHostName.size() /* + 1 ? */ ) == -1 )
+			newHostName.size() /* + 1? */ ) == -1 )
 		throw NetworkException( "Ceylan::Network::setLocalHostName: "
 			"unable to set local host name on Solaris to "
 			+ newHostName + ": " + explainError() ) ;
@@ -1003,6 +1008,7 @@ const string Ceylan::Network::getMostPreciseLocalHostName()
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
+
 
 
 
@@ -1458,12 +1464,14 @@ std::string Ceylan::Network::explainSocketError()
 
 
 
+
 // NetworkManager section.
 
 
 #if CEYLAN_ARCH_WINDOWS
 
 NetworkManager NetworkManager::_Manager ;
+
 
 NetworkManager::NetworkManager()  
 {

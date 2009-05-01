@@ -37,12 +37,15 @@
 
 
 
+
 namespace Ceylan 
 {
 
 
+
 	namespace System 
 	{
+	
 	
 	
 		/**
@@ -54,7 +57,7 @@ namespace Ceylan
 		 * feature is itself available.
 		 *
 		 * @note The virtual inheritance has been set for classes such as 
-		 * System::File which are both input and output streams : had the 
+		 * System::File which are both input and output streams: had the 
 		 * Stream class a data member, it would not be duplicated in a 
 		 * System::File instance (it would be allocated only once).
 		 *
@@ -151,6 +154,7 @@ namespace Ceylan
 				explicit InputStream( bool blocking = true ) ;
 		
 		
+		
 				/// Basic virtual destructor.
 				virtual ~InputStream() throw() ;
 		
@@ -159,6 +163,7 @@ namespace Ceylan
 				/// Tells if the stream has data to read.
 				bool isSelected() const ;
 		
+
 
 				/**
 				 * Tells whether this InputStream is faulty, i.e. encountered
@@ -198,8 +203,8 @@ namespace Ceylan
 				 *
 				 */
             	virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+
 
 
 
@@ -213,6 +218,7 @@ namespace Ceylan
 				virtual bool hasAvailableData() const = 0 ;
 		
  				
+				
 				/**
 				 * Reads up to maxLength bytes from this InputStream to
 				 * specified buffer.
@@ -266,6 +272,7 @@ namespace Ceylan
 				 */
 				virtual Ceylan::Sint8 readSint8() ;
 
+
 		
 				/**
 				 * Returns a Ceylan::Uint8 read from this input stream.
@@ -290,6 +297,7 @@ namespace Ceylan
 				virtual Ceylan::Sint16 readSint16() ;
 
 		
+		
 				/**
 				 * Returns a Ceylan::Uint16 read from this input stream.
 				 *
@@ -311,6 +319,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual Ceylan::Sint32 readSint32() ;
+
 
 
 				/**
@@ -338,6 +347,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual Ceylan::Float32 readFloat32() ;
+
 
 
 				/**
@@ -368,6 +378,7 @@ namespace Ceylan
 				virtual void readString( std::string & result ) ;
 
 
+
 				/**
 				 * Reads from this input stream as long as there are 
 				 * whitespaces to be read.
@@ -378,6 +389,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual void skipWhitespaces( Ceylan::Uint8 & firstNonSpace ) ;
+
 
 
 
@@ -402,6 +414,7 @@ namespace Ceylan
 				 * 				 
 				 */
 				static Ceylan::Uint16 Select( std::list<InputStream*> & is ) ;
+		
 		
 		
 				/**
@@ -435,6 +448,7 @@ namespace Ceylan
 				virtual void setSelected( bool newStatus ) ;
 
 
+
 				/**
 				 * Sets the faulty state of this stream.
 				 *
@@ -442,6 +456,7 @@ namespace Ceylan
 				 *
 				 */
 				void setFaulty( bool newFaultyState = true ) ;
+		
 		
 		
 				/**
@@ -455,8 +470,8 @@ namespace Ceylan
 	
 	
 	
+	
 			private:
-
 
 
 				/// Stores the selected status.
@@ -479,6 +494,7 @@ namespace Ceylan
 				InputStream( const InputStream & source ) ;
 			
 			
+			
 				/**
 				 * Assignment operator made private to ensure that it will 
 				 * be never called.
@@ -491,6 +507,7 @@ namespace Ceylan
 	
 		
 		} ;
+		
 					
 	}
 	

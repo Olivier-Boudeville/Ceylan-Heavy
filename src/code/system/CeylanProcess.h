@@ -40,6 +40,7 @@
 
 
 
+
 namespace Ceylan 
 {
 
@@ -51,8 +52,10 @@ namespace Ceylan
 		// For process input redirection.
 		class InputStream ;
 		
+		
 		// For process output redirection.
 		class OutputStream ;
+
 
 
 		/// Exception class for process concerns.
@@ -61,15 +64,17 @@ namespace Ceylan
 		
 			public:
 			
-				explicit ProcessException( const std::string message ) 
-					throw() ;
+				explicit ProcessException( const std::string message ) ;
 				virtual ~ProcessException() throw() ; 			
 							
 		} ;
 		
 		
+		
 		/// Describes a Process Identifier (PID).
 		typedef Ceylan::Uint32 Pid ;
+		
+		
 		
 		
 		/**
@@ -102,6 +107,7 @@ namespace Ceylan
 			public:
 	
 	
+	
 				/// Describes how a child process terminated.
 				enum ExitReason
 				{
@@ -121,12 +127,15 @@ namespace Ceylan
 				} ;
 	
 	
+	
 				/// Creates an anonymous Process object.
-				Process() throw() ;
+				Process() ;
+
 
 
 				/// Creates a named Process object.
-				explicit Process( const std::string & name ) throw() ;
+				explicit Process( const std::string & name ) ;
+	
 	
 	
 				/// Basic virtual destructor.
@@ -141,11 +150,13 @@ namespace Ceylan
 				 * @throw RunnableException if the process creation failed.
 				 *
 				 */
-				virtual void run() throw( RunnableException ) ;
+				virtual void run() ;
+	
 	
 	
 				/// Start point of the process: defines what it actually does.
-				virtual void start() throw() = 0 ;
+				virtual void start() = 0 ;
+	
 	
 	
 				/**
@@ -155,7 +166,8 @@ namespace Ceylan
 				 * killed.
 				 *
 				 */
-				virtual void kill() throw( ProcessException ) ;
+				virtual void kill() ;
+	
 	
 	
 				/**
@@ -165,11 +177,13 @@ namespace Ceylan
 				 * be known.
 				 *
 				 */
-				bool isRunning() const throw( ProcessException ) ;
+				bool isRunning() const ;
+	
 	
 	
 				/// Returns the error number.
-				inline ErrorCode getError() const throw() ;
+				inline ErrorCode getError() const ;
+	
 	
 	
 				/**
@@ -177,7 +191,8 @@ namespace Ceylan
 				 * process.
 				 *
 				 */
-				inline Pid getPID() const throw() ;
+				inline Pid getPID() const ;
+	
 	
 	
             	/**
@@ -193,8 +208,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+
 
 
 	
@@ -211,7 +226,8 @@ namespace Ceylan
 				 * one process, the current one, and its PID is set to 0.
 				 *
 				 */
-				static Pid GetHostingPID() throw( ProcessException ) ;
+				static Pid GetHostingPID() ;
+	
 	
 	
 				/**
@@ -222,7 +238,8 @@ namespace Ceylan
 				 * not supported.
 				 *
 				 */
-				static Pid GetParentID() throw( ProcessException ) ;
+				static Pid GetParentID() ;
+	
 	
 	
 				/**
@@ -243,7 +260,8 @@ namespace Ceylan
 				 */
 				static ExitReason WaitChildProcess( 
 					const Process & childProcess,
-					ErrorCode * executionInfo = 0 ) throw( ProcessException ) ;
+					ErrorCode * executionInfo = 0 ) ;
+	
 	
 	
 				/**
@@ -252,7 +270,8 @@ namespace Ceylan
 				 * @throw ProcessException on failure. 
 				 *
 				 */
-				static std::string GetOwner() throw( ProcessException ) ;
+				static std::string GetOwner() ;
+	
 	
 	
 				/**
@@ -275,12 +294,11 @@ namespace Ceylan
 				 *
 				 */
 				static void RunExecutable(
-						const std::string & filename,
-						const std::list<std::string> & arguments,
-						const std::string & stdoutFilename = 0,
-						const std::string & stderrFilename = 0,
-						const std::string & stdinFilename  = 0 ) 
-					throw( ProcessException ) ;
+					const std::string & filename,
+					const std::list<std::string> & arguments,
+					const std::string & stdoutFilename = 0,
+					const std::string & stderrFilename = 0,
+					const std::string & stdinFilename  = 0 ) ;
 
 
 
@@ -292,8 +310,8 @@ namespace Ceylan
 				 * available.
 				 *
 				 */				 
-				static bool RedirectStdout( const std::string & filename )
-					throw( ProcessException ) ;
+				static bool RedirectStdout( const std::string & filename ) ;
+
 
 
 				/**
@@ -306,8 +324,8 @@ namespace Ceylan
 				 * available.
 				 *
 				 */
-				static bool RedirectStdout( OutputStream & os )
-					throw( ProcessException ) ;
+				static bool RedirectStdout( OutputStream & os ) ;
+
 
 
 				/**
@@ -318,8 +336,8 @@ namespace Ceylan
 				 * available.
 				 *
 				 */
-				static bool RedirectStderr( const std::string & filename )
-					throw( ProcessException ) ;
+				static bool RedirectStderr( const std::string & filename ) ;
+	
 	
 	
 				/**
@@ -332,8 +350,8 @@ namespace Ceylan
 				 * available.
 				 *
 				 */
-				static bool RedirectStderr( OutputStream & os ) 
-					throw( ProcessException ) ;
+				static bool RedirectStderr( OutputStream & os ) ;
+
 
 
 				/**
@@ -344,8 +362,8 @@ namespace Ceylan
 				 * available.
 				 *
 				 */				 
-				static bool RedirectStdin( const std::string & filename )
-					throw( ProcessException ) ;
+				static bool RedirectStdin( const std::string & filename ) ;
+	
 	
 	
 				/**
@@ -358,8 +376,7 @@ namespace Ceylan
 				 * available.
 				 *
 				 */
-				static bool RedirectStdin( InputStream & is ) 
-					throw( ProcessException ) ;
+				static bool RedirectStdin( InputStream & is ) ;
 
 
 
@@ -370,7 +387,8 @@ namespace Ceylan
 				 * determined.
 				 *
 				 */
-				static Ceylan::Uint32 GetTime() throw( ProcessException ) ;
+				static Ceylan::Uint32 GetTime() ;
+	
 	
 	
 				/**
@@ -380,26 +398,33 @@ namespace Ceylan
 				 * @see restart
 				 *
 				 */
-				static void SaveState( int argc, char ** argv ) throw() ;
+				static void SaveState( int argc, char ** argv ) ;
+	
 	
 	
 				/**
 				 * Restarts the corresponding processs with command line options
 				 * as saved previously by calling saveState.
 				 *
+				 * @throw ProcessException if the operation failed.
+				 *
 				 * @see saveState
 				 *
 				 */
-				static void Restart() throw( ProcessException ) ;
+				static void Restart() ;
 	
 	
 	
 			protected:
 	
 	
-				/// Called whenever new process creation fails.
-				virtual void processCreationFailed() 
-					throw( ProcessException ) ;
+				/**
+				 * Called whenever new process creation fails.
+				 *
+				 * @throw ProcessException if needed.
+				 *
+				 */
+				virtual void processCreationFailed() ;
 	
 	
 	
@@ -415,8 +440,7 @@ namespace Ceylan
 				 *
 				 */
 				static bool DuplicateStream( FileDescriptor FDOld,
-						FileDescriptor FDNew ) 
-					throw( Features::FeatureNotAvailableException ) ;
+						FileDescriptor FDNew ) ;
 
 
 
@@ -427,7 +451,7 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				Process( const Process & source ) throw() ;
+				Process( const Process & source ) ;
 			
 			
 				/**
@@ -437,8 +461,9 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 *
 				 */			 
-				Process & operator = ( const Process & source ) throw() ;
+				Process & operator = ( const Process & source ) ;
 
+	
 	
 				/// The PID of this process.
 				Pid _id ;
@@ -447,6 +472,7 @@ namespace Ceylan
 				/// The error code returned by this process, if any.
 				ErrorCode _error ;
 	
+				
 				
 				
 				// Static section.
@@ -462,6 +488,7 @@ namespace Ceylan
 				
 				/// The path where the executable of this process should be run.
 				static std::string _Path ;
+				
 				
 				/// The name of the executable corresponding to this process.
 				static std::string _Executable ;
@@ -486,15 +513,20 @@ namespace Ceylan
 
 
 
-		ErrorCode Process::getError() const throw()
+		ErrorCode Process::getError() const
 		{
+		
 			return _error ;
+			
 		}
 
 
-		Pid Process::getPID() const throw()
+
+		Pid Process::getPID() const
 		{
+		
 			return _id ;
+			
 		}
 
 
@@ -503,4 +535,6 @@ namespace Ceylan
 }
 
 
+
 #endif  // CEYLAN_PROCESS_H_
+

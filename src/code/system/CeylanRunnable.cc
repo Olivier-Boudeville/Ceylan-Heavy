@@ -32,11 +32,12 @@ using namespace Ceylan::System ;
 
 
 
-RunnableException::RunnableException( const string message ) throw() :
+RunnableException::RunnableException( const string message ) :
 	SystemException( message )
 {
 
 }
+
 
 
 RunnableException::~RunnableException() throw()
@@ -46,18 +47,22 @@ RunnableException::~RunnableException() throw()
 
 
 
-Runnable::Runnable() throw() : 
+
+
+Runnable::Runnable() : 
 	_name()
 {
 
 }
 
 
-Runnable::Runnable( const string & name ) throw() : 
+
+Runnable::Runnable( const string & name ) : 
 	_name( name )
 {
 
 }
+
 
 
 Runnable::~Runnable() throw()
@@ -66,8 +71,11 @@ Runnable::~Runnable() throw()
 }
 
 
-const string & Runnable::getName() const throw()
+
+const string & Runnable::getName() const
 { 
+
 	return _name ; 
+	
 }
 				

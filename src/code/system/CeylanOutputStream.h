@@ -32,6 +32,8 @@
 #include "CeylanTypes.h"      // for Ceylan::Byte, etc.
 
 
+
+
 namespace Ceylan
 {
 
@@ -40,13 +42,14 @@ namespace Ceylan
 	{
 	
 	
+	
 		/**
 		 * Abstract output stream class used in IPC.
 		 *
 		 * @see Socket, Pipe, File, AnonymousInputStream, InputStream
 		 *
 		 * @note The virtual inheritance has been set for classes such as 
-		 * System::File which are both input and output streams : had the 
+		 * System::File which are both input and output streams: had the 
 		 * Stream class a data member, it would not be duplicated in a 
 		 * System::File instance (it would be allocated only once).
 		 *
@@ -106,8 +109,10 @@ namespace Ceylan
 				explicit OutputStream( bool blocking = true ) ;
 	
 	
+	
 				/// Basic destructor.
 				virtual ~OutputStream() throw() ;
+	
 	
 	
 				/**
@@ -144,6 +149,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual Size write( const std::string & message ) ;
+
 
 
 				/**
@@ -184,6 +190,7 @@ namespace Ceylan
 				virtual void writeSint8( Ceylan::Sint8 toWrite ) ;
 
 
+
 				/**
 				 * Writes a Ceylan::Uint8 to this output stream.
 				 *
@@ -201,6 +208,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual void writeSint16( Ceylan::Sint16 toWrite ) ;
+
 
 
 				/**
@@ -222,6 +230,7 @@ namespace Ceylan
 				virtual void writeSint32( Ceylan::Sint32 toWrite ) ;
 
 
+
 				/**
 				 * Writes a Ceylan::Uint32 to this output stream.
 				 *
@@ -233,7 +242,9 @@ namespace Ceylan
 
 
 
+
 				// Write floating-point types subsection.
+				
 				
 				
 				/**
@@ -243,6 +254,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual void writeFloat32( Ceylan::Float32 toWrite ) ;
+
 
 
 				/**
@@ -270,7 +282,6 @@ namespace Ceylan
 
 
 
-
             	/**
             	 * Returns an user-friendly description of the state of
 				 * this object.
@@ -292,6 +303,7 @@ namespace Ceylan
 			private:
 			
 			
+			
 				/**
 				 * Copy constructor made private to ensure that it will
 				 * be never called.
@@ -301,6 +313,7 @@ namespace Ceylan
 				 * 
 				 */			 
 				OutputStream( const OutputStream & source ) ;
+			
 			
 			
 				/**
@@ -314,11 +327,13 @@ namespace Ceylan
 				OutputStream & operator = ( const OutputStream & source ) ;
 	
 	
+	
 		} ;
 				
 	}	
 		
 }
+
 
 
 #endif // CEYLAN_OUTPUT_STREAM_H_

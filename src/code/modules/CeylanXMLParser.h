@@ -43,6 +43,7 @@ namespace Ceylan
 {
 
 
+
 	namespace System
 	{
 	
@@ -50,6 +51,7 @@ namespace Ceylan
 		class InputStream ;
 		
 	}
+	
 	
 	
 	
@@ -67,7 +69,7 @@ namespace Ceylan
 		 * Exception to be raised when an XML parser operation failed.
 		 *
 		 */
-		class CEYLAN_DLL XMLParserException: public Ceylan::XML::XMLException
+		class CEYLAN_DLL XMLParserException : public Ceylan::XML::XMLException
 		{
 	
 			public:
@@ -86,6 +88,7 @@ namespace Ceylan
 
 
 
+
 		/**
 		 * XML parser, which can read and write from and to XML file.
 		 * From a file, a tree in memory is generated, and reciprocally
@@ -98,7 +101,7 @@ namespace Ceylan
 		 * No validation nor XML schema managed.
 		 *
 		 */
-		class CEYLAN_DLL XMLParser: public Ceylan::TextDisplayable
+		class CEYLAN_DLL XMLParser : public Ceylan::TextDisplayable
 		{
 		
 		
@@ -107,6 +110,7 @@ namespace Ceylan
 
 
 				typedef Ceylan::Tree<Ceylan::XML::XMLElement> XMLTree ;
+
 
 
 				/**
@@ -130,6 +134,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual ~XMLParser() throw() ;
+	
 	
 	
 	
@@ -174,6 +179,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual void setXMLTree( XMLTree & newTree ) ;
+	
 	
 	
 	
@@ -237,6 +243,7 @@ namespace Ceylan
 
 				/// Default XML encoding is ISO-8859-15 (Latin-1 with euro).
 				static std::string DefaultEncoding ;
+
 
 
 
@@ -311,7 +318,8 @@ namespace Ceylan
 				 *
 				 */
 				static void InterpretXMLDeclaration( 
-					System::InputStream & input );
+					System::InputStream & input ) ;
+					
 					
 					
 				/**
@@ -327,9 +335,8 @@ namespace Ceylan
 				 *
 				 */
 				static void ParseAttributeSequence( 
-						const std::string & toBeParsed,
-						AttributeMap & attributeMap ) 
-					throw( XMLParserException )  ;
+					const std::string & toBeParsed, 
+					AttributeMap & attributeMap ) ;
 					
 					
 				
@@ -337,6 +344,7 @@ namespace Ceylan
 
 			protected:
 	
+				
 				
 				/**
 				 * Reads from specified input stream until a text, an opening or
@@ -362,9 +370,8 @@ namespace Ceylan
 						System::InputStream & input,
 						std::stack<std::string> & markupStack, 
 						XMLTree * currentNode, 
-						Ceylan::Uint8 & remainder )
-					throw( System::InputStream::InputStreamException, 
-						XMLParserException )  ;
+						Ceylan::Uint8 & remainder ) ;
+				
 				
 
 				/**
@@ -375,8 +382,10 @@ namespace Ceylan
 				std::string _filename ;
 
 
+
 				/// The tree corresponding to an XML document.
 				XMLTree * _parsedTree ;
+			
 			
 			
 				/**
@@ -393,6 +402,7 @@ namespace Ceylan
 			private:
 
 
+
 				/**
 				 * Copy constructor made private to ensure that it will never
 				 * be called.
@@ -403,7 +413,8 @@ namespace Ceylan
 				 * @note Made to avoid unwanted hidden clone of the Singleton.
 				 *
 				 */			 
-				XMLParser( const XMLParser & source ) throw() ;
+				XMLParser( const XMLParser & source ) ;
+			
 			
 			
 				/**
@@ -413,10 +424,11 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				XMLParser & operator = ( const XMLParser & source ) throw() ;
+				XMLParser & operator = ( const XMLParser & source ) ;
 
 
 		} ;
+		
 		
 	}
 	

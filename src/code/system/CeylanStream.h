@@ -36,6 +36,7 @@
 
 
 
+
 namespace Ceylan 
 {
 
@@ -52,6 +53,7 @@ namespace Ceylan
 		 *
 		 */
 		typedef int StreamID ;
+		
 		
 		
 		/**
@@ -121,6 +123,7 @@ namespace Ceylan
 				
 				
 				
+				
 				/**
 				 * Basic constructor for stream instances.
 				 *
@@ -130,6 +133,7 @@ namespace Ceylan
 				 *
 				 */
 				explicit Stream( bool blocking = true ) ;
+	
 	
 	
 				/// Basic virtual destructor.
@@ -145,6 +149,7 @@ namespace Ceylan
 				bool isBlocking() const ;
 	
 	
+	
 				/**
 				 * Closes the stream.
 				 *
@@ -154,6 +159,7 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool close() = 0 ;
+				
 				
 				
             	/**
@@ -172,6 +178,7 @@ namespace Ceylan
 					Ceylan::VerbosityLevels level = Ceylan::high ) const = 0 ;
 			
 			
+			
 				/**
 				 * Closes and zeroes the specified file descriptor.
 				 * It is passed by address so that this function can set it
@@ -183,6 +190,8 @@ namespace Ceylan
 				 *
 				 */
 				static bool Close( FileDescriptor & fd ) ;
+
+
 
 
 
@@ -210,6 +219,7 @@ namespace Ceylan
 
 				/// Stores whether the stream is in blocking mode.
 				bool _isBlocking ;
+				
 				
 				
 
@@ -240,10 +250,12 @@ namespace Ceylan
 					
 					
 		} ;	
+		
 	
 	}
 	
 }
+
 
 
 #endif // CEYLAN_STREAM_H_

@@ -39,12 +39,14 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
+
 #if CEYLAN_ARCH_NINTENDO_DS
 
 #include "CeylanConfigForNintendoDS.h"    // for irqInit and al (ARM9)
 #include "CeylanFIFO.h"                   // for FIFO
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
+
 
 
 #if CEYLAN_ARCH_WINDOWS
@@ -138,8 +140,10 @@ map<Ceylan::Byte *,Ceylan::Byte *> Ceylan::System::CacheProtectedMap ;
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 
+
 extern const Ceylan::System::InterruptMask 
 	Ceylan::System::AllInterruptsDisabled = 0 ;
+
 
 
 Ceylan::System::SystemException::SystemException( const string & message ) :
@@ -697,7 +701,6 @@ Size Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
 
 
 
-
 Size Ceylan::System::FDWrite( FileDescriptor fd,
 	const Ceylan::Byte * dataBuffer, Size toWriteBytesNumber )
 {
@@ -825,6 +828,7 @@ Size Ceylan::System::FDWrite( FileDescriptor fd,
 // Time section.
 
 
+
 Second Ceylan::System::getTime() 
 {
 
@@ -850,7 +854,6 @@ Second Ceylan::System::getTime()
 		"not available on this platform (no ::time function found)." ) ;
 
 #endif // CEYLAN_USES_TIME
-
 
 }
 
@@ -884,8 +887,8 @@ string Ceylan::System::timeToString( const time_t & t )
 
 
 string Ceylan::System::durationToString(
-		Second startingSecond, Microsecond startingMicrosecond,
-		Second stoppingSecond, Microsecond stoppingMicrosecond )
+	Second startingSecond, Microsecond startingMicrosecond,
+	Second stoppingSecond, Microsecond stoppingMicrosecond )
 {
 
 	// What a shame, I spent hours on this stupid code!
@@ -931,8 +934,8 @@ string Ceylan::System::durationToString(
 
 
 Microsecond Ceylan::System::getDurationBetween(
-		Second startingSecond, Microsecond startingMicrosecond,
-		Second stoppingSecond, Microsecond stoppingMicrosecond )
+	Second startingSecond, Microsecond startingMicrosecond,
+	Second stoppingSecond, Microsecond stoppingMicrosecond )
 {
 
 
@@ -980,7 +983,6 @@ Microsecond Ceylan::System::getDurationBetween(
 
 void Ceylan::System::getPreciseTime( Second & seconds, Microsecond & microsec )
 {
-
 
 #ifdef CEYLAN_USES_GETTIMEOFDAY
 
@@ -1159,9 +1161,7 @@ Microsecond Ceylan::System::getPreciseTimeCallDuration()
 
 
 void Ceylan::System::sleepForSeconds( Second seconds )
-	
 {
-
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
@@ -1237,7 +1237,6 @@ bool Ceylan::System::areSubSecondSleepsAvailable()
 
 void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )	
 {
-
 
 #if CEYLAN_DEBUG_SYSTEM
 	LogPlug::debug( "Ceylan::System::basicSleep: requested duration is "
@@ -1725,8 +1724,7 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 
 
 
-bool Ceylan::System::smartSleepUntil( Second second, Microsecond micro )
-	
+bool Ceylan::System::smartSleepUntil( Second second, Microsecond micro )	
 {
 
 	Second currentSecond ;
@@ -1763,7 +1761,6 @@ bool Ceylan::System::smartSleepUntil( Second second, Microsecond micro )
 
 Microsecond Ceylan::System::getActualDurationForSleep(
 		Microsecond requestedMicroseconds, Second requestedSeconds )
-	
 {
 
 
@@ -1795,14 +1792,12 @@ Microsecond Ceylan::System::getActualDurationForSleep(
 	return getDurationBetween( lastSecond, lastMicrosecond, 
 		currentSecond, currentMicrosecond) ;
 
-
 }
 
 
 
 Microsecond Ceylan::System::getSchedulingGranularity() 
 {
-
 
 	/*
 	 * Requesting too low sleep durations will not trigger the time slice

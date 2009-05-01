@@ -36,7 +36,6 @@
 
 
 
-
 /**
  * Describes a number of FIFO commands.
  *
@@ -51,8 +50,10 @@ typedef Ceylan::Uint8 FIFOCommandCount ;
 
 
 
+
 namespace Ceylan
 {
+
 
 
 	namespace System
@@ -63,6 +64,7 @@ namespace Ceylan
 		/// The atomic data that can be sent through the FIFO.
 		typedef Ceylan::Uint32 FIFOElement ;
 		
+			
 			
 		/**
 		 * Interrupt-based FIFO (First In, First Out) class for
@@ -215,10 +217,10 @@ namespace Ceylan
 				{ 
 					public: 
 					
-						explicit FIFOException( const std::string & reason )
-							throw() ;
+						explicit FIFOException( const std::string & reason ) ;
 						
-						virtual ~FIFOException() throw() ; 
+						virtual ~FIFOException() ; 
+						
 				} ;
 
 
@@ -228,8 +230,7 @@ namespace Ceylan
 				{ 
 					public: 
 					
-						explicit FIFOFull( const std::string & reason ) 
-							throw() ;
+						explicit FIFOFull( const std::string & reason ) ;
 						
 				} ;
 
@@ -240,8 +241,7 @@ namespace Ceylan
 				{ 
 					public: 
 					
-						explicit FIFOEmpty( const std::string & reason ) 
-							throw() ;
+						explicit FIFOEmpty( const std::string & reason ) ;
 							 
 				} ;
 
@@ -257,7 +257,7 @@ namespace Ceylan
 				 * @see activate to trigger the use of the FIFO.
 				 *
 				 */
-				explicit FIFO() throw( FIFOException ) ;
+				explicit FIFO() ;
 		
 	
 
@@ -269,8 +269,10 @@ namespace Ceylan
 				// Activation section.
 				
 				
+				
 				/// Returns whereas this FIFO is currently active.
-				virtual bool isActive() const throw() ;
+				virtual bool isActive() const ;
+		
 		
 		
 				/**
@@ -294,7 +296,8 @@ namespace Ceylan
 				 * ARM7 update of its status word.
 				 *
 				 */
-				virtual void activate() throw( FIFOException ) ;
+				virtual void activate() ;
+				
 				
 		
 				/**
@@ -307,13 +310,15 @@ namespace Ceylan
 				 * method call before this deactivate method is called.
 				 *
 				 */
-				virtual void deactivate() throw() ;
+				virtual void deactivate() ;
 
+				
 				
 				// Some FIFO-provided IPC services.
 				
 				
 				// Status word and error code section.
+
 
 
 				/**
@@ -324,7 +329,8 @@ namespace Ceylan
 				 * @see CeylanARM7Codes.h for list of known status codes.
 				 *
 				 */
-				virtual ARM7StatusWord getLastARM7StatusWord() throw() ;
+				virtual ARM7StatusWord getLastARM7StatusWord() ;
+
 
 
 				/**
@@ -334,7 +340,7 @@ namespace Ceylan
 				 * Reads the relevant shared variable.
 				 *
 				 */
-				virtual std::string interpretLastARM7StatusWord() throw() ;
+				virtual std::string interpretLastARM7StatusWord() ;
 
 
 				
@@ -346,7 +352,8 @@ namespace Ceylan
 				 * @see CeylanARM7Codes.h for list of known error codes.
 				 *
 				 */
-				virtual ARM7ErrorCode getLastARM7ErrorCode() throw() ;
+				virtual ARM7ErrorCode getLastARM7ErrorCode() ;
+				
 				
 				
 				/**
@@ -356,7 +363,7 @@ namespace Ceylan
 				 * Reads the relevant shared variable.
 				 *
 				 */
-				virtual std::string interpretLastARM7ErrorCode() throw() ;
+				virtual std::string interpretLastARM7ErrorCode() ;
 
 
 
@@ -384,8 +391,8 @@ namespace Ceylan
 				 * @see getBatteryStatus for a blocking wait for the update.
 				 *
 				 */
-				virtual void sendBatteryStatusRequest() 
-					throw( FIFOException ) ;
+				virtual void sendBatteryStatusRequest() ;
+				
 				
 				
 				/**
@@ -402,8 +409,8 @@ namespace Ceylan
 				 * if the time-out expires.
 				 *
 				 */
-				virtual BatteryStatus getBatteryStatus() 
-					throw( FIFOException ) ;
+				virtual BatteryStatus getBatteryStatus() ;
+					
 					
 				
 				/**
@@ -416,8 +423,8 @@ namespace Ceylan
 				 * @see getDSType for a blocking wait for the update.
 				 *
 				 */
-				virtual void sendDSTypeRequest() 
-					throw( FIFOException ) ;
+				virtual void sendDSTypeRequest() ;
+				
 				
 				
 				/**
@@ -434,7 +441,7 @@ namespace Ceylan
 				 * if the time-out expires.
 				 *
 				 */
-				virtual DSType getDSType() throw( FIFOException ) ;
+				virtual DSType getDSType() ;
 					
 				
 
@@ -451,8 +458,8 @@ namespace Ceylan
 				 *
 				 */
             	virtual const std::string toString( 
-					Ceylan::VerbosityLevels level = Ceylan::high ) 
-						const throw() ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+				
 				
 				
 				
@@ -465,7 +472,8 @@ namespace Ceylan
 				 *
 				 */
 				static FIFOCommandID GetFIFOCommandIDFrom( 
-					const FIFOElement & element ) throw() ;
+					const FIFOElement & element ) ;
+				
 				
 				
 				/**
@@ -474,7 +482,8 @@ namespace Ceylan
 				 *
 				 */
 				static FIFOCommandCount GetFIFOCommandCountFrom( 
-					const FIFOElement & element ) throw() ;
+					const FIFOElement & element ) ;
+				
 				
 				
 				/**
@@ -485,7 +494,8 @@ namespace Ceylan
 				 * [0,15].
 				 * 
 				 */
-				static FIFOCommandCount GetARM7ProcessedCount() throw() ;
+				static FIFOCommandCount GetARM7ProcessedCount() ;
+				
 				
 				
 				/**
@@ -496,7 +506,8 @@ namespace Ceylan
 				 * [0,15].
 				 * 
 				 */
-				static FIFOCommandCount GetARM9ProcessedCount() throw() ;
+				static FIFOCommandCount GetARM9ProcessedCount() ;
+				
 				
 								
 				/**
@@ -518,6 +529,7 @@ namespace Ceylan
 				 */
 				static void VBlankHandlerForFIFO() ;
 	
+	
 				
 				/**
 				 * Returns the supposedly already-created and already-activated
@@ -527,7 +539,8 @@ namespace Ceylan
 				 * no FIFO is available or if it is not active.
 				 *
 				 */
-				static FIFO & GetActivatedFIFO() throw ( FIFOException ) ;
+				static FIFO & GetActivatedFIFO() ;
+
 
 
 				/**
@@ -537,7 +550,8 @@ namespace Ceylan
 				 * not FIFO is available.
 				 *
 				 */
-				static FIFO & GetExistingFIFO() throw ( FIFOException ) ;
+				static FIFO & GetExistingFIFO() ;
+				
 				
 				
 				/**
@@ -546,7 +560,8 @@ namespace Ceylan
 				 * @throw FIFOException if the operation failed.
 				 *
 				 */
-				static FIFO & GetFIFO() throw ( FIFOException ) ;
+				static FIFO & GetFIFO() ;
+				
 				
 				
 				/**
@@ -557,7 +572,8 @@ namespace Ceylan
 				 * @throw FIFOException if the operation failed.
 				 *
 				 */
-				static bool RemoveFIFO() throw() ;
+				static bool RemoveFIFO() ;
+				
 				
 				
 				/**
@@ -585,7 +601,8 @@ namespace Ceylan
 				 * @note Called automatically by ManageReceivedCommand.
 				 *
 				 */
-				virtual void handleReceivedCommand() throw() ;
+				virtual void handleReceivedCommand() ;
+				
 				
 				
 				/**
@@ -607,8 +624,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual void handleReceivedSystemSpecificCommand(
-						FIFOCommandID commandID, FIFOElement firstElement )
-					throw() ;
+					FIFOCommandID commandID, FIFOElement firstElement ) ;
+				
 				
 				
 				/**
@@ -631,8 +648,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual void handleReceivedIntegratingLibrarySpecificCommand(
-						FIFOCommandID commandID, FIFOElement firstElement )
-					throw() ;
+					FIFOCommandID commandID, FIFOElement firstElement ) ;
+				
 				
 				
 				/**
@@ -655,8 +672,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual void handleReceivedApplicationCommand(
-						FIFOCommandID commandID, FIFOElement firstElement )
-					throw() ;
+					FIFOCommandID commandID, FIFOElement firstElement ) ;
+				
 				
 				
 				/**
@@ -669,7 +686,8 @@ namespace Ceylan
 				 *
 				 */
 				virtual void handleUnexpectedApplicationCommand( 
-					FIFOCommandID commandID ) throw() ;		
+					FIFOCommandID commandID ) ;		
+			
 			
 				
 				/**
@@ -690,8 +708,8 @@ namespace Ceylan
 				 * possibly, command number.
 				 *
 				 */
-				virtual FIFOElement prepareFIFOCommand( FIFOCommandID id )
-					throw() ;
+				virtual FIFOElement prepareFIFOCommand( FIFOCommandID id ) ;
+					
 					
 					
 				/**
@@ -702,7 +720,8 @@ namespace Ceylan
 				 * ARM7.
 				 *
 				 */
-				virtual void notifyCommandToARM7() throw() ;
+				virtual void notifyCommandToARM7() ;
+				
 				
 				
 				/**
@@ -710,7 +729,7 @@ namespace Ceylan
 				 * check its receive FIFO.
 				 *
 				 */				
-				virtual void sendSynchronizeInterruptToARM7() throw() ;
+				virtual void sendSynchronizeInterruptToARM7() ;
 				
 				
 
@@ -719,7 +738,7 @@ namespace Ceylan
 				 * ARM9 receiving queue.
 				 *
 				 */
-				bool dataAvailableForReading() const throw() ;
+				bool dataAvailableForReading() const ;
 				
 				
 				/**
@@ -727,7 +746,7 @@ namespace Ceylan
 				 * ARM9 sending queue.
 				 *
 				 */
-				bool spaceAvailableForWriting() const throw() ;
+				bool spaceAvailableForWriting() const ;
 				
 	
 				
@@ -739,7 +758,8 @@ namespace Ceylan
 				 * no such element.
 				 *
 				 */
-				FIFOElement read() throw( FIFOException ) ;
+				FIFOElement read() ;
+	
 	
 	
 				/**
@@ -752,7 +772,8 @@ namespace Ceylan
 				 * @throw FIFOException in case a FIFO error is reported.
 				 *
 				 */
-				FIFOElement readBlocking() throw( FIFOException ) ;
+				FIFOElement readBlocking() ;
+	
 	
 	
 				/**
@@ -763,7 +784,7 @@ namespace Ceylan
 				 * free space for that.
 				 *
 				 */
-				void write( FIFOElement toSend ) throw( FIFOException ) ;
+				void write( FIFOElement toSend ) ;
 	
 	
 	
@@ -777,22 +798,24 @@ namespace Ceylan
 				 * @throw FIFOException in case a FIFO error is reported.
 				 *
 				 */
-				void writeBlocking( FIFOElement toSend ) 
-					throw( FIFOException ) ;
+				void writeBlocking( FIFOElement toSend ) ;
+
 
 
 				/**
 				 * Returns the current count of processed commands, in [0,15].
 				 *
 				 */
-				FIFOCommandCount getProcessedCount() const throw() ;
+				FIFOCommandCount getProcessedCount() const ;
+				
 				
 				
 				/**
 				 * Returns the current count of sent commands, in [0,15].
 				 *
 				 */
-				FIFOCommandCount getSentCount() const throw() ;
+				FIFOCommandCount getSentCount() const ;
+				
 				
 				
 				/**
@@ -800,13 +823,15 @@ namespace Ceylan
 				 * [0,15], and updates accordingly the IPC sync register.
 				 *
 				 */
-				virtual void incrementProcessedCount() throw() ;
+				virtual void incrementProcessedCount() ;
 				
 				 				
 				
 				
+				
 				// Static section.
 				
+					
 					
 				/**
 				 * Callback called whenever the ARM7 triggers an IPC
@@ -822,6 +847,7 @@ namespace Ceylan
 				static void SyncHandlerForFIFO() ;
 	
 	
+	
 				/**
 				 * Manages a command sent through the FIFO.
 				 *
@@ -832,13 +858,13 @@ namespace Ceylan
 				 */
 				static void ManageReceivedCommand() ;
 				
+				
 			
 				/**
 				 * Returns a textual description of the specified command.
 				 *
 				 */
-				static std::string DescribeCommand( FIFOElement element )
-					throw() ;
+				static std::string DescribeCommand( FIFOElement element ) ;
 				
 				
 				
@@ -860,6 +886,7 @@ namespace Ceylan
 				ARM7StatusWord volatile * volatile _arm7StatusWordPointer ;
 		
 				
+				
 				/**
 				 * ARM9-allocated variable whose address will be sent to the
 				 * ARM7 when the activate method will be called so that the
@@ -873,6 +900,7 @@ namespace Ceylan
 				 *
 				 */
 				ARM7ErrorCode volatile * volatile _arm7ErrorCodePointer ;
+				
 				
 
 				/**
@@ -891,6 +919,7 @@ namespace Ceylan
 				volatile FIFOCommandCount _localCommandCount ;
 				
 				
+				
 				/**
 				 * Records the overall number of received commands to the FIFO.
 				 *
@@ -906,6 +935,7 @@ namespace Ceylan
 				volatile FIFOCommandCount _remoteCommandCount ;
 				
 				
+				
 				/**
 				 * Records the number of commands processed by the ARM9.
 				 *
@@ -917,6 +947,7 @@ namespace Ceylan
 				 *
 				 */
 				volatile FIFOCommandCount _processedCount ;
+				 
 				 
 				 
 				/**
@@ -932,6 +963,7 @@ namespace Ceylan
 				volatile FIFOCommandCount _sentCount ;
 				
 				
+				
 				/**
 				 * Tells whether this FIFO is activated.
 				 * 
@@ -941,6 +973,7 @@ namespace Ceylan
 				volatile bool _activated ;
 				 
 				 
+				 
 				/**
 				 * Records the last battery status retrieved.
 				 *
@@ -948,11 +981,13 @@ namespace Ceylan
 				volatile System::BatteryStatus _batteryStatus ; 
 	
 	
+	
 				/**
 				 * Records the DS type.
 				 *
 				 */
 				volatile System::DSType _dsType ; 
+	
 	
 	
 	
@@ -968,7 +1003,8 @@ namespace Ceylan
 				 * constructor is called, implicitly or not.
 				 * 
 				 */			 
-				FIFO( const FIFO & source ) throw() ;
+				FIFO( const FIFO & source ) ;
+			
 			
 			
 				/**
@@ -979,14 +1015,16 @@ namespace Ceylan
 				 * operator is called, implicitly or not.
 				 * 
 				 */			 
-				FIFO & operator = ( const FIFO & source ) throw() ;
+				FIFO & operator = ( const FIFO & source ) ;
 	
 			
 		} ;	
+		
 
 	}
 
 }
+
 
 
 #endif // CEYLAN_FIFO_H_

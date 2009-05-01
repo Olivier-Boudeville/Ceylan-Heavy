@@ -36,6 +36,11 @@
 #include "CeylanHolder.h"       // for Holder
 
 
+#ifdef CEYLAN_USES_CONFIG_H
+#include "CeylanConfig.h"       // for configure-time settings
+#endif // CEYLAN_USES_CONFIG_H
+
+
 #include <stack>   // for stack
 
 
@@ -49,19 +54,34 @@ using std::stack ;
 
 
 
+// Set to 1 to debug XML operations: 
+
+#if CEYLAN_DEBUG_XML
+
+#define DISPLAY_DEBUG_XML(message) LogPlug::debug(message)
+
+#else // CEYLAN_DEBUG_XML
+
+#define DISPLAY_DEBUG_XML(message) 
+
+#endif // CEYLAN_DEBUG_XML 
 
 
-XMLParserException::XMLParserException( const std::string & reason ) throw(): 
+
+
+XMLParserException::XMLParserException( const std::string & reason ) : 
 	XMLException( reason )
 {
 
 }
 
 
+
 XMLParserException::~XMLParserException() throw()
 {
 
 }
+
 
 
 
@@ -75,13 +95,14 @@ std::string XMLParser::DefaultEncoding = Latin1WithEuroEncoding ;
 
 
 
-XMLParser::XMLParser( const std::string & filename ) throw():
+XMLParser::XMLParser( const std::string & filename ) :
 	_filename( filename ),
 	_parsedTree( 0 ),
 	_encoding( DefaultEncoding )
 {
 
 }
+
 
 
 XMLParser::~XMLParser() throw()
@@ -93,7 +114,8 @@ XMLParser::~XMLParser() throw()
 }
 
 
-bool XMLParser::hasXMLTree() const throw()
+
+bool XMLParser::hasXMLTree() const
 {
 
 	return ( _parsedTree != 0 ) ;
@@ -101,7 +123,8 @@ bool XMLParser::hasXMLTree() const throw()
 }
 
 
-XMLParser::XMLTree & XMLParser::getXMLTree() const throw( XMLParserException )
+
+XMLParser::XMLTree & XMLParser::getXMLTree() const
 {
 
 	if ( _parsedTree == 0 )
@@ -112,7 +135,8 @@ XMLParser::XMLTree & XMLParser::getXMLTree() const throw( XMLParserException )
 }
 
 
-void XMLParser::setXMLTree( XMLTree & newTree ) throw()
+
+void XMLParser::setXMLTree( XMLTree & newTree )
 {
 
 	if ( _parsedTree != 0 )
@@ -123,8 +147,8 @@ void XMLParser::setXMLTree( XMLTree & newTree ) throw()
 }
 
 
+
 void XMLParser::saveToFile( const std::string & filename ) const 
-	throw( XMLParserException )
 {
 
 	if ( _parsedTree == 0 )
@@ -171,7 +195,8 @@ void XMLParser::saveToFile( const std::string & filename ) const
 }
 
 
-void XMLParser::loadFromFile() throw( XMLParserException )
+
+void XMLParser::loadFromFile()
 {
 
 	try
@@ -214,13 +239,13 @@ void XMLParser::loadFromFile() throw( XMLParserException )
 		// Read: '[whitespaces]<?', in readChar there is '?', which is dropped.
 		InterpretXMLDeclaration( inputFileHolder.get() ) ;
 
-		Ceylan::Uint8 remainder ;
+		Ceylan::Uint8 remaining ;
 
-		inputFileHolder->skipWhitespaces( remainder ) ;
+		inputFileHolder->skipWhitespaces( remaining ) ;
 	
 		// Read: '[whitespaces]<?xml version="1.0" [encoding..]?>[whitespaces]'.
 
-		if ( remainder != XML::LowerThan )
+		if ( remaining != XML::LowerThan )
 			throw XMLParserException( "XMLParser::loadFromFile failed: "
 				"after declaration, first non-whitespace character "
 				"is not '<'." ) ;
@@ -230,7 +255,7 @@ void XMLParser::loadFromFile() throw( XMLParserException )
 		
 		// Parse until root markup is closed:
 		handleNextElement( inputFileHolder.get(), markupStack, _parsedTree, 
-			remainder ) ;
+			remaining ) ;
 	
 		// Closing the file is automatic.
 		
@@ -246,9 +271,9 @@ void XMLParser::loadFromFile() throw( XMLParserException )
 }
 
 
+
 XMLParser::LowerThanSequence XMLParser::InterpretLowerThanSequence( 
-		InputStream & input, Ceylan::Uint8 & readChar ) 
-	throw( InputStream::InputStreamException )
+	InputStream & input, Ceylan::Uint8 & readChar ) 
 {
 
 	readChar = input.readUint8() ;
@@ -282,8 +307,8 @@ XMLParser::LowerThanSequence XMLParser::InterpretLowerThanSequence(
 }
 
 
-std::string XMLParser::DescribeLowerThanSequence(
-	LowerThanSequence sequence ) throw()
+
+std::string XMLParser::DescribeLowerThanSequence( LowerThanSequence sequence )
 {
 	
 	switch( sequence ) 
@@ -319,8 +344,8 @@ std::string XMLParser::DescribeLowerThanSequence(
 }
 
 
+
 void XMLParser::InterpretXMLDeclaration( InputStream & input ) 
-	throw( InputStream::InputStreamException, XMLParserException )
 {
 	
 	// '<?' already eaten.
@@ -362,7 +387,7 @@ void XMLParser::InterpretXMLDeclaration( InputStream & input )
 	
 	ParseAttributeSequence( res, declarationMap ) ;
 	
-	LogPlug::debug( "XMLParser::InterpretXMLDeclaration parsed: "
+	DISPLAY_DEBUG_XML( "XMLParser::InterpretXMLDeclaration parsed: "
 		+ Ceylan::formatStringMap( declarationMap ) ) ;
 	
 	AttributeMap::const_iterator it = declarationMap.find( "version" ) ;
@@ -393,11 +418,12 @@ void XMLParser::InterpretXMLDeclaration( InputStream & input )
 }
 
 
+
 void XMLParser::ParseAttributeSequence( const string & toBeParsed,
-	AttributeMap & attributeMap ) throw( XMLParserException )
+	AttributeMap & attributeMap )
 {
 
-	LogPlug::debug( "XMLParser::ParseAttributeSequence: will parse '"
+	DISPLAY_DEBUG_XML( "XMLParser::ParseAttributeSequence: will parse '"
 		+ toBeParsed + "'." ) ;
 		
 	StringSize size = toBeParsed.size() ;
@@ -439,7 +465,7 @@ void XMLParser::ParseAttributeSequence( const string & toBeParsed,
 			index++ ;
 		}
 		
-		LogPlug::debug( "XMLParser::ParseAttributeSequence: "
+		DISPLAY_DEBUG_XML( "XMLParser::ParseAttributeSequence: "
 			"adding attribute name '" + attributeName + "'." ) ;
 			
 		attributeMap.insert( make_pair( attributeName, "" ) ) ;
@@ -485,7 +511,7 @@ void XMLParser::ParseAttributeSequence( const string & toBeParsed,
 			
 			index++ ;
 			
-			LogPlug::debug( "XMLParser::ParseAttributeSequence: "
+			DISPLAY_DEBUG_XML( "XMLParser::ParseAttributeSequence: "
 				"associating to attribute name '" + attributeName 
 				+ "' the following attribute value: '" + attributeValue 
 				+ "'." ) ;
@@ -505,9 +531,9 @@ void XMLParser::ParseAttributeSequence( const string & toBeParsed,
 		
 }
 
+
 		
-const string XMLParser::toString( Ceylan::VerbosityLevels level ) 
-	const throw()
+const string XMLParser::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string res = "XML parser " ;
@@ -531,29 +557,29 @@ const string XMLParser::toString( Ceylan::VerbosityLevels level )
 }
 
 
+
 void XMLParser::handleNextElement( System::InputStream & input,
 		stack<string> & markupStack, XMLTree * currentTree, 
-		Ceylan::Uint8 & remainder )
-	throw( System::InputStream::InputStreamException, XMLParserException )
+		Ceylan::Uint8 & remaining )
 {
 
 	/*
 	 * When this method is called, leading whitespaces should have been
 	 * eaten, and first non-whitespace character should be already read and
-	 * stored in 'remainder' variable.
+	 * stored in 'remaining' variable.
 	 *
 	 */
 	
-	if ( remainder != XML::LowerThan )
+	if ( remaining != XML::LowerThan )
 	{
 	
 		// Should be a XML text element:
 		string text ;
-		text += static_cast<char>( remainder ) ;
+		text += static_cast<char>( remaining ) ;
 		
 		// Reads everything from the beginning of text to first '<':
-		while ( ( remainder = input.readUint8() ) != XML::LowerThan )
-			text += remainder ;
+		while ( ( remaining = input.readUint8() ) != XML::LowerThan )
+			text += remaining ;
 		
 		/*
 		 * Removes any trailing whitespace so that writing an
@@ -569,7 +595,7 @@ void XMLParser::handleNextElement( System::InputStream & input,
 		if ( index < text.size() - 1 )	
 			text = text.substr( 0, index + 1 ) ;
 			
-		LogPlug::debug( "XMLParser::handleNextElement: "
+		DISPLAY_DEBUG_XML( "XMLParser::handleNextElement: "
 			"creating XML text element from '" + text + "'." ) ;
 			
 		XMLText * newText = new XMLText( text ) ;
@@ -582,7 +608,7 @@ void XMLParser::handleNextElement( System::InputStream & input,
 		
 		currentTree->addSon( *newNode ) ;
 		
-		handleNextElement( input, markupStack, currentTree, remainder ) ;
+		handleNextElement( input, markupStack, currentTree, remaining ) ;
 		
 		return ;
 		
@@ -591,30 +617,30 @@ void XMLParser::handleNextElement( System::InputStream & input,
 	
 	// Here, we have either an opening or closing markup.
 	
-	LowerThanSequence seq = InterpretLowerThanSequence( input, remainder ) ;
+	LowerThanSequence seq = InterpretLowerThanSequence( input, remaining ) ;
 	
 	if ( seq != OpeningMarkup && seq != ClosingMarkup )
 		throw XMLParserException( "XMLParser::handleNextElement: "
 			"expecting opening or closing markup, found "
 			+ DescribeLowerThanSequence( seq ) + "." ) ;
 	
-	// A opening or closing markup ! (common section)
+	// A opening or closing markup! (common section)
 	string markupName ;
 	
 	// If opening, first letter was already eaten, otherwise was '/' if closing.
 	if ( seq == OpeningMarkup )
-		markupName = remainder ;
+		markupName = remaining ;
 	
-	remainder = input.readUint8() ;
+	remaining = input.readUint8() ;
 	
-	while ( ! Ceylan::isWhitespace( remainder ) 
-		&& remainder != XML::HigherThan )
+	while ( ! Ceylan::isWhitespace( remaining ) 
+		&& remaining != XML::HigherThan )
 	{
-		markupName += remainder ;
-		remainder = input.readUint8() ;	
+		markupName += remaining ;
+		remaining = input.readUint8() ;	
 	}
 		
-	LogPlug::debug( "XMLParser::handleNextElement: read markup '" 
+	DISPLAY_DEBUG_XML( "XMLParser::handleNextElement: read markup '" 
 		+ markupName + "'." ) ;
 	
 	if ( seq == OpeningMarkup )
@@ -623,18 +649,18 @@ void XMLParser::handleNextElement( System::InputStream & input,
 		XMLMarkup * newMarkup = new XMLMarkup( markupName ) ;
 		markupStack.push( markupName ) ;
 		
-		// Did we stop on a '>' ?
-		if ( remainder != XML::HigherThan )
+		// Did we stop on a '>'?
+		if ( remaining != XML::HigherThan )
 		{
 			
 			// No, it was a whitespace, looking for any markup attributes:
 			string restOfMarkup ;
-			while ( ( remainder = input.readUint8() ) != XML::HigherThan )
-				restOfMarkup += remainder ;
+			while ( ( remaining = input.readUint8() ) != XML::HigherThan )
+				restOfMarkup += remaining ;
 			
 			ParseAttributeSequence( restOfMarkup, newMarkup->getAttributes() ) ;
 			
-			LogPlug::debug( "XMLParser::handleNextElement: "
+			DISPLAY_DEBUG_XML( "XMLParser::handleNextElement: "
 				"read markup is now '"
 				+ encodeToHTML( newMarkup->toString() ) + "'." ) ;
 			
@@ -646,14 +672,14 @@ void XMLParser::handleNextElement( System::InputStream & input,
 		// Either a son of an already existing node, or the root:
 		if ( currentTree != 0 )
 		{
-			LogPlug::debug( "XMLParser::handleNextElement: "
+			DISPLAY_DEBUG_XML( "XMLParser::handleNextElement: "
 				"adding son to current parsed tree." ) ;
 			currentTree->addSon( *newNode ) ;
 			currentTree = newNode ;
 		}	
 		else
 		{
-			LogPlug::debug( "XMLParser::handleNextElement: "
+			DISPLAY_DEBUG_XML( "XMLParser::handleNextElement: "
 				"creating a new parsed tree." ) ;
 			setXMLTree( *newNode ) ;
 			currentTree = _parsedTree ;
@@ -671,12 +697,12 @@ void XMLParser::handleNextElement( System::InputStream & input,
 				"expecting closing markup for '" + toBeClosed 
 				+ "', found closing markup for '" + markupName + "'." ) ;
 		
-		LogPlug::debug( "XMLParser::handleNextElement: closing markup '"
+		DISPLAY_DEBUG_XML( "XMLParser::handleNextElement: closing markup '"
 			+ markupName + "' as expected." ) ;
 			
 		markupStack.pop() ;
 
-		// Everything is parsed ?
+		// Everything is parsed?
 		if ( markupStack.empty() )
 			return ;
 		
@@ -691,16 +717,16 @@ void XMLParser::handleNextElement( System::InputStream & input,
 		currentTree = tempTree	;
 		
 		// Go to the end of this markup: 
-		if ( remainder != XML::HigherThan )
+		if ( remaining != XML::HigherThan )
 			while ( input.readUint8() != XML::HigherThan )
 				;
 				
 	}
 
 
-	input.skipWhitespaces( remainder ) ;
+	input.skipWhitespaces( remaining ) ;
 	
-	handleNextElement( input, markupStack, currentTree, remainder ) ;
+	handleNextElement( input, markupStack, currentTree, remaining ) ;
 	
 }
 	
