@@ -57,11 +57,18 @@ LogChannel::LogChannel( const string & name ):
 LogChannel::~LogChannel() throw()
 {
 
+	CEYLAN_LOG( "Deleting log channel " + _name ) ;
+	
 	for ( list<LogMessage *>::iterator it = _messages.begin(); 
 		it != _messages.end(); it++ )
 	{
+	
+		CEYLAN_LOG( "Deleting message " + (*it)->toString() ) ;
 		delete (*it) ;
+		
 	}
+
+	CEYLAN_LOG( "Log channel " + _name + " deleted." ) ;
 		
 }
 
@@ -134,17 +141,24 @@ const string LogChannel::toString( Ceylan::VerbosityLevels level ) const
 	
 	if ( _messages.size() == 1 )
 	{
-		result += " contains only one message: " 
-			+ _messages.back()->toString( level ) ;
+		
+		result += " contains only one message" ;
+		if ( level == low )
+			return result ;
+			
+		result += ": " + _messages.back()->toString( level ) ;
+		
 		return result ;
 	}	
-	else
-	{
-		result += " contains " + Ceylan::toString( 
-			static_cast<Ceylan::Uint32>( _messages.size() ) ) 
-			+ " messages: " ;
-	}
+
+	// More than one message here:
 	
+	result += " contains " + Ceylan::toString( 
+		static_cast<Ceylan::Uint32>( _messages.size() ) ) + " messages" ; 
+
+	if ( level == low )
+		return result ;
+				
 	list<string> res ;
 		
 	for ( list<LogMessage *>::const_iterator it = _messages.begin(); 
@@ -166,7 +180,7 @@ const string LogChannel::toString( Ceylan::VerbosityLevels level ) const
 		
 	}	
 
-	return result + formatStringList( res ) ;
+	return result + ": " + formatStringList( res ) ;
 	
 }	
 
