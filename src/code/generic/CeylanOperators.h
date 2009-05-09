@@ -32,7 +32,9 @@
 #include "CeylanDisplayable.h"    // for Ceylan::VerbosityLevels
 #include "CeylanTypes.h"          // for Ceylan::Uint8, etc.
 
+
 #include <string>
+#include <list>
 
 
 
@@ -392,6 +394,32 @@ namespace Ceylan
 	 *
 	 */
     CEYLAN_DLL std::string toString( Ceylan::VerbosityLevels level ) ;
+	
+
+
+	/**
+	 * Converts a list of integers into a string, separated by a dash.
+	 *
+	 * @example Returns "33 - 54 - 1".
+	 *
+	 * @see Displayable
+	 *
+	 */
+    CEYLAN_DLL std::string toString( 
+		const std::list<Ceylan::Uint32> & intList ) ;
+	
+	
+	
+	/**
+	 * Converts a list of pointers into a string, separated by a dash.
+	 *
+	 * @example Returns "0x95dd268 - 0x5dd22333".
+	 *
+	 * @see Displayable
+	 *
+	 */
+    CEYLAN_DLL std::string toString( 
+		const std::list<const void *> & pointerList ) ;
 	
 
 
