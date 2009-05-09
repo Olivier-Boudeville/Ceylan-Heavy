@@ -41,13 +41,16 @@
 namespace Ceylan
 {
 
+
 	namespace Log
 	{
 	
 	
 	
+	
 		// Log messages are gathered into these Log channels.
 		class LogMessage ;
+		
 		
 		
 		/**
@@ -59,6 +62,7 @@ namespace Ceylan
 	 	 */
 		class CEYLAN_DLL LogChannel : public TextDisplayable
 		{
+	
 	
 	
 			/**
@@ -80,7 +84,9 @@ namespace Ceylan
 			typedef Ceylan::Uint32 MessageCount ;
 			
 			
+			
 			public:
+			
 			
 			
 				/**
@@ -89,9 +95,11 @@ namespace Ceylan
 		 		 */
 				explicit LogChannel( const std::string & name ) ;
 			
+			
 	
 				/// Basic virtual destructor.
 				virtual ~LogChannel() throw() ;
+
 
 
 				/**
@@ -112,6 +120,7 @@ namespace Ceylan
 					bool check = true ) ;
 				
 				
+				
 				/**
 				 * Returns this channel's name.
 				 *
@@ -119,12 +128,14 @@ namespace Ceylan
 				virtual const std::string getName() const ;
 				
 					
+					
 				/**
 				 * Returns the number of messages this channel 
 				 * currently gathered.
 				 *
 				 */
 				virtual MessageCount getMessageCount() const ;
+					
 					
 											
 	            /**
@@ -142,9 +153,12 @@ namespace Ceylan
 				virtual const std::string toString( 
 					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 				
+					
+					
 								
 				
 			protected:	
+
 
 
 				/// This channel's name.
@@ -185,6 +199,7 @@ namespace Ceylan
 				LogChannel( const LogChannel & source ) ;
 			
 			
+			
 				/**
 				 * Assignment operator made private to ensure that
 				 * it will be never called.
@@ -196,11 +211,14 @@ namespace Ceylan
 				LogChannel & operator = ( const LogChannel & source ) ;
 				
 				
+				
 		} ;
+		
 
 	}
 
 }
+
 
 
 #endif // CEYLAN_LOG_CHANNEL_H_
