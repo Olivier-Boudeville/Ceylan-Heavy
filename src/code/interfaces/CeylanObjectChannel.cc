@@ -76,16 +76,28 @@ ObjectChannel::ObjectChannel( const string & channelName ) :
 ObjectChannel::~ObjectChannel() throw() 
 {
 
+	CEYLAN_LOG( "Deleting object channel " + _name ) ;
+
 	for ( list<LogMessage *>::iterator it = _messages.begin(); 
 		it != _messages.end(); it++ )
 	{
+
+		CEYLAN_LOG( "Deleting message " + (*it)->toString() ) ;
 		delete (*it) ;
+		
 	}
-	
+
+
+	// Keep it, as the parent destructor will perform double deletion:
 	_messages.clear() ;
-	
+	 
+	 
+	CEYLAN_LOG( "Object channel " + _name + " cleared." ) ;
+		
 	if ( _linkedObjectID != 0 )
 		delete _linkedObjectID ;
+
+	CEYLAN_LOG( "Object channel " + _name + " deleted." ) ;
 		
 }
 
