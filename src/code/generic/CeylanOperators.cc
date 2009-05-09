@@ -26,7 +26,7 @@
 
 #include "CeylanOperators.h"
 
-#include "CeylanStringUtils.h"      // for reverse
+#include "CeylanStringUtils.h"      // for reverse, join
 
 
 #ifdef CEYLAN_USES_CONFIG_H
@@ -42,6 +42,7 @@ using std::istringstream ;
 
 
 using std::string ;
+using std::list ;
 
 
 const Ceylan::Uint16 Ceylan::DigitOutputPrecision = 40 ;
@@ -1279,6 +1280,36 @@ string Ceylan::toString( Ceylan::VerbosityLevels level )
 			break ;
 				
 	}
+	
+}
+
+
+
+std::string Ceylan::toString( const std::list<Ceylan::Uint32> & intList )
+{
+
+	list<string> res ;
+	
+	for ( list<Ceylan::Uint32>::const_iterator it = intList.begin();
+			it != intList.end(); it++ )
+		res.push_back( toString( *it ) ) ;
+		
+	return join( res, " - " ) ;
+	
+}
+
+
+
+std::string Ceylan::toString( const std::list<const void *> & pointerList )
+{
+
+	list<string> res ;
+	
+	for ( list<const void *>::const_iterator it = pointerList.begin();
+			it != pointerList.end(); it++ )
+		res.push_back( toString( *it ) ) ;
+		
+	return join( res, " - " ) ;
 	
 }
 
