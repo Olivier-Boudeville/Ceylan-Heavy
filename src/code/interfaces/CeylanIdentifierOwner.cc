@@ -91,7 +91,7 @@ Identifier & IdentifierOwner::getIdentifier() const
     {
         throw IdentifierNotAvailableException(
             "No available identifier to return for "
-			" IdentifierOwner::getIdentifier" ) ;
+			"IdentifierOwner::getIdentifier" ) ;
     }
 
 }
@@ -139,7 +139,7 @@ void IdentifierOwner::deleteIdentifier()
     {
         Ceylan::emergencyShutdown( 
 			"IdentifierOwner::deleteIdentifier: trying to "
-			"delete a non-existent identifier." ) ;
+			"delete a non-existing identifier." ) ;
     }
 
 #else // CEYLAN_DEBUG
