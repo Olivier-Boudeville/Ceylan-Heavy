@@ -95,12 +95,23 @@ LogAggregator::~LogAggregator() throw()
 
 	// Deallocating gathered channels, which will deallocate their messages:
 	
+	CEYLAN_LOG( "### Removing " + Ceylan::toString( _channelList.size() )
+		+ " channels." ) ;
+	
 	// Curiously enough, a const_iterator can be used too!
 	for ( list<LogChannel *>::iterator it = _channelList.begin(); 
 		it != _channelList.end(); it++ )
 	{
 		if ( (*it) != 0 )
+		{
+			
+			CEYLAN_LOG( "# Removing " /* + (*it)->toString( low ) */ ) ;
+			
 			delete (*it) ;
+			
+			CEYLAN_LOG( "# ...done" ) ;
+			
+		}	
 	}
 	
 }
@@ -171,7 +182,6 @@ bool LogAggregator::hasChannel( const std::string & channelName ) const
 LogChannel * LogAggregator::findChannel( const string & channelName ) const
 {
 
-
 	CEYLAN_LOG( "LogAggregator::findChannel: looking for channel " 
 		+ channelName ) ;
 	
@@ -194,7 +204,6 @@ LogChannel * LogAggregator::findChannel( const string & channelName ) const
 
 void LogAggregator::transferChannel( LogChannel & source, LogChannel & target )
 {
-
 
 	CEYLAN_LOG( "LogAggregator::transferChannel, from " 
 		+ source.getName() 
@@ -329,7 +338,7 @@ LogChannel * LogAggregator::findBasicChannel(
 	throw LogAggregatorException( "No basic channel named " 
 		+ basicChannelName + " found." ) ;
 
-	*/
+	 */
 	return 0 ;
 		
 }
@@ -466,6 +475,7 @@ void LogAggregator::createLoggableChannelFrom( LogMessage & message )
 			"the channel name of incoming message, "
 			+ realChannelName + " is not an object channel name: "
 			+ idEx.toString() + ": this shoud never happen." ) ;
+			
 	}
 	
 	CEYLAN_LOG( "Trying to match " + realChannelName 
@@ -484,7 +494,6 @@ void LogAggregator::createLoggableChannelFrom( LogMessage & message )
 	for ( list<LogChannel *>::const_iterator it = _channelList.begin();
 		it != _channelList.end(); it++ )
 	{
-	
 
 #if CEYLAN_DEBUG
 
