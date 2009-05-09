@@ -143,7 +143,6 @@ void LogAggregatorHTML::aggregate()
 
 	CEYLAN_LOG( "LogAggregatorHTML aggregation started" ) ; 
 
-	
 #if CEYLAN_DEBUG
 	if ( _outputDirectory == 0 )
 		throw LogAggregatorException( "LogAggregatorHTML::aggregate: "
@@ -202,11 +201,13 @@ void LogAggregatorHTML::aggregate()
 		logBrowserMenuFileHolder->write( MenuHeader ) ;
 		
 	
+		CEYLAN_LOG( "####### Writing channels now." ) ;
+		
 		for ( list<LogChannel *>::const_iterator it = _channelList.begin() ;
 			it != _channelList.end() ; it++ )
 		{
 	
-			CEYLAN_LOG( "Creating page for channel " + (*it)->getName()
+			CEYLAN_LOG( "Creating menu entry for channel " + (*it)->getName()
 				+ " which has " + Ceylan::toString( (*it)->getMessageCount() )
 				+ " messsage(s)." ) ;
 			
@@ -222,11 +223,18 @@ void LogAggregatorHTML::aggregate()
 				+ Ceylan::encodeToHTML( (*it)->getName() ) + "</a></td></tr>\n" 
 			) ;
 			
+			CEYLAN_LOG( "Creating channel page for channel " + (*it)->getName()
+				+ " which has " + Ceylan::toString( (*it)->getMessageCount() )
+				+ " messsage(s)." ) ;
+				
 			// Builds the corresponding channel page: 	
 			write( * (*it) ) ;
-		
+
+			CEYLAN_LOG( "Channel " + (*it)->getName() + " managed." ) ;
+				
 		}
 	
+		CEYLAN_LOG( "####### Channels written." ) ;
 	
 		logBrowserMenuFileHolder->write( MenuFooter ) ;
 
