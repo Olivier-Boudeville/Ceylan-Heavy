@@ -45,11 +45,13 @@ using std::list ;
 using namespace Ceylan::Log ;
 
 
-
 LogChannel::LogChannel( const string & name ):
 	_name( name )
 {
 
+	CEYLAN_LOG( "Creating log channel " + Ceylan::toString( this )
+		+ " named '" + name + "'" ) ;
+		
 }
 
 
@@ -57,7 +59,9 @@ LogChannel::LogChannel( const string & name ):
 LogChannel::~LogChannel() throw()
 {
 
-	CEYLAN_LOG( "Deleting log channel " + _name ) ;
+	CEYLAN_LOG( "Deleting log channel " + Ceylan::toString( this )
+		+ " named '" + _name + "', in which there are " 
+		+ Ceylan::toString( _messages.size()  ) + " remaining messages." ) ;
 	
 	for ( list<LogMessage *>::iterator it = _messages.begin(); 
 		it != _messages.end(); it++ )
@@ -77,6 +81,9 @@ LogChannel::~LogChannel() throw()
 void LogChannel::addMessage( LogMessage & message, bool check ) 
 {
 
+	CEYLAN_LOG( "Adding message " + Ceylan::toString( & message ) + ": '"
+		+ message.toString() + "'..." ) ;
+	 
 	// Attempt to allow for more reentrancy in an IRQ-based system:
 	static volatile bool inUse = false ;
 	
@@ -103,7 +110,9 @@ void LogChannel::addMessage( LogMessage & message, bool check )
 	_messages.push_back( & message ) ;
 
 	inUse = false ;
-	
+
+	CEYLAN_LOG( "... message added." ) ;
+		
 }
 
 
