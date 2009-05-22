@@ -29,6 +29,7 @@
 #include "CeylanTimestamp.h"      // for TimeStamp
 #include "CeylanStringUtils.h"    // for formatStringList
 #include "CeylanOperators.h"
+#include "CeylanLogLight.h"
 
 
 #ifdef CEYLAN_USES_CONFIG_H
@@ -55,6 +56,9 @@ LogMessage::LogMessage( const string & message,
 	_timestamp( & timestamp )
 {
 
+	CEYLAN_LOG( "Creating log message " + Ceylan::toString( this )
+		+ ": '" + message + "' in " + channelName ) ;
+		
 }
 
 
@@ -66,6 +70,10 @@ LogMessage::LogMessage( const string & message,
 	_channelName( channelName ),
 	_levelOfDetail( levelOfDetail )
 {
+
+	CEYLAN_LOG( "Creating log message " + Ceylan::toString( this )
+		+ ": '" + message + "' in " + channelName ) ;
+		
 
 	try 
 	{
@@ -89,9 +97,11 @@ LogMessage::LogMessage( const string & message,
 LogMessage::~LogMessage() throw()
 {
 
+	CEYLAN_LOG( "Deleting log message " + Ceylan::toString( this ) ) ;
+		
 	if ( _timestamp != 0 )
 		delete _timestamp ;
-		
+
 }
 
 
