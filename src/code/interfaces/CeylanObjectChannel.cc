@@ -45,11 +45,15 @@ using std::list ;
 using namespace Ceylan::Log ;
 
 
+#include <iostream>
 
 ObjectChannel::ObjectChannel( const string & channelName ) :
 	LogChannel( "Uninitialized object channel" ),
 	_linkedObjectID( 0 )
 {
+
+	CEYLAN_LOG( "Creating object channel " + Ceylan::toString( this ) 
+		+ " named '" + channelName + "'" ) ;
 
 	try 
 	{
@@ -76,21 +80,27 @@ ObjectChannel::ObjectChannel( const string & channelName ) :
 ObjectChannel::~ObjectChannel() throw() 
 {
 
-	CEYLAN_LOG( "Deleting object channel " + _name ) ;
+	CEYLAN_LOG( "Deleting object channel " + Ceylan::toString( this ) 
+		+ " named '" + _name + "'" ) ;
 
 	for ( list<LogMessage *>::iterator it = _messages.begin(); 
 		it != _messages.end(); it++ )
 	{
 
-		CEYLAN_LOG( "Deleting message " + (*it)->toString() ) ;
+		CEYLAN_LOG( " - deleting message '" + Ceylan::toString( *it ) + "'" ) ;
+		
 		delete (*it) ;
 		
 	}
 
 
-	// Keep it, as the parent destructor will perform double deletion:
-	_messages.clear() ;
+	/*
+	 * Keep it, as the parent destructor would otherwise perform double
+	 * deletion:
+	 *
+	 */
 	 
+	_messages.clear() ;
 	 
 	CEYLAN_LOG( "Object channel " + _name + " cleared." ) ;
 		
@@ -146,12 +156,13 @@ const string ObjectChannel::toString( Ceylan::VerbosityLevels level ) const
 		return result + " contains no message." ;
 	
 	if ( _messages.size() == 1 )
-		result += " contains only one message: " ;
+		result += " contains only one message" ;
 	else
-		result += " contains " 
-			+ Ceylan::toString( 
-				static_cast<Ceylan::Uint32>( _messages.size() ) ) 
-			+ " messages: " ;
+		result += " contains " + Ceylan::toString( 
+			static_cast<Ceylan::Uint32>( _messages.size() ) ) + " messages" ;
+	
+	if ( level == Ceylan::low )
+		return result ;
 	
 	list<string> messageList ;
 	 	
@@ -159,7 +170,7 @@ const string ObjectChannel::toString( Ceylan::VerbosityLevels level ) const
 		it != _messages.end(); it++ )
 	{
 	
-#if CEYLAN_DEBUG
+#if CEYLAN_DEBUG_LOG
 
 		if ( ! (*it) )
 		{
@@ -168,13 +179,16 @@ const string ObjectChannel::toString( Ceylan::VerbosityLevels level ) const
 			break ;
 		}	
 		
-#endif // CEYLAN_DEBUG
+		CEYLAN_LOG( "ObjectChannel::toString: describing message at "
+			+ Ceylan::toString( *it ) ) ;
+		
+#endif // CEYLAN_DEBUG_LOG
 		
 		messageList.push_back( (*it)->toString( level ) ) ;
 		
 	}	
 
-	return result + formatStringList( messageList ) ;
+	return result + ": " + formatStringList( messageList ) ;
 	
 }	
 
