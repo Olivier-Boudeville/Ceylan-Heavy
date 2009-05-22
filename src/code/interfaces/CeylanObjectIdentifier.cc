@@ -176,7 +176,7 @@ bool ObjectIdentifier::differentButMatches( const ObjectIdentifier & otherID )
 	if ( _className == otherID._className )
 		return false ;
 
-	// Strictly the same apart the class name: only case where true.	
+	// Strictly the same apart the class name, this is the only case where true:
 	return true ;
 	
 }
