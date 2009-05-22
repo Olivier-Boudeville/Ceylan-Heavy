@@ -204,12 +204,12 @@ void LogAggregatorHTML::aggregate()
 		CEYLAN_LOG( "####### Writing channels now." ) ;
 		
 		for ( list<LogChannel *>::const_iterator it = _channelList.begin() ;
-			it != _channelList.end() ; it++ )
+			it != _channelList.end(); it++ )
 		{
 	
 			CEYLAN_LOG( "Creating menu entry for channel " + (*it)->getName()
 				+ " which has " + Ceylan::toString( (*it)->getMessageCount() )
-				+ " messsage(s)." ) ;
+				+ " message(s)." ) ;
 			
 			// Add a menu reference, each channel with its message count:
 			logBrowserMenuFileHolder->write( 
@@ -225,7 +225,7 @@ void LogAggregatorHTML::aggregate()
 			
 			CEYLAN_LOG( "Creating channel page for channel " + (*it)->getName()
 				+ " which has " + Ceylan::toString( (*it)->getMessageCount() )
-				+ " messsage(s)." ) ;
+				+ " message(s)." ) ;
 				
 			// Builds the corresponding channel page: 	
 			write( * (*it) ) ;
@@ -295,9 +295,9 @@ const string LogAggregatorHTML::toString( Ceylan::VerbosityLevels level ) const
 void LogAggregatorHTML::write( const LogChannel & channel ) const
 {
 
-	CEYLAN_LOG( "Writing on disk channel " + channel.toString() ) ;
+	CEYLAN_LOG( "Writing on disk channel '" + Ceylan::toString( & channel )
+		+ "': " + channel.toString( Ceylan::high ) ) ;
 		
-
 	Holder<File> logChannelPageHolderFile( File::Create(
 		Directory::JoinPath( _outputDirectory->getPath(),
 			File::TransformIntoValidFilename( channel.getName() )
