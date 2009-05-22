@@ -87,7 +87,6 @@ LogAggregator::LogAggregator( bool beSmart,
 }
 
 
-
 LogAggregator::~LogAggregator() throw()  
 {
 
@@ -104,12 +103,12 @@ LogAggregator::~LogAggregator() throw()
 	{
 		if ( (*it) != 0 )
 		{
-			
-			CEYLAN_LOG( "# Removing " /* + (*it)->toString( low ) */ ) ;
+						
+			CEYLAN_LOG( "Removing channel " + (*it)->toString( low ) ) ;
 			
 			delete (*it) ;
 			
-			CEYLAN_LOG( "# ...done" ) ;
+			CEYLAN_LOG( "...done" ) ;
 			
 		}	
 	}
@@ -243,6 +242,8 @@ void LogAggregator::transferChannel( LogChannel & source, LogChannel & target )
 		 * set to null to avoid possible double deallocation of
 		 * transferred messages.
 		 *
+		 * (should be useless)
+		 *
 		 */
 		 
 		*it = 0 ;
@@ -251,7 +252,7 @@ void LogAggregator::transferChannel( LogChannel & source, LogChannel & target )
 	
 	/*
 	 * After having nullified all message pointers in source list,
-	 * remove this null pointers:
+	 * remove these null pointers:
 	 *
 	 */
 	source._messages.clear() ;
@@ -278,8 +279,8 @@ void LogAggregator::removeChannel( LogChannel & target )
 void LogAggregator::store( LogMessage & message ) 
 {
 	
-	CEYLAN_LOG( "LogAggregator::store: incoming message " 
-		+ message.toString() ) ;
+	CEYLAN_LOG( "LogAggregator::store: incoming message is '" 
+		+ message.toString() + "'." ) ;
 	
 	/*
 	 * Tests whether this message is an object one or not, and 
@@ -478,8 +479,8 @@ void LogAggregator::createLoggableChannelFrom( LogMessage & message )
 			
 	}
 	
-	CEYLAN_LOG( "Trying to match " + realChannelName 
-		+ " with already existing channels." ) ;
+	CEYLAN_LOG( "Trying to match '" + realChannelName 
+		+ "' with already existing channels." ) ;
 	
 	
 	/*
@@ -506,8 +507,7 @@ void LogAggregator::createLoggableChannelFrom( LogMessage & message )
 
 		CEYLAN_LOG( "Trying " + (*it)->getName() ) ;
 		
-		ObjectChannel * objChannel = 
-			dynamic_cast<ObjectChannel *>( (*it) ) ;	
+		ObjectChannel * objChannel = dynamic_cast<ObjectChannel *>( (*it) ) ;	
 					
 		if ( objChannel )
 		{
@@ -567,7 +567,8 @@ void LogAggregator::createLoggableChannelFrom( LogMessage & message )
 		
 	} // for ...
 	
-	// Deallocate the object identifer used for comparison purpose:
+	
+	// Deallocates the object identifer used for comparison purpose:
 	delete identifierFromMessage ;
 			  
 	
@@ -616,7 +617,7 @@ void LogAggregator::storeBasicMessage( LogMessage & basicLogMessage )
 	}
 	
 	CEYLAN_LOG( "LogAggregator::storeBasicMessage: "
-		"adding new message to already existing channel "
+		"adding new message to already existing channel " 
 		+ channel->getName() ) ;
 	channel->addMessage( basicLogMessage ) ;
 		
@@ -644,8 +645,8 @@ void LogAggregator::storeObjectMessage( LogMessage & objectLogMessage )
 	if ( channel == 0 )
 	{
 	
-		CEYLAN_LOG( "LogAggregator::storeObjectMessage: Channel " 
-			+ targetChannelName + " not found." ) ;
+		CEYLAN_LOG( "LogAggregator::storeObjectMessage: object channel '" 
+			+ targetChannelName + "' not found." ) ;
 		
 		/*
 		 * Object Channel not found. A channel is to be created, a 
