@@ -88,8 +88,8 @@ Object::~Object() throw()
 	if ( _trackInstance )
 	{
 	
-		CEYLAN_LOG( "Object sending its last message "
-			"just before deallocation." ) ;	
+		CEYLAN_LOG( 
+			"Object sending its last message just before deallocation." ) ;	
 				
 		send( "Being deallocated now." ) ;
 		
@@ -112,7 +112,7 @@ const std::string Object::getClassName() const
 	 
 	Ceylan::Uint16 i = 0 ; 
 	 
-	while (::isdigit( className[ i ] ) ) 
+	while ( ::isdigit( className[ i ] ) ) 
 		i++ ;
 
 	/*
@@ -127,17 +127,11 @@ const std::string Object::getClassName() const
 	if ( pos != string::npos && pos == 0 )
 		className = className.substr( toRemove.size() ) ;
 
-#if CEYLAN_DEBUG
-
 	string result = className.substr( i ) ;	 
-	CEYLAN_LOG( "Object::getClassName is: " + result ) ;
-	return result ;
 	
-#else // CEYLAN_DEBUG
-		
-	return className.substr( i ) ;	
-	 
-#endif // CEYLAN_DEBUG
+	CEYLAN_LOG( "Object::getClassName is: " + result ) ;
+	
+	return result ;
 	
 }
 
@@ -175,8 +169,7 @@ void Object::send( const string & message, LevelOfDetail levelOfDetail )
 		}
 		catch( const Identifier::IdentifierException & e )
 		{
-			throw LogException( "Object::send failed: "
-				+ e.toString() ) ;
+			throw LogException( "Object::send failed: " + e.toString() ) ;
 
 		}
 
@@ -187,8 +180,7 @@ void Object::send( const string & message, LevelOfDetail levelOfDetail )
 
 	}	
 	
-	CEYLAN_LOG( "Object::send: effective sending of message " 
-		+ message ) ;
+	CEYLAN_LOG( "Object::send: effective sending of message " + message ) ;
 	
 	Loggable::send( message, levelOfDetail ) ;	
 	
@@ -202,8 +194,7 @@ const string Object::toString( Ceylan::VerbosityLevels level ) const
 	string result ;
 	
 	if ( _trackInstance )
-		result = "This Ceylan object instance's "
-			"life cycle is monitored. " ;
+		result = "This Ceylan object instance's life cycle is monitored. " ;
 	else
 		result = "No monitoring for this Ceylan object "
 			"instance's life cycle. " ;
@@ -225,8 +216,7 @@ void Object::forgeIdentifier()
 	if ( hasIdentifier() )
 		dropIdentifier() ;
 		
-	CEYLAN_LOG( "Object::forgeIdentifier: "
-		"creating new object identifier." ) ;
+	CEYLAN_LOG( "Object::forgeIdentifier: creating new object identifier." ) ;
 
 	ObjectIdentifier * newID ;
 
@@ -245,8 +235,7 @@ void Object::forgeIdentifier()
 	}
 	catch( const Identifier::IdentifierException & e ) 
 	{
-		throw Log::LogException( "Object::forgeIdentifier: "
-			+ e.toString() ) ;
+		throw Log::LogException( "Object::forgeIdentifier: " + e.toString() ) ;
 	}
 
 
@@ -258,8 +247,7 @@ void Object::forgeIdentifier()
 	}
 	catch( const IdentifierNotAvailableException & e )
 	{
-		throw Log::LogException( "Object::forgeIdentifier: "
-			+ e.toString() ) ;
+		throw Log::LogException( "Object::forgeIdentifier: " + e.toString() ) ;
 	}
 
 
