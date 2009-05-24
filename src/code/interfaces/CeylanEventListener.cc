@@ -137,7 +137,7 @@ void EventListener::unsubscribeFrom( EventSource & source )
 			 * not be used any more:
 			 *
 			 */
-			_sources.remove( & source ) ;
+			_sources.erase( it ) ;
 				
 
 			// At most one pointer to this source registered!
@@ -161,7 +161,7 @@ void EventListener::unsubscribeFromAllSources()
 {
 		
 	for ( list<EventSource *>::iterator it = _sources.begin(); 
-		it != _sources.end() ; it++ )
+		it != _sources.end(); it++ )
 	{
 	
 		/*
@@ -191,7 +191,6 @@ void EventListener::unsubscribeFromAllSources()
 void EventListener::forgetSource( EventSource & source ) 
 {
 
-
 #if CEYLAN_DEBUG_EVENTS		
 	
 	// Check that the source was already known of this listener:
@@ -199,25 +198,38 @@ void EventListener::forgetSource( EventSource & source )
 	LogPlug::warning( "EventListener had to forgot source " 
 		+ source.toString() ) ;
 	
-	list<EventSource *>::iterator it ;
+	bool forgotten = false ;
 		
-	for ( it = _sources.begin(); it != _sources.end() ; it++ )
+	list<EventSource *>::iterator it = _sources.begin() ;
+		
+	while ( it != _sources.end() )
 	{
 	
 		if ( (*it) == & source )
-			break ;	
+		{
+		
+			it = _sources.erase( it ) ;
+			forgotten = true ;
+		}	
+		else
+		{
+			
+			it++ ;
+		
+		}			
 						
 	}
 					
-	if ( it == _sources.end() )
-		throw EventException( "EventListener::unsubscribeFrom: "
+	if ( ! forgotten )
+		throw EventException( "EventListener::forgetSource: "
 			"listener was not already registered to following event source: " 
 			+ source.toString() ) ;
 
-#endif // CEYLAN_DEBUG_EVENTS	
+#else // CEYLAN_DEBUG_EVENTS	
 
-	// Do not use iterator for deleting tasks!	
 	_sources.remove( & source ) ;
+
+#endif // CEYLAN_DEBUG_EVENTS	
 
 }
 
