@@ -163,12 +163,12 @@ bool FileLocator::addPathsFromEnvironmentVariable(
 bool FileLocator::removePath( const string & pathToRemove )
 {
 
-	for ( list<string>::const_iterator it = _paths.begin(); 
-			it != _paths.end() ; it++ )
+	// Comparison on string content, not pointers:
+	for ( list<string>::iterator it = _paths.begin(); it != _paths.end(); it++ )
 		if ( (*it) == pathToRemove )
 		{
 			// Iterator will not be used anymore afterwards:
-			_paths.remove( pathToRemove ) ;
+			_paths.erase( it ) ;
 			return true ;
 		}	
 	
