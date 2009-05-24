@@ -33,6 +33,10 @@
 
 
 
+#include <string>
+
+
+
 /**
  * Advanced pointer template, counting its references and deleting the 
  * contained resource as soon as no one refers to it. 
@@ -74,6 +78,7 @@ namespace Ceylan
 	typedef Ceylan::Uint32 ReferenceCount ;
 
 
+
 	/**
 	 * Pointers with reference counting.
 	 *
@@ -85,7 +90,9 @@ namespace Ceylan
 	 *
 	 *
 	 * This pointer will track the references to the specified resource,
-	 * which will be deallocated only when nobody references it.
+	 * which will be deallocated only when nobody references it any more.
+	 *
+	 * For each counted resource, exactly one referent will exist.
 	 *
  	 * Original name: CountedPointer.h
 	 * Original date: 07/24/99
@@ -125,7 +132,7 @@ namespace Ceylan
 	 *
 	 */
 	template< typename T >
-	class CountedPointer: public Ceylan::TextDisplayable
+	class CountedPointer : public Ceylan::TextDisplayable
 	{
 	
 	
@@ -164,7 +171,7 @@ namespace Ceylan
 					/* ref count */ 1 ) ; 
 
 	            setReferent( ( resourcePointer == 0 ) ? 
-					& staticRef: new Referent( resourcePointer ) ) ;
+					&staticRef : new Referent( resourcePointer ) ) ;
 					
 	        }
 
@@ -314,9 +321,20 @@ namespace Ceylan
 			
 				if ( _referent != 0 )
 				{
-					return "Counted pointer keeping track of " 
+					
+					std::string res = "Counted pointer keeping track of " 
 						+ Ceylan::toString( _referent->_refCount ) 
 						+ " reference(s) to its wrapped resource" ;
+					
+					if ( level == Ceylan::low )
+						return res ;
+					
+					if ( _referent->_resourcePointer == 0 )
+						return res + ", which is a null pointer (abnormal)" ;
+					else
+						return res + ", which is: " + 
+							_referent->_resourcePointer->toString( level ) ;
+								
 				}		
 				else
 				{
@@ -366,7 +384,7 @@ namespace Ceylan
 				/*
 				 * Throws out of isolate, if error creating element occurs.
 				 *
-				 * Supposes a copy construct for templated type exists!
+				 * Supposes a copy constructor for the templated type exists!
 				 *
 				 */
 				ElementType * newElement = new ElementType( * get() ) ;
@@ -413,6 +431,7 @@ namespace Ceylan
 		 
 		 	// Method members.
 		 
+		 
 			/**
 			 * Creates a new referent.
 			 *
@@ -439,11 +458,13 @@ namespace Ceylan
              }
 			 
 
+
 			// Data members.
 			
 			
 			/// Pointer to the actual object.
             ElementType * _resourcePointer ;     
+			
 			
 			/// The reference count for the wrapped resource.
             ReferenceCount _refCount ;
