@@ -167,7 +167,7 @@ namespace Ceylan
 			 * This listener can be registered multiple times to this source.
 			 *
 			 * @throw EventException if listener was not already registered to
-			 * the event source.
+			 * the event source, and if debug mode for events is activated.
 			 *
 			 */
 			virtual void forgetSource( EventSource & source ) ;
