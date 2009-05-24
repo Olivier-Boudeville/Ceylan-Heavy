@@ -245,7 +245,7 @@ void LogAggregatorHTML::aggregate()
 			+ " Aggregation of Log messages ended.</p>\n" ) ;
 		defaultPageFileHolder->write( DefaultPageFooter ) ;
 	
-		std::cout << "Logs can be inspected from file://"
+		std::cout << std::endl << "Logs can be inspected from file://"
 			<< _outputDirectory->getPath() << "/index.html" << std::endl ;
 		
 		// Automatic files will be automatically closed thanks to holders.
