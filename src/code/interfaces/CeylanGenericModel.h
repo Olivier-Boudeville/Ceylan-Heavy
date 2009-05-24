@@ -326,7 +326,7 @@ namespace Ceylan
 		 * SingleViewGenericModel templated class.
 		 *
 		 * @note Usually using this view-templated class is overkill, as 
-		 * most if not all models do not really need to know the actual class
+		 * most, if not all, models do not really need to know the actual class
 		 * of the views they are associated with.
 		 *
 		 */
@@ -378,7 +378,7 @@ namespace Ceylan
 				 * cannot be specified directly when creating this model.
 				 *
 				 */
-				explicit SingleViewGenericModel() ;
+				SingleViewGenericModel() ;
 	
 	
 	
