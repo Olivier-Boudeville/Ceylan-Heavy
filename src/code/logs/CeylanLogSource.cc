@@ -230,11 +230,11 @@ const string LogSource::toString( Ceylan::VerbosityLevels level ) const
 	if ( hasChannelName() )
 		return "This Log source corresponds to the channel [" + getChannelName()
 			+ "] and its current level of detail of interest is "
-			+ Ceylan::toString( _level ) ;
+			+ Ceylan::toNumericalString( _level ) ;
 	else
 		return "This Log source has no registered channel name, "
 			"and its current level of detail of interest is "
-			+ Ceylan::toString( _level ) ;
+			+ Ceylan::toNumericalString( _level ) ;
 
 }	
 
