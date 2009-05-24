@@ -791,6 +791,14 @@ void LogPlug::error( const string & message, LevelOfDetail levelOfDetail )
 
     ErrorLogSource->send( message, levelOfDetail ) ;
 	
+	/*
+	 * Errors are also output directly in the console for easier
+	 * debugging (except when stopping channel):
+	 *
+	 */
+	if ( message != "Stopping channel." )
+		std::cerr << "[error] " << message << std::endl ;
+	
 }
 
 
@@ -809,6 +817,14 @@ void LogPlug::fatal( const string & message, LevelOfDetail levelOfDetail )
 #endif // CEYLAN_DEBUG
 
     FatalLogSource->send( message, levelOfDetail ) ;
+
+	/*
+	 * Fatal errors are also output directly in the console for easier
+	 * debugging (except when stopping channel):
+	 *
+	 */
+	if ( message != "Stopping channel." )
+		std::cerr << "[fatal] " << message << std::endl ;
 	
 }
 
