@@ -1636,7 +1636,9 @@ Should be mainly a BFO (*Bug Fixes Only*, if bugs were to be found) version, as 
 
 Main changes are:
 
- - debug mode enhanced a lot: many checkings are made at all fronteers between WOOPER and either the user code (messages) or the class code (constructor, methods, destructor, execute requests); user-friendly explicit error messages are displayed instead of raw errors in most cases; ``wooper_result`` not appended any more to method returns in debug mode
+ - debug mode enhanced a lot: many checkings are made at all fronteers between WOOPER and either the user code (messages) or the class code (constructor, methods, destructor, execute requests); user-friendly explicit error messages are displayed instead of raw errors in most cases; ``is_record`` used to better detect when an expected state is not properly returned
+ 
+ - ``wooper_result`` not appended any more to method returns in debug mode
  
  - release mode tested and fixed
  
@@ -1644,6 +1646,7 @@ Main changes are:
  
  - destructor chained calls properly fixed this time
  
+ - ``delete_any_instance_referenced_in/2`` added, ``wooper_return_state_*`` macros simplified, ``remote_*`` bug fixed
  
 
 Version 0.3 [current stable]
@@ -1781,6 +1784,7 @@ Issues & Planned Enhancements
  - ensure that all instances of a given class *reference* the same hashtable dedicated to the method look-ups, and do not have each their own private *copy* of it (mere referencing is expected to result from single-assignment); some checking should be performed; storing a per-class direct method mapping could also be done with prebuilt modules: ``class_Cat`` would rely on an automatically generated ``class_Cat_mt`` (for "method table") module, which would just be used to convert a method name to the name of the module that should be called in the context of that class, inheritance-wise
 
  - ensure that each of these references remains purely *local* to the node (no network access wanted for method look-up!); this should be the case thanks to the local WOOPER class manager; otherwise, other types of tables could be used (maybe ETS)
+ 
  
 
 
