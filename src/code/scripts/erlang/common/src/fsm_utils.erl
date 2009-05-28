@@ -24,17 +24,12 @@
 % <http://www.mozilla.org/MPL/>.
 %
 % Author: Olivier Boudeville (olivier.boudeville@esperide.com)
+% Creation date: August 30, 2007.
 
 
 % Gathering of various convenient facilities.
 % See fsm_utils_test.erl for the corresponding test.
-
 -module(fsm_utils).
-
-% Creation date: August 30, 2007.
-% Author: Olivier Boudeville (olivier.boudeville@esperide.com).
-
-% Licensed under a disjunctive tri-license: MPL/GPL/LGPL.
 
 
 -export([create_blank_fsm_state/0,setFsmAttribute/3,getFsmAttribute/2]).
