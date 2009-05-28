@@ -25,7 +25,6 @@
 %
 % Author: Olivier Boudeville (olivier.boudeville@esperide.com)
 
-
 -module(class_Wooper_attribute_test).
 
 
@@ -48,12 +47,15 @@
 	remote_synchronous_timed_new_link/1, construct/1 ).
 
 
+
 % Method declarations.
 -define(wooper_method_export,test/1).
 
 
+
 % Static method declarations.
--export([run/0,crashing_examples/1]).
+-export([ run/0, crashing_examples/1 ]).
+
 
 
 % Allows to define WOOPER base variables and methods for that class:
@@ -62,10 +64,12 @@
 -define(Prefix,"--> ").
 
 
+
 % Constructs a new test instance.
 construct(State) ->
 	% Class-specific attributes:
 	?setAttribute(State,test_attribute,true).
+
 
 
 % Oneway test.
@@ -119,14 +123,18 @@ test(State) ->
 	?wooper_return_state_result( SubState, test_ok ).
 
 
+
 not_crashing_examples(State) ->
 	NewState = ?removeAttribute(State,non_existing),
 	OtherNewState = ?appendToAttribute(NewState,test_attribute,8),
 	[8|true] = ?getAttribute(OtherNewState,test_attribute),
 	not_crashing_test_undefined(State),
-	not_crashing_test_hashtable(State).
+	not_crashing_test_hashtable(State),
+	?wooper_return_state_result( OtherNewState, test_ok ).
 
 
+
+% Usually operations are commented-out as we do not want to fail on purpose:
 crashing_examples(State) ->
 	%?toggleAttribute(State,non_existing),
 	% Not a boolean:
@@ -146,7 +154,8 @@ crashing_examples(State) ->
 	crashing_test_undefined(State),
 
 	%?getAttr(non_existing),
-	ok.
+	?wooper_return_state_result( State, test_ok ).
+	
 	
 
 % Function needed as the checkUndefined macro operates on 'State':
@@ -154,10 +163,12 @@ not_crashing_test_undefined(State) ->
 	?checkUndefined(test_undef).
 	
 	
+	
 % Function needed as the checkUndefined macro operates on 'State':
 crashing_test_undefined(State) ->
 	?checkUndefined(unexisting_attribute).
 	
+
 
 not_crashing_test_hashtable(State) ->
 	% Let's have an (empty) hashtable first:
@@ -167,6 +178,7 @@ not_crashing_test_hashtable(State) ->
 	% Check was registered indeed:
 	ReadTable = ?getAttribute( EntrySetState, test_hashtable ),
 	{value,my_value} = hashtable:lookupEntry( my_key, ReadTable ).
+	
 	
 	
 % Actual test.
@@ -182,7 +194,7 @@ run() ->
 			
 		Other ->
 			io:format( ?Prefix "Test failed: ~w.~n", [Other] ),
-			erlang:exit(test_failed)
+			throw(test_failed)
 			
 	end.
 	
