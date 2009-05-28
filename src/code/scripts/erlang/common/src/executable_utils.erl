@@ -24,6 +24,7 @@
 % <http://www.mozilla.org/MPL/>.
 %
 % Author: Olivier Boudeville (olivier.boudeville@esperide.com)
+% Creation date: Saturday, July 12, 2008.
 
 
 % Gathering of various convenient facilities regarding executing of third-party
@@ -31,11 +32,6 @@
 % See executable_utils_test.erl for the corresponding test.
 -module(executable_utils).
 
-
-% Creation date: Saturday, July 12, 2008.
-% Author: Olivier Boudeville (olivier.boudeville@esperide.com).
-
-% Licensed under a disjunctive tri-license: MPL/GPL/LGPL.
 
 
 -export([ generate_png_from_graph_file/2,
