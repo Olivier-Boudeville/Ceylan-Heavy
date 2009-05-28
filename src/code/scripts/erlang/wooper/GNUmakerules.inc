@@ -22,13 +22,14 @@ class_%.beam: class_%.erl class_%.hrl
 	@$(ERLANG_COMPILER) $(ERLANG_COMPILER_OPT) -o $@ $< 
 
 
+# Most frequently-used rule:
 class_%.beam: class_%.erl
 	@echo "     Compiling WOOPER no-dependency class $<"
 	@$(ERLANG_COMPILER) $(ERLANG_COMPILER_OPT) -o $@ $< 
 
 
 # Allows for example 'make:files([class_XXX]).' or 'make:all().':
-# (deactivated, otherwise would be the default rule applied)
+# (deactivated, otherwise could be the default rule applied)
 #Emakefile:
 #	@echo "     Generating Emakefile"
 #	@echo "{'*',[debug_info,{i,\"$(WOOPER_INC)\"}]}." > Emakefile
