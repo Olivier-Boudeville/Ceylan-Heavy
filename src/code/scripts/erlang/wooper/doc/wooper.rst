@@ -318,7 +318,7 @@ The complete list of reserved function names that do not start with the ``wooper
  - ``get_superclasses``
  - ``executeRequest``
  - ``executeOneway``
- - ``delete_any_process_in``
+ - ``delete_any_instance_referenced_in``
  - ``is_wooper_debug``
 
 They are reserved for all arities.
@@ -529,7 +529,7 @@ The corresponding error message is ``{wooper_method_faulty_return, InstancePid, 
 
 For example, ``{wooper_method_faulty_return, <0.30.0>, class_Cat, myFaultyMethod, 1, [], [{{state_holder,..]}``.
 
-This error occurs when no other error matched (this is a catch-all case).
+This error occurs only when being in debug mode.
 
 The main reason for this to happen is when debug mode is set and when a method implementation did not respect the expected method return convention (neither ``wooper_return_state_result`` nor ``wooper_return_state_only`` used).
 
@@ -605,6 +605,9 @@ Thus the caller will only receive the **result** of a method, if it is a request
 
 More precisely, depending on its returning a specific result, the method signature will correspond either to a request or a oneway, and will use, respectively, either the ``wooper_return_state_result`` or the ``wooper_return_state_only`` macro.
 
+
+.. Note:: When a constructor or a method determines that a fatal error should be raised (ex: because it cannot find a required registered process), it should use ``throw``, like in: ``throw( {invalid_value,V} )``. Using ``exit`` is supported but not recommended.
+   
 
 For Requests
 ____________
@@ -720,6 +723,7 @@ For example:
 
 
 
+
 Regarding now ``executeOneway``, it is either ``executeOneway/3`` or ``executeOneway/2``, depending on whether the oneway takes parameters. If yes, they can be specified as a list (if there are more than one) or as a standalone parameter. 
 
 ``executeOneway`` returns the new state.
@@ -733,7 +737,7 @@ For example:
  - oneway taking no parameter: ``NewState = executeOneway(CurrentState,third_oneway_name)``
 
 
-
+.. Note:: As discussed previously, there are caller-side errors that are not to crash the instance. If such a call is performed directly from that instance (i.e. with one of the ``execute*`` constructs), then two errors will be output: the first, non-fatal for the instance, due to the method call, then the second, fatal for the instance, due to the failure of the ``execute*`` call. This is the expected behaviour, as here the instance plays both roles, the caller and the callee.
 
 
 .. _`state management`:
@@ -1096,6 +1100,12 @@ To do so, the ``remote_*new*`` variations shall be used. They behave exactly lik
 
 For example: ``MyCat = class_Cat:remote_new( TargetNode, Age, Gender, FurColor, WhiskerColor ).`` 
 
+Of course:
+
+ - the remote node must be already existing
+ - the current node must be able to connect to it (shared cookie)
+ - the needed modules must be available on the remote node 
+
 
 
 Declaration of the new/construct Pair
@@ -1270,7 +1280,9 @@ _________________________________
 
 We saw that, when implementing a constructor (``construct/N``), like in all other OOP approaches the constructors of the direct mother classes have to be explicitly called, so that they can be given the proper parameters. 
 
-Conversely, with WOOPER, when defining a destructor for a class (``delete/1``), one only has to specify what are the *specific* operations (if any) that are required so that an instance of that class is deleted: the proper calling of the destructors of mother classes across the inheritance graph is automatically taken in charge by WOOPER.
+Conversely, with WOOPER, when defining a destructor for a class (``delete/1``), one only has to specify what are the *specific* operations and state changes (if any) that are required so that an instance of that class is deleted: the proper calling of the destructors of mother classes across the inheritance graph is automatically taken in charge by WOOPER.
+
+Once the user-specified actions have been processed by the destructor (ex: releasing a resource, unsubscribing from a registry, deleting other instances, closing properly a file, etc.), it is expected to return an updated state, which will be given to the destructors of the instance superclasses.
 
 Note also that as soon as you define a destructor, you have to declare it in the ``wooper_construct_export`` section.
 
@@ -1284,13 +1296,15 @@ Otherwise a warning will be issued (``delete/1`` is unused), and the overridden 
 Asynchronous Destructor: ``delete/1``
 _____________________________________
 
-More precisely, either the class implementer does not define at all a ``delete/1`` operator, or it defines it without needing to call the ones of the mother class(es), like in::
+More precisely, either the class implementer does not define at all a ``delete/1`` operator (and therefore uses the default do-nothing destructor), or it defines it explicitly, like in::
 
   delete(State) ->
-    io:format("An instance of class ~w is being deleted now!", [?MODULE] ).
+    io:format("An instance of class ~w is being deleted now!", [?MODULE] ),
+	% Quite often the destructor do not need to modify the instance state:
+	State.
 
 
-In both cases, when the instance will be deleted (i.e. ``MyInstance ! delete`` is issued), WOOPER will take care of:
+In both cases (default or user-defined destructor), when the instance will be deleted (ex: ``MyInstance ! delete`` is issued), WOOPER will take care of:
 
  - calling any destructor defined for that class
  - then calling the ones of the direct mother classes, which will in turn call the ones of their mother classes, and so on
@@ -1301,14 +1315,46 @@ Note that the destructors for direct mother classes will be called in the revers
 Synchronous Destructor: ``synchronous_delete/1``
 ________________________________________________
 		   
-Finally, the ``delete/1`` operator does not need to be exported, since it will be triggered only thanks to messages.
+WOOPER automatically defines a way of deleting *synchronously* a given instance: a caller can request a synchronous (blocking) deletion of that instance and, once notified of the deletion, knows for sure the instance does not exist any more, like in::
+
+  InstanceToDelete ! {synchronous_delete,self()},
+  % Then the caller can block as long as the deletion did not occur:
+  receive
+  	{deleted,InstanceToDelete} ->
+		ok
+  end.
 
 
+The class implementer does not have to do anything to support this feature, as the synchronous deletion is automatically built by WOOPER on top of the usual asynchronous one (``delete/1``). 
 
 
 
 Miscellaneous Technical Points
 ==============================
+
+
+``delete_any_instance_referenced_in/2``
+---------------------------------------
+
+When an attribute contains either a single instance reference (i.e. the PID of the corresponding process) or a list of instance references, this WOOPER-defined helper function will automatically delete (asynchronously) these instances, and will return an updated state in which this attribute is set to ``undefined``.
+
+This function is especially useful in destructors.
+
+For example, if ``State`` contains:
+
+ - an attribute named ``my_pid`` whose value is the PID of an instance
+ - and also an attribute named ``my_list_of_pid`` containing a list of PID instances
+ 
+and if the deleted instance took ownership of these instances, then:: 
+
+  delete(State) ->
+    TempState = delete_any_instance_referenced_in( State, my_pid ),
+	delete_any_instance_referenced_in( TempState, my_list_of_pid).
+	
+will automatically delete all these instances and returns an updated state.
+
+Then the destructors of the mother classes can be chained.	
+
 
 
 EXIT Messages
@@ -1379,8 +1425,6 @@ WOOPER Example
 ==============
 
 We created a small set of classes allowing to show multiple inheritance:
-
-.. comment Use format-specific instructions so that the PDF fits in one page and the HTML has a full-sized image.
 
 .. figure:: wooper-example.png
    :alt: WOOPER Example
@@ -1457,6 +1501,10 @@ Runtime Errors
 Most errors while using WOOPER should result in relatively clear messages (ex: ``wooper_method_failed`` or ``wooper_method_faulty_return``).
 
 Another way of overcoming WOOPER issues is to activate the debug mode for all WOOPER-enabled compiled modules (ex: uncomment ``-define(wooper_debug,).`` in ``wooper.hrl``), and recompile your classes.
+
+The debug mode tries to perform extensive checking on all WOOPER entry points, from incoming messages to the user class itself.
+
+For example, the validity of states returned by the constructor, by each method and by the destructor is checked, as the one of states specified to the ``execute*`` constructs.
 
 If it is not enough to clear things up, an additional step can be to add, on a per-class basis (ex: in ``class_Cat.erl``), before the WOOPER include, ``-define(wooper_log_wanted,).``.
 
@@ -1539,10 +1587,12 @@ It will build and run all, including the various WOOPER test cases.
 Using Cutting-Edge SVN
 ----------------------
 
-
 A SVN (anonymous) check-out of WOOPER code can be obtained thanks to, for example::
 
   svn co https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/code/scripts/erlang Wooper-code-checkout 
+
+
+We try to ensure that the main line (``trunk``) always stays functional. Evolutions are to be take place in feature branches.
 
 
 Ceylan developers should used their Sourceforge user name so that they can commit changes::
@@ -1584,7 +1634,17 @@ Not released yet (work-in-progress).
 
 Should be mainly a BFO (*Bug Fixes Only*, if bugs were to be found) version, as functional coverage is pretty complete already.
 
+Main changes are:
 
+ - debug mode enhanced a lot: many checkings are made at all fronteers between WOOPER and either the user code (messages) or the class code (constructor, methods, destructor, execute requests); user-friendly explicit error messages are displayed instead of raw errors in most cases; ``wooper_result`` not appended any more to method returns in debug mode
+ 
+ - release mode tested and fixed
+ 
+ - ``exit`` replaced by ``throw``, use of newer and better ``try/catch`` instead of mere ``catch``
+ 
+ - destructor chained calls properly fixed this time
+ 
+ 
 
 Version 0.3 [current stable]
 ----------------------------
@@ -1653,7 +1713,7 @@ Each instance runs a main loop (``wooper_main_loop``, defined in `wooper.hrl <ht
 		{command,{M,P}} ->
   			S_new = f(S,M,P),
 			my_server( S_new )
-    end.		
+	end.		
 		
 			
 In each instance, WOOPER manages the tail-recursive infinite surrounding loop, ``S`` corresponds to the state of the instance (``State``), and ``f(S,M,P)`` corresponds to the WOOPER logic that triggers the user-defined method ``M`` with the current state (``S``) and the specified parameters (``P``), and that may return a result.
@@ -1721,9 +1781,7 @@ Issues & Planned Enhancements
  - ensure that all instances of a given class *reference* the same hashtable dedicated to the method look-ups, and do not have each their own private *copy* of it (mere referencing is expected to result from single-assignment); some checking should be performed; storing a per-class direct method mapping could also be done with prebuilt modules: ``class_Cat`` would rely on an automatically generated ``class_Cat_mt`` (for "method table") module, which would just be used to convert a method name to the name of the module that should be called in the context of that class, inheritance-wise
 
  - ensure that each of these references remains purely *local* to the node (no network access wanted for method look-up!); this should be the case thanks to the local WOOPER class manager; otherwise, other types of tables could be used (maybe ETS)
-		 
-
-
+ 
 
 
 :raw-latex:`\pagebreak`
