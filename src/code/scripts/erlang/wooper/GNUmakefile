@@ -13,6 +13,10 @@ WOOPER_RELEASES = $(WOOPER_RELEASE_ARCHIVE_BZ2) $(WOOPER_RELEASE_ARCHIVE_ZIP)
 SF_USER = wondersye
 
 
+# So that it remains the default make target:
+all:
+
+
 # Note: the source archives are not produced in this directory, but in its 
 # parent, so that everything related to WOOPER (including these rules) 
 # remains self-contained. 
