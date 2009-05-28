@@ -46,7 +46,7 @@ construct(State,?wooper_construct_parameters) ->
 	?setAttribute(CreatureState,fur_color,FurColor).
 	
 	
-% Overriding default destructor :	
+% Overriding default destructor:	
 % State should be returned, and destructors should be called in leaf-to-root
 % order in inheritance tree.
 delete(State) ->
@@ -81,5 +81,7 @@ getFurColor(State) ->
 % Overridden from Creature, useful to show the use of executeRequest.
 % (request)
 getArbitraryNumber(State) ->
+	% Interesting test for the stack trace, when called from the Mammal test:	
+	%throw( exception_throw_test_from_request ),
 	?wooper_return_state_result(State,15).
 
