@@ -23,6 +23,7 @@
 % If not, see <http://www.gnu.org/licenses/> and
 % <http://www.mozilla.org/MPL/>.
 %
+% Creation date: July 2, 2007.
 % Author: Olivier Boudeville (olivier.boudeville@esperide.com)
 
 
@@ -36,27 +37,24 @@
 -module(hashtable).
 % Directly depends on: the basic_utils module.
 
-% Creation date: July 2, 2007.
-% Author: Olivier Boudeville (olivier.boudeville@esperide.com).
 % Heavily inspired of the tupleStore example from 
 % 'Concurrent Programming in Erlang', section 9.8.
 
-% Licensed under a disjunctive tri-license: MPL/GPL/LGPL.
 
 
 % The hashtable is implemented thanks to a tuple whose size is the number of
 % buckets specified at the hashtable creation.
 % Each tuple element (hence each bucket) is a list of key/value pairs.
 
-% Maybe the ets module could/should be used instead.
+% Maybe the ETS module, proplists, dict, etc. could/should be used instead.
 
 
--export([new/0,new/1,addEntry/3,addEntries/2, 
-	removeEntry/2,lookupEntry/2,hasEntry/2,
-	getEntry/2,addToEntry/3,substractFromEntry/3,toggleEntry/2,
-	appendToEntry/3,deleteFromEntry/3,popFromEntry/2,
-	enumerate/1,keys/1,
-	getEntryCount/1,merge/2,toString/1,display/1]).
+-export([ new/0, new/1, addEntry/3, addEntries/2, 
+	removeEntry/2, lookupEntry/2, hasEntry/2,
+	getEntry/2, addToEntry/3, substractFromEntry/3, toggleEntry/2,
+	appendToEntry/3, deleteFromEntry/3, popFromEntry/2,
+	enumerate/1, keys/1, getEntryCount/1, merge/2, toString/1, display/1 ]).
+
 
 
 % The default number of hash buckets:
@@ -69,21 +67,24 @@ new() ->
 	new(?DefaultNumberOfBuckets).
 
 
+
 % Returns a new empty hash table with specified number of buckets.
 % For efficient access, there should be more buckets than entries.  
 new(NumberOfBuckets) ->
 	createTuple(NumberOfBuckets,[]).
 
 
+
 % Adds specified key/value pair into the specified hash table.
 % If there is already a pair with this key, then its previous value
 % will be replaced by the specified one.
 addEntry(Key,Value,HashTable) ->
-	KeyIndex=erlang:phash2(Key,size(HashTable))+1,
+	KeyIndex = erlang:phash2(Key,size(HashTable))+1,
 	% Retrieve appropriate tuple slot:
-	PreviousList=element(KeyIndex,HashTable),
-	NewList=replaceBucket(Key,Value,PreviousList,[]),
+	PreviousList = element(KeyIndex,HashTable),
+	NewList = replaceBucket(Key,Value,PreviousList,[]),
 	setelement(KeyIndex,HashTable,NewList).
+
 
 
 % Adds specified list of key/value pair into the specified hash table.
@@ -94,14 +95,16 @@ addEntries([],HashTable) ->
 	
 addEntries( [{EntryName,EntryValue}|Rest], HashTable) ->
 	addEntries( Rest, addEntry(EntryName,EntryValue,HashTable) ).
+
 	
 	
 % Removes specified key/value pair from the specified hash table.
 removeEntry(Key,HashTable) ->
-	KeyIndex=erlang:phash2(Key,size(HashTable))+1,
-	PreviousList=element(KeyIndex,HashTable),
-	NewList=deleteBucket(Key,PreviousList,[]),
+	KeyIndex = erlang:phash2(Key,size(HashTable))+1,
+	PreviousList = element(KeyIndex,HashTable),
+	NewList = deleteBucket(Key,PreviousList,[]),
 	setelement(KeyIndex,HashTable,NewList).
+
 	
 	
 % Looks-up specified entry (designated by its key) in specified hash table.	
@@ -110,6 +113,7 @@ removeEntry(Key,HashTable) ->
 lookupEntry(Key,HashTable) ->	
 	lookupInList(Key, element(erlang:phash2(Key,size(HashTable))+1,
 		HashTable)).
+
 
 
 % Tells whether the specified key exists in the table: returns true or false.
@@ -126,6 +130,7 @@ hasEntry(Key,HashTable) ->
 	end.	
 
 
+
 % Retrieves the value corresponding to specified key and returns it directly.
 % The key/value pair is expected to exist already, otherwise a bad match is
 % triggered.
@@ -133,6 +138,7 @@ getEntry(Key,HashTable) ->
 	{value,Value} = lookupInList(Key,
 		element(erlang:phash2(Key,size(HashTable))+1,HashTable)),
 	Value.
+
 
 
 % Adds specified value to the value, supposed to be numerical, associated to
@@ -145,6 +151,7 @@ addToEntry(Key,Value,HashTable) ->
 	addEntry(Key,Number+Value,HashTable).
 
 
+
 % Substracts specified value to the value, supposed to be numerical, 
 % associated to specified key.
 % A case clause is triggered if the key did not exist, a bad arithm is
@@ -153,6 +160,7 @@ substractFromEntry(Key,Value,HashTable) ->
 	{value,Number} = lookupInList(Key,
 		element(erlang:phash2(Key,size(HashTable))+1,HashTable)),
 	addEntry(Key,Number-Value,HashTable).
+
 
 
 % Toggles the boolean value associated with specified key: if true will be
@@ -172,6 +180,7 @@ toggleEntry(Key,HashTable) ->
 	end.	
 
 
+
 % Appends specified element to the value, supposed to be a list, associated to
 % specified key.
 % A case clause is triggered if the entry does not exist.
@@ -182,6 +191,7 @@ appendToEntry(Key,Element,HashTable) ->
 		element(erlang:phash2(Key,size(HashTable))+1,HashTable)),
 	addEntry(Key,[Element|List],HashTable).
 	
+
 
 % Appends specified element to the value, supposed to be a list, associated to
 % specified key.
@@ -198,6 +208,7 @@ deleteFromEntry(Key,Element,HashTable) ->
 	addEntry(Key,lists:delete(Element,List),HashTable).
 
 
+
 % Pops the head of the value (supposed to be a list) associated to specified
 % key, and returns a pair made of the popped head and the new hashtable. 
 popFromEntry(Key,HashTable) ->
@@ -207,6 +218,7 @@ popFromEntry(Key,HashTable) ->
 	
 
 
+
 % Returns a flat list whose elements are all the key/value pairs of the
 % hashtable.
 % Ex: [ {K1,V1}, {K2,V2},.. ].
@@ -214,9 +226,11 @@ enumerate(Hashtable) ->
 	lists:flatten( tuple_to_list(Hashtable) ).
 
 
+
 % Returns a list containing all the keys of this hashtable.
 keys(Hashtable) ->
 	get_keys_from_buckets( tuple_to_list(Hashtable), [] ).
+
 
 
 % Returns the number of entries (key/value pairs) stored in specified
@@ -224,6 +238,7 @@ keys(Hashtable) ->
 getEntryCount(Hashtable) ->
 	erlang:length( enumerate(Hashtable) ).
 	
+
 
 % Returns a new hashtable, which started from HashTableBase and was enriched
 % with the HashTableAdd entries whose keys where not already in HashTableBase
@@ -235,6 +250,7 @@ merge(HashTableBase,HashTableAdd) ->
 		fun({Key,Value},Acc) -> addEntry(Key,Value,Acc) end,
 		HashTableAdd,
 		enumerate(HashTableBase)). 
+	
 	
 
 toString(HashTable) when size(HashTable) > 0 ->
@@ -260,6 +276,7 @@ display(HashTable) ->
 
 
 
+
 % Helper functions.
 
 
@@ -268,9 +285,11 @@ display(HashTable) ->
 createTuple(Length,Default) ->
 	createTuple(Length,Default,[]).
 
+
 % Final step:	
 createTuple(0,_,Accumulator) ->
 	list_to_tuple(Accumulator);
+
 
 % Building from n-1 to n elements:
 createTuple(N,Default,Accumulator) ->
@@ -284,13 +303,16 @@ deleteBucket(Key,[{Key,_}|T],Accumulator) ->
 	% Skips the key if matching:
 	lists:append(T,Accumulator);
 
+
 deleteBucket(Key,[H|T],Accumulator) ->
 	% Keeps everything else: 
 	deleteBucket(Key,T,[H|Accumulator]);
 
+
 deleteBucket(_,[],Accumulator) -> 
 	Accumulator.
 
+	
 	
 % Replaces in specified list a key/value pair by another:	
 replaceBucket(Key,Value,[],Accumulator)	->
@@ -320,6 +342,7 @@ bucket_toString(Bucket) when length(Bucket) > 0 ->
 bucket_toString(_) ->
 	"Empty bucket".
 
+	
 	
 % Returns the value corresponding to the key in the specified list: 	
 lookupInList(Key,[]) ->
