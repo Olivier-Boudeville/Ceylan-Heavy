@@ -50,7 +50,7 @@ construct( State, ?wooper_construct_parameters ) ->
 	?setAttribute( ViviparousMammalState, whisker_color, WhiskerColor ).
 	
 	
-delete(State ) ->
+delete(State) ->
 	io:format( "Deleting cat ~w! (overridden destructor)~n", [self()] ),
 	State.
 	
