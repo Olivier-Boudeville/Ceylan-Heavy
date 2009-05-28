@@ -140,7 +140,8 @@ doc-recurse:
 	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then cd $$m && $(MAKE) -s doc CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ; else echo "     (directory $$m skipped)" ; fi ) ; then exit 1; fi ; done
 
 
-# Not used anymore now that all beams are always built:	
+
+# Not used any more now that all beams are always built:	
 build-tests: $(BEAM_FILES)
 	@for t in $(TEST_TARGETS); do $(MAKE) -s $$t CMD_LINE_OPT="${CMD_LINE_OPT}"; done
 
