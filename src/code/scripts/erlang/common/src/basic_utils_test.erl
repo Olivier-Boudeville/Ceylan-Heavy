@@ -126,6 +126,41 @@ run() ->
 
 	[1,4] = Subtracted, 	
 	
+	UnregisteredName = test_non_registered,
+	try basic_utils:get_registered_pid_for( UnregisteredName ) of
+	
+		_Anything ->
+			throw( test_should_have_failed )
+			
+	catch
+	
+		{neither_registered_locally_nor_globally,UnregisteredName} ->
+			ok
+			
+	end,
+	
+	RegisteredName = test_registered,
+	PidToRegister = self(),
+	basic_utils:register_as( PidToRegister, RegisteredName, global_only ),
+	
+	try basic_utils:get_registered_pid_for( RegisteredName ) of
+	
+		PidToRegister ->
+			ok
+			
+	catch
+	
+		Exception ->
+			throw( {test_should_have_succeeded,Exception} )
+			
+	end,
+	
+	
+	ListOfStrings = [ "Hello", "World", "Vampire" ],
+		
+	io:format( "   Displaying list ~w as a string:~n~s~n", 
+		[ ListOfStrings, basic_utils:string_list_to_string(ListOfStrings) ] ),	
+		
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().
 
