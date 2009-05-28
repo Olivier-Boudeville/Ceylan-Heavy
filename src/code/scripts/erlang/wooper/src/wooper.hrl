@@ -33,9 +33,10 @@
 
 
 % Creation date: Friday, July 6, 2007.
+% Author: Olivier Boudeville (olivier.boudeville@esperide.com).
 
 % Licensed under a disjunctive tri-license: MPL/GPL/LGPL, see:
-% http://ceylan.sourceforge.net/main/documentation/wooper/
+% http://ceylan.sourceforge.net/main/documentation/wooper/index.html#license
 
 
 % Provides most classical constructs: new/delete operators, remote method 
@@ -206,7 +207,7 @@
 	-define( WooperBaseMethods, get_class_name/0, get_class_name/1,
 		get_superclasses/0, get_superclasses/1,
 		executeRequest/2, executeRequest/3, executeOneway/2, executeOneway/3,
-		delete_any_process_in/2, wooper_destruct/1, 
+		delete_any_instance_referenced_in/2, wooper_destruct/1, 
 		wooper_pop_from_attribute/2, wooper_check_undefined/2,
 		wooper_construct_and_run/1, wooper_construct_and_run_synchronous/2,
 		wooper_get_all_attributes/1, 
@@ -231,17 +232,15 @@
 
 	is_wooper_debug() ->
 		true.
-	
-	% In debug mode, method results are checked thanks to an additional atom:
-	-define( wooper_return_state_result(State,Result),
-		{wooper_result,State,Result}).
-		
-	-define( wooper_return_state_only(State),{wooper_result,State}).
 
 
 	wooper_display_loop_state(State) ->
 		wooper_display_state(State).
 
+	% Uncomment to have all WOOPER recompiled classes output verbosely their
+	% information:
+	%-define(wooper_log_wanted,).
+	
 	-ifdef(wooper_log_wanted).
 		-define(wooper_log(Msg),io:format(Msg)).
 		-define(wooper_log_format(Msg,Format),io:format(Msg,Format)).
@@ -260,7 +259,7 @@
 	-define( WooperBaseMethods, get_class_name/0, get_class_name/1,
 		get_superclasses/0, get_superclasses/1,
 		executeRequest/2, executeRequest/3, executeOneway/2, executeOneway/3,
-		delete_any_process_in/2, wooper_destruct/1, 
+		delete_any_instance_referenced_in/2, wooper_destruct/1, 
 		wooper_pop_from_attribute/2, wooper_check_undefined/2,
 		wooper_construct_and_run/1, wooper_construct_and_run_synchronous/2,
 		wooper_get_all_attributes/1,
@@ -283,9 +282,6 @@
 	is_wooper_debug() ->
 		false.
 
-	% In release mode, method results are sent directly (no atom added):
-	-define(wooper_return_state_result(State,Result),{State,Result}).
-	-define(wooper_return_state_only(State), State).
 	
 	wooper_display_loop_state(_) ->
 		debug_no_activated.
@@ -294,6 +290,13 @@
 	-define(wooper_log_format(Msg,Format),no_wooper_log).
 		
 -endif.
+
+
+% Now that typ-checking on the state record is performed in debug mode,
+% in both modes method results are sent directly:
+% (no wooper_result atom added any more in debug mode)
+-define(wooper_return_state_result(State,Result),{State,Result}).
+-define(wooper_return_state_only(State), State).
 
 
 
@@ -594,7 +597,7 @@ synchronous_timed_new_link( ?wooper_construct_parameters ) ->
 % triggered, without waiting for it to complete.
 remote_new( Node, ?wooper_construct_parameters ) ->
 	spawn( Node, ?MODULE, wooper_construct_and_run,
-		[ [?wooper_construct_parameters], self() ] ).
+		[ [?wooper_construct_parameters] ] ).
 
 
 % Spawns a new instance for this class on specified interconnected node, 
@@ -606,7 +609,7 @@ remote_new( Node, ?wooper_construct_parameters ) ->
 % triggered, without waiting for it to complete.
 remote_new_link( Node, ?wooper_construct_parameters ) ->
 	spawn_link( Node, ?MODULE, wooper_construct_and_run,
-		[ [?wooper_construct_parameters], self() ] ).
+		[ [?wooper_construct_parameters] ] ).
 
 
 
@@ -689,8 +692,8 @@ remote_synchronous_timed_new( Node, ?wooper_construct_parameters ) ->
 % only when the created process reports it is up and running, or when 
 % a time-out occurs.
 remote_synchronous_timed_new_link( Node, ?wooper_construct_parameters ) ->
-	SpawnedPid = spawn_link( Node, ?MODULE,
-		 wooper_construct_and_run_synchronous,
+	SpawnedPid = spawn_link( Node, ?MODULE, 
+		wooper_construct_and_run_synchronous,
 		[ [?wooper_construct_parameters], self() ] ),
 		
 	% Blocks until the spawned process answers or a time-out occurs:	
@@ -873,7 +876,7 @@ synchronous_timed_new_link() ->
 % Creation is asynchronous: remote_new returns as soon as the creation is
 % triggered, without waiting for it to complete.
 remote_new( Node ) ->
-	spawn( Node, ?MODULE, wooper_construct_and_run, [ [], self() ] ).
+	spawn( Node, ?MODULE, wooper_construct_and_run, [ [] ] ).
 
 
 % Spawns a new instance for this class on specified interconnected node, 
@@ -884,7 +887,7 @@ remote_new( Node ) ->
 % triggered, without waiting for it to complete.
 remote_new_link( Node ) ->
 	spawn_link( Node, ?MODULE, wooper_construct_and_run,
-		[ [], self() ] ).
+		[ [] ] ).
 
 
 
@@ -990,6 +993,10 @@ remote_synchronous_timed_new_link( Node ) ->
 
 
 
+-ifdef(wooper_debug).
+
+
+% Extensive testings in this mode.
 
 % Indirection level to allow constructors to be chained.
 % Allows to obtain the virtual table from the instance, not from its parent. 
@@ -1001,9 +1008,68 @@ wooper_construct_and_run(ParameterList) ->
 		attribute_table = hashtable:new(?WooperAttributeCountUpperBound),
 		request_sender  = undefined
 	},
-	wooper_main_loop(
-		apply(?MODULE,construct,[BlankTable|ParameterList]) ).
+	case apply(?MODULE,construct,[BlankTable|ParameterList]) of 
+	
+		ConstructState when is_record(ConstructState,state_holder) ->
+			wooper_main_loop( ConstructState );
+			
+		Other ->
+			error_logger:error_msg(	"WOOPER error for PID ~w of class ~s: "
+				"constructor did not return a state, but returned ~w instead. "
+				"Construction parameters were ~w.~n",
+				[ self(), ?MODULE, Other, ParameterList] ),
+			% Wait a bit as error_msg seems asynchronous:
+			timer:sleep(1000),
+			throw({invalid_constructor,?MODULE}) 	
 
+	end.
+
+
+% Indirection level to allow constructors to be chained.
+% Allows to obtain the virtual table from the instance, not from its parent. 
+wooper_construct_and_run_synchronous(ParameterList,SpawnerPid) ->
+	%io:format("wooper_construct_and_run called with parameters ~w, "
+	%	"whose length is ~B.~n",[ParameterList,length(ParameterList)]),
+	BlankTable = #state_holder{
+		virtual_table   = wooper_retrieve_virtual_table(),
+		attribute_table = hashtable:new(?WooperAttributeCountUpperBound),
+		request_sender  = undefined
+	},
+	case apply(?MODULE,construct,[BlankTable|ParameterList]) of 
+	
+		ConstructState when is_record(ConstructState,state_holder) ->
+			SpawnerPid ! { spawn_successful, self() },
+			wooper_main_loop( ConstructState );
+			
+		Other ->
+			error_logger:error_msg(	"WOOPER error for PID ~w of class ~s: "
+				"constructor did not return a state, but returned ~w instead. "
+				"Construction parameters were ~w.~n",
+				[ self(), ?MODULE, Other, ParameterList] ),
+			% Wait a bit as error_msg seems asynchronous:
+			timer:sleep(1000),
+			throw({invalid_constructor,?MODULE}) 	
+
+	end.
+
+
+
+-else.
+
+
+% Less testings in this mode.
+
+% Indirection level to allow constructors to be chained.
+% Allows to obtain the virtual table from the instance, not from its parent. 
+wooper_construct_and_run(ParameterList) ->
+	%io:format("wooper_construct_and_run called with parameters ~w, "
+	%	"whose length is ~B.~n",[ParameterList,length(ParameterList)]),
+	BlankTable = #state_holder{
+		virtual_table   = wooper_retrieve_virtual_table(),
+		attribute_table = hashtable:new(?WooperAttributeCountUpperBound),
+		request_sender  = undefined
+	},
+	wooper_main_loop( apply(?MODULE,construct,[BlankTable|ParameterList]) ).
 
 
 % Indirection level to allow constructors to be chained.
@@ -1019,6 +1085,9 @@ wooper_construct_and_run_synchronous(ParameterList,SpawnerPid) ->
 	ConstructState = apply(?MODULE,construct,[BlankTable|ParameterList]),
 	SpawnerPid ! { spawn_successful, self() },
 	wooper_main_loop( ConstructState ).
+
+
+-endif.
 
 
 
@@ -1239,20 +1308,22 @@ wooper_pop_from_attribute(State,AttributeName) ->
 
 % Helper function for the checkUndefined macro.
 wooper_check_undefined(State,Attribute) -> 
+	try 
+		undefined = ?getAttr(Attribute)
+	catch	
 
-	case catch undefined = ?getAttr(Attribute) of
-
-		{'EXIT',{{badmatch,UnexpectedValue},Stack}} ->
+		exit:{{badmatch,UnexpectedValue},Stack} ->
 			% Attribute value was not equal to 'undefined':
 			throw( {attribute_was_not_undefined,{Attribute,UnexpectedValue},
 				Stack} );
-	
-		{'EXIT',Error} ->
+				
+		exit:Error ->
 			% Other error (ex: unknown attribute):
 			throw( {attribute_error,Attribute,Error} );
 		
-		_Other ->
-			ok	
+		OtherError ->
+			throw( {unexptected_attribute_error,Attribute,OtherError} )
+		
 	end.		
 
 
@@ -1424,10 +1495,10 @@ wooper_main_loop(State) ->
 			case element(1,Result) of
 			
 				wooper_method_failed ->
-					exit(Result) ;
+					throw(Result) ;
 				
 				wooper_method_faulty_return ->
-					exit(Result) ;
+					throw(Result) ;
 				
 				_ ->
 					ok	
@@ -1455,10 +1526,10 @@ wooper_main_loop(State) ->
 			case element(1,Result) of
 			
 				wooper_method_failed ->
-					exit(Result) ;
+					throw(Result) ;
 				
 				wooper_method_faulty_return ->
-					exit(Result) ;
+					throw(Result) ;
 				
 				_ ->
 					ok	
@@ -1581,25 +1652,48 @@ wooper_retrieve_virtual_table() ->
 			Table
 	
 	end.
+
 	
+-ifdef(wooper_debug).
+
 
 % Calls recursively the destructors through the inheritance tree.
 % Each wooper_destruct function is purely local to the current module. 
+% Initial specified is always valid (comes from the main loop, but states
+% returned by user-defined destructors must be checked in debug mode.
 wooper_destruct( State ) ->			
 	% If a class-specific delete is defined, execute it, otherwise
 	% do nothing. Then recurse with higher-level destructors
 	% (maybe just storing delete/1 in the method table would be
 	% more efficient, see wooper_class_manager:get_virtual_table_for):
-	case lists:member( {delete,1}, module_info(exports) ) of
+	DeletedState = case lists:member( {delete,1}, module_info(exports) ) of
 	
 		true ->
-			?MODULE:delete(State);	 
+			% All destructors, included user-defined ones, must return 
+			% a (possibly updated) state: 
+			case ?MODULE:delete(State) of 
+			
+				ReturnedState when is_record(ReturnedState,state_holder) ->
+					ReturnedState;
+				
+				Other ->
+					error_logger:error_msg(	
+						"WOOPER error for PID ~w of class ~s: "
+						"user-defined destructor did not return a state, "
+						"but returned ~w instead.~n",
+						[ self(), ?MODULE, Other] ),
+					% Wait a bit as error_msg seems asynchronous:
+					timer:sleep(1000),
+					throw({invalid_destructor,?MODULE}) 	
+						
+			end;	 
 		
 		false ->
 			% Destructor not overriden, using default one:
 			%io:format( "Deleting ~w (default do-nothing destructor "
 			%	"for class ~w).~n", [ self(), ?MODULE ] )
-			ok
+			% State unchanged:
+			State
 				
 	end,
 	% Then automatically call the direct mother destructors.			
@@ -1609,8 +1703,44 @@ wooper_destruct( State ) ->
 	% Final state is dropped.
 	lists:foldr( 
 		fun(Class,NewState) -> apply(Class,wooper_destruct,[NewState]) end,
-		State, get_superclasses() ).
+		DeletedState, get_superclasses() ).
 	
+-else.
+	
+
+% Calls recursively the destructors through the inheritance tree.
+% Each wooper_destruct function is purely local to the current module. 
+wooper_destruct( State ) ->			
+	% If a class-specific delete is defined, execute it, otherwise
+	% do nothing. Then recurse with higher-level destructors
+	% (maybe just storing delete/1 in the method table would be
+	% more efficient, see wooper_class_manager:get_virtual_table_for):
+	DeletedState = case lists:member( {delete,1}, module_info(exports) ) of
+	
+		true ->
+			% All destructors, included user-defined ones, must return 
+			% a (possibly updated) state: 
+			?MODULE:delete(State);	 
+		
+		false ->
+			% Destructor not overriden, using default one:
+			%io:format( "Deleting ~w (default do-nothing destructor "
+			%	"for class ~w).~n", [ self(), ?MODULE ] )
+			% State unchanged:
+			State
+				
+	end,
+	% Then automatically call the direct mother destructors.			
+	% Using foldr, not foldl: the destructors of mother classes
+	% are called in the reverse order compared to the order
+	% that was used for construction, for the sake of symmetry.
+	% Final state is dropped.
+	lists:foldr( 
+		fun(Class,NewState) -> apply(Class,wooper_destruct,[NewState]) end,
+		DeletedState, get_superclasses() ).
+	
+-endif.
+
 	
 	
 % Looks-up specified method (Method/Arity, ex: toString/0) to be found 
@@ -1649,7 +1779,9 @@ wooper_lookupMethod(State,MethodAtom,Arity) ->
 % The error logs have been added, as debugging faulty oneways is more difficult:
 % they cannot return any error to the caller, they can just crash and notify
 % any linked or monitoring process.
-wooper_execute_method(MethodAtom,State,Parameters) ->	
+% Not: atom and state checking in guards should be superfluous.
+wooper_execute_method(MethodAtom,State,Parameters) when is_atom(MethodAtom) 
+		andalso is_record(State,state_holder) andalso is_list(Parameters) ->	
 
 	%io:format("wooper_execute_method: looking up ~s(~w) from ~s.~n",
 	%	[ MethodAtom, Parameters, ?MODULE ]), 	
@@ -1664,119 +1796,19 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 			%io:format("wooper_execute_method: executing ~s:~s(~w).~n",
 			%	[ ?MODULE, MethodAtom, Parameters ]), 	
 			
-			% TODO: use try/catch instead (see 'programming Erlang p.67).
-			case catch apply(LocatedModule,MethodAtom,[State|Parameters]) of
-
-				% Matched expressions have to be reordered depending on the
-				% debug mode: 
-
-
+			try apply(LocatedModule,MethodAtom,[State|Parameters]) of
+			
 				% Void method (no result returned, only a state):
 				% ?wooper_return_state_only:
-				{wooper_result,NewState} ->  
+				NewState when is_record(NewState,state_holder) ->  
 					{NewState,wooper_method_returns_void};
 				
 				% Method returning a result (and a state of course):
 				% ?wooper_return_state_result:
-				{wooper_result,NewState,Result} ->  			
+				{NewState,Result} when is_record(NewState,state_holder) ->		
 					{NewState,{wooper_result,Result}};
-				
-				% All next cases are error cases.
-				% One option is to return an appropriate error term, but it 
-				% is useful only for requests, as oneways send back no result. 
-				% Another option is to let the faulty process crash: oneways
-				% would not send more answers, but linked and monitoring 
-				% processes could nevertheless by notified.
-				
-				% Finally, failed requests result in a log, an error answer
-				% being returned, then a crash if the error is due to internal
-				% reasons, whereas failed oneways result in a log then a crash,
-				% similarly if the error is due to internal reasons.
-				 
-				{'EXIT',ErrorTerm} ->
-				
-					case State#state_holder.request_sender of
-					
-						undefined ->
-						
-							% This is a oneway, so log and crash:
-							error_logger:error_msg(	"WOOPER error for PID ~w: "
-								"oneway method ~s:~s/~B failed "
-								"with error term ~w for parameters ~w.~n",
-								[ self(), ?MODULE, MethodAtom,
-									length(Parameters)+1, ErrorTerm,
-									Parameters] ),
-
-							% Wait a bit as error_msg seems asynchronous:
-							timer:sleep(1000),
-																
-							% Terminates the process:	
-							erlang:exit( {wooper_oneway_failed, self(), ?MODULE,
-								MethodAtom, length(Parameters)+1, Parameters,
-								ErrorTerm} );
-									
-						_ ->
-						
-							% This is a request, send error term and rely on
-							% the calling function (wooper_main_loop) to crash:
-							error_logger:error_msg(	"WOOPER error for PID ~w: "
-								"request method ~s:~s/~B failed "
-								"with error term ~w for parameters ~w.~n",
-								[ self(), ?MODULE, MethodAtom,
-									length(Parameters)+1, ErrorTerm,
-									Parameters] ),
-								
-							{State,
-								{wooper_method_failed, self(), ?MODULE,
-									MethodAtom, length(Parameters)+1, 
-						   			Parameters, ErrorTerm} }					
-					end;
-					
-
-				{'EXIT',Pid,ErrorTerm} ->
-				
-					case State#state_holder.request_sender of
-					
-						undefined ->
-						
-							% This is a oneway, so log and crash:
-							error_logger:error_msg(	"WOOPER error for PID ~w: "
-								"oneway method ~s:~s/~B failed "
-								"with error term ~w and PID ~w "
-								"for parameters ~w.~n",
-								[ self(), ?MODULE, MethodAtom,
-									length(Parameters)+1, ErrorTerm, Pid,
-									Parameters] ),
-
-							% Wait a bit as error_msg seems asynchronous:
-							timer:sleep(1000),
-								
-							% Terminates the process:	
-							erlang:exit( {wooper_oneway_failed, self(),
-								?MODULE, MethodAtom, length(Parameters)+1,
-								Parameters, {Pid, ErrorTerm}} );
-									
-						_ ->
-						
-							% This is a request, send error term and rely on
-							% the calling function (wooper_main_loop) to crash:
-							error_logger:error_msg(	"WOOPER error for PID ~w: "
-								"request method ~s:~s/~B failed "
-								"with error term ~w and PID ~w "
-								"for parameters ~w.~n",
-								[ self(), ?MODULE, MethodAtom,
-									length(Parameters)+1, ErrorTerm, Pid,
-									Parameters] ),
-								
-							{State,
-								{wooper_method_failed, self(), ?MODULE,
-									MethodAtom, length(Parameters)+1, 
-						   			Parameters, {Pid, ErrorTerm}} }
-								
-					end;
-					
-				
-				% Not a wooper result neither an EXIT message: faulty return.
+			
+				% Not a wooper result neither an exception: faulty return.
 				Other ->
 					
 					case State#state_holder.request_sender of
@@ -1794,7 +1826,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 							timer:sleep(1000),
 								
 							% Terminates the process:	
-							erlang:exit( {wooper_method_faulty_return, self(),
+							throw( {wooper_method_faulty_return, self(),
 								?MODULE, MethodAtom, length(Parameters)+1, 
 								Parameters, Other} );    
 						   
@@ -1814,11 +1846,73 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 									Parameters, Other } }
 									 
 					end
+					
+			catch
+			
+				% All next cases are error cases.
+				% One option is to return an appropriate error term, but it 
+				% is useful only for requests, as oneways send back no result. 
+				% Another option is to let the faulty process crash: oneways
+				% would not send more answers, but linked and monitoring 
+				% processes could nevertheless be notified.
+				
+				% Finally, failed requests result in a log, an error answer
+				% being returned, then a crash if the error is due to internal
+				% reasons, whereas failed oneways result in a log then a crash,
+				% similarly if the error is due to internal reasons.
+
+				% User-defined exceptions are not caught, they will be rethrown
+				% and make the process fail.
+				
+				% This the counterpart of {'EXIT',ErrorTerm}.
+				% What would be the counterpart of {'EXIT',Pid,ErrorTerm}?
+				% Reason can be: throw, error or exit
+				Reason:ErrorTerm ->
+
+					case State#state_holder.request_sender of
+					
+						undefined ->
+						
+							% This is a oneway, so log and crash:
+							error_logger:error_msg(	"WOOPER error for PID ~w: "
+								"oneway method ~s:~s/~B failed (cause: ~w) "
+								"with error term ~w for parameters ~w, "
+								"stack trace was (latest calls first): ~w.~n",
+								[ self(), ?MODULE, MethodAtom,
+									length(Parameters)+1, Reason, ErrorTerm,
+									Parameters,erlang:get_stacktrace()] ),
+
+							% Wait a bit as error_msg seems asynchronous:
+							timer:sleep(1000),
+																
+							% Terminates the process:	
+							throw( {wooper_oneway_failed, self(), ?MODULE,
+								MethodAtom, length(Parameters)+1, Parameters,
+								ErrorTerm} );
+									
+						_ ->
+						
+							% This is a request, send error term and rely on
+							% the calling function (wooper_main_loop) to crash:
+							error_logger:error_msg(	"WOOPER error for PID ~w: "
+								"request method ~s:~s/~B failed (cause: ~w) "
+								"with error term ~w for parameters ~w, "
+								"stack trace was (latest calls first): ~w.~n",
+								[ self(), ?MODULE, MethodAtom,
+									length(Parameters)+1, Reason, ErrorTerm,
+									Parameters,erlang:get_stacktrace()] ),
+								
+							{State,
+								{wooper_method_failed, self(), ?MODULE,
+									MethodAtom, length(Parameters)+1, 
+						   			Parameters, ErrorTerm} }
+														
+					end
+										
 						
 			end;
 
-		
-		
+				
 		% Method not found:	
 		{hashtable_key_not_found,{_MethodName,_Arity}} ->
 		
@@ -1840,7 +1934,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 					timer:sleep(1000),
 					
 					% Terminates the process:	
-					erlang:exit( {wooper_method_not_found, self(), ?MODULE,
+					throw( {wooper_method_not_found, self(), ?MODULE,
 						MethodAtom, length(Parameters)+1, Parameters} );   
 					 
 				_ ->
@@ -1872,7 +1966,8 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 
 
 % Parameter-less request.
-executeRequest(State,RequestAtom) -> 
+executeRequest(State,RequestAtom) when is_record(State,state_holder) 
+		andalso is_atom(RequestAtom) -> 
 
 	%io:format("executeRequest/2: executing ~s() from ~s.~n", 
 	%	[ RequestAtom , ?MODULE ]),
@@ -1885,8 +1980,29 @@ executeRequest(State,RequestAtom) ->
 		SenderAwareState, [] ), 
 
 	% Returns:			
-	{NewState#state_holder{request_sender=undefined}, Result}.
-
+	{NewState#state_holder{request_sender=undefined}, Result};
+	
+	
+executeRequest(StateError,RequestAtom) when is_atom(RequestAtom) -> 
+	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
+		"when executing request ~w: "
+		"first parameter should be a state, not ~w.~n",
+		[ self(), ?MODULE, RequestAtom, StateError] ),
+	% Wait a bit as error_msg seems asynchronous:
+	timer:sleep(1000),	
+	throw({invalid_request_call,RequestAtom});
+	
+	
+executeRequest(_State,RequestAtomError) -> 
+	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
+		"when executing request: ~w is not an atom.~n",
+		[ self(), ?MODULE, RequestAtomError] ),
+	% Wait a bit as error_msg seems asynchronous:
+	timer:sleep(1000),	
+	throw({invalid_request_call,RequestAtomError}).
+	
+	
+	
 
 
 % Allows to call synchronously from the code of a given class its actual 
@@ -1903,7 +2019,9 @@ executeRequest(State,RequestAtom) ->
 %
 % Note: Stripped-down version of wooper_main_loop.
 %  
-executeRequest(State,RequestAtom,ArgumentList) when is_list(ArgumentList) -> 
+executeRequest(State,RequestAtom,ArgumentList) when
+		is_record(State,state_holder) andalso is_atom(RequestAtom) 
+		andalso is_list(ArgumentList) -> 
 
 	%io:format("executeRequest/3 with list: executing ~s(~w) from ~s.~n",
 	%	[ RequestAtom, ArgumentList, ?MODULE ]), 	
@@ -1921,7 +2039,8 @@ executeRequest(State,RequestAtom,ArgumentList) when is_list(ArgumentList) ->
 	
 	
 % Here third parameter is not a list:
-executeRequest(State,RequestAtom,StandaloneArgument) -> 
+executeRequest(State,RequestAtom,StandaloneArgument) when
+		is_record(State,state_holder) andalso is_atom(RequestAtom)-> 
 
 	%io:format("executeRequest/3 with standalone argument: "
 	%	"executing ~s(~w) from ~s.~n", 
@@ -1935,13 +2054,34 @@ executeRequest(State,RequestAtom,StandaloneArgument) ->
 		SenderAwareState, [StandaloneArgument] ), 
 
 	% Returns:			
-	{NewState#state_holder{request_sender=undefined}, Result}.
+	{NewState#state_holder{request_sender=undefined}, Result};
+
+
+% Catches all errors:
+executeRequest(StateError,RequestAtom,_LastArg) when is_atom(RequestAtom) -> 
+	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
+		"when executing request ~w: "
+		"first parameter should be a state, not ~w.~n",
+		[ self(), ?MODULE, RequestAtom, StateError] ),
+	% Wait a bit as error_msg seems asynchronous:
+	timer:sleep(1000),	
+	throw({invalid_request_call,RequestAtom});
+	
+	
+executeRequest(_State,RequestAtomError,_LastArg) -> 
+	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
+		"when executing request: ~w is not an atom.~n",
+		[ self(), ?MODULE, RequestAtomError] ),
+	% Wait a bit as error_msg seems asynchronous:
+	timer:sleep(1000),	
+	throw({invalid_request_call,RequestAtomError}).
 
 
 
 
 % Parameter-less oneway.
-executeOneway(State,OnewayAtom) -> 
+executeOneway(State,OnewayAtom) when is_record(State,state_holder)
+		andalso is_atom(OnewayAtom) -> 
 
 	%io:format("executeOneway/2: executing ~s() from ~s.~n", 
 	%	[ OnewayAtom, ?MODULE ]),
@@ -1953,7 +2093,25 @@ executeOneway(State,OnewayAtom) ->
 		wooper_execute_method( OnewayAtom, State, [] ), 
 
 	% Returns:			
-	NewState.
+	NewState;
+
+executeOneway(StateError,OnewayAtom) when is_atom(OnewayAtom) -> 
+	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
+		"when executing oneway ~w: "
+		"first parameter should be a state, not ~w.~n",
+		[ self(), ?MODULE, OnewayAtom, StateError] ),
+	% Wait a bit as error_msg seems asynchronous:
+	timer:sleep(1000),	
+	throw({invalid_oneway_call,OnewayAtom});
+	
+	
+executeOneway(_State,OnewayError) -> 
+	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
+		"when executing oneway: ~w is not an atom.~n",
+		[ self(), ?MODULE, OnewayError] ),
+	% Wait a bit as error_msg seems asynchronous:
+	timer:sleep(1000),	
+	throw({invalid_oneway_call,OnewayError}).
 
 
 		
@@ -1971,7 +2129,9 @@ executeOneway(State,OnewayAtom) ->
 %
 % Note: Stripped-down version of wooper_main_loop.
 %  
-executeOneway(State,OnewayAtom,ArgumentList) when is_list(ArgumentList) -> 
+executeOneway(State,OnewayAtom,ArgumentList) when
+		is_record(State,state_holder) andalso is_atom(OnewayAtom) 
+		andalso is_list(ArgumentList) -> 
 
 	%io:format("executeOneway/3 with list: executing ~s(~w) from ~s.~n",
 	%	[ OnewayAtom, ArgumentList, ?MODULE ]), 	
@@ -1987,7 +2147,8 @@ executeOneway(State,OnewayAtom,ArgumentList) when is_list(ArgumentList) ->
 
 	
 % Here third parameter is not a list:
-executeOneway(State,OnewayAtom,StandaloneArgument) -> 
+executeOneway(State,OnewayAtom,StandaloneArgument) when
+		is_record(State,state_holder) andalso is_atom(OnewayAtom) -> 
 
 	%io:format("executeOneway/3 with standalone argument: "
 	%	"executing ~s(~w) from ~s.~n", 
@@ -2000,7 +2161,27 @@ executeOneway(State,OnewayAtom,StandaloneArgument) ->
 		wooper_execute_method( OnewayAtom, State, [StandaloneArgument] ), 
 
 	% Returns:			
-	NewState.
+	NewState;
+
+
+% Catches all errors:
+executeOneway(StateError,OnewayAtom,_LastArg) when is_atom(OnewayAtom) -> 
+	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
+		"when executing oneway ~w: "
+		"first parameter should be a state, not ~w.~n",
+		[ self(), ?MODULE, OnewayAtom, StateError] ),
+	% Wait a bit as error_msg seems asynchronous:
+	timer:sleep(1000),	
+	throw({invalid_oneway_call,OnewayAtom});
+	
+	
+executeOneway(_State,OnewayAtomError,_LastArg) -> 
+	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
+		"when executing oneway: ~w is not an atom.~n",
+		[ self(), ?MODULE, OnewayAtomError] ),
+	% Wait a bit as error_msg seems asynchronous:
+	timer:sleep(1000),	
+	throw({invalid_oneway_call,OnewayAtomError}).
 
 
 
@@ -2036,12 +2217,27 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 		{ value, LocatedModule } -> 
 			% The 'return' atom is a safety guard against incorrect method
 			% implementations:
-			case catch apply(LocatedModule,MethodAtom,[State|Parameters]) of
+			try apply(LocatedModule,MethodAtom,[State|Parameters]) of
+
+				% Method returning a result (and a state of course):
+				% ?wooper_return_state_result:
+				{NewState,Result} ->  
+					{NewState,{wooper_result,Result}};
+														
+				% Void method (no result returned, only a state):
+				% (catch-all, no faulty return can be detected here, when not
+				% in debug mode)
+				% ?wooper_return_state_only:
+				NewState ->  
+					{NewState,wooper_method_returns_void}
+				
+				% No catch-clause available here (no faulty return possible).
+						
+			catch
 
 				% Matched expressions have to be reordered depending on the
 				% debug mode: 
-				
-				{'EXIT',ErrorTerm} ->
+				Reason:ErrorTerm ->
 				
 					case State#state_holder.request_sender of
 					
@@ -2049,17 +2245,18 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 						
 							% This is a oneway, so log and crash:
 							error_logger:error_msg(	"WOOPER error for PID ~w: "
-								"oneway method ~s:~s/~B failed "
-								"with error term ~w for parameters ~w.~n",
+								"oneway method ~s:~s/~B failed (cause: ~w) "
+								"with error term ~w for parameters ~w, "
+								"stack trace was (latest calls first): ~w.~n",
 								[ self(), ?MODULE, MethodAtom,
-									length(Parameters)+1, ErrorTerm,
-									Parameters] ),
+									length(Parameters)+1, Reason, ErrorTerm,
+									Parameters,erlang:get_stacktrace()] ),
 
 							% Wait a bit as error_msg seems asynchronous:
 							timer:sleep(1000),
 								
 							% Terminates the process:	
-							erlang:exit( {wooper_oneway_failed, self(), ?MODULE,
+							throw( {wooper_oneway_failed, self(), ?MODULE,
 								MethodAtom, length(Parameters)+1, Parameters,
 								ErrorTerm} );
 									
@@ -2068,72 +2265,19 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 							% This is a request, send error term and rely on
 							% the calling function (wooper_main_loop) to crash:
 							error_logger:error_msg(	"WOOPER error for PID ~w: "
-								"request method ~s:~s/~B failed "
-								"with error term ~w for parameters ~w.~n",
+								"request method ~s:~s/~B failed (cause: ~w) "
+								"with error term ~w for parameters ~w, "
+								"stack trace was (latest calls first): ~w.~n",
 								[ self(), ?MODULE, MethodAtom,
-									length(Parameters)+1, ErrorTerm,
-									Parameters] ),
+									length(Parameters)+1, Reason, ErrorTerm,
+									Parameters,erlang:get_stacktrace()] ),
 								
 							{State,
 								{wooper_method_failed, self(), ?MODULE,
 									MethodAtom, length(Parameters)+1, 
 						   			Parameters, ErrorTerm} } 					
-					end;
+					end
 
-
-				{'EXIT',Pid,ErrorTerm} ->
-
-					case State#state_holder.request_sender of
-					
-						undefined ->
-						
-							% This is a oneway, so log and crash:
-							error_logger:error_msg(	"WOOPER error for PID ~w: "
-								"oneway method ~s:~s/~B failed "
-								"with error term ~w and PID ~w "
-								"for parameters ~w.~n",
-								[ self(), ?MODULE, MethodAtom,
-									length(Parameters)+1, ErrorTerm, Pid,
-									Parameters] ),
-
-							% Wait a bit as error_msg seems asynchronous:
-							timer:sleep(1000),
-							
-							% Terminates the process:	
-							erlang:exit( {wooper_oneway_failed, self(),
-								?MODULE, MethodAtom, length(Parameters)+1,
-								Parameters, {Pid, ErrorTerm}} );
-									
-						_ ->
-						
-							% This is a request, send error term and rely on
-							% the calling function (wooper_main_loop) to crash:
-							error_logger:error_msg(	"WOOPER error for PID ~w: "
-								"request method ~s:~s/~B failed "
-								"with error term ~w and PID ~w "
-								"for parameters ~w.~n",
-								[ self(), ?MODULE, MethodAtom,
-									length(Parameters)+1, ErrorTerm, Pid,
-									Parameters] ),
-								
-							{State,
-								{wooper_method_failed, self(), ?MODULE,
-									MethodAtom, length(Parameters)+1, 
-						   			Parameters, {Pid, ErrorTerm}} }
-								
-					end;
-
-
-				{NewState,Result} ->  
-					{NewState,{wooper_result,Result}};
-							
-							
-				% Void method (no result returned, only a state):
-				% (catch-all, no faulty return can be detected here, when not
-				% in debug mode)
-				NewState ->  
-					{NewState,wooper_method_returns_void}
-						
 			end;
 			
 			
@@ -2158,7 +2302,7 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 					timer:sleep(1000),
 					
 					% Terminates the process:	
-					erlang:exit( {wooper_method_not_found, self(), ?MODULE,
+					throw( {wooper_method_not_found, self(), ?MODULE,
 						MethodAtom, length(Parameters)+1, Parameters} );   
 					 
 				_ ->
@@ -2191,8 +2335,8 @@ executeRequest(State,RequestAtom) ->
 	% Auto-calling method:		
 	SenderAwareState = State#state_holder{request_sender=self()},
 	
-	% Correction checking by pattern-matching:
-	{ NewState, Result } = wooper_execute_method( RequestAtom,
+	% No special checking performed in release mode:
+	{ NewState, {wooper_result,Result} } = wooper_execute_method( RequestAtom,
 		SenderAwareState, [] ), 
 
 	% Returns:			
@@ -2223,9 +2367,9 @@ executeRequest(State,RequestAtom,ArgumentList) when is_list(ArgumentList) ->
 	SenderAwareState = State#state_holder{request_sender=self()},
 	
 	% No special checking performed in release mode:
-	{ NewState, Result } = wooper_execute_method( RequestAtom,
+	{ NewState, {wooper_result,Result} } = wooper_execute_method( RequestAtom,
 		SenderAwareState, ArgumentList ), 
-		
+
 	% Returns:			
 	{NewState#state_holder{request_sender=undefined}, Result};
 	
@@ -2242,7 +2386,7 @@ executeRequest(State,RequestAtom,StandaloneArgument) ->
 	SenderAwareState = State#state_holder{request_sender=self()},
 	
 	% No special checking performed in release mode:
-	{ NewState, Result } = wooper_execute_method( RequestAtom,
+	{ NewState, {wooper_result,Result} } = wooper_execute_method( RequestAtom,
 		SenderAwareState, [StandaloneArgument] ), 
 
 	% Returns:			
@@ -2324,12 +2468,12 @@ executeOneway(State,OnewayAtom,StandaloneArgument) ->
 % Deletes the process(es) potentially stored in specified WOOPER attribute list.
 % Sets the corresponding attribute(s) to 'undefined', returns an updated state.
 % Ex: in a destructor:
-% delete_any_process_in(State, [first_pid,second_pid] ) or
-% delete_any_process_in(State, my_pid ).
-delete_any_process_in( _State, [] ) ->
-	ok;
+% delete_any_instance_referenced_in(State, [first_pid,second_pid] ) or
+% delete_any_instance_referenced_in(State, my_pid ).
+delete_any_instance_referenced_in( State, [] ) ->
+	State;
 	
-delete_any_process_in( State, [PidAttribute|T] ) ->
+delete_any_instance_referenced_in( State, [PidAttribute|T] ) ->
 	NewState = case ?getAttr(PidAttribute) of
 	
 		undefined ->
@@ -2340,9 +2484,9 @@ delete_any_process_in( State, [PidAttribute|T] ) ->
 			?setAttribute( State, PidAttribute, undefined )
 				
 	end,
-	delete_any_process_in( NewState, T );
+	delete_any_instance_referenced_in( NewState, T );
 	
-delete_any_process_in( State, PidAttribute ) ->
+delete_any_instance_referenced_in( State, PidAttribute ) ->
 	case ?getAttr(PidAttribute) of
 	
 		undefined ->
