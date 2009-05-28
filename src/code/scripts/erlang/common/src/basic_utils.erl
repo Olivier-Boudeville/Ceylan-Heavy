@@ -24,17 +24,13 @@
 % <http://www.mozilla.org/MPL/>.
 %
 % Author: Olivier Boudeville (olivier.boudeville@esperide.com)
+% Creation date: July 1, 2007.
 
 
 % Gathering of various convenient facilities.
 % See basic_utils_test.erl for the corresponding test.
 -module(basic_utils).
 
-
-% Creation date: July 1, 2007.
-% Author: Olivier Boudeville (olivier.boudeville@esperide.com).
-
-% Licensed under a disjunctive tri-license: MPL/GPL/LGPL.
 
 
 % Note that string:tokens can be used to split strings.
@@ -47,12 +43,14 @@
 	
 % String management functions.
 -export([ term_toString/1, term_to_string/1, integer_to_string/1,
-	ipv4_to_string/1, ipv4_to_string/2, join/2 ]).
+	string_list_to_string/1, ipv4_to_string/1, ipv4_to_string/2, join/2,
+	remove_ending_carriage_return/1 ]).
 	
 	
 % Registration functions.
--export([ register_as/2, register_as/3, wait_for_global_registration_of/1,
-	wait_for_local_registration_of/1 ]).
+-export([ register_as/2, register_as/3, unregister/2, 
+	get_registered_pid_for/1, get_registered_pid_for/2,
+	wait_for_global_registration_of/1, wait_for_local_registration_of/1 ]).
 
 
 % Random functions.
@@ -149,7 +147,21 @@ term_to_string(Term) ->
 integer_to_string(IntegerValue) ->
 	hd( io_lib:format( "~B", [IntegerValue] ) ).
 	
+
+
+% Returns a string which pretty-prints specified list of strings, with bullets.	
+string_list_to_string( ListOfStrings ) ->
+	io_lib:format( "~n~s", [ string_list_to_string( ListOfStrings, [] ) ] ).
+
+
+string_list_to_string( [], Acc ) ->
+	 Acc;	
+
+string_list_to_string( [H|T], Acc ) when is_list(H) ->
+	string_list_to_string( T, Acc ++ io_lib:format( " + ~s~n", [H] ) ).
 	
+		
+		
 ipv4_to_string( {N1,N2,N3,N4} ) ->
 	lists:flatten( io_lib:format( "~B.~B.~B.~B", [N1,N2,N3,N4] ) ).
 	
@@ -171,7 +183,7 @@ join(_Separator,[]) ->
 join(Separator,ListToJoin) ->
     lists:flatten( lists:reverse( join(Separator, ListToJoin, []) ) ).
 	
-
+	
 join(_Separator,[],Acc) ->
     Acc;
 
@@ -182,68 +194,170 @@ join(Separator,[H|T],Acc) ->
     join(Separator, T, [Separator, H|Acc]).
 
 
+
+% Removes the ending "\n" character(s) of specified string.
+remove_ending_carriage_return(String) when is_list(String) ->
+	% 'Res ++ "\n" = String,Res' will not work:
+	string:strip( String, right, $\n ).
+
+
 	
 
 % Registration functions.
 	
 	
 % Registers the current process under specified name.
-% Declaration is register_as(ServerName,RegistrationType) with 
+% Declaration is register_as(Name,RegistrationType) with 
 % RegistrationType in 'local_only', 'global_only', 'local_and_global', 
 % depending on what kind of registration is requested.
-% Returns ok on success.
-% If local registration fails, local_registration_failed is returned.
-% If global registration fails, global_registration_failed is returned.
-register_as(ServerName,RegistrationType) ->
-	register_as( self(), ServerName, RegistrationType ).
+% Returns ok on success, otherwise throws an exception.
+register_as( Name, RegistrationType ) ->
+	register_as( self(), Name, RegistrationType ).
 
 
 % Registers specified PID under specified name.
-% Declaration is: register_as(Pid,ServerName,RegistrationType) with 
+% Declaration is: register_as(Pid,Name,RegistrationType) with 
 % RegistrationType is in 'local_only', 'global_only', 'local_and_global', 
 % depending on what kind of registration is requested.
-% Returns ok on success.
-% If local registration fails, local_registration_failed is returned.
-% If global registration fails, global_registration_failed is returned.
-register_as(Pid,ServerName,local_only) ->
-	case erlang:register( ServerName, Pid ) of 
+% Returns ok on success, otherwise throws an exception.
+register_as( Pid, Name, local_only ) ->
+	case erlang:register( Name, Pid ) of 
 	
 		true ->
 			ok;
 			
 		false ->
-			local_registration_failed				
+			throw( {local_registration_failed,Name} )					
 	
 	end;
  
-register_as(Pid,ServerName,global_only) ->
-	case global:register_name( ServerName, Pid ) of 
+register_as( Pid, Name, global_only ) ->
+	case global:register_name( Name, Pid ) of 
 	
 		yes ->
 			ok;
 					
 		no ->
-			global_registration_failed,ServerName				
+			throw( {global_registration_failed,Name} )				
 			
 	end;
 
-register_as(Pid,ServerName,local_and_global) ->
-	ok = register_as(Pid,ServerName,local_only),
-	ok = register_as(Pid,ServerName,global_only);
+register_as( Pid, Name, local_and_global ) ->
+	ok = register_as(Pid,Name,local_only),
+	ok = register_as(Pid,Name,global_only);
 
-register_as(_Pid,_ServerName,none) ->
+register_as(_Pid,_Name,none) ->
 	ok.
 
 
 
+
+% Unregisters specified name from specified registry.
+% Throws an exception in case of failure.
+unregister( Name, local_only ) ->
+	case erlang:unregister( Name ) of 
+	
+		true ->
+			ok;
+			
+		false ->
+			throw( {local_unregistration_failed,Name} )					
+	
+	end;
+
+unregister( Name, global_only ) ->
+	case global:unregister_name( Name ) of 
+	
+		ok ->
+			ok;
+					
+		_Other ->
+			throw( {global_unregistration_failed,Name} )				
+			
+	end;
+
+unregister( Name, local_and_global ) ->
+	ok = unregister( Name, local_only ),
+	ok = unregister( Name, global_only );
+
+unregister(_Name,none) ->
+	ok.
+
+
+
+% Returns the Pid that should be already registered, as specified name.
+% Local registering will be requested first, if not found global one will
+% be tried.
+% Not waiting for registration will be performed, see
+% wait_for_*_registration_of instead.
+get_registered_pid_for( Name ) ->
+	get_registered_pid_for( Name, local_otherwise_global ).
+	
+	
+	
+get_registered_pid_for( Name, local_otherwise_global ) ->
+	try get_registered_pid_for( Name, local ) of 
+	
+		Pid ->
+			Pid
+			
+	catch 
+	
+		{not_registered_locally,_Name} ->
+			try get_registered_pid_for( Name, global ) of 
+	
+				Pid ->
+					Pid
+			
+			catch
+			
+				{not_registered_globally,Name} ->
+					throw( {neither_registered_locally_nor_globally,Name} )
+					
+			end
+	
+	end;
+			
+get_registered_pid_for( Name, local ) ->
+	case erlang:whereis( Name ) of 
+	
+		undefined ->
+			throw( {not_registered_locally,Name} );
+				
+		Pid ->
+			Pid
+			
+	end;
+	
+get_registered_pid_for( Name, global ) ->
+	case global:whereis_name( Name ) of 
+	
+		undefined ->
+			throw( {not_registered_globally,Name} );
+				
+		Pid ->
+			Pid
+			
+	end;
+	
+% So that the atom used for registration can be used for look-up as well,
+% notably in static methods (see the registration_type defines).
+get_registered_pid_for( Name, local_and_global ) ->
+	get_registered_pid_for( Name, local_otherwise_global ).
+	
+
+
+
+
 % Waits (up to 5 seconds) until specified name is globally registered.
-% Returns either the resolved Pid or {global_registration_waiting_timeout,Name}.
+% Returns the resolved Pid, or throws 
+% {global_registration_waiting_timeout,Name}.
 wait_for_global_registration_of(Name) ->
 	wait_for_global_registration_of(Name,5).
 	
 
 wait_for_global_registration_of(Name,0) ->
-	{global_registration_waiting_timeout,Name};
+	throw({global_registration_waiting_timeout,Name});
 	
 wait_for_global_registration_of(Name,SecondsToWait) ->
 	case global:whereis_name( Name ) of 
@@ -261,13 +375,15 @@ wait_for_global_registration_of(Name,SecondsToWait) ->
 
 
 % Waits (up to 5 seconds) until specified name is locally registered.
-% Returns either the resolved Pid or {local_registration_waiting_timeout,Name}.
+% Returns either the resolved Pid or {,Name}.
+% Returns the resolved Pid, or throws 
+% {local_registration_waiting_timeout,Name}.
 wait_for_local_registration_of(Name) ->
 	wait_for_local_registration_of(Name,5).
 	
 
 wait_for_local_registration_of(Name,0) ->
-	{local_registration_waiting_timeout,Name};
+	throw({local_registration_waiting_timeout,Name});
 	
 wait_for_local_registration_of(Name,SecondsToWait) ->
 	case erlang:whereis( Name ) of 
@@ -340,12 +456,15 @@ get_random_module_name() ->
 % dictionary).
 
 start_random_source(A,B,C) ->
-	random:seed(A, B, C).
+	random:seed(A,B,C).
 
 
-% Seeds the random number generator, either with a default seed (if wanting to
-% obtain the same random series at each run) or with current time (if wanting
-% "real" non-reproducible randomness).
+% Seeds the random number generator, either with specified seed, or with 
+% a default seed (if wanting to obtain the same random series at each run) 
+% or with current time (if wanting "real" non-reproducible randomness).
+start_random_source( {A,B,C} ) ->
+	start_random_source(A,B,C);
+	
 start_random_source( default_seed ) ->
 	% Use default (fixed) values in the process dictionary:
 	random:seed();
@@ -377,6 +496,7 @@ get_random_module_name() ->
 
 
 -define(seed_upper_bound,65500).
+
 
 % Returns a seed obtained from the random source in use.
 % This is a randomly-determined seed, meant to be used to create another
@@ -496,9 +616,9 @@ notify_user(Message,FormatList) ->
 % Returns a name that is a legal name for an Erlang node, forged from
 % specified one.
 generate_valid_node_name_from( Name ) when is_list(Name) ->
-	{ok,ForgedName,_} = regexp:gsub( lists:flatten(Name),
-	 	" ","_" ),
-	ForgedName.
+	% Replaces all series of spaces by one underscore:
+	re:replace( lists:flatten(Name), " +", "_", [global,{return, list}] ).
+
 
 
 % Returns true iff the specified node is available, Erlang-wise.
