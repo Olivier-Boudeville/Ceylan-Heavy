@@ -89,13 +89,18 @@ testDirectMethodExecution(State,NewAge) ->
 
 	io:format( "Testing executeOneway.~n" ),
 	NewState = executeOneway(State,setAge,NewAge),
+	% Use this instead to test error management:
+	%NewState = executeOneway(test_not_a_state,setAge,NewAge),
+	%NewState = executeOneway(State,42,NewAge),
 	
 	% Not the 36 returned by this class (347 given by the test of Mammal) :
 	347 = ?getAttribute(NewState,age),
 	
 	io:format( "Testing executeRequest.~n" ),
-	% 15 from child classes (Mammal or Reptile), not 10 from here:
+	% 15 from Mammal child classes, not 10 from here:
 	{OtherState,15} = executeRequest(NewState,getArbitraryNumber,[]),
+	%{OtherState,15} = executeRequest(test_not_a_state,getArbitraryNumber,[]),
+	%{OtherState,15} = executeRequest(NewState,43,[]),
 
 	io:format( "Direct self-invocation success.~n" ),
 
