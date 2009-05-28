@@ -29,6 +29,8 @@
 % Module of the WOOPER class manager.
 -module(wooper_class_manager).
 
+
+
 % The purpose of this process is, on a per-node basis, to create and notably
 % to serve to instances the virtual table corresponding to the actual class
 % they are corresponding to.
@@ -71,7 +73,10 @@
 % Comment/uncomment to respectively disable and enable debug mode:
 %-define(debug,).
  
+ 
 -define(Log_prefix, "[WOOPER Class manager] ").
+ 
+ 
  
 -ifdef(debug).
 
@@ -162,6 +167,7 @@ loop(Tables) ->
 	end.
 	
 
+
 % Look-up specified table. If found, returns it immediately, otherwise 
 % constructs it, stores the result and returns it as well.	
 % Virtual tables are stored in a hashtable.
@@ -185,6 +191,7 @@ get_virtual_table_for(Module,Tables) ->
 	end.
 
 
+
 % Creates recursively (indirectly thanks to 'update_method_table_with') the
 % virtual table corresponding to specified module.
 create_method_table_for(TargetModule) ->
@@ -196,6 +203,7 @@ create_method_table_for(TargetModule) ->
 		apply(TargetModule,get_superclasses,[])).
 
 
+
 % Updates specified virtual table with the method of specified module
 % (i.e. precomputes the virtual table for the related class)
 % In case of key collision, the values specified in HashTable have
@@ -205,18 +213,46 @@ update_method_table_with(Module,HashTable) ->
 	hashtable:merge( HashTable, create_method_table_for(Module) ).
 
 
+
 % Tells whether the function Name/Arity should be registered into the method
 % virtual table.
-select_function(_,0)                          -> false ;
-select_function(new,_)                        -> false ;
-select_function(construct,_)                  -> false ;
-select_function(delete,1)                     -> false ;
-select_function(wooper_construct_and_run,_)   -> false ;
-select_function(wooper_debug_listen,_)        -> false ;
-select_function(module_info,1)                -> false ;
-select_function(_,_)                          -> true.
+select_function(_,0)                                    -> false ;
+select_function(new,_)                                  -> false ;
+select_function(new_link,_)                             -> false ;
+select_function(synchronous_new,_)                      -> false ;
+select_function(synchronous_new_link,_)                 -> false ;
+select_function(synchronous_timed_new,_)                -> false ;
+select_function(synchronous_timed_new_link,_)           -> false ;
+select_function(remote_new,_)                           -> false ;
+select_function(remote_new_link,_)                      -> false ;
+select_function(remote_synchronous_new,_)               -> false ;
+select_function(remote_synchronous_new_link,_)          -> false ;
+select_function(remote_synchronous_timed_new,_)         -> false ;
+select_function(remote_synchronous_timed_new_link,_)    -> false ;
+select_function(construct,_)                            -> false ;
+select_function(delete,1)                               -> false ;
+select_function(delete_any_instance_referenced_in,_)    -> false ;
+select_function(wooper_check_undefined,_) 	            -> false ;
+select_function(wooper_construct_and_run,_)             -> false ;
+select_function(wooper_construct_and_run_synchronous,_) -> false ;
+select_function(wooper_debug_listen,_)                  -> false ;
+select_function(wooper_destruct,_) 	                    -> false ;
+select_function(wooper_display_instance,_) 	            -> false ;
+select_function(wooper_display_loop_state,_) 	        -> false ;
+select_function(wooper_display_state,_) 	            -> false ;
+select_function(wooper_display_virtual_table,_)         -> false ;
+select_function(wooper_get_all_attributes,_) 	        -> false ;
+select_function(wooper_get_state_description,_)         -> false ;
+select_function(wooper_get_virtual_table_description,_) -> false ;
+select_function(wooper_pop_from_attribute,_)            -> false ;
+select_function(executeOneway,_)                        -> false ;
+select_function(executeRequest,_)                       -> false ;
+select_function(module_info,1)                          -> false ;
+% Includes 'wooper_get_instance_description/1', which could be useful to debug:
+select_function(_,_)                                    -> true.
 
-
+	
+	
 % Returns a Hashtable appropriate for method look-up, for the specified module.
 create_local_method_table_for(Module) ->
 	% Filter-out functions that should not be callable via RMI:
@@ -235,6 +271,7 @@ create_local_method_table_for(Module) ->
 		end,
 		hashtable:new(?WooperMethodCountUpperBound),
 		Module:module_info(exports)).
+
 
 
 % ping specified WOOPER instance, returns pong if it could be successfully
