@@ -166,7 +166,17 @@ run() ->
 		false ->
 			ok	
 	end,	
-	MyR ! delete,			
+	
+	% To check the result when using a faulty destructor:
+	io:format(?Prefix "synchronous deletion of the instance.~n" ),
+	MyR ! {synchronous_delete,self()},	
+	receive
+	
+		{deleted,MyR} ->
+			ok
+			
+	end,	
+		
 	io:format( ?Prefix "End of test for module ~s.~n", [ ?Tested_module ] ),
 	testFinished().
 
