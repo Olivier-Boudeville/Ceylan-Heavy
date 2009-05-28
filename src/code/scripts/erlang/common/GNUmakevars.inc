@@ -17,7 +17,12 @@ endif
 
 ARCHIVE_ROOT := $$HOME/Archive/$(PROJECT_NAME)
 
+
 ARCHIVE_FILE := $(ARCHIVE_ROOT)/`date +'%Y%m%d'`-$(PROJECT_NAME).tar.bz2
+
+
+ARCHIVE_BRANCH_FILE = $(ARCHIVE_ROOT)/`date +'%Y%m%d'`-$(PROJECT_NAME)-branch-$(shell basename `pwd`).tar.bz2
+
 
 
 SNAPSHOT_ARCHIVE_FILE := $(ARCHIVE_ROOT)/`date +'%Y%m%d'`-$(PROJECT_NAME)-snapshot.tar.bz2
@@ -46,12 +51,12 @@ INC += -I. $(COMMON_INC)
 
 # Erlang environment section.
 
-ERLANG_ROOT     := ~/Software/Erlang-$(ERLANG_VERSION)
+ERLANG_ROOT     := ~/Software/Erlang/Erlang-current-install
 
 ERLANG_COMPILER := `PATH=$(ERLANG_ROOT)/bin:$$PATH which erlc`
 
 
-WARNING_LEVEL := 3
+WARNING_LEVEL := 2
 
 ERLANG_COMPILER_OPT_DEBUG := +debug_info
 
