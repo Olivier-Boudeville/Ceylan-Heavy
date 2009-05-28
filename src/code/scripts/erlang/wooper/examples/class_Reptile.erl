@@ -27,7 +27,7 @@
 	synchronous_timed_new/2, synchronous_timed_new_link/2,
 	remote_new/3, remote_new_link/3, remote_synchronous_new/3,
 	remote_synchronous_new_link/3, remote_synchronous_timed_new/3,
-	remote_synchronous_timed_new_link/3, construct/3 ).
+	remote_synchronous_timed_new_link/3, construct/3, delete/1 ).
 	
 
 % Declarations of class-specific methods (besides inherited ones).
@@ -42,8 +42,17 @@
 % Constructs a new Reptile.
 construct(State,?wooper_construct_parameters) ->
 	class_Creature:construct(State,Age,Gender).
-	
-	
+	% To test constructor checking:
+	%an_unexpected_initial_state.
+
+
+% Overridden destructor	
+delete(State) ->
+	io:format( "Deleting a Reptile." ),
+	State.
+	% To test destructor checking use instead:
+	%an_unexpected_final_state.
+		
 	
 	
 % Method implementations.
@@ -51,14 +60,22 @@ construct(State,?wooper_construct_parameters) ->
 
 % Sets correctly the age of this Mammal (not like faulty implementation of the
 % Creature mother class).
-% Overriden from Creature, useful to show the use of executeOneway.
+% Overridden from Creature, useful to show the use of executeOneway.
+% Note: used to test WOOPER management of error conditions.
 % (oneway)
 setAge(State,NewAge) ->
-	?wooper_return_state_only(?setAttribute(State,age,NewAge)).
+	%throw( exception_throw_test_from_oneway ),
+	%exit( exception_exit_test_from_oneway ),
+	?wooper_return_state_only( ?setAttribute(State,age,NewAge) ).
 
 
-% All reptiles are cold-blooded:
+
+% All reptiles are cold-blooded
+% Note: used to test WOOPER management of error conditions.
+% (request)
 isHotBlooded(State) ->
+	%throw( exception_throw_test_from_request ),
+	%exit( exception_exit_test_from_request ),
 	?wooper_return_state_result(State,false).
 
 
