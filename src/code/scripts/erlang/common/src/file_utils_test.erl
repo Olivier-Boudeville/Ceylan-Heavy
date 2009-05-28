@@ -40,6 +40,23 @@ run() ->
 
 	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
 	
+	{ok,CurrentDir} = file:get_cwd(),
+	
+	{_RegularFiles,_Directories,_OtherFiles,_Devices} = Elements 
+		= file_utils:list_dir_elements( CurrentDir ),
+	
+	BeamExtension = ".beam",
+	
+	io:format( "   File elements in the current directory:~n~p~n", [Elements] ),
+	
+	% Too much outputs:
+	%io:format( "   Regular BEAM files in the current directory:~n~p~n",
+	%	[ file_utils:filter_by_extension(RegularFiles,BeamExtension) ] ),	
+
+	io:format( "   All BEAM files found recursively "
+		"from the current directory:~n~p~n",
+		[ file_utils:find_files_from(CurrentDir,BeamExtension) ] ),	
+		
 		
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().
