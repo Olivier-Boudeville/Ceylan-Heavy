@@ -24,6 +24,7 @@
 % <http://www.mozilla.org/MPL/>.
 %
 % Author: Olivier Boudeville (olivier.boudeville@esperide.com)
+% Creation date: Saturday, July 12, 2008.
 
 
 % Gathering of various convenient facilities regarding files.
@@ -31,32 +32,178 @@
 -module(file_utils).
 
 
-% Creation date: Saturday, July 12, 2008.
-% Author: Olivier Boudeville (olivier.boudeville@esperide.com).
-
-% Licensed under a disjunctive tri-license: MPL/GPL/LGPL.
-
 
 % Note: join/2 removed from file_utils, use filename:join(Components) or
 % filename:join(Name1, Name2) instead.
 
 
--export([ convert_to_filename/1, get_image_file_png/1, get_image_file_gif/1,
-	file_to_zipped_term/1, zipped_term_to_unzipped_file/1,
+
+% Filename-related operations.
+
+-export([ convert_to_filename/1, get_type_of/1, is_file/1, is_directory/1, 
+	list_dir_elements/1, filter_by_extension/2, find_files_from/2,
+	get_image_file_png/1, get_image_file_gif/1 ]).
+
+
+
+-export([ file_to_zipped_term/1, zipped_term_to_unzipped_file/1,
 	zipped_term_to_unzipped_file/2, files_to_zipped_term/1,
 	zipped_term_to_unzipped_files/1 ]).
 
 
--define(ResourceDir,"resources").
 
+% For the file_info record:
+-include_lib("kernel/include/file.hrl").
+
+
+
+
+% Filename-related operations.
 
 		
 % Converts specified name to an acceptable filename, filesystem-wise.	
 convert_to_filename(Name) ->
-	% Replace spaces by underscores:
-	{ok,Filename,_} = regexp:gsub( lists:flatten(Name)," ","_"),
-	%io:format( "Converted '~s' into '~s'.~n", [Name,Filename] ),
-	Filename.
+	% Replaces all series of spaces by one underscore:
+	re:replace( lists:flatten(Name), " +", "_", [global,{return, list}] ).
+
+
+
+% Returns the type of the specified file entry, in:
+% device | directory | regular | other.
+get_type_of(EntryName) ->
+	{ok,FileInfo} = file:read_file_info(EntryName),
+	#file_info{ type = FileType } = FileInfo,
+	FileType.
+
+
+
+% Returns whether the specified entry is a regular file.
+is_file(EntryName) ->
+	case get_type_of(EntryName) of 
+	
+		regular ->
+			true ;
+			
+		_ ->
+			false	
+	
+	end.
+		
+
+		
+% Returns whether the specified entry is a regular file.
+is_directory(EntryName) ->
+	case get_type_of(EntryName) of 
+	
+		directory ->
+			true ;
+			
+		_ ->
+			false	
+	
+	end.
+		
+		
+
+% Returns a tuple made of a four lists describing the file elements found in
+% specified directory: {RegularFiles,Directories,OtherFiles,Devices}.
+list_dir_elements(Dirname) ->
+	{ok,LocalDirElements} = file:list_dir(Dirname),
+	classify_dir_elements( prefix_files_with(Dirname,LocalDirElements), 
+		[], [], [], [] ).	
+	
+	
+	
+% Returns a tuple containing four lists corresponding to the sorting of all 
+% file elements: {Directories,RegularFiles,Devices,OtherFiles}.
+classify_dir_elements([], Devices, Directories, RegularFiles, OtherFiles ) ->
+	% Note the reordering: 
+	{RegularFiles,Directories,OtherFiles,Devices};
+	
+classify_dir_elements([H|T], Devices, Directories, RegularFiles, OtherFiles ) ->
+		
+	 case get_type_of(H) of 
+	 
+	 	device ->
+			classify_dir_elements(T, [H|Devices], Directories, RegularFiles,
+				OtherFiles ) ; 
+			
+		directory ->
+			classify_dir_elements(T, Devices, [H|Directories], RegularFiles,
+				OtherFiles ) ; 
+		
+		regular ->
+			classify_dir_elements(T, Devices, Directories, [H|RegularFiles],
+				OtherFiles ) ; 
+		
+		other ->
+			classify_dir_elements(T, Devices, Directories, RegularFiles,
+				[H|OtherFiles] ) 
+
+	end.
+	
+	
+	
+% Returns a list containing all elements of FilenameList whose extension is 
+% the specified one.	
+% Signature: filter_by_extension( FilenameList, Extension )
+filter_by_extension( Filenames, Extension ) ->	
+	filter_by_extension( Filenames, Extension, [] ).
+		
+
+filter_by_extension( [], _Extension, Acc ) ->
+	Acc ;
+	
+filter_by_extension( [H|T], Extension, Acc ) ->	
+	case filename:extension(H) of 
+	
+		Extension ->
+			filter_by_extension( T, Extension, [H|Acc] ) ;	
+		
+		_Other ->
+			filter_by_extension( T, Extension, Acc )	
+				
+	end.	 
+		 
+
+
+% Returns the list of all regular files found from the root with specified
+% extension, in the whole subtree (i.e. recursively). 
+% All returned pathnames are relative to this root.
+find_files_from( RootDir, Extension ) ->
+	find_files_from( RootDir, Extension, [] ).
+	
+	
+find_files_from( RootDir, Extension, Acc ) ->
+	%io:format( "find_files_from in ~s.~n", [RootDir] ),
+	{RegularFiles,Directories,_OtherFiles,_Devices} = list_dir_elements(
+		RootDir ),
+	Acc ++ list_files_in_subdirs(Directories,Extension,RootDir,[]) 
+		++ prefix_files_with( RootDir,
+			filter_by_extension(RegularFiles,Extension) ).
+		
+		
+list_files_in_subdirs([],_Extension,_BaseDir,Acc) -> 
+	Acc;
+	
+list_files_in_subdirs([H|T],Extension,RootDir,Acc) ->		
+	list_files_in_subdirs( T, Extension, RootDir,
+		find_files_from( filename:join(RootDir,H), Extension ) ++ Acc ).
+
+
+		 
+prefix_files_with( RootDir, Files ) ->
+	prefix_files_with( RootDir, Files, [] ).
+
+
+prefix_files_with( _RootDir, [], Acc ) ->
+	Acc;
+	
+prefix_files_with( RootDir, [H|T], Acc ) ->
+	prefix_files_with( RootDir, T, [filename:join(RootDir,H)|Acc] ).
+
+		 
+-define(ResourceDir,"resources").
 		
 	
 % Returns the image path corresponding to the specified file.	
@@ -64,10 +211,15 @@ get_image_file_png(Image) ->
   filename:join([?ResourceDir, "images", Image ++ ".png"]).
 
 
+
 % Returns the image path corresponding to the specified file.	
 get_image_file_gif(Image) ->
   filename:join([?ResourceDir, "images", Image ++ ".gif"]).
 
+
+
+
+% Zip-related operations.
 	
 	
 % Reads in memory the file specified from its filename, zips the
@@ -92,6 +244,7 @@ zipped_term_to_unzipped_file(ZippedTerm) ->
 	%zip:unzip(ZippedTerm,[verbose]).
 	{ok,[FileName]} = zip:unzip(ZippedTerm),
 	FileName.
+
 	
 	
 % Reads specified binary, extracts the zipped file in it and writes it
@@ -104,9 +257,8 @@ zipped_term_to_unzipped_file(ZippedTerm,TargetFilename) ->
 	{ok,File} = file:open( TargetFilename, [write] ),
 	ok = io:format( File, "~s", [ binary_to_list(Binary) ] ),
 	ok = file:close(File).
+
 	
-
-
 
 % Reads in memory the files specified from their filename, zips the
 % corresponding term, and returns it.
@@ -121,6 +273,7 @@ files_to_zipped_term(FilenameList) when is_list(FilenameList) ->
 		zip:zip( DummyFileName, FilenameList, [memory] ),
 	Bin.
 	
+
 
 % Reads specified binary, extracts the zipped files in it and writes them
 % on disk, in current directory.	
