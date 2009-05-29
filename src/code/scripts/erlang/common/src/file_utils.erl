@@ -32,6 +32,8 @@
 -module(file_utils).
 
 
+% Related standard modules: file, filename.
+
 
 % Note: join/2 removed from file_utils, use filename:join(Components) or
 % filename:join(Name1, Name2) instead.
@@ -40,8 +42,10 @@
 
 % Filename-related operations.
 
--export([ convert_to_filename/1, get_type_of/1, is_file/1, is_directory/1, 
-	list_dir_elements/1, filter_by_extension/2, find_files_from/2,
+-export([ convert_to_filename/1, exists/1, get_type_of/1, is_file/1,
+	is_directory/1, list_dir_elements/1, filter_by_extension/2,
+	find_files_from/2, find_all_files_from/1, 
+	path_to_variable_name/1, path_to_variable_name/2,
 	get_image_file_png/1, get_image_file_gif/1 ]).
 
 
@@ -68,12 +72,33 @@ convert_to_filename(Name) ->
 
 
 
+% Tells whether specified file entry exists, regardless of its type.
+exists(EntryName) ->
+	case file:read_file_info(EntryName) of 
+	
+		{ok,_FileInfo} ->
+			true;
+			
+		{error,_Reason} ->
+			false
+			
+	end.		
+
+	
+	
 % Returns the type of the specified file entry, in:
 % device | directory | regular | other.
 get_type_of(EntryName) ->
-	{ok,FileInfo} = file:read_file_info(EntryName),
-	#file_info{ type = FileType } = FileInfo,
-	FileType.
+	case file:read_file_info(EntryName) of 
+	
+		{ok,FileInfo} ->
+			#file_info{ type = FileType } = FileInfo,
+			FileType;
+			
+		{error,enoent} ->
+			throw({non_existing_entry,EntryName})
+			
+	end.		
 
 
 
@@ -191,6 +216,28 @@ list_files_in_subdirs([H|T],Extension,RootDir,Acc) ->
 		find_files_from( filename:join(RootDir,H), Extension ) ++ Acc ).
 
 
+list_all_files_in_subdirs([],_BaseDir,Acc) -> 
+	Acc;
+	
+list_all_files_in_subdirs([H|T],RootDir,Acc) ->		
+	list_all_files_in_subdirs( T, RootDir,
+		find_all_files_from( filename:join(RootDir,H) ) ++ Acc ).
+
+
+
+% Returns the list of all regular files found from the root, in the whole
+% subtree (i.e. recursively). 
+% All returned pathnames are relative to this root.
+find_all_files_from( RootDir ) ->
+	find_all_files_from( RootDir, [] ).
+	
+	
+find_all_files_from( RootDir, Acc ) ->
+	%io:format( "find_all_files_from in ~s.~n", [RootDir] ),
+	{RegularFiles,Directories,_OtherFiles,_Devices} = list_dir_elements(
+		RootDir ),
+	Acc ++ list_all_files_in_subdirs(Directories,RootDir,[]) 
+		++ prefix_files_with( RootDir, RegularFiles ).
 		 
 prefix_files_with( RootDir, Files ) ->
 	prefix_files_with( RootDir, Files, [] ).
@@ -202,6 +249,27 @@ prefix_files_with( _RootDir, [], Acc ) ->
 prefix_files_with( RootDir, [H|T], Acc ) ->
 	prefix_files_with( RootDir, T, [filename:join(RootDir,H)|Acc] ).
 
+		
+
+% Converts specified path (full filename, like '/home/jack/test.txt') into a
+% variable name licit in most programming languages (ex: C/C++).
+% Rule here is:
+%  - starts with a prefix, user-supplied or the default one
+%  - '-' becomes '_'
+%  - '.' becomes '_'
+%  - '/' becomes '_'
+path_to_variable_name(Filename) ->
+	path_to_variable_name(Filename,"File_").
+	
+path_to_variable_name(Filename,Prefix) ->
+	NoDashName = re:replace( lists:flatten(Filename), "-+", "_", 
+		[global,{return, list}] ),
+	NoDotName = re:replace( NoDashName, "\\.+", "_", 
+		[global,{return, list}] ),	
+	Prefix ++ re:replace( NoDotName, "/+", "_", 
+		[global,{return, list}] ).
+	
+	
 		 
 -define(ResourceDir,"resources").
 		
