@@ -132,6 +132,13 @@ test-recurse:
 	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then cd $$m && $(MAKE) -s test CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ; else echo "     (directory $$m skipped)" ; fi ) ; then exit 1; fi ; done
 
 
+# To execute standalone Erlang modules.
+%_exec: %.beam
+	@echo "     Running standalone module from $^"
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@ -noshell --eval `echo $@ | sed 's|_exec|:main()|1'` $(CMD_LINE_OPT) AAA
+
+
+
 # Best placed here rather than in GNUmakerules-docutils.inc:
 doc: doc-recurse
 
