@@ -426,6 +426,42 @@ string Ceylan::encodeToPhonetic( const std::string & message )
 
 
 
+string Ceylan::encodeToROT13( const std::string & message )
+{
+
+	string result ;
+
+	for ( string::const_iterator it = message.begin(); 
+		it != message.end(); it++ )
+	{
+			
+		if ( ( (*it) >= 'A' ) && ( (*it) <= 'Z' ) )
+		{
+		
+			result += ( (*it) - 'A' + 13) % 26 + 'A' ;
+
+		} 
+		else if ( (*it) >= 'a' && (*it) <= 'z' ) 
+		{
+		
+			result += ( (*it) - 'a' + 13) % 26 + 'a' ;
+			
+		}
+		else
+		{
+		
+			result += (*it) ;
+			
+		}
+		
+	}			
+	
+	return result ;
+	
+}
+
+
+
 string Ceylan::demangleSymbol( const std::string & symbol )
 {
 	

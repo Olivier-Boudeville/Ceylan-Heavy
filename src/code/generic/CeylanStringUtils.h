@@ -380,6 +380,22 @@ namespace Ceylan
 		
 		
 	/**
+	 * Encodes the specified string in 'rot13', a very simple substitution
+	 * cipher.
+	 *
+	 * @see http://en.wikipedia.org/wiki/ROT13
+	 *
+	 * Non alphabetic characters (not in a-z, A-Z) are left untouched. 
+	 *
+	 * @note ROT13 is its own inverse, that some function can be used for
+	 * decoding as well.
+	 *
+	 */
+	CEYLAN_DLL std::string encodeToROT13( const std::string & message ) ;
+		
+		
+		
+	/**
 	 * Demangles a C++ symbol so that it becomes human-readable.
 	 *
 	 * Example: 'N3One3Two11ExampleFourE' should be converted in
