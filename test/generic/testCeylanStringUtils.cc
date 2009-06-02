@@ -69,7 +69,22 @@ int main( int argc, char * argv[] )
 		LogPlug::info( "The sentence '" + toBePhonetized 
 			+ "' is phonetically converted to: '"
 			+ encodeToPhonetic( toBePhonetized ) + "'." ) ;
-			
+
+		string res = encodeToROT13( toBePhonetized ) ;
+		
+		LogPlug::info( "The same sentence '" + toBePhonetized 
+			+ "' is ROT13-converted to: '"
+			+ res + "'." ) ;
+		
+		if ( encodeToROT13( res ) == toBePhonetized ) 
+			LogPlug::info( "The same sentence '" + toBePhonetized 
+				+ "' being twice ROT13-converted "
+				"results indeed into its initial content." ) ;
+		else
+			throw TestException( "Encoding twice '" + toBePhonetized 
+				+ "' with ROT-13 does not yield the same result, we have '" 
+				+ res + "' instead." ) ; 
+				
 					
 		/* 
 		 * Bad idea: we want to be able to send HTML code in log messages,
