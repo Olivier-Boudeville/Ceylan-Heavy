@@ -134,36 +134,37 @@ is_directory(EntryName) ->
 % specified directory: {RegularFiles,Directories,OtherFiles,Devices}.
 list_dir_elements(Dirname) ->
 	{ok,LocalDirElements} = file:list_dir(Dirname),
-	classify_dir_elements( prefix_files_with(Dirname,LocalDirElements), 
-		[], [], [], [] ).	
+	classify_dir_elements( Dirname, LocalDirElements, [], [], [], [] ).	
 	
 	
 	
 % Returns a tuple containing four lists corresponding to the sorting of all 
 % file elements: {Directories,RegularFiles,Devices,OtherFiles}.
-classify_dir_elements([], Devices, Directories, RegularFiles, OtherFiles ) ->
+classify_dir_elements( _Dirname, [], 
+		Devices, Directories, RegularFiles, OtherFiles ) ->
 	% Note the reordering: 
 	{RegularFiles,Directories,OtherFiles,Devices};
 	
-classify_dir_elements([H|T], Devices, Directories, RegularFiles, OtherFiles ) ->
+classify_dir_elements( Dirname, [H|T], 
+		Devices, Directories, RegularFiles, OtherFiles ) ->
 		
-	 case get_type_of(H) of 
+	 case get_type_of( filename:join( Dirname, H ) ) of 
 	 
 	 	device ->
-			classify_dir_elements(T, [H|Devices], Directories, RegularFiles,
-				OtherFiles ) ; 
+			classify_dir_elements( Dirname, T, 
+				[H|Devices], Directories, RegularFiles, OtherFiles ) ; 
 			
 		directory ->
-			classify_dir_elements(T, Devices, [H|Directories], RegularFiles,
-				OtherFiles ) ; 
+			classify_dir_elements( Dirname, T, 
+				Devices, [H|Directories], RegularFiles, OtherFiles ) ; 
 		
 		regular ->
-			classify_dir_elements(T, Devices, Directories, [H|RegularFiles],
-				OtherFiles ) ; 
+			classify_dir_elements( Dirname, T, 
+				Devices, Directories, [H|RegularFiles], OtherFiles ) ; 
 		
 		other ->
-			classify_dir_elements(T, Devices, Directories, RegularFiles,
-				[H|OtherFiles] ) 
+			classify_dir_elements( Dirname, T, 
+				Devices, Directories, RegularFiles, [H|OtherFiles] ) 
 
 	end.
 	
@@ -192,52 +193,65 @@ filter_by_extension( [H|T], Extension, Acc ) ->
 		 
 
 
+
 % Returns the list of all regular files found from the root with specified
 % extension, in the whole subtree (i.e. recursively). 
 % All returned pathnames are relative to this root.
+% Ex: [ "./a.txt", "./tmp/b.txt" ].
 find_files_from( RootDir, Extension ) ->
-	find_files_from( RootDir, Extension, [] ).
+	find_files_from( RootDir, ".", Extension, [] ).
 	
 	
-find_files_from( RootDir, Extension, Acc ) ->
-	%io:format( "find_files_from in ~s.~n", [RootDir] ),
+find_files_from( RootDir, CurrentRelativeDir, Extension, Acc ) ->
+	%io:format( "find_files_from in ~s.~n", [CurrentRelativeDir] ),
 	{RegularFiles,Directories,_OtherFiles,_Devices} = list_dir_elements(
-		RootDir ),
-	Acc ++ list_files_in_subdirs(Directories,Extension,RootDir,[]) 
-		++ prefix_files_with( RootDir,
+		filename:join(RootDir,CurrentRelativeDir) ),
+	Acc ++ list_files_in_subdirs( Directories, Extension, 
+			RootDir, CurrentRelativeDir, [] ) 
+		++ prefix_files_with( CurrentRelativeDir,
 			filter_by_extension(RegularFiles,Extension) ).
 		
 		
-list_files_in_subdirs([],_Extension,_BaseDir,Acc) -> 
+		
+list_files_in_subdirs([],_Extension,_RootDir,_CurrentRelativeDir,Acc) -> 
 	Acc;
 	
-list_files_in_subdirs([H|T],Extension,RootDir,Acc) ->		
-	list_files_in_subdirs( T, Extension, RootDir,
-		find_files_from( filename:join(RootDir,H), Extension ) ++ Acc ).
+list_files_in_subdirs([H|T],Extension,RootDir,CurrentRelativeDir,Acc) ->		
+	list_files_in_subdirs( T, Extension, RootDir, CurrentRelativeDir,
+		find_files_from( RootDir, filename:join(CurrentRelativeDir,H), 
+			Extension, [] ) ++ Acc ).
 
-
-list_all_files_in_subdirs([],_BaseDir,Acc) -> 
-	Acc;
-	
-list_all_files_in_subdirs([H|T],RootDir,Acc) ->		
-	list_all_files_in_subdirs( T, RootDir,
-		find_all_files_from( filename:join(RootDir,H) ) ++ Acc ).
 
 
 
 % Returns the list of all regular files found from the root, in the whole
 % subtree (i.e. recursively). 
 % All returned pathnames are relative to this root.
+% Ex: [ "./a.txt", "./tmp/b.txt" ].
+% All returned pathnames are relative to this root.
 find_all_files_from( RootDir ) ->
-	find_all_files_from( RootDir, [] ).
+	find_all_files_from( RootDir, ".", [] ).
 	
 	
-find_all_files_from( RootDir, Acc ) ->
-	%io:format( "find_all_files_from in ~s.~n", [RootDir] ),
+find_all_files_from( RootDir, CurrentRelativeDir, Acc ) ->
+	%io:format( "find_all_files_from in ~s.~n", [CurrentRelativeDir] ),
 	{RegularFiles,Directories,_OtherFiles,_Devices} = list_dir_elements(
-		RootDir ),
-	Acc ++ list_all_files_in_subdirs(Directories,RootDir,[]) 
-		++ prefix_files_with( RootDir, RegularFiles ).
+		filename:join(RootDir,CurrentRelativeDir) ),		
+	Acc ++ list_all_files_in_subdirs( Directories, 
+			RootDir, CurrentRelativeDir, [] ) 
+		++ prefix_files_with( CurrentRelativeDir, RegularFiles ).
+	
+		 
+		 
+list_all_files_in_subdirs([],_RootDir,_CurrentRelativeDir,Acc) -> 
+	Acc;
+	
+list_all_files_in_subdirs([H|T],RootDir,CurrentRelativeDir,Acc) ->		
+	list_all_files_in_subdirs( T, RootDir, CurrentRelativeDir,
+		find_all_files_from( RootDir, filename:join(CurrentRelativeDir,H), [] )
+			++ Acc ).
+
+		 
 		 
 prefix_files_with( RootDir, Files ) ->
 	prefix_files_with( RootDir, Files, [] ).
@@ -250,18 +264,31 @@ prefix_files_with( RootDir, [H|T], Acc ) ->
 	prefix_files_with( RootDir, T, [filename:join(RootDir,H)|Acc] ).
 
 		
+		
 
-% Converts specified path (full filename, like '/home/jack/test.txt') into a
-% variable name licit in most programming languages (ex: C/C++).
+% Converts specified path (full filename, like '/home/jack/test.txt' or
+% './media/test.txt') into a variable name licit in most programming languages
+% (ex: C/C++).
 % Rule here is:
-%  - starts with a prefix, user-supplied or the default one
+%  - variable name starts with a prefix, user-supplied or the default one
+%  - any leading './' is removed
 %  - '-' becomes '_'
 %  - '.' becomes '_'
 %  - '/' becomes '_'
 path_to_variable_name(Filename) ->
 	path_to_variable_name(Filename,"File_").
 	
+
+% Removes any leading './':
+path_to_variable_name([$.,$/|T],Prefix) ->
+	convert(T,Prefix);
+	
 path_to_variable_name(Filename,Prefix) ->
+	convert(Filename,Prefix).
+	
+	
+% Helper function.
+convert(Filename,Prefix) ->	
 	NoDashName = re:replace( lists:flatten(Filename), "-+", "_", 
 		[global,{return, list}] ),
 	NoDotName = re:replace( NoDashName, "\\.+", "_", 
@@ -269,7 +296,8 @@ path_to_variable_name(Filename,Prefix) ->
 	Prefix ++ re:replace( NoDotName, "/+", "_", 
 		[global,{return, list}] ).
 	
-	
+
+
 		 
 -define(ResourceDir,"resources").
 		
