@@ -62,6 +62,21 @@ clean-release:
 	
 clean-archive:
 	-@cd .. && /bin/rm -f $(WOOPER_RELEASES)
+
+
+	
+# To be used from Ceylan's autotools-based build system:
+WOOPER_INSTALL_DIR = $(INSTALL_TARGET)/wooper
+
+
+# Tests could be removed:
+install: all
+	@echo "  Installing Erlang WOOPER developments to $(WOOPER_INSTALL_DIR)"
+	@mkdir -p $(WOOPER_INSTALL_DIR)/ebin $(WOOPER_INSTALL_DIR)/include $(WOOPER_INSTALL_DIR)/src #$(WOOPER_INSTALL_DIR)/bin
+	@/bin/cp src/*.beam $(WOOPER_INSTALL_DIR)/ebin
+	@/bin/cp src/*.hrl  $(WOOPER_INSTALL_DIR)/include
+	@/bin/cp src/*.erl  $(WOOPER_INSTALL_DIR)/src
+	#@/bin/cp src/*.sh   $(WOOPER_INSTALL_DIR)/bin
 	
 	
 include $(WOOPER_TOP)/GNUmakesettings.inc
