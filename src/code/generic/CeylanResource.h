@@ -30,13 +30,15 @@
 
 #include "CeylanTextDisplayable.h"  // for inheritance
 #include "CeylanException.h"        // for inheritance
+#include "CeylanTypes.h"            // for Ceylan::Uint32
+
 
 #include <string>
 
 
-
 namespace Ceylan
 {
+
 
 
 	/// Exception to be raised when a Resource encounters an abnormal situation.
@@ -51,6 +53,12 @@ namespace Ceylan
 
 
 
+
+	/// Resources can be designated based on a resource identifier.
+	typedef Ceylan::Uint32 ResourceID ;
+	
+	
+	
 
 	/**
 	 * Void interface that has to be implemented by all Resources, so that
