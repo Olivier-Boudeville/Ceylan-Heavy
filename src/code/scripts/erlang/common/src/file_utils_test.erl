@@ -57,11 +57,19 @@ run() ->
 		"from the current directory:~n~p~n",
 		[ file_utils:find_files_from(CurrentDir,BeamExtension) ] ),	
 	
-	Filename = "media/frame/1-23-2-98.oaf",
+	FirstFilename = "media/frame/1-23-2-98.oaf",
 
 	io:format( "   Path '~s', once transformed into a variable name, "
 		"results in: ~s~n",
-		[ Filename, file_utils:path_to_variable_name(Filename) ] ),	
+		[ FirstFilename, file_utils:path_to_variable_name(FirstFilename) ] ),	
+		
+		
+	SecondFilename = "./mnt/zadok/44_12.oaf",
+
+	io:format( "   Path '~s', once transformed into a variable name, "
+		"results in: ~s~n",
+		[ SecondFilename, file_utils:path_to_variable_name(SecondFilename) ] ),	
+		
 		
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().
