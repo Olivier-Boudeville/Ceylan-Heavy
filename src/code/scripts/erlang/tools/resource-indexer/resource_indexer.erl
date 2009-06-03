@@ -17,16 +17,31 @@
 
 
 
+display_usage() ->
+    io:format("Usage: resource_indexer.sh [-scan_dir A_PATH] [-index_basename A_PREFIX]\n"
+		"Index all resources from scan directory, "
+		"which is by default the current directory.\n"
+		"  Options are:\n"
+		"     -scan_dir A_PATH: scans from the A_PATH directory"
+		"     -output_dir A_PATH: directory where to generate XML and header files"
+		"     -index_basename A_PREFIX: uses that prefix for generated XML and header files").
+
+
+
 main() ->
 	%io:format( "Arguments: ~p.", [init:get_plain_arguments()] ),
 	ScanDir = manage_scan_dir(),
 	IndexBasename = manage_index_basename(),
+	OutputDirectory = manage_output_directory(),
 	Files = file_utils:find_all_files_from( ScanDir ),
 	%io:format( "Found files: ~p.~n", [Files] ),
 	FileEntries = create_entries_from( Files ),
 	%io:format( "Corresponding resource entries:~n ~p~n.", [FileEntries] ),
-	write_resources_as_xml( forge_xml_filename(IndexBasename), FileEntries ),
-	write_resources_as_header_file( forge_header_filename(IndexBasename),
+	write_resources_as_xml( 
+		filename:join( OutputDirectory, forge_xml_filename(IndexBasename) ),
+		FileEntries ),
+	write_resources_as_header_file( 
+		filename:join( OutputDirectory, forge_header_filename(IndexBasename) ),
 		FileEntries ),
 	halt(0).
 
@@ -87,7 +102,7 @@ manage_scan_dir() ->
 
 
       
-% Determines the basename that should be used to manage an index.
+% Determines the basename for index files.
 % Returns that basename.
 manage_index_basename() ->
 	case init:get_argument(index_basename) of
@@ -111,6 +126,29 @@ manage_index_basename() ->
 
 
 
+% Determines in which directory the generated files should be put.
+manage_output_directory() ->
+	case init:get_argument(output_dir) of
+	
+		{ok,[[CommandLineOutputDir]]} ->
+			io:format( "  Will generate index in specified output directory, "
+				" '~s'.\n",	[CommandLineOutputDir] ),
+			CommandLineOutputDir;	
+						
+		error ->
+			{ok,DefaultOutputDir} = file:get_cwd(),
+			io:format( "  Will use default output directory, '~s'.\n",
+				[DefaultOutputDir] ),
+			DefaultOutputDir;	
+		
+		{ok,[Other]} ->
+			handle_error( io_lib:format( 
+				"incorrect output_dir option: ~p", [Other] ) )
+				
+	end.
+
+
+
 % Returns an atom describing the type of specified file.
 % General content types (ex: 'audible') have to be defined instead of more
 % precise ones (ex: 'sound', 'music') as a given extension (ex: ".mp3") can 
@@ -118,6 +156,12 @@ manage_index_basename() ->
 get_content_type( Filename ) ->
 	case filename:extension( Filename ) of
 	
+		".txt" ->
+			text;
+			
+		".data" ->
+			data;
+			
 		".png" ->
 			image;
 			
@@ -126,6 +170,9 @@ get_content_type( Filename ) ->
 
 		".jpg" ->
 			image;
+			
+		".ttf" ->
+			font;
 			
 		".mp3" ->
 			audible;
@@ -215,8 +262,9 @@ write_resources_as_header_file( HeaderTargetFilename, FileEntries ) ->
 write_header_file_entries_header( File, DefineSymbol ) ->
 	io:format( File, "#ifndef ~s~n", [DefineSymbol] ),
 	io:format( File, "#define ~s~n~n~n", [DefineSymbol] ),
-	io:format( File, "#include \"Resource.h\"~n~n~n", [] ),
-	io:format( File, "namespace Resource~n", [] ),
+	io:format( File, "// For ResourceID:~n", [] ),
+	io:format( File, "#include \"CeylanResource.h\"~n~n~n", [] ),
+	io:format( File, "namespace ResourceIndex~n", [] ),
 	io:format( File, "{~n~n", [] ).
 	
 	
@@ -225,7 +273,7 @@ write_header_file_entries( _File, [] ) ->
 	ok;
 	
 write_header_file_entries( File, [H|T] ) ->
-	io:format( File, "  static const ResourceID ~s = ~B;~n", 
+	io:format( File, "  static const ResourceID ~s = ~B ;~n", 
 		[H#file_entry.variable_name,H#file_entry.resource_id] ),
 	write_header_file_entries( File, T ).
 	
@@ -237,7 +285,7 @@ write_header_file_entries_footer( File, DefineSymbol ) ->
 
 
 get_define_for( Filename ) ->
-	get_define_for( Filename, [] ).
+	get_define_for( filename:basename(Filename), [] ).
 	
 	
 get_define_for( [], Acc ) ->
@@ -246,17 +294,12 @@ get_define_for( [], Acc ) ->
 get_define_for( [$.|T], Acc ) ->
 	get_define_for( T, [$_|Acc] );
 	
+get_define_for( [$-|T], Acc ) ->
+	get_define_for( T, [$_|Acc] );
+	
 get_define_for( [H|T], Acc ) ->
 	get_define_for( T, [string:to_upper(H)|Acc] ).
 
-
-
-display_usage() ->
-    io:format("Usage: resource_indexer.sh [-scan_dir A_PATH] \n"
-		"Index all resources from scan directory, "
-		"which is by default the current directory.\n"
-		"  Options are:\n"
-		"     -scan_dir A_PATH: scans from the A_PATH directory").
 
 
 
