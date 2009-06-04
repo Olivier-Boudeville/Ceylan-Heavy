@@ -43,7 +43,7 @@ namespace Ceylan
 
 
 	/// Exception to be raised whenever a loadable operation fails.
-	class CEYLAN_DLL LoadableException: public Ceylan::Exception
+	class CEYLAN_DLL LoadableException : public Ceylan::Exception
 	{
 	
 		public:
@@ -377,6 +377,7 @@ namespace Ceylan
 			 */			 
 			LoadableWithContent & operator = ( 
 				const LoadableWithContent & source ) ;
+
 
     } ;
 			
