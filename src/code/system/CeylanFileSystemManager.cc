@@ -562,7 +562,6 @@ void FileSystemManager::SetDefaultFileSystemManager(
 void FileSystemManager::SetDefaultFileSystemManagerToPlatformDefault()
 {
 
-	
 	// Common to all platforms:
 	if ( _CurrentDefaultFileSystemManager != 0 )
 		delete _CurrentDefaultFileSystemManager ;
