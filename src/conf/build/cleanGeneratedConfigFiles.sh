@@ -14,17 +14,25 @@ BASE_DIR=`dirname $0`/../../..
 #echo "BASE_DIR = $BASE_DIR"
 
 cd $BASE_DIR
-#pwd
+
+# Converts a relative path into an absolute one:
+BASE_DIR=`pwd`
+
+cd src/code/scripts/erlang
+make -s clean 1>/dev/null 2>&1
 
  
 # Only the test Makefile (if available) knows which executables should be
 # removed:
-cd test
+cd $BASE_DIR/test
 make clean 1>/dev/null 2>&1
 
 cd cross-tests
 make clean
 cd ..
+
+
+cd $BASE_DIR
 
 $FIND . \( -name 'test*.exe-logs' -a -type d \) -exec $RM -rf '{}' ';' 2>/dev/null
 
