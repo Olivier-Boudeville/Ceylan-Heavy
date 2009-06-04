@@ -35,12 +35,15 @@
 #include "CeylanStringUtils.h"      // for formatStringList
 
 
+
 #include <string>
 #include <list>                     // for tree sons
 
 
+
 namespace Ceylan
 {
+
 
 
 	/**
@@ -266,7 +269,7 @@ namespace Ceylan
 	 * may instanciated with Content == std::string.
 	 *
 	 * @example For a file hierarchy structure, each tree node would
-	 * be a directory, and its contet would be a list of its file
+	 * be a directory, and its content would be a list of its file
 	 * entries.
 	 *
 	 * @note The typename X must be a child class of TextDisplayable,
@@ -276,6 +279,7 @@ namespace Ceylan
 	template <typename Content>
 	class /* CEYLAN_DLL */ Tree : public Ceylan::Visitable
 	{
+
 
 		public:
 
@@ -363,6 +367,20 @@ namespace Ceylan
 			 *
 			 */ 
 			virtual Content & getContent() ;  
+			 
+			 
+			 
+			/**
+			 * Returns the content that this root node of the tree owns, as
+			 * a const reference
+			 *
+			 * @throw TreeException if no content is registered in this
+			 * node.
+			 *
+			 * @see hasContent
+			 *
+			 */ 
+			virtual const Content & getContentAsConst() const ;  
 			 
 			 
 			 
@@ -556,7 +574,9 @@ namespace Ceylan
 
 
 
+
 		protected:
+
 
 
 			/**
@@ -586,7 +606,9 @@ namespace Ceylan
 
 
 
+
 		private:
+
 
 
 			/**
@@ -690,7 +712,7 @@ namespace Ceylan
 		
 		// Recurse if next level had not that content:
 		for ( typename SubTreeList::iterator it = _sons.begin();
-				it != _sons.end(); it++ )
+			it != _sons.end(); it++ )
 		{		
 			Tree * returned = (*it)->getFather( child ) ;
 			if ( returned != 0 )
@@ -788,7 +810,21 @@ namespace Ceylan
 	
 	}
 			 
+	
 		
+	template <typename Content>
+	const Content & Tree<Content>::getContentAsConst() const
+	{
+	
+		if ( _content == 0 )
+			throw TreeException( "Tree<Content>::getContentAsConst: "
+				"no available content to return." ) ;
+		
+		return *_content ;		
+	
+	}
+ 		
+	
 			 
 	template <typename Content>
 	void Tree<Content>::setContent( Content & newContent ) 	
@@ -866,7 +902,7 @@ namespace Ceylan
 	{
 	
 		for ( typename SubTreeList::iterator it = _sons.begin();
-				it != _sons.end(); it++ )
+			it != _sons.end(); it++ )
 		{
 		
 			Content * retrieved = (*it)->_content ;
@@ -889,7 +925,7 @@ namespace Ceylan
 		
 		// Otherwise recurse to next level:
 		for ( typename SubTreeList::iterator it = _sons.begin();
-				it != _sons.end(); it++ )
+			it != _sons.end(); it++ )
 		{		
 			Tree<Content> * returned = (*it)->getNodeOf( content ) ;
 			if ( returned != 0 )
@@ -962,8 +998,8 @@ namespace Ceylan
 		std::string res = "Tree " ;
 
 		if ( _content !=0 )
-			res += "whose local content is: "
-				+ _content->toString( level ) ;
+			res += "whose local content is: '"
+				+ _content->toString( level ) + "'" ;
 		else
 			res += "with no local content" ;
 
@@ -975,7 +1011,7 @@ namespace Ceylan
 		std::list<std::string> subtrees ;
 
 		for ( typename SubTreeList::const_iterator it =
-				_sons.begin(); it != _sons.end(); it++ )
+			_sons.begin(); it != _sons.end(); it++ )
 		{
 			subtrees.push_back( (*it)->toString( level ) ) ;
 		}
@@ -986,6 +1022,7 @@ namespace Ceylan
 
 
 }
+
 
 
 #endif // CEYLAN_TREE_H_
