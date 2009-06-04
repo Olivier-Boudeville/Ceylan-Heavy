@@ -237,7 +237,7 @@ Ceylan::Latin1Char StandardFileSystemManager::getSeparator() const
 
 
 File & StandardFileSystemManager::createFile( const string & filename, 
-		OpeningFlag createFlag,	PermissionFlag permissionFlag ) 
+	OpeningFlag createFlag,	PermissionFlag permissionFlag ) 
 {
 
 	return StandardFile::Create( filename, createFlag, permissionFlag ) ;
@@ -1239,7 +1239,10 @@ StandardFileSystemManager::StandardFileSystemManager()
 StandardFileSystemManager::~StandardFileSystemManager() throw()
 {
 
-	// Nothing special to switch off this filesystem.
+	if ( _StandardFileSystemManager == this )
+		_StandardFileSystemManager = 0 ;
+		
+	// Nothing else to switch off this filesystem.
 
 }
 
