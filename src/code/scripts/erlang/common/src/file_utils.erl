@@ -35,14 +35,11 @@
 % Related standard modules: file, filename.
 
 
-% Note: join/2 removed from file_utils, use filename:join(Components) or
-% filename:join(Name1, Name2) instead.
-
 
 
 % Filename-related operations.
 
--export([ convert_to_filename/1, exists/1, get_type_of/1, is_file/1,
+-export([ join/2, convert_to_filename/1, exists/1, get_type_of/1, is_file/1,
 	is_directory/1, list_dir_elements/1, filter_by_extension/2,
 	find_files_from/2, find_all_files_from/1, 
 	path_to_variable_name/1, path_to_variable_name/2,
@@ -64,6 +61,19 @@
 
 % Filename-related operations.
 
+
+% Joins the two specified path elements.
+% Note: join/2 added back to file_utils, filename:join(Components) or
+% filename:join(Name1, Name2) can be used instead.
+% However filename:join("","my_dir") results in "/my_dir", whereas often we
+% would want "my_dir", which is returned by file_utils:join/2.
+join( "", SecondPath ) ->
+	SecondPath ;
+	
+join( FirstPath, SecondPath ) ->
+	filename:join( FirstPath, SecondPath ).
+	
+	
 		
 % Converts specified name to an acceptable filename, filesystem-wise.	
 convert_to_filename(Name) ->
@@ -133,6 +143,7 @@ is_directory(EntryName) ->
 % Returns a tuple made of a four lists describing the file elements found in
 % specified directory: {RegularFiles,Directories,OtherFiles,Devices}.
 list_dir_elements(Dirname) ->
+	%io:format( "list_dir_elements for '~s'.~n", [Dirname] ),
 	{ok,LocalDirElements} = file:list_dir(Dirname),
 	classify_dir_elements( Dirname, LocalDirElements, [], [], [], [] ).	
 	
@@ -199,13 +210,13 @@ filter_by_extension( [H|T], Extension, Acc ) ->
 % All returned pathnames are relative to this root.
 % Ex: [ "./a.txt", "./tmp/b.txt" ].
 find_files_from( RootDir, Extension ) ->
-	find_files_from( RootDir, ".", Extension, [] ).
+	find_files_from( RootDir, "", Extension, [] ).
 	
 	
 find_files_from( RootDir, CurrentRelativeDir, Extension, Acc ) ->
 	%io:format( "find_files_from in ~s.~n", [CurrentRelativeDir] ),
 	{RegularFiles,Directories,_OtherFiles,_Devices} = list_dir_elements(
-		filename:join(RootDir,CurrentRelativeDir) ),
+		join(RootDir,CurrentRelativeDir) ),
 	Acc ++ list_files_in_subdirs( Directories, Extension, 
 			RootDir, CurrentRelativeDir, [] ) 
 		++ prefix_files_with( CurrentRelativeDir,
@@ -218,7 +229,7 @@ list_files_in_subdirs([],_Extension,_RootDir,_CurrentRelativeDir,Acc) ->
 	
 list_files_in_subdirs([H|T],Extension,RootDir,CurrentRelativeDir,Acc) ->		
 	list_files_in_subdirs( T, Extension, RootDir, CurrentRelativeDir,
-		find_files_from( RootDir, filename:join(CurrentRelativeDir,H), 
+		find_files_from( RootDir, join(CurrentRelativeDir,H), 
 			Extension, [] ) ++ Acc ).
 
 
@@ -230,13 +241,14 @@ list_files_in_subdirs([H|T],Extension,RootDir,CurrentRelativeDir,Acc) ->
 % Ex: [ "./a.txt", "./tmp/b.txt" ].
 % All returned pathnames are relative to this root.
 find_all_files_from( RootDir ) ->
-	find_all_files_from( RootDir, ".", [] ).
+	find_all_files_from( RootDir, "", [] ).
 	
 	
 find_all_files_from( RootDir, CurrentRelativeDir, Acc ) ->
-	%io:format( "find_all_files_from in ~s.~n", [CurrentRelativeDir] ),
+	%io:format( "find_all_files_from with root = '~s', current = '~s'.~n",
+	%	[RootDir,CurrentRelativeDir] ),
 	{RegularFiles,Directories,_OtherFiles,_Devices} = list_dir_elements(
-		filename:join(RootDir,CurrentRelativeDir) ),		
+		join(RootDir,CurrentRelativeDir) ),		
 	Acc ++ list_all_files_in_subdirs( Directories, 
 			RootDir, CurrentRelativeDir, [] ) 
 		++ prefix_files_with( CurrentRelativeDir, RegularFiles ).
@@ -247,13 +259,15 @@ list_all_files_in_subdirs([],_RootDir,_CurrentRelativeDir,Acc) ->
 	Acc;
 	
 list_all_files_in_subdirs([H|T],RootDir,CurrentRelativeDir,Acc) ->		
+	%io:format( "list_all_files_in_subdirs with root = '~s', current = '~s' "
+	%	"and H='~s'.~n", [RootDir,CurrentRelativeDir,H] ),
 	list_all_files_in_subdirs( T, RootDir, CurrentRelativeDir,
-		find_all_files_from( RootDir, filename:join(CurrentRelativeDir,H), [] )
-			++ Acc ).
+		find_all_files_from( RootDir, join(CurrentRelativeDir,H), [] ) ++ Acc ).
 
 		 
 		 
 prefix_files_with( RootDir, Files ) ->
+	%io:format( "Prefixing ~p with '~s'.~n", [Files,RootDir] ),
 	prefix_files_with( RootDir, Files, [] ).
 
 
@@ -261,7 +275,7 @@ prefix_files_with( _RootDir, [], Acc ) ->
 	Acc;
 	
 prefix_files_with( RootDir, [H|T], Acc ) ->
-	prefix_files_with( RootDir, T, [filename:join(RootDir,H)|Acc] ).
+	prefix_files_with( RootDir, T, [join(RootDir,H)|Acc] ).
 
 		
 		
