@@ -35,6 +35,23 @@ using namespace Ceylan ;
 using namespace Ceylan::Log ;
 
 
+/*
+ * One way of inspecting closely this test is:
+ *  - in 'generic/CeylanCountedPointer.h', to set CEYLAN_COUNTED_POINTER_DEBUG
+ * to 1
+ *  - to recompile the Ceylan library and this test
+ *  - to run it as:
+ * './testCeylanCountedPointer.exe --consolePlug 1>test.txt 2>&1'
+ *
+ * One can then check the changes in reference counting, and the fact that*
+ * only one TestCountedPointer is created indeed.
+ *
+ * Hint: first '[CountedPointer] after referent construction, refcount = 1'
+ * corresponds to the creation of the static referent for arrays.
+ *
+ */
+ 
+ 
 
 /**
  * Test class for counter pointer.
@@ -127,11 +144,17 @@ int main( int argc, char * argv[] )
 		if ( myCounted.getReferenceCount() != 1 )
 			throw Ceylan::TestException( 
 				"#1: expected reference count equal to one." ) ;
+		else
+			LogPlug::info( 
+				"Having reference count equal to one, as expected." ) ;
 		
 		
 		// This block will force myOtherCounted deallocation:
 		{
 		
+			LogPlug::info( 
+				"Creating a copy of the original counted pointer." ) ; 
+				
 			CountedPointer<TestCountedPointer> myOtherCounted = myCounted ;
 		
 			LogPlug::info( 
@@ -143,6 +166,9 @@ int main( int argc, char * argv[] )
 					"#2: expected reference count equal to two, got instead " 
 					+ Ceylan::toString( myCounted.getReferenceCount() ) 
 					+ "." ) ;
+			else
+				LogPlug::info( "First counted pointer having reference count "
+					"equal to two, as expected." ) ;
 
 			LogPlug::info( "Displaying second counted pointer: " 
 				+ myOtherCounted.toString() ) ;
@@ -152,27 +178,42 @@ int main( int argc, char * argv[] )
 					"#3: expected reference count equal to two, got instead " 
 					+ Ceylan::toString( myOtherCounted.getReferenceCount() ) 
 					+ "." ) ;
+			else
+				LogPlug::info( "Second counted pointer having reference count "
+					"equal to two, as expected." ) ;
 
 			Ceylan::ReferenceCount result = aFunction( myOtherCounted ) ;
+			
 			if ( result != 3 )
 				throw Ceylan::TestException( 
 					"#4: expected reference count equal to three, got instead "
 					+ Ceylan::toString( result ) + "." ) ;
+			else
+				LogPlug::info( "After function call, reference count "
+					"equal to three, as expected." ) ;
 									
+			LogPlug::info( "Second counted pointer going out of scope." ) ;
+			
 		}
-
+		
+		LogPlug::info( "Second counted pointer gone out of scope." ) ;
+		
 		Ceylan::ReferenceCount result = aFunction( myCounted ) ;
 		
 		if ( result != 2 )
 			throw Ceylan::TestException( 
 				"#5: expected reference count equal to two, got instead " 
 				+ Ceylan::toString( result ) + " )." ) ;
+		else
+			LogPlug::info( "After second function call, reference count "
+				"equal to two, as expected." ) ;
 
 		if ( myCounted.getReferenceCount() != 1 )
-				throw Ceylan::TestException( 
-					"#6: expected reference count equal to one, got instead " 
-					+ Ceylan::toString( myCounted.getReferenceCount() ) 
-					+ "." ) ;
+			throw Ceylan::TestException( 
+				"#6: expected reference count equal to one, got instead " 
+				+ Ceylan::toString( myCounted.getReferenceCount() ) + "." ) ;
+		else
+			LogPlug::info( "New reference count equal to one, as expected." ) ;
 
 		
 		LogPlug::info( "Displaying final counted pointer: " 
