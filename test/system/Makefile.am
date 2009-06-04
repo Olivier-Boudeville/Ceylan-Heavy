@@ -27,3 +27,9 @@ testCeylanSystemInformation_exe_SOURCES   = testCeylanSystemInformation.cc
 testCeylanThread_exe_SOURCES              = testCeylanThread.cc
 testCeylanTime_exe_SOURCES                = testCeylanTime.cc
 
+clean: clean-local
+
+clean-local:
+	-@/bin/rm -f schedulingGranularity.png testCeylanTime-granularity.dat
+	
+	
