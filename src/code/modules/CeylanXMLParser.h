@@ -120,9 +120,14 @@ namespace Ceylan
 				 *
 				 * @param filename the file whose content is formatted in
 				 * XML. Depending on which methods will be called, the filename
-				 * will be used to saved an internal tree to the corresponding
+				 * will be used to save an internal tree to the corresponding
 				 * file, or to load an internal tree from an already existing
 				 * file with that filename.
+				 *
+				 * Note that therefore no tree is available when this parser
+				 * is created.
+				 *
+				 * @see loadFromFile
 				 *
 				 */
 				explicit XMLParser( const std::string & filename ) ;
@@ -184,8 +189,9 @@ namespace Ceylan
 	
 	
 				
-				// Serializarion section.
+				// Serialization section.
 				
+	
 	
 				/**
 				 * Saves the internal tree into an XML file, whose filename
@@ -206,8 +212,8 @@ namespace Ceylan
 	
 	
 				/**
-				 * Loads from an XML file, whose filename
-				 * was specified in the constructor, a new internal XML tree.
+				 * Loads from an XML file, whose filename was specified 
+				 * in the constructor, a new internal XML tree.
 				 *
 				 * @note Any already existing tree will be deleted first.
 				 *
@@ -367,10 +373,10 @@ namespace Ceylan
 				 *
 				 */
 				virtual void handleNextElement( 
-						System::InputStream & input,
-						std::stack<std::string> & markupStack, 
-						XMLTree * currentNode, 
-						Ceylan::Uint8 & remainder ) ;
+					System::InputStream & input,
+					std::stack<std::string> & markupStack, 
+					XMLTree * currentNode, 
+					Ceylan::Uint8 & remainder ) ;
 				
 				
 
