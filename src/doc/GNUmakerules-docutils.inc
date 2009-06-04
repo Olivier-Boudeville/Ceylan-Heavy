@@ -1,13 +1,12 @@
+# OVERALL_DOCUMENT_SOURCE, COMMON_TOP and DOCUTILS_TOP should have been
+# defined beforehand.
+
 
 
 .PHONY: doc doc-recurse info info-doc-local full-doc create-doc regenerate-doc \
- make-doc-repository view-doc to-print clean clean-doc-repository              \
- info-doc-local clean-generated clean-dot clean-log clean-gnuplot clean-png    \
- clean-rst
-
-
-	
-# OVERALL_DOCUMENT_SOURCE and DOCUTILS_TOP should have been defined beforehand.
+ make-doc-repository view-doc to-print info-doc-local info-doc-tools           \
+ clean clean-doc-repository clean-generated clean-dot clean-doc-logs clean-gnuplot  \
+ clean-png clean-rst
 
 
 
@@ -17,6 +16,12 @@
 
 
 # Image section.
+
+#IMG_VIEWER := `which xv`
+IMG_VIEWER := `which eog`
+
+IMAGE_MAGICK := `which convert`
+
 
 # Not all python scripts generate images:
 PNG_FROM_PYTHON = $(patsubst %-png-generator.py,%.png,$(wildcard *-png-generator.py))
@@ -32,13 +37,30 @@ NEGATED_PNG = $(patsubst %.png,%-negated.png,$(wildcard *.png))
 
 
 
+ROTATED_PNG = $(patsubst %.png,%-rotated.png,$(wildcard *.png))
+
+# '-transpose' is not what we want:
+%-rotated.png: %.png
+	@echo "    Generating $@ from $< with $(IMAGE_MAGICK)"
+	@$(IMAGE_MAGICK) $< -rotate -90 $@
+
+
+
 # Graph rendering section.
 
+DOT_OPT := -Gcharset=latin1
+
+# Dot must found directly from the environment, since it is needed by
+# both the Make system and the Erlang application.
+# DOT := `PATH=$(DOT_ROOT)/bin:$$PATH which dot` $(DOT_OPT)
+DOT := `which dot` $(DOT_OPT)
 
 # To trigger the automatic rendering of a created graph, add 'VIEW_GRAPH=' 
 # at the end of the command line (ex : 'make MyFSM.png VIEW_GRAPH=')
-VIEW_GRAPH = no
-#VIEW_GRAPH =
+VIEW_GRAPH := no
+#VIEW_GRAPH :=
+
+
 
 %.png: %.graph
 	@echo "     Generating $@ from graph $<"
@@ -58,8 +80,10 @@ GRAPH_PNG = $(GRAPH_SRC:%.graph=%.png)
 
 # To trigger the automatic rendering of a created plot, add 'VIEW_PLOT=' 
 # at the end of the command line (ex : 'make MyData.png VIEW_PLOT=')
-#VIEW_PLOT = yes
-VIEW_PLOT = no
+#VIEW_PLOT := yes
+VIEW_PLOT := no
+
+GNUPLOT := `which gnuplot`
 
 %.png: %.plot %.dat
 	@echo "     Generating plot $@"
@@ -83,9 +107,9 @@ VIEW_PLOT = no
 
 # RST section.
 
-GENERATOR_LOG_FILE = "rst.log"
+GENERATOR_LOG_FILE := "rst.log"
 	
-TMP_RST_REPOSITORY = "tmp-rst"
+TMP_RST_REPOSITORY := "tmp-rst"
 
 
 # OVERALL_DOCUMENT_SOURCE defined in per-project GNUmakefile:
@@ -107,15 +131,16 @@ RST_GENERATED_FILES =  $(AUX_GENERATED_FILES) $(TEX_GENERATED_FILES)      \
 
 
 #RST_GENERATOR = update-docutils.sh
-RST_GENERATOR = generate-docutils.sh
+RST_GENERATOR = `PATH=$(COMMON_TOP)/src:$$PATH which generate-docutils.sh`
 
-PDF_VIEWER = /usr/bin/evince
+
+PDF_VIEWER := `which evince`
 
 
 # To trigger the automatic rendering of a created PDF, add 'VIEW_PDF=' 
 # at the end of the command line (ex : 'make MyDoc.pdf VIEW_PDF=')
-VIEW_PDF = yes
-#VIEW_PDF = no
+VIEW_PDF := yes
+#VIEW_PDF := no
 
 
 %.pdf: %.rst
@@ -140,7 +165,7 @@ doc: $(GRAPH_PNG) $(PNG_FROM_PYTHON) $(PNG_FROM_PYTHON_NEGATED) doc-recurse #$(P
 
 
 
-info: info-doc-local
+info: info-doc-local info-doc-tools
 
 
 info-doc-local:
@@ -148,18 +173,30 @@ info-doc-local:
 	@echo "OVERALL_DOCUMENT_TARGET = $(OVERALL_DOCUMENT_TARGET)"
 	@echo "PRINT_SERVER = $(PRINT_SERVER)"
 	
+	
+info-doc-tools:
+	@echo "DOT = $(DOT)"
+	@echo "GNUPLOT = $(GNUPLOT)"
+	@echo "IMG_VIEWER = $(IMG_VIEWER)"
+	@echo "IMAGE_MAGICK = $(IMAGE_MAGICK)"
+	@echo "PDF_VIEWER = $(PDF_VIEWER)"
+	@echo "RST_GENERATOR = $(RST_GENERATOR)"
+		
 
 	
 
 # Centralization of documentation sources is necessary, as the LateX generator
 # from docutils will not find images in directories otherwise.
+# Note: cannot use a 'doc' target, as it would induce in an infinite recursion.
 full-doc: create-doc
 
 
-create-doc: regenerate-doc clean-doc-repository make-doc-repository \
-		prepare-doc-hook
-	@echo "     Generating full (PDF) documentation from $(OVERALL_DOCUMENT_SOURCE) in $(TMP_RST_REPOSITORY) (log in $(GENERATOR_LOG_FILE))"
-	@$(MAKE) $(TMP_RST_REPOSITORY)/$(OVERALL_DOCUMENT_TARGET) 2>&1 | tee $(GENERATOR_LOG_FILE)
+create-doc: regenerate-doc clean-doc-repository make-doc-repository
+	@echo "     Generating full (PDF) documentation from \
+	$(OVERALL_DOCUMENT_SOURCE) in $(TMP_RST_REPOSITORY)  \
+	(log in $(GENERATOR_LOG_FILE))"
+	@$(MAKE) $(TMP_RST_REPOSITORY)/$(OVERALL_DOCUMENT_TARGET) 2>&1 | \
+	tee $(GENERATOR_LOG_FILE)
 	
 
 regenerate-doc:
@@ -174,16 +211,19 @@ make-doc-repository:
 
         
 view-doc: 
-	@[ ! -e "$(TMP_RST_REPOSITORY)/$(OVERALL_DOCUMENT_TARGET)" ] || $(PDF_VIEWER) $(TMP_RST_REPOSITORY)/$(OVERALL_DOCUMENT_TARGET) 1>/dev/null 2>&1
+	@[ ! -e "$(TMP_RST_REPOSITORY)/$(OVERALL_DOCUMENT_TARGET)" ] || \
+	$(PDF_VIEWER) $(TMP_RST_REPOSITORY)/$(OVERALL_DOCUMENT_TARGET) \
+	 1>/dev/null 2>&1
 	
 
 to-print: create-doc
-	@echo "    Transferring document $(OVERALL_DOCUMENT_TARGET) to $(PRINT_SERVER)"
+	@echo "    Transferring document $(OVERALL_DOCUMENT_TARGET) \
+	to $(PRINT_SERVER)"
 	@scp $(TMP_RST_REPOSITORY)/$(OVERALL_DOCUMENT_TARGET) $(PRINT_LOCATION) 
-		
-		
-clean: clean-doc-repository clean-generated clean-dot clean-log \
- clean-gnuplot clean-png clean-rst
+	
+	
+clean: clean-doc-repository clean-generated clean-dot clean-doc-logs \
+	clean-gnuplot clean-png clean-rst
 
 
 
@@ -201,20 +241,23 @@ clean-generated:
 
 # Some .png must be kept (ex: dia-exported ones).
 clean-dot:
-	-@if [ `basename $$PWD` != "doc" ]; then rm -f $(STATE_MACHINES_DIAGRAMS) *.map; fi
+	-@if [ `basename $$PWD` != "doc" ]; then \
+	/bin/rm -f $(STATE_MACHINES_DIAGRAMS) *.map; fi
 
 
-clean-log:
-	-@rm -f *.log
+clean-doc-logs:
+	-@/bin/rm -f *.log
 
 
 clean-gnuplot:
 	@# Let's hope we do not remove user files:
-	-@if [ `basename $$PWD` != "doc" ]; then rm -f *robe*.dat *robe*.p; fi
+	-@if [ `basename $$PWD` != "doc" ]; then \
+	/bin/rm -f *robe*.dat *robe*.p; fi
 	
 	
 clean-png: 
-	-@rm -f $(GRAPH_PNG) $(PNG_FROM_PYTHON) $(PNG_FROM_PYTHON_NEGATED) $(NEGATED_PNG)
+	-@rm -f $(GRAPH_PNG) $(PNG_FROM_PYTHON) $(PNG_FROM_PYTHON_NEGATED) \
+	$(NEGATED_PNG) $(ROTATED_PNG)
 	
 	
 clean-rst:
