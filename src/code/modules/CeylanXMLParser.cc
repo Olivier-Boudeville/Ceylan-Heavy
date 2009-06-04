@@ -173,9 +173,7 @@ void XMLParser::saveToFile( const std::string & filename ) const
 		
 		xmlFile.write( header ) ;
 	
-	
-		// Then 'SavingVisitor'.
-	
+		// Then apply the 'SavingVisitor':
 		XMLSavingVisitor myVisitor( xmlFile ) ;
 	
 		_parsedTree->accept( myVisitor ) ;
@@ -442,7 +440,7 @@ void XMLParser::ParseAttributeSequence( const string & toBeParsed,
 		if ( index >= size )
 			return ;
 			
-		// First character on an attribute should be a letter:
+		// First character of an attribute name should be a letter:
 		if ( ! Ceylan::isLetter( toBeParsed[index] ) )
 			throw XMLParserException( "XMLParser::ParseAttributeSequence: "
 				"expecting first character of attribute name, read '"
@@ -550,7 +548,7 @@ const string XMLParser::toString( Ceylan::VerbosityLevels level ) const
 	if ( _filename.empty() )
 		res += ". No serialization file defined" ;
 	else
-		res += ". Serialization file is " + _filename ;
+		res += ". Serialization file is '" + _filename + "'" ;
 
 	return res ;
 
@@ -559,8 +557,8 @@ const string XMLParser::toString( Ceylan::VerbosityLevels level ) const
 
 
 void XMLParser::handleNextElement( System::InputStream & input,
-		stack<string> & markupStack, XMLTree * currentTree, 
-		Ceylan::Uint8 & remaining )
+	stack<string> & markupStack, XMLTree * currentTree,
+	Ceylan::Uint8 & remaining )
 {
 
 	/*
@@ -649,14 +647,52 @@ void XMLParser::handleNextElement( System::InputStream & input,
 		XMLMarkup * newMarkup = new XMLMarkup( markupName ) ;
 		markupStack.push( markupName ) ;
 		
-		// Did we stop on a '>'?
-		if ( remaining != XML::HigherThan )
+		/*
+		 * Tells whether the found markup is a solo tag (ex: '<a />') and 
+		 * thus should be closed just after having being pushed in the markup
+		 * stack:
+		 */
+		bool soloTagToClose = false ;
+		
+		// Skip any whitespaces:
+		if ( Ceylan::isWhitespace( remaining ) )
+			input.skipWhitespaces( remaining ) ;
+			
+		/*
+		 * Here we can either:
+		 *  - find another attribute name
+		 *  - or stop this opening mark-up (on a '>')
+		 *  - or stop and close this opening mark-up (on a '/>'), in the case
+		 * of a solo tag (ex: '<temperature value="23.5" />')
+		 *
+		 */
+		if ( remaining == XML::Slash )
+		{
+		
+			// We read the '/' of a supposed solo tag, checking next is '>'.
+			remaining = input.readUint8() ;
+			
+			if ( remaining != HigherThan )
+				throw XMLParserException( "XMLParser::handleNextElement: "
+					"expecting ending '/>' for solo tag '" + markupName 
+				+ "', found '/" + Ceylan::toString( remaining ) + "'." ) ;
+			
+			soloTagToClose = true ;
+				
+		}
+		else if ( remaining != XML::HigherThan )
 		{
 			
 			// No, it was a whitespace, looking for any markup attributes:
 			string restOfMarkup ;
-			while ( ( remaining = input.readUint8() ) != XML::HigherThan )
+			
+			do
+			{
+			
 				restOfMarkup += remaining ;
+			
+			}
+			while ( ( remaining = input.readUint8() ) != XML::HigherThan ) ;
 			
 			ParseAttributeSequence( restOfMarkup, newMarkup->getAttributes() ) ;
 			
@@ -665,6 +701,7 @@ void XMLParser::handleNextElement( System::InputStream & input,
 				+ encodeToHTML( newMarkup->toString() ) + "'." ) ;
 			
 		} // else: we stop on a '>': no attribute to retrieve.
+		
 		
 		// Creating now the tree node containing that markup:
 		XMLParser::XMLTree * newNode = new XMLParser::XMLTree( *newMarkup ) ;
@@ -684,6 +721,40 @@ void XMLParser::handleNextElement( System::InputStream & input,
 			setXMLTree( *newNode ) ;
 			currentTree = _parsedTree ;
 		}	
+		
+		if ( soloTagToClose )
+		{
+		
+			/* 
+			 * Here we close the mark-up immediately after having opened it:
+			 *
+			 * Note: replicated from the next ClosingMarkup section.
+			 *
+			 */
+
+			DISPLAY_DEBUG_XML( "XMLParser::handleNextElement: "
+				"closing solo-tag based markup '" + markupName 
+				+ "' as expected." ) ;
+		
+			markupStack.pop() ;
+
+			// Everything is parsed? (most unlikely)
+			if ( markupStack.empty() )
+				return ;
+		
+			// New current tree is the father:
+			XMLTree * tempTree = _parsedTree->getFather( *currentTree ) ;
+		
+			if ( tempTree == 0 )
+				throw XMLParserException( "XMLParser::handleNextElement: "
+					"no father found for current tree '" 
+					+ currentTree->toString()
+					+ "' in parsed tree: '" + _parsedTree->toString() + "'." ) ;
+		
+			currentTree = tempTree	;
+		
+			// Already at the end of the mark-up
+		}
 			
 	}
 	else 
