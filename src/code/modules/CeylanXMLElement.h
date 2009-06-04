@@ -54,7 +54,7 @@ namespace Ceylan
 		 * failed.
 		 *
 		 */
-		class CEYLAN_DLL XMLElementException: public XMLException
+		class CEYLAN_DLL XMLElementException : public XMLException
 		{
 	
 			public:
@@ -111,7 +111,7 @@ namespace Ceylan
 				 * @throw SerializationException if the operation failed.
 				 *
 				 */
-				virtual void saveTo( System::OutputStream & output ) const ;
+				virtual void saveTo( System::OutputStream & output ) const = 0 ;
 				
 				 
 				 
@@ -147,8 +147,10 @@ namespace Ceylan
 		
 		
 		
+		
 		/// Various XML elements accept XML visitors.
 		class XMLVisitor ;
+		
 		
 		
 		
@@ -245,6 +247,22 @@ namespace Ceylan
 				
 				
 				/**
+				 * Returns the value of the attribute, specified by its name.
+				 *
+				 * @param name the attribute name.
+				 *
+				 * @return the value associated with the attribute name.
+				 *
+				 * @throw XMLElementException if no such attribute could be
+				 * found.
+				 *
+				 */
+				virtual AttributeValue getExistingAttribute( 
+					const AttributeName & name ) const ;
+					
+				
+				
+				/**
 				 * Adds specified name-value pair as an attribute of this
 				 * markup.
 				 *
@@ -277,10 +295,6 @@ namespace Ceylan
 				
 				// Serializable section.
 
-
-
-				// The saveTo method is inherited from XMLElement as is .
-
 			
 			
 				/**
@@ -308,8 +322,24 @@ namespace Ceylan
 				 */
 				virtual void accept( Visitor & visitor ) ;
 
+					
+					
+				/**
+				 * Saves the instance state to specified stream.
+				 *
+				 * @param output the output stream to which the state will be
+				 * written.
+				 *
+				 * @throw SerializationException if the operation failed.
+				 *
+				 * @note The toString is not used as they do not serve the
+				 * same purpose, and differ in terms of encoding.
+				 *
+				 */
+				virtual void saveTo( System::OutputStream & output ) const  ;
 
-
+					
+					
 				/**
 				 * Returns a user-friendly description of the state of this
 				 * object.
@@ -385,13 +415,15 @@ namespace Ceylan
 
 
 		
+		
+		
 		/**
 		 * Describes a XML text.
 		 *
 		 * A text is an eligible content for a markup.
 		 *
 		 */
-		class CEYLAN_DLL XMLText: public XMLElement
+		class CEYLAN_DLL XMLText : public XMLElement
 		{
 
 			public:
@@ -454,8 +486,20 @@ namespace Ceylan
 
 
 
-				// The saveTo method is inherited from XMLElement as is .
-				
+				/**
+				 * Saves the instance state to specified stream.
+				 *
+				 * @param output the output stream to which the state will be
+				 * written.
+				 *
+				 * @throw SerializationException if the operation failed.
+				 *
+				 * @note The toString is not used as they do not serve the
+				 * same purpose, and differ in terms of encoding.
+				 *
+				 */
+				virtual void saveTo( System::OutputStream & output ) const  ;
+			
 			
 			
 				/**
