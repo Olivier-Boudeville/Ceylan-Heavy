@@ -96,6 +96,7 @@ const Ceylan::Latin1Char LibfatFileSystemManager::Separator = '/'  ;
  *
  */
 				
+				
 
 bool LibfatFileSystemManager::existsAsEntry( const string & entryPath ) const
 {
@@ -138,8 +139,7 @@ void LibfatFileSystemManager::createSymbolicLink(
 
 
 
-time_t LibfatFileSystemManager::getEntryChangeTime( 
-	const string & entryPath )
+time_t LibfatFileSystemManager::getEntryChangeTime( const string & entryPath )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -844,6 +844,7 @@ void LibfatFileSystemManager::RemoveLibfatFileSystemManager()
 		
 		
 	}
+	
 }
 
 
@@ -890,7 +891,10 @@ LibfatFileSystemManager::LibfatFileSystemManager() :
 LibfatFileSystemManager::~LibfatFileSystemManager() throw()
 {
 
-	// Nothing special to switch off this filesystem.
+	if ( _LibfatFileSystemManager == this )
+		_LibfatFileSystemManager = 0 ;
+		
+	// Nothing else to switch off this filesystem.
 	
 }
 
