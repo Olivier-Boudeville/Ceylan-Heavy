@@ -86,14 +86,6 @@ XMLElement::~XMLElement() throw()
 
 
 
-void XMLElement::saveTo( System::OutputStream & output ) const	
-{
-
-	output.write( toString() ) ;
-
-}
-
-
 
 
 
@@ -165,6 +157,21 @@ string XMLMarkup::getAttribute( const string & name ) const
 
 
 
+string XMLMarkup::getExistingAttribute( const string & name ) const
+{
+
+	map<string,string>::const_iterator it = _attributes.find( name ) ;
+	
+	if ( it != _attributes.end() )
+		return (*it).second ;	
+	else
+		throw XMLElementException( "XMLMarkup::getExistingAttribute failed: "
+			"no attribute '" + name + "' defined." ) ; 
+	
+}
+
+
+
 void XMLMarkup::setAttribute( const string & name, const string & value )
 {
 
@@ -186,6 +193,9 @@ AttributeMap & XMLMarkup::getAttributes()
 void XMLMarkup::loadFrom( System::InputStream & input ) 
 {
 
+	throw SerializationException( "XMLMarkup::loadFrom: "
+		"not implemented yet." ) ;
+		
 }
 
 
@@ -206,6 +216,24 @@ void XMLMarkup::accept( Visitor & visitor )
 
 
 
+void XMLMarkup::saveTo( System::OutputStream & output ) const	
+{
+
+	string res = "<" + _name ;
+	
+	for ( map<string,string>::const_iterator it = _attributes.begin();
+			it != _attributes.end(); it++ )
+		res += ' ' + (*it).first + "=\"" + (*it).second + '"' ;
+	
+	res += ">" ;
+	
+	// No other encoding needed:
+	output.write( res ) ;
+
+}
+
+
+
 const string XMLMarkup::toString( Ceylan::VerbosityLevels level ) const
 {
 
@@ -214,8 +242,14 @@ const string XMLMarkup::toString( Ceylan::VerbosityLevels level ) const
 	for ( map<string,string>::const_iterator it = _attributes.begin();
 			it != _attributes.end(); it++ )
 		res += ' ' + (*it).first + "=\"" + (*it).second + '"' ;
-		
-	return res + ">" ;
+	
+	res += ">" ;
+
+	// Avoid having mark-ups messing with the HTML encoding:
+	if ( TextDisplayable::GetOutputFormat() == TextDisplayable::html )
+		return encodeToHTML( res ) ;
+	else	
+		return res ;
 	
 }
 
@@ -223,7 +257,10 @@ const string XMLMarkup::toString( Ceylan::VerbosityLevels level ) const
 
 
 
+
+
 // XMLText section.
+
 
 
 
@@ -271,6 +308,9 @@ void XMLText::setText( const string & newText )
 void XMLText::loadFrom( System::InputStream & input ) 
 {
 
+	throw SerializationException( "XMLText::loadFrom: "
+		"not implemented yet." ) ;
+
 }
 
 
@@ -287,6 +327,15 @@ void XMLText::accept( Visitor & visitor )
 			
 	actualVisitor->visit( *this ) ;
 	
+}
+
+
+
+void XMLText::saveTo( System::OutputStream & output ) const	
+{
+
+	output.write( _text ) ;
+
 }
 
 
