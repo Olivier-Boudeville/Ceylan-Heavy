@@ -18,13 +18,16 @@
 
 
 display_usage() ->
-    io:format("Usage: resource_indexer.sh [-scan_dir A_PATH] [-index_basename A_PREFIX]\n"
+    io:format("Usage: resource_indexer.sh [-scan_dir A_PATH] "
+		"[-index_basename A_PREFIX]\n"
 		"Index all resources from scan directory, "
 		"which is by default the current directory.\n"
 		"  Options are:\n"
 		"     -scan_dir A_PATH: scans from the A_PATH directory"
-		"     -output_dir A_PATH: directory where to generate XML and header files"
-		"     -index_basename A_PREFIX: uses that prefix for generated XML and header files").
+		"     -output_dir A_PATH: directory where to generate XML "
+		"and header files"
+		"     -index_basename A_PREFIX: uses that prefix for "
+		"generated XML and header files").
 
 
 
@@ -149,10 +152,15 @@ manage_output_directory() ->
 
 
 
-% Returns an atom describing the type of specified file.
-% General content types (ex: 'audible') have to be defined instead of more
-% precise ones (ex: 'sound', 'music') as a given extension (ex: ".mp3") can 
-% be used in several contexts (ex: for musics or for sounds).
+% Returns an atom describing the type of the specified file, based on its
+% extension.
+% This extension does not reflect its encoding (ex: no '.wav' or '.ogg'), as
+% a given encoding can be used in different contexts (ex: as a sound or as a
+% music), and as the actual encoding is generally automatically determined by
+% the back-end (ex: SDL_mixer) based on the file content rather than based on
+% its extension.
+% Therefore we have usage-based extensions (ex: '.music', '.sound') rather
+% than encoding-based extensions.
 get_content_type( Filename ) ->
 	case filename:extension( Filename ) of
 	
@@ -162,27 +170,18 @@ get_content_type( Filename ) ->
 		".data" ->
 			data;
 			
-		".png" ->
-			image;
+		".sound" ->
+			sound;
 			
-		".jpeg" ->
-			image;
+		".music" ->
+			music;
 
-		".jpg" ->
+		".image" ->
 			image;
 			
-		".ttf" ->
-			font;
-			
-		".mp3" ->
-			audible;
-			
-		".ogg" ->
-			audible;
-
-		".wav" ->
-			audible;
-				
+		".ttf_font" ->
+			ttf_font;
+							
 		_Other->
 			unknown
 			
@@ -200,7 +199,14 @@ create_entries_from( [], Entries, _CurrentId ) ->
 create_entries_from( [Filename|T], Entries, CurrentId ) ->
 	NewEntry = #file_entry
 	{
-		base_path = filename:dirname(Filename),
+		% We do not want any './' in paths, as PhysicsFS finds them insecure:
+		base_path = case filename:dirname(Filename) of 
+			"." ->
+				"" ;
+				
+			Other ->
+				Other	
+		end,		
 		file_name = filename:basename(Filename),
 		variable_name = file_utils:path_to_variable_name(Filename),
 		content_type = get_content_type(Filename),
@@ -220,7 +226,8 @@ write_resources_as_xml( XMLTargetFilename, FileEntries ) ->
 	
 	
 write_xml_file_entries_header( File ) ->
-	io:format( File, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>~n", [] ),
+	% Latin-1 with euro:
+	io:format( File, "<?xml version=\"1.0\" encoding=\"ISO-8859-15\"?>~n", [] ),
 	io:format( File, "<resource_list>~n~n", [] ).
 
 	 
@@ -230,13 +237,16 @@ write_xml_file_entries( _File, [] ) ->
 	
 write_xml_file_entries( File, [H|T] ) ->
 	io:format( File, "  <resource id=\"~B\">~n", [H#file_entry.resource_id] ),
-	%io:format( File, "    <base_path=\"~s\">~n", [H#file_entry.base_path] ),
-	%io:format( File, "    <file_name=\"~s\">~n", [H#file_entry.file_name] ),
-	io:format( File, "    <resource_path=\"~s\">~n", 
-		[filename:join(H#file_entry.base_path,H#file_entry.file_name)] ),
-	%io:format( File, "    <variable_name=\"~s\">~n",
+	%io:format( File, "    <base_path>~s</base_path>~n",
+	% [H#file_entry.base_path] ),
+	%io:format( File, "    <file_name>~s</file_name>~n",
+	% [H#file_entry.file_name] ),
+	% We *need* to use our join, not the default one:
+	io:format( File, "    <resource_path>~s</resource_path>~n", 
+		[ file_utils:join( H#file_entry.base_path, H#file_entry.file_name) ] ),
+	%io:format( File, "    <variable_name>~s</variable_name>~n",
 	%	[H#file_entry.variable_name] ),
-	io:format( File, "    <content_type=\"~w\">~n", 
+	io:format( File, "    <content_type>~w</content_type>~n", 
 		[H#file_entry.content_type] ),
 	io:format( File, "  </resource>~n~n", [] ),
 	write_xml_file_entries( File, T ).
