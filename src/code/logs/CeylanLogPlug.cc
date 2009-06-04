@@ -797,7 +797,8 @@ void LogPlug::error( const string & message, LevelOfDetail levelOfDetail )
 	 *
 	 */
 	if ( message != "Stopping channel." )
-		std::cerr << "[error] " << message << std::endl ;
+		std::cerr << std::endl << "[error] " << message << std::endl 
+			<< std::endl ;
 	
 }
 
@@ -824,7 +825,8 @@ void LogPlug::fatal( const string & message, LevelOfDetail levelOfDetail )
 	 *
 	 */
 	if ( message != "Stopping channel." )
-		std::cerr << "[fatal] " << message << std::endl ;
+		std::cerr << std::endl << "[fatal] " << message << std::endl 
+			<< std::endl ;
 	
 }
 
