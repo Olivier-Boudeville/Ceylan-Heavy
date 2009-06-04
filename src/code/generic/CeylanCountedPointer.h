@@ -69,9 +69,28 @@
 //#define CEYLAN_COUNTED_POINTER_USE_COPY_ON_WRITE 1
 
 
+// Set to 1 if wanting refcount-related debug displays:
+#define CEYLAN_COUNTED_POINTER_DEBUG 1
+
+
+#ifdef CEYLAN_COUNTED_POINTER_DEBUG
+
+	#include <iostream>
+
+	#define CEYLAN_DISPLAY_REFCOUNT(message) std::cout << "[CountedPointer] " << message << std::endl ;
+
+#else // CEYLAN_COUNTED_POINTER_DEBUG
+
+	#define CEYLAN_DISPLAY_REFCOUNT(message)
+
+#endif // CEYLAN_COUNTED_POINTER_DEBUG
+
+
+
 
 namespace Ceylan
 {
+
 
 
 	/// The reference count type.
@@ -445,6 +464,9 @@ namespace Ceylan
                  _resourcePointer( resourcePointer ),
                  _refCount( initialCount )
              {
+			
+				CEYLAN_DISPLAY_REFCOUNT( 
+					"after referent construction, refcount = " << _refCount ) ;
 			 
              }
 
@@ -517,6 +539,9 @@ namespace Ceylan
 			
             ( _referent = refPointer )->_refCount++ ;
 			
+			CEYLAN_DISPLAY_REFCOUNT( "after setReferent, refcount = " 
+				<< _referent->_refCount ) ;
+				
         }
 
 
@@ -534,10 +559,19 @@ namespace Ceylan
             if ( --_referent->_refCount == 0 )
 			{
 			
+				CEYLAN_DISPLAY_REFCOUNT( "after release, refcount is null, "
+					"deallocating resource" ) ;
+					
 				// Will trigger the resource deletion too:
                 delete _referent ;
 				_referent = 0 ;
 				
+			}
+			else
+			{
+			
+				CEYLAN_DISPLAY_REFCOUNT( "after release, refcount = " 
+					<< _referent->_refCount ) ;
 			}
 			
         }
