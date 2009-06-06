@@ -458,6 +458,8 @@ namespace Ceylan
 	 * Converts, if possible, a string containing an integer number into
 	 * that number.
 	 *
+	 * @throw Ceylan::Exception if the conversion failed.
+	 *
 	 */
     CEYLAN_DLL int stringToUnsignedLong( const std::string & numericalString ) ;
 		
@@ -467,6 +469,7 @@ namespace Ceylan
 
 	
 }
+
 
 
 #endif // CEYLAN_OPERATORS_H_
