@@ -199,7 +199,7 @@ namespace Ceylan
 			/**
 			 * Copy constructor.
 			 *
-			 * The two instances of counted pointer will refer the same
+			 * The two instances of counted pointer will refer to the same
 			 * referent.
 			 *
 			 */
