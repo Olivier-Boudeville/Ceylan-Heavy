@@ -134,7 +134,7 @@ namespace Ceylan
 		
 			/**
 			 * Puts specified resource in cache, associated with specified key,
-			 * and takes ownership  of it.
+			 * and takes ownership of it.
 			 * 
 			 * The basic Resource manager takes ownership of all the supplied
 			 * resources and will perform their deleting only during its own
@@ -367,7 +367,7 @@ namespace Ceylan
 	{
 	
 		for ( typename std::map<Key, const Resource *>::const_iterator it =
-			_entries.begin() ; it != _entries.end(); it++ )
+			_entries.begin(); it != _entries.end(); it++ )
 		{
 			delete (*it).second ;
 		}
@@ -423,12 +423,14 @@ namespace Ceylan
 		std::list<std::string> entries ;
 			
 		for ( typename std::map<Key, const Resource *>::const_iterator it =
-			_entries.begin() ; it != _entries.end(); it++ )
+			_entries.begin(); it != _entries.end(); it++ )
 		{
+		
 			count++ ;
 			entries.push_back( "[Entry #" + Ceylan::toString( count ) 
 				+ "] resource description = '"	
 				+ (*it).second->toString( Ceylan::low )	+ "'" ) ; 
+				
 		}	
 		
 		return res + Ceylan::formatStringList( entries ) ;
@@ -437,6 +439,7 @@ namespace Ceylan
 	
 	
 }
+
 
 
 #endif // CEYLAN_BASIC_RESOURCE_MANAGER_H_
