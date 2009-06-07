@@ -24,26 +24,26 @@ marshalled_client_test_name="testCeylanClientStream"
 multiplexed_lw_protocol_server_test_name="testCeylanMultiLwPtclSrv"
 multiplexed_lw_protocol_client_test_name="testCeylanProtocolClient"
 
-if [ "$on_cygwin" -eq "0" ] ; then
+if [ $on_cygwin -eq 0 ] ; then
 
-marshalled_server_test_exec="${TEST_ROOT}/$m/$m-${marshalled_server_test_name}.exe"
-marshalled_client_test_exec="${TEST_ROOT}/network/network-${marshalled_client_test_name}.exe"
-multiplexed_lw_protocol_server_test_exec="${TEST_ROOT}/$m/$m-${multiplexed_lw_protocol_server_test_name}.exe"
-multiplexed_lw_protocol_client_test_exec="${TEST_ROOT}/$m/$m-${multiplexed_lw_protocol_client_test_name}.exe"
+marshalled_server_test_exec="${test_root}/$m/$m-${marshalled_server_test_name}.exe"
+marshalled_client_test_exec="${test_root}/network/network-${marshalled_client_test_name}.exe"
+multiplexed_lw_protocol_server_test_exec="${test_root}/$m/$m-${multiplexed_lw_protocol_server_test_name}.exe"
+multiplexed_lw_protocol_client_test_exec="${test_root}/$m/$m-${multiplexed_lw_protocol_client_test_name}.exe"
 
 else
 
-marshalled_server_test_exec="${TEST_ROOT}/$m/${marshalled_server_test_name}.exe"
-marshalled_client_test_exec="${TEST_ROOT}/network/${marshalled_client_test_name}.exe"
-multiplexed_lw_protocol_server_test_exec="${TEST_ROOT}/$m/${multiplexed_lw_protocol_server_test_name}.exe"
-multiplexed_lw_protocol_client_test_exec="${TEST_ROOT}/$m/${multiplexed_lw_protocol_client_test_name}.exe"
+marshalled_server_test_exec="${test_root}/$m/${marshalled_server_test_name}.exe"
+marshalled_client_test_exec="${test_root}/network/${marshalled_client_test_name}.exe"
+multiplexed_lw_protocol_server_test_exec="${test_root}/$m/${multiplexed_lw_protocol_server_test_name}.exe"
+multiplexed_lw_protocol_client_test_exec="${test_root}/$m/${multiplexed_lw_protocol_client_test_name}.exe"
 
 fi
 
 
 # Have to be excluded from automatic selection since must be managed
 # specifically here:
-EXCLUDED_TESTS="${marshalled_server_test_name} ${multiplexed_lw_protocol_server_test_name} ${multiplexed_lw_protocol_client_test_name}"
+excluded_tests="${marshalled_server_test_name} ${multiplexed_lw_protocol_server_test_name} ${multiplexed_lw_protocol_client_test_name}"
 
 
 
@@ -56,15 +56,15 @@ check_no_ceylan_server_running
 
 DEBUG_INTERNAL "Will launch the server"
 t=${marshalled_server_test_exec}
-if [ "$is_batch" = "0" ] ; then
+if [ $is_batch -eq 0 ] ; then
 	echo "
 	
-	########### Running now $t" >>${TESTLOGFILE}
-	$t --batch ${network_option} 1>>${TESTLOGFILE} 2>&1 &
-	SERVER_PID="$!"
+	########### Running now $t" >>${test_log_file}
+	$t --batch ${network_option} 1>>${test_log_file} 2>&1 &
+	server_pid=$!
 else
 	$t --interactive ${network_option} &
-	SERVER_PID="$!"
+	server_pid=$!
 fi			
 
 
@@ -79,8 +79,8 @@ run_test ${marshalled_client_test_name} ${marshalled_client_test_exec}
 
 DEBUG_INTERNAL "Wait for the server"
 # Now inspect the server result:
-wait ${SERVER_PID} 
-return_code="$?"
+wait ${server_pid} 
+return_code=$?
 DEBUG_INTERNAL "Server return code is $return_code"
 
 display_launching ${marshalled_server_test_name}
@@ -101,15 +101,15 @@ check_no_ceylan_server_running
 
 DEBUG_INTERNAL "Will launch the server"
 t=${multiplexed_lw_protocol_server_test_exec}
-if [ "$is_batch" = "0" ] ; then
+if [ $is_batch -eq 0 ] ; then
 	echo "
 	
-	########### Running now $t" >>${TESTLOGFILE}
-	$t --batch ${network_option} 1>>${TESTLOGFILE} 2>&1 &
-	SERVER_PID="$!"
+	########### Running now $t" >>${test_log_file}
+	$t --batch ${network_option} 1>>${test_log_file} 2>&1 &
+	server_pid=$!
 else
 	$t --interactive ${network_option} &
-	SERVER_PID="$!"
+	server_pid=$!
 fi			
 
 
@@ -124,8 +124,8 @@ run_test ${multiplexed_lw_protocol_client_test_name} ${multiplexed_lw_protocol_c
 
 DEBUG_INTERNAL "Wait for the server"
 # Now inspect the server result:
-wait ${SERVER_PID} 
-return_code="$?"
+wait ${server_pid} 
+return_code=$?
 DEBUG_INTERNAL "Server return code is $return_code"
 
 display_launching ${multiplexed_lw_protocol_server_test_name}
