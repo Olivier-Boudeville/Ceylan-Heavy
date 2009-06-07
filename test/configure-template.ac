@@ -37,8 +37,8 @@ AM_PROG_LIBTOOL
 # Tells the libtool machinery that the package supports DLLs on Windows:
 # (note: if the configure fails here, check your are using indeed a recent
 # version of libtool, like the one installed by LOANI).
-LT_INIT([dlopen win32-dll])
-
+#LT_INIT([dlopen win32-dll])
+LT_INIT([dlopen])
 
 CEYLAN_TEST_DIR="\${prefix}/share/Ceylan-test"
 AC_SUBST(CEYLAN_TEST_DIR)
