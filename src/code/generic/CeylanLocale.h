@@ -235,10 +235,20 @@ namespace Ceylan
 
         protected:
 
+/* 
+ * Takes care of the awful issue of Windows DLL with templates.
+ *
+ * @see Ceylan's developer guide and README-build-for-windows.txt 
+ * to understand it, and to be aware of the associated risks. 
+ * 
+ */
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 
 			/// The list of supported locales.
 			std::list<LocaleCode> _supportedLocales ;
 
+#pragma warning( pop ) 			
 
 			/// The current locale in use.
 			LocaleCode _currentLocale ;

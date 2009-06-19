@@ -1215,11 +1215,21 @@ namespace Ceylan
 	
 				/// Deletes all referenced views.
 				virtual void deleteViews() ;
-				
-	
+					
+/* 
+ * Takes care of the awful issue of Windows DLL with templates.
+ *
+ * @see Ceylan's developer guide and README-build-for-windows.txt 
+ * to understand it, and to be aware of the associated risks. 
+ * 
+ */
+#pragma warning( push )
+#pragma warning( disable : 4251 )
+
 				/// The associated views.
 				std::list<const BaseView *> _views ;
-	
+
+#pragma warning( pop ) 			
 	
 	
 			private:
