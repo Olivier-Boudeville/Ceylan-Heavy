@@ -9,7 +9,7 @@ USAGE="`basename $0` [--interactive]: executes all tests for Ceylan in a row.
 	If the --interactive option is used, tests will not be run in batch mode, and will prompt the user for various inputs. Otherwise only their final result will be output. In all cases their messages will be stored in file ${test_log_file}. The return code of this script will be the number of failed tests (beware to overflow of the return code)"
 
 
-# Please remember, when debugging on UNIX playTests.sh, to execute it from
+# Remember, when debugging on UNIX playTests.sh, to execute it from
 # *installed* version, but to modify the playTests.sh from *source* code, 
 # and to copy back the latter to the former.
 
@@ -24,6 +24,7 @@ if [ $# -ge 2 ] ; then
 	Usage: $USAGE" 1>&2
 	exit 1
 fi	
+
 
 if [ $# -eq 1 ] ; then
 	if [ "$1" != "--interactive" ] ; then
@@ -298,9 +299,9 @@ fi
 
 # Apparently the ping utility provided by Cygwin is not able to send a 
 # given number of packets (neither '-n' nor '-c' is working):
-if [ $is_windows -eq 0 ] ; then
+if [ $use_cygwin -eq 1 ] ; then
 
-	# Test whether we are online (needed for DNS queries):
+	# Not on Cygwin, testing whether we are online (needed for DNS queries):
 	if ${PING} ${PING_OPT} 2 google.com 1>/dev/null 2>&1; then
 		is_online=0
 		network_option="--online"
@@ -315,7 +316,7 @@ if [ $is_windows -eq 0 ] ; then
 
 else
 
-	# Let's suppose that this Windows is connected to the Internet:
+	# Let's suppose that this Cygwin is connected to the Internet:
 	is_online=0
 
 	echo "
@@ -326,11 +327,14 @@ fi
 test_count=0
 error_count=0
 
+
 # Not using Cygwin by default to chain the tests:
 on_cygwin=1
 
+
 # Tells whether link dependencies should be checked in case a test fails:
 check_dependency=1
+
 
 # Special case for tests generated on Windows:
 if [ `uname -s | cut -b1-6` = "CYGWIN" ] ; then
@@ -493,6 +497,9 @@ display_final_stats
 echo "
 End of tests"
 
+
 LTDL_LIBRARY_PATH="$saved_ltdl_library_path"
 
+
 exit $error_count
+
