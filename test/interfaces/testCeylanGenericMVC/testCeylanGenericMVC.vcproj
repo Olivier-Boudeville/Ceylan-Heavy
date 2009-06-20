@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9,00"
 	Name="interfaces-testCeylanGenericMVC"
-	ProjectGUID="{73A40637-5618-4775-B2E5-87D24FA514F2}"
+	ProjectGUID="{0ADBF4A0-169A-44F5-8F35-C6DD6EC7A83A}"
 	RootNamespace="testCeylanGenericMVC"
 	TargetFrameworkVersion="196613"
 	>
