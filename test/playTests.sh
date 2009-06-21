@@ -297,6 +297,7 @@ else
 fi
 
 
+
 # Apparently the ping utility provided by Cygwin is not able to send a 
 # given number of packets (neither '-n' nor '-c' is working):
 if [ $use_cygwin -eq 1 ] ; then
@@ -323,6 +324,8 @@ else
 		Running in online mode, in-depth network testing enabled, supposing a direct connection to the Internet is available."
 
 fi
+
+
 
 test_count=0
 error_count=0
@@ -360,6 +363,7 @@ if [ `uname -s | cut -b1-6` = "CYGWIN" ] ; then
 	
 fi	
 
+
 # This script will automatically run each test of each selected Ceylan module.
 tested_root_modules=`cd ${test_root}; find . -type d | grep -v cross-tests | grep -v tmp | grep -v Debug | grep -v autom4te.cache | grep -v .svn | grep -v '.deps' | grep -v '.libs' | grep -v 'testCeylan'| grep -v '^\.$'`
 
@@ -391,7 +395,7 @@ if [ $is_batch -eq 0 ] ; then
 		Test results established at "`date '+%A, %B %-e, %Y'`"\n\n" > ${test_log_file}
 fi
 
-if [ "$on_cygwin" -eq 0 ] ; then
+if [ $on_cygwin -eq 0 ] ; then
 	echo "
 	
 	Library search path is: PATH='$PATH'" >> ${test_log_file}
