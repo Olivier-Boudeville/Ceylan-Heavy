@@ -1,16 +1,16 @@
 # Bash configuration file.
 
 # Created 2002, June 27.
-# Author : Olivier Boudeville (olivier.boudeville@online.fr)
+# Author: Olivier Boudeville (olivier.boudeville@online.fr)
 
 # This script triggers the Linux-specific part of bash configuration.
 
 
 
-# Compilers section :
+# Compilers section:
 
 
-# Intel C++ compiler :
+# Intel C++ compiler:
 alias icc=/opt/intel/compiler70/ia32/bin/icc
 
 export GCC_DEFAULT_ROOT=/usr/local
@@ -55,35 +55,35 @@ fi
 
 
 # Erlang:
-export ERLANG_ROOT=${LOANI_INSTALLATIONS}/Erlang-R12B-3
+export ERLANG_ROOT=~/Software/Erlang/Erlang-current-install
 export PATH=${ERLANG_ROOT}/bin:${PATH}
 
 
-# Java :
+# Java:
 # (nothing)
 
-# tidy :
+# tidy:
 export PATH=$PATH:/usr/local/Logiciels/tidy/bin
 
-# astyle :
+# astyle:
 export PATH=$PATH:/usr/local/Logiciels/astyle
 
-# Python Imaging Library (PIL) :
+# Python Imaging Library (PIL):
 IMAGING_VERSION=1.1.4
 PIL_ROOT=/usr/local/Logiciels/Imaging-${IMAGING_VERSION}/PIL
 
-# aranor CVS repository :
+# aranor CVS repository:
 export CVSROOT=:ext:$USER@aranor:/var/lib/cvs
 
 
 
-# Linux-specific aliases :
+# Linux-specific aliases:
 
 alias l='ls -aF --color'
 alias ls='ls -F --color'
 alias ll='ls -aF -l --color'
 
-# "cd" keyboard counterparts :
+# "cd" keyboard counterparts:
 alias xs='cd $1'
 alias vf='cd $1'
 
