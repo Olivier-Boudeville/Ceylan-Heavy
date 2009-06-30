@@ -30,6 +30,7 @@
 
 #include "CeylanTypes.h"              // for Uint32
 #include "CeylanTextDisplayable.h"    // for TextDisplayable
+#include "CeylanOperators.h"          // for Ceylan::toString
 
 
 
@@ -133,7 +134,7 @@ namespace Ceylan
 	 * @note Does not deal with circular references.
 	 *
 	 * Another use of this pointer is to hold local resources so that they get
-	 * deallocated whatever happens in the method (return, exceptions, etc.).
+	 * deallocated whatever happens in a method (return, exceptions, etc.).
 	 *
 	 * @example: for a mutex, which is a kind of resource that has to be
 	 * specifically deallocated under such circumstances:
@@ -148,6 +149,11 @@ namespace Ceylan
 	 *      return false ;
 	 * }
 	 * </pre>
+	 *
+	 * The mode of operation is to create for each shared resource any number
+	 * of counter pointer instances, which all share (point to) the same
+	 * referent structure, which is the one tracking the reference count and
+	 * taking care of the life-cycle of that resource.
 	 *
 	 */
 	template< typename T >
@@ -185,7 +191,14 @@ namespace Ceylan
 	        CountedPointer( ElementType * resourcePointer = 0 )
 	        {
 		 
-	            // Speeds default creation for arrays: (stack gets a reference)
+	            /*
+				 * Speeds default creation for arrays (stack gets a reference).
+				 *
+				 * Therefore as soon as a first counter pointer is created, the 
+				 * following static referent will be itself created (and never 
+				 * deallocated).
+				 *
+				 */
 	            static Referent staticRef( /* null pointer */ 0, 
 					/* ref count */ 1 ) ; 
 
@@ -343,7 +356,9 @@ namespace Ceylan
 					
 					std::string res = "Counted pointer keeping track of " 
 						+ Ceylan::toString( _referent->_refCount ) 
-						+ " reference(s) to its wrapped resource" ;
+						+ " reference(s) to its wrapped resource ("
+						+ Ceylan::toString( _referent->_resourcePointer ) 
+						+ ")" ;
 					
 					if ( level == Ceylan::low )
 						return res ;
@@ -437,6 +452,8 @@ namespace Ceylan
 
 
 
+
+
      /// Second: implementation.
 
 
@@ -466,7 +483,9 @@ namespace Ceylan
              {
 			
 				CEYLAN_DISPLAY_REFCOUNT( 
-					"after referent construction, refcount = " << _refCount ) ;
+					"after referent construction for resource pointer "
+					<< Ceylan::toString( _resourcePointer )
+					<< ", refcount = " << _refCount ) ;
 			 
              }
 
@@ -474,6 +493,10 @@ namespace Ceylan
              ~Referent() throw()
              {
 			 
+			 	CEYLAN_DISPLAY_REFCOUNT( 
+					"referent destructor deallocating its resource "
+					<< Ceylan::toString( _resourcePointer ) ) ;
+
 			 	// The actual only place where the wrapped resource is deleted:
                 delete _resourcePointer ;
 				
@@ -540,7 +563,8 @@ namespace Ceylan
             ( _referent = refPointer )->_refCount++ ;
 			
 			CEYLAN_DISPLAY_REFCOUNT( "after setReferent, refcount = " 
-				<< _referent->_refCount ) ;
+				<< _referent->_refCount << " for "
+				<< Ceylan::toString( _referent->_resourcePointer ) ) ;
 				
         }
 
@@ -560,7 +584,8 @@ namespace Ceylan
 			{
 			
 				CEYLAN_DISPLAY_REFCOUNT( "after release, refcount is null, "
-					"deallocating resource" ) ;
+					"deallocating resource "
+					<< Ceylan::toString( _referent->_resourcePointer ) ) ;
 					
 				// Will trigger the resource deletion too:
                 delete _referent ;
@@ -571,7 +596,8 @@ namespace Ceylan
 			{
 			
 				CEYLAN_DISPLAY_REFCOUNT( "after release, refcount = " 
-					<< _referent->_refCount ) ;
+					<< _referent->_refCount << " for " 
+					<< Ceylan::toString( _referent->_resourcePointer ) ) ;
 			}
 			
         }
