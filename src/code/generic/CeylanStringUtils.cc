@@ -760,7 +760,7 @@ std::list<string> Ceylan::splitIntoParagraphs( const string & textToSplit )
 
 
 std::string Ceylan::formatStringList( const list<string> & stringList, 
-	bool surroundByTicks )
+	bool surroundByTicks, Ceylan::Uint8 indentationLevel )
 {
 
 	if ( stringList.empty() )
@@ -789,12 +789,46 @@ std::string Ceylan::formatStringList( const list<string> & stringList,
 		// Raw text:
 		
 		res = '\n' ;  
+		
+		string prefix ;
+		
+		// Two space offset for each indentation level:
+		for ( Ceylan::Uint8 i = 0; i < indentationLevel; i++ )
+			prefix += "  " ;
+			
+		switch ( indentationLevel )
+		{
+		
+			case 1:
+				prefix += '-' ;
+				break ;
+		
+			case 2:
+				prefix += '*' ;
+				break ;
+		
+			case 3:
+				prefix += '.' ;
+				break ;
+				
+			case 4:
+				prefix += '+' ;
+				break ;
+		
+			default:
+				prefix += '-' ;
+				break ;
+				
+		}
+		
+		prefix += " " ;
+		
 		for ( list<string>::const_iterator it = stringList.begin(); 
 				it != stringList.end();	it++ )
 			if ( surroundByTicks )	
-				res += "\t+ '" + ( *it ) + "'\n" ; 	
+				res += prefix + "'" + ( *it ) + "'\n" ; 	
 			else		
-				res += "\t+ " + ( *it ) + '\n' ; 		
+				res += prefix + ( *it ) + '\n' ; 		
 	
 	}
 
