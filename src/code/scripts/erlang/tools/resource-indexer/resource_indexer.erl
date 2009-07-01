@@ -179,9 +179,15 @@ get_content_type( Filename ) ->
 		".image" ->
 			image;
 			
-		".ttf_font" ->
+		".tex2D" ->
+			texture_2D;
+			
+		".tex3D" ->
+			texture_3D;
+
+		".ttf" ->
 			ttf_font;
-							
+										
 		_Other->
 			unknown
 			
