@@ -152,7 +152,7 @@ const Ceylan::LibtoolVersion & Ceylan::GetVersion()
 	catch( const Ceylan::Exception & e )
 	{
 	
-		Ceylan::emergencyShutdown( "Ceylan::GetVersion failed: "
+		throw Ceylan::Exception( "Ceylan::GetVersion failed: " 
 			+ e.toString() ) ;
 			
 	}	
@@ -178,7 +178,7 @@ void Ceylan::parseCommandLineOptions( std::string & readExecutableName,
 
 	readExecutableName = string( argumentVector[0] ) ;
 	
-	for ( Ceylan::Uint16 arg = 1 ; arg < argumentCount; arg++ )
+	for ( Ceylan::Uint16 arg = 1; arg < argumentCount; arg++ )
 		readOptions.push_back( argumentVector[arg] ) ;	
 
 }
