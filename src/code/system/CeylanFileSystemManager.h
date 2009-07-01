@@ -1017,7 +1017,7 @@ namespace Ceylan
 				 *
 				 * @param deallocatePreviousIfAny if true, any previously
                  * existing manager will be deallocated. If false, it would be
-                 * replaced by not deleted.
+                 * replaced but not deleted.
 				 *
 				 */
 				static void SetDefaultFileSystemManager( 
