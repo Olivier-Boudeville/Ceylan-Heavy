@@ -224,6 +224,31 @@ int main( int argc, char * argv[] )
 
 	}
 	
+	
+	/*
+	 * Here the TestCountedPointer instance is expected to be deallocated.
+	 *
+	 * Can be checked by setting CEYLAN_COUNTED_POINTER_DEBUG during the
+	 * build, one should then see in the console after the test something like:
+	 
+[CountedPointer] after referent construction for resource pointer 0, 
+	refcount = 1
+[CountedPointer] after referent construction for resource pointer 0x9ad2f60,
+	refcount = 0
+[CountedPointer] after setReferent, refcount = 1 for 0x9ad2f60
+[CountedPointer] after setReferent, refcount = 2 for 0x9ad2f60
+[CountedPointer] after setReferent, refcount = 3 for 0x9ad2f60
+[CountedPointer] after release, refcount = 2 for 0x9ad2f60
+[CountedPointer] after release, refcount = 1 for 0x9ad2f60
+[CountedPointer] after setReferent, refcount = 2 for 0x9ad2f60
+[CountedPointer] after release, refcount = 1 for 0x9ad2f60
+[CountedPointer] after release, refcount is null, deallocating resource
+	0x9ad2f60
+[CountedPointer] referent destructor deallocating its resource 0x9ad2f60
+
+	 */
+	
+	
     catch ( const Ceylan::Exception & e )
     {
         std::cerr << "Ceylan exception caught: "
