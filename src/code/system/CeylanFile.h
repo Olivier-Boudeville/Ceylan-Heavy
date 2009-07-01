@@ -747,6 +747,11 @@ namespace Ceylan
 				 * @note Ceylan::Holder can be used as well to simplify the
 				 * management of the lifecycle of File instances.
 				 *
+				 * In some cases, depending on the filesystem back-end, 
+				 * opening the same file more than once might result in 
+				 * scrambled reads afterwards (ex: when reading from a
+				 * LZMA-based embedded archive).
+				 *
 				 */
 				static File & Open( const std::string & filename, 
 					OpeningFlag openFlag = OpenToReadBinary ) ;
