@@ -36,6 +36,8 @@
 #include <string>
 
 
+
+
 namespace Ceylan
 {
 
@@ -73,8 +75,10 @@ namespace Ceylan
 	{
 	
 	
+	
 		public:
 		
+			
 			
 			/// Creates a new resource.
 			Resource() ;
@@ -100,6 +104,7 @@ namespace Ceylan
 
 			
 		private:	
+		
 		
 		
 			/**
