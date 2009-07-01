@@ -71,7 +71,7 @@
 
 
 // Set to 1 if wanting refcount-related debug displays:
-#define CEYLAN_COUNTED_POINTER_DEBUG 1
+#define CEYLAN_COUNTED_POINTER_DEBUG 0
 
 
 #ifdef CEYLAN_COUNTED_POINTER_DEBUG
@@ -194,9 +194,10 @@ namespace Ceylan
 	            /*
 				 * Speeds default creation for arrays (stack gets a reference).
 				 *
-				 * Therefore as soon as a first counter pointer is created, the 
-				 * following static referent will be itself created (and never 
-				 * deallocated).
+				 * Therefore, for each class templated with CountedPointer,
+				 * as soon as a first counter pointer is created, the 
+				 * following static referent will be itself created (and 
+				 * deallocated at program ending).
 				 *
 				 */
 	            static Referent staticRef( /* null pointer */ 0, 
