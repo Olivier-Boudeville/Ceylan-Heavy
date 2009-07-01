@@ -839,8 +839,7 @@ std::string Ceylan::formatStringList( const list<string> & stringList,
 
 
 std::string Ceylan::formatStringMap( 
-	const std::map<std::string, std::string> & stringMap, 
-	bool surroundByTicks )
+	const std::map<std::string, std::string> & stringMap, bool surroundByTicks )
 {
 
 	if ( stringMap.empty() )
