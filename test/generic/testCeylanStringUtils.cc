@@ -49,7 +49,9 @@ using namespace Ceylan::Log ;
 int main( int argc, char * argv[] )
 {
 
+
 	LogHolder logger( argc, argv ) ;
+
 
     try
     {
@@ -176,6 +178,10 @@ int main( int argc, char * argv[] )
 		TextDisplayable::SetOutputFormat( TextDisplayable::rawText ) ;
 		LogPlug::info( "Raw formatting gives: "  
 			+ Ceylan::formatStringList( l ) ) ;
+		
+		TextDisplayable::SetOutputFormat( TextDisplayable::rawText ) ;
+		LogPlug::info( "Raw formatting with indentation level 2 gives: "  
+			+ Ceylan::formatStringList( l, /* surroundByTicks */ false, 2 ) ) ;
 		
 		// Restore:
 		TextDisplayable::SetOutputFormat( previous ) ;
