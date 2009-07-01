@@ -72,9 +72,10 @@
 
 // Set to 1 if wanting refcount-related debug displays:
 #define CEYLAN_COUNTED_POINTER_DEBUG 0
+//#define CEYLAN_COUNTED_POINTER_DEBUG 1
 
 
-#ifdef CEYLAN_COUNTED_POINTER_DEBUG
+#if CEYLAN_COUNTED_POINTER_DEBUG
 
 	#include <iostream>
 
