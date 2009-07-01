@@ -50,10 +50,17 @@ namespace Ceylan
 {
 	
 	
+	
 	// Some generic and useful definitions.
 	
 	
-	/// Returns the version of the Ceylan library currently linked.
+	
+	/**
+	 * Returns the version of the Ceylan library currently linked.
+	 *
+	 * @throw Ceylan::Exception if the operation failed.
+	 *
+	 */
 	CEYLAN_DLL const Ceylan::LibtoolVersion & GetVersion() ;
 	
 	
@@ -216,10 +223,8 @@ namespace Ceylan
 	 * @note Call me when run-time abnormal behaviours occurs, such
 	 * as state incoherence, that shows that some code is faulty. 
 	 *
-	 * @note That kind of function is useful, since raising a special
-	 * exception would oblige declaring it everywhere where runtime
-	 * checks are performed, even if that kind of checking is often
-	 * done only in debug mode.
+	 * @note That kind of function is useful in the cases (that should be
+	 * avoided) where exception specifications are used.
 	 *
 	 */
 	CEYLAN_DLL void emergencyShutdown( const std::string & message )
