@@ -46,10 +46,7 @@
  * With the MVC framework, we have Controller -> Model -> View, with '->'
  * meaning "depending on".
  *
- * Therefore a model, in terms of declaration, could depend (only) on its 
- * views. 
- *
- * However, in terms of life-cycle management, having a model know all its
+ * In terms of life-cycle management, having a model know all its
  * MVC-related components (views and controllers) is more convenient, as 
  * when the model determines it should be deallocated, it can manage
  * automatically its related objects (i.e. deallocate its views and 
@@ -60,6 +57,11 @@
  * will pick information from A, thus A may reference B just for life-cycle
  * reasons ('const' will suffice), and B will only call 'const' methods of A
  * to get the informations it needs (hence 'const' should suffice again).
+ *
+ * Therefore A may only reference a generic mother class of B (as A
+ * will not act on it, only maybe have to deallocate it), whereas B needs
+ * to know the actual (specialized) class of A, since it will have to call
+ * (const) methods of it.
  *
  */
  
