@@ -32,6 +32,7 @@
 #include "CeylanTextDisplayable.h"          // for inheritance
 #include "CeylanOperators.h"                // for toString
 #include "CeylanStringUtils.h"              // for formatStringList
+#include "CeylanGenericView.h"              // for BaseView
 
 
 #include <string>
@@ -51,13 +52,16 @@
  * models are defined: 
  *
  *  - a model with no view and no controller: NoViewGenericModel
- *  - a model with a single view and no controller: SingleViewGenericModel<View>
+ *  - a model with a single view and no controller: 
+ *    - templated version: SingleViewGenericModel<View> (often overkill)
+ *    - usually sufficient non-template version: SingleViewModel
  *  - a model with multiple (any number of) views and no controller:
  * MultipleViewGenericModel<View>
  *  - a model with no view and a single controller:
  * SingleControllerNoViewGenericModel<Controller>
+ *  - a model with a single view and a single controller:
+ * SingleControllerSingleViewGenericModel<Controller>
  *
- * 
  */
  
  
@@ -179,7 +183,9 @@ namespace Ceylan
 				virtual void addView( const BaseView & view ) const = 0 ;
 	
 	
-	
+				// No addController defined, not really useful.
+				
+				
 	            /**
 	             * Returns a user-friendly description of the state of 
 				 * this object.
@@ -192,8 +198,7 @@ namespace Ceylan
 	             *
 	             */
 				virtual const std::string toString(
-						Ceylan::VerbosityLevels level = Ceylan::high ) 
-					const ;
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 	
 	
 
@@ -201,6 +206,18 @@ namespace Ceylan
 			private:
 	
 	
+				/*
+				 * No datastructure declared for view(s) nor controller(s), 
+				 * as it depends on the actual specialization of the MVC
+				 * framework.
+				 *
+				 * For example, defining a reference would be enough for a
+				 * single view, for multiple views a list could be more
+				 * appropriate, etc.
+				 *
+				 */
+				 
+				 
 				/**
 				 * Copy constructor made private to ensure that it will never be
 				 * called.
@@ -329,6 +346,8 @@ namespace Ceylan
 		 * most, if not all, models do not really need to know the actual class
 		 * of the views they are associated with.
 		 *
+		 * @see the SingleViewModel non-templated class instead.
+		 *
 		 */
 
 
@@ -350,7 +369,7 @@ namespace Ceylan
 		 *
 		 */
 		template <typename ActualView> 
-		class SingleViewGenericModel: public BaseModel
+		class SingleViewGenericModel : public BaseModel
 		{
 	
 			public:
@@ -372,6 +391,8 @@ namespace Ceylan
 				/**
 				 * Creates a new generic model, which will be linked afterwards
 				 * to a view and to no controller.
+				 *
+				 * @see setView
 				 *
 				 * @note Generally used because of the chicken-and-egg
 				 * problem: on creation the view needs its model, so this view
@@ -395,9 +416,6 @@ namespace Ceylan
 				/**
 				 * Sets the unique view this model should have.
 				 *
-				 * If a view was already registered, it will be deallocated
-				 * first.
-				 *
 				 * @param view the view, whose ownership is taken.
 				 *
 				 * @throw GenericMVCException if a view was already registered.
@@ -410,9 +428,6 @@ namespace Ceylan
 				/**
 				 * Sets the unique view this model should have.
 				 *
-				 * If a view was already registered, it will be deallocated
-				 * first.
-				 *
 				 * @param view the view, whose ownership is taken.
 				 *
 				 * @throw GenericMVCException if a view was already registered.
@@ -421,10 +436,11 @@ namespace Ceylan
 				 * a view is deemed not to change the state of the model
 				 * itself; moreover if it was non-const, then views (which
 				 * have const references to models) could not auto-register
-				 * themselves to the models).
+				 * themselves to the models.
 				 *
 				 * @note The use of the setView method should be preferred,
-				 * as its name is clearer than this inherited one.
+				 * as its name is clearer than this one, inherited from
+				 * BaseModel.
 				 *
 				 */
 				virtual void addView( const ActualView & view ) const ;
@@ -518,11 +534,11 @@ namespace Ceylan
 		SingleViewGenericModel<ActualView>::~SingleViewGenericModel() throw()
 		{
 	
-			if ( _view != 0 )
+			if ( this->_view != 0 )
 			{
 			
 				// View owned here:
-				delete _view ;
+				delete this->_view ;
 				
 			}
 			
@@ -547,7 +563,7 @@ namespace Ceylan
 			const 
 		{
 		
-			if ( _view != 0 )
+			if ( this->_view != 0 )
 				throw GenericMVCException( 
 					"SingleViewGenericModel<ActualView>::addView failed: "
 					"a view was already registered." ) ;
@@ -566,7 +582,7 @@ namespace Ceylan
 			Ceylan::VerbosityLevels level ) const 
 		{
 	
-			if ( _view != 0 )
+			if ( this->_view != 0 )
 			{
 			
 				/*
@@ -580,7 +596,7 @@ namespace Ceylan
 						"owning a view" ;
 				else
 					return "Single-view controller-less generic model "
-						"associated to " + _view->toString( level ) ;
+						"associated to " + this->_view->toString( level ) ;
 
 			}		
 			else
@@ -623,7 +639,7 @@ namespace Ceylan
 		 * @see testCeylanGenericMVC.cc for examples.
 		 *
 		 */
-		class CEYLAN_DLL SingleViewModel: public BaseModel
+		class CEYLAN_DLL SingleViewModel : public BaseModel
 		{
 	
 			public:
@@ -670,9 +686,6 @@ namespace Ceylan
 				/**
 				 * Sets the unique view this model should have.
 				 *
-				 * If a view was already registered, it will be deallocated
-				 * first.
-				 *
 				 * @param view the view, whose ownership is taken.
 				 *
 				 * @throw GenericMVCException if a view was already registered.
@@ -691,9 +704,6 @@ namespace Ceylan
 				/**
 				 * Sets the unique view this model should have.
 				 *
-				 * If a view was already registered, it will be deallocated
-				 * first.
-				 *
 				 * @param view the view, whose ownership is taken.
 				 *
 				 * @throw GenericMVCException if a view was already registered.
@@ -705,7 +715,8 @@ namespace Ceylan
 				 * themselves to the models).
 				 *
 				 * @note The use of the setView method should be preferred,
-				 * as its name is clearer than this inherited one.
+				 * as its name is clearer than this one, inherited from
+				 * BaseModel.
 				 *
 				 */
 				virtual void addView( const BaseView & view ) const ;
@@ -794,7 +805,7 @@ namespace Ceylan
 		 *
 		 */
 		template <typename ActualView> 
-		class MultipleViewGenericModel: public BaseModel
+		class MultipleViewGenericModel : public BaseModel
 		{
 	
 	
@@ -861,7 +872,7 @@ namespace Ceylan
 				 * @param views the list of views; the list is copied 
 				 * (ownership not taken), but the ownership of views is taken.
 				 *
-				 * @throw GenericMVCException if at least a view was already
+				 * @throw GenericMVCException if at least one view was already
 				 * registered.
 				 *
 				 */
@@ -904,7 +915,9 @@ namespace Ceylan
 
 
 
+
 			protected:
+	
 	
 	
 				/// Deletes all referenced views.
@@ -913,6 +926,7 @@ namespace Ceylan
 	
 				/// The associated views.
 				std::list<const ActualView *> _views ;
+	
 	
 	
 	
@@ -954,7 +968,7 @@ namespace Ceylan
 			const ActualView & view )
 		{
 
-			_views.push_back( view ) ;
+			this->_views.push_back( view ) ;
 			
 		}
 	
@@ -964,7 +978,7 @@ namespace Ceylan
 			const std::list<const ActualView *> & views )
 		{
 
-			_views = views ;
+			this->_views = views ;
 			
 		}
 	
@@ -994,36 +1008,34 @@ namespace Ceylan
 			const std::list<const ActualView *> & views )
 		{
 			
-			if ( ! _views.empty() )
+			if ( ! this->_views.empty() )
 				throw GenericMVCException(
 					"MultipleViewGenericModel<ActualView>::setViews failed: "
 					"there was at least one view registered." ) ;
 					
-			_views = views ;
+			this->_views = views ;
 		
 		}
 			
 	
 	
 		template <typename ActualView>
-		void
-		MultipleViewGenericModel<ActualView>::addView( const ActualView & view )
-			const 
+		void MultipleViewGenericModel<ActualView>::addView( 
+			const ActualView & view ) const 
 		{
 
-			_views.push_back( & view ) ;
+			this->_views.push_back( & view ) ;
 		
 		}
 		
 				
 		
 		template <typename ActualView>
-		const std::string
-		MultipleViewGenericModel<ActualView>::toString(
+		const std::string MultipleViewGenericModel<ActualView>::toString(
 			Ceylan::VerbosityLevels level ) const 
 		{
 	
-			if ( _views.empty() )
+			if ( this->_views.empty() )
 				return "Multiple-view controller-less generic model "
 					"not associated to any view" ;
 			
@@ -1041,7 +1053,7 @@ namespace Ceylan
 			std::list<std::string> res ;
 			
 			for ( typename std::list<const ActualView *>::const_iterator it =
-				_views.begin(); it != _views.end() ; it++ )
+				this->_views.begin(); it != this->_views.end() ; it++ )
 			{
 			
 				res.push_back( (*it)->toString( level ) ) ;
@@ -1061,14 +1073,14 @@ namespace Ceylan
 		{
 
 			for ( typename std::list<const ActualView *>::const_iterator it =
-				_views.begin(); it != _views.end(); it++ )
+				this->_views.begin(); it != this->_views.end(); it++ )
 			{
 			
 				delete *it ;
 				
 			}
 			
-			_views.clear() ;
+			this->_views.clear() ;
 		
 		}
 		
@@ -1099,7 +1111,7 @@ namespace Ceylan
 		 * @see testCeylanGenericMVC.cc for examples.
 		 *
 		 */
-		class CEYLAN_DLL MultipleViewModel: public BaseModel
+		class CEYLAN_DLL MultipleViewModel : public BaseModel
 		{
 	
 	
@@ -1281,7 +1293,7 @@ namespace Ceylan
 		 *
 		 */
 		template <typename ActualController>
-		class SingleControllerNoViewGenericModel: public BaseModel
+		class SingleControllerNoViewGenericModel : public BaseModel
 		{
 	
 	
@@ -1327,8 +1339,8 @@ namespace Ceylan
 				 */
 				virtual ~SingleControllerNoViewGenericModel() throw() ;
 	
-	
-	
+
+
 	            /**
 	             * Returns a user-friendly description of the state of
 				 * this object.
@@ -1353,7 +1365,7 @@ namespace Ceylan
 				 *
 				 * @note A model should a priori never change its controller(s),
 				 * (the model is expected to retrieve information directly
-				 * from their model), hence the const reference.
+				 * from its model), hence the const reference.
 				 *
 				 */
 				const ActualController * _controller ;
@@ -1418,11 +1430,11 @@ namespace Ceylan
 		SingleControllerNoViewGenericModel<ActualController>::~SingleControllerNoViewGenericModel() throw()
 		{
 	
-			if ( _controller != 0 )
+			if ( this->controller != 0 )
 			{
 			
 				// Controller owned here:
-				delete _controller ;
+				delete this->_controller ;
 				
 			}
 			
@@ -1436,7 +1448,7 @@ namespace Ceylan
 			Ceylan::VerbosityLevels level ) const 
 		{
 	
-			if ( _controller != 0 )
+			if ( this->_controller != 0 )
 			{
 			
 				/*
@@ -1447,15 +1459,363 @@ namespace Ceylan
 
 				if ( level == Ceylan::low )
 					return "Single-controller view-less generic model "
-						"owning a view" ;
+						"owning a controller" ;
 				else
 					return "Single-controller view-less generic model "
-						"associated to " + _controller->toString( level ) ;
+						"associated to " 
+						+ this->_controller->toString( level ) ;
 
 			}		
 			else
 				return "Single-controller view-less generic model "
 					"not associated to any controller" ;
+	
+		}
+	
+	
+
+
+		// SingleControllerSingleViewGenericModel templated class.
+
+
+
+		/**
+		 * Generic model template, for models specifically linked to a given
+		 * controller (whose class is the typename) and to one specific
+		 * view (which is not a typename, as a model does not have to
+		 * know specifically its views).
+		 *
+		 * This generic model is linked to exactly one controller.
+		 *
+		 * @note No CEYLAN_DLL declaration for templates.
+		 *
+		 * @see testCeylanGenericMVC.cc for examples.
+		 *
+		 */
+		template <typename ActualController>
+		class SingleControllerSingleViewGenericModel : public BaseModel
+		{
+	
+	
+			public:
+	
+	
+	
+				/**
+				 * Creates a new generic model, which will be linked 
+				 * to specified controller, whose ownership is taken, and
+				 * to no view, currently.
+				 *
+				 * @param controller the controller this model will reference.
+				 *
+				 * @note Generally cannot be used because of the chicken-and-egg
+				 * problem: on creation the controller needs its model, 
+				 * and this model needs its controller, both cannot be
+				 * satisfied.
+				 *
+				 */
+				explicit SingleControllerSingleViewGenericModel(
+					const ActualController & controller ) ;
+	
+	
+	
+				/**
+				 * Creates a new generic model, which will be linked afterwards
+				 * to a controller and to one view.
+				 *
+				 * @note Generally used because of the chicken-and-egg
+				 * problem: on creation the controller needs its model, so 
+				 * this controller cannot be specified directly when creating 
+				 * this model.
+				 *
+				 */
+				SingleControllerSingleViewGenericModel() ;
+		
+		
+		
+				/**
+				 * Virtual destructor.
+				 *
+				 */
+				virtual ~SingleControllerSingleViewGenericModel() throw() ;
+	
+	
+
+				/**
+				 * Sets the unique view this model should have.
+				 *
+				 * @param view the view, whose ownership is taken.
+				 *
+				 * @throw GenericMVCException if a view was already registered.
+				 *
+				 * @note This is nevertheless a 'const' method, as adding 
+				 * a view is deemed not to change the state of the model
+				 * itself; moreover if it was non-const, then views (which
+				 * have const references to models) could not auto-register
+				 * themselves to the models).
+				 *
+				 */
+				virtual void setView( const BaseView & view ) ;
+	
+	
+	
+				/**
+				 * Sets the unique view this model should have.
+				 *
+				 * @param view the view, whose ownership is taken.
+				 *
+				 * @throw GenericMVCException if a view was already registered.
+				 *
+				 * @note This is nevertheless a 'const' method, as adding 
+				 * a view is deemed not to change the state of the model
+				 * itself; moreover if it was non-const, then views (which
+				 * have const references to models) could not auto-register
+				 * themselves to the models).
+				 *
+				 * @note The use of the setView method should be preferred,
+				 * as its name is clearer than this one, inherited from
+				 * BaseModel.
+				 *
+				 */
+				virtual void addView( const BaseView & view ) const ;
+
+	
+	
+				/**
+				 * Sets the unique (specialized) controller this model should
+				 * know.
+				 *
+				 * @param controller the controller, whose ownership is taken.
+				 *
+				 * @throw GenericMVCException if a controller was already
+				 * registered.
+				 *
+				 */
+				virtual void setController( 
+					const ActualController & controller ) ;
+	
+	
+	
+	            /**
+	             * Returns a user-friendly description of the state of
+				 * this object.
+	             *
+				 * @param level the requested verbosity level.
+				 *
+				 * @note Text output format is determined from overall settings.
+				 *
+				 * @see TextDisplayable
+	             *
+	             */
+				virtual const std::string toString(
+					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+
+
+
+
+			protected:
+	
+		
+				/**
+				 * The associated (unique, if any, and owned) view.
+				 *
+				 * @note A model should a priori never change its view(s), 
+				 * (the views are expected to retrieve information directly
+				 * from their model), hence the const reference.
+				 *
+				 */
+				const BaseView * _view ;
+
+
+				/**
+				 * The associated (unique, if any, and owned) controller.
+				 *
+				 * @note A model should a priori never change its controller(s),
+				 * (the model is expected to retrieve information directly
+				 * from its model), hence the const reference.
+				 *
+				 */
+				const ActualController * _controller ;
+	
+	
+	
+			private:
+	
+	
+				/**
+				 * Copy constructor made private to ensure that it will never be
+				 * called.
+				 * The compiler should complain whenever this undefined
+				 * constructor is called, implicitly or not.
+				 *
+				 */
+				SingleControllerSingleViewGenericModel(
+					const SingleControllerSingleViewGenericModel & source ) ;
+	
+	
+				/**
+				 * Assignment operator made private to ensure that it 
+				 * will never be called.
+				 * The compiler should complain whenever this undefined operator
+				 * is called, implicitly or not.
+				 *
+				 */
+				SingleControllerSingleViewGenericModel & operator = (
+					const SingleControllerSingleViewGenericModel & source ) ;
+
+
+	    } ;
+	
+	
+	
+		/* 
+		 * Implementation of the SingleControllerSingleViewGenericModel
+		 * templated class.
+		 *
+		 */
+	
+	
+		template <typename ActualController>
+		SingleControllerSingleViewGenericModel<ActualController>::SingleControllerSingleViewGenericModel( const ActualController & controller ) :
+			_view( 0 ),
+			_controller( & controller )
+		{
+
+		}
+	
+	
+	
+		template <typename ActualController>
+		SingleControllerSingleViewGenericModel<ActualController>::SingleControllerSingleViewGenericModel() :
+			_view( 0 ),
+			_controller( 0 )
+		{
+
+		}
+	
+	
+	
+		template <typename ActualController>
+		SingleControllerSingleViewGenericModel<ActualController>::~SingleControllerSingleViewGenericModel() throw()
+		{
+	
+			if ( this->_view != 0 )
+			{
+			
+				// View owned here:
+				delete this->_view ;
+				
+			}
+			
+			
+			if ( _controller != 0 )
+			{
+			
+				// Controller owned here:
+				delete this->_controller ;
+				
+			}
+			
+		}
+
+
+
+		template <typename ActualController>
+		void SingleControllerSingleViewGenericModel<ActualController>::setView( 
+			const BaseView & view )
+		{
+		
+			addView( view ) ;
+		
+		}
+		
+		
+		
+		template <typename ActualController>
+		void SingleControllerSingleViewGenericModel<ActualController>::addView( 
+			const BaseView & view ) const 
+		{
+		
+			if ( this->_view != 0 )
+				throw GenericMVCException( 
+					"SingleControllerSingleViewGenericModel<ActualController>::"
+					"addView failed: a view was already registered." ) ;
+			
+			// Do as if this instance had not to be 'const':
+			const_cast< 
+				SingleControllerSingleViewGenericModel<ActualController> *>(
+					this )->_view = & view ;
+		
+		}
+
+
+	
+		template <typename ActualController>
+		void
+		SingleControllerSingleViewGenericModel<ActualController>::setController(
+			const ActualController & controller ) 
+		{
+		
+			if ( _controller != 0 )
+				throw GenericMVCException( 
+					"SingleControllerSingleViewGenericModel<ActualController>::"
+					"setController failed: a controller was already registered."
+				) ;
+			
+			this->_controller = & controller ;
+		
+		}
+
+
+	
+		template <typename ActualController>
+		const std::string
+		SingleControllerSingleViewGenericModel<ActualController>::toString(
+			Ceylan::VerbosityLevels level ) const 
+		{
+		
+			std::string res ;
+			
+			if ( this->_view != 0 )
+			{
+			
+				/*
+				 * Beware to infinite recursion:
+				 * (the view may display in turn this model)
+				 *
+				 */
+
+				if ( level == Ceylan::low )
+					res = "Single-controller single-view generic model "
+						"owning a view" ;
+				else
+					res = "Single-controller single-view generic model "
+						"associated to view " + this->_view->toString( level ) ;
+
+			}		
+			else
+				res = "Single-controller single-view generic model "
+					"not associated to any view" ;
+	
+	
+			if ( this->_controller != 0 )
+			{
+			
+				/*
+				 * Beware to infinite recursion:
+				 * (the controller may display in turn this model)
+				 *
+				 */
+
+				if ( level == Ceylan::low )
+					return res + ", owning a controller" ;
+				else
+					return res + ", associated to " 
+						+ this->_controller->toString( level ) ;
+
+			}		
+			else
+				return res + ", not associated to any controller" ;
 	
 		}
 	
