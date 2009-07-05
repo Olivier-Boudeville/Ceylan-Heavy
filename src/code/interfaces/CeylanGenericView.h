@@ -29,7 +29,7 @@
 
 
 #include "CeylanTextDisplayable.h"       // for inheritance
-#include "CeylanGenericModel.h"          // for inheritance
+
 
 #include <string>
 
