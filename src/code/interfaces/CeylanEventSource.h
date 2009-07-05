@@ -66,7 +66,7 @@ namespace Ceylan
 	 * summary event on purpose, etc.
 	 *
 	 * Any listener can be registered at most one time to an event source:
-	 * attempt of multiple registrations result in an exception.
+	 * attempts of multiple registrations result in an exception.
 	 *
 	 * @note The event source / listener framework is also known as 
 	 * the Observer pattern.
