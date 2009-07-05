@@ -329,7 +329,7 @@ namespace Ceylan
 	
 	
 	
-	// Conversions from Ceylan::Float32ing points values to text.
+	// Conversions from floating points values to text.
 	
 	
 
