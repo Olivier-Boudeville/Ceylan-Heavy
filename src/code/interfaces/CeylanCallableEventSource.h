@@ -82,10 +82,12 @@ namespace Ceylan
 
 
         public:
+				
 					
 					
 			/// Basic constructor with no listener registered.
 			CallableEventSource() ;
+				
 				
 				
 			/**
@@ -97,6 +99,7 @@ namespace Ceylan
 			 *
 			 */
 			explicit CallableEventSource( EventListener & listener ) ;
+			
 				
 									
 			/// Basic virtual destructor.
@@ -161,7 +164,7 @@ namespace Ceylan
 			 *
 			 */
 			virtual const Event & getEventFor( 
-					const CallerEventListener & listener ) = 0 ;
+				const CallerEventListener & listener ) = 0 ;
 				
 				
 				
@@ -179,8 +182,10 @@ namespace Ceylan
 				Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 			
 
+
 				 
 		private:
+		
 		
 		
 			/**
@@ -191,6 +196,7 @@ namespace Ceylan
 			 *
 			 */			 
 			CallableEventSource( const CallableEventSource & source ) ;
+			
 			
 			
 			/**
