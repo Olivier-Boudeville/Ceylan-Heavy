@@ -69,7 +69,18 @@ run() ->
 	io:format( "   Path '~s', once transformed into a variable name, "
 		"results in: ~s~n",
 		[ SecondFilename, file_utils:path_to_variable_name(SecondFilename) ] ),	
-		
+	
+	SourceFilename = "/home/jack/rosie.ttf",
+	SourceExtension = ".ttf",
+	TargetExtension = ".wav",
+	
+	NewFilename = file_utils:replace_extension( SourceFilename, SourceExtension,
+		TargetExtension ),
+
+	io:format( "   Replacing extension '~s' by '~s' in '~s' results in: "
+		" '~s'.~n", 
+		[SourceExtension,TargetExtension,SourceFilename,NewFilename] ),
+				
 		
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().
