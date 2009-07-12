@@ -70,6 +70,7 @@ localhost() ->
 	%  - a long name
 	% net_adm:localhost() may return respectively "XXX.domain.com" or
 	% "XXX.localdomain", both of which are not proper hostnames.
+	% On the other hand, "hostname -f" might return 'localhost.localdomain'.
 	% Most reliable (ending carriage return must be removed):
 	basic_utils:remove_ending_carriage_return( os:cmd( "hostname -f" ) ).
 	
