@@ -48,6 +48,10 @@
 
 % Maybe the ETS module, proplists, dict, etc. could/should be used instead.
 
+% When the table holds less than 50 elements, probably using functions like
+% lists:keystore/4 and lists:keymember/3 would be faster.
+
+
 
 -export([ new/0, new/1, addEntry/3, addEntries/2, 
 	removeEntry/2, lookupEntry/2, hasEntry/2,
