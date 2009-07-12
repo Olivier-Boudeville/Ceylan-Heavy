@@ -44,7 +44,7 @@
 % String management functions.
 -export([ term_toString/1, term_to_string/1, integer_to_string/1,
 	string_list_to_string/1, ipv4_to_string/1, ipv4_to_string/2, join/2,
-	remove_ending_carriage_return/1 ]).
+	remove_ending_carriage_return/1, format_text_for_width/2, pad_string/2 ]).
 	
 	
 % Registration functions.
@@ -55,8 +55,8 @@
 
 % Random functions.
 -export([ start_random_source/3, start_random_source/1, stop_random_source/0,
-	get_random_value/1,	get_random_module_name/0, get_random_seed/0,
-	random_select/2, random_permute/1 ]).
+	get_random_value/0, get_random_value/1, get_random_module_name/0,
+	get_random_seed/0, random_select/2, random_permute/1 ]).
 	
 
 % List management functions.
@@ -85,12 +85,16 @@
 % Returns a tuple describing the current time. 
 % Ex: {{2007,9,6},{15,9,14}}
 get_timestamp() ->
-	{erlang:date(),erlang:time()}.
-
+	% Was: {erlang:date(),erlang:time()}.
+	% Better:
+	erlang:localtime().
+	
+		
 
 % Returns a string corresponding to the current timestamp.
 get_textual_timestamp() ->
 	get_textual_timestamp( get_timestamp() ).
+	
 	
 	
 get_textual_timestamp({{Year,Month,Day},{Hour,Minute,Second}}) ->
@@ -98,12 +102,15 @@ get_textual_timestamp({{Year,Month,Day},{Hour,Minute,Second}}) ->
 		[Year,Month,Day,Hour,Minute,Second] ).
 
 
+
 % Alias of get_textual_timestamp.
 timestamp_to_string(Timestamp) ->	
 	get_textual_timestamp(Timestamp).
 	
 	
-% Returns the duration in seconds between the two specified timestamps.	
+	
+% Returns the (signed) duration in seconds between the two specified timestamps,
+% using the first one as starting time and the second one as stopping time.	
 get_duration(FirstTimestamp,SecondTimestamp) ->
 	First  = calendar:datetime_to_gregorian_seconds(FirstTimestamp),
 	Second = calendar:datetime_to_gregorian_seconds(SecondTimestamp),
@@ -137,12 +144,14 @@ term_toString(Term) ->
 	end.	
 
 
+
 term_to_string(Term) ->
 	term_toString(Term).
 	
 	
+	
 % Avoids to have to use lists:flatten when converting an integer to a string.
-% Useless when using functions like io:format that accept iolists as 
+% Useless when using functions like io:format, that accept iolists as 
 % parameters.	
 integer_to_string(IntegerValue) ->
 	hd( io_lib:format( "~B", [IntegerValue] ) ).
@@ -201,34 +210,197 @@ remove_ending_carriage_return(String) when is_list(String) ->
 	string:strip( String, right, $\n ).
 
 
+
+
+% Formats specified text according to specified width, expressed in characters.
+% Returns a line of strings, each of which having Width characters.
+format_text_for_width( Text, Width ) ->
+	% Whitespaces converted to spaces:
+	CleanedTest = re:replace( lists:flatten(Text), "\\s+", " ", 
+		[global,{return, list}] ), 
+	WordList = string:tokens( CleanedTest, " " ),
+	%io:format( "Formatting ~p.~n", [WordList] ),
+	join_words( WordList, Width ).
 	
+	
+
+% Joins words from the list, line by line.
+join_words( WordList, Width ) ->
+	join_words( WordList, Width, _Lines = [], _CurrentLine = "",
+		_CurrentLineLen = 0 ).
+	
+	
+join_words( [], _Width, AccLines, _CurrentLine, _CurrentLineLen = 0 ) ->
+	% Ended with a full line:
+	lists:reverse(AccLines);
+		
+join_words( [], Width, AccLines, CurrentLine, _CurrentLineLen ) ->
+	% Ended with a partial line:
+	lists:reverse( [pad_string(CurrentLine,Width)|AccLines] );
+		
+join_words( [Word|RemainingWords], Width, AccLines, CurrentLine,
+		CurrentLineLen ) ->
+		
+	%io:format( "Managing word '~s' (len=~B), current line is '~s' (len=~B), "
+	%	"width = ~B.~n", [Word,length(Word),CurrentLine,CurrentLineLen,Width] ),
+			
+	% Length should be incremented, as a space must be inserted before that
+	% word, however we want to accept words whose width would be exactly equal
+	% to the line width:
+	ActualLength = case CurrentLine of 
+	
+		"" ->
+			length(Word);
+			
+		_NonEmpty ->
+			% Already at least a letter, we therefore must add a space before
+			% the new word:
+			length(Word) + 1
+				
+	end,
+	case ActualLength of 
+	
+		CompatibleWidth when CompatibleWidth =< Width ->
+			% Word width is manageable.
+			% Will this word fit on the current line?
+			% It depends on the
+			case CurrentLineLen + CompatibleWidth of
+			
+				FittingLen when FittingLen =< Width ->
+					% Yes, this word fits on the current line.
+					% Avoids adding a space at the beginning of a new line:
+					{NewCurrentLine,NewLineLen} = case CurrentLineLen of 
+					
+						0 ->
+							{Word,CompatibleWidth};
+							
+						Len -> 
+							{CurrentLine ++ " " ++ Word,Len+CompatibleWidth+1}	
+					
+					end,		
+					%io:format("Current line is now '~s'.~n", [NewCurrentLine]),
+					join_words( RemainingWords, Width, AccLines, NewCurrentLine,
+						NewLineLen );
+				
+				_ExceedingLen ->
+					% No, with this word the current line would be too wide,
+					% inserting it on new line instead:
+					PaddedCurrentLine = pad_string( CurrentLine, Width ),
+					%io:format( "Inserting line '~s'.~n", [PaddedCurrentLine] ),
+					join_words( RemainingWords, Width,
+						[PaddedCurrentLine|AccLines], Word, CompatibleWidth )
+			
+			end;
+			
+		_TooLargeWidth ->
+			% Will break words as many times as needed:
+			%io:format( "Word '~s' is too large (len=~B), breaking it.~n", 
+			%	[Word,length(Word)] ),
+			Subwords = break_word(Word,Width),
+			PaddedCurrentLine = pad_string( CurrentLine, Width ),
+			join_words( Subwords ++ RemainingWords, Width,
+				[PaddedCurrentLine|AccLines], "", 0 )
+			
+	end.
+
+
+
+% Returns the specified string, padded with spaces to specified width,
+% left-justified.
+pad_string( String, Width ) when length(String) =< Width ->
+	lists:flatten( io_lib:format( "~*.s", [ -Width, String ] ) ).
+
+
+
+% Returns a list of words obtained from the breaking of specified word, 
+% according to specified maximum width.
+% Parts of that word will use a separating dash.
+% Ex: break_word("simulator",5) returns ["simu-","lator"]
+break_word(Word,Width) ->
+	%io:format( "Breaking '~s' for width ~B.~n", [Word,Width] ),
+	%timer:sleep(500),
+	% We do not want to have underscores in the word, as if the word happens
+	% to be broken just after an underscore, RST will interpret it as a link.
+	% Therefore we escape underscores:
+	% Used to cut into halves, then preferring truncating a first full-length
+	% chunk, finally directly cutting the word into appropriate pieces:
+	%CutIndex = length(Word) div 2,
+	%CutIndex = Width-1,
+	cut_into_chunks( Word, Width, [] ).
+	
+	
+	
+% Cuts specified string into pieces, each of them having to fit in specified
+% width.
+cut_into_chunks( _String = [], _ChunkSize, Acc ) ->
+	%io:format( "cut_into_chunks return ~p.", [lists:reverse(Acc)]),
+	lists:reverse(Acc);
+
+% Last word may take the full width (no dash to add):	
+cut_into_chunks( String, ChunkSize, Acc ) when length(String) =< ChunkSize ->
+	cut_into_chunks( [], ChunkSize, [String|Acc] );
+	
+% Here we have to cut the string anyway:	
+cut_into_chunks( String, ChunkSize, Acc ) ->
+	% Rule is to add (and convert) characters until the end of line:
+	% (ChunkSize decremented as "-" will be added)
+	{FirstPart,Remaining} = aggregate_word( String, ChunkSize-1, [] ),
+	% Each underscore will result into another character (\) being added:
+	%io:format( "FirstPart = '~s' (~B), Remaining = '~s'.~n",
+	%	[FirstPart,length(FirstPart),Remaining] ),
+	cut_into_chunks( Remaining, ChunkSize, [ FirstPart ++ "-" |Acc] ).
+
+		
+		
+aggregate_word( String, 0, Acc ) ->
+	{lists:reverse(Acc),String};
+	
+	
+% An underscore once escaped would not fit, as it would result into two
+% characters ('\_'):
+aggregate_word( String = [$_|_T], 1, Acc ) ->
+	aggregate_word( String, 0, Acc );
+
+% An escaped underscore will fit:	
+aggregate_word( [$_|T], Count, Acc ) ->
+	% Adding '_\' as it will reversed (into the expected '\_'):
+	aggregate_word( T, Count-2, [$\_,$\\|Acc] );
+	
+aggregate_word( [H|T], Count, Acc ) ->
+	aggregate_word( T, Count-1, [H|Acc] ).
+	
+	
+
 
 % Registration functions.
 	
 	
 % Registers the current process under specified name.
 % Declaration is register_as(Name,RegistrationType) with 
-% RegistrationType in 'local_only', 'global_only', 'local_and_global', 
+% RegistrationType in 'local_only', 'global_only', 'local_and_global', 'none'
 % depending on what kind of registration is requested.
 % Returns ok on success, otherwise throws an exception.
 register_as( Name, RegistrationType ) ->
 	register_as( self(), Name, RegistrationType ).
 
 
+
 % Registers specified PID under specified name.
 % Declaration is: register_as(Pid,Name,RegistrationType) with 
-% RegistrationType is in 'local_only', 'global_only', 'local_and_global', 
+% RegistrationType in 'local_only', 'global_only', 'local_and_global', 
 % depending on what kind of registration is requested.
 % Returns ok on success, otherwise throws an exception.
 register_as( Pid, Name, local_only ) ->
-	case erlang:register( Name, Pid ) of 
-	
+	try erlang:register( Name, Pid ) of 
+		
 		true ->
-			ok;
+			ok
 			
-		false ->
-			throw( {local_registration_failed,Name} )					
+	catch
 	
+		ExceptionType:Exception ->			
+			throw( {local_registration_failed,Name,{ExceptionType,Exception}} )
+				
 	end;
  
 register_as( Pid, Name, global_only ) ->
@@ -255,25 +427,31 @@ register_as(_Pid,_Name,none) ->
 % Unregisters specified name from specified registry.
 % Throws an exception in case of failure.
 unregister( Name, local_only ) ->
-	case erlang:unregister( Name ) of 
+	try erlang:unregister( Name ) of 
 	
 		true ->
-			ok;
-			
-		false ->
-			throw( {local_unregistration_failed,Name} )					
+			ok
 	
+	catch		
+
+		ExceptionType:Exception ->			
+			throw( 
+				{local_unregistration_failed,Name,{ExceptionType,Exception}} )
+				
 	end;
 
 unregister( Name, global_only ) ->
-	case global:unregister_name( Name ) of 
+	% Documentation says it returns "void" (actually 'ok'):
+	try 
+		
+		global:unregister_name( Name ) 
 	
-		ok ->
-			ok;
-					
-		_Other ->
-			throw( {global_unregistration_failed,Name} )				
+	catch				
 			
+		ExceptionType:Exception ->			
+			throw( 
+				{global_unregistration_failed,Name,{ExceptionType,Exception}} )
+				
 	end;
 
 unregister( Name, local_and_global ) ->
@@ -288,7 +466,7 @@ unregister(_Name,none) ->
 % Returns the Pid that should be already registered, as specified name.
 % Local registering will be requested first, if not found global one will
 % be tried.
-% Not waiting for registration will be performed, see
+% No specific waiting for registration will be performed, see
 % wait_for_*_registration_of instead.
 get_registered_pid_for( Name ) ->
 	get_registered_pid_for( Name, local_otherwise_global ).
@@ -296,18 +474,18 @@ get_registered_pid_for( Name ) ->
 	
 	
 get_registered_pid_for( Name, local_otherwise_global ) ->
-	try get_registered_pid_for( Name, local ) of 
+	try 
 	
-		Pid ->
-			Pid
-			
+		get_registered_pid_for( Name, local )
+
 	catch 
 	
 		{not_registered_locally,_Name} ->
-			try get_registered_pid_for( Name, global ) of 
-	
-				Pid ->
-					Pid
+		
+			try 
+			
+				get_registered_pid_for( Name, global )
+					
 			
 			catch
 			
@@ -409,8 +587,11 @@ wait_for_local_registration_of(Name,SecondsToWait) ->
 %  - not all Erlang VM can be built with the proper SSH support
 %  - it is unclear whether the crypto module can be seeded like the random
 % module can be (probably it cannot be)
+%  - there is no crypto function returning a random float uniformly 
+% distributed between 0.0 and 1.0, and it may not be easy to implement it 
+% from what is available
 %
-% Therefore the two modules are not interchangeable.
+% Therefore the two modules are not completely interchangeable.
 %
 %-define(use_crypto_module,).
 
@@ -444,6 +625,14 @@ get_random_value(N) ->
 	crypto:rand_uniform(1,N+1).
 
 
+% Returns a random float uniformly distributed between 0.0 and 1.0, updating
+% the random state in the process dictionary.
+get_random_value() ->
+	% Not available: crypto:rand_uniform(0.0,1.0).
+	not_available_with_crypto.
+
+
+% Returns the name of the module managing the random generation.	
 get_random_module_name() ->
 	crypto.
 	
@@ -486,7 +675,14 @@ stop_random_source() ->
 get_random_value(N) ->
 	random:uniform(N).
 
+
+% Returns a random float uniformly distributed between 0.0 and 1.0, updating
+% the random state in the process dictionary.
+get_random_value() ->
+	random:uniform().
 	
+
+% Returns the name of the module managing the random generation.	
 get_random_module_name() ->
 	random.
 	
@@ -505,6 +701,7 @@ get_random_seed() ->
 	{   get_random_value( ?seed_upper_bound ), 
 		get_random_value( ?seed_upper_bound ), 
 		get_random_value( ?seed_upper_bound ) }.
+	
 	
 
 % Returns a random uniform permutation of the specified list.
@@ -544,6 +741,7 @@ get_element_at( List, 1 ) ->
 get_element_at( [_H|T], Index ) ->	
 	get_element_at( T, Index-1 ).
 		
+		
 
 % Returns a list corresponding to the specified one with the element
 % at specified index removed.
@@ -567,6 +765,7 @@ remove_element_at([_H|RemainingList],1,Result) ->
 	 
 remove_element_at([H|RemainingList],Index,Result) ->
 	remove_element_at(RemainingList,Index-1,[H|Result]).
+
 
 
 % Returns a list equal to L1 except that all elements found in L2 have been
@@ -596,6 +795,7 @@ speak(Message) ->
 notify_user(Message) ->
 	io:format(Message),
 	speak(Message).
+
 
 
 % Notifies the user of the specified message, with log output and synthetic
