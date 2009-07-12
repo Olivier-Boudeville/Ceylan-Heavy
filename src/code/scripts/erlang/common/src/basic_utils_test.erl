@@ -158,9 +158,33 @@ run() ->
 	
 	ListOfStrings = [ "Hello", "World", "Vampire" ],
 		
-	io:format( "   Displaying list ~w as a string:~n~s~n", 
+	io:format( "   Displaying list ~p as a string:~n~s~n", 
 		[ ListOfStrings, basic_utils:string_list_to_string(ListOfStrings) ] ),	
 		
+		
+	LongLine = "This is a long line to test the paragraph formatting.",
+	
+	% So that "formatting." has a chance to fit:
+	TargetWidth = 10,
+	
+	io:format( "   Displaying text '~s' once formatted "
+		"for a width of ~B:~n~p~n",
+		[LongLine,TargetWidth,
+			basic_utils:format_text_for_width(LongLine,TargetWidth) ] ),
+
+
+	JustWideEnoughLine = "<0.33.0>",
+	
+	% So that "formatting." has a chance to fit:
+	NewTargetWidth = 8,
+	
+	io:format( "   Displaying text '~s' once formatted "
+		"for a width of ~B:~n~p~n",
+		[JustWideEnoughLine,NewTargetWidth,
+			basic_utils:format_text_for_width( JustWideEnoughLine,
+				NewTargetWidth) ] ),
+	
+	 		
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().
 
