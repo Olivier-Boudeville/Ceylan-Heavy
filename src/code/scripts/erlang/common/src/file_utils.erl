@@ -39,9 +39,9 @@
 
 % Filename-related operations.
 
--export([ join/2, convert_to_filename/1, exists/1, get_type_of/1, is_file/1,
-	is_directory/1, list_dir_elements/1, filter_by_extension/2,
-	find_files_from/2, find_all_files_from/1, 
+-export([ join/2, convert_to_filename/1, replace_extension/3, exists/1,
+	get_type_of/1, is_file/1, is_directory/1, list_dir_elements/1,
+	filter_by_extension/2, find_files_from/2, find_all_files_from/1, 
 	path_to_variable_name/1, path_to_variable_name/2,
 	get_image_file_png/1, get_image_file_gif/1 ]).
 
@@ -80,6 +80,15 @@ convert_to_filename(Name) ->
 	% Replaces all series of spaces by one underscore:
 	re:replace( lists:flatten(Name), " +", "_", [global,{return, list}] ).
 
+
+
+% Returns a new filename whose extension has been updated.
+% Ex: replace_extension( "/home/jack/rosie.ttf", ".ttf", ".wav" ) should 
+% return "/home/jack/rosie.wav".
+replace_extension(Filename,SourceExtension,TargetExtension) ->
+	Index = string:rstr(Filename,SourceExtension),
+	string:substr(Filename,1,Index-1) ++ TargetExtension.
+	
 
 
 % Tells whether specified file entry exists, regardless of its type.
@@ -299,6 +308,7 @@ path_to_variable_name([$.,$/|T],Prefix) ->
 	
 path_to_variable_name(Filename,Prefix) ->
 	convert(Filename,Prefix).
+	
 	
 	
 % Helper function.
