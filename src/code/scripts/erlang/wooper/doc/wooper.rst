@@ -1474,6 +1474,45 @@ Tests
 To run a test (ex: ``class_Cat_test.erl``), when everything is compiled one just has to enter: ``make class_Cat_run``.
 
 
+:raw-latex:`\pagebreak`
+
+
+
+Good Practises
+==============
+
+When using WOOPER, the following conventions are deemed useful to respect.
+
+No warning should be tolerated in code using WOOPER
+ 
+All attributes of an instance should better be defined from the constructor, instead of being dynamically added during the life of the instance; otherwise the methods would have to deal with some attributes which may or may not be defined; if no proper value exists for an attribute at the creation of an instance, then its value should be set to the atom ``undefined``
+ 
+When a function or a method is defined in a WOOPER file, it should of course be commented, and, even if the information can be guessed from context and body, in the last line of the comments the type of the function should be specified (ex: ``oneway``, ``request``, ``helper function``, etc.), like in::
+  
+  % Sets the current color.
+  % (oneway)
+  setColor(State,NewColor) ->
+  	[..]
+
+Helper functions and static methods (which, from an Erlang point of view, are strictly the same) should be named like C functions (ex: ``compute_sum``) rather than being written in CamelCase (ex: no helper function named ``computeSum``)
+
+To further separate helper functions from instance methods, an helper function taking a ``State`` parameter should better place it at the end of its parameter list rather than in first position (ex: ``compute_sum(X,Y,State)`` rather than ``compute_sum(State,X,Y)``)
+
+In a method body, the various state variables being introduced should be properly named, i.e. their name should start with a self-documenting prefix followed by the ``State`` suffix, like in: ``SeededState = ?setAttribute(State,seed,{1,7,11})``
+
+
+
+Some more general (mostly unrelated) Erlang conventions that we like:
+
+ - when more than one parameter is specified in a fonction signature, parameter names can be surrounded by spaces (ex: ``f(Color)``, whereas ``g( Age, Height )``)
+ 
+ - functions should be separated by (at least) three newlines, whereas clauses for a given function should be separated exactly by one newline
+ 
+ - to auto-document parameters, a "mute" variable should be used: for example, instead of ``f(Color,true)`` use ``f( Color, _Dither = true )``
+
+
+
+
 
 :raw-latex:`\pagebreak`
 
