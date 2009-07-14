@@ -15,6 +15,15 @@ ifndef PROJECT_VERSION
 endif
 
 
+ifndef PACKAGE_NAME
+	PACKAGE_NAME = wooper
+endif
+
+
+ifndef PACKAGE_TOP
+	PACKAGE_TOP = $(WOOPER_TOP)
+endif
+
 
 WOOPER_RELEASE_BASE := wooper-$(PROJECT_VERSION)
 
