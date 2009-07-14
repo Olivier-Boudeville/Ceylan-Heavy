@@ -1,4 +1,3 @@
-% 
 % Copyright (C) 2003-2009 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
@@ -27,11 +26,16 @@
 % Creation date: July 1, 2007.
 
 
+% Base class for all emitters of traces.
+% A trace emitter has a notion of time (execution tick) as it needs to
+% timestamp its traces.
+% See class_TestTraceEmitter.erl and class_TraceEmitter_test.erl
 -module(class_TraceEmitter).
 
 
 % Determines what are the mother classes of this class (if any):
 -define( wooper_superclasses, [] ).
+
 
 
 % Parameters taken by the constructor ('construct'). 
@@ -40,6 +44,7 @@
 % of each child class when coming down the inheritance hierarchy, so that the
 % latest child class sets its targeted trace_categorization value)
 -define( wooper_construct_parameters, TraceEmitterName ).
+
 
 
 % Declaring all variations of WOOPER standard life-cycle operations:
@@ -51,12 +56,15 @@
 	remote_synchronous_timed_new_link/2, construct/2, delete/1 ]).
 
 
+
 % Method declarations.
 -define( wooper_method_export, getName/1, setName/2, display/1, toString/1 ).
 
 
+
 % Helper functions:
--export([ send/2, send_from_test/2, send_standalone/2, get_current_tick/1 ]).
+-export([ send/2, send_from_test/2, send_standalone/2, get_current_tick/1,
+	get_channel_name_for_priority/1 ]).
 
 
 
@@ -77,6 +85,7 @@
 -define(LogPrefix,"[Trace Emitter]").
 
 
+
 % Constructs a new Trace emitter.
 % EmitterName is the name of this trace emitter, ex: 'MyObject-16'.
 % EmitterCategorization is the categorization of this emitter, ex:
@@ -91,7 +100,8 @@ construct(State,?wooper_construct_parameters) ->
 	% otherwise the creation of multiple emitters would result in a race
 	% condition that would lead to the creation of multiple aggregators):	
 	AggregatorPid = class_TraceAggregator:getAggregator(false),
-	?setAttributes( State, [ {name,TraceEmitterName}, 
+	?setAttributes( State, [ 
+		{name,TraceEmitterName}, 
 		{trace_categorization,?TraceEmitterCategorization},
 		{trace_aggregator_pid, AggregatorPid} ] ).
 	
@@ -209,7 +219,7 @@ send_from_test( TraceType, [Message,MessageCategorization] ) ->
 			
 		AggregatorPid ->
 			AggregatorPid ! { send, 
-				[ self(), "Ceylan-test", "Test", none, 
+				[ self(), "Ceylan-trace-test", "Test", none, 
 			current_time_to_string(), current_location(), MessageCategorization,
 			get_priority_for(TraceType), Message ] }
 	
@@ -276,6 +286,7 @@ current_location() ->
 % (stack/error, warning/warn, info, fine, finest/debug, i.e. no more trace),
 % fatal and error messages have been put at the same priority level, and 
 % Ceylan trace level has been kept, whereas others have been offset.
+% See also: get_channel_name_for_priority/1.
 % Corresponds to stack/error:
 get_priority_for( fatal ) ->
 	1 ;
@@ -300,6 +311,30 @@ get_priority_for( trace ) ->
 get_priority_for( debug ) ->
 	6.
 	
+	
+
+% Returns the name of the trace channel corresponding to the trace priority.
+% See also: get_priority_for/1
+get_channel_name_for_priority(1) ->
+	fatal;
+
+get_channel_name_for_priority(2) ->
+	error;
+	
+get_channel_name_for_priority(3) ->
+	warning;
+	
+get_channel_name_for_priority(4) ->
+	info;
+	
+get_channel_name_for_priority(5) ->
+	trace;
+	
+get_channel_name_for_priority(6) ->
+	debug.
+	
+
+
 
 % Returns the current (numerical) execution tick, in virtual gregorian seconds.
 get_current_tick(State) ->
