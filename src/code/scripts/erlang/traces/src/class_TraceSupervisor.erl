@@ -1,4 +1,3 @@
-% 
 % Copyright (C) 2003-2009 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
@@ -39,33 +38,43 @@
 
 
 % Parameters taken by the constructor ('construct'). 
--define(wooper_construct_parameters, TraceFilename, MonitorNow, Synchronous ).
+-define(wooper_construct_parameters, TraceFilename, TraceType, MonitorNow,
+	Blocking ).
+
 
 
 % Declaring all variations of WOOPER standard life-cycle operations:
 % (template pasted, two replacements performed to update arities)
--define( wooper_construct_export, new/3, new_link/3, 
-	synchronous_new/3, synchronous_new_link/3,
-	synchronous_timed_new/3, synchronous_timed_new_link/3,
-	remote_new/4, remote_new_link/4, remote_synchronous_new/4,
-	remote_synchronous_new_link/4, remote_synchronous_timed_new/4,
-	remote_synchronous_timed_new_link/4, construct/4, delete/1 ).
+-define( wooper_construct_export, new/4, new_link/4, 
+	synchronous_new/4, synchronous_new_link/4,
+	synchronous_timed_new/4, synchronous_timed_new_link/4,
+	remote_new/5, remote_new_link/5, remote_synchronous_new/5,
+	remote_synchronous_new_link/5, remote_synchronous_timed_new/5,
+	remote_synchronous_timed_new_link/5, construct/5, delete/1 ).
+
 
 
 % Method declarations.
--define(wooper_method_export, monitor/1, synchronous_monitor/1 ).
+-define(wooper_method_export, monitor/1, blocking_monitor/1 ).
+
 
 
 % Static method declarations (to be directly called from module):
--export([ create/0, create/1, create/2, create/3 ]).
+-export([ create/0, create/1, create/2, create/3, create/4 ]).
 
 
 % Allows to define WOOPER base variables and methods for that class:
 -include("wooper.hrl").
 
 
+% For TraceExtension:
+-include("traces.hrl").
+
+
 % For default trace filename:
 -include("class_TraceAggregator.hrl").
+
+
 
 -define(LogPrefix,"[Trace Supervisor]").
 
@@ -77,26 +86,36 @@
 
 
 
+% Total width (expressed as a number of characters) of a line of log, 
+% in text mode (text_traces).
+-define(TextWidth,110).
+
+
+
 % Constructs a new trace supervisor.
-%  - TraceFilename is the name of the file where traces should be read from.
+%  - TraceFilename is the name of the file where traces should be read from;
+%  - TraceType the type of traces to expect (ex: log_mx_traces, text_traces)
 %  - MonitorNow tells whether the supervision should being immediately (if true)
 % or only when the monitor method is called (if false).
-%  - Synchronous tells whether the monitoring should be non-blocking
-% (if false) or otherwise the monitoring should be blocking and Synchronous
-% should be the PID of the caller to be notified.
+%  - Blocking tells whether the monitoring should be non-blocking
+% (if false) or otherwise the monitoring should be blocking, and this Blocking
+% parameter should be the PID of the caller to be notified.
 % This parameter has a meaning iff MonitorNow is true.
 construct(State,?wooper_construct_parameters) ->
 
-	io:format( "~s Creating a trace supervisor whose PID is ~w.~n", 
+	io:format( "~s Creating a trace supervisor, whose PID is ~w.~n", 
 		[ ?LogPrefix, self() ] ),
 
 	% First the direct mother classes (none), then this class-specific actions:
-	NewState = ?setAttributes( State, [ {trace_filename,TraceFilename} ] ),
+	NewState = ?setAttributes( State, [
+		{trace_filename,TraceFilename},
+		{trace_type,TraceType}
+	] ),
 		
 	EndState = case MonitorNow of
 	
 		true ->
-			case Synchronous of
+			case Blocking of
 			
 				Pid when is_pid(Pid) ->
 					% Pattern-match the result of in-place invocation:
@@ -104,7 +123,7 @@ construct(State,?wooper_construct_parameters) ->
 					% due to the LogMX issue with
 					% java_security_PrivilegedAction)
 					{RequestState,monitor_ok} = executeRequest(
-						NewState, synchronous_monitor ),
+						NewState, blocking_monitor ),
 						 
 					% Sends back to the caller:	 
 					Pid ! {wooper_result,monitor_ok},
@@ -141,69 +160,103 @@ delete(State) ->
 % Methods section.
 
 
-% Triggers an asynchronous supervision (trace monitoring).
+% Triggers an non-blocking supervision (trace monitoring).
 % Will return immediately.
 % (oneway)
 monitor(State) ->
-	Filename = ?getAttr( trace_filename ),
-	case filelib:is_file( Filename ) of
+
+	NewState = case ?getAttr(trace_type) of
 	
-		true ->
-			ok;
+		{text_traces,pdf} ->
+			io:format( "~s Trace supervisor has nothing to monitor, "
+				"as the PDF trace report will be generated only on execution "
+				"termination.~n", [ ?LogPrefix] ),
+				State;
+				
+		_Other ->	
+		
+			{Command,ActualFilename} = get_viewer_settings(State,
+				?getAttr( trace_filename ) ),
+
+			case filelib:is_file( ActualFilename ) of
+	
+				true ->
+					ok;
 			
-		false ->
-			error_logger:error_msg( "class_TraceSupervisor:monitor "
-				"unable to find trace file '~s'.~n", [ Filename ] ),
-			trace_file_not_found
+				false ->
+					error_logger:error_msg( "class_TraceSupervisor:monitor "
+						"unable to find trace file '~s'.~n", 
+						[ ActualFilename ] ),
+					throw( {trace_file_not_found,ActualFilename} )
 			
-	end,
-	io:format( "~s Trace supervisor will monitor file '~s' with LogMX now.~n", 
-		[ ?LogPrefix, Filename ] ),
+			end,
+			
+			io:format( "~s Trace supervisor will monitor file '~s' now, "
+				"with ~s.~n", [ ?LogPrefix, ActualFilename, Command ] ),
 	
-	% Non-blocking (logmx.sh must be found in the PATH):
-	[] = os:cmd( "logmx.sh " ++ Filename ++ " &" ),
+			% Non-blocking (command must be found in the PATH):
+			[] = os:cmd( Command ++ " " ++ ActualFilename ++ " &" ),
+			State
+			
+	end, 
 	
-	?wooper_return_state_only(State).
+	?wooper_return_state_only(NewState).
 
 
 
-% Triggers a synchronous supervision (trace monitoring).
-% Will block until LogMX is stopped by the user.
+% Triggers a blocking supervision (trace monitoring).
+% Will block until the viewer window is closed by the user.
 % (request)
-synchronous_monitor(State) ->
-	Filename = ?getAttr( trace_filename ),
-	case filelib:is_file( Filename ) of
-	
-		true ->
-			ok;
-			
-		false ->
-			error_logger:error_msg( "class_TraceSupervisor:synchronous_monitor "
-				"unable to find trace file '~s'.~n", [ Filename ] ),
-			trace_file_not_found
-			
-	end,
-	io:format( "~s Trace supervisor will monitor file '~s' with LogMX now, "
-		"blocking until the user closes the LogMX window.~n", 
-		[ ?LogPrefix, Filename ] ),
-	
-	% Blocking:
-	case os:cmd( "logmx.sh " ++ Filename ) of
-	
-		[] ->
-			io:format( "~s Trace supervisor ended monitoring of '~s' "
-				"with LogMX.~n", [ ?LogPrefix, Filename ] ),
-			?wooper_return_state_result(State,monitor_ok);
-	
-		Other ->
-			error_logger:error_msg(
-				"The monitoring of trace supervisor failed: ~s.~n", 
-				[ Other ] ),
-			?wooper_return_state_result(State,monitor_failed)
-			%throw( trace_supervision_failed )
-	
-	end.
+blocking_monitor(State) ->
 
+	case ?getAttr(trace_type) of
+	
+		{text_traces,pdf} ->
+			io:format( "~s Trace supervisor has nothing to monitor, "
+				"as the PDF trace report will be generated on execution "
+				"termination.~n", [ ?LogPrefix] ),
+			?wooper_return_state_result(State,monitor_ok);
+				
+		_Other ->	
+		
+			{Command,ActualFilename} = get_viewer_settings(State,
+				?getAttr( trace_filename ) ),
+				
+			case filelib:is_file( ActualFilename ) of
+	
+				true ->
+					ok;
+			
+				false ->
+					error_logger:error_msg( "class_TraceSupervisor:monitor "
+						"unable to find trace file '~s'.~n", 
+						[ ActualFilename ] ),
+					throw( {trace_file_not_found,ActualFilename} )
+			
+			end,
+			
+			io:format( "~s Trace supervisor will monitor file '~s' now "
+				"with ~s, blocking until the user closes the viewer window.~n", 
+				[ ?LogPrefix, ActualFilename, Command ] ),
+	
+			% Blocking:
+			case os:cmd( Command ++ " " ++ ActualFilename ) of
+	
+				[] ->
+					io:format( "~s Trace supervisor ended monitoring of "
+						"'~s'.~n", [ ?LogPrefix, ActualFilename ] ),
+					?wooper_return_state_result(State,monitor_ok);
+	
+				Other ->
+					error_logger:error_msg(
+						"The monitoring of trace supervisor failed: ~s.~n", 
+						[ Other ] ),
+					?wooper_return_state_result(State,monitor_failed)
+					%throw( trace_supervision_failed )
+	
+			end
+			
+	end.
 
 
 
@@ -211,52 +264,82 @@ synchronous_monitor(State) ->
 % 'Static' methods (module functions):
 	
 
-% Creates the trace supervisor synchronously with default settings regarding
-% trace filename and start (immediate here, not deferred).
-% See create/3 for a more in-depth explanation of the parameters.
+% Creates the trace supervisor with default settings regarding
+% trace filename, start mode (immediate here, not deferred) and trace type
+% (LogMX-based here, not text based), and blocks until closed.
+% See create/4 for a more in-depth explanation of the parameters.
 % (static)	
 create() ->
-	% First parameter is synchronous, second is MonitorNow (immediate):
-	create( true, true, ?trace_aggregator_filename ).
+	create( _Blocking = true ).
 	
 	
-% Creates the trace supervisor, synchronously iff Synchronous is true, with
-% default settings regarding trace filename and start (immediate here, not
-% deferred).
-% See create/3 for a more in-depth explanation of the parameters.
+	
+% Creates the trace supervisor, then blocks iff Blocking is true, with
+% default settings regarding trace filename, start mode (immediate here, not
+% deferred) and trace type (LogMX-based here, not text based).
+% See create/4 for a more in-depth explanation of the parameters.
 % (static)	
-create(Synchronous) ->
-	% Second parameter is MonitorNow (immediate):
-	create( Synchronous, true, ?trace_aggregator_filename ).
+create(Blocking) ->
+	create( Blocking, ?trace_aggregator_filename ).
 
 
-% Creates the trace supervisor, synchronously iff Synchronous is true, with
-% default settings regarding start (immediate here, not deferred).
-% See create/3 for a more in-depth explanation of the parameters.
+
+% Creates the trace supervisor, then blocks iff Blocking is true, with
+% default settings regarding start mode (immediate here, not deferred) and 
+% trace type (LogMX-based here, not text based).
+% See create/4 for a more in-depth explanation of the parameters.
 % (static)	
-create(Synchronous,TraceFilename) ->
-	% Second parameter is MonitorNow (immediate):
-	create( Synchronous, true, TraceFilename ).
+create( Blocking, TraceFilename ) ->
+	create( Blocking, TraceFilename, log_mx_traces ).
+
+
+
+% Creates the trace supervisor, then blocks iff Blocking is true, with
+% default settings regarding start mode (immediate here, not deferred).
+% See create/4 for a more in-depth explanation of the parameters.
+% (static)	
+create( Blocking, TraceFilename, TraceType ) ->
+	create( Blocking, _MonitorNow = true, TraceFilename, TraceType ).
+
 
 
 % Creates a trace supervisor.
-%  - Synchronous tells whether the monitoring should be blocking (if true) or
+%  - Blocking tells whether the monitoring should be blocking (if true) or
 % not (the supervisor tool is then launched in the background). 
 %  - MonitorNow tells whether the monitoring should start immediately or only
-% when a monitor/synchronous_monitor method is called
+% when a monitor/blocking_monitor method is called
 %  - TraceFilename the trace file to monitor
-create(Synchronous,MonitorNow,TraceFilename) ->
-	case Synchronous of 
+%  - TraceType the expected type of the traces (ex: log_mx_traces, text_traces)
+create( Blocking, MonitorNow, TraceFilename, TraceType ) ->
+	BlockingParam = case Blocking of 
 	
 		true ->
-			new( TraceFilename, MonitorNow, self() ) ;
+			self() ;
 			
 		false ->
-			new( TraceFilename, MonitorNow, none )
+			none
 			
-	end.
+	end,
+	new( TraceFilename, TraceType, MonitorNow, BlockingParam ).
 		
 
 
-% Section for helper functions (not methods).
+% Returns the name of the tool and the corresponding file that should be 
+% used to monitor traces.
+% (const helper function)
+get_viewer_settings(State,Filename) ->
+	case ?getAttr(trace_type) of
+	
+		log_mx_traces ->
+			{"logmx.sh",Filename};
+		
+		{text_traces,text_only} ->
+			{io_lib:format( "nedit -columns ~B", [?TextWidth] ),Filename};
 
+		{text_traces,pdf} ->
+			PdfTargetFilename = file_utils:replace_extension( Filename, 
+				?TraceExtension, ".pdf" ), 
+			{"evince",PdfTargetFilename}
+		
+	end.
+	
