@@ -1,15 +1,18 @@
-ERLANG_TRACES_TOP = .
+TRACE_TOP = .
+
+
+.PHONY: release release-zip release-bz2   \
+	prepare-release clean-release clean-archive
+
+ 
+MODULES_DIRS = src doc #conf 
+
+
+
+# No trace supervisor or graphical output wanted when running all tests from 
+# a root directory (batch mode vs interactive one):	 	
+CMD_LINE_OPT = "--batch"
+
 	
-# To be used from Ceylan's autotools-based build system:
-TRACES_INSTALL_DIR = $(INSTALL_TARGET)/traces
-
-
-# Tests could be removed:
-install: all
-	@echo "  Installing Erlang trace developments to $(TRACES_INSTALL_DIR)"
-	@mkdir -p $(TRACES_INSTALL_DIR)
-	@for m in $(MODULES_DIRS); do if ! ( cd $$m && $(MAKE) install INSTALL_TARGET=$(TRACES_INSTALL_DIR) && cd .. ) ; then exit 1; fi ; done
-
-
-include $(ERLANG_TRACES_TOP)/GNUmakesettings.inc
+include $(TRACE_TOP)/GNUmakesettings.inc
 
