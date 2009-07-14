@@ -1,4 +1,3 @@
-% 
 % Copyright (C) 2003-2009 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
@@ -35,10 +34,16 @@
 % a silent execution.
 
 
+% Expected to be already done:
+%-include("test_constructs.hrl").
+
+
+
 % Defines trace filename, if not already specified:
 -ifndef(TraceFilename).
-	-define(TraceFilename,"Ceylan-test.log").
+	-define(TraceFilename,"Ceylan-trace-test" ++ ?TraceExtension ).
 -endif.
+
 
 
 % Use the --batch option (ex: erl --batch) to disable the
@@ -55,8 +60,8 @@
 			
 		_ ->
 			% Default: a trace supervisor is used.
-			class_TraceSupervisor:create( true, ?TraceFilename ),
-			io:format( "Waiting for trace supervisor to be closed." )			
+			class_TraceSupervisor:create( true, ?TraceFilename, ?TraceType )
+			%io:format( "Waiting for trace supervisor to be closed.~n" )		
 	end			
 ).
 
@@ -70,9 +75,11 @@
 		
 		_ ->
 			% A supervisor must be waited for:
+			%io:format( "Waiting for supervisor.~n" ),
 			receive
 
 				{wooper_result,monitor_ok} ->
+					%io:format( "Notification received from supervisor.~n" ),
 					?test_info([ "Traces successfully monitored." ])
 
 			end
