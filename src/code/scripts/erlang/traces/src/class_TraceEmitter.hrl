@@ -1,4 +1,3 @@
-% 
 % Copyright (C) 2003-2009 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
@@ -25,7 +24,6 @@
 %
 % Author: Olivier Boudeville (olivier.boudeville@esperide.com)
 % Creation date: July 1, 2007.
-
 
 
 % This header centralizes notably all macros related to the sending traces.
@@ -155,18 +153,52 @@
 %   Example: ?warning([ "This is my message" ]) 
 %
 
+
+
+% Some delay are added when error traces are sent, so that they can be stored
+% before the virtual machine is stopped, should it happen (ex: if an exception
+% is thrown).
+% Delays should better be replaced by synchronous operations. 
+
+
 % Sends a trace of 'fatal' type with specified parameters and an explicit state.
--define( send_fatal(Args), class_TraceEmitter:send(fatal,Args) ).
+-define( send_fatal(Args), 
+	class_TraceEmitter:send(fatal,Args),
+	% To ensure the asynchronous sending of the trace has a chance to
+	% complete, possibly before the interpreter is crashed:
+	timer:sleep(100)
+).
+
+
 
 % Sends a trace of 'fatal' type with specified parameters and implicit 'State'.
--define( fatal(Args), class_TraceEmitter:send(fatal,[State|Args] ) ).
+-define( fatal(Args),
+	class_TraceEmitter:send(fatal,[State|Args]),
+	% To ensure the asynchronous sending of the trace has a chance to
+	% complete, possibly before the interpreter is crashed:
+	timer:sleep(100)
+).
+
+
 
 
 % Sends a trace of 'error' type with specified parameters and an explicit state.
--define( send_error(Args), class_TraceEmitter:send(error,Args) ).
+-define( send_error(Args), 
+	class_TraceEmitter:send(error,Args),
+	% To ensure the asynchronous sending of the trace has a chance to
+	% complete, possibly before the interpreter is crashed:
+	timer:sleep(100)
+).
+
+	
 
 % Sends a trace of 'error' type with specified parameters and implicit 'State'.
--define( error(Args), class_TraceEmitter:send(error,[State|Args]) ).
+-define( error(Args),
+	class_TraceEmitter:send(error,[State|Args]), 
+	% To ensure the asynchronous sending of the trace has a chance to
+	% complete, possibly before the interpreter is crashed:
+	timer:sleep(100)
+).
 
 
 % Sends a trace of 'warning' type with specified parameters and an explicit
@@ -224,6 +256,47 @@
 
 
 -endif.
+
+
+
+% To send traces neither from a TraceEmitter instance nor from a test
+% (ex: in a static method):
+
+-define( notify_fatal(Message),
+	class_TraceEmitter:send_standalone(fatal,[Message]),
+	% To ensure the asynchronous sending of the trace has a chance to
+	% complete, possibly before the interpreter is crashed:
+	timer:sleep(100)
+).
+
+
+-define( notify_error(Message),
+	class_TraceEmitter:send_standalone(error,[Message]),
+	% To ensure the asynchronous sending of the trace has a chance to
+	% complete, possibly before the interpreter is crashed:
+	timer:sleep(10)
+).
+	
+	
+-define( notify_warning(Message),
+	class_TraceEmitter:send_standalone(warning,[Message])
+).
+
+
+-define( notify_info(Message),
+	class_TraceEmitter:send_standalone(info,[Message])
+).
+
+
+-define( notify_trace(Message),
+	class_TraceEmitter:send_standalone(trace,[Message])
+).
+
+
+-define( notify_debug(Message),
+	class_TraceEmitter:send_standalone(debug,[Message])
+).
+
 
 
 % Section dedicated to trace emitters that are not WOOPER-based and dedicated
