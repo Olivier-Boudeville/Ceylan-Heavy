@@ -1,4 +1,3 @@
-% 
 % Copyright (C) 2003-2009 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
@@ -27,11 +26,43 @@
 % Creation date: July 1, 2007.
 
 
+% Extension to be used for trace file names:
+-define( TraceExtension, ".traces" ).
+
+
+% Per-test trace file (must be defined before the TraceSupervisor include):
+-define( TraceFilename, ( atom_to_list(?MODULE) ++ ?TraceExtension ) ).
+
+
+
+% Defines the type of requested execution traces. 
+% The trace type can be either:
+%  - log_mx_traces, for LogMX-compliant traces (the default): then the trace
+% aggregator will use a proper encoding so that the Ceylan Java trace parser,
+% plugged into LogMX, allows this tool to be used with Ceylan
+%  - {text_traces,TraceTextOutputType} for more basic text-based traces: then
+% the trace aggregator will do its best to format the traces as a human-readable
+% trace text file; this is mostly useful when LogMX cannot be used for any
+% reason; TraceTextOutputType can be either 'text_only' (if just wanting to
+% display a text file), or 'pdf' (if wanting to read the traces from a PDF
+% file).
+-ifndef(TraceType).
+	-define(TraceType,log_mx_traces).
+	%-define(TraceType,{text_traces,text_only}).
+	%-define(TraceType,{text_traces,pdf}).
+-endif.
+
+
+% For supervisor macros (ex: init_trace_supervisor):
+-include("class_TraceSupervisor.hrl").	
+
+
+
 % Defines some macros to emit standalone traces, i.e. not from a TraceEmitter,
-% and not for test purpose (ex: when writing classical, non-OOP, code) 
+% and not for test purpose (ex: when writing classical, non-OOP, code). 
 % Note: using 'emit' instead of 'send' to prevent name clashes.
 
-% Usage: '?emit_debug([ "Starting !" ])'
+% Usage: '?emit_debug([ "Starting!" ])'
 
 
 -define( emit_fatal(Message),
