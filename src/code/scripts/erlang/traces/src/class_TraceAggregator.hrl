@@ -1,4 +1,3 @@
-% 
 % Copyright (C) 2003-2009 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
@@ -32,7 +31,11 @@
 -define(trace_aggregator_name,ceylan_trace_aggregator).
 
 
+% For TraceExtension:
+% Should be already done: -include("traces.hrl").
+
+
 % The name of the file to which the aggregator will write the traces it 
 % receives:
--define(trace_aggregator_filename,"Ceylan-traces.log").
+-define(trace_aggregator_filename,"Ceylan-traces" ++ ?TraceExtension ).
 
