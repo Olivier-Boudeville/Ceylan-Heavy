@@ -1,4 +1,3 @@
-% 
 % Copyright (C) 2003-2009 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
@@ -32,6 +31,8 @@
 % execution trace file, which will be synchronized automatically: 
 % history will be retrieved under a zipped form from the aggregator, and next
 % traces will be sent directly to this listener as well as to the aggregator.
+% So the aggregator must have been run with the LogMX trace type
+% beforehand (log_mx_traces).
 -module(class_TraceListener).
 
 
@@ -97,24 +98,29 @@ construct(State,?wooper_construct_parameters) ->
 			io:format( "~s Received from aggregator a trace synchronization "
 				"for file '~s', will store it in '~s'.~n", 
 				[ ?LogPrefix, TraceFilename, ListenerTraceFilename] ),
-			file_utils:zipped_term_to_unzipped_file(Bin,ListenerTraceFilename)
-				
-	end,
-		
-	% Will write in it newer traces:
-	{ok,File} = file:open( ListenerTraceFilename, [append] ),
-		
-	NewState = ?setAttributes( State, [ 
-			{trace_aggregator_pid,TraceAggregatorPid},
-			{trace_filename,ListenerTraceFilename},
-			{trace_file,File}
-	] ),
-	
-	EndState = executeOneway( NewState, monitor ),
-	
-	io:format( "~s Trace listener created.~n", [ ?LogPrefix ] ),
-	EndState.
+			file_utils:zipped_term_to_unzipped_file(Bin,ListenerTraceFilename),
 
+			% Will write in it newer traces:
+			{ok,File} = file:open( ListenerTraceFilename, [append] ),
+		
+			NewState = ?setAttributes( State, [ 
+				{trace_aggregator_pid,TraceAggregatorPid},
+				{trace_filename,ListenerTraceFilename},
+				{trace_file,File}
+			] ),
+	
+			EndState = executeOneway( NewState, monitor ),
+	
+			io:format( "~s Trace listener created.~n", [ ?LogPrefix ] ),
+			EndState;
+
+		{trace_zip,ErrorReason} ->
+			io:format( "~s Trace listener cannot listen to current trace "
+				"aggregator, as this aggregator does not use LogMX-based "
+				"traces.~n", [ ?LogPrefix ] ),
+			throw( {cannot_listen_aggregator,TraceAggregatorPid,ErrorReason} )
+							
+	end.
 	
 	
 % Overridden destructor.
