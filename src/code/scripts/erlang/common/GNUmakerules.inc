@@ -49,9 +49,12 @@ TEST_TARGETS = $(patsubst %.erl,%,$(TEST_SOURCES))
 
 
 
-.PHONY: all all-recurse test test-recurse doc-recurse build-tests \
-  launch help-erl clean clean-erlang clean-database clean-recurse \
-  realclean info info-files $(MODULES_DIRS)
+.PHONY: all all-recurse test test-recurse doc-recurse build-tests launch \
+  install-all install-announce install-ebin install-bin install-src \
+  install-include install-examples install-test install-doc \
+  help-erl clean clean-erlang clean-database clean-recurse realclean \
+  info info-files $(MODULES_DIRS)
+
 
 
 all: all-recurse $(BEAM_FILES)
@@ -132,13 +135,6 @@ test-recurse:
 	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then cd $$m && $(MAKE) -s test CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ; else echo "     (directory $$m skipped)" ; fi ) ; then exit 1; fi ; done
 
 
-# To execute standalone Erlang modules.
-%_exec: %.beam
-	@echo "     Running standalone module from $^"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@ -noshell --eval `echo $@ | sed 's|_exec|:main()|1'` $(CMD_LINE_OPT) AAA
-
-
-
 # Best placed here rather than in GNUmakerules-docutils.inc:
 doc: doc-recurse
 
@@ -156,6 +152,74 @@ build-tests: $(BEAM_FILES)
 launch: Emakefile
 	@echo "     Launching interpreter with default Ceylan settings"
 	@${ERL_PARAMETERIZED_LAUNCHER} --ln test_shell $(CMD_LINE_OPT)
+	
+
+
+# Installation section.
+
+
+install: all doc install-all
+
+
+install-all: install-announce install-bin install-ebin install-src \
+	install-include install-examples install-test install-doc
+	
+	
+install-announce:
+	@echo "  Installing package $(PACKAGE_NAME) in $(PACKAGE_INSTALLATION_PREFIX)"
+	
+	
+install-bin:
+	@if [ -n "$(EXEC_TO_INSTALL)" ] ; then \
+	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/bin ; \
+	cp -r $(EXEC_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/bin ; fi
+
+
+install-ebin:
+	@if [ -n "$(BEAMS_TO_INSTALL)" ] ; then \
+	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/ebin ; \
+	cp -r $(BEAMS_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/ebin ; fi
+
+ 
+install-src:
+	@if [ -n "$(SOURCES_TO_INSTALL)" ] ; then \
+	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/src ; \
+	cp -r $(SOURCES_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/src ; fi
+
+
+install-include:
+	@if [ -n "$(INCLUDES_TO_INSTALL)" ] ; then \
+	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/include ; \
+	cp -r $(INCLUDES_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/include ; fi
+
+
+install-examples:
+	@if [ -n "$(EXAMPLES_TO_INSTALL_BEAMS)" ] ; then \
+	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/examples/ebin ; \
+	cp -r $(EXAMPLES_TO_INSTALL_BEAMS) \
+	$(PACKAGE_INSTALLATION_PREFIX)/examples/ebin ; fi
+	@if [ -n "$(EXAMPLES_TO_INSTALL_SRC)" ] ; then \
+	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/examples/src ; \
+	cp -r $(EXAMPLES_TO_INSTALL_SRC) \
+	$(PACKAGE_INSTALLATION_PREFIX)/examples/src ; fi
+
+
+install-test:
+	@if [ -n "$(TESTS_TO_INSTALL_BEAMS)" ] ; then \
+	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/test/ebin ; \
+	cp -r $(TESTS_TO_INSTALL_BEAMS) \
+	$(PACKAGE_INSTALLATION_PREFIX)/test/ebin ; fi
+	@if [ -n "$(TESTS_TO_INSTALL_SRC)" ] ; then \
+	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/test/src ; \
+	cp -r $(TESTS_TO_INSTALL_SRC) \
+	$(PACKAGE_INSTALLATION_PREFIX)/test/src ; fi
+
+
+install-doc:
+	@if [ -n "$(DOC_TO_INSTALL)" ] ; then \
+	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/doc ; \
+	cp -r $(DOC_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/doc ; fi
+
 	
 	
 help-erl:
@@ -200,4 +264,8 @@ info-files:
 	@echo "BEAM_FILES   = $(BEAM_FILES)"
 	@echo "TEST_SOURCES = $(TEST_SOURCES)"
 	@echo "TEST_TARGETS = $(TEST_TARGETS)"
+	
+	
+info-install:
+	@echo "BEAMS_TO_INSTALL = $(BEAMS_TO_INSTALL)"
 	
