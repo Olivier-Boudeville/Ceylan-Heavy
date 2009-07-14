@@ -132,20 +132,20 @@ sendTraces(State) ->
 	?trace(   ["Still livin' in a trace world! "  ] ),
 	?debug(   ["Still livin' in a debug world! "  ] ),
 	
-	?fatal(   ["Ouh-ouh-ouuuuuh fatal",   ?execution_start    ] ),
-	?error(   ["Ouh-ouh-ouuuuuh error",   ?execution_save     ] ),
+	?fatal(   ["Ouh-ouh-ouuuuuh fatal",   ?application_start    ] ),
+	?error(   ["Ouh-ouh-ouuuuuh error",   ?application_save     ] ),
 	?warning( ["Ouh-ouh-ouuuuuh warning", ?time               ] ),
 	?info(    ["Ouh-ouh-ouuuuuh info",    ?execution          ] ),
-	?trace(   ["Ouh-ouh-ouuuuuh trace",   ?execution_start    ] ),
-	?debug(   ["Ouh-ouh-ouuuuuh debug",   ?execution_start    ] ),
+	?trace(   ["Ouh-ouh-ouuuuuh trace",   ?application_start    ] ),
+	?debug(   ["Ouh-ouh-ouuuuuh debug",   ?application_start    ] ),
 	
 	
-	?fatal(   ["Oh yeah fatal",   ?execution_start,  5 ] ),
-	?error(   ["Oh yeah error",   ?execution_save,   6 ] ),
+	?fatal(   ["Oh yeah fatal",   ?application_start,  5 ] ),
+	?error(   ["Oh yeah error",   ?application_save,   6 ] ),
 	?warning( ["Oh yeah warning", ?time,             7 ] ),
 	?info(    ["Oh yeah info",    ?execution,        8 ] ),
-	?trace(   ["Oh yeah trace",   ?execution_start,  9 ] ),
-	?debug(   ["Oh yeah debug",   ?execution_start, 10 ] ),
+	?trace(   ["Oh yeah trace",   ?application_start,  9 ] ),
+	?debug(   ["Oh yeah debug",   ?application_start, 10 ] ),
 	
 	?wooper_return_state_result(State,ok).
 
