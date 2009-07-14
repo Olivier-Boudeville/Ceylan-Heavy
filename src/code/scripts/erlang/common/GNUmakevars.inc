@@ -15,6 +15,16 @@ ifndef PROJECT_VERSION
 endif
 
 
+ifndef PACKAGE_NAME
+	PACKAGE_NAME = common
+endif
+
+
+ifndef PACKAGE_TOP
+	PACKAGE_TOP = $(COMMON_TOP)
+endif
+
+
 ARCHIVE_ROOT := $$HOME/Archive/$(PROJECT_NAME)
 
 
@@ -33,6 +43,39 @@ PROJECT_RELEASE_BASE        := $(PROJECT_NAME)-$(PROJECT_VERSION)
 PROJECT_RELEASE_ARCHIVE_ZIP := $(PROJECT_RELEASE_BASE).zip
 PROJECT_RELEASE_ARCHIVE_BZ2 := $(PROJECT_RELEASE_BASE).tar.bz2
 
+
+
+# Installation section.
+
+# If wanting to install that package, following installation prefix is used:
+INSTALLATION_PREFIX := $$HOME/Software
+
+PACKAGE_INSTALLATION_PREFIX = $(INSTALLATION_PREFIX)/$(PACKAGE_NAME)
+
+
+# Could rely on the permissions instead:
+EXEC_TO_INSTALL := `find $(PACKAGE_TOP) -name '*.sh' -a ! -name '*.exe'`
+
+
+BEAMS_TO_INSTALL := `find $(PACKAGE_TOP) -name examples -prune -o \( -name '*.beam' -a ! -name '*_test.beam' -a ! -name 'class_Test*.beam' \) -a -print`
+
+SOURCES_TO_INSTALL := `find $(PACKAGE_TOP) -name examples -prune -o \( -name '*.erl' -a ! -name '*_test.erl' -a ! -name 'class_Test*.erl' \) -a -print`
+
+
+EXAMPLES_TO_INSTALL_BEAMS := `[ ! -d examples ] || find $(PACKAGE_TOP)/examples -name '*.beam'`
+
+EXAMPLES_TO_INSTALL_SRC := `[ ! -d examples ] || find $(PACKAGE_TOP)/examples -name '*.erl'`
+
+
+INCLUDES_TO_INSTALL := `find $(PACKAGE_TOP) -name '*.hrl'`
+
+
+TESTS_TO_INSTALL_BEAMS := `find $(PACKAGE_TOP) -name '*_test.beam' -o -name 'class_Test*.beam'`
+
+TESTS_TO_INSTALL_SRC := `find $(PACKAGE_TOP) -name '*_test.erl' -o -name 'class_Test*.erl'`
+
+
+DOC_TO_INSTALL := `find $(PACKAGE_TOP) -name '*.pdf' -o -name '*.html' -o -name '*.png'`
 
 
 
