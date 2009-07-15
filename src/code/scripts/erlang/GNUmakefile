@@ -1,16 +1,31 @@
-CEYLAN_ERLANG_TOP = .
 
+
+CEYLAN_ERLANG_TOP = .
 
 MODULES_DIRS = common wooper traces tools
 
-WOOPER_TOP = $(CEYLAN_ERLANG_TOP)/wooper
 
-include $(WOOPER_TOP)/GNUmakesettings.inc
+# No trace supervisor or graphical output wanted when running all tests from 
+# a root directory (batch mode vs interactive one):	 	
+CMD_LINE_OPT = "--batch"
 
 
-# To be called from code/scripts Makefile.am, with INSTALL_TARGET defined:
+PROJECT_NAME = "Ceylan-Erlang"
+
+
 install:
-	@if [ -z "$(INSTALL_TARGET)" ]; then echo "  Error, no installation target directory specified (installation should be performed from the 'Ceylan/trunk/src/code/scripts/' directory)." 1>&2 ; exit 1 ; fi
-	@echo "  Installing Erlang developments to $(INSTALL_TARGET)"
-	@for m in $(MODULES_DIRS); do if ! ( cd $$m && $(MAKE) -s install INSTALL_TARGET=$(INSTALL_TARGET) && cd .. ) ; then exit 1; fi ; done
+	@echo "  Installing $(PROJECT_NAME) in default locations"
+	@for m in $(MODULES_DIRS); do \
+	if ! ( if [ -d $$m ] ; then cd $$m && \
+	$(MAKE) -s install CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. \
+	; else echo "     (directory $$m skipped)" ; fi ) ; \
+	then exit 1; fi ; done
+
+clean:
+	@echo "  Cleaning $(PROJECT_NAME)"
+	@for m in $(MODULES_DIRS); do \
+	if ! ( if [ -d $$m ] ; then cd $$m && \
+	$(MAKE) -s clean CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. \
+	; else echo "     (directory $$m skipped)" ; fi ) ; \
+	then exit 1; fi ; done
 
