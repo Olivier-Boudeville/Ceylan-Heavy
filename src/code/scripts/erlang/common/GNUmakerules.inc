@@ -172,53 +172,53 @@ install-announce:
 install-bin:
 	@if [ -n "$(EXEC_TO_INSTALL)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/bin ; \
-	cp -r $(EXEC_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/bin ; fi
+	cp -f $(EXEC_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/bin ; fi
 
 
 install-ebin:
 	@if [ -n "$(BEAMS_TO_INSTALL)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/ebin ; \
-	cp -r $(BEAMS_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/ebin ; fi
+	cp -f $(BEAMS_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/ebin ; fi
 
  
 install-src:
 	@if [ -n "$(SOURCES_TO_INSTALL)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/src ; \
-	cp -r $(SOURCES_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/src ; fi
+	cp -f $(SOURCES_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/src ; fi
 
 
 install-include:
 	@if [ -n "$(INCLUDES_TO_INSTALL)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/include ; \
-	cp -r $(INCLUDES_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/include ; fi
+	cp -f $(INCLUDES_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/include ; fi
 
 
 install-examples:
 	@if [ -n "$(EXAMPLES_TO_INSTALL_BEAMS)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/examples/ebin ; \
-	cp -r $(EXAMPLES_TO_INSTALL_BEAMS) \
+	cp -f $(EXAMPLES_TO_INSTALL_BEAMS) \
 	$(PACKAGE_INSTALLATION_PREFIX)/examples/ebin ; fi
 	@if [ -n "$(EXAMPLES_TO_INSTALL_SRC)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/examples/src ; \
-	cp -r $(EXAMPLES_TO_INSTALL_SRC) \
+	cp -f $(EXAMPLES_TO_INSTALL_SRC) \
 	$(PACKAGE_INSTALLATION_PREFIX)/examples/src ; fi
 
 
 install-test:
 	@if [ -n "$(TESTS_TO_INSTALL_BEAMS)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/test/ebin ; \
-	cp -r $(TESTS_TO_INSTALL_BEAMS) \
+	cp -f $(TESTS_TO_INSTALL_BEAMS) \
 	$(PACKAGE_INSTALLATION_PREFIX)/test/ebin ; fi
 	@if [ -n "$(TESTS_TO_INSTALL_SRC)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/test/src ; \
-	cp -r $(TESTS_TO_INSTALL_SRC) \
+	cp -f $(TESTS_TO_INSTALL_SRC) \
 	$(PACKAGE_INSTALLATION_PREFIX)/test/src ; fi
 
 
 install-doc:
 	@if [ -n "$(DOC_TO_INSTALL)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/doc ; \
-	cp -r $(DOC_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/doc ; fi
+	cp -f $(DOC_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/doc ; fi
 
 	
 	
