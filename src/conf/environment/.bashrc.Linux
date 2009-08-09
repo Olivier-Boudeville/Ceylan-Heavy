@@ -55,33 +55,26 @@ fi
 
 
 # Erlang:
-export ERLANG_ROOT=~/Software/Erlang/Erlang-current-install
-export PATH=${ERLANG_ROOT}/bin:${PATH}
+export ERLANG_ROOT="$HOME/Software/Erlang/Erlang-current-install"
+export PATH="${ERLANG_ROOT}/bin:${PATH}"
 
+# Sox:
+export PATH="$HOME/Software/Sox/bin:${PATH}"
 
-# Java:
-# (nothing)
-
-# tidy:
-export PATH=$PATH:/usr/local/Logiciels/tidy/bin
-
-# astyle:
-export PATH=$PATH:/usr/local/Logiciels/astyle
 
 # Python Imaging Library (PIL):
 IMAGING_VERSION=1.1.4
 PIL_ROOT=/usr/local/Logiciels/Imaging-${IMAGING_VERSION}/PIL
 
-# aranor CVS repository:
-export CVSROOT=:ext:$USER@aranor:/var/lib/cvs
 
 
 
 # Linux-specific aliases:
 
-alias l='ls -aF --color'
-alias ls='ls -F --color'
-alias ll='ls -aF -l --color'
+alias l='ls -aF --color=auto'
+alias ls='ls -F --color=auto'
+alias ll='ls -aF -l --color=auto'
+
 
 # "cd" keyboard counterparts:
 alias xs='cd $1'
