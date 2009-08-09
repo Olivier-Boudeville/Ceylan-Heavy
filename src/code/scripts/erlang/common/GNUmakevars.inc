@@ -47,8 +47,14 @@ PROJECT_RELEASE_ARCHIVE_BZ2 := $(PROJECT_RELEASE_BASE).tar.bz2
 
 # Installation section.
 
-# If wanting to install that package, following installation prefix is used:
-INSTALLATION_PREFIX := $$HOME/Software
+
+# If wanting to install that package, following installation prefix is used.
+# INSTALLATION_PREFIX should be defined on a per-project basis, or be
+# overridden on the command line:
+ifndef INSTALLATION_PREFIX
+	INSTALLATION_PREFIX = $$HOME/Software
+endif
+
 
 PACKAGE_INSTALLATION_PREFIX = $(INSTALLATION_PREFIX)/$(PACKAGE_NAME)
 
