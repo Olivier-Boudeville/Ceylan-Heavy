@@ -521,6 +521,7 @@ namespace Ceylan
 	}
 	
 	
+	
 	/**
 	 * Prints in standard output a checkpoint message, with a checkpoint count
 	 * incremented at each call, starting from 1.
@@ -529,6 +530,7 @@ namespace Ceylan
 	 *
 	 */
 	CEYLAN_DLL void checkpoint( const std::string & message = "" ) ;
+	
 	
 	
 	/**
