@@ -473,20 +473,22 @@ namespace Ceylan
 		/**
 		 * Relative comparison.
 		 *
-		 * @note Not that useful, since compilers usually complain about
-		 * an ambiguous call of overloaded `Abs(...)', which should be 
-		 * templated too.
+		 * @note When the values to compare are integers, it is generally useful
+		 * to use a floating-point type for typename T, for example 
+		 * Ceylan:Float32, to avoid ambiguity with the Abs call. So in all
+		 * cases T is expected to be a floating-point value.
 		 *
 		 * @param x the first value to compare.
 		 *
 		 * @param y the second value to compare.
 		 *
-		 * @note The chosen epsilon, the double of the criterion of relative 
+		 * @note The chosen epsilon, the criterion of relative 
 		 * equality, is the default epsilon used for the templated type for
 		 * tests against zero, and EpsilonFloat32 for the relative test.
 		 *
 		 */
-		template <typename T> bool AreRelativelyEqual( T x, T y ) 
+		template <typename T>
+		bool AreRelativelyEqual( T x, T y ) 
 		{
 		
 		
@@ -510,10 +512,16 @@ namespace Ceylan
 			 * 
 			 * Relative comparison: compare their difference (|x-y|) 
 			 * to their mean value ((x+y)/2), here using 
-			 * EpsilonFloat32/2 as equality criterion.
+			 * EpsilonFloat32 as equality criterion.
+			 *
+			 * @note The second Abs, in the denominator, is necessary if 
+			 * x + y is negative, for example if x and y are negative.
+			 * The cast to a T value is then necessary to avoid an integer
+			 * division. 
 			 *
 			 */
-			return ( Abs( x - y ) / ( x + y ) < EpsilonFloat32 ) ;
+			return ( 2 * Abs( x - y ) / static_cast<T>( Abs( x + y ) ) 
+				< static_cast<T>( EpsilonFloat32 ) ) ;
 			
 		}
 		
@@ -523,22 +531,24 @@ namespace Ceylan
 		/**
 		 * Relative comparison with user-supplied epsilon.
 		 *
-		 * @note Not that useful, since compilers usually complain about
-		 * an ambiguous call of overloaded `Abs(...)', which should be 
-		 * templated too.
+		 * @note When the values to compare are integers, it is generally useful
+		 * to use a floating-point type for typename T, for example 
+		 * Ceylan:Float32, to avoid ambiguity with the Abs call. So in all
+		 * cases T is expected to be a floating-point value.
 		 *
 		 * @param x the first value to compare.
 		 *
 		 * @param y the second value to compare.
 		 *
-		 * @param epsilon the double of the criterion of relative equality.
+		 * @param epsilon the criterion of relative equality.
 		 *
 		 */
-		template <typename T> bool AreRelativelyEqual( T x, T y, 
-			Ceylan::LongFloat epsilon ) 
+		template <typename T>
+		bool AreRelativelyEqual( T x, T y, Ceylan::LongFloat epsilon ) 
 		{
-		
-		
+				
+			T castedEpsilon = static_cast<T>( epsilon ) ;
+			
 			/*
 			 * One goal, avoid division by zero on final formula:
 			 * x + y == 0 iff x == -y, in this case:  
@@ -547,19 +557,25 @@ namespace Ceylan
 			 * hence they are not deemed equal.
 			 *
 			 */
-			if ( IsNull( x + y, epsilon ) )
-				return IsNull( x, epsilon ) ;
+			if ( IsNull( x + y, castedEpsilon ) )
+				return IsNull( x, castedEpsilon ) ;
 				
 				
 			/*
 			 * Here x + y != 0.
 			 * 
 			 * Relative comparison: compare their difference (|x-y|) 
-			 * to their mean value ((x+y)/2), here using Epsilon/2 as 
+			 * to their mean value ((x+y)/2), here using epsilon as 
 			 * equality criterion.
 			 *
+			 * @note The second Abs, in the denominator, is necessary if 
+			 * x + y is negative, for example if x and y are negative.
+			 * The cast to a T value is then necessary to avoid an integer
+			 * division. 
+			 *
 			 */
-			return ( Abs( x - y ) / ( x + y ) < epsilon ) ;
+			return ( 2 * Abs( x - y ) / static_cast<T>( Abs( x + y ) ) 
+				< castedEpsilon ) ;
 			
 		}
 		
