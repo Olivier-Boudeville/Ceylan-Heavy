@@ -1,4 +1,4 @@
-# Prerequisite: TRACE_TOP must be set.
+# Prerequisite: TRACES_TOP must be set.
 
 
 # Project section.
@@ -21,7 +21,7 @@ endif
 
 
 ifndef PACKAGE_TOP
-	PACKAGE_TOP = $(TRACE_TOP)
+	PACKAGE_TOP = $(TRACES_TOP)
 endif
 
 
@@ -32,16 +32,16 @@ TRACE_RELEASE_ARCHIVE_BZ2 := $(TRACE_RELEASE_BASE).tar.bz2
 
 
 # Source section.
-TRACE_SRC  := $(TRACE_TOP)/src
+TRACE_SRC  := $(TRACES_TOP)/src
 
 # BEAM path section.
-TRACE_BEAM  := $(TRACE_TOP)/src
+TRACE_BEAM  := $(TRACES_TOP)/src
 
 # Include path section.
 TRACE_INC = -I$(TRACE_SRC)
 
 
-DOC_ROOT      = $(TRACE_TOP)/../../../doc
+DOC_ROOT      = $(TRACES_TOP)/../../../doc
 
 
 INC += $(TRACE_INC)
@@ -65,5 +65,5 @@ endif
 BEAM_DIRS += $(TRACE_BEAM)
 
 
-WOOPER_TOP = $(TRACE_TOP)/../wooper
+WOOPER_TOP = $(TRACES_TOP)/../wooper
 
