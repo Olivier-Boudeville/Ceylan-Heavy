@@ -1,7 +1,7 @@
-TRACE_TOP = ..
+TRACES_TOP = ..
 
 	
-include $(TRACE_TOP)/GNUmakesettings.inc
+include $(TRACES_TOP)/GNUmakesettings.inc
 
 
 # Lists the modules that should be recompiled once TraceType (as defined in
