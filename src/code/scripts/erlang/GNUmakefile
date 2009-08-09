@@ -13,13 +13,28 @@ CMD_LINE_OPT = "--batch"
 PROJECT_NAME = "Ceylan-Erlang"
 
 
-install:
+
+.PHONY: all install clean
+
+
+
+all:
+	@echo "  Building $(PROJECT_NAME)"
+	@for m in $(MODULES_DIRS); do \
+	if ! ( if [ -d $$m ] ; then cd $$m && \
+	$(MAKE) -s all CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. \
+	; else echo "     (directory $$m skipped)" ; fi ) ; \
+	then exit 1; fi ; done
+
+
+install: all
 	@echo "  Installing $(PROJECT_NAME) in default locations"
 	@for m in $(MODULES_DIRS); do \
 	if ! ( if [ -d $$m ] ; then cd $$m && \
 	$(MAKE) -s install CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. \
 	; else echo "     (directory $$m skipped)" ; fi ) ; \
 	then exit 1; fi ; done
+
 
 clean:
 	@echo "  Cleaning $(PROJECT_NAME)"
