@@ -1,18 +1,14 @@
 # Bash configuration file.
 
 # Created 2004, April 16
-# Author : Olivier Boudeville (olivier.boudeville@online.fr)
+# Author: Olivier Boudeville (olivier.boudeville@online.fr)
 
 # This script sets main all-UNIX practical tricks.
 
 
-alias ll='ls -l'
 alias la='ls -alg $*|more'
 alias lc='ls -clt'
 
-alias l='ls -aF'
-alias ls='ls -F'
-alias ll='ls -aF -l'
 
 alias lr='ls -Rx $*|more'
 alias dir='ls -l $*|more'
@@ -27,18 +23,38 @@ alias printText='a2ps'
 alias mo='more'
 alias r='fc -e -'
 
-alias sonata='ssh $USER@sonata'
-alias aranor='ssh $USER@aranor'
 
-# "cd" keyboard counterparts :
+# "cd" keyboard counterparts:
 alias xs='cd $1'
 alias vf='cd $1'
 
-# Shell section :
+
+# Shell section:
 
 HISTSIZE=1000
 IGNOREOF=1 
 set -o emacs 
 umask 002
 
-export PS1="\n\h \u \t "'$PWD'"\n> "  
+colors_wanted=0
+
+if [ $colors_wanted -eq 0 ] ; then
+
+	# We want colors:
+	export PS1="\n\e[95m\h \e[92m\u\e[95m \e[96m\t \e[93m"'$PWD'"\e[97m\n> "
+
+	alias l='ls -aF --color=auto'
+	alias ls='ls -F --color=auto'
+	alias ll='ls -aF -l --color=auto'
+	
+else
+	
+	# Without colors:
+	export PS1="\n\h \u \t "'$PWD'"\n> "
+
+	alias l='ls -aF'
+	alias ls='ls -F'
+	alias ll='ls -aF -l'
+
+fi
+
