@@ -1,4 +1,4 @@
-TRACE_TOP = .
+TRACES_TOP = .
 
 
 .PHONY: release release-zip release-bz2   \
@@ -14,5 +14,5 @@ MODULES_DIRS = src doc #conf
 CMD_LINE_OPT = "--batch"
 
 	
-include $(TRACE_TOP)/GNUmakesettings.inc
+include $(TRACES_TOP)/GNUmakesettings.inc
 
