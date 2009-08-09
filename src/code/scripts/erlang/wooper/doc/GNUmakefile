@@ -11,7 +11,8 @@ DOC_FILES = $(DOG_GENERATED_FILES) wooper-example.png
 WOOPER_WEB_DIR = $(WOOPER_TOP)/../../../../doc/web/main/documentation/wooper
 
 
-doc:
+
+full-doc:
 	@$(MAKE) $(DOG_GENERATED_FILES) VIEW_PDF=no
 
 
