@@ -1,5 +1,5 @@
-TRACE_TOP = ..
+TRACES_TOP = ..
 
 	
-include $(TRACE_TOP)/GNUmakesettings.inc
+include $(TRACES_TOP)/GNUmakesettings.inc
 
