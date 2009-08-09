@@ -1,5 +1,6 @@
 #!/bin/sh
 
+
 test_log_file=`pwd`"/testsOutcome.txt"
 playtest_local_file="playTests-local.sh"
 
@@ -236,9 +237,14 @@ check_no_ceylan_server_running()
 
 	if [ -n "${hanging_tests}" ] ; then
 	
-		ERROR_INTERNAL "apparently there is at least one hanging test before the test suite is launched, please remove it so that it cannot interfere with these new tests (${hanging_tests})" 
-		exit 10
+		# User might be looking at the HTML log output, that's ok:
+		if [ ! ${hanging_tests} = "firefox" ] ; then
 		
+			ERROR_INTERNAL "apparently there is at least one hanging test before the test suite is launched, please remove it so that it cannot interfere with these new tests (detected: ${hanging_tests})" 
+			exit 10
+			
+		fi
+			
 	fi
 
 }
