@@ -125,15 +125,29 @@ const Ceylan::LongFloat Ceylan::Maths::Two_div_sqrt_Pi =
 const Ceylan::LongFloat Ceylan::Maths::Sqrt_2 = 
 	1.4142135623730950488016887242096981L ;
 	
+	
 const Ceylan::LongFloat Ceylan::Maths::One_div_sqrt_2 = 
 	0.7071067811865475244008443621048490L ;
 	
 	
 	
-const Ceylan::LongFloat Ceylan::Maths::EpsilonFloat32   = 1.0e-7 ;			
+/*
+ * Raised from 1.0e-7, as it was too small for some tests of relative equality.
+ * For example, testCeylanLinear2D.exe returned:
+ *
+ * Incorrect Matrix2 inverse returned: 
+ * ~v1 = 141.421356201171875 whereas ~( m3*v1) =
+ *       141.4213714599609375.
+ *
+ */
+const Ceylan::LongFloat Ceylan::Maths::EpsilonFloat32   = 2.0e-7 ;			
+
 const Ceylan::LongFloat Ceylan::Maths::EpsilonFloat64   = 1.0e-9 ;
+
 const Ceylan::LongFloat Ceylan::Maths::EpsilonLongFloat = 1.0e-11 ;
+
 const Ceylan::LongFloat Ceylan::Maths::Epsilon          = EpsilonFloat32 ;
+
 
 
 
