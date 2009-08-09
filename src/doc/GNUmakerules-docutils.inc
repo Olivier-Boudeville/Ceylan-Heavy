@@ -5,8 +5,8 @@
 
 .PHONY: doc doc-recurse info info-doc-local full-doc create-doc regenerate-doc \
  make-doc-repository view-doc to-print info-doc-local info-doc-tools           \
- clean clean-doc-repository clean-generated clean-dot clean-doc-logs clean-gnuplot  \
- clean-png clean-rst
+ clean clean-doc-repository clean-generated clean-dot clean-doc-logs           \
+ clean-gnuplot clean-png clean-rst
 
 
 
@@ -25,6 +25,7 @@ IMAGE_MAGICK := `which convert`
 
 # Not all python scripts generate images:
 PNG_FROM_PYTHON = $(patsubst %-png-generator.py,%.png,$(wildcard *-png-generator.py))
+
 
 PNG_FROM_PYTHON_NEGATED = $(patsubst %-png-generator.py,%-negated.png,$(wildcard *-png-generator.py))
 
@@ -153,6 +154,9 @@ VIEW_PDF := yes
 	@$(RST_GENERATOR) $< $(PROJECT_CSS)
 
 
+%.pdf: %.traces
+	@echo "     Generating PDF report $@ from $<"
+	@if $(RST_GENERATOR) $< --pdf ; then if [ "$(VIEW_PDF)" != "no" ] ; then $(PDF_VIEWER) $@ & fi; fi
 
 
 
