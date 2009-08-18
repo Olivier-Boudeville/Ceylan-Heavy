@@ -27,11 +27,14 @@ all:
 	then exit 1; fi ; done
 
 
+	
 install: all
-	@echo "  Installing $(PROJECT_NAME) in default locations"
+	@echo "  Installing $(PROJECT_NAME) with INSTALLATION_PREFIX" \
+	"set to $(INSTALLATION_PREFIX)"
 	@for m in $(MODULES_DIRS); do \
 	if ! ( if [ -d $$m ] ; then cd $$m && \
-	$(MAKE) -s install CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. \
+	$(MAKE) -s install CMD_LINE_OPT="${CMD_LINE_OPT}" \
+	INSTALLATION_PREFIX="$(INSTALLATION_PREFIX)" && cd .. \
 	; else echo "     (directory $$m skipped)" ; fi ) ; \
 	then exit 1; fi ; done
 
