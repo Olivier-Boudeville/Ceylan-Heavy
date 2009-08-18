@@ -13,7 +13,7 @@ cd $indexer_dir
 
 
 # Paths are specified both for source directories and for installation ones:
-beam_paths=". ../../common/src ../../common/ebin"
+beam_paths=". ../ebin ../../common/src ../../common/ebin"
 
 script_options="$*"
 
