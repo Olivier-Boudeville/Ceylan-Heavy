@@ -50,11 +50,12 @@ TEST_TARGETS = $(patsubst %.erl,%,$(TEST_SOURCES))
 
 
 .PHONY: all all-recurse test test-recurse doc-recurse build-tests launch \
-  install-all install-announce install-ebin install-bin install-src \
-  install-include install-examples install-test install-doc \
-  help-erl clean clean-erlang clean-database clean-recurse realclean \
+  install-all install-announce install-ebin install-bin install-src      \
+  install-include install-examples install-test install-doc              \
+  info-install                                                           \
+  help-erl clean clean-erlang clean-database clean-recurse realclean     \
   info info-files $(MODULES_DIRS)
-
+ 
 
 
 all: all-recurse $(BEAM_FILES)
@@ -162,7 +163,8 @@ install: all doc install-all
 
 
 install-all: install-announce install-bin install-ebin install-src \
-	install-include install-examples install-test install-doc
+	install-include install-examples install-test install-doc  \
+	
 	
 	
 install-announce:
@@ -220,7 +222,18 @@ install-doc:
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/doc ; \
 	cp -f $(DOC_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/doc ; fi
 
-	
+
+info-install:
+	@echo "EXEC_TO_INSTALL = $(EXEC_TO_INSTALL)"
+	@echo "BEAMS_TO_INSTALL = $(BEAMS_TO_INSTALL)"
+	@echo "SOURCES_TO_INSTALL = $(SOURCES_TO_INSTALL)"
+	@echo "INCLUDES_TO_INSTALL = $(INCLUDES_TO_INSTALL)"
+	@echo "EXAMPLES_TO_INSTALL_BEAMS = $(EXAMPLES_TO_INSTALL_BEAMS)"
+	@echo "EXAMPLES_TO_INSTALL_SRC = $(EXAMPLES_TO_INSTALL_SRC)"
+	@echo "TESTS_TO_INSTALL_BEAMS = $(TESTS_TO_INSTALL_BEAMS)"
+	@echo "TESTS_TO_INSTALL_SRC = $(TESTS_TO_INSTALL_SRC)"
+	@echo "DOC_TO_INSTALL = $(DOC_TO_INSTALL)"
+		
 	
 help-erl:
 	@echo "To test hello.erl: 'erl', then 'c(hello).'," \
@@ -264,8 +277,4 @@ info-files:
 	@echo "BEAM_FILES   = $(BEAM_FILES)"
 	@echo "TEST_SOURCES = $(TEST_SOURCES)"
 	@echo "TEST_TARGETS = $(TEST_TARGETS)"
-	
-	
-info-install:
-	@echo "BEAMS_TO_INSTALL = $(BEAMS_TO_INSTALL)"
-	
+		
