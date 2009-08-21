@@ -30,7 +30,8 @@
 % See the basic_utils.erl tested module.
 -module(basic_utils_test).
 
--export([run/0]).
+
+-export([ run/0 ]).
 
 -define(Tested_module,basic_utils).
 
@@ -184,7 +185,25 @@ run() ->
 			basic_utils:format_text_for_width( JustWideEnoughLine,
 				NewTargetWidth) ] ),
 	
-	 		
+	
+	FirstTestString = "Hello world!",
+	
+	io:format( "   Determining whether '~p' is a string: ~w.~n",
+		[ FirstTestString, basic_utils:is_string(FirstTestString) ] ),
+			 	
+				
+	SecondTestString = [ $o, [ $s, $d ], $l ],
+	
+	io:format( "   Determining whether '~p' is a string: ~w.~n",
+		[ SecondTestString, basic_utils:is_string(SecondTestString) ] ),
+	
+			 	
+	ThirdTestString = [ $e, 1, 2, $r ],
+	
+	io:format( "   Determining whether '~p' is a string: ~w.~n",
+		[ ThirdTestString, basic_utils:is_string(ThirdTestString) ] ),
+			 	
+					
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().
 
