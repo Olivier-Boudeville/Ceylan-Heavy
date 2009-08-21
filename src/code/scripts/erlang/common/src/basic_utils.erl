@@ -36,15 +36,19 @@
 % Note that string:tokens can be used to split strings.
 
 
+
 % Timestamp-related functions.
 -export([ get_timestamp/0, get_textual_timestamp/0, get_textual_timestamp/1,
 	timestamp_to_string/1, get_duration/2, get_textual_duration/2 ]).
 	
 	
+	
 % String management functions.
 -export([ term_toString/1, term_to_string/1, integer_to_string/1,
 	string_list_to_string/1, ipv4_to_string/1, ipv4_to_string/2, join/2,
-	remove_ending_carriage_return/1, format_text_for_width/2, pad_string/2 ]).
+	remove_ending_carriage_return/1, format_text_for_width/2, pad_string/2,
+	is_string/1 ]).
+
 	
 	
 % Registration functions.
@@ -53,22 +57,27 @@
 	wait_for_global_registration_of/1, wait_for_local_registration_of/1 ]).
 
 
-% Random functions.
+
+% Random-related functions.
 -export([ start_random_source/3, start_random_source/1, stop_random_source/0,
 	get_random_value/0, get_random_value/1, get_random_module_name/0,
 	get_random_seed/0, random_select/2, random_permute/1 ]).
+	
 	
 
 % List management functions.
 -export([ get_element_at/2, remove_element_at/2, subtract_all_duplicates/2 ]). 
 
 
+
 % User-related functions.
 -export([ speak/1, notify_user/1, notify_user/2 ]).
 
 
+
 % Node-related functions.
 -export([ generate_valid_node_name_from/1, check_node_validity/1 ]). 
+
 
 
 % Miscellaneous functions.
@@ -309,6 +318,24 @@ join_words( [Word|RemainingWords], Width, AccLines, CurrentLine,
 % left-justified.
 pad_string( String, Width ) when length(String) =< Width ->
 	lists:flatten( io_lib:format( "~*.s", [ -Width, String ] ) ).
+
+
+
+% Returns true iff the parameter is a string.
+% Taken from http://lethain.com
+% (see distinguishing-strings-from-lists-in-erlang)
+% Note: something like [ $e, 1, 2, $r ] is deemed to be a string.
+is_string( [] ) -> 
+	true;
+	
+is_string( [H|_] ) when not is_integer(H) -> 
+	false;
+	
+is_string( [_|T] ) -> 
+	is_string(T);
+	
+is_string( _Other ) ->
+	false.
 
 
 
