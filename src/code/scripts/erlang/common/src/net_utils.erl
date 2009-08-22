@@ -36,7 +36,7 @@
 
 
 % Hostname-related functions.
--export([ ping/1, localhost/0 ]).
+-export([ ping/1, localhost/0, reverse_lookup/1 ]).
 
 
 
@@ -74,3 +74,23 @@ localhost() ->
 	% Most reliable (ending carriage return must be removed):
 	basic_utils:remove_ending_carriage_return( os:cmd( "hostname -f" ) ).
 	
+	
+	
+% Returns a string specifying the DNS name corresponding to the specified
+% IP address {N1,N2,N3,N4}.	
+reverse_lookup( IPAddress ) ->
+	Command = "host -W 1 " ++ basic_utils:ipv4_to_string(IPAddress) 
+		++ " 2>/dev/null",
+	Res = os:cmd( Command ),
+	%io:format( "Host command: ~s, result: ~s.~n", [Command,Res] ),	
+	case string:tokens( Res," " ) of 
+	
+		[ _ArpaString, "domain", "name", "pointer", Domain] ->
+			% Removes ending ".~n":
+			string:sub_string( Domain, 1, length(Domain)-2 );
+		
+		_Other  ->
+			unknown_dns
+				
+	end.	
+

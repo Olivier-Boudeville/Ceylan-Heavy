@@ -30,7 +30,9 @@
 % See the net_utils.erl tested module.
 -module(net_utils_test).
 
--export([run/0]).
+
+-export([ run/0 ]).
+
 
 -define(Tested_module,net_utils).
 
@@ -65,6 +67,31 @@ run() ->
 				"   Ping could not ping a non-existing host, as expected.~n")
 			
 	end,
+	
+
+
+	FirstIP = {74,125,127,100},
+	io:format( "   Reverse look-up of ~p is '~s'.~n", 
+		[ basic_utils:ipv4_to_string(FirstIP), 
+		  net_utils:reverse_lookup(FirstIP) ] ),
+
+
+	SecondIP = {82,225,152,215},
+	io:format( "   Reverse look-up of ~p is '~s'.~n", 
+		[ basic_utils:ipv4_to_string(SecondIP), 
+		  net_utils:reverse_lookup(SecondIP) ] ),
+
+
+	ThirdIP = {90,59,94,64},
+	io:format( "   Reverse look-up of ~p is '~s'.~n", 
+		[ basic_utils:ipv4_to_string(ThirdIP), 
+		  net_utils:reverse_lookup(ThirdIP) ] ),
+
+	FourthIP = {10,22,22,22},
+	io:format( "   Reverse look-up of ~p is '~s'.~n", 
+		[ basic_utils:ipv4_to_string(FourthIP), 
+		  net_utils:reverse_lookup(FourthIP) ] ),
+
 
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().
