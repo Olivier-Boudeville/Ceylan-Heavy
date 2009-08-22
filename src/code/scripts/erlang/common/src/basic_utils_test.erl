@@ -203,7 +203,27 @@ run() ->
 	io:format( "   Determining whether '~p' is a string: ~w.~n",
 		[ ThirdTestString, basic_utils:is_string(ThirdTestString) ] ),
 			 	
+	FirstVersion  = {0,0,0},
+	SecondVersion = {0,0,1},
+	ThirdVersion  = {0,1,0},
+	FourthVersion = {1,0,0},
+	FifthVersion  = {1,1,1},
 					
+	first_bigger = basic_utils:compare_versions( SecondVersion, FirstVersion),
+	first_bigger = basic_utils:compare_versions( ThirdVersion, SecondVersion),
+	first_bigger = basic_utils:compare_versions( FifthVersion, FirstVersion),
+
+	second_bigger = basic_utils:compare_versions( FirstVersion, FourthVersion),
+	second_bigger = basic_utils:compare_versions( ThirdVersion, FourthVersion),
+	second_bigger = basic_utils:compare_versions( SecondVersion, ThirdVersion),
+	
+	equal = basic_utils:compare_versions( FirstVersion, FirstVersion ),
+	equal = basic_utils:compare_versions( ThirdVersion, ThirdVersion ),
+	equal = basic_utils:compare_versions( FifthVersion, FifthVersion ),
+	
+	io:format( "   Comparisons of versions like ~s succeeded.~n", 
+		[ basic_utils:version_to_string(ThirdVersion) ] ),
+		  
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().
 

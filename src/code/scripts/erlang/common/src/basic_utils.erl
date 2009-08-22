@@ -45,7 +45,8 @@
 	
 % String management functions.
 -export([ term_toString/1, term_to_string/1, integer_to_string/1,
-	string_list_to_string/1, ipv4_to_string/1, ipv4_to_string/2, join/2,
+	string_list_to_string/1, ipv4_to_string/1, ipv4_to_string/2, 
+	version_to_string/1, join/2,
 	remove_ending_carriage_return/1, format_text_for_width/2, pad_string/2,
 	is_string/1 ]).
 
@@ -82,7 +83,7 @@
 
 % Miscellaneous functions.
 -export([ generate_basic_name_from/1, flush_pending_messages/0, checkpoint/1,
-	get_interpreter_version/0 ]).
+	get_interpreter_version/0, compare_versions/2 ]).
 
 
 
@@ -180,6 +181,7 @@ string_list_to_string( [H|T], Acc ) when is_list(H) ->
 	
 		
 		
+% Returns a string describing the specified IPv4 address.
 ipv4_to_string( {N1,N2,N3,N4} ) ->
 	lists:flatten( io_lib:format( "~B.~B.~B.~B", [N1,N2,N3,N4] ) ).
 	
@@ -187,6 +189,13 @@ ipv4_to_string( {N1,N2,N3,N4} ) ->
 ipv4_to_string( {N1,N2,N3,N4}, Port ) ->
 	lists:flatten( io_lib:format( "~B.~B.~B.~B:~B", [N1,N2,N3,N4,Port] ) ).
 
+
+
+% Returns a string describing the specified three-element version.
+version_to_string( {V1,V2,V3} ) ->
+	io_lib:format( "~B.~B.~B", [V1,V2,V3] ).
+	 
+	
 
 % join(Separator,ListToJoin), ex: join( '-', [ "Barbara", "Ann" ] ).
 % Python-like 'join', combines items in a list into a string using a separator
@@ -905,6 +914,28 @@ get_interpreter_version() ->
 	erlang:system_info(otp_release).
 
 
+
+% Compares the two triplets, which describes two version numbers (ex: {0,1,0})
+% and returns either first_bigger, second_bigger, or equal.
+% Note: the default term order is already what we needed.
+compare_versions( {A1,A2,A3}, {B1,B2,B3} ) ->
+	case {A1,A2,A3} > {B1,B2,B3} of
+	
+		true ->
+			first_bigger;
+			
+		false ->
+		
+			case {A1,A2,A3} =:= {B1,B2,B3} of	
+			
+				true ->
+					equal;
+					
+				false ->
+					second_bigger
+					
+			end		
+	end.
 
 
 
