@@ -13,6 +13,7 @@ USAGE="`basename $0` [-v] [-c a_cookie] [--sn a_short_node_name | --ln a_long_no
 	--ln a_long_node_name: specify a long name (@FQDN will be automatically added)
 	--tcp-range LOW HIGH: specify the range of TCP ports that should be used
 	--fqdn a_fqdn: specify the FQDN to be used
+	--background: run the launched interpreter in the background
 	--wooper-path wooper_path: specify the WOOPER path 
 	--eval 'an Erlang expression': start by evaluating this expression
 	--beam-dir a_path: adds specified directory to the path searched for beam files (multiple --beam-dir options can be specified)
@@ -37,6 +38,8 @@ DEFAULT_LOG_FILE="Ceylan-run.log"
 be_verbose=1
 use_tcp_range=1
 autostart=0
+in_background=1
+
 
 while [ $# -gt 0 ] ; do
 	token_eaten=1
@@ -82,6 +85,12 @@ while [ $# -gt 0 ] ; do
 		token_eaten=0
 	fi
 	
+	if [ "$1" = "--background" ] ; then
+		shift
+		in_background=0
+		token_eaten=0
+	fi
+	
 	if [ "$1" = "--beam-paths" ] ; then
 		# Keep --beam-paths if first position, as will be shifted in end of loop
 		while [ ! $# -eq 1 ] ; do
@@ -122,13 +131,13 @@ while [ $# -gt 0 ] ; do
 
 	# Avoids warning of next test:
 	if [ "$1" = "--batch" ] ; then
-		VERBATIM_OPT="${VERBATIM_OPT} $1"
+		verbatim_opt="${verbatim_opt} $1"
 		token_eaten=0
 	fi
 
 	if [ $token_eaten -eq 1 ] ; then
 		echo "Warning, unknown argument ($1), adding it 'as is' to command-line." 1>&2
-		VERBATIM_OPT="${VERBATIM_OPT} $1"
+		verbatim_opt="${verbatim_opt} $1"
 	fi	
 	
 	shift
@@ -136,23 +145,24 @@ done
 
 
 #+W w : log warnings as warnings.
-#LOG_OPT="+W w -kernel error_logger "{file,\"$DEFAULT_LOG_FILE\"}
-LOG_OPT="+W w"
+#log_opt="+W w -kernel error_logger "{file,\"$DEFAULT_LOG_FILE\"}
+log_opt="+W w"
 
 # +native not used here:
-CODE_OPT="-pz ${CODE_DIRS} -smp auto +K true +A 8"
+code_opt="-pz ${CODE_DIRS} -smp auto +K true +A 8"
 
 # By default up to 1,2 million processes could be created on one node:
 # (reduced, as even without having spawned these processes, the memory 
 # footprint can increase quite a lot) 
-MAX_PROCESS_COUNT=120000
-#MAX_PROCESS_COUNT=120000000
+max_process_count=120000
+#max_process_count=120000000
 
-COMMAND="${ERL} ${LOG_OPT} ${CODE_OPT} +P ${MAX_PROCESS_COUNT} ${VERBATIM_OPT}"
+
+COMMAND="${ERL} ${log_opt} ${code_opt} +P ${max_process_count} ${verbatim_opt}"
 
 # Adds a command-line cookie only if specified:
 if [ -n "${COOKIE}" ] ; then
-	COOKIE_OPT="-setcookie ${COOKIE}"
+	cookie_opt="-setcookie ${COOKIE}"
 fi
 
 if [ ${autostart} -eq 1 ] ; then
@@ -163,11 +173,11 @@ fi
 
 if [ $use_tcp_range -eq 0 ] ; then
 
-	TCP_PORT_OPT="-kernel inet_dist_listen_min ${LOWER_TCP_PORT} inet_dist_listen_max ${HIGHER_TCP_PORT}"  
+	tcp_port_opt="-kernel inet_dist_listen_min ${LOWER_TCP_PORT} inet_dist_listen_max ${HIGHER_TCP_PORT}"  
 
 fi
 
-COMMAND="${COMMAND} ${COOKIE_OPT} ${TO_EVAL} ${TCP_PORT_OPT}"
+COMMAND="${COMMAND} ${cookie_opt} ${TO_EVAL} ${tcp_port_opt}"
 
 
 
@@ -205,7 +215,8 @@ else
 	COMMAND="${COMMAND} -name ${LONG_NAME}"
 
 	if [ $be_verbose -eq 0 ] ; then
-		echo "Launching: ${COMMAND}"
+		#echo "Launching: ${COMMAND}"
+		dummy=1
 	else
 		echo "Launching Erlang interpreter with long name ${LONG_NAME}"
 	fi
@@ -213,7 +224,20 @@ else
 fi
 
 
+
+if [ $in_background -eq 0 ] ; then
+	background_opt="-noinput -noshell -detached"
+fi
+
+COMMAND="${COMMAND} ${background_opt}"
+
 #echo "$0 running final command: ${COMMAND}" 
 
 ${COMMAND}
+pid=$!
+
+# Commented out, as pid never set:
+#if [ $in_background -eq 0 ] ; then
+#	echo "(PID of launched interpreter is $pid)"
+#fi
 
