@@ -55,9 +55,11 @@
 % be generally uselessly long and would cause issues in case of multiple
 % inheritance.
 
+
 % Execution timestamp (tick) will be either specified in the send macro (a long
 % integer or 'none'), or set to following default execution timestamp:
--define( DefaultExecutionTimestamp, "unknown" ).
+-define( default_execution_timestamp, "unknown" ).
+
 
 
 % User timestamp will be the current date, as determined by the trace emitter.
@@ -90,7 +92,7 @@
 	-define( update,        ?execution".Update" ).
 	-define( state,         ?execution".State" ).
 
--define( DefaultMessageCategorization, ?execution".Uncategorized" ).
+-define( default_message_categorization, ?execution".Uncategorized" ).
 
 
 % Priority will be determined from the name of the chosen macro:
@@ -144,7 +146,7 @@
 % One trace information: tick is laking, will be added if found in emitter,
 % (could be a real tick or 'none' is execution not started), otherwise 
 % 'unknown' will be used; MessageCategorization is lacking too, 
-% DefaultMessageCategorization will be used instead.
+% default_message_categorization will be used instead.
 %
 %   ?send_K([MyState,Message])
 %   Example: ?send_warning([ MyState,"This is my message" ]) 
@@ -302,11 +304,11 @@
 % Section dedicated to trace emitters that are not WOOPER-based and dedicated
 % to tests.
 % See also: test_constructs.hrl.
--define(DefaultTestMessageCategorization,"Test.Uncategorized").
+-define(default_test_message_categorization,"Test.Uncategorized").
 
 
 % Section dedicated to trace emitters that are not WOOPER-based and dedicated
 % to classical functions (as opposed to methods from class_TraceEmitter).
 % See also: traces.hrl.
--define(DefaultStandaloneMessageCategorization,"Standalone.Uncategorized").
+-define(default_standalone_message_categorization,"Standalone.Uncategorized").
 
