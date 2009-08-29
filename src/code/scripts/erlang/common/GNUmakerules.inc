@@ -77,13 +77,58 @@ all-recurse:
 
 
 
+
+
+# Applications are meant to be executed, whereas tests are meant to be run:
+# they have different suffixes (_app vs _test) and ways of being launched
+# (make X_exec / make X_run) otherwise, for example, my_server_app.erl would
+# shadow my_server_test.erl if an ambiguous 'make my_server_run' was issued.
+
+
+
+# Application section.
+
+
+# 'X_exec' becomes 'X_app:exec()':
+
+
+%_exec: %_app.beam %.beam 
+	@echo "     Executing application $^ (first form)"
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@  --eval `echo $@ | sed 's|_exec|_app:exec()|1'` $(CMD_LINE_OPT)
+	
+		
+%_exec: %_app.beam
+	@echo "     Executing application $^ (second form)"
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@ --eval `echo $@ | sed 's|_exec|_app:exec()|1'` $(CMD_LINE_OPT)
+
+
+
+# To run in the background (somewhat like a daemon):
+
+%_exec_background: %_app.beam %.beam 
+	@echo "     Executing application $^ in the background (first form)"
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@ --background --eval `echo $@ | sed 's|_exec_background|_app:exec()|1'` $(CMD_LINE_OPT) &
+	
+		
+%_exec_background: %_app.beam
+	@echo "     Executing application $^ in the background (second form)"
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@ --background --eval `echo $@ | sed 's|_exec_background|_app:exec()|1'` $(CMD_LINE_OPT)
+
+
+
+# Test section.
+
+
 #%_test: %.beam %_test.beam
-#	@echo "    Executing test function $(STARTUP_FUNCTION) in module $@"
+#	@echo "    Running test function $(STARTUP_FUNCTION) in module $@"
 #	@$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT) -run $@ $(STARTUP_FUNCTION)
 
+
 #%_test: %_test.beam
-#	@echo "    Executing test function $(STARTUP_FUNCTION) in module $@"
+#	@echo "    Running test function $(STARTUP_FUNCTION) in module $@"
 #	@$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT) -run $@ $(STARTUP_FUNCTION)
+
+
 
 %_test: %.beam %_test.beam
 
@@ -110,7 +155,9 @@ all-recurse:
 	
 
 
+
 # 'X_run' becomes 'X_test:run()':
+
 	
 %_run: %_test %_test_dependencies
 	@echo "     Running unitary test $@ (first form) from $^, with $(ERL_PARAMETERIZED_LAUNCHER)"
