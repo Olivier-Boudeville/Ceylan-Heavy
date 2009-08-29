@@ -389,42 +389,42 @@ remove() ->
 
 
 % For Pid (ex: locally, <0.33.0>):
--define(PidWidth,8).
+-define(pid_width,8).
 
 
 % For EmitterName (ex: "First soda machine"):
--define(EmitterNameWidth,12).
+-define(emitter_name_width,12).
 
 
 % For EmitterCategorization (ex: "TimeManagement"):
-%-define(EmitterCategorizationWidth,12).
--define(EmitterCategorizationWidth,0).
+%-define(emitter_categorization_width,12).
+-define(emitter_categorization_width,0).
 
 
 % For Tick (ex: unknown, 3169899360000):
--define(TickWidth,14).
+-define(tick_width,14).
 
 
 % For Time (ex: "18/6/2009 16:32:14"):
--define(TimeWidth,10).
+-define(time_width,10).
 
 
 % For Location (ex: "soda_deterministic_integration_run@a_example.org"):
-%-define(LocationWidth,12).
--define(LocationWidth,0).
+%-define(location_width,12).
+-define(location_width,0).
 
 
 % For MessageCategorization (ex: "Execution.Uncategorized"):
-%-define(MessageCategorizationWidth,4).
--define(MessageCategorizationWidth,0).
+%-define(message_categorization_width,4).
+-define(message_categorization_width,0).
 
 
 % For Priority (ex: warning):
--define(PriorityWidth,7).
+-define(priority_width,7).
 
 
 % For Message:
--define(MessageWidth,45).
+-define(message_width,45).
 
 
 
@@ -474,22 +474,22 @@ manage_trace_header(State) ->
 			% Prints array header:
 			io:format( ?getAttr(trace_file), get_row_separator(), [] ),
 			PidLines = basic_utils:format_text_for_width( 
-				"Pid of Trace Emitter", ?PidWidth ),
+				"Pid of Trace Emitter", ?pid_width ),
 		
 			EmitterNameLines = basic_utils:format_text_for_width( 
-				"Emitter Name", ?EmitterNameWidth ),
+				"Emitter Name", ?emitter_name_width ),
 		
 			TickLines = basic_utils:format_text_for_width(
-				"Execution Tick", ?TickWidth ),
+				"Execution Tick", ?tick_width ),
 		
 			TimeLines = basic_utils:format_text_for_width( "User Time",
-				?TimeWidth ),
+				?time_width ),
 		
 			PriorityLines = basic_utils:format_text_for_width( 
-				"Trace Type", ?PriorityWidth ),
+				"Trace Type", ?priority_width ),
 	
 			MessageLines = basic_utils:format_text_for_width( 
-				"Trace Message", ?MessageWidth ),
+				"Trace Message", ?message_width ),
 	
 			HeaderLine = format_linesets( PidLines, EmitterNameLines, 
 				TickLines, TimeLines, PriorityLines, MessageLines ) ,
@@ -533,12 +533,12 @@ get_row_separator() ->
 % Returns the typical separator between array rows, with specified dash element
 % to represent horizontal lines.
 get_row_separator(DashType) ->
-	[$+] ++ string:chars(DashType,?PidWidth) 
-		++ [$+] ++ string:chars(DashType,?EmitterNameWidth)
-		++ [$+] ++ string:chars(DashType,?TickWidth)
-		++ [$+] ++ string:chars(DashType,?TimeWidth)
-		++ [$+] ++ string:chars(DashType,?PriorityWidth)
-		++ [$+] ++ string:chars(DashType,?MessageWidth) 
+	[$+] ++ string:chars(DashType,?pid_width) 
+		++ [$+] ++ string:chars(DashType,?emitter_name_width)
+		++ [$+] ++ string:chars(DashType,?tick_width)
+		++ [$+] ++ string:chars(DashType,?time_width)
+		++ [$+] ++ string:chars(DashType,?priority_width)
+		++ [$+] ++ string:chars(DashType,?message_width) 
 		++ [$+] ++ "\n".
 	
 
@@ -561,25 +561,25 @@ format_trace_for( {text_traces,_TargetFormat}, {TraceEmitterPid,
 	%  - MessageCategorization
 	
 	PidLines = basic_utils:format_text_for_width( 
-		io_lib:format( "~w", [TraceEmitterPid] ), ?PidWidth ),
+		io_lib:format( "~w", [TraceEmitterPid] ), ?pid_width ),
 		
 	EmitterNameLines = basic_utils:format_text_for_width( 
-		io_lib:format( "~s", [TraceEmitterName] ), ?EmitterNameWidth ),
+		io_lib:format( "~s", [TraceEmitterName] ), ?emitter_name_width ),
 		
 	% Can be a tick or an atom like 'unknown':	
 	TickLines = basic_utils:format_text_for_width( 
-		io_lib:format( "~p", [Tick] ), ?TickWidth ),
+		io_lib:format( "~p", [Tick] ), ?tick_width ),
 		
 	TimeLines = basic_utils:format_text_for_width( 
-		io_lib:format( "~s", [Time] ), ?TimeWidth ),
+		io_lib:format( "~s", [Time] ), ?time_width ),
 		
 	PriorityLines = basic_utils:format_text_for_width( 
 		io_lib:format( "~w", [
 			class_TraceEmitter:get_channel_name_for_priority(Priority) ]),
-		?PriorityWidth ),
+		?priority_width ),
 	
 	MessageLines = basic_utils:format_text_for_width( 
-		io_lib:format( "~s", [Message] ), ?MessageWidth ),
+		io_lib:format( "~s", [Message] ), ?message_width ),
 	
 	format_linesets( PidLines, EmitterNameLines, TickLines, TimeLines,
 		PriorityLines, MessageLines ) ++ get_row_separator().
@@ -595,9 +595,13 @@ format_linesets( PidLines, EmitterNameLines, TickLines, TimeLines,
 	
 	TotalLineCount = lists:max( [ length(L) || L <- Columns ] ),
 	
-	ColumnsPairs = [ {PidLines,?PidWidth}, {EmitterNameLines,?EmitterNameWidth},
-		{TickLines,?TickWidth}, {TimeLines,?TimeWidth},
-		{PriorityLines,?PriorityWidth}, {MessageLines,?MessageWidth} ], 
+	ColumnsPairs = [ 
+		{PidLines,?pid_width}, 
+		{EmitterNameLines,?emitter_name_width},
+		{TickLines,?tick_width}, 
+		{TimeLines,?time_width},
+		{PriorityLines,?priority_width}, 
+		{MessageLines,?message_width} ], 
 	
 	%io:format( "Column pairs:~n~p~n", [ColumnsPairs] ),
 	
