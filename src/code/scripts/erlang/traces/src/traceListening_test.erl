@@ -35,8 +35,8 @@
 -module(traceListening_test).
 
 
--define(Tested_modules,[ class_TraceListener, class_TraceAggregator,
-	class_TraceSupervisor ]).
+-define( Tested_modules, [ class_TraceListener, class_TraceAggregator,
+	class_TraceSupervisor ] ).
 
 
 % For trace facilities:
@@ -103,7 +103,7 @@ test_actual_body() ->
 	io:format( ?Prefix "Globally registered names: ~w.~n",
 		[global:registered_names()]),
 	
-	AggregatorName = ?trace_aggregator_name ,
+	AggregatorName = ?trace_aggregator_name,
 	io:format( ?Prefix "Looking up aggregator by name: ~s.~n",
 		[AggregatorName] ),
 		
