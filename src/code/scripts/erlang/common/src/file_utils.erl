@@ -40,12 +40,15 @@
 % Filename-related operations.
 
 -export([ join/2, convert_to_filename/1, replace_extension/3, exists/1,
-	get_type_of/1, is_file/1, is_directory/1, list_dir_elements/1,
+	get_type_of/1, is_file/1, is_existing_file/1, 
+	is_directory/1, is_existing_directory/1, list_dir_elements/1,
 	filter_by_extension/2, find_files_from/2, find_all_files_from/1, 
 	path_to_variable_name/1, path_to_variable_name/2,
-	get_image_file_png/1, get_image_file_gif/1 ]).
+	get_user_directory/0, get_image_file_png/1, get_image_file_gif/1 ]).
 
 
+
+% ZIP-related operations.
 
 -export([ file_to_zipped_term/1, zipped_term_to_unzipped_file/1,
 	zipped_term_to_unzipped_file/2, files_to_zipped_term/1,
@@ -122,6 +125,8 @@ get_type_of(EntryName) ->
 
 
 % Returns whether the specified entry is a regular file.
+% If the entry does not exist (neither as a file or as a directory, etc.),
+% will return a {non_existing_entry,EntryName} exception.
 is_file(EntryName) ->
 	case get_type_of(EntryName) of 
 	
@@ -132,10 +137,28 @@ is_file(EntryName) ->
 			false	
 	
 	end.
+	
+	
 		
+% Returns whether the specified entry exists and is a regular file.
+% If the entry does not exist, or exists but is not a file, will return
+% false.
+is_existing_file(EntryName) ->
+	case exists(EntryName) andalso get_type_of(EntryName) of 
+	
+		regular ->
+			true ;
+			
+		_ ->
+			false	
+	
+	end.
 
+	
 		
 % Returns whether the specified entry is a regular file.
+% If the entries does not exist (neither as a directory or as a file, etc.),
+% will return a {non_existing_entry,EntryName} exception.
 is_directory(EntryName) ->
 	case get_type_of(EntryName) of 
 	
@@ -148,6 +171,22 @@ is_directory(EntryName) ->
 	end.
 		
 		
+
+% Returns whether the specified entry exists and is a regular file.
+% If the entry does not exist, or exists but is not a directory, will return
+% false.
+is_existing_directory(EntryName) ->
+	case exists(EntryName) andalso get_type_of(EntryName) of 
+	
+		directory ->
+			true ;
+			
+		_ ->
+			false	
+	
+	end.
+
+
 
 % Returns a tuple made of a four lists describing the file elements found in
 % specified directory: {RegularFiles,Directories,OtherFiles,Devices}.
@@ -322,6 +361,20 @@ convert(Filename,Prefix) ->
 	
 
 
+% Returns the path corresponding to the home directory of the current
+% user, or throws an exception.
+get_user_directory() ->
+	case os:getenv("HOME") of
+	
+		[] ->
+			throw( could_not_determine_user_directory );
+			
+		NonEmptyPath ->	
+			NonEmptyPath
+			
+	end.
+	
+			
 		 
 -define(ResourceDir,"resources").
 		
