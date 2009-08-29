@@ -78,7 +78,7 @@
 % For trace_aggregator_name:
 -include("class_TraceEmitter.hrl"). 
 
-% For DefaultMessageCategorization:
+% For default_message_categorization:
 -include("class_TraceAggregator.hrl").
 
 
@@ -158,7 +158,7 @@ toString(State) ->
 
 % All informations available but the tick and the message categorization.
 send( TraceType, [State, Message] ) ->
-	send( TraceType, [ State, Message, ?DefaultMessageCategorization ] );
+	send( TraceType, [ State, Message, ?default_message_categorization ] );
 
 % All informations available but the tick, determining its availability.
 send( TraceType, [State, Message, MessageCategorization ] ) ->
@@ -206,7 +206,7 @@ send( TraceType,
 % Uses default trace aggregator, supposed to be already available and 
 % registered.
 send_from_test( TraceType, [Message] ) ->
-	send_from_test(TraceType, [Message, ?DefaultTestMessageCategorization]);
+	send_from_test(TraceType, [Message, ?default_test_message_categorization]);
 	
 send_from_test( TraceType, [Message,MessageCategorization] ) ->
 	% Follows the order of our trace format; oneway call:
@@ -219,7 +219,7 @@ send_from_test( TraceType, [Message,MessageCategorization] ) ->
 			
 		AggregatorPid ->
 			AggregatorPid ! { send, 
-				[ self(), "Ceylan-trace-test", "Test", none, 
+				[ self(), "Ceylan traces from test", "Test", none, 
 			current_time_to_string(), current_location(), MessageCategorization,
 			get_priority_for(TraceType), Message ] }
 	
@@ -232,9 +232,14 @@ send_from_test( TraceType, [Message,MessageCategorization] ) ->
 % registered.
 send_standalone( TraceType, [Message] ) ->
 	send_standalone(TraceType, [Message,
-		?DefaultStandaloneMessageCategorization]);
+		?default_standalone_message_categorization]);
 	
-send_standalone( TraceType, [Message,MessageCategorization] ) ->
+send_standalone( TraceType, [Message,TraceEmitterCategorization] ) ->
+	send_standalone( TraceType, [
+		Message, _TraceEmitterName = "Ceylan", TraceEmitterCategorization] );
+
+send_standalone( TraceType,
+		[ Message, TraceEmitterName, TraceEmitterCategorization ] ) ->
 	% Follows the order of our trace format; oneway call:
 	case global:whereis_name(?trace_aggregator_name) of
 	
@@ -244,10 +249,16 @@ send_standalone( TraceType, [Message,MessageCategorization] ) ->
 			throw( trace_aggregator_not_found );
 			
 		AggregatorPid ->
-			AggregatorPid ! { send, 
-				[ self(), "Ceylan", "Standalone", none, 
-			current_time_to_string(), current_location(), MessageCategorization,
-			get_priority_for(TraceType), Message ] }
+			AggregatorPid ! { send, [ 
+				_TraceEmitterPid = self(),
+				_TraceEmitterName = TraceEmitterName,
+				TraceEmitterCategorization, 
+				_Tick = none, 
+				_Time = current_time_to_string(),
+				_Location = current_location(),
+				_MessageCategorization = "Uncategorized",
+				_Priority = get_priority_for(TraceType),
+				_Message = Message ] }
 	
 	end.		
 
