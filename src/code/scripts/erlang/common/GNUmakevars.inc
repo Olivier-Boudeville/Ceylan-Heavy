@@ -166,6 +166,6 @@ ERLANG_INTERPRETER_OPT := -pz $(BEAM_DIRS) $(DISTRIBUTED_NODE_OPT)
 # prevent adding other options to the launcher afterwards:
 BEAM_PATH_OPT = $(foreach dir,$(BEAM_DIRS),--beam-dir $(dir))
 
-
-ERL_PARAMETERIZED_LAUNCHER = $(ERL_LAUNCHER) -v -c $(PROJECT_NAME) --ln $(VM_TEST_NAME) --fqdn $(FQDN) $(BEAM_PATH_OPT)
+# Removed: --ln $(VM_TEST_NAME)
+ERL_PARAMETERIZED_LAUNCHER = $(ERL_LAUNCHER) -v -c $(PROJECT_NAME) --fqdn $(FQDN) $(BEAM_PATH_OPT)
 
