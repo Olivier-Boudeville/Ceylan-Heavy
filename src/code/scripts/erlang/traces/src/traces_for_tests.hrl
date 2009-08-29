@@ -30,7 +30,7 @@
 
 
 % To avoid warnings if not used:
--export( [testFailed/1, check_pending_wooper_results/0 ]).
+-export( [ testFailed/1, check_pending_wooper_results/0 ]).
 
 
 
