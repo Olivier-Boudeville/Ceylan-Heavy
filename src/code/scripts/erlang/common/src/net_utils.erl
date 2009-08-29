@@ -36,7 +36,7 @@
 
 
 % Hostname-related functions.
--export([ ping/1, localhost/0, reverse_lookup/1 ]).
+-export([ ping/1, localhost/0, reverse_lookup/1, activate_socket_once/1 ]).
 
 
 
@@ -92,5 +92,13 @@ reverse_lookup( IPAddress ) ->
 		_Other  ->
 			unknown_dns
 				
-	end.	
+	end.
+	
+		
+
+% Activates once the specified socket, so that it can receive new data,
+% when flow control is needed.
+activate_socket_once( Socket ) ->
+	% Must be reset each time, to control flow:
+	inet:setopts( Socket, [{active,once}] ).
 
