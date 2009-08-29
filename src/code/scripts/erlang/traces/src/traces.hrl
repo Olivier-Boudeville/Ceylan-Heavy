@@ -58,10 +58,39 @@
 
 
 
+
+-define(traces_start, 
+	% Create first, synchronously (to avoid race conditions), a trace
+	% aggregator (false is to specify a non-private i.e. global aggregator).
+	% Race conditions could occur at least with trace emitters (they would
+	% create their own aggregator, should none by found).
+	TraceAggregatorPid = class_TraceAggregator:synchronous_new_link(
+		?TraceFilename, ?TraceType, false )
+).
+
+
+
+-define(traces_stop, 
+	TraceAggregatorPid ! {synchronous_delete,self()},
+	receive
+	
+  		{deleted,TraceAggregatorPid} ->
+			ok
+			
+  	end
+	%check_pending_wooper_results()
+).
+
+
+
+
+
 % Defines some macros to emit standalone traces, i.e. not from a TraceEmitter,
 % and not for test purpose (ex: when writing classical, non-OOP, code). 
 % Note: using 'emit' instead of 'send' to prevent name clashes.
 
+
+% Section for the sending of an uncategorized message.
 % Usage: '?emit_debug([ "Starting!" ])'
 
 
@@ -93,4 +122,41 @@
 -define( emit_debug(Message),
 	class_TraceEmitter:send_standalone(debug,[Message])
 ).
+
+
+
+% Section for the sending of a categorized message.
+% Usage: '?notify_debug([ "Starting!", "My Emitter Name", 
+% "My Emitter Category" ])'
+
+
+-define( notify_fatal( Message, TraceEmitterName, TraceEmitterCategorization ),
+	class_TraceEmitter:send_standalone( fatal,
+		[ Message, TraceEmitterName, TraceEmitterCategorization ] ) ).
+
+
+-define( notify_error( Message, TraceEmitterName, TraceEmitterCategorization ),
+	class_TraceEmitter:send_standalone( error,
+		[ Message, TraceEmitterName, TraceEmitterCategorization ] ) ).
+	
+	
+-define( notify_warning( Message, TraceEmitterName, TraceEmitterCategorization
+		),
+	class_TraceEmitter:send_standalone( warning,
+		[ Message, TraceEmitterName, TraceEmitterCategorization ] ) ).
+
+
+-define( notify_info( Message, TraceEmitterName, TraceEmitterCategorization ),
+	class_TraceEmitter:send_standalone( info,
+		[ Message, TraceEmitterName, TraceEmitterCategorization ] ) ).
+
+
+-define( notify_trace( Message, TraceEmitterName, TraceEmitterCategorization ),
+	class_TraceEmitter:send_standalone( trace,
+		[ Message, TraceEmitterName, TraceEmitterCategorization ] ) ).
+
+
+-define( notify_debug( Message, TraceEmitterName, TraceEmitterCategorization ),
+	class_TraceEmitter:send_standalone( debug,
+		[ Message, TraceEmitterName, TraceEmitterCategorization ] ) ).
 
