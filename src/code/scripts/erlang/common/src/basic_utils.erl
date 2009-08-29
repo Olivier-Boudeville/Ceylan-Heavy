@@ -132,11 +132,40 @@ get_duration(FirstTimestamp,SecondTimestamp) ->
 get_textual_duration(FirstTimestamp,SecondTimestamp) ->
 	{Days,{Hour, Minute, Second}} = calendar:seconds_to_daystime( 
 		get_duration(FirstTimestamp,SecondTimestamp) ),
-	lists:flatten( io_lib:format( "~B day(s), ~B hour(s), ~B minute(s) "
-		"and ~B second(s)", [Days, Hour, Minute, Second] ) ).
-		
-		
 
+	case Days of 
+	
+		0 ->
+			
+			case Hour of
+			
+			
+				0 ->
+				
+					case Minute of 
+					
+						0 ->
+							lists:flatten( io_lib:format( "~B second(s)", 
+								[Second] ) );
+						
+						_NonZeroMinutess ->
+							lists:flatten( io_lib:format( "~B minute(s) "
+								"and ~B second(s)", [Minute, Second] ) )
+					end;	
+						
+				_NonZeroHours ->
+					lists:flatten( io_lib:format( "~B hour(s), ~B minute(s) "
+						"and ~B second(s)", [Hour, Minute, Second] ) )
+			
+			end;
+			
+		_NonZeroDays ->
+			lists:flatten( io_lib:format( "~B day(s), ~B hour(s), ~B minute(s) "
+				"and ~B second(s)", [Days, Hour, Minute, Second] ) )
+		
+	end.	
+
+		
 		
 % String management functions.
 		
