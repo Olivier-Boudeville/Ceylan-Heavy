@@ -207,9 +207,9 @@ case $TERM in
         ;;
 esac
 
-LOGMX_ROOT="$HOME/Logiciels/LogMX_v1.2.3"
+LOGMX_ROOT="$HOME/Logiciels/LogMX_v1.3.3"
 alias logmx="${LOGMX_ROOT}/logmx.sh"
-PATH=$PATH:${LOGMX_ROOT}
+PATH=${LOGMX_ROOT}:$PATH
 
 #echo "-- Bash basically initialized according to Boudeville Standards --"
 
