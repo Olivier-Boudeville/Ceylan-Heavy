@@ -150,7 +150,7 @@ VIEW_PDF := yes
 
 
 %.html: %.rst
-	@echo "     Generating HTML documentation $@"
+	@echo "     Generating HTML documentation $@ using CSS $(PROJECT_CSS)"
 	@$(RST_GENERATOR) $< $(PROJECT_CSS)
 
 
