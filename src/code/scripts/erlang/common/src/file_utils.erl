@@ -48,6 +48,12 @@
 
 
 
+% Content-related operations.
+
+-export([ read_all_lines_of/1 ] ).
+
+
+
 % ZIP-related operations.
 
 -export([ file_to_zipped_term/1, zipped_term_to_unzipped_file/1,
@@ -389,6 +395,28 @@ get_image_file_png(Image) ->
 get_image_file_gif(Image) ->
   filename:join([?ResourceDir, "images", Image ++ ".gif"]).
 
+
+
+% Content-related operations.
+
+
+% Returns a list of lines read from specified file.
+read_all_lines_of( Filename ) ->
+	{ok, File} = file:open( Filename, [read] ),
+    lists:reverse( read_each_line( File, [] ) ).
+
+
+read_each_line( File, Acc ) ->
+
+    case io:get_line( File, "" ) of
+        eof  -> 
+			file:close(File), 
+			Acc;
+			
+        Line -> 
+			read_each_line( File, [ Line | Acc ] )
+			
+    end.
 
 
 
