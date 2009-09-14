@@ -233,21 +233,21 @@ version_to_string( {V1,V2,V3} ) ->
 % For file-related paths, you are expected to use portable standard
 % filename:join functions instead.
 % Note: use string:tokens to split the string.
-join(_Separator,[]) ->
+join( _Separator, [] ) ->
     "";
 
-join(Separator,ListToJoin) ->
+join( Separator, ListToJoin ) ->
     lists:flatten( lists:reverse( join(Separator, ListToJoin, []) ) ).
 	
 	
-join(_Separator,[],Acc) ->
+join( _Separator, [], Acc ) ->
     Acc;
 
-join(_Separator,[H| [] ],Acc) ->
+join( _Separator, [ H | [] ], Acc ) ->
     [H|Acc];
 	
-join(Separator,[H|T],Acc) ->
-    join(Separator, T, [Separator, H|Acc]).
+join( Separator, [H|T], Acc ) ->
+    join( Separator, T, [ Separator, H | Acc ] ).
 
 
 
