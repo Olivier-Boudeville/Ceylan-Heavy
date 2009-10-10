@@ -55,7 +55,7 @@
 
 -export([ new/0, new/1, addEntry/3, addEntries/2, 
 	removeEntry/2, lookupEntry/2, hasEntry/2,
-	getEntry/2, addToEntry/3, substractFromEntry/3, toggleEntry/2,
+	getEntry/2, addToEntry/3, subtractFromEntry/3, toggleEntry/2,
 	appendToEntry/3, deleteFromEntry/3, popFromEntry/2,
 	enumerate/1, keys/1, getEntryCount/1, merge/2, toString/1, display/1 ]).
 
@@ -112,9 +112,10 @@ removeEntry(Key,HashTable) ->
 	
 	
 % Looks-up specified entry (designated by its key) in specified hash table.	
-% Returns either the atom undefined (if no such key is registered in the table)
-% or {value,Value}, with Value being the value associated to the specified key.
-lookupEntry(Key,HashTable) ->	
+% Returns either {hashtable_key_not_found,Key} if no such key is registered in
+% the table, or {value,Value}, with Value being the value associated to the
+% specified key.
+lookupEntry( Key, HashTable ) ->	
 	lookupInList(Key, element(erlang:phash2(Key,size(HashTable))+1,
 		HashTable)).
 
@@ -156,11 +157,11 @@ addToEntry(Key,Value,HashTable) ->
 
 
 
-% Substracts specified value to the value, supposed to be numerical, 
+% Subtracts specified value to the value, supposed to be numerical, 
 % associated to specified key.
 % A case clause is triggered if the key did not exist, a bad arithm is
-% triggered if no substraction can be performed on the associated value.
-substractFromEntry(Key,Value,HashTable) ->	
+% triggered if no subtraction can be performed on the associated value.
+subtractFromEntry(Key,Value,HashTable) ->	
 	{value,Number} = lookupInList(Key,
 		element(erlang:phash2(Key,size(HashTable))+1,HashTable)),
 	addEntry(Key,Number-Value,HashTable).
