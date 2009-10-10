@@ -104,18 +104,22 @@ all-recurse:
 
 
 # To run in the background (somewhat like a daemon):
+# Note: the specified long name (with --ln) has its '_background' suffix
+# removed so that the node name of an executable does not depend from how
+# it is launched, otherwise clients needing to connect to that node would
+# themselves depend on that.
 
 %_exec_background: %_app.beam %.beam 
 	@echo "     Executing application $^ in the background (first form)"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@ --background --eval `echo $@ | sed 's|_exec_background|_app:exec()|1'` $(CMD_LINE_OPT) &
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln `echo $@ | sed 's|_background$$||1'` --background --eval `echo $@ | sed 's|_exec_background|_app:exec()|1'` $(CMD_LINE_OPT) &
 	
 		
 %_exec_background: %_app.beam
 	@echo "     Executing application $^ in the background (second form)"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@ --background --eval `echo $@ | sed 's|_exec_background|_app:exec()|1'` $(CMD_LINE_OPT)
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln `echo $@ | sed 's|_background$$||1'` --background --eval `echo $@ | sed 's|_exec_background|_app:exec()|1'` $(CMD_LINE_OPT)
 
 
-
+	
 # Test section.
 
 
