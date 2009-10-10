@@ -400,7 +400,7 @@ get_image_file_gif(Image) ->
 % Content-related operations.
 
 
-% Returns a list of lines read from specified file.
+% Returns a list of lines read from specified text file.
 read_all_lines_of( Filename ) ->
 	{ok, File} = file:open( Filename, [read] ),
     lists:reverse( read_each_line( File, [] ) ).
