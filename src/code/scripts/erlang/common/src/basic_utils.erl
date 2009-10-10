@@ -48,7 +48,7 @@
 	string_list_to_string/1, ipv4_to_string/1, ipv4_to_string/2, 
 	version_to_string/1, join/2,
 	remove_ending_carriage_return/1, format_text_for_width/2, pad_string/2,
-	is_string/1 ]).
+	is_string/1, get_whitespaces_list/0 ]).
 
 	
 	
@@ -376,6 +376,13 @@ is_string( _Other ) ->
 	false.
 
 
+
+% Returns the list of known whitespaces.
+% Note: useful with string:tokens.
+get_whitespaces_list() ->
+	" \n\t\r".
+	
+	
 
 % Returns a list of words obtained from the breaking of specified word, 
 % according to specified maximum width.
