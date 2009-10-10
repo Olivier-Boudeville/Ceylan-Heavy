@@ -231,6 +231,7 @@ fi
 
 COMMAND="${COMMAND} ${background_opt}"
 
+# Uncomment to see the actual runtime settings:
 #echo "$0 running final command: ${COMMAND}" 
 
 ${COMMAND}
