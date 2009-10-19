@@ -89,6 +89,7 @@ namespace Ceylan
     class CEYLAN_DLL Loadable
     {
 
+
         public:
 		
 		
@@ -195,7 +196,7 @@ namespace Ceylan
 	 *
 	 */
 	template <typename Content>
-	class LoadableWithContent: public Loadable
+	class LoadableWithContent : public Loadable
 	{
 	
 	
