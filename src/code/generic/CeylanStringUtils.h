@@ -142,6 +142,37 @@ namespace Ceylan
 	
 	
 	/**
+	 * Formats the specified list of strings, according to the specified format.
+	 *
+	 * Text output format is determined from overall settings: the list will
+	 * be output with HTML tags, or use raw formatting, accordingly.
+	 *
+	 * @param stringList the list of strings to format.
+	 *
+	 * @param targetFormat the format (ex: raw text, HTML, etc.) that should
+	 * be used to encode the returned string
+	 *
+	 * @param surroundByTicks tells whether each entry of the list should be
+	 * surrounded by ticks on output.
+	 *
+	 * @param indentationLevel the desired level of indentation, starting at 1
+	 * (used for raw text output).
+	 *
+	 * @note if the STL was smarter, it would have allowed arguments whose 
+	 * type is std::list<std::string> in std::list<const std::string>.
+	 * However no parameter of type 'const std::list<const std::string> &' can
+	 * be used, since std::list elements have to be able to be assigned, 
+	 * hence 'std::list<const X>' cannot be used.
+	 *
+	 */	
+	CEYLAN_DLL std::string formatStringList( 
+		const std::list<std::string> & stringList,
+		TextDisplayable::TextOutputFormat targetFormat,
+		bool surroundByTicks = false, Ceylan::Uint8 indentationLevel = 1 ) ;
+	
+	
+	
+	/**
 	 * Formats the specified map whose keys and values are strings, according
 	 * to the specified format.
 	 *
