@@ -72,7 +72,7 @@ fi
 display_launching ${marshalled_client_test_name}
 
 # Ensure that the server is ready before the client:
-sleep 1
+sleep 2
 
 DEBUG_INTERNAL "Will launch the client"
 run_test ${marshalled_client_test_name} ${marshalled_client_test_exec}
