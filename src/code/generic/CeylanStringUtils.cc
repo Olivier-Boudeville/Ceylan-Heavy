@@ -763,12 +763,24 @@ std::string Ceylan::formatStringList( const list<string> & stringList,
 	bool surroundByTicks, Ceylan::Uint8 indentationLevel )
 {
 
+	return formatStringList( stringList, TextDisplayable::GetOutputFormat(),
+		surroundByTicks, indentationLevel ) ;
+		
+}
+
+
+
+std::string Ceylan::formatStringList( const list<string> & stringList,
+	TextDisplayable::TextOutputFormat targetFormat,
+	bool surroundByTicks, Ceylan::Uint8 indentationLevel )
+{
+
 	if ( stringList.empty() )
 		return "(empty list)" ;
 		
 	string res ;
 	
-	if ( TextDisplayable::GetOutputFormat() == TextDisplayable::html )
+	if ( targetFormat == TextDisplayable::html )
 	{
 	
 		res = "<ul>" ; 
