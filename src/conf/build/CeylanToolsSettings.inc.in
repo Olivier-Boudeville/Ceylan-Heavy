@@ -15,11 +15,11 @@
 
 # GNU Libtool: http://www.gnu.org/software/libtool/libtool.html
 
-libtool_VERSION="2.2.4"
+libtool_VERSION="2.2.6a"
 libtool_ARCHIVE="libtool-${libtool_VERSION}.tar.gz"
 libtool_DOWNLOAD_LOCATION="http://ftp.gnu.org/gnu/libtool/"
 libtool_ALTERNATE_DOWNLOAD_LOCATION="http://mirrors.usc.edu/pub/gnu/libtool"
-libtool_MD5="0b87e84c7aad3b5e979bbe35312fd4c1"
+libtool_MD5="8ca1ea241cd27ff9832e045fe9afe4fd"
 
 
 
