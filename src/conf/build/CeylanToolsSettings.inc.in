@@ -58,33 +58,33 @@ win_pthread_MD5="xxx"
 
 # gcc: http://www.gnu.org/software/gcc/gcc.html
 
-gcc_VERSION="4.3.2"
+gcc_VERSION="4.4.2"
 
 gcc_ARCHIVE="gcc-${gcc_VERSION}.tar.bz2"
 gcc_DOWNLOAD_LOCATION="ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/gcc-${gcc_VERSION}"
 gcc_ALTERNATE_DOWNLOAD_LOCATION="ftp://ftp.uvsq.fr/pub/gcc/releases/gcc-${gcc_VERSION}"
-gcc_MD5="5dfac5da961ecd5f227c3175859a486d"
+gcc_MD5="70f5ac588a79e3c9901d5b34f58d896d"
 gcc_BUILD_TREE="gcc-${gcc_VERSION}-buildTree"
 gcc_SOURCE_TREE="gcc-${gcc_VERSION}-sourceTree"
 
 
 # binutils: http://www.gnu.org/software/binutils/
 
-binutils_VERSION="2.18"
+binutils_VERSION="2.20.51"
 binutils_ARCHIVE="binutils-${binutils_VERSION}.tar.bz2"
 binutils_DOWNLOAD_LOCATION="ftp://ftp.cs.tu-berlin.de/pub/gnu/binutils"
 binutils_ALTERNATE_DOWNLOAD_LOCATION="http://ftp.gnu.org/gnu/binutils"
-binutils_MD5="9d22ee4dafa3a194457caf4706f9cf01"
+binutils_MD5="5955f85e4ec6c21a46c9d3cf96e3bbce"
 
 
 
 # gdb: http://www.gnu.org/software/gdb/gdb.html
 
-gdb_VERSION="6.8"
+gdb_VERSION="7.0"
 gdb_ARCHIVE="gdb-${gdb_VERSION}.tar.bz2"
 gdb_DOWNLOAD_LOCATION="ftp://ftp.cs.tu-berlin.de/pub/gnu/gdb"
 gdb_ALTERNATE_DOWNLOAD_LOCATION="http://ftp.gnu.org/gnu/gdb"
-gdb_MD5="c9da266b884fb8fa54df786dfaadbc7a"
+gdb_MD5=""
 
 
 
@@ -126,28 +126,28 @@ dswifi_MD5=""
 
  
 
-# ----------- For optional tools ;
+# ----------- For optional tools:
 
 
 
 # dot: http://www.research.att.com/sw/tools/graphviz/
 
-# Actually 2.20.3 (defined in configure-template.ac):
+# Actually 2.24.0 (defined in configure-template.ac):
 dot_VERSION="@DOT_VERSION@"
 dot_ARCHIVE="graphviz-${dot_VERSION}.tar.gz"
 dot_DOWNLOAD_LOCATION="http://www.graphviz.org/pub/graphviz/ARCHIVE"
 dot_ALTERNATE_DOWNLOAD_LOCATION=""
-dot_MD5="4d94c4b809a5c095acfc973d8d207fa9"
+dot_MD5="806a30dbc3f8deb219216f35be0e7a40"
 
 
 # doxygen: http://www.stack.nl/~dimitri/doxygen/
 
-# Actually 1.5.8 (defined in configure-template.ac):
+# Actually 1.6.1 (defined in configure-template.ac):
 doxygen_VERSION="@DOXYGEN_VERSION@"
 doxygen_ARCHIVE="doxygen-${doxygen_VERSION}.src.tar.gz"
 doxygen_DOWNLOAD_LOCATION="ftp://ftp.stack.nl/pub/users/dimitri"
 doxygen_ALTERNATE_DOWNLOAD_LOCATION=""
-doxygen_MD5="7438b7ff875d522f02860eea39261953"
+doxygen_MD5="2ec343643e134f0d3ce2069420bcb4f0"
 
 
 
