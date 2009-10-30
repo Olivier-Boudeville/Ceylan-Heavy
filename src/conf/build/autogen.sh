@@ -102,6 +102,11 @@ $USAGE" 1>&2
 		token_eaten=0
 	fi
 	
+	if [ "$1" = "-g" -o "$1" = "--guess" ] ; then
+		warning "the -g and --guess options are meaningless for Ceylan, and thus are ignored."
+		token_eaten=0
+	fi
+	
 	if [ "$1" = "-o" -o "$1" = "--only-prepare-dist" ] ; then
 		# We need to have the library built (do_build=0) even only when only
 		# preparing a distribution package, as the test/autogen.sh needs
