@@ -27,14 +27,16 @@ make -s clean 1>/dev/null 2>&1
 cd $BASE_DIR/test
 make clean 1>/dev/null 2>&1
 
+# Only to be run from the test directory, as the log plug example in the website
+# would match as well:
+$FIND . \( -name 'test*.exe-logs' -a -type d \) -exec $RM -rf '{}' ';' 2>/dev/null
+
 cd cross-tests
 make clean
 cd ..
 
 
 cd $BASE_DIR
-
-$FIND . \( -name 'test*.exe-logs' -a -type d \) -exec $RM -rf '{}' ';' 2>/dev/null
 
 $FIND . \( -name 'test*.exe' -a -type f \) -exec $RM -f '{}' ';' 2>/dev/null
 
