@@ -15,6 +15,8 @@ BASE_DIR=`dirname $0`/../../..
 
 cd $BASE_DIR
 
+# We are in trunk now.
+
 # Converts a relative path into an absolute one:
 BASE_DIR=`pwd`
 
@@ -39,8 +41,6 @@ cd ..
 cd $BASE_DIR
 
 $FIND . \( -name 'test*.exe' -a -type f \) -exec $RM -f '{}' ';' 2>/dev/null
-
-cd ..
 
 # Directories:
 $FIND . \( -name 'autom4te.cache' -o -name '.deps' -o -name '.libs' \) -exec $RM -rf '{}' ';' 2>/dev/null
