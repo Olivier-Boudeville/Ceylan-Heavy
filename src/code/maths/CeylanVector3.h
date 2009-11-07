@@ -63,7 +63,7 @@ namespace Ceylan
 			 * @note Beware of counter-intuitive operator priorities.
 			 *
 			 */
-			class CEYLAN_DLL Vector3: public Vector
+			class CEYLAN_DLL Vector3 : public Vector
 			{
 
 
@@ -210,6 +210,15 @@ namespace Ceylan
 					 *
 					 */
 					explicit Vector3( Real x0 = 0, Real x1 = 0, Real x2 = 0 ) ;
+				
+				
+				
+					/**
+					 * Constructs a new vector from specified array of 
+					 * three floating-point coordinates.
+					 *
+					 */
+					explicit Vector3( const Real (& array)[3] ) ;
 				
 				
 				

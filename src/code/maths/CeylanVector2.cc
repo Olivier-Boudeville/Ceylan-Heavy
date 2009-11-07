@@ -70,6 +70,16 @@ Vector2::Vector2( Real x0, Real x1 )
 
 
 
+Vector2::Vector2( const Real (& array)[2] )
+{
+
+	_vec[0] = array[0] ;
+	_vec[1] = array[1] ;
+
+}
+
+
+
 Vector2::~Vector2() throw()
 {
 

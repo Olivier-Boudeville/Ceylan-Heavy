@@ -70,6 +70,17 @@ Vector3::Vector3( Real x0, Real x1, Real x2 )
 
 
 
+Vector3::Vector3( const Real (& array)[3] )
+{
+
+	_vec[0] = array[0] ;
+	_vec[1] = array[1] ;
+	_vec[2] = array[2] ;	
+
+}
+
+
+
 Vector3::~Vector3() throw()
 {
 
