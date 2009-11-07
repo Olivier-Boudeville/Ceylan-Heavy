@@ -1582,6 +1582,16 @@ namespace Ceylan
 	
 	
 				/**
+				 * Removes and deallocates the current view.
+				 *
+				 * @throw GenericMVCException if no view was registered.
+				 *
+				 */
+				virtual void removeView() ;
+				
+				 
+	
+				/**
 				 * Sets the unique (specialized) controller this model should
 				 * know.
 				 *
@@ -1749,7 +1759,22 @@ namespace Ceylan
 		}
 
 
-	
+		template <typename ActualController>
+		void SingleControllerSingleViewGenericModel<ActualController>::removeView() 
+		{
+		
+			if ( this->_view == 0 )
+				throw GenericMVCException( 
+					"SingleControllerSingleViewGenericModel<ActualController>::"
+					"removeView failed: no view was currently registered." ) ;
+			
+			delete this->_view ;
+			
+			this->_view = 0 ;
+		
+		}
+
+
 		template <typename ActualController>
 		void
 		SingleControllerSingleViewGenericModel<ActualController>::setController(
