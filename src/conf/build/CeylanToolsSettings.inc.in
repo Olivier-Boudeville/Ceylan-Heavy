@@ -85,7 +85,7 @@ gdb_VERSION="7.0"
 gdb_ARCHIVE="gdb-${gdb_VERSION}.tar.bz2"
 gdb_DOWNLOAD_LOCATION="ftp://ftp.cs.tu-berlin.de/pub/gnu/gdb"
 gdb_ALTERNATE_DOWNLOAD_LOCATION="http://ftp.gnu.org/gnu/gdb"
-gdb_MD5=""
+gdb_MD5="3386a7b69c010785c920ffc1e9cb890a"
 
 
 
@@ -99,31 +99,31 @@ devkitarm_VERSION="r20"
 devkitarm_ARCHIVE="devkitARM_${devkitarm_VERSION}-linux.tar.bz2"
 devkitarm_DOWNLOAD_LOCATION="http://heanet.dl.sourceforge.net/sourceforge/devkitpro"
 devkitarm_ALTERNATE_DOWNLOAD_LOCATION="http://downloads.sourceforge.net/devkitpro"
-devkitarm_MD5=""
+devkitarm_MD5="xxx"
 
 libnds_VERSION="20070503"
 libnds_ARCHIVE="libnds-${libnds_VERSION}.tar.bz2"
 libnds_DOWNLOAD_LOCATION="http://heanet.dl.sourceforge.net/sourceforge/devkitpro"
 libnds_ALTERNATE_DOWNLOAD_LOCATION="http://downloads.sourceforge.net/devkitpro"
-libnds_MD5=""
+libnds_MD5="xxx"
 
 libnds_examples_VERSION="20070327"
 libnds_examples_ARCHIVE="nds-examples-${libnds_examples_VERSION}.tar.bz2"
 libnds_examples_DOWNLOAD_LOCATION="http://heanet.dl.sourceforge.net/sourceforge/devkitpro"
 libnds_examples_ALTERNATE_DOWNLOAD_LOCATION="http://downloads.sourceforge.net/devkitpro"
-libnds_examples_MD5=""
+libnds_examples_MD5="xxx"
 
 libfat_VERSION="20070127"
 libfat_ARCHIVE="libfat-nds-${libfat_VERSION}.tar.bz2"
 libfat_DOWNLOAD_LOCATION="http://heanet.dl.sourceforge.net/sourceforge/devkitpro"
 libfat_ALTERNATE_DOWNLOAD_LOCATION="http://downloads.sourceforge.net/devkitpro"
-libfat_MD5=""
+libfat_MD5="xxx"
 
 dswifi_VERSION="0.3.1"
 dswifi_ARCHIVE="dswifi-${dswifi_VERSION}.tar.bz2"
 dswifi_DOWNLOAD_LOCATION="http://heanet.dl.sourceforge.net/sourceforge/devkitpro"
 dswifi_ALTERNATE_DOWNLOAD_LOCATION="http://downloads.sourceforge.net/devkitpro"
-dswifi_MD5=""
+dswifi_MD5="xxx"
 
  
 
