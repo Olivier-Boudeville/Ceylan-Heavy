@@ -186,7 +186,7 @@ namespace Ceylan
 		 *
 		 */
 		template <typename ActualModel>
-		class SingleModelGenericView: public BaseView
+		class SingleModelGenericView : public BaseView
 		{
 	
 	
