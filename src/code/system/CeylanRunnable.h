@@ -72,6 +72,8 @@ namespace Ceylan
 		 * Even though no exception specification can be specified,
 		 * the callback should not throw any exception whatsoever.
 		 *
+		 * See also: Ceylan::Functor.
+		 *
 		 */
 		typedef void (*Callback) ( void * data ) /* throw() */ ;
 	
