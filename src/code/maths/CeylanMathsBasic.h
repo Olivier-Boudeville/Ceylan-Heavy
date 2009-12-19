@@ -146,7 +146,7 @@ namespace Ceylan
 		
 		
 		/// Exception for Maths-related issues.
-		class CEYLAN_DLL MathsException: public Ceylan::Exception
+		class CEYLAN_DLL MathsException : public Ceylan::Exception
 		{
 		
 			public:
