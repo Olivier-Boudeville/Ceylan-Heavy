@@ -144,9 +144,10 @@ alias r='fc -e -'
 alias lock='xlock -mode blank'
 alias m='make 2>&1'
 alias ma='make 2>&1 | more'
-alias sonata='ssh $USER@sonata'
-alias aranor='ssh $USER@aranor'
+alias sonata='ssh wondersye@sonata'
+alias aranor='ssh wondersye@aranor'
 alias watt='ssh boudevil@watt'
+alias red='ssh sye@red'
 alias orge='ssh orge@orge-testing.esperide.com'
 
 
@@ -183,6 +184,7 @@ export TOETURANIS="sye@eturanis:/home/sye"
 export TOSONATA="wondersye@sonata:/home/wondersye"
 export TORAINBOW="sye@rainbow:/home/sye"
 export TOWATT="boudevil@watt:/home/boudevil"
+export TORED="sye@red:/home/sye"
 export TOORGE="orge@orge-testing.esperide.com:/home/orge"
 
 export TOARANOR_FTP="www-data@aranor:/home/ftp/LOANI-archive-repository"
