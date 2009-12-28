@@ -188,7 +188,7 @@ extern CEYLAN_DLL const ARM7StatusWord StatusReset ;
 /**
  * ARM7 error code values.
  *
- * Error codes in the [0..1023] range are reserved for Ceylan use.
+ * Error codes in the [0..1023] range are reserved for Ceylan use.
  *
  */
 
