@@ -18,7 +18,17 @@
 ;; Moves the cursor across "physical lines":
 (require 'physical-line)
 (add-hook 'find-file-hooks 'physical-line-mode-without-exception)
- 
+
+;; Automatic indentation while typing:
+;(add-hook 'find-file-hooks '(lambda ()
+;      (local-set-key (kbd "RET") 'newline-and-indent)))
+
+(add-hook 'find-file-hooks '(lambda ()
+      (local-set-key (kbd "RET") 'reindent-then-newline-and-indent)))
+
+;(setq indent-line-function 'indent-relative-maybe)
+	  
+	  
 ;; Indenting buffers as a whole:
 (defun iwb ()
   "indent whole buffer"
@@ -27,7 +37,27 @@
   (indent-region (point-min) (point-max) nil)
   )
 
-(global-set-key [f12] 'iwb)
+
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'post-forward)
+(setq uniquify-after-kill-buffer-p 1)
+(setq uniquify-ignore-buffers-re "^\\*")
+
+(require 'whitespace)
+(global-whitespace-mode 1)
+(setq-default show-trailing-whitespace nil)
+(setq whitespace-style '(space tabs lines-tail trailing empty indentation space-before-tab space-after-tab))
+(setq whitespace-line-column 80)
+
+
+(global-set-key [f6]  'goto-line)
+(global-set-key [f2]  'save-buffer)
+(global-set-key [f9]         'query-replace)
+(global-set-key [(shift f9)] 'query-replace-regexp)
+(global-set-key [f10] 'undo)
+(global-set-key [f11] 'iwb)
+(global-set-key [f12] 'kill-buffer)
+
 
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
@@ -37,18 +67,27 @@
 ;;(standard-display-european 1)
 
 (setq ispell-dictionary "francais")	;
+(setq ispell-program-name "aspell")
+(add-hook 'text-mode-hook 'flyspell-mode)
 
 (show-paren-mode t)
-(setq default-major-mode 'text-mode)
+(setq show-paren-style 'parenthesis)
+
+(setq initial-scratch-message "")
+
 (setq inhibit-startup-message t)
 (setq-default transient-mark-mode t)
 
+(defalias 'yes-or-no-p 'y-or-n-p)
+
 (global-hl-line-mode 1)
 
-;; ========== Place Backup Files in Specific Directory ==========
+(setq make-backup-files nil)
 
-;; Enable backup files.
-(setq make-backup-files t)
+(setq initial-major-mode 'text-mode)
+(setq default-major-mode 'text-mode)
+
+;; ========== Place Backup Files in Specific Directory ==========
 
 ;; Save all backup file in this directory.
 (setq backup-directory-alist (quote ((".*" . "~/.emacs_backups/"))))
@@ -60,6 +99,8 @@
 
 ;; Show column-number in the mode line
 (column-number-mode 1)
+
+(setq-default fill-column 80)
 
 ;; Set cursor color
 (set-cursor-color "white")
@@ -73,7 +114,7 @@
 (set-background-color "black")
 
 ;;; Set highlighting colors for isearch and drag
-(set-face-foreground 'highlight "white")
+;;(set-face-foreground 'highlight "white")
 
 
 ;; Color for the cursor line:
@@ -99,4 +140,25 @@
 
 (setq scroll-step 1)
 (show-paren-mode 1)
+(delete-selection-mode 1)
+(transient-mark-mode 1)
+(savehist-mode 1)
 
+(setq tool-bar-mode nil)
+
+(custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(blink-cursor-mode nil)
+ '(column-number-mode t)
+ '(show-paren-mode t)
+ '(tool-bar-mode nil)
+ '(transient-mark-mode t))
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ )
