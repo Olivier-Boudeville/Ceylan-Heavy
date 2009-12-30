@@ -166,6 +166,11 @@ ERLANG_INTERPRETER_OPT := -pz $(BEAM_DIRS) $(DISTRIBUTED_NODE_OPT)
 # prevent adding other options to the launcher afterwards:
 BEAM_PATH_OPT = $(foreach dir,$(BEAM_DIRS),--beam-dir $(dir))
 
-# Removed: --ln $(VM_TEST_NAME); OVERRIDDEN_OPT left for the user:
-ERL_PARAMETERIZED_LAUNCHER = $(ERL_LAUNCHER) -v -c $(PROJECT_NAME) --fqdn $(FQDN) $(BEAM_PATH_OPT) $(OVERRIDDEN_OPT)
+# Removed:
+#  --ln $(VM_TEST_NAME)
+#  -c $(PROJECT_NAME), as not specifying it on the command line allows to
+# select the one in ~/.erlang.cookie (if any), which is better
+#
+# OVERRIDDEN_OPT left for the user
+ERL_PARAMETERIZED_LAUNCHER = $(ERL_LAUNCHER) -v  --fqdn $(FQDN) $(BEAM_PATH_OPT) $(OVERRIDDEN_OPT)
 
