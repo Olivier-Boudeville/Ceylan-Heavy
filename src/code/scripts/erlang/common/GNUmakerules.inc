@@ -9,7 +9,7 @@
 
 ERL_FILES = $(wildcard *.erl)
 
-# Includes test beams:
+# Includes test beams:
 BEAM_FILES   = $(patsubst %.erl,%.beam,$(ERL_FILES))
 
 TEST_SOURCES = $(wildcard *_test.erl)
@@ -17,36 +17,35 @@ TEST_SOURCES = $(wildcard *_test.erl)
 TEST_TARGETS = $(patsubst %.erl,%,$(TEST_SOURCES))
 
 
-# Regarding dependency management.
+# Regarding dependency management.
 #
 # One can just ignore dependencies and rebuild "blindly" every module in 
-# current subtree.
+# current subtree.
 # One just has not to forget to issue 'make' from a right location, before
 # running one's Erlang program.
 
-# Another option is to track dependencies explicitly.
+# Another option is to track dependencies explicitly.
 # We found no existing way of managing dependencies automatically, thus 
 # they have to be declared by hand.
 # We want these user-specified dependencies to work with the generic
 # rules to build beam files and to run programs.
-# For example, 'make MyObject_run' would check MyObject_test.beam
-# and its dependencies before running it.
+# For example, 'make MyObject_run' would check MyObject_test.beam
+# and its dependencies before running it.
 # A generic rule like: '%.beam: %.erl' would not take into account
 # dependencies.
 # A generic rule like: '%.beam: %.erl %_dependencies' with
 # a definition like 'MyObject_dependencies: A.beam moduleB.beam'
-# would work (and modules not depending on others could be managed with a 
-# second generic rule: '%.beam: %.erl'), but generic targets, as 
+# would work (and modules not depending on others could be managed with a 
+# second generic rule: '%.beam: %.erl'), but generic targets, as 
 # defined in GNUmakerules.inc, seem to be *always* rebuilt, not depending
 # on their .PHONY status.
 # In our case, MyObject.beam (and all its 
-# prerequesites!) would thus always be rebuilt, even if no change at all was
-# operated on the corresponding sources, which whould not be acceptable. 
+# prerequisites!) would thus always be rebuilt, even if no change at all was
+# operated on the corresponding sources, which would not be acceptable. 
 
-# Thus we stick from now to the basic strategy: always issue a global 'make'
-# at the root of the source before running a program, otherwise be doomed
-# (changes not taken into account at runtime, as not recompiled).
-
+# Thus we stick from now to the basic strategy: always issue a global 'make'
+# at the root of the source before running a program, otherwise be doomed
+# (changes not taken into account at run-time, as not recompiled).
 
 
 .PHONY: all all-recurse test test-recurse doc-recurse build-tests launch \
@@ -151,8 +150,8 @@ all-recurse:
 
 
 # _integration prefix added not to match instead of the next rule.
-# %_integration_dependencies target is a phony target, so that test dependencies
-# can be specified.
+# _integration_dependencies target is a phony target, so that test dependencies
+# can be specified.
 %_integration_run: %_integration_test.beam %_integration_dependencies
 	@echo "     Running integration test $@ from $^ with $(ERL_PARAMETERIZED_LAUNCHER)"
 	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@ --eval `echo $@ | sed 's|_run|_test:run()|1'` $(CMD_LINE_OPT)
@@ -196,7 +195,7 @@ doc-recurse:
 
 
 
-# Not used any more now that all beams are always built:	
+# Not used any more now that all beams are always built:	
 build-tests: $(BEAM_FILES)
 	@for t in $(TEST_TARGETS); do $(MAKE) -s $$t CMD_LINE_OPT="${CMD_LINE_OPT}"; done
 
@@ -295,7 +294,7 @@ clean: clean-erlang clean-database clean-recurse
 
 clean-erlang:
 	@echo "     Cleaning all in "$(PWD) #`basename $(PWD)`
-	-@rm -f *.beam *.jam erl_crash.dump
+	-@/bin/rm -f *.beam *.jam erl_crash.dump
 
 
 clean-database:
