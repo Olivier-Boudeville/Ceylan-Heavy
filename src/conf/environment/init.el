@@ -6,29 +6,29 @@
 (require 'rst)
 (setq auto-mode-alist
       (append '(("\\.txt$" . rst-mode)
-                ("\\.rst$" . rst-mode)
-                ("\\.rest$" . rst-mode)) auto-mode-alist))
+				("\\.rst$" . rst-mode)
+				("\\.rest$" . rst-mode)) auto-mode-alist))
 
 
 ;; Displaying of line number on the left:
 ;; (see also 'longlines')
 (require 'linum)
-(add-hook 'find-file-hook (lambda () (linum-mode 1))) 
+(add-hook 'find-file-hook (lambda () (linum-mode 1)))
 
 ;; Moves the cursor across "physical lines":
 (require 'physical-line)
 (add-hook 'find-file-hooks 'physical-line-mode-without-exception)
 
 ;; Automatic indentation while typing:
-;(add-hook 'find-file-hooks '(lambda ()
-;      (local-set-key (kbd "RET") 'newline-and-indent)))
+;;(add-hook 'find-file-hooks '(lambda ()
+;;      (local-set-key (kbd "RET") 'newline-and-indent)))
 
 (add-hook 'find-file-hooks '(lambda ()
-      (local-set-key (kbd "RET") 'reindent-then-newline-and-indent)))
+							  (local-set-key (kbd "RET") 'reindent-then-newline-and-indent)))
 
-;(setq indent-line-function 'indent-relative-maybe)
-	  
-	  
+;;(setq indent-line-function 'indent-relative-maybe)
+
+
 ;; Indenting buffers as a whole:
 (defun iwb ()
   "indent whole buffer"
@@ -66,7 +66,7 @@
 (setq compilation-window-height 10)
 ;;(standard-display-european 1)
 
-(setq ispell-dictionary "francais")	;
+(setq ispell-dictionary "francais")		;
 (setq ispell-program-name "aspell")
 (add-hook 'text-mode-hook 'flyspell-mode)
 
@@ -124,12 +124,12 @@
 (set-face-foreground 'region "cyan")
 (set-face-background 'region "blue")
 
-;(set-face-foreground 'secondary-selection "skyblue")
-;(set-face-background 'secondary-selection "darkblue")
+;;(set-face-foreground 'secondary-selection "skyblue")
+;;(set-face-background 'secondary-selection "darkblue")
 (set-face-foreground 'secondary-selection "red")
 (set-face-background 'secondary-selection "green")
 
-;;Turn off a blinking cursor! 
+;;Turn off a blinking cursor!
 (if (fboundp 'blink-cursor-mode)
     (blink-cursor-mode -1))
 
@@ -146,19 +146,21 @@
 
 (setq tool-bar-mode nil)
 
+(server-start)
+
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(show-paren-mode t)
  '(tool-bar-mode nil)
  '(transient-mark-mode t))
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  )
