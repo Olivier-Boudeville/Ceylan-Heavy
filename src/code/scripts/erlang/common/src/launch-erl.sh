@@ -2,30 +2,30 @@
 
 default_node_name="ceylan_default"
 
-# Not used anymore as the user may prefer file-based cookies:
+# Not used anymore as the user may prefer file-based cookies:
 #DEFAULT_cookie="ceylan"
 
 
 USAGE="`basename $0` [-v] [-c a_cookie] [--sn a_short_node_name | --ln a_long_node_name] [--fqdn a_fqdn] [--beam-dir a_path] [--beam-paths path_1 path_2] [--no-auto-start] [-h]...: launches the Erlang interpreter with specified settings.
 	-v: be verbose
 	-c a_cookie: specify a cookie, otherwise no cookie will be specifically set
-	--sn a_short_node_name: specify a short name (ex: 'ceylan_2') 
+	--sn a_short_node_name: specify a short name (ex: 'ceylan_2')
 	--ln a_long_node_name: specify a long name (@FQDN will be automatically added)
 	--tcp-range LOW HIGH: specify the range of TCP ports that should be used
 	--fqdn a_fqdn: specify the FQDN to be used
 	--background: run the launched interpreter in the background
-	--wooper-path wooper_path: specify the WOOPER path 
+	--wooper-path wooper_path: specify the WOOPER path
 	--eval 'an Erlang expression': start by evaluating this expression
 	--beam-dir a_path: adds specified directory to the path searched for beam files (multiple --beam-dir options can be specified)
 	--beam-paths first_path second_path ...: adds specified directories to the path searched for beam files (multiple paths can be specified; must be the last option)
 	-h: display this help
 	other options will be passed 'as are' to the interpreter
-Unless --sn or --ln is specified, default is to use a long node name, '${default_node_name}'.
-	Example: launch-erl.sh -v --ln ceylan --eval 'class_TimeManager_test:run()'"	
+	Unless --sn or --ln is specified, default is to use a long node name, '${default_node_name}'.
+	Example: launch-erl.sh -v --ln ceylan --eval 'class_TimeManager_test:run()'"
 
 #echo "Received as parameters: $*"
 
-#ERL=/usr/bin/erl 
+#ERL=/usr/bin/erl
 ERL=erl
 
 CEYLAN_ERLANG=`dirname $0`/../..
@@ -43,27 +43,27 @@ in_background=1
 
 while [ $# -gt 0 ] ; do
 	token_eaten=1
-	
+
 	#echo "Examining next argument: '$1'"
-	
+
 	if [ "$1" = "-v" ] ; then
 		be_verbose=0
 		token_eaten=0
 	fi
-	
+
 	if [ "$1" = "-c" ] ; then
 		shift
-		#echo "  + specified cookie: $cookie"		
+		#echo "  + specified cookie: $cookie"
 		cookie="$1"
 		token_eaten=0
 	fi
-	
+
 	if [ "$1" = "--sn" ] ; then
 		shift
 		short_name="$1"
 		token_eaten=0
 	fi
-	
+
 	if [ "$1" = "--ln" ] ; then
 		shift
 		long_name="$1"
@@ -80,27 +80,32 @@ while [ $# -gt 0 ] ; do
 		#echo "  + TCP range: from $lower_tcp_port to $higher_tcp_port"
 		token_eaten=0
 	fi
-	
-	if [ "$1" = "--epmd_port" ] ; then
+
+	if [ "$1" = "--epmd-port" ] ; then
 		shift
 		epmd_port="$1"
-		# This is apparently the way to notify a VM of the EPMD port:
+		# This is apparently the way to notify a VM of the EPMD port, and
+		# appending the epmd_port_opt before the command apparently will not
+		# work ('ERL_EPMD_PORT=4269: not found'), thus exporting it instead: 
+		#epmd_port_opt="ERL_EPMD_PORT=$epmd_port"
 		export ERL_EPMD_PORT=$epmd_port
+		# This works both ways (to tell EPMD where to be launched, to tell ERL
+		# where to find EPMD).
 		token_eaten=0
 	fi
-	
+
 	if [ "$1" = "--fqdn" ] ; then
 		shift
 		fqdn="$1"
 		token_eaten=0
 	fi
-	
+
 	if [ "$1" = "--background" ] ; then
 		shift
 		in_background=0
 		token_eaten=0
 	fi
-	
+
 	if [ "$1" = "--beam-paths" ] ; then
 		# Keep --beam-paths if first position, as will be shifted in end of loop
 		while [ ! $# -eq 1 ] ; do
@@ -110,7 +115,7 @@ while [ $# -gt 0 ] ; do
 		done
 		token_eaten=0
 	fi
-	
+
 	if [ "$1" = "--eval" ] ; then
 		shift
 		# We can use -s instead, which would allow to send multiple commands
@@ -119,7 +124,7 @@ while [ $# -gt 0 ] ; do
 		eval_content="$1"
 		token_eaten=0
 	fi
-	
+
 	if [ "$1" = "--no-auto-start" ] ; then
 		#echo "Autostart deactivated"
 		autostart=1
@@ -148,8 +153,8 @@ while [ $# -gt 0 ] ; do
 	if [ $token_eaten -eq 1 ] ; then
 		echo "Warning, unknown argument ('$1'), adding it 'as is' to command-line." 1>&2
 		verbatim_opt="${verbatim_opt} $1"
-	fi	
-	
+	fi
+
 	shift
 done
 
@@ -162,8 +167,8 @@ log_opt="+W w"
 code_opt="-pz ${code_dirs} -smp auto +K true +A 8"
 
 # By default up to 1,2 million processes could be created on one node:
-# (reduced, as even without having spawned these processes, the memory 
-# footprint can increase quite a lot) 
+# (reduced, as even without having spawned these processes, the memory
+# footprint can increase quite a lot)
 max_process_count=120000
 #max_process_count=120000000
 
@@ -183,7 +188,7 @@ fi
 
 if [ $use_tcp_range -eq 0 ] ; then
 
-	tcp_port_opt="-kernel inet_dist_listen_min ${lower_tcp_port} inet_dist_listen_max ${higher_tcp_port}"  
+	tcp_port_opt="-kernel inet_dist_listen_min ${lower_tcp_port} inet_dist_listen_max ${higher_tcp_port}"
 
 fi
 
@@ -207,20 +212,20 @@ if [ -n "${short_name}" ] ; then
 	else
 		echo "Error, --sn and --ln cannot be used simultaneously." 1>&2
 		exit 1
-	fi	
+	fi
 
 	if [ $be_verbose -eq 0 ] ; then
 		echo "Launching: ${command}"
 	else
 		echo "Launching Erlang interpreter with short name ${short_name}"
 	fi
-	
+
 else
 
 	if [ -z "${long_name}" ] ; then
 		long_name="${default_node_name}"
 	fi
-	
+
 	#long_name="${long_name}@${fqdn}"
 	command="${command} -name ${long_name}"
 
@@ -230,19 +235,23 @@ else
 	else
 		echo "Launching Erlang interpreter with long name ${long_name}"
 	fi
-	
+
 fi
 
 
 
 if [ $in_background -eq 0 ] ; then
-	background_opt="-noinput -noshell -detached"
+	
+	# -detached removed, as was simply transformed into: '-noshell -noshell -noinput'
+	background_opt="-noinput -noshell"
+
 fi
 
+#command="$epmd_port_opt ${command} ${background_opt}"
 command="${command} ${background_opt}"
 
 # Uncomment to see the actual runtime settings:
-#echo "$0 running final command: ${command}" 
+echo "$0 running final command: ${command}" > command.txt
 
 ${command}
 pid=$!
@@ -251,4 +260,3 @@ pid=$!
 #if [ $in_background -eq 0 ] ; then
 #	echo "(PID of launched interpreter is $pid)"
 #fi
-
