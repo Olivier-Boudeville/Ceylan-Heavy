@@ -1,7 +1,7 @@
 # Bash configuration file.
 
 # Created 2004, April 16
-# Author: Olivier Boudeville (olivier.boudeville@online.fr)
+# Author: Olivier Boudeville (olivier.boudeville@esperide.com)
 
 # This script sets main all-UNIX practical tricks.
 
@@ -23,6 +23,8 @@ alias printText='a2ps'
 alias mo='more'
 alias r='fc -e -'
 
+alias n='emacs'
+
 
 # "cd" keyboard counterparts:
 alias xs='cd $1'
@@ -32,8 +34,8 @@ alias vf='cd $1'
 # Shell section:
 
 HISTSIZE=1000
-IGNOREOF=1 
-set -o emacs 
+IGNOREOF=1
+set -o emacs
 umask 002
 
 colors_wanted=0
@@ -46,9 +48,9 @@ if [ $colors_wanted -eq 0 ] ; then
 	alias l='ls -aF --color=auto'
 	alias ls='ls -F --color=auto'
 	alias ll='ls -aF -l --color=auto'
-	
+
 else
-	
+
 	# Without colors:
 	export PS1="\n\h \u \t "'$PWD'"\n> "
 
@@ -57,4 +59,3 @@ else
 	alias ll='ls -aF -l'
 
 fi
-
