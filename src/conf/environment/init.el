@@ -30,7 +30,7 @@
 
 
 ;; Indenting buffers as a whole:
-(defun iwb ()
+(defun indent-whole-buffer ()
   "indent whole buffer"
   (interactive)
   (delete-trailing-whitespace)
@@ -50,12 +50,13 @@
 (setq whitespace-line-column 80)
 
 
+(global-set-key [f10] 'undo)
 (global-set-key [f6]  'goto-line)
 (global-set-key [f2]  'save-buffer)
 (global-set-key [f9]         'query-replace)
 (global-set-key [(shift f9)] 'query-replace-regexp)
-(global-set-key [f10] 'undo)
-(global-set-key [f11] 'iwb)
+(global-set-key [f10] 'whitespace-cleanup)
+(global-set-key [f11] 'indent-whole-buffer)
 (global-set-key [f12] 'kill-buffer)
 
 
@@ -66,7 +67,7 @@
 (setq compilation-window-height 10)
 ;;(standard-display-european 1)
 
-(setq ispell-dictionary "francais")		;
+(setq ispell-dictionary "english")		;
 (setq ispell-program-name "aspell")
 (add-hook 'text-mode-hook 'flyspell-mode)
 
