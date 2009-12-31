@@ -24,6 +24,7 @@ alias mo='more'
 alias r='fc -e -'
 
 alias n='emacs'
+alias m='make'
 
 
 # "cd" keyboard counterparts:
