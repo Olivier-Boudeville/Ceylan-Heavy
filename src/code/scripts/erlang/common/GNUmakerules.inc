@@ -93,12 +93,12 @@ all-recurse:
 
 %_exec: %_app.beam %.beam 
 	@echo "     Executing application $^ (first form)"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@  --eval `echo $@ | sed 's|_exec|_app:exec()|1'` $(CMD_LINE_OPT)
+	$(ERL_PARAMETERIZED_LAUNCHER) --ln $@  --eval `echo $@|sed 's|_exec|_app:exec()|1'` $(CMD_LINE_OPT)
 	
 		
 %_exec: %_app.beam
 	@echo "     Executing application $^ (second form)"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@ --eval `echo $@ | sed 's|_exec|_app:exec()|1'` $(CMD_LINE_OPT)
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@ --eval `echo $@|sed 's|_exec|_app:exec()|1'` $(CMD_LINE_OPT)
 
 
 
@@ -224,35 +224,36 @@ install-announce:
 install-bin:
 	@if [ -n "$(EXEC_TO_INSTALL)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/bin ; \
-	cp -f $(EXEC_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/bin ; fi
+	/bin/cp -f $(EXEC_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/bin ; fi
 
 
 install-ebin:
 	@if [ -n "$(BEAMS_TO_INSTALL)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/ebin ; \
-	cp -f $(BEAMS_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/ebin ; fi
+	/bin/cp -f $(BEAMS_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/ebin ; fi
 
  
 install-src:
 	@if [ -n "$(SOURCES_TO_INSTALL)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/src ; \
-	cp -f $(SOURCES_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/src ; fi
+	/bin/cp -f $(SOURCES_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/src ; fi
 
 
 install-include:
 	@if [ -n "$(INCLUDES_TO_INSTALL)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/include ; \
-	cp -f $(INCLUDES_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/include ; fi
+	/bin/cp -f $(INCLUDES_TO_INSTALL) \
+	$(PACKAGE_INSTALLATION_PREFIX)/include ; fi
 
 
 install-examples:
 	@if [ -n "$(EXAMPLES_TO_INSTALL_BEAMS)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/examples/ebin ; \
-	cp -f $(EXAMPLES_TO_INSTALL_BEAMS) \
+	/bin/cp -f $(EXAMPLES_TO_INSTALL_BEAMS) \
 	$(PACKAGE_INSTALLATION_PREFIX)/examples/ebin ; fi
 	@if [ -n "$(EXAMPLES_TO_INSTALL_SRC)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/examples/src ; \
-	cp -f $(EXAMPLES_TO_INSTALL_SRC) \
+	/bin/cp -f $(EXAMPLES_TO_INSTALL_SRC) \
 	$(PACKAGE_INSTALLATION_PREFIX)/examples/src ; fi
 
 
@@ -270,7 +271,7 @@ install-test:
 install-doc:
 	@if [ -n "$(DOC_TO_INSTALL)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/doc ; \
-	cp -f $(DOC_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/doc ; fi
+	/bin/cp -f $(DOC_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/doc ; fi
 
 
 info-install:
