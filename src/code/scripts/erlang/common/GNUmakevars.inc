@@ -81,7 +81,7 @@ TESTS_TO_INSTALL_BEAMS := `find $(PACKAGE_TOP) -name '*_test.beam' -o -name 'cla
 TESTS_TO_INSTALL_SRC := `find $(PACKAGE_TOP) -name '*_test.erl' -o -name 'class_Test*.erl'`
 
 
-DOC_TO_INSTALL := `find $(PACKAGE_TOP) -name '*.pdf' -o -name '*.html' -o -name '*.png'`
+DOC_TO_INSTALL := `find $(PACKAGE_TOP) -name tmp-rst -prune -o \( -type f -a \( -name '*.pdf' -o -name '*.html' -o -name '*.png' \) \)|grep -v tmp-rst`
 
 
 
