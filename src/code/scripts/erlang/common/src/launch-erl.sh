@@ -86,7 +86,7 @@ while [ $# -gt 0 ] ; do
 		epmd_port="$1"
 		# This is apparently the way to notify a VM of the EPMD port, and
 		# appending the epmd_port_opt before the command apparently will not
-		# work ('ERL_EPMD_PORT=4269: not found'), thus exporting it instead: 
+		# work ('ERL_EPMD_PORT=4269: not found'), thus exporting it instead:
 		#epmd_port_opt="ERL_EPMD_PORT=$epmd_port"
 		export ERL_EPMD_PORT=$epmd_port
 		# This works both ways (to tell EPMD where to be launched, to tell ERL
@@ -101,7 +101,6 @@ while [ $# -gt 0 ] ; do
 	fi
 
 	if [ "$1" = "--background" ] ; then
-		shift
 		in_background=0
 		token_eaten=0
 	fi
@@ -241,7 +240,7 @@ fi
 
 
 if [ $in_background -eq 0 ] ; then
-	
+
 	# -detached removed, as was simply transformed into: '-noshell -noshell -noinput'
 	background_opt="-noinput -noshell"
 
