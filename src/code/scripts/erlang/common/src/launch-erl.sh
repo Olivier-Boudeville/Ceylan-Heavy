@@ -241,8 +241,9 @@ fi
 
 if [ $in_background -eq 0 ] ; then
 
-	# -detached removed, as was simply transformed into: '-noshell -noshell -noinput'
-	background_opt="-noinput -noshell"
+	# -detached used, and implies (among other things like being a
+	# non-blocking command), '-noinput -noshell':
+	background_opt="-detached"
 
 fi
 
@@ -250,7 +251,7 @@ fi
 command="${command} ${background_opt}"
 
 # Uncomment to see the actual runtime settings:
-echo "$0 running final command: ${command}" > command.txt
+#echo "$0 running final command: ${command}" > command.txt
 
 ${command}
 pid=$!
