@@ -80,14 +80,14 @@
 % will be synchronized.
 construct(State,?wooper_construct_parameters) ->
 
-	io:format( "~s Creating a trace listener whose PID is ~w, "
-		"synchronized on trace aggregator ~w.~n", 
-		[ ?LogPrefix, self(), TraceAggregatorPid ] ),
+	%io:format( "~s Creating a trace listener whose PID is ~w, "
+    %		"synchronized on trace aggregator ~w.~n", 
+	%	[ ?LogPrefix, self(), TraceAggregatorPid ] ),
 
 	% First the direct mother classes (none), then this class-specific actions:
 	
-	io:format( "~s Requesting from aggregator a trace synchronization.~n", 
-		[ ?LogPrefix ] ),
+	%io:format( "~s Requesting from aggregator a trace synchronization.~n", 
+	%	[ ?LogPrefix ] ),
 		
 	TraceAggregatorPid ! {addTraceListener,self()},
 	receive
@@ -95,9 +95,9 @@ construct(State,?wooper_construct_parameters) ->
 		 {trace_zip,Bin,TraceFilename} ->
 		 	% Allows to run for the same directory as aggregator:
 			ListenerTraceFilename = "Listener-" ++ TraceFilename,
-			io:format( "~s Received from aggregator a trace synchronization "
-				"for file '~s', will store it in '~s'.~n", 
-				[ ?LogPrefix, TraceFilename, ListenerTraceFilename] ),
+			%io:format( "~s Received from aggregator a trace synchronization "
+			%	"for file '~s', will store it in '~s'.~n", 
+			%	[ ?LogPrefix, TraceFilename, ListenerTraceFilename] ),
 			file_utils:zipped_term_to_unzipped_file(Bin,ListenerTraceFilename),
 
 			% Will write in it newer traces:
@@ -111,7 +111,7 @@ construct(State,?wooper_construct_parameters) ->
 	
 			EndState = executeOneway( NewState, monitor ),
 	
-			io:format( "~s Trace listener created.~n", [ ?LogPrefix ] ),
+			%io:format( "~s Trace listener created.~n", [ ?LogPrefix ] ),
 			EndState;
 
 		{trace_zip,ErrorReason} ->
@@ -159,8 +159,9 @@ monitor(State) ->
 			trace_file_not_found
 			
 	end,
-	io:format( "~s Trace listener will monitor file '~s' with LogMX now.~n", 
-		[ ?LogPrefix, Filename ] ),
+
+	%io:format( "~s Trace listener will monitor file '~s' with LogMX now.~n", 
+	%	[ ?LogPrefix, Filename ] ),
 	
 	% Non-blocking (logmx.sh must be found in the PATH):
 	[] = os:cmd( "logmx.sh " ++ Filename ++ " &" ),
@@ -184,5 +185,5 @@ addTrace(State,NewTrace) ->
 % aggregator.
 % (static)	
 create(AggregatorPid) ->
-	new( AggregatorPid ).
+	new_link( AggregatorPid ).
 		
