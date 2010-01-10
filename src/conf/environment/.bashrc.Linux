@@ -5,66 +5,65 @@
 
 # This script triggers the Linux-specific part of bash configuration.
 
+# Finally not called by default:
+setCompiler()
+{
+
+	# Compilers section:
+	
+	# Intel C++ compiler:
+	alias icc=/opt/intel/compiler70/ia32/bin/icc
+
+	export GCC_DEFAULT_ROOT=/usr/local
+	export GCC_ALTERNATE_ROOT=/usr/bin
 
 
-# Compilers section:
+	export GCC_DEFAULT_LOCATION=${GCC_DEFAULT_ROOT}/bin/gcc
+	export GCC_ALTERNATE_LOCATION=${GCC_ALTERNATE_ROOT}/bin/gcc
 
 
-# Intel C++ compiler:
-alias icc=/opt/intel/compiler70/ia32/bin/icc
+	if [ -x "$GCC_DEFAULT_LOCATION" ] ; then
+		alias gcc='$GCC_DEFAULT_LOCATION'
+		export C_COMPILER=$GCC_DEFAULT_LOCATION
+		export GCC_ROOT=$GCC_DEFAULT_ROOT
 
-export GCC_DEFAULT_ROOT=/usr/local
-export GCC_ALTERNATE_ROOT=/usr/bin
-
-
-export GCC_DEFAULT_LOCATION=${GCC_DEFAULT_ROOT}/bin/gcc
-export GCC_ALTERNATE_LOCATION=${GCC_ALTERNATE_ROOT}/bin/gcc
-
-
-if [ -x "$GCC_DEFAULT_LOCATION" ] ; then
-	alias gcc='$GCC_DEFAULT_LOCATION'
-	export C_COMPILER=$GCC_DEFAULT_LOCATION
-	export GCC_ROOT=$GCC_DEFAULT_ROOT
-
-else
-	if [ -x "$GCC_ALTERNATE_LOCATION" ] ; then
-		alias gcc='$GCC_ALTERNATE_LOCATION'
-		export C_COMPILER=$GCC_ALTERNATE_LOCATION
-		export GCC_ROOT=$GCC_ALTERNATE_ROOT
 	else
-		unset C_COMPILER	
-	fi	
-fi
+		if [ -x "$GCC_ALTERNATE_LOCATION" ] ; then
+			alias gcc='$GCC_ALTERNATE_LOCATION'
+			export C_COMPILER=$GCC_ALTERNATE_LOCATION
+			export GCC_ROOT=$GCC_ALTERNATE_ROOT
+		else
+			unset C_COMPILER	
+		fi	
+	fi
 
 
-export GPP_DEFAULT_LOCATION=${GCC_DEFAULT_ROOT}/bin/g++
-export GPP_ALTERNATE_LOCATION=${GCC_ALTERNATE_ROOT}/bin/g++
+	export GPP_DEFAULT_LOCATION=${GCC_DEFAULT_ROOT}/bin/g++
+	export GPP_ALTERNATE_LOCATION=${GCC_ALTERNATE_ROOT}/bin/g++
 
-if [ -x "$GPP_DEFAULT_LOCATION" ] ; then
-	alias g++='$GPP_DEFAULT_LOCATION'
-	export CPP_COMPILER=$GPP_DEFAULT_LOCATION
-else
-	if [ -x "$GPP_ALTERNATE_LOCATION" ] ; then
-		alias g++='$GPP_ALTERNATE_LOCATION'
-		export CPP_COMPILER=$GPP_ALTERNATE_LOCATION
+	if [ -x "$GPP_DEFAULT_LOCATION" ] ; then
+		alias g++='$GPP_DEFAULT_LOCATION'
+		export CPP_COMPILER=$GPP_DEFAULT_LOCATION
 	else
-		unset CPP_COMPILER	
-		unset GCC_ROOT
-	fi	
-fi
+		if [ -x "$GPP_ALTERNATE_LOCATION" ] ; then
+			alias g++='$GPP_ALTERNATE_LOCATION'
+			export CPP_COMPILER=$GPP_ALTERNATE_LOCATION
+		else
+			unset CPP_COMPILER	
+			unset GCC_ROOT
+		fi	
+	fi
 
+}
 
-# Erlang:
-export ERLANG_ROOT="$HOME/Software/Erlang/Erlang-current-install"
-export PATH="${ERLANG_ROOT}/bin:${PATH}"
 
 # Sox:
 export PATH="$HOME/Software/Sox/bin:${PATH}"
 
 
 # Python Imaging Library (PIL):
-IMAGING_VERSION=1.1.4
-PIL_ROOT=/usr/local/Logiciels/Imaging-${IMAGING_VERSION}/PIL
+#IMAGING_VERSION=1.1.4
+#PIL_ROOT=/usr/local/Logiciels/Imaging-${IMAGING_VERSION}/PIL
 
 
 
