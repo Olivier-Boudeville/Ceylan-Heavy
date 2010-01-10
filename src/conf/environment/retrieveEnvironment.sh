@@ -14,7 +14,7 @@ Example : `basename $0` $HOME/Projects/ceylan, or simply `basename $0` (recommen
 #   - $HOME/Projects/OSDL-loanized/LOANI-installations
 #   - $HOME/Projects/LOANI-0.4/LOANI-installations
 
-# To create new links, the back-ups must have been cleaned before :
+# To create new links, the back-ups must have been cleaned before:
 # (...)/LOANI-repository/ceylan/Ceylan/trunk/src/code/scripts/shell/srm *.previous .*.previous */*.previous .*/*.previous
 
 
