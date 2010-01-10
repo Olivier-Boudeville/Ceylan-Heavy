@@ -227,10 +227,24 @@ prepareDeveloperEnvironment()
 	echo "      + configuring emacs"
 
 	mkdir -p $HOME/.emacs.d
+
+	# Note: if a ~/.emacs file already exists, it will override all
+	# these ones:
+
 	if [ -f $HOME/.emacs.d/init.el ] ; then
 		backUpFile $HOME/.emacs.d/init.el
 	fi
 	ln -s $BASE/init.el $HOME/.emacs.d/init.el
+
+	if [ -f $HOME/.emacs.d/physical-line.el ] ; then
+		backUpFile $HOME/.emacs.d/physical-line.el
+	fi
+	ln -s $BASE/physical-line.el $HOME/.emacs.d/physical-line.el
+
+	if [ -f $HOME/.emacs.d/linum.el ] ; then
+		backUpFile $HOME/.emacs.d/linum.el
+	fi
+	ln -s $BASE/linum.el $HOME/.emacs.d/linum.el
 
 
 	echo "      + creating basic temporary directories"
