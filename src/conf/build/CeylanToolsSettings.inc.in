@@ -16,11 +16,11 @@
 # GNU Libtool: http://www.gnu.org/software/libtool/libtool.html
 
 libtool_VERSION="2.2.6"
-libtool_FULL_VERSION="${libtool_VERSION}a"
+libtool_FULL_VERSION="${libtool_VERSION}b"
 libtool_ARCHIVE="libtool-${libtool_FULL_VERSION}.tar.gz"
 libtool_DOWNLOAD_LOCATION="http://ftp.gnu.org/gnu/libtool/"
 libtool_ALTERNATE_DOWNLOAD_LOCATION="http://mirrors.usc.edu/pub/gnu/libtool"
-libtool_MD5="8ca1ea241cd27ff9832e045fe9afe4fd"
+libtool_MD5="07da460450490148c6d2df0f21481a25"
 
 
 
@@ -71,21 +71,21 @@ gcc_SOURCE_TREE="gcc-${gcc_VERSION}-sourceTree"
 
 # binutils: http://www.gnu.org/software/binutils/
 
-binutils_VERSION="2.20.51"
+binutils_VERSION="2.20"
 binutils_ARCHIVE="binutils-${binutils_VERSION}.tar.bz2"
 binutils_DOWNLOAD_LOCATION="ftp://ftp.cs.tu-berlin.de/pub/gnu/binutils"
 binutils_ALTERNATE_DOWNLOAD_LOCATION="http://ftp.gnu.org/gnu/binutils"
-binutils_MD5="5955f85e4ec6c21a46c9d3cf96e3bbce"
+binutils_MD5="ee2d3e996e9a2d669808713360fa96f8"
 
 
 
 # gdb: http://www.gnu.org/software/gdb/gdb.html
 
-gdb_VERSION="7.0"
+gdb_VERSION="7.0.1"
 gdb_ARCHIVE="gdb-${gdb_VERSION}.tar.bz2"
 gdb_DOWNLOAD_LOCATION="ftp://ftp.cs.tu-berlin.de/pub/gnu/gdb"
 gdb_ALTERNATE_DOWNLOAD_LOCATION="http://ftp.gnu.org/gnu/gdb"
-gdb_MD5="3386a7b69c010785c920ffc1e9cb890a"
+gdb_MD5="53ebade39bfdc1d06744e5188b6438b1"
 
 
 
@@ -133,22 +133,22 @@ dswifi_MD5="xxx"
 
 # dot: http://www.research.att.com/sw/tools/graphviz/
 
-# Actually 2.24.0 (defined in configure-template.ac):
+# Actually 2.26.0 (defined in configure-template.ac):
 dot_VERSION="@DOT_VERSION@"
 dot_ARCHIVE="graphviz-${dot_VERSION}.tar.gz"
 dot_DOWNLOAD_LOCATION="http://www.graphviz.org/pub/graphviz/ARCHIVE"
 dot_ALTERNATE_DOWNLOAD_LOCATION=""
-dot_MD5="806a30dbc3f8deb219216f35be0e7a40"
+dot_MD5="0609b42cb9ef913b7af13e43c4d716c9"
 
 
 # doxygen: http://www.stack.nl/~dimitri/doxygen/
 
-# Actually 1.6.1 (defined in configure-template.ac):
+# Actually 1.6.2 (defined in configure-template.ac):
 doxygen_VERSION="@DOXYGEN_VERSION@"
 doxygen_ARCHIVE="doxygen-${doxygen_VERSION}.src.tar.gz"
 doxygen_DOWNLOAD_LOCATION="ftp://ftp.stack.nl/pub/users/dimitri"
 doxygen_ALTERNATE_DOWNLOAD_LOCATION=""
-doxygen_MD5="2ec343643e134f0d3ce2069420bcb4f0"
+doxygen_MD5="70260101ef60952cb99484700241c99e"
 
 
 
