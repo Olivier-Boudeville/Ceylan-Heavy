@@ -50,7 +50,6 @@
 (setq whitespace-line-column 80)
 
 
-(global-set-key [f10] 'undo)
 (global-set-key [f6]  'goto-line)
 (global-set-key [f2]  'save-buffer)
 (global-set-key [f9]         'query-replace)
