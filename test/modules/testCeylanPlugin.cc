@@ -50,7 +50,6 @@ extern "C"
  * This is an example function that the plugin will try to call directly.
  * Note the in/out parameter 'aString', passed by reference. 
  *
- *
  */
 Ceylan::Uint16 functionFromExecutable( Ceylan::Uint8 anInt, 
 	std::string & aString ) throw()	
@@ -63,9 +62,11 @@ Ceylan::Uint16 functionFromExecutable( Ceylan::Uint8 anInt,
 
 }
 	
+	
 
 typedef Ceylan::Uint32 TestFunction( const std::string & message ) 
 	/* throw() */ ;
+
 
 
 /**
@@ -84,7 +85,6 @@ int main( int argc, char * argv[] )
 	try
 	{
 
-
 		LogPlug::info( "Testing Plugin implementation." ) ;
 
 
@@ -98,7 +98,7 @@ int main( int argc, char * argv[] )
 		
 		Plugin myPlugin( "ceylan-test-plugin", /* auto-prefix */ true ) ;
 		
-		LogPlug::info( "First loaded plugin : " + myPlugin.toString() ) ;
+		LogPlug::info( "First loaded plugin: " + myPlugin.toString() ) ;
 		
 		Ceylan::Sint16 expectedConstant = 123 ;
 		
@@ -108,7 +108,7 @@ int main( int argc, char * argv[] )
 
 		if ( readConstant != expectedConstant )
 			throw Ceylan::TestException( 
-				"Reading a constant from plugin failed : expecting '"
+				"Reading a constant from plugin failed: expecting '"
 				+ Ceylan::toString( expectedConstant ) + "', read '"
 				+ Ceylan::toString( readConstant ) + "'." ) ;
 		else
@@ -117,10 +117,10 @@ int main( int argc, char * argv[] )
 	
 		//TestFunction * readFunction = 0 ;
 		/*
-		 * How to transtype void * to a function pointer ?
+		 * How to transtype void * to a function pointer?
 		 * error: ISO C++ forbids casting between pointer-to-function and
 		 * pointer-to-object
-		 * Union-cast, memcopy, pre-integral cast : nothin satisfactory.
+		 * Union-cast, memcopy, pre-integral cast: nothing satisfactory.
 		 *
 		 */
 		TestFunction * readFunction = reinterpret_cast<TestFunction *>(
@@ -133,7 +133,7 @@ int main( int argc, char * argv[] )
 		
 		if ( readReturnValue != expectedReturnValue )
 			throw Ceylan::TestException( 
-				"Executing a function from plugin failed : "
+				"Executing a function from plugin failed: "
 				"expecting return value '"
 				+ Ceylan::toString( expectedReturnValue ) + "', read '"
 				+ Ceylan::toString( readReturnValue ) + "'." ) ;
@@ -149,7 +149,7 @@ int main( int argc, char * argv[] )
 		
 		Plugin myOtherPlugin( "ceylan-test-unknown-plugin" ) ;
 			
-		LogPlug::info( "Second loaded plugin : " + myOtherPlugin.toString() ) ;
+		LogPlug::info( "Second loaded plugin: " + myOtherPlugin.toString() ) ;
 		
 		
 		LogPlug::info( "Note that we are reading the same symbols in two "
@@ -162,7 +162,7 @@ int main( int argc, char * argv[] )
 
 		if ( readConstant != expectedOtherConstant )
 			throw Ceylan::TestException( 
-				"Reading a constant from an unknown plugin failed : expecting '"
+				"Reading a constant from an unknown plugin failed: expecting '"
 				+ Ceylan::toString( expectedOtherConstant ) + "', read '"
 				+ Ceylan::toString( readConstant ) + "'." ) ;
 		else
@@ -177,7 +177,7 @@ int main( int argc, char * argv[] )
 		
 		if ( readReturnValue != expectedOtherReturnValue )
 			throw Ceylan::TestException( 
-				"Executing a function from an unknown plugin failed : "
+				"Executing a function from an unknown plugin failed: "
 				"expecting return value '"
 				+ Ceylan::toString( expectedOtherReturnValue ) + "', read '"
 				+ Ceylan::toString( readReturnValue ) + "'." ) ;
@@ -191,7 +191,7 @@ int main( int argc, char * argv[] )
 	
 	catch ( const Ceylan::Exception & e )
 	{
-		std::cerr << "Ceylan exception caught : "
+		std::cerr << "Ceylan exception caught: "
 			<< e.toString( Ceylan::high ) << std::endl ;
 		return Ceylan::ExitFailure ;
 
@@ -199,7 +199,7 @@ int main( int argc, char * argv[] )
 
 	catch ( const std::exception & e )
 	{
-		std::cerr << "Standard exception caught : " 
+		std::cerr << "Standard exception caught: " 
 			 << e.what() << std::endl ;
 		return Ceylan::ExitFailure ;
 
