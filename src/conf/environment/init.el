@@ -29,6 +29,7 @@
                                    (?: simple 0)
                                    (?+ simple 0) ))
 
+(require 'erlang-start)
 
 
 ;; Displaying of line number on the left:
@@ -99,6 +100,14 @@
 (setq whitespace-style '(space tabs lines-tail trailing empty indentation space-before-tab space-after-tab))
 (setq whitespace-line-column 80)
 
+;; We want to see whether we go past column 80:
+(require 'highlight-80+)
+(add-hook 'find-file-hook 'highlight-80+-mode)
+
+;; 85 width allows to display correctly even files with 9999 lines,
+;; knowing that the leftmost column for line numbers uses some place:
+(add-to-list 'default-frame-alist (cons 'width 85))
+
 
 ;; Key section:
 
@@ -146,8 +155,7 @@
 
 ;;(global-set-key "TAB" 'reindent-then-newline-and-indent)
 
-
-
+	  
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
 (setq font-lock-maximum-size nil)
@@ -177,6 +185,7 @@
 (setq initial-major-mode 'text-mode)
 (setq default-major-mode 'text-mode)
 
+(add-to-list 'default-frame-alist (cons 'width 85))
 
 ;; Save all backup file in this directory:
 (setq backup-directory-alist (quote ((".*" . "~/.emacs_backups/"))))
