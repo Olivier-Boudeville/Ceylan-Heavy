@@ -111,44 +111,141 @@
 
 ;; Key section:
 
-;;(global-set-key [f1]              'kill-buffer)
-;;(global-set-key [XF86New]         'kill-buffer)
 
-(global-set-key [f2]                'save-buffer)
-(global-set-key [XF86Reply]         'save-buffer)
+(defun default-fone ()
+  (message "Default for F1")
+)
 
-;;(global-set-key [f3]              'kill-buffer)
-;;(global-set-key [XF86MailForward] 'kill-buffer)
+(defun default-f2 ()
+  (message "Default for F2")
+)
 
-;;(global-set-key [f4]              'kill-buffer)
-;;(global-set-key [XF86Send]        'kill-buffer)
+(defun default-f3 ()
+  (message "Default for F3")
+)
 
-(global-set-key [f5]                'undo)
-(global-set-key [XF86New]           'undo)
+(defun default-f4 ()
+  (message "Default for F4")
+)
 
-;;(global-set-key [f6]              'goto-line)
-;;(global-set-key [XF86New]         'goto-line)
+(defun default-f5 ()
+  (message "Default for F5")
+)
 
-;;(global-set-key [f7]              'kill-buffer)
-;;(global-set-key [print]           'kill-buffer)
+(defun default-f6 ()
+  (message "Default for F6")
+)
 
-;;(global-set-key [f8]              'kill-buffer)
-;;(global-set-key [XF86Save]        'kill-buffer)
+(defun default-f7 ()
+  (message "Default for F7")
+)
 
-(global-set-key [f9]			    'query-replace)
-(global-set-key [XF86New]		    'query-replace)
+(defun default-f8 ()
+  (message "Default for F8")
+)
 
-(global-set-key [(shift f9)]	    'query-replace-regexp)
-(global-set-key [(shift XF86New)]   'query-replace-regexp)
+(defun default-f9 ()
+  (message "Default for F9")
+)
 
-(global-set-key [f10]			    'whitespace-cleanup)
-(global-set-key [XF86Documents]     'whitespace-cleanup)
+(defun default-shift-f9 ()
+  (message "Default for Shift-F9")
+)
 
-(global-set-key [f11]			    'indent-whole-buffer)
-(global-set-key [XF86New]		    'indent-whole-buffer)
+(defun default-f10 ()
+  (message "Default for F10")
+)
 
-;;(global-set-key [f12]             'kill-buffer)
-;;(global-set-key [XF86New]         'kill-buffer)
+(defun default-f11 ()
+  (message "Default for F11")
+)
+
+(defun default-f12 ()
+  (message "Default for F12")
+)
+
+
+;; Actual mapping:
+
+(defun show-assigned-keys ()
+ "Shows the current key bindings"
+ (interactive)
+ (message "F1        -> save-buffer" )
+ (message "F2        -> query-replace" )
+ (message "F3        -> query-replace-regexp" )
+ (message "F4        -> indent-whole-buffer" )
+ (message "F5        -> undo" )
+ (message "F6        -> repeat-complex-command" )
+ (message "F7        -> goto-line" )
+ (message "F8        -> whitespace-cleanup" )
+ (message "F9        -> (intercepted by Ubuntu)" )
+ (message "Shift-F9  -> (currently not bound)" )
+ (message "F10       -> (currently not bound)" )
+ (message "F11       -> (does nothing)" )
+ (message "F12       -> (does nothing)" )
+  
+)
+
+
+;; Curiously hitting F1 triggers default-f12:
+(global-set-key [f1]			  'default-f1)
+(global-set-key [XF86New]		  'default-f1)
+
+;; Usable and behaves like expected:
+(global-set-key [f2]              'query-replace)
+(global-set-key [XF86Reply]       'query-replace)
+
+;; Usable and behaves like expected:
+(global-set-key [f3]			  'query-replace-regexp)
+(global-set-key [XF86MailForward] 'query-replace-regexp)
+
+;; Usable and behaves like expected:
+(global-set-key [f4]			  'indent-whole-buffer)
+(global-set-key [XF86Send]  	  'indent-whole-buffer)
+
+;; Curiously bound to Undo:
+(global-set-key [f5]              'default-f5)
+(global-set-key [XF86New]         'default-f5)
+
+;; Curiously bound to repeat-complex-command:
+(global-set-key [f6]			  'default-f6)
+(global-set-key [XF86New]		  'default-f6)
+
+
+;; Usable and behaves like expected:
+(global-set-key [f7]			  'goto-line)
+(global-set-key [print] 		  'goto-line)
+
+
+;; Usable and behaves like expected:
+(global-set-key [f8]              'whitespace-cleanup)
+(global-set-key [XF86Save]        'whitespace-cleanup)
+
+
+;; Intercepted by Ubuntu:
+(global-set-key [f9]			  'default-f9)
+(global-set-key [XF86New]		  'default-f9)
+
+
+;; Usable and behaves like expected:
+(global-set-key [(shift f9)]	    'default-shift-f9)
+(global-set-key [(shift XF86New)]   'default-shift-f9)
+(global-set-key [XF86Explorer]      'default-shift-f9)
+
+
+;; Usable and behaves like expected:
+(global-set-key [f10]			    'default-f10)
+(global-set-key [XF86Documents]     'default-f10)
+
+
+;; Not triggered on my keyboard:
+(global-set-key [f11]			    'default-f11)
+(global-set-key [XF86New]		    'default-f11)
+
+
+;; Not triggered when hitting F12, but triggered when hitting F1 on my keyboard:
+(global-set-key [f12]               'save-buffer)
+(global-set-key [XF86New]           'save-buffer)
 
 
 (global-set-key "\C-Z" 'undo)
