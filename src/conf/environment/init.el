@@ -113,57 +113,75 @@
 
 
 (defun default-fone ()
+  (interactive)
   (message "Default for F1")
 )
 
 (defun default-f2 ()
+  (interactive)
   (message "Default for F2")
 )
 
 (defun default-f3 ()
+  (interactive)
   (message "Default for F3")
 )
 
 (defun default-f4 ()
+  (interactive)
   (message "Default for F4")
 )
 
 (defun default-f5 ()
+  (interactive)
   (message "Default for F5")
 )
 
 (defun default-f6 ()
+  (interactive)
   (message "Default for F6")
 )
 
 (defun default-f7 ()
-  (message "Default for F7")
+ (interactive)
+ (message "Default for F7")
 )
 
 (defun default-f8 ()
+  (interactive)
   (message "Default for F8")
 )
 
 (defun default-f9 ()
+  (interactive)
   (message "Default for F9")
 )
 
 (defun default-shift-f9 ()
+  (interactive)
   (message "Default for Shift-F9")
 )
 
 (defun default-f10 ()
+  (interactive)
   (message "Default for F10")
 )
 
 (defun default-f11 ()
+  (interactive)
   (message "Default for F11")
 )
 
 (defun default-f12 ()
+  (interactive)
   (message "Default for F12")
 )
 
+(defun save-and-close ()
+  (interactive)
+  (save-buffer)
+  (kill-this-buffer)
+)
 
 ;; Actual mapping:
 
@@ -180,7 +198,7 @@
  (message "F8        -> whitespace-cleanup" )
  (message "F9        -> (intercepted by Ubuntu)" )
  (message "Shift-F9  -> (currently not bound)" )
- (message "F10       -> (currently not bound)" )
+ (message "F10       -> save-buffers-kill-emacs" )
  (message "F11       -> (does nothing)" )
  (message "F12       -> (does nothing)" )
   
@@ -234,8 +252,8 @@
 
 
 ;; Usable and behaves like expected:
-(global-set-key [f10]			    'default-f10)
-(global-set-key [XF86Documents]     'default-f10)
+(global-set-key [f10]			    'save-buffers-kill-emacs)
+(global-set-key [XF86Documents]     'save-buffers-kill-emacs)
 
 
 ;; Not triggered on my keyboard:
@@ -283,6 +301,7 @@
 (setq default-major-mode 'text-mode)
 
 (add-to-list 'default-frame-alist (cons 'width 85))
+(add-to-list 'default-frame-alist (cons 'height 60))
 
 ;; Save all backup file in this directory:
 (setq backup-directory-alist (quote ((".*" . "~/.emacs_backups/"))))
