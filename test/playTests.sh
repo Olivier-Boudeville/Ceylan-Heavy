@@ -398,7 +398,7 @@ DEBUG_INTERNAL "Space for test names = ${space_for_test_name}"
 
 if [ $is_batch -eq 0 ] ; then
 	echo "
-		Test results established at "`date '+%A, %B %-e, %Y'`"\n\n" > ${test_log_file}
+		Test results established on "`LANG=C date '+%A, %B %-e, %Y'`"\n\n" > ${test_log_file}
 fi
 
 if [ $on_cygwin -eq 0 ] ; then
