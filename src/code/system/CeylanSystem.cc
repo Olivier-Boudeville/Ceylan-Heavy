@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2009 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -63,8 +63,8 @@ extern "C"
 
 #include "fat.h"                          // for Chishm's libfat
 
-#include <fcntl.h> 
-#include <unistd.h> 
+#include <fcntl.h>
+#include <unistd.h>
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
@@ -141,7 +141,7 @@ map<Ceylan::Byte *,Ceylan::Byte *> Ceylan::System::CacheProtectedMap ;
 
 
 
-extern const Ceylan::System::InterruptMask 
+extern const Ceylan::System::InterruptMask
 	Ceylan::System::AllInterruptsDisabled = 0 ;
 
 
@@ -171,7 +171,7 @@ Ceylan::System::IOException::IOException( const string & message ) :
 
 
 
-Ceylan::System::IOException::~IOException() throw() 
+Ceylan::System::IOException::~IOException() throw()
 {
 
 }
@@ -186,27 +186,27 @@ const Ceylan::Uint32 OneMillion = 1000000 ;
 
 
 
-ErrorCode Ceylan::System::getError() 
+ErrorCode Ceylan::System::getError()
 {
 
 	return errno ;
-	
+
 }
 
 
 
 
-string Ceylan::System::explainError( ErrorCode errorID ) 
+string Ceylan::System::explainError( ErrorCode errorID )
 {
 
 	return string( ::strerror( errorID ) ) ;
-	
+
 }
 
 
 
 
-string Ceylan::System::explainError() 
+string Ceylan::System::explainError()
 {
 
 #ifdef CEYLAN_USES_STRERROR
@@ -224,11 +224,11 @@ string Ceylan::System::explainError()
 
 
 
-string Ceylan::System::getShellName() 
+string Ceylan::System::getShellName()
 {
 
 	return Ceylan::System::getEnvironmentVariable( "SHELL" ) ;
-	
+
 }
 
 
@@ -241,51 +241,51 @@ string Ceylan::System::getShellName()
  */
 
 
-void Ceylan::System::InitializeInterrupts( bool force ) 
+void Ceylan::System::InitializeInterrupts( bool force )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
-		
+
 
 #ifdef CEYLAN_RUNS_ON_ARM7
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::InitializeInterrupts: only available on the ARM9." ) ;
 
 #elif defined(CEYLAN_RUNS_ON_ARM9)
 
 	static bool initialized = false ;
-	
+
 	if ( ( ! initialized ) || force )
 	{
-	
+
 		// Initialize the interrupt subsystem:
 		irqInit() ;
 
 		/*
-		 * VBlank enabled but no specific handler set 
+		 * VBlank enabled but no specific handler set
 		 * (only wanting it for swiWaitForVBlank):
 		 *
 		 */
 		irqEnable( IRQ_VBLANK ) ;
-		
+
 		// Force a first update, to avoid reading random keys before first VBL:
 		swiWaitForVBlank() ;
-		
+
 		initialized = true ;
-		
+
 		//CEYLAN_LOG( "Interrupts initialized." ) ;
-		
-	}	
+
+	}
 
 #endif // CEYLAN_RUNS_ON_ARM7
 
-	
+
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 	LogPlug::warning( "Ceylan::System::InitializeInterrupts "
 		"should not be called on this platform." ) ;
-	
+
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
@@ -296,55 +296,55 @@ InterruptMask Ceylan::System::SetEnabledInterrupts( InterruptMask newMask )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
-		
+
 	// Works on both ARMs:
 
 	InterruptMask previousMask = REG_IME ;
-	
+
 	REG_IME = newMask ;
-	
+
 	return previousMask ;
 
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 	LogPlug::warning( "Ceylan::System::SetEnabledInterrupts "
 		"should not be called on this platform." ) ;
-	
+
 	// Dummy to allow compilation, will never be used:
 	return 0 ;
-	
+
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
 
 
 
-void Ceylan::System::InitializeIPC() 
+void Ceylan::System::InitializeIPC()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
-		
+
 
 #ifdef CEYLAN_RUNS_ON_ARM7
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::InitializeIPC: only available on the ARM9." ) ;
 
 #elif defined(CEYLAN_RUNS_ON_ARM9)
 
 	// Automatically registered as a static singleton:
 	FIFO * fifo = new FIFO() ;
-	
+
 	fifo->activate() ;
-	
+
 #endif // CEYLAN_RUNS_ON_ARM7
 
-	
+
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 	LogPlug::warning( "Ceylan::System::InitializeIPC "
 		"should not be called on this platform." ) ;
-	
+
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
@@ -361,79 +361,79 @@ Ceylan::Byte * Ceylan::System::CacheProtectedNew( Size numberOfBytes )
 
 	// Pseudo-protection against concurrent accesses:
 	static bool inUse = false ;
-	
+
 	while ( inUse )
 		;
-	
+
 	inUse = true ;
-	
+
 	int savedIME = REG_IME ;
 
 	REG_IME = AllInterruptsDisabled ;
-	
+
 	/*
-	 * On the DS DTCM, cache lines are 32-byte long. 
-	 * If wanting a boundary-aligned array of numberOfBytes, we have to 
+	 * On the DS DTCM, cache lines are 32-byte long.
+	 * If wanting a boundary-aligned array of numberOfBytes, we have to
 	 * allocate 'numberOfBytes + 32 -1' bytes to be sure the desired array
 	 * can be found in it
 	 *
 	 */
-	Ceylan::Byte * biggerBuffer = new Ceylan::Byte[ 
+	Ceylan::Byte * biggerBuffer = new Ceylan::Byte[
 		numberOfBytes + CacheLineSize - 1 ] ;
-	
+
 	if ( biggerBuffer == 0 )
 	{
-	
+
 		REG_IME = savedIME ;
 		inUse = false ;
-		
+
 		throw SystemException( "Ceylan::System::CacheProtectedNew failed: "
 			"null pointer returned, not enough memory?" ) ;
-	
+
 	}
-	
+
 	/*
 	 * Ex: in biggerBuffer is equal to 130, boundaryAlignedBuffer is:
 	 * 160 = 5 * 32, ok.
 	 *
 	 */
-	Ceylan::Byte * boundaryAlignedBuffer = biggerBuffer 
-		+ ( CacheLineSize - reinterpret_cast<Ceylan::Uint32>( biggerBuffer ) ) 
+	Ceylan::Byte * boundaryAlignedBuffer = biggerBuffer
+		+ ( CacheLineSize - reinterpret_cast<Ceylan::Uint32>( biggerBuffer ) )
 			% CacheLineSize ;
 
 	/*
-			
-	LogPlug::debug( "CacheProtectedNew: allocated " 
+
+	LogPlug::debug( "CacheProtectedNew: allocated "
 		+ Ceylan::toString( reinterpret_cast<Ceylan::Uint32>(
 			biggerBuffer ) ) + ", returning "
 		+ Ceylan::toString( reinterpret_cast<Ceylan::Uint32>(
 			boundaryAlignedBuffer ) ) + "." ) ;
-			
-	 */	
-		
+
+	 */
+
 	/*
 	 * Stores both addresses so that when CacheProtectedDelete will be given
 	 * boundaryAlignedBuffer, it will find biggerBuffer (the latter cannot be
 	 * deduced from the former).
 	 *
-	 */	
+	 */
 	Ceylan::System::CacheProtectedMap[ boundaryAlignedBuffer ] = biggerBuffer ;
 
 
 	REG_IME = savedIME ;
-	
+
 	inUse = false ;
-	
+
 	return boundaryAlignedBuffer ;
-	 
-	
+
+
 #else // CEYLAN_RUNS_ON_ARM9
 
 	throw SystemException( "Ceylan::System::CacheProtectedNew failed: "
 		"not available on the ARM7." ) ;
-	
+
 #endif // CEYLAN_RUNS_ON_ARM9
-		
+
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 	throw SystemException( "Ceylan::System::CacheProtectedNew failed: "
@@ -454,53 +454,53 @@ void Ceylan::System::CacheProtectedDelete( Ceylan::Byte * cacheProtectedBuffer )
 
 	// Pseudo-protection against concurrent accesses:
 	static bool inUse = false ;
-	
+
 	while ( inUse )
 		;
-	
+
 	inUse = true ;
-	
+
 	int savedIME = REG_IME ;
 
 	REG_IME = AllInterruptsDisabled ;
 
-	
+
 	// Searches for the specified pointer:
 	map<Ceylan::Byte *,Ceylan::Byte *>::iterator it =
 			CacheProtectedMap.find( cacheProtectedBuffer ) ;
-			
+
 	if ( it == CacheProtectedMap.end() )
 	{
-	
+
 		REG_IME = savedIME ;
 		inUse = false ;
-		
+
 		throw SystemException( "Ceylan::System::CacheProtectedDelete failed: "
-			"pointer " + Ceylan::toString( cacheProtectedBuffer ) 
+			"pointer " + Ceylan::toString( cacheProtectedBuffer )
 			+ " not found." ) ;
-			
+
 	}
-	
+
 	/*
 	LogPlug::debug( "CacheProtectedDelete: actual pointer found for "
-		+ Ceylan::toString( 
+		+ Ceylan::toString(
 			reinterpret_cast<Ceylan::Uint32>( cacheProtectedBuffer ) )
-		+ " is: " + Ceylan::toString( 
+		+ " is: " + Ceylan::toString(
 			reinterpret_cast<Ceylan::Uint32>( (*it).second ) ) ) ;
 	 */
-	 	
+
 	delete [] (*it).second ;
-	
+
 	REG_IME = savedIME ;
 	inUse = false ;
-					
+
 #else // CEYLAN_RUNS_ON_ARM9
 
 	throw SystemException( "CacheProtectedDelete failed: "
 		"not available on the ARM7." ) ;
-	
+
 #endif // CEYLAN_RUNS_ON_ARM9
-		
+
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 	throw SystemException( "CacheProtectedDelete failed: "
@@ -512,16 +512,16 @@ void Ceylan::System::CacheProtectedDelete( Ceylan::Byte * cacheProtectedBuffer )
 
 
 
-bool Ceylan::System::HasAvailableData( FileDescriptor fd ) 
+bool Ceylan::System::HasAvailableData( FileDescriptor fd )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
-		
+
 	LogPlug::error( "Ceylan::System::HasAvailableData: "
 		"not supported on the Nintendo DS platform." ) ;
 
 	return false ;
-	
+
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
@@ -566,8 +566,8 @@ Size Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
 {
 
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
- 	LogPlug::trace( "Ceylan::System::FDRead: will try to read "
-		+ Ceylan::toString( 
+	LogPlug::trace( "Ceylan::System::FDRead: will try to read "
+		+ Ceylan::toString(
 			static_cast<Ceylan::Uint32>( toReadBytesNumber ) ) + " byte(s)." ) ;
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 
@@ -582,17 +582,17 @@ Size Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
 
 	char * pos = dataBuffer ;
 
- 	SignedSize readBytesNumber ;
-	
+	SignedSize readBytesNumber ;
+
 
 	while ( toReadBytesNumber &&
-		( readBytesNumber = ::recv( fd, pos, 
-			static_cast<int>( toReadBytesNumber ), 
+		( readBytesNumber = ::recv( fd, pos,
+			static_cast<int>( toReadBytesNumber ),
 			/* flags */ 0 ) ) != 0 )
 	{
 
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
- 				LogPlug::trace( "Ceylan::System::FDRead: recv returned "
+				LogPlug::trace( "Ceylan::System::FDRead: recv returned "
 					+ Ceylan::toString( readBytesNumber ) + "." ) ;
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 
@@ -605,7 +605,7 @@ Size Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
 			{
 
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
- 				LogPlug::trace( "Ceylan::System::FDRead: "
+				LogPlug::trace( "Ceylan::System::FDRead: "
 					"operation would block." ) ;
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 
@@ -616,7 +616,7 @@ Size Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
 			{
 
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
- 				LogPlug::trace( "Ceylan::System::FDRead: operation failed." ) ;
+				LogPlug::trace( "Ceylan::System::FDRead: operation failed." ) ;
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 
 				throw IOException( "Ceylan::System::FDRead failed: "
@@ -648,8 +648,8 @@ Size Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
 
 	char * pos = dataBuffer ;
 
- 	SignedSize readBytesNumber ;
-	
+	SignedSize readBytesNumber ;
+
 	while ( toReadBytesNumber &&
 		( readBytesNumber = ::read( fd, pos, toReadBytesNumber ) ) != 0 )
 	{
@@ -691,7 +691,7 @@ Size Ceylan::System::FDRead( FileDescriptor fd, char * dataBuffer,
 
 
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
- 	LogPlug::trace( "Ceylan::System::FDRead: read "
+	LogPlug::trace( "Ceylan::System::FDRead: read "
 		+ Ceylan::toString( totalReadBytesNumber ) + " byte(s)." ) ;
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 
@@ -706,9 +706,9 @@ Size Ceylan::System::FDWrite( FileDescriptor fd,
 {
 
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
- 	LogPlug::trace( "Ceylan::System::FDWrite: will try to write "
-		+ Ceylan::toString( 
-			static_cast<Ceylan::Uint32>( toWriteBytesNumber ) ) 
+	LogPlug::trace( "Ceylan::System::FDWrite: will try to write "
+		+ Ceylan::toString(
+			static_cast<Ceylan::Uint32>( toWriteBytesNumber ) )
 		+ " byte(s)." ) ;
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 
@@ -723,11 +723,11 @@ Size Ceylan::System::FDWrite( FileDescriptor fd,
 
 	const char * pos = dataBuffer ;
 
- 	SignedSize wroteBytesNumber ;
+	SignedSize wroteBytesNumber ;
 
 	while( toWriteBytesNumber
-		&& ( wroteBytesNumber = ::send( fd, pos, 
-			static_cast<int>( toWriteBytesNumber ), 
+		&& ( wroteBytesNumber = ::send( fd, pos,
+			static_cast<int>( toWriteBytesNumber ),
 			/* flags */ 0 ) ) != 0 )
 	{
 
@@ -735,7 +735,7 @@ Size Ceylan::System::FDWrite( FileDescriptor fd,
 		{
 
 			/*
-			 * Non-blocking write return WSAEWOULDBLOCK if writing 
+			 * Non-blocking write return WSAEWOULDBLOCK if writing
 			 * would block:
 			 *
 			 */
@@ -773,7 +773,7 @@ Size Ceylan::System::FDWrite( FileDescriptor fd,
 
 	const char * pos = dataBuffer ;
 
- 	SignedSize wroteBytesNumber ;
+	SignedSize wroteBytesNumber ;
 
 	while( toWriteBytesNumber
 		&& ( wroteBytesNumber = ::write( fd, pos, toWriteBytesNumber ) ) != 0 )
@@ -814,7 +814,7 @@ Size Ceylan::System::FDWrite( FileDescriptor fd,
 #endif // CEYLAN_ARCH_WINDOWS
 
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
- 	LogPlug::trace( "Ceylan::System::FDWrite: wrote "
+	LogPlug::trace( "Ceylan::System::FDWrite: wrote "
 		+ Ceylan::toString( totalWroteBytesNumber ) + " byte(s)." ) ;
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 
@@ -829,7 +829,7 @@ Size Ceylan::System::FDWrite( FileDescriptor fd,
 
 
 
-Second Ceylan::System::getTime() 
+Second Ceylan::System::getTime()
 {
 
 #ifdef CEYLAN_USES_TIME
@@ -940,11 +940,11 @@ Microsecond Ceylan::System::getDurationBetween(
 
 
 	/*
-	 * Microsecond is Uint32, hence its maximum value is 4 294 967 295, it 
+	 * Microsecond is Uint32, hence its maximum value is 4 294 967 295, it
 	 * corresponds to 4294 seconds, i.e. about 1 hour and 11 minutes.
 	 *
 	 */
-	 	 
+
 
 	// These are <b>integer</b> divisions:
 	Second s1 = startingSecond + startingMicrosecond / OneMillion ;
@@ -972,7 +972,7 @@ Microsecond Ceylan::System::getDurationBetween(
 	if ( ( s2 - s1 ) > MaximumDurationWithMicrosecondAccuracy )
 		throw SystemException( "Ceylan::System::getDurationBetween: "
 				"specified duration should not exceed "
-				+ Ceylan::toString( MaximumDurationWithMicrosecondAccuracy ) 
+				+ Ceylan::toString( MaximumDurationWithMicrosecondAccuracy )
 				+ " seconds." ) ;
 
 	return ( ( s2 - s1 ) * OneMillion + r2 -r1 ) ;
@@ -1025,7 +1025,7 @@ void Ceylan::System::getPreciseTime( Second & seconds, Microsecond & microsec )
 
 
 Microsecond Ceylan::System::getAccuracyOfPreciseTime( Microsecond * minGap,
-	Microsecond * maxGap ) 
+	Microsecond * maxGap )
 {
 
 	Ceylan::Uint32 numberOfMeasures = 100 ;
@@ -1065,17 +1065,17 @@ Microsecond Ceylan::System::getAccuracyOfPreciseTime( Microsecond * minGap,
 
 	for ( Ceylan::Uint32 i = 0; i < numberOfMeasures; i++ )
 	{
-	
+
 		getPreciseTime( currentSecond, currentMicrosecond ) ;
-		
+
 		currentDuration = getDurationBetween( lastSecond, lastMicrosecond,
 			currentSecond, currentMicrosecond ) ;
-					
+
 		if ( currentDuration < minDuration )
 			minDuration = currentDuration ;
 		else if ( currentDuration > maxDuration )
 			maxDuration = currentDuration ;
-			
+
 		cumulativeDuration += currentDuration ;
 
 #if CEYLAN_DEBUG_SYSTEM
@@ -1090,7 +1090,7 @@ Microsecond Ceylan::System::getAccuracyOfPreciseTime( Microsecond * minGap,
 	if ( minGap != 0 )
 		*minGap = minDuration ;
 
- 	if ( maxGap != 0 )
+	if ( maxGap != 0 )
 		*maxGap = maxDuration ;
 
 #if CEYLAN_DEBUG_SYSTEM
@@ -1098,10 +1098,10 @@ Microsecond Ceylan::System::getAccuracyOfPreciseTime( Microsecond * minGap,
 	for ( Ceylan::Uint32 i = 0; i < numberOfMeasures; i++ )
 		Log::LogPlug::debug( "Duration of getPreciseTime call: "
 			+ Ceylan::toString( durations[i] ) + " microseconds." ) ;
-			
+
 	Log::LogPlug::debug( "Real average duration: "
 		+ Ceylan::toString(
-			static_cast<Ceylan::Float32>( 
+			static_cast<Ceylan::Float32>(
 				cumulativeDuration ) / numberOfMeasures ) ) ;
 
 	delete durations ;
@@ -1121,7 +1121,7 @@ Microsecond Ceylan::System::getAccuracyOfPreciseTime( Microsecond * minGap,
 
 
 
-Microsecond Ceylan::System::getPreciseTimeCallDuration() 
+Microsecond Ceylan::System::getPreciseTimeCallDuration()
 {
 
 	static Microsecond duration = 0 ;
@@ -1153,7 +1153,7 @@ Microsecond Ceylan::System::getPreciseTimeCallDuration()
 
 	if ( duration == 0 )
 		duration = 1 ;
-		
+
 	return duration ;
 
 }
@@ -1168,7 +1168,7 @@ void Ceylan::System::sleepForSeconds( Second seconds )
 	basicSleep( seconds, /* Nanosecond */ 0 ) ;
 
 #else // CEYLAN_ARCH_NINTENDO_DS
-	
+
 #ifdef CEYLAN_USES_SLEEP
 
 	Second stillToBeSlept = seconds ;
@@ -1207,18 +1207,18 @@ void Ceylan::System::sleepForSeconds( Second seconds )
 
 
 
-bool Ceylan::System::areSubSecondSleepsAvailable() 
+bool Ceylan::System::areSubSecondSleepsAvailable()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
-		
+
 	// swiWaitForVBlank available for both ARMs:
-	return true ; 
+	return true ;
 
 #elif CEYLAN_ARCH_WINDOWS == 1
 
 	return true ;
-	
+
 #else // CEYLAN_ARCH_WINDOWS
 
 
@@ -1227,15 +1227,15 @@ bool Ceylan::System::areSubSecondSleepsAvailable()
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 	return false ;
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
-	
-	
+
+
 #endif // CEYLAN_ARCH_NINTENDO_DS
-		
+
 }
 
 
 
-void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )	
+void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 {
 
 #if CEYLAN_DEBUG_SYSTEM
@@ -1250,16 +1250,16 @@ void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 #ifdef CEYLAN_RUNS_ON_ARM9
 	InitializeInterrupts( /* force */ false ) ;
 #endif // CEYLAN_RUNS_ON_ARM9
-	
+
 	// Each swiWaitForVBlank will last for about 1/60 s:
 	Ceylan::Uint32 vblankCount = seconds * 60 + nanos * (6/100000000) ;
-	
+
 	while ( vblankCount > 0 )
 	{
 		swiWaitForVBlank();
 		vblankCount-- ;
 	}
-	
+
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 
@@ -1346,11 +1346,11 @@ void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 
 
 
-void Ceylan::System::atomicSleep() 
+void Ceylan::System::atomicSleep()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
-	
+
 #ifdef CEYLAN_RUNS_ON_ARM9
 	InitializeInterrupts( /* force */ false ) ;
 #endif // CEYLAN_RUNS_ON_ARM9
@@ -1362,7 +1362,7 @@ void Ceylan::System::atomicSleep()
 	 *
 	 */
 	swiWaitForVBlank() ;
-	
+
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 	/*
@@ -1386,17 +1386,17 @@ void Ceylan::System::atomicSleep()
 
 	static Microsecond durationToRequest = static_cast<Microsecond>(
 		marginDecreaseFactor * getSchedulingGranularity() ) ;
-		
+
 	basicSleep( durationToRequest ) ;
 
-#endif // CEYLAN_ARCH_NINTENDO_DS		
+#endif // CEYLAN_ARCH_NINTENDO_DS
 
 
 }
 
 
 
-void Ceylan::System::basicSleep( Microsecond micros ) 
+void Ceylan::System::basicSleep( Microsecond micros )
 {
 
 	// Split waiting time thanks to integer division:
@@ -1516,7 +1516,7 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 
 	/*
 	 * Watch out the overflow on abnormal waiting conditions:
-	 * (it is signed hence no getDurationBetween needed) 
+	 * (it is signed hence no getDurationBetween needed)
 	 *
 	 */
 	Ceylan::SignedLongInteger currentError
@@ -1525,13 +1525,13 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 
 	LogPlug::debug( "Ceylan::System::smartSleep: "
 		"after having waited the big chunk, we are at "
-		+ Ceylan::toString( -currentError ) 
+		+ Ceylan::toString( -currentError )
 		+ " microseconds before deadline." ) ;
-		
+
 #if CEYLAN_DEBUG_SYSTEM
 	Ceylan::Uint32 atomicCount = 0 ;
 #endif // CEYLAN_DEBUG_SYSTEM
-			
+
 
 
 	while ( -currentError > static_cast<int>( 2 * usedGranularity ) )
@@ -1549,11 +1549,11 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 		atomicSleep() ;
 
 		getPreciseTime( currentSecond, currentMicrosecond ) ;
-		
+
 		// currentError still signed:
 		currentError = ( currentSecond - targetSecond ) * OneMillion
 			+ currentMicrosecond - targetMicrosecond ;
-			
+
 	}
 
 #if CEYLAN_DEBUG_SYSTEM
@@ -1567,7 +1567,7 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	// Check we are still before target time:
 	if ( currentError > 0 )
 	{
-	
+
 		LogPlug::warning( "Ceylan::System::smartSleep: "
 			"sleeps waited too much, target time missed of "
 			+ Ceylan::toString( currentError )
@@ -1576,7 +1576,7 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 			+ Ceylan::toString( getSchedulingGranularity() )
 			+ " microseconds)." ) ;
 		return false ;
-		
+
 	}
 
 	// Yes, still early.
@@ -1627,22 +1627,22 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 			+ targetMicrosecond - currentMicrosecond ;
 
 #if CEYLAN_DEBUG_SYSTEM
-		
+
 		logCount++ ;
-		
+
 		if ( ( logCount % 50 ) == 0 )
 			LogPlug::debug( "Ceylan::System::smartSleep: "
 				"remaining time in active waiting is "
 				+ Ceylan::toString( remainingTime ) + " microseconds." ) ;
-			
-		
+
+
 #endif // CEYLAN_DEBUG_SYSTEM
 
 
 #if CEYLAN_ARCH_WINDOWS
 
 		/*
-		 * On Windows (at least XP), we have a high scheduling granularity 
+		 * On Windows (at least XP), we have a high scheduling granularity
 		 * (we measured up to 16 ms) and, worse, as soon as we perform busy
 		 * waiting (because remaining time is too small to take the risk of
 		 * requesting a waiting of one time slice), we observed it led to
@@ -1657,9 +1657,9 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 		 *
 		 * We prefer the former to the latter (earlier better than later, and
 		 * error is smaller).
-		 * Hence on average we will be waiting the right duration, even 
+		 * Hence on average we will be waiting the right duration, even
 		 * though we will be most of the time either too early or too
-		 * late. 
+		 * late.
 		 *
 		 * The 1.5 coefficient has been computed so that waitings finishing too
 		 * late or too early divide somewhat evenly, since they could not be
@@ -1668,7 +1668,7 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 		 *
 		 * The coefficient has been tested both in idle and in loaded contexts.
 		 *
-		 * A coefficient equal to 2 would result in smartSleep being always 
+		 * A coefficient equal to 2 would result in smartSleep being always
 		 * too early.
 		 *
 		 * On GNU/Linux the busy waiting does not trigger such context changes
@@ -1676,7 +1676,7 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 		 * good results.
 		 *
 		 */
-		
+
 		if ( remaining  < 1.5 * usedGranularity )
 		{
 
@@ -1684,7 +1684,7 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 			LogPlug::debug( "Ceylan::System::smartSleep: remaining time ("
 				+ Ceylan::toString( remaining ) + " microseconds)"
 				+ " smaller than half of a time slice ("
-				+ Ceylan::toString( usedGranularity ) 
+				+ Ceylan::toString( usedGranularity )
 				+ " microseconds) and we are on Windows, "
 				"we prefer to finish earlier than later." ) ;
 #endif // CEYLAN_DEBUG_SYSTEM
@@ -1719,12 +1719,12 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	// We should be almost just-in-time here!
 
 	return true ;
-	
+
 }
 
 
 
-bool Ceylan::System::smartSleepUntil( Second second, Microsecond micro )	
+bool Ceylan::System::smartSleepUntil( Second second, Microsecond micro )
 {
 
 	Second currentSecond ;
@@ -1746,13 +1746,13 @@ bool Ceylan::System::smartSleepUntil( Second second, Microsecond micro )
 			+ " microseconds) is on the past (current date is "
 			+ Ceylan::toString( currentSecond ) + " seconds, "
 			+ Ceylan::toString( currentMicrosecond ) + " microseconds)." ) ;
-	 
+
 	if ( micro < currentMicrosecond )
 	{
 		second-- ;
 		micro += OneMillion ;
 	}
-	
+
 	return smartSleep( second - currentSecond, micro - currentMicrosecond ) ;
 
 }
@@ -1776,10 +1776,10 @@ Microsecond Ceylan::System::getActualDurationForSleep(
 	Microsecond currentMicrosecond ;
 
 	getPreciseTime( lastSecond, lastMicrosecond ) ;
-	
+
 	Ceylan::System::basicSleep( requestedSeconds /* second */,
 		requestedMicroseconds * 1000 /* nanoseconds */ ) ;
-		
+
 	getPreciseTime( currentSecond, currentMicrosecond ) ;
 
 
@@ -1789,14 +1789,14 @@ Microsecond Ceylan::System::getActualDurationForSleep(
 	 *
 	 */
 
-	return getDurationBetween( lastSecond, lastMicrosecond, 
+	return getDurationBetween( lastSecond, lastMicrosecond,
 		currentSecond, currentMicrosecond) ;
 
 }
 
 
 
-Microsecond Ceylan::System::getSchedulingGranularity() 
+Microsecond Ceylan::System::getSchedulingGranularity()
 {
 
 	/*
@@ -1811,49 +1811,49 @@ Microsecond Ceylan::System::getSchedulingGranularity()
 	 */
 
 	static Microsecond granularity = 0 ;
-	
+
 	// Already computed? Return it!
 	if ( granularity != 0 )
 		return granularity ;
-	
+
 #if CEYLAN_DEBUG_SYSTEM
 
 	bool logMeasures = true ;
-	
+
 	/*
-	 * Logs can been interpreted thanks to gnuplot, see comment in 
+	 * Logs can been interpreted thanks to gnuplot, see comment in
 	 * test/system/testCeylanTime.cc for more detailed explanations.
 	 *
 	 */
-	 
+
 	const string logFilename = "granularity.dat" ;
-	
+
 	File * logFile = 0 ;
-	
+
 	if ( logMeasures )
 	{
-	
+
 		logFile = & File::Create( logFilename ) ;
-		logFile->write( 
+		logFile->write(
 			"# This file records the requested sleep durations (first column)\n"
 			"# and the corresponding actual sleep durations (second column).\n"
 			"# The scheduling granularity can be usually guessed from it.\n"
 			"# One may use gnuplot to analyze the result,\n"
 			"# see test/system/testCeylanTime.cc.\n\n"   ) ;
-			
+
 		LogPlug::trace( "Ceylan::System::getSchedulingGranularity: "
 			"computing granularity now, and logging the result in the '"
 			+ logFilename + "' file." ) ;
 
-	}	
+	}
 	else
 	{
-	
+
 		LogPlug::trace( "Ceylan::System::getSchedulingGranularity: "
 			"computing granularity now (no file logging requested)." ) ;
-			
+
 	}
-		
+
 #endif // CEYLAN_DEBUG_SYSTEM
 
 
@@ -1897,15 +1897,15 @@ Microsecond Ceylan::System::getSchedulingGranularity()
 
 		// Increases the duration:
 		currentRequestedDuration += durationStep ;
-		
+
 		lastMeasuredDuration = currentMeasuredDuration ;
-		
+
 		currentMeasuredDuration =
 			getActualDurationForSleep( currentRequestedDuration ) ;
 
 #if CEYLAN_DEBUG_SYSTEM
-		logFile->write( Ceylan::toString( currentRequestedDuration ) 
-			+ " \t " + Ceylan::toString( currentMeasuredDuration ) 
+		logFile->write( Ceylan::toString( currentRequestedDuration )
+			+ " \t " + Ceylan::toString( currentMeasuredDuration )
 			+ " \n" ) ;
 #endif // CEYLAN_DEBUG_SYSTEM
 
@@ -1918,8 +1918,8 @@ Microsecond Ceylan::System::getSchedulingGranularity()
 			else
 				break ;
 		}
-		
-		
+
+
 		// Increases requested time until a gentle slope is found (0.5%):
 		if ( Ceylan::Maths::Abs( static_cast<Ceylan::Float32>(
 					currentMeasuredDuration - lastMeasuredDuration ) )
@@ -1947,13 +1947,13 @@ Microsecond Ceylan::System::getSchedulingGranularity()
 	// Hit top, nothing found?
 	if ( currentRequestedDuration == maximumPossibleDuration )
 	{
-	
+
 		currentMeasuredDuration = getActualDurationForSleep( testDuration ) ;
 		LogPlug::warning( "Ceylan::System::getSchedulingGranularity: "
 			"failed to guess actual time slice duration, starting with "
 			+ Ceylan::toString( currentMeasuredDuration )
 			+ " microseconds as an experimental basis." ) ;
-			
+
 	}
 	else
 	{
@@ -1984,7 +1984,7 @@ Microsecond Ceylan::System::getSchedulingGranularity()
 
 		/*
 		 * The 0.4 factor is here to ensure we do not request just more than
-		 * the time-slice, if we had surestimated it a bit, we could have 
+		 * the time-slice, if we had surestimated it a bit, we could have
 		 * two time slices instead.
 		 *
 		 */
@@ -1994,7 +1994,7 @@ Microsecond Ceylan::System::getSchedulingGranularity()
 
 	}
 
-	granularity = static_cast<Microsecond>( 
+	granularity = static_cast<Microsecond>(
 		( granularity * 1.0f ) / sampleCount ) ;
 
 	/*
@@ -2013,18 +2013,18 @@ Microsecond Ceylan::System::getSchedulingGranularity()
 	 * relevant.
 	 *
 	 */
-		
-	 
+
+
 #if CEYLAN_DEBUG_SYSTEM
 	LogPlug::debug( "Final returned scheduling granularity is "
 		+ Ceylan::toString( granularity ) + " microseconds." ) ;
-		
+
 	if ( logFile != 0 )
 	{
 		logFile->close() ;
 		delete logFile ;
 		logFile = 0 ;
-	}	
+	}
 #endif // CEYLAN_DEBUG_SYSTEM
 
 	return granularity ;
@@ -2033,7 +2033,7 @@ Microsecond Ceylan::System::getSchedulingGranularity()
 
 
 
-bool Ceylan::System::setLegacyStreamSynchronization( bool synchronized )	
+bool Ceylan::System::setLegacyStreamSynchronization( bool synchronized )
 {
 
 	/*
@@ -2049,4 +2049,3 @@ bool Ceylan::System::setLegacyStreamSynchronization( bool synchronized )
 	return std::ios::sync_with_stdio( synchronized ) ;
 
 }
-
