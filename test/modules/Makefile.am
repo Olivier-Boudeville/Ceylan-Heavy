@@ -9,8 +9,10 @@ testsmodules_PROGRAMS = \
 	testCeylanModule.exe     \
 	testCeylanXMLParser.exe
 
-#	testCeylanPlugin.exe had to be removed now that a 64-bit compiler can be
-# used (gcc version 4.4.1), as following error was triggered:
+
+# Removed now that a 64-bit compiler can be used (gcc version 4.4.1), as 
+# following error was triggered:
+#	testCeylanPlugin.exe
 
 # /usr/bin/ld: std::__once_call: TLS definition in
 # /usr/lib/gcc/x86_64-linux-gnu/4.4.1/libstdc++.a(mutex.o) section
