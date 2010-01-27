@@ -1,6 +1,9 @@
 (setq load-path (cons "~/.emacs.d" load-path))
 
-;; Use M-x byte-compile-file to precompile .el files (ex: linum)
+
+;; Compiles .el files newer than their .elc counterpart, or not having one:
+;; One cal also use M-x byte-compile-file to precompile .el files (ex: linum).
+(byte-recompile-directory "~/.emacs.d" 0)
 
 
 
@@ -20,15 +23,15 @@
 ;; Corresponds to conventions in demo-for-css-testing.rst:
 ;; (not correctly applied apparently, though)
 (setq rst-preferred-decorations '( (?= over-and-under 0)
-                                   (?- over-and-under 0)
-                                   (?= simple 0)
-                                   (?- simple 0)
-                                   (?. simple 0)
-                                   (?_ simple 0)
-                                   (?* simple 0)
-                                   (?: simple 0)
-                                   (?+ simple 0) ))
-
+				   (?- over-and-under 0)
+				   (?= simple 0)
+				   (?- simple 0)
+				   (?. simple 0)
+				   (?_ simple 0)
+				   (?* simple 0)
+				   (?: simple 0)
+				   (?+ simple 0) ))
+;; Erlang support:
 (require 'erlang-start)
 
 
@@ -63,20 +66,27 @@
   ;;(message "############ Setting advanced RET behaviour ###########")
   ;;(local-set-key (kbd "RET") 'reindent-then-newline-and-indent)
   (global-set-key (kbd "RET") 'reindent-then-newline-and-indent)
-)
+  )
 
 (add-hook 'find-file-hooks 'set-advanced-ret-behaviour)
 
 
 
-(defun fix-ret-behaviour-for-rst-mode ()
+(defun fix-behaviours-for-rst-mode ()
   ;;(message "############## Fixing RET behaviour for RST mode ###########")
-  
-  (remove-hook 'find-file-hooks 'set-advanced-ret-behaviour)
-  (global-set-key (kbd "RET") 'newline-and-indent)
-)
 
-(add-hook 'rst-mode-hook 'fix-ret-behaviour-for-rst-mode)
+  ;; Advanced automatic indentation not adaptated to text modes:
+  (remove-hook 'find-file-hooks 'set-advanced-ret-behaviour)
+
+  ;; This basic indentation is fine with text modes:
+  (global-set-key (kbd "RET") 'newline-and-indent)
+
+  ;;Long lines are normal in text modes:
+  (remove-hook 'find-file-hook 'highlight-80+-mode)
+
+  )
+
+(add-hook 'rst-mode-hook 'fix-behaviours-for-rst-mode)
 
 
 
@@ -115,94 +125,94 @@
 (defun default-fone ()
   (interactive)
   (message "Default for F1")
-)
+  )
 
 (defun default-f2 ()
   (interactive)
   (message "Default for F2")
-)
+  )
 
 (defun default-f3 ()
   (interactive)
   (message "Default for F3")
-)
+  )
 
 (defun default-f4 ()
   (interactive)
   (message "Default for F4")
-)
+  )
 
 (defun default-f5 ()
   (interactive)
   (message "Default for F5")
-)
+  )
 
 (defun default-f6 ()
   (interactive)
   (message "Default for F6")
-)
+  )
 
 (defun default-f7 ()
- (interactive)
- (message "Default for F7")
-)
+  (interactive)
+  (message "Default for F7")
+  )
 
 (defun default-f8 ()
   (interactive)
   (message "Default for F8")
-)
+  )
 
 (defun default-f9 ()
   (interactive)
   (message "Default for F9")
-)
+  )
 
 (defun default-shift-f9 ()
   (interactive)
   (message "Default for Shift-F9")
-)
+  )
 
 (defun default-f10 ()
   (interactive)
   (message "Default for F10")
-)
+  )
 
 (defun default-f11 ()
   (interactive)
   (message "Default for F11")
-)
+  )
 
 (defun default-f12 ()
   (interactive)
   (message "Default for F12")
-)
+  )
 
 (defun save-and-close ()
   (interactive)
   (save-buffer)
   (kill-this-buffer)
-)
+  )
 
 ;; Actual mapping:
 
 (defun show-assigned-keys ()
- "Shows the current key bindings"
- (interactive)
- (message "F1        -> save-buffer" )
- (message "F2        -> query-replace" )
- (message "F3        -> query-replace-regexp" )
- (message "F4        -> indent-whole-buffer" )
- (message "F5        -> undo" )
- (message "F6        -> repeat-complex-command" )
- (message "F7        -> goto-line" )
- (message "F8        -> whitespace-cleanup" )
- (message "F9        -> (intercepted by Ubuntu)" )
- (message "Shift-F9  -> (currently not bound)" )
- (message "F10       -> save-buffers-kill-emacs" )
- (message "F11       -> (does nothing)" )
- (message "F12       -> (does nothing)" )
-  
-)
+  "Shows the current key bindings"
+  (interactive)
+  (message "F1        -> save-buffer" )
+  (message "F2        -> query-replace" )
+  (message "F3        -> query-replace-regexp" )
+  (message "F4        -> indent-whole-buffer" )
+  (message "F5        -> undo" )
+  (message "F6        -> repeat-complex-command" )
+  (message "F7        -> goto-line" )
+  (message "F8        -> whitespace-cleanup" )
+  (message "F9        -> (intercepted by Ubuntu)" )
+  (message "Shift-F9  -> (currently not bound)" )
+  (message "F10       -> save-buffers-kill-emacs" )
+  (message "F11       -> (does nothing)" )
+  (message "F12       -> (does nothing)" )
+
+  )
 
 
 ;; Curiously hitting F1 triggers default-f12:
@@ -219,7 +229,7 @@
 
 ;; Usable and behaves like expected:
 (global-set-key [f4]			  'indent-whole-buffer)
-(global-set-key [XF86Send]  	  'indent-whole-buffer)
+(global-set-key [XF86Send]	  'indent-whole-buffer)
 
 ;; Curiously bound to Undo:
 (global-set-key [f5]              'default-f5)
@@ -232,7 +242,7 @@
 
 ;; Usable and behaves like expected:
 (global-set-key [f7]			  'goto-line)
-(global-set-key [print] 		  'goto-line)
+(global-set-key [print]		  'goto-line)
 
 
 ;; Usable and behaves like expected:
@@ -270,7 +280,7 @@
 
 ;;(global-set-key "TAB" 'reindent-then-newline-and-indent)
 
-	  
+
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
 (setq font-lock-maximum-size nil)
@@ -306,7 +316,7 @@
 ;; Save all backup file in this directory:
 (setq backup-directory-alist (quote ((".*" . "~/.emacs_backups/"))))
 
-;
+										;
 ;; Show line-number in the mode line
 ;;(line-number-mode 1)
 
@@ -383,11 +393,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  ;; Determines the rendering of titles in RST mode:
-  '(rst-level-1-face ((t (:background "#00f" :foreground "#fff"))))
-  '(rst-level-2-face ((t (:background "#00a" :foreground "#ddd"))))
-  '(rst-level-3-face ((t (:background "#003" :foreground "#bbb"))))
-  '(rst-level-4-face ((t (:background "#000" :foreground "#999"))))
-  '(rst-level-5-face ((t (:background "#010" :foreground "#666"))))
-  '(rst-level-6-face ((t (:background "#020" :foreground "#555"))))
+ '(rst-level-1-face ((t (:background "#00f" :foreground "#fff"))))
+ '(rst-level-2-face ((t (:background "#00a" :foreground "#ddd"))))
+ '(rst-level-3-face ((t (:background "#003" :foreground "#bbb"))))
+ '(rst-level-4-face ((t (:background "#000" :foreground "#999"))))
+ '(rst-level-5-face ((t (:background "#010" :foreground "#666"))))
+ '(rst-level-6-face ((t (:background "#020" :foreground "#555"))))
  )
-
