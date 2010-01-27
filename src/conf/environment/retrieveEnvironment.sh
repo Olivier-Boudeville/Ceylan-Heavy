@@ -194,6 +194,22 @@ preClean()
 }
 
 
+# Creates a link from Emacs configuration directory to original file:
+linkEmacsFile()
+{
+
+	target_name="$1"
+
+	target_link="$HOME/.emacs.d/${target_name}"
+
+	if [ -f "${target_link}" ] ; then
+		backUpFile "${target_link}"
+	fi
+	ln -s "$BASE/${target_name}" "${target_link}"
+
+}
+
+
 prepareDeveloperEnvironment()
 {
 
@@ -231,21 +247,9 @@ prepareDeveloperEnvironment()
 	# Note: if a ~/.emacs file already exists, it will override all
 	# these ones:
 
-	if [ -f $HOME/.emacs.d/init.el ] ; then
-		backUpFile $HOME/.emacs.d/init.el
-	fi
-	ln -s $BASE/init.el $HOME/.emacs.d/init.el
-
-	if [ -f $HOME/.emacs.d/physical-line.el ] ; then
-		backUpFile $HOME/.emacs.d/physical-line.el
-	fi
-	ln -s $BASE/physical-line.el $HOME/.emacs.d/physical-line.el
-
-	if [ -f $HOME/.emacs.d/linum.el ] ; then
-		backUpFile $HOME/.emacs.d/linum.el
-	fi
-	ln -s $BASE/linum.el $HOME/.emacs.d/linum.el
-
+	for f in init.el physical-line.el linum.el highlight-80+.el erlang.el erlang-start.el ; do
+		linkEmacsFile $f
+	done
 
 	echo "      + creating basic temporary directories"
 
@@ -281,4 +285,3 @@ if [ $do_link -eq 1 ] ; then
 else
 	echo "End of retrieval, projects files should be found in $INSTALL_ROOT."
 fi
-
