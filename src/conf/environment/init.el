@@ -2,18 +2,23 @@
 
 
 ;; Compiles .el files newer than their .elc counterpart, or not having one:
-;; One cal also use M-x byte-compile-file to precompile .el files (ex: linum).
+;; One can also use M-x byte-compile-file to precompile .el files (ex: linum).
+;; Warning: apparently, unless the .elc file is removed, changes will be
+;; effective only when having started emacs again *twice*.
 (byte-recompile-directory "~/.emacs.d" 0)
 
 
 
 ;; RST files support section.
 
+
+;; Disabled as is slowing emacs down way too much:
 (require 'rst)
 (setq auto-mode-alist
       (append '(("\\.txt$"  . rst-mode)
 				("\\.rst$"  . rst-mode)
 				("\\.rest$" . rst-mode)) auto-mode-alist))
+
 
 ;; Automatically update the table of contents everytime you adjust a
 ;; section title:
@@ -31,10 +36,23 @@
 				   (?* simple 0)
 				   (?: simple 0)
 				   (?+ simple 0) ))
+
+
 ;; Erlang support:
 (require 'erlang-start)
 
+(add-hook 'erlang-mode-hook 'my-erlang-mode-hook)
 
+(defun my-erlang-mode-hook ()   
+	(setq hs-special-modes-alist (cons '(erlang-mode    "^\\([a-z][a-zA-Z0-9_]*\\|'[^\n']*[^\\]'\\)\\s *(" nil "%"    erlang-end-of-clause) hs-special-modes-alist))   
+	(hs-minor-mode 1)   
+	(local-set-key [?\M-s] 'hs-toggle-hiding)   
+	(local-set-key [?\M-h] 'hs-hide-all)   
+	(local-set-key [?\M-u] 'hs-show-all)
+	(hs-hide-all)
+)
+ 
+ 
 ;; Displaying of line number on the left:
 ;; (see also 'longlines')
 (require 'linum)
@@ -68,12 +86,12 @@
   (global-set-key (kbd "RET") 'reindent-then-newline-and-indent)
   )
 
-(add-hook 'find-file-hooks 'set-advanced-ret-behaviour)
+;;(add-hook 'find-file-hooks 'set-advanced-ret-behaviour)
 
 
 
 (defun fix-behaviours-for-rst-mode ()
-  ;;(message "############## Fixing RET behaviour for RST mode ###########")
+  ;;(message "############## Fixing behaviours for RST mode ###########")
 
   ;; Advanced automatic indentation not adaptated to text modes:
   (remove-hook 'find-file-hooks 'set-advanced-ret-behaviour)
@@ -99,6 +117,26 @@
   )
 
 
+;; No more question about clients being still there:
+(remove-hook 'kill-buffer-query-functions 'server-kill-buffer-query-function)
+ 
+ 
+(defun kill-full-line ()
+ 	"Kills the current line, regardless of the current cursor position. It can be then yanked back with M-y."
+	(interactive)
+	(let ((orig (point)))
+	(beginning-of-line)
+	(let ((beg (point)))
+	(forward-line 1)
+	(delete-region beg (point)))
+	;; If line is shorter than previous line, then just go to end of line:
+	(end-of-line)
+	(let ((new (point)))
+	(if (< orig new)
+	(goto-char orig))))
+)
+
+ 
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward)
 (setq uniquify-after-kill-buffer-p 1)
@@ -114,14 +152,19 @@
 (require 'highlight-80+)
 (add-hook 'find-file-hook 'highlight-80+-mode)
 
-;; 85 width allows to display correctly even files with 9999 lines,
-;; knowing that the leftmost column for line numbers uses some place:
-(add-to-list 'default-frame-alist (cons 'width 85))
+
+;; 85 width would already allow to display correctly even files with
+;; 9999 lines, knowing that the leftmost column for line numbers uses
+;; some place. Selecting 88 instead to leave some room to the ... sign
+;; used to show a block was folded (anyway the 80-limit is shown by 
+;; background color).
+(add-to-list 'default-frame-alist (cons 'width  88))
+(add-to-list 'default-frame-alist (cons 'height 45))
 
 
 ;; Key section:
 
-
+  
 (defun default-fone ()
   (interactive)
   (message "Default for F1")
@@ -193,7 +236,12 @@
   (kill-this-buffer)
   )
 
+
+
 ;; Actual mapping:
+
+
+;; Use M-x describe-key to know to what function a key sequence is bound.
 
 (defun show-assigned-keys ()
   "Shows the current key bindings"
@@ -229,7 +277,7 @@
 
 ;; Usable and behaves like expected:
 (global-set-key [f4]			  'indent-whole-buffer)
-(global-set-key [XF86Send]	  'indent-whole-buffer)
+(global-set-key [XF86Send]	      'indent-whole-buffer)
 
 ;; Curiously bound to Undo:
 (global-set-key [f5]              'default-f5)
@@ -242,7 +290,7 @@
 
 ;; Usable and behaves like expected:
 (global-set-key [f7]			  'goto-line)
-(global-set-key [print]		  'goto-line)
+(global-set-key [print]		      'goto-line)
 
 
 ;; Usable and behaves like expected:
@@ -277,15 +325,72 @@
 
 
 (global-set-key "\C-Z" 'undo)
+(global-set-key "\C-P" 'recompile)
+(global-set-key "\C-Q" 'isearch-forward)
+(global-set-key "\C-S" 'save-buffer)
+(global-set-key "\C-D" 'next-error)
+(global-set-key "\C-F" 'find-file)
+
+(global-set-key "\M-k" 'kill-full-line)
+
+(global-set-key [M-right] 'next-buffer)
+(global-set-key [M-left]  'previous-buffer)
+
 
 ;;(global-set-key "TAB" 'reindent-then-newline-and-indent)
 
+
+
+;; Compilation section.
+;; Mostly taken from http://ensiwiki.ensimag.fr/index.php/Dot_Emacs
+
+;; make compile window disappear after successful compilation:
+(setq compilation-finish-function
+      (lambda (buf str)
+	(if (string-match "*Compilation*" (buffer-name buf))
+	    (if (string-match "abnormally" str)
+		(message "There were errors :-(")
+	      ;; No errors, make the compilation window go away in 2 seconds:
+	      (run-at-time 2 nil
+			   (lambda (buf)
+			     (delete-windows-on buf)
+			     (bury-buffer buf))
+			   buf)
+	      (message "No errors :-)")))))
+ 
+;;my-compile is smarter about how to display the new buffer
+(defun display-buffer-by-splitting-largest (buffer force-other-window)
+  "Display buffer BUFFER by splitting the largest buffer vertically, except if
+  there is already a window for it."
+  (or (get-buffer-window buffer)
+      (let ((new-win 
+	     (with-selected-window (get-largest-window)
+	       (split-window-vertically))))
+	(set-window-buffer new-win buffer)
+	new-win)))
+ 
+(defun my-compile ()
+  "Ad-hoc display of compilation buffer."
+  (interactive)
+  (let ((display-buffer-function 'display-buffer-by-splitting-largest))
+    (call-interactively 'compile)))
+ 
+;; Misc compilation settings:
+(setq-default
+ compile-command "make"
+ compilation-read-command nil
+ compilation-scroll-output 'first-error
+ compilation-ask-about-save nil
+ compilation-window-height 10
+ compilation-skip-threshold 0
+ compilation-auto-jump-to-first-error 1)
 
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
 (setq font-lock-maximum-size nil)
 (transient-mark-mode t)
-(setq compilation-window-height 10)
+
+
 ;;(standard-display-european 1)
 
 
@@ -310,8 +415,6 @@
 (setq initial-major-mode 'text-mode)
 (setq default-major-mode 'text-mode)
 
-(add-to-list 'default-frame-alist (cons 'width 85))
-(add-to-list 'default-frame-alist (cons 'height 60))
 
 ;; Save all backup file in this directory:
 (setq backup-directory-alist (quote ((".*" . "~/.emacs_backups/"))))
@@ -331,10 +434,27 @@
 ;; Set mouse color
 (set-mouse-color "white")
 
+
+(defun mouse-search-forward (begin end)   
+	(interactive (list (point) (mark)))  
+	(let ((text (filter-buffer-substring begin end nil t)))     
+	(goto-char (max begin end))     
+	(let ((found-pos (search-forward text nil t)))       
+	(if (not found-pos)           
+	(progn (goto-char begin) (error "not found")) 
+	(progn (goto-char found-pos) (set-mark (- found-pos (length text)))))))
+
+) 
+
+(define-key global-map [(down-mouse-3)] nil) 
+(define-key global-map [(mouse-3)] 'mouse-search-forward)
+
+
 ;; Set foreground and background
 (set-foreground-color "white")
 ;;(set-background-color "darkblue")
 (set-background-color "black")
+
 
 ;;; Set highlighting colors for isearch and drag
 ;;(set-face-foreground 'highlight "white")
@@ -344,8 +464,8 @@
 (set-face-background 'highlight "gray19")
 ;;(set-face-background 'highlight "black")
 
-(set-face-foreground 'region "cyan")
-(set-face-background 'region "blue")
+(set-face-foreground 'region "black")
+(set-face-background 'region "lightgreen")
 
 ;;(set-face-foreground 'secondary-selection "skyblue")
 ;;(set-face-background 'secondary-selection "darkblue")
