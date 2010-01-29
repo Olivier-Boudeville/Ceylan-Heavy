@@ -49,7 +49,7 @@
   :group 'highlight-80+-line)
 
 (defface highlight-80+
-  '((((background dark)) (:background "blue"))
+  '((((background dark)) (:background "brown"))
     (((background light)) (:background "dark gray")))
   "*Face for showing characters beyond column `highlight-80+-columns'."
   :group 'highlight-80+-line)
@@ -61,19 +61,19 @@
 
 (defconst highlight-80+-keywords
   `((highlight-80+-matcher (0 'highlight-80+-line prepend)
-                           (1 'highlight-80+ prepend)
-                           (2 'highlight-80+-first prepend))))
+			   (1 'highlight-80+ prepend)
+			   (2 'highlight-80+-first prepend))))
 
 (defsubst highlight-80+-format ()
   (if (< tab-width 2)
       "^\\(\\)\\([^\n]\\)\\{80,\\}$"
     (concat (format "^\\(?:[^\t\n]\\{%d\\}\\|[^\t\n]\\{,%d\\}\t\\)\\{%d\\}"
-                    tab-width (- tab-width 1)
-                    (/ highlight-80+-columns tab-width))
-            (let ((remainder (mod highlight-80+-columns tab-width)))
-              (when remainder
-                (format "\\(?:[^\t\n]\\{%d\\}\\|\t\\)" remainder)))
-            "\\(\\(.\\).*\\)$")))
+		    tab-width (- tab-width 1)
+		    (/ highlight-80+-columns tab-width))
+	    (let ((remainder (mod highlight-80+-columns tab-width)))
+	      (when remainder
+		(format "\\(?:[^\t\n]\\{%d\\}\\|\t\\)" remainder)))
+	    "\\(\\(.\\).*\\)$")))
 
 (defvar highlight-80+-last-width 0)
 (make-variable-buffer-local 'highlight-80+-last-width)
@@ -85,7 +85,7 @@
   ;; Update search when `tab-width' has changed.
   (unless (equal highlight-80+-last-width tab-width)
     (setq highlight-80+-last-keywords (highlight-80+-format)
-          highlight-80+-last-width tab-width)
+	  highlight-80+-last-width tab-width)
     ;; The rest of the buffer can't be right, either.
     (let ((font-lock-keywords))
       (font-lock-fontify-buffer)))
