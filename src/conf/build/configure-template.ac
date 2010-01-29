@@ -1574,28 +1574,36 @@ CheckBasicDatatypes()
 	CEYLAN_HAS_64_BIT_TYPE=0
 	
 	if test x$ac_cv_header_inttypes_h = xyes -o x$ac_cv_header_stdint_h = xyes; then
-	
+
+		AC_DEFINE(native_types_origin, "Read from standard system headers", [Defines from which source came the defines of native datatypes])	
+
 		AC_CHECK_TYPE(int64_t)
 		if test x$ac_cv_type_int64_t = xyes; then
 			CEYLAN_HAS_64_BIT_TYPE=1
 		fi	
 		
+		# Actually we do not define symbols whose value is their name 
+        # (ex: '#define foo foo'), as actually their name is automatically
+        # prefixed with _ceylan_ (results in: '#define _ceylan_foo foo'):
+
 		AC_DEFINE(int8_t, int8_t, [Defines 8-bit signed integer])
 		AC_DEFINE(uint8_t, uint8_t, [Defines 8-bit unsigned integer])
 		
-		AC_DEFINE(int16_t, signed short, [Defines 16-bit signed integer])
-		AC_DEFINE(uint16_t, unsigned short, [Defines 16-bit unsigned integer])
+		AC_DEFINE(int16_t, int16_t, [Defines 16-bit signed integer])
+		AC_DEFINE(uint16_t, uint16_t, [Defines 16-bit unsigned integer])
 		
-		AC_DEFINE(int32_t, signed int, [Defines 32-bit signed integer])
-		AC_DEFINE(uint32_t, unsigned int, [Defines 32-bit unsigned integer])
+		AC_DEFINE(int32_t, int32_t, [Defines 32-bit signed integer])
+		AC_DEFINE(uint32_t, uint32_t, [Defines 32-bit unsigned integer])
 		
-		AC_DEFINE(int64_t, signed long, [Defines 64-bit signed integer])
-		AC_DEFINE(uint64_t, unsigned long, [Defines 64-bit unsigned integer])
+		AC_DEFINE(int64_t, int64_t, [Defines 64-bit signed integer])
+		AC_DEFINE(uint64_t, uint64_t, [Defines 64-bit unsigned integer])
   			
 	else
 	
 		# Defines everything directly, by itself:
 	
+		AC_DEFINE(native_types_origin, "Determined by configure", [Defines from which source came the defines of native datatypes])	
+
 	    AC_CHECK_SIZEOF(char, 1)
  		AC_CHECK_SIZEOF(short, 2)
  		AC_CHECK_SIZEOF(int, 4)
