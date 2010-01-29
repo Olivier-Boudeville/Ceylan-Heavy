@@ -44,6 +44,11 @@ CEYLAN_TEST_DIR="\${prefix}/share/Ceylan-test"
 AC_SUBST(CEYLAN_TEST_DIR)
 
 
+# Checks for C library headers:
+AC_HEADER_STDC
+AC_CHECK_HEADERS(sys/types.h stdio.h stdlib.h stddef.h stdarg.h malloc.h memory.h string.h strings.h inttypes.h stdint.h ctype.h math.h iconv.h signal.h)
+
+
 
 # Compiler-specific optimization flags.
 
@@ -141,6 +146,8 @@ if test x$ac_cv_cxx_compiler_gnu = xyes; then
 fi
 
 
+# If the following line fails, then probably the reason is that the Ceylan
+# library was not installed (and thus ceylan.m4 was not included):
 CEYLAN_PATH(ST_CEYLAN_TESTED_LT_CURRENT_VERSION,ST_CEYLAN_TESTED_LT_REVISION_VERSION,ST_CEYLAN_TESTED_LT_AGE_VERSION)
 
 CPPFLAGS="$CPPFLAGS $CEYLAN_CPPFLAGS"
