@@ -173,7 +173,7 @@ export PS1="\n\e[95m\h \e[92m\u\e[95m \e[96m\t \e[93m"'$PWD'"\e[97m\n> "
 
 export MANPATH=/usr/share/man:$MANPATH
 export EDITOR=emacs
-export SVN_EDITOR="$EDITOR"
+export SVN_EDITOR="n -s"
 export SHELL=bash
 export PAGER=/usr/bin/less
 
