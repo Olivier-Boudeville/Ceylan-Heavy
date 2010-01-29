@@ -1272,6 +1272,20 @@ CheckSignalFeature()
 	# FIXME: forced to true, as in Ubuntu Karmic 64-bit the AC_CHECK_HEADERS
 	# fails (compilation errors due to symbols being defined twice) where
 	# it should not: [to be removed ASAP]
+# checking whether Ceylan signal support feature is wanted... yes
+# checking signal.h usability... no
+# checking signal.h presence... yes
+# configure: WARNING: signal.h: present but cannot be compiled
+# configure: WARNING: signal.h:     check for missing prerequisite headers?
+# configure: WARNING: signal.h: see the Autoconf documentation
+# configure: WARNING: signal.h:     section "Present But Cannot Be Compiled"
+# configure: WARNING: signal.h: proceeding with the compiler's result
+# configure: WARNING:     ## ------------------------------------------------ ##
+# configure: WARNING:     ## Report this to ceylan-bugs@lists.sourceforge.net ##
+# configure: WARNING:     ## ------------------------------------------------ ##
+# checking for signal.h... no
+# configure: WARNING: Signal support requested but not available, disabling it
+# checking whether Ceylan signal feature is enabled... no
 	CEYLAN_USES_SIGNALS=1
 	
 	# Added for the same fix (::signal function), to be removed:
@@ -1649,6 +1663,12 @@ CheckEndianness()
 	AC_C_BIGENDIAN([CEYLAN_RUNS_ON_LITTLE_ENDIAN=0],
 		[CEYLAN_RUNS_ON_LITTLE_ENDIAN=1])
 	
+    # Again a temporary due to autoconf failure, another header
+	# makes it believe wrongly we are in big-endian:
+	# "checking whether byte ordering is bigendian... yes"... on a x86...
+	# FIXME, to be removed:
+    CEYLAN_RUNS_ON_LITTLE_ENDIAN=1
+
 	AC_DEFINE_UNQUOTED([RUNS_ON_LITTLE_ENDIAN],
 		[$CEYLAN_RUNS_ON_LITTLE_ENDIAN],
 		[Define to 1 if the target platform is little endian])
