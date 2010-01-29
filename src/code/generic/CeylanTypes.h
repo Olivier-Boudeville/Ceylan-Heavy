@@ -55,13 +55,14 @@
  *
  * Even inttypes.h is not included here since it is not present on all
  * platforms. 
- * Otherwise we would need to use here a CEYLAN_USES_INTTYPES_H, which
- * would force us to include beforehand CeylanConfig.h (our "config.h").
- * It would not be satisfactory in installed headers, because of risks of
- * name clashes.
  *
- * For the moment, we dodge the issue and use fairly the same tricks as SDL
- * (http://www.libsdl.org, see SDL_types.h).
+ * We did not want to use CEYLAN_USES_INTTYPES_H and other defines, as it
+ * forces us to include beforehand CeylanConfig.h (our "config.h").
+ * It was deemed not satisfactory in installed headers, because of risks of
+ * name clashes.
+ * However no really portable solution was available when needing to detect
+ * 64bit types, thus we finally rely on CeylanConfig.h, which defines
+ * _ceylan_*int*_t symbols appropriately.
  *
  * cstdint, defined in Boost (http://www.boost.org), is sadly not existing 
  * yet in the C++ standard.
@@ -69,7 +70,55 @@
  * On the Nintendo DS, we could use also datatypes defined in libnds.
  *
  */
-//#include <inttypes.h>   // for int8_t and others
+
+
+/*
+ * Supposedly available on all targeted platforms (thus removes the need
+ * to include "CeylanConfig.h".
+ * However on GNU/Linux with gcc 4.4 we have: 
+ * "This file requires compiler and library support for the upcoming ISO
+ * C++ standard, C++0x. This support is currently experimental, and must
+ * be enabled with the -std=c++0x or -std=gnu++0x compiler options."
+ * #include <cstdint>
+ *
+ * #include <stdint.h> does not trigger it.
+ * 
+ *
+ */
+
+
+
+#ifdef CEYLAN_USES_CONFIG_H
+
+
+// If wanting to use our CeylanConfig.h, do so (our tests will not):
+#include "CeylanConfig.h"       // for configure-time settings
+
+#ifdef CEYLAN_USES_INTTYPES_H
+#include <inttypes.h>           // for int8_t and others
+#endif // CEYLAN_USES_INTTYPES_H
+
+
+#else // CEYLAN_USES_CONFIG_H
+
+
+// Otherwise suppose this one is available and use it:
+#include <inttypes.h>           // for int8_t and others
+
+#define _ceylan_int8_t int8_t 
+#define _ceylan_uint8_t uint8_t 
+
+#define _ceylan_int16_t int16_t 
+#define _ceylan_uint16_t uint16_t 
+
+#define _ceylan_int32_t int32_t 
+#define _ceylan_uint32_t uint32_t 
+
+#define _ceylan_int64_t int64_t 
+#define _ceylan_uint64_t uint64_t 
+
+
+#endif // CEYLAN_USES_CONFIG_H
 
 
 
@@ -111,9 +160,10 @@ namespace Ceylan
 	 * Ranges from -128 to 127 (both included).
 	 *
 	 * Could be as well, if inttypes.h was used: typedef int8_t Sint8 ;
+	 * or often typedef signed char Sint8 ;
 	 *
 	 */
-	typedef signed char	Sint8 ;
+	typedef _ceylan_int8_t Sint8 ;
 
 	extern CEYLAN_DLL Ceylan::Sint8 Sint8Min /* = -128 */  ;
 	extern CEYLAN_DLL Ceylan::Sint8 Sint8Max /* =  127 */  ;
@@ -126,9 +176,10 @@ namespace Ceylan
 	 * Ranges from 0 to 255 (both included).
 	 *
 	 * Could be as well, if inttypes.h was used: typedef uint8_t Uint8 ;
+	 * or often typedef unsigned char Uint8 ;
 	 *
 	 */
-	typedef unsigned char Uint8 ;
+	typedef _ceylan_uint8_t Uint8 ;
 	
 	extern CEYLAN_DLL Ceylan::Uint8 Uint8Min /* =   0 */ ;
 	extern CEYLAN_DLL Ceylan::Uint8 Uint8Max /* = 255 */ ;
@@ -174,9 +225,10 @@ namespace Ceylan
 	 * Ranges from -32 768 to 32 767 (both included).
 	 *
 	 * Could be as well, if inttypes.h was used: typedef int16_t Sint16 ;
+	 * or typedef signed short Sint16 ;
 	 *
 	 */
-	typedef signed short Sint16 ;
+	typedef _ceylan_int16_t Sint16 ;
 
 	extern CEYLAN_DLL Ceylan::Sint16 Sint16Min /* = -32768  */ ;
 	extern CEYLAN_DLL Ceylan::Sint16 Sint16Max /* =  32767  */ ;
@@ -189,9 +241,10 @@ namespace Ceylan
 	 * Ranges from 0 to 65 535 (both included).
 	 *
 	 * Could be as well, if inttypes.h was used: typedef uint16_t Uint16 ;
+	 * or typedef unsigned short Uint16 ;
 	 *
 	 */
-	typedef unsigned short Uint16 ;
+	typedef _ceylan_uint16_t Uint16 ;
 	
 	extern CEYLAN_DLL Ceylan::Uint16 Uint16Min /* =     0 */ ;
 	extern CEYLAN_DLL Ceylan::Uint16 Uint16Max /* = 65535 */ ;
@@ -205,9 +258,10 @@ namespace Ceylan
 	 * Ranges from -2 147 483 648 to 2 147 483 647 (both included).
 	 *
 	 * Could be as well, if inttypes.h was used: typedef int32_t Sint32 ;
-	 *
+	 * or typedef signed int Sint32 ;
+	 * 
 	 */
-	typedef signed int Sint32 ;
+	typedef _ceylan_int32_t Sint32 ;
 
 
 	/*
@@ -226,9 +280,10 @@ namespace Ceylan
 	 * Ranges from 0 to 4 294 967 295 (both included).
 	 *
 	 * Could be as well, if inttypes.h was used: typedef uint32_t Uint32 ;
+	 * or typedef unsigned int Uint32 ;
 	 *
 	 */
-	typedef unsigned int Uint32 ;
+	typedef _ceylan_uint32_t Uint32 ;
 
 	extern CEYLAN_DLL Ceylan::Uint32 Uint32Min /* = 0  */ ;
 	extern CEYLAN_DLL Ceylan::Uint32 Uint32Max /* = 4294967295 */ ;
@@ -297,32 +352,8 @@ namespace Ceylan
 	 *
 	 */
 	 
-   
-/*
- * Identifies whether there exists a suitable 64-bit type: 
- * (64-bit datatype is not supported on all platforms)
- *
- */  
-#if !defined(__STRICT_ANSI__)
-	#if defined(__GNUC__) || defined(__MWERKS__) || defined(__SUNPRO_C) || defined(__DECC)
-		#define CEYLAN_64_BIT_TYPE long long
-	#elif defined(_MSC_VER) 
-			// Visual C++:
-			#define CEYLAN_64_BIT_TYPE __int64
-	#endif // if defined(__GNUC__)...
-#endif // ! __STRICT_ANSI__
 
-
-// The 64-bit type is not available on EPOC/Symbian OS:
-#ifdef __SYMBIAN32__
-	#undef CEYLAN_64_BIT_TYPE
-#endif // __SYMBIAN32__
-
-
-
-// Now defines accordingly this 64-bit type:
-#ifdef CEYLAN_64_BIT_TYPE
-
+#ifdef CEYLAN_HAS_64_BIT_TYPE
 
 	/**
 	 * Unsigned 64-bit int. 	
@@ -330,9 +361,10 @@ namespace Ceylan
 	 * Ranges not specified for the moment. 
 	 *
 	 * Could be as well, if inttypes.h was used: typedef uint64_t Uint64 ;
+	 * or 
 	 *
 	 */
-	typedef unsigned CEYLAN_64_BIT_TYPE Uint64 ;
+	typedef _ceylan_uint64_t Uint64 ;
 		
 
 	/**
@@ -343,10 +375,10 @@ namespace Ceylan
 	 * Could be as well, if inttypes.h was used: typedef int64_t Sint64 ;
 	 *
 	 */
-	typedef signed CEYLAN_64_BIT_TYPE Sint64 ;
+	typedef _ceylan_int64_t Sint64 ;
 	
 	
-#else // CEYLAN_64_BIT_TYPE
+#else // CEYLAN_HAS_64_BIT_TYPE
 
 #define CEYLAN_FAKES_64_BIT_TYPE
 
@@ -359,8 +391,7 @@ namespace Ceylan
 		
 	} Uint64, Sint64 ;
 	
-	
-#endif // CEYLAN_64_BIT_TYPE
+#endif // CEYLAN_HAS_64_BIT_TYPE
 
 
 
