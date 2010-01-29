@@ -58,6 +58,8 @@
 (require 'linum)
 (add-hook 'find-file-hook (lambda () (linum-mode 1)))
 
+;; Not working apparently with emacs 22.2.1:
+;;(auto-raise-mode t)
 
 ;; Moves the cursor across "physical lines":
 ;; (finally deactivated, as the 'go to end of line' key was leading to the
@@ -329,7 +331,8 @@
 (global-set-key "\C-Q" 'isearch-forward)
 (global-set-key "\C-S" 'save-buffer)
 (global-set-key "\C-D" 'next-error)
-(global-set-key "\C-F" 'find-file)
+(global-set-key "\C-O" 'find-file)
+(global-set-key "\C-F" 'isearch-forward)
 
 (global-set-key "\M-k" 'kill-full-line)
 
@@ -410,16 +413,11 @@
 
 (global-hl-line-mode 1)
 
-(setq make-backup-files nil)
-
 (setq initial-major-mode 'text-mode)
 (setq default-major-mode 'text-mode)
 
 
-;; Save all backup file in this directory:
-(setq backup-directory-alist (quote ((".*" . "~/.emacs_backups/"))))
 
-										;
 ;; Show line-number in the mode line
 ;;(line-number-mode 1)
 
@@ -495,6 +493,37 @@
 (setq tool-bar-mode nil)
 
 (server-start)
+
+
+
+;; Back-up and autosave section.
+;; Taken from http://snarfed.org/space/gnu%20emacs%20backup%20files:
+
+;; Put autosave files (ie #foo#) in one place, *not*
+;; scattered all over the file system!
+(defvar autosave-dir
+ (concat "/tmp/emacs_autosaves/" (user-login-name) "/"))
+
+(make-directory autosave-dir t)
+
+(defun auto-save-file-name-p (filename)
+  (string-match "^#.*#$" (file-name-nondirectory filename)))
+
+(defun make-auto-save-file-name ()
+  (concat autosave-dir
+   (if buffer-file-name
+      (concat "#" (file-name-nondirectory buffer-file-name) "#")
+    (expand-file-name
+     (concat "#%" (buffer-name) "#")))))
+
+;; Put backup files (ie foo~) in one place too. (The backup-directory-alist
+;; list contains regexp=>directory mappings; filenames matching a regexp are
+;; backed up in the corresponding directory. Emacs will mkdir it if necessary.)
+(defvar backup-dir (concat "/tmp/emacs_backups/" (user-login-name) "/"))
+(setq backup-directory-alist (list (cons "." backup-dir)))
+
+
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
