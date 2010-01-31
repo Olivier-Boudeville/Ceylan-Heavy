@@ -1,6 +1,5 @@
 (setq load-path (cons "~/.emacs.d" load-path))
 
-
 ;; Compiles .el files newer than their .elc counterpart, or not having one:
 ;; One can also use M-x byte-compile-file to precompile .el files (ex: linum).
 ;; Warning: apparently, unless the .elc file is removed, changes will be
@@ -44,15 +43,37 @@
 (add-hook 'erlang-mode-hook 'my-erlang-mode-hook)
 
 (defun my-erlang-mode-hook ()   
-	(setq hs-special-modes-alist (cons '(erlang-mode    "^\\([a-z][a-zA-Z0-9_]*\\|'[^\n']*[^\\]'\\)\\s *(" nil "%"    erlang-end-of-clause) hs-special-modes-alist))   
+	   
 	(hs-minor-mode 1)   
-	(local-set-key [?\M-s] 'hs-toggle-hiding)   
-	(local-set-key [?\M-h] 'hs-hide-all)   
-	(local-set-key [?\M-u] 'hs-show-all)
-	(hs-hide-all)
+
 )
  
- 
+(message "<<<<<<######### init.el version 0 #########>>>>>>")
+
+;; Indentation:
+;; Starting from its second line, a multi-line statement should be
+;; indented of 2 characters from the beginning of line, not relatively
+;; to, say, the opening parenthesis which can be closo to the right edge
+;; of the line. 
+(setq c-offsets-alist '( 
+  ;; Otherwise parameters are aligned with the first, whereas we want a 
+  ;; fixed offset:
+  (arglist-cont-nonempty . 2)
+  (arglist-intro . 2)
+  )  
+)
+
+
+;; Support for C-like languages: 
+;; (customizations for all of c-mode, c++-mode, objc-mode, java-mode)
+(defun my-c-mode-common-hook ()
+  (setq cc-default-style "bsd")   
+  (c-set-offset 'substatement-open 0)
+)
+
+(add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
+(add-hook 'cc-mode-common-hook 'my-c-mode-common-hook)
+
 ;; Displaying of line number on the left:
 ;; (see also 'longlines')
 (require 'linum)
@@ -161,7 +182,10 @@
 ;; used to show a block was folded (anyway the 80-limit is shown by 
 ;; background color).
 (add-to-list 'default-frame-alist (cons 'width  88))
-(add-to-list 'default-frame-alist (cons 'height 45))
+
+;; Depends on the screen height:
+;;(add-to-list 'default-frame-alist (cons 'height 45))
+(add-to-list 'default-frame-alist (cons 'height 58))
 
 
 ;; Key section:
@@ -333,12 +357,14 @@
 (global-set-key "\C-D" 'next-error)
 (global-set-key "\C-O" 'find-file)
 (global-set-key "\C-F" 'isearch-forward)
+(global-set-key "\C-L" 'goto-line)
 
 (global-set-key "\M-k" 'kill-full-line)
 
 (global-set-key [M-right] 'next-buffer)
 (global-set-key [M-left]  'previous-buffer)
 
+(global-set-key [delete] 'delete-char) ;
 
 ;;(global-set-key "TAB" 'reindent-then-newline-and-indent)
 
@@ -419,7 +445,7 @@
 
 
 ;; Show line-number in the mode line
-;;(line-number-mode 1)
+(line-number-mode 1)
 
 ;; Show column-number in the mode line
 (column-number-mode 1)
@@ -549,3 +575,4 @@
  '(rst-level-5-face ((t (:background "#010" :foreground "#666"))))
  '(rst-level-6-face ((t (:background "#020" :foreground "#555"))))
  )
+ 
