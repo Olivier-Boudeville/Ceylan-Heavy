@@ -44,11 +44,10 @@
 
 (defun my-erlang-mode-hook ()   
 	   
-	(hs-minor-mode 1)   
 
 )
  
-(message "<<<<<<######### init.el version 0 #########>>>>>>")
+(message "<<<<<<######### init.el version 1.0 #########>>>>>>")
 
 ;; Indentation:
 ;; Starting from its second line, a multi-line statement should be
@@ -139,6 +138,8 @@
   (indent-region (point-min) (point-max) nil)
   )
 
+;;(add-hook 'find-file-hook 'indent-whole-buffer)
+;;(add-hook 'find-file-hook 'whitespace-cleanup)
 
 ;; No more question about clients being still there:
 (remove-hook 'kill-buffer-query-functions 'server-kill-buffer-query-function)
