@@ -303,7 +303,7 @@ prompted.  If the value is t the source is silently changed.")
 (defvar erlang-electric-commands
   '(erlang-electric-comma
     erlang-electric-semicolon
-    erlang-electric-gt)
+    erlang-electric-gt erlang-electric-newline)
   "*List of activated electric commands.
 
 The list should contain the electric commands which should be active.
@@ -337,7 +337,7 @@ inhibited.")
     erlang-electric-gt)
   "*Commands which can inhibit the next newline.")
 
-(defvar erlang-electric-semicolon-insert-blank-lines nil
+(defvar erlang-electric-semicolon-insert-blank-lines 1
   "*Number of blank lines inserted before header, or nil.
 
 This variable controls the behaviour of `erlang-electric-semicolon'
@@ -470,7 +470,7 @@ To activate the workaround, place the following in your `~/.emacs' file:
 (defvar erlang-indent-guard 2
   "*Indentation of Erlang guards.")
 
-(defvar erlang-argument-indent 2
+(defvar erlang-argument-indent nil
   "*Indentation of the first argument in a function call.
 When nil, indent to the column after the `(' of the
 function.")
@@ -3950,7 +3950,7 @@ Return nil if inside string, t if in a comment."
 			 (let ((previous (erlang-indent-find-preceding-expr))
 			       (stack-pos (nth 2 stack-top)))
 			   (if (>= previous stack-pos) stack-pos
-			     (- (+ previous erlang-argument-indent) 1))))
+			     (- (+ previous ) 1))))
 		   	(t
 		   	 (nth 2 stack-top))))
 		 (t 
@@ -4199,16 +4199,25 @@ This assumes that the preceding expression is either simple
   "Compute Erlang comment indentation.
 
 Used both by `indent-for-comment' and the Erlang specific indentation
-commands."
-  (cond ((looking-at "%%%") 0)
-	((looking-at "%%")
-	 (or (erlang-calculate-indent)
-	     (current-indentation)))
-	(t
-	 (save-excursion
-	   (skip-chars-backward " \t")
-	   (max (if (bolp) 0 (1+ (current-column)))
-		comment-column)))))
+commands.
+This version has been modified by Olivier Boudeville so that all 
+comment indentations are respected, namely comments starting with
+'%', '%%' or '%%%' are all indented as code, i.e. '%' is not set
+at current-column (48) and '%%%' at first column (0), they 
+behave like '%%'.
+"
+;;  (cond ((looking-at "%%%") 0)
+;;	((looking-at "%%")
+;;	 (or (erlang-calculate-indent)
+;;	     (current-indentation)))
+;;	(t
+;;	 (save-excursion
+;;	   (skip-chars-backward " \t")
+;;	   (max (if (bolp) 0 (1+ (current-column)))
+;;		comment-column)))))
+  (or (erlang-calculate-indent)
+	      (current-indentation))
+)
 
 ;;; Erlang movement commands
 
