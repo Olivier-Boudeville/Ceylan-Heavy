@@ -296,10 +296,10 @@ log_plug_option="--HTMLPlug"
 
 if [ $is_batch -eq 0 ] ; then
 	echo "
-					Running in batch mode, tests will be short and silent, only results are to be output."
+  Running in batch mode, tests will be short and silent, only results are to be output."
 else
 	echo "
-					Interactive tests will only need the enter key to be pressed one or more times. Be warned though that some tests might take a long time, and that some of them have no special output except a test result."
+  Interactive tests will only need the enter key to be pressed one or more times. Be warned though that some tests might take a long time, and that some of them have no special output except a test result."
 fi
 
 
@@ -313,12 +313,12 @@ if [ $use_cygwin -eq 1 ] ; then
 		is_online=0
 		network_option="--online"
 		echo "
-					Running in online mode, in-depth network testing enabled."
+  Running in online mode, in-depth network testing enabled."
 	else
 		is_online=1
 		network_option=""
 		echo "
-					No Internet connection detected, some network tests will be disabled."
+			No Internet connection detected, some network tests will be disabled."
 	fi
 
 else
@@ -327,7 +327,7 @@ else
 	is_online=0
 
 	echo "
-					Running in online mode, in-depth network testing enabled, supposing a direct connection to the Internet is available."
+  Running in online mode, in-depth network testing enabled, supposing a direct connection to the Internet is available."
 
 fi
 
@@ -398,17 +398,17 @@ DEBUG_INTERNAL "Space for test names = ${space_for_test_name}"
 
 if [ $is_batch -eq 0 ] ; then
 	echo "
-					Test results established on "`LANG=C date '+%A, %B %-e, %Y'`"\n\n" > ${test_log_file}
+			Test results established on "`LANG=C date '+%A, %B %-e, %Y'`"\n\n" > ${test_log_file}
 fi
 
 if [ $on_cygwin -eq 0 ] ; then
 	echo "
 
-					Library search path is: PATH='$PATH'" >> ${test_log_file}
+			 Library search path is: PATH='$PATH'" >> ${test_log_file}
 else
 	echo "
 
-					Library search path is: LD_LIBRARY_PATH='$LD_LIBRARY_PATH'" >> ${test_log_file}
+			 Library search path is: LD_LIBRARY_PATH='$LD_LIBRARY_PATH'" >> ${test_log_file}
 fi
 
 has_ldd=1
@@ -435,7 +435,7 @@ for m in ${tested_root_modules} ; do
 	playtest_local="${test_root}/$m/${playtest_local_file}"
 
 	printColor "
-					${term_offset}${term_primary_marker}Playing all tests of module '"`echo $m | sed 's|^./||1'`"': " $magenta_text $black_back
+	${term_offset}${term_primary_marker}Playing all tests of module '"`echo $m | sed 's|^./||1'`"': " $magenta_text $black_back
 
 	if [ -f "${playtest_local}" ] ; then
 		excluded_tests=""
@@ -461,7 +461,7 @@ for m in ${tested_root_modules} ; do
 		done
 
 		echo "
-					<Press enter to start testing module '"`echo $m | sed 's|./||'`"'>"
+				<Press enter to start testing module '"`echo $m | sed 's|./||'`"'>"
 		read $dummy
 		clear
 	fi
@@ -505,7 +505,7 @@ display_final_stats
 
 
 echo "
-					End of tests"
+  End of tests"
 
 
 LTDL_LIBRARY_PATH="$saved_ltdl_library_path"
