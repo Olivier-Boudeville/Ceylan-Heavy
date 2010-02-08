@@ -12,11 +12,11 @@
 
 
 ;; Disabled as is slowing emacs down way too much:
-(require 'rst)
-(setq auto-mode-alist
-      (append '(("\\.txt$"  . rst-mode)
-				("\\.rst$"  . rst-mode)
-				("\\.rest$" . rst-mode)) auto-mode-alist))
+;;(require 'rst)
+;;(setq auto-mode-alist
+;;      (append '(("\\.txt$"  . rst-mode)
+;;				("\\.rst$"  . rst-mode)
+;;				("\\.rest$" . rst-mode)) auto-mode-alist))
 
 
 ;; Automatically update the table of contents everytime you adjust a
@@ -27,48 +27,47 @@
 ;; Corresponds to conventions in demo-for-css-testing.rst:
 ;; (not correctly applied apparently, though)
 (setq rst-preferred-decorations '( (?= over-and-under 0)
-				   (?- over-and-under 0)
-				   (?= simple 0)
-				   (?- simple 0)
-				   (?. simple 0)
-				   (?_ simple 0)
-				   (?* simple 0)
-				   (?: simple 0)
-				   (?+ simple 0) ))
+								   (?- over-and-under 0)
+								   (?= simple 0)
+								   (?- simple 0)
+								   (?. simple 0)
+								   (?_ simple 0)
+								   (?* simple 0)
+								   (?: simple 0)
+								   (?+ simple 0) ))
 
 
 ;; Erlang support:
 (require 'erlang-start)
+(setq auto-mode-alist
+      (append '(("\\.escript$"  . erlang-mode)) auto-mode-alist))
 
 (add-hook 'erlang-mode-hook 'my-erlang-mode-hook)
 
-(defun my-erlang-mode-hook ()   
-	   
+(defun my-erlang-mode-hook () )
 
-)
- 
 (message "<<<<<<######### init.el version 1.0 #########>>>>>>")
 
 ;; Indentation:
 ;; Starting from its second line, a multi-line statement should be
 ;; indented of 2 characters from the beginning of line, not relatively
 ;; to, say, the opening parenthesis which can be closo to the right edge
-;; of the line. 
-(setq c-offsets-alist '( 
-  ;; Otherwise parameters are aligned with the first, whereas we want a 
-  ;; fixed offset:
-  (arglist-cont-nonempty . 2)
-  (arglist-intro . 2)
-  )  
-)
+;; of the line.
+(setq c-offsets-alist '(
+						;; Otherwise parameters are aligned with the first, whereas we want a
+						;; fixed offset:
+						(arglist-cont-nonempty . 2)
+						(arglist-intro . 2)
+						)
+	  )
 
 
-;; Support for C-like languages: 
+;; Support for C-like languages:
 ;; (customizations for all of c-mode, c++-mode, objc-mode, java-mode)
 (defun my-c-mode-common-hook ()
-  (setq cc-default-style "bsd")   
+  (setq cc-default-style "bsd")
   (c-set-offset 'substatement-open 0)
-)
+  )
 
 (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
 (add-hook 'cc-mode-common-hook 'my-c-mode-common-hook)
@@ -141,26 +140,24 @@
 ;;(add-hook 'find-file-hook 'indent-whole-buffer)
 ;;(add-hook 'find-file-hook 'whitespace-cleanup)
 
-;; No more question about clients being still there:
-(remove-hook 'kill-buffer-query-functions 'server-kill-buffer-query-function)
- 
- 
+
+
 (defun kill-full-line ()
- 	"Kills the current line, regardless of the current cursor position. It can be then yanked back with M-y."
-	(interactive)
-	(let ((orig (point)))
+  "Kills the current line, regardless of the current cursor position. It can be then yanked back with M-y."
+  (interactive)
+  (let ((orig (point)))
 	(beginning-of-line)
 	(let ((beg (point)))
-	(forward-line 1)
-	(delete-region beg (point)))
+	  (forward-line 1)
+	  (delete-region beg (point)))
 	;; If line is shorter than previous line, then just go to end of line:
 	(end-of-line)
 	(let ((new (point)))
-	(if (< orig new)
-	(goto-char orig))))
-)
+	  (if (< orig new)
+		  (goto-char orig))))
+  )
 
- 
+
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward)
 (setq uniquify-after-kill-buffer-p 1)
@@ -180,7 +177,7 @@
 ;; 85 width would already allow to display correctly even files with
 ;; 9999 lines, knowing that the leftmost column for line numbers uses
 ;; some place. Selecting 88 instead to leave some room to the ... sign
-;; used to show a block was folded (anyway the 80-limit is shown by 
+;; used to show a block was folded (anyway the 80-limit is shown by
 ;; background color).
 (add-to-list 'default-frame-alist (cons 'width  88))
 
@@ -191,7 +188,7 @@
 
 ;; Key section:
 
-  
+
 (defun default-fone ()
   (interactive)
   (message "Default for F1")
@@ -353,8 +350,14 @@
 
 (global-set-key "\C-Z" 'undo)
 (global-set-key "\C-P" 'recompile)
-(global-set-key "\C-Q" 'isearch-forward)
-(global-set-key "\C-S" 'save-buffer)
+
+;; C-s must be dedicated to search, not save, as repeated search will use
+;; it anyway:
+;;(global-set-key "\C-S" 'save-buffer)
+(global-set-key "\C-S" 'isearch-forward)
+
+(global-set-key "\C-Q" 'save-buffer)
+
 (global-set-key "\C-D" 'next-error)
 (global-set-key "\C-O" 'find-file)
 (global-set-key "\C-F" 'isearch-forward)
@@ -365,7 +368,7 @@
 (global-set-key [M-right] 'next-buffer)
 (global-set-key [M-left]  'previous-buffer)
 
-(global-set-key [delete] 'delete-char) ;
+(global-set-key [delete] 'delete-char)	;
 
 ;;(global-set-key "TAB" 'reindent-then-newline-and-indent)
 
@@ -377,34 +380,34 @@
 ;; make compile window disappear after successful compilation:
 (setq compilation-finish-function
       (lambda (buf str)
-	(if (string-match "*Compilation*" (buffer-name buf))
-	    (if (string-match "abnormally" str)
-		(message "There were errors :-(")
-	      ;; No errors, make the compilation window go away in 2 seconds:
-	      (run-at-time 2 nil
-			   (lambda (buf)
-			     (delete-windows-on buf)
-			     (bury-buffer buf))
-			   buf)
-	      (message "No errors :-)")))))
- 
+		(if (string-match "*Compilation*" (buffer-name buf))
+			(if (string-match "abnormally" str)
+				(message "There were errors :-(")
+			  ;; No errors, make the compilation window go away in 2 seconds:
+			  (run-at-time 2 nil
+						   (lambda (buf)
+							 (delete-windows-on buf)
+							 (bury-buffer buf))
+						   buf)
+			  (message "No errors :-)")))))
+
 ;;my-compile is smarter about how to display the new buffer
 (defun display-buffer-by-splitting-largest (buffer force-other-window)
   "Display buffer BUFFER by splitting the largest buffer vertically, except if
   there is already a window for it."
   (or (get-buffer-window buffer)
-      (let ((new-win 
-	     (with-selected-window (get-largest-window)
-	       (split-window-vertically))))
-	(set-window-buffer new-win buffer)
-	new-win)))
- 
+      (let ((new-win
+			 (with-selected-window (get-largest-window)
+			   (split-window-vertically))))
+		(set-window-buffer new-win buffer)
+		new-win)))
+
 (defun my-compile ()
   "Ad-hoc display of compilation buffer."
   (interactive)
   (let ((display-buffer-function 'display-buffer-by-splitting-largest))
     (call-interactively 'compile)))
- 
+
 ;; Misc compilation settings:
 (setq-default
  compile-command "make"
@@ -460,19 +463,39 @@
 (set-mouse-color "white")
 
 
-(defun mouse-search-forward (begin end)   
-	(interactive (list (point) (mark)))  
-	(let ((text (filter-buffer-substring begin end nil t)))     
-	(goto-char (max begin end))     
-	(let ((found-pos (search-forward text nil t)))       
-	(if (not found-pos)           
-	(progn (goto-char begin) (error "not found")) 
-	(progn (goto-char found-pos) (set-mark (- found-pos (length text)))))))
+(defun mouse-search-forward (begin end)
+  (interactive (list (point) (mark)))
+  (let ((text (filter-buffer-substring begin end nil t)))
+  (goto-char (max begin end))
+  (let ((found-pos (search-forward text nil t)))
+	(if (not found-pos)
+		(progn (goto-char (point-min)) 
+		       (let ((wrapped-found-pos (search-forward text nil t)))
+			   (goto-char (- wrapped-found-pos (length text)))
+			   (set-mark wrapped-found-pos)))
+	    (progn (goto-char found-pos) (set-mark (- found-pos (length text)))))))
 
-) 
+  ;; (interactive)
+  ;; (yank-pop (isearch-forward (kill-ring-save begin end)))
+)
 
-(define-key global-map [(down-mouse-3)] nil) 
+
+;;(defun mouse-search-backward (begin end)
+;;  (interactive (list (point) (mark)))
+;;  (let ((text (filter-buffer-substring begin end nil t)))
+;; (goto-char (max begin end))
+;;  (let ((found-pos (search-backward text nil t)))
+;;	(if (not found-pos)
+;;		(progn (goto-char begin) (error "not found"))
+;;	  (progn (goto-char found-pos) (set-mark (- found-pos (length text)))))))
+;; )
+
+;; For the mouse wheel:
+(mwheel-install)
+
+(define-key global-map [(down-mouse-3)] nil)
 (define-key global-map [(mouse-3)] 'mouse-search-forward)
+;;(define-key global-map [(shift mouse-3)] 'mouse-search-backward)
 
 
 ;; Set foreground and background
@@ -521,6 +544,10 @@
 
 (server-start)
 
+;; No more question about clients being still there:
+;; (must be *after* server-start) 
+(remove-hook 'kill-buffer-query-functions 'server-kill-buffer-query-function)
+
 
 
 ;; Back-up and autosave section.
@@ -529,7 +556,7 @@
 ;; Put autosave files (ie #foo#) in one place, *not*
 ;; scattered all over the file system!
 (defvar autosave-dir
- (concat "/tmp/emacs_autosaves/" (user-login-name) "/"))
+  (concat "/tmp/emacs_autosaves/" (user-login-name) "/"))
 
 (make-directory autosave-dir t)
 
@@ -538,10 +565,10 @@
 
 (defun make-auto-save-file-name ()
   (concat autosave-dir
-   (if buffer-file-name
-      (concat "#" (file-name-nondirectory buffer-file-name) "#")
-    (expand-file-name
-     (concat "#%" (buffer-name) "#")))))
+		  (if buffer-file-name
+			  (concat "#" (file-name-nondirectory buffer-file-name) "#")
+			(expand-file-name
+			 (concat "#%" (buffer-name) "#")))))
 
 ;; Put backup files (ie foo~) in one place too. (The backup-directory-alist
 ;; list contains regexp=>directory mappings; filenames matching a regexp are
@@ -576,4 +603,3 @@
  '(rst-level-5-face ((t (:background "#010" :foreground "#666"))))
  '(rst-level-6-face ((t (:background "#020" :foreground "#555"))))
  )
- 
