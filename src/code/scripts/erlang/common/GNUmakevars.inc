@@ -1,7 +1,7 @@
 # Prerequisite: COMMON_TOP must be set.
 
 
-# Project section.
+# Project section.
 
 # PROJECT_NAME should be defined on a per-project basis.
 ifndef PROJECT_NAME
@@ -144,10 +144,11 @@ DISTRIBUTED_NODE_OPT := -name $(VM_NAME)@$(FQDN) -setcookie $(PROJECT_NAME)
 
 STARTUP_FUNCTION := run
 
-BEAM_DIRS += . $(COMMON_BEAM)
+BEAM_DIRS += . $(COMMON_BEAM)/data-management $(COMMON_BEAM)/maths \
+		   $(COMMON_BEAM)/utils
 
 
-ERL_LAUNCHER = $(COMMON_SRC)/launch-erl.sh
+ERL_LAUNCHER = $(COMMON_SRC)/scripts/launch-erl.sh
 
 
 # Add '+native' if native-code compilation is supported:
@@ -156,7 +157,7 @@ ERLANG_COMPILER_OPT := -b beam $(INC) -v -W$(WARNING_LEVEL)  \
 
 
 # +v (verbose) option removed, as only active if the interpreter has been
-# compiled in debug mode (otherwise a warning is displayed at each execution).
+# compiled in debug mode (otherwise a warning is displayed at each execution).
 # (note: variable generally not used, as using the ERL_LAUNCHER script instead)
 ERLANG_INTERPRETER_OPT := -pz $(BEAM_DIRS) $(DISTRIBUTED_NODE_OPT)
 
