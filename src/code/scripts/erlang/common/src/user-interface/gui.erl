@@ -34,8 +34,131 @@
 -include("polygon.hrl").
 
 
-% Rendering of GUI elements.
+% Rendering of GUI elements, based on the gs module.
+
+
+
+% Color-related operations.
+-export([ get_colors/0, get_color/1 ]).
+
+
+
+% Line-related operations.
 -export([ draw_line/3, draw_line/4, draw_lines/2, draw_lines/3,
-		draw_cross/2, draw_cross/3, draw_polygon/2 ]).
+		  draw_cross/2, draw_cross/3, draw_cross/4, draw_labelled_cross/4, 
+		  draw_polygon/2 ]).
 
 
+
+
+% Color section.
+
+% Here colors are defined as a triplet of color components: {R,G,B}.
+% For example {0,0,0} is black and {255,255,255} is white. 
+% GS-predefined names (red, green, blue, white, black, grey, or yellow) are not
+% used.
+
+% Returns the list of known {color_name,ColorDefinition} associations.
+% Taken from http://www.december.com/html/spec/color16.html.
+get_colors() ->
+	[
+	  {aqua,{0,255,255}}, 	
+	  {black,{0,0,0}}, 	
+	  {blue,{0,0,255}}, 	
+	  {fuchsia,{255,0,255}}, 
+	  {gray,{128,128,128}}, 	
+	  {green,{0,128,0}}, 	
+	  {lime,{0,255,0}}, 	
+	  {maroon,{128,0,0}}, 
+	  {navy,{0,0,128}}, 	
+	  {olive,{128,128,0}}, 	
+	  {purple,{128,0,128}}, 	
+	  {red,{255,0,0}}, 
+	  {silver,{192,192,192}}, 	
+	  {teal,{0,128,128}}, 	
+	  {white,{255,255,255}}, 	
+	  {yellow,{255,255,0}}
+	].
+
+
+
+% Returns the RGB definition of the color specified by name (atom).
+get_color(ColorName) ->
+
+	case proplists:get_value( ColorName, get_colors() ) of
+		
+		undefined ->
+			throw( {unknown_color,ColorName} );
+		
+		Color ->
+			Color
+
+	end.
+
+
+
+
+% Line section.
+
+%{R,G,B}, or a the predefined name red, green, blue, white, black, grey, or
+% yellow.
+% For example {0,0,0} is black and {255,255,255} is white. 
+
+% Draws a line between specified two points in specified canvas.
+draw_line( P1, P2, Canvas ) ->
+	gs:create( line, Canvas, [ {coords, [P1,P2]} ] ).	
+
+
+% Draws a line between specified two points in specified canvas, with specified
+% color.
+draw_line( P1, P2, Color, Canvas ) ->
+	gs:create( line, Canvas, [ {coords, [P1,P2]}, {fg,Color} ] ).
+
+
+
+% Draws lines between specified list of points, in specified canvas.
+draw_lines( Points, Canvas ) ->
+	gs:create( line, Canvas, [ {coords, Points} ] ).	
+
+
+% Draws lines between specified list of points in specified canvas, with 
+% specified color.
+draw_lines( Points, Color, Canvas ) ->
+	gs:create( line, Canvas, [ {coords, Points}, {fg,Color} ] ).
+
+
+
+% Draws an upright cross at specified location (2D point), with default edge
+% length.
+draw_cross( Location, Canvas ) ->
+	draw_cross( Location, _DefaultEdgeLength=4, Canvas ).
+
+
+% Draws an upright cross at specified location, with specified edge length.
+draw_cross( _Location = {X,Y}, EdgeLength, Canvas ) ->
+	Offset = EdgeLength div 2,
+	% The last pixel of a line is not drawn, hence the +1:
+	draw_line( {X-Offset,Y}, {X+Offset+1,Y}, Canvas ),    
+	draw_line( {X,Y-Offset}, {X,Y+Offset+1}, Canvas ).	
+
+
+% Draws an upright cross at specified location, with specified edge length
+% and color.
+draw_cross( _Location = {X,Y}, EdgeLength, Color, Canvas ) ->
+	Offset = EdgeLength div 2,
+	% The last pixel of a line is not drawn, hence the +1:
+	draw_line( {X-Offset,Y}, {X+Offset+1,Y}, Color, Canvas ),    
+	draw_line( {X,Y-Offset}, {X,Y+Offset+1}, Color, Canvas ).
+
+
+% Draws an upright cross at specified location, with specified edge length
+% and companion label.
+draw_labelled_cross( Location={X,Y}, EdgeLength, LabelText, Canvas ) ->
+	draw_cross( Location, EdgeLength, Canvas ),
+	% Text a little above and on the right:
+	gs:create( text, Canvas,[ {coords,[{X+4,Y-12}]},
+                  {text,LabelText}]).
+
+
+draw_polygon(_,_) ->
+	ok.

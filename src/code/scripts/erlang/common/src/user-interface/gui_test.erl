@@ -1,0 +1,130 @@
+% Copyright (C) 2003-2010 Olivier Boudeville
+%
+% This file is part of the Ceylan Erlang library.
+%
+% This library is free software: you can redistribute it and/or modify
+% it under the terms of the GNU Lesser General Public License or
+% the GNU General Public License, as they are published by the Free Software
+% Foundation, either version 3 of these Licenses, or (at your option) 
+% any later version.
+% You can also redistribute it and/or modify it under the terms of the
+% Mozilla Public License, version 1.1 or later.
+%
+% This library is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+% GNU Lesser General Public License and the GNU General Public License
+% for more details.
+%
+% You should have received a copy of the GNU Lesser General Public
+% License, of the GNU General Public License and of the Mozilla Public License
+% along with this library.
+% If not, see <http://www.gnu.org/licenses/> and
+% <http://www.mozilla.org/MPL/>.
+%
+% Author: Olivier Boudeville (olivier.boudeville@esperide.com)
+
+
+% Unit tests for the GUI toolbox.
+% See the gui.erl tested module.
+-module(gui_test).
+
+
+-export([ run/0 ]).
+
+-define(Tested_module,gui).
+
+
+get_main_window_width() ->
+	800.
+
+get_main_window_height() ->
+	600.
+
+
+get_canvas_width() ->
+	640.
+
+get_canvas_height() ->
+	480.
+
+
+
+init_test_gui() ->
+
+	WindowSize = [ {width,get_main_window_width()}, 
+				   {height,get_main_window_height()} ],
+
+	GsId = gs:start(),
+
+	MainWin = gs:window( GsId, WindowSize ++ [  
+								{title,"GUI Test"},
+								{bg,gui:get_color(red)} ]),
+							   	
+	Canvas = gs:create( canvas, MainWin, [ 
+		{hscroll,bottom}, {vscroll,left},
+	    {width,get_canvas_width()},
+		{height,get_canvas_height()},
+		% Centers canvas:
+	    {x,(get_main_window_width()-get_canvas_width()) / 2},
+		{y,(get_main_window_height()-get_canvas_height()) / 2},
+        {bg,gui:get_color(lime)}
+        %{scrollregion, {100,200,30,200}}
+										 ] ),
+	gs:config( MainWin, WindowSize ),
+
+	create_test_gui( MainWin, Canvas ),
+
+    % Sets the GUI to visible:
+	gs:config( MainWin, {map,true} ),
+
+	gui_main_loop( MainWin, Canvas ),
+
+	gs:stop().
+
+
+
+create_test_gui( _MainWin, Canvas ) ->
+
+	P1 = {20,10},
+	P2 = {100,200},
+
+	gui:draw_line( P1, P2, Canvas ),
+	
+	P3 = {300,50},
+	Purple = gui:get_color(purple),
+
+	gui:draw_line( P2, P3, Purple, Canvas ),
+	P4 = {400,250},
+
+	gui:draw_lines( [P1,P3,P4], gui:get_color(blue), Canvas ),
+	
+	gui:draw_cross( {36,26}, _FirstEdgeLength=6, gui:get_color(red), Canvas ),
+	
+	gui:draw_labelled_cross( {36,86}, _SecondEdgeLength=4, "Cross label", Canvas ).
+ 
+
+gui_main_loop( MainWin, Canvas ) ->
+	
+	receive
+        
+		{gs,_Pair,destroy,[],[]} ->
+			io:format( "Quitting GUI test.~n" ),
+			erlang:halt();
+		
+		X ->
+            io:format("GUI test got event '~w' (ignored).~n",[X]),
+			gui_main_loop( MainWin, Canvas )
+	
+	end.
+	
+
+run() ->
+
+	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
+
+	init_test_gui(),
+		  
+	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
+	erlang:halt().
+
