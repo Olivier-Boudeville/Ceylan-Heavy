@@ -25,14 +25,14 @@
 % Author: Olivier Boudeville (olivier.boudeville@esperide.com)
 
 
-% Unit tests for the basic utils toolbox.
-% See the basic_utils.erl tested module.
--module(basic_utils_test).
+% Unit tests for the linear 2D facilities.
+% See the  tested module.
+-module(linear_2D_test).
 
 
 -export([ run/0 ]).
 
--define(Tested_module,basic_utils).
+-define(Tested_module,linear_2D).
 
 
 
@@ -40,30 +40,30 @@ run() ->
 
 	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
 
-	InitialTimestamp = basic_utils:get_timestamp(),
+	InitialTimestamp = linear_2D:get_timestamp(),
 	
 	io:format( "   Timestamp is ~s.~n", [ 
-		basic_utils:get_textual_timestamp(InitialTimestamp) ] ),
+		linear_2D:get_textual_timestamp(InitialTimestamp) ] ),
 				
 	io:format( "   Output with term_toString : ~s, ~s and ~s.~n", 
-		[ basic_utils:term_toString(an_atom), basic_utils:term_toString([1,2]), 
-			basic_utils:term_toString("A string")	]),
+		[ linear_2D:term_toString(an_atom), linear_2D:term_toString([1,2]), 
+			linear_2D:term_toString("A string")	]),
 	
 	io:format( "   Converting an integer to a string: ~s.~n",
-		[ basic_utils:integer_to_string(3245) ] ),		
+		[ linear_2D:integer_to_string(3245) ] ),		
 
-	basic_utils:checkpoint(1),
+	linear_2D:checkpoint(1),
 	
-	basic_utils:start_random_source( default_seed ),
+	linear_2D:start_random_source( default_seed ),
 	
-	RandomList = [ basic_utils:get_random_value(5) || _X <- lists:seq(1,15) ],
+	RandomList = [ linear_2D:get_random_value(5) || _X <- lists:seq(1,15) ],
 
-	basic_utils:stop_random_source(),
+	linear_2D:stop_random_source(),
 	
-	basic_utils:checkpoint(2),
+	linear_2D:checkpoint(2),
 	
 	io:format( "   Current module being used as random source: ~w.~n",
-		[basic_utils:get_random_module_name()] ),
+		[linear_2D:get_random_module_name()] ),
 			
 	io:format( "   A list of integer random values between 1 and 5 "
 		"(both included): ~w.~n", [RandomList] ),
@@ -79,7 +79,7 @@ run() ->
 	
 	GetIndex = 3,
 	
-	GetValue = basic_utils:get_element_at(L,GetIndex),
+	GetValue = linear_2D:get_element_at(L,GetIndex),
 	io:format( "   Getting item #~B of list ~w: ~B.~n", [GetIndex,L,GetValue] ),
 	
 	13 = GetValue,
@@ -88,11 +88,11 @@ run() ->
 	%OutOfBoundsIndex = 0,
 	%OutOfBoundsIndex = 100,
 	%io:format( "   Getting item #~B of list ~w: ~B.~n", [OutOfBoundsIndex,L,
-	%	basic_utils:get_element_at(L,OutOfBoundsIndex) ] ),    
+	%	linear_2D:get_element_at(L,OutOfBoundsIndex) ] ),    
 	
 	RemoveIndex = 3,
 	
-	ShortenList = basic_utils:remove_element_at( L, RemoveIndex ),
+	ShortenList = linear_2D:remove_element_at( L, RemoveIndex ),
 	
 	io:format( "   List obtained after having removed item #~B of list ~w: "
 		" ~w.~n", [RemoveIndex,L,ShortenList] ),
@@ -107,19 +107,19 @@ run() ->
 	%OutOfBoundsIndex = 100,
 	%io:format( "   List obtained after having removed item #~B of list ~w: "
 	%	" ~w.~n", [OutOfBoundsIndex,L,
-	%	basic_utils:remove_element_at( L, OutOfBoundsIndex )] ),
+	%	linear_2D:remove_element_at( L, OutOfBoundsIndex )] ),
 
 	io:format( "   List obtained after having uniformly permuted list ~w: "
-		" ~w.~n", [L,basic_utils:random_permute(L)] ),
+		" ~w.~n", [L,linear_2D:random_permute(L)] ),
 
 	io:format( "   List obtained after having uniformly permuted list ~w "
-		"(again): ~w.~n", [L,basic_utils:random_permute(L)] ),
+		"(again): ~w.~n", [L,linear_2D:random_permute(L)] ),
 
 	L1 = [1,2,3,4,2],
 	
 	L2 = [2,3],
 	
-	Subtracted = basic_utils:subtract_all_duplicates( L1, L2 ),  
+	Subtracted = linear_2D:subtract_all_duplicates( L1, L2 ),  
 	
 	io:format( "   Displaying the subtraction with duplicates removal "
 		"of ~w by ~w: ~w.~n", [ L1, L2, Subtracted ] ),
@@ -127,7 +127,7 @@ run() ->
 	[1,4] = Subtracted, 	
 	
 	UnregisteredName = test_non_registered,
-	try basic_utils:get_registered_pid_for( UnregisteredName ) of
+	try linear_2D:get_registered_pid_for( UnregisteredName ) of
 	
 		_Anything ->
 			throw( test_should_have_failed )
@@ -141,9 +141,9 @@ run() ->
 	
 	RegisteredName = test_registered,
 	PidToRegister = self(),
-	basic_utils:register_as( PidToRegister, RegisteredName, global_only ),
+	linear_2D:register_as( PidToRegister, RegisteredName, global_only ),
 	
-	try basic_utils:get_registered_pid_for( RegisteredName ) of
+	try linear_2D:get_registered_pid_for( RegisteredName ) of
 	
 		PidToRegister ->
 			ok
@@ -159,7 +159,7 @@ run() ->
 	ListOfStrings = [ "Hello", "World", "Vampire" ],
 		
 	io:format( "   Displaying list ~p as a string:~n~s~n", 
-		[ ListOfStrings, basic_utils:string_list_to_string(ListOfStrings) ] ),	
+		[ ListOfStrings, linear_2D:string_list_to_string(ListOfStrings) ] ),	
 		
 		
 	LongLine = "This is a long line to test the paragraph formatting.",
@@ -170,7 +170,7 @@ run() ->
 	io:format( "   Displaying text '~s' once formatted "
 		"for a width of ~B:~n~p~n",
 		[LongLine,TargetWidth,
-			basic_utils:format_text_for_width(LongLine,TargetWidth) ] ),
+			linear_2D:format_text_for_width(LongLine,TargetWidth) ] ),
 
 
 	JustWideEnoughLine = "<0.33.0>",
@@ -181,26 +181,26 @@ run() ->
 	io:format( "   Displaying text '~s' once formatted "
 		"for a width of ~B:~n~p~n",
 		[JustWideEnoughLine,NewTargetWidth,
-			basic_utils:format_text_for_width( JustWideEnoughLine,
+			linear_2D:format_text_for_width( JustWideEnoughLine,
 				NewTargetWidth) ] ),
 	
 	
 	FirstTestString = "Hello world!",
 	
 	io:format( "   Determining whether '~p' is a string: ~w.~n",
-		[ FirstTestString, basic_utils:is_string(FirstTestString) ] ),
+		[ FirstTestString, linear_2D:is_string(FirstTestString) ] ),
 			 	
 				
 	SecondTestString = [ $o, [ $s, $d ], $l ],
 	
 	io:format( "   Determining whether '~p' is a string: ~w.~n",
-		[ SecondTestString, basic_utils:is_string(SecondTestString) ] ),
+		[ SecondTestString, linear_2D:is_string(SecondTestString) ] ),
 	
 			 	
 	ThirdTestString = [ $e, 1, 2, $r ],
 	
 	io:format( "   Determining whether '~p' is a string: ~w.~n",
-		[ ThirdTestString, basic_utils:is_string(ThirdTestString) ] ),
+		[ ThirdTestString, linear_2D:is_string(ThirdTestString) ] ),
 			 	
 	FirstVersion  = {0,0,0},
 	SecondVersion = {0,0,1},
@@ -208,20 +208,20 @@ run() ->
 	FourthVersion = {1,0,0},
 	FifthVersion  = {1,1,1},
 					
-	first_bigger = basic_utils:compare_versions( SecondVersion, FirstVersion),
-	first_bigger = basic_utils:compare_versions( ThirdVersion, SecondVersion),
-	first_bigger = basic_utils:compare_versions( FifthVersion, FirstVersion),
+	first_bigger = linear_2D:compare_versions( SecondVersion, FirstVersion),
+	first_bigger = linear_2D:compare_versions( ThirdVersion, SecondVersion),
+	first_bigger = linear_2D:compare_versions( FifthVersion, FirstVersion),
 
-	second_bigger = basic_utils:compare_versions( FirstVersion, FourthVersion),
-	second_bigger = basic_utils:compare_versions( ThirdVersion, FourthVersion),
-	second_bigger = basic_utils:compare_versions( SecondVersion, ThirdVersion),
+	second_bigger = linear_2D:compare_versions( FirstVersion, FourthVersion),
+	second_bigger = linear_2D:compare_versions( ThirdVersion, FourthVersion),
+	second_bigger = linear_2D:compare_versions( SecondVersion, ThirdVersion),
 	
-	equal = basic_utils:compare_versions( FirstVersion, FirstVersion ),
-	equal = basic_utils:compare_versions( ThirdVersion, ThirdVersion ),
-	equal = basic_utils:compare_versions( FifthVersion, FifthVersion ),
+	equal = linear_2D:compare_versions( FirstVersion, FirstVersion ),
+	equal = linear_2D:compare_versions( ThirdVersion, ThirdVersion ),
+	equal = linear_2D:compare_versions( FifthVersion, FifthVersion ),
 	
 	io:format( "   Comparisons of versions like ~s succeeded.~n", 
-		[ basic_utils:version_to_string(ThirdVersion) ] ),
+		[ linear_2D:version_to_string(ThirdVersion) ] ),
 		  
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().

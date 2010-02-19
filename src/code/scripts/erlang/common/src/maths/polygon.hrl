@@ -23,46 +23,25 @@
 % <http://www.mozilla.org/MPL/>.
 %
 % Author: Olivier Boudeville (olivier.boudeville@esperide.com)
-% Creation date: August 30, 2007.
 
 
-% Gathering of various convenient facilities.
-% See fsm_utils_test.erl for the corresponding test.
--module(fsm_utils).
+% Describes a polygon, convex or not, simple or not.
+-record( polygon, {
+
+		   % List of points:
+		   vertices = [],
+
+		   % Rendering information, if any:
+		   % (can be for example: [ {edge_color,black}, {fill_color,grey} ],
+		   % edge_color describing the color for an edge and fill_color the
+		   % color of the inside)	
+		   rendering = undefined,
 
 
--export([ create_blank_fsm_state/0, setFsmAttribute/3, getFsmAttribute/2 ]).
+		   % Bounding-box information:
+		   % (can be for example: {disc,Center,Radius})
+		   bounding_box = undefined
 
+		  } 
 
-
-
-% Approximate average attribute count for a given FSM state instance.
--define(FSMAttributeCountUpperBound,5).
-
-
-% Creates an attribute table appropriate to store a FSM state.
-% setFsmAttribute, getFsmAttribute and getFsmAttr are to be used with these
-% variables too.
-create_blank_fsm_state() ->
-	hashtable:new( ?FSMAttributeCountUpperBound ).
-
-
-% Sets specified FSM state attribute.
-setFsmAttribute(FsmState,AttributeName,AttributeValue) ->
-	hashtable:addEntry( AttributeName, AttributeValue, FsmState ).
-
-
-% Retrieves specified FSM state attribute.
-% Return either the value, if the attribute is found, or 
-% { attribute_not_found, AttributeName }.			
-getFsmAttribute(FsmState,AttributeName) ->
-	case hashtable:lookupEntry( AttributeName, FsmState) of
-		
-		undefined ->
-			{ attribute_not_found, AttributeName } ;
-			
-		{value,Value} ->
-			Value
-			
-	end.
-				
+	   ).
