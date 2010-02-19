@@ -39,28 +39,10 @@
 
 	
 % Operations on vectors:
--export([ vectorize/2, square_magnitude( _V={X,Y} ) ->
-	X*X+Y*Y.
+-export([ vectorize/2, square_magnitude/1, magnitude/1, scale/2, make_unit/1 ]).
 
 
-% Returns the magnitude of the specified vector.
-magnitude( V ) ->
-	math:sqrt( square_magnitude(V) ).
 
-
-% Scales specified vector of specified factor.
-scale( _V={X,Y}, Factor ) ->
-	{Factor*X,Factor*Y}.
-
-
-% Returns the specified vector with an unit length (magnitude of 1):
-% (epsilon-based test for null vectors with floating-point coordinates could
-% be done here).
-make_unit( {0,0} ) ->
-	throw( cannot_make_null_vector_unit );
-
-make_uni ]).
-	
 	
 
 % Point section.
@@ -87,7 +69,7 @@ distance( P1, P2 ) ->
 % of the vector that would result from a regular 3D cross product of the input
 % vectors, taking their Z values implicitly as 0.
 cross_product( {X1,Y1}, {X2,Y2} ) ->
-	X1*Y2 - Y1*X1.
+	X1*Y2 - Y1*X2.
 
 
 % Returns a point (or vector) whose coordinates have been rounded to nearest
@@ -105,7 +87,7 @@ get_integer_center( P1, P2 ) ->
 % Returns a vertex corresponding the middle of the two specified vertices,
 % returned with possibly floating-point coordinates.
 get_center( {X1,Y1}, {X2,Y2} ) ->
-	{ (X1+X2)/2 ), (Y1+Y2)/2 }.
+	{ (X1+X2)/2, (Y1+Y2)/2 }.
 
 
 
