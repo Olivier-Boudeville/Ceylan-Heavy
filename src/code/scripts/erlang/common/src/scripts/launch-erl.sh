@@ -254,7 +254,16 @@ command="${command} ${background_opt}"
 #echo "$0 running final command: ${command}" > command.txt
 
 ${command}
-pid=$!
+res=$?
+
+if [ ! $res -eq 0 ] ; then
+
+	echo "Command failed, with error result $res." 1>&2
+	exit $res
+
+fi
+
+#pid=$!
 
 # Commented out, as pid never set:
 #if [ $in_background -eq 0 ] ; then
