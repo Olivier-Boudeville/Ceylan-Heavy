@@ -37,6 +37,9 @@
 -export([ square_distance/2, distance/2, 
 		  cross_product/2, roundify/1, get_integer_center/2, get_center/2 ]).
 
+% Operations on set of points:
+-export([ compute_smallest_enclosing_rectangle/1,
+		  compute_max_overall_distance/1, compute_convex_hull/1 ]).
 	
 % Operations on vectors:
 -export([ vectorize/2, square_magnitude/1, magnitude/1, scale/2, make_unit/1 ]).
@@ -89,6 +92,174 @@ get_integer_center( P1, P2 ) ->
 get_center( {X1,Y1}, {X2,Y2} ) ->
 	{ (X1+X2)/2, (Y1+Y2)/2 }.
 
+
+
+
+% Section for sets of points.
+
+
+% Computes the smallest rectangle that encloses the specified list of points.
+% Returns { TopLeft, BottomRight }.
+compute_smallest_enclosing_rectangle( Points ) ->
+	compute_smallest_enclosing_rectangle( Points, undefined, undefined ).
+
+
+compute_smallest_enclosing_rectangle( [], TopLeft, BottomRight ) ->
+	{ TopLeft, BottomRight };
+
+compute_smallest_enclosing_rectangle( [P|Others], undefined, undefined ) ->
+	% First found initializes best, knowing at least two points are expected:
+	compute_smallest_enclosing_rectangle( Others, _TopLeft=P, _BottomRight=P );
+
+compute_smallest_enclosing_rectangle( [{X,Y}|Others], {Xt,Yt}, {Xb,Yb} ) ->
+	Xmin = erlang:min( X, Xt ),
+	Ymin = erlang:min( Y, Yt ),
+	Xmax = erlang:max( X, Xb ),
+	Ymax = erlang:max( Y, Yb ),											
+	compute_smallest_enclosing_rectangle( Others, {Xmin,Ymin}, {Xmax,Ymax} ).
+
+
+% Computes the maximum distance between two points in the specified list
+% of points.
+% Returns {P1,P2,square_distance(P1,P2)} so that (square) distance is maximal.
+% We ensure that each internal edge is examined only once: when the distance
+% between a given vertex V and all other vertices have been computed, V is
+% removed from the list and a new mAximum is searched within this subset. 
+% Here there is only one vertex left:
+compute_max_overall_distance( Points ) when length(Points) < 2 ->
+	throw( {no_computable_overall_distance,Points} );
+
+compute_max_overall_distance( Points ) ->
+	compute_max_overall_distance( Points, undefined ).
+
+
+compute_max_overall_distance( [_H], Longest ) ->
+	Longest;
+
+% Here we have not compute a distance yet:
+compute_max_overall_distance( [H|Others], undefined ) ->
+	FirstEntry = compute_max_distance_between( H, Others ),
+	compute_max_overall_distance( Others, _FirstBest=FirstEntry );
+ 
+% At least one other vertex remains, and at least one distance was computed:
+compute_max_overall_distance( [H|Others], 
+							  Best = {_V1,_V2,LongestSquareDistance} ) ->
+
+	case compute_max_distance_between( H, Others, undefined ) of
+
+		{PmaxForH,LongestSquareDistanceFromH} when LongestSquareDistanceFromH >
+												   LongestSquareDistance ->
+			% We have a new winner:
+			compute_max_overall_distance( Others, 
+			   {H,PmaxForH,LongestSquareDistanceFromH} );
+										   
+		_Other ->							 
+			% Here LongestSquareDistance is not beaten:
+			compute_max_overall_distance( Others, Best )
+				
+	end.
+
+
+
+% Computes the maximum distance between a point (P) and a list of other
+% points.  
+% Returns {P,Pmax,LongestSquareDistance} with LongestSquareDistance
+% being the distance between P and Pmax, Pmax being chosen so that
+% LongestSquareDistance is maximal.  
+% As there must have been at least one point in the list, Pmax exists here
+% (never undefined):
+compute_max_distance_between( _P, [] ) ->
+	throw( no_computable_max_distance );
+	
+compute_max_distance_between( P, Points ) ->
+	compute_max_distance_between( P, Points, undefined ).
+
+
+compute_max_distance_between( P, [], {Pmax,LongestSquareDistance} ) ->
+	{P,Pmax,LongestSquareDistance};
+
+compute_max_distance_between( P, [Pnew|OtherPoints], undefined ) ->
+	% First point examined is at first by construction the first best:
+	compute_max_distance_between( P, OtherPoints, 
+								  {Pnew,linear_2D:square_distance(P,Pnew)} );
+
+compute_max_distance_between( P, [Pnew|OtherPoints],
+							  Best = {_Pmax,LongestSquareDistance} ) ->
+
+	case linear_2D:square_distance(P,Pnew) of
+
+		SquareDistance when SquareDistance > LongestSquareDistance ->
+			% We have a new winner:
+			compute_max_distance_between( P, OtherPoints, 
+										  {Pnew,SquareDistance} );
+
+		_LesserSquareDistance ->
+			% Previous best not beaten, let's keep it:
+			compute_max_distance_between( P, OtherPoints, Best )
+	end.
+
+
+
+% Computes the convex hull corresponding to the specified list of points.
+compute_convex_hull( Points ) ->
+	Pivot = find_pivot( Points ),
+	io:format( "Pivot is ~w.~n", [Pivot] ),
+	SortedPoints = sort_by_angle( Pivot, Points ),
+	ok.
+
+
+
+% Convex Hull section.
+
+
+% Finds the pivot, i.e. the leftmost point with the highest ordinate.
+% The point list is supposed not having duplicates.
+find_pivot( _PointList = [Pivot|Others] ) ->
+	find_pivot( Others, Pivot ).
+
+
+find_pivot( [], Pivot ) ->
+	Pivot;
+
+% Higher than the pivot, thus not wanted:
+find_pivot( [{_X,Y}|Others], Pivot={_Xp,Yp} ) when Y<Yp ->
+	find_pivot( Others, Pivot );
+
+% Lower than the pivot, thus wanted:
+find_pivot( [Point={_X,Y}|Others], _Pivot={_Xp,Yp} ) when Y>Yp ->
+	find_pivot( Others, Point );
+
+% Same level as the pivot, but at its right, thus not wanted:
+find_pivot( [{X,_Y}|Others], Pivot={Xp,_Y} ) when X>Xp ->
+	find_pivot( Others, Pivot );
+
+% Same level as the pivot, but at its left, thus wanted:
+find_pivot( [Point={X,_Yp}|Others], _Pivot={Xp,_Yp} ) when X<Xp ->	
+	find_pivot( Others, Point );
+
+% Duplicated pivot, abnormal:
+find_pivot( [Pivot|_Others], Pivot ) ->
+	throw( {duplicate_pivot,Pivot} ).
+
+
+sort_by_angle( Pivot, Points ) ->
+	% Each element of that list is {Cotangent,P}, where Cotangent is the
+	% cotangent of the angle the lines defined by the pivot and P makes with
+	% the x axis.
+	PointsWithAngles = [ {angle_value(P,Pivot),P} || P <- Points ],
+	SortedPoints = lists:keysort(1,PointsWithAngles).
+
+
+
+
+
+
+% Returns a value monotonically increasing with the angle the vector P1P2 
+% makes with the abscissa axis, knowing it is in [0,Pi[.
+angle_value( P1, P2 ) ->
+	V = make_unit( vectorize( P1, P2 ) ),
+	% Let a be the angle between [1,0] and V={X,Y}: tan(a)= Y/X
+	fixme.
 
 
 
