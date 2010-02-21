@@ -31,12 +31,8 @@
 		   % List of points:
 		   vertices = [],
 
-		   % Rendering information, if any:
-		   % (can be for example: [ {edge_color,black}, {fill_color,grey} ],
-		   % edge_color describing the color for an edge and fill_color the
-		   % color of the inside)	
-		   rendering = undefined,
-
+		   % Rendering information, if any, as an option list.
+		   rendering = [],
 
 		   % Bounding-box information:
 		   % (can be for example: {disc,Center,Radius})
@@ -45,3 +41,5 @@
 		  } 
 
 	   ).
+
+
