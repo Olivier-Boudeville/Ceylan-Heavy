@@ -41,6 +41,7 @@ run() ->
 
 	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
 	SingleOptionList = [{blue,2}],
+	2 = option_list:get( blue, SingleOptionList ),
 
 	% Pattern-match:
 	SingleOptionList = option_list:set( {blue,2}, [] ),
@@ -48,26 +49,33 @@ run() ->
 	InitialOptionList = [ {yellow,1}, {blue,1}, {red,1}, {green,1}, 
 						  {purple,1} ],
 
-	io:format( "   Initial option_list: ~w.~n", [InitialOptionList] ),
+	io:format( "   Initial option list: ~w.~n", [InitialOptionList] ),
 
 	BlackOptionList = option_list:set( {black,1}, InitialOptionList ),
-	io:format( "   OptionList with black entry added: ~w.~n", [BlackOptionList] ),
+	io:format( "   Option list with black entry added: ~w.~n", 
+			   [BlackOptionList] ),
 
 	RedOptionList = option_list:set( {red,2}, BlackOptionList ),
-	io:format( "   OptionList with red entry incremented: ~w.~n", [RedOptionList] ),
+	io:format( "   Option list with red entry incremented: ~w.~n", 
+			   [RedOptionList] ),
 	
-	EndpointOption_List = option_list:set( {black,2}, 
+	EndpointOptionList = option_list:set( {black,2}, 
       	option_list:set( {purple,2}, RedOptionList ) ),				  
 	
-	io:format( "   OptionList with endpoints updated: ~w.~n", [EndpointOption_List] ),
+	io:format( "   Option list with endpoints updated: ~w.~n", 
+			   [EndpointOptionList] ),
 
 	SecondOptionList = option_list:set( {magenta,1}, SingleOptionList ),
 	UpdatingOptionList = option_list:set( {black,3}, SecondOptionList ),
-
-	io:format( "   Update of previous option_list with option_list ~w is: ~w.~n", 
-      [ UpdatingOptionList, option_list:update_with(
-                           EndpointOption_List,UpdatingOptionList) ] ),
 	
+	UpdatedOptionList = option_list:update_with(
+                           EndpointOptionList, UpdatingOptionList),
+
+	io:format( "   Update of previous option list with option_list ~w is: "
+			   "~w.~n", [ UpdatingOptionList, UpdatedOptionList ] ),
+	
+	3 = option_list:get( black ,UpdatedOptionList ), 
+
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),	
 	erlang:halt().
 
