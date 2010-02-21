@@ -101,8 +101,25 @@ create_test_gui( _MainWin, Canvas ) ->
 	
 	gui:draw_cross( {36,26}, _FirstEdgeLength=6, gui:get_color(red), Canvas ),
 	
-	gui:draw_labelled_cross( {36,86}, _SecondEdgeLength=4, "Cross label", Canvas ).
+	gui:draw_labelled_cross( {36,86}, _SecondEdgeLength=4, "Cross label", 
+							 Canvas ),
+
+	% Taken from polygon_test.erl:
+	MyTriangle = polygon:update_bounding_box( lazy_circle, 
+	  polygon:set_edge_color( yellow, 
+			  polygon:get_triangle( {110,110}, {250,155}, {120,335} ) ) ),
+	
+	MyUprightSquare = polygon:update_bounding_box( lazy_circle,
+	  polygon:set_fill_color( red, 
+			  polygon:get_upright_square( _Center = {250,250}, 
+										  _EdgeLength = 50 ) ) ),
+
+	polygon:render( MyTriangle, Canvas ),
+	polygon:render( MyUprightSquare, Canvas ),
+
+	ok.
  
+
 
 gui_main_loop( MainWin, Canvas ) ->
 	
@@ -118,6 +135,7 @@ gui_main_loop( MainWin, Canvas ) ->
 	
 	end.
 	
+
 
 run() ->
 

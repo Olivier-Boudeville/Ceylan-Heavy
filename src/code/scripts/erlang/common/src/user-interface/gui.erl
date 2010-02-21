@@ -46,7 +46,7 @@
 % Line-related operations.
 -export([ draw_line/3, draw_line/4, draw_lines/2, draw_lines/3,
 		  draw_cross/2, draw_cross/3, draw_cross/4, draw_labelled_cross/4, 
-		  draw_polygon/2 ]).
+		  draw_circle/3, draw_circle/4 ]).
 
 
 
@@ -82,7 +82,15 @@ get_colors() ->
 
 
 
-% Returns the RGB definition of the color specified by name (atom).
+% Returns the RGB definition of the color specified by name (atom) or directly
+% as a triplet of color components.
+get_color( none ) ->
+	% none is a special case, for example to disable filling:
+	none;
+
+get_color( Color = {_R,_G,_B} ) ->
+	Color;
+
 get_color(ColorName) ->
 
 	case proplists:get_value( ColorName, get_colors() ) of
@@ -160,5 +168,20 @@ draw_labelled_cross( Location={X,Y}, EdgeLength, LabelText, Canvas ) ->
                   {text,LabelText}]).
 
 
-draw_polygon(_,_) ->
-	ok.
+% Renders specified circle in specified canvas.
+draw_circle( _Center={X,Y}, Radius, Canvas ) ->
+	TopLeft     = {X-Radius,Y-Radius},
+	BottomRight = {X+Radius,Y+Radius},
+	gs:create( oval, Canvas, [ {coords,[TopLeft,BottomRight]},
+	  {fill,none}, {bw,1} ] ).	
+
+draw_circle( _Center={X,Y}, Radius, Color, Canvas ) ->
+
+	TopLeft     = {X-Radius,Y-Radius},
+	BottomRight = {X+Radius,Y+Radius},
+
+	gs:create( oval, Canvas, [ {coords,[TopLeft,BottomRight]},
+	  {fill,none}, {bw,1}, {fg,gui:get_color(Color)} ] ).	
+
+
+
