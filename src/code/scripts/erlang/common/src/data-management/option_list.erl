@@ -36,7 +36,7 @@
 
 -module(option_list).
 
--export([ set/2, update_with/2 ]).
+-export([ set/2, get/2, lookup/2, update_with/2 ]).
 
 
 
@@ -50,11 +50,11 @@
 % The first previously existing entry found with Key (if any) is replaced
 % 'in place' by this entry.
 % If none is found, the specified entry is put as first element.
-set( Entry, Option_List ) -> 
-	set( Entry, Option_List, _Acc=[] ).
+set( Entry, OptionList ) -> 
+	set( Entry, OptionList, _Acc=[] ).
 
 
-set( Entry, _Option_List=[], Acc ) ->
+set( Entry, _OptionList=[], Acc ) ->
 	% Here no key matched:
 	[Entry|lists:reverse(Acc)];
 
@@ -65,6 +65,27 @@ set( Entry = {Key,_Value}, [{Key,_AnyValue}|T], Acc ) ->
 set( Entry, [NonMatchingEntry|T], Acc ) ->
 	% Different key found:
 	set( Entry, T, [NonMatchingEntry|Acc] ).
+
+
+% Returns the value associated to the specified key in specified option list.
+% Throws an exception if an entry with that key could not be found.
+get( Key, OptionList ) -> 
+
+	case proplists:get_value( Key, OptionList ) of
+		
+		undefined ->
+			throw( {key_not_found,Key,OptionList} );
+		
+		Value ->
+			Value
+
+	end.
+
+
+% Returns the value associated to the specified key in specified option list,
+% if found, otherwise (key not found), returns 'undefined'.
+lookup( Key, OptionList ) -> 
+	proplists:get_value( Key, OptionList ).
 
 
 % Updates BaseOptionList with the entries of UpdatingOptionList.
