@@ -222,7 +222,7 @@ run() ->
 	
 	io:format( "   Comparisons of versions like ~s succeeded.~n", 
 		[ basic_utils:version_to_string(ThirdVersion) ] ),
-		  
+
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().
 

@@ -82,7 +82,7 @@
 
 % Miscellaneous functions.
 -export([ generate_basic_name_from/1, flush_pending_messages/0, checkpoint/1,
-	get_interpreter_version/0, compare_versions/2 ]).
+		  get_interpreter_version/0, compare_versions/2 ]).
 
 
 
@@ -993,3 +993,4 @@ fix_characters([$'|T],Acc) ->
 fix_characters([H|T],Acc) ->
 	fix_characters(T,[H|Acc]).
 	
+
