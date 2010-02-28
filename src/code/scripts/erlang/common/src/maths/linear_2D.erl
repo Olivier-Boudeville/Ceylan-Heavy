@@ -201,17 +201,9 @@ compute_max_distance_between( P, [Pnew|OtherPoints],
 
 
 
-% Computes the convex hull corresponding to the specified list of points.
-compute_convex_hull( Points ) ->
-	Pivot = find_pivot( Points ),
-	io:format( "Pivot is ~w.~n", [Pivot] ),
-	sort_by_angle( Pivot, Points ).
 
+% Sorting by angle section.
 
-
-
-% Convex Hull section.
-% See Graham scan: http://en.wikipedia.org/wiki/Graham_scan
 
 % Finds the pivot, i.e. the leftmost point with the highest ordinate.
 % The point list is supposed not having duplicates.
@@ -325,6 +317,99 @@ reverse_and_drop_angle( [], Acc ) ->
 
 reverse_and_drop_angle( [{_Tangent,Point}|T], Acc ) ->
 	reverse_and_drop_angle( T, [Point|Acc] ).
+
+
+
+
+
+% Convex hull section.
+
+
+
+% Computes the convex hull corresponding to the specified list of points.
+compute_convex_hull( Points ) ->
+
+	{Pivot,RemainingPoints} = linear_2D:find_pivot( Points ),
+
+	case length(RemainingPoints) of 
+		
+		Len when Len < 2 ->
+			throw( not_enough_point_for_convex_hull );
+
+		_Other ->
+			% We have at least 2 points in addition to the pivot.
+			io:format( "Pivot is ~w, remaining points: ~w.~n", 
+					   [Pivot,RemainingPoints] ),
+
+			[P|T] = sort_by_angle( Pivot, RemainingPoints ),
+ 
+			% Initially only the pivot is known to belong to the convex hull.
+			% We also add the pivot to the end of the NextPoints list, so that
+			% the hull can be closed.
+			compute_graham_scan_hull( _CurrentlySelected=[Pivot], 
+									  _StudiedPoint=P, _NextPoints=(T++[Pivot]) )
+
+	end.
+
+
+
+
+% Computes the Graham scan for the specified list of points, expected to be
+% already sorted by increasing angle between the abscissa axis and the vector
+% from the pivot to each of these points (i.e. in increasing order of the angle
+% they and the point P make with the x-axis, in counter-clockwise order).
+% See: http://en.wikipedia.org/wiki/Graham_scan
+% Returns the corresponding convex hull, in clock-wise order.
+compute_graham_scan_hull( CurrentlySelected, _Pivot, _NextPoints=[] ) ->
+	% Last studied point is by construction always to pivot.
+
+	io:format( "compute_graham_scan_hull: "
+			   "exhausted input points, returning: ~w.~n", [CurrentlySelected] ),
+
+	CurrentlySelected;
+
+compute_graham_scan_hull( CurrentlySelected=[H|_T], StudiedPoint, 
+					 [Next|OtherNext] ) ->
+
+	case is_on_the_right( StudiedPoint, H, Next ) of
+
+		true ->
+			
+			io:format( "compute_graham_scan_hull: point ~w is on the right of "
+					   "segment from ~w to ~w, keeping ~w.~n", 
+					   [StudiedPoint, H, Next, StudiedPoint ] ),
+ 
+			% Here, the point 'Next' is on the right of the segment going from H
+			% to studied point, thus H should not have been selected and is
+			% discarded (next turns we might discard more elements from T):
+			compute_graham_scan_hull( [StudiedPoint|CurrentlySelected], Next,
+									   OtherNext );
+		
+		false ->
+
+			io:format( "compute_graham_scan_hull: point ~w is on the left of "
+					   "segment from ~w to ~w, eliminating ~w.~n", 
+					   [StudiedPoint, H, Next, StudiedPoint ] ),
+
+			% Here, the point 'Next' is on the left of the segment going from H
+			% to studied point, thus for the moment we can keep H and that
+			% studied point, until being possibly proved wrong later:
+			compute_graham_scan_hull( CurrentlySelected, Next, OtherNext )
+
+	end.
+	
+	
+% Returns whether P is on the left of the segment going from P1 to P2. Should P
+% be on that segment, then P will be considered as not being on the left: in the
+% convex hull, only necessary points will be kept, i.e. no point on the boundary
+% of the hull will be kept.
+is_on_the_right( _P={X,Y}, _P1={X1,Y1}, _P2={X2,Y2} ) ->	
+	DotProduct = (X2-X1)*(Y-Y1) - (Y2-Y1)*(X-X1),
+	DotProduct > 0.
+
+
+
+
 
 
 
