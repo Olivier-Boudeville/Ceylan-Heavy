@@ -45,8 +45,9 @@
 
 % Line-related operations.
 -export([ draw_line/3, draw_line/4, draw_lines/2, draw_lines/3,
-		  draw_cross/2, draw_cross/3, draw_cross/4, draw_labelled_cross/4, 
-		  draw_circle/3, draw_circle/4 ]).
+		  draw_cross/2, draw_cross/3, draw_cross/4, draw_labelled_cross/4,
+		  draw_labelled_cross/5, draw_circle/3, draw_circle/4,
+		  draw_numbered_points/2 ]).
 
 
 
@@ -168,6 +169,16 @@ draw_labelled_cross( Location={X,Y}, EdgeLength, LabelText, Canvas ) ->
                   {text,LabelText}]).
 
 
+% Draws an upright cross at specified location, with specified edge length
+% and companion label, and with specified color.
+draw_labelled_cross( Location={X,Y}, EdgeLength, Color, LabelText, Canvas ) ->
+	ActualColor = gui:get_color(Color),
+	draw_cross( Location, EdgeLength, ActualColor, Canvas ),
+	% Text a little above and on the right:
+	gs:create( text, Canvas,[ {coords,[{X+4,Y-12}]},
+                  {text,LabelText}, {fg,ActualColor} ]).
+
+
 % Renders specified circle in specified canvas.
 draw_circle( _Center={X,Y}, Radius, Canvas ) ->
 	TopLeft     = {X-Radius,Y-Radius},
@@ -183,5 +194,24 @@ draw_circle( _Center={X,Y}, Radius, Color, Canvas ) ->
 	gs:create( oval, Canvas, [ {coords,[TopLeft,BottomRight]},
 	  {fill,none}, {bw,1}, {fg,gui:get_color(Color)} ] ).	
 
+
+
+% Draws specified list of points, each point being identified in turn with one
+% cross and a label: P1 for the first point of the list, P2 for the next, etc.
+draw_numbered_points( Points, Canvas ) ->
+	LabelledPoints = label_points( Points, _Acc=[], _InitialCount=1 ), 
+	[ gui:draw_labelled_cross( Location, _Edge=5, Label, Canvas ) 
+	  || {Label,Location} <- LabelledPoints  ].
+
+
+% Adds a numbered label to each point in list.  Transforms a list of points into
+% a list of {PointLabel,Point} pairs while keeping its order.
+label_points( [], Acc, _Count ) ->
+	% Removes the reverse operation induced by iterating below in this function:
+	lists:reverse(Acc);
+
+label_points( [P|T], Acc, Count ) ->
+	Label = lists:flatten( io_lib:format("P~B", [Count] ) ),
+	label_points( T,[ {Label,P} |Acc], Count+1 ).
 
 
