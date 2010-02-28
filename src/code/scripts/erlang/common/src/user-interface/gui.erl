@@ -200,6 +200,7 @@ draw_circle( _Center={X,Y}, Radius, Color, Canvas ) ->
 % cross and a label: P1 for the first point of the list, P2 for the next, etc.
 draw_numbered_points( Points, Canvas ) ->
 	LabelledPoints = label_points( Points, _Acc=[], _InitialCount=1 ), 
+	%io:format( "Labelled points: ~p.~n", [LabelledPoints] ),
 	[ gui:draw_labelled_cross( Location, _Edge=5, Label, Canvas ) 
 	  || {Label,Location} <- LabelledPoints  ].
 
