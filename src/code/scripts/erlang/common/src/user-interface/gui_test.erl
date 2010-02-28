@@ -114,6 +114,24 @@ create_test_gui( _MainWin, Canvas ) ->
 			  polygon:get_upright_square( _Center = {250,250}, 
 										  _EdgeLength = 50 ) ) ),
 
+	RandomPoints = [ {random:uniform(200)+400,random:uniform(200)+200}
+					 || _Count <- lists:seq(1,30) ],
+
+	%io:format( "Random points: ~w.~n", [RandomPoints] ),
+
+	{Pivot,RemainingPoints} = linear_2D:find_pivot( RandomPoints ),
+
+	%io:format( "Pivot: ~w, remaining: ~w.~n", [Pivot,RemainingPoints] ),
+
+	gui:draw_labelled_cross( Pivot, _OtherEdgeLength=10, blue, "Pivot", 
+							 Canvas ),
+
+	SortedPoints = linear_2D:sort_by_angle( Pivot, RemainingPoints ),
+
+	%io:format( "Sorted points: ~w.~n", [SortedPoints] ),
+
+	gui:draw_numbered_points( SortedPoints, Canvas ),
+	
 	polygon:render( MyTriangle, Canvas ),
 	polygon:render( MyUprightSquare, Canvas ),
 
