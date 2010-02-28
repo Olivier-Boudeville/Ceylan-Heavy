@@ -338,16 +338,17 @@ compute_convex_hull( Points ) ->
 
 		_Other ->
 			% We have at least 2 points in addition to the pivot.
-			io:format( "Pivot is ~w, remaining points: ~w.~n", 
-					   [Pivot,RemainingPoints] ),
+			%io:format( "Pivot is ~w, remaining points: ~w.~n", 
+			%		   [Pivot,RemainingPoints] ),
 
-			[P|T] = sort_by_angle( Pivot, RemainingPoints ),
+			[P1,P2|T] = sort_by_angle( Pivot, RemainingPoints ),
  
 			% Initially only the pivot is known to belong to the convex hull.
+			% We had P1, next to be validated against P2.
 			% We also add the pivot to the end of the NextPoints list, so that
 			% the hull can be closed.
-			compute_graham_scan_hull( _CurrentlySelected=[Pivot], 
-									  _StudiedPoint=P, _NextPoints=(T++[Pivot]) )
+			compute_graham_scan_hull( _ToValidate=[P1,Pivot], 
+									  _NewPoint=P2, _NextPoints=(T++[Pivot]) )
 
 	end.
 
@@ -360,45 +361,65 @@ compute_convex_hull( Points ) ->
 % they and the point P make with the x-axis, in counter-clockwise order).
 % See: http://en.wikipedia.org/wiki/Graham_scan
 % Returns the corresponding convex hull, in clock-wise order.
-compute_graham_scan_hull( CurrentlySelected, _Pivot, _NextPoints=[] ) ->
-	% Last studied point is by construction always to pivot.
+compute_graham_scan_hull( ToValidate, _Pivot, _NextPoints=[] ) ->
+	% Last new point is by construction always to pivot.
 
-	io:format( "compute_graham_scan_hull: "
-			   "exhausted input points, returning: ~w.~n", [CurrentlySelected] ),
+	%io:format( "compute_graham_scan_hull: "
+	%		   "exhausted input points, returning: ~w.~n", [ToValidate] ),
 
-	CurrentlySelected;
+	ToValidate;
 
-compute_graham_scan_hull( CurrentlySelected=[H|_T], StudiedPoint, 
-					 [Next|OtherNext] ) ->
+compute_graham_scan_hull( ToValidate=[P2,P1|T], NewPoint, 
+						  NextPoints=[Next|OtherNext] ) ->
 
-	case is_on_the_right( StudiedPoint, H, Next ) of
+	case is_on_the_right( P2, P1, NewPoint ) of
 
 		true ->
 			
-			io:format( "compute_graham_scan_hull: point ~w is on the right of "
-					   "segment from ~w to ~w, keeping ~w.~n", 
-					   [StudiedPoint, H, Next, StudiedPoint ] ),
+			%io:format( "compute_graham_scan_hull: point ~w is on the right of "
+			%		   "segment from ~w to ~w, keeping ~w.~n", 
+			%		   [P2, P1, NewPoint, P2] ),
  
-			% Here, the point 'Next' is on the right of the segment going from H
-			% to studied point, thus H should not have been selected and is
-			% discarded (next turns we might discard more elements from T):
-			compute_graham_scan_hull( [StudiedPoint|CurrentlySelected], Next,
+			% Here, the point P2 is on the right of the segment going from P1 to
+			% the Next point, thus P2 can be kept and we can continue with the
+			% next points:
+			compute_graham_scan_hull( [NewPoint|ToValidate], Next,
 									   OtherNext );
 		
 		false ->
 
-			io:format( "compute_graham_scan_hull: point ~w is on the left of "
-					   "segment from ~w to ~w, eliminating ~w.~n", 
-					   [StudiedPoint, H, Next, StudiedPoint ] ),
+			%io:format( "compute_graham_scan_hull: point ~w is on the left of "
+			%		   "segment from ~w to ~w, eliminating ~w.~n", 
+			%		   [P2, P1, NewPoint, P2] ),
 
-			% Here, the point 'Next' is on the left of the segment going from H
-			% to studied point, thus for the moment we can keep H and that
-			% studied point, until being possibly proved wrong later:
-			compute_graham_scan_hull( CurrentlySelected, Next, OtherNext )
+			% Here, the point P2 is on the left of (or in) the segment going
+			% from P1 to the Next point, thus P2 is to be discarded, and will
+			% have to check predecessor(s) of P2 against the Next point.  
+			%
 
-	end.
+			compute_graham_scan_hull( [P1|T], NewPoint, NextPoints )
+
+
+	end;
 	
+% Note however that the first point examined after the pivot (FP1) may have to
+% be discarded because of the second. If we just removed FP1, then the
+% ToValidate list would just contain the pivot, thus triggering a function
+% clause. In that case we just have to replace FP1 by the next(FP1)=P2 here, and
+% thus ToValidate will always contain at least two elements:
+
+% This clause matches whenever we just removed the first point in the list
+% examined after the pivot. So the first parameter (ToValidate) is just a list
+% with one element, the pivot, that was added to close the hull. As we have no
+% intermediate point, we accept directly the next point (Next), knowing it will
+% be checked at the next recursion:
+%compute_graham_scan_hull( [Pivot], NewPoint, [Next|OtherNext] ) ->
+%	compute_graham_scan_hull( [NewPoint,Pivot], Next, OtherNext ).
+% A bit faster as we know L is actually [Pivot]:
+compute_graham_scan_hull( L, NewPoint, [Next|OtherNext] ) ->
+	compute_graham_scan_hull( [NewPoint|L], Next, OtherNext ).
 	
+
 % Returns whether P is on the left of the segment going from P1 to P2. Should P
 % be on that segment, then P will be considered as not being on the left: in the
 % convex hull, only necessary points will be kept, i.e. no point on the boundary
