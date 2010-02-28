@@ -45,7 +45,8 @@
 -export([ vectorize/2, square_magnitude/1, magnitude/1, scale/2, make_unit/1 ]).
 
 
-
+% Temp:
+-export([ find_pivot/1, sort_by_angle/2 ]).
 	
 
 % Point section.
@@ -204,62 +205,126 @@ compute_max_distance_between( P, [Pnew|OtherPoints],
 compute_convex_hull( Points ) ->
 	Pivot = find_pivot( Points ),
 	io:format( "Pivot is ~w.~n", [Pivot] ),
-	SortedPoints = sort_by_angle( Pivot, Points ),
-	ok.
+	sort_by_angle( Pivot, Points ).
+
 
 
 
 % Convex Hull section.
-
+% See Graham scan: http://en.wikipedia.org/wiki/Graham_scan
 
 % Finds the pivot, i.e. the leftmost point with the highest ordinate.
 % The point list is supposed not having duplicates.
-find_pivot( _PointList = [Pivot|Others] ) ->
-	find_pivot( Others, Pivot ).
+% Returns {Pivot,PivotLessList} where PivotLessList is the (unordered)
+% input list, without the Pivot.  
+find_pivot( _PointList = [FirstPivot|Others] ) ->
+	% First found is the first pivot:
+	find_pivot( Others, FirstPivot, _NewList=[] ).
 
 
-find_pivot( [], Pivot ) ->
-	Pivot;
+find_pivot( [], Pivot, NewList ) ->
+	{Pivot,NewList};
 
-% Higher than the pivot, thus not wanted:
-find_pivot( [{_X,Y}|Others], Pivot={_Xp,Yp} ) when Y<Yp ->
-	find_pivot( Others, Pivot );
+% Higher than the pivot, thus not wanted as pivot:
+find_pivot( [Point={_X,Y}|Others], Pivot={_Xp,Yp}, NewList ) when Y<Yp ->
+	find_pivot( Others, Pivot, [Point|NewList] );
 
 % Lower than the pivot, thus wanted:
-find_pivot( [Point={_X,Y}|Others], _Pivot={_Xp,Yp} ) when Y>Yp ->
-	find_pivot( Others, Point );
+find_pivot( [Point={_X,Y}|Others], PreviousPivot={_Xp,Yp}, NewList ) when Y>Yp ->
+	find_pivot( Others, Point, [PreviousPivot|NewList] );
+
 
 % Same level as the pivot, but at its right, thus not wanted:
-find_pivot( [{X,_Y}|Others], Pivot={Xp,_Y} ) when X>Xp ->
-	find_pivot( Others, Pivot );
+find_pivot( [Point={X,_Y}|Others], Pivot={Xp,_Y}, NewList ) when X>Xp ->
+	find_pivot( Others, Pivot, [Point|NewList] );
 
 % Same level as the pivot, but at its left, thus wanted:
-find_pivot( [Point={X,_Yp}|Others], _Pivot={Xp,_Yp} ) when X<Xp ->	
-	find_pivot( Others, Point );
+find_pivot( [Point={X,_Yp}|Others], PreviousPivot={Xp,_Yp}, NewList ) when X<Xp ->	
+	find_pivot( Others, Point, [PreviousPivot|NewList] );
 
 % Duplicated pivot, abnormal:
-find_pivot( [Pivot|_Others], Pivot ) ->
+find_pivot( [Pivot|_Others], Pivot, _NewList ) ->
 	throw( {duplicate_pivot,Pivot} ).
 
 
+
+% Returns a list containing the points sorted according to an increasing angle
+% between the abscissa axis and the vector from the pivot that each point.
+% Note: all points having the same abscissa as the pivot, except the highest one,
+% will be removed from the returned list.
 sort_by_angle( Pivot, Points ) ->
-	% Each element of that list is {Cotangent,P}, where Cotangent is the
-	% cotangent of the angle the lines defined by the pivot and P makes with
-	% the x axis.
-	PointsWithAngles = [ {angle_value(P,Pivot),P} || P <- Points ],
-	SortedPoints = lists:keysort(1,PointsWithAngles).
+	sort_by_angle( Pivot, Points, _LeftPoints=[], _MiddlePoint=undefined, 
+				   _RightPoints=[] ).
 
 
+% LeftPoints and RightPoints are lists of {Angle,Point} pairs.
+sort_by_angle( _Pivot, _Points=[], LeftPoints, undefined, RightPoints ) ->
+	%io:format( "sort_by_angle: no middle point found.~n" ),
+	% Not having a middle point to integrate here:
+	L = lists:keysort( _Index=1, LeftPoints )
+		++ lists:keysort( _Index=1, RightPoints ),
+	%io:format( "Full list: ~w.~n", [L] ),
+	reverse_and_drop_angle(L,[]);
 
+sort_by_angle( _Pivot, _Points=[], LeftPoints, MiddlePoint, RightPoints ) ->
+	%io:format( "sort_by_angle: at least one middle point found.~n" ),
+	L = lists:keysort( _Index=1, LeftPoints ) 
+		++ [{dummy,MiddlePoint}|lists:keysort( _Index=1, RightPoints )],
+	reverse_and_drop_angle(L,[]);
+					  
+% Note that Y<=Yp by definition of the pivot, hence Y-Yp<=0
+sort_by_angle( Pivot={Xp,Yp}, [Point={X,Y}|T], LeftPoints, MiddlePoint,
+			   RightPoints ) ->
+	case X-Xp of 
+		
+		0 ->
+			% Here we are just above the pivot, tan(Pi/2) is infinite.
+			case MiddlePoint of
 
+				undefined ->
+					% First found is first best:
+					sort_by_angle( Pivot, T, LeftPoints, Point, RightPoints );
 
+				{_Xm,Ym} ->
+					
+					case Y < Ym of
 
-% Returns a value monotonically increasing with the angle the vector P1P2 
-% makes with the abscissa axis, knowing it is in [0,Pi[.
-angle_value( P1, P2 ) ->
-	V = make_unit( vectorize( P1, P2 ) ),
-	% Let a be the angle between [1,0] and V={X,Y}: tan(a)= Y/X
-	fixme.
+						true ->
+					        % This point is above the previous highest middle point,
+					        % previous middle point can be dropped on the floor:
+							sort_by_angle( Pivot, T, LeftPoints, Point, 
+										   RightPoints );
+
+						false ->
+					        % The current point can be dropped on the floor, as it is
+					        % below the highest middle point:
+							sort_by_angle( Pivot, T, LeftPoints, MiddlePoint, 
+										   RightPoints )
+								
+					end
+			end;
+
+		DeltaX when DeltaX > 0 ->
+			% This is a point on the right of the pivot, stores the tangent
+			% of the angle the vector defined by the pivot and that point 
+			% makes with the abscissa axis:
+			sort_by_angle( Pivot, T, LeftPoints, MiddlePoint, 
+						   [ {(Y-Yp)/DeltaX,Point} |RightPoints] );	 
+		
+		NegativeDeltaX ->
+			% This is a point on the left of the pivot:
+			sort_by_angle( Pivot, T, [ {(Y-Yp)/NegativeDeltaX,Point} |LeftPoints], 
+						   MiddlePoint, RightPoints )
+
+	end.
+
+ 
+
+reverse_and_drop_angle( [], Acc ) ->
+	Acc;
+
+reverse_and_drop_angle( [{_Tangent,Point}|T], Acc ) ->
+	reverse_and_drop_angle( T, [Point|Acc] ).
 
 
 
