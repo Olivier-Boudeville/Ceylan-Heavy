@@ -61,30 +61,25 @@ init_test_gui() ->
 								{title,"GUI Test"},
 								{bg,gui:get_color(red)} ]),
 							   	
-	Canvas = gs:create( canvas, MainWin, [ 
-		{hscroll,bottom}, {vscroll,left},
-	    {width,get_canvas_width()},
-		{height,get_canvas_height()},
-		% Centers canvas:
-	    {x,(get_main_window_width()-get_canvas_width()) / 2},
-		{y,(get_main_window_height()-get_canvas_height()) / 2},
-        {bg,gui:get_color(lime)}
-        %{scrollregion, {100,200,30,200}}
-										 ] ),
 	gs:config( MainWin, WindowSize ),
+	
 
-	create_test_gui( MainWin, Canvas ),
+
+	gs:create( button, add_point_button, MainWin, [{width,75},{y,60},{x,10},
+                             {width,100}, {label,{text,"Add point"}}]),
+
+	InitialPointCount = 3,
+
 
     % Sets the GUI to visible:
 	gs:config( MainWin, {map,true} ),
 
-	gui_main_loop( MainWin, Canvas ),
+	gui_main_loop( MainWin, InitialPointCount, undefined ),
 
 	gs:stop().
 
 
-
-create_test_gui( _MainWin, Canvas ) ->
+create_basic_test_gui( Canvas ) ->
 
 	P1 = {20,10},
 	P2 = {100,200},
@@ -113,9 +108,27 @@ create_test_gui( _MainWin, Canvas ) ->
 	  polygon:set_fill_color( red, 
 			  polygon:get_upright_square( _Center = {250,250}, 
 										  _EdgeLength = 50 ) ) ),
+	polygon:render( MyTriangle, Canvas ),
+	polygon:render( MyUprightSquare, Canvas ).
+	
+	
 
-	RandomPoints = [ {random:uniform(200)+400,random:uniform(200)+200}
-					 || _Count <- lists:seq(1,30) ],
+create_test_gui( PointCount, MainWin ) ->
+
+	Canvas = gs:create( canvas, MainWin, [ 
+		{hscroll,bottom}, 
+		{vscroll,left},
+	    {width,get_canvas_width()},
+		{height,get_canvas_height()},
+		% Centers canvas:
+	    {x,(get_main_window_width()-get_canvas_width()) / 2},
+		{y,(get_main_window_height()-get_canvas_height()) / 2},
+        {bg,gui:get_color(lime)}
+        %{scrollregion, {100,200,30,200}}
+										 ] ),
+
+	RandomPoints = [ {random:uniform(300)+300,random:uniform(300)+100}
+					 || _Count <- lists:seq(1,PointCount) ],
 
 	%io:format( "Random points: ~w.~n", [RandomPoints] ),
 
@@ -131,25 +144,38 @@ create_test_gui( _MainWin, Canvas ) ->
 	%io:format( "Sorted points: ~w.~n", [SortedPoints] ),
 
 	gui:draw_numbered_points( SortedPoints, Canvas ),
+	gui:draw_lines( [Pivot|SortedPoints] ++ [Pivot], blue, Canvas ),
 	
-	polygon:render( MyTriangle, Canvas ),
-	polygon:render( MyUprightSquare, Canvas ),
 
-	ok.
+	HullPoints = linear_2D:compute_convex_hull( RandomPoints ),
+
+	%io:format( "Hull points: ~w.~n", [HullPoints] ),
+	io:format( "Number of hull points: ~B.~n", [length(HullPoints)] ),
+
+	gui:draw_lines( [Pivot|HullPoints], red, Canvas ),
+	Canvas.
  
 
 
-gui_main_loop( MainWin, Canvas ) ->
+gui_main_loop( MainWin, PointCount, Canvas ) ->
 	
+	io:format( "~nEntering main loop, point count is ~B.~n", [PointCount-1] ),
+
 	receive
         
 		{gs,_Pair,destroy,[],[]} ->
 			io:format( "Quitting GUI test.~n" ),
 			erlang:halt();
 		
+		to_do ->
+			create_basic_test_gui( Canvas ),
+			gui_main_loop( MainWin, PointCount, Canvas );
+
 		X ->
             io:format("GUI test got event '~w' (ignored).~n",[X]),
-			gui_main_loop( MainWin, Canvas )
+			gs:destroy( Canvas ),
+			NewCanvas = create_test_gui( PointCount, MainWin ),
+			gui_main_loop( MainWin, PointCount+1, NewCanvas )
 	
 	end.
 	
