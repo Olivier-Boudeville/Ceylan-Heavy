@@ -95,7 +95,7 @@ COMMON_BEAM := $(COMMON_TOP)/src
 COMMON_INC = -I$(COMMON_SRC)
 
 
-INC += -I. $(COMMON_INC)
+INC += $(foreach dir,$(BEAM_DIRS),-I$(dir))
 
 
 # Erlang environment section.
@@ -145,14 +145,14 @@ DISTRIBUTED_NODE_OPT := -name $(VM_NAME)@$(FQDN) -setcookie $(PROJECT_NAME)
 STARTUP_FUNCTION := run
 
 BEAM_DIRS += . $(COMMON_BEAM)/data-management $(COMMON_BEAM)/maths \
-		   $(COMMON_BEAM)/utils
+		   $(COMMON_BEAM)/user-interface $(COMMON_BEAM)/utils
 
 
 ERL_LAUNCHER = $(COMMON_SRC)/scripts/launch-erl.sh
 
 
 # Add '+native' if native-code compilation is supported:
-ERLANG_COMPILER_OPT := -b beam $(INC) -v -W$(WARNING_LEVEL)  \
+ERLANG_COMPILER_OPT := -b beam $(INC) -v -W$(WARNING_LEVEL) \
 	$(ERLANG_COMPILER_OPT_DEBUG)
 
 
@@ -172,6 +172,7 @@ BEAM_PATH_OPT = $(foreach dir,$(BEAM_DIRS),--beam-dir $(dir))
 #  -c $(PROJECT_NAME), as not specifying it on the command line allows to
 # select the one in ~/.erlang.cookie (if any), which is better
 #
-# OVERRIDDEN_OPT left for the user
-ERL_PARAMETERIZED_LAUNCHER = $(ERL_LAUNCHER) -v  --fqdn $(FQDN) $(BEAM_PATH_OPT) $(OVERRIDDEN_OPT)
+# OVERRIDDEN_OPT left for the user.
+ERL_PARAMETERIZED_LAUNCHER = $(ERL_LAUNCHER) -v  --fqdn $(FQDN) \
+						   $(BEAM_PATH_OPT) $(OVERRIDDEN_OPT)
 
