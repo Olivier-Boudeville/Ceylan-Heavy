@@ -42,12 +42,15 @@
 
 
 
--export([ get_lazy_circle_box/1, to_string/1 ]). 
+-export([ get_lazy_circle_box/1, get_minimal_enclosing_circle_box/1, 
+		  to_string/1 ]). 
 
 
 % Returns a disc which is a bounding-box for the specified list of points, which
-% must not be empty.
-% Returns the disc information: {Center,SquareRadius}.
+% must not be empty. 
+% Note: this bounding box is not the smallest one, but is
+% very lightweight to compute.
+% Returns the disc information:{Center,SquareRadius}.
 get_lazy_circle_box( PointList ) ->
 	{TopLeft,BottomRight} = linear_2D:compute_smallest_enclosing_rectangle( 
 							  PointList ),
@@ -57,6 +60,141 @@ get_lazy_circle_box( PointList ) ->
 	{Center,SquareRadius}.
 
 
+
+% Returns {Center,SquareRadius} which defines a bounding-box consisting on the
+% minimal enclosing circle (MEC) for the specified list of points.
+% Note: this bounding box is the smallest possible circle, but requires quite a
+% lot of computations.
+% Apparently there is now way of adding a point to an existing MEC without
+% recomputing everything from scratch. So we do not rely on an 'updateMEC'
+% function.
+get_minimal_enclosing_circle_box( [] ) ->
+	throw( no_point_to_enclose );
+
+get_minimal_enclosing_circle_box( [P] ) ->
+	% Only one point, epsilon-based comparison allows for a null radius:
+	{_Center=P,_SquareRadius=0};
+
+get_minimal_enclosing_circle_box( [P1,P2] ) ->
+
+	% Here we have two points, which defines the circle:
+	Center = linear_2D:get_center( P1, P2 ),
+
+	% Division by 4, not 2, as we deal with square quantities:
+	SquareRadius = linear_2D:square_distance( P1, P2 ) / 4,
+
+	{Center,SquareRadius};
+
+get_minimal_enclosing_circle_box( [P1,P2,P3] ) ->
+
+	io:format( "get_minimal_enclosing_circle_box for 3 points: "
+			   "~w, ~w and ~w.~n", [P1,P2,P3] ),
+
+	% Here we have three points, a triangle, which defines the circumscribed
+	% circle, whose center is the intersection of the three perpendicular
+	% bisectors.
+	% Let La be the perpendicular bisector of [P1,P2] and Lb the one of [P1,P3]:
+	Pa = linear_2D:get_center(P1,P2),
+	La = linear_2D:get_line( Pa, linear_2D:vectorize(P1,P2) ),
+	Pb = linear_2D:get_center(P1,P3),
+	Lb = linear_2D:get_line( Pb, linear_2D:vectorize(P1,P3) ),
+
+	case linear_2D:intersect( La, Lb ) of
+
+		no_point ->
+			% Here the three vertices must be aligned, we could find the two
+			% most distant points and use them as a MEC diameter.
+			throw( flat_triangle );
+		
+		Center ->
+			{Center,linear_2D:square_distance(Center,P1),{La,Lb}}
+
+	end;
+
+get_minimal_enclosing_circle_box( PointList ) ->
+	% Here we have at least three points, let's work an the hull instead:
+	% See http://www.cs.mcgill.ca/~cs507/projects/1998/jacob/solutions.html
+    % for the solution.
+	case linear_2D:compute_convex_hull( PointList ) of
+
+		[P1,P2|H] ->
+			% We start with a side S defined by P1 and P2 here:
+			try_side( P1, P2, H );
+
+		Other ->
+			throw( {unexpected_hull,Other} )
+
+	end.
+
+			
+
+% Returns {MinAngle,MinVertex}, the minimum angle subtended by the segment
+% [P1,P2] among points in the Points list.
+find_minimal_angle( P1, P2, Points ) ->
+	find_minimal_angle( P1, P2, Points, 
+						{_MinAngle=360.0,_MinVertex=undefined} ).
+
+
+find_minimal_angle( _P1, _P2, _Points=[], MinPair ) ->
+	MinPair;
+
+find_minimal_angle( P1, P2, [P|OtherPoints], MinPair={MinAngle,_MinVertex} ) ->
+	case linear_2D:abs_angle_deg( P, P1, P2 ) of
+
+		Angle when Angle < MinAngle ->
+			% We have a new winner here:
+			find_minimal_angle( P1, P2, OtherPoints, {Angle,P} ); 
+							   
+		_NonMinimalAngle ->
+			find_minimal_angle( P1, P2, OtherPoints, MinPair )
+	
+	end.
+
+
+% Tries the side of the convex hull H defined by vertices P1 and P2.		
+try_side( P1, P2, H ) ->
+
+	{MinAngle,MinVertex} = find_minimal_angle( P1, P2, H ),
+
+	case MinAngle of
+		
+		FirstAngle when FirstAngle > 90 ->
+		    % Finished, P1 and P2 determine the diametric circle,
+			% reusing the code for that:
+			get_minimal_enclosing_circle_box( [P1,P2] );
+		
+		_FirstAngleTooSmall ->
+			SecondAngle = linear_2D:abs_angle_deg( P1, MinVertex, P2 ),
+			case linear_2D:is_obtuse( SecondAngle ) of
+				
+				false ->
+					ThirdAngle = linear_2D:abs_angle_deg( P2, MinVertex, P1 ),
+					
+					case linear_2D:is_obtuse( ThirdAngle ) of
+						
+						false ->
+							% MEC determined by P1, P2 and MinVertex:
+							get_minimal_enclosing_circle_box( 
+							  [P1, P2, MinVertex] );
+						
+						true ->
+							% Here we try the new S, defined by the opposite 
+							% points of P2, i.e. MinVertex and P1:
+							try_side( MinVertex, P1, H )
+
+					end;
+
+				true ->						
+					% Here we try the new S, defined by the opposite points of
+					% P1, i.e. MinVertex and P2:
+					try_side( MinVertex, P1, H )
+
+			end
+
+	end.
+
+
+% Returns a textual description of specified circle.
 to_string( {circle,Center,SquareRadius} ) -> 
 	io_lib:format( "circle whose center is ~w and square radius is ~w",
 				   [Center,SquareRadius] ).
