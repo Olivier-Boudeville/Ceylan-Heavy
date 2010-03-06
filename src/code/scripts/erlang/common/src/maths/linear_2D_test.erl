@@ -26,7 +26,7 @@
 
 
 % Unit tests for the linear 2D facilities.
-% See the  tested module.
+% See the linear_2D tested module.
 -module(linear_2D_test).
 
 
@@ -40,7 +40,60 @@ run() ->
 
 	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
 
+	V={9,1},
 	
+	NL = linear_2D:normal_left( V ),
+	NR = linear_2D:normal_right( V ),
+
+	0 = linear_2D:dot_product( V, NL ),
+	0 = linear_2D:dot_product( V, NR ),
+
+	io:format( "    ~p is a (non-unit) left normal for vector ~p, "
+			   "and ~p is a right normal.~n", [NL,V,NR] ),
+
+	true  = linear_2D:is_strictly_on_the_right( NR, {0,0}, V ),
+	false = linear_2D:is_strictly_on_the_right( NL, {0,0}, V ),
+	false = linear_2D:is_strictly_on_the_right( V,  {0,0}, V ),
+
+	true  = linear_2D:is_strictly_on_the_right( V, {0,0}, NL ),
+	false = linear_2D:is_strictly_on_the_right( V, {0,0}, NR ),
+
+	NonV = linear_2D:scale( V, -1 ),
+
+	true  = linear_2D:is_strictly_on_the_right( NL, {0,0}, NonV ),
+   	false = linear_2D:is_strictly_on_the_right( NR, {0,0}, NonV ),
+
+	Pa    = {469,243},
+	Pivot = {348,268},
+	Pb    = {421,193},
+
+	false = linear_2D:is_strictly_on_the_right( Pa, Pivot, Pb ),
+
+	A={0,0},
+
+	B1={1,0},
+	B2={3,3},
+	B3={-5,3},
+
+	C1={0,1},
+	C2={-2,-1},
+	C3={1,-4},
+
+	[ io:format( "    Unoriented angle between the vertex ~w and ~w, "
+				 "~w is ~f degrees, oriented angle is ~f degrees.~n",
+				 [ P1, P2, P3, linear_2D:abs_angle_deg( P1, P2, P3 ),
+					 linear_2D:angle_deg( P1, P2, P3 ) ] ) || P1 <- [A], 
+														P2 <- [B1,B2,B3],
+														P3 <- [C1,C2,C3] ],
+
+	true  = linear_2D:are_close( B1, linear_2D:translate(B1,{0.000001,0} )),
+	false = linear_2D:are_close( B1, A ),
+
+	true  = linear_2D:is_within( A, C1, 1 ),
+	true  = linear_2D:is_within( A, B1, 1-0.0000001 ),
+	false = linear_2D:is_within( A, B2, 2 ),
+
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
+	timer:sleep(200),
 	erlang:halt().
 
