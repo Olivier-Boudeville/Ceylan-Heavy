@@ -150,16 +150,42 @@ create_test_gui( PointCount, MainWin ) ->
 	HullPoints = linear_2D:compute_convex_hull( RandomPoints ),
 
 	%io:format( "Hull points: ~w.~n", [HullPoints] ),
-	io:format( "Number of hull points: ~B.~n", [length(HullPoints)] ),
+	io:format( "Number of hull/set points: ~B/~B.~n", 
+			   [length(HullPoints),PointCount] ),
+
+	{Center,SquareRadius,{L1,L2}} = bounding_box:get_minimal_enclosing_circle_box(
+							  HullPoints ),
+
+	Radius = math:sqrt(SquareRadius),
+	io:format( "Bounding Minimal Enclosing Circle: "
+			   "center = ~p, radius = ~f.~n~n",
+			   [Center,Radius] ),
+
+	gui:draw_labelled_cross( Center, 5, purple, "MEC center", Canvas ),
+
+	gui:draw_circle( Center, Radius, Canvas ),
+
+	draw_segment( L1, Canvas ),	
+	draw_segment( L2, Canvas ),
 
 	gui:draw_lines( [Pivot|HullPoints], red, Canvas ),
 	Canvas.
  
 
+% Returns M={X,Y} for M on line L having Y for ordinate.
+get_point_at( _L={A,B,C}, Y ) ->
+	% For y=K, x=-(C+BK)/A 
+	{-(C+B*Y)/A,Y}.
+
+
+draw_segment( L, Canvas ) ->
+	gui:draw_line( get_point_at(L,0), get_point_at( L,get_canvas_height() ), 
+				   Canvas ).
+ 
 
 gui_main_loop( MainWin, PointCount, Canvas ) ->
 	
-	io:format( "~nEntering main loop, point count is ~B.~n", [PointCount-1] ),
+	%io:format( "~nEntering main loop, point count is ~B.~n", [PointCount-1] ),
 
 	receive
         
@@ -170,6 +196,11 @@ gui_main_loop( MainWin, PointCount, Canvas ) ->
 		to_do ->
 			create_basic_test_gui( Canvas ),
 			gui_main_loop( MainWin, PointCount, Canvas );
+
+		{gs,add_point_button,click,[],[_Label]} ->
+			gs:destroy( Canvas ),
+			NewCanvas = create_test_gui( PointCount, MainWin ),
+			gui_main_loop( MainWin, PointCount+1, NewCanvas );
 
 		X ->
             io:format("GUI test got event '~w' (ignored).~n",[X]),
