@@ -36,7 +36,7 @@
 
 
 % Operations on floating-point values:
--export([ are_close/2 ]).
+-export([ are_close/2, is_null/1 ]).
 
 
 % Operations with angles:
@@ -116,6 +116,12 @@ modulo(0,_Y) ->
 % enough to be equal.
 are_close( X, Y ) ->
 	erlang:abs(X-Y) < ?epsilon.
+
+
+% Returns true iff the specified floating-point number is deemed close enough to
+% zero to be null.
+is_null( X ) ->	
+	erlang:abs(X) < ?epsilon.
 
 
 
