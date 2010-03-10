@@ -529,8 +529,27 @@ is_obtuse( AngleInDegrees ) ->
 % to AC.
 abs_angle_rad( A, B, C ) ->
 	AB = vectorize(A,B),
+	M1 = magnitude(AB),
+	case math_utils:is_null(M1) of 
+
+		true ->
+			throw( {degenerate_angle,{A,B}} );
+		_ ->
+			ok
+
+	end,
 	AC = vectorize(A,C),
-	math:acos( dot_product( AB, AC )/ ( magnitude(AB)*magnitude(AC) ) ).
+	M2 = magnitude(AC),
+	case math_utils:is_null(M2) of 
+
+		true ->
+			throw( {degenerate_angle,{A,C}} );
+		_ ->
+			ok
+
+	end,
+	%io:format( "AB=~w, AC=~w, M1=~f, M2=~f.~n", [AB,AC,M1,M2] ),
+	math:acos( dot_product( AB, AC ) / ( magnitude(AB)*magnitude(AC) ) ).
 
 
 % Returns the signed (oriented) angle, in radians, between the vector AB and AC.
