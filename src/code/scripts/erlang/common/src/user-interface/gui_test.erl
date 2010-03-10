@@ -127,7 +127,7 @@ create_test_gui( PointCount, MainWin ) ->
         %{scrollregion, {100,200,30,200}}
 										 ] ),
 
-	RandomPoints = [ {random:uniform(300)+300,random:uniform(300)+100}
+	RandomPoints = [ {random:uniform(200)+300,random:uniform(300)+100}
 					 || _Count <- lists:seq(1,PointCount) ],
 
 	%io:format( "Random points: ~w.~n", [RandomPoints] ),
@@ -153,7 +153,7 @@ create_test_gui( PointCount, MainWin ) ->
 	io:format( "Number of hull/set points: ~B/~B.~n", 
 			   [length(HullPoints),PointCount] ),
 
-	{Center,SquareRadius,{L1,L2}} = bounding_box:get_minimal_enclosing_circle_box(
+	{Center,SquareRadius} = bounding_box:get_minimal_enclosing_circle_box(
 							  HullPoints ),
 
 	Radius = math:sqrt(SquareRadius),
@@ -164,9 +164,6 @@ create_test_gui( PointCount, MainWin ) ->
 	gui:draw_labelled_cross( Center, 5, purple, "MEC center", Canvas ),
 
 	gui:draw_circle( Center, Radius, Canvas ),
-
-	draw_segment( L1, Canvas ),	
-	draw_segment( L2, Canvas ),
 
 	gui:draw_lines( [Pivot|HullPoints], red, Canvas ),
 	Canvas.
