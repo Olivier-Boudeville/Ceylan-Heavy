@@ -41,9 +41,9 @@
 -module(bounding_box).
 
 
-
 -export([ get_lazy_circle_box/1, get_minimal_enclosing_circle_box/1, 
 		  to_string/1 ]). 
+
 
 
 % Returns a disc which is a bounding-box for the specified list of points, which
@@ -87,8 +87,8 @@ get_minimal_enclosing_circle_box( [P1,P2] ) ->
 
 get_minimal_enclosing_circle_box( [P1,P2,P3] ) ->
 
-	io:format( "get_minimal_enclosing_circle_box for 3 points: "
-			   "~w, ~w and ~w.~n", [P1,P2,P3] ),
+	%io:format( "get_minimal_enclosing_circle_box for 3 points: "
+	%		   "~w, ~w and ~w.~n", [P1,P2,P3] ),
 
 	% Here we have three points, a triangle, which defines the circumscribed
 	% circle, whose center is the intersection of the three perpendicular
@@ -107,7 +107,7 @@ get_minimal_enclosing_circle_box( [P1,P2,P3] ) ->
 			throw( flat_triangle );
 		
 		Center ->
-			{Center,linear_2D:square_distance(Center,P1),{La,Lb}}
+			{Center,linear_2D:square_distance(Center,P1)}
 
 	end;
 
@@ -115,6 +115,8 @@ get_minimal_enclosing_circle_box( PointList ) ->
 	% Here we have at least three points, let's work an the hull instead:
 	% See http://www.cs.mcgill.ca/~cs507/projects/1998/jacob/solutions.html
     % for the solution.
+	%io:format( "MEC for ~w.~n", [PointList] ),
+
 	case linear_2D:compute_convex_hull( PointList ) of
 
 		[P1,P2|H] ->
@@ -131,6 +133,8 @@ get_minimal_enclosing_circle_box( PointList ) ->
 % Returns {MinAngle,MinVertex}, the minimum angle subtended by the segment
 % [P1,P2] among points in the Points list.
 find_minimal_angle( P1, P2, Points ) ->
+	io:format( "Trying to find minimal angle in ~w for ~w and ~w.~n",
+			   [Points,P1,P2 ] ),
 	find_minimal_angle( P1, P2, Points, 
 						{_MinAngle=360.0,_MinVertex=undefined} ).
 
@@ -156,6 +160,8 @@ try_side( P1, P2, H ) ->
 
 	{MinAngle,MinVertex} = find_minimal_angle( P1, P2, H ),
 
+	io:format( "Trying side [~w,~w], min vertex: ~w.~n", [P1,P2,MinVertex] ),
+
 	case MinAngle of
 		
 		FirstAngle when FirstAngle > 90 ->
@@ -175,19 +181,27 @@ try_side( P1, P2, H ) ->
 						false ->
 							% MEC determined by P1, P2 and MinVertex:
 							get_minimal_enclosing_circle_box( 
-							  [P1, P2, MinVertex] );
+							  [ P1, P2, MinVertex ] );
 						
 						true ->
 							% Here we try the new S, defined by the opposite 
-							% points of P2, i.e. MinVertex and P1:
-							try_side( MinVertex, P1, H )
+							% points of P2, i.e. MinVertex and P1.
+
+							% We must however reconstruct beforehand the list of
+							% remaining points. H contains MinVertex but not P2:
+							NewH = [P2|lists:delete(MinVertex,H)],
+							try_side( MinVertex, P1, NewH )
 
 					end;
 
 				true ->						
 					% Here we try the new S, defined by the opposite points of
-					% P1, i.e. MinVertex and P2:
-					try_side( MinVertex, P1, H )
+					% P1, i.e. MinVertex and P2.
+
+					% We must however reconstruct beforehand the list of
+					% remaining points. H contains MinVertex but not P1:
+					NewH = [P1|lists:delete(MinVertex,H)],
+					try_side( MinVertex, P2, NewH )
 
 			end
 
