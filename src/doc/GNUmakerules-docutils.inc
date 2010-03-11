@@ -47,6 +47,15 @@ ROTATED_PNG = $(patsubst %.png,%-rotated.png,$(wildcard *.png))
 
 
 
+BORDERED_PNG = $(patsubst %.png,%-bordered.png,$(wildcard *.png))
+
+# Adds to the image a thin black border enclosing some additional white space:
+%-bordered.png: %.png
+	@echo "    Generating $@ from $< with $(IMAGE_MAGICK)"
+	@$(IMAGE_MAGICK) $< -mattecolor White -frame 4x4 -mattecolor Black -frame 1x1 $@
+
+
+
 # Graph rendering section.
 
 DOT_OPT := -Gcharset=latin1
@@ -150,13 +159,14 @@ VIEW_PDF := yes
 
 
 %.html: %.rst
-	@echo "     Generating HTML documentation $@ using CSS $(PROJECT_CSS)"
+	@echo "     Generating HTML documentation $@"
 	@$(RST_GENERATOR) $< $(PROJECT_CSS)
 
 
 %.pdf: %.traces
 	@echo "     Generating PDF report $@ from $<"
 	@if $(RST_GENERATOR) $< --pdf ; then if [ "$(VIEW_PDF)" != "no" ] ; then $(PDF_VIEWER) $@ & fi; fi
+
 
 
 
@@ -233,12 +243,12 @@ clean: clean-doc-repository clean-generated clean-dot clean-doc-logs \
 
 clean-doc-repository:
 	@echo "     Cleaning documentation repository in $(TMP_RST_REPOSITORY)"
-	-@rm -rf $(TMP_RST_REPOSITORY)
+	-@/bin/rm -rf $(TMP_RST_REPOSITORY)
 			
 			
 clean-generated:
 	@echo "     Cleaning generated files"
-	-@rm -f $(RST_GENERATED_FILES)
+	-@/bin/rm -f $(RST_GENERATED_FILES)
 	
 
 
@@ -260,11 +270,11 @@ clean-gnuplot:
 	
 	
 clean-png: 
-	-@rm -f $(GRAPH_PNG) $(PNG_FROM_PYTHON) $(PNG_FROM_PYTHON_NEGATED) \
+	-@/bin/rm -f $(GRAPH_PNG) $(PNG_FROM_PYTHON) $(PNG_FROM_PYTHON_NEGATED) \
 	$(NEGATED_PNG) $(ROTATED_PNG)
 	
 	
 clean-rst:
-	-@rm -f $(RST_GENERATED_FILES)
+	-@/bin/rm -f $(RST_GENERATED_FILES)
 	@if [ -d "$(TMP_RST_REPOSITORY)" ] ; then $(MAKE) clean-doc-repository; fi 
 
