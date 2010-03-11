@@ -1,5 +1,3 @@
-
-
 CEYLAN_ERLANG_TOP = .
 
 MODULES_DIRS = common wooper traces tools
@@ -14,7 +12,7 @@ PROJECT_NAME = "Ceylan-Erlang"
 
 
 
-.PHONY: all install clean
+.PHONY: all test install clean
 
 
 
@@ -27,7 +25,15 @@ all:
 	then exit 1; fi ; done
 
 
-	
+test:
+	@echo "  Testing $(PROJECT_NAME)"
+	@for m in $(MODULES_DIRS); do \
+	if ! ( if [ -d $$m ] ; then cd $$m && \
+	$(MAKE) -s test CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. \
+	; else echo "     (directory $$m skipped)" ; fi ) ; \
+	then exit 1; fi ; done
+
+
 install: all
 	@echo "  Installing $(PROJECT_NAME) with INSTALLATION_PREFIX" \
 	"set to $(INSTALLATION_PREFIX)"
