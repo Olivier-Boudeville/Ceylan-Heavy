@@ -1,4 +1,4 @@
-% Copyright (C) 2003-2009 Olivier Boudeville
+% Copyright (C) 2003-2010 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
 %
@@ -30,7 +30,7 @@
 
 
 % To avoid warnings if not used:
--export( [ testFailed/1, check_pending_wooper_results/0 ]).
+-export([ testFailed/1, check_pending_wooper_results/0, testFinished/0 ]).
 
 
 
@@ -43,8 +43,14 @@
 
 
 
+% For TracingActivated:
+-include("class_TraceEmitter.hrl").
 
-% Defines some macros to emit standalone test traces.
+
+
+
+-ifdef(TracingActivated).
+
 
 -define( test_fatal(Message),
 	class_TraceEmitter:send_from_test(fatal,[Message])
@@ -77,16 +83,47 @@
 
 
 
+-else.
+
+
+% Message is returned, as otherwise some variables in calling code could
+% be determined as unused, and thus would trigger a warning:
+
+-define( test_fatal(Message), test_trace_disabled ).
+
+-define( test_error(Message), test_trace_disabled ).
+	
+-define( test_warning(Message), test_trace_disabled ).
+
+-define( test_info(Message), test_trace_disabled ).
+
+-define( test_trace(Message), test_trace_disabled ).
+
+-define( test_debug(Message), test_trace_disabled ).
+
+
+-endif.
+
+
+
+-ifdef(TracingActivated).
+
 -define(test_start, 
 	% Create first, synchronously (to avoid race conditions), a trace
 	% aggregator (false is to specify a non-private i.e. global aggregator).
 	% Race conditions could occur at least with trace emitters (they would
 	% create their own aggregator, should none by found) and with trace
 	% supervisor (which expects a trace file to be already created at start-up).
+	% Goes back to the beginning of line:
+	io:format( "~n" ),
+	TestIsBatch = case init:get_argument('-batch') of
+		{ok,_} -> true; _ -> false 
+	end,	
 	TraceAggregatorPid = class_TraceAggregator:synchronous_new_link(
-		?TraceFilename, ?TraceType, false ),
+		?TraceFilename, ?TraceType, ?TraceTitle, _Private=false, TestIsBatch ),
 	?test_info([ io_lib:format( "Testing module(s) ~w.", 
 		[ ?Tested_modules ] ) ]),
+	% Defined in class_TraceSupervisor.hrl:
 	?init_trace_supervisor
 ).
 
@@ -125,8 +162,64 @@
 ).
 
 
+
+-else.
+
+
+% Here, even if traces are deactivated, a trace aggregator is created, as
+% actors expect to find one at start-up.
+% However no trace supervisor is needed here.
+
+-define(test_start, 
+	% Create first, synchronously (to avoid race conditions), a trace
+	% aggregator (false is to specify a non-private i.e. global aggregator).
+	% Goes back to the beginning of line:
+	io:format( "~n" ),
+	TraceAggregatorPid = class_TraceAggregator:synchronous_new_link(
+	  ?TraceFilename, ?TraceType, ?TraceTitle, _Private=false, _IsBatch=true ),
+	?test_info([ io_lib:format( "Testing module(s) ~w.", 
+		[ ?Tested_modules ] ) ])
+).
+
+
+
+-define(test_stop, 
+	?test_info([ io_lib:format( "End of test for module(s) ~w.", 
+		[ ?Tested_modules ] ) ]),
+	TraceAggregatorPid ! {synchronous_delete,self()},
+	receive
 	
-% Handle a test failure.
+  		{deleted,TraceAggregatorPid} ->
+			ok
+			
+  	end,
+	check_pending_wooper_results(),
+	testFinished()
+).
+
+
+
+-define(test_stop_without_waiting_for_trace_supervisor, 
+	?test_info([ io_lib:format( "End of test for module(s) ~w.", 
+		[ ?Tested_modules ] ) ]),
+	TraceAggregatorPid ! {synchronous_delete,self()},
+	receive
+	
+  		{deleted,TraceAggregatorPid} ->
+			ok
+			
+  	end,
+	check_pending_wooper_results(),
+	testFinished()
+).
+
+
+-endif.
+	
+	
+	
+	
+% Handles a test failure.
 testFailed(Reason) ->
 	% For some reason erlang:error is unable to interpret strings as strings,
 	% they are always output as unreadable list.
@@ -137,6 +230,7 @@ testFailed(Reason) ->
 	% Needed, otherwise error_logger will not display anything:	
 	timer:sleep(500),	
 	erlang:error( "Test ~s failed.", [ ?MODULE ]).
+
 
 
 

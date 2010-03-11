@@ -1,4 +1,4 @@
-% Copyright (C) 2003-2009 Olivier Boudeville
+% Copyright (C) 2003-2010 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
 %
@@ -26,7 +26,14 @@
 % Creation date: July 1, 2007.
 
 
+% Most basic trace aggregator.
+% It just collects traces from emitters and store them at once in a file.
+% Trace listeners can connect to the aggregator. In this case it will stop and 
+% send first the full current trace file to them. From that moment, incoming
+% traces will be both written in file and sent to each trace listener still
+% connected.
 -module(class_TraceAggregator).
+
 
 
 % Determines what are the mother classes of this class (if any):
@@ -35,18 +42,19 @@
 
 
 % Parameters taken by the constructor ('construct'). 
--define(wooper_construct_parameters, TraceFilename, TraceType, IsPrivate ).
+-define(wooper_construct_parameters, TraceFilename, TraceType, TraceTitle, 
+	IsPrivate, IsBatch ).
 
 
 
 % Declaring all variations of WOOPER standard life-cycle operations:
 % (template pasted, two replacements performed to update arities)
--define( wooper_construct_export, new/3, new_link/3, 
-	synchronous_new/3, synchronous_new_link/3,
-	synchronous_timed_new/3, synchronous_timed_new_link/3,
-	remote_new/4, remote_new_link/4, remote_synchronous_new/4,
-	remote_synchronous_new_link/4, remote_synchronous_timed_new/4,
-	remote_synchronous_timed_new_link/4, construct/4, delete/1 ).
+-define( wooper_construct_export, new/5, new_link/5, 
+	synchronous_new/5, synchronous_new_link/5,
+	synchronous_timed_new/5, synchronous_timed_new_link/5,
+	remote_new/6, remote_new_link/6, remote_synchronous_new/6,
+	remote_synchronous_new_link/6, remote_synchronous_timed_new/6,
+	remote_synchronous_timed_new_link/6, construct/6, delete/1 ).
 
 
 
@@ -83,11 +91,13 @@
 
 
 
+
+
 % Implementation Notes.
 %
 % The aggregator could store per-emitter constant settings (ex: emitter name
 % and categorization) instead of having them sent to it each time.
-%
+
 
 
 
@@ -95,46 +105,65 @@
 %  - TraceFilename is the name of the file where traces should be written to.
 %  - TraceType is either 'log_mx_traces', '{text_traces,text_only}' or
 % '{text_traces,pdf}', depending whether LogMX should be used to browse the
-% execution traces, or just a text viewer.
+% execution traces, or just a text viewer
+%  - TraceTitle is the title that should be used for traces; mostly used for
+% the PDF output
 %  - IsPrivate tells whether this trace aggregator will be privately held
 % (hence should not be registered in naming service) or if it is a (registered) 
-% singleton.
+% singleton
+%  - IsBatch tells whether the aggregator is run in a batch context; useful
+% when trace type is {text_traces,pdf}, so that this aggregator does not 
+% display the produced PDF when in batch mode
 construct(State,?wooper_construct_parameters) ->
 
 	% First the direct mother classes (none), then this class-specific actions:
 
+	% Increases the chances that the aggregator does not lag too much behind 
+	% the current simulation state:
+	erlang:process_flag( priority, _Level=high ),
+	
 	PrivateState = case IsPrivate of 
 	
 		true ->
 			io:format( "~n~s Creating a private trace aggregator, "
 				"whose PID is ~w.~n", [ ?LogPrefix, self() ] ),
-			?setAttribute(State,is_private,true);
+			setAttribute( State, is_private, true );
 		
 		false ->
-			io:format( "~n~s Creating the trace aggregator, whose PID is ~w.~n",
-				[ ?LogPrefix, self() ] ),
+			%io:format( "~n~s Creating the trace aggregator, "
+			%	"whose PID is ~w.~n", [ ?LogPrefix, self() ] ),
 				
 			basic_utils:register_as( ?trace_aggregator_name, local_and_global ),
 
-			?setAttribute(State,is_private,false)
+			setAttribute( State, is_private, false )
 
 	end,
 	
-	{ok,File} = file:open( TraceFilename, [write] ),
+	% Writes to file, as soon as 32KB or 0.5s is reached:
+	{ok,File} = file:open( TraceFilename, 
+		  [ write, raw, {delayed_write,_Size=32*1024,_Delay=500} ] ),
 
-	SetState = ?setAttributes( PrivateState, [ 
+	SetState = setAttributes( PrivateState, [ 
 		{trace_filename,TraceFilename}, 
 		{trace_file,File},
 		{trace_type,TraceType},
-		{trace_listeners,[]} ] ),
-	io:format( "~s Trace aggregator created.~n", [ ?LogPrefix ] ),
+		{trace_title,TraceTitle},
+		{trace_listeners,[]},
+		{is_batch,IsBatch} 
+											 ] ),
+		
+	io:format( "~s Aggregator created, trace filename is ~s, trace type is ~w, "
+		"and trace title is '~s'.~n",
+		[ ?LogPrefix, TraceFilename, TraceType, TraceTitle ] ),
+	
 	manage_trace_header(SetState).
 
 	
 	
 % Overridden destructor.
 delete(State) ->
-	io:format( "~s Deleting trace aggregator.~n", [ ?LogPrefix ] ),
+	
+	%io:format( "~s Deleting trace aggregator.~n", [ ?LogPrefix ] ),
 
 	% Class-specific actions:
 	case ?getAttr(is_private) of
@@ -149,8 +178,19 @@ delete(State) ->
 	
 	FooterState = manage_trace_footer(State),
 	
-	ok = file:close( ?getAttr(trace_file) ),
+	% We were performing immediate writes here (due to the delayed_write
+	% option, close may return an old write error and not even try to close the
+	% file. In that case we try to close it another time):
+	case file:close( ?getAttr(trace_file) ) of 
+		
+		{error,_Reason} ->
+			file:close( ?getAttr(trace_file) ) ;
+		
+		ok  ->
+			ok
 	
+	end,
+		
 	case ?getAttr(trace_type) of 
 	
 		log_mx_traces ->
@@ -161,27 +201,37 @@ delete(State) ->
 			
 		{text_traces,pdf} ->
 		
-			io:format( "~s Trace aggregator: generating PDF trace report.~n",
-				[ ?LogPrefix ] ),
+			io:format( "~s Generating PDF trace report.~n", [ ?LogPrefix ] ),
 				
 			PdfTargetFilename = file_utils:replace_extension( 
 				?getAttr(trace_filename), ?TraceExtension, ".pdf" ),
 				
-			Command = "if make " ++ PdfTargetFilename 
-				++ "; then echo ok; else echo error; fi",
+			GenerationCommand = "if make " ++ PdfTargetFilename 
+				++ " VIEW_PDF=no 1>/dev/null 2>&1; "
+				"then echo ok; else echo error; fi",
+			
+			%io:format( "PDF generation command is '~s'.~n", 
+			% [GenerationCommand] ),
 				 
-			case os:cmd( Command ) of
+			case os:cmd( GenerationCommand ) of
 
 				"ok\n" ->	
 				
-					io:format( "~s Trace aggregator: "
-						"displaying PDF trace report.~n", [ ?LogPrefix ] ),
-
-					os:cmd("evince " ++ PdfTargetFilename ) ;
+					case ?getAttr(is_batch) of
+						
+						true ->
+							ok;
+						
+						false ->
+							io:format( "~s Displaying PDF trace report.~n", 
+									  [ ?LogPrefix ] ),
+		
+							executable_utils:display_pdf_file( PdfTargetFilename )
+						
+						end;
 				
-				_Error ->
-					io:format( "~s Trace aggregator: "
-						"generation of PDF from ~s failed.~n", 
+				"error\n" ->
+					io:format( "~s Generation of PDF from ~s failed.~n", 
 						[ ?LogPrefix, ?getAttr(trace_filename) ] )	
 						
 			end			
@@ -190,7 +240,7 @@ delete(State) ->
 
 	% Then call the direct mother class counterparts: (none)
 	
-	io:format( "~s Trace aggregator deleted.~n", [ ?LogPrefix ] ),
+	io:format( "~s Aggregator deleted.~n", [ ?LogPrefix ] ),
 	
 	% Allow chaining:
 	FooterState.
@@ -202,7 +252,8 @@ delete(State) ->
 % Methods section.
 
 
-% Sends a full trace to this aggregator to have it stored.
+% Sends a full trace to this aggregator to have it processed, i.e. stored
+% or directly written.
 % The nine fields correspond to the ones defined in our trace format.
 % (const oneway)
 send( State, TraceEmitterPid, TraceEmitterName, TraceEmitterCategorization,
@@ -213,16 +264,18 @@ send( State, TraceEmitterPid, TraceEmitterName, TraceEmitterCategorization,
 		TraceEmitterCategorization, Tick, Time, Location, 
 		MessageCategorization, Priority, Message } ),
 				
-	io:format( ?getAttr(trace_file), "~s", [Trace] ),
-	
+	% Was: io:format( ?getAttr(trace_file), "~s", [Trace] ),
+	% but now we use faster raw writes:
+	ok = file:write( ?getAttr(trace_file), io_lib:format( "~s", [Trace] ) ), 
+			   
 	Listeners = ?getAttr(trace_listeners),
-	case length(Listeners) of 
+	case Listeners of 
 		
-		0 ->
+		[] ->
 			ok;
 			
 		_Other ->	
-			BinTrace = list_to_binary(Trace),
+			BinTrace = text_utils:string_to_binary(Trace),
 			lists:foreach( 
 				fun(Listener) ->	
 		
@@ -250,7 +303,7 @@ addTraceListener(State,ListenerPid) ->
 			TraceFilename = ?getAttr(trace_filename),
 			Bin = file_utils:file_to_zipped_term( TraceFilename ),
 			ListenerPid ! {trace_zip,Bin,TraceFilename},
-			?appendToAttribute( State, trace_listeners,	ListenerPid);
+			appendToAttribute( State, trace_listeners,	ListenerPid);
 				
 		OtherTraceType ->
 			Message = io_lib:format( 
@@ -266,12 +319,13 @@ addTraceListener(State,ListenerPid) ->
 	?wooper_return_state_only( NewState ).
 		
 
+
 % Removes specified trace listener from this aggregator.
 % (oneway)
 removeTraceListener(State,ListenerPid) ->
 	io:format( "~s Removing trace listener ~w.~n", 
 		[ ?LogPrefix, ListenerPid ] ),
-	UnregisterState = ?deleteFromAttribute(State,trace_listeners,ListenerPid),
+	UnregisterState = deleteFromAttribute(State,trace_listeners,ListenerPid),
 	?wooper_return_state_only( UnregisterState ).
 	
 
@@ -283,21 +337,22 @@ removeTraceListener(State,ListenerPid) ->
 % Creates the trace aggregator asynchronously, with default settings.
 % (static)	
 create( UseSynchronousNew ) ->
-	create( UseSynchronousNew, _TraceType = log_mx_traces ).
+	create( UseSynchronousNew, _TraceType=log_mx_traces ).
 	
 	
 	
 % Creates the trace aggregator asynchronously, using specified trace type.
 % (static)	
-create( _UseSynchronousNew = false, TraceType ) ->
-	new( ?trace_aggregator_filename, TraceType, _IsPrivate = false  );
+create( _UseSynchronousNew=false, TraceType ) ->
+	new_link( ?trace_aggregator_filename, TraceType, ?TraceTitle, 
+		_IsPrivate=false, _IsBatch=false  );
 
 % Creates the trace aggregator synchronously, using specified trace type.
 % (static)	
 create( _UseSynchronousNew = true, TraceType ) ->
 	% Trace filename, isPrivate:
-	synchronous_new( ?trace_aggregator_filename, TraceType, 
-		_IsPrivate = false ).
+	synchronous_new_link( ?trace_aggregator_filename, TraceType, 
+		?TraceTitle, _IsPrivate=false, _IsBatch=false ).
 
 
 
@@ -389,42 +444,42 @@ remove() ->
 
 
 % For Pid (ex: locally, <0.33.0>):
--define(pid_width,8).
+-define(PidWidth,8).
 
 
 % For EmitterName (ex: "First soda machine"):
--define(emitter_name_width,12).
+-define(EmitterNameWidth,12).
 
 
 % For EmitterCategorization (ex: "TimeManagement"):
-%-define(emitter_categorization_width,12).
--define(emitter_categorization_width,0).
+%-define(EmitterCategorizationWidth,12).
+-define(EmitterCategorizationWidth,0).
 
 
 % For Tick (ex: unknown, 3169899360000):
--define(tick_width,14).
+-define(TickWidth,14).
 
 
 % For Time (ex: "18/6/2009 16:32:14"):
--define(time_width,10).
+-define(TimeWidth,10).
 
 
 % For Location (ex: "soda_deterministic_integration_run@a_example.org"):
-%-define(location_width,12).
--define(location_width,0).
+%-define(LocationWidth,12).
+-define(LocationWidth,0).
 
 
 % For MessageCategorization (ex: "Execution.Uncategorized"):
-%-define(message_categorization_width,4).
--define(message_categorization_width,0).
+%-define(MessageCategorizationWidth,4).
+-define(MessageCategorizationWidth,0).
 
 
 % For Priority (ex: warning):
--define(priority_width,7).
+-define(PriorityWidth,7).
 
 
 % For Message:
--define(message_width,45).
+-define(MessageWidth,45).
 
 
 
@@ -445,57 +500,46 @@ manage_trace_header(State) ->
 			
 		{text_traces,_TargetFormat} ->
 		
-			io:format( ?getAttr(trace_file), 
-				"~n==============================", [] ),
-				
-			io:format( ?getAttr(trace_file), 
-				"~nCeylan Execution Trace Report", [] ),
-				
-			io:format( ?getAttr(trace_file), 
-				"~n==============================~n~n~n", [] ),
-						
-			io:format( ?getAttr(trace_file), "~n.. _table:", [] ),
+			Title = ?getAttr(trace_title) ++ " Execution Trace Report",
 			
-			io:format( ?getAttr(trace_file), 
-				"~n.. contents:: Table of Contents~n~n", [] ),
-
-			io:format( ?getAttr(trace_file), "~nExecution Context", [] ),
-			io:format( ?getAttr(trace_file), "~n------------------~n~n", [] ),
-
-			io:format( ?getAttr(trace_file), 
-				"Report generated on ~s, from trace file ``~s``, "
-				"on host ``~s``.~n~n",
-				[ basic_utils:get_textual_timestamp(), ?getAttr(trace_filename),
-				net_adm:localhost() ] ),
-
-			io:format( ?getAttr(trace_file), "~nTrace Begin", [] ),
-			io:format( ?getAttr(trace_file), "~n-----------~n~n", [] ),
+			% Builds a proper RST-compatible title layout:
+			TitleText = io_lib:format( 
+				   "~s~n.. _table:~n~n.. contents:: Table of Contents~n~n", 
+				   [ text_utils:generate_title(Title,1) ] )
+				++ io_lib:format( "~s", [ text_utils:generate_title( 
+												 "Execution Context", 2 ) ] )
+				++ io_lib:format( "Report generated on ~s, "
+					"from trace file ``~s``, on host ``~s``.~n~n",
+				    [ basic_utils:get_textual_timestamp(), 
+					 ?getAttr(trace_filename), net_adm:localhost() ] )
+				++ io_lib:format( "~s", 
+					[ text_utils:generate_title( "Trace Begin", 2 ) ] ),
 			
-			% Prints array header:
-			io:format( ?getAttr(trace_file), get_row_separator(), [] ),
-			PidLines = basic_utils:format_text_for_width( 
-				"Pid of Trace Emitter", ?pid_width ),
+			PidLines = text_utils:format_text_for_width( 
+				"Pid of Trace Emitter", ?PidWidth ),
 		
-			EmitterNameLines = basic_utils:format_text_for_width( 
-				"Emitter Name", ?emitter_name_width ),
+			EmitterNameLines = text_utils:format_text_for_width( 
+				"Emitter Name", ?EmitterNameWidth ),
 		
-			TickLines = basic_utils:format_text_for_width(
-				"Execution Tick", ?tick_width ),
+			TickLines = text_utils:format_text_for_width(
+				"Execution Tick", ?TickWidth ),
 		
-			TimeLines = basic_utils:format_text_for_width( "User Time",
-				?time_width ),
+			TimeLines = text_utils:format_text_for_width( "User Time",
+				?TimeWidth ),
 		
-			PriorityLines = basic_utils:format_text_for_width( 
-				"Trace Type", ?priority_width ),
+			PriorityLines = text_utils:format_text_for_width( 
+				"Trace Type", ?PriorityWidth ),
 	
-			MessageLines = basic_utils:format_text_for_width( 
-				"Trace Message", ?message_width ),
+			MessageLines = text_utils:format_text_for_width( 
+				"Trace Message", ?MessageWidth ),
 	
 			HeaderLine = format_linesets( PidLines, EmitterNameLines, 
 				TickLines, TimeLines, PriorityLines, MessageLines ) ,
 				
-			io:format( ?getAttr(trace_file), HeaderLine, [] ),
-			io:format( ?getAttr(trace_file), get_row_separator($=), [] ),
+			ok = file:write( ?getAttr(trace_file), 							
+							TitleText ++ get_row_separator() ++ HeaderLine
+							++ get_row_separator($=) ),
+							
 			State
 				
 	end.
@@ -506,19 +550,18 @@ manage_trace_header(State) ->
 % Returns an updated state.
 % (helper function)
 manage_trace_footer(State) ->
+
 	case ?getAttr(trace_type) of
 	
 		log_mx_traces ->
 			State;
 			
 		{text_traces,_TargetFormat} ->
-			io:format( ?getAttr(trace_file), "~nTrace End", [] ),
-			io:format( ?getAttr(trace_file), "~n---------~n~n", [] ),
-			io:format( ?getAttr(trace_file), 
-				"~n~nEnd of execution traces.~n", [] ),
-			io:format( ?getAttr(trace_file), 
-				"~nBack to the table_ of contents "
-				"and to the beginning of traces.", [] ),
+			ok = file:write( ?getAttr(trace_file), io_lib:format( 
+					   "~s~n~nEnd of execution traces.~n"
+					   "~nBack to the table_ of contents "
+					   "and to the beginning of traces.",
+				[ text_utils:generate_title( "Trace End", 2 ) ] ) ),
 			State
 				
 	end.
@@ -533,17 +576,18 @@ get_row_separator() ->
 % Returns the typical separator between array rows, with specified dash element
 % to represent horizontal lines.
 get_row_separator(DashType) ->
-	[$+] ++ string:chars(DashType,?pid_width) 
-		++ [$+] ++ string:chars(DashType,?emitter_name_width)
-		++ [$+] ++ string:chars(DashType,?tick_width)
-		++ [$+] ++ string:chars(DashType,?time_width)
-		++ [$+] ++ string:chars(DashType,?priority_width)
-		++ [$+] ++ string:chars(DashType,?message_width) 
+	[$+] ++ string:chars(DashType,?PidWidth) 
+		++ [$+] ++ string:chars(DashType,?EmitterNameWidth)
+		++ [$+] ++ string:chars(DashType,?TickWidth)
+		++ [$+] ++ string:chars(DashType,?TimeWidth)
+		++ [$+] ++ string:chars(DashType,?PriorityWidth)
+		++ [$+] ++ string:chars(DashType,?MessageWidth) 
 		++ [$+] ++ "\n".
 	
 
 
 % Formats specified trace according to specified trace type.
+% Returns a plain string.
 format_trace_for( log_mx_traces, {TraceEmitterPid,
 		TraceEmitterName, TraceEmitterCategorization, Tick, Time, Location,
 		MessageCategorization, Priority, Message} ) ->
@@ -560,26 +604,26 @@ format_trace_for( {text_traces,_TargetFormat}, {TraceEmitterPid,
 	%  - Location
 	%  - MessageCategorization
 	
-	PidLines = basic_utils:format_text_for_width( 
-		io_lib:format( "~w", [TraceEmitterPid] ), ?pid_width ),
+	PidLines = text_utils:format_text_for_width( 
+		io_lib:format( "~w", [TraceEmitterPid] ), ?PidWidth ),
 		
-	EmitterNameLines = basic_utils:format_text_for_width( 
-		io_lib:format( "~s", [TraceEmitterName] ), ?emitter_name_width ),
+	EmitterNameLines = text_utils:format_text_for_width( 
+		io_lib:format( "~s", [TraceEmitterName] ), ?EmitterNameWidth ),
 		
 	% Can be a tick or an atom like 'unknown':	
-	TickLines = basic_utils:format_text_for_width( 
-		io_lib:format( "~p", [Tick] ), ?tick_width ),
+	TickLines = text_utils:format_text_for_width( 
+		io_lib:format( "~p", [Tick] ), ?TickWidth ),
 		
-	TimeLines = basic_utils:format_text_for_width( 
-		io_lib:format( "~s", [Time] ), ?time_width ),
+	TimeLines = text_utils:format_text_for_width( 
+		io_lib:format( "~s", [Time] ), ?TimeWidth ),
 		
-	PriorityLines = basic_utils:format_text_for_width( 
+	PriorityLines = text_utils:format_text_for_width( 
 		io_lib:format( "~w", [
 			class_TraceEmitter:get_channel_name_for_priority(Priority) ]),
-		?priority_width ),
+		?PriorityWidth ),
 	
-	MessageLines = basic_utils:format_text_for_width( 
-		io_lib:format( "~s", [Message] ), ?message_width ),
+	MessageLines = text_utils:format_text_for_width( 
+		io_lib:format( "~s", [Message] ), ?MessageWidth ),
 	
 	format_linesets( PidLines, EmitterNameLines, TickLines, TimeLines,
 		PriorityLines, MessageLines ) ++ get_row_separator().
@@ -595,13 +639,9 @@ format_linesets( PidLines, EmitterNameLines, TickLines, TimeLines,
 	
 	TotalLineCount = lists:max( [ length(L) || L <- Columns ] ),
 	
-	ColumnsPairs = [ 
-		{PidLines,?pid_width}, 
-		{EmitterNameLines,?emitter_name_width},
-		{TickLines,?tick_width}, 
-		{TimeLines,?time_width},
-		{PriorityLines,?priority_width}, 
-		{MessageLines,?message_width} ], 
+	ColumnsPairs = [ {PidLines,?PidWidth}, {EmitterNameLines,?EmitterNameWidth},
+		{TickLines,?TickWidth}, {TimeLines,?TimeWidth},
+		{PriorityLines,?PriorityWidth}, {MessageLines,?MessageWidth} ], 
 	
 	%io:format( "Column pairs:~n~p~n", [ColumnsPairs] ),
 	

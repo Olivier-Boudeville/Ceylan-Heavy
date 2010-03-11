@@ -5,18 +5,18 @@
 
 # PROJECT_NAME should be defined on a per-project basis.
 ifndef PROJECT_NAME
-	PROJECT_NAME = Trace
+	PROJECT_NAME = Traces
 endif
 
 
 # PROJECT_VERSION should be defined on a per-project basis.
 ifndef PROJECT_VERSION
-	PROJECT_VERSION = 0.2
+	PROJECT_VERSION = 0.3
 endif
 
 
 ifndef PACKAGE_NAME
-	PACKAGE_NAME = trace
+	PACKAGE_NAME = traces
 endif
 
 
@@ -25,44 +25,44 @@ ifndef PACKAGE_TOP
 endif
 
 
-TRACE_RELEASE_BASE := trace-$(PROJECT_VERSION)
+TRACES_RELEASE_BASE := Traces-$(PROJECT_VERSION)
 
-TRACE_RELEASE_ARCHIVE_ZIP := $(TRACE_RELEASE_BASE).zip
-TRACE_RELEASE_ARCHIVE_BZ2 := $(TRACE_RELEASE_BASE).tar.bz2
+TRACES_RELEASE_ARCHIVE_ZIP := $(TRACES_RELEASE_BASE).zip
+TRACES_RELEASE_ARCHIVE_BZ2 := $(TRACES_RELEASE_BASE).tar.bz2
 
 
 # Source section.
-TRACE_SRC  := $(TRACES_TOP)/src
+TRACES_SRC := $(TRACES_TOP)/src
 
 # BEAM path section.
-TRACE_BEAM  := $(TRACES_TOP)/src
+TRACES_BEAM := $(TRACES_TOP)/src
 
 # Include path section.
-TRACE_INC = -I$(TRACE_SRC)
+TRACES_INC = -I$(TRACES_SRC)
 
 
-DOC_ROOT      = $(TRACES_TOP)/../../../doc
+DOC_ROOT = $(TRACES_TOP)/../../../doc
 
 
-INC += $(TRACE_INC)
+INC += $(TRACES_INC)
 
 
 
 ifndef VM_TEST_NAME
 
-VM_NAME := trace_debug
+VM_NAME := traces_debug
 
 endif
 
 
 ifndef VM_TEST_NAME
 
-VM_TEST_NAME := trace_test
+VM_TEST_NAME := traces_test
 
 endif
 
 
-BEAM_DIRS += $(TRACE_BEAM)
+BEAM_DIRS += $(TRACES_BEAM)
 
 
 WOOPER_TOP = $(TRACES_TOP)/../wooper

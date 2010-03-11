@@ -35,7 +35,7 @@
 % used in the vast majority of tests but this one, as the purpose of this test
 % is actually to test traces by themselves (cannot use the trace system to test
 % the trace system!). 
--module(traceManagement_test).
+-module(traceManagementUnderPressure_test).
 
 
 -define(Tested_modules,[ class_TraceEmitter, class_TraceAggregator,
@@ -49,6 +49,19 @@
 
 -define(Prefix,"--> ").
 
+
+send_traces( _TraceEmitter, _SequenceCount = 0 ) ->
+	ok;
+	 
+send_traces( TraceEmitter, SequenceCount ) ->
+	io:format( "Pressure test sending set of traces, remaining: ~B.~n",
+		[SequenceCount] ),
+		 
+	% We do not want 'ok' answers on purpose, to speed up the sending:
+	TraceEmitter ! sendAsyncTraces,
+	
+	send_traces( TraceEmitter, SequenceCount-1 ).
+ 
 
 
 % Run the tests.
@@ -93,40 +106,38 @@ run() ->
 		"Requesting the TestTraceEmitter to send some traces.~n" ),
 	
 	% Wait until there is an answer for this trace emitter:
-	MyTraceEmitter ! {sendTraces,[],self()},
+	send_traces( MyTraceEmitter, _SequenceCount = 500 ),
 	
-	receive
-	
-		{wooper_result,ok} ->
-			io:format( ?Prefix "Traces sent.~n" )	
-						
-	end,
-
-	ExpectedFirstBinaryName = list_to_binary(Name),
-	
+	io:format( ?Prefix " All traces sent.~n" ), 
+		
 	MyTraceEmitter ! {getName,[],self()},
+	
+	ExpectedName = list_to_binary(Name),	
+	
 	receive
 	
-		{wooper_result,ExpectedFirstBinaryName} ->
+		{wooper_result,ExpectedName}->
 			?test_info([ "Correct name returned." ])
 			
 	end,
-	
+
 	NewName = "This is my new name",
 	
 	MyTraceEmitter ! {setName,[NewName]},
 
-	ExpectedSecondBinaryName = list_to_binary(NewName),
-
 	MyTraceEmitter ! {getName,[],self()},
+
+	ExpectedNewName = list_to_binary(NewName),
+	
 	receive
 	
-		{wooper_result,ExpectedSecondBinaryName} ->
+		{wooper_result,ExpectedNewName} ->
 			?test_info([ "Correct new name returned." ])
 			
 	end,
 	
-   	io:format( ?Prefix "Deleting this TestTraceEmitter.~n" ),
+  		
+	io:format( ?Prefix "Deleting this TestTraceEmitter.~n" ),
 	
 	MyTraceEmitter ! delete,
 

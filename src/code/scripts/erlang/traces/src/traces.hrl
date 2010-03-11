@@ -1,4 +1,4 @@
-% Copyright (C) 2003-2009 Olivier Boudeville
+% Copyright (C) 2003-2010 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
 %
@@ -43,9 +43,13 @@
 %  - {text_traces,TraceTextOutputType} for more basic text-based traces: then
 % the trace aggregator will do its best to format the traces as a human-readable
 % trace text file; this is mostly useful when LogMX cannot be used for any
-% reason; TraceTextOutputType can be either 'text_only' (if just wanting to
-% display a text file), or 'pdf' (if wanting to read the traces from a PDF
-% file).
+% reason, like needing to generate a report; TraceTextOutputType can be:
+%     - 'text_only', if wanting to have traces be directly written to disk
+% as pure yet human-readable text
+%     - 'pdf', if wanting to read finally the traces in a generated PDF file
+%
+% Note: if you change (ex: comment/uncomment) the trace type, then you must
+% recompile your modules to take it into account. 
 -ifndef(TraceType).
 	-define(TraceType,log_mx_traces).
 	%-define(TraceType,{text_traces,text_only}).
@@ -53,35 +57,16 @@
 -endif.
 
 
+
+% Defines the trace title (ex: for PDF output), if not already specified:
+-ifndef(TraceTitle).
+	-define(TraceTitle,"Ceylan").
+-endif.
+
+
+
 % For supervisor macros (ex: init_trace_supervisor):
 -include("class_TraceSupervisor.hrl").	
-
-
-
-
--define(traces_start, 
-	% Create first, synchronously (to avoid race conditions), a trace
-	% aggregator (false is to specify a non-private i.e. global aggregator).
-	% Race conditions could occur at least with trace emitters (they would
-	% create their own aggregator, should none by found).
-	TraceAggregatorPid = class_TraceAggregator:synchronous_new_link(
-		?TraceFilename, ?TraceType, false )
-).
-
-
-
--define(traces_stop, 
-	TraceAggregatorPid ! {synchronous_delete,self()},
-	receive
-	
-  		{deleted,TraceAggregatorPid} ->
-			ok
-			
-  	end
-	%check_pending_wooper_results()
-).
-
-
 
 
 
@@ -89,8 +74,6 @@
 % and not for test purpose (ex: when writing classical, non-OOP, code). 
 % Note: using 'emit' instead of 'send' to prevent name clashes.
 
-
-% Section for the sending of an uncategorized message.
 % Usage: '?emit_debug([ "Starting!" ])'
 
 
@@ -122,41 +105,4 @@
 -define( emit_debug(Message),
 	class_TraceEmitter:send_standalone(debug,[Message])
 ).
-
-
-
-% Section for the sending of a categorized message.
-% Usage: '?notify_debug([ "Starting!", "My Emitter Name", 
-% "My Emitter Category" ])'
-
-
--define( notify_fatal( Message, TraceEmitterName, TraceEmitterCategorization ),
-	class_TraceEmitter:send_standalone( fatal,
-		[ Message, TraceEmitterName, TraceEmitterCategorization ] ) ).
-
-
--define( notify_error( Message, TraceEmitterName, TraceEmitterCategorization ),
-	class_TraceEmitter:send_standalone( error,
-		[ Message, TraceEmitterName, TraceEmitterCategorization ] ) ).
-	
-	
--define( notify_warning( Message, TraceEmitterName, TraceEmitterCategorization
-		),
-	class_TraceEmitter:send_standalone( warning,
-		[ Message, TraceEmitterName, TraceEmitterCategorization ] ) ).
-
-
--define( notify_info( Message, TraceEmitterName, TraceEmitterCategorization ),
-	class_TraceEmitter:send_standalone( info,
-		[ Message, TraceEmitterName, TraceEmitterCategorization ] ) ).
-
-
--define( notify_trace( Message, TraceEmitterName, TraceEmitterCategorization ),
-	class_TraceEmitter:send_standalone( trace,
-		[ Message, TraceEmitterName, TraceEmitterCategorization ] ) ).
-
-
--define( notify_debug( Message, TraceEmitterName, TraceEmitterCategorization ),
-	class_TraceEmitter:send_standalone( debug,
-		[ Message, TraceEmitterName, TraceEmitterCategorization ] ) ).
 

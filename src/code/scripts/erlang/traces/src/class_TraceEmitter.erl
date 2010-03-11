@@ -1,4 +1,4 @@
-% Copyright (C) 2003-2009 Olivier Boudeville
+% Copyright (C) 2003-2010 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
 %
@@ -58,8 +58,11 @@
 
 
 % Method declarations.
--define( wooper_method_export, getName/1, setName/2, display/1, toString/1 ).
-
+-define( wooper_method_export, getName/1, setName/2, 
+	getInitialTick/1, setInitialTick/2, 
+	getCurrentTickOffset/1, setCurrentTickOffset/2,
+	getCurrentTick/1, 
+	display/1, toString/1 ).
 
 
 % Helper functions:
@@ -75,10 +78,12 @@
 % Must be included before class_TraceEmitter header:
 -define(TraceEmitterCategorization,"Trace.Emitter").
 
+
 % For trace_aggregator_name:
 -include("class_TraceEmitter.hrl"). 
 
-% For default_message_categorization:
+
+% For DefaultMessageCategorization:
 -include("class_TraceAggregator.hrl").
 
 
@@ -86,10 +91,33 @@
 
 
 
+
+% Implementation notes:
+
+% As traces are timestamped, a trace emitter has to have some notion of time,
+% here based on (integer) execution ticks.
+%
+% Its current tick, to be obtained with the getCurrentTick/1 method or the
+% get_current_tick/1 function, is determined based on the addition of:
+%  - the initial emitter tick (initial_tick), a supposedly absolute
+% time reference (possibly a very large integer)
+%  - the current tick offset of the emitter (current_tick_offset), defined
+% relatively (i.e. as an offset) to initial_tick; this offset is 
+% generally able to fit in a platform-native integer, therefore, for increased 
+% performances, processings should be based preferably on offsets rather 
+% than on absolute time references
+%
+% To reduce the memory footprint in the trace aggregator mailbox and the size
+% of messages sent over the network, most of the time binaries are used 
+% instead of plain strings.
+
+
+
+
+
 % Constructs a new Trace emitter.
-% EmitterName is the name of this trace emitter, ex: 'MyObject-16'.
-% EmitterCategorization is the categorization of this emitter, ex:
-% 'ABaseClass.AMotherClass.[..].MyClass'.
+% EmitterName is a plain string containing the name of this trace emitter, 
+% ex: 'MyObject-16'.
 construct(State,?wooper_construct_parameters) ->
 
 	%io:format( "~s Creating a trace emitter whose name is ~s, "
@@ -100,11 +128,17 @@ construct(State,?wooper_construct_parameters) ->
 	% otherwise the creation of multiple emitters would result in a race
 	% condition that would lead to the creation of multiple aggregators):	
 	AggregatorPid = class_TraceAggregator:getAggregator(false),
-	?setAttributes( State, [ 
-		{name,TraceEmitterName}, 
-		{trace_categorization,?TraceEmitterCategorization},
-		{trace_aggregator_pid, AggregatorPid} ] ).
-	
+	setAttributes( State, [ 
+		{name,text_utils:string_to_binary(TraceEmitterName)},
+		{initial_tick,undefined},
+		{current_tick_offset,undefined},
+		{emitter_node,get_emitter_node_as_binary()},			   
+		{trace_aggregator_pid,AggregatorPid},
+		% Should be converted to binary each time when set, but will not
+		% crash if remaining a plain string:
+		{trace_categorization,
+		 text_utils:string_to_binary(?TraceEmitterCategorization)}
+						   ] ).
 	
 
 	
@@ -118,22 +152,69 @@ delete(State) ->
 	State.
 	
 	
+	
+	
+
 
 % Methods section.
 
 
+
 % Generic interface.	
 
-% Returns the name of this trace emitter.
+
+% Returns the name of this trace emitter, as a binary.
 % (const request)	
 getName(State) ->
-	?wooper_return_state_result(State,?getAttr(name)).
+	?wooper_return_state_result( State, ?getAttr(name) ).
 	
 
-% Sets the name of this trace emitter.
+
+% Sets the name of this trace emitter from specified plain string.
 % (oneway)
-setName(State,NewName) ->
-	?wooper_return_state_only( ?setAttribute( State, name, NewName ) ).
+setName( State, NewName ) ->
+	?wooper_return_state_only( setAttribute( State, name, 
+								 text_utils:string_to_binary(NewName) ) ).
+
+
+
+
+% Returns the initial tick of this trace emitter.
+% (const request)	
+getInitialTick(State) ->
+	?wooper_return_state_result( State, ?getAttr(initial_tick) ).
+
+
+	
+% Sets the initial tick of this trace emitter.
+% Note: does not update the tick offset, therefore the current tick is not
+% preserved.
+% (oneway)
+setInitialTick( State, NewInitialTick ) ->
+	?wooper_return_state_only( setAttribute( State, initial_tick, 
+		NewInitialTick ) ).
+
+
+
+
+% Returns the current tick offset of this trace emitter.
+% (const request)	
+getCurrentTickOffset(State) ->
+	?wooper_return_state_result( State, ?getAttr(current_tick_offset) ).
+
+	
+% Sets the current tick offset of this trace emitter.
+% (oneway)
+setCurrentTickOffset( State, NewCurrentTickOffset ) ->
+	?wooper_return_state_only( 
+		setAttribute( State, current_tick_offset, NewCurrentTickOffset ) ).
+
+
+
+% Returns the current tick of this trace emitter.
+% (const request)	
+getCurrentTick(State) ->
+	?wooper_return_state_result( State, get_current_tick(State) ).
 
 
 
@@ -156,47 +237,36 @@ toString(State) ->
 % Implementation of functions used by trace macros.
 
 
+
+% Sends a trace from that emitter.
+% Message is a plain string.
+% (helper function)
 % All informations available but the tick and the message categorization.
 send( TraceType, [State, Message] ) ->
-	send( TraceType, [ State, Message, ?default_message_categorization ] );
+	send( TraceType, [ State, Message, ?DefaultMessageCategorization ] );
 
-% All informations available but the tick, determining its availability.
-send( TraceType, [State, Message, MessageCategorization ] ) ->
-	case ?hasAttribute( State, current_time_offset ) of
+
+% Message and MessageCategorization are plain strings.
+% All informations available but the tick, determining its availability:
+send( TraceType, [ State, Message, MessageCategorization ] ) ->
+	send( TraceType, [ State, Message, MessageCategorization,
+		get_current_tick(State) ] );
+
+% The function used to send all types of traces:
+send( TraceType, [ State, Message, MessageCategorization, Tick ] ) ->
 	
-		true ->
-			% Should be an actor-like:
-			case ?hasAttribute( State, starting_time ) of
-			
-				true ->
-					send( TraceType, 
-						[State, Message, MessageCategorization,
-							get_current_tick(State)  ] );
-				
-				false ->
-					% Execution not started: 'none' tick
-					send( TraceType, 
-						[State, Message, MessageCategorization, none ] )
-			
-			end;
-			
-		false ->
-			% Not even an actor: 'unknown' tick
-			send( TraceType, [State, Message, MessageCategorization,
-				unknown ] )
-	end;
-
-% The function used to send all types of traces.
-send( TraceType, 
-		[State, Message, MessageCategorization, Tick ] ) ->
+	TimestampText = text_utils:string_to_binary( 
+	   basic_utils:get_textual_timestamp() ),
+	
 	% Follows the order of our trace format; oneway call:
 	?getAttr(trace_aggregator_pid) ! { send, 
 	%io:format( "PID = ~w, name = ~s, emitter categorization = ~s, "
 	%	"tick = ~w, user time = ~s, location = ~s, "
 	%	"message categorization = ~s, trace type = ~w, message = ~s ~n", 
 		[ self(), ?getAttr(name), ?getAttr(trace_categorization), Tick, 
-			current_time_to_string(), current_location(), MessageCategorization,
-			get_priority_for(TraceType), Message ]
+		 TimestampText, ?getAttr(emitter_node),
+		 text_utils:string_to_binary(MessageCategorization), 
+		 get_priority_for(TraceType), text_utils:string_to_binary(Message) ]
 	% ).		 
 	}.
 	
@@ -205,8 +275,9 @@ send( TraceType,
 % Sends all types of traces without requiring a class_TraceEmitter state.
 % Uses default trace aggregator, supposed to be already available and 
 % registered.
+% (static)
 send_from_test( TraceType, [Message] ) ->
-	send_from_test(TraceType, [Message, ?default_test_message_categorization]);
+	send_from_test(TraceType, [Message, ?DefaultTestMessageCategorization]);
 	
 send_from_test( TraceType, [Message,MessageCategorization] ) ->
 	% Follows the order of our trace format; oneway call:
@@ -218,10 +289,20 @@ send_from_test( TraceType, [Message,MessageCategorization] ) ->
 			throw( trace_aggregator_not_found );
 			
 		AggregatorPid ->
+			
+			TimestampText = text_utils:string_to_binary( 
+				basic_utils:get_textual_timestamp() ),
+			
+			% Not State available here:
+			EmitterNode = get_emitter_node_as_binary(),
+			
 			AggregatorPid ! { send, 
-				[ self(), "Ceylan traces from test", "Test", none, 
-			current_time_to_string(), current_location(), MessageCategorization,
-			get_priority_for(TraceType), Message ] }
+				[ self(), text_utils:string_to_binary("Ceylan Trace Test"), 
+				 text_utils:string_to_binary("Test"), none,
+				 TimestampText, EmitterNode,
+				 text_utils:string_to_binary(MessageCategorization), 
+				 get_priority_for(TraceType), 
+				 text_utils:string_to_binary(Message) ] }
 	
 	end.		
 
@@ -230,16 +311,12 @@ send_from_test( TraceType, [Message,MessageCategorization] ) ->
 % Sends all types of traces without requiring a class_TraceEmitter state.
 % Uses default trace aggregator, supposed to be already available and 
 % registered.
+% (static)
 send_standalone( TraceType, [Message] ) ->
-	send_standalone(TraceType, [Message,
-		?default_standalone_message_categorization]);
+	send_standalone( TraceType, [ Message,
+		?DefaultStandaloneMessageCategorization ] );
 	
-send_standalone( TraceType, [Message,TraceEmitterCategorization] ) ->
-	send_standalone( TraceType, [
-		Message, _TraceEmitterName = "Ceylan", TraceEmitterCategorization] );
-
-send_standalone( TraceType,
-		[ Message, TraceEmitterName, TraceEmitterCategorization ] ) ->
+send_standalone( TraceType, [Message,MessageCategorization] ) ->
 	% Follows the order of our trace format; oneway call:
 	case global:whereis_name(?trace_aggregator_name) of
 	
@@ -249,16 +326,20 @@ send_standalone( TraceType,
 			throw( trace_aggregator_not_found );
 			
 		AggregatorPid ->
-			AggregatorPid ! { send, [ 
-				_TraceEmitterPid = self(),
-				_TraceEmitterName = TraceEmitterName,
-				TraceEmitterCategorization, 
-				_Tick = none, 
-				_Time = current_time_to_string(),
-				_Location = current_location(),
-				_MessageCategorization = "Uncategorized",
-				_Priority = get_priority_for(TraceType),
-				_Message = Message ] }
+
+			TimestampText = text_utils:string_to_binary( 
+				basic_utils:get_textual_timestamp() ),
+
+			% Not State available here:
+			EmitterNode = get_emitter_node_as_binary(),
+
+			AggregatorPid ! { send, 
+				[ self(), text_utils:string_to_binary("Ceylan"), 
+				 text_utils:string_to_binary("Standalone"), none, 
+				 TimestampText, EmitterNode, 
+				 text_utils:string_to_binary(MessageCategorization), 
+				 get_priority_for(TraceType), 
+				 text_utils:string_to_binary(Message) ] }
 	
 	end.		
 
@@ -269,26 +350,9 @@ send_standalone( TraceType,
 % Section for helper functions (not methods).
 
 
-% Returns the current time and date as a string, with correct format.
-% Example: "14/04/2008 04:41:24"
-current_time_to_string() ->
-	{Year,Month,Day} = date(),
-	{Hour,Minute,Second} = time(),
-	lists:flatten( io_lib:format( "~w/~w/~w ~B:~B:~B", 
-		[ Day, Month, Year, Hour, Minute, Second ] ) ).
-		
-		
-% Returns the current location of the trace emitter, with correct format.
-current_location() ->
-	case node() of
-	
-		nonode@nohost ->
-			localhost;
-			
-		OtherName ->
-		 	OtherName
-	
-	end.
+% Returns the name of the node this emitter is on, as an atom.
+get_emitter_node_as_binary() ->
+	erlang:atom_to_binary( net_utils:localnode(), _Encoding=latin1 ).
 
 
 
@@ -347,8 +411,31 @@ get_channel_name_for_priority(6) ->
 
 
 
-% Returns the current (numerical) execution tick, in virtual gregorian seconds.
+% Returns the current (numerical) execution tick, expressed in execution ticks,
+% or the atom 'none' if the emitter time is not known.
 get_current_tick(State) ->
-	%io:format( "get_current_tick called.~n" ),
-	?getAttr(starting_time)	+ ?getAttr(current_time_offset).
 
+	%io:format( "get_current_tick called for ~w, initial tick is ~w, "
+	%	"current tick offset is ~w.~n", 
+	%	[ self(), ?getAttr(initial_tick), ?getAttr(current_tick_offset) ] ),
+		
+	InitialEmitterTick = ?getAttr(initial_tick),
+	case InitialEmitterTick of
+	
+		undefined ->
+			none;
+			
+		InitialTick ->
+			CurrentTickOffset = ?getAttr(current_tick_offset),
+			case CurrentTickOffset of
+			
+				undefined ->
+					none;
+			
+				TickOffset ->
+					InitialTick + TickOffset
+				
+			end
+			
+	end.
+			

@@ -1,20 +1,45 @@
+# Prerequisite: TRACES_TOP must be set.
 
-# Trace-specific rules:
-
-
-ERL_FILES = $(wildcard *.erl)
+# Add all Trace-specific rules below.
 
 
-TRACE_LOG_FILES = $(patsubst %.erl,%.traces,$(ERL_FILES))
 
-
-# Allows to avoid that 'clean' becomes the default target:
-all:
+.PHONY: clean-traces
 
 
 clean: clean-traces
-
-
-clean-traces:
-	-@rm -f $(TRACE_LOG_FILES)
 	
+
+ERL_FILES = $(wildcard *.erl)
+
+TRACES_FILES = $(patsubst %.erl,%.traces,$(ERL_FILES))
+
+
+AUX_GENERATED_FILES  := $(AUX_GENERATED_FILES) \
+	$(patsubst %.traces,%.aux,$(TRACES_FILES))
+	
+TEX_GENERATED_FILES  := $(TEX_GENERATED_FILES) \
+	$(patsubst %.traces,%.tex,$(TRACES_FILES))
+	
+OUT_GENERATED_FILES  := $(OUT_GENERATED_FILES) \
+	$(patsubst %.traces,%.out,$(TRACES_FILES))
+	
+LOG_GENERATED_FILES  := $(LOG_GENERATED_FILES) \
+	$(patsubst %.traces,%.log,$(TRACES_FILES))
+	
+HTML_GENERATED_FILES := $(HTML_GENERATED_FILES) \
+	$(patsubst %.traces,%.html,$(TRACES_FILES))
+	
+PDF_GENERATED_FILES  := $(PDF_GENERATED_FILES) \
+	$(patsubst %.traces,%.pdf,$(TRACES_FILES))
+
+
+TRACES_GENERATED_FILES := $(AUX_GENERATED_FILES) $(TEX_GENERATED_FILES)    \
+	$(OUT_GENERATED_FILES) $(LOG_GENERATED_FILES) $(HTML_GENERATED_FILES) \
+	$(PDF_GENERATED_FILES) $(GENERATOR_LOG_FILE)   
+	
+	
+clean-traces:
+	-@/bin/rm -f $(TRACES_FILES) $(TRACES_GENERATED_FILES)
+
+

@@ -1,4 +1,4 @@
-% Copyright (C) 2003-2009 Olivier Boudeville
+% Copyright (C) 2003-2010 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
 %
@@ -46,6 +46,7 @@
 
 
 
+
 % Use the --batch option (ex: erl --batch) to disable the
 % use of the trace supervisor:
 -define(init_trace_supervisor,
@@ -56,18 +57,23 @@
 	case init:get_argument('-batch') of
 		{ok,_} ->
 			% Option specified to disable the supervisor:
+			%io:format( "Supervisor disabled.~n" ),
 			no_trace_supervisor_wanted;
 			
 		_ ->
 			% Default: a trace supervisor is used.
-			class_TraceSupervisor:create( true, ?TraceFilename, ?TraceType )
+			%io:format( "Supervisor enabled.~n" ),			
+			class_TraceSupervisor:create( _Blocking=true, ?TraceFilename,
+				?TraceType )
 			%io:format( "Waiting for trace supervisor to be closed.~n" )		
 	end			
 ).
 
 
+
 -define(wait_for_any_trace_supervisor,
 	case init:get_argument('-batch') of
+	
 		{ok,_} ->
 			% No supervisor was launched.
 			% Let live the system for some time instead:
@@ -75,7 +81,7 @@
 		
 		_ ->
 			% A supervisor must be waited for:
-			%io:format( "Waiting for supervisor.~n" ),
+			%io:format( "Waiting for the trace supervisor.~n" ),
 			receive
 
 				{wooper_result,monitor_ok} ->

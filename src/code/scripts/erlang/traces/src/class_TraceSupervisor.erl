@@ -1,4 +1,4 @@
-% Copyright (C) 2003-2009 Olivier Boudeville
+% Copyright (C) 2003-2010 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
 %
@@ -95,19 +95,19 @@
 % Constructs a new trace supervisor.
 %  - TraceFilename is the name of the file where traces should be read from;
 %  - TraceType the type of traces to expect (ex: log_mx_traces, text_traces)
-%  - MonitorNow tells whether the supervision should being immediately (if true)
+%  - MonitorNow tells whether the supervision should begin immediately (if true)
 % or only when the monitor method is called (if false).
-%  - Blocking tells whether the monitoring should be non-blocking
-% (if false) or otherwise the monitoring should be blocking, and this Blocking
-% parameter should be the PID of the caller to be notified.
-% This parameter has a meaning iff MonitorNow is true.
-construct(State,?wooper_construct_parameters) ->
+%  - Blocking tells whether the monitoring should be non-blocking (if equal to
+% 'none'); otherwise the monitoring should be blocking, and this Blocking
+% parameter should be the PID of the caller to be notified. This parameter has
+% a meaning iff MonitorNow is true.
+construct( State, ?wooper_construct_parameters ) ->
 
-	io:format( "~s Creating a trace supervisor, whose PID is ~w.~n", 
-		[ ?LogPrefix, self() ] ),
+	%io:format( "~s Creating a trace supervisor, whose PID is ~w.~n", 
+	%	[ ?LogPrefix, self() ] ),
 
 	% First the direct mother classes (none), then this class-specific actions:
-	NewState = ?setAttributes( State, [
+	NewState = setAttributes( State, [
 		{trace_filename,TraceFilename},
 		{trace_type,TraceType}
 	] ),
@@ -115,6 +115,7 @@ construct(State,?wooper_construct_parameters) ->
 	EndState = case MonitorNow of
 	
 		true ->
+					   
 			case Blocking of
 			
 				Pid when is_pid(Pid) ->
@@ -127,6 +128,7 @@ construct(State,?wooper_construct_parameters) ->
 						 
 					% Sends back to the caller:	 
 					Pid ! {wooper_result,monitor_ok},
+					self() ! delete,
 					RequestState;
 						 
 				none ->
@@ -140,17 +142,17 @@ construct(State,?wooper_construct_parameters) ->
 			NewState
 			
 	end,	
-	io:format( "~s Trace supervisor created.~n", [ ?LogPrefix ] ),
+	%io:format( "~s Supervisor created.~n", [ ?LogPrefix ] ),
 	EndState.
 
 	
 	
 % Overridden destructor.
 delete(State) ->
-	io:format( "~s Deleting trace supervisor.~n", [ ?LogPrefix ] ),
+	%io:format( "~s Deleting supervisor.~n", [ ?LogPrefix ] ),
 	% Class-specific actions:
 	% Then call the direct mother class counterparts: (none)
-	io:format( "~s Trace supervisor deleted.~n", [ ?LogPrefix ] ),
+	io:format( "~s Supervisor deleted.~n", [ ?LogPrefix ] ),
 	% Allow chaining:
 	State.
 	
@@ -168,14 +170,14 @@ monitor(State) ->
 	NewState = case ?getAttr(trace_type) of
 	
 		{text_traces,pdf} ->
-			io:format( "~s Trace supervisor has nothing to monitor, "
+			io:format( "~s Supervisor has nothing to monitor, "
 				"as the PDF trace report will be generated only on execution "
 				"termination.~n", [ ?LogPrefix] ),
 				State;
 				
 		_Other ->	
 		
-			{Command,ActualFilename} = get_viewer_settings(State,
+			{Command,ActualFilename} = get_viewer_settings( State,
 				?getAttr( trace_filename ) ),
 
 			case filelib:is_file( ActualFilename ) of
@@ -191,8 +193,8 @@ monitor(State) ->
 			
 			end,
 			
-			io:format( "~s Trace supervisor will monitor file '~s' now, "
-				"with ~s.~n", [ ?LogPrefix, ActualFilename, Command ] ),
+			io:format( "~s Supervisor will monitor file '~s' now, "
+				"with '~s'.~n", [ ?LogPrefix, ActualFilename, Command ] ),
 	
 			% Non-blocking (command must be found in the PATH):
 			[] = os:cmd( Command ++ " " ++ ActualFilename ++ " &" ),
@@ -212,14 +214,14 @@ blocking_monitor(State) ->
 	case ?getAttr(trace_type) of
 	
 		{text_traces,pdf} ->
-			io:format( "~s Trace supervisor has nothing to monitor, "
+			io:format( "~s Supervisor has nothing to monitor, "
 				"as the PDF trace report will be generated on execution "
 				"termination.~n", [ ?LogPrefix] ),
-			?wooper_return_state_result(State,monitor_ok);
+			?wooper_return_state_result( State, monitor_ok );
 				
 		_Other ->	
 		
-			{Command,ActualFilename} = get_viewer_settings(State,
+			{Command,ActualFilename} = get_viewer_settings( State,
 				?getAttr( trace_filename ) ),
 				
 			case filelib:is_file( ActualFilename ) of
@@ -235,23 +237,23 @@ blocking_monitor(State) ->
 			
 			end,
 			
-			io:format( "~s Trace supervisor will monitor file '~s' now "
-				"with ~s, blocking until the user closes the viewer window.~n", 
+			io:format( "~s Supervisor will monitor file '~s' now with '~s', "
+				"blocking until the user closes the viewer window.~n", 
 				[ ?LogPrefix, ActualFilename, Command ] ),
 	
 			% Blocking:
 			case os:cmd( Command ++ " " ++ ActualFilename ) of
 	
 				[] ->
-					io:format( "~s Trace supervisor ended monitoring of "
-						"'~s'.~n", [ ?LogPrefix, ActualFilename ] ),
-					?wooper_return_state_result(State,monitor_ok);
+					io:format( "~s Supervisor ended monitoring of '~s'.~n", 
+						[ ?LogPrefix, ActualFilename ] ),
+					?wooper_return_state_result( State, monitor_ok );
 	
 				Other ->
 					error_logger:error_msg(
 						"The monitoring of trace supervisor failed: ~s.~n", 
 						[ Other ] ),
-					?wooper_return_state_result(State,monitor_failed)
+					?wooper_return_state_result( State, monitor_failed )
 					%throw( trace_supervision_failed )
 	
 			end
@@ -270,7 +272,7 @@ blocking_monitor(State) ->
 % See create/4 for a more in-depth explanation of the parameters.
 % (static)	
 create() ->
-	create( _Blocking = true ).
+	create( _Blocking=true ).
 	
 	
 	
@@ -299,7 +301,7 @@ create( Blocking, TraceFilename ) ->
 % See create/4 for a more in-depth explanation of the parameters.
 % (static)	
 create( Blocking, TraceFilename, TraceType ) ->
-	create( Blocking, _MonitorNow = true, TraceFilename, TraceType ).
+	create( Blocking, _MonitorNow=true, TraceFilename, TraceType ).
 
 
 
@@ -320,26 +322,26 @@ create( Blocking, MonitorNow, TraceFilename, TraceType ) ->
 			none
 			
 	end,
-	new( TraceFilename, TraceType, MonitorNow, BlockingParam ).
+	new_link( TraceFilename, TraceType, MonitorNow, BlockingParam ).
 		
 
 
 % Returns the name of the tool and the corresponding file that should be 
 % used to monitor traces.
 % (const helper function)
-get_viewer_settings(State,Filename) ->
+get_viewer_settings( State, Filename ) ->
 	case ?getAttr(trace_type) of
 	
 		log_mx_traces ->
-			{"logmx.sh",Filename};
+			{executable_utils:get_default_trace_viewer(),Filename};
 		
 		{text_traces,text_only} ->
-			{io_lib:format( "nedit -columns ~B", [?TextWidth] ),Filename};
+			{executable_utils:get_default_wide_text_viewer(?TextWidth),Filename};
 
 		{text_traces,pdf} ->
 			PdfTargetFilename = file_utils:replace_extension( Filename, 
 				?TraceExtension, ".pdf" ), 
-			{"evince",PdfTargetFilename}
+			{executable_utils:get_default_pdf_viewer(),PdfTargetFilename}
 		
 	end.
 	

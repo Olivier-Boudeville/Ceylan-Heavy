@@ -1,4 +1,4 @@
-% Copyright (C) 2003-2009 Olivier Boudeville
+% Copyright (C) 2003-2010 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
 %
@@ -29,19 +29,6 @@
 % This header centralizes notably all macros related to the sending traces.
 
 
-% Comment out to deactive tracing:
--define(TracingActivated,true).
-
-
-
--ifdef(TracingActivated).
-
-
--ifndef(TraceEmitterCategorization).
-	-define( TraceEmitterCategorization, "NotCategorized" ).
--endif.
-
-
 
 % Conventions section.
 
@@ -55,10 +42,9 @@
 % be generally uselessly long and would cause issues in case of multiple
 % inheritance.
 
-
 % Execution timestamp (tick) will be either specified in the send macro (a long
 % integer or 'none'), or set to following default execution timestamp:
--define( default_execution_timestamp, "unknown" ).
+-define( DefaultExecutionTimestamp, "unknown" ).
 
 
 
@@ -92,7 +78,7 @@
 	-define( update,        ?execution".Update" ).
 	-define( state,         ?execution".State" ).
 
--define( default_message_categorization, ?execution".Uncategorized" ).
+-define( DefaultMessageCategorization, ?execution".Uncategorized" ).
 
 
 % Priority will be determined from the name of the chosen macro:
@@ -101,6 +87,36 @@
 % Message will be directly specified in the macro call.
 
  
+-ifndef(TraceEmitterCategorization).
+	-define( TraceEmitterCategorization, "NotCategorized" ).
+-endif.
+
+
+
+% Section dedicated to trace emitters that are not WOOPER-based and dedicated
+% to tests.
+% See also: test_constructs.hrl.
+-define(DefaultTestMessageCategorization,"Test.Uncategorized").
+
+
+% Section dedicated to trace emitters that are not WOOPER-based and dedicated
+% to classical functions (as opposed to methods from class_TraceEmitter).
+% See also: traces.hrl.
+-define(DefaultStandaloneMessageCategorization,"Standalone.Uncategorized").
+
+
+ 
+ 
+ 
+% Comment the next line if wanting to disable the trace output:
+% (note that deactivating traces might cause some warnings about unused
+% variables)
+-define(TracingActivated,).
+
+ 
+-ifdef(TracingActivated).
+
+
 % The first version of macros uses an explicit state.
 % The second version of macros uses an implicit state, named 'State', as,
 % except in constructors, WOOPER conventions imply such a state exists and,
@@ -129,7 +145,8 @@
 %
 % Three trace informations:
 %   ?send_K([ MyState,Message,MessageCategorization,Tick ])
-%   Example: ?send_warning([ MyState,"This is my message", ?application_load, 132455 ]) 
+%   Example: ?send_warning([ MyState,"This is my message", ?application_load,
+% 132455 ]) 
 %
 %   ?K([Message,MessageCategorization,Tick])
 %   Example: ?warning([ "This is my message", ?application_load, 132455 ]) 
@@ -146,7 +163,7 @@
 % One trace information: tick is laking, will be added if found in emitter,
 % (could be a real tick or 'none' is execution not started), otherwise 
 % 'unknown' will be used; MessageCategorization is lacking too, 
-% default_message_categorization will be used instead.
+% DefaultMessageCategorization will be used instead.
 %
 %   ?send_K([MyState,Message])
 %   Example: ?send_warning([ MyState,"This is my message" ]) 
@@ -234,33 +251,6 @@
 
 
 
--else.
-
-
-
--define( send_fatal(Args), trace_disabled ).
--define( fatal(Args), trace_disabled ).
-
--define( send_error(Args), trace_disabled ).
--define( error(Args), trace_disabled ).
-
--define( send_warning(Args), trace_disabled ).
--define( warning(Args), trace_disabled ).
-
--define( send_info(Args), trace_disabled ).
--define( info(Args), trace_disabled ).
-
--define( send_trace(Args), trace_disabled ).
--define( trace(Args), trace_disabled ).
-
--define( send_debug(Args), trace_disabled ).
--define( debug(Args), trace_disabled ).
-
-
--endif.
-
-
-
 % To send traces neither from a TraceEmitter instance nor from a test
 % (ex: in a static method):
 
@@ -301,14 +291,84 @@
 
 
 
-% Section dedicated to trace emitters that are not WOOPER-based and dedicated
-% to tests.
-% See also: test_constructs.hrl.
--define(default_test_message_categorization,"Test.Uncategorized").
 
 
-% Section dedicated to trace emitters that are not WOOPER-based and dedicated
-% to classical functions (as opposed to methods from class_TraceEmitter).
-% See also: traces.hrl.
--define(default_standalone_message_categorization,"Standalone.Uncategorized").
+-else.
+
+
+% This 'else' branch will be used iff TracingActivated is not defined below:
+
+
+% Most important trace categories must never be disabled:
+
+-define( send_fatal(Args),
+	io:format( "Fatal trace message (although traces are disabled): ~s.~n",
+		[Args] ),
+	% To ensure the asynchronous output of the trace has a chance to
+	% complete, possibly before the interpreter is crashed:
+	timer:sleep(100)
+).
+
+-define( fatal(Args), ?send_fatal(Args) ).
+
+
+
+-define( send_error(Args),
+	io:format( "Error trace message (although traces are disabled): ~s.~n",
+		[Args] ),
+	% To ensure the asynchronous output of the trace has a chance to
+	% complete, possibly before the interpreter is crashed:
+	timer:sleep(100)
+).
+
+-define( error(Args), ?send_error(Args) ).
+
+
+-define( send_warning(Args), trace_disabled ).
+-define( warning(Args), trace_disabled ).
+
+-define( send_info(Args), trace_disabled ).
+-define( info(Args), trace_disabled ).
+
+-define( send_trace(Args), trace_disabled ).
+-define( trace(Args), trace_disabled ).
+
+-define( send_debug(Args), trace_disabled ).
+-define( debug(Args), trace_disabled ).
+
+
+
+% To send traces neither from a TraceEmitter instance nor from a test
+% (ex: in a static method):
+
+-define( notify_fatal(Message),
+	io:format( "Fatal trace message (although traces are disabled):~s.~n",
+		[Message]),
+	% To ensure the asynchronous output of the trace has a chance to
+	% complete, possibly before the interpreter is crashed:
+	timer:sleep(100)
+).
+
+
+-define( notify_error(Message),
+	io:format( "Error trace message (although traces are disabled):~s.~n",
+		[Message]),
+	% To ensure the asynchronous sending of the trace has a chance to
+	% complete, possibly before the interpreter is crashed:
+	timer:sleep(10)
+).
+	
+	
+-define( notify_warning(Message), trace_disabled ).
+
+-define( notify_info(Message), trace_disabled ).
+
+-define( notify_trace(Message), trace_disabled ).
+
+-define( notify_debug(Message), trace_disabled ).
+
+
+-endif.
+% End of the TracingActivated branch.
+
 

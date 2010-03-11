@@ -24,7 +24,7 @@ import com.lightysoft.logmx.mgr.LogFileParser;
  * @see erlang/traces/conf/logmx/TraceSample.txt
  *
  */
-public class CeylanParser extends LogFileParser 
+public class CeylanTraceParser extends LogFileParser 
 {
 
     /** Current parsed log entry */
@@ -138,7 +138,7 @@ public class CeylanParser extends LogFileParser
 			entry.setMessage( "[" + fields[6].trim() + "] [" + fields[4].trim() 
 			+ "] [" + fields[5].trim() + "]\n" + remainingFields ) ;
 
-			// Relative timestamp is also the Execution time here:
+			// Relative timestamp is also the execution time here:
 			entry.setExtraInfo( fields[3].trim() );	
 		
       } 
