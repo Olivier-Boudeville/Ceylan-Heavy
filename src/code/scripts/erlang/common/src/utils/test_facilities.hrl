@@ -1,4 +1,5 @@
-% Copyright (C) 2003-2010 Olivier Boudeville
+%
+% Copyright (C) 2003-2009 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
 %
@@ -31,6 +32,7 @@
 
 % Comment out to be able to use the interpreter after the test:
 -define(ExitAfterTest,).
+
 
 -ifdef(ExitAfterTest).
 

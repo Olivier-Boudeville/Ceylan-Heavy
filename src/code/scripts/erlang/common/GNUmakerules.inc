@@ -93,12 +93,12 @@ all-recurse:
 
 %_exec: %_app.beam %.beam 
 	@echo "     Executing application $^ (first form)"
-	$(ERL_PARAMETERIZED_LAUNCHER) --ln $@  --eval `echo $@|sed 's|_exec|_app:exec()|1'` $(CMD_LINE_OPT)
+	$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@|sed 's|_exec|_app:exec()|1'` $(CMD_LINE_OPT) $(INTERNAL_OPTIONS)
 	
 		
 %_exec: %_app.beam
 	@echo "     Executing application $^ (second form)"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@ --eval `echo $@|sed 's|_exec|_app:exec()|1'` $(CMD_LINE_OPT)
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@|sed 's|_exec|_app:exec()|1'` $(CMD_LINE_OPT) $(INTERNAL_OPTIONS)
 
 
 
@@ -110,12 +110,12 @@ all-recurse:
 
 %_exec_background: %_app.beam %.beam 
 	@echo "     Executing application $^ in the background (first form)"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln `echo $@ | sed 's|_background$$||1'` --background --eval `echo $@ | sed 's|_exec_background|_app:exec()|1'` $(CMD_LINE_OPT) &
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln `echo $@ | sed 's|_background$$||1'`-$$USER --background --eval `echo $@ | sed 's|_exec_background|_app:exec()|1'` $(CMD_LINE_OPT) $(INTERNAL_OPTIONS) &
 	
 		
 %_exec_background: %_app.beam
 	@echo "     Executing application $^ in the background (second form)"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln `echo $@ | sed 's|_background$$||1'` --background --eval `echo $@ | sed 's|_exec_background|_app:exec()|1'` $(CMD_LINE_OPT)
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln `echo $@ | sed 's|_background$$||1'`-$$USER --background --eval `echo $@ | sed 's|_exec_background|_app:exec()|1'` $(CMD_LINE_OPT) $(INTERNAL_OPTIONS) &
 
 
 	
@@ -140,21 +140,24 @@ all-recurse:
 	
 %_interactive_test: %.beam %_interactive_test.beam
 	@echo "     Executing interactively test function $(STARTUP_FUNCTION) in module $@"
-	@$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT) -run $@ $(STARTUP_FUNCTION)
+	@$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT) -run $@ \
+	$(STARTUP_FUNCTION) $(INTERNAL_OPTIONS)
 
 
 %_batch_test: %.beam %_batch_test.beam
 	@echo "     Executing non-interactively test function $(STARTUP_FUNCTION) in module $@"
-	@$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT)	-run $@ $(STARTUP_FUNCTION)
+	@$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT) -run $@ \
+	$(STARTUP_FUNCTION) $(INTERNAL_OPTIONS)
 
 
 
 # _integration prefix added not to match instead of the next rule.
-# _integration_dependencies target is a phony target, so that test dependencies
+# %_integration_dependencies target is a phony target, so that test dependencies
 # can be specified.
 %_integration_run: %_integration_test.beam %_integration_dependencies
 	@echo "     Running integration test $@ from $^ with $(ERL_PARAMETERIZED_LAUNCHER)"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@ --eval `echo $@ | sed 's|_run|_test:run()|1'` $(CMD_LINE_OPT)
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@ | sed 's|_run|_test:run()|1'` $(CMD_LINE_OPT) $(INTERNAL_OPTIONS)
+
 	
 
 
@@ -164,26 +167,26 @@ all-recurse:
 	
 %_run: %_test %_test_dependencies
 	@echo "     Running unitary test $@ (first form) from $^, with $(ERL_PARAMETERIZED_LAUNCHER)"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@ --eval `echo $@ | sed 's|_run|_test:run()|1'` $(CMD_LINE_OPT)
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@ | sed 's|_run|_test:run()|1'` $(CMD_LINE_OPT) $(INTERNAL_OPTIONS)
 
 
 %_run: %_test %.beam 
 	@echo "     Running unitary test $@ (second form) from $^"
-	$(ERL_PARAMETERIZED_LAUNCHER) --ln $@  --eval `echo $@ | sed 's|_run|_test:run()|1'` $(CMD_LINE_OPT)
+	$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER  --eval `echo $@ | sed 's|_run|_test:run()|1'` $(CMD_LINE_OPT) $(INTERNAL_OPTIONS)
 	
 		
 %_run: %_test
 	@echo "     Running unitary test $@ (third form) from $^"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@ --eval `echo $@ | sed 's|_run|_test:run()|1'` $(CMD_LINE_OPT)
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@ | sed 's|_run|_test:run()|1'` $(CMD_LINE_OPT) $(INTERNAL_OPTIONS)
 
 
 test: all test-recurse
-	@for t in $(TEST_TARGETS); do if ! $(MAKE) -s `echo $$t | sed 's|_test|_run|1'` CMD_LINE_OPT="${CMD_LINE_OPT}"; then exit 1; fi ; done
+	@for t in $(TEST_TARGETS); do if ! $(MAKE) -s `echo $$t | sed 's|_test|_run|1'` CMD_LINE_OPT="${CMD_LINE_OPT} --batch"; then exit 1; fi ; done
 
 
 test-recurse:
 	@echo "   Testing all in "`basename $(PWD)`
-	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then cd $$m && $(MAKE) -s test CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ; else echo "     (directory $$m skipped)" ; fi ) ; then exit 1; fi ; done
+	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then cd $$m && $(MAKE) -s test CMD_LINE_OPT="${CMD_LINE_OPT} --batch" && cd .. ; else echo "     (directory $$m skipped)" ; fi ) ; then exit 1; fi ; done
 
 
 # Best placed here rather than in GNUmakerules-docutils.inc:
@@ -202,11 +205,13 @@ build-tests: $(BEAM_FILES)
 
 launch: Emakefile
 	@echo "     Launching interpreter with default Ceylan settings"
-	@${ERL_PARAMETERIZED_LAUNCHER} --ln test_shell $(CMD_LINE_OPT)
+	@${ERL_PARAMETERIZED_LAUNCHER} --ln test_shell-$$USER \
+	$(CMD_LINE_OPT) $(INTERNAL_OPTIONS)
 	
 
 
 # Installation section.
+
 
 
 install: all doc install-all
@@ -226,66 +231,71 @@ install-prod-all: install-prod-announce install-bin install-ebin \
 
 	
 install-announce:
-	@echo "  Installing package $(PACKAGE_NAME) in $(PACKAGE_INSTALLATION_PREFIX)"
+	@echo "  Installing package $(PACKAGE_NAME) \
+	in $(PACKAGE_INSTALLATION_PREFIX)"
 
 
 install-prod-announce:
-	@echo "  Installing production package $(PACKAGE_NAME) in $(PACKAGE_INSTALLATION_PREFIX)"
+	@echo "  Installing production package $(PACKAGE_NAME) \
+	in $(PACKAGE_INSTALLATION_PREFIX)"
 
 
+# The -L option for cp is used to force the copy of the file which is pointed to
+# by a symbolic link, instead of copying that link, which is generally relative
+# and broken if copied in an installation 'as is'.
 	
 	
 install-bin:
 	@if [ -n "$(EXEC_TO_INSTALL)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/bin ; \
-	/bin/cp -f $(EXEC_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/bin ; fi
+	/bin/cp -L $(EXEC_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/bin ; fi
 
 
 install-ebin:
 	@if [ -n "$(BEAMS_TO_INSTALL)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/ebin ; \
-	/bin/cp -f $(BEAMS_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/ebin ; fi
+	/bin/cp -L $(BEAMS_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/ebin ; fi
 
  
 install-src:
 	@if [ -n "$(SOURCES_TO_INSTALL)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/src ; \
-	/bin/cp -f $(SOURCES_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/src ; fi
+	/bin/cp -L $(SOURCES_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/src ; fi
 
 
 install-include:
 	@if [ -n "$(INCLUDES_TO_INSTALL)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/include ; \
-	/bin/cp -f $(INCLUDES_TO_INSTALL) \
+	/bin/cp -L $(INCLUDES_TO_INSTALL) \
 	$(PACKAGE_INSTALLATION_PREFIX)/include ; fi
 
 
 install-examples:
 	@if [ -n "$(EXAMPLES_TO_INSTALL_BEAMS)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/examples/ebin ; \
-	/bin/cp -f $(EXAMPLES_TO_INSTALL_BEAMS) \
+	/bin/cp -L $(EXAMPLES_TO_INSTALL_BEAMS) \
 	$(PACKAGE_INSTALLATION_PREFIX)/examples/ebin ; fi
 	@if [ -n "$(EXAMPLES_TO_INSTALL_SRC)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/examples/src ; \
-	/bin/cp -f $(EXAMPLES_TO_INSTALL_SRC) \
+	/bin/cp -L $(EXAMPLES_TO_INSTALL_SRC) \
 	$(PACKAGE_INSTALLATION_PREFIX)/examples/src ; fi
 
 
 install-test:
 	@if [ -n "$(TESTS_TO_INSTALL_BEAMS)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/test/ebin ; \
-	cp -f $(TESTS_TO_INSTALL_BEAMS) \
+	cp -L $(TESTS_TO_INSTALL_BEAMS) \
 	$(PACKAGE_INSTALLATION_PREFIX)/test/ebin ; fi
 	@if [ -n "$(TESTS_TO_INSTALL_SRC)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/test/src ; \
-	cp -f $(TESTS_TO_INSTALL_SRC) \
+	cp -L $(TESTS_TO_INSTALL_SRC) \
 	$(PACKAGE_INSTALLATION_PREFIX)/test/src ; fi
 
 
 install-doc:
 	@if [ -n "$(DOC_TO_INSTALL)" ] ; then \
 	mkdir -p $(PACKAGE_INSTALLATION_PREFIX)/doc ; \
-	/bin/cp -f $(DOC_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/doc ; fi
+	/bin/cp -r -L $(DOC_TO_INSTALL) $(PACKAGE_INSTALLATION_PREFIX)/doc ; fi
 
 
 info-install:
@@ -322,7 +332,7 @@ clean-recurse:
 	
 realclean: clean
 	@echo "     Deep cleaning in "`basename $(PWD)`
-	@-rm -f Emakefile
+	@-/bin/rm -f Emakefile
 	
 	
 info: info-files
@@ -342,4 +352,5 @@ info-files:
 	@echo "BEAM_FILES   = $(BEAM_FILES)"
 	@echo "TEST_SOURCES = $(TEST_SOURCES)"
 	@echo "TEST_TARGETS = $(TEST_TARGETS)"
+
 		

@@ -50,7 +50,7 @@ PROJECT_RELEASE_ARCHIVE_BZ2 := $(PROJECT_RELEASE_BASE).tar.bz2
 
 # If wanting to install that package, following installation prefix is used.
 # INSTALLATION_PREFIX should be defined on a per-project basis, or be
-# overridden on the command line:
+# overridden on the command line (ex: 'make install INSTALLATION_PREFIX=/tmp'):
 ifndef INSTALLATION_PREFIX
 	INSTALLATION_PREFIX = $$HOME/Software
 endif

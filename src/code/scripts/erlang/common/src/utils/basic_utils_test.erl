@@ -32,9 +32,22 @@
 
 -export([ run/0 ]).
 
--define(Tested_module,basic_utils).
+
+-define( Tested_module, basic_utils ).
 
 
+check_process_specific_values( Min, Max ) ->
+	Self = self(),
+	F = fun() -> Self ! basic_utils:get_process_specific_value(Min,Max) end,
+	
+	[ spawn(F) || _X <- lists:seq(1,10) ],
+
+	G = fun() -> receive V -> V end end,				 
+	[ io:format( "   Generating a process-specific value in [~B;~B[: ~w.~n",
+				[ Min, Max, G() ] ) || _Y <- lists:seq(1,10) ].
+				  
+		
+	
 
 run() ->
 
@@ -45,13 +58,6 @@ run() ->
 	io:format( "   Timestamp is ~s.~n", [ 
 		basic_utils:get_textual_timestamp(InitialTimestamp) ] ),
 				
-	io:format( "   Output with term_toString : ~s, ~s and ~s.~n", 
-		[ basic_utils:term_toString(an_atom), basic_utils:term_toString([1,2]), 
-			basic_utils:term_toString("A string")	]),
-	
-	io:format( "   Converting an integer to a string: ~s.~n",
-		[ basic_utils:integer_to_string(3245) ] ),		
-
 	basic_utils:checkpoint(1),
 	
 	basic_utils:start_random_source( default_seed ),
@@ -155,52 +161,6 @@ run() ->
 			
 	end,
 	
-	
-	ListOfStrings = [ "Hello", "World", "Vampire" ],
-		
-	io:format( "   Displaying list ~p as a string:~n~s~n", 
-		[ ListOfStrings, basic_utils:string_list_to_string(ListOfStrings) ] ),	
-		
-		
-	LongLine = "This is a long line to test the paragraph formatting.",
-	
-	% So that "formatting." has a chance to fit:
-	TargetWidth = 10,
-	
-	io:format( "   Displaying text '~s' once formatted "
-		"for a width of ~B:~n~p~n",
-		[LongLine,TargetWidth,
-			basic_utils:format_text_for_width(LongLine,TargetWidth) ] ),
-
-
-	JustWideEnoughLine = "<0.33.0>",
-	
-	% So that "formatting." has a chance to fit:
-	NewTargetWidth = 8,
-	
-	io:format( "   Displaying text '~s' once formatted "
-		"for a width of ~B:~n~p~n",
-		[JustWideEnoughLine,NewTargetWidth,
-			basic_utils:format_text_for_width( JustWideEnoughLine,
-				NewTargetWidth) ] ),
-	
-	
-	FirstTestString = "Hello world!",
-	
-	io:format( "   Determining whether '~p' is a string: ~w.~n",
-		[ FirstTestString, basic_utils:is_string(FirstTestString) ] ),
-			 	
-				
-	SecondTestString = [ $o, [ $s, $d ], $l ],
-	
-	io:format( "   Determining whether '~p' is a string: ~w.~n",
-		[ SecondTestString, basic_utils:is_string(SecondTestString) ] ),
-	
-			 	
-	ThirdTestString = [ $e, 1, 2, $r ],
-	
-	io:format( "   Determining whether '~p' is a string: ~w.~n",
-		[ ThirdTestString, basic_utils:is_string(ThirdTestString) ] ),
 			 	
 	FirstVersion  = {0,0,0},
 	SecondVersion = {0,0,1},
@@ -221,8 +181,28 @@ run() ->
 	equal = basic_utils:compare_versions( FifthVersion, FifthVersion ),
 	
 	io:format( "   Comparisons of versions like ~s succeeded.~n", 
-		[ basic_utils:version_to_string(ThirdVersion) ] ),
+		[ text_utils:version_to_string(ThirdVersion) ] ),
 
+	DrawList = [ {first,1}, {second,2}, {third,1} ],
+	
+	io:format( "   Drawing an element from ~w, got: '~w'.~n", 
+		[ DrawList, basic_utils:draw_element( DrawList ) ] ),
+					
+	io:format( "   Drawing an element from ~w, got: '~w'.~n", 
+		[ DrawList, basic_utils:draw_element( DrawList ) ] ),
+					
+	io:format( "   Drawing an element from ~w, got: '~w'.~n", 
+		[ DrawList, basic_utils:draw_element( DrawList ) ] ),
+		
+	io:format( "   Generating a new UUID:"
+		" '~s'.~n", [ basic_utils:generate_uuid() ] ),
+
+	io:format( "   Generating a process-specific value: ~w.~n", 
+			  [ basic_utils:get_process_specific_value() ] ),
+	
+	{Min,Max} = {3,16},
+	check_process_specific_values( Min, Max ),
+					
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().
 

@@ -3,7 +3,7 @@
 default_node_name="ceylan_default"
 
 # Not used anymore as the user may prefer file-based cookies:
-#DEFAULT_cookie="ceylan"
+#default_cookie="ceylan"
 
 
 USAGE="`basename $0` [-v] [-c a_cookie] [--sn a_short_node_name | --ln a_long_node_name] [--fqdn a_fqdn] [--beam-dir a_path] [--beam-paths path_1 path_2] [--no-auto-start] [-h]...: launches the Erlang interpreter with specified settings.
@@ -143,7 +143,7 @@ while [ $# -gt 0 ] ; do
 		token_eaten=0
 	fi
 
-	# Avoids warning of next test:
+	# Avoids warning of next test:
 	if [ "$1" = "--batch" ] ; then
 		verbatim_opt="${verbatim_opt} $1"
 		token_eaten=0
@@ -165,16 +165,18 @@ log_opt="+W w"
 # +native not used here:
 code_opt="-pz ${code_dirs} -smp auto +K true +A 8"
 
+
 # By default up to 1,2 million processes could be created on one node:
-# (reduced, as even without having spawned these processes, the memory
-# footprint can increase quite a lot)
+# (reduced, as even without having spawned these processes, the memory
+# footprint can increase quite a lot)
+# Default value:
+#max_process_count=32768
 max_process_count=120000
 #max_process_count=120000000
 
-
 command="${ERL} ${log_opt} ${code_opt} +P ${max_process_count} ${verbatim_opt}"
 
-# Adds a command-line cookie only if specified:
+# Adds a command-line cookie only if specified:
 if [ -n "${cookie}" ] ; then
 	cookie_opt="-setcookie ${cookie}"
 fi
@@ -198,7 +200,7 @@ command="${command} ${cookie_opt} ${TO_EVAL} ${tcp_port_opt}"
 # nslookup could be used as well:
 # (some laptops timeout when using the 'host' command)
 if [ -z "${fqdn}" ] ; then
-	# Not used anymore:
+	# Not used anymore:
 	fqdn=`host \`hostname\` | awk '{ print $1 }' | head -n 1`
 	#echo "Guessed FQDN is ${fqdn}"
 fi

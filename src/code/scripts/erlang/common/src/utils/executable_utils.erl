@@ -1,5 +1,4 @@
-% 
-% Copyright (C) 2003-2009 Olivier Boudeville
+% Copyright (C) 2003-2010 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
 %
@@ -34,41 +33,131 @@
 
 
 
--export([ generate_png_from_graph_file/2,
-	generate_png_from_graph_file/3, display_png_file/1 ]).
 
+% Section for most usual commands:
+-export([ generate_png_from_graph_file/2,
+	generate_png_from_graph_file/3, display_png_file/1, display_pdf_file/1,
+	display_text_file/1, display_wide_text_file/2, get_ssh_mute_option/0 ]).
+
+
+
+% Section about default tools:
+-export([ get_default_image_viewer/0, get_default_pdf_viewer/0,
+		 get_default_text_viewer/0, get_default_wide_text_viewer/1, 
+		 get_default_trace_viewer/0 ]).
+	
+	
+	
+	
+% Section for most usual commands:
+	
 	
 % By default do not crash if dot outputs some warnings.
-generate_png_from_graph_file(PNGFilename,GraphFilename) ->
-	generate_png_from_graph_file(PNGFilename,GraphFilename,false).
+generate_png_from_graph_file( PNGFilename, GraphFilename ) ->
+	generate_png_from_graph_file( PNGFilename, GraphFilename, false ).
+
 
 
 % Generates a PNG image file from specified graph file, that must respect the
 % dot (graphviz) syntax.
 %  - PNGFilename the filename of the PNG to generate
 %  - GraphFilename the filename corresponding to the source graph
-%  - HaltOnDotOutput tells whether the process should crash if dot outputs
-% a warning
-generate_png_from_graph_file(PNGFilename,GraphFilename,true) ->
-	[] = execute_dot(PNGFilename,GraphFilename);
-
-% Any output remains available to the caller.
-generate_png_from_graph_file(PNGFilename,GraphFilename,false) ->
-	execute_dot(PNGFilename,GraphFilename).
+%  - HaltOnDotOutput tells whether the process should throw an exception 
+% should dot output an error or a warning
+generate_png_from_graph_file( PNGFilename, GraphFilename, true ) ->
+	case execute_dot( PNGFilename, GraphFilename ) of
 	
+		[] ->
+			ok;
+			
+		ErrorMessage ->
+			throw( {graph_generation_failed,ErrorMessage} )	
+			
+	end;
+	
+% Any output remains available to the caller.
+generate_png_from_graph_file( PNGFilename, GraphFilename, false ) ->
+	execute_dot( PNGFilename, GraphFilename ).
+	
+	
+
+% Displays (without blocking) to the user the specified PNG, using an external
+% viewer. 
+display_png_file( PNGFilename ) ->
+	% Viewer output is ignored: 
+	os:cmd( get_default_image_viewer() ++ " " ++ PNGFilename ++ " &" ).
 
 
 
 % Displays (without blocking) to the user the specified PNG, using an external
 % viewer. 
-display_png_file(PNGFilename) ->
-	% Viewer is 'eye of gnome' here (its output is ignored): 
-	os:cmd( "eog " ++ PNGFilename ++ " &" ).
+display_pdf_file( PDFFilename ) ->
+	% Viewer output is ignored: 
+	os:cmd( get_default_pdf_viewer() ++ " " ++ PDFFilename ++ " &" ).
+
+
+% Displays, with blocking, a text file.
+display_text_file( TextFilename ) ->
+	% Viewer output is ignored: 
+	os:cmd( get_default_text_viewer() ++ " " ++ TextFilename ).
+	
+
+% Displays, with blocking, a wide text file.
+display_wide_text_file( TextFilename, CharacterWidth ) ->
+	% Viewer output is ignored: 
+	os:cmd( get_default_wide_text_viewer(CharacterWidth) ++ " " 
+		   ++ TextFilename ).
+
+
+% Returns a string to be inserted into a command-line call to ssh/scp so that it
+% can run as much as possible non-interactively.  
+% Tries notably to avoid following message: "The authenticity of host 'Serveur
+% (XXXXX)' can't be established.  RSA key fingerprint is YYYYY. Are you sure you
+% want to continue connecting (yes/no)?": Note: only to be used in a trusted
+% environment.
+get_ssh_mute_option() ->
+  " -o \"StrictHostKeyChecking no\" ".
+	
+
+
+% Section about default tools:
+
+
+% Returns the default image viewer tool.
+% Could be also: xv, firefox, etc.
+get_default_image_viewer() ->
+	% Viewer is 'eye of gnome' here: 
+	"eog".
+	
+	
+% Returns the default PDF viewer tool.
+% Could be also: xpdf, acroread, etc.
+get_default_pdf_viewer() ->
+	"evince".
+
+
+% Returns the default text viewer tool.
+% Could be also: nedit, emacs, etc.
+get_default_text_viewer() ->
+	"gedit".	
+	
+
+get_default_wide_text_viewer(_CharacterWidth) ->
+	% Could be: io_lib:format( "nedit -column ~B", [CharacterWidth] )
+	"gedit". 
+							 
+		
+% Returns the default trace viewer tool.
+% Could be also: nedit, gedit, etc.
+get_default_trace_viewer() ->
+	% logmx.sh must be found in the PATH:
+	"logmx.sh".
+	
 	
 
 % Helper functions.
 
-execute_dot(PNGFilename,GraphFilename) ->
+execute_dot( PNGFilename, GraphFilename ) ->
 	% Dot might issue non-serious warnings:
 	os:cmd( "dot -o" ++ PNGFilename ++ " -Tpng " ++ GraphFilename ).
 

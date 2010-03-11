@@ -1,4 +1,5 @@
-% Copyright (C) 2003-2010 Olivier Boudeville
+% 
+% Copyright (C) 2003-2009 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
 %
@@ -31,7 +32,7 @@
 -module(fsm_utils).
 
 
--export([ create_blank_fsm_state/0, setFsmAttribute/3, getFsmAttribute/2 ]).
+-export([ create_blank_fsm_state/0, setFsmAttribute/3 ,getFsmAttribute/2 ]).
 
 
 

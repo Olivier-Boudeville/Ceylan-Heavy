@@ -34,7 +34,7 @@
 -export([ run/0 ]).
 
 
--define(Tested_module,net_utils).
+-define( Tested_module, net_utils ).
 
 
 
@@ -56,7 +56,9 @@ run() ->
 			
 	end,
 
-		
+	io:format( "   (will ping a non-existing host, "
+		"depending on the DNS settings the operation might be quite long)~n" ),
+			
 	case net_utils:ping( "non.existing.host" ) of
 	
 		true ->
@@ -67,29 +69,29 @@ run() ->
 				"   Ping could not ping a non-existing host, as expected.~n")
 			
 	end,
+
+
 	
-
-
 	FirstIP = {74,125,127,100},
 	io:format( "   Reverse look-up of ~p is '~s'.~n", 
-		[ basic_utils:ipv4_to_string(FirstIP), 
+		[ net_utils:ipv4_to_string(FirstIP), 
 		  net_utils:reverse_lookup(FirstIP) ] ),
 
 
 	SecondIP = {82,225,152,215},
 	io:format( "   Reverse look-up of ~p is '~s'.~n", 
-		[ basic_utils:ipv4_to_string(SecondIP), 
+		[ net_utils:ipv4_to_string(SecondIP), 
 		  net_utils:reverse_lookup(SecondIP) ] ),
 
 
 	ThirdIP = {90,59,94,64},
 	io:format( "   Reverse look-up of ~p is '~s'.~n", 
-		[ basic_utils:ipv4_to_string(ThirdIP), 
+		[ net_utils:ipv4_to_string(ThirdIP), 
 		  net_utils:reverse_lookup(ThirdIP) ] ),
 
 	FourthIP = {10,22,22,22},
 	io:format( "   Reverse look-up of ~p is '~s'.~n", 
-		[ basic_utils:ipv4_to_string(FourthIP), 
+		[ net_utils:ipv4_to_string(FourthIP), 
 		  net_utils:reverse_lookup(FourthIP) ] ),
 
 

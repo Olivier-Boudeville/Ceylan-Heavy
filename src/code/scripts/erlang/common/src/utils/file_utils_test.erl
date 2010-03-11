@@ -30,9 +30,7 @@
 % See the file_utils.erl tested module.
 -module(file_utils_test).
 
-
--export([ run/0 ]).
-
+-export([run/0]).
 
 -define(Tested_module,file_utils).
 	
@@ -82,12 +80,10 @@ run() ->
 	io:format( "   Replacing extension '~s' by '~s' in '~s' results in: "
 		" '~s'.~n", 
 		[SourceExtension,TargetExtension,SourceFilename,NewFilename] ),
-		
 				
-	io:format( "   Getting user directory: '~s'.~n", 
-		[file_utils:get_user_directory()] ),
-		
-		
+	%file_utils:create_directory( "tmp-tst" ),
+	%file_utils:create_directory( "tmp-tst/first/second", create_parents ),
+	
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().
 

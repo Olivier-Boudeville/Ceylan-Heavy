@@ -44,7 +44,7 @@
 
 
 % Operations on lines:
--export([ get_line/2, intersect/2 ]).
+-export([ get_line/2, intersect/2, get_abscissa_for_ordinate/2 ]).
 
 
 % Operations related to angles:
@@ -56,8 +56,8 @@
 -export([ compute_smallest_enclosing_rectangle/1,
 		  compute_max_overall_distance/1, compute_convex_hull/1 ]).
 
-	
-% Temp:
+
+% Only useful for tests:
 -export([ find_pivot/1, sort_by_angle/2 ]).
 
 
@@ -502,7 +502,18 @@ intersect( _D1={A,B,C}, _D2={U,V,W} ) ->
 			end
 
 	end.
-							
+		
+
+
+% Returns the abscissa of a point on line L having Y for ordinate.
+% Line L must not have for equation Y=constant (i.e. its A parameter must not be
+% null).
+get_abscissa_for_ordinate( _L={A,B,C}, Y ) ->
+	% For y=K, x=-(C+BK)/A 
+	-(C+B*Y)/A.
+
+
+
 
 % Angle section.
 

@@ -43,11 +43,15 @@
 
 
 
-% Line-related operations.
--export([ draw_line/3, draw_line/4, draw_lines/2, draw_lines/3,
-		  draw_cross/2, draw_cross/3, draw_cross/4, draw_labelled_cross/4,
-		  draw_labelled_cross/5, draw_circle/3, draw_circle/4,
-		  draw_numbered_points/2 ]).
+% Line-related rendering.
+-export([ draw_line/3, draw_line/4, draw_lines/2, draw_lines/3, 
+		 draw_segment/4 ]).
+
+
+% Rendering of other elements.
+-export([ draw_cross/2, draw_cross/3, draw_cross/4, draw_labelled_cross/4,
+		 draw_labelled_cross/5, draw_circle/3, draw_circle/4,
+		 draw_numbered_points/2 ]).
 
 
 
@@ -109,6 +113,7 @@ get_color(ColorName) ->
 
 % Line section.
 
+
 %{R,G,B}, or a the predefined name red, green, blue, white, black, grey, or
 % yellow.
 % For example {0,0,0} is black and {255,255,255} is white. 
@@ -135,6 +140,18 @@ draw_lines( Points, Canvas ) ->
 draw_lines( Points, Color, Canvas ) ->
 	gs:create( line, Canvas, [ {coords, Points}, {fg,Color} ] ).
 
+
+
+% Draws a segment of line L between the two specified ordinates. 
+% Line L must not have for equation Y=constant (i.e. its A parameter must not be
+% null).
+draw_segment( L, Y1, Y2, Canvas ) ->
+	gui:draw_line( {linear_2D:get_abscissa_for_ordinate(L,Y1),Y1},
+				   {linear_2D:get_abscissa_for_ordinate(L,Y2),Y2}, Canvas ). 
+
+
+
+% Section for other elements.
 
 
 % Draws an upright cross at specified location (2D point), with default edge

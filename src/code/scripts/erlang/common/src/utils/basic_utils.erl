@@ -32,23 +32,11 @@
 
 
 
-% Note that string:tokens can be used to split strings.
-
-
 
 % Timestamp-related functions.
 -export([ get_timestamp/0, get_textual_timestamp/0, get_textual_timestamp/1,
 	timestamp_to_string/1, get_duration/2, get_textual_duration/2 ]).
 	
-	
-	
-% String management functions.
--export([ term_toString/1, term_to_string/1, integer_to_string/1,
-	string_list_to_string/1, ipv4_to_string/1, ipv4_to_string/2, 
-	version_to_string/1, join/2,
-	remove_ending_carriage_return/1, format_text_for_width/2, pad_string/2,
-	is_string/1, get_whitespaces_list/0 ]).
-
 	
 	
 % Registration functions.
@@ -61,16 +49,17 @@
 % Random-related functions.
 -export([ start_random_source/3, start_random_source/1, stop_random_source/0,
 	get_random_value/0, get_random_value/1, get_random_module_name/0,
-	get_random_seed/0, random_select/2, random_permute/1 ]).
+	get_random_seed/0, random_select/2, random_permute/1, generate_uuid/0 ]).
 	
 	
 
 % List management functions.
--export([ get_element_at/2, remove_element_at/2, subtract_all_duplicates/2 ]). 
+-export([ get_element_at/2, remove_element_at/2, subtract_all_duplicates/2,
+		 append_at_end/2 ]). 
 
 
 
-% User-related functions.
+% Notification-related functions.
 -export([ speak/1, notify_user/1, notify_user/2 ]).
 
 
@@ -81,8 +70,9 @@
 
 
 % Miscellaneous functions.
--export([ generate_basic_name_from/1, flush_pending_messages/0, checkpoint/1,
-		  get_interpreter_version/0, compare_versions/2 ]).
+-export([ flush_pending_messages/0, checkpoint/1, compare_versions/2,
+		 sum_probabilities/1, draw_element/1, draw_element/2, 
+		 get_process_specific_value/0, get_process_specific_value/2 ]).
 
 
 
@@ -92,7 +82,8 @@
 
 
 % Returns a tuple describing the current time. 
-% Ex: {{2007,9,6},{15,9,14}}
+% Ex: { {Year,Month,Day}, {Hour,Minute,Second} } = basic_utils:get_timestamp()
+% may return '{{2007,9,6},{15,9,14}}'.
 get_timestamp() ->
 	% Was: {erlang:date(),erlang:time()}.
 	% Better:
@@ -100,7 +91,8 @@ get_timestamp() ->
 	
 		
 
-% Returns a string corresponding to the current timestamp.
+% Returns a string corresponding to the current timestamp, like:
+% "2009/9/1 11:46:53".
 get_textual_timestamp() ->
 	get_textual_timestamp( get_timestamp() ).
 	
@@ -131,322 +123,16 @@ get_duration(FirstTimestamp,SecondTimestamp) ->
 get_textual_duration(FirstTimestamp,SecondTimestamp) ->
 	{Days,{Hour, Minute, Second}} = calendar:seconds_to_daystime( 
 		get_duration(FirstTimestamp,SecondTimestamp) ),
-
-	case Days of 
-	
-		0 ->
-			
-			case Hour of
-			
-			
-				0 ->
-				
-					case Minute of 
-					
-						0 ->
-							lists:flatten( io_lib:format( "~B second(s)", 
-								[Second] ) );
-						
-						_NonZeroMinutess ->
-							lists:flatten( io_lib:format( "~B minute(s) "
-								"and ~B second(s)", [Minute, Second] ) )
-					end;	
-						
-				_NonZeroHours ->
-					lists:flatten( io_lib:format( "~B hour(s), ~B minute(s) "
-						"and ~B second(s)", [Hour, Minute, Second] ) )
-			
-			end;
-			
-		_NonZeroDays ->
-			lists:flatten( io_lib:format( "~B day(s), ~B hour(s), ~B minute(s) "
-				"and ~B second(s)", [Days, Hour, Minute, Second] ) )
-		
-	end.	
-
+	lists:flatten( io_lib:format( "~B day(s), ~B hour(s), ~B minute(s) "
+		"and ~B second(s)", [Days, Hour, Minute, Second] ) ).
 		
 		
-% String management functions.
-		
-
-% Returns a human-readable string describing specified term.	
-term_toString(Term) ->
-	case io_lib:printable_list(Term) of
-	
-		true -> 
-			io_lib:format("~s",[Term]);
-		
-		_    ->
-			io_lib:format("~p",[Term])
-		
-	end.	
-
-
-
-term_to_string(Term) ->
-	term_toString(Term).
-	
-	
-	
-% Avoids to have to use lists:flatten when converting an integer to a string.
-% Useless when using functions like io:format, that accept iolists as 
-% parameters.	
-integer_to_string(IntegerValue) ->
-	hd( io_lib:format( "~B", [IntegerValue] ) ).
-	
-
-
-% Returns a string which pretty-prints specified list of strings, with bullets.	
-string_list_to_string( ListOfStrings ) ->
-	io_lib:format( "~n~s", [ string_list_to_string( ListOfStrings, [] ) ] ).
-
-
-string_list_to_string( [], Acc ) ->
-	 Acc;	
-
-string_list_to_string( [H|T], Acc ) when is_list(H) ->
-	string_list_to_string( T, Acc ++ io_lib:format( " + ~s~n", [H] ) ).
-	
-		
-		
-% Returns a string describing the specified IPv4 address.
-ipv4_to_string( {N1,N2,N3,N4} ) ->
-	lists:flatten( io_lib:format( "~B.~B.~B.~B", [N1,N2,N3,N4] ) ).
-	
-	
-ipv4_to_string( {N1,N2,N3,N4}, Port ) ->
-	lists:flatten( io_lib:format( "~B.~B.~B.~B:~B", [N1,N2,N3,N4,Port] ) ).
-
-
-
-% Returns a string describing the specified three-element version.
-version_to_string( {V1,V2,V3} ) ->
-	io_lib:format( "~B.~B.~B", [V1,V2,V3] ).
-	 
-	
-
-% join(Separator,ListToJoin), ex: join( '-', [ "Barbara", "Ann" ] ).
-% Python-like 'join', combines items in a list into a string using a separator
-% between each item representation. 
-% Inspired from http://www.trapexit.org/String_join_with.
-% For file-related paths, you are expected to use portable standard
-% filename:join functions instead.
-% Note: use string:tokens to split the string.
-join( _Separator, [] ) ->
-    "";
-
-join( Separator, ListToJoin ) ->
-    lists:flatten( lists:reverse( join(Separator, ListToJoin, []) ) ).
-	
-	
-join( _Separator, [], Acc ) ->
-    Acc;
-
-join( _Separator, [ H | [] ], Acc ) ->
-    [H|Acc];
-	
-join( Separator, [H|T], Acc ) ->
-    join( Separator, T, [ Separator, H | Acc ] ).
-
-
-
-% Removes the ending "\n" character(s) of specified string.
-remove_ending_carriage_return(String) when is_list(String) ->
-	% 'Res ++ "\n" = String,Res' will not work:
-	string:strip( String, right, $\n ).
-
-
-
-
-% Formats specified text according to specified width, expressed in characters.
-% Returns a line of strings, each of which having Width characters.
-format_text_for_width( Text, Width ) ->
-	% Whitespaces converted to spaces:
-	CleanedTest = re:replace( lists:flatten(Text), "\\s+", " ", 
-		[global,{return, list}] ), 
-	WordList = string:tokens( CleanedTest, " " ),
-	%io:format( "Formatting ~p.~n", [WordList] ),
-	join_words( WordList, Width ).
-	
-	
-
-% Joins words from the list, line by line.
-join_words( WordList, Width ) ->
-	join_words( WordList, Width, _Lines = [], _CurrentLine = "",
-		_CurrentLineLen = 0 ).
-	
-	
-join_words( [], _Width, AccLines, _CurrentLine, _CurrentLineLen = 0 ) ->
-	% Ended with a full line:
-	lists:reverse(AccLines);
-		
-join_words( [], Width, AccLines, CurrentLine, _CurrentLineLen ) ->
-	% Ended with a partial line:
-	lists:reverse( [pad_string(CurrentLine,Width)|AccLines] );
-		
-join_words( [Word|RemainingWords], Width, AccLines, CurrentLine,
-		CurrentLineLen ) ->
-		
-	%io:format( "Managing word '~s' (len=~B), current line is '~s' (len=~B), "
-	%	"width = ~B.~n", [Word,length(Word),CurrentLine,CurrentLineLen,Width] ),
-			
-	% Length should be incremented, as a space must be inserted before that
-	% word, however we want to accept words whose width would be exactly equal
-	% to the line width:
-	ActualLength = case CurrentLine of 
-	
-		"" ->
-			length(Word);
-			
-		_NonEmpty ->
-			% Already at least a letter, we therefore must add a space before
-			% the new word:
-			length(Word) + 1
-				
-	end,
-	case ActualLength of 
-	
-		CompatibleWidth when CompatibleWidth =< Width ->
-			% Word width is manageable.
-			% Will this word fit on the current line?
-			% It depends on the
-			case CurrentLineLen + CompatibleWidth of
-			
-				FittingLen when FittingLen =< Width ->
-					% Yes, this word fits on the current line.
-					% Avoids adding a space at the beginning of a new line:
-					{NewCurrentLine,NewLineLen} = case CurrentLineLen of 
-					
-						0 ->
-							{Word,CompatibleWidth};
-							
-						Len -> 
-							{CurrentLine ++ " " ++ Word,Len+CompatibleWidth+1}	
-					
-					end,		
-					%io:format("Current line is now '~s'.~n", [NewCurrentLine]),
-					join_words( RemainingWords, Width, AccLines, NewCurrentLine,
-						NewLineLen );
-				
-				_ExceedingLen ->
-					% No, with this word the current line would be too wide,
-					% inserting it on new line instead:
-					PaddedCurrentLine = pad_string( CurrentLine, Width ),
-					%io:format( "Inserting line '~s'.~n", [PaddedCurrentLine] ),
-					join_words( RemainingWords, Width,
-						[PaddedCurrentLine|AccLines], Word, CompatibleWidth )
-			
-			end;
-			
-		_TooLargeWidth ->
-			% Will break words as many times as needed:
-			%io:format( "Word '~s' is too large (len=~B), breaking it.~n", 
-			%	[Word,length(Word)] ),
-			Subwords = break_word(Word,Width),
-			PaddedCurrentLine = pad_string( CurrentLine, Width ),
-			join_words( Subwords ++ RemainingWords, Width,
-				[PaddedCurrentLine|AccLines], "", 0 )
-			
-	end.
-
-
-
-% Returns the specified string, padded with spaces to specified width,
-% left-justified.
-pad_string( String, Width ) when length(String) =< Width ->
-	lists:flatten( io_lib:format( "~*.s", [ -Width, String ] ) ).
-
-
-
-% Returns true iff the parameter is a string.
-% Taken from http://lethain.com
-% (see distinguishing-strings-from-lists-in-erlang)
-% Note: something like [ $e, 1, 2, $r ] is deemed to be a string.
-is_string( [] ) -> 
-	true;
-	
-is_string( [H|_] ) when not is_integer(H) -> 
-	false;
-	
-is_string( [_|T] ) -> 
-	is_string(T);
-	
-is_string( _Other ) ->
-	false.
-
-
-
-% Returns the list of known whitespaces.
-% Note: useful with string:tokens.
-get_whitespaces_list() ->
-	" \n\t\r".
-	
-	
-
-% Returns a list of words obtained from the breaking of specified word, 
-% according to specified maximum width.
-% Parts of that word will use a separating dash.
-% Ex: break_word("simulator",5) returns ["simu-","lator"]
-break_word(Word,Width) ->
-	%io:format( "Breaking '~s' for width ~B.~n", [Word,Width] ),
-	%timer:sleep(500),
-	% We do not want to have underscores in the word, as if the word happens
-	% to be broken just after an underscore, RST will interpret it as a link.
-	% Therefore we escape underscores:
-	% Used to cut into halves, then preferring truncating a first full-length
-	% chunk, finally directly cutting the word into appropriate pieces:
-	%CutIndex = length(Word) div 2,
-	%CutIndex = Width-1,
-	cut_into_chunks( Word, Width, [] ).
-	
-	
-	
-% Cuts specified string into pieces, each of them having to fit in specified
-% width.
-cut_into_chunks( _String = [], _ChunkSize, Acc ) ->
-	%io:format( "cut_into_chunks return ~p.", [lists:reverse(Acc)]),
-	lists:reverse(Acc);
-
-% Last word may take the full width (no dash to add):	
-cut_into_chunks( String, ChunkSize, Acc ) when length(String) =< ChunkSize ->
-	cut_into_chunks( [], ChunkSize, [String|Acc] );
-	
-% Here we have to cut the string anyway:	
-cut_into_chunks( String, ChunkSize, Acc ) ->
-	% Rule is to add (and convert) characters until the end of line:
-	% (ChunkSize decremented as "-" will be added)
-	{FirstPart,Remaining} = aggregate_word( String, ChunkSize-1, [] ),
-	% Each underscore will result into another character (\) being added:
-	%io:format( "FirstPart = '~s' (~B), Remaining = '~s'.~n",
-	%	[FirstPart,length(FirstPart),Remaining] ),
-	cut_into_chunks( Remaining, ChunkSize, [ FirstPart ++ "-" |Acc] ).
-
-		
-		
-aggregate_word( String, 0, Acc ) ->
-	{lists:reverse(Acc),String};
-	
-	
-% An underscore once escaped would not fit, as it would result into two
-% characters ('\_'):
-aggregate_word( String = [$_|_T], 1, Acc ) ->
-	aggregate_word( String, 0, Acc );
-
-% An escaped underscore will fit:	
-aggregate_word( [$_|T], Count, Acc ) ->
-	% Adding '_\' as it will reversed (into the expected '\_'):
-	aggregate_word( T, Count-2, [$\_,$\\|Acc] );
-	
-aggregate_word( [H|T], Count, Acc ) ->
-	aggregate_word( T, Count-1, [H|Acc] ).
-	
-	
 
 
 % Registration functions.
 	
 	
-% Registers the current process under specified name.
+% Registers the current process under specified name, which must be an atom.
 % Declaration is register_as(Name,RegistrationType) with 
 % RegistrationType in 'local_only', 'global_only', 'local_and_global', 'none'
 % depending on what kind of registration is requested.
@@ -456,12 +142,13 @@ register_as( Name, RegistrationType ) ->
 
 
 
-% Registers specified PID under specified name.
+% Registers specified PID under specified name, which must be an atom.
 % Declaration is: register_as(Pid,Name,RegistrationType) with 
 % RegistrationType in 'local_only', 'global_only', 'local_and_global', 
-% depending on what kind of registration is requested.
+% 'none', depending on what kind of registration is requested.
 % Returns ok on success, otherwise throws an exception.
-register_as( Pid, Name, local_only ) ->
+register_as( Pid, Name, local_only ) when is_atom(Name) ->
+	
 	try erlang:register( Name, Pid ) of 
 		
 		true ->
@@ -474,7 +161,7 @@ register_as( Pid, Name, local_only ) ->
 				
 	end;
  
-register_as( Pid, Name, global_only ) ->
+register_as( Pid, Name, global_only ) when is_atom(Name) ->
 	case global:register_name( Name, Pid ) of 
 	
 		yes ->
@@ -485,7 +172,7 @@ register_as( Pid, Name, global_only ) ->
 			
 	end;
 
-register_as( Pid, Name, local_and_global ) ->
+register_as( Pid, Name, local_and_global ) when is_atom(Name) ->
 	ok = register_as(Pid,Name,local_only),
 	ok = register_as(Pid,Name,global_only);
 
@@ -793,6 +480,14 @@ random_permute( List ) ->
 	
 
 
+% Returns a string containing a new universally unique identifier (UUID), 
+% based on the system clock plus the system's ethernet hardware address, 
+% if present.
+generate_uuid() ->
+	Res = os:cmd( "uuidgen -t" ),
+	% Removes the final end-of-line:
+	tl( lists:reverse(Res) ).
+
 
 
 % List management functions.
@@ -851,10 +546,17 @@ subtract_all_duplicates( L1, L2 ) ->
 
 
 
+% Appends specified element at the end of specified list, without changing the
+% order of the list.
+% Ex: append_at_end( d, [a,b,c] ) returns [a,b,c,d].
+append_at_end( Elem, L ) when is_list(L) ->
+	% Should be more efficient than lists:reverse( [Elem|lists:reverse(L)] ):
+	L ++ [Elem].  
 
 
-% User-related functions.
 
+% Notification-related functions.
+	
 
 % Speaks the specified message, using espeak.		
 speak(Message) ->
@@ -909,18 +611,7 @@ check_node_validity( Node ) when is_atom(Node) ->
 	end.			
 
 
-
-
-
 % Miscellaneous functions.
-
-
-% Tries to return a string adequate to form a simple name (mostly
-% alphanumerical with underscores) from specified term.	
-% See also: file_utils:convert_to_filename/1.	
-generate_basic_name_from(Term) ->
-	String = term_to_string(Term),
-	fix_characters(String).	
 		
 
 % Flushes all the messages still in the mailbox of this process.
@@ -942,12 +633,6 @@ flush_pending_messages() ->
 checkpoint(Number) ->
 	io:format( "----- CHECKPOINT #~B -----~n", [Number] ).
 	
-	
-	
-% Returns the version informations of the current Erlang interpreter being used.
-get_interpreter_version() ->
-	erlang:system_info(otp_release).
-
 
 
 % Compares the two triplets, which describes two version numbers (ex: {0,1,0})
@@ -974,23 +659,85 @@ compare_versions( {A1,A2,A3}, {B1,B2,B3} ) ->
 
 
 
-% Non-exported helper functions.
+% Draws one element at random of the specified list, which is a list of 
+% {Element,Probability} pairs: returns the drawn element, knowing that it will
+% be choosen according to its probability.
+% Probabilities are managed as relative values, they do not have to sum up
+% to 1.0; they must be positive or null integers, and their sum must not be
+% null.
+% Ex:  ElementList = [{first,1},{second,2},{third,1}] is excepted to return
+% 'second' twice as frequently as 'first' or 'third'.
+% Using [{first,1},{second,0},{third,1}] instead would mean that 'second' would
+% never be drawn.
+draw_element( ElementList ) ->
+	draw_element( ElementList, sum_probabilities( ElementList ) ).
 
-fix_characters(String) ->
-	lists:reverse( fix_characters(lists:flatten(String),[]) ).
 
+sum_probabilities( ElementList ) ->
+	sum_probabilities( ElementList, 0 ).
 	
-fix_characters([],Acc) ->
+ 
+sum_probabilities( [], Acc ) ->
 	Acc;
 
-% 32 corresponds to space ('$ '):
-fix_characters([32|T],Acc) ->
-	fix_characters(T,["_"|Acc]);
+sum_probabilities( [ {_Element,Probability} | T ], Acc ) ->
+	sum_probabilities( T, Acc+Probability ).
 	
-fix_characters([$'|T],Acc) ->
-	fix_characters(T,["_"|Acc]);
+
+
+% Sum must be equal to the sum of all probabilities in ElementList.
+draw_element( _ElementList, 0 ) ->
+	throw( null_total_probability );
 	
-fix_characters([H|T],Acc) ->
-	fix_characters(T,[H|Acc]).
+draw_element( ElementList, Sum ) ->
+	DrawnValue = get_random_value( Sum ),
+	%io:format( "draw_element: drawn ~B.~n", [DrawnValue] ),
+	select_element( ElementList, DrawnValue, _CurrentSum = 0 ).
+	
+	
+	
+select_element( [ {Element,Probability} | _T ], DrawnValue, CurrentSum ) 
+		when Probability + CurrentSum >= DrawnValue ->
+	% Just gone past the probability range:	
+	Element;
+	
+select_element( [ {_Element,Probability} | T ], DrawnValue, CurrentSum ) ->
+	% Drawn value still not reached, continuing:
+	select_element( T, DrawnValue, CurrentSum+Probability ). 
+	
+	
+
+% Returns a value (a strictly positive integer) expected to be as much as
+% possible specific to the current process.
+% Mostly based on its PID.
+% Useful for example when a large number of similar processes try to access to
+% the same resource (ex: a set of file descriptors) over time: they can rely on
+% some random waiting based on that process-specific value in order to smooth
+% the accesses over time.
+% We could imagine taking into account as well the current time, the process
+% reductions, etc. or generating a reference.
+get_process_specific_value() ->
+	% PID are akin to <X.Y.Z>.
+	PidAsText = lists:flatten( io_lib:format( "~w", [self()] ) ),
+	%io:format( "PID: ~w.~n", [self()] ) ,
+	% Ex: ["<0","33","0>"]:
+	[ [$<|First],Second,Third ] = string:tokens(PidAsText,"."),
+	% We add 1 to x and z as they might be null:
+	{F,[]} = string:to_integer(First),
+	{S,[]} = string:to_integer(Second),
+	[$>|ExtractedThird] = lists:reverse(Third),
+	{T,[]} = string:to_integer( ExtractedThird ),
+	X = F+1,
+	Y = S,
+	Z = T+1,
+	%io:format( "Res = ~w.~n", [X*Y*Z] ),
+	X*Y*Z.
+
+
+% Returns a process-specific value in [Min,Max[.
+get_process_specific_value( Min, Max ) ->
+	Value = get_process_specific_value(),
+	{H,M,S} = erlang:time(),
+	( ((H+M+S+1)*Value) rem (Max-Min) ) + Min. 
 	
 

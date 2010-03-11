@@ -35,6 +35,7 @@
 -define(Tested_module,gui).
 
 
+
 get_main_window_width() ->
 	800.
 
@@ -169,17 +170,6 @@ create_test_gui( PointCount, MainWin ) ->
 	Canvas.
  
 
-% Returns M={X,Y} for M on line L having Y for ordinate.
-get_point_at( _L={A,B,C}, Y ) ->
-	% For y=K, x=-(C+BK)/A 
-	{-(C+B*Y)/A,Y}.
-
-
-draw_segment( L, Canvas ) ->
-	gui:draw_line( get_point_at(L,0), get_point_at( L,get_canvas_height() ), 
-				   Canvas ).
- 
-
 gui_main_loop( MainWin, PointCount, Canvas ) ->
 	
 	%io:format( "~nEntering main loop, point count is ~B.~n", [PointCount-1] ),
@@ -213,7 +203,15 @@ run() ->
 
 	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
 
-	init_test_gui(),
+	case init:get_argument('-batch') of
+	
+		{ok,_} ->
+			io:format( "(not running the GUI test, being in batch mode)~n" );
+		
+		_ ->
+			init_test_gui()
+			
+	end,
 		  
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().

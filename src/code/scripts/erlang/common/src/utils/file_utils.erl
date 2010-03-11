@@ -1,5 +1,4 @@
-% 
-% Copyright (C) 2003-2009 Olivier Boudeville
+% Copyright (C) 2003-2010 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
 %
@@ -41,21 +40,21 @@
 
 -export([ join/2, convert_to_filename/1, replace_extension/3, exists/1,
 	get_type_of/1, is_file/1, is_existing_file/1, 
-	is_directory/1, is_existing_directory/1, list_dir_elements/1,
-	filter_by_extension/2, find_files_from/2, find_all_files_from/1, 
+	is_directory/1, list_dir_elements/1,
+	filter_by_extension/2, find_files_from/2, find_files_with_excluded_dirs/3,
+	find_all_files_from/1, find_directories_from/1,
+	create_directory/1, create_directory/2,
 	path_to_variable_name/1, path_to_variable_name/2,
-	get_user_directory/0, get_image_file_png/1, get_image_file_gif/1 ]).
+	get_image_file_png/1, get_image_file_gif/1 ]).
 
 
+% I/O section.
 
-% Content-related operations.
+-export([ open/2 ]).
 
--export([ read_all_lines_of/1 ] ).
-
-
-
-% ZIP-related operations.
-
+		 
+% Zip-related operations.
+		 
 -export([ file_to_zipped_term/1, zipped_term_to_unzipped_file/1,
 	zipped_term_to_unzipped_file/2, files_to_zipped_term/1,
 	zipped_term_to_unzipped_files/1 ]).
@@ -131,8 +130,6 @@ get_type_of(EntryName) ->
 
 
 % Returns whether the specified entry is a regular file.
-% If the entry does not exist (neither as a file or as a directory, etc.),
-% will return a {non_existing_entry,EntryName} exception.
 is_file(EntryName) ->
 	case get_type_of(EntryName) of 
 	
@@ -143,12 +140,8 @@ is_file(EntryName) ->
 			false	
 	
 	end.
-	
-	
 		
-% Returns whether the specified entry exists and is a regular file.
-% If the entry does not exist, or exists but is not a file, will return
-% false.
+
 is_existing_file(EntryName) ->
 	case exists(EntryName) andalso get_type_of(EntryName) of 
 	
@@ -159,12 +152,9 @@ is_existing_file(EntryName) ->
 			false	
 	
 	end.
-
-	
+		
 		
 % Returns whether the specified entry is a regular file.
-% If the entries does not exist (neither as a directory or as a file, etc.),
-% will return a {non_existing_entry,EntryName} exception.
 is_directory(EntryName) ->
 	case get_type_of(EntryName) of 
 	
@@ -177,22 +167,6 @@ is_directory(EntryName) ->
 	end.
 		
 		
-
-% Returns whether the specified entry exists and is a regular file.
-% If the entry does not exist, or exists but is not a directory, will return
-% false.
-is_existing_directory(EntryName) ->
-	case exists(EntryName) andalso get_type_of(EntryName) of 
-	
-		directory ->
-			true ;
-			
-		_ ->
-			false	
-	
-	end.
-
-
 
 % Returns a tuple made of a four lists describing the file elements found in
 % specified directory: {RegularFiles,Directories,OtherFiles,Devices}.
@@ -258,33 +232,42 @@ filter_by_extension( [H|T], Extension, Acc ) ->
 		 
 
 
-
 % Returns the list of all regular files found from the root with specified
-% extension, in the whole subtree (i.e. recursively). 
+% extension, in the whole subtree (i.e. recursively), with specified 
+% directories excluded.
 % All returned pathnames are relative to this root.
 % Ex: [ "./a.txt", "./tmp/b.txt" ].
-find_files_from( RootDir, Extension ) ->
-	find_files_from( RootDir, "", Extension, [] ).
+find_files_with_excluded_dirs( RootDir, Extension, ExcludedDirList ) ->
+	find_files_with_excluded_dirs( RootDir, "", Extension, ExcludedDirList, 
+		[] ).
 	
 	
-find_files_from( RootDir, CurrentRelativeDir, Extension, Acc ) ->
-	%io:format( "find_files_from in ~s.~n", [CurrentRelativeDir] ),
+find_files_with_excluded_dirs( RootDir, CurrentRelativeDir, Extension,
+		ExcludedDirList, Acc ) ->
+	%io:format( "find_files_with_excluded_dirs in ~s.~n", 
+	% [CurrentRelativeDir] ),
 	{RegularFiles,Directories,_OtherFiles,_Devices} = list_dir_elements(
 		join(RootDir,CurrentRelativeDir) ),
-	Acc ++ list_files_in_subdirs( Directories, Extension, 
-			RootDir, CurrentRelativeDir, [] ) 
+	FilteredDirectories = [ D || D <- Directories, 
+		not lists:member( join(CurrentRelativeDir,D), ExcludedDirList ) ],
+	Acc ++ list_files_in_subdirs_ex( FilteredDirectories, Extension, 
+			RootDir, CurrentRelativeDir, ExcludedDirList, [] ) 
 		++ prefix_files_with( CurrentRelativeDir,
 			filter_by_extension(RegularFiles,Extension) ).
 		
 		
 		
-list_files_in_subdirs([],_Extension,_RootDir,_CurrentRelativeDir,Acc) -> 
+% Specific helper, as needing to call find_files_with_excluded_dirs:
+list_files_in_subdirs_ex( [], _Extension, _RootDir, _CurrentRelativeDir,
+		_ExcludedDirList, Acc ) -> 
 	Acc;
 	
-list_files_in_subdirs([H|T],Extension,RootDir,CurrentRelativeDir,Acc) ->		
-	list_files_in_subdirs( T, Extension, RootDir, CurrentRelativeDir,
-		find_files_from( RootDir, join(CurrentRelativeDir,H), 
-			Extension, [] ) ++ Acc ).
+list_files_in_subdirs_ex( [H|T], Extension, RootDir, CurrentRelativeDir,
+		ExcludedDirList, Acc ) ->		
+	list_files_in_subdirs_ex( T, Extension, RootDir, CurrentRelativeDir,
+		ExcludedDirList,
+		find_files_with_excluded_dirs( RootDir, join(CurrentRelativeDir,H), 
+			Extension, ExcludedDirList, [] ) ++ Acc ).
 
 
 
@@ -331,8 +314,114 @@ prefix_files_with( _RootDir, [], Acc ) ->
 prefix_files_with( RootDir, [H|T], Acc ) ->
 	prefix_files_with( RootDir, T, [join(RootDir,H)|Acc] ).
 
+
+
+% Returns the list of all regular files found from the root with specified
+% extension, in the whole subtree (i.e. recursively). 
+% All returned pathnames are relative to this root.
+% Ex: [ "./a.txt", "./tmp/b.txt" ].
+find_files_from( RootDir, Extension ) ->
+	find_files_from( RootDir, "", Extension, [] ).
+	
+	
+find_files_from( RootDir, CurrentRelativeDir, Extension, Acc ) ->
+	%io:format( "find_files_from in ~s.~n", [CurrentRelativeDir] ),
+	{RegularFiles,Directories,_OtherFiles,_Devices} = list_dir_elements(
+		join(RootDir,CurrentRelativeDir) ),
+	Acc ++ list_files_in_subdirs( Directories, Extension, 
+			RootDir, CurrentRelativeDir, [] ) 
+		++ prefix_files_with( CurrentRelativeDir,
+			filter_by_extension(RegularFiles,Extension) ).
 		
 		
+		
+list_files_in_subdirs([],_Extension,_RootDir,_CurrentRelativeDir,Acc) -> 
+	Acc;
+	
+list_files_in_subdirs([H|T],Extension,RootDir,CurrentRelativeDir,Acc) ->		
+	list_files_in_subdirs( T, Extension, RootDir, CurrentRelativeDir,
+		find_files_from( RootDir, join(CurrentRelativeDir,H), 
+			Extension, [] ) ++ Acc ).
+
+
+
+
+
+
+% Returns the list of all directories found from the root, in the
+%  whole subtree (i.e. recursively). 
+% All returned pathnames are relative to this root.
+% Ex: [ "./my-dir", "./tmp/other-dir" ].
+find_directories_from( RootDir ) ->
+	find_directories_from( RootDir, "", [] ).
+	
+	
+find_directories_from( RootDir, CurrentRelativeDir, Acc ) ->
+	%io:format( "find_directories_from in ~s.~n", [CurrentRelativeDir] ),
+	{_RegularFiles,Directories,_OtherFiles,_Devices} = list_dir_elements(
+		join(RootDir,CurrentRelativeDir) ),
+	Acc ++ list_directories_in_subdirs( Directories, 
+			RootDir, CurrentRelativeDir, [] ) 
+		++ prefix_files_with( CurrentRelativeDir, Directories ).
+		
+		
+		
+list_directories_in_subdirs( [], _RootDir, _CurrentRelativeDir, Acc ) -> 
+	Acc;
+	
+list_directories_in_subdirs( [H|T], RootDir, CurrentRelativeDir, Acc ) ->		
+	list_directories_in_subdirs( T, RootDir, CurrentRelativeDir,
+		find_directories_from( RootDir, join(CurrentRelativeDir,H), [] ) 
+		++ Acc ).
+		
+		
+
+% Creates specified directory, without creating any intermediate (parent)
+% directory that would not exist.
+% Throws an exception if the operation failed.
+create_directory( Dirname ) ->
+	create_directory( Dirname, create_no_parent ).
+
+
+% Creates specified directory.
+% If 'create_no_parent' is specified, no intermediate (parent) directory 
+% will be created.
+% If 'create_parents' is specified, any non-existing intermediate (parent)
+% directory will be created.
+% Throws an exception if the operation failed.
+create_directory( Dirname, create_no_parent ) ->
+	case file:make_dir( Dirname ) of
+	
+		ok ->
+			ok;
+		
+		{error,Reason} ->
+			throw( {create_directory_failed,Dirname,Reason} )
+	
+	end;		
+
+create_directory( Dirname, create_parents ) ->
+	create_dir_elem( filename:split( Dirname ), "" ).
+	
+	
+	
+create_dir_elem( [], _Prefix ) ->
+	ok;
+	
+create_dir_elem( [H|T], Prefix ) ->
+	NewPrefix = join(Prefix,H),
+	case exists( NewPrefix ) of
+	
+		true ->
+			ok ;
+		
+		false ->
+			create_directory( NewPrefix, create_no_parent )
+					
+	end,
+	create_dir_elem( T, NewPrefix ).
+		
+
 
 % Converts specified path (full filename, like '/home/jack/test.txt' or
 % './media/test.txt') into a variable name licit in most programming languages
@@ -367,20 +456,6 @@ convert(Filename,Prefix) ->
 	
 
 
-% Returns the path corresponding to the home directory of the current
-% user, or throws an exception.
-get_user_directory() ->
-	case os:getenv("HOME") of
-	
-		[] ->
-			throw( could_not_determine_user_directory );
-			
-		NonEmptyPath ->	
-			NonEmptyPath
-			
-	end.
-	
-			
 		 
 -define(ResourceDir,"resources").
 		
@@ -397,26 +472,37 @@ get_image_file_gif(Image) ->
 
 
 
-% Content-related operations.
+
+% I/O section.
 
 
-% Returns a list of lines read from specified text file.
-read_all_lines_of( Filename ) ->
-	{ok, File} = file:open( Filename, [read] ),
-    lists:reverse( read_each_line( File, [] ) ).
+% Opens the file corresponding to specified filename with specified list of
+% options.
+% Returns the file reference, or throws an exception.
+% Will try to obtain a file descriptor iteratively (and endlessly) with
+% process-specific random waitings, should no descriptor be available.
+% This is done in order to support situations where potentially more Erlang
+% processes than available file descriptors try to access to files. An effort is
+% made to desynchronize these processes to smooth the use of descriptors.
+open( Filename, Options ) ->
+	
+	case file:open( Filename, Options ) of
+		
+		{ok,File} ->
+			 File;
+		
+		{error,emfile} ->
+			% File descriptors exhausted for this OS process.
+			% Kludge to desynchronize file opening in order to remain below 1024
+			% file descriptor opened:
+			timer:sleep( basic_utils:get_process_specific_value( 
+										_Min=50,_Max=200 ) ),
+			open( Filename, Options );
+		
+		{error,OtherError} ->
+			throw( {open_failed, {Filename,Options}, OtherError } )
 
-
-read_each_line( File, Acc ) ->
-
-    case io:get_line( File, "" ) of
-        eof  -> 
-			file:close(File), 
-			Acc;
-			
-        Line -> 
-			read_each_line( File, [ Line | Acc ] )
-			
-    end.
+	end.
 
 
 
@@ -430,13 +516,12 @@ read_each_line( File, Acc ) ->
 % Returns a binary.
 file_to_zipped_term(Filename)  ->
 	DummyFileName = "dummy",
-	%{ok,{_DummyFileName,Bin}} = zip:zip( DummyFileName, Filename,
-	% [verbose,memory] ),
 	{ok,{_DummyFileName,Bin}} = 
 		%zip:zip( DummyFileName, [Filename], [verbose,memory] ),
 		zip:zip( DummyFileName, [Filename], [memory] ),
 	Bin.
 	
+
 	
 % Reads specified binary, extracts the zipped file in it and writes it
 % on disk, in current directory.
@@ -461,26 +546,24 @@ zipped_term_to_unzipped_file(ZippedTerm,TargetFilename) ->
 
 	
 
-% Reads in memory the files specified from their filename, zips the
+% Reads in memory the files specified from their filenames, zips the
 % corresponding term, and returns it.
 % Note: useful for network transfers of small files. 
 % Larger ones should be transferred with TCP/IP and by chunks.
 % Returns a binary.
-files_to_zipped_term(FilenameList) when is_list(FilenameList) ->
+files_to_zipped_term(FilenameList)  ->
 	DummyFileName = "dummy",
-	%{ok,{_DummyFileName,Bin}} = zip:zip( DummyFileName, FilenameList,
-	% [verbose,memory] ),
 	{ok,{_DummyFileName,Bin}} = 
 		zip:zip( DummyFileName, FilenameList, [memory] ),
 	Bin.
 	
-
+		
 
 % Reads specified binary, extracts the zipped files in it and writes them
-% on disk, in current directory.	
-% Returns a list of the filenames of the unzipped files.	
+% on disk, in current directory.
+% Returns the list of filenames corresponding to the unzipped files.	
 zipped_term_to_unzipped_files(ZippedTerm) ->
-	%zip:unzip(ZippedTerm,[verbose]).
-	{ok,FileList} = zip:unzip(ZippedTerm),
-	FileList.
-	
+	%{ok,FileNames} = zip:unzip(ZippedTerm,[verbose]),
+	{ok,FileNames} = zip:unzip(ZippedTerm),
+	FileNames.
+

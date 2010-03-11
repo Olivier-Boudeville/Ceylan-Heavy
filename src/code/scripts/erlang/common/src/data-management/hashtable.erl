@@ -34,7 +34,7 @@
 % containing key/value pairs.
 
 -module(hashtable).
-% Directly depends on: the basic_utils module.
+% Directly depends on the text_utils module.
 
 % Heavily inspired of the tupleStore example from 
 % 'Concurrent Programming in Erlang', section 9.8.
@@ -100,14 +100,14 @@ addEntries( [{EntryName,EntryValue}|Rest], HashTable) ->
 	addEntries( Rest, addEntry(EntryName,EntryValue,HashTable) ).
 
 	
-	
-% Removes specified key/value pair from the specified hash table.
-removeEntry(Key,HashTable) ->
-	KeyIndex = erlang:phash2(Key,size(HashTable))+1,
-	PreviousList = element(KeyIndex,HashTable),
-	NewList = deleteBucket(Key,PreviousList,[]),
-	setelement(KeyIndex,HashTable,NewList).
 
+% Removes specified key/value pair from the specified hash table.
+% Does nothing if the key is not found.
+removeEntry( Key, HashTable ) ->
+	KeyIndex = erlang:phash2( Key, size(HashTable) ) + 1,
+	PreviousList = element( KeyIndex, HashTable ),
+	NewList = deleteBucket( Key, PreviousList, [] ),
+	setelement( KeyIndex, HashTable, NewList ).
 	
 	
 % Looks-up specified entry (designated by its key) in specified hash table.	
@@ -299,34 +299,34 @@ createTuple(0,_,Accumulator) ->
 createTuple(N,Default,Accumulator) ->
 	createTuple(N-1,Default,[Default|Accumulator]).
 	
-	
 
+	
 % Removes pair entry from list when the key matches the specified one: 
 % (returns an identical list if the key is not found)		
-deleteBucket(Key,[{Key,_}|T],Accumulator) -> 
+deleteBucket( Key, [{Key,_Value}|T], Accumulator ) -> 
 	% Skips the key if matching:
-	lists:append(T,Accumulator);
+	lists:append( T, Accumulator );
 
 
-deleteBucket(Key,[H|T],Accumulator) ->
+deleteBucket( Key, [H|T], Acc ) ->
 	% Keeps everything else: 
-	deleteBucket(Key,T,[H|Accumulator]);
+	deleteBucket( Key, T, [H|Acc] );
 
 
-deleteBucket(_,[],Accumulator) -> 
-	Accumulator.
+deleteBucket( _Key, [], Acc ) -> 
+	Acc.
 
 	
 	
 % Replaces in specified list a key/value pair by another:	
-replaceBucket(Key,Value,[],Accumulator)	->
-	[{Key,Value}|Accumulator];
+replaceBucket(Key,Value,[],Acc)	->
+	[{Key,Value}|Acc];
 
-replaceBucket(Key,Value,[{Key,_}|T],Accumulator) ->
-	[{Key,Value}|lists:append(T,Accumulator)];
+replaceBucket(Key,Value,[{Key,_}|T],Acc) ->
+	[{Key,Value}|lists:append(T,Acc)];
 
-replaceBucket(Key,Value,[H|T],Accumulator) ->
-	replaceBucket(Key,Value,T,[H|Accumulator]).
+replaceBucket(Key,Value,[H|T],Acc) ->
+	replaceBucket(Key,Value,T,[H|Acc]).
 	
 
 		
@@ -336,8 +336,8 @@ bucket_toString(Bucket) when length(Bucket) > 0 ->
 	lists:foldl(
 		fun({Key,Value},Acc) ->
 			Acc ++ io_lib:format( "     * ~s -> ~s~n", 
-				[ basic_utils:term_toString(Key),
-				  basic_utils:term_toString(Value) ])
+				[ text_utils:term_toString(Key),
+				  text_utils:term_toString(Value) ])
 		end,
 		io_lib:format( "Bucket with ~B element(s):~n",
 			[length(Bucket)]),
