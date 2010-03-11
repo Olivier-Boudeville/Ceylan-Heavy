@@ -36,7 +36,7 @@
 
 % Constructs a new Viviparous being (parameter-less constructor).
 construct(State) ->
-	?setAttribute(State,birth_given_count,0).
+	setAttribute(State,birth_given_count,0).
 	
 	
 	
@@ -53,12 +53,11 @@ getMeanChildrenCount(State) ->
 % Returns the number of times this viviparous being gave birth:	
 getBirthGivenCount(State) ->
 	?wooper_return_state_result( State, 
-		?getAttribute(State,birth_given_count) ).
+		getAttribute(State,birth_given_count) ).
 		
 		
 % Increase the number of times this viviparous being gave birth:	
 giveBirth(State,NumberOfNewChildren) ->
-	?wooper_return_state_only( ?setAttribute(State,birth_given_count, 
-		?getAttribute(State,birth_given_count) + NumberOfNewChildren ) ).
+	?wooper_return_state_only( setAttribute(State,birth_given_count, 
+		getAttribute(State,birth_given_count) + NumberOfNewChildren ) ).
 		
-	

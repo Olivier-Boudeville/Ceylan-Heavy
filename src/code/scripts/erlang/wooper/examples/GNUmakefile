@@ -4,24 +4,22 @@ WOOPER_TOP = ..
 include $(WOOPER_TOP)/GNUmakesettings.inc
 
 
-HELPER_MODULES = \
-	$(COMMON_BEAM)/basic_utils.beam              \
-	$(COMMON_BEAM)/file_utils.beam               \
-	$(COMMON_BEAM)/executable_utils.beam         \
-	$(WOOPER_BEAM)/wooper_class_manager.beam
+# Helper modules (ex: basic_utils.beam, wooper_class_manager.beam, etc.) are not
+# listed here as dependencies, their possible lacking will be detected at
+# run-time.
 
 
-class_Creature_test: class_Creature.beam $(HELPER_MODULES)
+class_Creature_test: class_Creature.beam
 
 
-class_Mammal_test: class_Mammal.beam class_Creature.beam $(HELPER_MODULES)
+class_Mammal_test: class_Mammal.beam class_Creature.beam
 
-class_Reptile_test: class_Reptile.beam class_Creature.beam $(HELPER_MODULES)
+class_Reptile_test: class_Reptile.beam class_Creature.beam
 
 
-class_ViviparousBeing_test: class_ViviparousBeing.beam $(HELPER_MODULES)
+class_ViviparousBeing_test: class_ViviparousBeing.beam
 
-class_OvoviviparousBeing_test: class_OvoviviparousBeing.beam $(HELPER_MODULES)
+class_OvoviviparousBeing_test: class_OvoviviparousBeing.beam
 
 
 class_Cat_test: class_Cat.beam class_Mammal_test class_ViviparousBeing_test

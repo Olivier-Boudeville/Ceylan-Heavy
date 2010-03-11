@@ -33,7 +33,8 @@
 % Declarations of class-specific methods (besides inherited ones).
 % isHotBlooded/1 and canEat/2 are abstract here, hence not mentioned:
 -define(wooper_method_export, getAge/1, setAge/2, declareBirthday/1, 
-	getGender/1, getArbitraryNumber/1, testDirectMethodExecution/2 ).
+	getGender/1, getArbitraryNumber/1, testDirectMethodExecution/2,
+	testSingleExecution/1 ).
 
 
 % Non-method exported functions:
@@ -43,11 +44,12 @@
 % Allows to define WOOPER base variables and methods for that class:
 -include("wooper.hrl").
 	
+	
 
 % Constructs a new Creature.
 construct(State,?wooper_construct_parameters) ->
 	% No mother class.
-	?setAttributes(State, [ {age,Age}, {gender,Gender} ] ).
+	setAttributes(State, [ {age,Age}, {gender,Gender} ] ).
 	
 
 	
@@ -60,21 +62,25 @@ getAge(State) ->
 	?wooper_return_state_result(State,?getAttr(age)).
 		
 	
+	
 % Sets the age of this creature.
 setAge(State,_NewAge) ->
 	% Mother implementation chosen faulty to check override:
-	?wooper_return_state_only(?setAttribute(State,age,36)).
+	?wooper_return_state_only(setAttribute(State,age,36)).
+
 
 
 % Increments the age of this creature.
 declareBirthday(State) ->
 	?wooper_return_state_only(
-		?setAttribute(State,age,?getAttr(age)+1)).
+		setAttribute(State,age,?getAttr(age)+1)).
+	
 	
 	
 % Returns the gender of this creature.
 getGender(State) ->
 	?wooper_return_state_result(State,?getAttr(gender)).
+
 
 
 % Returns a class-specific arbitrary number.
@@ -83,22 +89,32 @@ getArbitraryNumber(State) ->
 	?wooper_return_state_result(State,10).
 
 
+
 % Tests direct (synchronous) self-invocation of methods.
+% To be called only from a Mammal instance, as there is an hardcoded 
+% pattern-matching that should work only for a Mammal.
+% Must not be called from the Creature test, otherwise will fail.
 % (oneway).
 testDirectMethodExecution(State,NewAge) ->
 
 	io:format( "Testing executeOneway.~n" ),
-	NewState = executeOneway(State,setAge,NewAge),
+	
+	% Note: the version of setAge called in the context of a Creature sets
+	% in on purpose to a fixed value (36), regardless of the specified age,
+	% whereas the Mammal version of setAge behaves as expected: 
+	NewState = executeOneway( State, setAge, NewAge ),
+	
 	% Use this instead to test error management:
 	%NewState = executeOneway(test_not_a_state,setAge,NewAge),
 	%NewState = executeOneway(State,42,NewAge),
 	
-	% Not the 36 returned by this class (347 given by the test of Mammal) :
-	347 = ?getAttribute(NewState,age),
+	% NewAge is expected to be 347:
+	NewAge = getAttribute( NewState, age ),
 	
 	io:format( "Testing executeRequest.~n" ),
 	% 15 from Mammal child classes, not 10 from here:
-	{OtherState,15} = executeRequest(NewState,getArbitraryNumber,[]),
+	
+	{OtherState,15} = executeRequest( NewState, getArbitraryNumber ,[] ),
 	%{OtherState,15} = executeRequest(test_not_a_state,getArbitraryNumber,[]),
 	%{OtherState,15} = executeRequest(NewState,43,[]),
 
@@ -108,7 +124,29 @@ testDirectMethodExecution(State,NewAge) ->
 
 
 
+% Allows to test that calling an attribute macro with a state parameter
+% returned by a function will trigger that function only once.
+% Indeed a faulty implementation, due to a macro pitfall, used to make a
+% statement like 'setAttribute( f(State), attr, value )' call f/1 twice.
+% The returned value of the setAttribute call was correct, but any side-effect
+% triggered by f (sending a message, writing a trace, etc.) happened twice. 
+% (oneway)
+testSingleExecution(State) ->	
+	?wooper_return_state_only( setAttribute( side_effect_function(State),
+		age, 10 ) ).
+	 
+	
+	
+side_effect_function( State ) ->
+	io:format( "~n### This message must not be displayed more than once.~n" ),
+	State.
+	
+	
+
+
+
 % Helper function.
+
 
 % Just to show it can exist:	
 example_fun() ->

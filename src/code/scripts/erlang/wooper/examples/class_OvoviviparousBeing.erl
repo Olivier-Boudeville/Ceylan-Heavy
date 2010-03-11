@@ -37,7 +37,7 @@
 
 % Constructs a new Ovoviviparous being (parameter-less constructor).
 construct(State) ->
-	?setAttribute(State,eggs_count,0).
+	setAttribute(State,eggs_count,0).
 
 
 	
@@ -53,11 +53,11 @@ getMeanEggsCount(State) ->
 % Returns the number of eggs this ovoviviparous laid:	
 getEggsLaidCount(State) ->
 	?wooper_return_state_result( State, 
-		?getAttribute(State,eggs_count) ).
+		getAttribute(State,eggs_count) ).
 		
 		
 % Increase the number of eggs this ovoviviparous laid:	
 layEggs(State,NumberOfNewEggs) ->
-	?wooper_return_state_only( ?setAttribute(State,eggs_count, 
-		?getAttribute(State,eggs_count) + NumberOfNewEggs ) ).
+	?wooper_return_state_only( setAttribute(State,eggs_count, 
+		getAttribute(State,eggs_count) + NumberOfNewEggs ) ).
 		

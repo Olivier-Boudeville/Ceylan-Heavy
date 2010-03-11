@@ -3,25 +3,17 @@ WOOPER_TOP = ..
 
 include $(WOOPER_TOP)/GNUmakesettings.inc
 
-
-# Note: utils and hashtable will be recompiled in place (here) if not already
-# available in their expected directory.
-HELPER_MODULES = \
-	$(COMMON_BEAM)/basic_utils.beam              \
-	$(COMMON_BEAM)/file_utils.beam               \
-	$(COMMON_BEAM)/executable_utils.beam         \
-	$(COMMON_BEAM)/hashtable.beam                \
-	$(WOOPER_BEAM)/wooper_class_manager.beam
+# Helper modules (ex: basic_utils.beam, wooper_class_manager.beam, etc.) are not
+# listed here as dependencies, their possible lacking will be detected at
+# run-time.
 
 
 wooper_class_manager_test: \
 	wooper_class_manager_test.beam   \
-	wooper_class_manager.beam        \
-	$(HELPER_MODULES)
+	wooper_class_manager.beam       
 
 
 class_Wooper_attribute_test: \
 	class_Wooper_attribute_test.beam \
-	wooper_class_manager.beam        \
-	$(HELPER_MODULES)
+	wooper_class_manager.beam
 

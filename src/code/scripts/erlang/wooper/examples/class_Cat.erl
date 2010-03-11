@@ -35,6 +35,7 @@
 % Method declarations.
 -define( wooper_method_export, getTeatCount/1, canEat/2, getWhiskerColor/1 ).
 
+
 % Allows to define WOOPER base variables and methods for that class:
 -include("wooper.hrl").
 
@@ -47,12 +48,14 @@ construct( State, ?wooper_construct_parameters ) ->
 	ViviparousMammalState = class_ViviparousBeing:construct( MammalState ),
 	
 	% Then the class-specific attributes:
-	?setAttribute( ViviparousMammalState, whisker_color, WhiskerColor ).
+	setAttribute( ViviparousMammalState, whisker_color, WhiskerColor ).
+	
 	
 	
 delete(State) ->
 	io:format( "Deleting cat ~w! (overridden destructor)~n", [self()] ),
 	State.
+	
 	
 	
 % No guarantee on biological fidelity:	
@@ -79,4 +82,4 @@ canEat(State,_) ->
 
 getWhiskerColor(State)->
 	?wooper_return_state_result( State, ?getAttr(whisker_color) ).
-
+	

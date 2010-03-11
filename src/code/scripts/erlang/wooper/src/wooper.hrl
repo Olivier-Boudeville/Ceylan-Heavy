@@ -1,5 +1,4 @@
-% 
-% Copyright (C) 2003-2009 Olivier Boudeville
+% Copyright (C) 2003-2010 Olivier Boudeville
 %
 % This file is part of the WOOPER library.
 %
@@ -193,7 +192,17 @@
 -include("wooper_class_manager.hrl").
 
 
+
 % WOOPER internal functions.
+
+
+% Declaration of functions for state management:
+-export([ setAttribute/3, setAttributes/2, hasAttribute/2, getAttribute/2,
+	removeAttribute/2, addToAttribute/3, subtractFromAttribute/3, 
+	toggleAttribute/2, appendToAttribute/3, deleteFromAttribute/3,
+	addKeyValueToAttribute/4, popFromAttribute/2 ]).
+	
+	
 
 % Comment/uncomment to respectively disable and enable debug mode:
 -define(wooper_debug,).
@@ -206,9 +215,12 @@
 	% These methods/functions are defined for all classes:
 	-define( WooperBaseMethods, get_class_name/0, get_class_name/1,
 		get_superclasses/0, get_superclasses/1,
-		executeRequest/2, executeRequest/3, executeOneway/2, executeOneway/3,
+		executeRequest/2, executeRequest/3, 
+		executeOneway/2, executeOneway/3,
+		executeRequestWith/3,executeRequestWith/4,
+		executeOnewayWith/3,executeOnewayWith/4,
 		delete_any_instance_referenced_in/2, wooper_destruct/1, 
-		wooper_pop_from_attribute/2, wooper_check_undefined/2,
+		wooper_check_undefined/2,
 		wooper_construct_and_run/1, wooper_construct_and_run_synchronous/2,
 		wooper_get_all_attributes/1, 
 		is_wooper_debug/0, wooper_debug_listen/3,
@@ -220,8 +232,32 @@
 	
 	-export([?WooperBaseMethods]).
 	
+	% wooper_method_export is deprecated in favor of:
+	%  - wooper_public_method_export
+	%  - wooper_protected_method_export
+	%  - wooper_private_method_export
+	%  - wooper_static_method_export
 	-ifdef(wooper_method_export).
 		-export([?wooper_method_export]).
+	-endif.
+	
+	
+	-ifdef(wooper_public_method_export).
+		-export([?wooper_public_method_export]).
+	-endif.
+	
+	
+	-ifdef(wooper_protected_method_export).
+		-export([?wooper_protected_method_export]).
+	-endif.
+	
+	
+	-ifdef(wooper_private_method_export).
+		-export([?wooper_private_method_export]).
+	-endif.
+	
+	-ifdef(wooper_static_method_export).
+		-export([?wooper_static_method_export]).
 	-endif.
 	
 	% Must be defined, but an error message at their call should be clearer:
@@ -237,8 +273,11 @@
 	wooper_display_loop_state(State) ->
 		wooper_display_state(State).
 
+
 	% Uncomment to have all WOOPER recompiled classes output verbosely their
 	% information:
+	% (useful when everything is compiled without this flag and then 
+	% uncommenting the flag to recompile only the class(es) to debug)
 	%-define(wooper_log_wanted,).
 	
 	-ifdef(wooper_log_wanted).
@@ -258,9 +297,12 @@
 	% These methods/functions are defined for all classes:
 	-define( WooperBaseMethods, get_class_name/0, get_class_name/1,
 		get_superclasses/0, get_superclasses/1,
-		executeRequest/2, executeRequest/3, executeOneway/2, executeOneway/3,
+		executeRequest/2, executeRequest/3, 
+		executeOneway/2, executeOneway/3,
+		executeRequestWith/3,executeRequestWith/4,
+		executeOnewayWith/3,executeOnewayWith/4,
 		delete_any_instance_referenced_in/2, wooper_destruct/1, 
-		wooper_pop_from_attribute/2, wooper_check_undefined/2,
+		wooper_check_undefined/2,
 		wooper_construct_and_run/1, wooper_construct_and_run_synchronous/2,
 		wooper_get_all_attributes/1,
 		is_wooper_debug/0, wooper_debug_listen/3,
@@ -322,11 +364,11 @@ wooper_debug_listen( Pid, Action, Arguments ) ->
 		
 		{wooper_result,Result} ->
 			io:format("Result of call to '~w' with arguments '~w': ~s~n",
-				[Action,Arguments,basic_utils:term_toString(Result)]);
+				[Action,Arguments,text_utils:term_toString(Result)]);
 	
 		Anything ->
 			io:format("Answer to call to '~w' with arguments '~w': ~s~n",
-				[Action,Arguments,basic_utils:term_toString(Anything)])
+				[Action,Arguments,text_utils:term_toString(Anything)])
 	
 	end.
 
@@ -346,7 +388,7 @@ get_superclasses() ->
 get_class_name(State) ->
 	?wooper_return_state_result(State,?className).
 
-% Method that returns the superclasses of the instance.
+% Method that returns the (direct) superclasses of the instance.
 get_superclasses(State) ->
 	?wooper_return_state_result(State,?wooper_superclasses).
 
@@ -495,7 +537,7 @@ synchronous_new_link( ?wooper_construct_parameters ) ->
 		[ [?wooper_construct_parameters], self() ] ),
 	
 	% Blocks until the spawned process answers:	
-	% (no risk of synchronous spawns mismatch, as each synchronous calls is
+	% (no risk of synchronous spawns mismatch, as each synchronous call is
 	% waited for)
 	receive	
 		
@@ -535,7 +577,7 @@ synchronous_timed_new( ?wooper_construct_parameters ) ->
 	
 	after ?synchronous_time_out -> 
 	
-		time_out
+		throw( {synchronous_time_out,?MODULE} )
 		
 	end.
 
@@ -558,7 +600,7 @@ synchronous_timed_new_link( ?wooper_construct_parameters ) ->
 	
 	after ?synchronous_time_out -> 
 	
-		time_out
+		throw( {synchronous_linked_time_out,?MODULE} )
 		
 	end.
 
@@ -646,7 +688,7 @@ remote_synchronous_new_link( Node, ?wooper_construct_parameters ) ->
 		[ [?wooper_construct_parameters], self() ] ),
 	
 	% Blocks until the spawned process answers:	
-	% (no risk of synchronous spawns mismatch, as each synchronous calls is
+	% (no risk of synchronous spawns mismatch, as each synchronous call is
 	% waited for)
 	receive	
 		
@@ -667,6 +709,7 @@ remote_synchronous_new_link( Node, ?wooper_construct_parameters ) ->
 % only when the created process reports it is up and running, or when
 % a time-out occurs.
 remote_synchronous_timed_new( Node, ?wooper_construct_parameters ) ->
+	
 	SpawnedPid = spawn( Node, ?MODULE, wooper_construct_and_run_synchronous,
 		[ [?wooper_construct_parameters], self() ] ),
 		
@@ -678,7 +721,7 @@ remote_synchronous_timed_new( Node, ?wooper_construct_parameters ) ->
 	
 	after ?synchronous_time_out -> 
 	
-		time_out
+		throw( {remote_synchronous_time_out,Node,?MODULE} )
 		
 	end.
 
@@ -692,6 +735,11 @@ remote_synchronous_timed_new( Node, ?wooper_construct_parameters ) ->
 % only when the created process reports it is up and running, or when 
 % a time-out occurs.
 remote_synchronous_timed_new_link( Node, ?wooper_construct_parameters ) ->
+
+	%io:format( "~w:remote_synchronous_timed_new_link: node is ~s, "
+	%	"parameters are:~n ~p.~n", 
+	%	[ ?MODULE, Node, [?wooper_construct_parameters] ] ),
+		
 	SpawnedPid = spawn_link( Node, ?MODULE, 
 		wooper_construct_and_run_synchronous,
 		[ [?wooper_construct_parameters], self() ] ),
@@ -700,11 +748,14 @@ remote_synchronous_timed_new_link( Node, ?wooper_construct_parameters ) ->
 	receive	
 		
 		{spawn_successful,SpawnedPid} ->
+			%io:format( "remote_synchronous_timed_new_link: returning ~w.~n",
+			%		  [SpawnedPid] ),
 			SpawnedPid
 	
-	after ?synchronous_time_out -> 
-	
-		time_out
+	after ?synchronous_time_out ->
+			
+		%io:format( "remote_synchronous_timed_new_link: throwing time-out.~n" ),
+		throw( {remote_synchronous_linked_time_out,Node,?MODULE} )
 		
 	end.
 
@@ -778,7 +829,7 @@ synchronous_new_link() ->
 		[ [], self() ] ),
 	
 	% Blocks until the spawned process answers:	
-	% (no risk of synchronous spawns mismatch, as each synchronous calls is
+	% (no risk of synchronous spawns mismatch, as each synchronous call is
 	% waited for)
 	receive	
 		
@@ -817,7 +868,7 @@ synchronous_timed_new() ->
 	
 	after ?synchronous_time_out -> 
 	
-		time_out
+		throw( {synchronous_time_out,?MODULE} )
 		
 	end.
 
@@ -839,7 +890,7 @@ synchronous_timed_new_link() ->
 	
 	after ?synchronous_time_out -> 
 	
-		time_out
+		throw( {synchronous_linked_time_out,?MODULE} )
 		
 	end.
 
@@ -918,11 +969,11 @@ remote_synchronous_new( Node ) ->
 % when the created process reports it is up and running.
 remote_synchronous_new_link( Node ) ->
 	% Double-list: list with a list in it.
-	SpawnedPid= spawn_link( Node, ?MODULE, wooper_construct_and_run_synchronous,
-		[ [], self() ] ),
+	SpawnedPid = spawn_link( Node, ?MODULE,
+		wooper_construct_and_run_synchronous, [ [], self() ] ),
 	
 	% Blocks until the spawned process answers:	
-	% (no risk of synchronous spawns mismatch, as each synchronous calls is
+	% (no risk of synchronous spawns mismatch, as each synchronous call is
 	% waited for)
 	receive	
 		
@@ -953,7 +1004,7 @@ remote_synchronous_timed_new( Node ) ->
 	
 	after ?synchronous_time_out -> 
 	
-		time_out
+		throw( {remote_synchronous_time_out,Node,?MODULE} )
 		
 	end.
 
@@ -977,7 +1028,7 @@ remote_synchronous_timed_new_link( Node ) ->
 	
 	after ?synchronous_time_out -> 
 	
-		time_out
+		throw( {remote_synchronous_linked_time_out,Node,?MODULE} )
 		
 	end.
 
@@ -1097,24 +1148,114 @@ wooper_construct_and_run_synchronous(ParameterList,SpawnerPid) ->
 
 
 % Note that these macros should be one-liners, otherwise their value would be
-% the first evaluated in the macro - not the last...
+% the first evaluated in the macro - not the last.
+% Indeed 'NewState = ?setAttribute( State, ...)' *and* '
+% my_function( ?setAttribute( State, ...)' have to be supported.
+% In case of a macro with multiple instructions, in the first example NewState 
+% would be bound to the result of the first instruction of the macro, as
+% shown in:
 
+% 1> A=a,b,c. 
+% c
+% 2> A.
+% a
+
+% instead of the expected final macro result.
+% Whereas for the second example the result sent to my_function would be
+% (as expected) the updated state (c, in the previous shell output).
+ 
+% Another problem that must be avoided is that if calling for example
+% '?setAttribute( f(State), name, value )', then we do not want any
+% side-effect caused by f/1 to be triggered more than once. For example in
+% the setAttribute/3 macros defined below (and now commented-out), multiple
+% references to (State) would have resulted in as many calls to f/1, which
+% is not correct.
+
+% Therefore we came to the conclusion that macros could not fulfill our needs,
+% and defined full-blown functions instead, even if we incur the performance
+% penalty of an additional function call. 
+% So finally '?setAttribute( AState, name, value )' should be transformed 
+% into '?setAttribute( AState, name, value )'.
+
+% Newer macros are defined for backward compatibility, resulting in the same
+% function call. They should not be used anymore, their purpose is just 
+% to support unchanged legacy code.  
+
+% Finally, with an upcoming version of WOOPER making use of parse transforms
+% and of class-specific records, attributes will be used thanks to the same
+% function calls, while fully removing their performance penalty.
+
+
+
+% Faulty macro:
 
 % Sets specified attribute of the instance to the specified value, based from
 % specified state.
 % Returns an updated state.
 % Always succeeds.
 % See also: the setAttributes macro to set more than one attribute at a time.
+%-define(setAttribute(State,AttributeName,AttributeValue),
+%	(State)#state_holder{
+%		attribute_table = hashtable:addEntry(
+%			(AttributeName),
+%			(AttributeValue),
+%			(State)#state_holder.attribute_table )
+%	}
+%).
+
+
+% Correct function-based version:
+
+% Sets specified attribute of the instance to the specified value, based from
+% specified state.
+% Returns an updated state.
+% Always succeeds.
+% See also: setAttributes/3, to set more than one attribute at a time.
+setAttribute( State, AttributeName, AttributeValue ) ->
+   State#state_holder{
+	   attribute_table = hashtable:addEntry(
+		   AttributeName,
+		   AttributeValue,
+		   State#state_holder.attribute_table )
+   }.
+	
+
+
+% Uncomment if old-style attribute management macros are to be enabled:
+%-define(use_legacy_macros,).
+
+-ifdef( use_legacy_macros ).
+
+% Macro defined for backward compatibility only:
+
 -define(setAttribute(State,AttributeName,AttributeValue),
-	% Fields virtual_table and request_sender are not changed:
-	(State)#state_holder{
-		attribute_table = hashtable:addEntry(
-			(AttributeName),
-			(AttributeValue),
-			(State)#state_holder.attribute_table )
-	}
+	setAttribute( (State), (AttributeName), (AttributeValue) )
 ).
 
+-endif.
+
+
+
+% Faulty macro:
+
+% Sets a list of attribute/value pairs in specified state.
+% The expected parameter is a list of pairs (2-element tuples), each pair 
+% containing in first position the attribute name and in second one the 
+% attribute value.
+% Returns an updated state.
+% Always succeeds.
+% See also: setAttribute/3.
+%-define(setAttributes(State,ListOfAttributePairs),
+%	% Fields virtual_table and request_sender are not changed:
+%	(State)#state_holder{
+%		attribute_table = hashtable:addEntries(
+%			(ListOfAttributePairs),
+%			(State)#state_holder.attribute_table )
+%	}
+%).
+
+
+% Correct function-based version:
 
 
 % Sets a list of attribute/value pairs in specified state.
@@ -1123,158 +1264,443 @@ wooper_construct_and_run_synchronous(ParameterList,SpawnerPid) ->
 % attribute value.
 % Returns an updated state.
 % Always succeeds.
-% See also: the setAttribute macro.
--define(setAttributes(State,ListOfAttributePairs),
-	% Fields virtual_table and request_sender are not changed:
-	(State)#state_holder{
-		attribute_table = hashtable:addEntries(
-			(ListOfAttributePairs),
-			(State)#state_holder.attribute_table )
-	}
+% See also: the setAttribute function.
+setAttributes( State, ListOfAttributePairs ) ->
+
+   % Fields virtual_table and request_sender are not changed:
+   State#state_holder{
+	   attribute_table = hashtable:addEntries(
+		   ListOfAttributePairs,
+		   State#state_holder.attribute_table )
+   }.
+   
+  
+   
+-ifdef( use_legacy_macros ).
+  
+% Macro defined for backward compatibility only:
+
+-define(setAttributes( State, ListOfAttributePairs ),
+	setAttributes( (State), (ListOfAttributePairs) )
 ).
 	
-	
+-endif.
+
+
+
+% Faulty macro:
 
 % Tells whether specified attribute exists, returns true or false.
 % Note: usually the best practise is to set all possible attributes from the
 % constructor, either to an appropriate value or to 'undefined', instead of
 % having instances with or without a given attribute.
--define(hasAttribute(State,AttributeName),
-	hashtable:hasEntry( (AttributeName), 
-		(State)#state_holder.attribute_table ) ).
+% Note: not expected to be ever used, as all attributes should be defined
+% directly in the constructor, hence no attribute could appear later, if this
+% good practise is respected.
+%-define(hasAttribute(State,AttributeName),
+%	hashtable:hasEntry( (AttributeName), 
+%		(State)#state_holder.attribute_table ) ).
 
 
+
+% Correct function-based version:
+
+% Tells whether specified attribute exists, returns true or false.
+% Note: usually the best practise is to set all possible attributes from the
+% constructor, either to an appropriate value or to 'undefined', instead of
+% having instances with or without a given attribute.
+% Note: not expected to be ever used, as all attributes should be defined
+% directly in the constructor, hence no attribute could appear later, if this
+% good practise is respected.
+hasAttribute( State, AttributeName ) ->
+	hashtable:hasEntry( AttributeName, State#state_holder.attribute_table ).
+
+
+
+-ifdef( use_legacy_macros ).
+
+% Macro defined for backward compatibility only:
+
+-define( hasAttribute( State, AttributeName ),
+	hasAttribute( (State), (AttributeName) )
+).
+
+-endif.
+
+
+
+% Faulty macro:
 
 % Returns the value associated to specified named-designated attribute, if 
 % found, otherwise triggers a case clause crash.
 % Note: almost never used, as either the attribute can be obtained with 
 % getAttr/1 (as externally defined) or it is already bound to a variable.
 % See also: the getAttr/1 shorthand.
--define(getAttribute(State,AttributeName),
-	hashtable:getEntry( (AttributeName), 
-		(State)#state_holder.attribute_table ) ).
+%-define( getAttribute( State, AttributeName ),
+%	hashtable:getEntry( (AttributeName), 
+%		(State)#state_holder.attribute_table ) ).
+
+
+
+% Correct function-based version:
+
+% Returns the value associated to specified named-designated attribute, if 
+% found, otherwise triggers a case clause crash.
+% Note: almost never used, as either the attribute can be obtained with 
+% getAttr/1 (as externally defined) or it is already bound to a variable.
+% See also: the getAttr/1 shorthand.
+getAttribute( State, AttributeName ) ->
+	hashtable:getEntry( AttributeName, State#state_holder.attribute_table ).
+		
+
+
+-ifdef( use_legacy_macros ).
+		
+% Macro defined for backward compatibility only:
+		
+-define( getAttribute( State, AttributeName ),
+	getAttribute( (State), (AttributeName) ) ).
+	
+-endif.
 
 
 
 % Returns the value associated to specified named-designated attribute, if 
 % found, otherwise triggers a case clause crash.
-% This macro is usually more useful than the getAttribute one, as one generally
-% wants to retrieve an attribute already available in the 'State' parameter
-% of a method (otherwise that value is available through a bound variable 
-% in the method body). Therefore the use of a variable named 'State' can often
-% be implied.
+% This macro is usually more useful than the getAttribute function, as one 
+% generally wants to retrieve an attribute already available in the 'State'
+% parameter of a method (otherwise that value is available through a bound
+% variable in the method body).
+% Therefore the use of a variable named 'State' can often be implied.
 % Beware to the implicit use of the 'State' variable: in some cases other
-% states should be used. 
-% See the longer getAttribute/2 macro.
--define(getAttr(AttributeName),?getAttribute(State,(AttributeName))).
-
-
-
-% Returns an updated state not having anymore specified attribute.
-% No error is triggered if the specified attribute was not existing.
--define(removeAttribute(State,AttributeName),
-	% Fields virtual_table and request_sender are not changed:
-	(State)#state_holder{
-		attribute_table = hashtable:removeEntry( (AttributeName),
-			(State)#state_holder.attribute_table )
-	}
+% states should be used; due to this variable, getAttr must remain a macro. 
+% See the longer getAttribute/2 function.
+-define( getAttr(AttributeName), 
+	getAttribute( State, (AttributeName) )
 ).
 
 
+
+
+
+% Faulty macro:
+
+% Returns an updated state not having anymore specified attribute.
+% No error is triggered if the specified attribute was not existing.
+%-define(removeAttribute(State,AttributeName),
+%	% Fields virtual_table and request_sender are not changed:
+%	(State)#state_holder{
+%		attribute_table = hashtable:removeEntry( (AttributeName),
+%			(State)#state_holder.attribute_table )
+%	}
+%).
+
+
+
+% Correct function-based version:
+
+% Returns an updated state not having anymore specified attribute.
+% No error is triggered if the specified attribute was not existing.
+removeAttribute( State, AttributeName ) ->
+
+	% Fields virtual_table and request_sender are not changed:
+	State#state_holder{
+		attribute_table = hashtable:removeEntry( AttributeName,
+			State#state_holder.attribute_table )
+	}.
+	
+	
+	
+-ifdef( use_legacy_macros ).
+	
+% Macro defined for backward compatibility only:
+
+-define( removeAttribute( State, AttributeName ),
+	removeAttribute( (State), (AttributeName) )
+).	
+
+-endif.
+
+
+
+% Faulty macro:
 
 % Adds specified value to specified attribute, supposed to be a number.
 % A case clause is triggered if the attribute did not exist, a bad arithm is
 % triggered if no addition can be performed on the attribute value.
--define(addToAttribute(State,AttributeName,Value),
-	% Fields virtual_table and request_sender are not changed:
-	(State)#state_holder{
-		attribute_table = hashtable:addToEntry(
-			(AttributeName),
-			(Value),
-			(State)#state_holder.attribute_table )
-	}
-).
+%-define(addToAttribute(State,AttributeName,Value),
+%	% Fields virtual_table and request_sender are not changed:
+%	(State)#state_holder{
+%		attribute_table = hashtable:addToEntry(
+%			(AttributeName),
+%			(Value),
+%			(State)#state_holder.attribute_table )
+%	}
+%).
 
 
 
-% Substracts specified value from specified attribute, supposed to be a number.
+% Correct function-based version:
+
+% Adds specified value to specified attribute, supposed to be a number.
 % A case clause is triggered if the attribute did not exist, a bad arithm is
-% triggered if no substraction can be performed on the attribute value.
--define(substractFromAttribute(State,AttributeName,Value),
+% triggered if no addition can be performed on the attribute value.
+addToAttribute( State, AttributeName, Value ) ->
 	% Fields virtual_table and request_sender are not changed:
-	(State)#state_holder{
-		attribute_table = hashtable:substractFromEntry(
-			(AttributeName),
-			(Value),
-			(State)#state_holder.attribute_table )
-	}
+	State#state_holder{
+		attribute_table = hashtable:addToEntry(
+			AttributeName,
+			Value,
+			State#state_holder.attribute_table )
+	}.
+
+
+
+-ifdef( use_legacy_macros ).
+
+% Macro defined for backward compatibility only:
+
+-define( addToAttribute( State, AttributeName, Value ),
+	addToAttribute( (State), (AttributeName), (Value) )
 ).
 
+-endif.
+
+
+
+% Faulty macro:
+
+% Subtracts specified value from specified attribute, supposed to be a number.
+% A case clause is triggered if the attribute did not exist, a bad arithm is
+% triggered if no subtraction can be performed on the attribute value.
+%-define(subtractFromAttribute(State,AttributeName,Value),
+%	% Fields virtual_table and request_sender are not changed:
+%	(State)#state_holder{
+%		attribute_table = hashtable:subtractFromEntry(
+%			(AttributeName),
+%			(Value),
+%			(State)#state_holder.attribute_table )
+%	}
+%).
+
+
+% Correct function-based version:
+
+% Subtracts specified value from specified attribute, supposed to be a number.
+% A case clause is triggered if the attribute did not exist, a bad arithm is
+% triggered if no subtraction can be performed on the attribute value.
+subtractFromAttribute( State, AttributeName, Value ) ->
+	% Fields virtual_table and request_sender are not changed:
+	State#state_holder{
+		attribute_table = hashtable:subtractFromEntry(
+			AttributeName,
+			Value,
+			State#state_holder.attribute_table )
+	}.
+
+
+
+-ifdef( use_legacy_macros ).
+
+% Macro defined for backward compatibility only:
+
+-define( subtractFromAttribute( State, AttributeName, Value ),
+	subtractFromAttribute( (State), (AttributeName), (Value) )
+).
+
+-endif.
 
  
+ 
+% Faulty macro:
+
 % Returns an updated state in which specified boolean attribute is toggled:
 % if true will be false, if false will be true.
 % A case clause is triggered if the attribute does not exist or it is not a
 % boolean value.
--define(toggleAttribute(State,BooleanAttributeName),
+%-define( toggleAttribute(State,BooleanAttributeName),
+%	% Fields virtual_table and request_sender are not changed:
+%	(State)#state_holder{
+%		attribute_table = hashtable:toggleEntry(
+%			(BooleanAttributeName), 
+%			(State)#state_holder.attribute_table )
+%	}
+%).	
+
+
+
+% Correct function-based version:
+
+% Returns an updated state in which specified boolean attribute is toggled:
+% if true will be false, if false will be true.
+% A case clause is triggered if the attribute does not exist or it is not a
+% boolean value.
+toggleAttribute( State, BooleanAttributeName ) ->
 	% Fields virtual_table and request_sender are not changed:
-	(State)#state_holder{
+	State#state_holder{
 		attribute_table = hashtable:toggleEntry(
-			(BooleanAttributeName), 
-			(State)#state_holder.attribute_table )
-	}
+			BooleanAttributeName, 
+			State#state_holder.attribute_table )
+	}.	
+
+
+
+-ifdef( use_legacy_macros ).
+
+% Macro defined for backward compatibility only:
+
+-define( toggleAttribute( State, BooleanAttributeName ),
+	toggleAttribute( (State), (BooleanAttributeName) )
 ).	
 
+-endif.
 
+
+
+% Faulty macro:
 
 % Appends specified element to specified attribute, supposed to be a list.
 % A case clause is triggered if the attribute did not exist.
 % Note: no check is performed to ensure the attribute is a list indeed, and the
 % operation will not complain if not.
--define(appendToAttribute(State,AttributeName,Element),
+%-define(appendToAttribute(State,AttributeName,Element),
+%	% Fields virtual_table and request_sender are not changed:
+%	(State)#state_holder{
+%		attribute_table = hashtable:appendToEntry(
+%			(AttributeName),
+%			(Element),
+%			(State)#state_holder.attribute_table )
+%	}
+%).
+
+
+
+% Correct function-based version:
+
+% Appends specified element to specified attribute, supposed to be a list.
+% A case clause is triggered if the attribute did not exist.
+% Note: no check is performed to ensure the attribute is a list indeed, and the
+% operation will not complain if not.
+appendToAttribute( State, AttributeName, Element ) ->
 	% Fields virtual_table and request_sender are not changed:
-	(State)#state_holder{
+	State#state_holder{
 		attribute_table = hashtable:appendToEntry(
-			(AttributeName),
-			(Element),
-			(State)#state_holder.attribute_table )
-	}
+			AttributeName,
+			Element,
+			State#state_holder.attribute_table )
+	}.
+
+
+
+-ifdef( use_legacy_macros ).
+
+% Macro defined for backward compatibility only:
+
+-define(appendToAttribute( State, AttributeName, Element ),
+	appendToAttribute( (State), (AttributeName), (Element) )
 ).
 
+-endif.
 
+
+
+% Faulty macro:
 
 % Deletes the first match of specified element from specified attribute,
 % supposed to be a list.
 % A case clause is triggered if the attribute did not exist.
 % If the element is not in the specified list, the list will not be modified.
--define(deleteFromAttribute(State,AttributeName,Element),
+%-define(deleteFromAttribute(State,AttributeName,Element),
+%	% Fields virtual_table and request_sender are not changed:
+%	(State)#state_holder{
+%		attribute_table = hashtable:deleteFromEntry(
+%			(AttributeName),
+%			(Element),
+%			(State)#state_holder.attribute_table )
+%	}
+%).
+
+
+
+% Correct function-based version:
+
+% Deletes the first match of specified element from specified attribute,
+% supposed to be a list.
+% A case clause is triggered if the attribute did not exist.
+% If the element is not in the specified list, the list will not be modified.
+deleteFromAttribute( State, AttributeName, Element ) ->
 	% Fields virtual_table and request_sender are not changed:
-	(State)#state_holder{
+	State#state_holder{
 		attribute_table = hashtable:deleteFromEntry(
-			(AttributeName),
-			(Element),
-			(State)#state_holder.attribute_table )
-	}
+			AttributeName,
+			Element,
+			State#state_holder.attribute_table )
+	}.
+
+
+
+-ifdef( use_legacy_macros ).
+
+% Macro defined for backward compatibility only:
+
+-define( deleteFromAttribute( State, AttributeName, Element ),
+	deleteFromAttribute( (State), (AttributeName), (Element) )
 ).
 
+-endif.
 
+
+
+% Faulty macro:
 
 % Assumes the specified attribute is a hashtable and adds the specified
 % key/value pair to it.
 % Several lines compacted into a bit impressive one-liner.
--define(addKeyValueToAttribute(State,AttributeName,Key,Value),
+%-define(addKeyValueToAttribute(State,AttributeName,Key,Value),
+%	% Fields virtual_table and request_sender are not changed:
+%	(State)#state_holder{
+%		attribute_table = hashtable:addEntry( 
+%			(AttributeName), 
+%			hashtable:addEntry( (Key), (Value),
+%				hashtable:getEntry( (AttributeName),
+%					(State)#state_holder.attribute_table )),
+%			(State)#state_holder.attribute_table )
+%	}
+%).
+
+
+
+% Correct function-based version:
+
+% Assumes the specified attribute is a hashtable and adds the specified
+% key/value pair to it.
+% Several lines compacted into a bit impressive one-liner.
+addKeyValueToAttribute( State, AttributeName, Key, Value ) ->
 	% Fields virtual_table and request_sender are not changed:
-	(State)#state_holder{
+	State#state_holder{
 		attribute_table = hashtable:addEntry( 
-			(AttributeName), 
-			hashtable:addEntry( (Key), (Value),
-				hashtable:getEntry( (AttributeName),
-					(State)#state_holder.attribute_table )),
-			(State)#state_holder.attribute_table )
-	}
+			AttributeName, 
+			hashtable:addEntry( Key, Value,
+				hashtable:getEntry( AttributeName,
+					State#state_holder.attribute_table ) ),
+			State#state_holder.attribute_table )
+	}.
+	
+
+
+-ifdef( use_legacy_macros ).
+
+% Macro defined for backward compatibility only:
+
+-define( addKeyValueToAttribute( State, AttributeName, Key, Value ),
+	addKeyValueToAttribute( (State), (AttributeName), (Key), (Value) )
 ).
+	
+-endif.	
 
-
+	
+	
+% Faulty macro:
 
 % Removes the head from specified attribute, supposed to be a list, and 
 % returns a tuple {NewState,PoppedHead}.
@@ -1287,16 +1713,26 @@ wooper_construct_and_run_synchronous(ParameterList,SpawnerPid) ->
 %
 % Note: This cannot be a one-line macro, it has to be a function.
 %
--define(popFromAttribute(State,AttributeName),
-	wooper_pop_from_attribute( (State), (AttributeName) )
-).
+%-define(popFromAttribute(State,AttributeName),
+%	wooper_pop_from_attribute( (State), (AttributeName) )
+%).
 
 
+% Correct function-based version:
 
-% Helper function for the popFromAttribute macro.
-wooper_pop_from_attribute(State,AttributeName) ->
-	{Head,PoppedAttributeTable} = hashtable:popFromEntry(AttributeName,
-		State#state_holder.attribute_table),
+% Removes the head from specified attribute, supposed to be a list, and 
+% returns a tuple {NewState,PoppedHead}.
+%
+% For example, if the attribute 'my_list' contains [5,8,3], executing:
+% '{PoppedState,Head} = ?popFromAttribute(State,my_list)'
+% returns a state whose my_list attribute is [8,3] and a value Head = 5.
+%
+% A case clause is triggered if the attribute did not exist.
+%
+popFromAttribute( State, AttributeName ) ->
+
+	{Head,PoppedAttributeTable} = hashtable:popFromEntry( AttributeName,
+		State#state_holder.attribute_table ),
 	
 	{ #state_holder{
 		virtual_table   = State#state_holder.virtual_table,
@@ -1307,20 +1743,32 @@ wooper_pop_from_attribute(State,AttributeName) ->
 
 
 
+-ifdef( use_legacy_macros ).
+
+% Macro defined for backward compatibility only:
+
+-define( popFromAttribute( State, AttributeName ),
+	popFromAttribute( (State), (AttributeName) )
+).
+
+-endif.
+
+
+
 % Checks that the value of specified attribute is 'undefined'.
 % Triggers an exception otherwise.
-% Note: operates on a state called 'State'.
+% Note: operates on a state called 'State', thus must be a macro.
 % The check could be disabled in debug mode.
 % This results in function call, as a pure macro, if used more than
 % once in a function, would trigger warnings about unsage variables.
--define(checkUndefined(Attribute),
-	wooper_check_undefined(State,Attribute)
+-define( checkUndefined( Attribute ),
+	wooper_check_undefined( State, (Attribute) )
 ). 
 
 
 
 % Helper function for the checkUndefined macro.
-wooper_check_undefined(State,Attribute) -> 
+wooper_check_undefined( State, Attribute ) -> 
 	try 
 		undefined = ?getAttr(Attribute)
 	catch	
@@ -1335,14 +1783,15 @@ wooper_check_undefined(State,Attribute) ->
 			throw( {attribute_error,Attribute,Error} );
 		
 		OtherError ->
-			throw( {unexptected_attribute_error,Attribute,OtherError} )
+			throw( {unexpected_attribute_error,Attribute,OtherError} )
 		
 	end.		
 
 
 
 % Returns the sender of the request.
--define(getSender(),State#state_holder.request_sender).
+% Must be a macro, due to the implied state parameter.
+-define( getSender(), State#state_holder.request_sender ).
 
 
 
@@ -1351,6 +1800,7 @@ wooper_check_undefined(State,Attribute) ->
 % If if it is already running, find it and returns its atom, otherwise launch
 % it and returns that same atom as well.
 wooper_get_class_manager() ->
+
 	case lists:member( ?WooperClassManagerName, registered() ) of
 		true ->
 			?WooperClassManagerName;
@@ -1395,8 +1845,8 @@ wooper_state_toString(State) ->
 			Acc ++ io_lib:format( 
 				"     * ~s = ~s~n", 
 				[
-					basic_utils:term_toString(AttName),
-					basic_utils:term_toString(AttrValue)
+					text_utils:term_toString(AttName),
+					text_utils:term_toString(AttrValue)
 				])
 			
 		end, 
@@ -1471,10 +1921,12 @@ wooper_get_instance_description(State) ->
 	
 	
 % WOOPER default EXIT handler.
-% Can be overridden by defining or inheriting the onWooperExitReceived/3 method.	
+% Can be overridden by defining or inheriting the onWooperExitReceived/3 
+% method.	
 wooper_default_exit_handler(State,Pid,ExitType) ->
-	io:format( "WOOPER default EXIT handler ignored signal '~w' from ~w.~n",
-		[ExitType,Pid] ),
+	io:format( "  Warning: the WOOPER default EXIT handler of ~w "
+	  "instance ~w ignored following EXIT message from ~w:~n~p.~n~n", 
+	  [ ?MODULE, self(), Pid, ExitType ] ),
 	?wooper_return_state_only(State).	
 
 
@@ -1482,7 +1934,7 @@ wooper_default_exit_handler(State,Pid,ExitType) ->
 % Waits for incoming requests and serves them.
 wooper_main_loop(State) ->
 	
-	?wooper_log( "wooper_main_loop start.~n" ),
+	%?wooper_log( "wooper_main_loop start.~n" ),
 
 	% Comment-out to avoid the state display prior to each method call:
 	%wooper_display_loop_state(State),
@@ -1496,7 +1948,7 @@ wooper_main_loop(State) ->
 		{ MethodAtom, ArgumentList, CallerPid } 
 				when is_pid(CallerPid) and is_list(ArgumentList) ->
 			?wooper_log_format( "Main loop (case A) for ~w: "
-				"request ~s with argument list ~w for ~w.~n", 
+				"request '~s' with argument list ~w for ~w.~n", 
 				[self(), MethodAtom, ArgumentList, CallerPid] ),
 			SenderAwareState = State#state_holder{request_sender=CallerPid},
 			{ NewState, Result } = wooper_execute_method( MethodAtom,
@@ -1519,7 +1971,7 @@ wooper_main_loop(State) ->
 			end, 
 			SenderAgnosticState =
 				NewState#state_holder{request_sender=undefined},
-			?wooper_log( "Main loop (case A) ended.~n" ),	
+			%?wooper_log( "Main loop (case A) ended.~n" ),	
 			wooper_main_loop(SenderAgnosticState);
 
 		
@@ -1527,7 +1979,7 @@ wooper_main_loop(State) ->
 		% double-brackets		
 		{ MethodAtom, Argument, CallerPid } when is_pid(CallerPid) ->
 			?wooper_log_format( "Main loop (case B) for ~w: "
-				"request ~s with argument ~w for ~w.~n", 
+				"request '~s' with argument ~w for ~w.~n", 
 				[self(), MethodAtom, Argument, CallerPid] ),
 			SenderAwareState = State#state_holder{request_sender=CallerPid},
 			{ NewState, Result } = wooper_execute_method( MethodAtom,
@@ -1550,7 +2002,7 @@ wooper_main_loop(State) ->
 			end, 
 			SenderAgnosticState =
 				NewState#state_holder{request_sender=undefined},
-			?wooper_log( "Main loop (case B) ended.~n" ),	
+			%?wooper_log( "Main loop (case B) ended.~n" ),	
 			wooper_main_loop(SenderAgnosticState);
 
 
@@ -1560,12 +2012,12 @@ wooper_main_loop(State) ->
 		% interested in the result)
 		{ MethodAtom, ArgumentList } when is_list(ArgumentList) ->
 			?wooper_log_format( "Main loop (case C) for ~w: "
-				"oneway ~s with argument list ~w.~n",
+				"oneway '~s' with argument list ~w.~n",
 				[self(), MethodAtom, ArgumentList] ),
 			% Any result would be ignored, only the updated state is kept:
 			{ NewState, _ } = wooper_execute_method( 
 				MethodAtom, State, ArgumentList ),
-			?wooper_log( "Main loop (case C) ended.~n" ),	
+			%?wooper_log( "Main loop (case C) ended.~n" ),	
 			wooper_main_loop(NewState);
 		
 		{ synchronous_delete, CallerPid } ->
@@ -1583,18 +2035,19 @@ wooper_main_loop(State) ->
 			?wooper_log_format( "Main loop (case D) for ~w: oneway ping.~n",
 				[self()]),
 			CallerPid ! {pong,self()},
-			?wooper_log( "Main loop (case D) ended.~n" ),	
+			%?wooper_log( "Main loop (case D) ended.~n" ),	
 			wooper_main_loop(State);
 		
 		
 		% Oneway with parameters:		
 		{ MethodAtom, Argument } ->
 			?wooper_log_format( "Main loop (case E) for ~w: "
-				"oneway ~s with argument ~w.~n",[self(),MethodAtom, Argument] ),
+				"oneway '~s' with argument ~w.~n",
+				[ self(), MethodAtom, Argument ] ),
 			% Any result would be ignored, only the updated state is kept:
 			{ NewState, _ } = wooper_execute_method( MethodAtom, State, 
 				[ Argument ] ), 
-			?wooper_log( "Main loop (case E) ended.~n" ),	
+			%?wooper_log( "Main loop (case E) ended.~n" ),	
 			wooper_main_loop(NewState);
 			
 			
@@ -1612,7 +2065,7 @@ wooper_main_loop(State) ->
 				"Main loop (case F) for ~w: oneway from atom ~s.~n",
 				[self(),MethodAtom]),
 			{ NewState, _ } = wooper_execute_method( MethodAtom, State, [] ),
-			?wooper_log( "Main loop (case F) ended.~n" ),	
+			%?wooper_log( "Main loop (case F) ended.~n" ),	
 			wooper_main_loop(NewState);
 		
 		
@@ -1622,18 +2075,18 @@ wooper_main_loop(State) ->
 			case hashtable:lookupEntry( {onWooperExitReceived,3},
 					State#state_holder.virtual_table) of 
 				
-				undefined ->
+				{ hashtable_key_not_found, _Key} ->
 					% EXIT handler not overridden, using default one:
-					?wooper_log( "Main loop (case G) ended.~n" ),	
+					%?wooper_log( "Main loop (case G) ended.~n" ),	
 					wooper_main_loop( wooper_default_exit_handler( State,
 						Pid,ExitType ) );
 				
-				{ value, _ } -> 
+				{ value, _Key } -> 
 					% Reusing safe execution facilities rather than directly
 					% 'apply( LocatedModule,onWooperExitReceived,...)':
 					{ NewState, _ } = wooper_execute_method(
 						onWooperExitReceived, State, [Pid,ExitType] ),
-					?wooper_log( "Main loop (case G) ended.~n" ),	
+					%?wooper_log( "Main loop (case G) ended.~n" ),	
 					wooper_main_loop(NewState)
 								
 			end;
@@ -1644,7 +2097,7 @@ wooper_main_loop(State) ->
 				[self(),Other] ),			
 			error_logger:warning_msg( "WOOPER ignored following message: ~w.~n",
 				[Other]),
-			?wooper_log( "Main loop (case H) ended.~n" ),	
+			%?wooper_log( "Main loop (case H) ended.~n" ),	
 			wooper_main_loop(State)
 			
 
@@ -1793,7 +2246,7 @@ wooper_lookupMethod(State,MethodAtom,Arity) ->
 % they cannot return any error to the caller, they can just crash and notify
 % any linked or monitoring process.
 % Not: atom and state checking in guards should be superfluous.
-wooper_execute_method(MethodAtom,State,Parameters) when is_atom(MethodAtom) 
+wooper_execute_method( MethodAtom, State, Parameters ) when is_atom(MethodAtom) 
 		andalso is_record(State,state_holder) andalso is_list(Parameters) ->	
 
 	%io:format("wooper_execute_method: looking up ~s(~w) from ~s.~n",
@@ -1803,133 +2256,15 @@ wooper_execute_method(MethodAtom,State,Parameters) when is_atom(MethodAtom)
 	case wooper_lookupMethod( State, MethodAtom, length(Parameters)+1 ) of
 	
 		{ value, LocatedModule } -> 
-			% The 'return' atom is a safety guard against incorrect method
-			% implementations:
 
-			%io:format("wooper_execute_method: executing ~s:~s(~w).~n",
-			%	[ ?MODULE, MethodAtom, Parameters ]), 	
-			
-			try apply(LocatedModule,MethodAtom,[State|Parameters]) of
-			
-				% Void method (no result returned, only a state):
-				% ?wooper_return_state_only:
-				NewState when is_record(NewState,state_holder) ->  
-					{NewState,wooper_method_returns_void};
-				
-				% Method returning a result (and a state of course):
-				% ?wooper_return_state_result:
-				{NewState,Result} when is_record(NewState,state_holder) ->		
-					{NewState,{wooper_result,Result}};
-			
-				% Not a wooper result neither an exception: faulty return.
-				Other ->
-					
-					case State#state_holder.request_sender of
-					
-						undefined ->
-						
-							% This is a oneway, so log and crash:
-							error_logger:error_msg(	"WOOPER error for PID ~w: "
-								"oneway method ~s:~s/~B made a faulty return "
-								"~w, parameters were ~w.~n",
-								[ self(), LocatedModule, MethodAtom,
-									length(Parameters)+1, Other, Parameters] ),
-
-							% Wait a bit as error_msg seems asynchronous:
-							timer:sleep(1000),
-								
-							% Terminates the process:	
-							throw( {wooper_method_faulty_return, self(),
-								LocatedModule, MethodAtom, 
-								length(Parameters)+1, Parameters, Other} );    
-						   
-						_ ->
-						
-							% This is a request, send error term and rely on
-							% the calling function (wooper_main_loop) to crash:
-							error_logger:error_msg(	"WOOPER error for PID ~w: "
-								"request method ~s:~s/~B made a faulty return "
-								"~w, parameters were ~w.~n",
-								[ self(), LocatedModule, MethodAtom,
-									length(Parameters)+1, Other, Parameters ] ),
-								
-							{State, 
-							   	{wooper_method_faulty_return, self(),
-									LocatedModule, MethodAtom,
-									length(Parameters)+1, Parameters, Other } }
-									 
-					end
-					
-			catch
-			
-				% All next cases are error cases.
-				% One option is to return an appropriate error term, but it 
-				% is useful only for requests, as oneways send back no result. 
-				% Another option is to let the faulty process crash: oneways
-				% would not send more answers, but linked and monitoring 
-				% processes could nevertheless be notified.
-				
-				% Finally, failed requests result in a log, an error answer
-				% being returned, then a crash if the error is due to internal
-				% reasons, whereas failed oneways result in a log then a crash,
-				% similarly if the error is due to internal reasons.
-
-				% User-defined exceptions are not caught, they will be rethrown
-				% and make the process fail.
-				
-				% This the counterpart of {'EXIT',ErrorTerm}.
-				% What would be the counterpart of {'EXIT',Pid,ErrorTerm}?
-				% Reason can be: throw, error or exit
-				Reason:ErrorTerm ->
-
-					case State#state_holder.request_sender of
-					
-						undefined ->
-						
-							% This is a oneway, so log and crash:
-							% (error term would often be unreadable with ~p)
-							error_logger:error_msg(	"WOOPER error for PID ~w: "
-								"oneway method ~s:~s/~B failed (cause: ~w) "
-								"with error term '~w' for parameters ~w, "
-								"stack trace was (latest calls first):~n~p.~n",
-								[ self(), LocatedModule, MethodAtom,
-									length(Parameters)+1, Reason, ErrorTerm,
-									Parameters,erlang:get_stacktrace()] ),
-
-							% Wait a bit as error_msg seems asynchronous:
-							timer:sleep(1000),
-																
-							% Terminates the process:	
-							throw( {wooper_oneway_failed, self(), LocatedModule,
-								MethodAtom, length(Parameters)+1, Parameters,
-								ErrorTerm} );
-									
-						_ ->
-						
-							% This is a request, send error term and rely on
-							% the calling function (wooper_main_loop) to crash:
-							% (error term would often be unreadable with ~p)
-							error_logger:error_msg(	"WOOPER error for PID ~w: "
-								"request method ~s:~s/~B failed (cause: ~w) "
-								"with error term '~w' for parameters ~w, "
-								"stack trace was (latest calls first):~n~p.~n",
-								[ self(), LocatedModule, MethodAtom,
-									length(Parameters)+1, Reason, ErrorTerm,
-									Parameters,erlang:get_stacktrace()] ),
-								
-							{State,
-								{wooper_method_failed, self(), LocatedModule,
-									MethodAtom, length(Parameters)+1, 
-						   			Parameters, ErrorTerm} }
-														
-					end
-										
-						
-			end;
-
+			%io:format("wooper_execute_method: executing ~s:~s(~w) from ~s.~n",
+			%	[ ?MODULE, MethodAtom, Parameters, LocatedModule ]),
+			 	
+			wooper_effective_method_execution( LocatedModule, MethodAtom, 
+				State, Parameters );
 				
 		% Method not found:	
-		{hashtable_key_not_found,{_MethodName,_Arity}} ->
+		{ hashtable_key_not_found, {_MethodName,_Arity} } ->
 		
 			case State#state_holder.request_sender of
 					
@@ -1980,8 +2315,145 @@ wooper_execute_method(MethodAtom,State,Parameters) when is_atom(MethodAtom)
 
 
 
-% Parameter-less request.
-executeRequest(State,RequestAtom) when is_record(State,state_holder) 
+% Exactly as wooper_execute_method, except that the target module (class)
+% is directly specified, instead of being determined from the instance
+% virtual table.
+wooper_execute_method_with( ClassName, MethodAtom, State, Parameters ) 
+		when is_atom(ClassName) andalso is_atom(MethodAtom)
+		andalso is_record(State,state_holder) andalso is_list(Parameters) ->	
+	% FIXME One check should be added: ClassName must be a super-class
+	% (direct or not) of the actual class.
+	wooper_effective_method_execution( ClassName, MethodAtom, State, 
+		Parameters ).
+
+
+
+% Triggers the actual method execution.
+wooper_effective_method_execution( SelectedModule, MethodAtom, State, 
+		Parameters ) ->
+		
+	try apply( SelectedModule, MethodAtom, [State|Parameters] ) of
+			
+		% Void method (no result returned, only a state):
+		% ?wooper_return_state_only:
+		NewState when is_record(NewState,state_holder) ->  
+			{NewState,wooper_method_returns_void};
+		
+		% Method returning a result (and a state of course):
+		% ?wooper_return_state_result:
+		{NewState,Result} when is_record(NewState,state_holder) ->		
+			{NewState,{wooper_result,Result}};
+		
+		% Not a wooper result neither an exception: faulty return.
+		Other ->
+			
+			case State#state_holder.request_sender of
+			
+				undefined ->
+				
+					% This is a oneway, so log and crash:
+					error_logger:error_msg(	"WOOPER error for PID ~w: "
+						"oneway method ~s:~s/~B made a faulty return "
+						"~w, parameters were ~w.~n",
+						[ self(), SelectedModule, MethodAtom,
+							length(Parameters)+1, Other, Parameters] ),
+
+					% Wait a bit as error_msg seems asynchronous:
+					timer:sleep(1000),
+						
+					% Terminates the process:	
+					throw( {wooper_method_faulty_return, self(),
+						SelectedModule, MethodAtom, 
+						length(Parameters)+1, Parameters, Other} );    
+				   
+				_ ->
+				
+					% This is a request, send error term and rely on
+					% the calling function (wooper_main_loop) to crash:
+					error_logger:error_msg(	"WOOPER error for PID ~w: "
+						"request method ~s:~s/~B made a faulty return "
+						"~w, parameters were ~w.~n",
+						[ self(), SelectedModule, MethodAtom,
+							length(Parameters)+1, Other, Parameters ] ),
+						
+					{State, 
+					   	{wooper_method_faulty_return, self(),
+							SelectedModule, MethodAtom,
+							length(Parameters)+1, Parameters, Other } }
+							 
+			end
+			
+	catch
+			
+		% All next cases are error cases.
+		% One option is to return an appropriate error term, but it 
+		% is useful only for requests, as oneways send back no result. 
+		% Another option is to let the faulty process crash: oneways
+		% would not send more answers, but linked and monitoring 
+		% processes could nevertheless be notified.
+		
+		% Finally, failed requests result in a log, an error answer
+		% being returned, then a crash if the error is due to internal
+		% reasons, whereas failed oneways result in a log then a crash,
+		% similarly if the error is due to internal reasons.
+
+		% User-defined exceptions are not caught, they will be rethrown
+		% and make the process fail.
+		
+		% This the counterpart of {'EXIT',ErrorTerm}.
+		% What would be the counterpart of {'EXIT',Pid,ErrorTerm}?
+		% Reason can be: throw, error or exit.
+		Reason:ErrorTerm ->
+
+			case State#state_holder.request_sender of
+			
+				undefined ->
+				
+					% This is a oneway, so log and crash:
+					% (error term would often be unreadable with ~p)
+					error_logger:error_msg(	"WOOPER error for PID ~w: "
+						"oneway method ~s:~s/~B failed (cause: ~w) "
+						"with error term '~w' for parameters ~w, "
+						"stack trace was (latest calls first):~n~p.~n",
+						[ self(), SelectedModule, MethodAtom,
+							length(Parameters)+1, Reason, ErrorTerm,
+							Parameters,erlang:get_stacktrace()] ),
+
+					% Wait a bit as error_msg seems asynchronous:
+					timer:sleep(1000),
+														
+					% Terminates the process:	
+					throw( {wooper_oneway_failed, self(), SelectedModule,
+						MethodAtom, length(Parameters)+1, Parameters,
+						ErrorTerm} );
+							
+				_ ->
+				
+					% This is a request, send error term and rely on
+					% the calling function (wooper_main_loop) to crash:
+					% (error term would often be unreadable with ~p)
+					error_logger:error_msg(	"WOOPER error for PID ~w: "
+						"request method ~s:~s/~B failed (cause: ~w) "
+						"with error term '~w' for parameters ~w, "
+						"stack trace was (latest calls first):~n~p.~n",
+						[ self(), SelectedModule, MethodAtom,
+							length(Parameters)+1, Reason, ErrorTerm,
+							Parameters,erlang:get_stacktrace()] ),
+						
+					{State,
+						{wooper_method_failed, self(), SelectedModule,
+							MethodAtom, length(Parameters)+1, 
+				   			Parameters, ErrorTerm} }
+												
+			end
+			
+	end.										
+
+
+
+% Parameter-less request, calling implicitly any overridden version of the
+% method.
+executeRequest( State, RequestAtom ) when is_record(State,state_holder) 
 		andalso is_atom(RequestAtom) -> 
 
 	%io:format("executeRequest/2: executing ~s() from ~s.~n", 
@@ -1998,7 +2470,7 @@ executeRequest(State,RequestAtom) when is_record(State,state_holder)
 	{NewState#state_holder{request_sender=undefined}, Result};
 	
 	
-executeRequest(StateError,RequestAtom) when is_atom(RequestAtom) -> 
+executeRequest( StateError, RequestAtom ) when is_atom(RequestAtom) -> 
 	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
 		"when executing request ~w: "
 		"first parameter should be a state, not '~w'.~n",
@@ -2008,7 +2480,7 @@ executeRequest(StateError,RequestAtom) when is_atom(RequestAtom) ->
 	throw({invalid_request_call,RequestAtom});
 	
 	
-executeRequest(_State,RequestAtomError) -> 
+executeRequest( _State, RequestAtomError ) -> 
 	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
 		"when executing request: '~w' is not an atom.~n",
 		[ self(), ?MODULE, RequestAtomError] ),
@@ -2034,7 +2506,7 @@ executeRequest(_State,RequestAtomError) ->
 %
 % Note: Stripped-down version of wooper_main_loop.
 %  
-executeRequest(State,RequestAtom,ArgumentList) when
+executeRequest( State, RequestAtom, ArgumentList ) when
 		is_record(State,state_holder) andalso is_atom(RequestAtom) 
 		andalso is_list(ArgumentList) -> 
 
@@ -2053,7 +2525,7 @@ executeRequest(State,RequestAtom,ArgumentList) when
 	
 	
 % Here the third parameter is not a list:
-executeRequest(State,RequestAtom,StandaloneArgument) when
+executeRequest( State, RequestAtom, StandaloneArgument ) when
 		is_record(State,state_holder) andalso is_atom(RequestAtom)-> 
 
 	%io:format("executeRequest/3 with standalone argument: "
@@ -2072,7 +2544,8 @@ executeRequest(State,RequestAtom,StandaloneArgument) when
 
 
 % Catches all errors:
-executeRequest(StateError,RequestAtom,_LastArg) when is_atom(RequestAtom) -> 
+executeRequest( StateError, RequestAtom, _LastArg ) 
+		when is_atom(RequestAtom) -> 
 	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
 		"when executing request ~w: "
 		"first parameter should be a state, not '~w'.~n",
@@ -2082,7 +2555,7 @@ executeRequest(StateError,RequestAtom,_LastArg) when is_atom(RequestAtom) ->
 	throw({invalid_request_call,RequestAtom});
 	
 	
-executeRequest(_State,RequestAtomError,_LastArg) -> 
+executeRequest( _State, RequestAtomError, _LastArg ) -> 
 	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
 		"when executing request: '~w' is not an atom.~n",
 		[ self(), ?MODULE, RequestAtomError] ),
@@ -2093,8 +2566,123 @@ executeRequest(_State,RequestAtomError,_LastArg) ->
 
 
 
+
+% Parameter-less request, calling the version of the method as defined in 
+% the specified class.
+executeRequestWith( State, ClassName, RequestAtom ) 
+	when is_record(State,state_holder) andalso is_atom(ClassName)
+		andalso is_atom(RequestAtom) -> 
+
+	%io:format("executeRequestWith/3: executing ~s() from ~s with ~s.~n", 
+	%	[ RequestAtom , ?MODULE, ClassName ]),
+			
+	% Auto-calling method:		
+	SenderAwareState = State#state_holder{request_sender=self()},
+	
+	% Correction checking by pattern-matching:
+	{ NewState, {wooper_result,Result} } = wooper_execute_method_with(
+		ClassName, RequestAtom, SenderAwareState, [] ), 
+
+	% Returns:			
+	{NewState#state_holder{request_sender=undefined}, Result};
+	
+	
+executeRequestWith( StateError, ClassName, RequestAtom ) 
+		when is_atom(ClassName)	andalso is_atom(RequestAtom) -> 
+		
+	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
+		"when executing request ~w in the context of class ~s: "
+		"first parameter should be a state, not '~w'.~n",
+		[ self(), ?MODULE, RequestAtom, ClassName, StateError ] ),
+	% Wait a bit as error_msg seems asynchronous:
+	timer:sleep(1000),	
+	throw({invalid_request_call,RequestAtom});
+	
+	
+executeRequestWith( _State, ClassNameError, RequestAtomError ) -> 
+	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
+		"when executing request in a class context: "
+		"'~w' and '~w' should both be atoms.~n",
+		[ self(), ?MODULE, ClassNameError, RequestAtomError ] ),
+	% Wait a bit as error_msg seems asynchronous:
+	timer:sleep(1000),	
+	throw( {invalid_request_call,ClassNameError,RequestAtomError} ).
+	
+	
+	
+
+
+% Allows to call synchronously from the code of a given class
+% overridden methods (requests, here) as defined in specified classes.
+%
+% If no failure occurs, returns {wooper_result,NewState,Result}.
+%
+% Note: Stripped-down version of wooper_main_loop.
+%  
+executeRequestWith( State, ClassName, RequestAtom, ArgumentList ) when
+		is_record(State,state_holder) andalso is_atom(ClassName) 
+		andalso is_atom(RequestAtom) andalso is_list(ArgumentList) -> 
+
+	%io:format("executeRequestWith/4 with list: executing ~s(~w) from ~s "
+	%  "with ~s.~n", [ RequestAtom, ArgumentList, ?MODULE, ClassName ]), 	
+	
+	% Auto-calling method:		
+	SenderAwareState = State#state_holder{request_sender=self()},
+	
+	% Correction checking by pattern-matching:
+	{ NewState, {wooper_result,Result} } = wooper_execute_method_with(
+		ClassName, RequestAtom, SenderAwareState, ArgumentList ), 
+		
+	% Returns:			
+	{NewState#state_holder{request_sender=undefined}, Result};
+	
+	
+% Here the third parameter is not a list:
+executeRequestWith( State, ClassName, RequestAtom, StandaloneArgument ) when
+		is_record(State,state_holder) andalso is_atom(ClassName) 
+		andalso is_atom(RequestAtom) andalso is_atom(RequestAtom) -> 
+
+	%io:format("executeRequestWith/3 with standalone argument: "
+	%	"executing ~s(~w) from ~s with ~s.~n", 
+	%	[ RequestAtom, StandaloneArgument, ?MODULE, ClassName ]),
+			
+	% Auto-calling method:		
+	SenderAwareState = State#state_holder{request_sender=self()},
+	
+	% Correction checking by pattern-matching:
+	{ NewState, {wooper_result,Result} } = wooper_execute_method_with(
+		ClassName, RequestAtom, SenderAwareState, [StandaloneArgument] ), 
+
+	% Returns:			
+	{NewState#state_holder{request_sender=undefined}, Result};
+
+
+executeRequestWith( StateError, ClassName, RequestAtom, _LastArg ) 
+		when is_atom(ClassName) andalso is_atom(RequestAtom) -> 
+		
+	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
+		"when executing request ~w: "
+		"first parameter should be a state, not '~w'.~n",
+		[ self(), ?MODULE, RequestAtom, StateError] ),
+	% Wait a bit as error_msg seems asynchronous:
+	timer:sleep(1000),	
+	throw({invalid_request_call,RequestAtom});
+	
+	
+% Catches all remaining errors:
+executeRequestWith( _State, ClassNameError, RequestAtomError, _LastArg ) -> 
+	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
+		"when executing request: both '~w' and '~w' should be atoms.~n",
+		[ self(), ?MODULE, ClassNameError, RequestAtomError] ),
+	% Wait a bit as error_msg seems asynchronous:
+	timer:sleep(1000),	
+	throw({invalid_request_call,ClassNameError,RequestAtomError}).
+
+
+
+
 % Parameter-less oneway.
-executeOneway(State,OnewayAtom) when is_record(State,state_holder)
+executeOneway( State, OnewayAtom ) when is_record(State,state_holder)
 		andalso is_atom(OnewayAtom) -> 
 
 	%io:format("executeOneway/2: executing ~s() from ~s.~n", 
@@ -2109,7 +2697,7 @@ executeOneway(State,OnewayAtom) when is_record(State,state_holder)
 	% Returns:			
 	NewState;
 
-executeOneway(StateError,OnewayAtom) when is_atom(OnewayAtom) -> 
+executeOneway( StateError, OnewayAtom ) when is_atom(OnewayAtom) -> 
 	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
 		"when executing oneway ~w: "
 		"first parameter should be a state, not '~w'.~n",
@@ -2119,7 +2707,7 @@ executeOneway(StateError,OnewayAtom) when is_atom(OnewayAtom) ->
 	throw({invalid_oneway_call,OnewayAtom});
 	
 	
-executeOneway(_State,OnewayError) -> 
+executeOneway( _State, OnewayError ) -> 
 	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
 		"when executing oneway: '~w' is not an atom.~n",
 		[ self(), ?MODULE, OnewayError] ),
@@ -2143,7 +2731,7 @@ executeOneway(_State,OnewayError) ->
 %
 % Note: Stripped-down version of wooper_main_loop.
 %  
-executeOneway(State,OnewayAtom,ArgumentList) when
+executeOneway( State, OnewayAtom, ArgumentList ) when
 		is_record(State,state_holder) andalso is_atom(OnewayAtom) 
 		andalso is_list(ArgumentList) -> 
 
@@ -2161,7 +2749,7 @@ executeOneway(State,OnewayAtom,ArgumentList) when
 
 	
 % Here third parameter is not a list:
-executeOneway(State,OnewayAtom,StandaloneArgument) when
+executeOneway( State, OnewayAtom, StandaloneArgument ) when
 		is_record(State,state_holder) andalso is_atom(OnewayAtom) -> 
 
 	%io:format("executeOneway/3 with standalone argument: "
@@ -2179,7 +2767,7 @@ executeOneway(State,OnewayAtom,StandaloneArgument) when
 
 
 % Catches all errors:
-executeOneway(StateError,OnewayAtom,_LastArg) when is_atom(OnewayAtom) -> 
+executeOneway( StateError, OnewayAtom, _LastArg ) when is_atom(OnewayAtom) -> 
 	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
 		"when executing oneway ~w: "
 		"first parameter should be a state, not '~w'.~n",
@@ -2189,10 +2777,118 @@ executeOneway(StateError,OnewayAtom,_LastArg) when is_atom(OnewayAtom) ->
 	throw({invalid_oneway_call,OnewayAtom});
 	
 	
-executeOneway(_State,OnewayAtomError,_LastArg) -> 
+executeOneway( _State, OnewayAtomError, _LastArg ) -> 
 	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
 		"when executing oneway: '~w' is not an atom.~n",
 		[ self(), ?MODULE, OnewayAtomError] ),
+	% Wait a bit as error_msg seems asynchronous:
+	timer:sleep(1000),	
+	throw({invalid_oneway_call,OnewayAtomError}).
+
+
+
+
+
+
+% Parameter-less oneway, relying on the specified actual class to be used,
+% instead of determining it from the instance virtual table.
+executeOnewayWith( State, ClassName, OnewayAtom ) 
+		when is_record(State,state_holder) andalso is_atom(ClassName) 
+			andalso is_atom(OnewayAtom) ->
+
+	%io:format("executeOnewayWith/3: executing ~s() from ~s.~n", 
+	%	[ OnewayAtom, ?MODULE ]),
+			
+	% No request_sender to change with oneways.
+	
+	% Correction checking by pattern-matching:
+	{ NewState, wooper_method_returns_void } =
+		wooper_execute_method_with(	ClassName, OnewayAtom, State, [] ), 
+
+	% Returns:			
+	NewState;
+
+executeOnewayWith( StateError, ClassName, OnewayAtom ) when is_atom(ClassName) 
+		andalso is_atom(OnewayAtom) -> 
+	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
+		"when executing oneway ~w with ~s: "
+		"first parameter should be a state, not '~w'.~n",
+		[ self(), ?MODULE, OnewayAtom, ClassName, StateError ] ),
+	% Wait a bit as error_msg seems asynchronous:
+	timer:sleep(1000),	
+	throw({invalid_oneway_call,OnewayAtom});
+	
+	
+executeOnewayWith( _State, ClassNameError, OnewayError ) -> 
+	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
+		"when executing oneway: both '~w' and '~w' should be atoms.~n",
+		[ self(), ?MODULE, ClassNameError, OnewayError] ),
+	% Wait a bit as error_msg seems asynchronous:
+	timer:sleep(1000),	
+	throw({invalid_oneway_call,ClassNameError,OnewayError}).
+
+
+		
+% Allows to call synchronously from the code of a given class the oneway 
+% defined in specified class, instead of determining it from the instance
+% virtual table.
+%
+% If no failure occurs, returns {wooper_result,NewState}.
+%
+% Note: Stripped-down version of wooper_main_loop.
+%  
+executeOnewayWith( State, ClassName, OnewayAtom, ArgumentList ) when
+		is_record(State,state_holder) andalso is_atom(ClassName)  
+		andalso is_atom(OnewayAtom) andalso is_list(ArgumentList) -> 
+
+	%io:format("executeOneway/4 with list: executing ~s(~w) from ~s with ~s.~n",
+	%	[ OnewayAtom, ArgumentList, ?MODULE, ClassName ]), 	
+			
+	% No request_sender to change with oneways.
+	
+	% Correction checking by pattern-matching:
+	{ NewState, wooper_method_returns_void } = wooper_execute_method_with(
+		ClassName, OnewayAtom, State, ArgumentList ), 
+	
+	% Returns:	
+	NewState;
+
+	
+% Here third parameter is not a list:
+executeOnewayWith( State, ClassName, OnewayAtom, StandaloneArgument ) when
+		is_record(State,state_holder) andalso is_atom(ClassName) 
+		andalso is_atom(OnewayAtom) -> 
+
+	%io:format("executeOneway/4 with standalone argument: "
+	%	"executing ~s(~w) from ~s with ~s.~n", 
+	%	[ OnewayAtom, StandaloneArgument, ?MODULE, ClassName ]),
+			
+	% No request_sender to change with oneways.
+	
+	% Correction checking by pattern-matching:
+	{ NewState, wooper_method_returns_void } = wooper_execute_method_with(
+		ClassName, OnewayAtom, State, [StandaloneArgument] ), 
+
+	% Returns:			
+	NewState;
+
+
+executeOnewayWith( StateError, ClassName, OnewayAtom, _LastArg ) 
+		when is_atom(ClassName) andalso is_atom(OnewayAtom) -> 
+	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
+		"when executing oneway ~w with ~s: "
+		"first parameter should be a state, not '~w'.~n",
+		[ self(), ?MODULE, OnewayAtom, ClassName, StateError ] ),
+	% Wait a bit as error_msg seems asynchronous:
+	timer:sleep(1000),	
+	throw({invalid_oneway_call,OnewayAtom});
+	
+	
+% Catches all remaining errors:
+executeOnewayWith( _State, ClassName, OnewayAtomError, _LastArg ) -> 
+	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
+		"when executing oneway with ~s: both '~w' and '~w' should be atoms.~n",
+		[ self(), ?MODULE, ClassName, OnewayAtomError ] ),
 	% Wait a bit as error_msg seems asynchronous:
 	timer:sleep(1000),	
 	throw({invalid_oneway_call,OnewayAtomError}).
@@ -2206,6 +2902,15 @@ executeOneway(_State,OnewayAtomError,_LastArg) ->
 
 
 % Not in debug mode here:
+
+
+% FIXME: TO-DO
+% - define wooper_execute_method_with
+% - define wooper_effective_method_execution
+% - separate wooper_effective_method_execution from wooper_execute_method
+% - implement execute*With
+%
+
 
 
 % Executes the specified method, designated by its atom, with specified 
@@ -2497,7 +3202,7 @@ delete_any_instance_referenced_in( State, [PidAttribute|T] ) ->
 		
 		Pid when is_pid(Pid) ->
 			Pid ! delete,
-			?setAttribute( State, PidAttribute, undefined )
+			setAttribute( State, PidAttribute, undefined )
 				
 	end,
 	delete_any_instance_referenced_in( NewState, T );
@@ -2510,7 +3215,7 @@ delete_any_instance_referenced_in( State, PidAttribute ) ->
 		
 		Pid when is_pid(Pid) ->
 			Pid ! delete,
-			?setAttribute( State, PidAttribute, undefined )
+			setAttribute( State, PidAttribute, undefined )
 				
 	end.
 

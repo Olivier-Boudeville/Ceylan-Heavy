@@ -146,9 +146,12 @@ run() ->
 
 	% Not too late in the test to have enough time to execute fully:
 	io:format( ?Prefix "Testing direct method invocation.~n" ),
+
 	% Inherited from Creature:
 	MyM ! {testDirectMethodExecution,347},
 
+	MyM ! testExplicitClassSelection,
+	
 	MyM ! {getFurColor,[],self()},
 	receive
 	
@@ -161,6 +164,8 @@ run() ->
 				[ UnexpectedFurColor ] ) )
 	
 	end,
+	
+	
 	case class_Mammal:is_wooper_debug() of 
 		true ->
 			MyM ! { wooper_get_instance_description,[], self() },

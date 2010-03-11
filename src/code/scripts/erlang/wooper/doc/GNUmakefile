@@ -3,9 +3,9 @@ WOOPER_TOP = ..
 
 OVERALL_DOCUMENT_TARGET = wooper.rst
 
-DOG_GENERATED_FILES = wooper.pdf wooper.html
+DOC_GENERATED_FILES = wooper.pdf wooper.html
 
-DOC_FILES = $(DOG_GENERATED_FILES) wooper-example.png
+DOC_FILES = $(DOC_GENERATED_FILES) wooper-example.png
 
 
 WOOPER_WEB_DIR = $(WOOPER_TOP)/../../../../doc/web/main/documentation/wooper
@@ -13,7 +13,7 @@ WOOPER_WEB_DIR = $(WOOPER_TOP)/../../../../doc/web/main/documentation/wooper
 
 
 full-doc:
-	@$(MAKE) $(DOG_GENERATED_FILES) VIEW_PDF=no
+	@$(MAKE) $(DOC_GENERATED_FILES) VIEW_PDF=no
 
 
 # Exports in Ceylan website:
@@ -26,7 +26,7 @@ export-doc: doc
 # For COMMON_TOP:
 include $(WOOPER_TOP)/GNUmakesettings.inc
 
-# Not used for a better readability: 
+# Not used, for a better readability: 
 #PROJECT_CSS = $(COMMON_TOP)/doc/Ceylan-docutils.css
 
 include $(COMMON_TOP)/doc/GNUmakerules-docutils.inc

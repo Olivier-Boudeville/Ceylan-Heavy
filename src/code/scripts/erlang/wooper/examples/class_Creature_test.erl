@@ -91,6 +91,7 @@ run() ->
 				
 	end,	
 	MyC ! declareBirthday,
+	
 	MyC ! {getAge,[],self()},
 	receive
 	
@@ -106,7 +107,24 @@ run() ->
 	
 	MyC ! declareBirthday,
 	
-	MyC ! delete,	
+	
+	% Some more technical checkings:
+	
+	% Note to be called here, otherwise will fail:
+	%MyC ! {testDirectMethodExecution,36},
+	
+	MyC ! testSingleExecution,
+	
+	
+	% Ensures a synchronous ending:
+	MyC ! { synchronous_delete, self() },
+	receive
+	
+		{deleted,MyC} ->
+			io:format(?Prefix "Synchronous deletion succeedeed.~n" )
+	
+	end,
+		
 	io:format( ?Prefix "End of test for module ~s.~n", [ ?Tested_module ] ),
 	testFinished().
 

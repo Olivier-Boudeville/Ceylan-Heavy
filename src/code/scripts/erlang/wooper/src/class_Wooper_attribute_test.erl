@@ -25,6 +25,7 @@
 %
 % Author: Olivier Boudeville (olivier.boudeville@esperide.com)
 
+
 -module(class_Wooper_attribute_test).
 
 
@@ -49,7 +50,7 @@
 
 
 % Method declarations.
--define(wooper_method_export,test/1).
+-define(wooper_method_export, test/1 ).
 
 
 
@@ -68,7 +69,7 @@
 % Constructs a new test instance.
 construct(State) ->
 	% Class-specific attributes:
-	?setAttribute(State,test_attribute,true).
+	setAttribute(State,test_attribute,true).
 
 
 
@@ -76,45 +77,45 @@ construct(State) ->
 test(State) ->
 	io:format( "   Testing attribute management.~n" ),
 	
-	true        = ?hasAttribute(State,test_attribute),
-	false       = ?hasAttribute(State,non_existing),
+	true        = hasAttribute(State,test_attribute),
+	false       = hasAttribute(State,non_existing),
 	
 	true        = ?getAttr(test_attribute),
 	
-	UnsetState  = ?removeAttribute(State,test_attribute),
-	false       = ?hasAttribute(UnsetState,test_attribute),
+	UnsetState  = removeAttribute(State,test_attribute),
+	false       = hasAttribute(UnsetState,test_attribute),
 	
-	NewSetState = ?setAttribute(UnsetState,test_attribute,true),
-	true        = ?getAttribute(NewSetState,test_attribute),
+	NewSetState = setAttribute(UnsetState,test_attribute,true),
+	true        = getAttribute(NewSetState,test_attribute),
 	
-	MultiState  = ?setAttributes(NewSetState,[
+	MultiState  = setAttributes(NewSetState,[
 		{test_attribute,false}, {another_attribute,42} ]),
-	false       = ?getAttribute(MultiState,test_attribute),
-	42          = ?getAttribute(MultiState,another_attribute),
+	false       = getAttribute(MultiState,test_attribute),
+	42          = getAttribute(MultiState,another_attribute),
 	
-	RevertState = ?toggleAttribute(MultiState,test_attribute),
-	true        = ?getAttribute(RevertState,test_attribute),
+	RevertState = toggleAttribute(MultiState,test_attribute),
+	true        = getAttribute(RevertState,test_attribute),
 	
-	VoidState   = ?setAttribute(RevertState,test_list,[]),
-	AppendState = ?appendToAttribute(VoidState,test_list, 7),
-	AgainState  = ?appendToAttribute(AppendState,test_list, 8),
-	[8,7]       = ?getAttribute(AgainState,test_list),
+	VoidState   = setAttribute(RevertState,test_list,[]),
+	AppendState = appendToAttribute(VoidState,test_list, 7),
+	AgainState  = appendToAttribute(AppendState,test_list, 8),
+	[8,7]       = getAttribute(AgainState,test_list),
 	
-	DeleteState = ?deleteFromAttribute(AgainState,test_list,7),
-	[8]         = ?getAttribute(DeleteState,test_list),
+	DeleteState = deleteFromAttribute(AgainState,test_list,7),
+	[8]         = getAttribute(DeleteState,test_list),
 	
-	PreAddState = ?setAttribute(DeleteState,test_add,1),
-	AddState    = ?addToAttribute(PreAddState,test_add,10),
-	11          = ?getAttribute(AddState,test_add),
+	PreAddState = setAttribute(DeleteState,test_add,1),
+	AddState    = addToAttribute(PreAddState,test_add,10),
+	11          = getAttribute(AddState,test_add),
 	
-	SubState    = ?substractFromAttribute(AddState,test_add,5),
-	6           = ?getAttribute(SubState,test_add),
+	SubState    = subtractFromAttribute(AddState,test_add,5),
+	6           = getAttribute(SubState,test_add),
 
-	{PoppedState,8} = ?popFromAttribute(AgainState,test_list),
-	{_,7}           = ?popFromAttribute(PoppedState,test_list),
+	{PoppedState,8} = popFromAttribute(AgainState,test_list),
+	{_,7}           = popFromAttribute(PoppedState,test_list),
 	
-	UndefState  = ?setAttribute(PoppedState,test_undef,undefined),
-	%UndefState  = ?setAttribute(PoppedState,test_undef,not_undefined),
+	UndefState  = setAttribute(PoppedState,test_undef,undefined),
+	%UndefState  = setAttribute(PoppedState,test_undef,not_undefined),
 	
 	not_crashing_examples(UndefState),
 	%crashing_examples(UndefState),
@@ -125,9 +126,9 @@ test(State) ->
 
 
 not_crashing_examples(State) ->
-	NewState = ?removeAttribute(State,non_existing),
-	OtherNewState = ?appendToAttribute(NewState,test_attribute,8),
-	[8|true] = ?getAttribute(OtherNewState,test_attribute),
+	NewState = removeAttribute(State,non_existing),
+	OtherNewState = appendToAttribute(NewState,test_attribute,8),
+	[8|true] = getAttribute(OtherNewState,test_attribute),
 	not_crashing_test_undefined(State),
 	not_crashing_test_hashtable(State),
 	?wooper_return_state_result( OtherNewState, test_ok ).
@@ -136,20 +137,20 @@ not_crashing_examples(State) ->
 
 % Usually operations are commented-out as we do not want to fail on purpose:
 crashing_examples(State) ->
-	%?toggleAttribute(State,non_existing),
+	%toggleAttribute(State,non_existing),
 	% Not a boolean:
-	%?toggleAttribute(State,test_add),
+	%toggleAttribute(State,test_add),
 	
-	%?addToAttribute(State,non_existing,4),
+	%addToAttribute(State,non_existing,4),
 	% Not a number:
-	%?addToAttribute(State,test_attribute,4),
+	%addToAttribute(State,test_attribute,4),
 	
-	%?substractFromAttribute(State,non_existing,4),
+	%subtractFromAttribute(State,non_existing,4),
 	% Not a number:
-	%?substractFromAttribute(State,test_attribute,4),
+	%subtractFromAttribute(State,test_attribute,4),
 
 	% Not a list:
-	%?deleteFromAttribute(State,test_attribute,7),
+	%deleteFromAttribute(State,test_attribute,7),
 	
 	crashing_test_undefined(State),
 
@@ -172,11 +173,11 @@ crashing_test_undefined(State) ->
 
 not_crashing_test_hashtable(State) ->
 	% Let's have an (empty) hashtable first:
-	WithTableState = ?setAttribute( State, test_hashtable, hashtable:new() ),
-	EntrySetState = ?addKeyValueToAttribute(WithTableState,test_hashtable,
+	WithTableState = setAttribute( State, test_hashtable, hashtable:new() ),
+	EntrySetState = addKeyValueToAttribute(WithTableState,test_hashtable,
 		my_key, my_value ),
 	% Check was registered indeed:
-	ReadTable = ?getAttribute( EntrySetState, test_hashtable ),
+	ReadTable = getAttribute( EntrySetState, test_hashtable ),
 	{value,my_value} = hashtable:lookupEntry( my_key, ReadTable ).
 	
 	

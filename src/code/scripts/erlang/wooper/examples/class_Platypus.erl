@@ -51,7 +51,7 @@ construct(State,?wooper_construct_parameters) ->
 		MammalState ),
 	
 	% Then the class-specific attributes:
-	?setAttributes( OvoviviparousMammalState, 
+	setAttributes( OvoviviparousMammalState, 
 		[ {nozzle_color,NozzleColor},
 		{alternate_names,[hector,edgar,roger,sean]} ] ).
 	
@@ -84,16 +84,16 @@ canEat(State,_) ->
 
 
 getNozzleColor(State)->
-	?wooper_return_state_result( State, ?getAttribute(State,nozzle_color) ).
+	?wooper_return_state_result( State, getAttribute(State,nozzle_color) ).
 
 
 % Returns the list of alternate names for this platypus.
 getAlternateNames(State) ->
-	?wooper_return_state_result( State, ?getAttribute(State,alternate_names) ).
+	?wooper_return_state_result( State, getAttribute(State,alternate_names) ).
 	
 
 % Returns the first alternate name for this platypus and forget it.
 popFirstAlternateName(State) ->
-	{NewState,Name} = ?popFromAttribute(State,alternate_names),
+	{NewState,Name} = popFromAttribute(State,alternate_names),
 	?wooper_return_state_result( NewState, Name ).
 
