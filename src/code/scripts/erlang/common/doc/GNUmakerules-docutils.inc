@@ -1,1 +1,0 @@
-../../../ceylan/Ceylan/trunk/src/doc/GNUmakerules-docutils.inc
