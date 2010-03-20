@@ -41,7 +41,9 @@ export OSDL_SRC=${OSDL_ROOT}/trunk/src
 export OSDL_DOC=${OSDL_SRC}/doc/web/main/documentation
 
 
-export ORGE_ROOT=${LOANI_REPOSITORY}/osdl/Orge/trunk
+#export ORGE_ROOT=${LOANI_REPOSITORY}/osdl/Orge/trunk
+export ORGE_ROOT=${LOANI_REPOSITORY}/OSDL-Erlang/Orge/trunk
+
 export ORGE_SRC=${ORGE_ROOT}/src/code
 
 export YAG_VERSION=0.5
@@ -152,7 +154,7 @@ alias rainbow='ssh wondersye@rainbow'
 alias watt='ssh boudevil@watt'
 alias red='ssh wondersye@red'
 alias orge='ssh orge@orge-testing.esperide.com'
-
+alias pastek='ssh wondersye@pastek.nainwak.org'
 
 
 # Shell section:
@@ -189,7 +191,7 @@ export TORAINBOW="wondersye@rainbow:/home/wondersye"
 export TOWATT="boudevil@watt:/home/boudevil"
 export TORED="wondersye@red:/home/wondersye"
 export TOORGE="orge@orge-testing.esperide.com:/home/orge"
-
+export TOPASTEK="wondersye@pastek.nainwak.org:/home/darm/wondersye"
 export TOARANOR_FTP="www-data@aranor:/home/ftp/LOANI-archive-repository"
   
 
@@ -221,6 +223,8 @@ alias logmx="${LOGMX_ROOT}/logmx.sh"
 # Erlang section:
 export ERLANG_ROOT="$HOME/Software/Erlang/Erlang-current-install"
 export PATH="${ERLANG_ROOT}/bin:${PATH}"
+
+export BATCH='CMD_LINE_OPT="--batch"'
 
 #echo "-- Bash basically initialized according to Boudeville Standards --"
 
