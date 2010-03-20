@@ -12,11 +12,11 @@
 
 
 ;; Disabled as is slowing emacs down way too much:
-;;(require 'rst)
-;;(setq auto-mode-alist
-;;      (append '(("\\.txt$"  . rst-mode)
-;;				("\\.rst$"  . rst-mode)
-;;				("\\.rest$" . rst-mode)) auto-mode-alist))
+(require 'rst)
+(setq auto-mode-alist
+      (append '(("\\.txt$"  . rst-mode)
+				("\\.rst$"  . rst-mode)
+				("\\.rest$" . rst-mode)) auto-mode-alist))
 
 
 ;; Automatically update the table of contents everytime you adjust a
@@ -469,7 +469,7 @@
   (goto-char (max begin end))
   (let ((found-pos (search-forward text nil t)))
 	(if (not found-pos)
-		(progn (goto-char (point-min)) 
+		(progn (goto-char (point-min))
 		       (let ((wrapped-found-pos (search-forward text nil t)))
 			   (goto-char (- wrapped-found-pos (length text)))
 			   (set-mark wrapped-found-pos)))
@@ -545,7 +545,7 @@
 (server-start)
 
 ;; No more question about clients being still there:
-;; (must be *after* server-start) 
+;; (must be *after* server-start)
 (remove-hook 'kill-buffer-query-functions 'server-kill-buffer-query-function)
 
 
