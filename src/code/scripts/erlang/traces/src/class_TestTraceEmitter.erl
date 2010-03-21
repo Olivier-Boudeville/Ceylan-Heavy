@@ -32,11 +32,11 @@
 
 
 % Determines what are the mother classes of this class (if any):
--define(wooper_superclasses,[class_TraceEmitter]).
+-define( wooper_superclasses, [class_TraceEmitter]).
 
 
 % Parameters taken by the constructor ('construct'). 
--define(wooper_construct_parameters, TraceEmitterName ).
+-define( wooper_construct_parameters, TraceEmitterName ).
 
 
 % Declaring all variations of WOOPER standard life-cycle operations:
@@ -50,8 +50,8 @@
 
 
 
-% Method declarations.
--define(wooper_method_export, sendTraces/1, sendAsyncTraces/1 ).
+% Member method declarations.
+-define( wooper_method_export, sendTraces/1, sendAsyncTraces/1 ).
 
 
 
@@ -71,7 +71,7 @@
 
 	
 % Constructs a new test trace emitter.
-construct(State,?wooper_construct_parameters) ->
+construct( State,?wooper_construct_parameters ) ->
 
 	io:format( "~s Creating a new test trace emitter, whose name is ~s, "
 		"whose PID is ~w.~n", [ ?LogPrefix, TraceEmitterName, self() ] ),
@@ -85,12 +85,12 @@ construct(State,?wooper_construct_parameters) ->
 		 
 	% From now on, traces can be sent (but from the constructor send_* traces
 	% only should be sent, to be able to refer to a trace-enabled state):
-	?send_fatal(   [TestTraceState,"Hello fatal world! "]   ),
-	?send_error(   [TestTraceState,"Hello error world! "]   ),
-	?send_warning( [TestTraceState,"Hello warning world! "] ),
-	?send_info(    [TestTraceState,"Hello info world! "]    ),
-	?send_trace(   [TestTraceState,"Hello trace world! "]   ),
-	?send_debug(   [TestTraceState,"Hello debug world! "]   ),
+	?send_fatal(   TestTraceState, "Hello fatal world!"   ),
+	?send_error(   TestTraceState, "Hello error world!"   ),
+	?send_warning( TestTraceState, "Hello warning world!" ),
+	?send_info(    TestTraceState, "Hello info world!"    ),
+	?send_trace(   TestTraceState, "Hello trace world!"   ),
+	?send_debug(   TestTraceState, "Hello debug world!"   ),
 	
 	TestTraceState.
 	
@@ -106,12 +106,12 @@ delete(State) ->
 		[ ?LogPrefix, ?getAttr(name) ] ),
 	
 	% Last moment to send traces:
-	?fatal(   ["Goodbye fatal world! "  ] ),
-	?error(   ["Goodbye error world! "  ] ),
-	?warning( ["Goodbye warning world! "] ),
-	?info(    ["Goodbye info world! "   ] ),
-	?trace(   ["Goodbye trace world! "  ] ),
-	?debug(   ["Goodbye debug world! "  ] ),
+	?fatal(   "Goodbye fatal world!"   ),
+	?error(   "Goodbye error world!"   ),
+	?warning( "Goodbye warning world!" ),
+	?info(    "Goodbye info world!"    ),
+	?trace(   "Goodbye trace world!"   ),
+	?debug(   "Goodbye debug world!"   ),
 	
 	io:format( "~s Test trace emitter ~s deleted.~n", 
 		[ ?LogPrefix, ?getAttr(name) ] ),
@@ -149,28 +149,71 @@ send_traces(State) ->
 
 	%io:format( "~s Sending some traces.~n",	[ ?LogPrefix ] ),
 	
-	% We finally replaced fatal and error traces by warning, as the former
-	% two induce waitings (i.e. timer:sleep/1 calls):
+	% We finally replaced fatal and error traces by warning, as the former two
+	% induce waitings (i.e. timer:sleep/1 calls):
 	
-	?warning( ["Still livin' in a fatal world! "  ] ),
-	?warning( ["Still livin' in a error world! "  ] ),
-	?warning( ["Still livin' in a warning world! "] ),
-	?info(    ["Still livin' in a info world! "   ] ),
-	?trace(   ["Still livin' in a trace world! "  ] ),
-	?debug(   ["Still livin' in a debug world! "  ] ),
+
+	% With no formatting:
+
+	?warning( "Still livin' in a fatal world! (plain)"   ),
+	?warning( "Still livin' in a error world! (plain)"   ),
+	?warning( "Still livin' in a warning world! (plain)" ),
+	?info(    "Still livin' in a info world! (plain)"    ),
+	?trace(   "Still livin' in a trace world! (plain)"   ),
+	?debug(   "Still livin' in a debug world! (plain)"   ),
+
+
+	?warning_cat( "Still livin' in a fatal world! (cat)",  ?application_start ),
+	?warning_cat( "Still livin' in a error world! (cat)",  ?application_save ),
+	?warning_cat( "Still livin' in a warning world! (cat)",?time ),
+	?info_cat(    "Still livin' in a info world! (cat)",   ?execution ),
+	?trace_cat(   "Still livin' in a trace world! (cat)",  ?application_start ),
+	?debug_cat(   "Still livin' in a debug world! (cat)",  ?application_start ),
+
+
+	?warning_full( "Still livin' in a fatal world! (full)",  
+				   ?application_start, 5 ),
+
+	?warning_full( "Still livin' in a error world! (full)",  
+				   ?application_save, 6 ),
+
+	?warning_full( "Still livin' in a warning world! (full)",
+				   ?time, 7 ),
+
+	?info_full(    "Still livin' in a info world! (full)",   
+				   ?execution, 8 ),
+
+	?trace_full(   "Still livin' in a trace world! (full)", 
+				   ?application_start, 9 ),
+
+	?debug_full(   "Still livin' in a debug world! (full)",
+				   ?application_start, 10 ),
+
+
+
+	% With formatting:
+
+	?warning_fmt( "Yes, still livin' in a ~w world! (plain)", [fatal]   ),
+	?warning_fmt( "Yes, still livin' in a ~w world! (plain)", [error]   ),
+	?warning_fmt( "Yes, still livin' in a ~w world! (plain)", [warning] ),
+	?info_fmt(    "Yes, still livin' in a ~w world! (plain)", [info]    ),
+	?trace_fmt(   "Yes, still livin' in a ~w world! (plain)", [trace]   ),
+	?debug_fmt(   "Yes, still livin' in a ~w world! (plain)", [debug]   ),
 	
-	?warning( ["Ouh-ouh-ouuuuuh fatal",   ?application_start    ] ),
-	?warning( ["Ouh-ouh-ouuuuuh error",   ?application_save     ] ),
-	?warning( ["Ouh-ouh-ouuuuuh warning", ?time                 ] ),
-	?info(    ["Ouh-ouh-ouuuuuh info",    ?execution            ] ),
-	?trace(   ["Ouh-ouh-ouuuuuh trace",   ?application_start    ] ),
-	?debug(   ["Ouh-ouh-ouuuuuh debug",   ?application_start    ] ),
+
+	
+	?warning_fmt_cat( "Ouh-ouh-ouuuuuh ~w", [fatal],   ?application_start ),
+	?warning_fmt_cat( "Ouh-ouh-ouuuuuh ~w", [error],   ?application_save  ),
+	?warning_fmt_cat( "Ouh-ouh-ouuuuuh ~w", [warning], ?time              ),
+	?info_fmt_cat(    "Ouh-ouh-ouuuuuh ~w", [info],    ?execution         ),
+	?trace_fmt_cat(   "Ouh-ouh-ouuuuuh ~w", [trace],   ?application_start ),
+	?debug_fmt_cat(   "Ouh-ouh-ouuuuuh ~w", [debug],   ?application_start ),
 	
 	
-	?warning( ["Oh yeah fatal",   ?application_start,  5 ] ),
-	?warning( ["Oh yeah error",   ?application_save,   6 ] ),
-	?warning( ["Oh yeah warning", ?time,               7 ] ),
-	?info(    ["Oh yeah info",    ?execution,          8 ] ),
-	?trace(   ["Oh yeah trace",   ?application_start,  9 ] ),
-	?debug(   ["Oh yeah debug",   ?application_start, 10 ] ).
+	?warning_fmt_full( "Oh yeah ~w", [fatal],   ?application_start,  5 ),
+	?warning_fmt_full( "Oh yeah ~w", [error],   ?application_save,   6 ),
+	?warning_fmt_full( "Oh yeah ~w", [warning], ?time,               7 ),
+	?info_fmt_full(    "Oh yeah ~w", [info],    ?execution,          8 ),
+	?trace_fmt_full(   "Oh yeah ~w", [trace],   ?application_start,  9 ),
+	?debug_fmt_full(   "Oh yeah ~w", [debug],   ?application_start, 10 ).
 

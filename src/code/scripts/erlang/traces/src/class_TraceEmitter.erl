@@ -242,18 +242,18 @@ toString(State) ->
 % Message is a plain string.
 % (helper function)
 % All informations available but the tick and the message categorization.
-send( TraceType, [State, Message] ) ->
-	send( TraceType, [ State, Message, ?DefaultMessageCategorization ] );
+send( TraceType, State, Message ) ->
+	send( TraceType, State, Message, ?DefaultMessageCategorization );
 
 
 % Message and MessageCategorization are plain strings.
 % All informations available but the tick, determining its availability:
-send( TraceType, [ State, Message, MessageCategorization ] ) ->
+send( TraceType, State, Message, MessageCategorization ) ->
 	send( TraceType, [ State, Message, MessageCategorization,
 		get_current_tick(State) ] );
 
 % The function used to send all types of traces:
-send( TraceType, [ State, Message, MessageCategorization, Tick ] ) ->
+send( TraceType, State, Message, MessageCategorization, Tick ) ->
 	
 	TimestampText = text_utils:string_to_binary( 
 	   basic_utils:get_textual_timestamp() ),
@@ -276,16 +276,18 @@ send( TraceType, [ State, Message, MessageCategorization, Tick ] ) ->
 % Uses default trace aggregator, supposed to be already available and 
 % registered.
 % (static)
-send_from_test( TraceType, [Message] ) ->
-	send_from_test(TraceType, [Message, ?DefaultTestMessageCategorization]);
+send_from_test( TraceType, Message ) ->
+	send_from_test(TraceType, Message, ?DefaultTestMessageCategorization );
 	
-send_from_test( TraceType, [Message,MessageCategorization] ) ->
+send_from_test( TraceType, Message, MessageCategorization ) ->
 	% Follows the order of our trace format; oneway call:
 	case global:whereis_name(?trace_aggregator_name) of
 	
 		undefined ->
+
 			error_logger:info_msg( "class_TraceEmitter:send_from_test: "	
 				"trace aggregator not found." ),	
+
 			throw( trace_aggregator_not_found );
 			
 		AggregatorPid ->
@@ -312,17 +314,19 @@ send_from_test( TraceType, [Message,MessageCategorization] ) ->
 % Uses default trace aggregator, supposed to be already available and 
 % registered.
 % (static)
-send_standalone( TraceType, [Message] ) ->
-	send_standalone( TraceType, [ Message,
-		?DefaultStandaloneMessageCategorization ] );
+send_standalone( TraceType, Message ) ->
+	send_standalone( TraceType, Message,
+		?DefaultStandaloneMessageCategorization );
 	
-send_standalone( TraceType, [Message,MessageCategorization] ) ->
+send_standalone( TraceType, Message, MessageCategorization ) ->
 	% Follows the order of our trace format; oneway call:
-	case global:whereis_name(?trace_aggregator_name) of
+	case global:whereis_name( ?trace_aggregator_name ) of
 	
 		undefined ->
+
 			error_logger:info_msg( "class_TraceEmitter:send_standalone: "	
-				"trace aggregator not found." ),	
+				"trace aggregator not found." ),
+	
 			throw( trace_aggregator_not_found );
 			
 		AggregatorPid ->
