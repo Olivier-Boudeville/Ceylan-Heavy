@@ -478,9 +478,12 @@ get_image_file_gif(Image) ->
 
 % Opens the file corresponding to specified filename with specified list of
 % options.
+%
 % Returns the file reference, or throws an exception.
+%
 % Will try to obtain a file descriptor iteratively (and endlessly) with
 % process-specific random waitings, should no descriptor be available.
+%
 % This is done in order to support situations where potentially more Erlang
 % processes than available file descriptors try to access to files. An effort is
 % made to desynchronize these processes to smooth the use of descriptors.
