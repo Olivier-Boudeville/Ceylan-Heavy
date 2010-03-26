@@ -30,8 +30,8 @@
 % class_TraceSupervisor.hrl inclusion (ex: included from test_constructs.hrl).
 	
 
-% Allows to use an interactive trace supervisor (LogMX) if true, otherwise
-% a silent execution.
+% Allows to use an interactive trace supervisor (LogMX) if true, otherwise a
+% silent execution.
 
 
 % Expected to be already done:
@@ -47,8 +47,8 @@
 
 
 
-% Use the --batch option (ex: erl --batch) to disable the
-% use of the trace supervisor:
+% Use the --batch option (ex: erl --batch) to disable the use of the trace
+% supervisor:
 -define(init_trace_supervisor,
 	% By default (with no specific option) a synchronous supervisor is wanted
 	% (wait for its launch to complete):
@@ -86,7 +86,7 @@
 
 				{wooper_result,monitor_ok} ->
 					%io:format( "Notification received from supervisor.~n" ),
-					?test_info([ "Traces successfully monitored." ])
+					?test_info( "Traces successfully monitored." )
 
 			end
 	end
