@@ -42,17 +42,18 @@
 % Declaring all variations of WOOPER standard life-cycle operations:
 % (template pasted, two replacements performed to update arities)
 -define( wooper_construct_export, new/1, new_link/1, 
-	synchronous_new/1, synchronous_new_link/1,
-	synchronous_timed_new/1, synchronous_timed_new_link/1,
-	remote_new/2, remote_new_link/2, remote_synchronous_new/2,
-	remote_synchronous_new_link/2, remote_synchronous_timed_new/2,
-	remote_synchronous_timed_new_link/2, construct/2, delete/1 ).
+		synchronous_new/1, synchronous_new_link/1,
+		synchronous_timed_new/1, synchronous_timed_new_link/1,
+		remote_new/2, remote_new_link/2, remote_synchronous_new/2,
+		remote_synchronous_new_link/2, remote_synchronous_timed_new/2,
+		remote_synchronous_timed_new_link/2, construct/2, delete/1 ).
 
 
 
 % Member method declarations.
 -define( wooper_method_export, sendTraces/1, sendAsyncTraces/1 ).
 
+-export([ send_traces/1, send_traces_benchmark/1 ]).
 
 
 % Allows to define WOOPER base variables and methods for that class:
@@ -69,7 +70,10 @@
 % Allows to use macros for trace sending:
 -include("class_TraceEmitter.hrl").
 
+
+
 	
+
 % Constructs a new test trace emitter.
 construct( State,?wooper_construct_parameters ) ->
 
@@ -128,8 +132,9 @@ delete(State) ->
 % (const request)
 sendTraces(State) ->
 
-	%io:format( "~s Sending some traces.~n",	[ ?LogPrefix ] ),
-	send_traces(State),
+	%io:format( "~s Sending some traces.~n", [ ?LogPrefix ] ),
+	%send_traces(State),
+	send_traces_benchmark(State),
 	?wooper_return_state_result(State,ok).
 
 
@@ -137,7 +142,8 @@ sendTraces(State) ->
 sendAsyncTraces(State) ->
 
 	%io:format( "~s Sending some asynchronous traces.~n", [ ?LogPrefix ] ),
-	send_traces(State),
+	%send_traces(State),
+	send_traces_benchmark(State),
 	?wooper_return_state_only(State).
 
 
@@ -145,14 +151,98 @@ sendAsyncTraces(State) ->
 
 % Helper functions.
 
+
+% We should be testing all forms of traces here.
 send_traces(State) ->
 
-	%io:format( "~s Sending some traces.~n",	[ ?LogPrefix ] ),
+	%io:format( "~s Sending some traces.~n", [ ?LogPrefix ] ),
 	
 	% We finally replaced fatal and error traces by warning, as the former two
 	% induce waitings (i.e. timer:sleep/1 calls):
 	
 
+	% With no formatting:
+
+	?fatal(   "Still livin' in a fatal world! (plain)"   ),
+	?error(   "Still livin' in a error world! (plain)"   ),
+	?warning( "Still livin' in a warning world! (plain)" ),
+	?info(    "Still livin' in a info world! (plain)"    ),
+	?trace(   "Still livin' in a trace world! (plain)"   ),
+	?debug(   "Still livin' in a debug world! (plain)"   ),
+
+
+	
+	?fatal_cat(   "Still livin' in a fatal world! (cat)", ?application_start ),
+	
+	?error_cat(   "Still livin' in a error world! (cat)", ?application_save ),
+	
+	?warning_cat( "Still livin' in a warning world! (cat)", ?time ),
+	
+	?info_cat(    "Still livin' in a info world! (cat)",  ?execution ),
+	
+	?trace_cat(   "Still livin' in a trace world! (cat)", ?application_start ),
+	
+	?debug_cat(   "Still livin' in a debug world! (cat)", ?application_start ),
+
+
+	
+	?fatal_full(   "Still livin' in a fatal world! (full)", 
+				?application_start, 5 ),
+	
+	?error_full(   "Still livin' in a error world! (full)",  
+				?application_save, 6 ),
+
+	?warning_full( "Still livin' in a warning world! (full)",
+				  ?time, 7 ),
+
+	?info_full(    "Still livin' in a info world! (full)",   
+			   ?execution, 8 ),
+
+	?trace_full(   "Still livin' in a trace world! (full)", 
+				?application_start, 9 ),
+	
+	?debug_full(   "Still livin' in a debug world! (full)",
+				?application_start, 10 ),
+
+
+
+	% With formatting:
+
+	?fatal_fmt(   "Yes, still livin' in a ~w world! (plain)", [fatal]   ),
+	?error_fmt(   "Yes, still livin' in a ~w world! (plain)", [error]   ),
+	?warning_fmt( "Yes, still livin' in a ~w world! (plain)", [warning] ),
+	?info_fmt(    "Yes, still livin' in a ~w world! (plain)", [info]    ),
+	?trace_fmt(   "Yes, still livin' in a ~w world! (plain)", [trace]   ),
+	?debug_fmt(   "Yes, still livin' in a ~w world! (plain)", [debug]   ),
+	
+	
+	?fatal_fmt_cat( "Ouh-ouh-ouuuuuh ~w",   [fatal],   ?application_start ),
+	?error_fmt_cat( "Ouh-ouh-ouuuuuh ~w",   [error],   ?application_save  ),
+	?warning_fmt_cat( "Ouh-ouh-ouuuuuh ~w", [warning], ?time              ),
+	?info_fmt_cat(    "Ouh-ouh-ouuuuuh ~w", [info],    ?execution         ),
+	?trace_fmt_cat(   "Ouh-ouh-ouuuuuh ~w", [trace],   ?application_start ),
+	?debug_fmt_cat(   "Ouh-ouh-ouuuuuh ~w", [debug],   ?application_start ),
+	
+	
+	?fatal_fmt_full(   "Oh yeah ~w", [fatal],   ?application_start,  5 ),
+	?error_fmt_full(   "Oh yeah ~w", [error],   ?application_save,   6 ),
+	?warning_fmt_full( "Oh yeah ~w", [warning], ?time,               7 ),
+	?info_fmt_full(    "Oh yeah ~w", [info],    ?execution,          8 ),
+	?trace_fmt_full(   "Oh yeah ~w", [trace],   ?application_start,  9 ),
+	?debug_fmt_full(   "Oh yeah ~w", [debug],   ?application_start, 10 ).
+
+
+
+
+% Fatal and error messages replaced by warning, as the former two induce sleeps,
+% which distorts the benchmarks.
+send_traces_benchmark(State) ->
+
+	%io:format( "~s Sending some traces.~n", [ ?LogPrefix ] ),
+	
+	% We finally replaced fatal and error traces by warning, as the former two
+	% induce waitings (i.e. timer:sleep/1 calls):
+	
 	% With no formatting:
 
 	?warning( "Still livin' in a fatal world! (plain)"   ),
@@ -163,12 +253,23 @@ send_traces(State) ->
 	?debug(   "Still livin' in a debug world! (plain)"   ),
 
 
-	?warning_cat( "Still livin' in a fatal world! (cat)",  ?application_start ),
-	?warning_cat( "Still livin' in a error world! (cat)",  ?application_save ),
-	?warning_cat( "Still livin' in a warning world! (cat)",?time ),
-	?info_cat(    "Still livin' in a info world! (cat)",   ?execution ),
-	?trace_cat(   "Still livin' in a trace world! (cat)",  ?application_start ),
-	?debug_cat(   "Still livin' in a debug world! (cat)",  ?application_start ),
+	?warning_cat( "Still livin' in a fatal world! (cat)",  
+				 ?application_start ),
+	
+	?warning_cat( "Still livin' in a error world! (cat)",  
+				 ?application_save ),
+	
+	?warning_cat( "Still livin' in a warning world! (cat)",
+				 ?time ),
+	
+	?info_cat(    "Still livin' in a info world! (cat)",   
+			  ?execution ),
+	
+	?trace_cat(   "Still livin' in a trace world! (cat)",  
+			   ?application_start ),
+	
+	?debug_cat(   "Still livin' in a debug world! (cat)",  
+			   ?application_start ),
 
 
 	?warning_full( "Still livin' in a fatal world! (full)",  
