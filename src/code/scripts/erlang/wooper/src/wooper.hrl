@@ -38,42 +38,48 @@
 % http://ceylan.sourceforge.net/main/documentation/wooper/index.html#license
 
 
-% Provides most classical constructs: new/delete operators, remote method 
+% Provides most classical constructs: new/delete operators, remote method
 % invocation (RMI), polymorphism and multiple inheritance, all with state
-% management and in a quite efficient way (i.e. no significantly faster 
-% approach in Erlang could be imagined by the author).
+% management and in a quite efficient way (i.e. no significantly faster approach
+% in Erlang could be imagined by the author).
 
 % Instances are created thanks to the new operator, which calls automatically
 % the relevant constructor ('construct' function).
 
 % A class C is mapped to an Erlang module, preferably named 'class_C'.
+%
 % An active object is mapped to an Erlang process.
+%
 % Methods support Remote Invocation Calls, mapped to Erlang messages.
+%
 % Inheritance is implemented thanks to a per-class method virtual table,
 % including the locally-defined ones and all the inherited ones.
-% This table is shared among all the instances of a given class, thanks to
-% a singleton-like class manager process that keeps references to the virtual
-% table of each class. 
-% Instance state is maintained thanks to a per-instance attribute table,
-% storing all its attributes, including all the inherited ones.
 %
-% The hashtable type, defined in hashtable.erl, is used at all levels: 
+% This table is shared among all the instances of a given class, thanks to a
+% singleton-like class manager process that keeps references to the virtual
+% table of each class.
+%
+% Instance state is maintained thanks to a per-instance attribute table, storing
+% all its attributes, including all the inherited ones.
+%
+% The hashtable type, defined in hashtable.erl, is used at all levels:
 % per-instance (for the attribute table), per-class (for the so-called virtual
 % table), per-node (for the class manager).
+%
 % The proplist module could be used instead.
 
-% When an exported function is called as a method (i.e. it is listed in 
-% the wooper_method_export variable, see below) the list of parameters
-% being received is prefixed with the instance state (a bit like 'self' in
-% Python): A ! { aMethod, [1,2] } results in the calling of the 'aMethod'
-% function defined in the class module of A (exported thanks to
-% wooper_method_export) with parameters automatically given to that function
-% being: 'CurrentStateOfA, 1, 2' instead of '1, 2', with 
-% CurrentStateOfA being the A state variable automatically kept in the instance
-% WOOPER main loop.
-% Hence 'aMethod' must have been defined as aMethod/3 instead of aMethod/2
-% (it is indeed 'aMethod(State,X,Y) -> [..]'), whereas from the outside it is
-% called with only two parameters specified (state not being included).
+% When an exported function is called as a method (i.e. it is listed in the
+% wooper_method_export variable, see below) the list of parameters being
+% received is prefixed with the instance state (a bit like 'self' in Python):
+% A ! { aMethod, [1,2] } results in the calling of the 'aMethod' function
+% defined in the class module of A (exported thanks to wooper_method_export)
+% with parameters automatically given to that function being: 'CurrentStateOfA,
+% 1, 2' instead of '1, 2', with CurrentStateOfA being the A state variable
+% automatically kept in the instance WOOPER main loop.
+%
+% Hence 'aMethod' must have been defined as aMethod/3 instead of aMethod/2 (it
+% is indeed 'aMethod(State,X,Y) -> [..]'), whereas from the outside it is called
+% with only two parameters specified (state not being included).
 
 
 % The usual content of the '-export([XXX]).' clause in a class module should be
@@ -117,8 +123,8 @@
 
 % Shared code. 
 %
-% All WOOPER classes should mention their superclasses and their WOOPER 
-% exports before the WOOPER header is included.
+% All WOOPER classes should mention their superclasses and their WOOPER exports
+% before the WOOPER header is included.
 
 % Example:
 % -module(class_Cat).
@@ -142,28 +148,31 @@
 
 % Records the state of an instance.
 % Module is the Erlang module the class is mapped to.
-% This is the class-specific object state, each instance of this class
-% will have its own state_holder, quite similar to the 'C++' this pointer.
+%
+% This is the class-specific object state, each instance of this class will have
+% its own state_holder, quite similar to the 'C++' this pointer.
+%
 % Constant data (ex: the virtual table) are referenced by each class instance,
 % they are not duplicated (pointer to a virtual table shared by all class
 % instances rather than deep copy).
 %
 % The virtual table holds the method name to module mapping for a given class.
 % The attribute table (a hashtable) records all the data members of a given
-% instance, including all the inherited ones. 
+% instance, including all the inherited ones.
+%
 % The request sender member is used internally by WOOPER so that a request
-% method have a way of retrieving the corresponding caller PID. This avoids
-% the caller to specify its PID twice, one for WOOPER, one for the method, as
-% a method parameter, in the case the method itself needs the caller PID, for
+% method have a way of retrieving the corresponding caller PID. This avoids the
+% caller to specify its PID twice, one for WOOPER, one for the method, as a
+% method parameter, in the case the method itself needs the caller PID, for
 % example to register it in a list in its own state. Thus a caller does not have
 % to specify: 'MyInstance ! {my_request,[self()],self()}', specifying
 % 'MyInstance ! {my_request,[],self()}' is enough: the method will be able to
-% retrieve the caller PID thanks to the request_sender member, automatically
-% set by WOOPER. For non-request methods (oneways), WOOPER will set
-% request_sender to the atom 'undefined', to ensure the oneway crashes whenever
-% trying to use this request-specific information to send a message.
+% retrieve the caller PID thanks to the request_sender member, automatically set
+% by WOOPER. For non-request methods (oneways), WOOPER will set request_sender
+% to the atom 'undefined', to ensure the oneway crashes whenever trying to use
+% this request-specific information to send a message.
 % 
-% Therefore when you see the first parameter of a method, 'State', it is 
+% Therefore when you see the first parameter of a method, 'State', it is
 % actually just an instance of the following record:
 -record( state_holder, {
 		virtual_table,
@@ -173,21 +182,21 @@
 
 
 
-% A list could be managed that would allow to discriminate the methods from
-% the other exported functions. As macros cannot be substitued in strings
-% it would probably force the developer to list them twice.
+% A list could be managed that would allow to discriminate the methods from the
+% other exported functions. As macros cannot be substitued in strings it would
+% probably force the developer to list them twice.
 
 % The class name, as mapped to a module.
 -define(className,?MODULE).
 
 
 % Approximate average attribute count for a given class instance, including
-% inherited ones (ideally should be slightly above the maximum number of
-% actual attributes for a given class)
+% inherited ones (ideally should be slightly above the maximum number of actual
+% attributes for a given class)
 -define(WooperAttributeCountUpperBound,16).
 
 
-% For the name of the registered process that keeps the per-class method 
+% For the name of the registered process that keeps the per-class method
 % hashtables:
 -include("wooper_class_manager.hrl").
 
@@ -198,9 +207,9 @@
 
 % Declaration of functions for state management:
 -export([ setAttribute/3, setAttributes/2, hasAttribute/2, getAttribute/2,
-	removeAttribute/2, addToAttribute/3, subtractFromAttribute/3, 
-	toggleAttribute/2, appendToAttribute/3, deleteFromAttribute/3,
-	addKeyValueToAttribute/4, popFromAttribute/2 ]).
+		 removeAttribute/2, addToAttribute/3, subtractFromAttribute/3, 
+		 toggleAttribute/2, appendToAttribute/3, deleteFromAttribute/3,
+		 addKeyValueToAttribute/4, popFromAttribute/2 ]).
 	
 	
 
@@ -237,10 +246,14 @@
 	%  - wooper_protected_method_export
 	%  - wooper_private_method_export
 	%  - wooper_static_method_export
+    % Could have been wooper_member_method_export
 	-ifdef(wooper_method_export).
 		-export([?wooper_method_export]).
 	-endif.
-	
+
+	-ifdef(wooper_member_method_export).
+		-export([?wooper_member_method_export]).
+	-endif.	
 	
 	-ifdef(wooper_public_method_export).
 		-export([?wooper_public_method_export]).
@@ -332,6 +345,12 @@
 	-define(wooper_log_format(Msg,Format),no_wooper_log).
 		
 -endif.
+
+
+% Number of milliseconds to wait for, in order to be sure that the error message
+% could be written to the console, knowing that the operation is asynchronous
+% and thus may not be performed should the VM halt immediately:
+-define(error_display_waiting,1000).
 
 
 % Now that typ-checking on the state record is performed in debug mode,
@@ -1065,12 +1084,12 @@ wooper_construct_and_run(ParameterList) ->
 			wooper_main_loop( ConstructState );
 			
 		Other ->
-			error_logger:error_msg(	"WOOPER error for PID ~w of class ~s: "
-				"constructor did not return a state, but returned ~w instead. "
-				"Construction parameters were ~w.~n",
+			error_logger:error_msg(	"~nWOOPER error for PID ~w of class ~s: "
+				"constructor did not return a state, but returned '~p' instead."
+				" Construction parameters were:~n~p.~n",
 				[ self(), ?MODULE, Other, ParameterList] ),
 			% Wait a bit as error_msg seems asynchronous:
-			timer:sleep(1000),
+			timer:sleep( ?error_display_waiting ),
 			throw({invalid_constructor,?MODULE}) 	
 
 	end.
@@ -1093,12 +1112,12 @@ wooper_construct_and_run_synchronous(ParameterList,SpawnerPid) ->
 			wooper_main_loop( ConstructState );
 			
 		Other ->
-			error_logger:error_msg(	"WOOPER error for PID ~w of class ~s: "
-				"constructor did not return a state, but returned ~w instead. "
-				"Construction parameters were ~w.~n",
+			error_logger:error_msg(	"~nWOOPER error for PID ~w of class ~s: "
+				"constructor did not return a state, but returned '~p' instead."
+				" Construction parameters were:~n~p.~n",
 				[ self(), ?MODULE, Other, ParameterList] ),
 			% Wait a bit as error_msg seems asynchronous:
-			timer:sleep(1000),
+			timer:sleep( ?error_display_waiting ),
 			throw({invalid_constructor,?MODULE}) 	
 
 	end.
@@ -2093,10 +2112,10 @@ wooper_main_loop(State) ->
 			
 		
 		Other ->
-			?wooper_log_format( "Main loop (case H) for ~w: unmatched ~s.~n",
+			?wooper_log_format( "Main loop (case H) for ~w: unmatched ~p.~n",
 				[self(),Other] ),			
-			error_logger:warning_msg( "WOOPER ignored following message: ~w.~n",
-				[Other]),
+			error_logger:warning_msg( 
+				"WOOPER ignored following message:~n~p.~n", [Other] ),
 			%?wooper_log( "Main loop (case H) ended.~n" ),	
 			wooper_main_loop(State)
 			
@@ -2144,12 +2163,12 @@ wooper_destruct( State ) ->
 				
 				Other ->
 					error_logger:error_msg(	
-						"WOOPER error for PID ~w of class ~s: "
+						"~nWOOPER error for PID ~w of class ~s: "
 						"user-defined destructor did not return a state, "
-						"but returned '~w' instead.~n", 
+						"but returned '~p' instead.~n", 
 						[ self(), ?MODULE, Other] ),
 					% Wait a bit as error_msg seems asynchronous:
-					timer:sleep(1000),
+					timer:sleep( ?error_display_waiting ),
 					throw({invalid_destructor,?MODULE}) 	
 						
 			end;	 
@@ -2274,14 +2293,14 @@ wooper_execute_method( MethodAtom, State, Parameters ) when is_atom(MethodAtom)
 					% Method name and arity returned as separate tuple 
 					% elements, as if in a single string ("M/A"), the result
 					% is displayed as a list:
-					error_logger:error_msg(	"WOOPER error for PID ~w: "
+					error_logger:error_msg(	"~nWOOPER error for PID ~w, "
 						"oneway method ~s:~s/~B not found, "
-						"parameters were ~w.~n",
+						"parameters were:~n~p~n",
 						[ self(), ?MODULE, MethodAtom,
 							length(Parameters)+1, Parameters] ),
 
 					% Wait a bit as error_msg seems asynchronous:
-					timer:sleep(1000),
+					timer:sleep( ?error_display_waiting ),
 					
 					% Terminates the process:	
 					throw( {wooper_method_not_found, self(), ?MODULE,
@@ -2291,9 +2310,9 @@ wooper_execute_method( MethodAtom, State, Parameters ) when is_atom(MethodAtom)
 						
 					% This is a request, send error term and rely on
 					% the calling function (wooper_main_loop) to crash:
-					error_logger:error_msg(	"WOOPER error for PID ~w: "
+					error_logger:error_msg(	"~nWOOPER error for PID ~w, "
 						"request method ~s:~s/~B not found, "
-						"parameters were '~w'.~n",
+						"parameters were:~n~p~n",
 						[ self(), ?MODULE, MethodAtom,
 							length(Parameters)+1, Parameters] ),
 					
@@ -2307,7 +2326,7 @@ wooper_execute_method( MethodAtom, State, Parameters ) when is_atom(MethodAtom)
 			
 			
 		Other ->
-			error_logger:warning_msg( "WOOPER ignored following message: ~w.~n",
+			error_logger:warning_msg( "WOOPER ignored following message:~n~p.~n",
 				[Other]),
 			wooper_main_loop(State)
 			
@@ -2352,14 +2371,14 @@ wooper_effective_method_execution( SelectedModule, MethodAtom, State,
 				undefined ->
 				
 					% This is a oneway, so log and crash:
-					error_logger:error_msg(	"WOOPER error for PID ~w: "
+					error_logger:error_msg(	"~nWOOPER error for PID ~w, "
 						"oneway method ~s:~s/~B made a faulty return "
-						"~w, parameters were ~w.~n",
+						"'~p', parameters were:~n~p~n",
 						[ self(), SelectedModule, MethodAtom,
 							length(Parameters)+1, Other, Parameters] ),
 
 					% Wait a bit as error_msg seems asynchronous:
-					timer:sleep(1000),
+					timer:sleep( ?error_display_waiting ),
 						
 					% Terminates the process:	
 					throw( {wooper_method_faulty_return, self(),
@@ -2370,9 +2389,9 @@ wooper_effective_method_execution( SelectedModule, MethodAtom, State,
 				
 					% This is a request, send error term and rely on
 					% the calling function (wooper_main_loop) to crash:
-					error_logger:error_msg(	"WOOPER error for PID ~w: "
+					error_logger:error_msg(	"~nWOOPER error for PID ~w, "
 						"request method ~s:~s/~B made a faulty return "
-						"~w, parameters were ~w.~n",
+						"'~p', parameters were:~n~p~n",
 						[ self(), SelectedModule, MethodAtom,
 							length(Parameters)+1, Other, Parameters ] ),
 						
@@ -2411,16 +2430,19 @@ wooper_effective_method_execution( SelectedModule, MethodAtom, State,
 				
 					% This is a oneway, so log and crash:
 					% (error term would often be unreadable with ~p)
-					error_logger:error_msg(	"WOOPER error for PID ~w: "
-						"oneway method ~s:~s/~B failed (cause: ~w) "
-						"with error term '~w' for parameters ~w, "
-						"stack trace was (latest calls first):~n~p.~n",
-						[ self(), SelectedModule, MethodAtom,
-							length(Parameters)+1, Reason, ErrorTerm,
-							Parameters,erlang:get_stacktrace()] ),
+					
+					error_logger:error_msg(	"~nWOOPER error for PID ~w, "
+								"oneway method ~s:~s/~B failed (cause: ~p):~n~n"
+								" - with error term:~n~p~n~n"
+							    " - for parameters:~n~p~n~n"
+								" - stack trace was (latest calls first):~n~p"
+								"~n~n",
+								[ self(), SelectedModule, MethodAtom,
+									length(Parameters)+1, Reason, ErrorTerm,
+									Parameters,erlang:get_stacktrace()] ),
 
 					% Wait a bit as error_msg seems asynchronous:
-					timer:sleep(1000),
+					timer:sleep( ?error_display_waiting ),
 														
 					% Terminates the process:	
 					throw( {wooper_oneway_failed, self(), SelectedModule,
@@ -2429,16 +2451,18 @@ wooper_effective_method_execution( SelectedModule, MethodAtom, State,
 							
 				_ ->
 				
-					% This is a request, send error term and rely on
-					% the calling function (wooper_main_loop) to crash:
-					% (error term would often be unreadable with ~p)
-					error_logger:error_msg(	"WOOPER error for PID ~w: "
-						"request method ~s:~s/~B failed (cause: ~w) "
-						"with error term '~w' for parameters ~w, "
-						"stack trace was (latest calls first):~n~p.~n",
-						[ self(), SelectedModule, MethodAtom,
-							length(Parameters)+1, Reason, ErrorTerm,
-							Parameters,erlang:get_stacktrace()] ),
+					% This is a request, send error term and rely on the calling
+					% function (wooper_main_loop) to crash: (error term would
+					% often be unreadable with ~p)
+					error_logger:error_msg(	"~nWOOPER error for PID ~w, request"
+								" method ~s:~s/~B failed (cause: ~p):~n~n"
+								" - with error term:~n~p~n~n"
+							    " - for parameters:~n~p~n~n"
+								" - stack trace was (latest calls first):~n~p"
+								"~n~n",
+								[ self(), SelectedModule, MethodAtom,
+									length(Parameters)+1, Reason, ErrorTerm,
+									Parameters,erlang:get_stacktrace()] ),
 						
 					{State,
 						{wooper_method_failed, self(), SelectedModule,
@@ -2471,21 +2495,21 @@ executeRequest( State, RequestAtom ) when is_record(State,state_holder)
 	
 	
 executeRequest( StateError, RequestAtom ) when is_atom(RequestAtom) -> 
-	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
-		"when executing request ~w: "
-		"first parameter should be a state, not '~w'.~n",
+	error_logger:error_msg(	"~nWOOPER error for PID ~w of class ~s "
+		"when executing request ~p: "
+		"first parameter should be a state, not '~p'.~n",
 		[ self(), ?MODULE, RequestAtom, StateError] ),
 	% Wait a bit as error_msg seems asynchronous:
-	timer:sleep(1000),	
+	timer:sleep( ?error_display_waiting ),	
 	throw({invalid_request_call,RequestAtom});
 	
 	
 executeRequest( _State, RequestAtomError ) -> 
-	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
-		"when executing request: '~w' is not an atom.~n",
+	error_logger:error_msg(	"~nWOOPER error for PID ~w of class ~s "
+		"when executing request: '~p' is not an atom.~n",
 		[ self(), ?MODULE, RequestAtomError] ),
 	% Wait a bit as error_msg seems asynchronous:
-	timer:sleep(1000),	
+	timer:sleep( ?error_display_waiting ),	
 	throw({invalid_request_call,RequestAtomError}).
 	
 	
@@ -2546,21 +2570,21 @@ executeRequest( State, RequestAtom, StandaloneArgument ) when
 % Catches all errors:
 executeRequest( StateError, RequestAtom, _LastArg ) 
 		when is_atom(RequestAtom) -> 
-	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
-		"when executing request ~w: "
-		"first parameter should be a state, not '~w'.~n",
+	error_logger:error_msg(	"~nWOOPER error for PID ~w of class ~s "
+		"when executing request ~p: "
+		"first parameter should be a state, not '~p'.~n",
 		[ self(), ?MODULE, RequestAtom, StateError] ),
 	% Wait a bit as error_msg seems asynchronous:
-	timer:sleep(1000),	
+	timer:sleep( ?error_display_waiting ),	
 	throw({invalid_request_call,RequestAtom});
 	
 	
 executeRequest( _State, RequestAtomError, _LastArg ) -> 
-	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
-		"when executing request: '~w' is not an atom.~n",
+	error_logger:error_msg(	"~nWOOPER error for PID ~w of class ~s "
+		"when executing request: '~p' is not an atom.~n",
 		[ self(), ?MODULE, RequestAtomError] ),
 	% Wait a bit as error_msg seems asynchronous:
-	timer:sleep(1000),	
+	timer:sleep( ?error_display_waiting ),	
 	throw({invalid_request_call,RequestAtomError}).
 
 
@@ -2590,22 +2614,22 @@ executeRequestWith( State, ClassName, RequestAtom )
 executeRequestWith( StateError, ClassName, RequestAtom ) 
 		when is_atom(ClassName)	andalso is_atom(RequestAtom) -> 
 		
-	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
-		"when executing request ~w in the context of class ~s: "
-		"first parameter should be a state, not '~w'.~n",
+	error_logger:error_msg(	"~nWOOPER error for PID ~w of class ~s "
+		"when executing request ~p in the context of class ~s: "
+		"first parameter should be a state, not '~p'.~n",
 		[ self(), ?MODULE, RequestAtom, ClassName, StateError ] ),
 	% Wait a bit as error_msg seems asynchronous:
-	timer:sleep(1000),	
+	timer:sleep( ?error_display_waiting ),	
 	throw({invalid_request_call,RequestAtom});
 	
 	
 executeRequestWith( _State, ClassNameError, RequestAtomError ) -> 
-	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
+	error_logger:error_msg(	"~nWOOPER error for PID ~w of class ~s "
 		"when executing request in a class context: "
-		"'~w' and '~w' should both be atoms.~n",
+		"'~p' and '~p' should both be atoms.~n",
 		[ self(), ?MODULE, ClassNameError, RequestAtomError ] ),
 	% Wait a bit as error_msg seems asynchronous:
-	timer:sleep(1000),	
+	timer:sleep( ?error_display_waiting ),	
 	throw( {invalid_request_call,ClassNameError,RequestAtomError} ).
 	
 	
@@ -2660,22 +2684,22 @@ executeRequestWith( State, ClassName, RequestAtom, StandaloneArgument ) when
 executeRequestWith( StateError, ClassName, RequestAtom, _LastArg ) 
 		when is_atom(ClassName) andalso is_atom(RequestAtom) -> 
 		
-	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
-		"when executing request ~w: "
-		"first parameter should be a state, not '~w'.~n",
+	error_logger:error_msg(	"~nWOOPER error for PID ~w of class ~s "
+		"when executing request ~p: "
+		"first parameter should be a state, not '~p'.~n",
 		[ self(), ?MODULE, RequestAtom, StateError] ),
 	% Wait a bit as error_msg seems asynchronous:
-	timer:sleep(1000),	
+	timer:sleep( ?error_display_waiting ),	
 	throw({invalid_request_call,RequestAtom});
 	
 	
 % Catches all remaining errors:
 executeRequestWith( _State, ClassNameError, RequestAtomError, _LastArg ) -> 
-	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
-		"when executing request: both '~w' and '~w' should be atoms.~n",
+	error_logger:error_msg(	"~nWOOPER error for PID ~w of class ~s "
+		"when executing request: both '~p' and '~p' should be atoms.~n",
 		[ self(), ?MODULE, ClassNameError, RequestAtomError] ),
 	% Wait a bit as error_msg seems asynchronous:
-	timer:sleep(1000),	
+	timer:sleep( ?error_display_waiting ),	
 	throw({invalid_request_call,ClassNameError,RequestAtomError}).
 
 
@@ -2698,21 +2722,21 @@ executeOneway( State, OnewayAtom ) when is_record(State,state_holder)
 	NewState;
 
 executeOneway( StateError, OnewayAtom ) when is_atom(OnewayAtom) -> 
-	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
-		"when executing oneway ~w: "
-		"first parameter should be a state, not '~w'.~n",
+	error_logger:error_msg(	"~nWOOPER error for PID ~w of class ~s "
+		"when executing oneway ~p: "
+		"first parameter should be a state, not '~p'.~n",
 		[ self(), ?MODULE, OnewayAtom, StateError] ),
 	% Wait a bit as error_msg seems asynchronous:
-	timer:sleep(1000),	
+	timer:sleep( ?error_display_waiting ),	
 	throw({invalid_oneway_call,OnewayAtom});
 	
 	
 executeOneway( _State, OnewayError ) -> 
-	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
-		"when executing oneway: '~w' is not an atom.~n",
+	error_logger:error_msg(	"~nWOOPER error for PID ~w of class ~s "
+		"when executing oneway: '~p' is not an atom.~n",
 		[ self(), ?MODULE, OnewayError] ),
 	% Wait a bit as error_msg seems asynchronous:
-	timer:sleep(1000),	
+	timer:sleep( ?error_display_waiting ),	
 	throw({invalid_oneway_call,OnewayError}).
 
 
@@ -2768,21 +2792,21 @@ executeOneway( State, OnewayAtom, StandaloneArgument ) when
 
 % Catches all errors:
 executeOneway( StateError, OnewayAtom, _LastArg ) when is_atom(OnewayAtom) -> 
-	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
-		"when executing oneway ~w: "
-		"first parameter should be a state, not '~w'.~n",
+	error_logger:error_msg(	"~nWOOPER error for PID ~w of class ~s "
+		"when executing oneway ~p: "
+		"first parameter should be a state, not '~p'.~n",
 		[ self(), ?MODULE, OnewayAtom, StateError] ),
 	% Wait a bit as error_msg seems asynchronous:
-	timer:sleep(1000),	
+	timer:sleep( ?error_display_waiting ),	
 	throw({invalid_oneway_call,OnewayAtom});
 	
 	
 executeOneway( _State, OnewayAtomError, _LastArg ) -> 
-	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
-		"when executing oneway: '~w' is not an atom.~n",
+	error_logger:error_msg(	"~nWOOPER error for PID ~w of class ~s "
+		"when executing oneway: '~p' is not an atom.~n",
 		[ self(), ?MODULE, OnewayAtomError] ),
 	% Wait a bit as error_msg seems asynchronous:
-	timer:sleep(1000),	
+	timer:sleep( ?error_display_waiting ),	
 	throw({invalid_oneway_call,OnewayAtomError}).
 
 
@@ -2810,21 +2834,21 @@ executeOnewayWith( State, ClassName, OnewayAtom )
 
 executeOnewayWith( StateError, ClassName, OnewayAtom ) when is_atom(ClassName) 
 		andalso is_atom(OnewayAtom) -> 
-	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
-		"when executing oneway ~w with ~s: "
-		"first parameter should be a state, not '~w'.~n",
+	error_logger:error_msg(	"~nWOOPER error for PID ~w of class ~s "
+		"when executing oneway ~p with ~s: "
+		"first parameter should be a state, not '~p'.~n",
 		[ self(), ?MODULE, OnewayAtom, ClassName, StateError ] ),
 	% Wait a bit as error_msg seems asynchronous:
-	timer:sleep(1000),	
+	timer:sleep( ?error_display_waiting ),	
 	throw({invalid_oneway_call,OnewayAtom});
 	
 	
 executeOnewayWith( _State, ClassNameError, OnewayError ) -> 
-	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
-		"when executing oneway: both '~w' and '~w' should be atoms.~n",
+	error_logger:error_msg(	"~nWOOPER error for PID ~w of class ~s "
+		"when executing oneway: both '~p' and '~p' should be atoms.~n",
 		[ self(), ?MODULE, ClassNameError, OnewayError] ),
 	% Wait a bit as error_msg seems asynchronous:
-	timer:sleep(1000),	
+	timer:sleep( ?error_display_waiting ),	
 	throw({invalid_oneway_call,ClassNameError,OnewayError}).
 
 
@@ -2875,22 +2899,22 @@ executeOnewayWith( State, ClassName, OnewayAtom, StandaloneArgument ) when
 
 executeOnewayWith( StateError, ClassName, OnewayAtom, _LastArg ) 
 		when is_atom(ClassName) andalso is_atom(OnewayAtom) -> 
-	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
-		"when executing oneway ~w with ~s: "
-		"first parameter should be a state, not '~w'.~n",
+	error_logger:error_msg(	"~nWOOPER error for PID ~w of class ~s "
+		"when executing oneway ~p with ~s: "
+		"first parameter should be a state, not '~p'.~n",
 		[ self(), ?MODULE, OnewayAtom, ClassName, StateError ] ),
 	% Wait a bit as error_msg seems asynchronous:
-	timer:sleep(1000),	
+	timer:sleep( ?error_display_waiting ),	
 	throw({invalid_oneway_call,OnewayAtom});
 	
 	
 % Catches all remaining errors:
 executeOnewayWith( _State, ClassName, OnewayAtomError, _LastArg ) -> 
-	error_logger:error_msg(	"WOOPER error for PID ~w of class ~s "
-		"when executing oneway with ~s: both '~w' and '~w' should be atoms.~n",
+	error_logger:error_msg(	"~nWOOPER error for PID ~w of class ~s "
+		"when executing oneway with ~s: both '~p' and '~p' should be atoms.~n",
 		[ self(), ?MODULE, ClassName, OnewayAtomError ] ),
 	% Wait a bit as error_msg seems asynchronous:
-	timer:sleep(1000),	
+	timer:sleep( ?error_display_waiting ),	
 	throw({invalid_oneway_call,OnewayAtomError}).
 
 
@@ -2964,16 +2988,18 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 						
 							% This is a oneway, so log and crash:
 							% (error term would often be unreadable with ~p)
-							error_logger:error_msg(	"WOOPER error for PID ~w: "
-								"oneway method ~s:~s/~B failed (cause: ~w) "
-								"with error term '~w' for parameters ~w, "
-								"stack trace was (latest calls first):~n~p.~n",
+							error_logger:error_msg("~nWOOPER error for PID ~w, "
+								"oneway method ~s:~s/~B failed (cause: ~p):~n~n"
+								" - with error term:~n~p~n~n"
+							    " - for parameters:~n~p~n~n"
+								" - stack trace was (latest calls first):~n~p"
+								"~n~n",
 								[ self(), LocatedModule, MethodAtom,
 									length(Parameters)+1, Reason, ErrorTerm,
 									Parameters,erlang:get_stacktrace()] ),
-
+							
 							% Wait a bit as error_msg seems asynchronous:
-							timer:sleep(1000),
+							timer:sleep( ?error_display_waiting ),
 								
 							% Terminates the process:	
 							throw( {wooper_oneway_failed, self(), LocatedModule,
@@ -2985,10 +3011,13 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 							% This is a request, send error term and rely on
 							% the calling function (wooper_main_loop) to crash:
 							% (error term would often be unreadable with ~p)
-							error_logger:error_msg(	"WOOPER error for PID ~w: "
-								"request method ~s:~s/~B failed (cause: ~w) "
-								"with error term '~w' for parameters ~w, "
-								"stack trace was (latest calls first):~n~p.~n",
+							error_logger:error_msg(	"~nWOOPER error for PID ~w,"
+								" request method ~s:~s/~B failed "
+								"(cause: ~p):~n~n"
+								" - with error term:~n~p~n~n"
+							    " - for parameters:~n~p~n~n"
+								" - stack trace was (latest calls first):~n~p"
+								"~n~n",
 								[ self(), LocatedModule, MethodAtom,
 									length(Parameters)+1, Reason, ErrorTerm,
 									Parameters,erlang:get_stacktrace()] ),
@@ -3013,14 +3042,14 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 					% Method name and arity returned as separate tuple elements,
 					% as if in a single string ("M/A"), the result is displayed
 					% as a list:
-					error_logger:error_msg(	"WOOPER error for PID ~w: "
+					error_logger:error_msg(	"WOOPER error for PID ~w, "
 						"oneway method ~s:~s/~B not found, "
-						"parameters were ~w.~n",
+						"parameters were:~n~p~n",
 						[ self(), LocatedModule, MethodAtom,
 							length(Parameters)+1, Parameters] ),
 					
 					% Wait a bit as error_msg seems asynchronous:
-					timer:sleep(1000),
+					timer:sleep( ?error_display_waiting ),
 					
 					% Terminates the process:	
 					throw( {wooper_method_not_found, self(), LocatedModule,
@@ -3030,9 +3059,9 @@ wooper_execute_method(MethodAtom,State,Parameters) ->
 						
 					% This is a request, send error term and rely on
 					% the calling function (wooper_main_loop) to crash:
-					error_logger:error_msg(	"WOOPER error for PID ~w: "
+					error_logger:error_msg(	"WOOPER error for PID ~w, "
 						"request method ~s:~s/~B not found, "
-						"parameters were ~w.~n",
+						"parameters were:~n~p~n",
 						[ self(), LocatedModule, MethodAtom,
 							length(Parameters)+1, Parameters] ),
 					
