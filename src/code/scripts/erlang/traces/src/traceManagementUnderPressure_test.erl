@@ -34,7 +34,7 @@
 % Note: trace services are among the most generic services offered, they are
 % used in the vast majority of tests but this one, as the purpose of this test
 % is actually to test traces by themselves (cannot use the trace system to test
-% the trace system!). 
+% the trace system!).
 -module(traceManagementUnderPressure_test).
 
 
@@ -65,8 +65,9 @@ send_traces( TraceEmitter, SequenceCount ) ->
 
 
 % Run the tests.
-% Note: this is the only test that does not use the trace functionalities
-% for its own behaviours (since it is the subject of the test).
+%
+% Note: this is the only test that does not use the trace functionalities for
+% its own behaviours (since it is the subject of the test).
 run() ->
 
 	io:format( ?Prefix "Testing module ~w.~n", [ ?Tested_modules ] ),
@@ -95,18 +96,18 @@ run() ->
 	% (as test_start triggers a *synchronous* aggregator):
 	MyTraceEmitter = class_TestTraceEmitter:synchronous_new_link(Name),	
 		
-	?test_fatal([   "This is a test of the fatal priority for tests." ]),
-	?test_error([   "This is a test of the error priority for tests." ]),
-	?test_warning([ "This is a test of the warning priority for tests." ]),
-	?test_info([    "This is a test of the info priority for tests." ]),
-	?test_trace([   "This is a test of the trace priority for tests." ]),
-	?test_debug([   "This is a test of the debug priority for tests." ]),
+	?test_fatal(   "This is a test of the fatal priority for tests." ),
+	?test_error(   "This is a test of the error priority for tests." ),
+	?test_warning( "This is a test of the warning priority for tests." ),
+	?test_info(    "This is a test of the info priority for tests." ),
+	?test_trace(   "This is a test of the trace priority for tests." ),
+	?test_debug(   "This is a test of the debug priority for tests." ),
 	
 	io:format( ?Prefix 
 		"Requesting the TestTraceEmitter to send some traces.~n" ),
 	
 	% Wait until there is an answer for this trace emitter:
-	send_traces( MyTraceEmitter, _SequenceCount = 500 ),
+	send_traces( MyTraceEmitter, _SequenceCount=500 ),
 	
 	io:format( ?Prefix " All traces sent.~n" ), 
 		
@@ -117,7 +118,7 @@ run() ->
 	receive
 	
 		{wooper_result,ExpectedName}->
-			?test_info([ "Correct name returned." ])
+			?test_info( "Correct name returned." )
 			
 	end,
 
@@ -132,7 +133,7 @@ run() ->
 	receive
 	
 		{wooper_result,ExpectedNewName} ->
-			?test_info([ "Correct new name returned." ])
+			?test_info( "Correct new name returned." )
 			
 	end,
 	
