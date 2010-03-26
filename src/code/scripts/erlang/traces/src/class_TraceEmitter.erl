@@ -50,24 +50,25 @@
 % Declaring all variations of WOOPER standard life-cycle operations:
 % (just a matter of a copy/paste followed by the replacement of arities)
 -export([ new/1, new_link/1, synchronous_new/1, synchronous_new_link/1,
-	synchronous_timed_new/1, synchronous_timed_new_link/1,
-	remote_new/2, remote_new_link/2, remote_synchronous_new/2,
-	remote_synchronous_new_link/2, remote_synchronous_timed_new/2,
-	remote_synchronous_timed_new_link/2, construct/2, delete/1 ]).
+		 synchronous_timed_new/1, synchronous_timed_new_link/1,
+		 remote_new/2, remote_new_link/2, remote_synchronous_new/2,
+		 remote_synchronous_new_link/2, remote_synchronous_timed_new/2,
+		 remote_synchronous_timed_new_link/2, construct/2, delete/1 ]).
 
 
 
-% Method declarations.
+% Member method declarations.
 -define( wooper_method_export, getName/1, setName/2, 
-	getInitialTick/1, setInitialTick/2, 
-	getCurrentTickOffset/1, setCurrentTickOffset/2,
-	getCurrentTick/1, 
-	display/1, toString/1 ).
+		getInitialTick/1, setInitialTick/2, 
+		getCurrentTickOffset/1, setCurrentTickOffset/2,
+		getCurrentTick/1, 
+		display/1, toString/1 ).
 
 
 % Helper functions:
--export([ send/2, send_from_test/2, send_standalone/2, get_current_tick/1,
-	get_channel_name_for_priority/1 ]).
+-export([ send/3, send/4, send/5, 
+		 send_from_test/2, send_standalone/2, get_current_tick/1,
+		 get_channel_name_for_priority/1 ]).
 
 
 
@@ -107,9 +108,9 @@
 % performances, processings should be based preferably on offsets rather 
 % than on absolute time references
 %
-% To reduce the memory footprint in the trace aggregator mailbox and the size
-% of messages sent over the network, most of the time binaries are used 
-% instead of plain strings.
+% To reduce the memory footprint in the trace aggregator mailbox and the size of
+% messages sent over the network, most of the time binaries are used instead of
+% plain strings.
 
 
 
@@ -118,7 +119,7 @@
 % Constructs a new Trace emitter.
 % EmitterName is a plain string containing the name of this trace emitter, 
 % ex: 'MyObject-16'.
-construct(State,?wooper_construct_parameters) ->
+construct( State, ?wooper_construct_parameters ) ->
 
 	%io:format( "~s Creating a trace emitter whose name is ~s, "
 	%	"whose PID is ~w and whose categorization is ~s.~n", 
@@ -128,14 +129,17 @@ construct(State,?wooper_construct_parameters) ->
 	% otherwise the creation of multiple emitters would result in a race
 	% condition that would lead to the creation of multiple aggregators):	
 	AggregatorPid = class_TraceAggregator:getAggregator(false),
+	
+	% Note: the 'name' attribute is stored as a binary, to reduce the memory
+	% footprint. Use text_utils:binary_to_string/1 to get back a plain string.
 	setAttributes( State, [ 
 		{name,text_utils:string_to_binary(TraceEmitterName)},
 		{initial_tick,undefined},
 		{current_tick_offset,undefined},
 		{emitter_node,get_emitter_node_as_binary()},			   
 		{trace_aggregator_pid,AggregatorPid},
-		% Should be converted to binary each time when set, but will not
-		% crash if remaining a plain string:
+		% Should be converted to binary each time when set, but will not crash
+		% if remaining a plain string:
 		{trace_categorization,
 		 text_utils:string_to_binary(?TraceEmitterCategorization)}
 						   ] ).
@@ -164,6 +168,7 @@ delete(State) ->
 
 
 % Returns the name of this trace emitter, as a binary.
+% Note: use text_utils:binary_to_string/1 to get back a plain string.
 % (const request)	
 getName(State) ->
 	?wooper_return_state_result( State, ?getAttr(name) ).
@@ -243,14 +248,15 @@ toString(State) ->
 % (helper function)
 % All informations available but the tick and the message categorization.
 send( TraceType, State, Message ) ->
-	send( TraceType, State, Message, ?DefaultMessageCategorization );
+	send( TraceType, State, Message, ?DefaultMessageCategorization ).
 
 
 % Message and MessageCategorization are plain strings.
 % All informations available but the tick, determining its availability:
 send( TraceType, State, Message, MessageCategorization ) ->
-	send( TraceType, [ State, Message, MessageCategorization,
-		get_current_tick(State) ] );
+	send( TraceType, State, Message, MessageCategorization,
+		get_current_tick(State) ).
+
 
 % The function used to send all types of traces:
 send( TraceType, State, Message, MessageCategorization, Tick ) ->
@@ -277,9 +283,11 @@ send( TraceType, State, Message, MessageCategorization, Tick ) ->
 % registered.
 % (static)
 send_from_test( TraceType, Message ) ->
-	send_from_test(TraceType, Message, ?DefaultTestMessageCategorization );
+	send_from_test(TraceType, Message, ?DefaultTestMessageCategorization ).
 	
+
 send_from_test( TraceType, Message, MessageCategorization ) ->
+
 	% Follows the order of our trace format; oneway call:
 	case global:whereis_name(?trace_aggregator_name) of
 	
@@ -316,7 +324,8 @@ send_from_test( TraceType, Message, MessageCategorization ) ->
 % (static)
 send_standalone( TraceType, Message ) ->
 	send_standalone( TraceType, Message,
-		?DefaultStandaloneMessageCategorization );
+		?DefaultStandaloneMessageCategorization ).
+
 	
 send_standalone( TraceType, Message, MessageCategorization ) ->
 	% Follows the order of our trace format; oneway call:
