@@ -37,30 +37,31 @@
 
 
 % Determines what are the mother classes of this class (if any):
--define(wooper_superclasses,[]).
+% (the trace aggregator is not a trace emitter)
+-define( wooper_superclasses,[]).
 
 
 
 % Parameters taken by the constructor ('construct'). 
--define(wooper_construct_parameters, TraceFilename, TraceType, TraceTitle, 
-	IsPrivate, IsBatch ).
+-define( wooper_construct_parameters, TraceFilename, TraceType, TraceTitle, 
+		IsPrivate, IsBatch ).
 
 
 
 % Declaring all variations of WOOPER standard life-cycle operations:
 % (template pasted, two replacements performed to update arities)
 -define( wooper_construct_export, new/5, new_link/5, 
-	synchronous_new/5, synchronous_new_link/5,
-	synchronous_timed_new/5, synchronous_timed_new_link/5,
-	remote_new/6, remote_new_link/6, remote_synchronous_new/6,
-	remote_synchronous_new_link/6, remote_synchronous_timed_new/6,
-	remote_synchronous_timed_new_link/6, construct/6, delete/1 ).
+		synchronous_new/5, synchronous_new_link/5,
+		synchronous_timed_new/5, synchronous_timed_new_link/5,
+		remote_new/6, remote_new_link/6, remote_synchronous_new/6,
+		remote_synchronous_new_link/6, remote_synchronous_timed_new/6,
+		remote_synchronous_timed_new_link/6, construct/6, delete/1 ).
 
 
 
-% Method declarations.
--define(wooper_method_export, send/10, addTraceListener/2, 
-	removeTraceListener/2 ).
+% Member method declarations.
+-define( wooper_method_export, send/10, addTraceListener/2, 
+		removeTraceListener/2 ).
 
 
 % Static method declarations (to be directly called from module):
@@ -95,8 +96,8 @@
 
 % Implementation Notes.
 %
-% The aggregator could store per-emitter constant settings (ex: emitter name
-% and categorization) instead of having them sent to it each time.
+% The aggregator could store per-emitter constant settings (ex: emitter name and
+% categorization) instead of having them sent to it each time.
 
 
 
@@ -114,12 +115,12 @@
 %  - IsBatch tells whether the aggregator is run in a batch context; useful
 % when trace type is {text_traces,pdf}, so that this aggregator does not 
 % display the produced PDF when in batch mode
-construct(State,?wooper_construct_parameters) ->
+construct( State, ?wooper_construct_parameters ) ->
 
 	% First the direct mother classes (none), then this class-specific actions:
 
-	% Increases the chances that the aggregator does not lag too much behind 
-	% the current simulation state:
+	% Increases the chances that the aggregator does not lag too much behind the
+	% current simulation state:
 	erlang:process_flag( priority, _Level=high ),
 	
 	PrivateState = case IsPrivate of 
@@ -140,7 +141,7 @@ construct(State,?wooper_construct_parameters) ->
 	end,
 	
 	% Writes to file, as soon as 32KB or 0.5s is reached:
-	{ok,File} = file:open( TraceFilename, 
+	File = file_utils:open( TraceFilename, 
 		  [ write, raw, {delayed_write,_Size=32*1024,_Delay=500} ] ),
 
 	SetState = setAttributes( PrivateState, [ 
@@ -152,8 +153,8 @@ construct(State,?wooper_construct_parameters) ->
 		{is_batch,IsBatch} 
 											 ] ),
 		
-	io:format( "~s Aggregator created, trace filename is ~s, trace type is ~w, "
-		"and trace title is '~s'.~n",
+	io:format( "~n~s Aggregator created, trace filename is ~s, "
+			  "trace type is ~w, and trace title is '~s'.~n",
 		[ ?LogPrefix, TraceFilename, TraceType, TraceTitle ] ),
 	
 	manage_trace_header(SetState).
@@ -258,7 +259,15 @@ delete(State) ->
 % (const oneway)
 send( State, TraceEmitterPid, TraceEmitterName, TraceEmitterCategorization,
 		Tick, Time, Location, MessageCategorization, Priority, Message ) ->
-			
+	
+	% Useful to check that all fields are of minimal sizes (ex: binaries):
+	%io:format( "- TraceEmitterPid: ~w~n- TraceEmitterName: ~w~n"
+ 	%		   "- TraceEmitterCategorization: ~w~n- Tick: ~w~n- Time: ~w~n"
+	%		   "- Location: ~w~n- MessageCategorization: ~w~n- Priority: ~w~n"
+	%		   "- Message: ~w~n~n", 
+	%		  [TraceEmitterPid,TraceEmitterName,TraceEmitterCategorization,
+	%		  Tick,Time,Location,MessageCategorization,Priority,Message ] ),
+	
 	Trace = format_trace_for( ?getAttr(trace_type), 
 		{ TraceEmitterPid, TraceEmitterName,
 		TraceEmitterCategorization, Tick, Time, Location, 
@@ -296,9 +305,9 @@ addTraceListener(State,ListenerPid) ->
 	NewState = case ?getAttr(trace_type) of
 
 		log_mx_traces ->
-			?emit_info([ io_lib:format( 
-				"Trace aggregator adding trace listener ~w, "
-				"and sending it previous traces.~n", [ ListenerPid ] ) ]),
+			% Not a trace emitter but still able to send traces:		   
+			?notify_info_fmt( "Trace aggregator adding trace listener ~w, "
+				"and sending it previous traces.~n", [ ListenerPid ] ),
 			% Transfer file:
 			TraceFilename = ?getAttr(trace_filename),
 			Bin = file_utils:file_to_zipped_term( TraceFilename ),
@@ -311,7 +320,7 @@ addTraceListener(State,ListenerPid) ->
 				"as it requires LogMX traces, whereas the current trace "
 				"type is ~w.~n", [ ListenerPid, OtherTraceType ] ),
 			io:format( "Warning: " ++ Message ),	
-			?emit_warning([ Message ]),
+			?notify_warning( Message ),
 			ListenerPid ! {trace_zip,incompatible_trace_type},
 			State
 				
