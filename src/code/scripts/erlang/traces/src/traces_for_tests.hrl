@@ -44,7 +44,7 @@
 
 
 % For TracingActivated:
--include("class_TraceEmitter.hrl").
+%-include("class_TraceEmitter.hrl").
 
 
 
@@ -53,32 +53,73 @@
 
 
 -define( test_fatal(Message),
-	class_TraceEmitter:send_from_test(fatal,[Message])
+	class_TraceEmitter:send_from_test( fatal, Message )
 ).
+
+
+-define( test_fatal_fmt( MessageFormat, FormatValues ),
+	class_TraceEmitter:send_from_test( fatal, 
+						 io_lib:format( MessageFormat, FormatValues ) )
+).
+
 
 
 -define( test_error(Message),
-	class_TraceEmitter:send_from_test(error,[Message])
+	class_TraceEmitter:send_from_test( error, Message )
 ).
-	
+
+
+-define( test_error_fmt( MessageFormat, FormatValues ),
+	class_TraceEmitter:send_from_test( error, 
+						 io_lib:format( MessageFormat, FormatValues ) )
+).
+
+
 	
 -define( test_warning(Message),
-	class_TraceEmitter:send_from_test(warning,[Message])
+	class_TraceEmitter:send_from_test( warning, Message )
 ).
 
 
+-define( test_warning_fmt( MessageFormat, FormatValues ),
+	class_TraceEmitter:send_from_test( warning, 
+						 io_lib:format( MessageFormat, FormatValues ) )
+).
+		
+		
+		
 -define( test_info(Message),
-	class_TraceEmitter:send_from_test(info,[Message])
+	class_TraceEmitter:send_from_test( info, Message )
 ).
+
+
+-define( test_info_fmt( MessageFormat, FormatValues ),
+	class_TraceEmitter:send_from_test( info, 
+						 io_lib:format( MessageFormat, FormatValues ) )
+).
+		
 
 
 -define( test_trace(Message),
-	class_TraceEmitter:send_from_test(trace,[Message])
+	class_TraceEmitter:send_from_test( trace, Message )
 ).
 
 
+-define( test_trace_fmt( MessageFormat, FormatValues ),
+	class_TraceEmitter:send_from_test( trace, 
+						 io_lib:format( MessageFormat, FormatValues ) )
+).
+
+
+
 -define( test_debug(Message),
-	class_TraceEmitter:send_from_test(debug,[Message])
+	class_TraceEmitter:send_from_test( debug, Message )
+).
+
+
+-define( test_debug_fmt( MessageFormat, FormatValues ),
+	class_TraceEmitter:send_from_test( debug, 
+						 io_lib:format( MessageFormat, FormatValues ) )
 ).
 
 
@@ -86,20 +127,52 @@
 -else.
 
 
-% Message is returned, as otherwise some variables in calling code could
-% be determined as unused, and thus would trigger a warning:
+% Here TracingActivated is not defined: traces are disabled.
 
--define( test_fatal(Message), test_trace_disabled ).
 
--define( test_error(Message), test_trace_disabled ).
+% Allows to avoid warnings about variables not be used when traces are disabled:
+test_trace_disabled(_) ->
+	test_trace_disabled.
+
+test_trace_disabled(_,_) ->
+	test_trace_disabled.
+
+
+
+% Message is returned, as otherwise some variables in calling code could be
+% determined as unused, and thus would trigger a warning:
+
+-define( test_fatal(Message), test_trace_disabled(Message) ).
+
+-define( test_error(Message), test_trace_disabled(Message) ).
 	
--define( test_warning(Message), test_trace_disabled ).
+-define( test_warning(Message), test_trace_disabled(Message) ).
 
--define( test_info(Message), test_trace_disabled ).
+-define( test_info(Message), test_trace_disabled(Message) ).
 
--define( test_trace(Message), test_trace_disabled ).
+-define( test_trace(Message), test_trace_disabled(Message) ).
 
--define( test_debug(Message), test_trace_disabled ).
+-define( test_debug(Message), test_trace_disabled(Message) ).
+
+
+
+-define( test_fatal_fmt( Message, FormatValues ), 
+		test_trace_disabled( Message, FormatValues ) ).
+
+-define( test_error_fmt( Message, FormatValues ), 
+		test_trace_disabled( Message, FormatValues ) ).
+	
+-define( test_warning_fmt( Message, FormatValues ), 
+		test_trace_disabled( Message, FormatValues ) ).
+
+-define( test_info_fmt( Message, FormatValues ), 
+		test_trace_disabled( Message, FormatValues ) ).
+
+-define( test_trace_fmt( Message, FormatValues ), 
+		test_trace_disabled( Message, FormatValues ) ).
+
+-define( test_debug_fmt( Message, FormatValues ), 
+		test_trace_disabled( Message, FormatValues ) ).
 
 
 -endif.
@@ -109,11 +182,13 @@
 -ifdef(TracingActivated).
 
 -define(test_start, 
-	% Create first, synchronously (to avoid race conditions), a trace
-	% aggregator (false is to specify a non-private i.e. global aggregator).
+	% Create first, synchronously (to avoid race conditions), a trace aggregator
+	% (false is to specify a non-private i.e. global aggregator).
+	%
 	% Race conditions could occur at least with trace emitters (they would
 	% create their own aggregator, should none by found) and with trace
 	% supervisor (which expects a trace file to be already created at start-up).
+	%	
 	% Goes back to the beginning of line:
 	io:format( "~n" ),
 	TestIsBatch = case init:get_argument('-batch') of
@@ -121,8 +196,7 @@
 	end,	
 	TraceAggregatorPid = class_TraceAggregator:synchronous_new_link(
 		?TraceFilename, ?TraceType, ?TraceTitle, _Private=false, TestIsBatch ),
-	?test_info([ io_lib:format( "Testing module(s) ~w.", 
-		[ ?Tested_modules ] ) ]),
+	?test_info_fmt( "Testing module(s) ~w.", [ ?Tested_modules ] ),
 	% Defined in class_TraceSupervisor.hrl:
 	?init_trace_supervisor
 ).
@@ -130,8 +204,7 @@
 
 
 -define(test_stop, 
-	?test_info([ io_lib:format( "End of test for module(s) ~w.", 
-		[ ?Tested_modules ] ) ]),
+	?test_info_fmt( "End of test for module(s) ~w.", [ ?Tested_modules ] ),
 	% Defined in class_TraceSupervisor.hrl:
 	?wait_for_any_trace_supervisor,
 	TraceAggregatorPid ! {synchronous_delete,self()},
@@ -148,8 +221,7 @@
 
 
 -define(test_stop_without_waiting_for_trace_supervisor, 
-	?test_info([ io_lib:format( "End of test for module(s) ~w.", 
-		[ ?Tested_modules ] ) ]),
+	?test_info_fmt( "End of test for module(s) ~w.", [ ?Tested_modules ] ),
 	TraceAggregatorPid ! {synchronous_delete,self()},
 	receive
 	
@@ -177,15 +249,13 @@
 	io:format( "~n" ),
 	TraceAggregatorPid = class_TraceAggregator:synchronous_new_link(
 	  ?TraceFilename, ?TraceType, ?TraceTitle, _Private=false, _IsBatch=true ),
-	?test_info([ io_lib:format( "Testing module(s) ~w.", 
-		[ ?Tested_modules ] ) ])
+	?test_info_fmt( "Testing module(s) ~w.", [ ?Tested_modules ] )
 ).
 
 
 
 -define(test_stop, 
-	?test_info([ io_lib:format( "End of test for module(s) ~w.", 
-		[ ?Tested_modules ] ) ]),
+	?test_info_fmt( "End of test for module(s) ~w.", [ ?Tested_modules ] ),
 	TraceAggregatorPid ! {synchronous_delete,self()},
 	receive
 	
@@ -200,8 +270,7 @@
 
 
 -define(test_stop_without_waiting_for_trace_supervisor, 
-	?test_info([ io_lib:format( "End of test for module(s) ~w.", 
-		[ ?Tested_modules ] ) ]),
+	?test_info_fmt( "End of test for module(s) ~w.", [ ?Tested_modules ] ),
 	TraceAggregatorPid ! {synchronous_delete,self()},
 	receive
 	
@@ -226,7 +295,7 @@ testFailed(Reason) ->
 	Message = io_lib:format( "Test failed for module(s) ~w, reason: ~s.~n",
 		[ ?Tested_modules, Reason ] ), 
 	error_logger:error_msg( Message ),
-	?test_fatal([ Message ]),
+	?test_fatal( Message ),
 	% Needed, otherwise error_logger will not display anything:	
 	timer:sleep(500),	
 	erlang:error( "Test ~s failed.", [ ?MODULE ]).
@@ -240,8 +309,8 @@ check_pending_wooper_results() ->
 	receive
 	
 		{wooper_result,AResult} ->
-			?test_info([ io_lib:format( 
-				"Following WOOPER result was unread: ~w.~n", [AResult] ) ]),
+			?test_info_fmt( "Following WOOPER result was unread: ~w.~n", 
+						   [AResult] ),
 			check_pending_wooper_results()
 					
 	after 
