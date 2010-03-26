@@ -38,8 +38,9 @@
 
 
 % Node-related functions.
--export([ localnode/0, check_node_availability/1, check_node_availability/2, 
-	shutdown_node/1 ]).
+-export([ localnode/0, get_all_connected_nodes/0, 
+		 check_node_availability/1, check_node_availability/2, 
+		 shutdown_node/1 ]).
 
 
 % Address-related functions.
@@ -130,6 +131,13 @@ localnode() ->
 		 	OtherNodeName
 	
 	end.
+
+
+
+% Returns the list of all connected nodes (each being designated by an atom,
+% like 'foo@bar.org'), including the local node.
+get_all_connected_nodes() ->
+	[node()|nodes()].
 
 
 
