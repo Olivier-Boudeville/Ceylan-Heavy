@@ -69,40 +69,742 @@
 -include("class_TraceSupervisor.hrl").	
 
 
+% For TracingActivated:
+-include("class_TraceEmitter.hrl").	
+
 
 % Defines some macros to emit standalone traces, i.e. not from a TraceEmitter,
-% and not for test purpose (ex: when writing classical, non-OOP, code). 
-% Note: using 'emit' instead of 'send' to prevent name clashes.
+% and not for test purpose (ex: when writing classical, non-OOP, code).
+%
+% Note: using 'notify' instead of 'send' to prevent name clashes.
 
-% Usage: '?emit_debug([ "Starting!" ])'
+% Usage: '?notify_debug( "Starting!" )'
 
 
--define( emit_fatal(Message),
-	class_TraceEmitter:send_standalone(fatal,[Message])
+
+-ifdef(TracingActivated).
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Fatal section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+% Subsection for Fatal, without formatting.
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_fatal(Message),
+		 class_TraceEmitter:send_standalone( fatal, Message ),
+	     % To ensure the asynchronous sending of the trace has a chance to
+	     % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
 ).
 
 
--define( emit_error(Message),
-	class_TraceEmitter:send_standalone(error,[Message])
-).
-	
-	
--define( emit_warning(Message),
-	class_TraceEmitter:send_standalone(warning,[Message])
-).
 
-
--define( emit_info(Message),
-	class_TraceEmitter:send_standalone(info,[Message])
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_fatal_cat( Message, MessageCategorization ),
+		 class_TraceEmitter:send_standalone( fatal, Message, 
+											 MessageCategorization ),
+	     % To ensure the asynchronous sending of the trace has a chance to
+	     % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
 ).
 
 
--define( emit_trace(Message),
-	class_TraceEmitter:send_standalone(trace,[Message])
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_fatal_full( Message, MessageCategorization, Tick ),
+		 class_TraceEmitter:send_standalone( fatal, Message, 
+											 MessageCategorization, Tick ),
+	     % To ensure the asynchronous sending of the trace has a chance to
+	     % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
 ).
 
 
--define( emit_debug(Message),
-	class_TraceEmitter:send_standalone(debug,[Message])
+
+
+% Subsection for Fatal, with formatting.
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_fatal_fmt( Message, FormatValues ),
+		 class_TraceEmitter:send_standalone( fatal,
+							  io_lib:format(Message,FormatValues) ),
+	     % To ensure the asynchronous sending of the trace has a chance to
+	     % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
 ).
+
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_fatal_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 class_TraceEmitter:send_standalone( fatal, 
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization ),
+	     % To ensure the asynchronous sending of the trace has a chance to
+	     % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
+).
+
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_fatal_fmt_full( Message, FormatValues, MessageCategorization, 
+								Tick ),
+		 class_TraceEmitter:send_standalone( fatal, 
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization, Tick ),
+	     % To ensure the asynchronous sending of the trace has a chance to
+	     % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
+).
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Error section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Subsection for Error, without formatting.
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_error(Message),
+		 class_TraceEmitter:send_standalone( error, Message ),
+	     % To ensure the asynchronous sending of the trace has a chance to
+	     % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
+).
+
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_error_cat( Message, MessageCategorization ),
+		 class_TraceEmitter:send_standalone( error, Message, 
+											 MessageCategorization ),
+	     % To ensure the asynchronous sending of the trace has a chance to
+	     % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
+).
+
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_error_full( Message, MessageCategorization, Tick ),
+		 class_TraceEmitter:send_standalone( error, Message, 
+											 MessageCategorization, Tick ),
+	     % To ensure the asynchronous sending of the trace has a chance to
+	     % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
+).
+
+
+
+
+% Subsection for Error, with formatting.
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_error_fmt( Message, FormatValues ),
+		 class_TraceEmitter:send_standalone( error,
+							  io_lib:format(Message,FormatValues) ),
+	     % To ensure the asynchronous sending of the trace has a chance to
+	     % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
+).
+
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_error_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 class_TraceEmitter:send_standalone( error, 
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization ),
+	     % To ensure the asynchronous sending of the trace has a chance to
+	     % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
+).
+
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_error_fmt_full( Message, FormatValues, MessageCategorization, 
+								Tick ),
+		 class_TraceEmitter:send_standalone( error, 
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization, Tick ),
+	     % To ensure the asynchronous sending of the trace has a chance to
+	     % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
+).
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Warning section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Subsection for Warning, without formatting.
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_warning(Message),
+		 class_TraceEmitter:send_standalone( warning, Message )
+).
+
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_warning_cat( Message, MessageCategorization ),
+		 class_TraceEmitter:send_standalone( warning, Message, 
+											 MessageCategorization )
+).
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_warning_full( Message, MessageCategorization, Tick ),
+		 class_TraceEmitter:send_standalone( warning, Message, 
+											 MessageCategorization, Tick )
+).
+
+
+
+
+% Subsection for Warning, with formatting.
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_warning_fmt( Message, FormatValues ),
+		 class_TraceEmitter:send_standalone( warning,
+							  io_lib:format(Message,FormatValues) )
+).
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_warning_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 class_TraceEmitter:send_standalone( warning, 
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization )
+).
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_warning_fmt_full( Message, FormatValues, MessageCategorization, 
+								Tick ),
+		 class_TraceEmitter:send_standalone( warning, 
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization, Tick )
+).
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Info section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Subsection for Info, without formatting.
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_info(Message),
+		 class_TraceEmitter:send_standalone( info, Message )
+).
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_info_cat( Message, MessageCategorization ),
+		 class_TraceEmitter:send_standalone( info, Message, 
+											 MessageCategorization )
+).
+
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_info_full( Message, MessageCategorization, Tick ),
+		 class_TraceEmitter:send_standalone( info, Message, 
+											 MessageCategorization, Tick )
+).
+
+
+
+
+% Subsection for Info, with formatting.
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_info_fmt( Message, FormatValues ),
+		 class_TraceEmitter:send_standalone( info,
+							  io_lib:format(Message,FormatValues) )
+).
+
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_info_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 class_TraceEmitter:send_standalone( info, 
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization )
+).
+
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_info_fmt_full( Message, FormatValues, MessageCategorization, 
+								Tick ),
+		 class_TraceEmitter:send_standalone( info, 
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization, Tick )
+).
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Trace section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Subsection for Trace, without formatting.
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_trace(Message),
+		 class_TraceEmitter:send_standalone( trace, Message )
+).
+
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_trace_cat( Message, MessageCategorization ),
+		 class_TraceEmitter:send_standalone( trace, Message, 
+											 MessageCategorization )
+).
+
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_trace_full( Message, MessageCategorization, Tick ),
+		 class_TraceEmitter:send_standalone( trace, Message, 
+											 MessageCategorization, Tick )
+).
+
+
+% Subsection for Trace, with formatting.
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_trace_fmt( Message, FormatValues ),
+		 class_TraceEmitter:send_standalone( trace,
+							  io_lib:format(Message,FormatValues) )
+).
+
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_trace_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 class_TraceEmitter:send_standalone( trace, 
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization )
+).
+
+
+
+% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_trace_fmt_full( Message, FormatValues, MessageCategorization, 
+								Tick ),
+		 class_TraceEmitter:send_standalone( trace, 
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization, Tick )
+).
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Debug section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Subsection for Debug, without formatting.
+
+
+% To send debugs neither from a DebugEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_debug(Message),
+		 class_TraceEmitter:send_standalone( debug, Message )
+).
+
+
+
+% To send debugs neither from a DebugEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_debug_cat( Message, MessageCategorization ),
+		 class_TraceEmitter:send_standalone( debug, Message, 
+											 MessageCategorization )
+).
+
+
+
+% To send debugs neither from a DebugEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_debug_full( Message, MessageCategorization, Tick ),
+		 class_TraceEmitter:send_standalone( debug, Message, 
+											 MessageCategorization, Tick )
+).
+
+
+
+% Subsection for Debug, with formatting.
+
+
+% To send debugs neither from a DebugEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_debug_fmt( Message, FormatValues ),
+		 class_TraceEmitter:send_standalone( debug,
+							  io_lib:format(Message,FormatValues) )
+).
+
+
+
+% To send debugs neither from a DebugEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_debug_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 class_TraceEmitter:send_standalone( debug, 
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization )
+).
+
+
+% To send debugs neither from a DebugEmitter instance nor from a test (ex: in a
+% static method):
+-define( notify_debug_fmt_full( Message, FormatValues, MessageCategorization, 
+								Tick ),
+		 class_TraceEmitter:send_standalone( debug, 
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization, Tick )
+).
+
+
+
+
+
+
+
+
+
+
+
+
+
+-else.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Traces are disabled here.
+% This 'else' branch will be used iff TracingActivated is not defined above.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Fatal section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+-define( notify_fatal(Message),
+		 ?send_fatal( undefined, Message )
+).
+
+
+-define( notify_fatal_cat( Message, MessageCategorization ),
+		 ?send_fatal_cat( undefined, Message, MessageCategorization )
+).
+
+
+-define( notify_fatal_full( Message, MessageCategorization, Tick ),
+		 ?send_fatal_full( State, Message, MessageCategorization, Tick )
+).
+
+
+
+-define( notify_fatal_fmt( Message, FormatValues ),
+		 ?send_fatal_fmt( undefined, Message, FormatValues )
+).
+
+
+-define( notify_fatal_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 ?send_fatal_fmt_cat( undefined, Message, FormatValues, 
+		 					  MessageCategorization )
+).
+
+
+-define( notify_fatal_fmt_full( Message, FormatValues, MessageCategorization, 
+		 Tick ),
+		 ?send_fatal_fmt_full( undefined, Message, FormatValues, 
+		 					   MessageCategorization, Tick )
+).
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Error section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+-define( notify_error(Message),
+		 ?send_error( undefined, Message )
+).
+
+
+-define( notify_error_cat( Message, MessageCategorization ),
+		 ?send_error_cat( undefined, Message, MessageCategorization )
+).
+
+
+-define( notify_error_full( Message, MessageCategorization, Tick ),
+		 ?send_error_full( State, Message, MessageCategorization, Tick )
+).
+
+
+
+-define( notify_error_fmt( Message, FormatValues ),
+		 ?send_error_fmt( undefined, Message, FormatValues )
+).
+
+
+-define( notify_error_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 ?send_error_fmt_cat( undefined, Message, FormatValues, 
+		 					  MessageCategorization )
+).
+
+
+-define( notify_error_fmt_full( Message, FormatValues, MessageCategorization, 
+		 Tick ),
+		 ?send_error_fmt_full( undefined, Message, FormatValues, 
+		 					   MessageCategorization, Tick )
+).
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Warning section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+-define( notify_warning(Message),
+		 trace_disabled( Message )	
+).
+
+
+-define( notify_warning_cat( Message, MessageCategorization ),
+		 trace_disabled( Message, MessageCategorization )	
+).
+
+
+-define( notify_warning_full( Message, MessageCategorization, Tick ),
+		 trace_disabled( Message, MessageCategorization, Tick )
+).
+
+
+
+-define( notify_warning_fmt( Message, FormatValues ),
+		 trace_disabled( Message, FormatValues )
+).
+
+
+-define( notify_warning_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 trace_disabled( Message, FormatValues, MessageCategorization )
+).
+
+
+-define( notify_warning_fmt_full( Message, FormatValues, MessageCategorization, 
+		 		 Tick ),
+		 trace_disabled( Message, FormatValues, MessageCategorization, Tick )
+).
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Info section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+-define( notify_info(Message),
+		 trace_disabled( Message )	
+).
+
+
+-define( notify_info_cat( Message, MessageCategorization ),
+		 trace_disabled( Message, MessageCategorization )	
+).
+
+
+-define( notify_info_full( Message, MessageCategorization, Tick ),
+		 trace_disabled( Message, MessageCategorization, Tick )
+).
+
+
+
+-define( notify_info_fmt( Message, FormatValues ),
+		 trace_disabled( Message, FormatValues )
+).
+
+
+-define( notify_info_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 trace_disabled( Message, FormatValues, MessageCategorization )
+).
+
+
+-define( notify_info_fmt_full( Message, FormatValues, MessageCategorization, 
+		 		 Tick ),
+		 trace_disabled( Message, FormatValues, MessageCategorization, Tick )
+).
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Trace section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+-define( notify_trace(Message),
+		 trace_disabled( Message )	
+).
+
+
+-define( notify_trace_cat( Message, MessageCategorization ),
+		 trace_disabled( Message, MessageCategorization )	
+).
+
+
+-define( notify_trace_full( Message, MessageCategorization, Tick ),
+		 trace_disabled( Message, MessageCategorization, Tick )
+).
+
+
+
+-define( notify_trace_fmt( Message, FormatValues ),
+		 trace_disabled( Message, FormatValues )
+).
+
+
+-define( notify_trace_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 trace_disabled( Message, FormatValues, MessageCategorization )
+).
+
+
+-define( notify_trace_fmt_full( Message, FormatValues, MessageCategorization, 
+		 		 Tick ),
+		 trace_disabled( Message, FormatValues, MessageCategorization, Tick )
+).
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Debug section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+-define( notify_debug(Message),
+		 trace_disabled( Message )	
+).
+
+
+-define( notify_debug_cat( Message, MessageCategorization ),
+		 trace_disabled( Message, MessageCategorization )	
+).
+
+
+-define( notify_debug_full( Message, MessageCategorization, Tick ),
+		 trace_disabled( Message, MessageCategorization, Tick )
+).
+
+
+
+-define( notify_debug_fmt( Message, FormatValues ),
+		 trace_disabled( Message, FormatValues )
+).
+
+
+-define( notify_debug_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 trace_disabled( Message, FormatValues, MessageCategorization )
+).
+
+
+-define( notify_debug_fmt_full( Message, FormatValues, MessageCategorization, 
+		 		 Tick ),
+		 trace_disabled( Message, FormatValues, MessageCategorization, Tick )
+).
+
+
+-endif.
+
+% End of the TracingActivated branch.
 
