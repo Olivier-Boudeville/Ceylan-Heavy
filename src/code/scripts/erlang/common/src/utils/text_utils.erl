@@ -450,9 +450,10 @@ get_line_of( Character, Length ) ->
 % Miscellaneous functions.
 
 
-% Tries to return a string adequate to form a simple name (mostly
-% alphanumerical with underscores) from specified term.	
-% See also: file_utils:convert_to_filename/1.	
+% Tries to return a string adequate to form a simple name (mostly alphanumerical
+% with underscores) from specified term.
+%
+% See also: file_utils:convert_to_filename/1.
 generate_text_name_from(Term) ->
 	String = term_to_string(Term),
 	fix_characters(String).	
