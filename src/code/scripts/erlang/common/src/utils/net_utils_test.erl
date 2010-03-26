@@ -1,5 +1,4 @@
-% 
-% Copyright (C) 2003-2009 Olivier Boudeville
+ % Copyright (C) 2003-2010 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
 %
@@ -95,6 +94,9 @@ run() ->
 		  net_utils:reverse_lookup(FourthIP) ] ),
 
 
+	io:format( "   All connected nodes are: ~w.~n",
+			  [ net_utils:get_all_connected_nodes() ] ),
+	
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().
 
