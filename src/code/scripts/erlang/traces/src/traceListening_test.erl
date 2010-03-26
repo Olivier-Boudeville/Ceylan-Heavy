@@ -1,4 +1,4 @@
-% Copyright (C) 2003-2009 Olivier Boudeville
+% Copyright (C) 2003-2010 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
 %
@@ -27,6 +27,7 @@
 
 
 % Unit tests for the implementation of trace listening.
+%
 % See the following modules:
 %  - class_TraceListener
 %  - class_TraceSupervisor
@@ -50,15 +51,15 @@
 -define(Prefix,"--> ").
 
 
-% ?test_stop should not be used here as its wait_for_any_trace_supervisor 
-% macro would wait for a non-launched supervisor.
+% ?test_stop should not be used here as its wait_for_any_trace_supervisor macro
+% would wait for a non-launched supervisor.
 
 
 send_traces( 0 ) ->
 	ok;
 	
 send_traces( Count ) ->
-	?test_trace([ io_lib:format( "Emitting trace #~B.", [Count] ) ]),
+	?test_trace_fmt( "Emitting trace #~B.", [Count] ),
 	send_traces( Count-1 ).
 
 
@@ -67,7 +68,7 @@ send_timed_traces( 0 ) ->
 	ok;
 	
 send_timed_traces( Count ) ->
-	?test_trace([ io_lib:format( "Emitting timed trace #~B.", [Count] ) ]),
+	?test_trace_fmt( "Emitting timed trace #~B.", [Count] ),
 	timer:sleep(100),	
 	send_timed_traces( Count-1 ).
 
@@ -80,7 +81,8 @@ test_actual_body() ->
 	[_H,NodeName] = string:tokens( atom_to_list(node()), "@" ),
 	
 	TargetVMName = lists:flatten( 
-		io_lib:format( "traceManagement_run@~s", [NodeName] ) ),
+		io_lib:format( "traceManagement_run-~s@~s", 
+					  [system_utils:get_user_name(), NodeName] ) ),
 		
 	io:format( ?Prefix "Connecting to '~s'.~n", [TargetVMName]),
 	
@@ -118,8 +120,8 @@ test_actual_body() ->
 		"a real synchronization.~n" ),
 	send_traces( 50 ),
 
-	% No ?test_start: we will be using the aggregator from the node
-	% named 'traceManagement_run'.
+	% No ?test_start: we will be using the aggregator from the node named
+	% 'traceManagement_run'.
 	io:format( ?Prefix "Creating a test trace local listener.~n" ),
 	MyTraceListener = class_TraceListener:synchronous_new_link(AggregatorPid),
 
@@ -134,8 +136,7 @@ test_actual_body() ->
 	% To ensure the message has been sent before the VM shuts down:
 	timer:sleep(500),
 			
-	?test_info([ io_lib:format( "End of test for module(s) ~w.", 
-		[ ?Tested_modules ] ) ]),
+	?test_info_fmt( "End of test for module(s) ~w.", [ ?Tested_modules ]  ),
 	check_pending_wooper_results(),
 	testFinished().
 
