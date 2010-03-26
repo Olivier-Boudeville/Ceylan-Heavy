@@ -26,8 +26,10 @@
 % Creation date: July 1, 2007.
 
 
-% This header centralizes notably all macros related to the sending traces.
+% This header centralizes notably all macros related to the sending of traces
+% from a class_TraceEmitter.
 
+% See also traces.hrl, for the standalone sending of traces. 
 
 
 % Conventions section.
@@ -187,7 +189,7 @@
 % '?trace_full( "Hello", "My Category", 125 )' 
 %
 % Similarly, the use of io_lib:format involved too much typing, so we defined
-% shorter forms instead. Taking 'trace' as an example:
+% shorter forms instead. Taking 'trace' again as an example:
 %
 %  - '?trace([ io_lib:format( "Hello ~w.", [V] ) ])' becomes 
 % '?trace_fmt( "Hello ~w.", [V] )' (most frequently used form; 'fmt' stands for
@@ -217,7 +219,7 @@
 % Subsection for Fatal, without formatting.
 
 
-% Plain, with 3 variations regarding state: explicit, implicit, none.
+% Plain, with 2 variations regarding state: explicit or implicit.
 
 
 % Sends a trace of 'fatal' type with specified parameters and an explicit state.
@@ -239,19 +241,9 @@
 ).
 
 
-% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
-% static method):
--define( notify_fatal(Message),
-		 class_TraceEmitter:send_standalone( fatal, Message ),
-	     % To ensure the asynchronous sending of the trace has a chance to
-	     % complete, possibly before the interpreter is crashed:
-		 timer:sleep(100)
-).
 
 
-
-
-% Categorized, with 3 variations regarding state: explicit, implicit, none.
+% Categorized, with 2 variations regarding state: explicit or implicit.
 
 
 % Sends a trace of 'fatal' type with specified parameters and an explicit state.
@@ -268,28 +260,17 @@
 % variable named 'State'.
 -define( fatal_cat( Message, MessageCategorization ),
 		 class_TraceEmitter:send( fatal, State, Message, 
-								  MessageCategorizatione ),
+								  MessageCategorization ),
          % To ensure the asynchronous sending of the trace has a chance to
          % complete, possibly before the interpreter is crashed:
 		 timer:sleep(100)
 ).
 
 
-% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
-% static method):
--define( notify_fatal_cat( Message, MessageCategorization ),
-		 class_TraceEmitter:send_standalone( fatal, Message, 
-											 MessageCategorization ),
-	     % To ensure the asynchronous sending of the trace has a chance to
-	     % complete, possibly before the interpreter is crashed:
-		 timer:sleep(100)
-).
 
 
-
-
-% Categorized with tick, with 3 variations regarding state: explicit, implicit,
-% none.
+% Categorized with tick, with 2 variations regarding state: explicit or
+% implicit.
 
 
 % Sends a trace of 'fatal' type with specified parameters and an explicit state.
@@ -313,26 +294,12 @@
 ).
 
 
-% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
-% static method):
--define( notify_fatal_cat( Message, MessageCategorization, Tick ),
-		 class_TraceEmitter:send_standalone( fatal, Message, 
-											 MessageCategorization, Tick ),
-	     % To ensure the asynchronous sending of the trace has a chance to
-	     % complete, possibly before the interpreter is crashed:
-		 timer:sleep(100)
-).
-
-
-
-
-
 
 
 % Subsection for Fatal, with formatting.
 
 
-% Plain, with 3 variations regarding state: explicit, implicit, none.
+% Plain, with 2 variations regarding state: explicit or implicit.
 
 
 % Sends a trace of 'fatal' type with specified parameters and an explicit state.
@@ -356,20 +323,8 @@
 ).
 
 
-% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
-% static method):
--define( notify_fatal_fmt( Message, FormatValues ),
-		 class_TraceEmitter:send_standalone( fatal,
-							  io_lib:format(Message,FormatValues) ),
-	     % To ensure the asynchronous sending of the trace has a chance to
-	     % complete, possibly before the interpreter is crashed:
-		 timer:sleep(100)
-).
 
-
-
-
-% Categorized, with 3 variations regarding state: explicit, implicit, none.
+% Categorized, with 2 variations regarding state: explicit or implicit.
 
 
 % Sends a trace of 'fatal' type with specified parameters and an explicit state.
@@ -389,30 +344,16 @@
 -define( fatal_fmt_cat( Message, FormatValues, MessageCategorization ),
 		 class_TraceEmitter:send( fatal, State,
 							  io_lib:format(Message,FormatValues), 
-							  MessageCategorizatione ),
+							  MessageCategorization ),
          % To ensure the asynchronous sending of the trace has a chance to
          % complete, possibly before the interpreter is crashed:
 		 timer:sleep(100)
 ).
 
 
-% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
-% static method):
--define( notify_fmt_fatal_cat( Message, FormatValues, 
-							   MessageCategorization ),
-		 class_TraceEmitter:send_standalone( fatal, 
-							  io_lib:format(Message,FormatValues), 
-							  MessageCategorization ),
-	     % To ensure the asynchronous sending of the trace has a chance to
-	     % complete, possibly before the interpreter is crashed:
-		 timer:sleep(100)
-).
 
-
-
-
-% Categorized with tick, with 3 variations regarding state: explicit, implicit,
-% none.
+% Categorized with tick, with 2 variations regarding state: explicit or
+% implicit.
 
 
 % Sends a trace of 'fatal' type with specified parameters and an explicit state.
@@ -427,46 +368,41 @@
 ).
 
 
+
 % Sends a trace of 'fatal' type with specified parameters and implicit use of a
 % variable named 'State'.
 -define( fatal_fmt_full( Message, FormatValues, MessageCategorization, Tick ),
 		 class_TraceEmitter:send( fatal, State, 
-							  io_lib:format(Message,FormatValues), Tick ),
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization, Tick ),
          % To ensure the asynchronous sending of the trace has a chance to
          % complete, possibly before the interpreter is crashed:
 		 timer:sleep(100)
 ).
 
 
-% To send traces neither from a TraceEmitter instance nor from a test (ex: in a
-% static method):
--define( notify_fatal_fmt_full( Message, FormatValues, MessageCategorization, 
-								Tick ),
-		 class_TraceEmitter:send_standalone( fatal, 
-							  io_lib:format(Message,FormatValues), 
-							  MessageCategorization, Tick ),
-	     % To ensure the asynchronous sending of the trace has a chance to
-	     % complete, possibly before the interpreter is crashed:
-		 timer:sleep(100)
-).
 
 
 
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Error section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+% Subsection for Error, without formatting.
 
 
-
+% Plain, with 2 variations regarding state: explicit or implicit.
 
 
 % Sends a trace of 'error' type with specified parameters and an explicit state.
 -define( send_error( State, Message ), 
 		 class_TraceEmitter:send( error, State, Message ),
-		 % To ensure the asynchronous sending of the trace has a chance to
-		 % complete, possibly before the interpreter is crashed:
+         % To ensure the asynchronous sending of the trace has a chance to
+         % complete, possibly before the interpreter is crashed:
 		 timer:sleep(100)
 ).
 
@@ -474,7 +410,7 @@
 % Sends a trace of 'error' type with specified parameters and implicit use of a
 % variable named 'State'.
 -define( error(Message),
-		 class_TraceEmitter:send( error, State, Message ), 
+		 class_TraceEmitter:send( error, State, Message ),
          % To ensure the asynchronous sending of the trace has a chance to
          % complete, possibly before the interpreter is crashed:
 		 timer:sleep(100)
@@ -482,82 +418,771 @@
 
 
 
+
+% Categorized, with 2 variations regarding state: explicit or implicit.
+
+
+% Sends a trace of 'error' type with specified parameters and an explicit state.
+-define( send_error_cat( State, Message, MessageCategorization ), 
+		 class_TraceEmitter:send( error, State, Message, 
+								  MessageCategorization ),
+         % To ensure the asynchronous sending of the trace has a chance to
+         % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
+).
+
+
+% Sends a trace of 'error' type with specified parameters and implicit use of a
+% variable named 'State'.
+-define( error_cat( Message, MessageCategorization ),
+		 class_TraceEmitter:send( error, State, Message, 
+								  MessageCategorization ),
+         % To ensure the asynchronous sending of the trace has a chance to
+         % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
+).
+
+
+
+
+% Categorized with tick, with 2 variations regarding state: explicit or
+% implicit.
+
+
+% Sends a trace of 'error' type with specified parameters and an explicit state.
+-define( send_error_full( State, Message, MessageCategorization, Tick ), 
+		 class_TraceEmitter:send( error, State, Message, 
+								  MessageCategorization, Tick ),
+         % To ensure the asynchronous sending of the trace has a chance to
+         % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
+).
+
+
+% Sends a trace of 'error' type with specified parameters and implicit use of a
+% variable named 'State'.
+-define( error_full( Message, MessageCategorization, Tick ),
+		 class_TraceEmitter:send( error, State, Message, 
+								  MessageCategorization, Tick ),
+         % To ensure the asynchronous sending of the trace has a chance to
+         % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
+).
+
+
+
+
+% Subsection for Error, with formatting.
+
+
+% Plain, with 2 variations regarding state: explicit or implicit.
+
+
+% Sends a trace of 'error' type with specified parameters and an explicit state.
+-define( send_error_fmt( State, Message, FormatValues ), 
+		 class_TraceEmitter:send( error, State, 
+							  io_lib:format(Message,FormatValues) ),
+         % To ensure the asynchronous sending of the trace has a chance to
+         % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
+).
+
+
+% Sends a trace of 'error' type with specified parameters and implicit use of a
+% variable named 'State'.
+-define( error_fmt( Message, FormatValues ),
+		 class_TraceEmitter:send( error, State, 
+							  io_lib:format(Message,FormatValues) ),
+         % To ensure the asynchronous sending of the trace has a chance to
+         % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
+).
+
+
+
+
+
+% Categorized, with 2 variations regarding state: explicit or implicit.
+
+
+% Sends a trace of 'error' type with specified parameters and an explicit state.
+-define( send_error_fmt_cat( State, Message, FormatValues, 
+							 MessageCategorization ), 
+		 class_TraceEmitter:send( error, State,
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization ),
+         % To ensure the asynchronous sending of the trace has a chance to
+         % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
+).
+
+
+% Sends a trace of 'error' type with specified parameters and implicit use of a
+% variable named 'State'.
+-define( error_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 class_TraceEmitter:send( error, State,
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization ),
+         % To ensure the asynchronous sending of the trace has a chance to
+         % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
+).
+
+
+
+
+
+% Categorized with tick, with 2 variations regarding state: explicit or
+% implicit.
+
+
+% Sends a trace of 'error' type with specified parameters and an explicit state.
+-define( send_error_fmt_full( State, Message, FormatValues, 
+							  MessageCategorization, Tick ), 
+		 class_TraceEmitter:send( error, State, 
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization, Tick ),
+         % To ensure the asynchronous sending of the trace has a chance to
+         % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
+).
+
+
+% Sends a trace of 'error' type with specified parameters and implicit use of a
+% variable named 'State'.
+-define( error_fmt_full( Message, FormatValues, MessageCategorization, Tick ),
+		 class_TraceEmitter:send( error, State, 
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization, Tick ),
+         % To ensure the asynchronous sending of the trace has a chance to
+         % complete, possibly before the interpreter is crashed:
+		 timer:sleep(100)
+).
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Warning section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Subsection for Warning, without formatting.
+
+
+% Plain, with 2 variations regarding state: explicit or implicit.
+
+
 % Sends a trace of 'warning' type with specified parameters and an explicit
 % state.
 -define( send_warning( State, Message ), 
-		 class_TraceEmitter:send( warning, State, Message ) ).
+		 class_TraceEmitter:send( warning, State, Message )
+).
 
 
 % Sends a trace of 'warning' type with specified parameters and implicit use of
 % a variable named 'State'.
--define( warning(Message), 
-		 class_TraceEmitter:send( warning, State, Message ) ).
+-define( warning(Message),
+		 class_TraceEmitter:send( warning, State, Message )
+
+).
 
 
 
-% Sends a trace of 'info' type with specified parameters and an explicit state.
+
+
+% Categorized, with 2 variations regarding state: explicit or implicit.
+
+
+% Sends a trace of 'warning' type with specified parameters and an explicit 
+% state.
+-define( send_warning_cat( State, Message, MessageCategorization ), 
+		 class_TraceEmitter:send( warning, State, Message, 
+								  MessageCategorization )
+).
+
+
+% Sends a trace of 'warning' type with specified parameters and implicit use of
+% a variable named 'State'.
+-define( warning_cat( Message, MessageCategorization ),
+		 class_TraceEmitter:send( warning, State, Message, 
+								  MessageCategorization )
+).
+
+
+
+
+% Categorized with tick, with 2 variations regarding state: explicit or
+% implicit.
+
+
+% Sends a trace of 'warning' type with specified parameters and an explicit
+% state.
+-define( send_warning_full( State, Message, MessageCategorization, Tick ), 
+		 class_TraceEmitter:send( warning, State, Message, 
+								  MessageCategorization, Tick )
+).
+
+
+% Sends a trace of 'warning' type with specified parameters and implicit use of 
+% a variable named 'State'.
+-define( warning_full( Message, MessageCategorization, Tick ),
+		 class_TraceEmitter:send( warning, State, Message, 
+								  MessageCategorization, Tick )
+).
+
+
+
+
+
+
+
+
+% Subsection for Warning, with formatting.
+
+
+% Plain, with 2 variations regarding state: explicit or implicit.
+
+
+% Sends a trace of 'warning' type with specified parameters and an explicit 
+% state.
+-define( send_warning_fmt( State, Message, FormatValues ), 
+		 class_TraceEmitter:send( warning, State, 
+							  io_lib:format(Message,FormatValues) )
+).
+
+
+% Sends a trace of 'warning' type with specified parameters and implicit use of
+% a variable named 'State'.
+-define( warning_fmt( Message, FormatValues ),
+		 class_TraceEmitter:send( warning, State, 
+							  io_lib:format(Message,FormatValues) )
+).
+
+
+
+
+% Categorized, with 2 variations regarding state: explicit or implicit.
+
+
+% Sends a trace of 'warning' type with specified parameters and an explicit 
+% state.
+-define( send_warning_fmt_cat( State, Message, FormatValues, 
+							 MessageCategorization ), 
+		 class_TraceEmitter:send( warning, State,
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization )
+).
+
+
+% Sends a trace of 'warning' type with specified parameters and implicit use of
+% a variable named 'State'.
+-define( warning_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 class_TraceEmitter:send( warning, State,
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization )
+).
+
+
+
+
+
+% Categorized with tick, with 2 variations regarding state: explicit or
+% implicit.
+
+
+% Sends a trace of 'warning' type with specified parameters and an explicit 
+% state.
+-define( send_warning_fmt_full( State, Message, FormatValues, 
+							  MessageCategorization, Tick ), 
+		 class_TraceEmitter:send( warning, State, 
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization, Tick )
+).
+
+
+% Sends a trace of 'warning' type with specified parameters and implicit use of
+% a variable named 'State'.
+-define( warning_fmt_full( Message, FormatValues, MessageCategorization, Tick ),
+		 class_TraceEmitter:send( warning, State, 
+							  io_lib:format(Message,FormatValues),
+							  MessageCategorization, Tick )
+ ).
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Info section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Subsection for Info, without formatting.
+
+
+% Plain, with 2 variations regarding state: explicit or implicit.
+
+
+% Sends a trace of 'info' type with specified parameters and an explicit
+% state.
 -define( send_info( State, Message ), 
-		 class_TraceEmitter:send( info, State, Message ) ).
+		 class_TraceEmitter:send( info, State, Message )
+).
 
 
-% Sends a trace of 'info' type with specified parameters and implicit use of a
-% variable named 'State'.
--define( info(Message), 
-		 class_TraceEmitter:send( info, State, Message ) ).
+% Sends a trace of 'info' type with specified parameters and implicit use of
+% a variable named 'State'.
+-define( info(Message),
+		 class_TraceEmitter:send( info, State, Message )
+
+).
 
 
 
-% Sends a trace of 'trace' type with specified parameters and an explicit state.
+
+
+% Categorized, with 2 variations regarding state: explicit or implicit.
+
+
+% Sends a trace of 'info' type with specified parameters and an explicit 
+% state.
+-define( send_info_cat( State, Message, MessageCategorization ), 
+		 class_TraceEmitter:send( info, State, Message, 
+								  MessageCategorization )
+).
+
+
+% Sends a trace of 'info' type with specified parameters and implicit use of
+% a variable named 'State'.
+-define( info_cat( Message, MessageCategorization ),
+		 class_TraceEmitter:send( info, State, Message, 
+								  MessageCategorization )
+).
+
+
+
+
+
+% Categorized with tick, with 2 variations regarding state: explicit or
+% implicit.
+
+
+% Sends a trace of 'info' type with specified parameters and an explicit
+% state.
+-define( send_info_full( State, Message, MessageCategorization, Tick ), 
+		 class_TraceEmitter:send( info, State, Message, 
+								  MessageCategorization, Tick )
+).
+
+
+% Sends a trace of 'info' type with specified parameters and implicit use of 
+% a variable named 'State'.
+-define( info_full( Message, MessageCategorization, Tick ),
+		 class_TraceEmitter:send( info, State, Message, 
+								  MessageCategorization, Tick )
+).
+
+
+
+
+
+
+% Subsection for Info, with formatting.
+
+
+% Plain, with 2 variations regarding state: explicit or implicit.
+
+
+% Sends a trace of 'info' type with specified parameters and an explicit 
+% state.
+-define( send_info_fmt( State, Message, FormatValues ), 
+		 class_TraceEmitter:send( info, State, 
+							  io_lib:format(Message,FormatValues) )
+).
+
+
+% Sends a trace of 'info' type with specified parameters and implicit use of
+% a variable named 'State'.
+-define( info_fmt( Message, FormatValues ),
+		 class_TraceEmitter:send( info, State, 
+							  io_lib:format(Message,FormatValues) )
+).
+
+
+
+
+
+% Categorized, with 2 variations regarding state: explicit or implicit.
+
+
+% Sends a trace of 'info' type with specified parameters and an explicit 
+% state.
+-define( send_info_fmt_cat( State, Message, FormatValues, 
+							 MessageCategorization ), 
+		 class_TraceEmitter:send( info, State,
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization )
+).
+
+
+% Sends a trace of 'info' type with specified parameters and implicit use of
+% a variable named 'State'.
+-define( info_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 class_TraceEmitter:send( info, State,
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization )
+).
+
+
+
+
+
+
+% Categorized with tick, with 2 variations regarding state: explicit or
+% implicit.
+
+
+% Sends a trace of 'info' type with specified parameters and an explicit 
+% state.
+-define( send_info_fmt_full( State, Message, FormatValues, 
+							  MessageCategorization, Tick ), 
+		 class_TraceEmitter:send( info, State, 
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization, Tick )
+).
+
+
+% Sends a trace of 'info' type with specified parameters and implicit use of
+% a variable named 'State'.
+-define( info_fmt_full( Message, FormatValues, MessageCategorization, Tick ),
+		 class_TraceEmitter:send( info, State, 
+							  io_lib:format(Message,FormatValues),
+							  MessageCategorization, Tick )
+ ).
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Trace section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Subsection for Trace, without formatting.
+
+
+% Plain, with 2 variations regarding state: explicit or implicit.
+
+
+% Sends a trace of 'trace' type with specified parameters and an explicit
+% state.
 -define( send_trace( State, Message ), 
-		 class_TraceEmitter:send( trace, State, Message ) ).
+		 class_TraceEmitter:send( trace, State, Message )
+).
 
 
-% Sends a trace of 'trace' type with specified parameters and implicit use of a
-% variable named 'State'.
--define( trace(Message), 
-		 class_TraceEmitter:send( trace, State, Message ) ).
+% Sends a trace of 'trace' type with specified parameters and implicit use of
+% a variable named 'State'.
+-define( trace(Message),
+		 class_TraceEmitter:send( trace, State, Message )
+
+).
 
 
 
-% Sends a trace of 'debug' type with specified parameters and an explicit state.
+
+
+% Categorized, with 2 variations regarding state: explicit or implicit.
+
+
+% Sends a trace of 'trace' type with specified parameters and an explicit 
+% state.
+-define( send_trace_cat( State, Message, MessageCategorization ), 
+		 class_TraceEmitter:send( trace, State, Message, 
+								  MessageCategorization )
+).
+
+
+% Sends a trace of 'trace' type with specified parameters and implicit use of
+% a variable named 'State'.
+-define( trace_cat( Message, MessageCategorization ),
+		 class_TraceEmitter:send( trace, State, Message, 
+								  MessageCategorization )
+).
+
+
+
+
+
+% Categorized with tick, with 2 variations regarding state: explicit or
+% implicit.
+
+
+% Sends a trace of 'trace' type with specified parameters and an explicit
+% state.
+-define( send_trace_full( State, Message, MessageCategorization, Tick ), 
+		 class_TraceEmitter:send( trace, State, Message, 
+								  MessageCategorization, Tick )
+).
+
+
+% Sends a trace of 'trace' type with specified parameters and implicit use of 
+% a variable named 'State'.
+-define( trace_full( Message, MessageCategorization, Tick ),
+		 class_TraceEmitter:send( trace, State, Message, 
+								  MessageCategorization, Tick )
+).
+
+
+
+
+
+
+
+
+% Subsection for Trace, with formatting.
+
+
+% Plain, with 2 variations regarding state: explicit or implicit.
+
+
+% Sends a trace of 'trace' type with specified parameters and an explicit 
+% state.
+-define( send_trace_fmt( State, Message, FormatValues ), 
+		 class_TraceEmitter:send( trace, State, 
+							  io_lib:format(Message,FormatValues) )
+).
+
+
+% Sends a trace of 'trace' type with specified parameters and implicit use of
+% a variable named 'State'.
+-define( trace_fmt( Message, FormatValues ),
+		 class_TraceEmitter:send( trace, State, 
+							  io_lib:format(Message,FormatValues) )
+).
+
+
+
+
+% Categorized, with 2 variations regarding state: explicit or implicit.
+
+
+% Sends a trace of 'trace' type with specified parameters and an explicit 
+% state.
+-define( send_trace_fmt_cat( State, Message, FormatValues, 
+							 MessageCategorization ), 
+		 class_TraceEmitter:send( trace, State,
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization )
+).
+
+
+% Sends a trace of 'trace' type with specified parameters and implicit use of
+% a variable named 'State'.
+-define( trace_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 class_TraceEmitter:send( trace, State,
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization )
+).
+
+
+
+
+
+% Categorized with tick, with 2 variations regarding state: explicit or
+% implicit.
+
+
+% Sends a trace of 'trace' type with specified parameters and an explicit 
+% state.
+-define( send_trace_fmt_full( State, Message, FormatValues, 
+							  MessageCategorization, Tick ), 
+		 class_TraceEmitter:send( trace, State, 
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization, Tick )
+).
+
+
+% Sends a trace of 'trace' type with specified parameters and implicit use of
+% a variable named 'State'.
+-define( trace_fmt_full( Message, FormatValues, MessageCategorization, Tick ),
+		 class_TraceEmitter:send( trace, State, 
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization, Tick )
+ ).
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Debug section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Subsection for Debug, without formatting.
+
+
+% Plain, with 2 variations regarding state: explicit or implicit.
+
+
+% Sends a debug of 'debug' type with specified parameters and an explicit
+% state.
 -define( send_debug( State, Message ), 
-		 class_TraceEmitter:send( debug, State, Message ) ).
-
-
-% Sends a trace of 'debug' type with specified parameters and implicit use of a
-% variable named 'State'.
--define( debug(Message), 
-		 class_TraceEmitter:send( debug, State, Message ) ).
-
-
-
-
--define( notify_error(Message),
-		 class_TraceEmitter:send_standalone( error, Message ),
-	     % To ensure the asynchronous sending of the trace has a chance to
-	     % complete, possibly before the interpreter is crashed:
-		 timer:sleep(100)
-).
-	
-	
--define( notify_warning(Message),
-		 class_TraceEmitter:send_standalone( warning, Message )
+		 class_TraceEmitter:send( debug, State, Message )
 ).
 
 
--define( notify_info(Message),
-		 class_TraceEmitter:send_standalone( info, Message )
+% Sends a debug of 'debug' type with specified parameters and implicit use of
+% a variable named 'State'.
+-define( debug(Message),
+		 class_TraceEmitter:send( debug, State, Message )
+
 ).
 
 
--define( notify_trace(Message),
-		 class_TraceEmitter:send_standalone( trace, Message )
+
+
+% Categorized, with 2 variations regarding state: explicit or implicit.
+
+
+% Sends a debug of 'debug' type with specified parameters and an explicit 
+% state.
+-define( send_debug_cat( State, Message, MessageCategorization ), 
+		 class_TraceEmitter:send( debug, State, Message, 
+								  MessageCategorization )
 ).
 
 
--define( notify_debug(Message),
-		 class_TraceEmitter:send_standalone( debug, Message )
+% Sends a debug of 'debug' type with specified parameters and implicit use of
+% a variable named 'State'.
+-define( debug_cat( Message, MessageCategorization ),
+		 class_TraceEmitter:send( debug, State, Message, 
+								  MessageCategorization )
 ).
+
+
+
+
+
+
+% Categorized with tick, with 2 variations regarding state: explicit or
+% implicit.
+
+
+% Sends a debug of 'debug' type with specified parameters and an explicit
+% state.
+-define( send_debug_full( State, Message, MessageCategorization, Tick ), 
+		 class_TraceEmitter:send( debug, State, Message, 
+								  MessageCategorization, Tick )
+).
+
+
+% Sends a debug of 'debug' type with specified parameters and implicit use of 
+% a variable named 'State'.
+-define( debug_full( Message, MessageCategorization, Tick ),
+		 class_TraceEmitter:send( debug, State, Message, 
+								  MessageCategorization, Tick )
+).
+
+
+
+
+
+% Subsection for Debug, with formatting.
+
+
+% Plain, with 2 variations regarding state: explicit or implicit.
+
+
+% Sends a debug of 'debug' type with specified parameters and an explicit 
+% state.
+-define( send_debug_fmt( State, Message, FormatValues ), 
+		 class_TraceEmitter:send( debug, State, 
+							  io_lib:format(Message,FormatValues) )
+).
+
+
+% Sends a debug of 'debug' type with specified parameters and implicit use of
+% a variable named 'State'.
+-define( debug_fmt( Message, FormatValues ),
+		 class_TraceEmitter:send( debug, State, 
+							  io_lib:format(Message,FormatValues) )
+).
+
+
+
+
+
+% Categorized, with 2 variations regarding state: explicit or implicit.
+
+
+% Sends a debug of 'debug' type with specified parameters and an explicit 
+% state.
+-define( send_debug_fmt_cat( State, Message, FormatValues, 
+							 MessageCategorization ), 
+		 class_TraceEmitter:send( debug, State,
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization )
+).
+
+
+% Sends a debug of 'debug' type with specified parameters and implicit use of
+% a variable named 'State'.
+-define( debug_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 class_TraceEmitter:send( debug, State,
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization )
+).
+
+
+
+
+
+% Categorized with tick, with 2 variations regarding state: explicit or
+% implicit.
+
+
+% Sends a debug of 'debug' type with specified parameters and an explicit 
+% state.
+-define( send_debug_fmt_full( State, Message, FormatValues, 
+							  MessageCategorization, Tick ), 
+		 class_TraceEmitter:send( debug, State, 
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization, Tick )
+).
+
+
+% Sends a debug of 'debug' type with specified parameters and implicit use of
+% a variable named 'State'.
+-define( debug_fmt_full( Message, FormatValues, MessageCategorization, Tick ),
+		 class_TraceEmitter:send( debug, State, 
+							  io_lib:format(Message,FormatValues), 
+							  MessageCategorization, Tick )
+ ).
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -567,18 +1192,50 @@
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Traces are disabled here.
-% This 'else' branch will be used iff TracingActivated is not defined below:
+% This 'else' branch will be used iff TracingActivated is not defined above.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-% Defined to avoid warnings about variables not being used.
-% Hopefully will be inlined, and then optimized out as a whole by the compiler.
-trace_disabled( _State, _Message ) ->
+
+% trace_disabled functions are defined to avoid warnings about variables not
+% being used.
+
+% Hopefully they will be inlined, and then optimized out as a whole by the
+% compiler.
+
+trace_disabled( _, _, _, _ ) ->
 	trace_disabled.
 
-trace_disabled( _Message ) ->
+
+trace_disabled( _, _, _ ) ->
 	trace_disabled.
 
+
+trace_disabled( _, _ ) ->
+	trace_disabled.
+
+
+trace_disabled( _ ) ->
+	trace_disabled.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Fatal section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+% Subsection for Fatal, without formatting.
 
 
 % Most important trace categories cannot be disabled:
@@ -589,104 +1246,596 @@ trace_disabled( _Message ) ->
          % To ensure the asynchronous output of the trace has a chance to
          % complete, possibly before the interpreter is crashed:
 		 timer:sleep(100),
-		 trace_disabled( State )
-		
+		 trace_disabled( State )		
 ).
 
+
 -define( fatal(Message), 
-		 ?send_fatal( undefined, Message ) ).
+		 ?send_fatal( undefined, Message )
+).
 
 
+
+
+
+-define( send_fatal_cat( State, Message, MessageCategorization ),
+		 ?send_fatal( State, Message ++ "(" ++ MessageCategorization ++ ")" )
+).
+
+
+-define( fatal_cat( Message, MessageCategorization ),
+		 ?send_fatal_cat( undefined, Message, MessageCategorization )
+).
+
+
+
+
+
+-define( send_fatal_full( State, Message, MessageCategorization, Tick ),
+		 ?send_fatal( State, Message ++ "(" ++ MessageCategorization 
+		 			 ++ io_lib:format( ") at tick ~w", [Tick] ) )
+).
+
+
+-define( fatal_full( Message, MessageCategorization, Tick ),
+		 ?send_fatal_full( State, Message, MessageCategorization, Tick )
+).
+
+
+
+
+
+% Subsection for Fatal, with formatting.
+
+
+-define( send_fatal_fmt( State, Message, FormatValues ),
+		 ?send_fatal( State, io_lib:format(Message,FormatValues) )
+).
+
+
+-define( fatal_fmt( Message, FormatValues ),
+		 ?send_fatal_fmt( undefined, Message, FormatValues )
+).
+
+
+
+
+
+-define( send_fatal_fmt_cat( State, Message, FormatValues, 
+		 					 MessageCategorization ),
+		 ?send_fatal( State, io_lib:format(Message,FormatValues)  
+		 			 ++ "(" ++ MessageCategorization ++ ")" )
+).
+
+
+-define( fatal_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 ?send_fatal_fmt_cat( undefined, Message, FormatValues, 
+		 					  MessageCategorization )
+).
+
+
+
+
+
+-define( send_fatal_fmt_full( State, Message, FormatValues, 
+						  MessageCategorization, Tick ),
+		 ?send_fatal( State, io_lib:format(Message,FormatValues)  
+		 			 ++ "(" ++ MessageCategorization 
+					 ++ io_lib:format( ") at tick ~w", [Tick] ) )
+).
+
+
+-define( fatal_fmt_full( Message, FormatValues, MessageCategorization, Tick ),
+		 ?send_fatal_fmt_full( undefined, Message, FormatValues, 
+		 					   MessageCategorization, Tick )
+).
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Error section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+% Subsection for Error, without formatting.
+
+
+% Most important trace categories cannot be disabled:
 
 -define( send_error( State, Message ),
 		 io:format( "Error trace message (although traces are disabled): ~s.~n",
 					[Message] ),
-	     % To ensure the asynchronous output of the trace has a chance to
-	     % complete, possibly before the interpreter is crashed:
+         % To ensure the asynchronous output of the trace has a chance to
+         % complete, possibly before the interpreter is crashed:
 		 timer:sleep(100),
-		 trace_disabled( State )
+		 trace_disabled( State )		
 ).
 
 
 -define( error(Message), 
-		 ?send_error( undefined, Message ) ).
+		 ?send_error( undefined, Message )
+).
 
 
 
--define( send_warning( State, Message ), 
-		 trace_disabled( State, Message ) ).
+
+
+-define( send_error_cat( State, Message, MessageCategorization ),
+		 ?send_error( State, Message ++ "(" ++ MessageCategorization ++ ")" )
+).
+
+
+-define( error_cat( Message, MessageCategorization ),
+		 ?send_error_cat( undefined, Message, MessageCategorization )
+).
+
+
+
+
+-define( send_error_full( State, Message, MessageCategorization, Tick ),
+		 ?send_error( State, Message ++ "(" ++ MessageCategorization 
+		 			 ++ io_lib:format( ") at tick ~w", [Tick] ) )
+).
+
+
+-define( error_full( Message, MessageCategorization, Tick ),
+		 ?send_error_full( State, Message, MessageCategorization, Tick )
+).
+
+
+
+
+
+
+
+
+% Subsection for Error, with formatting.
+
+
+-define( send_error_fmt( State, Message, FormatValues ),
+		 ?send_error( State, io_lib:format(Message,FormatValues) )
+).
+
+
+-define( error_fmt( Message, FormatValues ),
+		 ?send_error_fmt( undefined, Message, FormatValues )
+).
+
+
+
+
+-define( send_error_fmt_cat( State, Message, FormatValues, 
+		 					 MessageCategorization ),
+		 ?send_error( State, io_lib:format(Message,FormatValues)  
+		 			 ++ "(" ++ MessageCategorization ++ ")" )
+).
+
+
+-define( error_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 ?send_error_fmt_cat( undefined, Message, FormatValues, 
+		 					  MessageCategorization )
+).
+
+
+
+
+
+
+
+
+-define( send_error_fmt_full( State, Message, FormatValues, 
+						  MessageCategorization, Tick ),
+		 ?send_error( State, io_lib:format(Message,FormatValues)  
+		 			 ++ "(" ++ MessageCategorization 
+					 ++ io_lib:format( ") at tick ~w", [Tick] ) )
+).
+
+
+-define( error_fmt_full( Message, FormatValues, MessageCategorization, Tick ),
+		 ?send_error_fmt_full( undefined, Message, FormatValues, 
+		 					   MessageCategorization, Tick )
+).
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Warning section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+% Subsection for Warning, without formatting.
+
+
+
+-define( send_warning( State, Message ),
+		 trace_disabled( State, Message )		
+).
 
 
 -define( warning(Message), 
-		 trace_disabled(Message) ).
+		 trace_disabled( Message )	
+).
 
 
 
--define( send_info( State, Message ), 
-		 trace_disabled(State,Message) ).
+
+-define( send_warning_cat( State, Message, MessageCategorization ),
+		 trace_disabled( State, Message, MessageCategorization )	
+).
+
+
+-define( warning_cat( Message, MessageCategorization ),
+		 trace_disabled( Message, MessageCategorization )	
+).
+
+
+
+
+-define( send_warning_full( State, Message, MessageCategorization, Tick ),
+		 trace_disabled( State, Message, MessageCategorization, Tick )
+).
+
+
+-define( warning_full( Message, MessageCategorization, Tick ),
+		 trace_disabled( Message, MessageCategorization, Tick )
+).
+
+
+
+
+
+% Subsection for Warning, with formatting.
+
+
+-define( send_warning_fmt( State, Message, FormatValues ),
+		 trace_disabled( State, Message, FormatValues )
+).
+
+
+-define( warning_fmt( Message, FormatValues ),
+		 trace_disabled( Message, FormatValues )
+).
+
+
+
+-define( send_warning_fmt_cat( State, Message, FormatValues, 
+		 					 MessageCategorization ),
+		 trace_disabled( State, Message, FormatValues, 
+		 					 MessageCategorization )
+).
+
+
+-define( warning_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 trace_disabled( Message, FormatValues, MessageCategorization )
+).
+
+
+
+
+
+-define( send_warning_fmt_full( State, Message, FormatValues, 
+						  MessageCategorization, Tick ),
+		 trace_disabled( State, Message, FormatValues, 
+						  MessageCategorization, Tick )
+).
+
+
+-define( warning_fmt_full( Message, FormatValues, MessageCategorization, Tick ),
+		 trace_disabled( Message, FormatValues, MessageCategorization, Tick )
+).
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Info section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+% Subsection for Info, without formatting.
+
+
+% Most important trace categories cannot be disabled:
+
+-define( send_info( State, Message ),
+		 trace_disabled( State, Message )		
+).
 
 
 -define( info(Message), 
-		 trace_disabled(Message) ).
+		 trace_disabled( Message )	
+).
 
 
 
--define( send_trace( State, Message ), 
-		 trace_disabled( State, Message ) ).
+
+
+
+-define( send_info_cat( State, Message, MessageCategorization ),
+		 trace_disabled( State, Message, MessageCategorization )	
+).
+
+
+-define( info_cat( Message, MessageCategorization ),
+		 trace_disabled( Message, MessageCategorization )	
+).
+
+
+
+
+-define( send_info_full( State, Message, MessageCategorization, Tick ),
+		 trace_disabled( State, Message, MessageCategorization, Tick )
+).
+
+
+-define( info_full( Message, MessageCategorization, Tick ),
+		 trace_disabled( Message, MessageCategorization, Tick )
+).
+
+
+
+
+
+
+% Subsection for Info, with formatting.
+
+
+-define( send_info_fmt( State, Message, FormatValues ),
+		 trace_disabled( State, Message, FormatValues )
+).
+
+
+-define( info_fmt( Message, FormatValues ),
+		 trace_disabled( Message, FormatValues )
+).
+
+
+
+
+
+-define( send_info_fmt_cat( State, Message, FormatValues, 
+		 					 MessageCategorization ),
+		 trace_disabled( State, Message, FormatValues, 
+		 					 MessageCategorization )
+).
+
+
+-define( info_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 trace_disabled( Message, FormatValues, MessageCategorization )
+).
+
+
+
+
+
+
+-define( send_info_fmt_full( State, Message, FormatValues, 
+						  MessageCategorization, Tick ),
+		 trace_disabled( State, Message, FormatValues, 
+						  MessageCategorization, Tick )
+).
+
+
+-define( info_fmt_full( Message, FormatValues, MessageCategorization, Tick ),
+		 trace_disabled( Message, FormatValues, MessageCategorization, Tick )
+).
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Trace section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+% Subsection for Trace, without formatting.
+
+
+% Most important trace categories cannot be disabled:
+
+-define( send_trace( State, Message ),
+		 trace_disabled( State, Message )		
+).
 
 
 -define( trace(Message), 
-		 trace_disabled(Message) ).
+		 trace_disabled( Message )	
+).
 
 
 
--define( send_debug( State, Message ), 
-		 trace_disabled( State, Message ) ).
+
+
+-define( send_trace_cat( State, Message, MessageCategorization ),
+		 trace_disabled( State, Message, MessageCategorization )	
+).
+
+
+-define( trace_cat( Message, MessageCategorization ),
+		 trace_disabled( Message, MessageCategorization )	
+).
+
+
+
+
+
+-define( send_trace_full( State, Message, MessageCategorization, Tick ),
+		 trace_disabled( State, Message, MessageCategorization, Tick )
+).
+
+
+-define( trace_full( Message, MessageCategorization, Tick ),
+		 trace_disabled( Message, MessageCategorization, Tick )
+).
+
+
+
+
+
+
+% Subsection for Trace, with formatting.
+
+
+-define( send_trace_fmt( State, Message, FormatValues ),
+		 trace_disabled( State, Message, FormatValues )
+).
+
+
+-define( trace_fmt( Message, FormatValues ),
+		 trace_disabled( Message, FormatValues )
+).
+
+
+
+-define( send_trace_fmt_cat( State, Message, FormatValues, 
+		 					 MessageCategorization ),
+		 trace_disabled( State, Message, FormatValues, 
+		 					 MessageCategorization )
+).
+
+
+-define( trace_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 trace_disabled( Message, FormatValues, MessageCategorization )
+).
+
+
+
+-define( send_trace_fmt_full( State, Message, FormatValues, 
+						  MessageCategorization, Tick ),
+		 trace_disabled( State, Message, FormatValues, 
+						  MessageCategorization, Tick )
+).
+
+
+-define( trace_fmt_full( Message, FormatValues, MessageCategorization, Tick ),
+		 trace_disabled( Message, FormatValues, MessageCategorization, Tick )
+).
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Debug section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+% Subsection for Debug, without formatting.
+
+
+% Most important debug categories cannot be disabled:
+
+-define( send_debug( State, Message ),
+		 trace_disabled( State, Message )		
+).
 
 
 -define( debug(Message), 
-		 trace_disabled(Message) ).
-
-
-
-% To send traces neither from a TraceEmitter instance nor from a test
-% (ex: in a static method):
-
--define( notify_fatal(Message),
-		 io:format( "Fatal trace message (although traces are disabled):~s.~n",
-					[Message]),
-	     % To ensure the asynchronous output of the trace has a chance to
-	     % complete, possibly before the interpreter is crashed:
-		 timer:sleep(100)
+		 trace_disabled( Message )	
 ).
 
 
--define( notify_error(Message),
-		 io:format( "Error trace message (although traces are disabled):~s.~n",
-					[Message]),
-	     % To ensure the asynchronous sending of the trace has a chance to
-	     % complete, possibly before the interpreter is crashed:
-		 timer:sleep(100)
+
+
+
+
+-define( send_debug_cat( State, Message, MessageCategorization ),
+		 trace_disabled( State, Message, MessageCategorization )	
 ).
-	
-	
--define( notify_warning(Message), 
-		 trace_disabled(Message) ).
 
 
--define( notify_info(Message), 
-		 trace_disabled(Message) ).
+-define( debug_cat( Message, MessageCategorization ),
+		 trace_disabled( Message, MessageCategorization )	
+).
 
 
--define( notify_trace(Message), 
-		 trace_disabled(Message) ).
 
 
--define( notify_debug(Message), 
-		 trace_disabled(Message) ).
+
+-define( send_debug_full( State, Message, MessageCategorization, Tick ),
+		 trace_disabled( State, Message, MessageCategorization, Tick )
+).
+
+
+-define( debug_full( Message, MessageCategorization, Tick ),
+		 trace_disabled( Message, MessageCategorization, Tick )
+).
+
+
+
+
+
+
+
+
+% Subsection for Debug, with formatting.
+
+
+-define( send_debug_fmt( State, Message, FormatValues ),
+		 trace_disabled( State, Message, FormatValues )
+).
+
+
+-define( debug_fmt( Message, FormatValues ),
+		 trace_disabled( Message, FormatValues )
+).
+
+
+
+
+
+-define( send_debug_fmt_cat( State, Message, FormatValues, 
+		 					 MessageCategorization ),
+		 trace_disabled( State, Message, FormatValues, 
+		 					 MessageCategorization )
+).
+
+
+-define( debug_fmt_cat( Message, FormatValues, MessageCategorization ),
+		 trace_disabled( Message, FormatValues, MessageCategorization )
+).
+
+
+
+
+
+
+-define( send_debug_fmt_full( State, Message, FormatValues, 
+						  MessageCategorization, Tick ),
+		 trace_disabled( State, Message, FormatValues, 
+						  MessageCategorization, Tick )
+).
+
+
+-define( debug_fmt_full( Message, FormatValues, MessageCategorization, Tick ),
+		 trace_disabled( Message, FormatValues, MessageCategorization, Tick )
+).
+
 
 
 -endif.
+
 
 % End of the TracingActivated branch.
 
