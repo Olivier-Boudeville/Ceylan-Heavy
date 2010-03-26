@@ -1,4 +1,3 @@
-% 
 % Copyright (C) 2003-2010 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
@@ -77,9 +76,11 @@ get_size( Term ) ->
 	erts_debug:flat_size(Term) * get_size_of_vm_word().
 
 
-% Returns a string containing a user-friendly description of the specified
-% size in bytes, using GB (Gigabytes), MB (Megabytes), KB (Kilobytes) and
-% bytes.
+% Returns a string containing a user-friendly description of the specified size
+% in bytes, using GiB (Gibibytes, not Gigabytes), MiB (Mebibytes, not
+% Megabytes), KiB (Kibibytes, not Kilobytes) and bytes.
+%
+% See http://en.wikipedia.org/wiki/Kibibyte
 interpret_byte_size( SizeInBytes ) ->
 	
 	Kilo = 1024,
@@ -92,7 +93,7 @@ interpret_byte_size( SizeInBytes ) ->
 						 [];
 					 
 					 GigaNonNull->
-						 [io_lib:format( "~B GB", [GigaNonNull] )]
+						 [io_lib:format( "~B GiB", [GigaNonNull] )]
 							   
 				   end,
 	SizeAfterGiga = SizeInBytes rem Giga,
@@ -104,7 +105,7 @@ interpret_byte_size( SizeInBytes ) ->
 						 ListWithGiga;
 					 
 					 MegaNonNull->
-						 [io_lib:format( "~B MB", [MegaNonNull] )|ListWithGiga]
+						 [io_lib:format( "~B MiB", [MegaNonNull] )|ListWithGiga]
 							   
 				   end,
 	SizeAfterMega = SizeAfterGiga rem Mega,
@@ -116,7 +117,7 @@ interpret_byte_size( SizeInBytes ) ->
 						 ListWithMega;
 					 
 					 KiloNonNull->
-						 [io_lib:format( "~B KB", [KiloNonNull] )|ListWithMega]
+						 [io_lib:format( "~B KiB", [KiloNonNull] )|ListWithMega]
 							   
 				   end,
 	SizeAfterKilo = SizeAfterMega rem Kilo,
@@ -160,10 +161,12 @@ get_memory_summary() ->
 	SysSize  = erlang:memory( system ),
 	ProcSize = erlang:memory( processes ),
 	Sum = SysSize + ProcSize,
-	io:format( "  - system size: ~s (~f%)~n", 
-			  [ interpret_byte_size(SysSize), SysSize/Sum ] ),
-	io:format( "  - process size: ~s (~f%)~n", 
-			  [ interpret_byte_size(ProcSize), ProcSize/Sum ] ).
+	io:format( "  - system size: ~s (~s)~n", 
+			  [ interpret_byte_size(SysSize), 
+			   text_utils:percent_to_string(SysSize/Sum) ] ),
+	io:format( "  - process size: ~s (~s)~n", 
+			  [ interpret_byte_size(ProcSize), 
+			   text_utils:percent_to_string(ProcSize/Sum) ] ).
 	
 	
 	
