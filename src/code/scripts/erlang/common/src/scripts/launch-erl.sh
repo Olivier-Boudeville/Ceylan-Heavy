@@ -25,6 +25,7 @@ USAGE="`basename $0` [-v] [-c a_cookie] [--sn a_short_node_name | --ln a_long_no
 
 #echo "Received as parameters: $*"
 
+
 #ERL=/usr/bin/erl
 ERL=erl
 
@@ -41,7 +42,11 @@ autostart=0
 in_background=1
 
 
-while [ $# -gt 0 ] ; do
+# To stop interpreting options when having to manage them verbatim:
+do_stop=1
+
+
+while [ $# -gt 0 ] && [ $do_stop -eq 1 ] ; do
 	token_eaten=1
 
 	#echo "Examining next argument: '$1'"
@@ -119,7 +124,7 @@ while [ $# -gt 0 ] ; do
 		shift
 		# We can use -s instead, which would allow to send multiple commands
 		# in a row.
-		TO_EVAL="-eval $1"
+		to_eval="-eval $1"
 		eval_content="$1"
 		token_eaten=0
 	fi
@@ -143,19 +148,33 @@ while [ $# -gt 0 ] ; do
 		token_eaten=0
 	fi
 
-	# Avoids warning of next test:
+	# Ignore options that have to be interpreted by the program itself:
+	if [ "$1" = "-start-verbatim-options" ] ; then
+		do_stop=0
+		shift
+		verbatim_opt="${verbatim_opt} $*"
+		token_eaten=0
+	fi
+
 	if [ "$1" = "--batch" ] ; then
 		verbatim_opt="${verbatim_opt} $1"
 		token_eaten=0
 	fi
 
 	if [ $token_eaten -eq 1 ] ; then
-		echo "Warning, unknown argument ('$1'), adding it 'as is' to command-line." 1>&2
+		echo "Warning, unknown argument ('$1'), "
+		"adding it 'as is' to command-line." 1>&2
 		verbatim_opt="${verbatim_opt} $1"
 	fi
 
-	shift
+	# Prevents an unwanted shift to be done if no verbatim option was specified:
+	if [ $do_stop -eq 1 ] ; then
+		shift
+	fi
+
 done
+
+#echo "Verbatim options: '${verbatim_opt}'."
 
 
 #+W w : log warnings as warnings.
@@ -166,7 +185,7 @@ log_opt="+W w"
 code_opt="-pz ${code_dirs} -smp auto +K true +A 8"
 
 
-# By default up to 1,2 million processes could be created on one node:
+# By default up to 1.2 million processes could be created on one node:
 # (reduced, as even without having spawned these processes, the memory
 # footprint can increase quite a lot)
 # Default value:
@@ -174,7 +193,7 @@ code_opt="-pz ${code_dirs} -smp auto +K true +A 8"
 max_process_count=120000
 #max_process_count=120000000
 
-command="${ERL} ${log_opt} ${code_opt} +P ${max_process_count} ${verbatim_opt}"
+command="${ERL} ${log_opt} ${code_opt} +P ${max_process_count}"
 
 # Adds a command-line cookie only if specified:
 if [ -n "${cookie}" ] ; then
@@ -182,18 +201,19 @@ if [ -n "${cookie}" ] ; then
 fi
 
 if [ ${autostart} -eq 1 ] ; then
-	echo " ** No autostart wanted, but you can run manually: ${eval_content}. **"
-	TO_EVAL="-eval io:format(\"-->"${eval_content}".\")"
+	echo " ** No autostart wanted, but you can run manually: ${eval_content} **"
+	to_eval="-eval io:format(\"-->"${eval_content}".\")"
 fi
 
 
 if [ $use_tcp_range -eq 0 ] ; then
 
-	tcp_port_opt="-kernel inet_dist_listen_min ${lower_tcp_port} inet_dist_listen_max ${higher_tcp_port}"
+	tcp_port_opt="-kernel inet_dist_listen_min ${lower_tcp_port} "
+	"inet_dist_listen_max ${higher_tcp_port}"
 
 fi
 
-command="${command} ${cookie_opt} ${TO_EVAL} ${tcp_port_opt}"
+command="${command} ${cookie_opt} ${to_eval} ${tcp_port_opt}"
 
 
 
@@ -249,11 +269,12 @@ if [ $in_background -eq 0 ] ; then
 
 fi
 
-#command="$epmd_port_opt ${command} ${background_opt}"
-command="${command} ${background_opt}"
+#command="$epmd_port_opt ${command} ${background_opt} ${verbatim_opt}"
+command="${command} ${background_opt} ${verbatim_opt}"
 
 # Uncomment to see the actual runtime settings:
-#echo "$0 running final command: ${command}" > command.txt
+#echo "$0 running final command:
+#${command}" > command.txt
 
 ${command}
 res=$?
