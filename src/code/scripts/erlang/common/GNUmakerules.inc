@@ -57,6 +57,11 @@ TEST_TARGETS = $(patsubst %.erl,%,$(TEST_SOURCES))
  
 
 
+# Note: long lines in rules should not be word-wrapped (with \), as their
+# displaying on the console would print them, leading to poorly dense outputs,
+# that are not pleasing to the eye.
+
+
 all: all-recurse $(BEAM_FILES)
 
 
@@ -93,12 +98,12 @@ all-recurse:
 
 %_exec: %_app.beam %.beam 
 	@echo "     Executing application $^ (first form)"
-	$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@|sed 's|_exec|_app:exec()|1'` $(CMD_LINE_OPT) $(INTERNAL_OPTIONS)
+	$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@|sed 's|_exec|_app:exec()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
 	
 		
 %_exec: %_app.beam
 	@echo "     Executing application $^ (second form)"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@|sed 's|_exec|_app:exec()|1'` $(CMD_LINE_OPT) $(INTERNAL_OPTIONS)
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@|sed 's|_exec|_app:exec()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
 
 
 
@@ -110,12 +115,13 @@ all-recurse:
 
 %_exec_background: %_app.beam %.beam 
 	@echo "     Executing application $^ in the background (first form)"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln `echo $@ | sed 's|_background$$||1'`-$$USER --background --eval `echo $@ | sed 's|_exec_background|_app:exec()|1'` $(CMD_LINE_OPT) $(INTERNAL_OPTIONS) &
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln `echo $@ | sed 's|_background$$||1'`-$$USER --background --eval `echo $@ | sed 's|_exec_background|_app:exec()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT) &
 	
 		
 %_exec_background: %_app.beam
 	@echo "     Executing application $^ in the background (second form)"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln `echo $@ | sed 's|_background$$||1'`-$$USER --background --eval `echo $@ | sed 's|_exec_background|_app:exec()|1'` $(CMD_LINE_OPT) $(INTERNAL_OPTIONS) &
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln `echo $@ | sed 's|_background$$||1'`-$$USER --background --eval `echo $@ | sed 's|_exec_background|_app:exec()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT) &
+
 
 
 	
@@ -139,15 +145,15 @@ all-recurse:
 
 	
 %_interactive_test: %.beam %_interactive_test.beam
-	@echo "     Executing interactively test function $(STARTUP_FUNCTION) in module $@"
-	@$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT) -run $@ \
-	$(STARTUP_FUNCTION) $(INTERNAL_OPTIONS)
+	@echo "     Executing interactively test function "
+	"$(STARTUP_FUNCTION) in module $@"
+	@$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT) -run $@ $(STARTUP_FUNCTION) $(INTERNAL_OPTIONS)
 
 
 %_batch_test: %.beam %_batch_test.beam
-	@echo "     Executing non-interactively test function $(STARTUP_FUNCTION) in module $@"
-	@$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT) -run $@ \
-	$(STARTUP_FUNCTION) $(INTERNAL_OPTIONS)
+	@echo "     Executing non-interactively test function "
+	"$(STARTUP_FUNCTION) in module $@"
+	@$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT) -run $@ $(STARTUP_FUNCTION) $(INTERNAL_OPTIONS)
 
 
 
@@ -155,8 +161,9 @@ all-recurse:
 # %_integration_dependencies target is a phony target, so that test dependencies
 # can be specified.
 %_integration_run: %_integration_test.beam %_integration_dependencies
-	@echo "     Running integration test $@ from $^ with $(ERL_PARAMETERIZED_LAUNCHER)"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@ | sed 's|_run|_test:run()|1'` $(CMD_LINE_OPT) $(INTERNAL_OPTIONS)
+	@echo "     Running integration test $@ from $^ "
+	"with $(ERL_PARAMETERIZED_LAUNCHER)"
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@ | sed 's|_run|_test:run()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
 
 	
 
@@ -167,17 +174,17 @@ all-recurse:
 	
 %_run: %_test %_test_dependencies
 	@echo "     Running unitary test $@ (first form) from $^, with $(ERL_PARAMETERIZED_LAUNCHER)"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@ | sed 's|_run|_test:run()|1'` $(CMD_LINE_OPT) $(INTERNAL_OPTIONS)
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@ | sed 's|_run|_test:run()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
 
 
 %_run: %_test %.beam 
 	@echo "     Running unitary test $@ (second form) from $^"
-	$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER  --eval `echo $@ | sed 's|_run|_test:run()|1'` $(CMD_LINE_OPT) $(INTERNAL_OPTIONS)
+	$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@ | sed 's|_run|_test:run()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
 	
 		
 %_run: %_test
 	@echo "     Running unitary test $@ (third form) from $^"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@ | sed 's|_run|_test:run()|1'` $(CMD_LINE_OPT) $(INTERNAL_OPTIONS)
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@ | sed 's|_run|_test:run()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
 
 
 test: all test-recurse
@@ -194,7 +201,7 @@ doc: doc-recurse
 
 doc-recurse:
 	@echo "   Preparing documentation in "$(PWD) #`basename $(PWD)`
-	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then cd $$m && $(MAKE) -s doc CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ; else echo "     (directory $$m skipped)" ; fi ) ; then exit 1; fi ; done
+	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then cd $$m && $(MAKE) -s doc CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ; else echo "     (directory $$m skipped)" ; fi ) ; 	then exit 1; fi ; done
 
 
 
@@ -205,9 +212,9 @@ build-tests: $(BEAM_FILES)
 
 launch: Emakefile
 	@echo "     Launching interpreter with default Ceylan settings"
-	@${ERL_PARAMETERIZED_LAUNCHER} --ln test_shell-$$USER \
-	$(CMD_LINE_OPT) $(INTERNAL_OPTIONS)
+	@${ERL_PARAMETERIZED_LAUNCHER} --ln test_shell-$$USER $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
 	
+
 
 
 # Installation section.
@@ -327,12 +334,15 @@ clean-database:
 	
 	
 clean-recurse:
-	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then cd $$m && $(MAKE) -s clean CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ; else echo "     (directory $$m skipped)" ; fi ) ; then exit 1; fi ; done
+	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then      \
+	cd $$m && $(MAKE) -s clean CMD_LINE_OPT="${CMD_LINE_OPT}" &&   \
+	cd .. ; else echo "     (directory $$m skipped)" ; fi ) ; then \
+	 exit 1; fi ; done
 
 	
 realclean: clean
 	@echo "     Deep cleaning in "`basename $(PWD)`
-	@-/bin/rm -f Emakefile
+	-@/bin/rm -f Emakefile
 	
 	
 info: info-files
@@ -353,4 +363,7 @@ info-files:
 	@echo "TEST_SOURCES = $(TEST_SOURCES)"
 	@echo "TEST_TARGETS = $(TEST_TARGETS)"
 
-		
+	
+include $(COMMON_TOP)/doc/GNUmakerules-docutils.inc
+
+
