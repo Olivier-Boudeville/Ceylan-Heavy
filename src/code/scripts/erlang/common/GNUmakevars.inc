@@ -173,6 +173,8 @@ BEAM_PATH_OPT = $(foreach dir,$(BEAM_DIRS),--beam-dir $(dir))
 # select the one in ~/.erlang.cookie (if any), which is better
 #
 # OVERRIDDEN_OPT left for the user.
-ERL_PARAMETERIZED_LAUNCHER = $(ERL_LAUNCHER) -v  --fqdn $(FQDN) \
+ERL_PARAMETERIZED_LAUNCHER = $(ERL_LAUNCHER) -v --fqdn $(FQDN) \
 						   $(BEAM_PATH_OPT) $(OVERRIDDEN_OPT)
+
+INTERNAL_OPTIONS := -start-verbatim-options $(INTERNAL_OPTIONS)
 
