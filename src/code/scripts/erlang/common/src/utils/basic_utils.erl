@@ -35,23 +35,24 @@
 
 % Timestamp-related functions.
 -export([ get_timestamp/0, get_textual_timestamp/0, get_textual_timestamp/1,
-	timestamp_to_string/1, get_duration/2, get_textual_duration/2 ]).
+		 timestamp_to_string/1, get_duration/2, get_textual_duration/2 ]).
 	
 	
 	
 % Registration functions.
 -export([ register_as/2, register_as/3, unregister/2, 
-	get_registered_pid_for/1, get_registered_pid_for/2,
-	wait_for_global_registration_of/1, wait_for_local_registration_of/1 ]).
+		 get_registered_pid_for/1, get_registered_pid_for/2,
+		 wait_for_global_registration_of/1, wait_for_local_registration_of/1 ]).
 
 
 
 % Random-related functions.
 -export([ start_random_source/3, start_random_source/1, stop_random_source/0,
-	get_random_value/0, get_random_value/1, get_random_module_name/0,
-	get_random_seed/0, random_select/2, random_permute/1, generate_uuid/0 ]).
-	
-	
+		 get_random_value/0, get_random_value/1, get_random_module_name/0,
+		 get_random_seed/0, random_select/2, random_permute/1, generate_uuid/0 
+		 ]).
+
+
 
 % List management functions.
 -export([ get_element_at/2, remove_element_at/2, subtract_all_duplicates/2,
@@ -406,9 +407,9 @@ start_random_source(A,B,C) ->
 	random:seed(A,B,C).
 
 
-% Seeds the random number generator, either with specified seed, or with 
-% a default seed (if wanting to obtain the same random series at each run) 
-% or with current time (if wanting "real" non-reproducible randomness).
+% Seeds the random number generator, either with specified seed, or with a
+% default seed (if wanting to obtain the same random series at each run) or with
+% current time (if wanting "real" non-reproducible randomness).
 start_random_source( {A,B,C} ) ->
 	start_random_source(A,B,C);
 	
@@ -427,6 +428,7 @@ stop_random_source() ->
 	
 	
 % Returns an integer random value generated from an uniform distribution. 
+%
 % Given an integer N >= 1, returns a random integer uniformly distributed
 % between 1 and N (both included), updating the random state in the process
 % dictionary.
@@ -434,8 +436,8 @@ get_random_value(N) ->
 	random:uniform(N).
 
 
-% Returns a random float uniformly distributed between 0.0 and 1.0, updating
-% the random state in the process dictionary.
+% Returns a random float uniformly distributed between 0.0 and 1.0, updating the
+% random state in the process dictionary.
 get_random_value() ->
 	random:uniform().
 	
@@ -463,9 +465,11 @@ get_random_seed() ->
 	
 
 % Returns a random uniform permutation of the specified list.
+%
 % Inspired from http://paste.lisp.org/display/74804.
-% All these algorithms would need random access to a list, which is not
-% readily possible here, hence must be emulated.
+%
+% All these algorithms would need random access to a list, which is not readily
+% possible here, hence must be emulated.
 random_select( _, 0 ) -> 
 	[];
 	
@@ -480,9 +484,8 @@ random_permute( List ) ->
 	
 
 
-% Returns a string containing a new universally unique identifier (UUID), 
-% based on the system clock plus the system's ethernet hardware address, 
-% if present.
+% Returns a string containing a new universally unique identifier (UUID), based
+% on the system clock plus the system's ethernet hardware address, if present.
 generate_uuid() ->
 	Res = os:cmd( "uuidgen -t" ),
 	% Removes the final end-of-line:
@@ -498,8 +501,10 @@ generate_uuid() ->
 % Returns the element in the list at the specified index, in [1..length(List)].
 % If the index is out of bounds, a function_clause like 
 % '[{basic_utils,get_element_at,...}]' is triggered.
+%
 % Note: usually these kinds of functions should not be used, recursive
 % algorithms are a lot more effective, when applicable.
+%
 % Signature: get_element_at(List,Index)
 get_element_at( List, 1 ) ->
 	hd(List);
@@ -509,12 +514,15 @@ get_element_at( [_H|T], Index ) ->
 		
 		
 
-% Returns a list corresponding to the specified one with the element
-% at specified index removed.
+% Returns a list corresponding to the specified one with the element at
+% specified index removed.
+%
 % If the index is out of bounds, a function_clause like 
 % '[{basic_utils,remove_element_at,...}]' is triggered.
+%
 % Note: usually these kinds of functions should not be used, recursive
 % algorithms are a lot more effective, when applicable.
+%
 % Signature: remove_element_at(List,Index) ->
 % Not tail recursive version:
 %remove_element_at( [_H|T], 1 ) -> 
@@ -564,7 +572,7 @@ speak(Message) ->
 	
 
 % Notifies the user of the specified message, with log output and synthetic
-% voice.			
+% voice.
 notify_user(Message) ->
 	io:format(Message),
 	speak(Message).
@@ -586,8 +594,8 @@ notify_user(Message,FormatList) ->
 % Node-related functions.
 
 
-% Returns a name that is a legal name for an Erlang node, forged from
-% specified one.
+% Returns a name that is a legal name for an Erlang node, forged from specified
+% one.
 generate_valid_node_name_from( Name ) when is_list(Name) ->
 	% Replaces all series of spaces by one underscore:
 	re:replace( lists:flatten(Name), " +", "_", [global,{return, list}] ).
@@ -609,6 +617,7 @@ check_node_validity( Node ) when is_atom(Node) ->
 			false
 			
 	end.			
+
 
 
 % Miscellaneous functions.
@@ -659,14 +668,16 @@ compare_versions( {A1,A2,A3}, {B1,B2,B3} ) ->
 
 
 
-% Draws one element at random of the specified list, which is a list of 
+% Draws one element at random of the specified list, which is a list of
 % {Element,Probability} pairs: returns the drawn element, knowing that it will
 % be choosen according to its probability.
-% Probabilities are managed as relative values, they do not have to sum up
-% to 1.0; they must be positive or null integers, and their sum must not be
-% null.
-% Ex:  ElementList = [{first,1},{second,2},{third,1}] is excepted to return
+%
+% Probabilities are managed as relative values, they do not have to sum up to
+% 1.0; they must be positive or null integers, and their sum must not be null.
+%
+% Ex: ElementList = [{first,1},{second,2},{third,1}] is excepted to return
 % 'second' twice as frequently as 'first' or 'third'.
+%
 % Using [{first,1},{second,0},{third,1}] instead would mean that 'second' would
 % never be drawn.
 draw_element( ElementList ) ->
@@ -709,11 +720,14 @@ select_element( [ {_Element,Probability} | T ], DrawnValue, CurrentSum ) ->
 
 % Returns a value (a strictly positive integer) expected to be as much as
 % possible specific to the current process.
+%
 % Mostly based on its PID.
+%
 % Useful for example when a large number of similar processes try to access to
 % the same resource (ex: a set of file descriptors) over time: they can rely on
 % some random waiting based on that process-specific value in order to smooth
 % the accesses over time.
+%
 % We could imagine taking into account as well the current time, the process
 % reductions, etc. or generating a reference.
 get_process_specific_value() ->
