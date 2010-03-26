@@ -11,7 +11,7 @@ endif
 
 # PROJECT_VERSION should be defined on a per-project basis.
 ifndef PROJECT_VERSION
-	PROJECT_VERSION = 0.4
+	PROJECT_VERSION = 1.0
 endif
 
 
