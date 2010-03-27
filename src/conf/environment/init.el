@@ -10,8 +10,7 @@
 
 ;; RST files support section.
 
-
-;; Disabled as is slowing emacs down way too much:
+;; May be disabled if slowing emacs down way too much:
 (require 'rst)
 (setq auto-mode-alist
       (append '(("\\.txt$"  . rst-mode)
@@ -54,12 +53,12 @@
 ;; to, say, the opening parenthesis which can be closo to the right edge
 ;; of the line.
 (setq c-offsets-alist '(
-						;; Otherwise parameters are aligned with the first, whereas we want a
-						;; fixed offset:
-						(arglist-cont-nonempty . 2)
-						(arglist-intro . 2)
+		;; Otherwise parameters are aligned with the first, whereas we want a
+		;; fixed offset:
+		(arglist-cont-nonempty . 2)
+		(arglist-intro . 2)
 						)
-	  )
+)
 
 
 ;; Support for C-like languages:
@@ -72,13 +71,16 @@
 (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
 (add-hook 'cc-mode-common-hook 'my-c-mode-common-hook)
 
+
 ;; Displaying of line number on the left:
 ;; (see also 'longlines')
 (require 'linum)
 (add-hook 'find-file-hook (lambda () (linum-mode 1)))
 
+
 ;; Not working apparently with emacs 22.2.1:
 ;;(auto-raise-mode t)
+
 
 ;; Moves the cursor across "physical lines":
 ;; (finally deactivated, as the 'go to end of line' key was leading to the
@@ -107,6 +109,7 @@
   (global-set-key (kbd "RET") 'reindent-then-newline-and-indent)
   )
 
+
 ;;(add-hook 'find-file-hooks 'set-advanced-ret-behaviour)
 
 
@@ -114,7 +117,7 @@
 (defun fix-behaviours-for-rst-mode ()
   ;;(message "############## Fixing behaviours for RST mode ###########")
 
-  ;; Advanced automatic indentation not adaptated to text modes:
+  ;; Advanced automatic indentation not adapted to text modes:
   (remove-hook 'find-file-hooks 'set-advanced-ret-behaviour)
 
   ;; This basic indentation is fine with text modes:
@@ -189,76 +192,87 @@
 ;; Key section:
 
 
-(defun default-fone ()
+(defun default-f1 ()
   (interactive)
   (message "Default for F1")
-  )
+)
 
 (defun default-f2 ()
   (interactive)
   (message "Default for F2")
-  )
+)
 
 (defun default-f3 ()
   (interactive)
   (message "Default for F3")
-  )
+)
 
 (defun default-f4 ()
   (interactive)
   (message "Default for F4")
-  )
+)
 
 (defun default-f5 ()
   (interactive)
   (message "Default for F5")
-  )
+)
 
 (defun default-f6 ()
   (interactive)
   (message "Default for F6")
-  )
+)
 
 (defun default-f7 ()
-  (interactive)
-  (message "Default for F7")
-  )
+ (interactive)
+ (message "Default for F7")
+)
 
 (defun default-f8 ()
   (interactive)
   (message "Default for F8")
-  )
+)
 
 (defun default-f9 ()
   (interactive)
   (message "Default for F9")
-  )
+)
 
 (defun default-shift-f9 ()
   (interactive)
   (message "Default for Shift-F9")
-  )
+)
 
 (defun default-f10 ()
   (interactive)
   (message "Default for F10")
-  )
+)
 
 (defun default-f11 ()
   (interactive)
   (message "Default for F11")
-  )
+)
 
 (defun default-f12 ()
   (interactive)
   (message "Default for F12")
-  )
+)
 
 (defun save-and-close ()
   (interactive)
   (save-buffer)
   (kill-this-buffer)
-  )
+)
+
+
+
+;; Not triggered when hitting F12, but triggered when hitting F1 on my keyboard:
+(global-set-key [f12]               'save-buffer)
+(global-set-key [XF86New]           'save-buffer)
+
+
+(global-set-key "\C-Z" 'undo)
+
+;;(global-set-key "TAB" 'reindent-then-newline-and-indent)
 
 
 
