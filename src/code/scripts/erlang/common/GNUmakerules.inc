@@ -321,7 +321,7 @@ help-erl:
 	@echo "To test hello.erl: 'erl', then 'c(hello).'," \
 		"then 'hello:world().', then CTRL-C CTRL-C"
 
-clean: clean-erlang clean-database clean-recurse
+clean: clean-erlang clean-database clean-override  clean-recurse
 
 
 clean-erlang:
@@ -332,6 +332,21 @@ clean-erlang:
 clean-database:
 	-@/bin/rm -rf Mnesia.*@*
 	
+
+# This target has been added in order to allow the packages making use of
+# 'Common' to define their specific cleaning rules.
+# They could have defined in their own GNUmakerules.inc something like:
+#   clean: clean-mypackage
+#   clean-mypackage:
+#   -@/bin/rm foo.mypackage
+# but then this 'clean' target would become the default one, whereas we expect
+# the 'all' default target of 'Common' to be triggered.
+# Thus we finally allowed upper packages to make their cleaning thanks to:
+# FILES_TO_CLEAN += foo.mypackage in their GNUmakevars.inc
+clean-override:
+	@#echo "FILES_TO_CLEAN = $(FILES_TO_CLEAN)"
+	-@/bin/rm -f $(FILES_TO_CLEAN)
+
 	
 clean-recurse:
 	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then      \
