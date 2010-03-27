@@ -1,7 +1,7 @@
 # Prerequisite: TRACES_TOP must be set.
 
 
-# Project section.
+# Project section.
 
 # PROJECT_NAME should be defined on a per-project basis.
 ifndef PROJECT_NAME
