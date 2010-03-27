@@ -7,7 +7,8 @@
 .PHONY: clean-traces
 
 
-clean: clean-traces
+# Not wanting to define a default rule:
+#clean: clean-traces
 	
 
 ERL_FILES = $(wildcard *.erl)
@@ -38,8 +39,8 @@ TRACES_GENERATED_FILES := $(AUX_GENERATED_FILES) $(TEX_GENERATED_FILES)    \
 	$(OUT_GENERATED_FILES) $(LOG_GENERATED_FILES) $(HTML_GENERATED_FILES) \
 	$(PDF_GENERATED_FILES) $(GENERATOR_LOG_FILE) Listener-*.traces   
 	
-	
-clean-traces:
-	-@/bin/rm -f $(TRACES_FILES) $(TRACES_GENERATED_FILES)
+
+# Used by the clean-override target in 'Common':	
+FILES_TO_CLEAN += $(TRACES_FILES) $(TRACES_GENERATED_FILES)
 
 
