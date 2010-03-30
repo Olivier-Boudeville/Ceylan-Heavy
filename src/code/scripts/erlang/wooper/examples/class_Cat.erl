@@ -1,5 +1,4 @@
-% 
-% Copyright (C) 2003-2009 Olivier Boudeville
+% Copyright (C) 2003-2010 Olivier Boudeville
 %
 % This file is part of the WOOPER examples.
 %
@@ -25,15 +24,19 @@
 % Declaring all variations of WOOPER standard life-cycle operations:
 % (template pasted, two replacements performed to update arities)
 -define( wooper_construct_export, new/4, new_link/4, 
-	synchronous_new/4, synchronous_new_link/4,
-	synchronous_timed_new/4, synchronous_timed_new_link/4,
-	remote_new/5, remote_new_link/5, remote_synchronous_new/5,
-	remote_synchronous_new_link/5, remote_synchronous_timed_new/5,
-	remote_synchronous_timed_new_link/5, construct/5, delete/1 ).
+		synchronous_new/4, synchronous_new_link/4,
+		synchronous_timed_new/4, synchronous_timed_new_link/4,
+		remote_new/5, remote_new_link/5, remote_synchronous_new/5,
+		remote_synchronous_new_link/5, remote_synchronous_timed_new/5,
+		remote_synchronous_timed_new_link/5, construct/5, delete/1 ).
 
 
-% Method declarations.
+% Member method declarations.
 -define( wooper_method_export, getTeatCount/1, canEat/2, getWhiskerColor/1 ).
+
+
+% Static method declarations.
+-define( wooper_static_method_export, get_mean_life_expectancy/0 ).
 
 
 % Allows to define WOOPER base variables and methods for that class:
@@ -82,4 +85,15 @@ canEat(State,_) ->
 
 getWhiskerColor(State)->
 	?wooper_return_state_result( State, ?getAttr(whisker_color) ).
+	
+
+
+
+% Static section.
+
+
+% Returns the mean life expectancy of a cat, in years.
+get_mean_life_expectancy() ->
+	18.
+
 	
