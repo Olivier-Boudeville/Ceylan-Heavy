@@ -58,22 +58,78 @@ run() ->
 			   [polygon:to_string(MyUprightSquare)] ),
 
 
+	% Simplest concave polygone has 4 vertices (clockwise defined):
+	MyConcavePolygon = polygon:get_polygon( [
+			  {0,0}, {20,0}, {10,20}, {14,14} ] ),
+
+	io:format( "   Concave polygon description:~n~s~n", 
+			   [polygon:to_string(MyConcavePolygon)] ),
+
+
 	io:format( "   Diameter information ({P1,P2,SquareDistance}):~n"
 			   "  - for the triangle, we have: ~w~n"
-			   "  - for the upright square, we have: ~w~n~n", 
+			   "  - for the upright square, we have: ~w~n"
+			   "  - for the concave polygon, we have: ~w~n~n", 
 			   [polygon:get_diameter(MyTriangle),
-				polygon:get_diameter(MyUprightSquare)] ),
+				polygon:get_diameter(MyUprightSquare),
+				polygon:get_diameter(MyConcavePolygon)
+			   ] ),
 
 	io:format( "   Smallest enclosing rectangle "
 			   "({TopLeftCorner,BottomRightCorner}):~n"
 			   "  - for the triangle, we have: ~w~n"
-			   "  - for the upright square, we have: ~w~n", 
+			   "  - for the upright square, we have: ~w~n"
+			   "  - for the concave polygon, we have: ~w~n~n", 
 			   [polygon:get_smallest_enclosing_rectangle(MyTriangle),
-				polygon:get_smallest_enclosing_rectangle(MyUprightSquare)] ),
+				polygon:get_smallest_enclosing_rectangle(MyUprightSquare),
+				polygon:get_smallest_enclosing_rectangle(MyConcavePolygon)
+			   ] ),
+
+
+	io:format( "   Areas:~n"
+			   "  - for the triangle, we have: ~w~n"
+			   "  - for the upright square, we have: ~w~n"
+			   "  - for the concave polygon, we have: ~w~n~n", 
+			   [polygon:get_area(MyTriangle),
+				polygon:get_area(MyUprightSquare),
+				polygon:get_area(MyConcavePolygon) 
+			   ] ),
 
 	
+	% Clockwise order:
+	MySimpleTriangle = polygon:get_triangle( {0,0}, {0,5}, {10,0} ),
+
+	io:format( "   Clockwise test:~n"
+			   "  - is the triangle defined in clockwise order: ~w~n"
+			   "  - is the upright square defined in clockwise order: ~w~n"
+			   "  - is the concave polygon defined in clockwise order: ~w~n~n", 
+			   [polygon:is_in_clockwise_order(MyTriangle),
+				polygon:is_in_clockwise_order(MyUprightSquare),
+				polygon:is_in_clockwise_order(MyConcavePolygon) 
+			   ] ),
+
+
+	% Area would be negative if its absolute value was not selected:
+	AreaSimple = 25.0 = polygon:get_area(MySimpleTriangle),
+
+	io:format( "  Area of simple triangle:~n~s is: ~f.~n~n", 
+			   [ polygon:to_string(MySimpleTriangle), AreaSimple ] ),
+
+
+	io:format( "   Convexity test:~n"
+			   "  - is the triangle convex: ~w~n"
+			   "  - is the upright square convex: ~w~n"
+			   "  - is the concave polygon convex: ~w~n~n", 
+			   [polygon:is_convex(MyTriangle),
+				polygon:is_convex(MyUprightSquare),
+				polygon:is_convex(MyConcavePolygon)
+			   ] ),
+
 	% Rendering tests: see gui_test.erl.
-	  
+
+	% To force the console output:
+	timer:sleep(200),
+
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().
 

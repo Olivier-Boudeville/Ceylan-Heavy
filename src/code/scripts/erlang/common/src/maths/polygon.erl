@@ -37,12 +37,13 @@
 
 
 % Construction-related section.
--export([ get_triangle/3, get_upright_square/2 ]).
+-export([ get_triangle/3, get_upright_square/2, get_polygon/1 ]).
 
 
 % Operations on polygons.
--export([ get_diameter/1, get_smallest_enclosing_rectangle/1, render/2, 
-		  to_string/1 ]).
+-export([ get_diameter/1, get_smallest_enclosing_rectangle/1, get_area/1,
+		  is_in_clockwise_order/1, is_convex/1,
+		  render/2, to_string/1 ]).
 
 
 % Color-related section.
@@ -75,7 +76,10 @@ get_upright_square( _Center = {Xc,Yc}, EdgeLength ) ->
 	#polygon{ vertices = [ {X1,Y1}, {X2,Y1}, {X2,Y2}, {X1,Y2} ] }.
 
 
-
+% Returns a new polygon whose vertices are the specified ones.
+get_polygon( Vertices ) ->
+	#polygon{ vertices = Vertices }.
+	
 
 % Operations on polygons.
 
@@ -122,6 +126,96 @@ get_smallest_enclosing_rectangle( Polygon ) ->
 
 	end.
 
+
+
+% Returns the area enclosed of the polygon, supposed to be non-self-intersecting
+% and having at least two vertices.
+%
+% Vertices can be listed clockwise or counter-clockwise.
+%
+% Should there be no absolute value computed, and if the polygon was convex,
+% then the area would be positive iff vertices were listed in counter-clockwise
+% order.
+%
+% See: http://en.wikipedia.org/wiki/Polygon#Area_and_centroid
+get_area( Polygon ) ->
+	erlang:abs( get_signed_area( Polygon#polygon.vertices ) ).
+
+
+
+% Tells whether the specified polygon has its vertices in clockwise order
+% (otherwise they are in counter-clockwise order).
+is_in_clockwise_order( Polygon ) ->
+	case get_signed_area( Polygon#polygon.vertices ) of
+
+		Area when Area > 0 ->
+			true;
+		
+		_Negative ->
+			false
+
+	end.
+
+
+% Tells whether the specified polygon is convex (iff true) or concave
+% (otherwise).
+%
+% Polygon must have at least one vertex.
+%
+% Sign is either 'undefined' (initially), or 'positive', or 'negative'.
+%
+is_convex( Polygon ) ->
+	[First|T] = Polygon#polygon.vertices,
+	is_convex( T ++ [First], _Previous=First, _Sign=undefined ).
+
+
+is_convex( [], _Previous, _Sign ) ->
+	% Not interrupted, thus convex (includes polygon having only one vertex):
+	true;
+
+is_convex( [P={X,Y}|T], _Previous={Xp,Yp}, _Sign=undefined ) ->
+	% Setting the first sign:
+	io:format( "initial: previous= ~w, next= ~w, sum=~w.~n", 
+			   [{Xp,Yp},P, Xp*Y-X*Y] ),
+
+	FirstSign = case Xp*Y-X*Yp of
+
+				  PositiveSum when PositiveSum > 0 ->
+					  positive;
+				  
+				  _NegativeSum ->
+					  negative
+
+			  end,
+								   
+	is_convex( T, _NewPrevious=P, FirstSign );
+
+is_convex( [P={X,Y}|T], _Previous={Xp,Yp}, Sign ) ->
+	io:format( "iterated: previous= ~w, next= ~w, sum=~w.~n", 
+			   [{Xp,Yp},P, Xp*Y-X*Yp] ),
+	% Checking if still obtaining the same sign:
+	NewSign = case Xp*Y-X*Yp of
+
+				  PositiveSum when PositiveSum > 0 ->
+					  positive;
+				  
+				  _NegativeSum ->
+					  negative
+
+			  end,
+	io:format( "Current sign: ~s, new one: ~s.~n", [Sign,NewSign] ),
+							   
+	case NewSign of
+
+		Sign ->
+			% Can still be convex:
+			is_convex( T, _NewPrevious=P, Sign );
+		
+		_OppositeSign ->
+			% Finished, as is concave:
+			false
+				
+	end.	
 
 
 
@@ -227,5 +321,33 @@ update_bounding_box( lazy_circle, Polygon ) ->
 							  Polygon#polygon.vertices ),
 	Polygon#polygon{ bounding_box = {circle,Center,SquareRadius} }.
 
+
+
+
+% Helper functions.
+
+
+% Returns the signed area enclosed of the polygon, supposed to be
+% non-self-intersecting and having at least two vertices.
+%
+% Vertices can be listed clockwise or counter-clockwise.
+%
+get_signed_area( _Vertices=[First|T] ) ->
+	% We will start from the second point, as we always deal with the current
+	% one and its predecessor (avoid to add an element at end of list):
+	get_signed_area( T, _FirstOfAll=First, _Previous=First, _Area=0 ).
+
+
+get_signed_area( _Vertices=[_Last={X,Y}], _FirstOfAll={Xf,Yf}, 
+				 _Previous={Xp,Yp}, Area ) ->
+	% Here we reached the last point of the polygon, so, first, we compute its
+	% product with the previous point, then we do the same with the FirstOfAll
+	% point, as if it was following this Last point:
+	LastTwoSumTerms = Xp*Y-X*Yp + X*Yf-Xf*Y,
+	(Area+LastTwoSumTerms) / 2 ;
+
+get_signed_area( [P={X,Y}|T], FirstOfAll, _Previous={Xp,Yp}, Area ) ->
+	% Here we are not managing the last point:
+	get_signed_area( T, FirstOfAll, _NewPrevious=P, Area + Xp*Y-X*Yp ).
 
 
