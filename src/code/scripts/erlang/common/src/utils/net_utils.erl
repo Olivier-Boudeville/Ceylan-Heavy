@@ -56,9 +56,12 @@
 % Note: command-line based call, used that way as there is no ICMP stack.
 % A port could be used also.
 ping(Hostname) when is_list(Hostname) ->
+	
 	Command = "if ping " ++ Hostname ++ " -q -c 1 1>/dev/null 2>&1; "
 		"then echo ping_ok ; else echo ping_failed ; fi",
-	%io:format( "Ping command: ~s~n.", [Command] ),	
+	
+	%io:format( "Ping command: ~s~n.", [Command] ),
+	
 	case os:cmd( Command ) of 
 	
 		"ping_ok\n" ->
@@ -94,15 +97,15 @@ localhost() ->
 	
 
 	
-% Returns a string specifying the DNS name corresponding to the specified
-% IP address {N1,N2,N3,N4}.	
+% Returns a string specifying the DNS name corresponding to the specified IP
+% address {N1,N2,N3,N4}.
 reverse_lookup( IPAddress ) ->
 	Command = "host -W 1 " ++ ipv4_to_string(IPAddress) ++ " 2>/dev/null",
 	Res = os:cmd( Command ),
 	%io:format( "Host command: ~s, result: ~s.~n", [Command,Res] ),	
 	case string:tokens( Res," " ) of 
 	
-		[ _ArpaString, "domain", "name", "pointer", Domain] ->
+		[ _ArpaString, "domain", "name", "pointer", Domain ] ->
 			% Removes ending ".~n":
 			string:sub_string( Domain, 1, length(Domain)-2 );
 		
@@ -118,9 +121,11 @@ reverse_lookup( IPAddress ) ->
 
 
 % Returns the name of the local node, as an atom.
-% It is either a specific node name, or the atom 'local_node' (preferred 
-% to 'nonode@nohost').
+%
+% It is either a specific node name, or the atom 'local_node' (preferred to
+% 'nonode@nohost').
 localnode() ->
+	
 	case node() of
 	
 		nonode@nohost ->
@@ -141,12 +146,16 @@ get_all_connected_nodes() ->
 
 
 
-% Returns whether specified Erlang node is available, waiting a bit (up to
-% 3.1 seconds) should the node.
+% Returns whether specified Erlang node is available, waiting a bit (up to 3.1
+% seconds) should the node need some time to come up.
+%
 % Nodename can be an atom or a string.
-% Performs a fixed number of attempts with some exponential waiting in-between, 
+%
+% Performs a fixed number of attempts with some exponential waiting in-between,
 % in case the node is being launched in the background.
-% Durations are in milliseconds, maximum waiting time is 3.1 seconds. 
+%
+% Durations are in milliseconds, maximum waiting time is 3.1 seconds.
+%
 % Allows to return as soon as possible. 
 check_node_availability( Nodename ) ->
 	check_node_availability( Nodename, with_waiting ).
@@ -154,19 +163,29 @@ check_node_availability( Nodename ) ->
 
 	
 % Returns whether specified Erlang node is available:
-%   - Nodename is an atom or a string corresponding to the name of the target
-% node
-%   - Timing is either 'immediate' or 'with_waiting'
-% If 'immediate', the target node will be deemed available or not as soon as the
-% first and only ping attempted returns a result.
-% If ' with_waiting', a fixed number of attempts with some exponential waiting
-% in-between will be performed. This is useful, if the node is being launched
-% in the background, to wait for it, but to return as soon as possible. 
-% Durations are in milliseconds, maximum waiting time is 3.1 seconds. 
+
+% - Nodename is an atom or a string corresponding to the name of the target node
+%
+% - Timing is either 'immediate' or 'with_waiting'. If 'immediate', the target
+% node will be deemed available or not as soon as the first and only ping
+% attempted returns a result.  If ' with_waiting', a fixed number of attempts
+% with some exponential waiting in-between will be performed.
+%
+% This is useful so that, if the node is being launched in the background, it is
+% waited for while returning as soon as possible.
+%
+% Durations are in milliseconds, maximum waiting time is:
+%
+%  - 3.1  seconds if initial attempt count is 5
+%  - 6.3  seconds if initial attempt count is 6
+%  - 12.7 seconds if initial attempt count is 7
+%  - 25.5 seconds if initial attempt count is 8
+%
+% The safe setting seems an attempt count of 6.
 check_node_availability( Nodename, Timing ) when is_list(Nodename) ->
 	check_node_availability( list_to_atom(Nodename), Timing ) ;
 
-check_node_availability( Nodename, _Timing = immediate ) 
+check_node_availability( Nodename, _Timing=immediate ) 
 		when is_atom(Nodename) ->
 	
 	case net_adm:ping( Nodename ) of
@@ -179,13 +198,12 @@ check_node_availability( Nodename, _Timing = immediate )
 			
 	end;
 	
-check_node_availability( Nodename, _Timing = with_waiting ) 
+check_node_availability( Nodename, _Timing=with_waiting ) 
 		when is_atom(Nodename) ->
-	check_node_availability( Nodename, _AttemptCount = 5, 
-		_InitialDuration = 100 ).
+	check_node_availability( Nodename, _AttemptCount=6, _InitialDuration=100 ).
 	
 
-check_node_availability( _AtomNodename, _Count = 0, _CurrentDuration ) ->
+check_node_availability( _AtomNodename, _Count=0, _CurrentDuration ) ->
 	false ;
 		
 check_node_availability( AtomNodename, AttemptCount, CurrentDuration ) ->
@@ -196,6 +214,7 @@ check_node_availability( AtomNodename, AttemptCount, CurrentDuration ) ->
 			true ;
 		
 		pang ->
+			%io:format( "Sleeping for ~B ms.~n", [CurrentDuration] ),
 			timer:sleep(CurrentDuration),
 			check_node_availability( AtomNodename, AttemptCount-1,
 				2*CurrentDuration )
@@ -204,18 +223,18 @@ check_node_availability( AtomNodename, AttemptCount, CurrentDuration ) ->
 			
 
 
-% Shutdowns specified node, and returns only when it cannot be ping'ed 
-% anymore.
+% Shutdowns specified node, and returns only when it cannot be ping'ed anymore.
+%
 % Throws an exception if not able to terminate it.
 shutdown_node(Nodename) when is_list(Nodename) ->
 	shutdown_node( list_to_atom(Nodename) );
 	
 shutdown_node(Nodename)	when is_atom(Nodename) ->
 	rpc:cast( Nodename, erlang, halt, [] ),
-	wait_unavailable( Nodename, _AttemptCount = 5, _Duration = 100 ).
+	wait_unavailable( Nodename, _AttemptCount=5, _Duration=100 ).
 	
 	
-wait_unavailable( Nodename, _AttemptCount = 0, _Duration ) ->
+wait_unavailable( Nodename, _AttemptCount=0, _Duration ) ->
 	throw( {node_not_terminating,Nodename} );
 	
 wait_unavailable( Nodename, AttemptCount, Duration ) ->
