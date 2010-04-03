@@ -85,7 +85,7 @@ construct( State,?wooper_construct_parameters ) ->
 		
 	% Class-specific:
 	TestTraceState = setAttribute( TraceState, trace_categorization,
-		list_to_binary(?TraceEmitterCategorization) ),
+		text_utils:string_to_binary(?TraceEmitterCategorization) ),
 		 
 	% From now on, traces can be sent (but from the constructor send_* traces
 	% only should be sent, to be able to refer to a trace-enabled state):
