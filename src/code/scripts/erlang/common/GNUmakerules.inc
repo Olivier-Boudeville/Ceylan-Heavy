@@ -115,12 +115,12 @@ all-recurse:
 
 %_exec_background: %_app.beam %.beam 
 	@echo "     Executing application $^ in the background (first form)"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln `echo $@ | sed 's|_background$$||1'`-$$USER --background --eval `echo $@ | sed 's|_exec_background|_app:exec()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT) &
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln `echo $@|sed 's|_background$$||1'`-$$USER --background --eval `echo $@|sed 's|_exec_background|_app:exec()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT) &
 	
 		
 %_exec_background: %_app.beam
 	@echo "     Executing application $^ in the background (second form)"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln `echo $@ | sed 's|_background$$||1'`-$$USER --background --eval `echo $@ | sed 's|_exec_background|_app:exec()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT) &
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln `echo $@|sed 's|_background$$||1'`-$$USER --background --eval `echo $@|sed 's|_exec_background|_app:exec()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT) &
 
 
 
@@ -163,7 +163,7 @@ all-recurse:
 %_integration_run: %_integration_test.beam %_integration_dependencies
 	@echo "     Running integration test $@ from $^ "
 	"with $(ERL_PARAMETERIZED_LAUNCHER)"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@ | sed 's|_run|_test:run()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@|sed 's|_run|_test:run()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
 
 	
 
@@ -174,21 +174,21 @@ all-recurse:
 	
 %_run: %_test %_test_dependencies
 	@echo "     Running unitary test $@ (first form) from $^, with $(ERL_PARAMETERIZED_LAUNCHER)"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@ | sed 's|_run|_test:run()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@|sed 's|_run|_test:run()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
 
 
 %_run: %_test %.beam 
 	@echo "     Running unitary test $@ (second form) from $^"
-	$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@ | sed 's|_run|_test:run()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
+	$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@|sed 's|_run|_test:run()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
 	
 		
 %_run: %_test
 	@echo "     Running unitary test $@ (third form) from $^"
-	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@ | sed 's|_run|_test:run()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
+	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@|sed 's|_run|_test:run()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
 
 
 test: all test-recurse
-	@for t in $(TEST_TARGETS); do if ! $(MAKE) -s `echo $$t | sed 's|_test|_run|1'` CMD_LINE_OPT="${CMD_LINE_OPT} --batch"; then exit 1; fi ; done
+	@for t in $(TEST_TARGETS); do if ! $(MAKE) -s `echo $$t|sed 's|_test|_run|1'` CMD_LINE_OPT="${CMD_LINE_OPT} --batch"; then exit 1; fi ; done
 
 
 test-recurse:
