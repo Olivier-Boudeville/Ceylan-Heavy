@@ -68,7 +68,7 @@
 % Helper functions:
 -export([ send/3, send/4, send/5, 
 		 send_from_test/2, send_standalone/2, get_current_tick/1,
-		 get_channel_name_for_priority/1 ]).
+		 get_channel_name_for_priority/1, get_plain_name/1 ]).
 
 
 
@@ -399,7 +399,11 @@ get_priority_for( trace ) ->
 get_priority_for( debug ) ->
 	6.
 	
-	
+
+% Returns the name of this trace emitter, as a plain string.	
+get_plain_name(State) ->
+	text_utils:binary_to_string( ?getAttr(name) ).
+
 
 % Returns the name of the trace channel corresponding to the trace priority.
 % See also: get_priority_for/1
