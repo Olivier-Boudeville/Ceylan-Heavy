@@ -123,7 +123,7 @@ interpret_byte_size( SizeInBytes ) ->
 	SizeAfterKilo = SizeAfterMega rem Kilo,
 	%io:format( "SizeAfterKilo = ~B.~n", [SizeAfterKilo] ),
 	
-	ListWithByte = case SizeAfterKilo rem Kilo of
+	ListWithByte = case SizeAfterKilo of
 					 
 					 0 ->
 						ListWithKilo ;
@@ -139,6 +139,7 @@ interpret_byte_size( SizeInBytes ) ->
 													
 	%io:format( "Unit list is: ~w.~n", [ListWithByte] ),
 	
+	% Preparing for final display:
 	case ListWithByte of
 		
 		[] ->
