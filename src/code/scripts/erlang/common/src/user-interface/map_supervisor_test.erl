@@ -69,7 +69,7 @@
 % coordinates, thus in centimeters. 
 %
 % A zoom factor F is defined. It allows to convert screen distances into
-% virtual-world distances. It is defined in virtual word centimeters per pixel.
+% virtual-world distances. It is defined in virtual world centimeters per pixel.
 % For example if F = 100 cm/px then a line segment of 10 pixels corresponds to 1
 % meter in the virtual world.
 % 
@@ -124,7 +124,14 @@ init_supervisor_gui( State ) ->
 	MainWin = gs:window( GsId, WindowSize ++ [  
 								{title,"Map Supervisor"},
 								{bg,gui:get_color(grey)} ]),
-							   		
+	
+	% Defines the packer:
+	_Packer = gs:frame( main_packer, MainWin, [
+					{packer_x,[]},
+					{packer_y,[]}
+											   ] ),
+
+
 	Canvas = gs:create( canvas, MainWin, [ 
 		{hscroll,bottom}, 
 		{vscroll,left},
