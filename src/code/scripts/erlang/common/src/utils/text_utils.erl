@@ -44,6 +44,7 @@
 		 string_to_binary/1, binary_to_string/1, 
 		 strings_to_binaries/1, binaries_to_strings/1,
 		 percent_to_string/1, percent_to_string/2,
+		 distance_to_string/1, 
 		 join/2, remove_ending_carriage_return/1, format_text_for_width/2,
 		 pad_string/2, is_string/1 ]).
 	
@@ -148,6 +149,80 @@ percent_to_string( Value ) ->
 percent_to_string( Value, Precision ) ->
 	% Awful format string to determine:
 	io_lib:format( "~.*f%", [ Precision, Value * 100 ] ).
+
+
+% Returns a textual description of the specified distance, expressed in millimeters.
+distance_to_string( Millimeters ) ->
+	
+	% One kilo is 1 meter, one mega is 1 km.
+	Kilo = 1000,
+	Mega = Kilo*Kilo,
+
+    ListWithMega = case Millimeters div Mega of
+					 
+					 0 ->
+						 [];
+					 
+					 MegaNonNull->
+						 [io_lib:format( "~B km", [MegaNonNull] )]
+							   
+				   end,
+	SizeAfterMega = Millimeters rem Mega,
+	%io:format( "SizeAfterGiga = ~B.~n", [SizeAfterGiga] ),
+	
+	ListWithMega = case SizeAfterGiga div Mega of
+					 
+					 0 ->
+						 ListWithGiga;
+					 
+					 MegaNonNull->
+						 [io_lib:format( "~B MiB", [MegaNonNull] )|ListWithGiga]
+							   
+				   end,
+	SizeAfterMega = SizeAfterGiga rem Mega,
+	%io:format( "SizeAfterMega = ~B.~n", [SizeAfterMega] ),
+	
+	ListWithKilo = case SizeAfterMega div Kilo of
+					 
+					 0 ->
+						 ListWithMega;
+					 
+					 KiloNonNull->
+						 [io_lib:format( "~B KiB", [KiloNonNull] )|ListWithMega]
+							   
+				   end,
+	SizeAfterKilo = SizeAfterMega rem Kilo,
+	%io:format( "SizeAfterKilo = ~B.~n", [SizeAfterKilo] ),
+	
+	ListWithByte = case SizeAfterKilo rem Kilo of
+					 
+					 0 ->
+						ListWithKilo ;
+					 
+					 1->
+						 [ "1 byte" | ListWithKilo ];
+					   
+					 AtLeastTwoBytes ->
+						 [ io_lib:format( "~B bytes", [AtLeastTwoBytes] )
+						   | ListWithKilo ]
+							   
+				   end,
+													
+	%io:format( "Unit list is: ~w.~n", [ListWithByte] ),
+	
+	case ListWithByte of
+		
+		[] ->
+			"0 byte";
+		
+		[OneElement] ->
+			OneElement;
+		
+		[Smaller|Bigger] ->
+			text_utils:join( ", ", lists:reverse(Bigger) ) ++ " and " ++ Smaller
+	
+	end.
+
 
 
 
