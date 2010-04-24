@@ -138,82 +138,82 @@ version_to_string( {V1,V2,V3} ) ->
 
 
 
-% Returns a textual description of the specified percentage, expected to be
-% a float in [0,1], with the default number of digits after the decimal point.
+% Returns a textual description of the specified percentage, expected to be a
+% float in [0,1], with the default number of digits after the decimal point.
 percent_to_string( Value ) ->
 	percent_to_string( Value, _DefaultPrecision = 1 ).
 
 
-% Returns a textual description of the specified percentage, expected to be
-% a float in [0,1], with the specified number of digits after the decimal point.
+% Returns a textual description of the specified percentage, expected to be a
+% float in [0,1], with the specified number of digits after the decimal point.
 percent_to_string( Value, Precision ) ->
 	% Awful format string to determine:
 	io_lib:format( "~.*f%", [ Precision, Value * 100 ] ).
 
 
-% Returns a textual description of the specified distance, expressed in millimeters.
+
+% Returns a textual description of the specified distance, expected to be
+% provided in millimeters.
 distance_to_string( Millimeters ) ->
 	
-	% One kilo is 1 meter, one mega is 1 km.
-	Kilo = 1000,
-	Mega = Kilo*Kilo,
+	Centimeters = 10,
+	Meters = 100 * Centimeters,
+	Km = Meters*Meters,
 
-    ListWithMega = case Millimeters div Mega of
+    ListWithKm = case Millimeters div Km of
 					 
 					 0 ->
 						 [];
 					 
-					 MegaNonNull->
-						 [io_lib:format( "~B km", [MegaNonNull] )]
+					 KmNonNull->
+						 [io_lib:format( "~Bkm", [KmNonNull] )]
 							   
 				   end,
-	SizeAfterMega = Millimeters rem Mega,
-	%io:format( "SizeAfterGiga = ~B.~n", [SizeAfterGiga] ),
+	DistAfterKm = Millimeters rem Km,
+	%io:format( "DistAfterKm = ~B.~n", [DistAfterKm] ),
 	
-	ListWithMega = case SizeAfterGiga div Mega of
+	ListWithMeters = case DistAfterKm div Meters of
 					 
 					 0 ->
-						 ListWithGiga;
+						 ListWithKm;
 					 
-					 MegaNonNull->
-						 [io_lib:format( "~B MiB", [MegaNonNull] )|ListWithGiga]
+					 MetersNonNull->
+						 [io_lib:format( "~Bm", [MetersNonNull] )|ListWithKm]
 							   
 				   end,
-	SizeAfterMega = SizeAfterGiga rem Mega,
-	%io:format( "SizeAfterMega = ~B.~n", [SizeAfterMega] ),
+	DistAfterMeters = DistAfterKm rem Meters,
+	%io:format( "DistAfterMeters = ~B.~n", [DistAfterMeters] ),
 	
-	ListWithKilo = case SizeAfterMega div Kilo of
+	ListWithCentimeters = case DistAfterMeters div Centimeters of
 					 
 					 0 ->
-						 ListWithMega;
+						 ListWithMeters;
 					 
-					 KiloNonNull->
-						 [io_lib:format( "~B KiB", [KiloNonNull] )|ListWithMega]
+					 CentNonNull->
+						 [io_lib:format( "~Bcm", [CentNonNull])|ListWithMeters]
 							   
 				   end,
-	SizeAfterKilo = SizeAfterMega rem Kilo,
-	%io:format( "SizeAfterKilo = ~B.~n", [SizeAfterKilo] ),
+	DistAfterCentimeters = DistAfterMeters rem Centimeters,
+	%io:format( "DistAfterCentimeters = ~B.~n", [DistAfterCentimeters] ),
 	
-	ListWithByte = case SizeAfterKilo rem Kilo of
+	ListWithMillimeters = case DistAfterCentimeters of
 					 
 					 0 ->
-						ListWithKilo ;
+						 ListWithCentimeters;
 					 
-					 1->
-						 [ "1 byte" | ListWithKilo ];
-					   
-					 AtLeastTwoBytes ->
-						 [ io_lib:format( "~B bytes", [AtLeastTwoBytes] )
-						   | ListWithKilo ]
+					 AtLeastOneMillimeter ->
+						 [ io_lib:format( "~Bmm", [AtLeastOneMillimeter] )
+						   | ListWithCentimeters ]
 							   
 				   end,
 													
-	%io:format( "Unit list is: ~w.~n", [ListWithByte] ),
+	%io:format( "Unit list is: ~w.~n", [ListWithMillimeters] ),
 	
-	case ListWithByte of
+	% Preparing for final display:
+	case ListWithMillimeters of
 		
 		[] ->
-			"0 byte";
+			"0mm";
 		
 		[OneElement] ->
 			OneElement;
