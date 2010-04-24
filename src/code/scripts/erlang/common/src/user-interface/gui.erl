@@ -37,6 +37,16 @@
 % Rendering of GUI elements, based on the gs module.
 
 
+% Implementation notes:
+
+% Sadly with GS, buttons can only have a text label or an XBM image, with
+% supports only black and white. One wanting to use either a BMP or a GIF should
+% use the canvasbutton module (defined in lib/erlang/lib/toolbar-x.y.z/src) and
+% directly usable from the shell. It emulates a GS button, on a specified
+% canvas.
+
+
+
 
 % Color-related operations.
 -export([ get_colors/0, get_color/1 ]).
