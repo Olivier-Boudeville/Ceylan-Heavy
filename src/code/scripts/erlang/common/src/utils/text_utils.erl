@@ -153,7 +153,13 @@ percent_to_string( Value, Precision ) ->
 
 
 % Returns a textual description of the specified distance, expected to be
-% provided in millimeters.
+% expressed as a floating-point number of millimeters, which will be first
+% rounded to nearest integer.
+distance_to_string( Millimeters ) when is_float(Millimeters) ->
+	distance_to_string( round(Millimeters) );
+
+% Returns a textual description of the specified distance, expected to be
+% expressed as an integer number of millimeters.
 distance_to_string( Millimeters ) ->
 	
 	Centimeters = 10,
