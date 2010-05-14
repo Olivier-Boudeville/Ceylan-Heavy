@@ -27,8 +27,10 @@
 
 
 % Most basic trace aggregator.
+%
 % It just collects traces from emitters and store them at once in a file.
-% Trace listeners can connect to the aggregator. In this case it will stop and 
+%
+% Trace listeners can connect to the aggregator. In this case it will stop and
 % send first the full current trace file to them. From that moment, incoming
 % traces will be both written in file and sent to each trace listener still
 % connected.
@@ -68,6 +70,9 @@
 -export([ create/1, getAggregator/1, remove/0 ]).
 
 
+% To spawn the overload monitoring process:
+-export([ overload_monitor_main_loop/1 ]).
+
 
 % Allows to define WOOPER base variables and methods for that class:
 -include("wooper.hrl").
@@ -102,19 +107,25 @@
 
 
 
-% Constructs a new trace aggregator.
-%  - TraceFilename is the name of the file where traces should be written to.
+% Constructs a new trace aggregator:
+%
+%  - TraceFilename is the name of the file where traces should be written to
+%
 %  - TraceType is either 'log_mx_traces', '{text_traces,text_only}' or
-% '{text_traces,pdf}', depending whether LogMX should be used to browse the
-% execution traces, or just a text viewer
-%  - TraceTitle is the title that should be used for traces; mostly used for
-% the PDF output
-%  - IsPrivate tells whether this trace aggregator will be privately held
-% (hence should not be registered in naming service) or if it is a (registered) 
-% singleton
-%  - IsBatch tells whether the aggregator is run in a batch context; useful
-% when trace type is {text_traces,pdf}, so that this aggregator does not 
-% display the produced PDF when in batch mode
+%  '{text_traces,pdf}', depending whether LogMX should be used to browse the
+%  execution traces, or just a text viewer
+%
+%  - TraceTitle is the title that should be used for traces; mostly used for the
+%  PDF output
+%
+%  - IsPrivate tells whether this trace aggregator will be privately held (hence
+%  should not be registered in naming service) or if it is a (registered)
+%  singleton
+%
+%  - IsBatch tells whether the aggregator is run in a batch context; useful when
+%  trace type is {text_traces,pdf}, so that this aggregator does not display the
+%  produced PDF when in batch mode
+%
 construct( State, ?wooper_construct_parameters ) ->
 
 	% First the direct mother classes (none), then this class-specific actions:
@@ -144,12 +155,16 @@ construct( State, ?wooper_construct_parameters ) ->
 	File = file_utils:open( TraceFilename, 
 		  [ write, raw, {delayed_write,_Size=32*1024,_Delay=500} ] ),
 
+	OverLoadMonitorPid = spawn_link( ?MODULE, overload_monitor_main_loop,
+									[ self() ] ),
+									
 	SetState = setAttributes( PrivateState, [ 
 		{trace_filename,TraceFilename}, 
 		{trace_file,File},
 		{trace_type,TraceType},
 		{trace_title,TraceTitle},
 		{trace_listeners,[]},
+		{overload_monitor_pid,OverLoadMonitorPid},							
 		{is_batch,IsBatch} 
 											 ] ),
 		
@@ -166,6 +181,8 @@ delete(State) ->
 	
 	%io:format( "~s Deleting trace aggregator.~n", [ ?LogPrefix ] ),
 
+	?getAttr(overload_monitor_pid) ! delete,
+	
 	% Class-specific actions:
 	case ?getAttr(is_private) of
 	
@@ -179,9 +196,9 @@ delete(State) ->
 	
 	FooterState = manage_trace_footer(State),
 	
-	% We were performing immediate writes here (due to the delayed_write
-	% option, close may return an old write error and not even try to close the
-	% file. In that case we try to close it another time):
+	% We were performing immediate writes here (due to the delayed_write option,
+	% close may return an old write error and not even try to close the file. In
+	% that case we try to close it another time):
 	case file:close( ?getAttr(trace_file) ) of 
 		
 		{error,_Reason} ->
@@ -442,6 +459,36 @@ remove() ->
 	end.
 
 
+% Code of the process that monitors the aggregator, overloading-wise.
+overload_monitor_main_loop( AggregatorPid ) ->
+	
+	receive
+		
+		delete ->
+			%io:format( "(overload monitor deleted)~n" ),
+			deleted
+		
+	% Every 2s:	
+	after 200 ->
+			
+			{message_queue_len,QueueLen} = erlang:process_info( 
+			    AggregatorPid, message_queue_len ),
+			
+			case QueueLen of
+				
+				TooMany when TooMany > 5000 ->
+					io:format( "(warning: trace aggregator is overloaded, "
+							  "too many traces are being sent, "
+							  "~B of them are still waiting to be processed)~n",
+							  [TooMany] );
+				
+				_Other ->
+					ok
+						
+			end,
+			overload_monitor_main_loop( AggregatorPid )
+				
+	end.
 
 
 % Some defines.
