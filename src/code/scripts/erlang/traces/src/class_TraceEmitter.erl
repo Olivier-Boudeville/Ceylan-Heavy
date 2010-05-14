@@ -65,10 +65,14 @@
 		display/1, toString/1 ).
 
 
+% Static method declarations.
+-define( wooper_static_method_export, get_current_tick/1, get_plain_name/1 ).
+
+
 % Helper functions:
 -export([ send/3, send/4, send/5, 
-		 send_from_test/2, send_standalone/2, get_current_tick/1,
-		 get_channel_name_for_priority/1, get_plain_name/1 ]).
+		 send_from_test/2, send_standalone/2,
+		 get_channel_name_for_priority/1 ]).
 
 
 
@@ -131,7 +135,9 @@ construct( State, ?wooper_construct_parameters ) ->
 	AggregatorPid = class_TraceAggregator:getAggregator(false),
 	
 	% Note: the 'name' attribute is stored as a binary, to reduce the memory
-	% footprint. Use text_utils:binary_to_string/1 to get back a plain string.
+	% footprint. Use text_utils:binary_to_string/1 to get back a plain string
+	% or, preferably, the class_TraceEmitter:get_plain_name/1 static method.
+	
 	setAttributes( State, [ 
 		{name,text_utils:string_to_binary(TraceEmitterName)},
 		{initial_tick,undefined},
@@ -399,11 +405,7 @@ get_priority_for( trace ) ->
 get_priority_for( debug ) ->
 	6.
 	
-
-% Returns the name of this trace emitter, as a plain string.	
-get_plain_name(State) ->
-	text_utils:binary_to_string( ?getAttr(name) ).
-
+	
 
 % Returns the name of the trace channel corresponding to the trace priority.
 % See also: get_priority_for/1
@@ -456,3 +458,10 @@ get_current_tick(State) ->
 			
 	end.
 			
+
+
+% Returns the name of this trace emitter, as a plain string, not as a binary.
+get_plain_name(State) ->
+	text_utils:binary_to_string( ?getAttr(name) ).
+
+
