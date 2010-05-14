@@ -38,7 +38,9 @@
 		 
 % System-related functions.
 -export([ get_interpreter_version/0, get_size_of_vm_word/0, get_size/1,
-		 interpret_byte_size/1, get_memory_summary/0 ]).
+		 interpret_byte_size/1, interpret_byte_size_with_unit/1, 
+		 convert_byte_size_with_unit/1, display_memory_summary/0,
+		 get_total_installed_memory/0 ]).
 
 
 
@@ -53,11 +55,27 @@ get_user_name() ->
 % Returns the home directory of the current user.
 get_user_home_directory() ->
 	os:getenv("HOME").
+
+
+
+% Returns the total install memory (RAM) of the computer being used, in bytes.
+get_total_installed_memory() ->
+	
+	% First check the expected unit is returned, by pattern-matching:
+	"kB\n" = os:cmd("cat /proc/meminfo|grep 'MemTotal:'|awk '{print $3}'"),
+	
+	ValueCommand = "cat /proc/meminfo|grep 'MemTotal:'|awk '{print $2}'",
+	
+	% The returned value of following command is like "12345\n", in bytes:
+	MemorySizeString = text_utils:remove_ending_carriage_return( 
+								os:cmd( ValueCommand ) ),
+	
+	% They were kB (not kiB):
+	list_to_integer(MemorySizeString) * 1000.
 	
 	
 
-
-% System-related functions.
+% Erlang System-related functions.
 
 
 % Returns the version informations of the current Erlang interpreter 
@@ -76,8 +94,9 @@ get_size( Term ) ->
 	erts_debug:flat_size(Term) * get_size_of_vm_word().
 
 
+
 % Returns a string containing a user-friendly description of the specified size
-% in bytes, using GiB (Gibibytes, not Gigabytes), MiB (Mebibytes, not
+% expressed in bytes, using GiB (Gibibytes, not Gigabytes), MiB (Mebibytes, not
 % Megabytes), KiB (Kibibytes, not Kilobytes) and bytes.
 %
 % See http://en.wikipedia.org/wiki/Kibibyte
@@ -123,7 +142,7 @@ interpret_byte_size( SizeInBytes ) ->
 	SizeAfterKilo = SizeAfterMega rem Kilo,
 	%io:format( "SizeAfterKilo = ~B.~n", [SizeAfterKilo] ),
 	
-	ListWithByte = case SizeAfterKilo of
+	ListWithByte = case SizeAfterKilo rem Kilo of
 					 
 					 0 ->
 						ListWithKilo ;
@@ -139,7 +158,6 @@ interpret_byte_size( SizeInBytes ) ->
 													
 	%io:format( "Unit list is: ~w.~n", [ListWithByte] ),
 	
-	% Preparing for final display:
 	case ListWithByte of
 		
 		[] ->
@@ -153,20 +171,116 @@ interpret_byte_size( SizeInBytes ) ->
 	
 	end.
 
+
+
+% Returns a string containing a user-friendly description of the specified size
+% expressed in bytes), using the most appropriate unit among GiB (Gibibytes, not
+% Gigabytes), MiB (Mebibytes, not Megabytes), KiB (Kibibytes, not Kilobytes) and
+% bytes, rounding that value to 1 figure after the comma (this is thus an
+% approximate value).
+%
+% See http://en.wikipedia.org/wiki/Kibibyte
+interpret_byte_size_with_unit( Size ) ->
+
+	{Unit,Value} = convert_byte_size_with_unit( Size ),
 	
+	case Unit of 
+				   
+	    byte ->
+            
+			case Value of 
+		
+				0 ->
+					"0 byte";
+				
+				1 ->
+					"1 byte";
+				
+				Other ->
+					io_lib:format( "~B bytes", [Other] )
+						
+			end;
+		
+		kib ->
+			io_lib:format( "~.1f KiB", [Value] );
+		
+		mib ->
+			io_lib:format( "~.1f MiB", [Value] );
 	
+		gib ->
+			io_lib:format( "~.1f GiB", [Value] )
+				
+	end.
+	
+
+
+% Converts the specified size, in bytes, as a value expressed in an appropriate
+% size unit.
+%
+% Returns a {Unit,Value} pair, in which:
+%
+% - Unit is the largest size unit that can be selected so that the specified
+% size if worth at least 1 unit of it (ex: we do not want a value 0.9, at least
+% 1.0 is wanted); Unit can be 'gib', for GiB (Gibibytes), 'mib', for MiB
+% (Mebibytes), 'kib' for KiB (Kibibytes), or 'byte', for Byte
+%
+% - Value is the converted byte size, in the specified returned unit, expressed
+% either as an integer (for bytes) or as a float
+%
+% Ex: 1023 (bytes) translates to {byte,1023}, 1025 translates to
+% {kib,1.0009765625}.
+%
+% Note that the returned value cannot be expected to be exact (rounded),
+% therefore this function is mostly useful for user output.
+%
+convert_byte_size_with_unit( SizeInBytes ) ->
+	
+	Kilo = 1024,
+	Mega = Kilo*Kilo,
+	Giga = Kilo*Mega,
+	
+	case SizeInBytes div Giga of
+		
+		0 ->
+			
+			case SizeInBytes div Mega of
+				
+				0 ->
+					
+					case SizeInBytes div Kilo of
+						
+						0 ->
+							%{byte,float(SizeInBytes)};
+							{byte,SizeInBytes};
+						
+						_ ->	
+							{kib,SizeInBytes/Kilo}
+								
+					end;
+				
+				_ ->
+					{mib,SizeInBytes/Mega}
+						
+			end;
+		
+		_ ->
+			{gib,SizeInBytes/Giga}
+				
+	end.		
+
+
 
 % Returns a summary of the dynamically allocated memory currently being
 % used by the Erlang emulator.
-get_memory_summary() ->
+display_memory_summary() ->
 	SysSize  = erlang:memory( system ),
 	ProcSize = erlang:memory( processes ),
 	Sum = SysSize + ProcSize,
 	io:format( "  - system size: ~s (~s)~n", 
-			  [ interpret_byte_size(SysSize), 
+			  [ interpret_byte_size_with_unit(SysSize), 
 			   text_utils:percent_to_string(SysSize/Sum) ] ),
 	io:format( "  - process size: ~s (~s)~n", 
-			  [ interpret_byte_size(ProcSize), 
+			  [ interpret_byte_size_with_unit(ProcSize), 
 			   text_utils:percent_to_string(ProcSize/Sum) ] ).
 	
 	

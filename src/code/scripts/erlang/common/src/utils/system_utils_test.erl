@@ -63,10 +63,11 @@ run() ->
 				
 	io:format( "   Determining what is the home directory of the current user:"
 		" ~s.~n", [ system_utils:get_user_home_directory() ] ),
-	{Unit, TotalMemory} =system_utils:get_used_machine_total_memory(),
-	io:format( "   Determining the total memory in byte of the used machine:"
-		" ~B ~s.~n", [ TotalMemory, Unit ] ),
-
+	
+	TotalRAM = system_utils:get_total_installed_memory(),
+	io:format( "   Determining the total memory installed on this computer:"
+		" ~B bytes, which is ~s.~n", 
+			  [ TotalRAM, system_utils:interpret_byte_size(TotalRAM) ] ),
 
 	
 	% System-related functions.
