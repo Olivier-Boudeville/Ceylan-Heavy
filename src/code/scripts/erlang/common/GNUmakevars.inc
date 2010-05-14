@@ -151,9 +151,21 @@ BEAM_DIRS += . $(COMMON_BEAM)/data-management $(COMMON_BEAM)/maths \
 ERL_LAUNCHER = $(COMMON_SRC)/scripts/launch-erl.sh
 
 
-# Add '+native' if native-code compilation is supported:
-ERLANG_COMPILER_OPT := -b beam $(INC) -v -W$(WARNING_LEVEL) \
-	$(ERLANG_COMPILER_OPT_DEBUG)
+# Add '+native' if native-code compilation is supported.
+#
+# Removed options:
+#
+# - ("+{warn_format,2}" would trigger unwanted useless warnings about format
+# strings
+#
+# - -v/+verbose causes inlining to be too verbose, ex:
+# "Old inliner: threshold=0 functions=[{setAttribute,3},.."
+#
+ERLANG_COMPILER_OPT += -b beam $(INC) -W$(WARNING_LEVEL)        \
+	$(ERLANG_COMPILER_OPT_DEBUG) +bin_opt_info +warn_export_all \
+	+warn_export_vars +warn_shadow_vars +warn_obsolete_guards   \
+	+warn_unused_import	+warnings_as_errors                     \
+	"+{debug_info_key,\"Ceylan\"}"
 
 
 # +v (verbose) option removed, as only active if the interpreter has been
