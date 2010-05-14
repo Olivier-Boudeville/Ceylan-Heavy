@@ -64,6 +64,12 @@ endif
 
 BEAM_DIRS += $(TRACES_BEAM)
 
+ERLANG_COMPILER_OPT += "+{nowarn_unused_function,[{trace_disabled,1},{trace_disabled,2},{trace_disabled,3},{trace_disabled,4},{trace_disabled,5},{test_trace_disabled,1},{test_trace_disabled,2} ]}"
 
+
+# WOOPER_TOP may be a symbolic link pointing to the actual WOOPER package to be
+# used.
+#
 WOOPER_TOP = $(TRACES_TOP)/../wooper
+
 
