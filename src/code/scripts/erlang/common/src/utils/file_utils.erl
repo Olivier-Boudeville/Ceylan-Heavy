@@ -48,9 +48,11 @@
 	get_image_file_png/1, get_image_file_gif/1 ]).
 
 
+
 % I/O section.
 
--export([ open/2 ]).
+-export([ open/2, open/3 ]).
+
 
 		 
 % Zip-related operations.
@@ -85,8 +87,9 @@ join( FirstPath, SecondPath ) ->
 		
 % Converts specified name to an acceptable filename, filesystem-wise.	
 convert_to_filename(Name) ->
-	% Replaces all series of spaces by one underscore:
-	re:replace( lists:flatten(Name), " +", "_", [global,{return, list}] ).
+	% Currently we use exactly the same translation rules both for node names
+	% and file names:
+	basic_utils:generate_valid_node_name_from(Name).
 
 
 
@@ -121,7 +124,11 @@ get_type_of(EntryName) ->
 		{ok,FileInfo} ->
 			#file_info{ type = FileType } = FileInfo,
 			FileType;
-			
+		
+		{error,eloop} ->
+			% Probably a recursive symlink:
+			throw({too_many_symlink_levels,EntryName});
+				   
 		{error,enoent} ->
 			throw({non_existing_entry,EntryName})
 			
@@ -481,13 +488,78 @@ get_image_file_gif(Image) ->
 %
 % Returns the file reference, or throws an exception.
 %
+% Will attempt to open the specified file only once, as looping endlessly does
+% not seem a viable solution right now (risk of exhausting the descriptors,
+% making the VM fail for example when loading a new BEAM).
+%
+open( Filename, Options ) ->
+	open( Filename, Options, _Default=try_once ).
+
+
+% Opens the file corresponding to specified filename (first parameter) with
+% specified list of options (second parameter). 
+%
+% Third parameter is either 'try_once' or 'try_endlessly', depending
+% respectively on whether we want to try to open the file once (no other
+% attempt will be made) or endlessly, until a file descriptor can be gained.
+%
+% Returns the file reference, or throws an exception.
+%
 % Will try to obtain a file descriptor iteratively (and endlessly) with
 % process-specific random waitings, should no descriptor be available.
 %
+% A risk of that approach is that all available file descriptors will be
+% taken, thus potentially preventing other processes (including the VM itself)
+% to perform any file operation, like loading a new BEAM, ex:
+% File operation error: system_limit. Target: 
+% lib/erlang/lib/kernel-x.y.z/ebin/timer.beam. Function: get_file. 
+% Process: code_server.                                                          %
 % This is done in order to support situations where potentially more Erlang
 % processes than available file descriptors try to access to files. An effort is
-% made to desynchronize these processes to smooth the use of descriptors.
-open( Filename, Options ) ->
+% made to desynchroniopen/2ze these processes to smooth the use of descriptors.
+open( Filename, Options, try_endlessly_safer ) ->
+	File = open( Filename, Options, try_endlessly ),
+	% We could check here that at least one descriptor remains, by adding a 
+	% dummy file open/close and catching emfile, however one could need more
+	% than one spare descriptor.
+	% The correct solution would involve knowing the max number of descriptors
+	% for that process and the current number of open ones, none information
+	% we seems able to know.
+	% So for the moment we do not do anything more:
+	File;
+	
+open( Filename, Options, try_endlessly ) ->
+	
+	case file:open( Filename, Options ) of
+		
+		{ok,File} ->
+			 File;
+		
+		{error,FileError} when FileError == emfile 
+				orelse FileError == system_limit ->
+				
+			% File descriptors exhausted for this OS process.
+			% Kludge to desynchronize file opening in order to remain below 1024
+			% file descriptor opened:
+			Duration = basic_utils:get_process_specific_value( 
+										_Min=50, _Max=200 ),
+			
+			% Attempt not to use timer:sleep (anyway will trigger errors
+			% afterwards when the system will try to look-up some BEAMs):		
+			receive
+			
+			after Duration ->
+			
+				open( Filename, Options, try_endlessly )
+				
+			end;	
+		
+		{error,OtherFileError} ->
+			throw( {open_failed, {Filename,Options}, OtherFileError } )
+
+	end;
+	
+open( Filename, Options, try_once ) ->
 	
 	case file:open( Filename, Options ) of
 		
@@ -495,27 +567,30 @@ open( Filename, Options ) ->
 			 File;
 		
 		{error,emfile} ->
-			% File descriptors exhausted for this OS process.
-			% Kludge to desynchronize file opening in order to remain below 1024
-			% file descriptor opened:
-			timer:sleep( basic_utils:get_process_specific_value( 
-										_Min=50,_Max=200 ) ),
-			open( Filename, Options );
+			throw( {too_many_open_files, {Filename,Options}} );
+		
+		{error,system_limit} ->
+			% Never had system_limit without this cause (yet!):
+			throw( {too_many_open_files, {Filename,Options}, system_limit} );
 		
 		{error,OtherError} ->
 			throw( {open_failed, {Filename,Options}, OtherError } )
 
 	end.
+	
 
 
 
 % Zip-related operations.
 	
 	
-% Reads in memory the file specified from its filename, zips the
-% corresponding term, and returns it.
-% Note: useful for network transfers of small files. 
+% Reads in memory the file specified from its filename, zips the corresponding
+% term, and returns it.
+%
+% Note: useful for network transfers of small files.
+%
 % Larger ones should be transferred with TCP/IP and by chunks.
+%
 % Returns a binary.
 file_to_zipped_term(Filename)  ->
 	DummyFileName = "dummy",
@@ -526,8 +601,9 @@ file_to_zipped_term(Filename)  ->
 	
 
 	
-% Reads specified binary, extracts the zipped file in it and writes it
-% on disk, in current directory.
+% Reads specified binary, extracts the zipped file in it and writes it on disk,
+% in current directory.
+%
 % Returns the filename of the unzipped file.	
 zipped_term_to_unzipped_file(ZippedTerm) ->
 	%zip:unzip(ZippedTerm,[verbose]).
@@ -536,11 +612,13 @@ zipped_term_to_unzipped_file(ZippedTerm) ->
 
 	
 	
-% Reads specified binary, extracts the zipped file in it and writes it
-% on disk, in current directory, under specified filename instead of under
-% filename stored in the zip archive.
+% Reads specified binary, extracts the zipped file in it and writes it on disk,
+% in current directory, under specified filename instead of under filename
+% stored in the zip archive.
+%
 % Any pre-existing file will be overwritten.
-% Note: only one file is expected in the specified archive.
+%
+% Note: only one file is expected to be stored in the specified archive.
 zipped_term_to_unzipped_file(ZippedTerm,TargetFilename) ->
 	{ok,[{_AFilename, Binary}]} = zip:unzip(ZippedTerm,[memory]),
 	{ok,File} = file:open( TargetFilename, [write] ),
@@ -551,8 +629,11 @@ zipped_term_to_unzipped_file(ZippedTerm,TargetFilename) ->
 
 % Reads in memory the files specified from their filenames, zips the
 % corresponding term, and returns it.
+%
 % Note: useful for network transfers of small files. 
+%
 % Larger ones should be transferred with TCP/IP and by chunks.
+%
 % Returns a binary.
 files_to_zipped_term(FilenameList)  ->
 	DummyFileName = "dummy",
@@ -562,11 +643,13 @@ files_to_zipped_term(FilenameList)  ->
 	
 		
 
-% Reads specified binary, extracts the zipped files in it and writes them
-% on disk, in current directory.
+% Reads specified binary, extracts the zipped files in it and writes them on
+% disk, in current directory.
+%
 % Returns the list of filenames corresponding to the unzipped files.	
 zipped_term_to_unzipped_files(ZippedTerm) ->
 	%{ok,FileNames} = zip:unzip(ZippedTerm,[verbose]),
 	{ok,FileNames} = zip:unzip(ZippedTerm),
 	FileNames.
+
 
