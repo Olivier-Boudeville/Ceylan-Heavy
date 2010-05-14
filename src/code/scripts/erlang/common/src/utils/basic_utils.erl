@@ -286,11 +286,12 @@ get_registered_pid_for( Name, local_and_global ) ->
 
 
 
-% Waits (up to 5 seconds) until specified name is globally registered.
-% Returns the resolved Pid, or throws 
+% Waits (up to 10 seconds) until specified name is globally registered.
+%
+% Returns the resolved Pid, or throws
 % {global_registration_waiting_timeout,Name}.
 wait_for_global_registration_of(Name) ->
-	wait_for_global_registration_of(Name,5).
+	wait_for_global_registration_of(Name,10).
 	
 
 wait_for_global_registration_of(Name,0) ->
@@ -597,8 +598,20 @@ notify_user(Message,FormatList) ->
 % Returns a name that is a legal name for an Erlang node, forged from specified
 % one.
 generate_valid_node_name_from( Name ) when is_list(Name) ->
-	% Replaces all series of spaces by one underscore:
-	re:replace( lists:flatten(Name), " +", "_", [global,{return, list}] ).
+	
+	% Replaces each series of spaces (' '), lower than ('<'), greater than
+	% ('>'), comma (','), left ('(') and right (')') parentheses, single (''')
+	% and double ('"') quotes, forward ('/') and backward ('\') slashes,
+	% ampersand ('&'), tilde ('~'), sharp ('#'), at sign ('@'), all other kinds
+	% of brackets ('{', '}', '[', ']'), pipe ('|'), dollar ('$'), star ('*'),
+	% marks ('?' and '!'), plus ('+'), other punctation signs (';' and ':') by
+	% exactly one underscore:
+	%
+	% (see also: file_utils:convert_to_filename/1)
+	re:replace( lists:flatten(Name), 
+			   "( |<|>|,|\\(|\\)|'|\"|/|\\\\|\&|~|"
+			   "#|@|{|}|\\[|\\]|\\||\\$|\\*|\\?|!|\\+|;|:)+", "_", 
+		 [global,{return, list}] ).
 
 
 
