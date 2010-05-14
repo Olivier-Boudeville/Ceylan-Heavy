@@ -208,7 +208,8 @@ fi
 
 if [ $use_tcp_range -eq 0 ] ; then
 
-	tcp_port_opt="-kernel inet_dist_listen_min ${lower_tcp_port} inet_dist_listen_max ${higher_tcp_port}"
+	tcp_port_opt="-kernel inet_dist_listen_min ${lower_tcp_port} "
+	"inet_dist_listen_max ${higher_tcp_port}"
 
 fi
 
