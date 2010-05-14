@@ -29,4 +29,6 @@ include $(WOOPER_TOP)/GNUmakesettings.inc
 # Not used, for a better readability: 
 #PROJECT_CSS = $(COMMON_TOP)/doc/Ceylan-docutils.css
 
+# Now included in the common general rules:
+#include $(COMMON_TOP)/doc/GNUmakerules-docutils.inc
 
