@@ -70,6 +70,19 @@ run() ->
 		"results in: ~s~n",
 		[ SecondFilename, file_utils:path_to_variable_name(SecondFilename) ] ),	
 	
+	
+	FirstString = "My name is Bond",
+	io:format( "   String '~s', once transformed into a file name, "
+		"results in: '~s'~n",
+		[ FirstString, file_utils:convert_to_filename(FirstString) ] ),	
+	
+	
+	SecondString = "James,  James <Bond> ('Special' \"Agent\"), Sir",
+	io:format( "   String '~s', once transformed into a file name, "
+		"results in: '~s'~n",
+		[ SecondString, file_utils:convert_to_filename(SecondString) ] ),	
+	
+	
 	SourceFilename = "/home/jack/rosie.ttf",
 	SourceExtension = ".ttf",
 	TargetExtension = ".wav",
