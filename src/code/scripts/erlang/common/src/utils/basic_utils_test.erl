@@ -74,10 +74,11 @@ run() ->
 	io:format( "   A list of integer random values between 1 and 5 "
 		"(both included): ~w.~n", [RandomList] ),
 	
-	TestName = "I have spaces and also 'I have quotes'",
+	TestName = "I have \"<spaces>\" / \ & ~ # @ { } [ ] | $ * ? ! + , ; :"
+		"(and also 'I have quotes')",
 		
-	io:format( "   Filename generated from '~s' is '~s'.~n", 
-		[TestName,file_utils:convert_to_filename(TestName)] ),
+	io:format( "   Nodename generated from '~s' is '~s'.~n", 
+		[TestName,basic_utils:generate_valid_node_name_from(TestName)] ),
 	
 	
 	% Testing list management:
