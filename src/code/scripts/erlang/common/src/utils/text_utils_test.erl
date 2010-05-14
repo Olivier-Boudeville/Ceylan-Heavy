@@ -51,15 +51,7 @@ print_title( Title, Level ) ->
 	io:format( "Title level ~B:~n~s~n", [ Level, 
 		text_utils:generate_title(Title,Level) ] ).
 	
-print_distances( [] ) ->
-	ok;
-
-print_distances( [H|T] ) ->
-	io:format( "     - distance corresponding to ~pmm is: ~s.~n", 
-		[ H, text_utils:distance_to_string(H) ] ),
-	print_distances( T ).
 	
-
 
 run() ->
 
@@ -153,16 +145,6 @@ run() ->
 	% Order matters:
 	BinList = text_utils:strings_to_binaries( StringList ),
 	StringList = text_utils:binaries_to_strings( BinList ),
-
-	Distances = [ 0, 1, 9, 10, 11, 50, 51, 99, 100, 101, 102, 400,
-				  998, 999, 1000, 1001, 1099, 1100, 1101, 1500, 1501,
-				  1999, 2000, 2134, 999998, 999999, 1000000, 1000001,
-				  1499999, 1500000, 4000000, 11000000 ],
-
-	print_distances( Distances ),
-
-	% Needed to be sure that all outputs are shown before halting:
-	timer:sleep(200),
 
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().
