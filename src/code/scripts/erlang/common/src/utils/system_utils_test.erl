@@ -41,8 +41,12 @@ print_sizes( [] ) ->
 	ok;
 
 print_sizes( [H|T] ) ->
-	io:format( "     - size of ~p is ~s.~n", 
-		[ H, system_utils:interpret_byte_size( system_utils:get_size(H) ) ] ),
+	
+	Size = system_utils:get_size(H),
+	
+	io:format( "     - exact size of ~p is ~s~n", 
+		[ H, system_utils:interpret_byte_size( Size ) ] ),
+		
 	print_sizes( T ).
 	
 
@@ -59,6 +63,10 @@ run() ->
 				
 	io:format( "   Determining what is the home directory of the current user:"
 		" ~s.~n", [ system_utils:get_user_home_directory() ] ),
+	{Unit, TotalMemory} =system_utils:get_used_machine_total_memory(),
+	io:format( "   Determining the total memory in byte of the used machine:"
+		" ~B ~s.~n", [ TotalMemory, Unit ] ),
+
 
 	
 	% System-related functions.
@@ -83,8 +91,11 @@ run() ->
 		
 	io:format( "   Testing size-describing facilities:~n" ),
 	
-	[ io:format( "    + '~B bytes' translates to: '~s'.~n", 
-      [X,system_utils:interpret_byte_size(X)] ) || X <- SizesToInterpret ],
+	[ io:format( "    + '~B bytes' translates to: '~s', or "
+			  "'~s', in terms of units~n", 
+      [X,system_utils:interpret_byte_size(X),
+	   system_utils:interpret_byte_size_with_unit(X)] ) 
+	 || X <- SizesToInterpret ],
 	
   	io:format( "   Evaluating the size in memory of a few terms:~n" ),
 	
@@ -106,8 +117,8 @@ run() ->
 			      / system_utils:get_size(BinaryVersion) ] ),
 	
 			   
- 	io:format( "   Getting memory summary: ~s.~n", 
-			  [system_utils:get_memory_summary()] ),
+ 	io:format( "   Getting memory summary:~n" ),
+	system_utils:display_memory_summary(),
 						
 						
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
