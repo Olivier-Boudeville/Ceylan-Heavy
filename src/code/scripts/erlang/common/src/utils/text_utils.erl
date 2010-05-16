@@ -44,7 +44,7 @@
 		 string_to_binary/1, binary_to_string/1, 
 		 strings_to_binaries/1, binaries_to_strings/1,
 		 percent_to_string/1, percent_to_string/2,
-		 distance_to_string/1, 
+		 distance_to_string/1, distance_to_short_string/1,
 		 join/2, remove_ending_carriage_return/1, format_text_for_width/2,
 		 pad_string/2, is_string/1 ]).
 	
@@ -152,14 +152,16 @@ percent_to_string( Value, Precision ) ->
 
 
 
-% Returns a textual description of the specified distance, expected to be
-% expressed as a floating-point number of millimeters, which will be first
-% rounded to nearest integer.
+% Returns an exact rounded textual description of the specified distance,
+% expected to be expressed as a floating-point number of millimeters, which will
+% be first rounded to nearest integer.
+% Ex: for a distance of 1001.5 millimeters, returns "1m and 2mm".
 distance_to_string( Millimeters ) when is_float(Millimeters) ->
 	distance_to_string( round(Millimeters) );
 
-% Returns a textual description of the specified distance, expected to be
+% Returns an exact textual description of the specified distance, expected to be
 % expressed as an integer number of millimeters.
+% Ex: for an integer distance of 1000001 millimeters, returns "1km and 1mm".
 distance_to_string( Millimeters ) ->
 	
 	Centimeters = 10,
@@ -230,6 +232,66 @@ distance_to_string( Millimeters ) ->
 	end.
 
 
+
+% Returns an approximate textual description of the specified distance, expected
+% to be expressed as a floating-point number of millimeters, which will be first
+% rounded to nearest integer.
+%
+% Only one unit, the most appropriate one, will be used, with up to 1 figure
+% after the comma.
+%
+% Ex: for a distance of 1000.5 millimeters, returns "1.0m".
+distance_to_short_string( Millimeters ) when is_float(Millimeters) ->
+	distance_to_short_string( round(Millimeters) );
+
+% Returns an approximate textual description of the specified distance, expected
+% to be expressed as an integer number of millimeters.
+%
+% Only one unit, the most appropriate one, will be used, with up to 1 figure
+% after the comma.
+%
+% Ex: for a distance of 1000001 millimeters, returns "1.0km".
+distance_to_short_string( Millimeters ) ->
+
+	% Note: very specific limit distances could be better managed.
+	% Ex: 999999 millimeters is 999m, 99cm and 9mm, and "1000.0m" due to
+	% rounding, whereas we would have preferred "1km".
+	
+	Centimeters = 10,
+	Meters = 100 * Centimeters,
+	Km = Meters*Meters,
+	
+	% First, guess the most suitable unit, then use it:
+    
+	case Millimeters div Km of
+					 
+		0 ->
+			% Kilometers are too big:
+			case Millimeters div Meters of
+					 
+				0 ->
+					% Meters are too big:
+					case Millimeters div Centimeters of
+					 
+						0 ->
+							% Centimeters are too big, stick to mm:
+							io_lib:format( "~Bmm", [Millimeters] );
+								
+						_CmNonNull ->
+							io_lib:format( "~.1fcm", [Millimeters/Centimeters] )
+								
+					end;
+				
+				 _MetersNonNull ->
+					io_lib:format( "~.1fm", [Millimeters/Meters] )
+					 
+			end;
+				
+		_KmNonNull->
+			io_lib:format( "~.1fkm", [Millimeters/Km] )
+				
+	end.
+				
 
 
 % Converts a plain (list-based) string into a binary. 

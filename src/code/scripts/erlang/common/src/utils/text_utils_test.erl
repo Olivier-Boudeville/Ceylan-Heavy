@@ -146,6 +146,16 @@ run() ->
 	BinList = text_utils:strings_to_binaries( StringList ),
 	StringList = text_utils:binaries_to_strings( BinList ),
 
+	% In millimeters:
+	Distances = [ -1001.5, -1001.0, -1000.5, -1000.0, -999.5, -999.0,
+				 -1001, -1000, -999, -1.6, -1.4, -1.0, -0.9, -1, 0,
+				 1, 0.9, 2, 999, 1000, 1001, 999999, 1000000, 1000001 ],
+	
+	[ io:format( " - an integer distance of ~w millimeters is ~s, "
+				"and roughly ~s~n", [ D, text_utils:distance_to_string(D),
+								text_utils:distance_to_short_string(D) ] ) 
+	 || D <- Distances ],
+
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().
 
