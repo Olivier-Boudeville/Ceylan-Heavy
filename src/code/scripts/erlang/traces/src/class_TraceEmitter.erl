@@ -104,13 +104,15 @@
 %
 % Its current tick, to be obtained with the getCurrentTick/1 method or the
 % get_current_tick/1 function, is determined based on the addition of:
-%  - the initial emitter tick (initial_tick), a supposedly absolute
-% time reference (possibly a very large integer)
+%
+%  - the initial emitter tick (initial_tick), a supposedly absolute time
+%  reference (possibly a very large integer)
+%
 %  - the current tick offset of the emitter (current_tick_offset), defined
-% relatively (i.e. as an offset) to initial_tick; this offset is 
-% generally able to fit in a platform-native integer, therefore, for increased 
-% performances, processings should be based preferably on offsets rather 
-% than on absolute time references
+%  relatively (i.e. as an offset) to initial_tick; this offset is generally able
+%  to fit in a platform-native integer, therefore, for increased performances,
+%  processings should be based preferably on offsets rather than on absolute
+%  time references
 %
 % To reduce the memory footprint in the trace aggregator mailbox and the size of
 % messages sent over the network, most of the time binaries are used instead of
@@ -121,8 +123,9 @@
 
 
 % Constructs a new Trace emitter.
-% EmitterName is a plain string containing the name of this trace emitter, 
-% ex: 'MyObject-16'.
+%
+% EmitterName is a plain string containing the name of this trace emitter, ex:
+% 'MyObject-16'.
 construct( State, ?wooper_construct_parameters ) ->
 
 	%io:format( "~s Creating a trace emitter whose name is ~s, "
@@ -131,8 +134,8 @@ construct( State, ?wooper_construct_parameters ) ->
 		
 	% Retrieves the trace aggregator (false: do not launch it if not available,
 	% otherwise the creation of multiple emitters would result in a race
-	% condition that would lead to the creation of multiple aggregators):	
-	AggregatorPid = class_TraceAggregator:getAggregator(false),
+	% condition that would lead to the creation of multiple aggregators):
+	AggregatorPid = class_TraceAggregator:get_aggregator(false),
 	
 	% Note: the 'name' attribute is stored as a binary, to reduce the memory
 	% footprint. Use text_utils:binary_to_string/1 to get back a plain string
@@ -153,8 +156,7 @@ construct( State, ?wooper_construct_parameters ) ->
 
 	
 % Overridden destructor.
-% Unsubscribing for TimeManager supposed already done, thanks to a termination
-% message. 
+%
 delete(State) ->
 	%io:format( "~s Deleting Trace Emitter.~n", [ ?LogPrefix ] ),
 	% erlang:unlink() not used. 
@@ -174,7 +176,9 @@ delete(State) ->
 
 
 % Returns the name of this trace emitter, as a binary.
+%
 % Note: use text_utils:binary_to_string/1 to get back a plain string.
+%
 % (const request)	
 getName(State) ->
 	?wooper_return_state_result( State, ?getAttr(name) ).
@@ -182,6 +186,7 @@ getName(State) ->
 
 
 % Sets the name of this trace emitter from specified plain string.
+%
 % (oneway)
 setName( State, NewName ) ->
 	?wooper_return_state_only( setAttribute( State, name, 
@@ -191,6 +196,7 @@ setName( State, NewName ) ->
 
 
 % Returns the initial tick of this trace emitter.
+%
 % (const request)	
 getInitialTick(State) ->
 	?wooper_return_state_result( State, ?getAttr(initial_tick) ).
@@ -198,8 +204,10 @@ getInitialTick(State) ->
 
 	
 % Sets the initial tick of this trace emitter.
+%
 % Note: does not update the tick offset, therefore the current tick is not
 % preserved.
+%
 % (oneway)
 setInitialTick( State, NewInitialTick ) ->
 	?wooper_return_state_only( setAttribute( State, initial_tick, 
@@ -209,12 +217,14 @@ setInitialTick( State, NewInitialTick ) ->
 
 
 % Returns the current tick offset of this trace emitter.
+%
 % (const request)	
 getCurrentTickOffset(State) ->
 	?wooper_return_state_result( State, ?getAttr(current_tick_offset) ).
 
 	
 % Sets the current tick offset of this trace emitter.
+%
 % (oneway)
 setCurrentTickOffset( State, NewCurrentTickOffset ) ->
 	?wooper_return_state_only( 
@@ -223,6 +233,7 @@ setCurrentTickOffset( State, NewCurrentTickOffset ) ->
 
 
 % Returns the current tick of this trace emitter.
+%
 % (const request)	
 getCurrentTick(State) ->
 	?wooper_return_state_result( State, get_current_tick(State) ).
@@ -251,8 +262,11 @@ toString(State) ->
 
 % Sends a trace from that emitter.
 % Message is a plain string.
+%
+% All informations are available here, but the tick and the message
+% categorization.
+%
 % (helper function)
-% All informations available but the tick and the message categorization.
 send( TraceType, State, Message ) ->
 	send( TraceType, State, Message, ?DefaultMessageCategorization ).
 
@@ -287,6 +301,7 @@ send( TraceType, State, Message, MessageCategorization, Tick ) ->
 % Sends all types of traces without requiring a class_TraceEmitter state.
 % Uses default trace aggregator, supposed to be already available and 
 % registered.
+%
 % (static)
 send_from_test( TraceType, Message ) ->
 	send_from_test(TraceType, Message, ?DefaultTestMessageCategorization ).
@@ -325,8 +340,10 @@ send_from_test( TraceType, Message, MessageCategorization ) ->
 
 
 % Sends all types of traces without requiring a class_TraceEmitter state.
-% Uses default trace aggregator, supposed to be already available and 
+%
+% Uses default trace aggregator, supposed to be already available and
 % registered.
+%
 % (static)
 send_standalone( TraceType, Message ) ->
 	send_standalone( TraceType, Message,
@@ -376,10 +393,12 @@ get_emitter_node_as_binary() ->
 
 
 % Returns the priority of specified trace type (i.e. fatal, error, etc.).
+%
 % Note: now that LogMX v1.3.2 and later only support 5 levels of detail 
 % (stack/error, warning/warn, info, fine, finest/debug, i.e. no more trace),
 % fatal and error messages have been put at the same priority level, and 
 % Ceylan trace level has been kept, whereas others have been offset.
+%
 % See also: get_channel_name_for_priority/1.
 % Corresponds to stack/error:
 get_priority_for( fatal ) ->
@@ -408,6 +427,7 @@ get_priority_for( debug ) ->
 	
 
 % Returns the name of the trace channel corresponding to the trace priority.
+%
 % See also: get_priority_for/1
 get_channel_name_for_priority(1) ->
 	fatal;
