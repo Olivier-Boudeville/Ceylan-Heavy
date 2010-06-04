@@ -48,12 +48,13 @@ TEST_TARGETS = $(patsubst %.erl,%,$(TEST_SOURCES))
 # (changes not taken into account at run-time, as not recompiled).
 
 
-.PHONY: all all-recurse test test-recurse doc-recurse build-tests launch \
-  install-all install-announce install-ebin install-bin install-src      \
-  install-include install-examples install-test install-doc              \
-  info-install                                                           \
-  help-erl clean clean-erlang clean-database clean-recurse realclean     \
-  info info-files $(MODULES_DIRS)
+.PHONY: all all-parallel-recurse all-recurse                               \
+	test test-recurse doc-recurse build-tests launch                       \
+  	install-all install-announce install-ebin install-bin install-src      \
+  	install-include install-examples install-test install-doc              \
+  	info-install                                                           \
+  	help-erl clean clean-erlang clean-database clean-recurse realclean     \
+  	info info-files $(MODULES_DIRS)
  
 
 
@@ -63,6 +64,13 @@ TEST_TARGETS = $(patsubst %.erl,%,$(TEST_SOURCES))
 
 
 all: all-recurse $(BEAM_FILES)
+
+
+# This rule is not used by default, as we use the -j option from the root
+# makefile, letting then 'make' use its job server for that task:
+all-parallel-recurse:
+	@echo "   Building all on parallel over $(CORE_COUNT) cores (in "$(PWD) #`basename $(PWD)`
+	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then cd $$m && $(MAKE) -s all -j $(CORE_COUNT) CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ; else echo "     (directory $$m skipped)" ; fi ) ; then exit 1; fi ; done
 
 
 all-recurse:
