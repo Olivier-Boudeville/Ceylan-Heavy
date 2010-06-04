@@ -571,8 +571,8 @@ synchronous_new_link( ?wooper_construct_parameters ) ->
 -ifdef(use_synchronous_timed_new).
 
 
-% The duration in milliseconds before a time-out is triggered after a created
-% instance does not seem to answer properly and after a reasonable duration:
+% A reasonable duration (in milliseconds) before a time-out is triggered after a
+% created instance does not seem to answer properly:
 -define(synchronous_time_out,5000).
 			
 			
@@ -677,8 +677,12 @@ remote_new_link( Node, ?wooper_construct_parameters ) ->
 % Creation is synchronous: remote_synchronous_new will return only 
 % when the created process reports it is up and running.
 remote_synchronous_new( Node, ?wooper_construct_parameters ) ->
-	%io:format("synchronous_new operator: spawning ~w:wooper_construct_and_run "
-	%	"with parameters ~w.~n", [?MODULE,[?wooper_construct_parameters]]), 
+	
+	%io:format( "remote_synchronous_new operator: "
+	%	"spawning ~w:wooper_construct_and_run_synchronous "
+	%	"with parameters ~w.~n", [?MODULE,[?wooper_construct_parameters]]),
+	%timer:sleep(200),
+	
 	% Double-list: list with a list in it.
 	SpawnedPid = spawn( Node, ?MODULE, wooper_construct_and_run_synchronous,
 		[ [?wooper_construct_parameters], self() ] ),
@@ -699,9 +703,16 @@ remote_synchronous_new( Node, ?wooper_construct_parameters ) ->
 % Creation is synchronous: remote_synchronous_new_link will return only 
 % when the created process reports it is up and running.
 remote_synchronous_new_link( Node, ?wooper_construct_parameters ) ->
+
+	%io:format( "remote_synchronous_new_link operator: "
+	%	"spawning ~w:wooper_construct_and_run_synchronous "
+	%	"with parameters ~w.~n", [?MODULE,[?wooper_construct_parameters]]),
+	%timer:sleep(200),
+	
 	% Double-list: list with a list in it.
-	SpawnedPid= spawn_link( Node, ?MODULE, wooper_construct_and_run_synchronous,
-		[ [?wooper_construct_parameters], self() ] ),
+	SpawnedPid = spawn_link( Node, ?MODULE, 
+							wooper_construct_and_run_synchronous,
+							[ [?wooper_construct_parameters], self() ] ),
 	
 	% Blocks until the spawned process answers:	
 	% (no risk of synchronous spawns mismatch, as each synchronous call is
@@ -725,6 +736,11 @@ remote_synchronous_new_link( Node, ?wooper_construct_parameters ) ->
 % only when the created process reports it is up and running, or when
 % a time-out occurs.
 remote_synchronous_timed_new( Node, ?wooper_construct_parameters ) ->
+	
+	%io:format( "remote_synchronous_timed_new operator: "
+	%	"spawning ~w:wooper_construct_and_run_synchronous "
+	%	"with parameters ~w.~n", [?MODULE,[?wooper_construct_parameters]]),
+	%timer:sleep(200),
 	
 	SpawnedPid = spawn( Node, ?MODULE, wooper_construct_and_run_synchronous,
 		[ [?wooper_construct_parameters], self() ] ),
@@ -752,10 +768,12 @@ remote_synchronous_timed_new( Node, ?wooper_construct_parameters ) ->
 % a time-out occurs.
 remote_synchronous_timed_new_link( Node, ?wooper_construct_parameters ) ->
 
-	%io:format( "~w:remote_synchronous_timed_new_link: node is ~s, "
-	%	"parameters are:~n ~p.~n", 
-	%	[ ?MODULE, Node, [?wooper_construct_parameters] ] ),
-		
+	%io:format( "remote_synchronous_timed_new_link operator: "
+	%		  "spawning ~w:wooper_construct_and_run_synchronous "
+	%		  "with parameters ~w on node ~w from node ~w.~n", 
+	%		  [?MODULE,[?wooper_construct_parameters],Node,node()]),
+	%timer:sleep(200),
+	
 	SpawnedPid = spawn_link( Node, ?MODULE, 
 		wooper_construct_and_run_synchronous,
 		[ [?wooper_construct_parameters], self() ] ),
