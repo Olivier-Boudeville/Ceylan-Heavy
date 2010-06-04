@@ -36,24 +36,37 @@
 
 
 % Defines the type of requested execution traces. 
+
 % The trace type can be either:
+%
 %  - log_mx_traces, for LogMX-compliant traces (the default): then the trace
-% aggregator will use a proper encoding so that the Ceylan Java trace parser,
-% plugged into LogMX, allows this tool to be used with Ceylan
+%  aggregator will use a proper encoding so that the Ceylan Java trace parser,
+%  plugged into LogMX, allows this tool to be used with Ceylan
+%
 %  - {text_traces,TraceTextOutputType} for more basic text-based traces: then
-% the trace aggregator will do its best to format the traces as a human-readable
-% trace text file; this is mostly useful when LogMX cannot be used for any
-% reason, like needing to generate a report; TraceTextOutputType can be:
-%     - 'text_only', if wanting to have traces be directly written to disk
-% as pure yet human-readable text
+%  the trace aggregator will do its best to format the traces as a
+%  human-readable trace text file; this is mostly useful when LogMX cannot be
+%  used for any reason, like needing to generate a report; TraceTextOutputType
+%  can be:
+%
+%     - 'text_only', if wanting to have traces be directly written to disk as
+%     pure yet human-readable text
+%
 %     - 'pdf', if wanting to read finally the traces in a generated PDF file
 %
-% Note: if you change (ex: comment/uncomment) the trace type, then you must
-% recompile your modules to take it into account. 
+% Note: 
+%
+%  - if you change (ex: comment/uncomment) the trace type, then you must
+% recompile your modules to take it into account
+%
+%  - check in the class_TraceEmitter.hrl file whether TracingActivated is
+%  defined
+%
 -ifndef(TraceType).
 	-define(TraceType,log_mx_traces).
-	%-define(TraceType,{text_traces,text_only}).
 	%-define(TraceType,{text_traces,pdf}).
+    %-define(TraceType,{text_traces,text_only}).
+
 -endif.
 
 
