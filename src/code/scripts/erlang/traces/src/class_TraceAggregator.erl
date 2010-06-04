@@ -67,7 +67,7 @@
 
 
 % Static method declarations (to be directly called from module):
--export([ create/1, getAggregator/1, remove/0 ]).
+-export([ create/1, get_aggregator/1, remove/0 ]).
 
 
 % To spawn the overload monitoring process:
@@ -383,26 +383,31 @@ create( _UseSynchronousNew = true, TraceType ) ->
 
 
 
-% Returns the Pid of the current trace aggregator.
-% Parameter is a boolean that tells whether the aggregator should be created
-% if not available (if true) or if this method should just return a failure
+% Returns the PID of the current trace aggregator.
+%
+% The parameter is a boolean telling whether the aggregator should be created if
+% not available (if true), or if this method should just return a failure
 % notification (if false).
-% Note: to avoid race conditions between concurrent calls to this static 
-% method (ex: due to trace emitter instances), a execution might start with
-% a call to this method with a blocking wait until the aggregator pops up in
-% registry services.
+%
+% Note: to avoid race conditions between concurrent calls to this static method
+% (ex: due to multiple trace emitter instances created in parallel), an execution
+% might start with a call to this method with a blocking wait until the
+% aggregator pops up in registry services.
+%
 % Waits a bit before giving up: useful when client and aggregator processes are
 % launched almost simultaneously.
+%
 % (static)
-getAggregator(CreateIfNotAvailable) ->
-	% Only dealing with registered managers (instead of using directly
-	% their PID) allows to be sure only one instance (singleton) is
-	% being used, to avoid the case of two managers being launched at
-	% the same time (the second will then terminate immediately).
+get_aggregator(CreateIfNotAvailable) ->
 	
-	% If launching multiple trace emitters in a row, first emitter may 
-	% trigger the launch of trace aggregator, but second emitter might do the
-	% same if the aggregator is still being initialized: 
+	% Only dealing with registered managers (instead of using directly their
+	% PID) allows to be sure only one instance (singleton) is being used, to
+	% avoid the case of two managers being launched at the same time (the second
+	% will then terminate immediately).
+	
+	% If launching multiple trace emitters in a row, first emitter may trigger
+	% the launch of trace aggregator, but second emitter might do the same if
+	% the aggregator is still being initialized:
 	case basic_utils:wait_for_global_registration_of( ?trace_aggregator_name )
 			of
 	
@@ -428,7 +433,7 @@ getAggregator(CreateIfNotAvailable) ->
 
 						{registration_waiting_timeout,?trace_aggregator_name} ->
 							error_logger:error_msg( 
-								"class_TraceAggregator:getAggregator "
+								"class_TraceAggregator:get_aggregator "
 								"unable to launch successfully "
 								"the aggregator.~n" ),
 						trace_aggregator_launch_failed
@@ -469,7 +474,7 @@ overload_monitor_main_loop( AggregatorPid ) ->
 			deleted
 		
 	% Every 2s:	
-	after 200 ->
+	after 2000 ->
 			
 			{message_queue_len,QueueLen} = erlang:process_info( 
 			    AggregatorPid, message_queue_len ),
