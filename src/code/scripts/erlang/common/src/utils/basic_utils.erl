@@ -35,7 +35,8 @@
 
 % Timestamp-related functions.
 -export([ get_timestamp/0, get_textual_timestamp/0, get_textual_timestamp/1,
-		 timestamp_to_string/1, get_duration/2, get_textual_duration/2 ]).
+		 timestamp_to_string/1, get_duration/2, get_textual_duration/2,
+		 get_precise_timestamp/0, get_precise_duration/2 ]).
 	
 	
 	
@@ -109,7 +110,9 @@ get_textual_timestamp({{Year,Month,Day},{Hour,Minute,Second}}) ->
 timestamp_to_string(Timestamp) ->	
 	get_textual_timestamp(Timestamp).
 	
-	
+
+
+
 	
 % Returns the (signed) duration in seconds between the two specified timestamps,
 % using the first one as starting time and the second one as stopping time.	
@@ -120,14 +123,41 @@ get_duration(FirstTimestamp,SecondTimestamp) ->
 
 
 % Returns a textual description of the duration between the two specified
-% timestamps.	
+% timestamps.
+%
+% See also: text_utils:duration_to_string/1, which is smarter.	
 get_textual_duration(FirstTimestamp,SecondTimestamp) ->
 	{Days,{Hour, Minute, Second}} = calendar:seconds_to_daystime( 
 		get_duration(FirstTimestamp,SecondTimestamp) ),
+	
 	lists:flatten( io_lib:format( "~B day(s), ~B hour(s), ~B minute(s) "
 		"and ~B second(s)", [Days, Hour, Minute, Second] ) ).
 		
-		
+
+
+
+% Returns a timestamp that is as precise as possible: {MegaSecs,Secs,MicroSecs},
+% where:
+%
+%  - MegaSecs is an integer number of millions of seconds
+%  - Secs is an integer number of second which is less than one million
+%  - MicroSecs is an integer number of microseconds
+%
+get_precise_timestamp() ->
+	erlang:now().
+	
+
+
+% Returns the (signed) duration in milliseconds between the two specified
+% precise timestamps (as obtained thanks to get_precise_duration/0), using the
+% first one as starting time and the second one as stopping time.
+get_precise_duration( _FirstTimestamp={A1,A2,A3}, 
+					 _SecondTimestamp={B1,B2,B3} ) ->
+	
+	% Seconds to be converted in milliseconds:
+	1000 * ( (B1-A1) * 1000000 + B2-A2 ) + round( (B3-A3)/1000 ). 
+	
+	
 
 
 % Registration functions.
