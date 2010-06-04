@@ -80,8 +80,29 @@ get_total_installed_memory() ->
 
 % Returns the version informations of the current Erlang interpreter 
 % being used.
+%
+% Returns a full version name (ex: "R13B04") or, if not available, a shorter one
+% (ex: "R11B").
+%
 get_interpreter_version() ->
-	erlang:system_info(otp_release).
+	% Older versions (pre-R13A?) did not support the otp_release tag:
+	try erlang:system_info(otp_release) of
+		
+		V ->
+			% Ex: V="R13B04"
+			V
+				
+	catch
+		
+		_:_ ->
+			% Here we revert to another (older) solution:
+			{_OTPInfos,V} = init:script_id(),
+			% Ex: "R11B"
+			V
+				
+	end.
+	
+		
 
 
 % Returns the size, in bytes, of a word of this Virtual Machine.
