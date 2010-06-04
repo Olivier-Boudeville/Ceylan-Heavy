@@ -146,6 +146,9 @@ run() ->
 	BinList = text_utils:strings_to_binaries( StringList ),
 	StringList = text_utils:binaries_to_strings( BinList ),
 
+	
+	io:format( "~n   	Testing the textual conversion of distances:~n" ),
+	
 	% In millimeters:
 	Distances = [ -1001.5, -1001.0, -1000.5, -1000.0, -999.5, -999.0,
 				 -1001, -1000, -999, -1.6, -1.4, -1.0, -0.9, -1, 0,
@@ -155,6 +158,20 @@ run() ->
 				"and roughly ~s~n", [ D, text_utils:distance_to_string(D),
 								text_utils:distance_to_short_string(D) ] ) 
 	 || D <- Distances ],
+
+	
+	io:format( "~n   	Testing the textual conversion of durations:~n" ),
+	
+	% In milliseconds:
+	
+	Durations = [ -100000, -1000, -1, 0 , 1, 2, 10, 3000, 3599, 
+				 3600, 3601, 36000, 59000, 60000, 61000, 100000, 
+				 12345678, 1234567890123 ],
+	
+	[ io:format( " - an integer duration of ~w milliseconds is ~s~n",
+				[ D, text_utils:duration_to_string(D) ] ) 
+	 || D <- Durations ],
+
 
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().
