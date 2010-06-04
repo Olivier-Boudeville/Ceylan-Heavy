@@ -30,7 +30,8 @@
 
 
 % To avoid warnings if not used:
--export([ testFailed/1, check_pending_wooper_results/0, testFinished/0 ]).
+-export([ test_receive/0, testFailed/1, check_pending_wooper_results/0, 
+		 testFinished/0 ]).
 
 
 
@@ -181,7 +182,8 @@ test_trace_disabled(_,_) ->
 
 -ifdef(TracingActivated).
 
--define(test_start, 
+
+-define( test_start, 
 	% Create first, synchronously (to avoid race conditions), a trace aggregator
 	% (false is to specify a non-private i.e. global aggregator).
 	%
@@ -195,7 +197,8 @@ test_trace_disabled(_,_) ->
 		{ok,_} -> true; _ -> false 
 	end,	
 	TraceAggregatorPid = class_TraceAggregator:synchronous_new_link(
-		?TraceFilename, ?TraceType, ?TraceTitle, _Private=false, TestIsBatch ),
+		?TraceFilename, ?TraceType, ?TraceTitle, _TraceIsPrivate=false, 
+		TestIsBatch ),
 	?test_info_fmt( "Testing module(s) ~w.", [ ?Tested_modules ] ),
 	% Defined in class_TraceSupervisor.hrl:
 	?init_trace_supervisor
@@ -203,7 +206,7 @@ test_trace_disabled(_,_) ->
 
 
 
--define(test_stop, 
+-define( test_stop, 
 	?test_info_fmt( "End of test for module(s) ~w.", [ ?Tested_modules ] ),
 	% Defined in class_TraceSupervisor.hrl:
 	?wait_for_any_trace_supervisor,
@@ -220,7 +223,7 @@ test_trace_disabled(_,_) ->
 
 
 
--define(test_stop_without_waiting_for_trace_supervisor, 
+-define( test_stop_without_waiting_for_trace_supervisor, 
 	?test_info_fmt( "End of test for module(s) ~w.", [ ?Tested_modules ] ),
 	TraceAggregatorPid ! {synchronous_delete,self()},
 	receive
@@ -242,19 +245,20 @@ test_trace_disabled(_,_) ->
 % actors expect to find one at start-up.
 % However no trace supervisor is needed here.
 
--define(test_start, 
+-define( test_start, 
 	% Create first, synchronously (to avoid race conditions), a trace
 	% aggregator (false is to specify a non-private i.e. global aggregator).
 	% Goes back to the beginning of line:
 	io:format( "~n" ),
 	TraceAggregatorPid = class_TraceAggregator:synchronous_new_link(
-	  ?TraceFilename, ?TraceType, ?TraceTitle, _Private=false, _IsBatch=true ),
+	  ?TraceFilename, ?TraceType, ?TraceTitle, _TraceIsPrivate=false, 
+	  _TraceIsBatch=true ),
 	?test_info_fmt( "Testing module(s) ~w.", [ ?Tested_modules ] )
 ).
 
 
 
--define(test_stop, 
+-define( test_stop, 
 	?test_info_fmt( "End of test for module(s) ~w.", [ ?Tested_modules ] ),
 	TraceAggregatorPid ! {synchronous_delete,self()},
 	receive
@@ -269,7 +273,7 @@ test_trace_disabled(_,_) ->
 
 
 
--define(test_stop_without_waiting_for_trace_supervisor, 
+-define( test_stop_without_waiting_for_trace_supervisor, 
 	?test_info_fmt( "End of test for module(s) ~w.", [ ?Tested_modules ] ),
 	TraceAggregatorPid ! {synchronous_delete,self()},
 	receive
@@ -285,8 +289,22 @@ test_trace_disabled(_,_) ->
 
 -endif.
 	
-	
-	
+
+
+% Helper function to write receive clauses in simulation cases (ex: tests) which
+% cannot interfere with trace supervision.
+% 
+% Returns the received value.
+% 
+% Ex: Pid ! {getBaz,[],self()}, MyBaz = test_receive(), ...
+%
+test_receive() ->	
+	receive
+		{wooper_result,V} when V /= monitor_ok ->
+			V
+	end.
+
+
 	
 % Handles a test failure.
 testFailed(Reason) ->
