@@ -49,7 +49,7 @@
 
 % Use the --batch option (ex: erl --batch) to disable the use of the trace
 % supervisor:
--define(init_trace_supervisor,
+-define( init_trace_supervisor,
 	% By default (with no specific option) a synchronous supervisor is wanted
 	% (wait for its launch to complete):
 	
@@ -63,15 +63,15 @@
 		_ ->
 			% Default: a trace supervisor is used.
 			%io:format( "Supervisor enabled.~n" ),			
-			class_TraceSupervisor:create( _Blocking=true, ?TraceFilename,
-				?TraceType )
+			class_TraceSupervisor:create( _BlockingSupervisor=true, 
+										 ?TraceFilename, ?TraceType )
 			%io:format( "Waiting for trace supervisor to be closed.~n" )		
 	end			
 ).
 
 
 
--define(wait_for_any_trace_supervisor,
+-define( wait_for_any_trace_supervisor,
 	case init:get_argument('-batch') of
 	
 		{ok,_} ->
@@ -81,7 +81,8 @@
 		
 		_ ->
 			% A supervisor must be waited for:
-			%io:format( "Waiting for the trace supervisor.~n" ),
+			io:format( "(waiting for the user to stop the trace supervision)~n"
+					  ),
 			receive
 
 				{wooper_result,monitor_ok} ->
