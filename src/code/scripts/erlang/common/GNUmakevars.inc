@@ -109,7 +109,8 @@ WARNING_LEVEL := 2
 
 ERLANG_COMPILER_OPT_DEBUG := +debug_info
 
-
+# The number of available cores on this computer:
+CORE_COUNT := `grep -c processor /proc/cpuinfo`
 
 ERLANG_INTERPRETER := `PATH=$(ERLANG_ROOT)/bin:$$PATH which erl`
 
