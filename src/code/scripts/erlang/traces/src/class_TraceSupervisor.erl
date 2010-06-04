@@ -5,7 +5,7 @@
 % This library is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License or
 % the GNU General Public License, as they are published by the Free Software
-% Foundation, either version 3 of these Licenses, or (at your option) 
+% Foundation, either version 3 of these Licenses, or (at your option)
 % any later version.
 % You can also redistribute it and/or modify it under the terms of the
 % Mozilla Public License, version 1.1 or later.
@@ -38,7 +38,7 @@
 
 
 
-% Parameters taken by the constructor ('construct'). 
+% Parameters taken by the constructor ('construct').
 -define(wooper_construct_parameters, TraceFilename, TraceType, MonitorNow,
 	Blocking ).
 
@@ -46,7 +46,7 @@
 
 % Declaring all variations of WOOPER standard life-cycle operations:
 % (template pasted, two replacements performed to update arities)
--define( wooper_construct_export, new/4, new_link/4, 
+-define( wooper_construct_export, new/4, new_link/4,
 	synchronous_new/4, synchronous_new_link/4,
 	synchronous_timed_new/4, synchronous_timed_new_link/4,
 	remote_new/5, remote_new_link/5, remote_synchronous_new/5,
@@ -61,7 +61,7 @@
 
 
 % Static method declarations (to be directly called from module):
--define( wooper_static_method_export, create/0, create/1, create/2, create/3, 
+-define( wooper_static_method_export, create/0, create/1, create/2, create/3,
 		create/4 ).
 
 
@@ -88,7 +88,7 @@
 
 
 
-% Total width (expressed as a number of characters) of a line of log, 
+% Total width (expressed as a number of characters) of a line of log,
 % in text mode (text_traces).
 -define(TextWidth,110).
 
@@ -110,7 +110,7 @@
 %
 construct( State, ?wooper_construct_parameters ) ->
 
-	%io:format( "~s Creating a trace supervisor, whose PID is ~w.~n", 
+	%io:format( "~s Creating a trace supervisor, whose PID is ~w.~n",
 	%	[ ?LogPrefix, self() ] ),
 
 	% First the direct mother classes (none), then this class-specific actions:
@@ -118,14 +118,13 @@ construct( State, ?wooper_construct_parameters ) ->
 		{trace_filename,TraceFilename},
 		{trace_type,TraceType}
 	] ),
-	
-	case 
+
 	EndState = case MonitorNow of
-	
+
 		true ->
-					   
+
 			case Blocking of
-			
+
 				Pid when is_pid(Pid) ->
 					% Pattern-match the result of in-place invocation:
 					% ('monitor_ok' used to be temporarily replaced by '_'
@@ -133,42 +132,42 @@ construct( State, ?wooper_construct_parameters ) ->
 					% java_security_PrivilegedAction)
 					{RequestState,monitor_ok} = executeRequest(
 						NewState, blocking_monitor ),
-						 
+
 					% Sends back to the caller:
 					Pid ! {wooper_result,monitor_ok},
 					self() ! delete,
 					RequestState;
-						 
+
 				none ->
-					% Non-blocking, handled after the constructor:		 
+					% Non-blocking, handled after the constructor:
 					self() ! monitor,
 					NewState
-			
+
 			end;
-		
+
 		false ->
 			NewState
-			
-	end,	
+
+	end,
 	%io:format( "~s Supervisor created.~n", [ ?LogPrefix ] ),
 	EndState.
 
-	
-	
+
+
 % Overridden destructor.
 delete(State) ->
-	
+
 	%io:format( "~s Deleting supervisor.~n", [ ?LogPrefix ] ),
 	% Class-specific actions:
 	% Then call the direct mother class counterparts: (none)
 	io:format( "~s Supervisor deleted.~n", [ ?LogPrefix ] ),
-	
+
 	% Allow chaining:
 	State.
-	
 
-	
-	
+
+
+
 % Methods section.
 
 
@@ -179,40 +178,40 @@ delete(State) ->
 monitor(State) ->
 
 	NewState = case ?getAttr(trace_type) of
-	
+
 		{text_traces,pdf} ->
 			io:format( "~s Supervisor has nothing to monitor, "
 				"as the PDF trace report will be generated only on execution "
 				"termination.~n", [ ?LogPrefix] ),
 				State;
-				
-		_Other ->	
-		
+
+		_Other ->
+
 			{Command,ActualFilename} = get_viewer_settings( State,
 				?getAttr( trace_filename ) ),
 
 			case filelib:is_file( ActualFilename ) of
-	
+
 				true ->
 					ok;
-			
+
 				false ->
 					error_logger:error_msg( "class_TraceSupervisor:monitor "
-						"unable to find trace file '~s'.~n", 
+						"unable to find trace file '~s'.~n",
 						[ ActualFilename ] ),
 					throw( {trace_file_not_found,ActualFilename} )
-			
+
 			end,
-			
+
 			io:format( "~s Supervisor will monitor file '~s' now, "
 				"with '~s'.~n", [ ?LogPrefix, ActualFilename, Command ] ),
-	
+
 			% Non-blocking (command must be found in the PATH):
 			[] = os:cmd( Command ++ " " ++ ActualFilename ++ " &" ),
 			State
-			
-	end, 
-	
+
+	end,
+
 	?wooper_return_state_only(NewState).
 
 
@@ -224,59 +223,59 @@ monitor(State) ->
 blocking_monitor(State) ->
 
 	case ?getAttr(trace_type) of
-	
+
 		{text_traces,pdf} ->
 			io:format( "~s Supervisor has nothing to monitor, "
 				"as the PDF trace report will be generated on execution "
 				"termination.~n", [ ?LogPrefix ] ),
 			?wooper_return_state_result( State, monitor_ok );
-				
-		_Other ->	
-		
+
+		_Other ->
+
 			{Command,ActualFilename} = get_viewer_settings( State,
 				?getAttr( trace_filename ) ),
-				
+
 			case filelib:is_file( ActualFilename ) of
-	
+
 				true ->
 					ok;
-			
+
 				false ->
 					error_logger:error_msg( "class_TraceSupervisor:monitor "
-						"unable to find trace file '~s'.~n", 
+						"unable to find trace file '~s'.~n",
 						[ ActualFilename ] ),
 					throw( {trace_file_not_found,ActualFilename} )
-			
+
 			end,
-			
+
 			io:format( "~s Supervisor will monitor file '~s' now with '~s', "
-				"blocking until the user closes the viewer window.~n", 
+				"blocking until the user closes the viewer window.~n",
 				[ ?LogPrefix, ActualFilename, Command ] ),
-	
+
 			% Blocking:
 			case os:cmd( Command ++ " " ++ ActualFilename ) of
-	
+
 				[] ->
-					io:format( "~s Supervisor ended monitoring of '~s'.~n", 
+					io:format( "~s Supervisor ended monitoring of '~s'.~n",
 						[ ?LogPrefix, ActualFilename ] ),
 					?wooper_return_state_result( State, monitor_ok );
-	
+
 				Other ->
 					error_logger:error_msg(
-						"The monitoring of trace supervisor failed: ~s.~n", 
+						"The monitoring of trace supervisor failed: ~s.~n",
 						[ Other ] ),
 					?wooper_return_state_result( State, monitor_failed )
 					%throw( trace_supervision_failed )
-	
+
 			end
-			
+
 	end.
 
 
 
 
 % 'Static' methods (module functions):
-	
+
 
 % Creates the trace supervisor with default settings regarding trace filename,
 % start mode (immediate here, not deferred) and trace type (LogMX-based here,
@@ -284,19 +283,19 @@ blocking_monitor(State) ->
 %
 % See create/4 for a more in-depth explanation of the parameters.
 %
-% (static)	
+% (static)
 create() ->
 	create( _Blocking=true ).
-	
-	
-	
+
+
+
 % Creates the trace supervisor, then blocks iff Blocking is true, with default
 % settings regarding trace filename, start mode (immediate here, not deferred)
 % and trace type (LogMX-based here, not text based).
 %
 % See create/4 for a more in-depth explanation of the parameters.
 %
-% (static)	
+% (static)
 create(Blocking) ->
 	create( Blocking, ?trace_aggregator_filename ).
 
@@ -308,7 +307,7 @@ create(Blocking) ->
 %
 % See create/4 for a more in-depth explanation of the parameters.
 %
-% (static)	
+% (static)
 create( Blocking, TraceFilename ) ->
 	create( Blocking, TraceFilename, log_mx_traces ).
 
@@ -319,7 +318,7 @@ create( Blocking, TraceFilename ) ->
 %
 % See create/4 for a more in-depth explanation of the parameters.
 %
-% (static)	
+% (static)
 create( Blocking, TraceFilename, TraceType ) ->
 	create( Blocking, _MonitorNow=true, TraceFilename, TraceType ).
 
@@ -338,19 +337,19 @@ create( Blocking, TraceFilename, TraceType ) ->
 %  - TraceType the expected type of the traces (ex: log_mx_traces, text_traces)
 %
 create( Blocking, MonitorNow, TraceFilename, TraceType ) ->
-	
-	BlockingParam = case Blocking of 
-	
+
+	BlockingParam = case Blocking of
+
 		true ->
 			self() ;
-			
+
 		false ->
 			none
-			
+
 	end,
-	
+
 	new_link( TraceFilename, TraceType, MonitorNow, BlockingParam ).
-		
+
 
 
 % Returns the name of the tool and the corresponding file that should be used to
@@ -359,18 +358,16 @@ create( Blocking, MonitorNow, TraceFilename, TraceType ) ->
 % (const helper)
 get_viewer_settings( State, Filename ) ->
 	case ?getAttr(trace_type) of
-	
+
 		log_mx_traces ->
 			{executable_utils:get_default_trace_viewer(),Filename};
-		
+
 		{text_traces,text_only} ->
 			{executable_utils:get_default_wide_text_viewer(?TextWidth),Filename};
 
 		{text_traces,pdf} ->
-			PdfTargetFilename = file_utils:replace_extension( Filename, 
-				?TraceExtension, ".pdf" ), 
+			PdfTargetFilename = file_utils:replace_extension( Filename,
+				?TraceExtension, ".pdf" ),
 			{executable_utils:get_default_pdf_viewer(),PdfTargetFilename}
-		
-	end.
-	
 
+	end.
