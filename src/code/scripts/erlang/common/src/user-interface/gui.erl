@@ -5,7 +5,7 @@
 % This library is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License or
 % the GNU General Public License, as they are published by the Free Software
-% Foundation, either version 3 of these Licenses, or (at your option) 
+% Foundation, either version 3 of these Licenses, or (at your option)
 % any later version.
 % You can also redistribute it and/or modify it under the terms of the
 % Mozilla Public License, version 1.1 or later.
@@ -54,7 +54,7 @@
 
 
 % Line-related rendering.
--export([ draw_line/3, draw_line/4, draw_lines/2, draw_lines/3, 
+-export([ draw_line/3, draw_line/4, draw_lines/2, draw_lines/3,
 		 draw_segment/4 ]).
 
 
@@ -69,7 +69,7 @@
 % Color section.
 
 % Here colors are defined as a triplet of color components: {R,G,B}.
-% For example {0,0,0} is black and {255,255,255} is white. 
+% For example {0,0,0} is black and {255,255,255} is white.
 % GS-predefined names (red, green, blue, white, black, grey, or yellow) are not
 % used.
 
@@ -77,22 +77,22 @@
 % Taken from http://www.december.com/html/spec/color16.html.
 get_colors() ->
 	[
-	  {aqua,{0,255,255}}, 	
-	  {black,{0,0,0}}, 	
-	  {blue,{0,0,255}}, 	
-	  {fuchsia,{255,0,255}}, 
-	  {gray,{128,128,128}}, 	
-	  {grey,{128,128,128}}, 	
-	  {green,{0,128,0}}, 	
-	  {lime,{0,255,0}}, 	
-	  {maroon,{128,0,0}}, 
-	  {navy,{0,0,128}}, 	
-	  {olive,{128,128,0}}, 	
-	  {purple,{128,0,128}}, 	
-	  {red,{255,0,0}}, 
-	  {silver,{192,192,192}}, 	
-	  {teal,{0,128,128}}, 	
-	  {white,{255,255,255}}, 	
+	  {aqua,{0,255,255}},
+	  {black,{0,0,0}},
+	  {blue,{0,0,255}},
+	  {fuchsia,{255,0,255}},
+	  {gray,{128,128,128}},
+	  {grey,{128,128,128}},
+	  {green,{0,128,0}},
+	  {lime,{0,255,0}},
+	  {maroon,{128,0,0}},
+	  {navy,{0,0,128}},
+	  {olive,{128,128,0}},
+	  {purple,{128,0,128}},
+	  {red,{255,0,0}},
+	  {silver,{192,192,192}},
+	  {teal,{0,128,128}},
+	  {white,{255,255,255}},
 	  {yellow,{255,255,0}}
 	].
 
@@ -110,10 +110,10 @@ get_color( Color = {_R,_G,_B} ) ->
 get_color(ColorName) ->
 
 	case proplists:get_value( ColorName, get_colors() ) of
-		
+
 		undefined ->
 			throw( {unknown_color,ColorName} );
-		
+
 		Color ->
 			Color
 
@@ -127,11 +127,11 @@ get_color(ColorName) ->
 
 %{R,G,B}, or a the predefined name red, green, blue, white, black, grey, or
 % yellow.
-% For example {0,0,0} is black and {255,255,255} is white. 
+% For example {0,0,0} is black and {255,255,255} is white.
 
 % Draws a line between specified two points in specified canvas.
 draw_line( P1, P2, Canvas ) ->
-	gs:create( line, Canvas, [ {coords, [P1,P2]} ] ).	
+	gs:create( line, Canvas, [ {coords, [P1,P2]} ] ).
 
 
 % Draws a line between specified two points in specified canvas, with specified
@@ -143,22 +143,22 @@ draw_line( P1, P2, Color, Canvas ) ->
 
 % Draws lines between specified list of points, in specified canvas.
 draw_lines( Points, Canvas ) ->
-	gs:create( line, Canvas, [ {coords, Points} ] ).	
+	gs:create( line, Canvas, [ {coords, Points} ] ).
 
 
-% Draws lines between specified list of points in specified canvas, with 
+% Draws lines between specified list of points in specified canvas, with
 % specified color.
 draw_lines( Points, Color, Canvas ) ->
 	gs:create( line, Canvas, [ {coords, Points}, {fg,Color} ] ).
 
 
 
-% Draws a segment of line L between the two specified ordinates. 
+% Draws a segment of line L between the two specified ordinates.
 % Line L must not have for equation Y=constant (i.e. its A parameter must not be
 % null).
 draw_segment( L, Y1, Y2, Canvas ) ->
 	gui:draw_line( {linear_2D:get_abscissa_for_ordinate(L,Y1),Y1},
-				   {linear_2D:get_abscissa_for_ordinate(L,Y2),Y2}, Canvas ). 
+				   {linear_2D:get_abscissa_for_ordinate(L,Y2),Y2}, Canvas ).
 
 
 
@@ -175,8 +175,8 @@ draw_cross( Location, Canvas ) ->
 draw_cross( _Location = {X,Y}, EdgeLength, Canvas ) ->
 	Offset = EdgeLength div 2,
 	% The last pixel of a line is not drawn, hence the +1:
-	draw_line( {X-Offset,Y}, {X+Offset+1,Y}, Canvas ),    
-	draw_line( {X,Y-Offset}, {X,Y+Offset+1}, Canvas ).	
+	draw_line( {X-Offset,Y}, {X+Offset+1,Y}, Canvas ),
+	draw_line( {X,Y-Offset}, {X,Y+Offset+1}, Canvas ).
 
 
 % Draws an upright cross at specified location, with specified edge length
@@ -184,7 +184,7 @@ draw_cross( _Location = {X,Y}, EdgeLength, Canvas ) ->
 draw_cross( _Location = {X,Y}, EdgeLength, Color, Canvas ) ->
 	Offset = EdgeLength div 2,
 	% The last pixel of a line is not drawn, hence the +1:
-	draw_line( {X-Offset,Y}, {X+Offset+1,Y}, Color, Canvas ),    
+	draw_line( {X-Offset,Y}, {X+Offset+1,Y}, Color, Canvas ),
 	draw_line( {X,Y-Offset}, {X,Y+Offset+1}, Color, Canvas ).
 
 
@@ -194,7 +194,7 @@ draw_labelled_cross( Location={X,Y}, EdgeLength, LabelText, Canvas ) ->
 	draw_cross( Location, EdgeLength, Canvas ),
 	% Text a little above and on the right:
 	gs:create( text, Canvas,[ {coords,[{X+4,Y-12}]},
-                  {text,LabelText}]).
+				  {text,LabelText}]).
 
 
 % Draws an upright cross at specified location, with specified edge length
@@ -204,7 +204,7 @@ draw_labelled_cross( Location={X,Y}, EdgeLength, Color, LabelText, Canvas ) ->
 	draw_cross( Location, EdgeLength, ActualColor, Canvas ),
 	% Text a little above and on the right:
 	gs:create( text, Canvas,[ {coords,[{X+4,Y-12}]},
-                  {text,LabelText}, {fg,ActualColor} ]).
+				  {text,LabelText}, {fg,ActualColor} ]).
 
 
 % Renders specified circle in specified canvas.
@@ -212,24 +212,26 @@ draw_circle( _Center={X,Y}, Radius, Canvas ) ->
 	TopLeft     = {X-Radius,Y-Radius},
 	BottomRight = {X+Radius,Y+Radius},
 	gs:create( oval, Canvas, [ {coords,[TopLeft,BottomRight]},
-	  {fill,none}, {bw,1} ] ).	
+	  {fill,none}, {bw,1} ] ).
 
+
+% Renders specified circle, with specified color, in specified canvas.
 draw_circle( _Center={X,Y}, Radius, Color, Canvas ) ->
 
 	TopLeft     = {X-Radius,Y-Radius},
 	BottomRight = {X+Radius,Y+Radius},
 
 	gs:create( oval, Canvas, [ {coords,[TopLeft,BottomRight]},
-	  {fill,none}, {bw,1}, {fg,gui:get_color(Color)} ] ).	
+	  {fill,none}, {bw,1}, {fg,gui:get_color(Color)} ] ).
 
 
 
 % Draws specified list of points, each point being identified in turn with one
 % cross and a label: P1 for the first point of the list, P2 for the next, etc.
 draw_numbered_points( Points, Canvas ) ->
-	LabelledPoints = label_points( Points, _Acc=[], _InitialCount=1 ), 
+	LabelledPoints = label_points( Points, _Acc=[], _InitialCount=1 ),
 	%io:format( "Labelled points: ~p.~n", [LabelledPoints] ),
-	[ gui:draw_labelled_cross( Location, _Edge=5, Label, Canvas ) 
+	[ gui:draw_labelled_cross( Location, _Edge=5, Label, Canvas )
 	  || {Label,Location} <- LabelledPoints  ].
 
 
@@ -242,5 +244,3 @@ label_points( [], Acc, _Count ) ->
 label_points( [P|T], Acc, Count ) ->
 	Label = lists:flatten( io_lib:format("P~B", [Count] ) ),
 	label_points( T,[ {Label,P} |Acc], Count+1 ).
-
-
