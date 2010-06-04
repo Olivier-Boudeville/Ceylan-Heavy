@@ -15,9 +15,11 @@ SVN_OPT = --username wondersye
 
 MODULES_DIRS = common wooper traces
 
+CORE_COUNT := `grep -c processor /proc/cpuinfo`
+
 
 all:
-	@for m in $(MODULES_DIRS); do ( cd $$m ; $(MAKE) all ) ; done
+	@for m in $(MODULES_DIRS); do ( cd $$m ; $(MAKE) -j $(CORE_COUNT) all-recurse ) ; done
 
 
 clean:
@@ -30,7 +32,7 @@ co:
 
 
 ci:
-	@for m in $(MODULES_DIRS); do svn co $(SVN_ROOT)/$$m $(SVN_OPT) ; done
+	@for m in $(MODULES_DIRS); do ( cd $$m ; svn ci ) ; done
 
 
 up:
