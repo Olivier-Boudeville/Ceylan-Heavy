@@ -186,11 +186,11 @@ code_opt="-pz ${code_dirs} -smp auto +K true +A 8"
 
 
 # By default up to 1.2 million processes could be created on one node:
-# (reduced, as even without having spawned these processes, the memory
-# footprint can increase quite a lot)
-# Default value:
-#max_process_count=32768
-max_process_count=120000
+# (reduced, as even without having spawned these processes, the memory footprint
+# can increase quite a lot; default value is 32768 processes)
+
+# max_process_count=120000
+max_process_count=400000
 #max_process_count=120000000
 
 command="${ERL} ${log_opt} ${code_opt} +P ${max_process_count}"
@@ -245,6 +245,9 @@ else
 	if [ -z "${long_name}" ] ; then
 		long_name="${default_node_name}"
 	fi
+
+	# Commented-out, as otherwise we will indeed avoid the "Can't set long node
+	# name! Please check your configuration" blocking error, but afterwards 
 
 	#long_name="${long_name}@${fqdn}"
 	command="${command} -name ${long_name}"
