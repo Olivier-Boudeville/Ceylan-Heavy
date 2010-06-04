@@ -90,7 +90,7 @@
 
  
 -ifndef(TraceEmitterCategorization).
-	-define( TraceEmitterCategorization, "NotCategorized" ).
+	-define(TraceEmitterCategorization,"NotCategorized").
 -endif.
 
 
@@ -113,11 +113,17 @@
 % Comment the next line if wanting to disable the trace output:
 -define(TracingActivated,).
 
- 
+
+
 -ifdef(TracingActivated).
 
 
+% The type of trace output (ex: LogMX, PDF, etc.) is defined in the traces.hrl
+% file.
+
+
 % The first version of macros uses an explicit state.
+%
 % The second version of macros uses an implicit state, named 'State', as, except
 % in constructors, WOOPER conventions imply such a state exists and, provided
 % informations stored in state have not changed (notably emitter name and
