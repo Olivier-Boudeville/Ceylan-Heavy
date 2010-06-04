@@ -1,7 +1,10 @@
-
 # Ad-hoc makefile for Orge's prerequisites.
 
-.PHONY: all clean co up
+# Actual source file is:
+# ceylan/Ceylan/trunk/src/code/scripts/erlang/top-Ceylan-Erlang-GNUmakefile
+# To be copied as Ceylan-Erlang/GNUmakefile.
+
+.PHONY: all clean co ci up st
 
 
 SVN_ROOT = "http://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/code/scripts/erlang"
@@ -26,10 +29,13 @@ co:
 	@for m in $(MODULES_DIRS); do svn co $(SVN_ROOT)/$$m $(SVN_OPT) ; done
 
 
+ci:
+	@for m in $(MODULES_DIRS); do svn co $(SVN_ROOT)/$$m $(SVN_OPT) ; done
+
+
 up:
 	@for m in $(MODULES_DIRS); do ( cd $$m ; svn update ) ; done
 
 
 st:
 	@for m in $(MODULES_DIRS); do ( cd $$m ; svn status ) ; done
-
