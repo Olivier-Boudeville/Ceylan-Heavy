@@ -69,7 +69,7 @@ TEST_TARGETS = $(patsubst %.erl,%,$(TEST_SOURCES))
 
 # This rule is not used by default, as we use the -j option from the root
 # makefile, letting then 'make' use its job server for that task:
-all-parallel-recurse:
+all-parallel-recurse: $(BEAM_FILES)
 	@echo "   Building all on parallel over $(CORE_COUNT) cores (in "$(PWD) #`basename $(PWD)`
 	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then cd $$m && $(MAKE) -s all -j $(CORE_COUNT) CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ; else echo "     (directory $$m skipped)" ; fi ) ; then exit 1; fi ; done
 
@@ -78,6 +78,8 @@ all-parallel-recurse:
 all-recurse: $(BEAM_FILES)
 	@echo "   Building all in "$(PWD) #`basename $(PWD)`
 	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then cd $$m && $(MAKE) -s all-recurse CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ; else echo "     (directory $$m skipped)" ; fi ) ; then exit 1; fi ; done
+
+all: $(BEAM_FILES)
 
 
 %.beam: %.erl %.hrl
