@@ -45,6 +45,7 @@
 		 strings_to_binaries/1, binaries_to_strings/1,
 		 percent_to_string/1, percent_to_string/2,
 		 distance_to_string/1, distance_to_short_string/1,
+		 duration_to_string/1,
 		 join/2, remove_ending_carriage_return/1, format_text_for_width/2,
 		 pad_string/2, is_string/1 ]).
 	
@@ -291,7 +292,104 @@ distance_to_short_string( Millimeters ) ->
 			io_lib:format( "~.1fkm", [Millimeters/Km] )
 				
 	end.
-				
+		
+
+
+% Returns an approximate textual description of the specified duration, expected
+% to be expressed as an integer number of milliseconds.
+%
+% Ex: for a duration of ms, returns "".
+%
+% See also: basic_utils:get_textual_duration/2.
+duration_to_string( Milliseconds ) ->
+	
+	FullSeconds = Milliseconds div 1000,
+	{Days,{Hours,Minutes,Seconds}} = calendar:seconds_to_daystime(FullSeconds),
+	
+	ListWithDays = case Days of 
+					   
+					   0 ->
+						   [];
+					   
+					   1 ->
+						   [ "1 day" ];
+					   
+					   _ ->
+						   [ io_lib:format("~B days",[Days]) ]
+							   
+				   end,
+	
+	ListWithHours = case Hours of 
+						
+						0 ->
+							ListWithDays;
+						
+						1 ->
+							[ "1 hour" |ListWithDays];
+						
+						_ ->
+							[ io_lib:format("~B hours",[Hours]) |ListWithDays]
+								
+					end,
+	
+	ListWithMinutes = case Minutes of 
+						  
+						  0 ->
+							  ListWithHours;
+						  
+						  1 ->
+							  [ "1 minute" |ListWithHours];
+						  
+						  _ ->
+							  [ io_lib:format("~B minutes",[Minutes]) 
+							   |ListWithHours]
+								  
+					  end,
+	
+	ListWithSeconds = case Seconds of 
+						
+						  0 ->
+							  ListWithMinutes;
+						  
+						  1 ->
+							  [ "1 second" |ListWithMinutes];
+						  
+						  _ ->
+							  [ io_lib:format("~B seconds",[Seconds]) |
+							   ListWithMinutes]
+								  
+					  end,
+	
+	ActualMilliseconds = Milliseconds rem 1000,
+	
+	ListWithMilliseconds = case ActualMilliseconds of 
+	
+							   0 ->
+								   ListWithSeconds;
+							   
+							   1 ->
+								   [ "1 millisecond" |ListWithSeconds];
+						
+							   _ ->
+								   [ io_lib:format("~B milliseconds",
+												   [ActualMilliseconds]) 
+									|ListWithSeconds]
+									   
+						   end,
+	
+	% Preparing for final display:
+	case ListWithMilliseconds of
+		
+		[] ->
+			"0 millisecond";
+		
+		[OneElement] ->
+			OneElement;
+		
+		[Smaller|Bigger] ->
+			text_utils:join( ", ", lists:reverse(Bigger) ) ++ " and " ++ Smaller
+	
+	end.
 
 
 % Converts a plain (list-based) string into a binary. 
