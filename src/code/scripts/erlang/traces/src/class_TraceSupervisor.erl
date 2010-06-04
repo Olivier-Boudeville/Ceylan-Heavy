@@ -27,8 +27,9 @@
 
 
 % Trace supervisor.
-% This version just uses LogMX (http://logmx.com) to track the default 
-% execution trace file, expected to be locally available on disk.
+%
+% This version just uses LogMX (http://logmx.com) to track the default execution
+% trace file, expected to be locally available on disk.
 -module(class_TraceSupervisor).
 
 
@@ -55,12 +56,13 @@
 
 
 % Method declarations.
--define(wooper_method_export, monitor/1, blocking_monitor/1 ).
+-define( wooper_method_export, monitor/1, blocking_monitor/1 ).
 
 
 
 % Static method declarations (to be directly called from module):
--export([ create/0, create/1, create/2, create/3, create/4 ]).
+-define( wooper_static_method_export, create/0, create/1, create/2, create/3, 
+		create/4 ).
 
 
 % Allows to define WOOPER base variables and methods for that class:
@@ -92,15 +94,20 @@
 
 
 
-% Constructs a new trace supervisor.
-%  - TraceFilename is the name of the file where traces should be read from;
+% Constructs a new trace supervisor:
+%
+%  - TraceFilename is the name of the file where traces should be read from
+%
 %  - TraceType the type of traces to expect (ex: log_mx_traces, text_traces)
+%
 %  - MonitorNow tells whether the supervision should begin immediately (if true)
-% or only when the monitor method is called (if false).
+%  or only when the monitor method is called (if false)
+%
 %  - Blocking tells whether the monitoring should be non-blocking (if equal to
-% 'none'); otherwise the monitoring should be blocking, and this Blocking
-% parameter should be the PID of the caller to be notified. This parameter has
-% a meaning iff MonitorNow is true.
+%  'none'); otherwise the monitoring should be blocking, and this Blocking
+%  parameter should be the PID of the caller to be notified. This parameter has
+%  a meaning iff MonitorNow is true
+%
 construct( State, ?wooper_construct_parameters ) ->
 
 	%io:format( "~s Creating a trace supervisor, whose PID is ~w.~n", 
@@ -111,7 +118,8 @@ construct( State, ?wooper_construct_parameters ) ->
 		{trace_filename,TraceFilename},
 		{trace_type,TraceType}
 	] ),
-		
+	
+	case 
 	EndState = case MonitorNow of
 	
 		true ->
@@ -126,7 +134,7 @@ construct( State, ?wooper_construct_parameters ) ->
 					{RequestState,monitor_ok} = executeRequest(
 						NewState, blocking_monitor ),
 						 
-					% Sends back to the caller:	 
+					% Sends back to the caller:
 					Pid ! {wooper_result,monitor_ok},
 					self() ! delete,
 					RequestState;
@@ -149,10 +157,12 @@ construct( State, ?wooper_construct_parameters ) ->
 	
 % Overridden destructor.
 delete(State) ->
+	
 	%io:format( "~s Deleting supervisor.~n", [ ?LogPrefix ] ),
 	% Class-specific actions:
 	% Then call the direct mother class counterparts: (none)
 	io:format( "~s Supervisor deleted.~n", [ ?LogPrefix ] ),
+	
 	% Allow chaining:
 	State.
 	
@@ -164,6 +174,7 @@ delete(State) ->
 
 % Triggers an non-blocking supervision (trace monitoring).
 % Will return immediately.
+%
 % (oneway)
 monitor(State) ->
 
@@ -208,6 +219,7 @@ monitor(State) ->
 
 % Triggers a blocking supervision (trace monitoring).
 % Will block until the viewer window is closed by the user.
+%
 % (request)
 blocking_monitor(State) ->
 
@@ -216,7 +228,7 @@ blocking_monitor(State) ->
 		{text_traces,pdf} ->
 			io:format( "~s Supervisor has nothing to monitor, "
 				"as the PDF trace report will be generated on execution "
-				"termination.~n", [ ?LogPrefix] ),
+				"termination.~n", [ ?LogPrefix ] ),
 			?wooper_return_state_result( State, monitor_ok );
 				
 		_Other ->	
@@ -266,53 +278,67 @@ blocking_monitor(State) ->
 % 'Static' methods (module functions):
 	
 
-% Creates the trace supervisor with default settings regarding
-% trace filename, start mode (immediate here, not deferred) and trace type
-% (LogMX-based here, not text based), and blocks until closed.
+% Creates the trace supervisor with default settings regarding trace filename,
+% start mode (immediate here, not deferred) and trace type (LogMX-based here,
+% not text based), and blocks until closed.
+%
 % See create/4 for a more in-depth explanation of the parameters.
+%
 % (static)	
 create() ->
 	create( _Blocking=true ).
 	
 	
 	
-% Creates the trace supervisor, then blocks iff Blocking is true, with
-% default settings regarding trace filename, start mode (immediate here, not
-% deferred) and trace type (LogMX-based here, not text based).
+% Creates the trace supervisor, then blocks iff Blocking is true, with default
+% settings regarding trace filename, start mode (immediate here, not deferred)
+% and trace type (LogMX-based here, not text based).
+%
 % See create/4 for a more in-depth explanation of the parameters.
+%
 % (static)	
 create(Blocking) ->
 	create( Blocking, ?trace_aggregator_filename ).
 
 
 
-% Creates the trace supervisor, then blocks iff Blocking is true, with
-% default settings regarding start mode (immediate here, not deferred) and 
-% trace type (LogMX-based here, not text based).
+% Creates the trace supervisor, then blocks iff Blocking is true, with default
+% settings regarding start mode (immediate here, not deferred) and trace type
+% (LogMX-based here, not text based).
+%
 % See create/4 for a more in-depth explanation of the parameters.
+%
 % (static)	
 create( Blocking, TraceFilename ) ->
 	create( Blocking, TraceFilename, log_mx_traces ).
 
 
 
-% Creates the trace supervisor, then blocks iff Blocking is true, with
-% default settings regarding start mode (immediate here, not deferred).
+% Creates the trace supervisor, then blocks iff Blocking is true, with default
+% settings regarding start mode (immediate here, not deferred).
+%
 % See create/4 for a more in-depth explanation of the parameters.
+%
 % (static)	
 create( Blocking, TraceFilename, TraceType ) ->
 	create( Blocking, _MonitorNow=true, TraceFilename, TraceType ).
 
 
 
-% Creates a trace supervisor.
-%  - Blocking tells whether the monitoring should be blocking (if true) or
-% not (the supervisor tool is then launched in the background). 
+% Creates a trace supervisor:
+%
+%  - Blocking tells whether the monitoring should be blocking (if true) or not
+%  (the supervisor tool is then launched in the background)
+%
 %  - MonitorNow tells whether the monitoring should start immediately or only
-% when a monitor/blocking_monitor method is called
+%  when a monitor/blocking_monitor method is called
+%
 %  - TraceFilename the trace file to monitor
+%
 %  - TraceType the expected type of the traces (ex: log_mx_traces, text_traces)
+%
 create( Blocking, MonitorNow, TraceFilename, TraceType ) ->
+	
 	BlockingParam = case Blocking of 
 	
 		true ->
@@ -322,13 +348,15 @@ create( Blocking, MonitorNow, TraceFilename, TraceType ) ->
 			none
 			
 	end,
+	
 	new_link( TraceFilename, TraceType, MonitorNow, BlockingParam ).
 		
 
 
-% Returns the name of the tool and the corresponding file that should be 
-% used to monitor traces.
-% (const helper function)
+% Returns the name of the tool and the corresponding file that should be used to
+% monitor traces.
+%
+% (const helper)
 get_viewer_settings( State, Filename ) ->
 	case ?getAttr(trace_type) of
 	
@@ -345,3 +373,4 @@ get_viewer_settings( State, Filename ) ->
 		
 	end.
 	
+
