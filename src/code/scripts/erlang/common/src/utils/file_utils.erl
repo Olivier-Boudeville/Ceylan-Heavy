@@ -87,9 +87,27 @@ join( FirstPath, SecondPath ) ->
 		
 % Converts specified name to an acceptable filename, filesystem-wise.	
 convert_to_filename(Name) ->
+	
 	% Currently we use exactly the same translation rules both for node names
-	% and file names:
-	basic_utils:generate_valid_node_name_from(Name).
+	% and file names (see basic_utils:generate_valid_node_name_from/1).
+	
+	% Note however that now we duplicate the code instead of calling the
+	% basic_utils module from here, as otherwise there would be one more module
+	% to deploy under some circumstances.
+	
+	% Replaces each series of spaces (' '), lower than ('<'), greater than
+	% ('>'), comma (','), left ('(') and right (')') parentheses, single (''')
+	% and double ('"') quotes, forward ('/') and backward ('\') slashes,
+	% ampersand ('&'), tilde ('~'), sharp ('#'), at sign ('@'), all other kinds
+	% of brackets ('{', '}', '[', ']'), pipe ('|'), dollar ('$'), star ('*'),
+	% marks ('?' and '!'), plus ('+'), other punctation signs (';' and ':') by
+	% exactly one underscore:
+	%
+	% (see also: basic_utils:generate_valid_node_name_from/1)
+	re:replace( lists:flatten(Name), 
+			   "( |<|>|,|\\(|\\)|'|\"|/|\\\\|\&|~|"
+			   "#|@|{|}|\\[|\\]|\\||\\$|\\*|\\?|!|\\+|;|:)+", "_", 
+		 [global,{return, list}] ).
 
 
 
