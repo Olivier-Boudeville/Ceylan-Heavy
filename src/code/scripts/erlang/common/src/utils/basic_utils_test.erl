@@ -54,6 +54,7 @@ run() ->
 	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
 
 	InitialTimestamp = basic_utils:get_timestamp(),
+	InitialPreciseTimestamp = basic_utils:get_precise_timestamp(),
 	
 	io:format( "   Timestamp is ~s.~n", [ 
 		basic_utils:get_textual_timestamp(InitialTimestamp) ] ),
@@ -203,6 +204,12 @@ run() ->
 	
 	{Min,Max} = {3,16},
 	check_process_specific_values( Min, Max ),
+
+	FinalPreciseTimestamp = basic_utils:get_precise_timestamp(),
+	
+	io:format( "   Precise duration in test is ~p ms.~n", [ 
+		basic_utils:get_precise_duration(InitialPreciseTimestamp,
+										 FinalPreciseTimestamp) ] ),
 					
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().
