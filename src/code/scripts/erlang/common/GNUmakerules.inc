@@ -9,7 +9,7 @@
 ERL_FILES = $(wildcard *.erl)
 
 # Includes test beams:
-BEAM_FILES   = $(patsubst %.erl,%.beam,$(ERL_FILES))
+BEAM_FILES	 = $(patsubst %.erl,%.beam,$(ERL_FILES))
 
 TEST_SOURCES = $(wildcard *_test.erl)
 
@@ -18,46 +18,42 @@ TEST_TARGETS = $(patsubst %.erl,%,$(TEST_SOURCES))
 
 # Regarding dependency management.
 #
-# One can just ignore dependencies and rebuild "blindly" every module in current
-# subtree.
-#
+# One can just ignore dependencies and rebuild "blindly" every module in
+# current subtree.
 # One just has not to forget to issue 'make' from a right location, before
 # running one's Erlang program.
 
 # Another option is to track dependencies explicitly.
-# We found no existing way of managing dependencies automatically, thus they
-# have to be declared by hand.
-#
-# We want these user-specified dependencies to work with the generic rules to
-# build beam files and to run programs.
-#
-# For example, 'make MyObject_run' would check MyObject_test.beam and its
-# dependencies before running it.
-#
-# A generic rule like: '%.beam: %.erl' would not take into account dependencies.
-#
-# A generic rule like: '%.beam: %.erl %_dependencies' with a definition like
-# 'MyObject_dependencies: A.beam moduleB.beam' would work (and modules not
-# depending on others could be managed with a second generic rule: '%.beam:
-# %.erl'), but generic targets, as defined in GNUmakerules.inc, seem to be
-# *always* rebuilt, not depending on their .PHONY status.
-#
-# In our case, MyObject.beam (and all its prerequisites!) would thus always be
-# rebuilt, even if no change at all was operated on the corresponding sources,
-# which would not be acceptable.
-#
-# Thus we stick from now to the basic strategy: always issue a global 'make' at
-# the root of the source before running a program, otherwise be doomed (changes
-# not taken into account at run-time, as not recompiled).
+# We found no existing way of managing dependencies automatically, thus
+# they have to be declared by hand.
+# We want these user-specified dependencies to work with the generic
+# rules to build beam files and to run programs.
+# For example, 'make MyObject_run' would check MyObject_test.beam
+# and its dependencies before running it.
+# A generic rule like: '%.beam: %.erl' would not take into account
+# dependencies.
+# A generic rule like: '%.beam: %.erl %_dependencies' with
+# a definition like 'MyObject_dependencies: A.beam moduleB.beam'
+# would work (and modules not depending on others could be managed with a
+# second generic rule: '%.beam: %.erl'), but generic targets, as
+# defined in GNUmakerules.inc, seem to be *always* rebuilt, not depending
+# on their .PHONY status.
+# In our case, MyObject.beam (and all its
+# prerequisites!) would thus always be rebuilt, even if no change at all was
+# operated on the corresponding sources, which would not be acceptable.
+
+# Thus we stick from now to the basic strategy: always issue a global 'make'
+# at the root of the source before running a program, otherwise be doomed
+# (changes not taken into account at run-time, as not recompiled).
 
 
-.PHONY: all all-recurse all-sequential-recurse                              \
-	test test-recurse doc-recurse build-tests launch                       \
-  	install-all install-announce install-ebin install-bin install-src      \
-  	install-include install-examples install-test install-doc              \
-  	info-install                                                           \
-  	help-erl clean clean-erlang clean-database clean-recurse realclean     \
-  	info info-files $(MODULES_DIRS)
+.PHONY: all all-parallel-recurse all-recurse							   \
+	test test-recurse doc-recurse build-tests launch					   \
+	install-all install-announce install-ebin install-bin install-src	   \
+	install-include install-examples install-test install-doc			   \
+	info-install														   \
+	help-erl clean clean-erlang clean-database clean-recurse realclean	   \
+	info info-files $(MODULES_DIRS)
 
 
 
@@ -66,29 +62,28 @@ TEST_TARGETS = $(patsubst %.erl,%,$(TEST_SOURCES))
 # that are not pleasing to the eye.
 
 
+all: all-recurse $(BEAM_FILES)
+
 
 # This rule is not used by default, as we use the -j option from the root
 # makefile, letting then 'make' use its job server for that task:
-all-parallel-recurse: $(BEAM_FILES)
-	@echo "   Building all on parallel over $(CORE_COUNT) cores (in "$(PWD) #`basename $(PWD)`
-	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then cd $$m && $(MAKE) -s all -j $(CORE_COUNT) CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ; else echo "     (directory $$m skipped)" ; fi ) ; then exit 1; fi ; done
+all-parallel-recurse:
+	@echo "	  Building all on parallel over $(CORE_COUNT) cores (in "$(PWD) #`basename $(PWD)`
+	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then cd $$m && $(MAKE) -s all -j $(CORE_COUNT) CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ; else echo "	  (directory $$m skipped)" ; fi ) ; then exit 1; fi ; done
 
 
-# This rule will use any -j option already specified, without overriding it:
-all-recurse: $(BEAM_FILES)
-	@echo "   Building all in "$(PWD) #`basename $(PWD)`
-	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then cd $$m && $(MAKE) -s all-recurse CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ; else echo "     (directory $$m skipped)" ; fi ) ; then exit 1; fi ; done
-
-all: $(BEAM_FILES)
+all-recurse:
+	@echo "	  Building all in "$(PWD) #`basename $(PWD)`
+	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then cd $$m && $(MAKE) -s all CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ; else echo "	 (directory $$m skipped)" ; fi ) ; then exit 1; fi ; done
 
 
 %.beam: %.erl %.hrl
-	@echo "     Compiling module with header $<"
+	@echo "		Compiling module with header $<"
 	@$(ERLANG_COMPILER) $(ERLANG_COMPILER_OPT) -o $@ $<
 
 
 %.beam: %.erl
-	@echo "     Compiling module $<"
+	@echo "		Compiling module $<"
 	@$(ERLANG_COMPILER) $(ERLANG_COMPILER_OPT) -o $@ $<
 
 
@@ -109,12 +104,12 @@ all: $(BEAM_FILES)
 
 
 %_exec: %_app.beam %.beam
-	@echo "     Executing application $^ (first form)"
+	@echo "		Executing application $^ (first form)"
 	$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@|sed 's|_exec|_app:exec()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
 
 
 %_exec: %_app.beam
-	@echo "     Executing application $^ (second form)"
+	@echo "		Executing application $^ (second form)"
 	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@|sed 's|_exec|_app:exec()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
 
 
@@ -126,12 +121,12 @@ all: $(BEAM_FILES)
 # themselves depend on that.
 
 %_exec_background: %_app.beam %.beam
-	@echo "     Executing application $^ in the background (first form)"
+	@echo "		Executing application $^ in the background (first form)"
 	@$(ERL_PARAMETERIZED_LAUNCHER) --ln `echo $@|sed 's|_background$$||1'`-$$USER --background --eval `echo $@|sed 's|_exec_background|_app:exec()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT) &
 
 
 %_exec_background: %_app.beam
-	@echo "     Executing application $^ in the background (second form)"
+	@echo "		Executing application $^ in the background (second form)"
 	@$(ERL_PARAMETERIZED_LAUNCHER) --ln `echo $@|sed 's|_background$$||1'`-$$USER --background --eval `echo $@|sed 's|_exec_background|_app:exec()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT) &
 
 
@@ -141,29 +136,32 @@ all: $(BEAM_FILES)
 
 
 #%_test: %.beam %_test.beam
-#	@echo "    Running test function $(STARTUP_FUNCTION) in module $@"
+#	@echo "	   Running test function $(STARTUP_FUNCTION) in module $@"
 #	@$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT) -run $@ $(STARTUP_FUNCTION)
 
 
 #%_test: %_test.beam
-#	@echo "    Running test function $(STARTUP_FUNCTION) in module $@"
+#	@echo "	   Running test function $(STARTUP_FUNCTION) in module $@"
 #	@$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT) -run $@ $(STARTUP_FUNCTION)
 
 
 
 %_test: %.beam %_test.beam
+		@# Even just a comment is needed here, to force rebuild.
+
 
 %_test: %_test.beam
+		@# Even just a comment is needed here, to force rebuild.
 
 
 %_interactive_test: %.beam %_interactive_test.beam
-	@echo "     Executing interactively test function "
+	@echo "		Executing interactively test function "
 	"$(STARTUP_FUNCTION) in module $@"
 	@$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT) -run $@ $(STARTUP_FUNCTION) $(INTERNAL_OPTIONS)
 
 
 %_batch_test: %.beam %_batch_test.beam
-	@echo "     Executing non-interactively test function "
+	@echo "		Executing non-interactively test function "
 	"$(STARTUP_FUNCTION) in module $@"
 	@$(ERLANG_INTERPRETER) $(ERLANG_INTERPRETER_OPT) -run $@ $(STARTUP_FUNCTION) $(INTERNAL_OPTIONS)
 
@@ -173,7 +171,7 @@ all: $(BEAM_FILES)
 # %_integration_dependencies target is a phony target, so that test dependencies
 # can be specified.
 %_integration_run: %_integration_test.beam %_integration_dependencies
-	@echo "     Running integration test $@ from $^ "
+	@echo "		Running integration test $@ from $^ "
 	"with $(ERL_PARAMETERIZED_LAUNCHER)"
 	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@|sed 's|_run|_test:run()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
 
@@ -185,17 +183,17 @@ all: $(BEAM_FILES)
 
 
 %_run: %_test %_test_dependencies
-	@echo "     Running unitary test $@ (first form) from $^, with $(ERL_PARAMETERIZED_LAUNCHER)"
+	@echo "		Running unitary test $@ (first form) from $^, with $(ERL_PARAMETERIZED_LAUNCHER)"
 	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@|sed 's|_run|_test:run()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
 
 
 %_run: %_test %.beam
-	@echo "     Running unitary test $@ (second form) from $^"
+	@echo "		Running unitary test $@ (second form) from $^"
 	$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@|sed 's|_run|_test:run()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
 
 
 %_run: %_test
-	@echo "     Running unitary test $@ (third form) from $^"
+	@echo "		Running unitary test $@ (third form) from $^"
 	@$(ERL_PARAMETERIZED_LAUNCHER) --ln $@-$$USER --eval `echo $@|sed 's|_run|_test:run()|1'` $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
 
 
@@ -204,16 +202,16 @@ test: all test-recurse
 
 
 test-recurse:
-	@echo "   Testing all in "`basename $(PWD)`
-	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then cd $$m && $(MAKE) -s test CMD_LINE_OPT="${CMD_LINE_OPT} --batch" && cd .. ; else echo "     (directory $$m skipped)" ; fi ) ; then exit 1; fi ; done
+	@echo "	  Testing all in "`basename $(PWD)`
+	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then cd $$m && $(MAKE) -s test CMD_LINE_OPT="${CMD_LINE_OPT} --batch" && cd .. ; else echo "	  (directory $$m skipped)" ; fi ) ; then exit 1; fi ; done
 
 
 # Best placed here rather than in GNUmakerules-docutils.inc:
 doc: doc-recurse
 
 doc-recurse:
-	@echo "   Preparing documentation in "$(PWD) #`basename $(PWD)`
-	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then cd $$m && $(MAKE) -s doc CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ; else echo "     (directory $$m skipped)" ; fi ) ; 	then exit 1; fi ; done
+	@echo "	  Preparing documentation in "$(PWD) #`basename $(PWD)`
+	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then cd $$m && $(MAKE) -s doc CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. ; else echo "	 (directory $$m skipped)" ; fi ) ;	then exit 1; fi ; done
 
 
 
@@ -223,7 +221,7 @@ build-tests: $(BEAM_FILES)
 
 
 launch: Emakefile
-	@echo "     Launching interpreter with default Ceylan settings"
+	@echo "		Launching interpreter with default Ceylan settings"
 	@${ERL_PARAMETERIZED_LAUNCHER} --ln test_shell-$$USER $(INTERNAL_OPTIONS) $(CMD_LINE_OPT)
 
 
@@ -250,12 +248,12 @@ install-prod-all: install-prod-announce install-bin install-ebin \
 
 
 install-announce:
-	@echo "  Installing package $(PACKAGE_NAME) \
+	@echo "	 Installing package $(PACKAGE_NAME) \
 	in $(PACKAGE_INSTALLATION_PREFIX)"
 
 
 install-prod-announce:
-	@echo "  Installing production package $(PACKAGE_NAME) \
+	@echo "	 Installing production package $(PACKAGE_NAME) \
 	in $(PACKAGE_INSTALLATION_PREFIX)"
 
 
@@ -337,7 +335,7 @@ clean: clean-erlang clean-database clean-override  clean-recurse
 
 
 clean-erlang:
-	@echo "     Cleaning all in "$(PWD) #`basename $(PWD)`
+	@echo "		Cleaning all in "$(PWD) #`basename $(PWD)`
 	-@/bin/rm -f *.beam *.jam erl_crash.dump
 
 
@@ -348,9 +346,9 @@ clean-database:
 # This target has been added in order to allow the packages making use of
 # 'Common' to define their specific cleaning rules.
 # They could have defined in their own GNUmakerules.inc something like:
-#   clean: clean-mypackage
-#   clean-mypackage:
-#   -@/bin/rm foo.mypackage
+#	clean: clean-mypackage
+#	clean-mypackage:
+#	-@/bin/rm foo.mypackage
 # but then this 'clean' target would become the default one, whereas we expect
 # the 'all' default target of 'Common' to be triggered.
 # Thus we finally allowed upper packages to make their cleaning thanks to:
@@ -361,32 +359,32 @@ clean-override:
 
 
 clean-recurse:
-	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then      \
+	@for m in $(MODULES_DIRS); do if ! ( if [ -d $$m ] ; then	   \
 	cd $$m && $(MAKE) -s clean CMD_LINE_OPT="${CMD_LINE_OPT}" &&   \
-	cd .. ; else echo "     (directory $$m skipped)" ; fi ) ; then \
+	cd .. ; else echo "		(directory $$m skipped)" ; fi ) ; then \
 	 exit 1; fi ; done
 
 
 realclean: clean
-	@echo "     Deep cleaning in "`basename $(PWD)`
+	@echo "		Deep cleaning in "`basename $(PWD)`
 	-@/bin/rm -f Emakefile
 
 
 info: info-files
-	@echo "FQDN                   = $(FQDN)"
-	@echo "BEAM_DIRS              = $(BEAM_DIRS)"
-	@echo "BEAM_PATH_OPT          = $(BEAM_PATH_OPT)"
-	@echo "ARCHIVE_FILE           = $(ARCHIVE_FILE)"
-	@echo "ERLANG_INTERPRETER     = $(ERLANG_INTERPRETER)"
+	@echo "FQDN					  = $(FQDN)"
+	@echo "BEAM_DIRS			  = $(BEAM_DIRS)"
+	@echo "BEAM_PATH_OPT		  = $(BEAM_PATH_OPT)"
+	@echo "ARCHIVE_FILE			  = $(ARCHIVE_FILE)"
+	@echo "ERLANG_INTERPRETER	  = $(ERLANG_INTERPRETER)"
 	@echo "ERLANG_INTERPRETER_OPT = $(ERLANG_INTERPRETER_OPT)"
-	@echo "ERLANG_SRC             = $(ERLANG_SRC)"
-	@echo "VM_TEST_NAME           = $(VM_TEST_NAME)"
-	@echo "PROJECT_NAME           = $(PROJECT_NAME)"
+	@echo "ERLANG_SRC			  = $(ERLANG_SRC)"
+	@echo "VM_TEST_NAME			  = $(VM_TEST_NAME)"
+	@echo "PROJECT_NAME			  = $(PROJECT_NAME)"
 
 
 info-files:
-	@echo "ERL_FILES    = $(ERL_FILES)"
-	@echo "BEAM_FILES   = $(BEAM_FILES)"
+	@echo "ERL_FILES	= $(ERL_FILES)"
+	@echo "BEAM_FILES	= $(BEAM_FILES)"
 	@echo "TEST_SOURCES = $(TEST_SOURCES)"
 	@echo "TEST_TARGETS = $(TEST_TARGETS)"
 
