@@ -9,7 +9,7 @@ Usage: "`basename $0`" [ -h | --help ] [ --nds ] [ --with-osdl-env-file <filenam
 	--disable-all-features: just build the core of the Ceylan library
 	--no-build: stop just after having generated the configure script
 	--chain-test: build and install the library, build the test suite and run it against the installation
-	--full-test: build and install the library, perform all available tests, including 'make distcheck' and the full test suite
+	--full-test: build and install the library, perform all available tests, including the full test suite (not including 'distcheck' anymore)
 	--only-prepare-dist: generate configure and al, but do not build anything
 	--disable-all-features: build the Ceylan library with none of its optional features
 	--configure-options: all following options will be directly passed whenever configure is run"
@@ -242,9 +242,8 @@ fi
 if [ $do_target_nds -eq 0 ] ; then
 
 
-	# First attempt was relying on the autotools, but it was a nightmare.
-	# Hence basic specific Makefiles (Makefile.cross) are used and it works
-	# great.
+	# First attempt was relying on the autotools, but it was a nightmare. Hence
+	# basic specific Makefiles (Makefile.cross) are used and it works great.
 
 	echo "Cross-compiling for the Nintendo DS."
 
