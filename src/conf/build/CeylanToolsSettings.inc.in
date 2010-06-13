@@ -15,7 +15,7 @@
 # GNU Libtool: http://www.gnu.org/software/libtool/libtool.html
 
 libtool_VERSION="2.2.8"
-libtool_FULL_VERSION="${libtool_VERSION}b"
+libtool_FULL_VERSION="${libtool_VERSION}"
 libtool_ARCHIVE="libtool-${libtool_FULL_VERSION}.tar.gz"
 libtool_DOWNLOAD_LOCATION="http://ftp.gnu.org/gnu/libtool/"
 libtool_ALTERNATE_DOWNLOAD_LOCATION="http://mirrors.usc.edu/pub/gnu/libtool"
