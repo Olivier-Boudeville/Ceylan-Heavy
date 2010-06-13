@@ -13,7 +13,7 @@
 ;; May be disabled if slowing emacs down way too much:
 (require 'rst)
 (setq auto-mode-alist
-      (append '(("\\.txt$"  . rst-mode)
+	  (append '(("\\.txt$"  . rst-mode)
 				("\\.rst$"  . rst-mode)
 				("\\.rest$" . rst-mode)) auto-mode-alist))
 
@@ -39,7 +39,7 @@
 ;; Erlang support:
 (require 'erlang-start)
 (setq auto-mode-alist
-      (append '(("\\.escript$"  . erlang-mode)) auto-mode-alist))
+	  (append '(("\\.escript$"  . erlang-mode)) auto-mode-alist))
 
 (add-hook 'erlang-mode-hook 'my-erlang-mode-hook)
 
@@ -315,7 +315,7 @@
 
 ;; Usable and behaves like expected:
 (global-set-key [f4]			  'indent-whole-buffer)
-(global-set-key [XF86Send]	      'indent-whole-buffer)
+(global-set-key [XF86Send]		  'indent-whole-buffer)
 
 ;; Curiously bound to Undo:
 (global-set-key [f5]              'default-f5)
@@ -328,7 +328,7 @@
 
 ;; Usable and behaves like expected:
 (global-set-key [f7]			  'goto-line)
-(global-set-key [print]		      'goto-line)
+(global-set-key [print]			  'goto-line)
 
 
 ;; Usable and behaves like expected:
@@ -342,19 +342,19 @@
 
 
 ;; Usable and behaves like expected:
-(global-set-key [(shift f9)]	    'default-shift-f9)
+(global-set-key [(shift f9)]		'default-shift-f9)
 (global-set-key [(shift XF86New)]   'default-shift-f9)
 (global-set-key [XF86Explorer]      'default-shift-f9)
 
 
 ;; Usable and behaves like expected:
-(global-set-key [f10]			    'save-buffers-kill-emacs)
+(global-set-key [f10]				'save-buffers-kill-emacs)
 (global-set-key [XF86Documents]     'save-buffers-kill-emacs)
 
 
 ;; Not triggered on my keyboard:
-(global-set-key [f11]			    'default-f11)
-(global-set-key [XF86New]		    'default-f11)
+(global-set-key [f11]				'default-f11)
+(global-set-key [XF86New]			'default-f11)
 
 
 ;; Not triggered when hitting F12, but triggered when hitting F1 on my keyboard:
@@ -393,7 +393,7 @@
 
 ;; make compile window disappear after successful compilation:
 (setq compilation-finish-function
-      (lambda (buf str)
+	  (lambda (buf str)
 		(if (string-match "*Compilation*" (buffer-name buf))
 			(if (string-match "abnormally" str)
 				(message "There were errors :-(")
@@ -410,7 +410,7 @@
   "Display buffer BUFFER by splitting the largest buffer vertically, except if
   there is already a window for it."
   (or (get-buffer-window buffer)
-      (let ((new-win
+	  (let ((new-win
 			 (with-selected-window (get-largest-window)
 			   (split-window-vertically))))
 		(set-window-buffer new-win buffer)
@@ -420,7 +420,7 @@
   "Ad-hoc display of compilation buffer."
   (interactive)
   (let ((display-buffer-function 'display-buffer-by-splitting-largest))
-    (call-interactively 'compile)))
+	(call-interactively 'compile)))
 
 ;; Misc compilation settings:
 (setq-default
@@ -484,10 +484,10 @@
   (let ((found-pos (search-forward text nil t)))
 	(if (not found-pos)
 		(progn (goto-char (point-min))
-		       (let ((wrapped-found-pos (search-forward text nil t)))
+			   (let ((wrapped-found-pos (search-forward text nil t)))
 			   (goto-char (- wrapped-found-pos (length text)))
 			   (set-mark wrapped-found-pos)))
-	    (progn (goto-char found-pos) (set-mark (- found-pos (length text)))))))
+		(progn (goto-char found-pos) (set-mark (- found-pos (length text)))))))
 
   ;; (interactive)
   ;; (yank-pop (isearch-forward (kill-ring-save begin end)))
@@ -536,7 +536,7 @@
 
 ;; Turns off a blinking cursor:
 (if (fboundp 'blink-cursor-mode)
-    (blink-cursor-mode -1))
+	(blink-cursor-mode -1))
 
 ;;(setq frame-background-mode 'dark)
 '(frame-background-mode (quote dark))
