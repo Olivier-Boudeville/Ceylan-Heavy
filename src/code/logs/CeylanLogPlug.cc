@@ -1,12 +1,12 @@
-/* 
- * Copyright (C) 2003-2009 Olivier Boudeville
+/*
+ * Copyright (C) 2003-2010 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
  *
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -56,11 +56,11 @@ using namespace Ceylan::Log ;
 
 
 /*
- * The few global variables that will be set when the actual plug will be 
+ * The few global variables that will be set when the actual plug will be
  * created:
  *
  */
- 
+
 LogSource * LogPlug::InfoLogSource     = 0 ;
 LogSource * LogPlug::TraceLogSource    = 0 ;
 LogSource * LogPlug::DebugLogSource    = 0 ;
@@ -82,7 +82,7 @@ string LogPlug::SourceName = "<no source specified>" ;
 
 
 
-const string LogPlug::LogSystemNotInitialized = 
+const string LogPlug::LogSystemNotInitialized =
 	"Attempt of using the Log system whereas it has not been initialized yet. "
 	"Consider using LogPlug<Implementation>::StartService, "
 	"for example LogPlugClassical::StartService" ;
@@ -92,8 +92,8 @@ const string LogPlug::LogSystemNotInitialized =
 void LogPlug::SetInfoLogSource( LogSource & newInfoLogSource )
 {
 
-    InfoLogSource = & newInfoLogSource ;
-	
+	InfoLogSource = & newInfoLogSource ;
+
 }
 
 
@@ -101,8 +101,8 @@ void LogPlug::SetInfoLogSource( LogSource & newInfoLogSource )
 LogSource & LogPlug::GetInfoLogSource()
 {
 
-    return * InfoLogSource ;
-	
+	return * InfoLogSource ;
+
 }
 
 
@@ -110,8 +110,8 @@ LogSource & LogPlug::GetInfoLogSource()
 void LogPlug::SetTraceLogSource( LogSource & newTraceLogSource )
 {
 
-    TraceLogSource = & newTraceLogSource ;
-	
+	TraceLogSource = & newTraceLogSource ;
+
 }
 
 
@@ -119,8 +119,8 @@ void LogPlug::SetTraceLogSource( LogSource & newTraceLogSource )
 LogSource & LogPlug::GetTraceLogSource()
 {
 
-    return * TraceLogSource ;
-	
+	return * TraceLogSource ;
+
 }
 
 
@@ -128,8 +128,8 @@ LogSource & LogPlug::GetTraceLogSource()
 void LogPlug::SetDebugLogSource( LogSource & newDebugLogSource )
 {
 
-    DebugLogSource = & newDebugLogSource ;
-	
+	DebugLogSource = & newDebugLogSource ;
+
 }
 
 
@@ -137,8 +137,8 @@ void LogPlug::SetDebugLogSource( LogSource & newDebugLogSource )
 LogSource & LogPlug::GetDebugLogSource()
 {
 
-    return * DebugLogSource ;
-	
+	return * DebugLogSource ;
+
 }
 
 
@@ -146,8 +146,8 @@ LogSource & LogPlug::GetDebugLogSource()
 void LogPlug::SetWarningLogSource( LogSource & newWarningLogSource )
 {
 
-    WarningLogSource = & newWarningLogSource ;
-	
+	WarningLogSource = & newWarningLogSource ;
+
 }
 
 
@@ -155,8 +155,8 @@ void LogPlug::SetWarningLogSource( LogSource & newWarningLogSource )
 LogSource & LogPlug::GetWarningLogSource()
 {
 
-    return * WarningLogSource ;
-	
+	return * WarningLogSource ;
+
 }
 
 
@@ -164,8 +164,8 @@ LogSource & LogPlug::GetWarningLogSource()
 void LogPlug::SetErrorLogSource( LogSource & newErrorLogSource )
 {
 
-    ErrorLogSource = & newErrorLogSource ;
-	
+	ErrorLogSource = & newErrorLogSource ;
+
 }
 
 
@@ -173,8 +173,8 @@ void LogPlug::SetErrorLogSource( LogSource & newErrorLogSource )
 LogSource & LogPlug::GetErrorLogSource()
 {
 
-    return * ErrorLogSource ;
-	
+	return * ErrorLogSource ;
+
 }
 
 
@@ -182,8 +182,8 @@ LogSource & LogPlug::GetErrorLogSource()
 void LogPlug::SetFatalLogSource( LogSource & newFatalLogSource )
 {
 
-    FatalLogSource = & newFatalLogSource ;
-	
+	FatalLogSource = & newFatalLogSource ;
+
 }
 
 
@@ -191,8 +191,8 @@ void LogPlug::SetFatalLogSource( LogSource & newFatalLogSource )
 LogSource & LogPlug::GetFatalLogSource()
 {
 
-    return * FatalLogSource ;
-	
+	return * FatalLogSource ;
+
 }
 
 
@@ -201,7 +201,7 @@ bool LogPlug::IsFatalLogSourceAvailable()
 {
 
 	return ( FatalLogSource != 0 ) ;
-	
+
 }
 
 
@@ -209,8 +209,8 @@ bool LogPlug::IsFatalLogSourceAvailable()
 void LogPlug::SetLogRootLogSource( LogSource & newLogRootLogSource )
 {
 
-    LogrootLogSource = & newLogRootLogSource ;
-	
+	LogrootLogSource = & newLogRootLogSource ;
+
 }
 
 
@@ -218,8 +218,8 @@ void LogPlug::SetLogRootLogSource( LogSource & newLogRootLogSource )
 LogSource & LogPlug::GetLogRootLogSource()
 {
 
-    return * LogrootLogSource ;
-	
+	return * LogrootLogSource ;
+
 }
 
 
@@ -227,8 +227,8 @@ LogSource & LogPlug::GetLogRootLogSource()
 void LogPlug::SetTransport( LogTransport & newTransport )
 {
 
-    Transport = & newTransport ;
-	
+	Transport = & newTransport ;
+
 }
 
 
@@ -236,8 +236,8 @@ void LogPlug::SetTransport( LogTransport & newTransport )
 LogTransport & LogPlug::GetTransport()
 {
 
-    return *Transport ;
-	
+	return *Transport ;
+
 }
 
 
@@ -245,8 +245,8 @@ LogTransport & LogPlug::GetTransport()
 void LogPlug::SetListener( LogListener & newListener )
 {
 
-    Listener = & newListener ;
-	
+	Listener = & newListener ;
+
 }
 
 
@@ -254,8 +254,8 @@ void LogPlug::SetListener( LogListener & newListener )
 LogListener & LogPlug::GetListener()
 {
 
-    return * Listener ;
-	
+	return * Listener ;
+
 }
 
 
@@ -263,8 +263,8 @@ LogListener & LogPlug::GetListener()
 void LogPlug::SetAggregator( LogAggregator & newAggregator )
 {
 
-    Aggregator = & newAggregator ;
-	
+	Aggregator = & newAggregator ;
+
 }
 
 
@@ -272,8 +272,8 @@ void LogPlug::SetAggregator( LogAggregator & newAggregator )
 LogAggregator & LogPlug::GetAggregator()
 {
 
-    return * Aggregator ;
-	
+	return * Aggregator ;
+
 }
 
 
@@ -281,102 +281,102 @@ LogAggregator & LogPlug::GetAggregator()
 void LogPlug::CheckBlank()
 {
 
-    if ( LogrootLogSource != 0 )
-        throw LogException( "LogPlug::StartService: there was already a Log "
+	if ( LogrootLogSource != 0 )
+		throw LogException( "LogPlug::StartService: there was already a Log "
 			"source assigned to LogPlug::logroot." ) ;
 
-    if ( InfoLogSource != 0 )
-        throw LogException( "LogPlug::StartService: there was already a Log "
+	if ( InfoLogSource != 0 )
+		throw LogException( "LogPlug::StartService: there was already a Log "
 			"source assigned to LogPlug::info." ) ;
 
-    if ( TraceLogSource != 0 )
-        throw LogException( "LogPlug::StartService: there was already a Log "
+	if ( TraceLogSource != 0 )
+		throw LogException( "LogPlug::StartService: there was already a Log "
 			"source assigned to LogPlug::trace." ) ;
 
-    if ( DebugLogSource != 0 )
-        throw LogException( "LogPlug::StartService: there was already a Log "
+	if ( DebugLogSource != 0 )
+		throw LogException( "LogPlug::StartService: there was already a Log "
 			"source assigned to LogPlug::debug." ) ;
 
-    if ( WarningLogSource != 0 )
-        throw LogException( "LogPlug::StartService: there was already a Log "
+	if ( WarningLogSource != 0 )
+		throw LogException( "LogPlug::StartService: there was already a Log "
 			"source assigned to LogPlug::warning." ) ;
 
-    if ( ErrorLogSource != 0 )
-        throw LogException( "LogPlug::StartService: there was already a Log "
+	if ( ErrorLogSource != 0 )
+		throw LogException( "LogPlug::StartService: there was already a Log "
 			"source assigned to LogPlug::error." ) ;
 
-    if ( FatalLogSource != 0 )
-        throw LogException( "LogPlug::StartService: there was already a Log "
+	if ( FatalLogSource != 0 )
+		throw LogException( "LogPlug::StartService: there was already a Log "
 			"source assigned to LogPlug::fatal." ) ;
 
-			
-    if ( Transport != 0 )
-        throw LogException( "LogPlug::StartService: LogPlug::Transport "
-			"was already assigned." ) ;
-			
-    if ( Listener != 0 )
-        throw LogException( "LogPlug::StartService: LogPlug::Listener "
+
+	if ( Transport != 0 )
+		throw LogException( "LogPlug::StartService: LogPlug::Transport "
 			"was already assigned." ) ;
 
-    if ( Aggregator != 0 )
-        throw LogException( "LogPlug::StartService: LogPlug::Aggregator "
+	if ( Listener != 0 )
+		throw LogException( "LogPlug::StartService: LogPlug::Listener "
+			"was already assigned." ) ;
+
+	if ( Aggregator != 0 )
+		throw LogException( "LogPlug::StartService: LogPlug::Aggregator "
 			"was already assigned." ) ;
 
 }
 
 
 
-void LogPlug::SetFullExecutablePath( const string & plugInitiatorFullName )	
+void LogPlug::SetFullExecutablePath( const string & plugInitiatorFullName )
 {
 
 	if ( FullExecutablePath.size() != 0 )
-    	throw LogException( "LogPlug::SetFullExecutablePath: "
-        	"path already set." ) ;
-            
-    FullExecutablePath = plugInitiatorFullName ;
-        
-}
-    
-  
-    
-std::string LogPlug::GetFullExecutablePath() 
-{
-    
-	if ( FullExecutablePath.size() == 0 )
-    	throw LogException( "LogPlug::GetFullExecutablePath: "
-        	"no path available." ) ;
-    
-    return FullExecutablePath ;
-    
+		throw LogException( "LogPlug::SetFullExecutablePath: "
+			"path already set." ) ;
+
+	FullExecutablePath = plugInitiatorFullName ;
+
 }
 
-                    
-                    
+
+
+std::string LogPlug::GetFullExecutablePath()
+{
+
+	if ( FullExecutablePath.empty() )
+		throw LogException( "LogPlug::GetFullExecutablePath: "
+			"no path available." ) ;
+
+	return FullExecutablePath ;
+
+}
+
+
+
 std::string LogPlug::GetSpeakerNameFrom( const string & plugInitiatorFullName )
 {
 
 	// plugInitiatorFullName is usually argv[0].
-	
+
 	/*
-	 * If speakerName was 'arguments[0]', then all log files would be 
-	 * created alongside the test executable, in the same directory, 
+	 * If speakerName was 'arguments[0]', then all log files would be
+	 * created alongside the test executable, in the same directory,
 	 * no matter from which directory they were launched.
 	 *
 	 * For example, if a 'testLockable' executable lies in
 	 * 'Ceylan/Ceylan-0.2/bin/interfaces', and if we execute it from
 	 * 'Ceylan/Ceylan-0.2/tests-outputs'  (hence with
-	 * '../bin/interfaces/testLockable'), with speakerName set to 
+	 * '../bin/interfaces/testLockable'), with speakerName set to
 	 * 'arguments[0]' the log files would be created under
 	 * 'Ceylan/Ceylan-0.2/bin/interfaces'.
 	 *
 	 * The preferred behaviour would be to write them under current
-	 * directory (hence, 'tests-outputs'). 
+	 * directory (hence, 'tests-outputs').
 	 * In this case StripFilename should be used:
 	 *
 	 */
 	string speakerName ;
 
-    
+
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	/*
@@ -388,61 +388,61 @@ std::string LogPlug::GetSpeakerNameFrom( const string & plugInitiatorFullName )
 	speakerName = "DS" ;
 
 #else // CEYLAN_ARCH_NINTENDO_DS
-	
-    try
-    { 	
-		
-        Ceylan::System::Directory::StripFilename( 
-    		/* fullExecutablePath */ plugInitiatorFullName, 
+
+	try
+	{
+
+		Ceylan::System::Directory::StripFilename(
+			/* fullExecutablePath */ plugInitiatorFullName,
 			/* base path */ 0, & speakerName ) ;
 
 	}
-    catch( const System::DirectoryException & e )
-    {
-    	throw LogException( "GetSpeakerNameFrom failed: " + e.toString() ) ;
-    }
-    
-    
+	catch( const System::DirectoryException & e )
+	{
+		throw LogException( "GetSpeakerNameFrom failed: " + e.toString() ) ;
+	}
+
+
 #endif // CEYLAN_ARCH_NINTENDO_DS
-		
+
 	CEYLAN_LOG( "LogHolder: speaker name for logs will be " + speakerName ) ;
-    
-    return speakerName ;
+
+	return speakerName ;
 
 }
 
 
-    
+
 void LogPlug::CreateBasicPlug()
 {
-	
+
 	CEYLAN_LOG( "Creating default standard channels." ) ;
-		
+
 	if ( Transport == 0 )
 		throw LogException( "LogPlug::CreateBasicPlug: "
 			"no transport available" ) ;
-	
+
 	// These log sources are static variables:
-						
+
 	LogrootLogSource = new LogSource( "Log root", *Transport ) ;
-	
+
 	FatalLogSource   = new LogSource( "Fatal", *Transport ) ;
-	
+
 	ErrorLogSource   = new LogSource( "Error", *Transport ) ;
-		
+
 	WarningLogSource = new LogSource( "Warning", *Transport ) ;
-	
+
 	DebugLogSource   = new LogSource( "Debug", *Transport ) ;
 
 	TraceLogSource   = new LogSource( "Trace", *Transport ) ;
-	
+
 	InfoLogSource    = new LogSource( "Info", *Transport ) ;
 
 
 	LogrootLogSource->send( "Starting log plug service, from Ceylan "
-		+ Ceylan::GetVersion().toString() + "." ) ; 
-	
-	
+		+ Ceylan::GetVersion().toString() + "." ) ;
+
+
 	// Avoid having too many logs on the DS small screen:
 #if ! CEYLAN_ARCH_NINTENDO_DS
 
@@ -461,7 +461,7 @@ void LogPlug::CreateBasicPlug()
 
 void LogPlug::CreateNullPlug()
 {
-	
+
 	CEYLAN_LOG( "Creating muted null channels." ) ;
 
 	/*
@@ -474,21 +474,21 @@ void LogPlug::CreateNullPlug()
 	 * deletes of the same pointer wanted), in StopService.
 	 *
 	 */
-	 
+
 	LogrootLogSource = new MuteLogSource() ;
-	
+
 	FatalLogSource   = new MuteLogSource() ;
-	
+
 	ErrorLogSource   = new MuteLogSource() ;
-		
+
 	WarningLogSource = new MuteLogSource() ;
-	
+
 	DebugLogSource   = new MuteLogSource() ;
 
 	TraceLogSource   = new MuteLogSource() ;
-	
+
 	InfoLogSource    = new MuteLogSource() ;
-		
+
 }
 
 
@@ -497,27 +497,27 @@ void LogPlug::StartService( const string & plugCreator )
 {
 
 	SourceName = plugCreator ;
-	
-    if ( LogrootLogSource == 0 )
-        throw LogException( "No Log source assigned to LogPlug::logroot" ) ;
 
-    if ( InfoLogSource == 0 )
-        throw LogException( "No Log source assigned to LogPlug::info" ) ;
+	if ( LogrootLogSource == 0 )
+		throw LogException( "No Log source assigned to LogPlug::logroot" ) ;
 
-    if ( TraceLogSource == 0 )
-        throw LogException( "No Log source assigned to LogPlug::trace" ) ;
+	if ( InfoLogSource == 0 )
+		throw LogException( "No Log source assigned to LogPlug::info" ) ;
 
-    if ( DebugLogSource == 0 )
-        throw LogException( "No Log source assigned to LogPlug::debug" ) ;
+	if ( TraceLogSource == 0 )
+		throw LogException( "No Log source assigned to LogPlug::trace" ) ;
 
-    if ( WarningLogSource == 0 )
-        throw LogException( "No Log source assigned to LogPlug::warning" ) ;
+	if ( DebugLogSource == 0 )
+		throw LogException( "No Log source assigned to LogPlug::debug" ) ;
 
-    if ( ErrorLogSource == 0 )
-        throw LogException( "No Log source assigned to LogPlug::error" ) ;
+	if ( WarningLogSource == 0 )
+		throw LogException( "No Log source assigned to LogPlug::warning" ) ;
 
-    if ( FatalLogSource == 0 )
-        throw LogException( "No Log source assigned to LogPlug::fatal" ) ;
+	if ( ErrorLogSource == 0 )
+		throw LogException( "No Log source assigned to LogPlug::error" ) ;
+
+	if ( FatalLogSource == 0 )
+		throw LogException( "No Log source assigned to LogPlug::fatal" ) ;
 
 }
 
@@ -526,9 +526,9 @@ void LogPlug::StartService( const string & plugCreator )
 void LogPlug::StopService( bool warnIfAlreadyStopped )
 {
 
-	if ( InfoLogSource != 0 ) 
+	if ( InfoLogSource != 0 )
 	{
-	
+
 #if ! CEYLAN_ARCH_NINTENDO_DS
 		info( "Stopping channel." ) ;
 		logroot( "Stopping channel Info." ) ;
@@ -537,76 +537,76 @@ void LogPlug::StopService( bool warnIfAlreadyStopped )
 		delete InfoLogSource ;
 		InfoLogSource = 0 ;
 	}
-	
-	
-	if ( WarningLogSource != 0  ) 
+
+
+	if ( WarningLogSource != 0  )
 	{
-	
+
 #if ! CEYLAN_ARCH_NINTENDO_DS
 		warning( "Stopping channel." ) ;
 		logroot( "Stopping channel Warning." ) ;
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
-    	delete WarningLogSource ;
+		delete WarningLogSource ;
 		WarningLogSource = 0 ;
 	}
-	
-	
-	if ( TraceLogSource != 0  ) 
+
+
+	if ( TraceLogSource != 0  )
 	{
-	
+
 #if ! CEYLAN_ARCH_NINTENDO_DS
 		trace( "Stopping channel." ) ;
 		logroot( "Stopping channel Trace." ) ;
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
-    	delete TraceLogSource ;
+		delete TraceLogSource ;
 		TraceLogSource = 0 ;
 	}
-	
-	
-	if ( DebugLogSource != 0  ) 
+
+
+	if ( DebugLogSource != 0  )
 	{
-	
+
 #if ! CEYLAN_ARCH_NINTENDO_DS
 		debug( "Stopping channel." ) ;
 		logroot( "Stopping channel Debug." ) ;
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
-    	delete DebugLogSource ;
+		delete DebugLogSource ;
 		DebugLogSource = 0 ;
 	}
-		
-	
-	if ( ErrorLogSource != 0  ) 
+
+
+	if ( ErrorLogSource != 0  )
 	{
-	
+
 #if ! CEYLAN_ARCH_NINTENDO_DS
 		error( "Stopping channel." ) ;
 		logroot( "Stopping channel Error." ) ;
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
-    	delete ErrorLogSource ;
+		delete ErrorLogSource ;
 		ErrorLogSource = 0 ;
 	}
-	
-	
-	if ( FatalLogSource != 0  ) 
+
+
+	if ( FatalLogSource != 0  )
 	{
-	
+
 #if ! CEYLAN_ARCH_NINTENDO_DS
 		fatal( "Stopping channel." ) ;
 		logroot( "Stopping channel Fatal." ) ;
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
-    	delete FatalLogSource ;
+		delete FatalLogSource ;
 		FatalLogSource = 0 ;
 	}
-	
-	
+
+
 	if ( LogrootLogSource != 0  )
 	{
-	
+
 #if ! CEYLAN_ARCH_NINTENDO_DS
 		logroot( "Stopping log plug service." ) ;
 		delete LogrootLogSource ;
@@ -616,14 +616,14 @@ void LogPlug::StopService( bool warnIfAlreadyStopped )
 	}
 	else
 	{
-	
+
 		if ( warnIfAlreadyStopped )
 			std::cerr << "Error in LogPlug::StopService: "
 				"no log root channel available, "
-				"maybe LogPlug::StopService was called more than once?" 
-				<< std::endl ;	
+				"maybe LogPlug::StopService was called more than once?"
+				<< std::endl ;
 	}
-		
+
 }
 
 
@@ -632,192 +632,192 @@ const string LogPlug::GetSourceName()
 {
 
 	return SourceName ;
-	
+
 }
 
 
 
 const string LogPlug::ToString( Ceylan::VerbosityLevels level )
 {
-	
+
 	std::list<string> res ;
-		
+
 	if ( Aggregator != 0 )
 		res.push_back( Aggregator->toString() ) ;
 	else
 		res.push_back( "no aggregator connected." ) ;
-	
-		
+
+
 	if ( InfoLogSource != 0 )
 		res.push_back( InfoLogSource->toString() ) ;
 	else
 		res.push_back( "no info log source connected." ) ;
-	
+
 	if ( TraceLogSource != 0 )
 		res.push_back( TraceLogSource->toString() ) ;
 	else
 		res.push_back( "no trace log source connected." ) ;
-	
+
 	if ( DebugLogSource != 0 )
 		res.push_back( DebugLogSource->toString() ) ;
 	else
 		res.push_back( "no debug log source connected." ) ;
-	
+
 	if ( WarningLogSource != 0 )
 		res.push_back( WarningLogSource->toString() ) ;
 	else
 		res.push_back( "no warning log source connected." ) ;
-	
+
 	if ( ErrorLogSource != 0 )
 		res.push_back( ErrorLogSource->toString() ) ;
 	else
 		res.push_back( "no error log source connected." ) ;
-	
+
 	if ( FatalLogSource != 0 )
 		res.push_back( FatalLogSource->toString() ) ;
 	else
 		res.push_back( "no fatal log source connected." ) ;
-	
+
 	if ( LogrootLogSource != 0 )
 		res.push_back( LogrootLogSource->toString() ) ;
 	else
 		res.push_back( "no root log source connected." ) ;
-	
+
 	if ( Transport != 0 )
 		res.push_back( Transport->toString() ) ;
 	else
 		res.push_back( "no log transport connected." ) ;
-	
+
 	if ( Listener != 0 )
 		res.push_back( Listener->toString() ) ;
 	else
 		res.push_back( "no log listener connected." ) ;
-	
-	
+
+
 	return "LogSystem status: " + Ceylan::formatStringList( res ) ;
 
 }
 
 
 
-void LogPlug::info( const string & message, LevelOfDetail levelOfDetail ) 	
+void LogPlug::info( const string & message, LevelOfDetail levelOfDetail )
 {
 
 #if CEYLAN_DEBUG
 
-    if ( InfoLogSource == 0 )
-    {
-        std::cerr << LogSystemNotInitialized << std::endl << std::flush ;
-        throw LogException( LogSystemNotInitialized ) ;
-    }
+	if ( InfoLogSource == 0 )
+	{
+		std::cerr << LogSystemNotInitialized << std::endl << std::flush ;
+		throw LogException( LogSystemNotInitialized ) ;
+	}
 
 #endif // CEYLAN_DEBUG
 
-    InfoLogSource->send( message, levelOfDetail ) ;
-	
+	InfoLogSource->send( message, levelOfDetail ) ;
+
 }
 
 
 
-void LogPlug::trace( const string & message, LevelOfDetail levelOfDetail ) 	
+void LogPlug::trace( const string & message, LevelOfDetail levelOfDetail )
 {
 
 #if CEYLAN_DEBUG
 
-    if ( TraceLogSource == 0 )
-    {
-        std::cerr << LogSystemNotInitialized << std::endl << std::flush ;
-        throw LogException( LogSystemNotInitialized ) ;
-    }
+	if ( TraceLogSource == 0 )
+	{
+		std::cerr << LogSystemNotInitialized << std::endl << std::flush ;
+		throw LogException( LogSystemNotInitialized ) ;
+	}
 
 #endif // CEYLAN_DEBUG
 
-    TraceLogSource->send( message, levelOfDetail ) ;
-	
+	TraceLogSource->send( message, levelOfDetail ) ;
+
 }
 
 
 
-void LogPlug::debug( const string & message, LevelOfDetail levelOfDetail ) 	
+void LogPlug::debug( const string & message, LevelOfDetail levelOfDetail )
 {
 
 #if CEYLAN_DEBUG
 
-    if ( DebugLogSource == 0 )
-    {
-        std::cerr << LogSystemNotInitialized << std::endl << std::flush ;
-        throw LogException( LogSystemNotInitialized ) ;
-    }
+	if ( DebugLogSource == 0 )
+	{
+		std::cerr << LogSystemNotInitialized << std::endl << std::flush ;
+		throw LogException( LogSystemNotInitialized ) ;
+	}
 
 #endif // CEYLAN_DEBUG
 
-    DebugLogSource->send( message, levelOfDetail ) ;
-	
+	DebugLogSource->send( message, levelOfDetail ) ;
+
 }
 
 
 
-void LogPlug::warning( const string & message, LevelOfDetail levelOfDetail ) 	
+void LogPlug::warning( const string & message, LevelOfDetail levelOfDetail )
 {
 
 #if CEYLAN_DEBUG
 
-    if ( WarningLogSource == 0 )
-    {
-        std::cerr << LogSystemNotInitialized << std::endl << std::flush ;
-        throw LogException( LogSystemNotInitialized ) ;
-    }
+	if ( WarningLogSource == 0 )
+	{
+		std::cerr << LogSystemNotInitialized << std::endl << std::flush ;
+		throw LogException( LogSystemNotInitialized ) ;
+	}
 
 #endif // CEYLAN_DEBUG
 
-    WarningLogSource->send( message, levelOfDetail ) ;
-	
+	WarningLogSource->send( message, levelOfDetail ) ;
+
 }
 
 
 
-void LogPlug::error( const string & message, LevelOfDetail levelOfDetail ) 	
+void LogPlug::error( const string & message, LevelOfDetail levelOfDetail )
 {
 
 #if CEYLAN_DEBUG
 
-    if ( ErrorLogSource == 0 )
-    {
-        std::cerr << LogSystemNotInitialized << std::endl << std::flush ;
-        throw LogException( LogSystemNotInitialized ) ;
-    }
+	if ( ErrorLogSource == 0 )
+	{
+		std::cerr << LogSystemNotInitialized << std::endl << std::flush ;
+		throw LogException( LogSystemNotInitialized ) ;
+	}
 
 #endif // CEYLAN_DEBUG
 
-    ErrorLogSource->send( message, levelOfDetail ) ;
-	
+	ErrorLogSource->send( message, levelOfDetail ) ;
+
 	/*
 	 * Errors are also output directly in the console for easier
 	 * debugging (except when stopping channel):
 	 *
 	 */
 	if ( message != "Stopping channel." )
-		std::cerr << std::endl << "[error] " << message << std::endl 
+		std::cerr << std::endl << "[error] " << message << std::endl
 			<< std::endl ;
-	
+
 }
 
 
 
-void LogPlug::fatal( const string & message, LevelOfDetail levelOfDetail ) 	
+void LogPlug::fatal( const string & message, LevelOfDetail levelOfDetail )
 {
 
 #if CEYLAN_DEBUG
 
-    if ( FatalLogSource == 0 )
-    {
-        std::cerr << LogSystemNotInitialized << std::endl << std::flush ;
-        throw LogException( LogSystemNotInitialized ) ;
-    }
+	if ( FatalLogSource == 0 )
+	{
+		std::cerr << LogSystemNotInitialized << std::endl << std::flush ;
+		throw LogException( LogSystemNotInitialized ) ;
+	}
 
 #endif // CEYLAN_DEBUG
 
-    FatalLogSource->send( message, levelOfDetail ) ;
+	FatalLogSource->send( message, levelOfDetail ) ;
 
 	/*
 	 * Fatal errors are also output directly in the console for easier
@@ -825,28 +825,28 @@ void LogPlug::fatal( const string & message, LevelOfDetail levelOfDetail )
 	 *
 	 */
 	if ( message != "Stopping channel." )
-		std::cerr << std::endl << "[fatal] " << message << std::endl 
+		std::cerr << std::endl << "[fatal] " << message << std::endl
 			<< std::endl ;
-	
+
 }
 
 
 
-void LogPlug::logroot( const string & message, LevelOfDetail levelOfDetail ) 
+void LogPlug::logroot( const string & message, LevelOfDetail levelOfDetail )
 {
 
 #if CEYLAN_DEBUG
 
-    if ( LogrootLogSource == 0 )
-    {
-        std::cerr << LogSystemNotInitialized << std::endl << std::flush ;
-        throw LogException( LogSystemNotInitialized ) ;
-    }
+	if ( LogrootLogSource == 0 )
+	{
+		std::cerr << LogSystemNotInitialized << std::endl << std::flush ;
+		throw LogException( LogSystemNotInitialized ) ;
+	}
 
 #endif // CEYLAN_DEBUG
 
-    LogrootLogSource->send( message, levelOfDetail ) ;
-	
+	LogrootLogSource->send( message, levelOfDetail ) ;
+
 }
 
 
@@ -855,9 +855,9 @@ void LogPlug::logroot( const string & message, LevelOfDetail levelOfDetail )
 LogPlug::LogPlug()
 {
 
-	throw LogException( 
+	throw LogException(
 		"Ceylan::Log::LogPlug should not be instanciated directly." ) ;
-		
+
 }
 
 
@@ -866,4 +866,3 @@ LogPlug::~LogPlug() throw()
 {
 
 }
-
