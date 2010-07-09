@@ -1,4 +1,3 @@
-
 # erlang not listed here, as relies on classical makefiles, not using autotools:
 SUBDIRS = python shell
 
@@ -17,15 +16,13 @@ all-local:
 all-local-hidden:
 	@if `which erlc 1>/dev/null 2>&1` ; then \
 	echo "  Erlang build activated" && cd erlang && \
-	$(MAKE) -f GNUmakefile all ; else echo "  Erlang build disabled" ; fi 
+	$(MAKE) -f GNUmakefile all ; else echo "  Erlang build disabled" ; fi
 
 
 install-data-local:
-
-install-data-local-hidden:
 	@if `which erlc 1>/dev/null 2>&1` ; then \
 	echo "  Erlang install activated" && $(MAKE) install-erlang ; \
-	else echo "  Erlang install disabled" ; fi 
+	else echo "  Erlang install disabled" ; fi
 
 
 install-erlang:
@@ -35,4 +32,3 @@ install-erlang:
 	@mkdir -p $(DESTDIR)@CEYLAN_INSTALL_ERLANG_DIR@
 	@cd erlang && $(MAKE) install \
 	INSTALLATION_PREFIX=$(DESTDIR)@CEYLAN_INSTALL_ERLANG_DIR@
-
