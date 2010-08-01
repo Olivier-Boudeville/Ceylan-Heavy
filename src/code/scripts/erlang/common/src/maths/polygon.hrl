@@ -5,7 +5,7 @@
 % This library is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License or
 % the GNU General Public License, as they are published by the Free Software
-% Foundation, either version 3 of these Licenses, or (at your option) 
+% Foundation, either version 3 of these Licenses, or (at your option)
 % any later version.
 % You can also redistribute it and/or modify it under the terms of the
 % Mozilla Public License, version 1.1 or later.
@@ -28,18 +28,16 @@
 % Describes a polygon, convex or not, simple or not.
 -record( polygon, {
 
-		   % List of points:
-		   vertices = [],
+		% List of points:
+		vertices = [],
 
-		   % Rendering information, if any, as an option list.
-		   rendering = [],
+		% Rendering information, if any, as an option list.
+		rendering = [],
 
-		   % Bounding-box information:
-		   % (can be for example: {disc,Center,Radius})
-		   bounding_box = undefined
+		% Bounding-box information:
+		% (can be for example: {disc,Center,Radius})
+		bounding_box = undefined
 
-		  } 
+		  }
 
 	   ).
-
-
