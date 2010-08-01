@@ -55,15 +55,18 @@
 
 % Line-related rendering.
 -export([ draw_line/3, draw_line/4, draw_lines/2, draw_lines/3,
-		 draw_segment/4 ]).
+		draw_segment/4 ]).
 
 
 % Rendering of other elements.
--export([ draw_cross/2, draw_cross/3, draw_cross/4, draw_labelled_cross/4,
-		 draw_labelled_cross/5, draw_circle/3, draw_circle/4,
-		 draw_numbered_points/2 ]).
+-export([ draw_cross/2, draw_cross/3, draw_cross/4, draw_labelled_cross/3,
+		  draw_labelled_cross/4, draw_labelled_cross/5,
+		  draw_circle/3, draw_circle/4,
+		  draw_numbered_points/2 ]).
 
 
+% The default length of the edge of a cross:
+-define( default_cross_edge_length, 5 ).
 
 
 % Color section.
@@ -125,9 +128,10 @@ get_color(ColorName) ->
 % Line section.
 
 
-%{R,G,B}, or a the predefined name red, green, blue, white, black, grey, or
+% {R,G,B}, or a the predefined name red, green, blue, white, black, grey, or
 % yellow.
-% For example {0,0,0} is black and {255,255,255} is white.
+%
+% For example {0,0,0} is black, and {255,255,255} is white.
 
 % Draws a line between specified two points in specified canvas.
 draw_line( P1, P2, Canvas ) ->
@@ -179,8 +183,8 @@ draw_cross( _Location = {X,Y}, EdgeLength, Canvas ) ->
 	draw_line( {X,Y-Offset}, {X,Y+Offset+1}, Canvas ).
 
 
-% Draws an upright cross at specified location, with specified edge length
-% and color.
+% Draws an upright cross at specified location, with specified edge length and
+% color.
 draw_cross( _Location = {X,Y}, EdgeLength, Color, Canvas ) ->
 	Offset = EdgeLength div 2,
 	% The last pixel of a line is not drawn, hence the +1:
@@ -188,23 +192,43 @@ draw_cross( _Location = {X,Y}, EdgeLength, Color, Canvas ) ->
 	draw_line( {X,Y-Offset}, {X,Y+Offset+1}, Color, Canvas ).
 
 
-% Draws an upright cross at specified location, with specified edge length
-% and companion label.
-draw_labelled_cross( Location={X,Y}, EdgeLength, LabelText, Canvas ) ->
-	draw_cross( Location, EdgeLength, Canvas ),
+
+
+% Draws an upright cross at specified location, with specified companion label.
+draw_labelled_cross( Location={X,Y}, LabelText, Canvas ) ->
+	draw_cross( Location, ?default_cross_edge_length, Canvas ),
 	% Text a little above and on the right:
 	gs:create( text, Canvas,[ {coords,[{X+4,Y-12}]},
 				  {text,LabelText}]).
 
 
-% Draws an upright cross at specified location, with specified edge length
-% and companion label, and with specified color.
+% Draws an upright cross at specified location, with specified edge length and
+% companion label.
+draw_labelled_cross( Location={X,Y}, EdgeLength, LabelText, Canvas )
+  when is_integer(EdgeLength) ->
+
+	draw_cross( Location, EdgeLength, Canvas ),
+	% Text a little above and on the right:
+	gs:create( text, Canvas,[ {coords,[{X+4,Y-12}]},
+				  {text,LabelText}]);
+
+% Draws an upright cross at specified location, with specified color and
+% companion label.
+draw_labelled_cross( Location, Color, LabelText, Canvas ) ->
+	draw_labelled_cross( Location, ?default_cross_edge_length, Color,
+						 LabelText, Canvas ).
+
+
+
+% Draws an upright cross at specified location, with specified edge length and
+% companion label, and with specified color.
 draw_labelled_cross( Location={X,Y}, EdgeLength, Color, LabelText, Canvas ) ->
 	ActualColor = gui:get_color(Color),
 	draw_cross( Location, EdgeLength, ActualColor, Canvas ),
 	% Text a little above and on the right:
 	gs:create( text, Canvas,[ {coords,[{X+4,Y-12}]},
 				  {text,LabelText}, {fg,ActualColor} ]).
+
 
 
 % Renders specified circle in specified canvas.
