@@ -72,7 +72,9 @@
 % Color section.
 
 % Here colors are defined as a triplet of color components: {R,G,B}.
+%
 % For example {0,0,0} is black and {255,255,255} is white.
+%
 % GS-predefined names (red, green, blue, white, black, grey, or yellow) are not
 % used.
 
@@ -107,7 +109,7 @@ get_color( none ) ->
 	% none is a special case, for example to disable filling:
 	none;
 
-get_color( Color = {_R,_G,_B} ) ->
+get_color( Color={_R,_G,_B} ) ->
 	Color;
 
 get_color(ColorName) ->
