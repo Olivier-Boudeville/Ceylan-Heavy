@@ -1,4 +1,3 @@
-
 # Bash configuration file.
 
 # Created 2002, June 26.
@@ -161,8 +160,8 @@ alias pastek='ssh wondersye@pastek.nainwak.org'
 # Shell section:
 
 HISTSIZE=1000
-IGNOREOF=1 
-set -o emacs 
+IGNOREOF=1
+set -o emacs
 umask 002
 
 export PATH=/bin:/usr/bin:/usr/local/bin:/usr/local:/usr/bin/X11:/sbin:/usr/sbin:$PATH:.
@@ -172,7 +171,7 @@ export LD_LIBRARY_PATH=/usr/lib:/usr/local/lib:$LD_LIBRARY_PATH
 
 export LS_COLORS='no=00:fi=00:di=01;35:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jpg=01;35:*.png=01;35:*.gif=01;35:*.bmp=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.png=01;35:*.mpg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:'
 
-export PS1="\n\e[95m\h \e[92m\u\e[95m \e[96m\t \e[93m"'$PWD'"\e[97m\n> "  
+export PS1="\n\e[95m\h \e[92m\u\e[95m \e[96m\t \e[93m"'$PWD'"\e[97m\n> "
 
 export MANPATH=/usr/share/man:$MANPATH
 export EDITOR=emacs
@@ -195,7 +194,7 @@ export TORED="wondersye@red:/home/wondersye"
 export TOORGE="orge@orge-testing.esperide.com:/home/orge"
 export TOPASTEK="wondersye@pastek.nainwak.org:/home/darm/wondersye"
 export TOARANOR_FTP="www-data@aranor:/home/ftp/LOANI-archive-repository"
-  
+
 
 # Cubbyhole section:
 
@@ -210,9 +209,9 @@ export PLUG="--HTMLPlug"
 alias xt='/usr/bin/X11/xterm -bg black -fg white -name `basename $PWD`&'
 alias xterm='xterm -fg black'
 case $TERM in
-    xterm*)
+	xterm*)
  		PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD}\007"'
-        ;;
+		;;
 esac
 
 
@@ -229,4 +228,3 @@ export PATH="${ERLANG_ROOT}/bin:${PATH}"
 export BATCH='CMD_LINE_OPT="--batch"'
 
 #echo "-- Bash basically initialized according to Boudeville Standards --"
-
