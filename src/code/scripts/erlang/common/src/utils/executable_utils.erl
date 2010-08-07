@@ -28,6 +28,7 @@
 
 % Gathering of various convenient facilities regarding executing of third-party
 % tools.
+%
 % See executable_utils_test.erl for the corresponding test.
 -module(executable_utils).
 
@@ -59,12 +60,17 @@ generate_png_from_graph_file( PNGFilename, GraphFilename ) ->
 
 
 % Generates a PNG image file from specified graph file, that must respect the
-% dot (graphviz) syntax.
+% dot (graphviz) syntax:
+%
 %  - PNGFilename the filename of the PNG to generate
+%
 %  - GraphFilename the filename corresponding to the source graph
-%  - HaltOnDotOutput tells whether the process should throw an exception
-% should dot output an error or a warning
+%
+%  - HaltOnDotOutput tells whether the process should throw an exception should
+%  dot output an error or a warning
+%
 generate_png_from_graph_file( PNGFilename, GraphFilename, true ) ->
+
 	case execute_dot( PNGFilename, GraphFilename ) of
 
 		[] ->
@@ -111,7 +117,8 @@ display_wide_text_file( TextFilename, CharacterWidth ) ->
 
 % Returns a string to be inserted into a command-line call to ssh/scp so that it
 % can run as much as possible non-interactively.
-% Tries notably to avoid following message: "The authenticity of host 'Serveur
+%
+% Tries notably to avoid following message: "The authenticity of host 'Server
 % (XXXXX)' can't be established.  RSA key fingerprint is YYYYY. Are you sure you
 % want to continue connecting (yes/no)?": Note: only to be used in a trusted
 % environment.
@@ -123,25 +130,26 @@ get_ssh_mute_option() ->
 % Section about default tools:
 
 
-% Returns the default image viewer tool.
+% Returns the name of the default image viewer tool.
 % Could be also: xv, firefox, etc.
 get_default_image_viewer() ->
 	% Viewer is 'eye of gnome' here:
 	"eog".
 
 
-% Returns the default PDF viewer tool.
+% Returns the name of the default PDF viewer tool.
 % Could be also: xpdf, acroread, etc.
 get_default_pdf_viewer() ->
 	"evince".
 
 
-% Returns the default text viewer tool.
+% Returns the name of the default text viewer tool.
 % Could be also: nedit, emacs, etc.
 get_default_text_viewer() ->
 	"gedit".
 
 
+% Returns the name of the default viewer tool for wider texts.
 get_default_wide_text_viewer(_CharacterWidth) ->
 	% Could be: io_lib:format( "nedit -column ~B", [CharacterWidth] )
 	"gedit".
@@ -155,7 +163,9 @@ get_default_trace_viewer() ->
 
 
 
+
 % Helper functions.
+
 
 execute_dot( PNGFilename, GraphFilename ) ->
 	% Dot might issue non-serious warnings:
