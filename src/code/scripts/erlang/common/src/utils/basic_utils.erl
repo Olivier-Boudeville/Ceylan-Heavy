@@ -5,7 +5,7 @@
 % This library is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License or
 % the GNU General Public License, as they are published by the Free Software
-% Foundation, either version 3 of these Licenses, or (at your option) 
+% Foundation, either version 3 of these Licenses, or (at your option)
 % any later version.
 % You can also redistribute it and/or modify it under the terms of the
 % Mozilla Public License, version 1.1 or later.
@@ -37,11 +37,11 @@
 -export([ get_timestamp/0, get_textual_timestamp/0, get_textual_timestamp/1,
 		 timestamp_to_string/1, get_duration/2, get_textual_duration/2,
 		 get_precise_timestamp/0, get_precise_duration/2 ]).
-	
-	
-	
+
+
+
 % Registration functions.
--export([ register_as/2, register_as/3, unregister/2, 
+-export([ register_as/2, register_as/3, unregister/2,
 		 get_registered_pid_for/1, get_registered_pid_for/2,
 		 wait_for_global_registration_of/1, wait_for_local_registration_of/1 ]).
 
@@ -50,14 +50,14 @@
 % Random-related functions.
 -export([ start_random_source/3, start_random_source/1, stop_random_source/0,
 		 get_random_value/0, get_random_value/1, get_random_module_name/0,
-		 get_random_seed/0, random_select/2, random_permute/1, generate_uuid/0 
+		 get_random_seed/0, random_permute/1, generate_uuid/0
 		 ]).
 
 
 
 % List management functions.
--export([ get_element_at/2, remove_element_at/2, subtract_all_duplicates/2,
-		 append_at_end/2 ]). 
+-export([ get_element_at/2, remove_element_at/2, uniquify/1,
+		  subtract_all_duplicates/2, append_at_end/2 ]).
 
 
 
@@ -67,13 +67,13 @@
 
 
 % Node-related functions.
--export([ generate_valid_node_name_from/1, check_node_validity/1 ]). 
+-export([ generate_valid_node_name_from/1, check_node_validity/1 ]).
 
 
 
 % Miscellaneous functions.
 -export([ flush_pending_messages/0, checkpoint/1, compare_versions/2,
-		 sum_probabilities/1, draw_element/1, draw_element/2, 
+		 sum_probabilities/1, draw_element/1, draw_element/2,
 		 get_process_specific_value/0, get_process_specific_value/2 ]).
 
 
@@ -83,23 +83,23 @@
 % Timestamp-related functions.
 
 
-% Returns a tuple describing the current time. 
+% Returns a tuple describing the current time.
 % Ex: { {Year,Month,Day}, {Hour,Minute,Second} } = basic_utils:get_timestamp()
 % may return '{{2007,9,6},{15,9,14}}'.
 get_timestamp() ->
 	% Was: {erlang:date(),erlang:time()}.
 	% Better:
 	erlang:localtime().
-	
-		
+
+
 
 % Returns a string corresponding to the current timestamp, like:
 % "2009/9/1 11:46:53".
 get_textual_timestamp() ->
 	get_textual_timestamp( get_timestamp() ).
-	
-	
-	
+
+
+
 get_textual_timestamp({{Year,Month,Day},{Hour,Minute,Second}}) ->
  	io_lib:format( "~p/~p/~p ~B:~2..0B:~2..0B",
 		[Year,Month,Day,Hour,Minute,Second] ).
@@ -107,15 +107,15 @@ get_textual_timestamp({{Year,Month,Day},{Hour,Minute,Second}}) ->
 
 
 % Alias of get_textual_timestamp.
-timestamp_to_string(Timestamp) ->	
+timestamp_to_string(Timestamp) ->
 	get_textual_timestamp(Timestamp).
-	
 
 
 
-	
+
+
 % Returns the (signed) duration in seconds between the two specified timestamps,
-% using the first one as starting time and the second one as stopping time.	
+% using the first one as starting time and the second one as stopping time.
 get_duration(FirstTimestamp,SecondTimestamp) ->
 	First  = calendar:datetime_to_gregorian_seconds(FirstTimestamp),
 	Second = calendar:datetime_to_gregorian_seconds(SecondTimestamp),
@@ -125,14 +125,14 @@ get_duration(FirstTimestamp,SecondTimestamp) ->
 % Returns a textual description of the duration between the two specified
 % timestamps.
 %
-% See also: text_utils:duration_to_string/1, which is smarter.	
+% See also: text_utils:duration_to_string/1, which is smarter.
 get_textual_duration(FirstTimestamp,SecondTimestamp) ->
-	{Days,{Hour, Minute, Second}} = calendar:seconds_to_daystime( 
+	{Days,{Hour, Minute, Second}} = calendar:seconds_to_daystime(
 		get_duration(FirstTimestamp,SecondTimestamp) ),
-	
+
 	lists:flatten( io_lib:format( "~B day(s), ~B hour(s), ~B minute(s) "
 		"and ~B second(s)", [Days, Hour, Minute, Second] ) ).
-		
+
 
 
 
@@ -145,26 +145,26 @@ get_textual_duration(FirstTimestamp,SecondTimestamp) ->
 %
 get_precise_timestamp() ->
 	erlang:now().
-	
+
 
 
 % Returns the (signed) duration in milliseconds between the two specified
 % precise timestamps (as obtained thanks to get_precise_duration/0), using the
 % first one as starting time and the second one as stopping time.
-get_precise_duration( _FirstTimestamp={A1,A2,A3}, 
+get_precise_duration( _FirstTimestamp={A1,A2,A3},
 					 _SecondTimestamp={B1,B2,B3} ) ->
-	
+
 	% Seconds to be converted in milliseconds:
-	1000 * ( (B1-A1) * 1000000 + B2-A2 ) + round( (B3-A3)/1000 ). 
-	
-	
+	1000 * ( (B1-A1) * 1000000 + B2-A2 ) + round( (B3-A3)/1000 ).
+
+
 
 
 % Registration functions.
-	
-	
+
+
 % Registers the current process under specified name, which must be an atom.
-% Declaration is register_as(Name,RegistrationType) with 
+% Declaration is register_as(Name,RegistrationType) with
 % RegistrationType in 'local_only', 'global_only', 'local_and_global', 'none'
 % depending on what kind of registration is requested.
 % Returns ok on success, otherwise throws an exception.
@@ -174,33 +174,33 @@ register_as( Name, RegistrationType ) ->
 
 
 % Registers specified PID under specified name, which must be an atom.
-% Declaration is: register_as(Pid,Name,RegistrationType) with 
-% RegistrationType in 'local_only', 'global_only', 'local_and_global', 
+% Declaration is: register_as(Pid,Name,RegistrationType) with
+% RegistrationType in 'local_only', 'global_only', 'local_and_global',
 % 'none', depending on what kind of registration is requested.
 % Returns ok on success, otherwise throws an exception.
 register_as( Pid, Name, local_only ) when is_atom(Name) ->
-	
-	try erlang:register( Name, Pid ) of 
-		
+
+	try erlang:register( Name, Pid ) of
+
 		true ->
 			ok
-			
+
 	catch
-	
-		ExceptionType:Exception ->			
+
+		ExceptionType:Exception ->
 			throw( {local_registration_failed,Name,{ExceptionType,Exception}} )
-				
+
 	end;
- 
+
 register_as( Pid, Name, global_only ) when is_atom(Name) ->
-	case global:register_name( Name, Pid ) of 
-	
+	case global:register_name( Name, Pid ) of
+
 		yes ->
 			ok;
-					
+
 		no ->
-			throw( {global_registration_failed,Name} )				
-			
+			throw( {global_registration_failed,Name} )
+
 	end;
 
 register_as( Pid, Name, local_and_global ) when is_atom(Name) ->
@@ -216,31 +216,31 @@ register_as(_Pid,_Name,none) ->
 % Unregisters specified name from specified registry.
 % Throws an exception in case of failure.
 unregister( Name, local_only ) ->
-	try erlang:unregister( Name ) of 
-	
+	try erlang:unregister( Name ) of
+
 		true ->
 			ok
-	
-	catch		
 
-		ExceptionType:Exception ->			
-			throw( 
+	catch
+
+		ExceptionType:Exception ->
+			throw(
 				{local_unregistration_failed,Name,{ExceptionType,Exception}} )
-				
+
 	end;
 
 unregister( Name, global_only ) ->
 	% Documentation says it returns "void" (actually 'ok'):
-	try 
-		
-		global:unregister_name( Name ) 
-	
-	catch				
-			
-		ExceptionType:Exception ->			
-			throw( 
+	try
+
+		global:unregister_name( Name )
+
+	catch
+
+		ExceptionType:Exception ->
+			throw(
 				{global_unregistration_failed,Name,{ExceptionType,Exception}} )
-				
+
 	end;
 
 unregister( Name, local_and_global ) ->
@@ -259,59 +259,59 @@ unregister(_Name,none) ->
 % wait_for_*_registration_of instead.
 get_registered_pid_for( Name ) ->
 	get_registered_pid_for( Name, local_otherwise_global ).
-	
-	
-	
+
+
+
 get_registered_pid_for( Name, local_otherwise_global ) ->
-	try 
-	
+	try
+
 		get_registered_pid_for( Name, local )
 
-	catch 
-	
+	catch
+
 		{not_registered_locally,_Name} ->
-		
-			try 
-			
+
+			try
+
 				get_registered_pid_for( Name, global )
-					
-			
+
+
 			catch
-			
+
 				{not_registered_globally,Name} ->
 					throw( {neither_registered_locally_nor_globally,Name} )
-					
+
 			end
-	
+
 	end;
-			
+
 get_registered_pid_for( Name, local ) ->
-	case erlang:whereis( Name ) of 
-	
+	case erlang:whereis( Name ) of
+
 		undefined ->
 			throw( {not_registered_locally,Name} );
-				
+
 		Pid ->
 			Pid
-			
+
 	end;
-	
+
 get_registered_pid_for( Name, global ) ->
-	case global:whereis_name( Name ) of 
-	
+	case global:whereis_name( Name ) of
+
 		undefined ->
 			throw( {not_registered_globally,Name} );
-				
+
 		Pid ->
 			Pid
-			
+
 	end;
-	
+
 % So that the atom used for registration can be used for look-up as well,
 % notably in static methods (see the registration_type defines).
 get_registered_pid_for( Name, local_and_global ) ->
 	get_registered_pid_for( Name, local_otherwise_global ).
-	
+
 
 
 
@@ -322,21 +322,21 @@ get_registered_pid_for( Name, local_and_global ) ->
 % {global_registration_waiting_timeout,Name}.
 wait_for_global_registration_of(Name) ->
 	wait_for_global_registration_of(Name,10).
-	
+
 
 wait_for_global_registration_of(Name,0) ->
 	throw({global_registration_waiting_timeout,Name});
-	
+
 wait_for_global_registration_of(Name,SecondsToWait) ->
-	case global:whereis_name( Name ) of 
-	
+	case global:whereis_name( Name ) of
+
 		undefined ->
 			timer:sleep(1000),
 			wait_for_global_registration_of(Name,SecondsToWait-1);
-				
+
 		Pid ->
 			Pid
-			
+
 	end.
 
 
@@ -344,25 +344,25 @@ wait_for_global_registration_of(Name,SecondsToWait) ->
 
 % Waits (up to 5 seconds) until specified name is locally registered.
 % Returns either the resolved Pid or {,Name}.
-% Returns the resolved Pid, or throws 
+% Returns the resolved Pid, or throws
 % {local_registration_waiting_timeout,Name}.
 wait_for_local_registration_of(Name) ->
 	wait_for_local_registration_of(Name,5).
-	
+
 
 wait_for_local_registration_of(Name,0) ->
 	throw({local_registration_waiting_timeout,Name});
-	
+
 wait_for_local_registration_of(Name,SecondsToWait) ->
-	case erlang:whereis( Name ) of 
-	
+	case erlang:whereis( Name ) of
+
 		undefined ->
 			timer:sleep(1000),
 			wait_for_local_registration_of(Name,SecondsToWait-1);
-				
+
 		Pid ->
 			Pid
-			
+
 	end.
 
 
@@ -377,8 +377,8 @@ wait_for_local_registration_of(Name,SecondsToWait) ->
 %  - not all Erlang VM can be built with the proper SSH support
 %  - it is unclear whether the crypto module can be seeded like the random
 % module can be (probably it cannot be)
-%  - there is no crypto function returning a random float uniformly 
-% distributed between 0.0 and 1.0, and it may not be easy to implement it 
+%  - there is no crypto function returning a random float uniformly
+% distributed between 0.0 and 1.0, and it may not be easy to implement it
 % from what is available
 %
 % Therefore the two modules are not completely interchangeable.
@@ -407,7 +407,7 @@ stop_random_source() ->
 	ok = crypto:stop().
 
 
-% Returns an integer random value generated from an uniform distribution. 
+% Returns an integer random value generated from an uniform distribution.
 % Given an integer N >= 1, returns a random integer uniformly distributed
 % between 1 and N (both included), updating the random state in the process
 % dictionary.
@@ -422,11 +422,11 @@ get_random_value() ->
 	not_available_with_crypto.
 
 
-% Returns the name of the module managing the random generation.	
+% Returns the name of the module managing the random generation.
 get_random_module_name() ->
 	crypto.
-	
-	
+
+
 -else. % use_crypto_module
 
 
@@ -443,7 +443,7 @@ start_random_source(A,B,C) ->
 % current time (if wanting "real" non-reproducible randomness).
 start_random_source( {A,B,C} ) ->
 	start_random_source(A,B,C);
-	
+
 start_random_source( default_seed ) ->
 	% Use default (fixed) values in the process dictionary:
 	random:seed();
@@ -452,13 +452,13 @@ start_random_source( time_based_seed ) ->
 	% Each run will result in different random series:
 	{A, B, C} = erlang:now(),
 	start_random_source(A,B,C).
-	
-	
+
+
 stop_random_source() ->
 	ok.
-	
-	
-% Returns an integer random value generated from an uniform distribution. 
+
+
+% Returns an integer random value generated from an uniform distribution.
 %
 % Given an integer N >= 1, returns a random integer uniformly distributed
 % between 1 and N (both included), updating the random state in the process
@@ -471,13 +471,13 @@ get_random_value(N) ->
 % random state in the process dictionary.
 get_random_value() ->
 	random:uniform().
-	
 
-% Returns the name of the module managing the random generation.	
+
+% Returns the name of the module managing the random generation.
 get_random_module_name() ->
 	random.
-	
-	
+
+
 -endif. % use_crypto_module
 
 
@@ -489,11 +489,11 @@ get_random_module_name() ->
 % This is a randomly-determined seed, meant to be used to create another
 % random generator.
 get_random_seed() ->
-	{   get_random_value( ?seed_upper_bound ), 
-		get_random_value( ?seed_upper_bound ), 
+	{   get_random_value( ?seed_upper_bound ),
+		get_random_value( ?seed_upper_bound ),
 		get_random_value( ?seed_upper_bound ) }.
-	
-	
+
+
 
 % Returns a random uniform permutation of the specified list.
 %
@@ -501,18 +501,29 @@ get_random_seed() ->
 %
 % All these algorithms would need random access to a list, which is not readily
 % possible here, hence must be emulated.
-random_select( _, 0 ) -> 
-	[];
-	
-random_select( List, N ) -> 
-	% Uses the 'random' basic random source:
-	Index = random:uniform( length(List) ),
-	[ get_element_at( List, Index ) 
-		| random_select( remove_element_at( List, Index ), N-1 ) ].
-
+%
+% See also the 'Speedy unsort:shuffle/1,2' thread in the erlang-questions
+% mailing list for counterparts.
 random_permute( List ) ->
-	random_select( List, length(List) ).
-	
+	random_permute( List, length(List) ).
+
+
+random_permute( _List, _RemainingLen=0 ) ->
+	[];
+
+random_permute( List, RemainingLen ) ->
+
+	% Cheking is commented-out:
+	%RemainingLen = length(List),
+
+	% Uses the 'random' basic random source:
+
+	% (using remove_element_at/2 should be quicker than using
+	% proplists:delete/2, as we stop at the first matching element found)
+	Index = random:uniform( length(List) ),
+	[ get_element_at( List, Index )
+		| random_permute( remove_element_at( List, Index ), RemainingLen-1 ) ].
+
 
 
 % Returns a string containing a new universally unique identifier (UUID), based
@@ -527,57 +538,76 @@ generate_uuid() ->
 % List management functions.
 
 
-% Index start at position #1, not #0.
+% Index starts at position #1, not #0.
 
 % Returns the element in the list at the specified index, in [1..length(List)].
-% If the index is out of bounds, a function_clause like 
-% '[{basic_utils,get_element_at,...}]' is triggered.
+%
+% If the index is out of bounds, a function_clause is raised.
 %
 % Note: usually these kinds of functions should not be used, recursive
 % algorithms are a lot more effective, when applicable.
 %
-% Signature: get_element_at(List,Index)
-get_element_at( List, 1 ) ->
-	hd(List);
+get_element_at( List, Index ) ->
+	lists:nth( Index, List ).
 
-get_element_at( [_H|T], Index ) ->	
-	get_element_at( T, Index-1 ).
-		
-		
+
+%% get_element_at( List, 1 ) ->
+%%	hd(List);
+
+%% get_element_at( [_H|T], Index ) ->
+%%	get_element_at( T, Index-1 ).
+
+
 
 % Returns a list corresponding to the specified one with the element at
 % specified index removed.
 %
-% If the index is out of bounds, a function_clause like 
+% If the index is out of bounds, a function_clause like
 % '[{basic_utils,remove_element_at,...}]' is triggered.
 %
 % Note: usually these kinds of functions should not be used, recursive
 % algorithms are a lot more effective, when applicable.
 %
-% Signature: remove_element_at(List,Index) ->
+% Signature: remove_element_at(List,Index).
+%
+% Curiously lists:nth exists, but no function to remove an element specified by
+% its index seems to be available in the lists module.
+%
 % Not tail recursive version:
-%remove_element_at( [_H|T], 1 ) -> 
+%remove_element_at( [_H|T], 1 ) ->
 %	T;
-%	
+%
 %remove_element_at( [H|T], N ) ->
 %	[H|remove_element_at(T,N-1)].
 % Tail recursive version:
-remove_element_at(List,Index) ->
-	remove_element_at(List,Index,[]).
+remove_element_at( List, Index ) ->
+	remove_element_at( List, Index, [] ).
 
-remove_element_at([_H|RemainingList],1,Result) ->
+remove_element_at( [_H|RemainingList], 1, Result ) ->
 	lists:reverse( Result ) ++ RemainingList;
-	 
-remove_element_at([H|RemainingList],Index,Result) ->
-	remove_element_at(RemainingList,Index-1,[H|Result]).
 
+remove_element_at( [H|RemainingList], Index, Result ) ->
+	remove_element_at( RemainingList, Index-1, [H|Result] ).
+
+
+
+% Returns a list whose elements are the ones of the specified list, except that
+% they are unique (all their duplicates have been removed).
+%
+% No specific order is respected in the returned list.
+%
+% Ex: if L = [1,2,3,2,2,4,5,5,4,6,6,5], then basic_utils:uniquify(L) is:
+% [3,6,2,5,1,4].
+uniquify( List ) ->
+	% There is probably a more efficient way of doing the same:
+	sets:to_list( sets:from_list(List) ).
 
 
 % Returns a list equal to L1 except that all elements found in L2 have been
 % removed, even if in L1 they were duplicated.
 % Note: like lists:subtract, except that all occurences from L2 (not only
 % the first one) are removed.
-% Example: [1,4] = basic_utils:subtract_all_duplicates( [1,2,3,4,2], [2,3] )  
+% Example: [1,4] = basic_utils:subtract_all_duplicates( [1,2,3,4,2], [2,3] )
 % Taken from
 % http://www.trapexit.org/Finding_Elements_in_One_Array_but_Not_Another
 subtract_all_duplicates( L1, L2 ) ->
@@ -590,17 +620,17 @@ subtract_all_duplicates( L1, L2 ) ->
 % Ex: append_at_end( d, [a,b,c] ) returns [a,b,c,d].
 append_at_end( Elem, L ) when is_list(L) ->
 	% Should be more efficient than lists:reverse( [Elem|lists:reverse(L)] ):
-	L ++ [Elem].  
+	L ++ [Elem].
 
 
 
 % Notification-related functions.
-	
 
-% Speaks the specified message, using espeak.		
+
+% Speaks the specified message, using espeak.
 speak(Message) ->
 	[] = os:cmd("espeak -s 140 \"" ++ Message ++ "\" &" ).
-	
+
 
 % Notifies the user of the specified message, with log output and synthetic
 % voice.
@@ -611,10 +641,10 @@ notify_user(Message) ->
 
 
 % Notifies the user of the specified message, with log output and synthetic
-% voice.		
+% voice.
 % Example: 'basic_utils:notify_user( "Hello ~w", [ Name ]).'
 notify_user(Message,FormatList) ->
-	ActualMessage = io_lib:format(Message,FormatList), 
+	ActualMessage = io_lib:format(Message,FormatList),
 	io:format(ActualMessage),
 	speak(ActualMessage).
 
@@ -628,19 +658,19 @@ notify_user(Message,FormatList) ->
 % Returns a name that is a legal name for an Erlang node, forged from specified
 % one.
 generate_valid_node_name_from( Name ) when is_list(Name) ->
-	
+
 	% Replaces each series of spaces (' '), lower than ('<'), greater than
 	% ('>'), comma (','), left ('(') and right (')') parentheses, single (''')
 	% and double ('"') quotes, forward ('/') and backward ('\') slashes,
 	% ampersand ('&'), tilde ('~'), sharp ('#'), at sign ('@'), all other kinds
 	% of brackets ('{', '}', '[', ']'), pipe ('|'), dollar ('$'), star ('*'),
-	% marks ('?' and '!'), plus ('+'), other punctation signs (';' and ':') by
-	% exactly one underscore:
+	% marks ('?' and '!'), plus ('+'), other punctation signs (';', '.' and ':')
+	% by exactly one underscore:
 	%
 	% (see also: file_utils:convert_to_filename/1)
-	re:replace( lists:flatten(Name), 
+	re:replace( lists:flatten(Name),
 			   "( |<|>|,|\\(|\\)|'|\"|/|\\\\|\&|~|"
-			   "#|@|{|}|\\[|\\]|\\||\\$|\\*|\\?|!|\\+|;|:)+", "_", 
+			   "#|@|{|}|\\[|\\]|\\||\\$|\\*|\\?|!|\\+|;|\\.|:)+", "_",
 		 [global,{return, list}] ).
 
 
@@ -649,42 +679,42 @@ generate_valid_node_name_from( Name ) when is_list(Name) ->
 check_node_validity( Node ) when is_list(Node) ->
 	% ping requires atoms:
 	check_node_validity( list_to_atom(Node) ) ;
-	
+
 check_node_validity( Node ) when is_atom(Node) ->
 	case net_adm:ping( Node ) of
-	
+
 		pong ->
 			true ;
-		
+
 		pang ->
 			false
-			
-	end.			
 
-
-
-% Miscellaneous functions.
-		
-
-% Flushes all the messages still in the mailbox of this process.
-flush_pending_messages() ->
-	receive
-	
-		_ ->
-			flush_pending_messages()
-	
-	after 0 ->
-		ok
-	
 	end.
 
 
 
-% Displays a numbered checkpoint. 
+% Miscellaneous functions.
+
+
+% Flushes all the messages still in the mailbox of this process.
+flush_pending_messages() ->
+	receive
+
+		_ ->
+			flush_pending_messages()
+
+	after 0 ->
+		ok
+
+	end.
+
+
+
+% Displays a numbered checkpoint.
 % Useful for debugging purposes.
 checkpoint(Number) ->
 	io:format( "----- CHECKPOINT #~B -----~n", [Number] ).
-	
+
 
 
 % Compares the two triplets, which describes two version numbers (ex: {0,1,0})
@@ -692,21 +722,21 @@ checkpoint(Number) ->
 % Note: the default term order is already what we needed.
 compare_versions( {A1,A2,A3}, {B1,B2,B3} ) ->
 	case {A1,A2,A3} > {B1,B2,B3} of
-	
+
 		true ->
 			first_bigger;
-			
+
 		false ->
-		
-			case {A1,A2,A3} =:= {B1,B2,B3} of	
-			
+
+			case {A1,A2,A3} =:= {B1,B2,B3} of
+
 				true ->
 					equal;
-					
+
 				false ->
 					second_bigger
-					
-			end		
+
+			end
 	end.
 
 
@@ -729,37 +759,37 @@ draw_element( ElementList ) ->
 
 sum_probabilities( ElementList ) ->
 	sum_probabilities( ElementList, 0 ).
-	
- 
+
+
 sum_probabilities( [], Acc ) ->
 	Acc;
 
 sum_probabilities( [ {_Element,Probability} | T ], Acc ) ->
 	sum_probabilities( T, Acc+Probability ).
-	
+
 
 
 % Sum must be equal to the sum of all probabilities in ElementList.
 draw_element( _ElementList, 0 ) ->
 	throw( null_total_probability );
-	
+
 draw_element( ElementList, Sum ) ->
 	DrawnValue = get_random_value( Sum ),
 	%io:format( "draw_element: drawn ~B.~n", [DrawnValue] ),
 	select_element( ElementList, DrawnValue, _CurrentSum = 0 ).
-	
-	
-	
-select_element( [ {Element,Probability} | _T ], DrawnValue, CurrentSum ) 
+
+
+
+select_element( [ {Element,Probability} | _T ], DrawnValue, CurrentSum )
 		when Probability + CurrentSum >= DrawnValue ->
-	% Just gone past the probability range:	
+	% Just gone past the probability range:
 	Element;
-	
+
 select_element( [ {_Element,Probability} | T ], DrawnValue, CurrentSum ) ->
 	% Drawn value still not reached, continuing:
-	select_element( T, DrawnValue, CurrentSum+Probability ). 
-	
-	
+	select_element( T, DrawnValue, CurrentSum+Probability ).
+
+
 
 % Returns a value (a strictly positive integer) expected to be as much as
 % possible specific to the current process.
@@ -795,6 +825,4 @@ get_process_specific_value() ->
 get_process_specific_value( Min, Max ) ->
 	Value = get_process_specific_value(),
 	{H,M,S} = erlang:time(),
-	( ((H+M+S+1)*Value) rem (Max-Min) ) + Min. 
-	
-
+	( ((H+M+S+1)*Value) rem (Max-Min) ) + Min.
