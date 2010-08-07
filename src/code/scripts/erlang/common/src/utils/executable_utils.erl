@@ -5,7 +5,7 @@
 % This library is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License or
 % the GNU General Public License, as they are published by the Free Software
-% Foundation, either version 3 of these Licenses, or (at your option) 
+% Foundation, either version 3 of these Licenses, or (at your option)
 % any later version.
 % You can also redistribute it and/or modify it under the terms of the
 % Mozilla Public License, version 1.1 or later.
@@ -43,15 +43,15 @@
 
 % Section about default tools:
 -export([ get_default_image_viewer/0, get_default_pdf_viewer/0,
-		 get_default_text_viewer/0, get_default_wide_text_viewer/1, 
+		 get_default_text_viewer/0, get_default_wide_text_viewer/1,
 		 get_default_trace_viewer/0 ]).
-	
-	
-	
-	
+
+
+
+
 % Section for most usual commands:
-	
-	
+
+
 % By default do not crash if dot outputs some warnings.
 generate_png_from_graph_file( PNGFilename, GraphFilename ) ->
 	generate_png_from_graph_file( PNGFilename, GraphFilename, false ).
@@ -62,62 +62,62 @@ generate_png_from_graph_file( PNGFilename, GraphFilename ) ->
 % dot (graphviz) syntax.
 %  - PNGFilename the filename of the PNG to generate
 %  - GraphFilename the filename corresponding to the source graph
-%  - HaltOnDotOutput tells whether the process should throw an exception 
+%  - HaltOnDotOutput tells whether the process should throw an exception
 % should dot output an error or a warning
 generate_png_from_graph_file( PNGFilename, GraphFilename, true ) ->
 	case execute_dot( PNGFilename, GraphFilename ) of
-	
+
 		[] ->
 			ok;
-			
+
 		ErrorMessage ->
-			throw( {graph_generation_failed,ErrorMessage} )	
-			
+			throw( {graph_generation_failed,ErrorMessage} )
+
 	end;
-	
+
 % Any output remains available to the caller.
 generate_png_from_graph_file( PNGFilename, GraphFilename, false ) ->
 	execute_dot( PNGFilename, GraphFilename ).
-	
-	
+
+
 
 % Displays (without blocking) to the user the specified PNG, using an external
-% viewer. 
+% viewer.
 display_png_file( PNGFilename ) ->
-	% Viewer output is ignored: 
+	% Viewer output is ignored:
 	os:cmd( get_default_image_viewer() ++ " " ++ PNGFilename ++ " &" ).
 
 
 
 % Displays (without blocking) to the user the specified PNG, using an external
-% viewer. 
+% viewer.
 display_pdf_file( PDFFilename ) ->
-	% Viewer output is ignored: 
+	% Viewer output is ignored:
 	os:cmd( get_default_pdf_viewer() ++ " " ++ PDFFilename ++ " &" ).
 
 
 % Displays, with blocking, a text file.
 display_text_file( TextFilename ) ->
-	% Viewer output is ignored: 
+	% Viewer output is ignored:
 	os:cmd( get_default_text_viewer() ++ " " ++ TextFilename ).
-	
+
 
 % Displays, with blocking, a wide text file.
 display_wide_text_file( TextFilename, CharacterWidth ) ->
-	% Viewer output is ignored: 
-	os:cmd( get_default_wide_text_viewer(CharacterWidth) ++ " " 
+	% Viewer output is ignored:
+	os:cmd( get_default_wide_text_viewer(CharacterWidth) ++ " "
 		   ++ TextFilename ).
 
 
 % Returns a string to be inserted into a command-line call to ssh/scp so that it
-% can run as much as possible non-interactively.  
+% can run as much as possible non-interactively.
 % Tries notably to avoid following message: "The authenticity of host 'Serveur
 % (XXXXX)' can't be established.  RSA key fingerprint is YYYYY. Are you sure you
 % want to continue connecting (yes/no)?": Note: only to be used in a trusted
 % environment.
 get_ssh_mute_option() ->
   " -o \"StrictHostKeyChecking no\" ".
-	
+
 
 
 % Section about default tools:
@@ -126,10 +126,10 @@ get_ssh_mute_option() ->
 % Returns the default image viewer tool.
 % Could be also: xv, firefox, etc.
 get_default_image_viewer() ->
-	% Viewer is 'eye of gnome' here: 
+	% Viewer is 'eye of gnome' here:
 	"eog".
-	
-	
+
+
 % Returns the default PDF viewer tool.
 % Could be also: xpdf, acroread, etc.
 get_default_pdf_viewer() ->
@@ -139,25 +139,24 @@ get_default_pdf_viewer() ->
 % Returns the default text viewer tool.
 % Could be also: nedit, emacs, etc.
 get_default_text_viewer() ->
-	"gedit".	
-	
+	"gedit".
+
 
 get_default_wide_text_viewer(_CharacterWidth) ->
 	% Could be: io_lib:format( "nedit -column ~B", [CharacterWidth] )
-	"gedit". 
-							 
-		
+	"gedit".
+
+
 % Returns the default trace viewer tool.
 % Could be also: nedit, gedit, etc.
 get_default_trace_viewer() ->
 	% logmx.sh must be found in the PATH:
 	"logmx.sh".
-	
-	
+
+
 
 % Helper functions.
 
 execute_dot( PNGFilename, GraphFilename ) ->
 	% Dot might issue non-serious warnings:
 	os:cmd( "dot -o" ++ PNGFilename ++ " -Tpng " ++ GraphFilename ).
-
