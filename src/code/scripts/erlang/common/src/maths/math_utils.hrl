@@ -5,7 +5,7 @@
 % This library is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License or
 % the GNU General Public License, as they are published by the Free Software
-% Foundation, either version 3 of these Licenses, or (at your option) 
+% Foundation, either version 3 of these Licenses, or (at your option)
 % any later version.
 % You can also redistribute it and/or modify it under the terms of the
 % Mozilla Public License, version 1.1 or later.
@@ -30,5 +30,3 @@
 % relatively to the epsilon distance: P1 is deemed equal to P2 iff the distance
 % between P1 and P2 is below epsilon.
 -define( epsilon, 1.0e-6 ).
-
-

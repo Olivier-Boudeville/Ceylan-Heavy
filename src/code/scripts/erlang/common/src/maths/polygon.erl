@@ -5,7 +5,7 @@
 % This library is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License or
 % the GNU General Public License, as they are published by the Free Software
-% Foundation, either version 3 of these Licenses, or (at your option) 
+% Foundation, either version 3 of these Licenses, or (at your option)
 % any later version.
 % You can also redistribute it and/or modify it under the terms of the
 % Mozilla Public License, version 1.1 or later.
@@ -42,17 +42,17 @@
 
 % Operations on polygons.
 -export([ get_diameter/1, get_smallest_enclosing_rectangle/1, get_area/1,
-		  is_in_clockwise_order/1, is_convex/1,
-		  render/2, to_string/1 ]).
+		is_in_clockwise_order/1, is_convex/1,
+		render/2, to_string/1 ]).
 
 
 % Color-related section.
--export([ set_edge_color/2, get_edge_color/1, 
-		  set_fill_color/2, get_fill_color/1 ]). 
+-export([ set_edge_color/2, get_edge_color/1,
+		set_fill_color/2, get_fill_color/1 ]).
 
 
 % Bounding-box related section.
--export([ update_bounding_box/2 ]). 
+-export([ update_bounding_box/2 ]).
 
 
 
@@ -65,7 +65,7 @@ get_triangle( V1, V2, V3 ) ->
 	#polygon{ vertices = [V1,V2,V3] }.
 
 
-% Returns an upright square corresponding to the specified center and edge 
+% Returns an upright square corresponding to the specified center and edge
 % length.
 get_upright_square( _Center = {Xc,Yc}, EdgeLength ) ->
 	Offset = erlang:round(EdgeLength / 2),
@@ -79,7 +79,7 @@ get_upright_square( _Center = {Xc,Yc}, EdgeLength ) ->
 % Returns a new polygon whose vertices are the specified ones.
 get_polygon( Vertices ) ->
 	#polygon{ vertices = Vertices }.
-	
+
 
 % Operations on polygons.
 
@@ -87,7 +87,7 @@ get_polygon( Vertices ) ->
 % Returns a polygon diameter, i.e. two points in the polygon which are at the
 % maximum distance one of the other.
 % Returns {V1,V2,D} when V1 and V2 are the endpoints
-% of a diameter and D is its square length: D = square_distance(V1,V2). 
+% of a diameter and D is its square length: D = square_distance(V1,V2).
 get_diameter( Polygon ) ->
 
 	case Polygon#polygon.vertices of
@@ -101,17 +101,18 @@ get_diameter( Polygon ) ->
 		ListWithAtLeastTwoVertices ->
 			% There are at least two vertices:
 			linear_2D:compute_max_overall_distance( ListWithAtLeastTwoVertices )
-	
+
 	end.
 
 
 
-% Returns the smallest upright rectangle which encompasses the specified 
+% Returns the smallest upright rectangle which encompasses the specified
 % polygon.
-% More precisely, {TopLeftCorner,BottomRightCorner} is returned, which 
-% defines the rectangle from two opposite points.
+%
+% More precisely, {TopLeftCorner,BottomRightCorner} is returned, which defines
+% the rectangle from two opposite points.
 get_smallest_enclosing_rectangle( Polygon ) ->
-	
+
 	case Polygon#polygon.vertices of
 
 		[] ->
@@ -121,7 +122,7 @@ get_smallest_enclosing_rectangle( Polygon ) ->
 			throw( single_vertex );
 
 		ListWithAtLeastTwoVertices ->
-			linear_2D:compute_smallest_enclosing_rectangle( 
+			linear_2D:compute_smallest_enclosing_rectangle(
 			  ListWithAtLeastTwoVertices )
 
 	end.
@@ -150,7 +151,7 @@ is_in_clockwise_order( Polygon ) ->
 
 		Area when Area > 0 ->
 			true;
-		
+
 		_Negative ->
 			false
 
@@ -175,47 +176,47 @@ is_convex( [], _Previous, _Sign ) ->
 
 is_convex( [P={X,Y}|T], _Previous={Xp,Yp}, _Sign=undefined ) ->
 	% Setting the first sign:
-	io:format( "initial: previous= ~w, next= ~w, sum=~w.~n", 
+	io:format( "initial: previous= ~w, next= ~w, sum=~w.~n",
 			   [{Xp,Yp},P, Xp*Y-X*Y] ),
 
 	FirstSign = case Xp*Y-X*Yp of
 
 				  PositiveSum when PositiveSum > 0 ->
 					  positive;
-				  
+
 				  _NegativeSum ->
 					  negative
 
 			  end,
-								   
+
 	is_convex( T, _NewPrevious=P, FirstSign );
 
 is_convex( [P={X,Y}|T], _Previous={Xp,Yp}, Sign ) ->
-	io:format( "iterated: previous= ~w, next= ~w, sum=~w.~n", 
+	io:format( "iterated: previous= ~w, next= ~w, sum=~w.~n",
 			   [{Xp,Yp},P, Xp*Y-X*Yp] ),
 	% Checking if still obtaining the same sign:
 	NewSign = case Xp*Y-X*Yp of
 
 				  PositiveSum when PositiveSum > 0 ->
 					  positive;
-				  
+
 				  _NegativeSum ->
 					  negative
 
 			  end,
 	io:format( "Current sign: ~s, new one: ~s.~n", [Sign,NewSign] ),
-							   
+
 	case NewSign of
 
 		Sign ->
 			% Can still be convex:
 			is_convex( T, _NewPrevious=P, Sign );
-		
+
 		_OppositeSign ->
 			% Finished, as is concave:
 			false
-				
-	end.	
+
+	end.
 
 
 
@@ -228,8 +229,8 @@ set_edge_color( Color, Polygon ) ->
 	Polygon#polygon{ rendering = option_list:set( {fg,gui:get_color(Color)},
 										Polygon#polygon.rendering ) }.
 
-% Returns the current edge color of the specified polygon, if specified, 
-% otherwise 'undefined'.	  
+% Returns the current edge color of the specified polygon, if specified,
+% otherwise 'undefined'.
 get_edge_color( Polygon ) ->
 	option_list:lookup( fg, Polygon#polygon.rendering ).
 
@@ -241,8 +242,8 @@ set_fill_color( Color, Polygon ) ->
 	Polygon#polygon{ rendering = option_list:set( {fill,gui:get_color(Color)},
 										Polygon#polygon.rendering ) }.
 
-% Returns the current fill color of the specified polygon, if specified, 
-% otherwise 'undefined'.	  		  
+% Returns the current fill color of the specified polygon, if specified,
+% otherwise 'undefined'.
 get_fill_color( Polygon ) ->
 	option_list:lookup( fill, Polygon#polygon.rendering ).
 
@@ -272,7 +273,7 @@ render( Polygon, Canvas ) ->
 
 			Options = [ {coords,Vertices} | get_rendering_options(Polygon) ],
 			gs:create( polygon, Canvas, Options ),
-			
+
 			case Polygon#polygon.bounding_box of
 
 				{circle,Center,SquareRadius} ->
@@ -291,33 +292,34 @@ render( Polygon, Canvas ) ->
 
 % Returns a textual description of the specified polygon.
 to_string( Polygon ) ->
-	
+
 	BBText = case Polygon#polygon.bounding_box of
-		
+
 				 undefined ->
 					 "none available";
 
 				 BB ->
 					 bounding_box:to_string(BB)
-						 
+
 	end,
 
- 	io_lib:format(  "  + vertices: ~w~n", [Polygon#polygon.vertices] )
- 		++ io_lib:format( "  + edge color: ~w~n", [get_edge_color(Polygon)] )
- 		++ io_lib:format( "  + fill color: ~w~n", [get_fill_color(Polygon)] )
- 		++ io_lib:format( "  + bounding-box: ~s~n", [BBText] ).
+	io_lib:format(  "  + vertices: ~w~n", [Polygon#polygon.vertices] )
+		++ io_lib:format( "  + edge color: ~w~n", [get_edge_color(Polygon)] )
+		++ io_lib:format( "  + fill color: ~w~n", [get_fill_color(Polygon)] )
+		++ io_lib:format( "  + bounding-box: ~s~n", [BBText] ).
 
 
 
 % Bounding-box related section.
 
 
-% Updates, for the specified polygon, its internal bounding-box, with regard 
-% to the specified bounding-box request. 
+% Updates, for the specified polygon, its internal bounding-box, with regard to
+% the specified bounding-box request.
+%
 % Returns a polygon with updated information.
 % The lazy circle bounding box is fast to determine, but not optimal:
 update_bounding_box( lazy_circle, Polygon ) ->
-	{Center,SquareRadius} = bounding_box:get_lazy_circle_box( 
+	{Center,SquareRadius} = bounding_box:get_lazy_circle_box(
 							  Polygon#polygon.vertices ),
 	Polygon#polygon{ bounding_box = {circle,Center,SquareRadius} }.
 
@@ -338,7 +340,7 @@ get_signed_area( _Vertices=[First|T] ) ->
 	get_signed_area( T, _FirstOfAll=First, _Previous=First, _Area=0 ).
 
 
-get_signed_area( _Vertices=[_Last={X,Y}], _FirstOfAll={Xf,Yf}, 
+get_signed_area( _Vertices=[_Last={X,Y}], _FirstOfAll={Xf,Yf},
 				 _Previous={Xp,Yp}, Area ) ->
 	% Here we reached the last point of the polygon, so, first, we compute its
 	% product with the previous point, then we do the same with the FirstOfAll
@@ -349,5 +351,3 @@ get_signed_area( _Vertices=[_Last={X,Y}], _FirstOfAll={Xf,Yf},
 get_signed_area( [P={X,Y}|T], FirstOfAll, _Previous={Xp,Yp}, Area ) ->
 	% Here we are not managing the last point:
 	get_signed_area( T, FirstOfAll, _NewPrevious=P, Area + Xp*Y-X*Yp ).
-
-

@@ -5,7 +5,7 @@
 % This library is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License or
 % the GNU General Public License, as they are published by the Free Software
-% Foundation, either version 3 of these Licenses, or (at your option) 
+% Foundation, either version 3 of these Licenses, or (at your option)
 % any later version.
 % You can also redistribute it and/or modify it under the terms of the
 % Mozilla Public License, version 1.1 or later.
@@ -26,6 +26,7 @@
 
 
 % Unit tests for the linear 2D facilities.
+%
 % See the linear_2D tested module.
 -module(linear_2D_test).
 
@@ -41,7 +42,7 @@ run() ->
 	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
 
 	V={9,1},
-	
+
 	NL = linear_2D:normal_left( V ),
 	NR = linear_2D:normal_right( V ),
 
@@ -61,7 +62,7 @@ run() ->
 	NonV = linear_2D:scale( V, -1 ),
 
 	true  = linear_2D:is_strictly_on_the_right( NL, {0,0}, NonV ),
-   	false = linear_2D:is_strictly_on_the_right( NR, {0,0}, NonV ),
+	false = linear_2D:is_strictly_on_the_right( NR, {0,0}, NonV ),
 
 	Pa    = {469,243},
 	Pivot = {348,268},
@@ -82,7 +83,7 @@ run() ->
 	[ io:format( "    Unoriented angle between the vertex ~w and ~w, "
 				 "~w is ~f degrees, oriented angle is ~f degrees.~n",
 				 [ P1, P2, P3, linear_2D:abs_angle_deg( P1, P2, P3 ),
-					 linear_2D:angle_deg( P1, P2, P3 ) ] ) || P1 <- [A], 
+					 linear_2D:angle_deg( P1, P2, P3 ) ] ) || P1 <- [A],
 														P2 <- [B1,B2,B3],
 														P3 <- [C1,C2,C3] ],
 
@@ -96,4 +97,3 @@ run() ->
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	timer:sleep(200),
 	erlang:halt().
-

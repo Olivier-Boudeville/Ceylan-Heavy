@@ -5,7 +5,7 @@
 % This library is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License or
 % the GNU General Public License, as they are published by the Free Software
-% Foundation, either version 3 of these Licenses, or (at your option) 
+% Foundation, either version 3 of these Licenses, or (at your option)
 % any later version.
 % You can also redistribute it and/or modify it under the terms of the
 % Mozilla Public License, version 1.1 or later.
@@ -33,14 +33,14 @@
 
 
 % Operations on points:
--export([ are_close/2, is_within/3, square_distance/2, distance/2, 
-		  cross_product/2, roundify/1, get_integer_center/2, get_center/2,
-		  translate/2 ]).
+-export([ are_close/2, is_within/3, square_distance/2, distance/2,
+		cross_product/2, roundify/1, get_integer_center/2, get_center/2,
+		translate/2 ]).
 
-	
+
 % Operations on vectors:
 -export([ vectorize/2, square_magnitude/1, magnitude/1, scale/2, make_unit/1,
-		  normal_left/1, normal_right/1, dot_product/2 ]).
+		normal_left/1, normal_right/1, dot_product/2 ]).
 
 
 % Operations on lines:
@@ -49,12 +49,12 @@
 
 % Operations related to angles:
 -export([ is_strictly_on_the_right/3, is_obtuse/1, abs_angle_rad/3, angle_rad/3,
-		  abs_angle_deg/3, angle_deg/3 ]).
+		abs_angle_deg/3, angle_deg/3 ]).
 
 
 % Operations on set of points:
 -export([ compute_smallest_enclosing_rectangle/1,
-		  compute_max_overall_distance/1, compute_convex_hull/1 ]).
+		compute_max_overall_distance/1, compute_convex_hull/1 ]).
 
 
 % Only useful for tests:
@@ -80,10 +80,11 @@ are_close( _P1={X1,Y1}, _P2={X2,Y2} ) ->
 % to overcome numerical errors.
 is_within( P, C, D ) ->
 	% "Taylor series", square(epsilon) is negligible here:
-	square_distance( P, C ) < D * (D + ?epsilon). 
+	square_distance( P, C ) < D * (D + ?epsilon).
 
 
 % Returns the square of the distance between the two specified points.
+%
 % For comparison purposes, computing the square root is useless.
 % Could rely on vectorize and square_magnitude as well.
 square_distance( {X1,Y1}, {X2,Y2} ) ->
@@ -94,6 +95,7 @@ square_distance( {X1,Y1}, {X2,Y2} ) ->
 
 
 % Returns the distance between the two specified points.
+%
 % For comparison purposes, computing the square root is useless.
 % Could rely on vectorize and magnitude as well.
 distance( P1, P2 ) ->
@@ -132,10 +134,12 @@ translate( _P={X,Y}, _V={Vx,Vy} ) ->
 	{X+Vx,Y+Vy}.
 
 
+
 % Section for sets of points.
 
 
 % Computes the smallest rectangle that encloses the specified list of points.
+%
 % Returns { TopLeft, BottomRight }.
 compute_smallest_enclosing_rectangle( Points ) ->
 	compute_smallest_enclosing_rectangle( Points, undefined, undefined ).
@@ -152,16 +156,19 @@ compute_smallest_enclosing_rectangle( [{X,Y}|Others], {Xt,Yt}, {Xb,Yb} ) ->
 	Xmin = erlang:min( X, Xt ),
 	Ymin = erlang:min( Y, Yt ),
 	Xmax = erlang:max( X, Xb ),
-	Ymax = erlang:max( Y, Yb ),											
+	Ymax = erlang:max( Y, Yb ),
 	compute_smallest_enclosing_rectangle( Others, {Xmin,Ymin}, {Xmax,Ymax} ).
 
 
-% Computes the maximum distance between two points in the specified list
-% of points.
+% Computes the maximum distance between two points in the specified list of
+% points.
+%
 % Returns {P1,P2,square_distance(P1,P2)} so that (square) distance is maximal.
+%
 % We ensure that each internal edge is examined only once: when the distance
 % between a given vertex V and all other vertices have been computed, V is
-% removed from the list and a new mAximum is searched within this subset. 
+% removed from the list and a new mAximum is searched within this subset.
+%
 % Here there is only one vertex left:
 compute_max_overall_distance( Points ) when length(Points) < 2 ->
 	throw( {no_computable_overall_distance,Points} );
@@ -177,9 +184,9 @@ compute_max_overall_distance( [_H], Longest ) ->
 compute_max_overall_distance( [H|Others], undefined ) ->
 	FirstEntry = compute_max_distance_between( H, Others ),
 	compute_max_overall_distance( Others, _FirstBest=FirstEntry );
- 
+
 % At least one other vertex remains, and at least one distance was computed:
-compute_max_overall_distance( [H|Others], 
+compute_max_overall_distance( [H|Others],
 							  Best = {_V1,_V2,LongestSquareDistance} ) ->
 
 	case compute_max_distance_between( H, Others, undefined ) of
@@ -187,27 +194,28 @@ compute_max_overall_distance( [H|Others],
 		{PmaxForH,LongestSquareDistanceFromH} when LongestSquareDistanceFromH >
 												   LongestSquareDistance ->
 			% We have a new winner:
-			compute_max_overall_distance( Others, 
+			compute_max_overall_distance( Others,
 			   {H,PmaxForH,LongestSquareDistanceFromH} );
-										   
-		_Other ->							 
+
+		_Other ->
 			% Here LongestSquareDistance is not beaten:
 			compute_max_overall_distance( Others, Best )
-				
+
 	end.
 
 
 
-% Computes the maximum distance between a point (P) and a list of other
-% points.  
-% Returns {P,Pmax,LongestSquareDistance} with LongestSquareDistance
-% being the distance between P and Pmax, Pmax being chosen so that
-% LongestSquareDistance is maximal.  
+% Computes the maximum distance between a point (P) and a list of other points.
+%
+% Returns {P,Pmax,LongestSquareDistance} with LongestSquareDistance being the
+% distance between P and Pmax, Pmax being chosen so that LongestSquareDistance
+% is maximal.
+%
 % As there must have been at least one point in the list, Pmax exists here
 % (never undefined):
 compute_max_distance_between( _P, [] ) ->
 	throw( no_computable_max_distance );
-	
+
 compute_max_distance_between( P, Points ) ->
 	compute_max_distance_between( P, Points, undefined ).
 
@@ -217,7 +225,7 @@ compute_max_distance_between( P, [], {Pmax,LongestSquareDistance} ) ->
 
 compute_max_distance_between( P, [Pnew|OtherPoints], undefined ) ->
 	% First point examined is at first by construction the first best:
-	compute_max_distance_between( P, OtherPoints, 
+	compute_max_distance_between( P, OtherPoints,
 								  {Pnew,linear_2D:square_distance(P,Pnew)} );
 
 compute_max_distance_between( P, [Pnew|OtherPoints],
@@ -227,7 +235,7 @@ compute_max_distance_between( P, [Pnew|OtherPoints],
 
 		SquareDistance when SquareDistance > LongestSquareDistance ->
 			% We have a new winner:
-			compute_max_distance_between( P, OtherPoints, 
+			compute_max_distance_between( P, OtherPoints,
 										  {Pnew,SquareDistance} );
 
 		_LesserSquareDistance ->
@@ -243,8 +251,9 @@ compute_max_distance_between( P, [Pnew|OtherPoints],
 
 % Finds the pivot, i.e. the leftmost point with the highest ordinate.
 % The point list is supposed not having duplicates.
-% Returns {Pivot,PivotLessList} where PivotLessList is the (unordered)
-% input list, without the Pivot.  
+%
+% Returns {Pivot,PivotLessList} where PivotLessList is the (unordered) input
+% list, without the Pivot.
 find_pivot( _PointList = [FirstPivot|Others] ) ->
 	% First found is the first pivot:
 	find_pivot( Others, FirstPivot, _NewList=[] ).
@@ -267,7 +276,7 @@ find_pivot( [Point={X,_Y}|Others], Pivot={Xp,_Y}, NewList ) when X>Xp ->
 	find_pivot( Others, Pivot, [Point|NewList] );
 
 % Same level as the pivot, but at its left, thus wanted:
-find_pivot( [Point={X,_Yp}|Others], PreviousPivot={Xp,_Yp}, NewList ) when X<Xp ->	
+find_pivot( [Point={X,_Yp}|Others], PreviousPivot={Xp,_Yp}, NewList ) when X<Xp ->
 	find_pivot( Others, Point, [PreviousPivot|NewList] );
 
 % Duplicated pivot, abnormal:
@@ -278,10 +287,11 @@ find_pivot( [Pivot|_Others], Pivot, _NewList ) ->
 
 % Returns a list containing the points sorted according to an increasing angle
 % between the abscissa axis and the vector from the pivot that each point.
-% Note: all points having the same abscissa as the pivot, except the highest one,
-% will be removed from the returned list.
+%
+% Note: all points having the same abscissa as the pivot, except the highest
+% one, will be removed from the returned list.
 sort_by_angle( Pivot, Points ) ->
-	sort_by_angle( Pivot, Points, _LeftPoints=[], _MiddlePoint=undefined, 
+	sort_by_angle( Pivot, Points, _LeftPoints=[], _MiddlePoint=undefined,
 				   _RightPoints=[] ).
 
 
@@ -296,15 +306,15 @@ sort_by_angle( _Pivot, _Points=[], LeftPoints, undefined, RightPoints ) ->
 
 sort_by_angle( _Pivot, _Points=[], LeftPoints, MiddlePoint, RightPoints ) ->
 	%io:format( "sort_by_angle: at least one middle point found.~n" ),
-	L = lists:keysort( _Index=1, LeftPoints ) 
+	L = lists:keysort( _Index=1, LeftPoints )
 		++ [{dummy,MiddlePoint}|lists:keysort( _Index=1, RightPoints )],
 	reverse_and_drop_angle(L,[]);
-					  
+
 % Note that Y<=Yp by definition of the pivot, hence Y-Yp<=0
 sort_by_angle( Pivot={Xp,Yp}, [Point={X,Y}|T], LeftPoints, MiddlePoint,
 			   RightPoints ) ->
-	case X-Xp of 
-		
+	case X-Xp of
+
 		0 ->
 			% Here we are just above the pivot, tan(Pi/2) is infinite.
 			case MiddlePoint of
@@ -314,39 +324,40 @@ sort_by_angle( Pivot={Xp,Yp}, [Point={X,Y}|T], LeftPoints, MiddlePoint,
 					sort_by_angle( Pivot, T, LeftPoints, Point, RightPoints );
 
 				{_Xm,Ym} ->
-					
+
 					case Y < Ym of
 
 						true ->
-					        % This point is above the previous highest middle point,
-					        % previous middle point can be dropped on the floor:
-							sort_by_angle( Pivot, T, LeftPoints, Point, 
+							% This point is above the previous highest middle
+							% point, previous middle point can be dropped on the
+							% floor:
+							sort_by_angle( Pivot, T, LeftPoints, Point,
 										   RightPoints );
 
 						false ->
-					        % The current point can be dropped on the floor, as
-					        % it is below the highest middle point:
-							sort_by_angle( Pivot, T, LeftPoints, MiddlePoint, 
+							% The current point can be dropped on the floor, as
+							% it is below the highest middle point:
+							sort_by_angle( Pivot, T, LeftPoints, MiddlePoint,
 										   RightPoints )
-								
+
 					end
 			end;
 
 		DeltaX when DeltaX > 0 ->
-			% This is a point on the right of the pivot, stores the tangent
-			% of the angle the vector defined by the pivot and that point 
-			% makes with the abscissa axis:
-			sort_by_angle( Pivot, T, LeftPoints, MiddlePoint, 
-						   [ {(Y-Yp)/DeltaX,Point} |RightPoints] );	 
-		
+			% This is a point on the right of the pivot, stores the tangent of
+			% the angle the vector defined by the pivot and that point makes
+			% with the abscissa axis:
+			sort_by_angle( Pivot, T, LeftPoints, MiddlePoint,
+						   [ {(Y-Yp)/DeltaX,Point} |RightPoints] );
+
 		NegativeDeltaX ->
 			% This is a point on the left of the pivot:
-			sort_by_angle( Pivot, T, [ {(Y-Yp)/NegativeDeltaX,Point} |LeftPoints], 
+			sort_by_angle( Pivot, T, [ {(Y-Yp)/NegativeDeltaX,Point} |LeftPoints],
 						   MiddlePoint, RightPoints )
 
 	end.
 
- 
+
 
 reverse_and_drop_angle( [], Acc ) ->
 	Acc;
@@ -385,8 +396,8 @@ scale( _V={X,Y}, Factor ) ->
 
 
 % Returns the specified vector with an unit length (magnitude of 1):
-% (epsilon-based test for null vectors with floating-point coordinates could
-% be done here).
+% (epsilon-based test for null vectors with floating-point coordinates could be
+% done here).
 make_unit( {0,0} ) ->
 	throw( cannot_make_null_vector_unit );
 
@@ -430,29 +441,30 @@ get_line( _P={Xp,Yp}, _V={Vx,Vy} ) ->
 	B=Vy,
 	C = - (Xp*Vx+Yp*Vy),
 	{A,B,C}.
-	
+
 
 % Returns the intersection of the two specified lines, if it is a point,
 % otherwise the atom no_point (the intersection can be void, if the lines are
 % parallel but different, or a full line, if they are the same line).
+%
 % First line has for equation a.x+b.y+c=0, second has for equation u.x+v.y+w=0.
 intersect( _D1={A,B,C}, _D2={U,V,W} ) ->
 	% We will try to substitute y, as determined from first equation, into
 	% the second one:
-	case B of 
-		
+	case B of
+
 		0 ->
 			% Thus A.X = -C
-			case A of 
-				
+			case A of
+
 				0 ->
 					% Either empty or the same:
 					no_point;
 
 				_ ->
 					X = -C/A,
-					case V of 
-						
+					case V of
+
 						0 ->
 							no_point;
 
@@ -466,18 +478,18 @@ intersect( _D1={A,B,C}, _D2={U,V,W} ) ->
 
 		_ ->
 			% General case: Y= - (C+A.X)/B (I), will be replaced in second
-			% equation: 
+			% equation:
 			case U of
 
 				0 ->
 					% Thus Y:
 					Y= -W/V,
 					% Now X from first:
-					case A of 
+					case A of
 
 						0 ->
 							no_point;
-						
+
 						_ ->
 							X= - (B*Y+C)/A,
 							{X,Y}
@@ -486,8 +498,8 @@ intersect( _D1={A,B,C}, _D2={U,V,W} ) ->
 
 				_ ->
 					% General case, substituing (I) in second equation we have:
-					% (B.U-V.A).X = V.C-B.D 
-					case B*U-V*A of 
+					% (B.U-V.A).X = V.C-B.D
+					case B*U-V*A of
 
 						0 ->
 							no_point;
@@ -497,19 +509,20 @@ intersect( _D1={A,B,C}, _D2={U,V,W} ) ->
 							Y = - (C+A*X) / B,
 							{X,Y}
 
-					end	
+					end
 
 			end
 
 	end.
-		
+
 
 
 % Returns the abscissa of a point on line L having Y for ordinate.
+%
 % Line L must not have for equation Y=constant (i.e. its A parameter must not be
 % null).
 get_abscissa_for_ordinate( _L={A,B,C}, Y ) ->
-	% For y=K, x=-(C+BK)/A 
+	% For y=K, x=-(C+BK)/A
 	-(C+B*Y)/A.
 
 
@@ -520,7 +533,7 @@ get_abscissa_for_ordinate( _L={A,B,C}, Y ) ->
 
 % Returns true iff P is strictly on the right of the oriented segment going from
 % P1 to P2.
-is_strictly_on_the_right( P, P1, P2 ) ->	
+is_strictly_on_the_right( P, P1, P2 ) ->
 	Vec_P1P2 = vectorize( P1, P2 ),
 	RightNormal = normal_right( Vec_P1P2 ),
 	Vec_P1P  = vectorize( P1, P ),
@@ -534,14 +547,15 @@ is_obtuse( AngleInDegrees ) ->
 	AngleInDegrees > 90 andalso AngleInDegrees < 180.
 
 
-% Returns the angle, in radians, between the vector AB and AC. 
+% Returns the angle, in radians, between the vector AB and AC.
+%
 % Note: with this function we cannot tell whether one vector is ahead of the
 % other, i.e. if we should use the returned angle or its opposite to go from AB
 % to AC.
 abs_angle_rad( A, B, C ) ->
 	AB = vectorize(A,B),
 	M1 = magnitude(AB),
-	case math_utils:is_null(M1) of 
+	case math_utils:is_null(M1) of
 
 		true ->
 			throw( {degenerate_angle,{A,B}} );
@@ -551,7 +565,7 @@ abs_angle_rad( A, B, C ) ->
 	end,
 	AC = vectorize(A,C),
 	M2 = magnitude(AC),
-	case math_utils:is_null(M2) of 
+	case math_utils:is_null(M2) of
 
 		true ->
 			throw( {degenerate_angle,{A,C}} );
@@ -564,30 +578,32 @@ abs_angle_rad( A, B, C ) ->
 
 
 % Returns the signed (oriented) angle, in radians, between the vector AB and AC.
+%
 % Note: with this function we can tell that we must rotate counter-clockwise of
 % the returned angle to go from AB to AC.
 angle_rad( A, B, C ) ->
 	{X1,Y1} = vectorize(A,B),
 	{X2,Y2} = vectorize(A,C),
-	math:atan2( Y2, X2 ) - math:atan2( Y1, X1 ). 
+	math:atan2( Y2, X2 ) - math:atan2( Y1, X1 ).
 
 
-% Returns the angle, in canonical degrees, between the vector AB and AC. 
+% Returns the angle, in canonical degrees, between the vector AB and AC.
 % Note: with this function we cannot tell whether one vector is ahead of the
 % other, i.e. if we should use the returned angle or its opposite to go from AB
 % to AC.
 abs_angle_deg( A, B, C ) ->
-	 math_utils:canonify( math_utils:radian_to_degree( 
+	 math_utils:canonify( math_utils:radian_to_degree(
 							abs_angle_rad( A, B, C ) ) ).
 
 
 
 % Returns the signed (oriented) angle, in canonical degrees, between the vector
 % AB and AC.
+%
 % Note: with this function we can tell that we must rotate counter-clockwise of
 % the returned angle to go from AB to AC.
 angle_deg( A, B, C ) ->
-	 math_utils:canonify( math_utils:radian_to_degree( 
+	 math_utils:canonify( math_utils:radian_to_degree(
 							angle_rad( A, B, C ) ) ).
 
 
@@ -598,28 +614,29 @@ angle_deg( A, B, C ) ->
 
 
 % Computes the convex hull corresponding to the specified list of points.
+%
 % Returns the list of points that defines the hull.
 compute_convex_hull( Points ) ->
 
 	{Pivot,RemainingPoints} = find_pivot( Points ),
 
-	case length(RemainingPoints) of 
-		
+	case length(RemainingPoints) of
+
 		Len when Len < 2 ->
 			throw( not_enough_points_for_convex_hull );
 
 		_Other ->
 			% We have at least 2 points in addition to the pivot.
-			%io:format( "Pivot is ~w, remaining points: ~w.~n", 
+			%io:format( "Pivot is ~w, remaining points: ~w.~n",
 			%		   [Pivot,RemainingPoints] ),
 
 			[P1,P2|T] = sort_by_angle( Pivot, RemainingPoints ),
- 
+
 			% Initially only the pivot is known to belong to the convex hull.
 			% We had P1, next to be validated against P2.
 			% We also add the pivot to the end of the NextPoints list, so that
 			% the hull can be closed.
-			compute_graham_scan_hull( _ToValidate=[P1,Pivot], 
+			compute_graham_scan_hull( _ToValidate=[P1,Pivot],
 									  _NewPoint=P2, _NextPoints=(T++[Pivot]) )
 
 	end.
@@ -631,6 +648,7 @@ compute_convex_hull( Points ) ->
 % already sorted by increasing angle between the abscissa axis and the vector
 % from the pivot to each of these points (i.e. in increasing order of the angle
 % they and the point P make with the x-axis, in counter-clockwise order).
+%
 % See: http://en.wikipedia.org/wiki/Graham_scan
 % Returns the corresponding convex hull, in clock-wise order.
 compute_graham_scan_hull( ToValidate, _Pivot, _NextPoints=[] ) ->
@@ -641,13 +659,14 @@ compute_graham_scan_hull( ToValidate, _Pivot, _NextPoints=[] ) ->
 
 	ToValidate;
 
-compute_graham_scan_hull( ToValidate=[P2,P1|T], NewPoint, 
+compute_graham_scan_hull( ToValidate=[P2,P1|T], NewPoint,
 						  NextPoints=[Next|OtherNext] ) ->
-	
+
 	% Should P2 be on the line defined by P1 and NewPoint, then P2 will be
 	% considered as not being on the left: in the convex hull, only necessary
 	% points will be kept, i.e. no point on the boundary of the hull will be
 	% kept.
+	%
 	% Note: The test seems to be wrongly negated; however it is correct as
 	% actually we describe the algorithm as seen if represented in a basis whose
 	% ordinates are increasing when going from the top to the bottom (i.e. like
@@ -655,50 +674,49 @@ compute_graham_scan_hull( ToValidate=[P2,P1|T], NewPoint,
 	case is_strictly_on_the_right( P2, P1, NewPoint ) of
 
 		false ->
-			
+
 			%io:format( "compute_graham_scan_hull: point ~w is on the right of "
-			%		   "segment from ~w to ~w, keeping ~w.~n", 
+			%		   "segment from ~w to ~w, keeping ~w.~n",
 			%		   [P2, P1, NewPoint, P2] ),
- 
+
 			% Here, the point P2 is on the right of the segment going from P1 to
 			% the Next point, thus P2 can be kept and we can continue with the
 			% next points:
 			compute_graham_scan_hull( [NewPoint|ToValidate], Next,
 									   OtherNext );
-		
+
 		true ->
 
 			%io:format( "compute_graham_scan_hull: point ~w is on the left of "
-			%		   "segment from ~w to ~w, eliminating ~w.~n", 
+			%		   "segment from ~w to ~w, eliminating ~w.~n",
 			%		   [P2, P1, NewPoint, P2] ),
 
 			% Here, the point P2 is on the left of (or in) the segment going
 			% from P1 to the Next point, thus P2 is to be discarded, and will
-			% have to check predecessor(s) of P2 against the Next point.  
+			% have to check predecessor(s) of P2 against the Next point.
 			%
 
 			compute_graham_scan_hull( [P1|T], NewPoint, NextPoints )
 
 
 	end;
-	
+
 % Note however that the first point examined after the pivot (FP1) may have to
 % be discarded because of the second. If we just removed FP1, then the
 % ToValidate list would just contain the pivot, thus triggering a function
-% clause. In that case we just have to replace FP1 by the next(FP1)=P2 here, and
-% thus ToValidate will always contain at least two elements:
+% clause.
+%
+% In that case we just have to replace FP1 by the next(FP1)=P2 here, and thus
+% ToValidate will always contain at least two elements:
 
 % This clause matches whenever we just removed the first point in the list
 % examined after the pivot. So the first parameter (ToValidate) is just a list
 % with one element, the pivot, that was added to close the hull. As we have no
 % intermediate point, we accept directly the next point (Next), knowing it will
 % be checked at the next recursion:
+%
 %compute_graham_scan_hull( [Pivot], NewPoint, [Next|OtherNext] ) ->
 %	compute_graham_scan_hull( [NewPoint,Pivot], Next, OtherNext ).
 % A bit faster as we know L is actually [Pivot]:
 compute_graham_scan_hull( L, NewPoint, [Next|OtherNext] ) ->
 	compute_graham_scan_hull( [NewPoint|L], Next, OtherNext ).
-	
-
-
-

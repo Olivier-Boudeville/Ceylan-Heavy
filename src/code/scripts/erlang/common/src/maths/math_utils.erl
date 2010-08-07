@@ -5,7 +5,7 @@
 % This library is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License or
 % the GNU General Public License, as they are published by the Free Software
-% Foundation, either version 3 of these Licenses, or (at your option) 
+% Foundation, either version 3 of these Licenses, or (at your option)
 % any later version.
 % You can also redistribute it and/or modify it under the terms of the
 % Mozilla Public License, version 1.1 or later.
@@ -27,6 +27,7 @@
 
 
 % Gathering of various general purpose basic math facilities.
+%
 % See math_utils_test.erl for the corresponding test.
 -module(math_utils).
 
@@ -53,57 +54,60 @@
 
 % Floors returns the biggest integer smaller than the specified floating-point
 % value.
+%
 % Inspired from http://schemecookbook.org/Erlang/NumberRounding.
 floor(X) ->
-    T = erlang:trunc(X),
-    case (X - T) of
+	T = erlang:trunc(X),
+	case (X - T) of
 
-        Neg when Neg < 0 -> 
+		Neg when Neg < 0 ->
 			T - 1;
 
-        %Pos when Pos > 0 -> 
+		%Pos when Pos > 0 ->
 		%	T;
 
-        _PositiveOrNull -> 
+		_PositiveOrNull ->
 			T
 
-    end.
+	end.
 
 
 
 % Ceiling returns the smallest integer bigger than the specified floating-point
 % value.
+%
 % Inspired from http://schemecookbook.org/Erlang/NumberRounding.
 ceiling(X) ->
-    T = erlang:trunc(X),
-    case (X - T) of
+	T = erlang:trunc(X),
+	case (X - T) of
 
-        Pos when Pos > 0 -> 
+		Pos when Pos > 0 ->
 			T + 1;
-        
-		%Neg when Neg < 0 -> 
+
+		%Neg when Neg < 0 ->
 		%	T;
 
 		_NegativeOrNull ->
 			T
 
-    end.
+	end.
 
 
 
 % Returns the positive remainder of the division of X by Y, in [0;Y[.
-% In Erlang, -5 rem 3 is -2, whereas this function will return 1, 
+%
+% In Erlang, -5 rem 3 is -2, whereas this function will return 1,
 % since -5 = -2 * 3 + 1.
-modulo(X,Y) when X > 0 -> 
+modulo(X,Y) when X > 0 ->
 	X rem Y;
 
-modulo(X,Y) when X < 0 -> 
+modulo(X,Y) when X < 0 ->
 	K = (-X div Y)+1,
 	PositiveX = X + K*Y,
 	%io:format( "K=~B, PositiveX=~B~n.", [K,PositiveX] ),
 	PositiveX rem Y;
 
-modulo(0,_Y) -> 
+modulo(0,_Y) ->
 	0.
 
 
@@ -120,7 +124,7 @@ are_close( X, Y ) ->
 
 % Returns true iff the specified floating-point number is deemed close enough to
 % zero to be null.
-is_null( X ) ->	
+is_null( X ) ->
 	erlang:abs(X) < ?epsilon.
 
 
@@ -141,11 +145,9 @@ radian_to_degree( AngleInRadians ) ->
 
 % Canonifies specified angle in degrees, i.e. ensures the returned value that
 % corresponds to the specified angle is in the [0;360[ interval.
-canonify( AngleInDegrees ) when is_integer(AngleInDegrees) -> 
+canonify( AngleInDegrees ) when is_integer(AngleInDegrees) ->
 	modulo( AngleInDegrees, 360 );
 
 % Here we assume it is a floating-point value, positive or not.
 canonify( AngleInDegrees ) ->
 	AngleInDegrees - 360 * floor(AngleInDegrees/360).
-
-
