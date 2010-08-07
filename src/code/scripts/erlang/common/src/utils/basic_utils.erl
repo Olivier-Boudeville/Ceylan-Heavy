@@ -520,7 +520,7 @@ random_permute( List, RemainingLen ) ->
 
 	% (using remove_element_at/2 should be quicker than using
 	% proplists:delete/2, as we stop at the first matching element found)
-	Index = random:uniform( length(List) ),
+	Index = random:uniform( RemainingLen ),
 	[ get_element_at( List, Index )
 		| random_permute( remove_element_at( List, Index ), RemainingLen-1 ) ].
 
@@ -588,6 +588,7 @@ remove_element_at( [_H|RemainingList], 1, Result ) ->
 
 remove_element_at( [H|RemainingList], Index, Result ) ->
 	remove_element_at( RemainingList, Index-1, [H|Result] ).
+
 
 
 
