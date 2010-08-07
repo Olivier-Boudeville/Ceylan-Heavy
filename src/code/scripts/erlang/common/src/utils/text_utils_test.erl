@@ -30,10 +30,10 @@
 -module(text_utils_test).
 
 
--export([ run/0 ]).
-
-
 -define( Tested_module, text_utils ).
+
+% For test_finished/0 and al:
+-include("test_facilities.hrl").
 
 
 % For pretty-printing test:
@@ -130,11 +130,11 @@ run() ->
 
 	Percent = 0.1234,
 
-	io:format( "   	Displaying ~p as a percentage: ~s.~n",
+	io:format( "	Displaying ~p as a percentage: ~s.~n",
 			  [ Percent, text_utils:percent_to_string( Percent ) ] ),
 
 
-	io:format( "   	Checking string/binary conversions.~n" ),
+	io:format( "	Checking string/binary conversions.~n" ),
 
 	"hello" = text_utils:binary_to_string( <<"hello">> ),
 	 <<"hello">> = text_utils:string_to_binary( "hello" ),
@@ -158,7 +158,7 @@ run() ->
 
 	end,
 
-	io:format( "~n	 	Testing the textual conversion of distances:~n" ),
+	io:format( "~n		Testing the textual conversion of distances:~n" ),
 
 	% In millimeters:
 	Distances = [ -1001.5, -1001.0, -1000.5, -1000.0, -999.5, -999.0,
@@ -171,7 +171,7 @@ run() ->
 	 || D <- Distances ],
 
 
-	io:format( "~n	 	Testing the textual conversion of durations:~n" ),
+	io:format( "~n		Testing the textual conversion of durations:~n" ),
 
 	% In milliseconds:
 
@@ -183,6 +183,4 @@ run() ->
 				[ D, text_utils:duration_to_string(D) ] )
 	 || D <- Durations ],
 
-
-	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
-	erlang:halt().
+	test_finished().

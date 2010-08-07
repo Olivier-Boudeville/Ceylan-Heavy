@@ -31,9 +31,11 @@
 -module(math_utils_test).
 
 
--export([ run/0 ]).
-
 -define(Tested_module,math_utils).
+
+
+% For test_finished/0 and al:
+-include("test_facilities.hrl").
 
 
 
@@ -74,5 +76,4 @@ run() ->
 			math_utils:radian_to_degree( Angle ) ] ) || Angle <-
 				   [0,math:pi()/2,1.0,math:pi(), 2*math:pi() ] ],
 
-	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
-	erlang:halt().
+	test_finished().

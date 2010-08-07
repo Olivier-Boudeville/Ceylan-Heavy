@@ -31,10 +31,10 @@
 -module(option_list_test).
 
 
--export([ run/0 ]).
-
-
 -define(Tested_module,option_list).
+
+% For test_finished/0 and al:
+-include("test_facilities.hrl").
 
 
 run() ->
@@ -77,5 +77,4 @@ run() ->
 
 	3 = option_list:get( black ,UpdatedOptionList ),
 
-	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
-	erlang:halt().
+	test_finished().

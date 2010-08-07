@@ -60,9 +60,9 @@
 
 % Rendering of other elements.
 -export([ draw_cross/2, draw_cross/3, draw_cross/4, draw_labelled_cross/3,
-		  draw_labelled_cross/4, draw_labelled_cross/5,
-		  draw_circle/3, draw_circle/4,
-		  draw_numbered_points/2 ]).
+		draw_labelled_cross/4, draw_labelled_cross/5,
+		draw_circle/3, draw_circle/4,
+		draw_numbered_points/2 ]).
 
 
 % The default length of the edge of a cross:

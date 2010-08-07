@@ -30,10 +30,12 @@
 -module(basic_utils_test).
 
 
--export([ run/0 ]).
+
+-define(Tested_module,basic_utils).
 
 
--define( Tested_module, basic_utils ).
+% For test_finished/0 and al:
+-include("test_facilities.hrl").
 
 
 check_process_specific_values( Min, Max ) ->
@@ -219,5 +221,4 @@ run() ->
 		basic_utils:get_precise_duration(InitialPreciseTimestamp,
 										 FinalPreciseTimestamp) ] ),
 
-	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
-	erlang:halt().
+	test_finished().

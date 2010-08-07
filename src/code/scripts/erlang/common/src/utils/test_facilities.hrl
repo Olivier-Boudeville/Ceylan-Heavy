@@ -1,5 +1,4 @@
-%
-% Copyright (C) 2003-2009 Olivier Boudeville
+% Copyright (C) 2003-2010 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
 %
@@ -36,15 +35,18 @@
 
 -ifdef(ExitAfterTest).
 
-testFinished() ->
-	io:format( "(test finished, interpreter halted)~n" ),	
+test_finished() ->
+	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
+	io:format( "(test finished, interpreter halted)~n" ),
+	% To ensure all outputs are indeed performed before the VM is halted:
+	timer:sleep(200),
 	erlang:halt().
-	
+
 -else.
 
-testFinished() ->
+test_finished() ->
+	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	io:format( "(test finished, interpreter still running)~n" ),
 	test_success.
-	
--endif.
 
+-endif.

@@ -31,10 +31,11 @@
 -module(linear_2D_test).
 
 
--export([ run/0 ]).
-
 -define(Tested_module,linear_2D).
 
+
+% For test_finished/0 and al:
+-include("test_facilities.hrl").
 
 
 run() ->
@@ -94,6 +95,4 @@ run() ->
 	true  = linear_2D:is_within( A, B1, 1-0.0000001 ),
 	false = linear_2D:is_within( A, B2, 2 ),
 
-	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
-	timer:sleep(200),
-	erlang:halt().
+	test_finished().

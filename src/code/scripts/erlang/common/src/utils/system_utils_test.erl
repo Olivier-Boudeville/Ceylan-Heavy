@@ -30,11 +30,11 @@
 -module(system_utils_test).
 
 
--export([ run/0 ]).
+-define(Tested_module,system_utils).
 
 
--define( Tested_module, system_utils ).
-
+% For test_finished/0 and al:
+-include("test_facilities.hrl").
 
 
 print_sizes( [] ) ->
@@ -98,7 +98,7 @@ run() ->
 	   system_utils:interpret_byte_size_with_unit(X)] )
 	 || X <- SizesToInterpret ],
 
-  	io:format( "   Evaluating the size in memory of a few terms:~n" ),
+	io:format( "   Evaluating the size in memory of a few terms:~n" ),
 
 	AFullSentence = "All human beings are born free and equal in dignity "
 		"and rights. They are endowed with reason and conscience and "
@@ -118,9 +118,7 @@ run() ->
 				  / system_utils:get_size(BinaryVersion) ] ),
 
 
- 	io:format( "   Getting memory summary:~n" ),
+	io:format( "   Getting memory summary:~n" ),
 	system_utils:display_memory_summary(),
 
-
-	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
-	erlang:halt().
+	test_finished().

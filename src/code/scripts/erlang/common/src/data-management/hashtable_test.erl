@@ -32,10 +32,10 @@
 % Directly depends on the hashtable module.
 
 
--export([ run/0 ]).
-
-
 -define(Tested_module,hashtable).
+
+% For test_finished/0 and al:
+-include("test_facilities.hrl").
 
 
 run() ->
@@ -89,5 +89,4 @@ run() ->
 
 	io:format( "   Merged table: ~s~n", [hashtable:toString(MyH8)]),
 
-	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
-	erlang:halt().
+	test_finished().

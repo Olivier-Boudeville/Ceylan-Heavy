@@ -29,10 +29,12 @@
 % See the file_utils.erl tested module.
 -module(file_utils_test).
 
--export([run/0]).
 
 -define(Tested_module,file_utils).
 
+
+% For test_finished/0 and al:
+-include("test_facilities.hrl").
 
 
 run() ->
@@ -118,5 +120,4 @@ run() ->
 	%file_utils:create_directory( "tmp-tst" ),
 	%file_utils:create_directory( "tmp-tst/first/second", create_parents ),
 
-	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
-	erlang:halt().
+	test_finished().

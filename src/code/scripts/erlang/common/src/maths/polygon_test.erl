@@ -31,9 +31,11 @@
 -module(polygon_test).
 
 
--export([ run/0 ]).
-
 -define(Tested_module,polygon).
+
+
+% For test_finished/0 and al:
+-include("test_facilities.hrl").
 
 
 
@@ -127,8 +129,4 @@ run() ->
 
 	% Rendering tests: see gui_test.erl.
 
-	% To force the console output:
-	timer:sleep(200),
-
-	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
-	erlang:halt().
+	test_finished().

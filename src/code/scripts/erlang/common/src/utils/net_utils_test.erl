@@ -30,11 +30,11 @@
 -module(net_utils_test).
 
 
--export([ run/0 ]).
+-define(Tested_module,net_utils).
 
 
--define( Tested_module, net_utils ).
-
+% For test_finished/0 and al:
+-include("test_facilities.hrl").
 
 
 run() ->
@@ -108,5 +108,4 @@ run() ->
 	io:format( "   All connected nodes are: ~w.~n",
 			  [ net_utils:get_all_connected_nodes() ] ),
 
-	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
-	erlang:halt().
+	test_finished().

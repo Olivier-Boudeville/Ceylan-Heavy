@@ -30,11 +30,10 @@
 % See the executable_utils.erl tested module.
 -module(executable_utils_test).
 
--export([run/0]).
-
-
 -define(Tested_module,executable_utils).
 
+% For test_finished/0 and al:
+-include("test_facilities.hrl").
 
 
 run() ->
@@ -43,5 +42,4 @@ run() ->
 
 	% No side-effect wanted here.
 
-	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
-	erlang:halt().
+	test_finished().
