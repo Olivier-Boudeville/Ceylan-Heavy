@@ -38,12 +38,15 @@
 
 % Filename-related operations.
 
--export([ join/2, convert_to_filename/1, replace_extension/3, exists/1,
+-export([ join/1, join/2, convert_to_filename/1, replace_extension/3, exists/1,
 	get_type_of/1, is_file/1, is_existing_file/1,
-	is_directory/1, is_existing_directory/1,
-	list_dir_elements/1,
-	filter_by_extension/2, find_files_from/2, find_files_with_excluded_dirs/3,
-	find_all_files_from/1, find_directories_from/1,
+	is_directory/1, is_existing_directory/1, list_dir_elements/1,
+	filter_by_extension/2,
+	find_files_from/1, find_files_with_extension_from/2,
+	find_files_with_excluded_suffixes/2,
+	find_files_with_excluded_dirs/2,
+	find_files_with_extension_and_excluded_dirs/3,
+	find_directories_from/1,
 	create_directory/1, create_directory/2,
 	path_to_variable_name/1, path_to_variable_name/2,
 	get_image_file_png/1, get_image_file_gif/1 ]).
@@ -73,16 +76,36 @@
 % Filename-related operations.
 
 
+% Joins the specified list of path elements.
+%
+% Note: join/1 added back to file_utils, filename:join(Components) can be used
+% instead.
+%
+% However filename:join(["","my_dir"]) results in "/my_dir", whereas often we
+% would want "my_dir", which is returned by file_utils:join/1.
+%
+join( [""|T] ) ->
+	filename:join( T );
+
+join( ComponentList ) ->
+	filename:join( ComponentList ).
+
+
 % Joins the two specified path elements.
-% Note: join/2 added back to file_utils, filename:join(Components) or
-% filename:join(Name1, Name2) can be used instead.
+%
+% Note: join/2 added back to file_utils, filename:join(Name1, Name2) can be used
+% instead.
+%
 % However filename:join("","my_dir") results in "/my_dir", whereas often we
 % would want "my_dir", which is returned by file_utils:join/2.
+%
 join( "", SecondPath ) ->
 	SecondPath ;
 
 join( FirstPath, SecondPath ) ->
 	filename:join( FirstPath, SecondPath ).
+
+
 
 
 
@@ -113,11 +136,12 @@ convert_to_filename(Name) ->
 
 
 % Returns a new filename whose extension has been updated.
-% Ex: replace_extension( "/home/jack/rosie.ttf", ".ttf", ".wav" ) should
-% return "/home/jack/rosie.wav".
-replace_extension(Filename,SourceExtension,TargetExtension) ->
-	Index = string:rstr(Filename,SourceExtension),
-	string:substr(Filename,1,Index-1) ++ TargetExtension.
+%
+% Ex: replace_extension( "/home/jack/rosie.ttf", ".ttf", ".wav" ) should return
+% "/home/jack/rosie.wav".
+replace_extension( Filename, SourceExtension, TargetExtension ) ->
+	Index = string:rstr( Filename, SourceExtension ),
+	string:substr( Filename, 1, Index-1 ) ++ TargetExtension.
 
 
 
@@ -155,8 +179,11 @@ get_type_of(EntryName) ->
 
 
 
-% Returns whether the specified entry, supposed already existing, is a regular
-% file.
+% Returns whether the specified entry, supposedly existing, is a regular file.
+%
+% If the specified entry happens not to exist, a
+% '{non_existing_entry,EntryName}' exception will be thrown.
+%
 is_file(EntryName) ->
 	case get_type_of(EntryName) of
 
@@ -169,7 +196,9 @@ is_file(EntryName) ->
 	end.
 
 
-% Tells whether the specified entry exists and is a regular file.
+% Returns whether the specified entry exists and is a regular file.
+%
+% Returns true or false, and cannot trigger an exception.
 is_existing_file(EntryName) ->
 	case exists(EntryName) andalso get_type_of(EntryName) of
 
@@ -182,8 +211,11 @@ is_existing_file(EntryName) ->
 	end.
 
 
-
-% Returns whether the specified entry is a directory.
+% Returns whether the specified entry, supposedly existing, is a directory.
+%
+% If the specified entry happens not to exist, a
+% '{non_existing_entry,EntryName}' exception will be thrown.
+%
 is_directory(EntryName) ->
 	case get_type_of(EntryName) of
 
@@ -196,7 +228,9 @@ is_directory(EntryName) ->
 	end.
 
 
-% Tells whether the specified entry exists and is a directory.
+% Returns whether the specified entry exists and is a directory.
+%
+% Returns true or false, and cannot trigger an exception.
 is_existing_directory(EntryName) ->
 	case exists(EntryName) andalso get_type_of(EntryName) of
 
@@ -231,7 +265,7 @@ classify_dir_elements( Dirname, [H|T],
 
 	 case get_type_of( filename:join( Dirname, H ) ) of
 
-	 	device ->
+		device ->
 			classify_dir_elements( Dirname, T,
 				[H|Devices], Directories, RegularFiles, OtherFiles ) ;
 
@@ -251,9 +285,8 @@ classify_dir_elements( Dirname, [H|T],
 
 
 
-% Returns a list containing all elements of FilenameList whose extension is
+% Returns a list containing all elements of Filenames list whose extension is
 % the specified one.
-% Signature: filter_by_extension( FilenameList, Extension )
 filter_by_extension( Filenames, Extension ) ->
 	filter_by_extension( Filenames, Extension, [] ).
 
@@ -274,74 +307,270 @@ filter_by_extension( [H|T], Extension, Acc ) ->
 
 
 
-% Returns the list of all regular files found from the root with specified
-% extension, in the whole subtree (i.e. recursively), with specified
-% directories excluded.
-% All returned pathnames are relative to this root.
-% Ex: [ "./a.txt", "./tmp/b.txt" ].
-find_files_with_excluded_dirs( RootDir, Extension, ExcludedDirList ) ->
-	find_files_with_excluded_dirs( RootDir, "", Extension, ExcludedDirList,
-		[] ).
+% Returns a list containing all elements of Filenames list which do not match
+% any of the specified suffixes.
+filter_by_excluded_suffixes( Filenames, ExcludedSuffixes ) ->
+	filter_by_excluded_suffixes( Filenames, ExcludedSuffixes, [] ).
 
 
-find_files_with_excluded_dirs( RootDir, CurrentRelativeDir, Extension,
-		ExcludedDirList, Acc ) ->
-	%io:format( "find_files_with_excluded_dirs in ~s.~n",
-	% [CurrentRelativeDir] ),
-	{RegularFiles,Directories,_OtherFiles,_Devices} = list_dir_elements(
-		join(RootDir,CurrentRelativeDir) ),
-	FilteredDirectories = [ D || D <- Directories,
-		not lists:member( join(CurrentRelativeDir,D), ExcludedDirList ) ],
-	Acc ++ list_files_in_subdirs_ex( FilteredDirectories, Extension,
-			RootDir, CurrentRelativeDir, ExcludedDirList, [] )
-		++ prefix_files_with( CurrentRelativeDir,
-			filter_by_extension(RegularFiles,Extension) ).
+filter_by_excluded_suffixes( [], _ExcludedSuffixes, Acc ) ->
+	Acc ;
+
+filter_by_excluded_suffixes( [H|T], ExcludedSuffixes, Acc ) ->
+	case has_matching_suffix(H,ExcludedSuffixes) of
+
+		true ->
+			filter_by_excluded_suffixes( T, ExcludedSuffixes, Acc );
+
+		false ->
+			filter_by_excluded_suffixes( T, ExcludedSuffixes, [H|Acc] )
+
+	end.
 
 
 
-% Specific helper, as needing to call find_files_with_excluded_dirs:
-list_files_in_subdirs_ex( [], _Extension, _RootDir, _CurrentRelativeDir,
-		_ExcludedDirList, Acc ) ->
-	Acc;
+has_matching_suffix( _Filename, _ExcludedSuffixes=[] ) ->
+	false;
 
-list_files_in_subdirs_ex( [H|T], Extension, RootDir, CurrentRelativeDir,
-		ExcludedDirList, Acc ) ->
-	list_files_in_subdirs_ex( T, Extension, RootDir, CurrentRelativeDir,
-		ExcludedDirList,
-		find_files_with_excluded_dirs( RootDir, join(CurrentRelativeDir,H),
-			Extension, ExcludedDirList, [] ) ++ Acc ).
+has_matching_suffix( Filename, [S|OtherS] ) ->
 
+	% We have to avoid feeding string:substr/2 with a start position that is not
+	% strictly positive, otherwise we would have a function clause:
+
+	LenFile = length(Filename),
+	LenSuffix = length(S),
+
+	case LenFile - LenSuffix + 1 of
+
+		StartPos when StartPos > 0 ->
+
+			case string:substr( Filename, StartPos ) of
+
+				S ->
+					true;
+
+				_ ->
+					has_matching_suffix( Filename, OtherS )
+
+			end;
+
+		_ ->
+			has_matching_suffix( Filename, OtherS )
+
+	end.
+
+
+
+
+% Section dedicated to the look-up of files, with various variations (with or
+% without extensions, with or without excluded directories, etc.)
 
 
 
 % Returns the list of all regular files found from the root, in the whole
 % subtree (i.e. recursively).
+%
+% All extensions accepted, no excluded directories.
+%
 % All returned pathnames are relative to this root.
 % Ex: [ "./a.txt", "./tmp/b.txt" ].
-% All returned pathnames are relative to this root.
-find_all_files_from( RootDir ) ->
-	find_all_files_from( RootDir, "", [] ).
+%
+find_files_from( RootDir ) ->
+	find_files_from( RootDir, "", [] ).
 
 
-find_all_files_from( RootDir, CurrentRelativeDir, Acc ) ->
-	%io:format( "find_all_files_from with root = '~s', current = '~s'.~n",
+find_files_from( RootDir, CurrentRelativeDir, Acc ) ->
+
+	%io:format( "find_files_from with root = '~s', current = '~s'.~n",
 	%	[RootDir,CurrentRelativeDir] ),
+
 	{RegularFiles,Directories,_OtherFiles,_Devices} = list_dir_elements(
 		join(RootDir,CurrentRelativeDir) ),
-	Acc ++ list_all_files_in_subdirs( Directories,
+
+	Acc ++ list_files_in_subdirs( Directories,
 			RootDir, CurrentRelativeDir, [] )
 		++ prefix_files_with( CurrentRelativeDir, RegularFiles ).
 
 
-
-list_all_files_in_subdirs([],_RootDir,_CurrentRelativeDir,Acc) ->
+% Specific helper for find_files_from/3 above:
+list_files_in_subdirs( [], _RootDir, _CurrentRelativeDir, Acc ) ->
 	Acc;
 
-list_all_files_in_subdirs([H|T],RootDir,CurrentRelativeDir,Acc) ->
-	%io:format( "list_all_files_in_subdirs with root = '~s', current = '~s' "
+list_files_in_subdirs( [H|T], RootDir, CurrentRelativeDir, Acc ) ->
+
+	%io:format( "list_files_in_subdirs with root = '~s', current = '~s' "
 	%	"and H='~s'.~n", [RootDir,CurrentRelativeDir,H] ),
-	list_all_files_in_subdirs( T, RootDir, CurrentRelativeDir,
-		find_all_files_from( RootDir, join(CurrentRelativeDir,H), [] ) ++ Acc ).
+
+	list_files_in_subdirs( T, RootDir, CurrentRelativeDir,
+		find_files_from( RootDir, join(CurrentRelativeDir,H), [] ) ++ Acc ).
+
+
+
+
+% Returns the list of all regular files found from the root with specified
+% extension, in the whole subtree (i.e. recursively).
+%
+% All returned pathnames are relative to this root.
+% Ex: [ "./a.txt", "./tmp/b.txt" ].
+find_files_with_extension_from( RootDir, Extension ) ->
+	find_files_with_extension_from( RootDir, "", Extension, [] ).
+
+
+find_files_with_extension_from( RootDir, CurrentRelativeDir, Extension, Acc ) ->
+
+	%io:format( "find_files_from in ~s.~n", [CurrentRelativeDir] ),
+
+	{RegularFiles,Directories,_OtherFiles,_Devices} = list_dir_elements(
+		join(RootDir,CurrentRelativeDir) ),
+
+	Acc ++ list_files_in_subdirs_with_extension( Directories, Extension,
+			RootDir, CurrentRelativeDir, [] )
+		++ prefix_files_with( CurrentRelativeDir,
+			filter_by_extension(RegularFiles,Extension) ).
+
+
+% Helper for find_files_with_extension_from/4:
+list_files_in_subdirs_with_extension( [], _Extension, _RootDir,
+									  _CurrentRelativeDir, Acc) ->
+	Acc;
+
+list_files_in_subdirs_with_extension( [H|T], Extension, RootDir,
+									  CurrentRelativeDir, Acc ) ->
+	list_files_in_subdirs_with_extension( T, Extension, RootDir,
+		CurrentRelativeDir,
+		find_files_with_extension_from( RootDir, join(CurrentRelativeDir,H),
+			Extension, [] ) ++ Acc ).
+
+
+
+
+% Returns the list of all regular files found from the root which do not match
+% any of the specified suffixes, in the whole subtree (i.e. recursively).
+%
+% All returned pathnames are relative to this root.
+% Ex: [ "./a.txt", "./tmp/b.txt" ].
+find_files_with_excluded_suffixes( RootDir, ExcludedSuffixes ) ->
+	find_files_with_excluded_suffixes( RootDir, "", ExcludedSuffixes, [] ).
+
+
+find_files_with_excluded_suffixes( RootDir, CurrentRelativeDir,
+										ExcludedSuffixes, Acc ) ->
+
+	%io:format( "find_files_with_excluded_suffixes in ~s.~n",
+	% [CurrentRelativeDir] ),
+
+	{RegularFiles,Directories,_OtherFiles,_Devices} = list_dir_elements(
+		join(RootDir,CurrentRelativeDir) ),
+
+	Acc ++ list_files_in_subdirs_with_excluded_suffixes( Directories,
+			ExcludedSuffixes, RootDir, CurrentRelativeDir, [] )
+		++ prefix_files_with( CurrentRelativeDir,
+			filter_by_excluded_suffixes(RegularFiles,ExcludedSuffixes) ).
+
+
+% Helper for find_files_with_excluded_suffixes/4:
+list_files_in_subdirs_with_excluded_suffixes( [], _excluded_suffixes, _RootDir,
+									  _CurrentRelativeDir, Acc) ->
+	Acc;
+
+list_files_in_subdirs_with_excluded_suffixes( [H|T], ExcludedSuffixes, RootDir,
+									  CurrentRelativeDir, Acc ) ->
+	list_files_in_subdirs_with_excluded_suffixes( T, ExcludedSuffixes, RootDir,
+		CurrentRelativeDir,
+		find_files_with_excluded_suffixes( RootDir, join(CurrentRelativeDir,H),
+			ExcludedSuffixes, [] ) ++ Acc ).
+
+
+
+
+
+% Returns the list of all regular files found from the root, in the whole
+% subtree (i.e. recursively), with specified directories excluded.
+%
+% All extensions accepted.
+%
+% All returned pathnames are relative to this root.
+% Ex: [ "./a.txt", "./tmp/b.txt" ].
+find_files_with_excluded_dirs( RootDir, ExcludedDirList ) ->
+	find_files_with_excluded_dirs( RootDir, "", ExcludedDirList, [] ).
+
+find_files_with_excluded_dirs( RootDir, CurrentRelativeDir, ExcludedDirList,
+							Acc ) ->
+
+	%io:format( "find_files_with_excluded_dirs in ~s.~n",
+	% [CurrentRelativeDir] ),
+
+	{RegularFiles,Directories,_OtherFiles,_Devices} = list_dir_elements(
+		join( RootDir, CurrentRelativeDir ) ),
+
+	FilteredDirectories = [ D || D <- Directories,
+		not lists:member( join(CurrentRelativeDir,D), ExcludedDirList ) ],
+
+	Acc ++ list_files_in_subdirs_excluded_dirs( FilteredDirectories, RootDir,
+								  CurrentRelativeDir, ExcludedDirList, [] )
+		++ prefix_files_with( CurrentRelativeDir, RegularFiles ).
+
+
+% Specific helper for find_files_with_excluded_dirs/4 above:
+list_files_in_subdirs_excluded_dirs( [], _RootDir,
+		_CurrentRelativeDir, _ExcludedDirList, Acc ) ->
+	Acc;
+
+list_files_in_subdirs_excluded_dirs( [H|T], RootDir,
+		CurrentRelativeDir, ExcludedDirList, Acc ) ->
+
+	list_files_in_subdirs_excluded_dirs( T, RootDir, CurrentRelativeDir,
+		ExcludedDirList,
+		find_files_with_excluded_dirs( RootDir, join(CurrentRelativeDir,H),
+			ExcludedDirList, [] ) ++ Acc ).
+
+
+
+% Returns the list of all regular files found from the root with specified
+% extension, in the whole subtree (i.e. recursively), with specified directories
+% excluded.
+%
+% All returned pathnames are relative to this root.
+% Ex: [ "./a.txt", "./tmp/b.txt" ].
+find_files_with_extension_and_excluded_dirs( RootDir, Extension,
+											 ExcludedDirList ) ->
+	find_files_with_extension_and_excluded_dirs( RootDir, "", Extension,
+												 ExcludedDirList, [] ).
+
+
+find_files_with_extension_and_excluded_dirs( RootDir, CurrentRelativeDir,
+		Extension, ExcludedDirList, Acc ) ->
+
+	%io:format( "find_files_with_extension_and_excluded_dirs in ~s.~n",
+	% [CurrentRelativeDir] ),
+
+	{RegularFiles,Directories,_OtherFiles,_Devices} = list_dir_elements(
+		join(RootDir,CurrentRelativeDir) ),
+
+	FilteredDirectories = [ D || D <- Directories,
+		not lists:member( join(CurrentRelativeDir,D), ExcludedDirList ) ],
+
+	Acc ++ list_files_in_subdirs_exclude_with_extension( FilteredDirectories,
+			Extension, RootDir, CurrentRelativeDir, ExcludedDirList, [] )
+		++ prefix_files_with( CurrentRelativeDir,
+			filter_by_extension(RegularFiles,Extension) ).
+
+
+
+% Specific helper for find_files_with_extension_and_excluded_dirs/5 above:
+list_files_in_subdirs_exclude_with_extension( [], _Extension, _RootDir,
+		_CurrentRelativeDir, _ExcludedDirList, Acc ) ->
+	Acc;
+
+list_files_in_subdirs_exclude_with_extension( [H|T], Extension, RootDir,
+		CurrentRelativeDir, ExcludedDirList, Acc ) ->
+	list_files_in_subdirs_exclude_with_extension( T, Extension, RootDir,
+		CurrentRelativeDir, ExcludedDirList,
+		find_files_with_extension_and_excluded_dirs( RootDir,
+			join(CurrentRelativeDir,H),	Extension, ExcludedDirList, [] )
+		++ Acc ).
+
+
 
 
 
@@ -357,33 +586,6 @@ prefix_files_with( RootDir, [H|T], Acc ) ->
 	prefix_files_with( RootDir, T, [join(RootDir,H)|Acc] ).
 
 
-
-% Returns the list of all regular files found from the root with specified
-% extension, in the whole subtree (i.e. recursively).
-% All returned pathnames are relative to this root.
-% Ex: [ "./a.txt", "./tmp/b.txt" ].
-find_files_from( RootDir, Extension ) ->
-	find_files_from( RootDir, "", Extension, [] ).
-
-
-find_files_from( RootDir, CurrentRelativeDir, Extension, Acc ) ->
-	%io:format( "find_files_from in ~s.~n", [CurrentRelativeDir] ),
-	{RegularFiles,Directories,_OtherFiles,_Devices} = list_dir_elements(
-		join(RootDir,CurrentRelativeDir) ),
-	Acc ++ list_files_in_subdirs( Directories, Extension,
-			RootDir, CurrentRelativeDir, [] )
-		++ prefix_files_with( CurrentRelativeDir,
-			filter_by_extension(RegularFiles,Extension) ).
-
-
-
-list_files_in_subdirs([],_Extension,_RootDir,_CurrentRelativeDir,Acc) ->
-	Acc;
-
-list_files_in_subdirs([H|T],Extension,RootDir,CurrentRelativeDir,Acc) ->
-	list_files_in_subdirs( T, Extension, RootDir, CurrentRelativeDir,
-		find_files_from( RootDir, join(CurrentRelativeDir,H),
-			Extension, [] ) ++ Acc ).
 
 
 
@@ -426,11 +628,14 @@ create_directory( Dirname ) ->
 
 
 % Creates specified directory.
-% If 'create_no_parent' is specified, no intermediate (parent) directory
-% will be created.
+%
+% If 'create_no_parent' is specified, no intermediate (parent) directory will be
+% created.
+%
 % If 'create_parents' is specified, any non-existing intermediate (parent)
 % directory will be created.
-% Throws an exception if the operation failed.
+%
+% Throws an exception if the operation fails.
 create_directory( Dirname, create_no_parent ) ->
 	case file:make_dir( Dirname ) of
 
@@ -468,12 +673,14 @@ create_dir_elem( [H|T], Prefix ) ->
 % Converts specified path (full filename, like '/home/jack/test.txt' or
 % './media/test.txt') into a variable name licit in most programming languages
 % (ex: C/C++).
+%
 % Rule here is:
 %  - variable name starts with a prefix, user-supplied or the default one
 %  - any leading './' is removed
 %  - '-' becomes '_'
 %  - '.' becomes '_'
 %  - '/' becomes '_'
+%
 path_to_variable_name(Filename) ->
 	path_to_variable_name(Filename,"File_").
 
@@ -504,13 +711,13 @@ convert(Filename,Prefix) ->
 
 % Returns the image path corresponding to the specified file.
 get_image_file_png(Image) ->
-  filename:join([?ResourceDir, "images", Image ++ ".png"]).
+  filename:join([ ?ResourceDir, "images", Image ++ ".png" ]).
 
 
 
 % Returns the image path corresponding to the specified file.
 get_image_file_gif(Image) ->
-  filename:join([?ResourceDir, "images", Image ++ ".gif"]).
+  filename:join([ ?ResourceDir, "images", Image ++ ".gif" ]).
 
 
 
@@ -535,8 +742,8 @@ open( Filename, Options ) ->
 % specified list of options (second parameter).
 %
 % Third parameter is either 'try_once' or 'try_endlessly', depending
-% respectively on whether we want to try to open the file once (no other
-% attempt will be made) or endlessly, until a file descriptor can be gained.
+% respectively on whether we want to try to open the file once (no other attempt
+% will be made) or endlessly, until a file descriptor can be gained.
 %
 % Returns the file reference, or throws an exception.
 %
@@ -546,20 +753,27 @@ open( Filename, Options ) ->
 % A risk of that approach is that all available file descriptors will be
 % taken, thus potentially preventing other processes (including the VM itself)
 % to perform any file operation, like loading a new BEAM, ex:
+% """
 % File operation error: system_limit. Target:
 % lib/erlang/lib/kernel-x.y.z/ebin/timer.beam. Function: get_file.
-% Process: code_server.                                                          %
+% Process: code_server.
+% """
+%                                 %
 % This is done in order to support situations where potentially more Erlang
 % processes than available file descriptors try to access to files. An effort is
 % made to desynchroniopen/2ze these processes to smooth the use of descriptors.
 open( Filename, Options, try_endlessly_safer ) ->
+
 	File = open( Filename, Options, try_endlessly ),
+
 	% We could check here that at least one descriptor remains, by adding a
 	% dummy file open/close and catching emfile, however one could need more
 	% than one spare descriptor.
+	%
 	% The correct solution would involve knowing the max number of descriptors
-	% for that process and the current number of open ones, none information
-	% we seems able to know.
+	% for that process and the current number of open ones, none information we
+	% seems able to know.
+	%
 	% So for the moment we do not do anything more:
 	File;
 
@@ -654,6 +868,7 @@ zipped_term_to_unzipped_file(ZippedTerm) ->
 % Any pre-existing file will be overwritten.
 %
 % Note: only one file is expected to be stored in the specified archive.
+%
 zipped_term_to_unzipped_file(ZippedTerm,TargetFilename) ->
 	{ok,[{_AFilename, Binary}]} = zip:unzip(ZippedTerm,[memory]),
 	{ok,File} = file:open( TargetFilename, [write] ),
@@ -670,6 +885,7 @@ zipped_term_to_unzipped_file(ZippedTerm,TargetFilename) ->
 % Larger ones should be transferred with TCP/IP and by chunks.
 %
 % Returns a binary.
+%
 files_to_zipped_term(FilenameList)  ->
 	DummyFileName = "dummy",
 	{ok,{_DummyFileName,Bin}} =
@@ -682,6 +898,7 @@ files_to_zipped_term(FilenameList)  ->
 % disk, in current directory.
 %
 % Returns the list of filenames corresponding to the unzipped files.
+%
 zipped_term_to_unzipped_files(ZippedTerm) ->
 	%{ok,FileNames} = zip:unzip(ZippedTerm,[verbose]),
 	{ok,FileNames} = zip:unzip(ZippedTerm),
