@@ -27,6 +27,7 @@
 
 
 % Gathering of various convenient facilities.
+%
 % See net_utils_test.erl for the corresponding test.
 -module(net_utils).
 
@@ -39,8 +40,9 @@
 
 % Node-related functions.
 -export([ localnode/0, get_all_connected_nodes/0,
-		 check_node_availability/1, check_node_availability/2,
-		 shutdown_node/1 ]).
+		check_node_availability/1, check_node_availability/2,
+		get_node_naming_mode/0, get_naming_compliant_hostname/2,
+		shutdown_node/1 ]).
 
 
 % Address-related functions.
@@ -53,6 +55,7 @@
 
 
 % Pings specified hostname, and returns true iff it could be ping'd.
+%
 % Note: command-line based call, used that way as there is no ICMP stack.
 % A port could be used also.
 ping(Hostname) when is_list(Hostname) ->
@@ -79,8 +82,10 @@ localhost() ->
 	% Depending on the node being launched with either:
 	%  - no network name or a short name
 	%  - a long name
+	%
 	% net_adm:localhost() may return respectively "XXX.domain.com" or
 	% "XXX.localdomain", both of which are not proper hostnames.
+	%
 	% On the other hand, "hostname -f" might return 'localhost.localdomain'.
 	% Most reliable (ending carriage return must be removed):
 	case text_utils:remove_ending_carriage_return( os:cmd( "hostname -f" ) ) of
@@ -100,6 +105,7 @@ localhost() ->
 % Returns a string specifying the DNS name corresponding to the specified IP
 % address {N1,N2,N3,N4}.
 reverse_lookup( IPAddress ) ->
+
 	Command = "host -W 1 " ++ ipv4_to_string(IPAddress) ++ " 2>/dev/null",
 	Res = os:cmd( Command ),
 	%io:format( "Host command: ~s, result: ~s.~n", [Command,Res] ),
@@ -123,6 +129,7 @@ activate_socket_once( Socket ) ->
 
 
 
+
 % Node-related functions.
 
 
@@ -139,7 +146,7 @@ localnode() ->
 
 		OtherNodeName ->
 			% Could be XX@myhost.example.com:
-		 	OtherNodeName
+			OtherNodeName
 
 	end.
 
@@ -206,6 +213,10 @@ check_node_availability( Nodename, _Timing=immediate )
 
 check_node_availability( Nodename, _Timing=with_waiting )
 		when is_atom(Nodename) ->
+
+	%io:format( "check_node_availability of node '~s' with waiting.~n",
+	%		  [Nodename] ),
+
 	check_node_availability( Nodename, _AttemptCount=6, _InitialDuration=100 ).
 
 
@@ -229,7 +240,39 @@ check_node_availability( AtomNodename, AttemptCount, CurrentDuration ) ->
 
 
 
-% Shutdowns specified node, and returns only when it cannot be ping'ed anymore.
+% Returns the naming mode of this node, either 'short_name' or 'long_name'.
+get_node_naming_mode() ->
+
+	% We determine the mode based on the returned node name:
+	% (ex: 'foo@bar' vs 'foo@bar.baz.org')
+	[_Node,Host] = string:tokens( atom_to_list(node()), "@" ),
+	case length( string:tokens( Host, "." ) ) of
+
+		1 ->
+			short_name;
+
+		TwoOrMore when TwoOrMore > 1 ->
+			long_name
+
+	end.
+
+
+
+% Returns a transformed version of the specified hostname so that it is
+% compliant with the specified node naming convention.
+%
+% For example, if the short_name convention is specified, then a "bar.baz.org"
+% hostname will result into "bar".
+get_naming_compliant_hostname( Hostname, short_name ) ->
+	hd( string:tokens( Hostname, "." ) );
+
+get_naming_compliant_hostname( Hostname, long_name ) ->
+	Hostname.
+
+
+
+% Shutdowns specified node, and returns only when it cannot be ping'ed anymore:
+% it is a safe and synchronous operation.
 %
 % Throws an exception if not able to terminate it.
 shutdown_node(Nodename) when is_list(Nodename) ->
@@ -251,6 +294,9 @@ wait_unavailable( Nodename, AttemptCount, Duration ) ->
 			wait_unavailable( Nodename, AttemptCount-1, 2*Duration );
 
 		pang ->
+			% Safety delay to ensure the node had time to fully shut down and
+			% to unregister from everything:
+			timer:sleep(500),
 			ok
 
 	end.

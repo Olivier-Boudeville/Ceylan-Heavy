@@ -5,7 +5,7 @@
 % This library is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License or
 % the GNU General Public License, as they are published by the Free Software
-% Foundation, either version 3 of these Licenses, or (at your option) 
+% Foundation, either version 3 of these Licenses, or (at your option)
 % any later version.
 % You can also redistribute it and/or modify it under the terms of the
 % Mozilla Public License, version 1.1 or later.
@@ -40,63 +40,73 @@
 run() ->
 
 	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
-	
+
 	Localhost = net_utils:localhost(),
-	
+
 	io:format( "   Pinging now localhost ~s.~n", [ Localhost ] ),
-	
+
 	case net_utils:ping( Localhost ) of
-	
+
 		true ->
 			io:format( "   Ping success of localhost.~n");
-			
-		false ->	
+
+		false ->
 			throw( could_not_ping_localhost )
-			
+
 	end,
 
 	io:format( "   (will ping a non-existing host, "
 		"depending on the DNS settings the operation might be quite long)~n" ),
-			
+
 	case net_utils:ping( "non.existing.host" ) of
-	
+
 		true ->
 			throw( could_ping_non_existing_localhost );
-			
-		false ->	
-			io:format( 
+
+		false ->
+			io:format(
 				"   Ping could not ping a non-existing host, as expected.~n")
-			
+
 	end,
 
 
-	
+	io:format( "   Connected nodes are: ~w.~n",
+			  [ net_utils:get_all_connected_nodes() ] ),
+
+
+	NamingMode = net_utils:get_node_naming_mode(),
+
+	io:format( "   Naming mode for this node: ~w.~n", [ NamingMode ] ),
+
+	io:format( "   Naming-compliant hostname for '~s' is '~s'.~n", [ Localhost,
+		  net_utils:get_naming_compliant_hostname( Localhost, NamingMode ) ] ),
+
+
 	FirstIP = {74,125,127,100},
-	io:format( "   Reverse look-up of ~p is '~s'.~n", 
-		[ net_utils:ipv4_to_string(FirstIP), 
+	io:format( "   Reverse look-up of ~p is '~s'.~n",
+		[ net_utils:ipv4_to_string(FirstIP),
 		  net_utils:reverse_lookup(FirstIP) ] ),
 
 
 	SecondIP = {82,225,152,215},
-	io:format( "   Reverse look-up of ~p is '~s'.~n", 
-		[ net_utils:ipv4_to_string(SecondIP), 
+	io:format( "   Reverse look-up of ~p is '~s'.~n",
+		[ net_utils:ipv4_to_string(SecondIP),
 		  net_utils:reverse_lookup(SecondIP) ] ),
 
 
 	ThirdIP = {90,59,94,64},
-	io:format( "   Reverse look-up of ~p is '~s'.~n", 
-		[ net_utils:ipv4_to_string(ThirdIP), 
+	io:format( "   Reverse look-up of ~p is '~s'.~n",
+		[ net_utils:ipv4_to_string(ThirdIP),
 		  net_utils:reverse_lookup(ThirdIP) ] ),
 
 	FourthIP = {10,22,22,22},
-	io:format( "   Reverse look-up of ~p is '~s'.~n", 
-		[ net_utils:ipv4_to_string(FourthIP), 
+	io:format( "   Reverse look-up of ~p is '~s'.~n",
+		[ net_utils:ipv4_to_string(FourthIP),
 		  net_utils:reverse_lookup(FourthIP) ] ),
 
 
 	io:format( "   All connected nodes are: ~w.~n",
 			  [ net_utils:get_all_connected_nodes() ] ),
-	
+
 	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().
-
