@@ -5,7 +5,7 @@
 % This library is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License or
 % the GNU General Public License, as they are published by the Free Software
-% Foundation, either version 3 of these Licenses, or (at your option) 
+% Foundation, either version 3 of these Licenses, or (at your option)
 % any later version.
 % You can also redistribute it and/or modify it under the terms of the
 % Mozilla Public License, version 1.1 or later.
@@ -31,6 +31,7 @@
 
 % An option list is basically a list containing key/value pairs, keys being
 % generally atoms, values being any Erlang term.
+%
 % In an option list, usually no duplicate keys are expected to exist.
 % Operations on option list tend to preserve the order of their entries.
 
@@ -40,17 +41,19 @@
 
 
 
-% Note: our option lists only have {Key,Value} pairs (ex: no entry is made
-% of a single atom.
+% Note: our option lists only have {Key,Value} pairs (ex: no entry is made of a
+% single atom.
 
 
 
 % Sets in specified option list the specified entry.
 % Returns an updated option list.
-% The first previously existing entry found with Key (if any) is replaced
-% 'in place' by this entry.
+
+% The first previously existing entry found with Key (if any) is replaced 'in
+% place' by this entry.
+%
 % If none is found, the specified entry is put as first element.
-set( Entry, OptionList ) -> 
+set( Entry, OptionList ) ->
 	set( Entry, OptionList, _Acc=[] ).
 
 
@@ -68,34 +71,34 @@ set( Entry, [NonMatchingEntry|T], Acc ) ->
 
 
 % Returns the value associated to the specified key in specified option list.
+%
 % Throws an exception if an entry with that key could not be found.
-get( Key, OptionList ) -> 
+get( Key, OptionList ) ->
 
 	case proplists:get_value( Key, OptionList ) of
-		
+
 		undefined ->
 			throw( {key_not_found,Key,OptionList} );
-		
+
 		Value ->
 			Value
 
 	end.
 
 
-% Returns the value associated to the specified key in specified option list,
-% if found, otherwise (key not found), returns 'undefined'.
-lookup( Key, OptionList ) -> 
+% Returns the value associated to the specified key in specified option list, if
+% found, otherwise (key not found), returns 'undefined'.
+lookup( Key, OptionList ) ->
 	proplists:get_value( Key, OptionList ).
 
 
 % Updates BaseOptionList with the entries of UpdatingOptionList.
-% Merges the two specified option lists into the returned one, knowing that
-% all entries found with the same key in both option lists will end up with
-% the value defined in the second, UpdatingOptionList.
+%
+% Merges the two specified option lists into the returned one, knowing that all
+% entries found with the same key in both option lists will end up with the
+% value defined in the second, UpdatingOptionList.
 update_with( BaseOptionList, _UpdatingOptionList=[] ) ->
 	BaseOptionList;
 
-update_with( BaseOptionList, [H|T] ) ->	
+update_with( BaseOptionList, [H|T] ) ->
 	update_with( set(H,BaseOptionList), T ).
-
-	

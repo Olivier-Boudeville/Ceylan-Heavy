@@ -5,7 +5,7 @@
 % This library is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License or
 % the GNU General Public License, as they are published by the Free Software
-% Foundation, either version 3 of these Licenses, or (at your option) 
+% Foundation, either version 3 of these Licenses, or (at your option)
 % any later version.
 % You can also redistribute it and/or modify it under the terms of the
 % Mozilla Public License, version 1.1 or later.
@@ -31,7 +31,7 @@
 -module(option_list_test).
 
 
--export([run/0]).
+-export([ run/0 ]).
 
 
 -define(Tested_module,option_list).
@@ -40,42 +40,42 @@
 run() ->
 
 	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
+
 	SingleOptionList = [{blue,2}],
 	2 = option_list:get( blue, SingleOptionList ),
 
 	% Pattern-match:
 	SingleOptionList = option_list:set( {blue,2}, [] ),
 
-	InitialOptionList = [ {yellow,1}, {blue,1}, {red,1}, {green,1}, 
+	InitialOptionList = [ {yellow,1}, {blue,1}, {red,1}, {green,1},
 						  {purple,1} ],
 
 	io:format( "   Initial option list: ~w.~n", [InitialOptionList] ),
 
 	BlackOptionList = option_list:set( {black,1}, InitialOptionList ),
-	io:format( "   Option list with black entry added: ~w.~n", 
+	io:format( "   Option list with black entry added: ~w.~n",
 			   [BlackOptionList] ),
 
 	RedOptionList = option_list:set( {red,2}, BlackOptionList ),
-	io:format( "   Option list with red entry incremented: ~w.~n", 
+	io:format( "   Option list with red entry incremented: ~w.~n",
 			   [RedOptionList] ),
-	
-	EndpointOptionList = option_list:set( {black,2}, 
-      	option_list:set( {purple,2}, RedOptionList ) ),				  
-	
-	io:format( "   Option list with endpoints updated: ~w.~n", 
+
+	EndpointOptionList = option_list:set( {black,2},
+		option_list:set( {purple,2}, RedOptionList ) ),
+
+	io:format( "   Option list with endpoints updated: ~w.~n",
 			   [EndpointOptionList] ),
 
 	SecondOptionList = option_list:set( {magenta,1}, SingleOptionList ),
 	UpdatingOptionList = option_list:set( {black,3}, SecondOptionList ),
-	
+
 	UpdatedOptionList = option_list:update_with(
-                           EndpointOptionList, UpdatingOptionList),
+						   EndpointOptionList, UpdatingOptionList),
 
 	io:format( "   Update of previous option list with option_list ~w is: "
 			   "~w.~n", [ UpdatingOptionList, UpdatedOptionList ] ),
-	
-	3 = option_list:get( black ,UpdatedOptionList ), 
 
-	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),	
+	3 = option_list:get( black ,UpdatedOptionList ),
+
+	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
 	erlang:halt().
-
