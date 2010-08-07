@@ -5,7 +5,7 @@
 % This library is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License or
 % the GNU General Public License, as they are published by the Free Software
-% Foundation, either version 3 of these Licenses, or (at your option) 
+% Foundation, either version 3 of these Licenses, or (at your option)
 % any later version.
 % You can also redistribute it and/or modify it under the terms of the
 % Mozilla Public License, version 1.1 or later.
@@ -34,12 +34,12 @@
 
 
 % Hostname-related functions.
--export([ ping/1, reverse_lookup/1, localhost/0 ]). 
+-export([ ping/1, localhost/0, reverse_lookup/1, activate_socket_once/1 ]).
 
 
 % Node-related functions.
--export([ localnode/0, get_all_connected_nodes/0, 
-		 check_node_availability/1, check_node_availability/2, 
+-export([ localnode/0, get_all_connected_nodes/0,
+		 check_node_availability/1, check_node_availability/2,
 		 shutdown_node/1 ]).
 
 
@@ -52,25 +52,25 @@
 % Hostname-related functions.
 
 
-% Pings specified hostname, and returns true iff it could be ping'd. 
+% Pings specified hostname, and returns true iff it could be ping'd.
 % Note: command-line based call, used that way as there is no ICMP stack.
 % A port could be used also.
 ping(Hostname) when is_list(Hostname) ->
-	
+
 	Command = "if ping " ++ Hostname ++ " -q -c 1 1>/dev/null 2>&1; "
 		"then echo ping_ok ; else echo ping_failed ; fi",
-	
+
 	%io:format( "Ping command: ~s~n.", [Command] ),
-	
-	case os:cmd( Command ) of 
-	
+
+	case os:cmd( Command ) of
+
 		"ping_ok\n" ->
 			true ;
-		
+
 		"ping_failed\n" ->
 			false
-				
-	end.			 	
+
+	end.
 
 
 
@@ -84,39 +84,45 @@ localhost() ->
 	% On the other hand, "hostname -f" might return 'localhost.localdomain'.
 	% Most reliable (ending carriage return must be removed):
 	case text_utils:remove_ending_carriage_return( os:cmd( "hostname -f" ) ) of
-	
+
 		"localhost" ->
 			throw( could_not_determine_localhost );
-			
+
 		"localhost.localdomain" ->
 			throw( could_not_determine_localhost );
-			
+
 		Other ->
 			Other
 	end.
-	
 
-	
+
+
 % Returns a string specifying the DNS name corresponding to the specified IP
 % address {N1,N2,N3,N4}.
 reverse_lookup( IPAddress ) ->
 	Command = "host -W 1 " ++ ipv4_to_string(IPAddress) ++ " 2>/dev/null",
 	Res = os:cmd( Command ),
-	%io:format( "Host command: ~s, result: ~s.~n", [Command,Res] ),	
-	case string:tokens( Res," " ) of 
-	
+	%io:format( "Host command: ~s, result: ~s.~n", [Command,Res] ),
+	case string:tokens( Res," " ) of
+
 		[ _ArpaString, "domain", "name", "pointer", Domain ] ->
 			% Removes ending ".~n":
 			string:sub_string( Domain, 1, length(Domain)-2 );
-		
+
 		_Other  ->
 			unknown_dns
-				
-	end.	
+
+	end.
+
+
+% Activates once the specified socket, so that it can receive new data, when
+% flow control is needed.
+activate_socket_once( Socket ) ->
+	% Must be reset each time, to control flow:
+	inet:setopts( Socket, [ {active,once} ] ).
 
 
 
-	
 % Node-related functions.
 
 
@@ -125,16 +131,16 @@ reverse_lookup( IPAddress ) ->
 % It is either a specific node name, or the atom 'local_node' (preferred to
 % 'nonode@nohost').
 localnode() ->
-	
+
 	case node() of
-	
+
 		nonode@nohost ->
 			local_node;
-			
+
 		OtherNodeName ->
 			% Could be XX@myhost.example.com:
 		 	OtherNodeName
-	
+
 	end.
 
 
@@ -156,12 +162,12 @@ get_all_connected_nodes() ->
 %
 % Durations are in milliseconds, maximum waiting time is 3.1 seconds.
 %
-% Allows to return as soon as possible. 
+% Allows to return as soon as possible.
 check_node_availability( Nodename ) ->
 	check_node_availability( Nodename, with_waiting ).
-	
 
-	
+
+
 % Returns whether specified Erlang node is available:
 
 % - Nodename is an atom or a string corresponding to the name of the target node
@@ -185,42 +191,42 @@ check_node_availability( Nodename ) ->
 check_node_availability( Nodename, Timing ) when is_list(Nodename) ->
 	check_node_availability( list_to_atom(Nodename), Timing ) ;
 
-check_node_availability( Nodename, _Timing=immediate ) 
+check_node_availability( Nodename, _Timing=immediate )
 		when is_atom(Nodename) ->
-	
+
 	case net_adm:ping( Nodename ) of
-	
+
 		pong ->
 			true ;
-		
+
 		pang ->
 			false
-			
+
 	end;
-	
-check_node_availability( Nodename, _Timing=with_waiting ) 
+
+check_node_availability( Nodename, _Timing=with_waiting )
 		when is_atom(Nodename) ->
 	check_node_availability( Nodename, _AttemptCount=6, _InitialDuration=100 ).
-	
+
 
 check_node_availability( _AtomNodename, _Count=0, _CurrentDuration ) ->
 	false ;
-		
+
 check_node_availability( AtomNodename, AttemptCount, CurrentDuration ) ->
 
 	case net_adm:ping( AtomNodename ) of
-	
+
 		pong ->
 			true ;
-		
+
 		pang ->
 			%io:format( "Sleeping for ~B ms.~n", [CurrentDuration] ),
 			timer:sleep(CurrentDuration),
 			check_node_availability( AtomNodename, AttemptCount-1,
 				2*CurrentDuration )
-			
-	end.			
-			
+
+	end.
+
 
 
 % Shutdowns specified node, and returns only when it cannot be ping'ed anymore.
@@ -228,39 +234,38 @@ check_node_availability( AtomNodename, AttemptCount, CurrentDuration ) ->
 % Throws an exception if not able to terminate it.
 shutdown_node(Nodename) when is_list(Nodename) ->
 	shutdown_node( list_to_atom(Nodename) );
-	
+
 shutdown_node(Nodename)	when is_atom(Nodename) ->
 	rpc:cast( Nodename, erlang, halt, [] ),
 	wait_unavailable( Nodename, _AttemptCount=5, _Duration=100 ).
-	
-	
+
+
 wait_unavailable( Nodename, _AttemptCount=0, _Duration ) ->
 	throw( {node_not_terminating,Nodename} );
-	
+
 wait_unavailable( Nodename, AttemptCount, Duration ) ->
 	case net_adm:ping( Nodename ) of
-	
+
 		pong ->
 			timer:sleep(Duration),
 			wait_unavailable( Nodename, AttemptCount-1, 2*Duration );
-			
+
 		pang ->
 			ok
-			
-	end.			
-	
-	
-	
-					
+
+	end.
+
+
+
+
 % Address-related functions.
-	
-		
+
+
 % Returns a string describing the specified IPv4 address.
 ipv4_to_string( {N1,N2,N3,N4} ) ->
 	lists:flatten( io_lib:format( "~B.~B.~B.~B", [N1,N2,N3,N4] ) ).
-	
-	
+
+
 % Returns a string describing the specified IPv4 address and port.
 ipv4_to_string( {N1,N2,N3,N4}, Port ) ->
 	lists:flatten( io_lib:format( "~B.~B.~B.~B:~B", [N1,N2,N3,N4,Port] ) ).
-
