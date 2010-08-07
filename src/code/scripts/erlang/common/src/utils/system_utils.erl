@@ -5,7 +5,7 @@
 % This library is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License or
 % the GNU General Public License, as they are published by the Free Software
-% Foundation, either version 3 of these Licenses, or (at your option) 
+% Foundation, either version 3 of these Licenses, or (at your option)
 % any later version.
 % You can also redistribute it and/or modify it under the terms of the
 % Mozilla Public License, version 1.1 or later.
@@ -35,10 +35,10 @@
 % User-related functions.
 -export([ get_user_name/0, get_user_home_directory/0 ]).
 
-		 
+
 % System-related functions.
 -export([ get_interpreter_version/0, get_size_of_vm_word/0, get_size/1,
-		 interpret_byte_size/1, interpret_byte_size_with_unit/1, 
+		 interpret_byte_size/1, interpret_byte_size_with_unit/1,
 		 convert_byte_size_with_unit/1, display_memory_summary/0,
 		 get_total_installed_memory/0 ]).
 
@@ -50,7 +50,7 @@
 % Returns the name of the current user.
 get_user_name() ->
 	os:getenv("USER").
-	
+
 
 % Returns the home directory of the current user.
 get_user_home_directory() ->
@@ -60,25 +60,25 @@ get_user_home_directory() ->
 
 % Returns the total install memory (RAM) of the computer being used, in bytes.
 get_total_installed_memory() ->
-	
+
 	% First check the expected unit is returned, by pattern-matching:
 	"kB\n" = os:cmd("cat /proc/meminfo|grep 'MemTotal:'|awk '{print $3}'"),
-	
+
 	ValueCommand = "cat /proc/meminfo|grep 'MemTotal:'|awk '{print $2}'",
-	
+
 	% The returned value of following command is like "12345\n", in bytes:
-	MemorySizeString = text_utils:remove_ending_carriage_return( 
+	MemorySizeString = text_utils:remove_ending_carriage_return(
 								os:cmd( ValueCommand ) ),
-	
+
 	% They were kB (not kiB):
 	list_to_integer(MemorySizeString) * 1000.
-	
-	
+
+
 
 % Erlang System-related functions.
 
 
-% Returns the version informations of the current Erlang interpreter 
+% Returns the version informations of the current Erlang interpreter
 % being used.
 %
 % Returns a full version name (ex: "R13B04") or, if not available, a shorter one
@@ -87,22 +87,22 @@ get_total_installed_memory() ->
 get_interpreter_version() ->
 	% Older versions (pre-R13A?) did not support the otp_release tag:
 	try erlang:system_info(otp_release) of
-		
+
 		V ->
 			% Ex: V="R13B04"
 			V
-				
+
 	catch
-		
+
 		_:_ ->
 			% Here we revert to another (older) solution:
 			{_OTPInfos,V} = init:script_id(),
 			% Ex: "R11B"
 			V
-				
+
 	end.
-	
-		
+
+
 
 
 % Returns the size, in bytes, of a word of this Virtual Machine.
@@ -122,74 +122,74 @@ get_size( Term ) ->
 %
 % See http://en.wikipedia.org/wiki/Kibibyte
 interpret_byte_size( SizeInBytes ) ->
-	
+
 	Kilo = 1024,
 	Mega = Kilo*Kilo,
 	Giga = Kilo*Mega,
-	
-    ListWithGiga = case SizeInBytes div Giga of
-					 
+
+	ListWithGiga = case SizeInBytes div Giga of
+
 					 0 ->
 						 [];
-					 
+
 					 GigaNonNull->
 						 [io_lib:format( "~B GiB", [GigaNonNull] )]
-							   
+
 				   end,
 	SizeAfterGiga = SizeInBytes rem Giga,
 	%io:format( "SizeAfterGiga = ~B.~n", [SizeAfterGiga] ),
-	
+
 	ListWithMega = case SizeAfterGiga div Mega of
-					 
+
 					 0 ->
 						 ListWithGiga;
-					 
+
 					 MegaNonNull->
 						 [io_lib:format( "~B MiB", [MegaNonNull] )|ListWithGiga]
-							   
+
 				   end,
 	SizeAfterMega = SizeAfterGiga rem Mega,
 	%io:format( "SizeAfterMega = ~B.~n", [SizeAfterMega] ),
-	
+
 	ListWithKilo = case SizeAfterMega div Kilo of
-					 
+
 					 0 ->
 						 ListWithMega;
-					 
+
 					 KiloNonNull->
 						 [io_lib:format( "~B KiB", [KiloNonNull] )|ListWithMega]
-							   
+
 				   end,
 	SizeAfterKilo = SizeAfterMega rem Kilo,
 	%io:format( "SizeAfterKilo = ~B.~n", [SizeAfterKilo] ),
-	
+
 	ListWithByte = case SizeAfterKilo rem Kilo of
-					 
+
 					 0 ->
 						ListWithKilo ;
-					 
+
 					 1->
 						 [ "1 byte" | ListWithKilo ];
-					   
+
 					 AtLeastTwoBytes ->
 						 [ io_lib:format( "~B bytes", [AtLeastTwoBytes] )
 						   | ListWithKilo ]
-							   
+
 				   end,
-													
+
 	%io:format( "Unit list is: ~w.~n", [ListWithByte] ),
-	
+
 	case ListWithByte of
-		
+
 		[] ->
 			"0 byte";
-		
+
 		[OneElement] ->
 			OneElement;
-		
+
 		[Smaller|Bigger] ->
 			text_utils:join( ", ", lists:reverse(Bigger) ) ++ " and " ++ Smaller
-	
+
 	end.
 
 
@@ -204,35 +204,35 @@ interpret_byte_size( SizeInBytes ) ->
 interpret_byte_size_with_unit( Size ) ->
 
 	{Unit,Value} = convert_byte_size_with_unit( Size ),
-	
-	case Unit of 
-				   
-	    byte ->
-            
-			case Value of 
-		
+
+	case Unit of
+
+		byte ->
+
+			case Value of
+
 				0 ->
 					"0 byte";
-				
+
 				1 ->
 					"1 byte";
-				
+
 				Other ->
 					io_lib:format( "~B bytes", [Other] )
-						
+
 			end;
-		
+
 		kib ->
 			io_lib:format( "~.1f KiB", [Value] );
-		
+
 		mib ->
 			io_lib:format( "~.1f MiB", [Value] );
-	
+
 		gib ->
 			io_lib:format( "~.1f GiB", [Value] )
-				
+
 	end.
-	
+
 
 
 % Converts the specified size, in bytes, as a value expressed in an appropriate
@@ -255,39 +255,39 @@ interpret_byte_size_with_unit( Size ) ->
 % therefore this function is mostly useful for user output.
 %
 convert_byte_size_with_unit( SizeInBytes ) ->
-	
+
 	Kilo = 1024,
 	Mega = Kilo*Kilo,
 	Giga = Kilo*Mega,
-	
+
 	case SizeInBytes div Giga of
-		
+
 		0 ->
-			
+
 			case SizeInBytes div Mega of
-				
+
 				0 ->
-					
+
 					case SizeInBytes div Kilo of
-						
+
 						0 ->
 							%{byte,float(SizeInBytes)};
 							{byte,SizeInBytes};
-						
-						_ ->	
+
+						_ ->
 							{kib,SizeInBytes/Kilo}
-								
+
 					end;
-				
+
 				_ ->
 					{mib,SizeInBytes/Mega}
-						
+
 			end;
-		
+
 		_ ->
 			{gib,SizeInBytes/Giga}
-				
-	end.		
+
+	end.
 
 
 
@@ -297,12 +297,9 @@ display_memory_summary() ->
 	SysSize  = erlang:memory( system ),
 	ProcSize = erlang:memory( processes ),
 	Sum = SysSize + ProcSize,
-	io:format( "  - system size: ~s (~s)~n", 
-			  [ interpret_byte_size_with_unit(SysSize), 
+	io:format( "  - system size: ~s (~s)~n",
+			  [ interpret_byte_size_with_unit(SysSize),
 			   text_utils:percent_to_string(SysSize/Sum) ] ),
-	io:format( "  - process size: ~s (~s)~n", 
-			  [ interpret_byte_size_with_unit(ProcSize), 
+	io:format( "  - process size: ~s (~s)~n",
+			  [ interpret_byte_size_with_unit(ProcSize),
 			   text_utils:percent_to_string(ProcSize/Sum) ] ).
-	
-	
-	
