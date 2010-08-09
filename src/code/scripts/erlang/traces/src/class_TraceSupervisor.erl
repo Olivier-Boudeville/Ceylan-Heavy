@@ -34,35 +34,21 @@
 
 
 % Determines what are the mother classes of this class (if any):
--define(wooper_superclasses,[]).
-
-
-
-% Parameters taken by the constructor ('construct').
--define(wooper_construct_parameters, TraceFilename, TraceType, MonitorNow,
-	Blocking ).
-
-
-
-% Declaring all variations of WOOPER standard life-cycle operations:
-% (template pasted, two replacements performed to update arities)
--define( wooper_construct_export, new/4, new_link/4,
-	synchronous_new/4, synchronous_new_link/4,
-	synchronous_timed_new/4, synchronous_timed_new_link/4,
-	remote_new/5, remote_new_link/5, remote_synchronous_new/5,
-	remote_synchronous_new_link/5, remote_synchronous_timed_new/5,
-	remote_synchronous_timed_new_link/5, construct/5, delete/1 ).
+-wooper_superclasses([]).
 
 
 
 % Method declarations.
--define( wooper_method_export, monitor/1, blocking_monitor/1 ).
+-wooper_member_methods([ monitor/1, blocking_monitor/1 ]).
 
 
 
 % Static method declarations (to be directly called from module):
--define( wooper_static_method_export, create/0, create/1, create/2, create/3,
-		create/4 ).
+-wooper_static_methods([ create/0, create/1, create/2, create/3, create/4 ]).
+
+-export([ delete/1 ]).
+
+-wooper_attributes([ trace_filename, trace_type ]).
 
 
 % Allows to define WOOPER base variables and methods for that class:
@@ -108,7 +94,7 @@
 %  parameter should be the PID of the caller to be notified. This parameter has
 %  a meaning iff MonitorNow is true
 %
-construct( State, ?wooper_construct_parameters ) ->
+construct( State, TraceFilename, TraceType, MonitorNow,	Blocking ) ->
 
 	%io:format( "~s Creating a trace supervisor, whose PID is ~w.~n",
 	%	[ ?LogPrefix, self() ] ),
