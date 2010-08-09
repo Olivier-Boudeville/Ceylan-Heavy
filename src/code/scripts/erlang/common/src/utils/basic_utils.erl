@@ -67,7 +67,8 @@
 
 
 % Node-related functions.
--export([ generate_valid_node_name_from/1, check_node_validity/1 ]).
+-export([ generate_valid_node_name_from/1, generate_valid_atom_node_name_from/1,
+		  check_node_validity/1 ]).
 
 
 
@@ -101,7 +102,7 @@ get_textual_timestamp() ->
 
 
 get_textual_timestamp({{Year,Month,Day},{Hour,Minute,Second}}) ->
- 	io_lib:format( "~p/~p/~p ~B:~2..0B:~2..0B",
+	io_lib:format( "~p/~p/~p ~B:~2..0B:~2..0B",
 		[Year,Month,Day,Hour,Minute,Second] ).
 
 
@@ -656,8 +657,11 @@ notify_user(Message,FormatList) ->
 % Node-related functions.
 
 
-% Returns a name that is a legal name for an Erlang node, forged from specified
-% one.
+% Returns a name (as a plain string) that is a legal name for an Erlang node,
+% forged from specified name (specified as a plain string).
+%
+% Note: erlang:list_to_atom/1 not used here, as the user may wish for example to
+% add a prefix or a suffix before.
 generate_valid_node_name_from( Name ) when is_list(Name) ->
 
 	% Replaces each series of spaces (' '), lower than ('<'), greater than
@@ -673,6 +677,13 @@ generate_valid_node_name_from( Name ) when is_list(Name) ->
 			   "( |<|>|,|\\(|\\)|'|\"|/|\\\\|\&|~|"
 			   "#|@|{|}|\\[|\\]|\\||\\$|\\*|\\?|!|\\+|;|\\.|:)+", "_",
 		 [global,{return, list}] ).
+
+
+
+% Returns a name (as an atom) that is a legal name for an Erlang node,
+% forged from specified name (specified as a plain string).
+generate_valid_atom_node_name_from( Name ) when is_list(Name) ->
+	erlang:list_to_atom( generate_valid_node_name_from(Name) ).
 
 
 
