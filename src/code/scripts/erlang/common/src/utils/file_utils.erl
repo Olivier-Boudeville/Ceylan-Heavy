@@ -48,6 +48,7 @@
 	find_files_with_extension_and_excluded_dirs/3,
 	find_directories_from/1,
 	create_directory/1, create_directory/2,
+	get_user_directory/0,
 	path_to_variable_name/1, path_to_variable_name/2,
 	get_image_file_png/1, get_image_file_gif/1 ]).
 
@@ -670,6 +671,21 @@ create_dir_elem( [H|T], Prefix ) ->
 
 
 
+% Returns the path corresponding to the home directory of the current user, or
+% throws an exception.
+get_user_directory() ->
+	case os:getenv("HOME") of
+
+		[] ->
+			throw( could_not_determine_user_directory );
+
+		NonEmptyPath ->
+			NonEmptyPath
+
+	end.
+
+
+
 % Converts specified path (full filename, like '/home/jack/test.txt' or
 % './media/test.txt') into a variable name licit in most programming languages
 % (ex: C/C++).
@@ -702,7 +718,6 @@ convert(Filename,Prefix) ->
 		[global,{return, list}] ),
 	Prefix ++ re:replace( NoDotName, "/+", "_",
 		[global,{return, list}] ).
-
 
 
 

@@ -26,11 +26,12 @@
 
 
 % Unit tests for the file_utils toolbox.
+%
 % See the file_utils.erl tested module.
 -module(file_utils_test).
 
 
--define(Tested_module,file_utils).
+-define(Tested_modules, [ file_utils ] ).
 
 
 % For test_finished/0 and al:
@@ -39,7 +40,7 @@
 
 run() ->
 
-	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
+	io:format( "--> Testing modules ~w.~n", [ ?Tested_modules ] ),
 
 	{ok,CurrentDir} = file:get_cwd(),
 
@@ -119,5 +120,8 @@ run() ->
 
 	%file_utils:create_directory( "tmp-tst" ),
 	%file_utils:create_directory( "tmp-tst/first/second", create_parents ),
+
+	io:format( "   Home directory of the current user is: ~s~n",
+		[ file_utils:get_user_directory() ] ),
 
 	test_finished().
