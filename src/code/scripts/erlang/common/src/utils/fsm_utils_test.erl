@@ -32,7 +32,7 @@
 
 
 
--define(Tested_module,fsm_utils).
+-define(Tested_modules, [fsm_utils] ).
 
 % For test_finished/0 and al:
 -include("test_facilities.hrl").
@@ -44,7 +44,7 @@
 
 run() ->
 
-	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
+	io:format( "--> Testing modules ~w.~n", [ ?Tested_modules ] ),
 
 	StartFsmState = fsm_utils:create_blank_fsm_state(),
 	FsmState = ?setFsmAttribute(StartFsmState, test_question, 42),

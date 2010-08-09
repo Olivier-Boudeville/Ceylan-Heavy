@@ -30,7 +30,7 @@
 -module(net_utils_test).
 
 
--define(Tested_module,net_utils).
+-define(Tested_modules, [net_utils] ).
 
 
 % For test_finished/0 and al:
@@ -39,7 +39,7 @@
 
 run() ->
 
-	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
+	io:format( "--> Testing modules ~w.~n", [ ?Tested_modules ] ),
 
 	Localhost = net_utils:localhost(),
 

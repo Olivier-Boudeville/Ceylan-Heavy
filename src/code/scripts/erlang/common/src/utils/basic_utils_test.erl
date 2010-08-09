@@ -31,7 +31,7 @@
 
 
 
--define(Tested_module,basic_utils).
+-define(Tested_modules, [basic_utils] ).
 
 
 % For test_finished/0 and al:
@@ -53,7 +53,7 @@ check_process_specific_values( Min, Max ) ->
 
 run() ->
 
-	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
+	io:format( "--> Testing modules ~w.~n", [ ?Tested_modules ] ),
 
 	InitialTimestamp = basic_utils:get_timestamp(),
 	InitialPreciseTimestamp = basic_utils:get_precise_timestamp(),

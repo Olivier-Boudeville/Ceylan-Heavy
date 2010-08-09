@@ -30,7 +30,7 @@
 -module(text_utils_test).
 
 
--define( Tested_module, text_utils ).
+-define( Tested_modules, [text_utils] ).
 
 % For test_finished/0 and al:
 -include("test_facilities.hrl").
@@ -55,7 +55,7 @@ print_title( Title, Level ) ->
 
 run() ->
 
-	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
+	io:format( "--> Testing modules ~w.~n", [ ?Tested_modules ] ),
 
 
 	io:format( "   Converting an integer to a string: ~s.~n",

@@ -30,7 +30,7 @@
 -module(system_utils_test).
 
 
--define(Tested_module,system_utils).
+-define(Tested_modules, [system_utils] ).
 
 
 % For test_finished/0 and al:
@@ -53,7 +53,7 @@ print_sizes( [H|T] ) ->
 
 run() ->
 
-	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
+	io:format( "--> Testing modules ~w.~n", [ ?Tested_modules ] ),
 
 
 	% User-related functions.

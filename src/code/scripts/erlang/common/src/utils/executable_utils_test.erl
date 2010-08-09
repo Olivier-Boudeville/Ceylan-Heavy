@@ -30,7 +30,7 @@
 % See the executable_utils.erl tested module.
 -module(executable_utils_test).
 
--define(Tested_module,executable_utils).
+-define(Tested_modules, [executable_utils] ).
 
 % For test_finished/0 and al:
 -include("test_facilities.hrl").
@@ -38,7 +38,7 @@
 
 run() ->
 
-	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
+	io:format( "--> Testing modules ~w.~n", [ ?Tested_modules ] ),
 
 	% No side-effect wanted here.
 
