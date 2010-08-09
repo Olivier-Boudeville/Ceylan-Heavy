@@ -61,9 +61,9 @@
 % - check in the class_TraceEmitter.hrl file whether TracingActivated is defined
 %
 -ifndef(TraceType).
-	%-define(TraceType,log_mx_traces).
+	-define(TraceType,log_mx_traces).
 	%-define(TraceType,{text_traces,pdf}).
-	-define(TraceType,{text_traces,text_only}).
+	%-define(TraceType,{text_traces,text_only}).
 
 -endif.
 
