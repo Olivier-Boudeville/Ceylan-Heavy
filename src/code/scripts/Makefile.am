@@ -8,9 +8,9 @@ DIST_SUBDIRS = $(SUBDIRS)
 all: all-local
 
 
-# Hidden target as, from a fresh full Ceylan trunk, the symbolic links,
-# for example in common/doc, are dead: they are meant to be used once
-# installed as a dedicated Ceylan-Erlang source package.
+# Hidden target as, from a fresh full Ceylan trunk, the symbolic links, for
+# example in common/doc, are dead: they are meant to be used once installed as a
+# dedicated Ceylan-Erlang source package.
 all-local:
 
 all-local-hidden:
@@ -19,7 +19,9 @@ all-local-hidden:
 	$(MAKE) -f GNUmakefile all ; else echo "  Erlang build disabled" ; fi
 
 
-install-data-local:
+# We have to hide the install target hook as well, otherwise will attempt again
+# to build:
+install-data-local-hidden:
 	@if `which erlc 1>/dev/null 2>&1` ; then \
 	echo "  Erlang install activated" && $(MAKE) install-erlang ; \
 	else echo "  Erlang install disabled" ; fi
