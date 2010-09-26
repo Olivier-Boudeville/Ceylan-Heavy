@@ -13,10 +13,10 @@ BUILT_SUBDIRS = \
 	middleware  \
 	modules     \
 	network     \
-	system      
+	system
 
-	
-	
+
+
 # These are the subdirectories which may be built:
 EXTRA_SUBDIRS =	@CEYLAN_EXTRA_DIRS@
 
@@ -40,10 +40,10 @@ libCeylan_la_SOURCES = $(GENERAL_SRCS)
 libCeylan_la_LDFLAGS = \
 	-no-undefined                                                            \
 	-release @CEYLAN_LT_RELEASE@                                             \
-	-version-info @CEYLAN_LT_CURRENT@:@CEYLAN_LT_REVISION@:@CEYLAN_LT_AGE@ 
+	-version-info @CEYLAN_LT_CURRENT@:@CEYLAN_LT_REVISION@:@CEYLAN_LT_AGE@
 
-				
-# Submodule convenience libraries:	
+
+# Submodule convenience libraries:
 SUBLIBS = \
 	generic/libCeylanGeneric.la       \
 	interfaces/libCeylanInterfaces.la \
@@ -53,28 +53,28 @@ SUBLIBS = \
 	modules/libCeylanModules.la       \
 	network/libCeylanNetwork.la       \
 	system/libCeylanSystem.la
-	
 
-EXTRA_SUBLIBS = @CEYLAN_EXTRA_LIBLTDL_SUBLIB@	
-	
-# The overall library is made from submodule convenience libraries and al:	
+
+EXTRA_SUBLIBS = @CEYLAN_EXTRA_LIBLTDL_SUBLIB@
+
+# The overall library is made from submodule convenience libraries and al:
 libCeylan_la_LIBADD	= \
 	$(SUBLIBS)           \
 	@CEYLAN_EXTRA_LIBS@  \
-	@SYSTEM_LIBS@        
-	
-	
+	@SYSTEM_LIBS@
+
+
 libCeylan_la_DEPENDENCIES = \
 	$(SUBLIBS)           \
-	@CEYLAN_EXTRA_LIBS@   
+	@CEYLAN_EXTRA_LIBS@
 
-	
+
 libCeylanIncludedir      = $(includedir)/Ceylan
 libCeylanInclude_HEADERS = Ceylan.h
 
 DISTCLEANFILES = CeylanConfig.h
-	
-	
+
+
 # Run ldconfig after installing the library:
 install-exec-hook:
 	-ldconfig
