@@ -594,26 +594,24 @@
 
 
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(show-paren-mode t)
- '(tool-bar-mode nil)
- '(transient-mark-mode t))
+ '(tool-bar-mode nil))
 
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- ;; Determines the rendering of titles in RST mode:
- '(rst-level-1-face ((t (:background "#00f" :foreground "#fff"))))
- '(rst-level-2-face ((t (:background "#00a" :foreground "#ddd"))))
- '(rst-level-3-face ((t (:background "#003" :foreground "#bbb"))))
- '(rst-level-4-face ((t (:background "#000" :foreground "#999"))))
- '(rst-level-5-face ((t (:background "#010" :foreground "#666"))))
- '(rst-level-6-face ((t (:background "#020" :foreground "#555"))))
- )
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 77 :width normal :foundry "unknown" :family "DejaVu Sans Mono"))))
+ '(rst-level-1-face ((t (:background "#00f" :foreground "#fff"))) t)
+ '(rst-level-2-face ((t (:background "#00a" :foreground "#ddd"))) t)
+ '(rst-level-3-face ((t (:background "#003" :foreground "#bbb"))) t)
+ '(rst-level-4-face ((t (:background "#000" :foreground "#999"))) t)
+ '(rst-level-5-face ((t (:background "#010" :foreground "#666"))) t)
+ '(rst-level-6-face ((t (:background "#020" :foreground "#555"))) t))
