@@ -292,7 +292,7 @@
   (message "F6        -> repeat-complex-command" )
   (message "F7        -> goto-line" )
   (message "F8        -> whitespace-cleanup" )
-  (message "F9        -> (intercepted by Ubuntu)" )
+  (message "F9        -> fd-switch-dictionary" )
   (message "Shift-F9  -> (currently not bound)" )
   (message "F10       -> save-buffers-kill-emacs" )
   (message "F11       -> (does nothing)" )
@@ -441,9 +441,29 @@
 ;;(standard-display-european 1)
 
 
+
+;; Spelling section.
+
+;; Hit F9 to toggle english and french dictionaries:
+
 (setq ispell-dictionary "english")
 (setq ispell-program-name "aspell")
 (add-hook 'text-mode-hook 'flyspell-mode)
+
+(defun fd-switch-dictionary()
+      (interactive)
+      (let* ((dic ispell-current-dictionary)
+    	 (change (if (string= dic "english") "francais" "english")))
+        (ispell-change-dictionary change)
+        (message "Dictionary switched from %s to %s" dic change)
+        ))
+    
+(global-set-key (kbd "<f9>")   'fd-switch-dictionary)
+
+;; Not working apparently:
+;;(require 'flyspell-guess)
+;;(eval-after-load "flyspell-guess" '(flyspell-insinuate-guess-indicator))
+
 
 (show-paren-mode t)
 (setq show-paren-style 'parenthesis)
@@ -608,7 +628,7 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 77 :width normal :foundry "unknown" :family "DejaVu Sans Mono"))))
+ '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 107 :width normal :foundry "unknown" :family "DejaVu Sans Mono"))))
  '(rst-level-1-face ((t (:background "#00f" :foreground "#fff"))) t)
  '(rst-level-2-face ((t (:background "#00a" :foreground "#ddd"))) t)
  '(rst-level-3-face ((t (:background "#003" :foreground "#bbb"))) t)
