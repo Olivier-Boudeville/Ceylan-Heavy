@@ -32,7 +32,7 @@
 % Directly depends on the hashtable module.
 
 
--define(Tested_module,hashtable).
+-define(Tested_modules,[hashtable]).
 
 % For test_finished/0 and al:
 -include("test_facilities.hrl").
@@ -40,7 +40,7 @@
 
 run() ->
 
-	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
+	io:format( "--> Testing module ~p.~n", [ ?Tested_modules ] ),
 
 	MyH1 = hashtable:new(0),
 	hashtable:display(MyH1),

@@ -31,7 +31,7 @@
 -module(option_list_test).
 
 
--define(Tested_module,option_list).
+-define(Tested_modules,[option_list]).
 
 % For test_finished/0 and al:
 -include("test_facilities.hrl").
@@ -39,7 +39,7 @@
 
 run() ->
 
-	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
+	io:format( "--> Testing module ~p.~n", [ ?Tested_modules ] ),
 
 	SingleOptionList = [{blue,2}],
 	2 = option_list:get( blue, SingleOptionList ),

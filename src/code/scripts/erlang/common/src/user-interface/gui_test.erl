@@ -30,7 +30,7 @@
 -module(gui_test).
 
 
--define(Tested_module,gui).
+-define(Tested_modules,[gui]).
 
 
 % For test_finished/0 and al:
@@ -204,7 +204,7 @@ gui_main_loop( MainWin, PointCount, Canvas ) ->
 % The actual test:
 run() ->
 
-	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
+	io:format( "--> Testing modules ~p.~n", [ ?Tested_modules ] ),
 
 	case init:get_argument('-batch') of
 

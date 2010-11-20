@@ -31,7 +31,7 @@
 -module(polygon_test).
 
 
--define(Tested_module,polygon).
+-define(Tested_modules,[polygon]).
 
 
 % For test_finished/0 and al:
@@ -41,7 +41,7 @@
 
 run() ->
 
-	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
+	io:format( "--> Testing modules ~p.~n", [ ?Tested_modules ] ),
 
 	MyTriangle = polygon:update_bounding_box( lazy_circle,
 	  polygon:set_edge_color( yellow,

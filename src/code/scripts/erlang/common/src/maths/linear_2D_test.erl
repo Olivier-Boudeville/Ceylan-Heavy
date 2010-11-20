@@ -31,7 +31,7 @@
 -module(linear_2D_test).
 
 
--define(Tested_module,linear_2D).
+-define(Tested_modules,[linear_2D]).
 
 
 % For test_finished/0 and al:
@@ -40,7 +40,7 @@
 
 run() ->
 
-	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
+	io:format( "--> Testing modules ~p.~n", [ ?Tested_modules ] ),
 
 	V={9,1},
 

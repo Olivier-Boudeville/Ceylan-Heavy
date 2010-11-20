@@ -31,7 +31,7 @@
 -module(math_utils_test).
 
 
--define(Tested_module,math_utils).
+-define(Tested_modules,[math_utils]).
 
 
 % For test_finished/0 and al:
@@ -41,7 +41,7 @@
 
 run() ->
 
-	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
+	io:format( "--> Testing modules ~p.~n", [ ?Tested_modules ] ),
 
 	Roundings = [ -1.1, -1.0, -0.9, 0.0, 0.9, 1.0, 1.1 ],
 
