@@ -25,15 +25,15 @@
 % Author: Olivier Boudeville (olivier.boudeville@esperide.com)
 
 
-% Unit tests for the basic utils toolbox.
+% Unit tests for the text utils toolbox.
 % See the text_utils.erl tested module.
 -module(text_utils_test).
 
 
--define( Tested_modules, [text_utils] ).
+-export([ run/0 ]).
 
-% For test_finished/0 and al:
--include("test_facilities.hrl").
+
+-define( Tested_module, text_utils ).
 
 
 % For pretty-printing test:
@@ -55,7 +55,7 @@ print_title( Title, Level ) ->
 
 run() ->
 
-	io:format( "--> Testing modules ~w.~n", [ ?Tested_modules ] ),
+	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
 
 
 	io:format( "   Converting an integer to a string: ~s.~n",
@@ -109,19 +109,39 @@ run() ->
 
 	io:format( "   Determining whether '~p' is a string: ~w.~n",
 		[ FirstTestString, text_utils:is_string(FirstTestString) ] ),
-
+	true = text_utils:is_string( FirstTestString ),
 
 	SecondTestString = [ $o, [ $s, $d ], $l ],
 
 	io:format( "   Determining whether '~p' is a string: ~w.~n",
 		[ SecondTestString, text_utils:is_string(SecondTestString) ] ),
-
+	false = text_utils:is_string( SecondTestString ),
 
 	ThirdTestString = [ $e, 1, 2, $r ],
 
-
 	io:format( "   Determining whether '~p' is a string: ~w.~n",
 		[ ThirdTestString, text_utils:is_string(ThirdTestString) ] ),
+	true = text_utils:is_string(ThirdTestString),
+
+	FirstList = [],
+	io:format( "   Determining whether '~p' is a list of strings: ~w.~n",
+		[ FirstList, text_utils:is_list_of_strings(FirstList) ] ),
+	true = text_utils:is_list_of_strings(FirstList),
+
+	SecondList = [FirstTestString],
+	io:format( "   Determining whether '~p' is a list of strings: ~w.~n",
+		[ SecondList, text_utils:is_list_of_strings(SecondList) ] ),
+	true = text_utils:is_list_of_strings(SecondList),
+
+	ThirdList = [FirstTestString,ThirdTestString],
+	io:format( "   Determining whether '~p' is a list of strings: ~w.~n",
+		[ ThirdList, text_utils:is_list_of_strings(ThirdList) ] ),
+	true = text_utils:is_list_of_strings(ThirdList),
+
+	FourthList = [FirstTestString,SecondTestString],
+	io:format( "   Determining whether '~p' is a list of strings: ~w.~n~n",
+		[ FourthList, text_utils:is_list_of_strings(FourthList) ] ),
+	false = text_utils:is_list_of_strings(FourthList),
 
 
 	Title = "Alien creatures invaded Ireland!",
@@ -130,11 +150,11 @@ run() ->
 
 	Percent = 0.1234,
 
-	io:format( "	Displaying ~p as a percentage: ~s.~n",
+	io:format( "    Displaying ~p as a percentage: ~s.~n",
 			  [ Percent, text_utils:percent_to_string( Percent ) ] ),
 
 
-	io:format( "	Checking string/binary conversions.~n" ),
+	io:format( "    Checking string/binary conversions.~n" ),
 
 	"hello" = text_utils:binary_to_string( <<"hello">> ),
 	 <<"hello">> = text_utils:string_to_binary( "hello" ),
@@ -183,4 +203,13 @@ run() ->
 				[ D, text_utils:duration_to_string(D) ] )
 	 || D <- Durations ],
 
-	test_finished().
+
+	io:format( "~n		Testing the upper-casing of first letter:~n" ),
+
+	[ io:format( " - '~s' becomes '~s'~n",
+				[ T, text_utils:uppercase_initial_letter(T) ] )
+	 || T <- [ [], "a", "A", "Hello", "hello" ] ],
+
+	io:format( "~n--> End of test for module ~s.~n", [ ?Tested_module ] ),
+
+	erlang:halt().
