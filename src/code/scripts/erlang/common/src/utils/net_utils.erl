@@ -27,7 +27,6 @@
 
 
 % Gathering of various convenient facilities.
-%
 % See net_utils_test.erl for the corresponding test.
 -module(net_utils).
 
@@ -35,14 +34,20 @@
 
 
 % Hostname-related functions.
--export([ ping/1, localhost/0, reverse_lookup/1, activate_socket_once/1 ]).
+-export([ ping/1, reverse_lookup/1, localhost/0 ]).
 
 
 % Node-related functions.
 -export([ localnode/0, get_all_connected_nodes/0,
-		check_node_availability/1, check_node_availability/2,
-		get_node_naming_mode/0, get_naming_compliant_hostname/2,
-		shutdown_node/1 ]).
+		 check_node_availability/1, check_node_availability/2,
+		 get_node_naming_mode/0, get_naming_compliant_hostname/2,
+		 generate_valid_node_name_from/1, get_fully_qualified_node_name/3,
+		 shutdown_node/1 ]).
+
+
+% Net-related command line options.
+-export([ get_cookie_option/0, get_epmd_option/1, get_node_name_option/2,
+		 get_tcp_port_range_option/1, get_basic_node_launching_command/5 ]).
 
 
 % Address-related functions.
@@ -55,7 +60,6 @@
 
 
 % Pings specified hostname, and returns true iff it could be ping'd.
-%
 % Note: command-line based call, used that way as there is no ICMP stack.
 % A port could be used also.
 ping(Hostname) when is_list(Hostname) ->
@@ -82,10 +86,8 @@ localhost() ->
 	% Depending on the node being launched with either:
 	%  - no network name or a short name
 	%  - a long name
-	%
 	% net_adm:localhost() may return respectively "XXX.domain.com" or
 	% "XXX.localdomain", both of which are not proper hostnames.
-	%
 	% On the other hand, "hostname -f" might return 'localhost.localdomain'.
 	% Most reliable (ending carriage return must be removed):
 	case text_utils:remove_ending_carriage_return( os:cmd( "hostname -f" ) ) of
@@ -98,6 +100,7 @@ localhost() ->
 
 		Other ->
 			Other
+
 	end.
 
 
@@ -105,7 +108,6 @@ localhost() ->
 % Returns a string specifying the DNS name corresponding to the specified IP
 % address {N1,N2,N3,N4}.
 reverse_lookup( IPAddress ) ->
-
 	Command = "host -W 1 " ++ ipv4_to_string(IPAddress) ++ " 2>/dev/null",
 	Res = os:cmd( Command ),
 	%io:format( "Host command: ~s, result: ~s.~n", [Command,Res] ),
@@ -119,13 +121,6 @@ reverse_lookup( IPAddress ) ->
 			unknown_dns
 
 	end.
-
-
-% Activates once the specified socket, so that it can receive new data, when
-% flow control is needed.
-activate_socket_once( Socket ) ->
-	% Must be reset each time, to control flow:
-	inet:setopts( Socket, [ {active,once} ] ).
 
 
 
@@ -270,6 +265,39 @@ get_naming_compliant_hostname( Hostname, long_name ) ->
 	Hostname.
 
 
+% Returns a name that is a legal name for an Erlang node, forged from specified
+% one.
+generate_valid_node_name_from( Name ) when is_list(Name) ->
+
+	% Replaces each series of spaces (' '), lower than ('<'), greater than
+	% ('>'), comma (','), left ('(') and right (')') parentheses, single (''')
+	% and double ('"') quotes, forward ('/') and backward ('\') slashes,
+	% ampersand ('&'), tilde ('~'), sharp ('#'), at sign ('@'), all other kinds
+	% of brackets ('{', '}', '[', ']'), pipe ('|'), dollar ('$'), star ('*'),
+	% marks ('?' and '!'), plus ('+'), other punctation signs (';', '.' and ':')
+	% by exactly one underscore:
+	%
+	% (see also: file_utils:convert_to_filename/1)
+	re:replace( lists:flatten(Name),
+			   "( |<|>|,|\\(|\\)|'|\"|/|\\\\|\&|~|"
+			   "#|@|{|}|\\[|\\]|\\||\\$|\\*|\\?|!|\\+|;|\\.|:)+", "_",
+		 [global,{return, list}] ).
+
+
+
+% Returns the full name of a node, which has to be used to target it from
+% another node, with respect to the specified node naming conventions.
+%
+% Ex: for a node name 'foo', a hostname 'bar.org', with short names, we may
+% specify 'foo@bar' to target the corresponding node with these conventions (not
+% a mere 'foo', neither 'foo@bar.org').
+%
+% Both parameters must be plain strings.
+get_fully_qualified_node_name( NodeName, Hostname, NodeNamingMode ) ->
+	NodeName ++ "@"
+		++ get_naming_compliant_hostname( Hostname, NodeNamingMode ).
+
+
 
 % Shutdowns specified node, and returns only when it cannot be ping'ed anymore:
 % it is a safe and synchronous operation.
@@ -301,6 +329,98 @@ wait_unavailable( Nodename, AttemptCount, Duration ) ->
 
 	end.
 
+
+
+
+% Net-related command line options.
+
+
+% Returns the command-line option (a plain string) to be used to run a new
+% Erlang node with the same cookie as the current node, whether or not it is
+% alive.
+get_cookie_option() ->
+	case erlang:get_cookie() of
+
+		nocookie ->
+			"";
+
+		Cookie ->
+			"-setcookie '" ++ atom_to_list( Cookie ) ++ "'"
+
+	end.
+
+
+
+% Returns the command-line option (a plain string) to be used to run a new
+% Erlang node with the specified EPMD port specification, with can be either the
+% 'undefined' atom or the port number.
+%
+% Note that if a non-default EPMD port is specified for a new node, this implies
+% that the current node usually has to itself respect the same non-standard
+% convention (ex: see the FIREWALL_OPT make option in common/GNUmakevars.inc),
+% otherwise available nodes will not be found.
+%
+get_epmd_option( undefined ) ->
+	"";
+
+get_epmd_option( EpmdPort ) when is_integer(EpmdPort) ->
+	io_lib:format( "ERL_EPMD_PORT=~B", [EpmdPort] ).
+
+
+
+% Returns the command-line option (a plain string) to be used to run a new
+% Erlang node with the node name and node naming mode (short or long name).
+get_node_name_option( NodeName, NodeNamingMode ) ->
+
+	NodeNameOption = case NodeNamingMode of
+
+		  short_name ->
+			 "-sname";
+
+		  long_name ->
+			 "-name"
+
+	end,
+	NodeNameOption ++ " " ++ NodeName.
+
+
+
+% Returns the command-line option (a plain string) to be used to run a new
+% Erlang node with the specified TCP port restriction, with can be either the
+% 'no_restriction' atom or a pair of integers {MinTCPPort,MaxTCPPort}.
+%
+% If using a specific TCP/IP port range for a new node, the current node may
+% have to respect this constraint as well (see the FIREWALL_OPT make option in
+% common/GNUmakevars.inc), otherwise inter-node communication could fail.
+%
+get_tcp_port_range_option( no_restriction ) ->
+	"";
+
+get_tcp_port_range_option( {MinTCPPort,MaxTCPPort} ) when is_integer(MinTCPPort)
+		   andalso is_integer(MaxTCPPort) andalso MinTCPPort < MaxTCPPort ->
+
+	io_lib:format( " -kernel inet_dist_listen_min ~B inet_dist_listen_max ~B ",
+				  [ MinTCPPort, MaxTCPPort ] ).
+
+
+
+% Returns a plain string corresponding to a basic command-line command that can
+% be used to launch an Erlang node (interpreter) with the specified settings.
+get_basic_node_launching_command( NodeName, NodeNamingMode, EpmdSettings,
+								TCPSettings, AdditionalOptions ) ->
+
+	% May end up with a command-line option similar to:
+	% ERL_EPMD_PORT=754 erl -setcookie 'foobar' -sname hello
+	% -kernel inet_dist_listen_min 10000 inet_dist_listen_max 14000
+	% -noshell -smp auto +K true +A 8 +P 400000
+
+	text_utils:join( _Separator=" ", [
+			get_epmd_option(EpmdSettings),
+			executable_utils:get_default_erlang_interpreter(),
+			get_cookie_option(),
+			get_node_name_option( NodeName, NodeNamingMode ),
+			get_tcp_port_range_option( TCPSettings ),
+			AdditionalOptions ] ).
 
 
 
