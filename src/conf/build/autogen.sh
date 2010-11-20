@@ -1,5 +1,24 @@
 #!/bin/sh
 
+
+# debug mode activated iff equal to true (0):
+debug_mode=1
+
+debug()
+{
+	if [ $debug_mode -eq 0 ] ; then
+		echo "debug: $*"
+	fi
+}
+
+
+warning()
+{
+	echo "warning: $*" 1>&2
+}
+
+
+
 USAGE="
 
 Usage: "`basename $0`" [ -h | --help ] [ --nds ] [ --with-osdl-env-file <filename> ] [ -d | --disable-all-features ] [ -n | --no-build ] [ -c | --chain-test ] [ -f | --full-test ] [ -o | --only-prepare-dist ] [ --configure-options [option 1] [option 2] [...] ]: (re)generates all the autotools-based build system.
@@ -143,26 +162,8 @@ while [ $# -gt 0 ] ; do
 		exit 5
 	fi
 	shift
+
 done
-
-
-
-# debug mode activated iff equal to true (0):
-debug_mode=1
-
-debug()
-{
-	if [ $debug_mode -eq 0 ] ; then
-		echo "debug: $*"
-	fi
-}
-
-
-warning()
-{
-	echo "warning: $*" 1>&2
-}
-
 
 
 # Wait-after-execution mode activated iff equal to true (0):
