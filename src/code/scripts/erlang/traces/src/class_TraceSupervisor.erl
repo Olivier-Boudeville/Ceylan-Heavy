@@ -34,21 +34,35 @@
 
 
 % Determines what are the mother classes of this class (if any):
--wooper_superclasses([]).
+-define( wooper_superclasses, [] ).
+
+
+
+% Parameters taken by the constructor ('construct').
+-define( wooper_construct_parameters, TraceFilename, TraceType, MonitorNow,
+	Blocking ).
+
+
+
+% Declaring all variations of WOOPER standard life-cycle operations:
+% (template pasted, two replacements performed to update arities)
+-define( wooper_construct_export, new/4, new_link/4,
+	synchronous_new/4, synchronous_new_link/4,
+	synchronous_timed_new/4, synchronous_timed_new_link/4,
+	remote_new/5, remote_new_link/5, remote_synchronous_new/5,
+	remote_synchronous_new_link/5, remote_synchronous_timed_new/5,
+	remote_synchronous_timed_new_link/5, construct/5, delete/1 ).
 
 
 
 % Method declarations.
--wooper_member_methods([ monitor/1, blocking_monitor/1 ]).
+-define( wooper_method_export, monitor/1, blocking_monitor/1 ).
 
 
 
 % Static method declarations (to be directly called from module):
--wooper_static_methods([ create/0, create/1, create/2, create/3, create/4 ]).
-
--export([ delete/1 ]).
-
--wooper_attributes([ trace_filename, trace_type ]).
+-define( wooper_static_method_export, create/0, create/1, create/2, create/3,
+		create/4 ).
 
 
 % Allows to define WOOPER base variables and methods for that class:
@@ -94,7 +108,7 @@
 %  parameter should be the PID of the caller to be notified. This parameter has
 %  a meaning iff MonitorNow is true
 %
-construct( State, TraceFilename, TraceType, MonitorNow,	Blocking ) ->
+construct( State, ?wooper_construct_parameters ) ->
 
 	%io:format( "~s Creating a trace supervisor, whose PID is ~w.~n",
 	%	[ ?LogPrefix, self() ] ),
@@ -116,13 +130,25 @@ construct( State, TraceFilename, TraceType, MonitorNow,	Blocking ) ->
 					% ('monitor_ok' used to be temporarily replaced by '_'
 					% due to the LogMX issue with
 					% java_security_PrivilegedAction)
-					{RequestState,monitor_ok} = executeRequest(
-						NewState, blocking_monitor ),
+					case executeRequest( NewState, blocking_monitor ) of
 
-					% Sends back to the caller:
-					Pid ! {wooper_result,monitor_ok},
-					self() ! delete,
-					RequestState;
+						{RequestState,monitor_ok} ->
+							% Sends back to the caller:
+							Pid ! {wooper_result,monitor_ok},
+							self() ! delete,
+							RequestState;
+
+						{AnyState,monitor_failed} ->
+
+							% If needing to ignore a non-significant error from
+							% the supervision tool:
+							Pid ! {wooper_result,monitor_ok},
+							self() ! delete,
+							AnyState
+
+							%throw( blocking_monitoring_failed )
+
+					end;
 
 				none ->
 					% Non-blocking, handled after the constructor:
@@ -250,7 +276,8 @@ blocking_monitor(State) ->
 					error_logger:error_msg(
 						"The monitoring of trace supervisor failed: ~s.~n",
 						[ Other ] ),
-					?wooper_return_state_result( State, monitor_failed )
+					%?wooper_return_state_result( State, monitor_failed )
+					?wooper_return_state_result( State, monitor_ok )
 					%throw( trace_supervision_failed )
 
 			end

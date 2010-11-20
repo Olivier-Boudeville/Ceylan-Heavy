@@ -32,7 +32,6 @@
 %  - class_TraceListener
 %  - class_TraceSupervisor
 %  - class_TraceAggregator
-%
 % Made to be executed while the traceManagement_test is running.
 -module(traceListening_test).
 
@@ -60,8 +59,7 @@ send_traces( 0 ) ->
 	ok;
 
 send_traces( Count ) ->
-	?test_trace_fmt( "Emitting trace #~B from listener.", [Count] ),
-	%timer:sleep(100),
+	?test_trace_fmt( "Emitting trace #~B.", [Count] ),
 	send_traces( Count-1 ).
 
 
@@ -70,7 +68,7 @@ send_timed_traces( 0 ) ->
 	ok;
 
 send_timed_traces( Count ) ->
-	?test_trace_fmt( "Emitting timed trace #~B from listener.", [Count] ),
+	?test_trace_fmt( "Emitting timed trace #~B.", [Count] ),
 	timer:sleep(100),
 	send_timed_traces( Count-1 ).
 
@@ -94,12 +92,9 @@ test_actual_body() ->
 			ok;
 
 		pang ->
-
-			error_logger:error_msg( "Error, the trace management test "
-				"should already be running.~nFor example, execute "
-				"'make traceManagement_run' in another terminal.~n~n" ),
-			% No halting before the message is output:
-			timer:sleep(500),
+			io:format( ?Prefix "Error, the trace management test "
+				"should already be running.~n For example, execute "
+				"'make traceManagement_run' in another terminal.~n" ),
 			throw( {no_trace_aggregator_to_listen,TargetVMName} )
 
 	end,
@@ -108,7 +103,7 @@ test_actual_body() ->
 	global:sync(),
 
 	io:format( ?Prefix "Globally registered names: ~w.~n",
-		[ global:registered_names() ] ),
+		[global:registered_names()]),
 
 	AggregatorName = ?trace_aggregator_name,
 	io:format( ?Prefix "Looking up aggregator by name: ~s.~n",
@@ -122,8 +117,7 @@ test_actual_body() ->
 	end,
 
 	io:format( ?Prefix "Sending initial traces to force "
-		"a real synchronisation, with past, present, future messages.~n" ),
-
+		"a real synchronization.~n" ),
 	send_traces( 50 ),
 
 	% No ?test_start: we will be using the aggregator from the node named
@@ -135,11 +129,15 @@ test_actual_body() ->
 
 	% Could wait here for any event before stopping.
 
-
 	io:format( ?Prefix "Deleting this test trace listener.~n" ),
 
 	MyTraceListener ! delete,
 
+	% To ensure the message has been sent before the VM shuts down:
+	timer:sleep(500),
+
+	?test_info_fmt( "End of test for module(s) ~w.", [ ?Tested_modules ]  ),
+	check_pending_wooper_results(),
 	test_finished().
 
 
@@ -157,6 +155,9 @@ run() ->
 		{ok,_} ->
 			io:format( ?Prefix "Running in batch mode, no traceManagement_test "
 				"supposed to be running, nothing done.~n" ),
+			io_lib:format( "End of test for module(s) ~w.",
+				[ ?Tested_modules ] ),
+			check_pending_wooper_results(),
 			test_finished();
 
 		_ ->

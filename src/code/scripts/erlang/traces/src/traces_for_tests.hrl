@@ -31,16 +31,21 @@
 
 % To avoid warnings if not used:
 -export([ test_receive/0, test_failed/1, check_pending_wooper_results/0,
-		  test_finished/0 ]).
+		 test_finished/0 ]).
 
+
+
+% For testFinished:
+-include("test_facilities.hrl").
 
 
 % For TraceFilename:
--include("traces_defines.hrl").
+-include("traces.hrl").
 
 
-% For test_finished:
--include("test_facilities.hrl").
+
+% For TracingActivated:
+%-include("class_TraceEmitter.hrl").
 
 
 
@@ -236,15 +241,13 @@ test_trace_disabled(_,_) ->
 -else.
 
 
-% Here, even if traces are deactivated, a trace aggregator is created, as actors
-% expect to find one at start-up.
-%
+% Here, even if traces are deactivated, a trace aggregator is created, as
+% actors expect to find one at start-up.
 % However no trace supervisor is needed here.
 
 -define( test_start,
-	% Create first, synchronously (to avoid race conditions), a trace aggregator
-	% (false is to specify a non-private i.e. global aggregator).
-	%
+	% Create first, synchronously (to avoid race conditions), a trace
+	% aggregator (false is to specify a non-private i.e. global aggregator).
 	% Goes back to the beginning of line:
 	io:format( "~n" ),
 	TraceAggregatorPid = class_TraceAggregator:synchronous_new_link(
@@ -288,8 +291,8 @@ test_trace_disabled(_,_) ->
 
 
 
-% Helper function to write receive clauses in test simulation cases which cannot
-% interfere with trace supervision.
+% Helper function to write receive clauses in simulation cases (ex: tests) which
+% cannot interfere with trace supervision.
 %
 % Returns the received value.
 %
@@ -302,6 +305,7 @@ test_receive() ->
 	end.
 
 
+
 % Handles a test failure.
 test_failed(Reason) ->
 	% For some reason erlang:error is unable to interpret strings as strings,
@@ -310,7 +314,7 @@ test_failed(Reason) ->
 		[ ?Tested_modules, Reason ] ),
 	error_logger:error_msg( Message ),
 	?test_fatal( Message ),
-	% Needed, otherwise error_logger may not display anything:
+	% Needed, otherwise error_logger will not display anything:
 	timer:sleep(500),
 	erlang:error( "Test ~s failed.", [ ?MODULE ]).
 
@@ -318,7 +322,7 @@ test_failed(Reason) ->
 
 
 % Displays and flushes all remaining WOOPER results.
-% Defined here, since uses a trace.
+% Defines here, since uses a trace.
 check_pending_wooper_results() ->
 	receive
 

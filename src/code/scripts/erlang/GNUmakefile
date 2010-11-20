@@ -3,14 +3,17 @@ CEYLAN_ERLANG_TOP = .
 MODULES_DIRS = common wooper traces tools
 
 
-# No trace supervisor or graphical output wanted when running all tests from 
-# a root directory (batch mode vs interactive one):	 	
+# No trace supervisor or graphical output wanted when running all tests from
+# a root directory (batch mode vs interactive one):
 CMD_LINE_OPT = "--batch"
 
 
 PROJECT_NAME = "Ceylan-Erlang"
 
 
+# Defaults, to be overridden from the command-line or, more preferably, from a
+# Makefile from a parent directory:
+INSTALLATION_PREFIX :=
 
 .PHONY: all test install clean
 
@@ -52,4 +55,3 @@ clean:
 	$(MAKE) -s clean CMD_LINE_OPT="${CMD_LINE_OPT}" && cd .. \
 	; else echo "     (directory $$m skipped)" ; fi ) ; \
 	then exit 1; fi ; done
-

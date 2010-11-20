@@ -54,8 +54,8 @@
 
 % Location will be the current Erlang node, as determined by the trace emitter.
 
-% MessageCategorization will be either specified in the send macro, or set the
-% default categorization.
+% MessageCategorization will be either specified in the send macro, or
+% set the default categorization.
 
 % Following built-in message categorizations are available:
 
@@ -95,16 +95,14 @@
 
 
 
-% Section dedicated to trace emitters that are not WOOPER-based and dedicated to
-% tests.
-%
+% Section dedicated to trace emitters that are not WOOPER-based and dedicated
+% to tests.
 % See also: test_constructs.hrl.
 -define(DefaultTestMessageCategorization,"Test.Uncategorized").
 
 
-% Section dedicated to trace emitters that are not WOOPER-based and dedicated to
-% classical functions (as opposed to methods from class_TraceEmitter).
-%
+% Section dedicated to trace emitters that are not WOOPER-based and dedicated
+% to classical functions (as opposed to methods from class_TraceEmitter).
 % See also: traces.hrl.
 -define(DefaultStandaloneMessageCategorization,"Standalone.Uncategorized").
 
@@ -140,9 +138,7 @@
 % arities, thus LOG(X) and LOG(X,Y) cannot be defined without a name clash.
 % This explains why the trace informations have to be specified between brakets:
 % using LOG([X,Y]) instead of LOG(X,Y).
-%
 % Anonymous functions could be used as well.
-%
 % See http://www.nabble.com/question%3A-macro-definition-tt14840873.html
 
 % For each type of trace (fatal, error, warning, etc.), a few variations of the
@@ -1255,7 +1251,7 @@
 
 
 trace_disabled( _ ) ->
-	trace_disabled.
+ 	trace_disabled.
 
 
 trace_disabled( _, _ ) ->
@@ -1267,11 +1263,11 @@ trace_disabled( _, _, _ ) ->
 
 
 trace_disabled( _, _, _, _ ) ->
-	trace_disabled.
+ 	trace_disabled.
 
 
 trace_disabled( _, _, _, _, _ ) ->
-	trace_disabled.
+ 	trace_disabled.
 
 
 
@@ -1319,7 +1315,7 @@ trace_disabled( _, _, _, _, _ ) ->
 
 -define( send_fatal_full( State, Message, MessageCategorization, Tick ),
 		 ?send_fatal( State, Message ++ "(" ++ MessageCategorization
-					 ++ io_lib:format( ") at tick ~w", [Tick] ) )
+		 			 ++ io_lib:format( ") at tick ~w", [Tick] ) )
 ).
 
 
@@ -1348,15 +1344,15 @@ trace_disabled( _, _, _, _, _ ) ->
 
 
 -define( send_fatal_fmt_cat( State, Message, FormatValues,
-							 MessageCategorization ),
+		 					 MessageCategorization ),
 		 ?send_fatal( State, io_lib:format(Message,FormatValues)
-					 ++ "(" ++ MessageCategorization ++ ")" )
+		 			 ++ "(" ++ MessageCategorization ++ ")" )
 ).
 
 
 -define( fatal_fmt_cat( Message, FormatValues, MessageCategorization ),
 		 ?send_fatal_fmt_cat( State, Message, FormatValues,
-							  MessageCategorization )
+		 					  MessageCategorization )
 ).
 
 
@@ -1366,14 +1362,14 @@ trace_disabled( _, _, _, _, _ ) ->
 -define( send_fatal_fmt_full( State, Message, FormatValues,
 						  MessageCategorization, Tick ),
 		 ?send_fatal( State, io_lib:format(Message,FormatValues)
-					 ++ "(" ++ MessageCategorization
+		 			 ++ "(" ++ MessageCategorization
 					 ++ io_lib:format( ") at tick ~w", [Tick] ) )
 ).
 
 
 -define( fatal_fmt_full( Message, FormatValues, MessageCategorization, Tick ),
 		 ?send_fatal_fmt_full( State, Message, FormatValues,
-							   MessageCategorization, Tick )
+		 					   MessageCategorization, Tick )
 ).
 
 
@@ -1456,15 +1452,15 @@ trace_disabled( _, _, _, _, _ ) ->
 
 
 -define( send_error_fmt_cat( State, Message, FormatValues,
-							 MessageCategorization ),
+		 					 MessageCategorization ),
 		 ?send_error( State, io_lib:format(Message,FormatValues)
-					 ++ "(" ++ MessageCategorization ++ ")" )
+		 			 ++ "(" ++ MessageCategorization ++ ")" )
 ).
 
 
 -define( error_fmt_cat( Message, FormatValues, MessageCategorization ),
 		 ?send_error_fmt_cat( State, Message, FormatValues,
-							  MessageCategorization )
+		 					  MessageCategorization )
 ).
 
 
@@ -1477,14 +1473,14 @@ trace_disabled( _, _, _, _, _ ) ->
 -define( send_error_fmt_full( State, Message, FormatValues,
 						  MessageCategorization, Tick ),
 		 ?send_error( State, io_lib:format(Message,FormatValues)
-					 ++ "(" ++ MessageCategorization
+		 			 ++ "(" ++ MessageCategorization
 					 ++ io_lib:format( ") at tick ~w", [Tick] ) )
 ).
 
 
 -define( error_fmt_full( Message, FormatValues, MessageCategorization, Tick ),
 		 ?send_error_fmt_full( State, Message, FormatValues,
-							   MessageCategorization, Tick )
+		 					   MessageCategorization, Tick )
 ).
 
 
@@ -1554,9 +1550,9 @@ trace_disabled( _, _, _, _, _ ) ->
 
 
 -define( send_warning_fmt_cat( State, Message, FormatValues,
-							 MessageCategorization ),
+		 					 MessageCategorization ),
 		trace_disabled( State, Message, FormatValues,
-							 MessageCategorization )
+		 					 MessageCategorization )
 ).
 
 
@@ -1655,7 +1651,7 @@ trace_disabled( _, _, _, _, _ ) ->
 
 
 -define( send_info_fmt_cat( State, Message, FormatValues,
-							 MessageCategorization ),
+		 					 MessageCategorization ),
 		trace_disabled( State, Message, FormatValues, MessageCategorization )
 ).
 
@@ -1752,9 +1748,9 @@ trace_disabled( _, _, _, _, _ ) ->
 
 
 -define( send_trace_fmt_cat( State, Message, FormatValues,
-							 MessageCategorization ),
+		 					 MessageCategorization ),
 		 trace_disabled( State, Message, FormatValues,
-							 MessageCategorization )
+		 					 MessageCategorization )
 ).
 
 
@@ -1853,9 +1849,9 @@ trace_disabled( _, _, _, _, _ ) ->
 
 
 -define( send_debug_fmt_cat( State, Message, FormatValues,
-							 MessageCategorization ),
+		 					 MessageCategorization ),
 		 trace_disabled( State, Message, FormatValues,
-							 MessageCategorization )
+		 					 MessageCategorization )
 ).
 
 

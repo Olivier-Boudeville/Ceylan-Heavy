@@ -34,44 +34,45 @@
 
 
 % Determines what are the mother classes of this class (if any):
--wooper_superclasses([]).
+-define( wooper_superclasses, [] ).
 
 
-% TraceEmitterCategorization will be set in the trace_categorization attribute
+
+% Parameters taken by the constructor ('construct').
+% These are class-specific data needing to be set in the constructor:
+% (TraceEmitterCategorization will be set in the trace_categorization attribute
 % of each child class when coming down the inheritance hierarchy, so that the
-% latest child class sets its targeted trace_categorization value.
+% latest child class sets its targeted trace_categorization value)
+-define( wooper_construct_parameters, TraceEmitterName ).
 
 
 
-% Member method declarations:
--wooper_member_methods([
-		getName/1, setName/2,
+% Declaring all variations of WOOPER standard life-cycle operations:
+% (just a matter of a copy/paste followed by the replacement of arities)
+-export([ new/1, new_link/1, synchronous_new/1, synchronous_new_link/1,
+		synchronous_timed_new/1, synchronous_timed_new_link/1,
+		remote_new/2, remote_new_link/2, remote_synchronous_new/2,
+		remote_synchronous_new_link/2, remote_synchronous_timed_new/2,
+		remote_synchronous_timed_new_link/2, construct/2, delete/1 ]).
+
+
+
+% Member method declarations.
+-define( wooper_method_export, getName/1, setName/2,
 		getInitialTick/1, setInitialTick/2,
 		getCurrentTickOffset/1, setCurrentTickOffset/2,
 		getCurrentTick/1,
-		display/1, toString/1 ]).
+		display/1, toString/1 ).
 
 
-% Static method declarations:
--wooper_static_methods([ get_current_tick/1, get_plain_name/1 ]).
-
--wooper_attributes([
-					 name,
-					 initial_tick,
-					 current_tick_offset,
-					 emitter_node,
-					 trace_aggregator_pid,
-					 trace_categorization
- ]).
-
-
--export([ delete/1 ]).
+% Static method declarations.
+-define( wooper_static_method_export, get_current_tick/1, get_plain_name/1 ).
 
 
 % Helper functions:
 -export([ send/3, send/4, send/5,
-		send_from_test/2, send_standalone/2,
-		get_channel_name_for_priority/1 ]).
+		 send_from_test/2, send_standalone/2,
+		 get_channel_name_for_priority/1 ]).
 
 
 
@@ -105,14 +106,15 @@
 % get_current_tick/1 function, is determined based on the addition of:
 %
 %  - the initial emitter tick (initial_tick), a supposedly absolute time
-%  reference (possibly a very large integer)
+%  reference (possibly a very large integer), whatever this reference may be
+%  (creation tick for that instance, initial execution tick, etc.)
 %
 %  - the current tick offset of the emitter (current_tick_offset), defined
 %  relatively (i.e. as an offset) to initial_tick; this offset is generally able
 %  to fit in a platform-native integer, therefore, for increased performances,
 %  processings should be based preferably on offsets rather than on absolute
 %  time references
-%
+
 % To reduce the memory footprint in the trace aggregator mailbox and the size of
 % messages sent over the network, most of the time binaries are used instead of
 % plain strings.
@@ -125,7 +127,7 @@
 %
 % EmitterName is a plain string containing the name of this trace emitter, ex:
 % 'MyObject-16'.
-construct( State, TraceEmitterName ) ->
+construct( State, ?wooper_construct_parameters ) ->
 
 	%io:format( "~s Creating a trace emitter whose name is ~s, "
 	%	"whose PID is ~w and whose categorization is ~s.~n",
@@ -146,8 +148,8 @@ construct( State, TraceEmitterName ) ->
 		{current_tick_offset,undefined},
 		{emitter_node,get_emitter_node_as_binary()},
 		{trace_aggregator_pid,AggregatorPid},
-		% Should be converted to binary each time when set, but will not crash
-		% if remaining a plain string:
+		% Should be converted to binary each time when set (but will not crash
+		% if remaining a plain string):
 		{trace_categorization,
 		 text_utils:string_to_binary(?TraceEmitterCategorization)}
 						   ] ).
@@ -241,14 +243,13 @@ getCurrentTick(State) ->
 
 % Displays the state in the console.
 display(State) ->
-	%wooper_display_instance(State),
+	wooper_display_instance(State),
 	?wooper_return_state_only( State ).
 
 
 % Returns a textual description of this emitter.
 toString(State) ->
-	%?wooper_return_state_result( State, wooper_state_toString(State) ).
-	?wooper_return_state_result( State, "not available" ).
+	?wooper_return_state_result( State, wooper_state_toString(State) ).
 
 
 
@@ -290,15 +291,16 @@ send( TraceType, State, Message, MessageCategorization, Tick ) ->
 	%	"tick = ~w, user time = ~s, location = ~s, "
 	%	"message categorization = ~s, trace type = ~w, message = ~s ~n",
 		[ self(), ?getAttr(name), ?getAttr(trace_categorization), Tick,
-		 TimestampText, ?getAttr(emitter_node),
-		 text_utils:string_to_binary(MessageCategorization),
-		 get_priority_for(TraceType), text_utils:string_to_binary(Message) ]
+		TimestampText, ?getAttr(emitter_node),
+		text_utils:string_to_binary(MessageCategorization),
+		get_priority_for(TraceType), text_utils:string_to_binary(Message) ]
 	% ).
 	}.
 
 
 
 % Sends all types of traces without requiring a class_TraceEmitter state.
+%
 % Uses default trace aggregator, supposed to be already available and
 % registered.
 %

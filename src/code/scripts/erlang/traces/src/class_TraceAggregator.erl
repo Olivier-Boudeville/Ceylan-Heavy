@@ -40,25 +40,39 @@
 
 % Determines what are the mother classes of this class (if any):
 % (the trace aggregator is not a trace emitter)
--wooper_superclasses([]).
+-define( wooper_superclasses,[]).
+
+
+
+% Parameters taken by the constructor ('construct').
+-define( wooper_construct_parameters, TraceFilename, TraceType, TraceTitle,
+		IsPrivate, IsBatch ).
+
+
+
+% Declaring all variations of WOOPER standard life-cycle operations:
+% (template pasted, two replacements performed to update arities)
+-define( wooper_construct_export, new/5, new_link/5,
+		synchronous_new/5, synchronous_new_link/5,
+		synchronous_timed_new/5, synchronous_timed_new_link/5,
+		remote_new/6, remote_new_link/6, remote_synchronous_new/6,
+		remote_synchronous_new_link/6, remote_synchronous_timed_new/6,
+		remote_synchronous_timed_new_link/6, construct/6, delete/1 ).
+
 
 
 % Member method declarations.
--wooper_member_methods([ send/10, addTraceListener/2, removeTraceListener/2 ]).
+-define( wooper_method_export, send/10, addTraceListener/2,
+		removeTraceListener/2 ).
 
 
 % Static method declarations (to be directly called from module):
--wooper_static_methods([ create/1, get_aggregator/1, remove/0 ]).
-
--wooper_attributes([ trace_filename, trace_file, trace_type,
-					 trace_title, trace_listeners, overload_monitor_pid,
-					 is_batch, is_private ]).
+-export([ create/1, get_aggregator/1, remove/0 ]).
 
 
 % To spawn the overload monitoring process:
 -export([ overload_monitor_main_loop/1 ]).
 
--export([ delete/1 ]).
 
 % Allows to define WOOPER base variables and methods for that class:
 -include("wooper.hrl").
@@ -112,7 +126,7 @@
 %  trace type is {text_traces,pdf}, so that this aggregator does not display the
 %  produced PDF when in batch mode
 %
-construct( State, TraceFilename, TraceType, TraceTitle,	IsPrivate, IsBatch ) ->
+construct( State, ?wooper_construct_parameters ) ->
 
 	% First the direct mother classes (none), then this class-specific actions:
 
@@ -231,7 +245,7 @@ delete(State) ->
 									  [ ?LogPrefix ] ),
 
 							executable_utils:display_pdf_file(
-							  PdfTargetFilename )
+							   PdfTargetFilename )
 
 						end;
 
@@ -268,9 +282,9 @@ send( State, TraceEmitterPid, TraceEmitterName, TraceEmitterCategorization,
 
 	% Useful to check that all fields are of minimal sizes (ex: binaries):
 	%io:format( "- TraceEmitterPid: ~w~n- TraceEmitterName: ~w~n"
-	%			"- TraceEmitterCategorization: ~w~n- Tick: ~w~n- Time: ~w~n"
-	%			"- Location: ~w~n- MessageCategorization: ~w~n- Priority: ~w~n"
-	%			"- Message: ~w~n~n",
+	%		   "- TraceEmitterCategorization: ~w~n- Tick: ~w~n- Time: ~w~n"
+	%		   "- Location: ~w~n- MessageCategorization: ~w~n- Priority: ~w~n"
+	%		   "- Message: ~w~n~n",
 	%		  [TraceEmitterPid,TraceEmitterName,TraceEmitterCategorization,
 	%		  Tick,Time,Location,MessageCategorization,Priority,Message ] ),
 
@@ -292,7 +306,13 @@ send( State, TraceEmitterPid, TraceEmitterName, TraceEmitterCategorization,
 
 		_Other ->
 			BinTrace = text_utils:string_to_binary(Trace),
-			[ L ! {addTrace,BinTrace} || L <- Listeners ]
+			lists:foreach(
+				fun(Listener) ->
+
+					Listener ! {addTrace,BinTrace}
+
+				end,
+				Listeners )
 
 	end,
 	?wooper_return_state_only( State ).
@@ -300,40 +320,26 @@ send( State, TraceEmitterPid, TraceEmitterName, TraceEmitterCategorization,
 
 
 % Adds specified trace listener to this aggregator.
-%
 % (oneway)
-addTraceListener( State, ListenerPid ) ->
-
+addTraceListener(State,ListenerPid) ->
 	% Better log this events directly in the traces:
 	NewState = case ?getAttr(trace_type) of
 
 		log_mx_traces ->
-
+			% Not a trace emitter but still able to send traces:
 			?notify_info_fmt( "Trace aggregator adding trace listener ~w, "
 				"and sending it previous traces.~n", [ ListenerPid ] ),
-
 			% Transfer file:
 			TraceFilename = ?getAttr(trace_filename),
-
-			% We *must* force the flushing of the file into disk, otherwise we
-			% experienced cases where some traces are still in the file write
-			% cache (we use delayed_write): as a consequence, not being included
-			% into the zip, but being already processed by the aggregator, a
-			% listener may lost them all.
-			ok = file:sync( ?getAttr(trace_file) ),
-
 			Bin = file_utils:file_to_zipped_term( TraceFilename ),
 			ListenerPid ! {trace_zip,Bin,TraceFilename},
-			appendToAttribute( State, trace_listeners, ListenerPid);
+			appendToAttribute( State, trace_listeners,	ListenerPid);
 
 		OtherTraceType ->
-
 			Message = io_lib:format(
-						"Trace aggregator not adding trace listener ~w, "
-						"as this requires this aggregator to target "
-						"LogMX traces, whereas the current trace type is ~w.~n",
-						[ ListenerPid, OtherTraceType ] ),
-
+				"Trace aggregator not adding trace listener ~w, "
+				"as it requires LogMX traces, whereas the current trace "
+				"type is ~w.~n", [ ListenerPid, OtherTraceType ] ),
 			io:format( "Warning: " ++ Message ),
 			?notify_warning( Message ),
 			ListenerPid ! {trace_zip,incompatible_trace_type},
@@ -345,16 +351,11 @@ addTraceListener( State, ListenerPid ) ->
 
 
 % Removes specified trace listener from this aggregator.
-%
 % (oneway)
-removeTraceListener( State, ListenerPid ) ->
-
+removeTraceListener(State,ListenerPid) ->
 	io:format( "~s Removing trace listener ~w.~n",
 		[ ?LogPrefix, ListenerPid ] ),
-
-	UnregisterState = deleteFromAttribute( State, trace_listeners,
-										   ListenerPid ),
-
+	UnregisterState = deleteFromAttribute(State,trace_listeners,ListenerPid),
 	?wooper_return_state_only( UnregisterState ).
 
 
@@ -373,14 +374,12 @@ create( UseSynchronousNew ) ->
 % Creates the trace aggregator asynchronously, using specified trace type.
 % (static)
 create( _UseSynchronousNew=false, TraceType ) ->
-
 	new_link( ?trace_aggregator_filename, TraceType, ?TraceTitle,
 		_IsPrivate=false, _IsBatch=false  );
 
 % Creates the trace aggregator synchronously, using specified trace type.
 % (static)
-create( _UseSynchronousNew=true, TraceType ) ->
-
+create( _UseSynchronousNew = true, TraceType ) ->
 	% Trace filename, isPrivate:
 	synchronous_new_link( ?trace_aggregator_filename, TraceType,
 		?TraceTitle, _IsPrivate=false, _IsBatch=false ).
@@ -395,9 +394,9 @@ create( _UseSynchronousNew=true, TraceType ) ->
 % notification (if false).
 %
 % Note: to avoid race conditions between concurrent calls to this static method
-% (ex: due to multiple trace emitter instances created in parallel), an
-% execution might start with a call to this method with a blocking wait until
-% the aggregator pops up in registry services.
+% (ex: due to multiple trace emitter instances created in parallel), an execution
+% might start with a call to this method with a blocking wait until the
+% aggregator pops up in registry services.
 %
 % Waits a bit before giving up: useful when client and aggregator processes are
 % launched almost simultaneously.
@@ -455,7 +454,6 @@ get_aggregator(CreateIfNotAvailable) ->
 
 
 % Deletes the trace aggregator.
-%
 % (static)
 remove() ->
 
@@ -506,7 +504,6 @@ overload_monitor_main_loop( AggregatorPid ) ->
 
 
 % Columns in text traces have fixed width, in characters (total: 110).
-%
 % In this mode, by default, emitter categorization, location and message
 % categorization are not written.
 
@@ -558,7 +555,6 @@ overload_monitor_main_loop( AggregatorPid ) ->
 
 % Takes care of any header in the trace header.
 % Returns an updated state.
-%
 % (helper function)
 manage_trace_header(State) ->
 
@@ -617,7 +613,6 @@ manage_trace_header(State) ->
 
 % Takes care of any header in the trace header.
 % Returns an updated state.
-%
 % (helper function)
 manage_trace_footer(State) ->
 
@@ -639,16 +634,12 @@ manage_trace_footer(State) ->
 
 
 % Returns the typical separator between array rows.
-%
-% (helper function)
 get_row_separator() ->
 	get_row_separator($-).
 
 
 % Returns the typical separator between array rows, with specified dash element
 % to represent horizontal lines.
-%
-% (helper function)
 get_row_separator(DashType) ->
 	[$+] ++ string:chars(DashType,?PidWidth)
 		++ [$+] ++ string:chars(DashType,?EmitterNameWidth)
@@ -661,14 +652,10 @@ get_row_separator(DashType) ->
 
 
 % Formats specified trace according to specified trace type.
-%
 % Returns a plain string.
-%
-% (helper function)
 format_trace_for( log_mx_traces, {TraceEmitterPid,
 		TraceEmitterName, TraceEmitterCategorization, Tick, Time, Location,
 		MessageCategorization, Priority, Message} ) ->
-
 	lists:flatten( io_lib:format( "~w|~s|~s|~w|~s|~s|~s|~w|~s~n",
 		[ TraceEmitterPid, TraceEmitterName, TraceEmitterCategorization,
 		Tick, Time, Location, MessageCategorization, Priority, Message ] ) );
@@ -709,8 +696,6 @@ format_trace_for( {text_traces,_TargetFormat}, {TraceEmitterPid,
 
 
 % Formats specified list of linesets.
-%
-% (helper function)
 format_linesets( PidLines, EmitterNameLines, TickLines, TimeLines,
 		PriorityLines, MessageLines ) ->
 
@@ -734,8 +719,6 @@ format_linesets( PidLines, EmitterNameLines, TickLines, TimeLines,
 
 % Returns a list of full lines, made from the lines of each column.
 % Here we finished to handle all lines (none remaining):
-%
-% (helper function)
 format_full_lines( _Rows, [], 0, Res, CurrentLine ) ->
 	lists:reverse( [CurrentLine|Res] ) ;
 
