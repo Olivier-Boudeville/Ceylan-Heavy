@@ -34,7 +34,9 @@
 
 
 % Timestamp-related functions.
--export([ get_timestamp/0, get_textual_timestamp/0, get_textual_timestamp/1,
+-export([ get_timestamp/0,
+		 get_textual_timestamp/0, get_textual_timestamp/1,
+		 get_textual_timestamp_for_path/0, get_textual_timestamp_for_path/1,
 		 timestamp_to_string/1, get_duration/2, get_textual_duration/2,
 		 get_precise_timestamp/0, get_precise_duration/2 ]).
 
@@ -57,7 +59,7 @@
 
 % List management functions.
 -export([ get_element_at/2, remove_element_at/2, uniquify/1,
-		  subtract_all_duplicates/2, append_at_end/2 ]).
+		 subtract_all_duplicates/2, append_at_end/2 ]).
 
 
 
@@ -66,16 +68,14 @@
 
 
 
-% Node-related functions.
--export([ generate_valid_node_name_from/1, generate_valid_atom_node_name_from/1,
-		  check_node_validity/1 ]).
-
+% Code-related functions.
+-export([ get_code_for/1, deploy_modules/2, deploy_modules/3 ]).
 
 
 % Miscellaneous functions.
 -export([ flush_pending_messages/0, checkpoint/1, compare_versions/2,
-		 sum_probabilities/1, draw_element/1, draw_element/2,
-		 get_process_specific_value/0, get_process_specific_value/2 ]).
+		sum_probabilities/1, draw_element/1, draw_element/2,
+		get_process_specific_value/0, get_process_specific_value/2 ]).
 
 
 
@@ -100,9 +100,24 @@ get_textual_timestamp() ->
 	get_textual_timestamp( get_timestamp() ).
 
 
-
-get_textual_timestamp({{Year,Month,Day},{Hour,Minute,Second}}) ->
+% Returns a string corresponding to the specified timestamp, like:
+% "2009/9/1 11:46:53".
+get_textual_timestamp( { {Year,Month,Day}, {Hour,Minute,Second} } ) ->
 	io_lib:format( "~p/~p/~p ~B:~2..0B:~2..0B",
+		[Year,Month,Day,Hour,Minute,Second] ).
+
+
+
+% Returns a string corresponding to the current timestamp and able to be a part
+% of a path, like: "2009/9/1 11:46:53".
+get_textual_timestamp_for_path() ->
+	get_textual_timestamp_for_path( get_timestamp() ).
+
+
+% Returns a string corresponding to the specified timestamp and able to be a
+% part of a path, like: "2009/9/1 11:46:53".
+get_textual_timestamp_for_path( { {Year,Month,Day}, {Hour,Minute,Second} } ) ->
+	io_lib:format( "~p-~p-~p-at-~Bh-~2..0Bm-~2..0Bs",
 		[Year,Month,Day,Hour,Minute,Second] ).
 
 
@@ -527,6 +542,7 @@ random_permute( List, RemainingLen ) ->
 
 
 
+
 % Returns a string containing a new universally unique identifier (UUID), based
 % on the system clock plus the system's ethernet hardware address, if present.
 generate_uuid() ->
@@ -539,7 +555,7 @@ generate_uuid() ->
 % List management functions.
 
 
-% Index starts at position #1, not #0.
+% Index start at position #1, not #0.
 
 % Returns the element in the list at the specified index, in [1..length(List)].
 %
@@ -553,10 +569,10 @@ get_element_at( List, Index ) ->
 
 
 %% get_element_at( List, 1 ) ->
-%%	hd(List);
+%% 	hd(List);
 
 %% get_element_at( [_H|T], Index ) ->
-%%	get_element_at( T, Index-1 ).
+%% 	get_element_at( T, Index-1 ).
 
 
 
@@ -589,8 +605,6 @@ remove_element_at( [_H|RemainingList], 1, Result ) ->
 
 remove_element_at( [H|RemainingList], Index, Result ) ->
 	remove_element_at( RemainingList, Index-1, [H|Result] ).
-
-
 
 
 % Returns a list whose elements are the ones of the specified list, except that
@@ -654,52 +668,77 @@ notify_user(Message,FormatList) ->
 
 
 
-% Node-related functions.
+% Code-related functions.
 
 
-% Returns a name (as a plain string) that is a legal name for an Erlang node,
-% forged from specified name (specified as a plain string).
+% Returns a {ModuleBinary,ModuleFilename} pair for the module specified as an
+% atom, or throws an exception.
+get_code_for( ModuleName ) ->
+
+	case code:get_object_code( ModuleName ) of
+
+		{ModuleName,ModuleBinary,ModuleFilename} ->
+			{ModuleBinary,ModuleFilename};
+
+		error ->
+			throw( {module_code_lookup_failed,ModuleName} )
+
+	end.
+
+
+
+
+% RPC default time-out, in milliseconds:
+% (30s, could be infinity)
+-define( rpc_timeout, 30*1000 ).
+
+
+% Deploys the specified list of modules on the specified list of nodes (atoms):
+% sends them these modules (as a binary), and load them so that they are ready
+% for future use.
+deploy_modules( Modules, Nodes ) ->
+	deploy_modules( Modules, Nodes, _Timeout=?rpc_timeout ).
+
+
+% Deploys the specified list of modules on the specified list of nodes (atoms):
+% sends them these modules (as a binary), and load them so that they are ready
+% for future use.
 %
-% Note: erlang:list_to_atom/1 not used here, as the user may wish for example to
-% add a prefix or a suffix before.
-generate_valid_node_name_from( Name ) when is_list(Name) ->
-
-	% Replaces each series of spaces (' '), lower than ('<'), greater than
-	% ('>'), comma (','), left ('(') and right (')') parentheses, single (''')
-	% and double ('"') quotes, forward ('/') and backward ('\') slashes,
-	% ampersand ('&'), tilde ('~'), sharp ('#'), at sign ('@'), all other kinds
-	% of brackets ('{', '}', '[', ']'), pipe ('|'), dollar ('$'), star ('*'),
-	% marks ('?' and '!'), plus ('+'), other punctation signs (';', '.' and ':')
-	% by exactly one underscore:
-	%
-	% (see also: file_utils:convert_to_filename/1)
-	re:replace( lists:flatten(Name),
-			   "( |<|>|,|\\(|\\)|'|\"|/|\\\\|\&|~|"
-			   "#|@|{|}|\\[|\\]|\\||\\$|\\*|\\?|!|\\+|;|\\.|:)+", "_",
-		 [global,{return, list}] ).
+% Timeout is the time-out duration, either an integer number of milliseconds, or
+% the infinity atom.
+deploy_modules( Modules, Nodes, Timeout ) ->
+	% For each module in turn, contact each and every node in parallel:
+	[ deploy_module( M, get_code_for(M), Nodes, Timeout ) || M <- Modules ].
 
 
 
-% Returns a name (as an atom) that is a legal name for an Erlang node,
-% forged from specified name (specified as a plain string).
-generate_valid_atom_node_name_from( Name ) when is_list(Name) ->
-	erlang:list_to_atom( generate_valid_node_name_from(Name) ).
+% (helper function)
+deploy_module( ModuleName, {ModuleBinary,ModuleFilename}, Nodes, Timeout ) ->
 
+	{ResList,BadNodes} = rpc:multicall( Nodes, code,
+				load_binary,
+				[ ModuleName, ModuleFilename, ModuleBinary ],
+				Timeout ),
 
+	ReportedErrors = [ E || {error,E} <- ResList ],
 
-% Returns true iff the specified node is available, Erlang-wise.
-check_node_validity( Node ) when is_list(Node) ->
-	% ping requires atoms:
-	check_node_validity( list_to_atom(Node) ) ;
+	case BadNodes of
 
-check_node_validity( Node ) when is_atom(Node) ->
-	case net_adm:ping( Node ) of
+		[] ->
+			case ReportedErrors of
 
-		pong ->
-			true ;
+				[] ->
+					ok;
 
-		pang ->
-			false
+				_ ->
+					throw( {module_deployment_failed,ModuleName,
+						ReportedErrors} )
+
+			end;
+
+		_ ->
+			throw( {module_deployment_failed,ModuleName,
+					{ReportedErrors,BadNodes}} )
 
 	end.
 
