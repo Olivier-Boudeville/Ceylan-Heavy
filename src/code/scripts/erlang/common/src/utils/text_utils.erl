@@ -47,8 +47,9 @@
 		 percent_to_string/1, percent_to_string/2,
 		 distance_to_string/1, distance_to_short_string/1,
 		 duration_to_string/1,
+		 uppercase_initial_letter/1,
 		 join/2, remove_ending_carriage_return/1, format_text_for_width/2,
-		 pad_string/2, is_string/1 ]).
+		 pad_string/2, is_string/1, is_list_of_strings/1 ]).
 
 
 % Restructured-Text (RST) related functions.
@@ -57,6 +58,9 @@
 
 % Miscellaneous functions.
 -export([ generate_text_name_from/1 ]).
+
+
+
 
 
 
@@ -226,7 +230,7 @@ distance_to_string( Millimeters ) ->
 			OneElement;
 
 		[Smaller|Bigger] ->
-			text_utils:join( ", ", lists:reverse(Bigger) ) ++ " and " ++ Smaller
+			join( ", ", lists:reverse(Bigger) ) ++ " and " ++ Smaller
 
 	end.
 
@@ -385,9 +389,10 @@ duration_to_string( Milliseconds ) ->
 			OneElement;
 
 		[Smaller|Bigger] ->
-			text_utils:join( ", ", lists:reverse(Bigger) ) ++ " and " ++ Smaller
+			join( ", ", lists:reverse(Bigger) ) ++ " and " ++ Smaller
 
 	end.
+
 
 
 % Converts a plain (list-based) string into a binary.
@@ -442,12 +447,26 @@ string_to_float( String ) ->
 
 
 
+% Returns the specified string, ensuring that its first letter is a majuscule,
+% uppercasing it if necessary.
+uppercase_initial_letter( [] ) ->
+	[];
+
+uppercase_initial_letter( [First|Others] ) ->
+	[string:to_upper(First)|Others].
+
+
+
 % join(Separator,ListToJoin), ex: join( '-', [ "Barbara", "Ann" ] ).
+%
 % Python-like 'join', combines items in a list into a string using a separator
 % between each item representation.
+%
 % Inspired from http://www.trapexit.org/String_join_with.
+%
 % For file-related paths, you are expected to use portable standard
 % filename:join functions instead.
+%
 % Note: use string:tokens to split the string.
 join(_Separator,[]) ->
 	"";
@@ -463,7 +482,7 @@ join(_Separator,[H| [] ],Acc) ->
 	[H|Acc];
 
 join(Separator,[H|T],Acc) ->
-	join(Separator, T, [Separator, H|Acc]).
+	join(Separator, T, [Separator,H|Acc]).
 
 
 
@@ -575,7 +594,9 @@ pad_string( String, Width ) when length(String) =< Width ->
 
 
 
-% Returns true iff the parameter is a string.
+% Returns true iff the parameter is a (non-nested) string (actually a plain list
+% of integers).
+%
 % Taken from http://lethain.com
 % (see distinguishing-strings-from-lists-in-erlang)
 % Note: something like [ $e, 1, 2, $r ] is deemed to be a string.
@@ -590,6 +611,25 @@ is_string( [_|T] ) ->
 
 is_string( _Other ) ->
 	false.
+
+
+
+% Returns true iff the specified parameter is a list whose all elements are
+% strings.
+is_list_of_strings( [] ) ->
+	true;
+
+is_list_of_strings( [H|T] ) ->
+
+	case is_string(H) of
+
+		true ->
+			is_list_of_strings( T );
+
+		false ->
+			false
+
+	end.
 
 
 
