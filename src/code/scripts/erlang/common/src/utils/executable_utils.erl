@@ -37,16 +37,18 @@
 
 % Section for most usual commands:
 -export([ generate_png_from_graph_file/2,
-	generate_png_from_graph_file/3, display_png_file/1, display_pdf_file/1,
+	generate_png_from_graph_file/3, display_png_file/1, browse_images_in/1,
+		 display_pdf_file/1,
 	display_text_file/1, display_wide_text_file/2, get_ssh_mute_option/0 ]).
 
 
 
 % Section about default tools:
--export([ get_default_image_viewer/0, get_default_pdf_viewer/0,
+-export([ get_default_image_viewer/0, get_default_image_browser/0,
+		 get_default_pdf_viewer/0,
 		 get_default_text_viewer/0, get_default_wide_text_viewer/1,
-		 get_default_trace_viewer/0 ]).
-
+		 get_default_trace_viewer/0, get_default_erlang_interpreter/0,
+		 get_default_ssh_client/0, get_default_scp_executable/0 ]).
 
 
 
@@ -95,6 +97,13 @@ display_png_file( PNGFilename ) ->
 
 
 
+% Allows to browser the images available in specified directory (specified as a
+% plain string).
+browse_images_in( DirectoryName ) ->
+	os:cmd( get_default_image_browser() ++ " " ++ DirectoryName ++ " &" ).
+
+
+
 % Displays (without blocking) to the user the specified PNG, using an external
 % viewer.
 display_pdf_file( PDFFilename ) ->
@@ -137,6 +146,13 @@ get_default_image_viewer() ->
 	"eog".
 
 
+% Returns the name of the default image browser tool.
+% Could be also: geeqie (new name)
+get_default_image_browser() ->
+	% Compatibility alias:
+	"gqview".
+
+
 % Returns the name of the default PDF viewer tool.
 % Could be also: xpdf, acroread, etc.
 get_default_pdf_viewer() ->
@@ -158,9 +174,26 @@ get_default_wide_text_viewer(_CharacterWidth) ->
 % Returns the default trace viewer tool.
 % Could be also: nedit, gedit, etc.
 get_default_trace_viewer() ->
-	% logmx.sh must be found in the PATH:
+	% Note: expected to be on the PATH:
 	"logmx.sh".
 
+
+% Returns the path to the default Erlang interpreter.
+get_default_erlang_interpreter() ->
+	% Note: expected to be on the PATH:
+	"erl".
+
+
+% Returns the path to the default SSH client.
+get_default_ssh_client() ->
+	% Note: expected to be on the PATH:
+	"ssh".
+
+
+% Returns the path to the default SSH-based scp executable.
+get_default_scp_executable() ->
+	% Note: expected to be on the PATH:
+	"scp".
 
 
 
