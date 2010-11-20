@@ -30,12 +30,10 @@
 -module(basic_utils_test).
 
 
+-export([ run/0 ]).
 
--define(Tested_modules, [basic_utils] ).
 
-
-% For test_finished/0 and al:
--include("test_facilities.hrl").
+-define( Tested_module, basic_utils ).
 
 
 check_process_specific_values( Min, Max ) ->
@@ -53,13 +51,16 @@ check_process_specific_values( Min, Max ) ->
 
 run() ->
 
-	io:format( "--> Testing modules ~w.~n", [ ?Tested_modules ] ),
+	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
 
 	InitialTimestamp = basic_utils:get_timestamp(),
 	InitialPreciseTimestamp = basic_utils:get_precise_timestamp(),
 
 	io:format( "   Timestamp is ~s.~n", [
 		basic_utils:get_textual_timestamp(InitialTimestamp) ] ),
+
+	io:format( "   Timestamp for path is ~s.~n", [
+		basic_utils:get_textual_timestamp_for_path(InitialTimestamp) ] ),
 
 	basic_utils:checkpoint(1),
 
@@ -76,12 +77,6 @@ run() ->
 
 	io:format( "   A list of integer random values between 1 and 5 "
 		"(both included): ~w.~n", [RandomList] ),
-
-	TestName = "I have \"<spaces>\" / \ & ~ # @ { } [ ] | $ * ? ! + , . ; :"
-		"(and also 'I have quotes')",
-
-	io:format( "   Nodename generated from '~s' is '~s'.~n",
-		[TestName,basic_utils:generate_valid_node_name_from(TestName)] ),
 
 
 	% Testing list management:
@@ -221,4 +216,5 @@ run() ->
 		basic_utils:get_precise_duration(InitialPreciseTimestamp,
 										 FinalPreciseTimestamp) ] ),
 
-	test_finished().
+	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
+	erlang:halt().
