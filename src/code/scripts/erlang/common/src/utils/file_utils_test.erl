@@ -26,59 +26,65 @@
 
 
 % Unit tests for the file_utils toolbox.
-%
 % See the file_utils.erl tested module.
 -module(file_utils_test).
 
+-export([run/0]).
 
--define(Tested_modules, [ file_utils ] ).
+-define(Tested_module,file_utils).
 
-
-% For test_finished/0 and al:
--include("test_facilities.hrl").
 
 
 run() ->
 
-	io:format( "--> Testing modules ~w.~n", [ ?Tested_modules ] ),
+	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
 
-	{ok,CurrentDir} = file:get_cwd(),
+	CurrentDir = file_utils:get_current_directory(),
 
 	{_RegularFiles,_Directories,_OtherFiles,_Devices} = Elements
 		= file_utils:list_dir_elements( CurrentDir ),
 
 	BeamExtension = ".beam",
 
-	io:format( "   File elements in the current directory:~n~p~n", [Elements] ),
+	io:format( "~n   File elements in the current directory (~s):~n~p~n",
+			  [CurrentDir,Elements] ),
 
 	% Too many outputs:
 	%io:format( "   Regular BEAM files in the current directory:~n~p~n",
 	%	[ file_utils:filter_by_extension(RegularFiles,BeamExtension) ] ),
 
-	io:format( "   All files found recursively "
+	io:format( "~n   All files found recursively "
 		"from the current directory:~n~p~n",
 		[ file_utils:find_files_from(CurrentDir) ] ),
 
 
-	io:format( "   All BEAM files found recursively "
+	io:format( "~n   All BEAM files found recursively "
 		"from the current directory:~n~p~n",
 		[ file_utils:find_files_with_extension_from( CurrentDir,
-													 BeamExtension ) ] ),
+													BeamExtension ) ] ),
 
 	ExcludedDirs = [ ".svn", "non-existing-dir" ],
 
-	io:format( "   All files found recursively "
+	io:format( "~n   All files found recursively "
 		"from the current directory, with directories ~p excluded:~n~p~n",
 		[ ExcludedDirs, file_utils:find_files_with_excluded_dirs(
-						  CurrentDir, ExcludedDirs ) ] ),
+						CurrentDir, ExcludedDirs ) ] ),
 
-	ErlExtension = ".erl",
 
-	io:format( "   All ~s files found recursively "
-		"from the current directory, with directories ~p excluded:~n~p~n",
-		[ ErlExtension, ExcludedDirs,
-		  file_utils:find_files_with_extension_and_excluded_dirs(
-						  CurrentDir, ErlExtension, ExcludedDirs ) ] ),
+	ExcludedSuffixes = [ ".erl", ".beam", "non-existing-suffix" ],
+
+	io:format( "~n   All files found recursively "
+		"from the current directory, with suffixes ~p excluded:~n~p~n",
+		[ ExcludedSuffixes, file_utils:find_files_with_excluded_suffixes(
+						CurrentDir, ExcludedSuffixes ) ] ),
+
+
+	io:format( "~n   All files found recursively "
+			  "from the current directory, with directories ~p and suffixes ~p "
+			  "excluded:~n~p~n",
+		[ ExcludedDirs, ExcludedSuffixes,
+		  file_utils:find_files_with_excluded_dirs_and_suffixes(
+						CurrentDir, ExcludedDirs, ExcludedSuffixes ) ] ),
 
 
 	FirstFilename = "media/frame/1-23-2-98.oaf",
@@ -107,7 +113,7 @@ run() ->
 		[ SecondString, file_utils:convert_to_filename(SecondString) ] ),
 
 
-	SourceFilename = "/home/jack/rosie.ttf",
+	SourceFilename  = "/home/jack/rosie.ttf",
 	SourceExtension = ".ttf",
 	TargetExtension = ".wav",
 
@@ -118,10 +124,15 @@ run() ->
 		" '~s'.~n",
 		[SourceExtension,TargetExtension,SourceFilename,NewFilename] ),
 
+
+	% Commented as not wanting to have too many side-effects:
+
 	%file_utils:create_directory( "tmp-tst" ),
 	%file_utils:create_directory( "tmp-tst/first/second", create_parents ),
 
-	io:format( "   Home directory of the current user is: ~s~n",
-		[ file_utils:get_user_directory() ] ),
+	Bin = file_utils:read_whole( "GNUmakefile" ),
+	io:format( "   Read file: ~p.~n", [Bin] ),
+	%file_utils:write_whole( "test.dat", Bin ),
 
-	test_finished().
+	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
+	erlang:halt().
