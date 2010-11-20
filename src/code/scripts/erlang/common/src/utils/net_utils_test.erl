@@ -30,16 +30,16 @@
 -module(net_utils_test).
 
 
--define(Tested_modules, [net_utils] ).
+-export([ run/0 ]).
 
 
-% For test_finished/0 and al:
--include("test_facilities.hrl").
+-define( Tested_module, net_utils ).
+
 
 
 run() ->
 
-	io:format( "--> Testing modules ~w.~n", [ ?Tested_modules ] ),
+	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
 
 	Localhost = net_utils:localhost(),
 
@@ -61,7 +61,7 @@ run() ->
 	case net_utils:ping( "non.existing.host" ) of
 
 		true ->
-			throw( could_ping_non_existing_localhost );
+			throw( could_ping_non_existing_host );
 
 		false ->
 			io:format(
@@ -80,6 +80,24 @@ run() ->
 
 	io:format( "   Naming-compliant hostname for '~s' is '~s'.~n", [ Localhost,
 		  net_utils:get_naming_compliant_hostname( Localhost, NamingMode ) ] ),
+
+
+	TestName = "I have \"<spaces>\" / \ & ~ # @ { } [ ] | $ * ? ! + , . ; :"
+		"(and also 'I have quotes')",
+
+	io:format( "   Node name generated from '~s' is '~s'.~n",
+		[TestName,net_utils:generate_valid_node_name_from(TestName)] ),
+
+
+	NodeName = "hello",
+	NodeNamingMode = short_name,
+	EpmdSettings = 754,
+	TCPSettings = {10000,14000},
+	AdditionalOptions = "-noshell -smp auto +K true +A 8 +P 400000",
+
+	io:format( "   Example of node launching command: '~s'.~n", [
+		  net_utils:get_basic_node_launching_command( NodeName, NodeNamingMode,
+		  EpmdSettings, TCPSettings, AdditionalOptions ) ] ),
 
 
 	FirstIP = {74,125,127,100},
@@ -108,4 +126,5 @@ run() ->
 	io:format( "   All connected nodes are: ~w.~n",
 			  [ net_utils:get_all_connected_nodes() ] ),
 
-	test_finished().
+	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
+	erlang:halt().
