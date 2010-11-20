@@ -1,11 +1,12 @@
-% Copyright (C) 2003-2010 Olivier Boudeville
+% 
+% Copyright (C) 2003-2009 Olivier Boudeville
 %
 % This file is part of the Ceylan Erlang library.
 %
 % This library is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License or
 % the GNU General Public License, as they are published by the Free Software
-% Foundation, either version 3 of these Licenses, or (at your option)
+% Foundation, either version 3 of these Licenses, or (at your option) 
 % any later version.
 % You can also redistribute it and/or modify it under the terms of the
 % Mozilla Public License, version 1.1 or later.
@@ -26,20 +27,20 @@
 
 
 % Unit tests for the executable_utils toolbox.
-%
 % See the executable_utils.erl tested module.
 -module(executable_utils_test).
 
--define(Tested_modules, [executable_utils] ).
+-export([run/0]).
 
-% For test_finished/0 and al:
--include("test_facilities.hrl").
+-define(Tested_module,executable_utils).
+
 
 
 run() ->
 
-	io:format( "--> Testing modules ~w.~n", [ ?Tested_modules ] ),
+	io:format( "--> Testing module ~s.~n", [ ?Tested_module ] ),
+	
+		
+	io:format( "--> End of test for module ~s.~n", [ ?Tested_module ] ),
+	erlang:halt().
 
-	% No side-effect wanted here.
-
-	test_finished().
