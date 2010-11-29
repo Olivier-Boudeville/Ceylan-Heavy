@@ -14,12 +14,12 @@
 
 # GNU Libtool: http://www.gnu.org/software/libtool/libtool.html
 
-libtool_VERSION="2.2.10"
+libtool_VERSION="2.4"
 libtool_FULL_VERSION="${libtool_VERSION}"
 libtool_ARCHIVE="libtool-${libtool_FULL_VERSION}.tar.gz"
 libtool_DOWNLOAD_LOCATION="http://mirror.clarkson.edu/gnu/libtool/"
 libtool_ALTERNATE_DOWNLOAD_LOCATION="http://mirrors.usc.edu/pub/gnu/libtool"
-libtool_MD5="b745d220e88163fcd9eea0a90ccf21b0"
+libtool_MD5="b32b04148ecdd7344abc6fe8bd1bb021"
 
 
 # win32 pthreads: http://sources.redhat.com/pthreads-win32/
@@ -45,14 +45,17 @@ win_pthread_HEADER_SCHED_MD5="xxx"
 win_pthread_HEADER_SEM="semaphore.h"
 win_pthread_HEADER_SEM_MD5="xxx"
 
-# checking for whole directory will be always false,
-# actual test will be made in getwin_pthread.
+# Checking for whole directory will be always false, actual test will be made in
+# getwin_pthread.
 win_pthread_MD5="xxx"
 
 
 
 # ----------- For common build tools:
 
+
+# Note: now we generally rely on the build toolchain provided by the
+# distribution.
 
 
 # gcc: http://www.gnu.org/software/gcc/gcc.html
@@ -141,12 +144,12 @@ dot_MD5="6f45946fa622770c45609778c0a982ee"
 
 # doxygen: http://www.stack.nl/~dimitri/doxygen/
 
-# Actually 1.6.3 (defined in configure-template.ac):
+# Actually 1.7.2 (defined in configure-template.ac):
 doxygen_VERSION="@DOXYGEN_VERSION@"
 doxygen_ARCHIVE="doxygen-${doxygen_VERSION}.src.tar.gz"
 doxygen_DOWNLOAD_LOCATION="ftp://ftp.stack.nl/pub/users/dimitri"
 doxygen_ALTERNATE_DOWNLOAD_LOCATION=""
-doxygen_MD5="2d6ea20a9d850d94321cee78bab7bb87"
+doxygen_MD5="d5f3e32474186abc64288db6b8ffd7f0"
 
 
 
