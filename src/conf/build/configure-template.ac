@@ -89,7 +89,7 @@ AC_SUBST(CEYLAN_FULL_VERSION)
 
 
 
-# Libtool-style versioning.
+# Libtool-style versioning.
 
 CEYLAN_MAJOR_ANCESTOR=ST_MAJOR_ANCESTOR
 AC_SUBST(CEYLAN_MAJOR_ANCESTOR)
@@ -112,7 +112,7 @@ AC_SUBST(CEYLAN_LT_AGE)
 
 CEYLAN_LIBTOOL_VERSION="$CEYLAN_LT_CURRENT.$CEYLAN_LT_REVISION.$CEYLAN_LT_AGE"
 # The CEYLAN_LIBTOOL_VERSION symbol is used to update
-# generic/CeylanHeaderVersion.cc with the actual Ceylan libtool version, so that
+# generic/CeylanHeaderVersion.cc with the actual Ceylan libtool version, so that
 # this header-embedded version can be compared with the library version (see:
 # test/ceylan.m4).
 AC_SUBST(CEYLAN_LIBTOOL_VERSION)
@@ -375,6 +375,7 @@ CEYLAN_SUBSTITUTE="\$(top_srcdir)/src/code/scripts/shell/substitute.sh"
 AC_SUBST(CEYLAN_SUBSTITUTE)
 
 
+
 # Compiler-specific optimization flags.
 
 
@@ -406,13 +407,15 @@ if test x$enable_debug = xyes; then
 
 	AM_CXXFLAGS="$AM_CXXFLAGS -g"
 	if test x$ac_cv_cxx_compiler_gnu = xyes; then
-		# Add -pg to manage profile information for gprof.
+
 		# -fstack-check used to be specified but wroke havoc in generated code,
 		# causing crashes and various valgrind reports.
 		#AM_CXXFLAGS="$AM_CXXFLAGS -ggdb -O0 -fno-inline -fbounds-check -ftrapv -fnon-call-exceptions"
 		# Safest settings:
 		AM_CXXFLAGS="$AM_CXXFLAGS -ggdb -O0 -fno-inline"
+
 	fi
+
 else
 
 	# Aggressive optimizations:
@@ -461,6 +464,24 @@ else
 			;;
 	esac
 fi
+
+
+
+# Profiling section. Applies even when built for release mode.
+
+if test x$ac_cv_cxx_compiler_gnu = xyes; then
+
+   # Add -pg to manage profiling information for gprof. For example:
+   # gprof ./XXX.exe|~/gprof2dot.py|dot -Tpng -o output.png && eog output.png
+
+   #profiling_opt="-pg"
+   profiling_opt=""
+
+fi
+
+AM_CXXFLAGS="${AM_CXXFLAGS} ${profiling_opt}"
+AM_LDFLAGS="${AM_LDFLAGS} ${profiling_opt}"
+
 
 
 
@@ -759,7 +780,7 @@ CheckMultithreadFeature()
 				;;
 			*-*-netbsd*)
 				# -I/usr/pkg/include removed since its pthread.h had
-				# conflicting types with /usr/include/pthread_types.h:
+				# conflicting types with /usr/include/pthread_types.h:
 				pthread_cflags="-D_REENTRANT"
 				# -lsem removed, it does not exist with NetBSD 2.0.2:
 				pthread_lib="-L/usr/pkg/lib -lpthread"
@@ -1082,7 +1103,7 @@ CheckFileLockFeature()
 		else
 			AC_MSG_WARN([File lock support requested but not available, disabling it])
 		fi
-		# It is 'have_file_descriptor' indeed:
+		# It is 'have_file_descriptor' indeed:
 		if test x$have_file_descriptor = xno; then
 			have_file_lock=no
 			CEYLAN_USES_FILE_LOCKS=0
@@ -1182,7 +1203,7 @@ CheckPluginFeature()
 		# Built as static library:
 		#CEYLAN_LIBLTDL="-L\${top_builddir}/libltdl -lltdl"
 		CEYLAN_LIBLTDL=""
-		# Performs the configure time checks required to build ltdl.o
+		# Performs the configure time checks required to build ltdl.o
 		# correctly (dlopen support):
 		AC_LIBTOOL_DLOPEN
 		# Tells the libtool machinery that the package supports DLLs
@@ -1221,7 +1242,7 @@ CheckPluginFeature()
 
 	# Cannot be specified before, since using plugin requires to add for
 	# example
-	# AC_LIBTOOL_DLOPEN before this call:
+	# AC_LIBTOOL_DLOPEN before this call:
 	LT_INIT([dlopen win32-dll])
 
 
@@ -1524,8 +1545,8 @@ CheckPlatform()
 	# For all builds, CEYLAN_DLL will be actually defined
 	# thanks to command-line preprocessor options (-DCEYLAN_DLL="...")
 	# so that headers can avoid #including platform-specific configuration
-	# files. Hence no 'AC_DEFINE_UNQUOTED([CEYLAN_DLL], ...' here.
-	# Same reason applies for CEYLAN_PACKED_ATTRIBUTE.
+	# files. Hence no 'AC_DEFINE_UNQUOTED([CEYLAN_DLL], ...' here.
+	# Same reason applies for CEYLAN_PACKED_ATTRIBUTE.
 
 	AM_CXXFLAGS="${AM_CXXFLAGS} -DCEYLAN_DLL=\"${CEYLAN_DLL}\" -DCEYLAN_PACKED_ATTRIBUTE=\"${CEYLAN_PACKED_ATTRIBUTE}\""
 
@@ -1533,7 +1554,7 @@ CheckPlatform()
 
 
 
-# Checks if we want to use RPATH when linking to Ceylan.
+# Checks if we want to use RPATH when linking to Ceylan.
 # Note: CheckPlatform must have been executed first, for HOST_ARCH.
 CheckRpath()
 {
@@ -1604,50 +1625,50 @@ CheckBasicDatatypes()
 		AC_DEFINE(native_types_origin, "Determined by configure", [Defines from which source came the defines of native datatypes])
 
 		AC_CHECK_SIZEOF(char, 1)
- 		AC_CHECK_SIZEOF(short, 2)
- 		AC_CHECK_SIZEOF(int, 4)
- 		AC_CHECK_SIZEOF(long, 4)
- 		AC_CHECK_SIZEOF(long long, 8)
+		AC_CHECK_SIZEOF(short, 2)
+		AC_CHECK_SIZEOF(int, 4)
+		AC_CHECK_SIZEOF(long, 4)
+		AC_CHECK_SIZEOF(long long, 8)
 
- 		if test x$ac_cv_sizeof_char = x1; then
- 			AC_DEFINE(int8_t, signed char, [Defines 8-bit signed integer])
- 			AC_DEFINE(uint8_t, unsigned char, [Defines 8-bit unsigned integer])
- 		fi
+		if test x$ac_cv_sizeof_char = x1; then
+			AC_DEFINE(int8_t, signed char, [Defines 8-bit signed integer])
+			AC_DEFINE(uint8_t, unsigned char, [Defines 8-bit unsigned integer])
+		fi
 
- 		if test x$ac_cv_sizeof_short = x2; then
- 			AC_DEFINE(int16_t, signed short, [Defines 16-bit signed integer])
- 			AC_DEFINE(uint16_t, unsigned short, [Defines 16-bit unsigned integer])
- 		else
- 			if test x$ac_cv_sizeof_int = x2; then
- 				AC_DEFINE(int16_t, signed int, [Defines 16-bit signed integer])
- 				AC_DEFINE(uint16_t, unsigned int, [Defines 16-bit unsigned integer])
- 			fi
- 		fi
+		if test x$ac_cv_sizeof_short = x2; then
+			AC_DEFINE(int16_t, signed short, [Defines 16-bit signed integer])
+			AC_DEFINE(uint16_t, unsigned short, [Defines 16-bit unsigned integer])
+		else
+			if test x$ac_cv_sizeof_int = x2; then
+				AC_DEFINE(int16_t, signed int, [Defines 16-bit signed integer])
+				AC_DEFINE(uint16_t, unsigned int, [Defines 16-bit unsigned integer])
+			fi
+		fi
 
- 		if test x$ac_cv_sizeof_int = x4; then
- 			AC_DEFINE(int32_t, signed int, [Defines 32-bit signed integer])
- 			AC_DEFINE(uint32_t, unsigned int, [Defines 32-bit unsigned integer])
- 		else
- 			if test x$ac_cv_sizeof_long = x4; then
- 				AC_DEFINE(int32_t, signed long, [Defines 32-bit signed integer])
- 				AC_DEFINE(uint32_t, unsigned long, [Defines 32-bit unsigned integer])
- 			fi
- 		fi
+		if test x$ac_cv_sizeof_int = x4; then
+			AC_DEFINE(int32_t, signed int, [Defines 32-bit signed integer])
+			AC_DEFINE(uint32_t, unsigned int, [Defines 32-bit unsigned integer])
+		else
+			if test x$ac_cv_sizeof_long = x4; then
+				AC_DEFINE(int32_t, signed long, [Defines 32-bit signed integer])
+				AC_DEFINE(uint32_t, unsigned long, [Defines 32-bit unsigned integer])
+			fi
+		fi
 
- 		if test x$ac_cv_sizeof_long = x8; then
- 			AC_DEFINE(int64_t, signed long, [Defines 64-bit signed integer])
- 			AC_DEFINE(uint64_t, unsigned long, [Defines 64-bit unsigned integer])
- 			CEYLAN_HAS_64_BIT_TYPE=1
- 		else
- 			if test x$ac_cv_sizeof_long_long = x8; then
- 				AC_DEFINE(int64_t, signed long long, [Defines 64-bit signed integer])
- 				AC_DEFINE(uint64_t, unsigned long long, [Defines 64-bit unsigned integer])
- 				CEYLAN_HAS_64_BIT_TYPE=1
- 			fi
- 		fi
+		if test x$ac_cv_sizeof_long = x8; then
+			AC_DEFINE(int64_t, signed long, [Defines 64-bit signed integer])
+			AC_DEFINE(uint64_t, unsigned long, [Defines 64-bit unsigned integer])
+			CEYLAN_HAS_64_BIT_TYPE=1
+		else
+			if test x$ac_cv_sizeof_long_long = x8; then
+				AC_DEFINE(int64_t, signed long long, [Defines 64-bit signed integer])
+				AC_DEFINE(uint64_t, unsigned long long, [Defines 64-bit unsigned integer])
+				CEYLAN_HAS_64_BIT_TYPE=1
+			fi
+		fi
 
- 		AC_DEFINE(size_t, unsigned int,  [Defines size_t])
- 		AC_DEFINE(uintptr_t, unsigned long, [Defines uintptr_t])
+		AC_DEFINE(size_t, unsigned int,  [Defines size_t])
+		AC_DEFINE(uintptr_t, unsigned long, [Defines uintptr_t])
 
 	fi
 
