@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003-2009 Olivier Boudeville
+ * Copyright (C) 2003-2010 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
  *
@@ -99,7 +99,7 @@ extern "C"
 #endif // CEYLAN_USES_SYS_TIMEB_H
 
 #ifdef CEYLAN_USES_WINSOCK2_H
-#include <winsock2.h>					  // for Windows read/write operations
+#include <winsock2.h>                     // for Windows read/write operations
 #endif // CEYLAN_USES_WINSOCK2_H
 
 }
@@ -235,8 +235,8 @@ string Ceylan::System::getShellName()
 
 
 /*
- * This section is mostly related to embedded platforms, such as
- * the Nintendo DS.
+ * This section is mostly related to embedded platforms, such as the Nintendo
+ * DS.
  *
  */
 
@@ -373,9 +373,10 @@ Ceylan::Byte * Ceylan::System::CacheProtectedNew( Size numberOfBytes )
 
 	/*
 	 * On the DS DTCM, cache lines are 32-byte long.
-	 * If wanting a boundary-aligned array of numberOfBytes, we have to
-	 * allocate 'numberOfBytes + 32 -1' bytes to be sure the desired array
-	 * can be found in it
+	 *
+	 * If wanting a boundary-aligned array of numberOfBytes, we have to allocate
+	 * 'numberOfBytes + 32 -1' bytes to be sure the desired array can be found
+	 * in it
 	 *
 	 */
 	Ceylan::Byte * biggerBuffer = new Ceylan::Byte[
@@ -735,8 +736,7 @@ Size Ceylan::System::FDWrite( FileDescriptor fd,
 		{
 
 			/*
-			 * Non-blocking write return WSAEWOULDBLOCK if writing
-			 * would block:
+			 * Non-blocking write return WSAEWOULDBLOCK if writing would block:
 			 *
 			 */
 			if ( Network::getSocketError() == WSAEWOULDBLOCK )
@@ -984,7 +984,11 @@ Microsecond Ceylan::System::getDurationBetween(
 void Ceylan::System::getPreciseTime( Second & seconds, Microsecond & microsec )
 {
 
+  // Warning: getting precise time might be itself a time-consuming operation.
+
 #ifdef CEYLAN_USES_GETTIMEOFDAY
+
+  // This is the usual selected primitive on Linux.
 
 	timeval currentTime ;
 
@@ -1001,13 +1005,13 @@ void Ceylan::System::getPreciseTime( Second & seconds, Microsecond & microsec )
 
 #ifdef CEYLAN_USES__FTIME_S
 
-    struct _timeb timeBuffer ;
+	struct _timeb timeBuffer ;
 
 	if( ::_ftime_s( & timeBuffer ) != 0 )
 		throw SystemException( "System::getPreciseTime: "
 			"_ftime_s failed." ) ;
 
-    seconds  = static_cast<Second>( timeBuffer.time ) ;
+	seconds  = static_cast<Second>( timeBuffer.time ) ;
 	microsec = static_cast<Microsecond>( timeBuffer.millitm * 1000 ) ;
 
 
@@ -1031,8 +1035,8 @@ Microsecond Ceylan::System::getAccuracyOfPreciseTime( Microsecond * minGap,
 	Ceylan::Uint32 numberOfMeasures = 100 ;
 
 	/*
-	 * 4 000 000 000 microseconds is more than hour, all accuracies
-	 * should be far below.
+	 * 4 000 000 000 microseconds is more than hour, all accuracies should be
+	 * far below.
 	 *
 	 */
 	Microsecond minDuration = 4000000000U ;
@@ -1177,8 +1181,8 @@ void Ceylan::System::sleepForSeconds( Second seconds )
 	{
 
 		/*
-		 * ::sleep returns zero if the requested time has elapsed, or
-		 * the number of seconds left to sleep.
+		 * ::sleep returns zero if the requested time has elapsed, or the number
+		 * of seconds left to sleep.
 		 *
 		 */
 		stillToBeSlept = ::sleep( stillToBeSlept ) ;
@@ -1276,13 +1280,13 @@ void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 #if CEYLAN_USES_NANOSLEEP
 
 	/*
-	 * nanosleep is POSIX compliant and should be accurate, but on the two
-	 * Linux 2.4 kernel we tried, instead of having strict 10 ms scheduling,
-	 * the minimum waiting time was two time slices (20 ms).
-	 * The step was then 10 ms indeed (so, with longer waiting time, the
-	 * actual duration was 30 ms, then 40 ms, and so on, but we were unable to
-	 * have an actual sleep duration of 10 ms, even for requested sleep
-	 * below 1 ms).
+	 * nanosleep is POSIX compliant and should be accurate, but on the two Linux
+	 * 2.4 kernel we tried, instead of having strict 10 ms scheduling, the
+	 * minimum waiting time was two time slices (20 ms).
+	 *
+	 * The step was then 10 ms indeed (so, with longer waiting time, the actual
+	 * duration was 30 ms, then 40 ms, and so on, but we were unable to have an
+	 * actual sleep duration of 10 ms, even for requested sleep below 1 ms).
 	 *
 	 * We therefore disabled the use of nanosleep.
 	 *
@@ -1303,14 +1307,14 @@ void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
 	/*
-	 * Use ::select (chosen by default), which seems to be an
-	 * effective way of waiting.
+	 * Use ::select (chosen by default), which seems to be an effective way of
+	 * waiting.
 	 *
 	 * Should be portable on most UNIX systems.
 	 *
 	 */
 
-    timeval timeout ;
+	timeval timeout ;
 	timeout.tv_sec = seconds ;
 
 	// Rounded to microseconds:
@@ -1321,8 +1325,25 @@ void Ceylan::System::basicSleep( Second seconds, Nanosecond nanos )
 	if ( ::select( 0, static_cast<fd_set *>( 0 ),
 			static_cast<fd_set *>( 0 ), static_cast<fd_set *>( 0 ),
 			& timeout ) < 0 )
+	{
+
+	  /*
+	   * On some UNIX system, select might appear to fail, whereas it is
+	   * a normal condition ("Interrupted system call").
+	   * In this case no exception should be thrown.
+	   *
+	   * As the main risk associated to a basic sleep is that it may last for
+	   * too long, if interrupted we do not try to compensate with another basic
+	   * sleep (more complex sleep primitives will correctly manage that).
+	   *
+	   */
+	  if ( Ceylan::System::getError() == EINTR )
+		return ;
+	  else
 		throw SystemException( "System::basicSleep with select failed: "
 			+ Ceylan::System::explainError() ) ;
+
+	}
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
@@ -1366,14 +1387,14 @@ void Ceylan::System::atomicSleep()
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 	/*
-	 * Factor of margin so that the requested waiting time will most
-	 * probably exactly trigger one time slice of waiting.
+	 * Factor of margin so that the requested waiting time will most probably
+	 * exactly trigger one time slice of waiting.
 	 *
-	 * The factor below 1.0 avoids asking for two time slices if
-	 * their length was surestimated a bit.
+	 * The factor below 1.0 avoids asking for two time slices if their length
+	 * was surestimated a bit.
 	 *
-	 * Being conservative and having a margin is the safe way when the
-	 * hosting computer is not idle.
+	 * Being conservative and having a margin is the safe way when the hosting
+	 * computer is not idle.
 	 *
 	 */
 	const Ceylan::Float32 marginDecreaseFactor = 0.75f ;
@@ -1412,9 +1433,9 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 
 
 	/*
-	 * Warning: this piece of code is especially sensitive to overflows,
-	 * since very high numbers of microseconds are to be handled in
-	 * often unsigned variables. Beware!
+	 * Warning: this piece of code is especially sensitive to overflows, since
+	 * very high numbers of microseconds are to be handled in often unsigned
+	 * variables. Beware!
 	 *
 	 * Please test it thoroughfully thanks to testCeylanTime utility.
 	 *
@@ -1468,8 +1489,8 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 		getSchedulingGranularity() * marginIncreaseFactor ) ;
 
 	/*
-	 * Integer divisions to compute the maximum number of time slices fitting
-	 * in requested time: here lies the risk of overflow, as specified in the
+	 * Integer divisions to compute the maximum number of time slices fitting in
+	 * requested time: here lies the risk of overflow, as specified in the
 	 * method doc. Integer division means rounded down, since preferring not
 	 * enough sleeping to too much.
 	 *
@@ -1487,8 +1508,8 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 
 	/*
 	 * Sleep for the main part. Use 'basicSleep' rather than
-	 * 'getActualDurationForSleep' since the starting time might differ
-	 * largely, because of the previous 'getSchedulingGranularity' call.
+	 * 'getActualDurationForSleep' since the starting time might differ largely,
+	 * because of the previous 'getSchedulingGranularity' call.
 	 *
 	 * Make so that the exact wanted full time slices are waited:
 	 *
@@ -1541,11 +1562,7 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 		atomicCount++ ;
 #endif // CEYLAN_DEBUG_SYSTEM
 
-		/*
-		 * Sleep for one time slice as long as there is another one
-		 * remaining.
-		 *
-		 */
+		// Sleep for one time slice as long as there is another one remaining.
 		atomicSleep() ;
 
 		getPreciseTime( currentSecond, currentMicrosecond ) ;
@@ -1596,8 +1613,8 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 	bool done = false ;
 
 	/*
-	 * After the full time slices have elapsed, perform active waiting for
-	 * the remaining time:
+	 * After the full time slices have elapsed, perform active waiting for the
+	 * remaining time:
 	 *
 	 */
 
@@ -1642,38 +1659,39 @@ bool Ceylan::System::smartSleep( Second seconds, Microsecond micros )
 #if CEYLAN_ARCH_WINDOWS
 
 		/*
-		 * On Windows (at least XP), we have a high scheduling granularity
-		 * (we measured up to 16 ms) and, worse, as soon as we perform busy
-		 * waiting (because remaining time is too small to take the risk of
-		 * requesting a waiting of one time slice), we observed it led to
-		 * the OS perfoming a context switch (hence even with busy waiting
-		 * we end up with a full time slice penalty, and we would be always
-		 * late, of up to one time slice. Bad performance).
+		 * On Windows (at least XP), we have a high scheduling granularity (we
+		 * measured up to 16 ms) and, worse, as soon as we perform busy waiting
+		 * (because remaining time is too small to take the risk of requesting a
+		 * waiting of one time slice), we observed it led to the OS perfoming a
+		 * context switch (hence even with busy waiting we end up with a full
+		 * time slice penalty, and we would be always late, of up to one time
+		 * slice. Bad performance).
 		 *
 		 * Let Ts be the time slice duration (16 ms for example).
+		 *
 		 * Thus at this point if remaining time tr is between 0 and Ts / 2,
 		 * we have the choice to be too early of tr, or to be late of at least
 		 * Ts - tr > tr.
 		 *
 		 * We prefer the former to the latter (earlier better than later, and
 		 * error is smaller).
-		 * Hence on average we will be waiting the right duration, even
-		 * though we will be most of the time either too early or too
-		 * late.
+		 *
+		 * Hence on average we will be waiting the right duration, even though
+		 * we will be most of the time either too early or too late.
 		 *
 		 * The 1.5 coefficient has been computed so that waitings finishing too
 		 * late or too early divide somewhat evenly, since they could not be
-		 * eradicated, with a slight advantage given to 'too early' waitings,
-		 * as they are generally less disturbing for an application.
+		 * eradicated, with a slight advantage given to 'too early' waitings, as
+		 * they are generally less disturbing for an application.
 		 *
 		 * The coefficient has been tested both in idle and in loaded contexts.
 		 *
-		 * A coefficient equal to 2 would result in smartSleep being always
-		 * too early.
+		 * A coefficient equal to 2 would result in smartSleep being always too
+		 * early.
 		 *
 		 * On GNU/Linux the busy waiting does not trigger such context changes
-		 * and we just have to wait the deadline as expected, with pretty
-		 * good results.
+		 * and we just have to wait the deadline as expected, with pretty good
+		 * results.
 		 *
 		 */
 
@@ -1802,11 +1820,11 @@ Microsecond Ceylan::System::getSchedulingGranularity()
 	/*
 	 * Requesting too low sleep durations will not trigger the time slice
 	 * waiting (ex: on Linux 2.4, for a requested sleep of 310 microseconds,
-	 * measured time has been 3166 microseconds whereas the time slice is
-	 * 10 000 microseconds).
+	 * measured time has been 3166 microseconds whereas the time slice is 10 000
+	 * microseconds).
 	 *
-	 * Assuming no system will have a granularity below 500 microseconds,
-	 * the test of a sleep of 450 microseconds should be relevant.
+	 * Assuming no system will have a granularity below 500 microseconds, the
+	 * test of a sleep of 450 microseconds should be relevant.
 	 *
 	 */
 
@@ -1874,9 +1892,8 @@ Microsecond Ceylan::System::getSchedulingGranularity()
 	const Microsecond durationStep = 250 ;
 
 	/**
-	 * Upper bound to time slice is 110 ms, to be able to catch as high as
-	 * a 100 ms granularity (a frequency of less than 10Hz should be quite
-	 * uncommon).
+	 * Upper bound to time slice is 110 ms, to be able to catch as high as a 100
+	 * ms granularity (a frequency of less than 10Hz should be quite uncommon).
 	 *
 	 */
 	Microsecond maximumPossibleDuration = 110000 ;
@@ -1937,8 +1954,8 @@ Microsecond Ceylan::System::getSchedulingGranularity()
 
 
 	/*
-	 * When all measures fail, use this test duration to approximately guess
-	 * the time slice.
+	 * When all measures fail, use this test duration to approximately guess the
+	 * time slice.
 	 *
 	 */
 	Microsecond testDuration = 900 ;
@@ -1970,8 +1987,8 @@ Microsecond Ceylan::System::getSchedulingGranularity()
 
 
 	/*
-	 * Requesting multiple times the time slice allows to measure it finely,
-	 * in order to compute the average value.
+	 * Requesting multiple times the time slice allows to measure it finely, in
+	 * order to compute the average value.
 	 *
 	 */
 	const Ceylan::Uint8 sampleCount = 20 ;
@@ -1983,9 +2000,9 @@ Microsecond Ceylan::System::getSchedulingGranularity()
 	{
 
 		/*
-		 * The 0.4 factor is here to ensure we do not request just more than
-		 * the time-slice, if we had surestimated it a bit, we could have
-		 * two time slices instead.
+		 * The 0.4 factor is here to ensure we do not request just more than the
+		 * time-slice, if we had surestimated it a bit, we could have two time
+		 * slices instead.
 		 *
 		 */
 
@@ -1999,9 +2016,9 @@ Microsecond Ceylan::System::getSchedulingGranularity()
 
 	/*
 	 * We supposed here that we interrupted the current time-slice at random
-	 * moments, therefore on average on its middle, hence the multiplication
-	 * by two: 'granularity *= 2 ;'. That was wrong as the real granularity
-	 * was correctly computed.
+	 * moments, therefore on average on its middle, hence the multiplication by
+	 * two: 'granularity *= 2 ;'. That was wrong as the real granularity was
+	 * correctly computed.
 	 *
 	 * We could instead use:
 	 * 'granularity = static_cast<Microsecond>( granularity * 1.5f );'
