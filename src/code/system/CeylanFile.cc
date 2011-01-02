@@ -1,12 +1,12 @@
-/* 
- * Copyright (C) 2003-2009 Olivier Boudeville
+/*
+ * Copyright (C) 2003-2010 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
  *
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -31,6 +31,7 @@
 #include "CeylanOperators.h"         // for toString
 #include "CeylanStringUtils.h"       // for StringSize
 #include "CeylanFileSystemManager.h" // for FileSystemManager
+#include "CeylanHolder.h"            // for the Holder template
 
 
 
@@ -46,9 +47,8 @@ using namespace Ceylan::Log ;
 
 /*
  * We need our own bitmasks, instead of using #ifdef/#endif pair testing
- * CEYLAN_USES_FILE_DESCRIPTORS, since we allow Read and Write to be 
- * OR'd, whereas for example O_RDONLY | O_WRONLY might be different from
- * O_RDWR.
+ * CEYLAN_USES_FILE_DESCRIPTORS, since we allow Read and Write to be OR'd,
+ * whereas for example O_RDONLY | O_WRONLY might be different from O_RDWR.
  *
  */
 const OpeningFlag File::Read          = 0x0001 ;
@@ -64,7 +64,7 @@ const OpeningFlag File::Synchronous   = 0x0080 ;
 
 // Special cases:
 
-const OpeningFlag File::CreateToWriteBinary = 
+const OpeningFlag File::CreateToWriteBinary =
 	Read | Write | CreateFile | TruncateFile | Binary ;
 
 
@@ -81,9 +81,9 @@ const PermissionFlag File::OwnerRead          = 0x0001 ;
 const PermissionFlag File::OwnerWrite         = 0x0002 ;
 const PermissionFlag File::OwnerExec          = 0x0004 ;
 
-const PermissionFlag File::OwnerReadWrite     = 
+const PermissionFlag File::OwnerReadWrite     =
 	File::OwnerRead | File::OwnerWrite ;
-	
+
 const PermissionFlag File::OwnerReadWriteExec =
 	File::OwnerReadWrite | File::OwnerExec ;
 
@@ -92,10 +92,10 @@ const PermissionFlag File::GroupRead          = 0x0008 ;
 const PermissionFlag File::GroupWrite         = 0x0010 ;
 const PermissionFlag File::GroupExec          = 0x0020 ;
 
-const PermissionFlag File::GroupReadWrite     = 
+const PermissionFlag File::GroupReadWrite     =
 	File::GroupRead | File::GroupWrite ;
-	
-const PermissionFlag File::GroupReadWriteExec = 
+
+const PermissionFlag File::GroupReadWriteExec =
 	File::GroupReadWrite | File::GroupExec ;
 
 
@@ -103,12 +103,12 @@ const PermissionFlag File::OthersRead          = 0x0040 ;
 const PermissionFlag File::OthersWrite         = 0x0080 ;
 const PermissionFlag File::OthersExec          = 0x0100 ;
 
-const PermissionFlag File::OthersReadWrite     = 
+const PermissionFlag File::OthersReadWrite     =
 	File::OthersRead | File::OthersWrite ;
-	
-const PermissionFlag File::OthersReadWriteExec = 
+
+const PermissionFlag File::OthersReadWriteExec =
 	File::OthersReadWrite | File::OthersExec ;
-				
+
 
 
 const Size File::UsualBufferSize = 10240 ;
@@ -117,40 +117,40 @@ const Size File::BigBufferSize   = 1<<19 ;
 
 
 
-// Numerous FileException child classes:	
-	
-	
-	
+// Numerous FileException child classes:
+
+
+
 FileReadLockingFailed::FileReadLockingFailed( const string & reason ) :
 	FileException( reason )
 {
 
 }
-			
-	
-	
+
+
+
 FileReadUnlockingFailed::FileReadUnlockingFailed( const string & reason ) :
 	FileException( reason )
 {
 
 }
-				
-	
-	
+
+
+
 FileWriteLockingFailed::FileWriteLockingFailed( const string & reason ) :
 	FileException( reason )
 {
 
 }
-		
-		
-		
+
+
+
 FileWriteUnlockingFailed::FileWriteUnlockingFailed( const string & reason ) :
 	FileException( reason )
 {
 
 }
-			
+
 
 
 FileDelegatingException::FileDelegatingException( const string & reason ) :
@@ -168,23 +168,23 @@ FileDelegatingException::FileDelegatingException( const string & reason ) :
 // Static section.
 
 
-bool File::ExistsAsFileOrSymbolicLink( const string & filename ) 
+bool File::ExistsAsFileOrSymbolicLink( const string & filename )
 {
 
 	// Let FileLookupFailed and FileDelegatingException propagate:
 	return GetCorrespondingFileSystemManager().existsAsFileOrSymbolicLink(
 		filename ) ;
-				
+
 }
 
 
 
-bool File::Exists( const string & filename ) 	
+bool File::Exists( const string & filename )
 {
 
 	// Let FileLookupFailed and FileDelegatingException propagate:
 	return ExistsAsFileOrSymbolicLink( filename ) ;
-				
+
 }
 
 
@@ -193,13 +193,13 @@ void File::Remove( const string & filename )
 {
 
 	// Let FileRemoveFailed and FileDelegatingException propagate:
-	GetCorrespondingFileSystemManager().removeFile( filename ) ;	
+	GetCorrespondingFileSystemManager().removeFile( filename ) ;
 
 }
 
 
 
-void File::Move( const string & sourceFilename, const string & targetFilename )	
+void File::Move( const string & sourceFilename, const string & targetFilename )
 {
 
 	// Let FileMoveFailed and FileDelegatingException propagate:
@@ -207,14 +207,14 @@ void File::Move( const string & sourceFilename, const string & targetFilename )
 		targetFilename ) ;
 
 }
-	
-	
-										
-void File::Copy( const string & sourceFilename, const string & targetFilename )	
+
+
+
+void File::Copy( const string & sourceFilename, const string & targetFilename )
 {
 
 	// Let FileCopyFailed and FileDelegatingException propagate:
-	GetCorrespondingFileSystemManager().copyFile( sourceFilename, 
+	GetCorrespondingFileSystemManager().copyFile( sourceFilename,
 		targetFilename ) ;
 
 }
@@ -239,20 +239,20 @@ time_t File::GetLastChangeTime( const string & filename )
 	 * propagate:
 	 *
 	 */
-	return GetCorrespondingFileSystemManager().getLastChangeTimeFile( 
+	return GetCorrespondingFileSystemManager().getLastChangeTimeFile(
 		filename ) ;
 
 }
 
-	
-						
-string File::TransformIntoValidFilename( const string & rawFilename ) 
+
+
+string File::TransformIntoValidFilename( const string & rawFilename )
 {
 
 	// Let FileDelegatingException propagates:
-	return GetCorrespondingFileSystemManager().transformIntoValidFilename( 
+	return GetCorrespondingFileSystemManager().transformIntoValidFilename(
 		rawFilename ) ;
-			
+
 }
 
 
@@ -262,12 +262,12 @@ void File::Touch( const string & filename )
 
 	// Let FileTouchFailed and FileDelegatingException propagate:
 	GetCorrespondingFileSystemManager().touch( filename ) ;
-			
+
 }
 
 
 
-bool File::Diff( const string & firstFilename, const string & secondFilename ) 
+bool File::Diff( const string & firstFilename, const string & secondFilename )
 {
 
 	// Let FileDiffFailed and FileDelegatingException propagate:
@@ -278,8 +278,22 @@ bool File::Diff( const string & firstFilename, const string & secondFilename )
 
 
 
+Ceylan::Byte & File::ReadWholeContent( const string & filename )
+{
 
-// Constructors are in protected section.	
+  // Allows for a smart and safe file deallocation:
+  Ceylan::Holder<File> myFileHolder(
+	GetCorrespondingFileSystemManager().openFile( filename,
+	  /* flags */ OpenToReadBinary ) ) ;
+
+  return myFileHolder->readWholeContent() ;
+
+}
+
+
+
+
+// Constructors are in protected section.
 
 
 // Factories section.
@@ -292,12 +306,12 @@ File & File::Create( const std::string & filename, OpeningFlag createFlag,
 
 	return GetCorrespondingFileSystemManager().createFile( filename, createFlag,
 		permissionFlag ) ;
-		
+
 }
 
 
 
-File & File::Open( const std::string & filename, OpeningFlag openFlag ) 
+File & File::Open( const std::string & filename, OpeningFlag openFlag )
 {
 
 	return GetCorrespondingFileSystemManager().openFile( filename, openFlag ) ;
@@ -311,7 +325,7 @@ File::~File() throw()
 
 	/*
 	 * Could not be factorized here, as reopen is abstract here:
-	 * 
+	 *
 
 	try
 	{
@@ -321,20 +335,20 @@ File::~File() throw()
 	{
 		LogPlug::error( "File destructor: close failed: " + e.toString() ) ;
 	}
-		
+
 	 *
 	 */
-		
+
 }
 
 
 
-				
-const std::string & File::getName() const 
-{ 
 
-	return _name ; 
-	
+const std::string & File::getName() const
+{
+
+	return _name ;
+
 }
 
 
@@ -346,12 +360,12 @@ const std::string & File::getName() const
 
 void File::lockForReading() const
 {
-	
+
 	// Meant to be overriden:
-	
+
 	throw FileReadLockingFailed( "File::lockForReading: "
 		"lock feature not available" ) ;
-		
+
 }
 
 
@@ -360,10 +374,10 @@ void File::unlockForReading() const
 {
 
 	// Meant to be overriden:
-	
+
 	throw FileReadUnlockingFailed( "File::unlockForReading: "
 		"lock feature not available" ) ;
-	
+
 }
 
 
@@ -372,10 +386,10 @@ void File::lockForWriting() const
 {
 
 	// Meant to be overriden:
-	
+
 	throw FileWriteLockingFailed( "File::lockForWriting: "
 		"lock feature not available" ) ;
-	
+
 }
 
 
@@ -384,7 +398,7 @@ void File::unlockForWriting() const
 {
 
 	// Meant to be overriden:
-	
+
 	throw FileWriteUnlockingFailed( "File::unlockForWriting: "
 		"lock feature not available" ) ;
 
@@ -392,12 +406,12 @@ void File::unlockForWriting() const
 
 
 
-bool File::isLocked() const 
+bool File::isLocked() const
 {
 
 	// Meant to be overriden:
-	
-	return false ;	
+
+	return false ;
 
 }
 
@@ -408,7 +422,7 @@ Size File::size() const
 
 	// Let FileSizeRequestFailed and FileDelegatingException propagate:
 	return getCorrespondingFileSystemManager().getSize( _name ) ;
-	
+
 }
 
 
@@ -424,39 +438,39 @@ void File::readExactLength( Ceylan::Byte * buffer, Size exactLength )
 
 	try
 	{
-		
+
 		do
 		{
 
 			readCount = read( buffer, remainder ) ;
-			
+
 			remainder -= readCount ;
 
 			if ( readCount == 0 )
 				readFailures++ ;
 			else
 				readFailures = 0 ;
-				
+
 		}
 		while( remainder > 0 && readFailures < maxReadFailures ) ;
 
 
-	} 
+	}
 	catch ( const InputStream::ReadFailedException  & e )
 	{
-	
-		throw InputStream::ReadFailedException( 
+
+		throw InputStream::ReadFailedException(
 			"File::readExactLength: trying to read "
-			+ Ceylan::toString( static_cast<Ceylan::Uint32>( exactLength ) ) 
+			+ Ceylan::toString( static_cast<Ceylan::Uint32>( exactLength ) )
 			+ " bytes, actually read "
-			+ Ceylan::toString( static_cast<Ceylan::Uint32>( 
+			+ Ceylan::toString( static_cast<Ceylan::Uint32>(
 					exactLength - remainder ) )
 			+ " bytes before following error: " + e.toString() ) ;
 
 	}
 
 	if ( readFailures == maxReadFailures )
-		throw InputStream::ReadFailedException( 
+		throw InputStream::ReadFailedException(
 			"File::readExactLength: unable to read requested bytes, maybe "
 			"trying to read a binary file not opened in Binary mode?" ) ;
 
@@ -464,17 +478,36 @@ void File::readExactLength( Ceylan::Byte * buffer, Size exactLength )
 
 
 
-bool File::hasAvailableData() const 
+Ceylan::Byte & File::readWholeContent()
+{
+
+	Size contentSize = size() ;
+	Ceylan::Byte * res = new Ceylan::Byte[ contentSize ] ;
+
+	if ( res == 0 )
+	  throw FileException( "File::readWholeContent failed: "
+		"could not allocate buffer of size " + Ceylan::toString(contentSize)
+		+ " bytes." ) ;
+
+	readExactLength( res, contentSize ) ;
+
+	return *res ;
+
+}
+
+
+
+bool File::hasAvailableData() const
 {
 
 	return true ;
-	
+
 }
 
 
 
 
-void File::open( OpeningFlag openFlag, PermissionFlag permissionFlag ) 
+void File::open( OpeningFlag openFlag, PermissionFlag permissionFlag )
 {
 
 	if ( _openFlag != DoNotOpen )
@@ -495,9 +528,9 @@ void File::remove()
 
 	try
 	{
-	
+
 		close() ;
-		
+
 	}
 	catch( const Stream::CloseException & e )
 	{
@@ -507,31 +540,31 @@ void File::remove()
 
 	// Let FileDelegatingException and FileRemoveFailed propagate:
 	getCorrespondingFileSystemManager().removeFile( _name ) ;
-		
+
 }
 
 
 
-StreamID File::getInputStreamID() const 
+StreamID File::getInputStreamID() const
 {
 
 	return getStreamID() ;
-	
+
 }
 
 
 
-StreamID File::getOutputStreamID() const 
+StreamID File::getOutputStreamID() const
 {
 
 	return getStreamID() ;
-	
+
 }
 
 
 
-const std::string File::toString( Ceylan::VerbosityLevels level ) 
-	const 
+const std::string File::toString( Ceylan::VerbosityLevels level )
+	const
 {
 
 	return "File object for filename '" + _name + "'" ;
@@ -546,9 +579,9 @@ const std::string File::toString( Ceylan::VerbosityLevels level )
 // Protected section.
 
 
-File::File( const string & name, OpeningFlag openFlag, 
+File::File( const string & name, OpeningFlag openFlag,
 		PermissionFlag permissions ) :
-	InputOutputStream(),	
+	InputOutputStream(),
 	_name( name ),
 	_openFlag( openFlag ),
 	_permissions( permissions ),
@@ -558,14 +591,14 @@ File::File( const string & name, OpeningFlag openFlag,
 
 	/*
 	 * Could not be factorized here as reopen is abstract here:
-	 * 
-	 
+	 *
+
 	if ( openFlag != DoNotOpen )
 		reopen() ;
-		
+
 	 *
 	 */
-		
+
 }
 
 
@@ -575,16 +608,15 @@ FileSystemManager & File::GetCorrespondingFileSystemManager()
 
 	try
 	{
-	
+
 		return FileSystemManager::GetAnyDefaultFileSystemManager() ;
-	
+
 	}
 	catch( const FileSystemManagerException & e )
 	{
 		throw FileDelegatingException(
-			"File::GetCorrespondingFileSystemManager failed: " 
+			"File::GetCorrespondingFileSystemManager failed: "
 			+ e.toString() ) ;
 	}
-	
-}
 
+}

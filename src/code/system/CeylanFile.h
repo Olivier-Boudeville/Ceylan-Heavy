@@ -1,12 +1,12 @@
-/* 
- * Copyright (C) 2003-2009 Olivier Boudeville
+/*
+ * Copyright (C) 2003-2010 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
  *
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -45,16 +45,16 @@ namespace Ceylan
 	namespace System
 	{
 
-		
+
 		/*
-		 * Each File child class is linked to a corresponding filesystem
-		 * manager child class.
+		 * Each File child class is linked to a corresponding filesystem manager
+		 * child class.
 		 *
 		 */
 		class FileSystemManager ;
-		
-		
-		
+
+
+
 		/**
 		 * File opening openFlags, they can be OR'ed.
 		 *
@@ -66,8 +66,8 @@ namespace Ceylan
 
 
 		/**
-		 * File creation abstract permissions, to be used in case a new 
-		 * file is created.
+		 * File creation abstract permissions, to be used in case a new file is
+		 * created.
 		 *
 		 * Permissions can be OR'ed.
 		 *
@@ -75,8 +75,8 @@ namespace Ceylan
 		 * according to (actualPermissionFlag & ~umask).
 		 *
 		 * @note When the file descriptor and/or the advanced file attribute
-		 * features are not enabled, the permissions which are not managed
-		 * are ignored.
+		 * features are not enabled, the permissions which are not managed are
+		 * ignored.
 		 *
 		 */
 		typedef Ceylan::Uint16 PermissionFlag ;
@@ -86,68 +86,68 @@ namespace Ceylan
 		 * As explained in CeylanFileSystemCommon.h, some file exceptions have
 		 * to be declared in that file and have to have a name starting with
 		 * 'File'. For the sake of homogeneity, other file exception declared
-		 * here also have a name like 'FileX', instead of being
-		 * declared as inner classes (ex: File::X').
+		 * here also have a name like 'FileX', instead of being declared as
+		 * inner classes (ex: File::X').
 		 *
 		 * Note that exceptions associated to inherited methods
 		 * (InputOutputStream) cannot follow this rule.
 		 *
 		 */
-		 
-		 
 
-		class CEYLAN_DLL FileReadLockingFailed: public FileException
-		{ 
-			public: 
-			
-				explicit FileReadLockingFailed( const std::string & reason ) ; 
+
+
+		class CEYLAN_DLL FileReadLockingFailed : public FileException
+		{
+			public:
+
+				explicit FileReadLockingFailed( const std::string & reason ) ;
 		} ;
 
 
 
-		class CEYLAN_DLL FileReadUnlockingFailed: public FileException
-		{ 
-			public: 
-			
+		class CEYLAN_DLL FileReadUnlockingFailed : public FileException
+		{
+			public:
+
 				explicit FileReadUnlockingFailed( const std::string & reason ) ;
 		} ;
 
 
 
-		class CEYLAN_DLL FileWriteLockingFailed: public FileException
-		{ 
-			public: 
-			
-				explicit FileWriteLockingFailed( const std::string & reason ) ; 
+		class CEYLAN_DLL FileWriteLockingFailed : public FileException
+		{
+			public:
+
+				explicit FileWriteLockingFailed( const std::string & reason ) ;
 		} ;
 
 
 
-		class CEYLAN_DLL FileWriteUnlockingFailed: public FileException
-		{ 
-			public: 
-			
-				explicit FileWriteUnlockingFailed( 
-					const std::string & reason ) ; 
+		class CEYLAN_DLL FileWriteUnlockingFailed : public FileException
+		{
+			public:
+
+				explicit FileWriteUnlockingFailed(
+					const std::string & reason ) ;
 		} ;
 
 
 
 		/**
-		 * Thrown when file operations failed because of underlying
-		 * filesystem manager: the corresponding backend could not 
-		 * be retrieved as expected.
+		 * Thrown when file operations failed because of underlying filesystem
+		 * manager: the corresponding backend could not be retrieved as
+		 * expected.
 		 *
 		 */
-		class CEYLAN_DLL FileDelegatingException: public FileException
-		{ 
-		
-			public: 
-			
+		class CEYLAN_DLL FileDelegatingException : public FileException
+		{
+
+			public:
+
 				explicit FileDelegatingException( const std::string & reason ) ;
-					
+
 		} ;
-		
+
 
 
 
@@ -158,17 +158,21 @@ namespace Ceylan
 		 *
 		 * Actual files should be created and opened with respectively the
 		 * File::Create and File::Open factories.
+		 *
 		 * If it allows to fully hide the actual child class being used, an
-		 * abstract File class hinders from using such File instances as 
-		 * automatic variables: 'File myFile(...)' cannot exist, thus 
-		 * 'File & myFile = File::Create(...)' as to be used instead. 
+		 * abstract File class hinders from using such File instances as
+		 * automatic variables: 'File myFile(...)' cannot exist, thus 'File &
+		 * myFile = File::Create(...)' as to be used instead.
+		 *
 		 * The drawback of this approach is that the life-cycle of the instance
-		 * has to be managed explicitly, with for example a 'delete &myFile'
-		 * to be placed before each return or throw statement (no automatic
+		 * has to be managed explicitly, with for example a 'delete &myFile' to
+		 * be placed before each return or throw statement (no automatic
 		 * variable can be used directly for an abstract file).
+		 *
 		 * To restore file handling through automatic variable (which are
-		 * automatically deallocated in the relevant cases), the Holder
-		 * class is available.
+		 * automatically deallocated in the relevant cases), the Holder class is
+		 * available.
+		 *
 		 * It should be used that way:
 		 * 'Holder<File> myFileHolder( File::Open(...) ) ;', then
 		 * 'myFileHolder.get().lockForWriting()' or, preferably,
@@ -176,117 +180,115 @@ namespace Ceylan
 		 *
 		 * @see Directory, FileSystemManager for other file-related operations.
 		 *
-		 * @note Depending on the platform support, some primitives may not
-		 * be available, which results in FileException being raised
-		 * whenever called. The reason for that is either the underlying
-		 * platform is unable to provide these features, or the Ceylan
-		 * porting effort did not manage them for the moment.
+		 * @note Depending on the platform support, some primitives may not be
+		 * available, which results in FileException being raised whenever
+		 * called. The reason for that is either the underlying platform is
+		 * unable to provide these features, or the Ceylan porting effort did
+		 * not manage them for the moment.
 		 *
-		 * @see following feature symbols to spot the actual support 
-		 * beforehand:
+		 * @see following feature symbols to spot the actual support beforehand:
 		 *   - Features::areAdvancedFileAttributesSupported
 		 *   - Features::areSymbolicLinksSupported
 		 *   - Features::areFileLocksSupported
-		 * 
+		 *
 		 * @note To specify all exceptions that may be thrown by file
 		 * manipulation, use System::SystemException, the closest mother class
 		 * of FileException, InputStream::ReadFailedException,
-		 * OutputStream::WriteFailedException, Stream::CloseException. 
-		 * 
+		 * OutputStream::WriteFailedException, Stream::CloseException.
+		 *
 		 */
-		class CEYLAN_DLL File: public InputOutputStream
+		class CEYLAN_DLL File : public InputOutputStream
 		{
-	
+
 
 			public:
 
 
 
-				// Allows read operations on the opened file. 
+				// Allows read operations on the opened file.
 				static const OpeningFlag Read ;
-				
-				
+
+
 				// Allows write operations on the opened file.
 				static const OpeningFlag Write ;
-				
-				
-				
+
+
+
 				/**
 				 * Creates the file, if it does not exist.
 				 *
-				 * Could not be named 'Create' (static method of the same
-				 * name exists already), thus CreateFile is used.
+				 * Could not be named 'Create' (static method of the same name
+				 * exists already), thus CreateFile is used.
 				 *
 				 */
 				static const OpeningFlag CreateFile ;
-				
-				
+
+
 				// Truncates file to length zero when opening.
 				static const OpeningFlag TruncateFile ;
-				
-				
+
+
 				// Seeks to the end of the file before each write operation.
 				static const OpeningFlag AppendFile ;
-				
-				
-								
+
+
+
 				// Opens the file in binary rather than in text mode.
 				static const OpeningFlag Binary ;
-				
-				
+
+
 				// Does not open the underlying file object.
 				static const OpeningFlag DoNotOpen ;
-				
-				
-				
+
+
+
 				/*
-				 * Creates the file for writing, it is a convenience 
-				 * shortcut equal to the very common combination:
+				 * Creates the file for writing, it is a convenience shortcut
+				 * equal to the very common combination:
 				 * 'Read | Write | CreateFile | TruncateFile | Binary'.
 				 *
 				 */
 				static const OpeningFlag CreateToWriteBinary ;
-				
-				
+
+
 				/*
-				 * Opens the file for reading, it is a convenience 
-				 * shortcut equal to the very common combination:
-				 * 'Read | Binary'.
+				 * Opens the file for reading, it is a convenience shortcut
+				 * equal to the very common combination: 'Read | Binary'.
 				 *
 				 */
 				static const OpeningFlag OpenToReadBinary ;
-				
-								
-				
+
+
+
 				/**
 				 * Opens the file in non-blocking mode, when possible.
 				 *
-				 * Neither the opening nor any subsequent operations on
-				 * this file will cause the calling process to wait.
+				 * Neither the opening nor any subsequent operations on this
+				 * file will cause the calling process to wait.
 				 *
-				 * @note Only taken into account if the advanced file 
-				 * attribute feature is enabled.
+				 * @note Only taken into account if the advanced file attribute
+				 * feature is enabled.
 				 *
 				 */
 				static const OpeningFlag NonBlocking ;
-				
-				
-				
+
+
+
 				/**
 				 * Opens the file in synchronous mode.
 				 *
-				 * Any write operation on this file will block the
-				 * calling process until the data has been physically 
-				 * written to the underlying hardware.
+				 * Any write operation on this file will block the calling
+				 * process until the data has been physically written to the
+				 * underlying hardware.
 				 *
-				 * @note Mostly taken into account if the advanced file 
+				 * @note Mostly taken into account if the advanced file
 				 * attribute feature is enabled, even though our default C++
 				 * file stream-base implementation tries to manage it as well.
 				 *
 				 */
 				static const OpeningFlag Synchronous ;
-				
-				
+
+
 
 
 				/*
@@ -297,9 +299,9 @@ namespace Ceylan
 
 				/// Allows its owner to read the created file.
 				static const PermissionFlag OwnerRead ;
-				
-				
-				
+
+
+
 				/// Allows its owner to write to the created file.
 				static const PermissionFlag OwnerWrite ;
 
@@ -307,33 +309,33 @@ namespace Ceylan
 
 				/// Allows its owner to execute the created file.
 				static const PermissionFlag OwnerExec ;
-				
-				
-				
+
+
+
 				/**
-				 * Provided for convenience: 
+				 * Provided for convenience:
 				 * OwnerReadWrite = OwnerRead | OwnerWrite.
 				 *
 				 */
 				static const PermissionFlag OwnerReadWrite ;
-				
-				
+
+
 
 				/**
-				 * Provided for convenience: 
+				 * Provided for convenience:
 				 * OwnerReadWriteExec = OwnerReadWrite | OwnerExec.
 				 *
 				 */
 				static const PermissionFlag OwnerReadWriteExec ;
-				
+
 
 
 
 				/*
 				 * Open flags for 'Group'.
 				 *
-				 * @note They are only taken into account if the advanced 
-				 * file attribute feature is enabled.
+				 * @note They are only taken into account if the advanced file
+				 * attribute feature is enabled.
 				 *
 				 */
 
@@ -341,19 +343,19 @@ namespace Ceylan
 				/**
 				 * Allows the group to read the created file.
 				 *
-				 * @note Only taken into account if the advanced file 
-				 * attribute feature is enabled.
+				 * @note Only taken into account if the advanced file attribute
+				 * feature is enabled.
 				 *
 				 */
 				static const PermissionFlag GroupRead ;
-				
-				
-				
+
+
+
 				/**
 				 * Allows the group to write the created file.
 				 *
-				 * @note Only taken into account if the advanced file 
-				 * attribute feature is enabled.
+				 * @note Only taken into account if the advanced file attribute
+				 * feature is enabled.
 				 *
 				 */
 				static const PermissionFlag GroupWrite ;
@@ -362,66 +364,66 @@ namespace Ceylan
 				/**
 				 * Allows the group to execute the created file.
 				 *
-				 * @note Only taken into account if the advanced file 
-				 * attribute feature is enabled.
+				 * @note Only taken into account if the advanced file attribute
+				 * feature is enabled.
 				 *
 				 */
 				static const PermissionFlag GroupExec ;
-				
-				
-				
+
+
+
 				/**
-				 * Provided for convenience: 
+				 * Provided for convenience:
 				 * GroupReadWrite = GroupRead | GroupWrite.
 				 *
-				 * @note Only taken into account if the advanced file 
-				 * attribute feature is enabled.
+				 * @note Only taken into account if the advanced file attribute
+				 * feature is enabled.
 				 *
 				 */
 				static const PermissionFlag GroupReadWrite ;
-				
-				
-				
+
+
+
 				/**
-				 * Provided for convenience: 
+				 * Provided for convenience:
 				 * GroupReadWriteExec = GroupReadWrite | GroupExec.
 				 *
-				 * @note Only taken into account if the advanced file 
-				 * attribute feature is enabled.
+				 * @note Only taken into account if the advanced file attribute
+				 * feature is enabled.
 				 *
 				 */
 				static const PermissionFlag GroupReadWriteExec ;
-				
+
 
 
 				/*
 				 * Open flags for 'Others'.
 				 *
-				 * @note They are only taken into account if the advanced 
-				 * file attribute feature is enabled.
+				 * @note They are only taken into account if the advanced file
+				 * attribute feature is enabled.
 				 *
 				 */
 
 
 
 				/**
-				 * Allows the others (not owner, not group) to read the 
-				 * created file.
+				 * Allows the others (not owner, not group) to read the created
+				 * file.
 				 *
-				 * @note Only taken into account if the advanced file 
-				 * attribute feature is enabled.
+				 * @note Only taken into account if the advanced file attribute
+				 * feature is enabled.
 				 *
 				 */
 				static const PermissionFlag OthersRead ;
-				
-				
-				
+
+
+
 				/**
-				 * Allows the others (not owner, not group) to write
-				 * to the created file.
+				 * Allows the others (not owner, not group) to write to the
+				 * created file.
 				 *
-				 * @note Only taken into account if the advanced file 
-				 * attribute feature is enabled.
+				 * @note Only taken into account if the advanced file attribute
+				 * feature is enabled.
 				 *
 				 */
 				static const PermissionFlag OthersWrite ;
@@ -429,89 +431,89 @@ namespace Ceylan
 
 
 				/**
-				 * Allows the others (not owner, not group) to execute
-				 * the created file.
+				 * Allows the others (not owner, not group) to execute the
+				 * created file.
 				 *
-				 * @note Only taken into account if the advanced file 
-				 * attribute feature is enabled.
+				 * @note Only taken into account if the advanced file attribute
+				 * feature is enabled.
 				 *
 				 */
 				static const PermissionFlag OthersExec ;
-				
-				
-				
+
+
+
 				/**
-				 * Provided for convenience: 
+				 * Provided for convenience:
 				 * OthersReadWrite = OthersRead | OthersWrite.
 				 *
-				 * @note Only taken into account if the advanced file 
-				 * attribute feature is enabled.
+				 * @note Only taken into account if the advanced file attribute
+				 * feature is enabled.
 				 *
 				 */
 				static const PermissionFlag OthersReadWrite ;
-				
-				
-				
+
+
+
 				/**
-				 * Provided for convenience: 
+				 * Provided for convenience:
 				 * OthersReadWriteExec = OthersReadWrite | OthersExec.
 				 *
-				 * @note Only taken into account if the advanced file 
-				 * attribute feature is enabled.
+				 * @note Only taken into account if the advanced file attribute
+				 * feature is enabled.
 				 *
 				 */
 				static const PermissionFlag OthersReadWriteExec ;
-				
-							
+
+
 				/*
 				 * Static section.
 				 *
 				 * These methods encapsulate calls to the actual filesystem
 				 * manager, so that the developer does not need to mess with
 				 * platform-specific details and/or with the management of
-				 * specialized filesystem managers. 
+				 * specialized filesystem managers.
 				 *
-				 * Should a delegated operation fail, a FileException is
-				 * thrown, including if the filesystem manager backend could 
-				 * not be retrieved. In that case a more specialized exception
-				 * is thrown, a FileDelegatingException.
+				 * Should a delegated operation fail, a FileException is thrown,
+				 * including if the filesystem manager backend could not be
+				 * retrieved. In that case a more specialized exception is
+				 * thrown, a FileDelegatingException.
 				 *
 				 */
 
 
 				/**
-				 * Tells whether the regular file or symbolic link 
+				 * Tells whether the regular file or symbolic link
 				 * <b>filename</b> exists (and is not a directory).
 				 *
 				 * @param filename the filename to look-up.
 				 *
-				 * This method will work as expected whether the 
-				 * symbolic link feature is enabled or not.
+				 * This method will work as expected whether the symbolic link
+				 * feature is enabled or not.
 				 *
 				 * @throw FileException, including FileLookupFailed if the
-				 * operation failed (existence test failed with no answer) or
-				 * is not supported on this platform, or FileDelegatingException
-				 * if the relevant filesystem manager could not be retrieved.
+				 * operation failed (existence test failed with no answer) or is
+				 * not supported on this platform, or FileDelegatingException if
+				 * the relevant filesystem manager could not be retrieved.
 				 *
 				 */
-				static bool ExistsAsFileOrSymbolicLink( 
+				static bool ExistsAsFileOrSymbolicLink(
 					const std::string & filename ) ;
 
 
 
 				/**
-				 * Tells whether the regular file or symbolic link 
+				 * Tells whether the regular file or symbolic link
 				 * <b>filename</b> exists (and is not a directory).
 				 *
 				 * @param filename the filename to look-up.
 				 *
-				 * This method will work as expected whether the 
-				 * symbolic link feature is enabled or not.
+				 * This method will work as expected whether the symbolic link
+				 * feature is enabled or not.
 				 *
 				 * @throw FileException, including FileLookupFailed if the
-				 * operation failed (existence test failed with no answer) or
-				 * is not supported on this platform, or FileDelegatingException
-				 * if the relevant filesystem manager could not be retrieved.
+				 * operation failed (existence test failed with no answer) or is
+				 * not supported on this platform, or FileDelegatingException if
+				 * the relevant filesystem manager could not be retrieved.
 				 *
 				 * @note This method is an alias for ExistsAsFileOrSymbolicLink.
 				 *
@@ -532,9 +534,9 @@ namespace Ceylan
 				 *
 				 */
 				static void Remove( const std::string & filename ) ;
-				
-				
-				
+
+
+
 				/**
 				 * Moves specified file on filesystem.
 				 *
@@ -562,9 +564,9 @@ namespace Ceylan
 				 *
 				 * @param targetFilename the new filename of the copied file.
 				 *
-				 * @throw CopyFailed if the operation failed or is not
-				 * supported on this platform, or FileDelegatingException if 
-				 * the relevant filesystem manager could not be retrieved.
+				 * @throw CopyFailed if the operation failed or is not supported
+				 * on this platform, or FileDelegatingException if the relevant
+				 * filesystem manager could not be retrieved.
 				 *
 				 */
 				static void Copy( const std::string & sourceFilename,
@@ -578,8 +580,8 @@ namespace Ceylan
 				 * @param filename the filename whose size is searched.
 				 *
 				 * @throw FileSizeRequestFailed if the operation failed or is
-				 * not supported on this platform, or FileDelegatingException 
-				 * if the relevant filesystem manager could not be retrieved.
+				 * not supported on this platform, or FileDelegatingException if
+				 * the relevant filesystem manager could not be retrieved.
 				 *
 				 */
 				static Size GetSize( const std::string & filename ) ;
@@ -598,13 +600,13 @@ namespace Ceylan
 				 * could not be retrieved.
 				 *
 				 */
-				static time_t GetLastChangeTime( 
+				static time_t GetLastChangeTime(
 					const std::string & filename ) ;
 
 
 
 				/**
-				 * Takes specified <b>rawFilename</b> and tries to transform it 
+				 * Takes specified <b>rawFilename</b> and tries to transform it
 				 * so that the result should be a valid name, from the
 				 * filesystem's point of view.
 				 *
@@ -613,29 +615,29 @@ namespace Ceylan
 				 * @return the converted filename
 				 *
 				 */
-				static std::string TransformIntoValidFilename( 
+				static std::string TransformIntoValidFilename(
 					const std::string & rawFilename ) ;
 
 
 
 				/**
-				 * Updates the last access and modification times of 
-				 * specified file.
+				 * Updates the last access and modification times of specified
+				 * file.
 				 *
 				 * This is not expected to work for directories.
 				 *
 				 * @param filename the filename of the file whose times must
 				 * be updated.
 				 *
-				 * @note On contrary to the UNIX command touch, if the
-				 * specified file does not exist, it will not be created.
-				 * A TouchFailed exception would be raised instead.
+				 * @note On contrary to the UNIX command touch, if the specified
+				 * file does not exist, it will not be created.  A TouchFailed
+				 * exception would be raised instead.
 				 *
 				 * @see File::Create to create empty files.
 				 *
 				 * @throw TouchFailed if the operation failed or is not
-				 * supported on this platform, or FileDelegatingException if 
-				 * the relevant filesystem manager could not be retrieved.
+				 * supported on this platform, or FileDelegatingException if the
+				 * relevant filesystem manager could not be retrieved.
 				 *
 				 */
 				static void Touch( const std::string & filename ) ;
@@ -652,30 +654,41 @@ namespace Ceylan
 				 * @param secondFilename the filename of the second file to
 				 * compare.
 				 *
-				 * @return true iff these files exists and have exactly the 
-				 * same content.
+				 * @return true iff these files exists and have exactly the same
+				 * content.
 				 *
-				 * @throw DiffFailed if the operation failed or is not
-				 * supported on this platform, or FileDelegatingException if 
-				 * the relevant filesystem manager could not be retrieved.
+				 * @throw DiffFailed if the operation failed or is not supported
+				 * on this platform, or FileDelegatingException if the relevant
+				 * filesystem manager could not be retrieved.
 				 *
 				 */
 				static bool Diff( const std::string & firstFilename,
 						const std::string & secondFilename ) ;
 
 
-				
-				
-				
+				/**
+				 * Reads, in binary mode, the specified file as a whole
+				 * (i.e. its full content) and returns a reference to a
+				 * dynamically-allocated buffer which contains this content.
+				 *
+				 * @note Ownership of the returned buffer is transferred to the
+				 * caller, who shall de-allocate it when appropriate.
+				 *
+				 */
+				static Ceylan::Byte & ReadWholeContent(
+				  const std::string & filename ) ;
+
+
+
 				// Factory section.
-				
-		
+
+
 				/**
 				 * Returns a File reference on a newly created file.
 				 *
 				 * By default, it creates a new file on disk. If the name
-				 * corresponds to an already-existing file, it will be
-				 * truncated and overwritten.
+				 * corresponds to an already-existing file, it will be truncated
+				 * and overwritten.
 				 *
 				 * @param filename the name of the file.
 				 *
@@ -703,19 +716,19 @@ namespace Ceylan
 				 * ...
 				 * myFile.write( "Hello Ceylan!" ) ;
 				 * ...
-                 * delete & myFile ;
+				 * delete & myFile ;
 				 * </pre>
 				 *
 				 * @note Ceylan::Holder can be used as well to simplify the
 				 * management of the lifecycle of File instances.
 				 *
 				 */
-				static File & Create( const std::string & filename, 
+				static File & Create( const std::string & filename,
 					OpeningFlag createFlag = CreateToWriteBinary,
 					PermissionFlag permissionFlag = OwnerReadWrite ) ;
 
-				
-				
+
+
 				/**
 				 * Returns a File reference on specified already-existing file,
 				 * which will be opened with specified settings.
@@ -742,25 +755,26 @@ namespace Ceylan
 				 * ...
 				 * myFile.read( buf, 100 ) ;
 				 * ...
+				 * delete &myFile ;
 				 * </pre>
 				 *
 				 * @note Ceylan::Holder can be used as well to simplify the
 				 * management of the lifecycle of File instances.
 				 *
-				 * In some cases, depending on the filesystem back-end, 
-				 * opening the same file more than once might result in 
-				 * scrambled reads afterwards (ex: when reading from a
-				 * LZMA-based embedded archive).
+				 * In some cases, depending on the filesystem back-end, opening
+				 * the same file more than once might result in scrambled reads
+				 * afterwards (ex: when reading from a LZMA-based embedded
+				 * archive).
 				 *
 				 */
-				static File & Open( const std::string & filename, 
+				static File & Open( const std::string & filename,
 					OpeningFlag openFlag = OpenToReadBinary ) ;
 
 
-				
+
 				/**
-				 * Destroys the file reference object, does not remove the
-				 * file itself.
+				 * Destroys the file reference object, does not remove the file
+				 * itself.
 				 *
 				 * @note Will close automatically the file if needed.
 				 *
@@ -783,16 +797,16 @@ namespace Ceylan
 				/// Returns this file's name.
 				const std::string & getName() const ;
 
-				
-				
+
+
 				/**
 				 * Returns true iff this file is open.
 				 *
 				 */
 				virtual bool isOpen() const = 0 ;
-				
-				
-				
+
+
+
 				/**
 				 * Closes the file for read/write actions.
 				 *
@@ -820,15 +834,15 @@ namespace Ceylan
 
 
 				// Locking section.
-				
-				 
-				 
+
+
+
 				/**
 				 * Locks the file for reading.
 				 *
-				 * @throw FileReadLockingFailed if the operation failed or 
-				 * if the file lock feature is not available.
-				 *		 
+				 * @throw FileReadLockingFailed if the operation failed or if
+				 * the file lock feature is not available.
+				 *
 				 * This default implementation, meant to be overriden, throws
 				 * this exception if called.
 				 *
@@ -840,9 +854,9 @@ namespace Ceylan
 				/**
 				 * Unlocks the file for reading.
 				 *
-				 * @throw FileReadUnlockingFailed if the operation failed or 
-				 * if the file lock feature is not available.
-				 *		 
+				 * @throw FileReadUnlockingFailed if the operation failed or if
+				 * the file lock feature is not available.
+				 *
 				 * This default implementation, meant to be overriden, throws
 				 * this exception if called.
 				 *
@@ -854,9 +868,9 @@ namespace Ceylan
 				/**
 				 * Locks the file for writing.
 				 *
-				 * @throw FileWriteLockingFailed if the operation failed or 
-				 * if the file lock feature is not available.
-				 *		 
+				 * @throw FileWriteLockingFailed if the operation failed or if
+				 * the file lock feature is not available.
+				 *
 				 * This default implementation, meant to be overriden, throws
 				 * this exception if called.
 				 *
@@ -868,9 +882,9 @@ namespace Ceylan
 				/**
 				 * Unlocks the file for writing.
 				 *
-				 * @throw FileWriteUnlockingFailed if the operation failed or 
-				 * if the file lock feature is not available.
-				 *		 
+				 * @throw FileWriteUnlockingFailed if the operation failed or if
+				 * the file lock feature is not available.
+				 *
 				 * This default implementation, meant to be overriden, throws
 				 * this exception if called.
 				 *
@@ -883,10 +897,10 @@ namespace Ceylan
 				/**
 				 * Tells whether the file is locked.
 				 *
-				 * @return true if the lock feature is available and the 
-				 * file is locked, otherwise returns false, i.e. if the file
-				 * is locked or if the lock feature is not available.
-				 *		 
+				 * @return true if the lock feature is available and the file is
+				 * locked, otherwise returns false, i.e. if the file is locked
+				 * or if the lock feature is not available.
+				 *
 				 * This default implementation, meant to be overriden, returns
 				 * always false.
 				 *
@@ -915,8 +929,8 @@ namespace Ceylan
 				/**
 				 * Returns the latest change time of this standard file.
 				 *
-				 * @throw FileLastChangeTimeRequestFailed if the 
-				 * operation failed, or is not supported.
+				 * @throw FileLastChangeTimeRequestFailed if the operation
+				 * failed, or is not supported.
 				 *
 				 */
 				virtual time_t getLastChangeTime() const = 0 ;
@@ -927,28 +941,27 @@ namespace Ceylan
 				 * Reads up to maxLength bytes from this file to specified
 				 * buffer.
 				 *
-				 * @param buffer the buffer where to store read bytes. 
-				 * Its size must be at least maxLength bytes.
+				 * @param buffer the buffer where to store read bytes. Its size
+				 * must be at least maxLength bytes.
 				 *
-				 * @param maxLength the maximum number of bytes that should 
-				 * be read.
+				 * @param maxLength the maximum number of bytes that should be
+				 * read.
 				 *
-				 * @return The number of bytes actually read, which should
-				 * be maxLength or lower.
+				 * @return The number of bytes actually read, which should be
+				 * maxLength or lower.
 				 *
 				 * @throw InputStream::ReadFailedException if a read error
-				 * occurred. Note that this is not a child class of 
+				 * occurred. Note that this is not a child class of
 				 * FileException, as it comes from an inherited interface.
 				 *
-				 * @note May be unable to read the full content of a file 
-				 * if the file was open without the 'Binary' flag (hence
-				 * in text mode) and if in the file content it occurs
-				 * that accidentally some bytes form an 'end of file'
-				 * marker (despite some bytes remain to be read past
-				 * this marker).
+				 * @note May be unable to read the full content of a file if the
+				 * file was open without the 'Binary' flag (hence in text mode)
+				 * and if in the file content it occurs that accidentally some
+				 * bytes form an 'end of file' marker (despite some bytes remain
+				 * to be read past this marker).
 				 *
 				 */
-		 		virtual Size read( Ceylan::Byte * buffer, Size maxLength ) = 0 ;
+				virtual Size read( Ceylan::Byte * buffer, Size maxLength ) = 0 ;
 
 
 
@@ -956,27 +969,38 @@ namespace Ceylan
 				 * Reads exactly exactLength bytes from this file to specified
 				 * buffer.
 				 *
-				 * @param buffer the buffer where to store read bytes. 
-				 * Its size must be at least maxLength bytes.
+				 * @param buffer the buffer where to store read bytes. Its size
+				 * must be at least maxLength bytes.
 				 *
-				 * @param maxLength the maximum number of bytes that should 
-				 * be read.
+				 * @param maxLength the maximum number of bytes that should be
+				 * read.
 				 *
-				 * @return The number of bytes actually read, which should
-				 * be maxLength or lower.
+				 * @return The number of bytes actually read, which should be
+				 * maxLength or lower.
 				 *
 				 * @throw ReadFailed if a read error occurred.
 				 *
-				 * @note May never terminate if the file was open without
-				 * the 'Binary' flag (hence in text mode) and if in the 
-				 * file content it occurs that accidentally some bytes 
-				 * form an 'end of file' marker (despite some bytes remain
-				 * to be read past this marker).
+				 * @note May never terminate if the file was open without the
+				 * 'Binary' flag (hence in text mode) and if in the file content
+				 * it occurs that accidentally some bytes form an 'end of file'
+				 * marker (despite some bytes remain to be read past this
+				 * marker).
 				 *
 				 */
-		 		virtual void readExactLength( Ceylan::Byte * buffer, 
+				virtual void readExactLength( Ceylan::Byte * buffer,
 						Size exactLength ) ;
 
+
+				/**
+				 * Reads, in binary mode, this file as a whole (i.e. its full
+				 * content) and returns a reference to a dynamically-allocated
+				 * buffer which contains this content.
+				 *
+				 * @note Ownership of the returned buffer is transferred to the
+				 * caller, who shall de-allocate it when appropriate.
+				 *
+				 */
+				virtual Ceylan::Byte & readWholeContent() ;
 
 
 				/**
@@ -986,19 +1010,19 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool hasAvailableData() const ;
-				
-				
-				
+
+
+
 				/**
 				 * Writes message to this file.
 				 *
 				 * @param message the message to write to this file.
 				 *
-				 * @return The number of bytes actually written, which 
-				 * should be equal to the size of the string or lower.
+				 * @return The number of bytes actually written, which should be
+				 * equal to the size of the string or lower.
 				 *
 				 * @throw OutputStream::WriteFailedException if a write error
-				 * occurred. Note that this is not a child class of 
+				 * occurred. Note that this is not a child class of
 				 * FileException, as it comes from an inherited interface.
 				 *
 				 */
@@ -1007,22 +1031,22 @@ namespace Ceylan
 
 
 				/**
-				 * Writes up to maxLength bytes from the specified buffer
-				 * to this file.
+				 * Writes up to maxLength bytes from the specified buffer to
+				 * this file.
 				 *
-				 * @param buffer the buffer where to find bytes that must
-				 * be written to this file.
-				 * Its size must be at least maxLength bytes.
+				 * @param buffer the buffer where to find bytes that must be
+				 * written to this file. Its size must be at least maxLength
+				 * bytes.
 				 *
-				 * @return The number of bytes actually written, which 
-				 * should be equal to maxLength.
+				 * @return The number of bytes actually written, which should be
+				 * equal to maxLength.
 				 *
 				 * @throw OutputStream::WriteFailedException if a write error
-				 * occurred. Note that this is not a child class of 
+				 * occurred. Note that this is not a child class of
 				 * FileException, as it comes from an inherited interface.
 				 *
 				 */
-				virtual Size write( const Ceylan::Byte * buffer, 
+				virtual Size write( const Ceylan::Byte * buffer,
 					Size maxLength ) = 0 ;
 
 
@@ -1031,7 +1055,7 @@ namespace Ceylan
 				 * Determines current position within this file.
 				 *
 				 * @return offset in bytes from start of file.
-                 *
+				 *
 				 * @throw FileException if the operation failed.
 				 *
 				 */
@@ -1042,9 +1066,9 @@ namespace Ceylan
 				/**
 				 * Seeks to specified position within this file.
 				 *
-				 * @param targetPosition this position corresponds to the
-                 * number of bytes from start of file to seek to.
-                 *
+				 * @param targetPosition this position corresponds to the number
+				 * of bytes from start of file to seek to.
+				 *
 				 * @throw FileException if the operation failed.
 				 *
 				 */
@@ -1057,10 +1081,10 @@ namespace Ceylan
 				 * DoNotOpen open flag.
 				 *
 				 * @throw FileException, including FileAlreadyOpened if file was
-				 * already opened, and FileOpeningFailed if an error occurred, 
+				 * already opened, and FileOpeningFailed if an error occurred,
 				 * if the operation failed or is not supported.
 				 */
-				virtual void open( OpeningFlag openFlag = CreateToWriteBinary, 
+				virtual void open( OpeningFlag openFlag = CreateToWriteBinary,
 					PermissionFlag permissionFlag = OwnerReadWrite ) ;
 
 
@@ -1068,12 +1092,12 @@ namespace Ceylan
 				/**
 				 * Removes this file from disk.
 				 *
-				 * Closes it if necessary. No other operation should be 
+				 * Closes it if necessary. No other operation should be
 				 * performed afterwards on that file.
 				 *
 				 * @throw FileRemoveFailed if the operation failed or is not
-				 * supported on this platform, and FileDelegatingException
-				 * if the corresponding filesystem manager could not be used.
+				 * supported on this platform, and FileDelegatingException if
+				 * the corresponding filesystem manager could not be used.
 				 *
 				 */
 				virtual void remove() ;
@@ -1088,8 +1112,8 @@ namespace Ceylan
 				/**
 				 * Returns this file's ID.
 				 *
-				 * @return the StreamID or -1 if nothing appropriate can
-				 * be returned with the available features.
+				 * @return the StreamID or -1 if nothing appropriate can be
+				 * returned with the available features.
 				 *
 				 */
 				virtual StreamID getStreamID() const = 0 ;
@@ -1097,8 +1121,8 @@ namespace Ceylan
 
 
 				/**
-				 * Returns this file descriptor for this file, or -1 if 
-				 * the file descriptor feature is not available.
+				 * Returns this file descriptor for this file, or -1 if the file
+				 * descriptor feature is not available.
 				 *
 				 */
 				virtual StreamID getInputStreamID() const ;
@@ -1106,38 +1130,37 @@ namespace Ceylan
 
 
 				/**
-				 * Returns this file descriptor for this file, or -1 if 
-				 * the file descriptor feature is not available.
+				 * Returns this file descriptor for this file, or -1 if the file
+				 * descriptor feature is not available.
 				 *
 				 */
 				virtual StreamID getOutputStreamID() const ;
 
 
 
-            	/**
-            	 * Returns an user-friendly description of the state of
-				 * this object.
-            	 *
+				/**
+				 * Returns an user-friendly description of the state of this
+				 * object.
+				 *
 				 * @param level the requested verbosity level.
 				 *
-				 * @note Text output format is determined from overall 
-				 * settings.
+				 * @note Text output format is determined from overall settings.
 				 *
 				 * @see TextDisplayable
 				 *
 				 */
-            	virtual const std::string toString( 
+				virtual const std::string toString(
 					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 
 
 				/// Describes buffer size for usual I/O operations.
 				static const Size UsualBufferSize ;
-				
-				
+
+
 				/// Describes buffer size for significant I/O operations.
 				static const Size BigBufferSize ;
-				
+
 
 
 
@@ -1156,37 +1179,36 @@ namespace Ceylan
 				 * @param openFlag the flag describing the opening mode.
 				 *
 				 * @param permissionFlag the flag describing the requested
-				 * permissions, if this file is to be created.
-				 * Otherwise (if the file already exists), this parameter
-				 * is ignored.
+				 * permissions, if this file is to be created. Otherwise (if the
+				 * file already exists), this parameter is ignored.
 				 *
 				 * @see OpeningFlag, PermissionFlag
 				 *
-				 * @note If not specifically set, the file is opened in 
-				 * text mode: one should not forget to add the Binary flag. 
-				 * The mistake can be detected when basic read() returns less
-				 * than the requested size, or when readExactLength() never
+				 * @note If not specifically set, the file is opened in text
+				 * mode: one should not forget to add the Binary flag. The
+				 * mistake can be detected when basic read() returns less than
+				 * the requested size, or when readExactLength() never
 				 * terminates.
 				 *
 				 * @throw FileException if the operation failed.
 				 *
 				 */
-				explicit File( const std::string & name, 
+				explicit File( const std::string & name,
 					OpeningFlag openFlag = CreateToWriteBinary,
 					PermissionFlag permissionFlag = OwnerReadWrite ) ;
 
 
 
 				/**
-				 * Returns the filesystem manager that corresponds to the 
-				 * actual File child class.
+				 * Returns the filesystem manager that corresponds to the actual
+				 * File child class.
 				 *
 				 * @throw FileDelegatingException if the operation failed.
 				 *
 				 */
 				virtual FileSystemManager & getCorrespondingFileSystemManager()
 					const = 0 ;
-					
+
 
 
 				/**
@@ -1225,11 +1247,11 @@ namespace Ceylan
 				 */
 				bool _lockedForReading: 1, _lockedForWriting: 1 ;
 
-								
+
 
 				/**
-				 * Returns the filesystem manager that should be used by 
-				 * File static methods, which is the default manager.
+				 * Returns the filesystem manager that should be used by File
+				 * static methods, which is the default manager.
 				 *
 				 * @return the default filesystem manager.
 				 *
@@ -1246,7 +1268,7 @@ namespace Ceylan
 
 
 				/**
-				 * Copy constructor made private to ensure that it will 
+				 * Copy constructor made private to ensure that it will
 				 * be never called.
 				 *
 				 * The compiler should complain whenever this undefined
@@ -1258,20 +1280,20 @@ namespace Ceylan
 
 
 				/**
-				 * Assignment operator made private to ensure that it will
-				 * be never called.
+				 * Assignment operator made private to ensure that it will be
+				 * never called.
 				 *
-				 * The compiler should complain whenever this undefined 
-				 * operator is called, implicitly or not.
+				 * The compiler should complain whenever this undefined operator
+				 * is called, implicitly or not.
 				 *
 				 */
 				File & operator = ( const File & source ) ;
 
-				
+
 
 		} ;
-		
-		
+
+
 	}
 
 }
@@ -1279,4 +1301,3 @@ namespace Ceylan
 
 
 #endif // CEYLAN_FILE_H_
-
