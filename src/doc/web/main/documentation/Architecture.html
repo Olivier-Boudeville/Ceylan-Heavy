@@ -3,10 +3,10 @@
 <!--    Ce document fait partie du projet Ceylan.
 		Pour toute remarque, envoyer un courriel à olivier.boudeville@online.fr
 -->
-<!--    
-        Date de création : 11 Février 2004.
-        Auteur : Olivier Boudeville (olivier.boudeville@online.fr)
-        Version : 0.1
+<!--
+		Date de création: 11 Février 2004.
+		Auteur: Olivier Boudeville (olivier.boudeville@online.fr)
+		Version: 0.1
 -->
 
 <html lang="FR">
@@ -24,57 +24,57 @@
 
 <body>
   <div class="banner">
-    <p><em>Courts-circuits</em> <a href="../../common/black.html" onclick= 
-    "parent.toolbar.location=&#39;MainMenu.html&#39;">Page principale</a>
-    <a href="../../Map.html">Plan du site</a> <a href=
-    "mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20Architecture%20de%20Ceylan">
-    écrivez-nous</a></p>
+	<p><em>Courts-circuits</em> <a href="../../common/black.html" onclick=
+	"parent.toolbar.location=&#39;MainMenu.html&#39;">Page principale</a>
+	<a href="../../Map.html">Plan du site</a> <a href=
+	"mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20Architecture%20de%20Ceylan">
+	écrivez-nous</a></p>
   </div><a name="_top_"></a>
-  
+
 
   <h1>Architecture de Ceylan</h1><br>
 
 <p>
-<b>Attention</b> : ce document est daté et n'aborde vraiment que des aspects en relation avec le système de log.
+<b>Attention</b>: ce document est daté et n'aborde vraiment que des aspects en relation avec le système de log.
 </p>
- 
-  
+
+
 <h2>Présentation</h2>
   <p>Ce document décrit l'architecture générale choisie pour agencer les modules et classes de la bibliothèque Ceylan. Cette vue d'ensemble peut servir de guide pour explorer la documentation complète de l'<a href="../../../../../html/index.html">API Ceylan</a> et des développements correspondants.</p>
-  
+
   <p>
   La structure générale de Ceylan est celle d'un paquetage qui fédère un ensemble de services. Chaque service se définit comme une unité fonctionnelle prise en charge par un ensemble de modules et classes. Bien que quelques services observent une logique autosuffisante, la plupart s'appuient sur d'autres services, soit en provenance directe de Ceylan, soit de travaux tiers.
   </p>
-  
+
   <p>
   La bibliothèque Ceylan est notamment utilisée par la bibliothèque <a href="http://osdl.sourceforge.net" target="_blank">OSDL</a> [<a href="http://osdl.sourceforge.net/OSDL/OSDL-0.3/src/doc/web/main/documentation/OSDL/OSDL-generic/Architecture.html" target="_blank">lien direct vers la description de son architecture</a>].
-  
+
   </p>
-  
+
  <p>
  Le panorama esquissé ici décompose la bibliothèque en services, eux-même rassemblant un ou plusieurs modules. Cette description retrace à grands traits ce qu'il serait idéal d'implémenter, sachant que ce recensement, à mi-chemin entre une liste à la Prévert et une lettre au Père Noël, sera douloureusement mis à mal par sa réalisation pratique, qui nous contraindra à réduire de beaucoup nos ambitions et à ne développer que les modules strictement nécessaires.</p>
- 
+
  <p>
  Rien n'interdit toutefois d'imaginer ce que pourrait être la vue d'ensemble avant d'affronter le monde réel et ses inévitables concessions.
- 
+
  </p>
- 
- 
+
+
  <h2>Vue d'ensemble</h2>
- 
+
  <p>
  <center>
-    <img src="../../images/ceylan-zoom-inverted.png" alt="Ceylan framework"></img>
+	<img src="../../images/ceylan-zoom-inverted.png" alt="Ceylan framework"></img>
 </center>
 
 <!--
 
 service de renseignement sur la configuration d'exécution, sur les performances et les ressources de la plate-forme, et fournissant des indicateurs autorisant un paramétrage aisé des niveaux de détail et qualité de service demandés
- 
-service de localisation, piochant les phrases dans un dictionnaire indexé par la langue (ex :
+
+service de localisation, piochant les phrases dans un dictionnaire indexé par la langue (ex:
 <code>FileNotFoundDict[ 'French' ] == "Fichier %s introuvable"</code>). Le dictionnaire pourrait être stocké en XML.
 
-service de protection, anti-copie, anti-rétro-engineering, d'un client du jeu ou d'un protocole réseau, à base de compression/chiffrement, de clés de sessions symétriques et de certificats (PKI), proposant des services de système de fichier virtuel (ex : physicFS).
+service de protection, anti-copie, anti-rétro-engineering, d'un client du jeu ou d'un protocole réseau, à base de compression/chiffrement, de clés de sessions symétriques et de certificats (PKI), proposant des services de système de fichier virtuel (ex: physicFS).
 
 
 logging
@@ -83,70 +83,70 @@ logging
 -->
 
 
- </p> 
-  
+ </p>
+
   <a name="servicesList"></a>
  <h2>Liste des services</h2>
- 
- <center>
- <table summary="Service table of contents" style="border : none">
-    <tr>
-      <td>
-        <div class="box">
-	
-    <a href="#LogService">LogService</a> : service de log et de trace d'exécution<br>
 
-        </div>
-      </td>
-    </tr>
+ <center>
+ <table summary="Service table of contents" style="border: none">
+	<tr>
+	  <td>
+		<div class="box">
+
+	<a href="#LogService">LogService</a>: service de log et de trace d'exécution<br>
+
+		</div>
+	  </td>
+	</tr>
 </table>
-</center> 
-  
-  
+</center>
+
+
  <h2>Descriptif des services</h2>
 <br>
 
-<!-- Template pour service :
- 
+<!-- Template pour service:
+
  <a name=""></a>
- 
+
  <center>
-    <table summary="a box" style="border : none">
-        <tr>
-          <td>
-            <div class="box">
+	<table summary="a box" style="border: none">
+		<tr>
+		  <td>
+			<div class="box">
  <h3></h3>
 
-            </div>
-          </td>
-        </tr>
-    </table>
+			</div>
+		  </td>
+		</tr>
+	</table>
 </center>
 
- 
- 
- 
+
+
+
  <h4>Objectif</h4>
  <p>
- 
- 
+
+
  </p>
- 
- 
+
+
  <h4>Cas d'utilisation</h4>
  <p>
- 
- 
+
+
  </p>
- 
- 
- 
+
+
+
  <h4>Implémentation</h4>
  <p>
- 
- 
+
+
  </p>
- 
+
 
  <br>
  <center>[<a href="#servicesList">retour à la liste des services</a>]</center>
@@ -156,33 +156,33 @@ logging
 
 
  <a name="LogService"></a>
- 
- <center>
-    <table summary="a box" style="border : none">
-        <tr>
-          <td>
-            <div class="box">
- <h3>LogService : service de log et de trace d'exécution</h3>
 
-            </div>
-          </td>
-        </tr>
-    </table>
+ <center>
+	<table summary="a box" style="border: none">
+		<tr>
+		  <td>
+			<div class="box">
+ <h3>LogService: service de log et de trace d'exécution</h3>
+
+			</div>
+		  </td>
+		</tr>
+	</table>
 </center>
 
- 
- 
- 
+
+
+
  <h4>Objectif</h4>
- 
+
  <p>
  Il s'agit de donner la capacité à des objets, lors de l'exécution, d'envoyer des messages concernant leur état, messages qui seront enregistrés pour être consultables en cours d'exécution (en quasi temps réel) ou a posteriori (post mortem).</p>
- 
- <p>En l'occurence, afin d'assurer une certaine convivialité, il sera possible d'étudier ces compte-rendus d'exécution à partir d'un simple navigateur web, puisqu'ils pourront prendre la forme d'un ensemble de pages hypertexte (html). 
+
+ <p>En l'occurence, afin d'assurer une certaine convivialité, il sera possible d'étudier ces compte-rendus d'exécution à partir d'un simple navigateur web, puisqu'ils pourront prendre la forme d'un ensemble de pages hypertexte (html).
  </p>
 
 <p>
-L'adjonction de deux notions renforce l'utilisabilité de ce service :
+L'adjonction de deux notions renforce l'utilisabilité de ce service:
 <ul>
 	<li>la notion de <b>canal</b>, un espace d'expression cloisonné qui permet de classer les messages pour éviter qu'ils forment un ensemble indistinct. Un canal peut  par exemple obéir à une logique thématique.</li>
 
@@ -197,56 +197,56 @@ L'adjonction de deux notions renforce l'utilisabilité de ce service :
 
 <h5>Les canaux</h5>
 <p>
-Chaque message est émis sur un canal. Les canaux peuvent être d'un type parmi trois :
+Chaque message est émis sur un canal. Les canaux peuvent être d'un type parmi trois:
 <ul>
-	<li><b>privés</b> : ils correspondent au canal automatiquement affecté à chaque instance d'un objet capable d'émettre un message, c'est-à-dire de type <code>Loggable</code>, qui est un cas particulier de <code>LogSource</code>. Cet espace de communication est dédié à une instance particulière, elle peut donc utiliser à sa guise. Un canal privé est nommé d'après son instance, son nom effectif sera fonction de l'hôte (ordinateur) où a été instancié l'objet correspondant à ce canal, du numéro du processus (PID) qui l'héberge, du nom de sa classe, et de l'adresse mémoire qu'il occupe. Ce quadruplet doit permettre d'identifier de manière unique, à un instant donné, n'importe quelle instance particulière. Un exemple, prenant la forme d'une URI (<em>Uniform Resource Identifier</em>, dont les classiques URL sont des sous-classes),
-serait :
+	<li><b>privés</b>: ils correspondent au canal automatiquement affecté à chaque instance d'un objet capable d'émettre un message, c'est-à-dire de type <code>Loggable</code>, qui est un cas particulier de <code>LogSource</code>. Cet espace de communication est dédié à une instance particulière, elle peut donc utiliser à sa guise. Un canal privé est nommé d'après son instance, son nom effectif sera fonction de l'hôte (ordinateur) où a été instancié l'objet correspondant à ce canal, du numéro du processus (PID) qui l'héberge, du nom de sa classe, et de l'adresse mémoire qu'il occupe. Ce quadruplet doit permettre d'identifier de manière unique, à un instant donné, n'importe quelle instance particulière. Un exemple, prenant la forme d'une URI (<em>Uniform Resource Identifier</em>, dont les classiques URL sont des sous-classes),
+serait:
 
 
-      <table summary="ID example" style="border: none">
-        <tr>
-          <td>
-		             <div class="box"> 
+	  <table summary="ID example" style="border: none">
+		<tr>
+		  <td>
+					 <div class="box">
 
 <code>log://&lt;nom complet de l'hôte de l'instance&gt;/&lt;PID-numéro du PID-hôte&gt;/&lt;nom de la classe&gt;/&lt;adresse de l'instance&gt;</code>
-           </div>
-			  
-          </td>
-        </tr>
-      </table>
+		   </div>
 
-ce qui pourrait donner en pratique :
+		  </td>
+		</tr>
+	  </table>
 
-      <table summary="ID instance example" style="border: none">
-        <tr>
-          <td>
-		             <div class="box"> 
+ce qui pourrait donner en pratique:
+
+	  <table summary="ID instance example" style="border: none">
+		<tr>
+		  <td>
+					 <div class="box">
 
  <code>log://osdl.dnsalias.com/PID-9100/Lockable/0xA13F3004F</code>
-            </div>
-			  
-          </td>
-        </tr>
-      </table>
+			</div>
 
- 
- 
+		  </td>
+		</tr>
+	  </table>
+
+
+
   Notons bien que l'hôte en question est celui hébergeant l'instance et non pas nécessairement l'hôte hébergeant l'agrégateur de logs ou le moteur de rendu HTML du système de logs.
 </li>
-	<li><b>standards</b> : ils sont disponibles par défaut, automatiquement ajoutés dès l'initialisation du système de logs, si bien qu'il est possible de directement leur envoyer des messages sans se préoccuper de les créer. Ils sont de facto commun à tous les utilisateurs du service de log. Dans l'ordre de criticité croissante des six canaux standards, on distingue :
+	<li><b>standards</b>: ils sont disponibles par défaut, automatiquement ajoutés dès l'initialisation du système de logs, si bien qu'il est possible de directement leur envoyer des messages sans se préoccuper de les créer. Ils sont de facto commun à tous les utilisateurs du service de log. Dans l'ordre de criticité croissante des six canaux standards, on distingue:
 	<ol>
-		<li><b>info</b> : de simples remarques informatives sont destinées à y figurer</li>
-		<li><b>trace</b> : messages permettant de retracer la suite d'appels de fonctions suivie lors d'une exécution</li>
-		<li><b>debug</b> : destiné à recueillir des informations de mise au point</li>
-		<li><b>warning</b> : à utiliser lorsqu'une propriété de fonctionnement non-critique mais devant être vérifiée ne l'est plus</li>
-		<li><b>error</b> : lorsqu'une anomalie de comportement a été détectée</li>
-		<li><b>fatal</b> : lorsqu'une anomalie majeure est survenue, sans espoir de rémission, rendant nécessaire l'arrêt immédiat du programme</li>
+		<li><b>info</b>: de simples remarques informatives sont destinées à y figurer</li>
+		<li><b>trace</b>: messages permettant de retracer la suite d'appels de fonctions suivie lors d'une exécution</li>
+		<li><b>debug</b>: destiné à recueillir des informations de mise au point</li>
+		<li><b>warning</b>: à utiliser lorsqu'une propriété de fonctionnement non-critique mais devant être vérifiée ne l'est plus</li>
+		<li><b>error</b>: lorsqu'une anomalie de comportement a été détectée</li>
+		<li><b>fatal</b>: lorsqu'une anomalie majeure est survenue, sans espoir de rémission, rendant nécessaire l'arrêt immédiat du programme</li>
 	</ol>
 
-	
-	
+
+
 	 </li>
-	<li><b>créés</b> : ils sont dynamiquement instanciés, à la demande, et sont usuellement relatifs à un thème transverse, commun à plusieurs acteurs. Par exemple, un canal "gestion de la mémoire", gardant trace des allocations et désallocations, peut être utilisé pour pouvoir vérifier les cycles de vie d'instances d'objets à surveiller. Ces canaux génériques sont modélisés sous forme de <code>LogSource</code>.
+	<li><b>créés</b>: ils sont dynamiquement instanciés, à la demande, et sont usuellement relatifs à un thème transverse, commun à plusieurs acteurs. Par exemple, un canal "gestion de la mémoire", gardant trace des allocations et désallocations, peut être utilisé pour pouvoir vérifier les cycles de vie d'instances d'objets à surveiller. Ces canaux génériques sont modélisés sous forme de <code>LogSource</code>.
 </li>
 </ul>
 
@@ -254,11 +254,11 @@ ce qui pourrait donner en pratique :
 <h5>Les niveaux de détail</h5>
 
 <p>
-A chaque message est rattaché en outre un niveau de détail, qui quantifie son importance : plus le niveau de détail sera petit, plus le message devra être significatif, porteur de sens.
+A chaque message est rattaché en outre un niveau de détail, qui quantifie son importance: plus le niveau de détail sera petit, plus le message devra être significatif, porteur de sens.
 </p>
 
 
-<p>Identiquement, chaque canal dispose de son propre niveau de détail, qui détermine le seuil maximal au delà duquel les messages trop détaillés qui lui sont adressés seront ignorés. Fort logiquement, un message sera répercuté par un canal si et seulement si le niveau de détail du message est inférieur au seuil maximal d'intérêt du canal. 
+<p>Identiquement, chaque canal dispose de son propre niveau de détail, qui détermine le seuil maximal au delà duquel les messages trop détaillés qui lui sont adressés seront ignorés. Fort logiquement, un message sera répercuté par un canal si et seulement si le niveau de détail du message est inférieur au seuil maximal d'intérêt du canal.
 </p>
 
 
@@ -266,83 +266,83 @@ A chaque message est rattaché en outre un niveau de détail, qui quantifie son im
 </p>
 
 
-<br> 
+<br>
  <p>
- Ce module, en dépit de son nom, n'a donc pas l'ambition de calculer le moindre logarithme ! 
+ Ce module, en dépit de son nom, n'a donc pas l'ambition de calculer le moindre logarithme !
  </p>
- 
- 
+
+
  <h4>Cas d'utilisation</h4>
  <p>
- Ce service de log est d'une grande utilité pour le débogage et la mise au point de systèmes complexes, notamment multi-agents et/ou multitâches. Il permet aux développeurs d'avoir la chronologie des informations émises par chacun des objets utilisant ce service, et de croiser ces informations de manière à se faire une idée des changements d'états successifs ayant affecté un ensemble d'objets, alors que ces changements sont trop nombreux ou trop rapides pour être interprétés en temps réel par un humain : les logs sont souvent le seul moyen rapide de savoir ce qu'il se passe lors de l'exécution d'un programme, et leur exhaustivité compléte idéalement un débogueur. La succession des messages permet donc de connaître leur ordre temporel, et il est possible en outre à un canal de dater chacun des messages qu'il reçoit, au moins d'horodatage (<em>time-stamps</em>). Cela permet ainsi de reconstituer l'ordre de messages envoyés à des canaux différents.
+ Ce service de log est d'une grande utilité pour le débogage et la mise au point de systèmes complexes, notamment multi-agents et/ou multitâches. Il permet aux développeurs d'avoir la chronologie des informations émises par chacun des objets utilisant ce service, et de croiser ces informations de manière à se faire une idée des changements d'états successifs ayant affecté un ensemble d'objets, alors que ces changements sont trop nombreux ou trop rapides pour être interprétés en temps réel par un humain: les logs sont souvent le seul moyen rapide de savoir ce qu'il se passe lors de l'exécution d'un programme, et leur exhaustivité compléte idéalement un débogueur. La succession des messages permet donc de connaître leur ordre temporel, et il est possible en outre à un canal de dater chacun des messages qu'il reçoit, au moins d'horodatage (<em>time-stamps</em>). Cela permet ainsi de reconstituer l'ordre de messages envoyés à des canaux différents.
  </p>
- 
- 
+
+
  <p>
- Un cas typique d'utilisation d'un service de log est celui de la mise au point d'un système multi-agent proies/prédateurs, dans lequel sur un terrain de jeu des créatures vivent et meurent selon les règles présidant à leurs destinées qui ont été implémentées. D'une superposition de comportements élémentaires résulte un comportement collectif complexe, pour l'analyse duquel un compte-rendu détaillé des messages envoyés par chacune des créatures artificielles en présence est précieux : il devient possible de suivre l'histoire de n'importe laquelle d'entre elles, et de s'assurer qu'elle se comporte conformément aux règles prévues.
- 
+ Un cas typique d'utilisation d'un service de log est celui de la mise au point d'un système multi-agent proies/prédateurs, dans lequel sur un terrain de jeu des créatures vivent et meurent selon les règles présidant à leurs destinées qui ont été implémentées. D'une superposition de comportements élémentaires résulte un comportement collectif complexe, pour l'analyse duquel un compte-rendu détaillé des messages envoyés par chacune des créatures artificielles en présence est précieux: il devient possible de suivre l'histoire de n'importe laquelle d'entre elles, et de s'assurer qu'elle se comporte conformément aux règles prévues.
+
  </p>
- 
- 
+
+
  <h4>Implémentation</h4>
- 
+
  <h5>LogSource, LogListener et LogAggregator</h5>
  <p>
  Les objets souhaitant disposer de la possibilité d'envoyer des messages doivent hériter de la classe mère <code>LogSource</code>. Comme on l'a vu, chaque instance implémentant cette interface est alors identifiée par la pseudo-URI (<em>Uniform Resource Identifier</em>) de type
- 
-      <table summary="ID example" style="border: none">
-        <tr>
-          <td>
-		             <div class="box"> 
- 
+
+	  <table summary="ID example" style="border: none">
+		<tr>
+		  <td>
+					 <div class="box">
+
   <code>log://machine/PID-pid/classe/adresse</code>
-  
-  
-           </div>
-			  
-          </td>
-        </tr>
-      </table>
- 
-    par exemple      
- 
+
+
+		   </div>
+
+		  </td>
+		</tr>
+	  </table>
+
+	par exemple
+
   <table summary="ID instance example" style="border: none">
-        <tr>
-          <td>
-		             <div class="box"> 
+		<tr>
+		  <td>
+					 <div class="box">
  <code>log://aranor/PID-22541/Beholder/0x4A10FE94</code>           </div>
-			  
-          </td>
-        </tr>
-      </table>
+
+		  </td>
+		</tr>
+	  </table>
 
 
  Chaque objet de type <code>LogSource</code> est alors raccordé à un <code>LogListener</code>, qui se charge d'être le réceptacle des messages envoyés et de les transmettre à un <code>LogAggregator</code>, dont la tâche est de générer le document html correspondant à ces messages afin de les rendre consultables de manière conviviale.
  </p>
- 
-<h5>Choisir son implémentation</h5> 
+
+<h5>Choisir son implémentation</h5>
 <p>
-Au moins deux implémentations de la paire d'interfaces <code>LogListener</code> / <code>LogAggregator</code> sont envisageables. 
+Au moins deux implémentations de la paire d'interfaces <code>LogListener</code> / <code>LogAggregator</code> sont envisageables.
 </p>
 
 
-<h6>Schéma local : une paire LogListener / LogAggregator basique</h6>
+<h6>Schéma local: une paire LogListener / LogAggregator basique</h6>
 <p>
-Cette forme basique est assurée par une seule classe qui implémente elle-même, directement, les deux interfaces. Cette version du système de log est destinée à être complètement contenue dans le programme qui en fait usage et à en faire partie, par exemple sous la forme d'une instance statique : chaque objet <code>LogSource</code> peut s'y référer pour envoyer ses messages, et cette même instance accomplit les deux fonctions, celle de collecter les messages (<code>LogListener</code>) et celle d'en générer une synthèse hypertexte (<code>LogAggregator</code>). 
+Cette forme basique est assurée par une seule classe qui implémente elle-même, directement, les deux interfaces. Cette version du système de log est destinée à être complètement contenue dans le programme qui en fait usage et à en faire partie, par exemple sous la forme d'une instance statique: chaque objet <code>LogSource</code> peut s'y référer pour envoyer ses messages, et cette même instance accomplit les deux fonctions, celle de collecter les messages (<code>LogListener</code>) et celle d'en générer une synthèse hypertexte (<code>LogAggregator</code>).
 </p>
 
 <p>
 Ce système a l'avantage de la simplicité, mais souffre de quelques carences. L'implémentation des logs dispose notamment de la même espérance de vie que le programme qui l'utilise, ce qui veut dire que si le programme en cours de développement connaît un crash, le système de log subira le même sort. Les inscriptions dans des fichiers pourront certes subsister (en s'asssurant de vider les tampons d'entrée/sortie à chaque écriture), mais les éventuelles opérations d'agrégation de sources et d'achèvement de la génération des pages html ne pourront être menées à bien. Néanmoins ce système reste en tout point supérieur à la méthode la plus usuelle, qui consiste à truffer son code d'appels de macros, qui en mode mise au point se transforment en <code>fprintf</code>, <code>cout</code> ou <code>cerr</code>.
-</p> 
-
-
-<h6>Schéma en étoile : plusieurs LogListeners en communication avec un LogAggregator</h6>
-<p>
-La deuxième implémentation du système de log demande un investissement plus important, mais qui en vaut la peine. Elle consiste à écrire un <code>LogListener</code>, qui peut prendre lui aussi la forme d'un objet statique, mais dont le rôle est uniquement de collecter les messages et, par le réseau, de les transmettre à un <code>LogAggregator</code> indépendant. 
 </p>
 
-<p>Cette instance de <code>LogAggregator</code> peut fort bien se trouver sur la même machine ou sur une autre, dans tous les cas elle ne dépendra de la durée de vie d'un processus l'utilisant, fonctionnant à la manière d'un démon UNIX. Qui plus est, une seule instance de <code>LogAggregator</code> peut servir autant de d'instances <code>LogListener</code> que voulu, c'est-à-dire autant de processus sur autant de machines que l'on veut : on dispose ainsi d'un système de log distribué particulièrement pratique et complet, qui à notre connaissance est le nec plus ultra en ce domaine.
-</p> 
+
+<h6>Schéma en étoile: plusieurs LogListeners en communication avec un LogAggregator</h6>
+<p>
+La deuxième implémentation du système de log demande un investissement plus important, mais qui en vaut la peine. Elle consiste à écrire un <code>LogListener</code>, qui peut prendre lui aussi la forme d'un objet statique, mais dont le rôle est uniquement de collecter les messages et, par le réseau, de les transmettre à un <code>LogAggregator</code> indépendant.
+</p>
+
+<p>Cette instance de <code>LogAggregator</code> peut fort bien se trouver sur la même machine ou sur une autre, dans tous les cas elle ne dépendra de la durée de vie d'un processus l'utilisant, fonctionnant à la manière d'un démon UNIX. Qui plus est, une seule instance de <code>LogAggregator</code> peut servir autant de d'instances <code>LogListener</code> que voulu, c'est-à-dire autant de processus sur autant de machines que l'on veut: on dispose ainsi d'un système de log distribué particulièrement pratique et complet, qui à notre connaissance est le nec plus ultra en ce domaine.
+</p>
 
 <p>Couplé à un simple serveur web, ce système rend possible la consultation des logs distribués depuis un nombre quelconque de navigateurs sur n'importe quelle(s) machine(s).
 </p>
@@ -351,7 +351,7 @@ La deuxième implémentation du système de log demande un investissement plus impo
 <h5>Activation et désactivation du système de log</h5>
 
 <p>
-Un système de log est un outil précieux mais qui induit un certain coût en ressources : chaque envoi de message est un appel de méthode, et la constitution des chaînes de caractères transmises en tant qu'identifiant d'un <code>Loggable</code> ou en tant que message consomme de la puissance de traitement et de la mémoire. Comme, pour la mise au point, il n'est pas envisageable de se passer d'un tel outil et comme, pour une version testée et diffusée, il est souhaitable de faire l'économie de ce système, il est important de pouvoir le désactiver totalement, à moindre effort, tout en se réservant la possibilité de le réactiver à loisir quand le besoin s'en fait sentir.  
+Un système de log est un outil précieux mais qui induit un certain coût en ressources: chaque envoi de message est un appel de méthode, et la constitution des chaînes de caractères transmises en tant qu'identifiant d'un <code>Loggable</code> ou en tant que message consomme de la puissance de traitement et de la mémoire. Comme, pour la mise au point, il n'est pas envisageable de se passer d'un tel outil et comme, pour une version testée et diffusée, il est souhaitable de faire l'économie de ce système, il est important de pouvoir le désactiver totalement, à moindre effort, tout en se réservant la possibilité de le réactiver à loisir quand le besoin s'en fait sentir.
 
 </p>
 
@@ -370,20 +370,20 @@ Une solution au principe proche serait de recourir à une paire de scripts qui se
 
 <h5>Utilisation du système de log</h5>
 <p>
-Elle est simple : chaque <code>LogSource</code>, une fois créée, peut envoyer des messages, soit implicitement à son canal privé, soit, en le précisant, sur un canal standard ou dynamiquement créé.
+Elle est simple: chaque <code>LogSource</code>, une fois créée, peut envoyer des messages, soit implicitement à son canal privé, soit, en le précisant, sur un canal standard ou dynamiquement créé.
 
 </p>
 
-<p>A nouveau deux choix étaient possibles : l'envoi de messages uniquement sous forme de chaîne de caractères, ou la possibilité de fournir un flux, au sens des <code>iostreams</code>. Ceylan proposant par ailleurs des opérateurs conviviaux de conversion en chaînes de caractères et encourageant la généralisation de l'implémentation de l'interface <em>TextDisplayable</em> (qui propose la méthode <code>toString</code>), il a été décidé, au moins dans un premier temps, de se cantonner à l'envoi simple de chaînes de caractères.</p>
+<p>A nouveau deux choix étaient possibles: l'envoi de messages uniquement sous forme de chaîne de caractères, ou la possibilité de fournir un flux, au sens des <code>iostreams</code>. Ceylan proposant par ailleurs des opérateurs conviviaux de conversion en chaînes de caractères et encourageant la généralisation de l'implémentation de l'interface <em>TextDisplayable</em> (qui propose la méthode <code>toString</code>), il a été décidé, au moins dans un premier temps, de se cantonner à l'envoi simple de chaînes de caractères.</p>
 
 
 
 <h5>Autres implémentations fonctionnellement voisines</h5>
 <p>
 <ul>
-    <li><a href="http://log4cpp.sourceforge.net/" target="_blank">Log for C++</a> (log4cpp)</li>
-    <li><a href="http://log4cplus.sourceforge.net/" target="_blank">log4cplus</a> (homologue de log4cpp moins évolué)</li>
-    <li><a href="http://sourceforge.net/projects/logengine/" target="_blank">logengine</a></li>
+	<li><a href="http://log4cpp.sourceforge.net/" target="_blank">Log for C++</a> (log4cpp)</li>
+	<li><a href="http://log4cplus.sourceforge.net/" target="_blank">log4cplus</a> (homologue de log4cpp moins évolué)</li>
+	<li><a href="http://sourceforge.net/projects/logengine/" target="_blank">logengine</a></li>
 </ul>
 
 </p>
@@ -394,11 +394,6 @@ Elle est simple : chaque <code>LogSource</code>, une fois créée, peut envoyer de
 <br><br>
 
 
-  
-  <br>
-  <br>
-  <br>
-  <br>
 
   <h3>N'hésitez pas à nous faire part de votre avis !</h3>
 
@@ -408,9 +403,10 @@ Elle est simple : chaque <code>LogSource</code>, une fois créée, peut envoyer de
   <hr>
 
   <div class="c1">
-    <a href="#_top_">Haut de page</a><br>
-    <br>
-    <em>Dernière mise à jour : mardi 20 mars 2007</em>
+	<a href="#_top_">Haut de page</a><br>
+	<br>
+	<em>Dernière mise à jour: lundi 3 janvier 2011
+</em>
   </div>
 </body>
 </html>

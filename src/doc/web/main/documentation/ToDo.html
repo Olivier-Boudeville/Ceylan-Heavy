@@ -1,14 +1,14 @@
 <!DOCTYPE HTML PUBLIC "HTML 4.01 Transitional"
 "http://www.w3.org/TR/html4/frameset.dtd">
-<!--    This document is a part of the Ceylan project 
-        For any comment, please mail to olivier.boudeville@online.fr
+<!--    This document is a part of the Ceylan project
+		For any comment, please mail to olivier.boudeville@online.fr
 -->
-<!--    
-        Creation date : 2003, July 25.
-        Author : Olivier Boudeville (olivier.boudeville@online.fr)
-        Update made by :  the author
-        Version number : 0.1
-        Adapted from : http://www.w3.org/Style/Examples/007/maps.html
+<!--
+		Creation date : 2003, July 25.
+		Author : Olivier Boudeville (olivier.boudeville@online.fr)
+		Update made by :  the author
+		Version number : 0.1
+		Adapted from : http://www.w3.org/Style/Examples/007/maps.html
 -->
 
 <html lang="EN">
@@ -25,9 +25,9 @@
 
 <body>
   <div class="banner">
-    <p><em>General</em> <a href="../../common/black.html" onclick= 
-    "parent.toolbar.location=&#39;MainMenu.html&#39;">home page</a>
-    <a href="../Map.html">site map</a> <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20TO-DO">mail us</a></p>
+	<p><em>General</em> <a href="../../common/black.html" onclick=
+	"parent.toolbar.location=&#39;MainMenu.html&#39;">home page</a>
+	<a href="../Map.html">site map</a> <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20TO-DO">mail us</a></p>
   </div><a name="_top_"></a>
 
   <h1>TO-DO List for Ceylan-0.3</h1>
@@ -37,87 +37,87 @@
 <a name="toc">
 <center>
 	<table summary="Table of content" style="border: none">
-        <tr>
-          <td>
+		<tr>
+		  <td>
 
 		   <div class="box">
-		       <a href="#generic">Generic</a><br>
-		       <a href="#log">Log system</a><br>
-		       <a href="#features">Feature system</a><br>
-		       <a href="#build">Build system</a>
-          </div>
+			   <a href="#generic">Generic</a><br>
+			   <a href="#log">Log system</a><br>
+			   <a href="#features">Feature system</a><br>
+			   <a href="#build">Build system</a>
+		  </div>
 
-          </td>
-        </tr>
-      </table>
+		  </td>
+		</tr>
+	  </table>
 </center>
 <!--
 <br><p><center>[<a href="#toc">Back to the table of contents</a>]</center></p><br><br>
   -->
 
 
-<a name="generic"></a> 
-  
+<a name="generic"></a>
+
 <center>
-    <table summary="a box" style="border : none">
-        <tr>
-          <td>
-            <div class="box">
-            <h2>Generic TO-DO list</h2>
-            </div>
-          </td>
-        </tr>
-    </table>
+	<table summary="a box" style="border : none">
+		<tr>
+		  <td>
+			<div class="box">
+			<h2>Generic TO-DO list</h2>
+			</div>
+		  </td>
+		</tr>
+	</table>
 </center>
-  
-  
+
+
   <ul>
-  
-    <li>abstract filesystem service (ex : PhysicsFS)</li>
-	
-    <li>Singleton : should be templated, if possible</li>
 
-    <li>check that its destructor is actually called on program
-    exit</li>
+	<li>abstract filesystem service (ex : PhysicsFS)</li>
 
-    <li>all good practises from
-    http://www.owlnet.rice.edu/~comp320/2002/notes/ should be used</li>
+	<li>Singleton : should be templated, if possible</li>
 
-    <li>think to a generic plug-in architecture with Module
-    services.</li>
+	<li>check that its destructor is actually called on program
+	exit</li>
 
-    <li>a whole Object-based hierarchy, like Java, should be made.</li>
+	<li>all good practises from
+	http://www.owlnet.rice.edu/~comp320/2002/notes/ should be used</li>
 
-    <li>recursive object list should be used.</li>
+	<li>think to a generic plug-in architecture with Module
+	services.</li>
 
-    <li>a shared library should be made together with the static one,
-    and a way of inspecting their contents should be provided.</li>
+	<li>a whole Object-based hierarchy, like Java, should be made.</li>
 
-    <li>an XML-based extended configuration file reader would be very
-    useful</li>
+	<li>recursive object list should be used.</li>
 
-    <li>interfaces and implementation of the MVC (Model-View-Control)
-    pattern</li>
+	<li>a shared library should be made together with the static one,
+	and a way of inspecting their contents should be provided.</li>
 
-    <li>Mutex holder used as automatic variable to ensure mutex is
-    released whatever happens</li>
+	<li>an XML-based extended configuration file reader would be very
+	useful</li>
 
-    <li>portable getChar should be made for the classical one (DOS) and
-    its UNIX port in Utils.h</li>
+	<li>interfaces and implementation of the MVC (Model-View-Control)
+	pattern</li>
 
-    <li>use a C++ unit test library such as <a href=
-    "http://cppunit.sourceforge.net">CPPunit</a></li>
+	<li>Mutex holder used as automatic variable to ensure mutex is
+	released whatever happens</li>
 
-    <li>module architecture should be useful as a mother class for
-    every project module federating services</li>
+	<li>portable getChar should be made for the classical one (DOS) and
+	its UNIX port in Utils.h</li>
 
-    <li>add a header in header files such as : 
+	<li>use a C++ unit test library such as <a href=
+	"http://cppunit.sourceforge.net">CPPunit</a></li>
+
+	<li>module architecture should be useful as a mother class for
+	every project module federating services</li>
+
+	<li>add a header in header files such as :
 <center>
-    <table summary="a box" style="border : none">
-        <tr>
-          <td>
-            <div class="box">
-<code><pre>			
+	<table summary="a box" style="border : none">
+		<tr>
+		  <td>
+			<div class="box">
+<code><pre>
 /*
  * The Ceylan library.
  * Copyright (C) 2003 &quot;the OSDL team&quot; (see AUTHORS file)
@@ -134,112 +134,112 @@
  */
  </pre></code>
 
-            </div>
-          </td>
-        </tr>
-    </table>
+			</div>
+		  </td>
+		</tr>
+	</table>
 </center>
-	
-    </li>
+
+	</li>
   </ul>
 
 <br><p><center>[<a href="#toc">Back to the table of contents</a>]</center></p><br><br>
 
 
 
-<a name="log"></a> 
+<a name="log"></a>
 
 <center>
-    <table summary="a box" style="border : none">
-        <tr>
-          <td>
-            <div class="box">
-            <h2>Log system TO-DO list</h2>
+	<table summary="a box" style="border : none">
+		<tr>
+		  <td>
+			<div class="box">
+			<h2>Log system TO-DO list</h2>
 
-            </div>
-          </td>
-        </tr>
-    </table>
+			</div>
+		  </td>
+		</tr>
+	</table>
 </center>
 
   <ul>
-    <li>add a way of disabling log statements and make them truly
-    costless : a python script which automatically comments them /
-    remove comments ?</li>
+	<li>add a way of disabling log statements and make them truly
+	costless : a python script which automatically comments them /
+	remove comments ?</li>
 
-    <li>add LogNull, black hole for Logs such as /dev/null</li>
+	<li>add LogNull, black hole for Logs such as /dev/null</li>
 
-    <li>allow to interface Log System with <a href=
-    "http://log4cpp.sourceforge.net">log4cpp</a></li>
+	<li>allow to interface Log System with <a href=
+	"http://log4cpp.sourceforge.net">log4cpp</a></li>
 
-    <li>add support for dynamically-created channels with channel API
-    creation</li>
+	<li>add support for dynamically-created channels with channel API
+	creation</li>
 
-    <li>allow to use a webserver as one of the outputs of the Log
-    System, something like LogHTML</li>
+	<li>allow to use a webserver as one of the outputs of the Log
+	System, something like LogHTML</li>
 
-    <li>support fine settings for level of detail, and allow to assume
-    default vallues like a state machine</li>
+	<li>support fine settings for level of detail, and allow to assume
+	default vallues like a state machine</li>
 
-    <li>try to figure out how a log channel could inherit from ostream,
-    in order to be able to use the very useful operator &lt;&lt; for
-    log messages</li>
+	<li>try to figure out how a log channel could inherit from ostream,
+	in order to be able to use the very useful operator &lt;&lt; for
+	log messages</li>
 
-    <li>support dynamically chosen Log systems implementation, like
-    plug-ins.</li>
+	<li>support dynamically chosen Log systems implementation, like
+	plug-ins.</li>
 
-    <li>default log channels might be among debug, trace, info, warn,
-    error, fatal</li>
+	<li>default log channels might be among debug, trace, info, warn,
+	error, fatal</li>
 
-    <li>log output might be defined by a configuration file</li>
+	<li>log output might be defined by a configuration file</li>
 
-    <li>channel groups might be useful</li>
+	<li>channel groups might be useful</li>
 
-    <li>channels might be sorted in a forest (a set of tree) with
-    special commands allowing to change their relationships</li>
+	<li>channels might be sorted in a forest (a set of tree) with
+	special commands allowing to change their relationships</li>
 
-    <li>some log channels might be dedicated to efficiency measurement
-    targeted at profiling</li>
+	<li>some log channels might be dedicated to efficiency measurement
+	targeted at profiling</li>
 
-    <li>provide a way of defining level of detail relatively to another
-    channel&#39;s one (+1, -2, etc.)</li>
+	<li>provide a way of defining level of detail relatively to another
+	channel&#39;s one (+1, -2, etc.)</li>
   </ul>
 
 <br><p><center>[<a href="#toc">Back to the table of contents</a>]</center></p><br><br>
 
 
 
-<a name="features"></a> 
+<a name="features"></a>
 
 <center>
-    <table summary="a box" style="border : none">
-        <tr>
-          <td>
-            <div class="box">
-            <h2>Feature system TO-DO list</h2>
+	<table summary="a box" style="border : none">
+		<tr>
+		  <td>
+			<div class="box">
+			<h2>Feature system TO-DO list</h2>
 
-            </div>
-          </td>
-        </tr>
-    </table>
+			</div>
+		  </td>
+		</tr>
+	</table>
 </center>
 <br><p><center>[<a href="#toc">Back to the table of contents</a>]</center></p><br><br>
 
 
 
-<a name="build"></a> 
+<a name="build"></a>
 
 <center>
-    <table summary="a box" style="border : none">
-        <tr>
-          <td>
-            <div class="box">
-            <h2>Build system TO-DO list</h2>
+	<table summary="a box" style="border : none">
+		<tr>
+		  <td>
+			<div class="box">
+			<h2>Build system TO-DO list</h2>
 
-            </div>
-          </td>
-        </tr>
-    </table>
+			</div>
+		  </td>
+		</tr>
+	</table>
 </center>
 
 
@@ -249,28 +249,25 @@
 
 <br><p><center>[<a href="#toc">Back to the table of contents</a>]</center></p><br><br>
 
-  
+
   <br>
   <hr>
-  <br>
-  <br>
-  <br>
-
+ 
   <h3>Please react !</h3>
 
-  <p>If you have information more detailed or more recent than those
-  presented in this document, if you noticed errors, neglects or points
-  insufficiently discussed, <a href=
-  "mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20TO-DO%20list">
-  drop us a line</a>!</p><br>
+  <p>If you have information more detailed or more recent than those presented
+  in this document, if you noticed errors, neglects or points insufficiently
+  discussed, <a href=
+  "mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20TO-DO%20list"> drop us
+  a line</a>!</p><br>
   <br>
   <hr>
 
   <center>
-    [<a href="#_top_">Top</a>]
+	[<a href="#_top_">Top</a>]
 	<br>
-    <br>
-    <em>Last update : Saturday, March 4, 2006</em>
+	<br>
+	<em>Last update : Saturday, March 4, 2006</em>
   </center>
 </body>
 </html>

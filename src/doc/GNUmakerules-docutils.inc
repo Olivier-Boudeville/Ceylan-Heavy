@@ -65,7 +65,7 @@ DOT_OPT := -Gcharset=latin1
 # DOT := `PATH=$(DOT_ROOT)/bin:$$PATH which dot` $(DOT_OPT)
 DOT := `which dot` $(DOT_OPT)
 
-# To trigger the automatic rendering of a created graph, add 'VIEW_GRAPH=' 
+# To trigger the automatic rendering of a created graph, add 'VIEW_GRAPH='
 # at the end of the command line (ex : 'make MyFSM.png VIEW_GRAPH=')
 VIEW_GRAPH := no
 #VIEW_GRAPH :=
@@ -78,7 +78,7 @@ VIEW_GRAPH := no
 	@if [ "$(VIEW_GRAPH)" != "no" ] ; then $(IMG_VIEWER) $@ & fi
 
 GRAPH_SRC = $(wildcard *.graph)
-GRAPH_PNG = $(GRAPH_SRC:%.graph=%.png) 
+GRAPH_PNG = $(GRAPH_SRC:%.graph=%.png)
 
 
 
@@ -88,7 +88,7 @@ GRAPH_PNG = $(GRAPH_SRC:%.graph=%.png)
 	@echo "     Generating plot data $@ from $<"
 	@$(PYTHON) $<
 
-# To trigger the automatic rendering of a created plot, add 'VIEW_PLOT=' 
+# To trigger the automatic rendering of a created plot, add 'VIEW_PLOT='
 # at the end of the command line (ex : 'make MyData.png VIEW_PLOT=')
 #VIEW_PLOT := yes
 VIEW_PLOT := no
@@ -118,7 +118,7 @@ GNUPLOT := `which gnuplot`
 # RST section.
 
 GENERATOR_LOG_FILE := "rst.log"
-	
+
 TMP_RST_REPOSITORY := "tmp-rst"
 
 
@@ -137,7 +137,7 @@ PDF_GENERATED_FILES  = $(patsubst %.rst,%.pdf,$(RST_FILES))
 
 RST_GENERATED_FILES =  $(AUX_GENERATED_FILES) $(TEX_GENERATED_FILES)      \
 	$(OUT_GENERATED_FILES) $(LOG_GENERATED_FILES) $(HTML_GENERATED_FILES) \
-	$(PDF_GENERATED_FILES) $(GENERATOR_LOG_FILE)   
+	$(PDF_GENERATED_FILES) $(GENERATOR_LOG_FILE)
 
 
 #RST_GENERATOR = update-docutils.sh
@@ -147,7 +147,7 @@ RST_GENERATOR = `PATH=$(COMMON_TOP)/src:$$PATH which generate-docutils.sh`
 PDF_VIEWER := `which evince`
 
 
-# To trigger the automatic rendering of a created PDF, add 'VIEW_PDF=' 
+# To trigger the automatic rendering of a created PDF, add 'VIEW_PDF='
 # at the end of the command line (ex : 'make MyDoc.pdf VIEW_PDF=')
 VIEW_PDF := yes
 #VIEW_PDF := no
@@ -186,8 +186,8 @@ info-doc-local:
 	@echo "OVERALL_DOCUMENT_SOURCE = $(OVERALL_DOCUMENT_SOURCE)"
 	@echo "OVERALL_DOCUMENT_TARGET = $(OVERALL_DOCUMENT_TARGET)"
 	@echo "PRINT_SERVER = $(PRINT_SERVER)"
-	
-	
+
+
 info-doc-tools:
 	@echo "DOT = $(DOT)"
 	@echo "GNUPLOT = $(GNUPLOT)"
@@ -195,9 +195,9 @@ info-doc-tools:
 	@echo "IMAGE_MAGICK = $(IMAGE_MAGICK)"
 	@echo "PDF_VIEWER = $(PDF_VIEWER)"
 	@echo "RST_GENERATOR = $(RST_GENERATOR)"
-		
 
-	
+
+
 
 # Centralization of documentation sources is necessary, as the LateX generator
 # from docutils will not find images in directories otherwise.
@@ -211,31 +211,31 @@ create-doc: regenerate-doc clean-doc-repository make-doc-repository
 	(log in $(GENERATOR_LOG_FILE))"
 	@$(MAKE) $(TMP_RST_REPOSITORY)/$(OVERALL_DOCUMENT_TARGET) 2>&1 | \
 	tee $(GENERATOR_LOG_FILE)
-	
+
 
 regenerate-doc:
 	@echo "     Regenerating all documentation elements"
 	@cd $(DOCUTILS_TOP) && $(MAKE) -s doc
-	
+
 
 make-doc-repository:
 	@echo "     Copying documentation sources to $(TMP_RST_REPOSITORY)"
 	@mkdir -p $(TMP_RST_REPOSITORY)
 	@find $(DOCUTILS_TOP) -name $(TMP_RST_REPOSITORY) -prune -o \( -name '*.rst' -o -name '*.png' \) -exec cp -f '{}' $(TMP_RST_REPOSITORY) ';'
 
-        
-view-doc: 
+
+view-doc:
 	@[ ! -e "$(TMP_RST_REPOSITORY)/$(OVERALL_DOCUMENT_TARGET)" ] || \
 	$(PDF_VIEWER) $(TMP_RST_REPOSITORY)/$(OVERALL_DOCUMENT_TARGET) \
 	 1>/dev/null 2>&1
-	
+
 
 to-print: create-doc
 	@echo "    Transferring document $(OVERALL_DOCUMENT_TARGET) \
 	to $(PRINT_SERVER)"
-	@scp $(TMP_RST_REPOSITORY)/$(OVERALL_DOCUMENT_TARGET) $(PRINT_LOCATION) 
-	
-	
+	@scp $(TMP_RST_REPOSITORY)/$(OVERALL_DOCUMENT_TARGET) $(PRINT_LOCATION)
+
+
 clean: clean-doc-repository clean-generated clean-dot clean-doc-logs \
 	clean-gnuplot clean-png clean-rst
 
@@ -244,12 +244,12 @@ clean: clean-doc-repository clean-generated clean-dot clean-doc-logs \
 clean-doc-repository:
 	@echo "     Cleaning documentation repository in $(TMP_RST_REPOSITORY)"
 	-@/bin/rm -rf $(TMP_RST_REPOSITORY)
-			
-			
+
+
 clean-generated:
 	@echo "     Cleaning generated files"
 	-@/bin/rm -f $(RST_GENERATED_FILES)
-	
+
 
 
 
@@ -267,14 +267,13 @@ clean-gnuplot:
 	@# Let's hope we do not remove user files:
 	-@if [ `basename $$PWD` != "doc" ]; then \
 	/bin/rm -f *robe*.dat *robe*.p; fi
-	
-	
-clean-png: 
+
+
+clean-png:
 	-@/bin/rm -f $(GRAPH_PNG) $(PNG_FROM_PYTHON) $(PNG_FROM_PYTHON_NEGATED) \
 	$(NEGATED_PNG) $(ROTATED_PNG)
-	
-	
+
+
 clean-rst:
 	-@/bin/rm -f $(RST_GENERATED_FILES)
-	@if [ -d "$(TMP_RST_REPOSITORY)" ] ; then $(MAKE) clean-doc-repository; fi 
-
+	@if [ -d "$(TMP_RST_REPOSITORY)" ] ; then $(MAKE) clean-doc-repository; fi

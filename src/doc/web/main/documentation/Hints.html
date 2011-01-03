@@ -1,19 +1,19 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/REC-html40/loose.dtd">
-<!--  This document is a part of the OSDL project 
-    For any comment, please mail to olivier.boudeville@online.fr
+<!--  This document is a part of the OSDL project
+	For any comment, please mail to olivier.boudeville@online.fr
 -->
-<!--  
-    Creation date : 2004, January 25.
-    Author : Olivier Boudeville (olivier.boudeville@online.fr)
-    Update made by : the author
-    Version number : 0.1
-    Adapted from : no previous document
+<!--
+	Creation date: 2004, January 25.
+	Author: Olivier Boudeville (olivier.boudeville@online.fr)
+	Update made by: the author
+	Version number: 0.1
+	Adapted from: no previous document
 -->
 
 <html>
 <head>
-  <title>Ceylan - Some hints about Ceylan</title>
+  <title>Ceylan - Some Hints About Ceylan</title>
   <meta http-equiv="Content-Type" content=
   "text/html; charset=iso-8859-1">
   <meta name="description" content="Ceylan">
@@ -25,34 +25,34 @@
 
 <body>
   <p>
-  
+
    <div class="banner">
-    <p><em>General</em> <a href="../../common/black.html" onclick= 
-    "parent.toolbar.location='MainMenu.html'">home page</a>
-    <a href="../Map.html">site map</a> <a href=
-    "mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20Changes">mail
-    us</a></p>
-  </div><a name="_top_"></a> 
+	<p><em>General</em> <a href="../../common/black.html" onclick=
+	"parent.toolbar.location='MainMenu.html'">home page</a>
+	<a href="../Map.html">site map</a> <a href=
+	"mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20Changes">mail
+	us</a></p>
+  </div><a name="_top_"></a>
 
   <h1>Some hints about Ceylan</h1>
 
   <ul>
-    <li>The test cases do not use the Log system in general (except of course for the Log system test !), in order to be as autonomous as possible, according to Kent Beck's principles.</li>
-	
+	<li>The test cases do not use the Log system in general (except of course for the Log system test!), in order to be as autonomous as possible, according to Kent Beck's principles.</li>
+
 	<li>
-		<p>Source files are best viewed thanks to any text editor which is at least 100 character wide, set so that a tabulation is four character long. Ex : <a href="http://www.nedit.org" target="_blank">nedit</a>, which can be launched thanks to <code>nc</code> (or <code>neditc</code>, or <code>nedit-nc</code> depending on the distribution), to avoid wasting too much memory.</p>
+		<p>Source files are best viewed thanks to any text editor which is at least 100 character wide, set so that a tabulation is four character long. Ex: <a href="http://www.nedit.org" target="_blank">nedit</a>, which can be launched thanks to <code>nc</code> (or <code>neditc</code>, or <code>nedit-nc</code> depending on the distribution), to avoid wasting too much memory.</p>
 		<p> See our <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/conf/environment/nedit.rc?view=markup" target="_blank">nedit configuration</a> file, which we recommend to view our source code (one can put its content into <code>~/.nedit/nedit.rc</code> to have it taken into account). One can use too our script called <a href="http://ceylan.svn.sourceforge.net/viewvc/ceylan/Ceylan/trunk/src/code/scripts/shell/n?view=markup" target="_blank">n</a>, that allows to edit files with great simplicity.
 		</p>
 	</li>
-	<li>To make good use of the Log system within a <code>main()</code> function, one shall mimic the standard way of using it :
+	<li>To make good use of the Log system within a <code>main()</code> function, one shall mimic the standard way of using it:
 
 <pre>
 <code>
 <center>
-    <table summary="Code" style="border : none">
-        <tr>
-          <td>
-            <div class="box">
+	<table summary="Code" style="border: none">
+		<tr>
+		  <td>
+			<div class="box">
 <code><pre>
 
 #include &lt;iostream&gt;    // for cerr, endl
@@ -76,54 +76,54 @@ int main( int argc, char * argv[] )
 {
 
 	LogHolder logger( argc, argv ) ;
-	
-    try
-    {
-		
+
+	try
+	{
+
 		LogPlug::info( "Starting my program" ) ;
-	
-	
+
+
 		// Blah blah blah
-	
-		
+
+
 		LogPlug::info( "End of my program." ) ;
 
 	}
-	
-    catch ( const Ceylan::Exception & e )
-    {
-        std::cerr &lt;&lt; "Ceylan exception caught : "
-        	&lt;&lt; e.toString( Ceylan::high ) &lt;&lt; std::endl ;
+
+	catch ( const Ceylan::Exception & e )
+	{
+		std::cerr &lt;&lt; "Ceylan exception caught: "
+			&lt;&lt; e.toString( Ceylan::high ) &lt;&lt; std::endl ;
 		return Ceylan::ExitFailure ;
 
-    }
+	}
 
-    catch ( const std::exception & e )
-    {
-        std::cerr &lt;&lt; "Standard exception caught : " 
+	catch ( const std::exception & e )
+	{
+		std::cerr &lt;&lt; "Standard exception caught: "
 			 &lt;&lt; e.what() &lt;&lt; std::endl ;
 		return Ceylan::ExitFailure ;
 
-    }
+	}
 
-    catch ( ... )
-    {
-        std::cerr &lt;&lt; "Unknown exception caught" &lt;&lt; std::endl ;
+	catch ( ... )
+	{
+		std::cerr &lt;&lt; "Unknown exception caught" &lt;&lt; std::endl ;
 		return Ceylan::ExitFailure ;
 
-    }
+	}
 
-    return Ceylan::ExitSuccess ;
+	return Ceylan::ExitSuccess ;
 
 }
 
 </pre></code>
-            </div>
-          </td>
-        </tr>
-    </table>
+			</div>
+		  </td>
+		</tr>
+	</table>
 </center>
-	
+
 </li>
 
 <li>
@@ -132,33 +132,25 @@ If an object inheriting from Ceylan::Object has chosen to track instances (<code
 </li>
 
 <li>
-When running executables using <code>LogHolder</code> (which is the recommended way of using the log system), one has often a favorite log plug (generally, the HTML one) which is a bit painful to specify each time (for example by adding <code>--HTMLPlug</code> on the command line), so that the default plug, which is the classical (raw) one, is overriden. A convenient trick is to set an environment variable in your shell settings to define your plug (bash example : <code>export PLUG="--HTMLPlug"</code>), and use it accordingly : <code>./testObject.exe $PLUG</code>.
+When running executables using <code>LogHolder</code> (which is the recommended way of using the log system), one has often a favorite log plug (generally, the HTML one) which is a bit painful to specify each time (for example by adding <code>--HTMLPlug</code> on the command line), so that the default plug, which is the classical (raw) one, is overriden. A convenient trick is to set an environment variable in your shell settings to define your plug (bash example: <code>export PLUG="--HTMLPlug"</code>), and use it accordingly: <code>./testObject.exe $PLUG</code>.
 </li>
   </ul>
-  
-  
-  
-  
-  
-  <br>
-  <br>
-  <br>
+
   <br>
 
-  <h3>Please react !</h3>
+  <h3>Please react!</h3>
 
   <p>If you have information more detailed or more recent than those
   presented in this document, if you noticed errors, neglects or points
-  insufficiently discussed, <a href=
-  "mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20Hints">drop
+  insufficiently discussed, <a href="mailto:olivier.boudeville@online.fr?subject=[Ceylan]%20Hints">drop
   us a line</a>!</p><br>
   <br>
   <hr>
 
 <center>
-    <a href="#_top_">Top</a><br>
-    <br>
-    <em>Last update : Tuesday, March 20, 2007
+	<a href="#_top_">Top</a><br>
+	<br>
+	<em>Last update: Monday, January 3, 2011
 </em>
 </center>
 </body>
