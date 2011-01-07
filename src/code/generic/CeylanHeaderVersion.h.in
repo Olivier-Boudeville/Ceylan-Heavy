@@ -1,12 +1,12 @@
-/* 
- * Copyright (C) 2003-2009 Olivier Boudeville
+/*
+ * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
  *
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -39,23 +39,22 @@ namespace Ceylan
 	 * This is the libtool version of the Ceylan headers, as defined in the
 	 * configure step.
 	 *
-	 * Allows to detect run-time mismatches between the Ceylan headers a 
-	 * program or a library was compiled with, and the actual Ceylan library
-	 * it is then linked to.
+	 * Allows to detect run-time mismatches between the Ceylan headers a program
+	 * or a library was compiled with, and the actual Ceylan library it is then
+	 * linked to.
 	 *
 	 */
-	CEYLAN_DLL const std::string actualCeylanHeaderLibtoolVersion 
+	CEYLAN_DLL const std::string actualCeylanHeaderLibtoolVersion
 		= "@CEYLAN_LIBTOOL_VERSION@" ;
 
-	
+
 	/*
-	 * NEVER check-in this file if there is no more CEYLAN_LIBTOOL_VERSION 
+	 * NEVER check-in this file if there is no more CEYLAN_LIBTOOL_VERSION
 	 * above!
 	 *
 	 */
-	 		
+
 }
 
 
 #endif // CEYLAN_HEADER_VERSION_H_
-
