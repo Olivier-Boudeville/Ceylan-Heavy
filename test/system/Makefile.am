@@ -31,5 +31,3 @@ clean: clean-local
 
 clean-local:
 	-@/bin/rm -f schedulingGranularity.png testCeylanTime-granularity.dat
-	
-	
