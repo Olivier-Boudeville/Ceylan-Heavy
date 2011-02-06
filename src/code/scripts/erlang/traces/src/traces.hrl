@@ -95,6 +95,40 @@
 
 -ifdef(TracingActivated).
 
+-define( app_start,
+	% Create first, synchronously (to avoid race conditions), a trace aggregator
+	% (false is to specify a non-private i.e. global aggregator).
+	%
+	% Race conditions could occur at least with trace emitters (they would
+	% create their own aggregator, should none by found) and with trace
+	% supervisor (which expects a trace file to be already created at start-up).
+	%
+	% Goes back to the beginning of line:
+	io:format( "~n" ),
+	AppIsBatch = case init:get_argument('-batch') of
+		{ok,_} -> true; _ -> false
+	end,
+	TraceAggregatorPid = class_TraceAggregator:synchronous_new_link(
+		?TraceFilename, ?TraceType, ?TraceTitle, _TraceIsPrivate=false,
+		TestIsBatch ),
+	% Defined in class_TraceSupervisor.hrl:
+	?init_trace_supervisor
+).
+
+
+-define( app_stop,
+	% Defined in class_TraceSupervisor.hrl:
+	?wait_for_any_trace_supervisor,
+	TraceAggregatorPid ! {synchronous_delete,self()},
+	receive
+
+		{deleted,TraceAggregatorPid} ->
+			ok
+
+	end,
+	check_pending_wooper_results(),
+	app_finished()
+).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
