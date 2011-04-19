@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -77,8 +77,8 @@ namespace Ceylan
 		 * Signed size, in bytes, for example for file operations.
 		 *
 		 */
-		 
-		 
+
+
 		/*
 		 * Using here the only configuration-specific preprocessor symbol that
 		 * may exist in Ceylan public headers:
@@ -164,7 +164,7 @@ namespace Ceylan
 		 * whose type is UINT_PTR.
 		 *
 		 */
-		
+
 		/*
 		 * Using here the only configuration-specific preprocessor symbol that
 		 * may exist in Ceylan public headers:
@@ -181,7 +181,7 @@ namespace Ceylan
 #endif // CEYLAN_RUNS_ON_WINDOWS
 
 
-		
+
 		/// Error number as defined by errno.
 		typedef int ErrorCode ;
 
@@ -221,7 +221,7 @@ namespace Ceylan
 
 
 
-		
+
 		/*
 		 * This section is mostly related to embedded platforms, such as
 		 * the Nintendo DS.
@@ -229,7 +229,7 @@ namespace Ceylan
 		 * @see also CeylanSystemInformation.h
 		 *
 		 */
-		 
+
 
 		/// Masks describing which interrupts are enabled.
 		typedef int InterruptMask ;
@@ -238,20 +238,20 @@ namespace Ceylan
 
 		/// To specify that all interrupts are to disabled (null value).
 		extern CEYLAN_DLL const InterruptMask AllInterruptsDisabled ;
-		
-		
-		
+
+
+
 		/// Signature of an interrupt handler.
 		typedef void (* IRQHandler)( void ) ;
-		
-		
+
+
 
 		/**
 		 * On platforms requiring it (ex: the Nintendo DS),
 		 * initializes the interrupt system by using a default handler.
 		 *
 		 * @param force if true, the handler will be reset unconditionnally,
-		 * if false it will be reset only if not already set (allows to 
+		 * if false it will be reset only if not already set (allows to
 		 * perform it once for all at startup).
 		 *
 		 * @throw SystemException if an error occurred (if on the platform
@@ -277,19 +277,19 @@ namespace Ceylan
 		 * @throw SystemException if an error occurred.
 		 *
 		 */
-		CEYLAN_DLL InterruptMask SetEnabledInterrupts( 
+		CEYLAN_DLL InterruptMask SetEnabledInterrupts(
 			InterruptMask newMask = AllInterruptsDisabled ) ;
 
 
 
 		/**
 		 * On platforms requiring it (ex: the Nintendo DS),
-		 * initializes the IPC system (Inter-Process Communication), by 
+		 * initializes the IPC system (Inter-Process Communication), by
 		 * setting up the FIFO infrastructure (creation and activation).
 		 *
 		 * @note Creates a default FIFO with no application-specific requests
 		 * supported. If the user subclassed the FIFO mother class to support
-		 * additional commands, it has to be initialized by user code instead. 
+		 * additional commands, it has to be initialized by user code instead.
 		 *
 		 * @throw SystemException if an error occurred (if on the platform
 		 * nothing has to be done, only a log warning will be issued, no
@@ -297,11 +297,11 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL void InitializeIPC() ;
-		
 
 
-		/** 
-		 * Converts specified address, expected to be in main RAM, into a 
+
+		/**
+		 * Converts specified address, expected to be in main RAM, into a
 		 * mirrored address in the non-cacheable RAM mirror.
 		 *
 		 * @note Ensure that the specified address in the main RAM, i.e. in
@@ -309,25 +309,25 @@ namespace Ceylan
 		 *
 		 * @note Only useful for the DS ARM9, to ensure its data cache is not
 		 * used, for example when sharing data with the ARM7, which does not
-		 * see the ARM9 cache. 
+		 * see the ARM9 cache.
 		 *
 		 */
 		template <typename T>
 		T* ConvertToNonCacheable( T * sourceAddress )
 		{
-		
+
 			return reinterpret_cast<T*>(
-				reinterpret_cast<Ceylan::Uint32>( sourceAddress ) 
+				reinterpret_cast<Ceylan::Uint32>( sourceAddress )
 					+ /* offset to reach mirror address */ 0x400000 ) ;
-	              
+
 		}
-		
-		
-		
+
+
+
 		/**
 		 * Reserves the specified size of memory so that it is compliant with
-		 * the Nintendo DS ARM9 data cache, i.e. the returned buffer 
-		 * spreads over an integer number of cache lines, so that flushing 
+		 * the Nintendo DS ARM9 data cache, i.e. the returned buffer
+		 * spreads over an integer number of cache lines, so that flushing
 		 * or invalidating these lines will not affect other data.
 		 *
 		 * This function is only useful for the DS ARM9.
@@ -358,7 +358,7 @@ namespace Ceylan
 		 * registered.
 		 *
 		 */
-		CEYLAN_DLL void CacheProtectedDelete( 
+		CEYLAN_DLL void CacheProtectedDelete(
 			Ceylan::Byte * cacheProtectedBuffer ) ;
 
 
@@ -367,21 +367,21 @@ namespace Ceylan
 
 		/// The size, in bytes, of a given line in data cache.
 		CEYLAN_DLL extern const Size CacheLineSize ;
-		
-		
-/* 
+
+
+/*
  * Takes care of the awful issue of Windows DLL with templates.
  *
- * @see Ceylan's developer guide and README-build-for-windows.txt 
- * to understand it, and to be aware of the associated risks. 
- * 
+ * @see Ceylan's developer guide and README-build-for-windows.txt
+ * to understand it, and to be aware of the associated risks.
+ *
  */
 #pragma warning( push )
 #pragma warning( disable: 4251 )
 
 		/**
 		 * This associative table stores the relation between a buffer address
-		 * returned by CacheProtectedNew and the actual buffer that was 
+		 * returned by CacheProtectedNew and the actual buffer that was
 		 * allocated.
 		 *
 		 * The two are different, as the later has to be bigger than the former,
@@ -390,17 +390,17 @@ namespace Ceylan
 		 */
 		CEYLAN_DLL extern std::map<Ceylan::Byte *,Ceylan::Byte *>
 			CacheProtectedMap ;
-		
-#pragma warning( pop ) 			
+
+#pragma warning( pop )
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
-		
+
 
 
 		// IO section.
-		
-		
+
+
 		/**
 		 * Tells whether there is data available on specified file
 		 * descriptor.
@@ -442,7 +442,7 @@ namespace Ceylan
 		 * occurred.
 		 *
 		 */
-		CEYLAN_DLL Size FDWrite( FileDescriptor fd, 
+		CEYLAN_DLL Size FDWrite( FileDescriptor fd,
 			const Ceylan::Byte * dataBuffer, Size toWriteBytesNumber ) ;
 
 
@@ -521,10 +521,10 @@ namespace Ceylan
 		 * a microsecond accuracy, before an overflow may occur.
 		 *
 		 */
-		extern CEYLAN_DLL const Second MaximumDurationWithMicrosecondAccuracy ; 
-		
-		
-		
+		extern CEYLAN_DLL const Second MaximumDurationWithMicrosecondAccuracy ;
+
+
+
 		/**
 		 * Returns the duration, in microseconds, between the two specified
 		 * times, i.e. duration = (stopping time) - (starting time).
@@ -549,7 +549,7 @@ namespace Ceylan
 		 * Returns the time since the Epoch (00:00:00 UTC, January 1, 1970),
 		 * with up to a one microsecond accuracy, expressed as a pair
 		 * containing the number of seconds and the number of microseconds
-		 * elapsed. 
+		 * elapsed.
 		 *
 		 * On some platforms (Windows XP), accuracy is worse than 1 millisecond.
 		 *
@@ -573,7 +573,7 @@ namespace Ceylan
 		 * @throw SystemException should a problem occur.
 		 *
 		 */
-		CEYLAN_DLL void getPreciseTime( Second & seconds, 
+		CEYLAN_DLL void getPreciseTime( Second & seconds,
 			Microsecond & microsec ) ;
 
 
@@ -610,7 +610,7 @@ namespace Ceylan
 		 * microseconds.
 		 *
 		 */
-		CEYLAN_DLL Microsecond getAccuracyOfPreciseTime( 
+		CEYLAN_DLL Microsecond getAccuracyOfPreciseTime(
 				Microsecond * minGap = 0, Microsecond * maxGap = 0 ) ;
 
 
@@ -662,7 +662,7 @@ namespace Ceylan
 
 
 		/**
-		 * Makes the process sleep for a quite small duration, which is 
+		 * Makes the process sleep for a quite small duration, which is
 		 * probably the smallest possible duration on the system,
 		 * scheduler-wise, i.e. exactly one time slice.
 		 *
@@ -696,7 +696,7 @@ namespace Ceylan
 		 * granularity of the scheduling for the underlying operating system.
 		 * For example, no sleep may be shorter than 10 ms on Linux/i386
 		 * (prior to kernel 2.6) and 1 ms on Linux/Alpha.
-         *
+		 *
 		 * @param secondCount the number of seconds to wait
 		 *
 		 * @param nanoCount the remaining part of the time to wait, expressed as
@@ -769,7 +769,7 @@ namespace Ceylan
 		 * prior to calling this sleep method.
 		 *
 		 */
-		CEYLAN_DLL bool smartSleep( Second secondCount, 
+		CEYLAN_DLL bool smartSleep( Second secondCount,
 			Microsecond microCount ) ;
 
 
@@ -779,7 +779,7 @@ namespace Ceylan
 		 *
 		 * @param secondCount the number of seconds to wait for.
 		 *
-		 * @param microCount the microsecond to wait for, expressed as a 
+		 * @param microCount the microsecond to wait for, expressed as a
 		 * number of microseconds.
 		 * As full seconds should be taken into account with the parameter
 		 * <b>second</b>, <b>micros</b> should be less than one second, i.e.
@@ -795,7 +795,7 @@ namespace Ceylan
 		 * prior to calling this sleep method.
 		 *
 		 */
-		CEYLAN_DLL bool smartSleepUntil( Second secondCount, 
+		CEYLAN_DLL bool smartSleepUntil( Second secondCount,
 			Microsecond microCount ) ;
 
 
@@ -803,7 +803,7 @@ namespace Ceylan
 		/**
 		 * Sleeps, and returns the actual sleeping time corresponding to
 		 * the requested sleeping time, expressed in seconds and microseconds.
-	 	 *
+		 *
 		 * @param requestedMicroseconds the time to sleep, expressed in
 		 * microseconds, in the [0, 1 000 000 [ range.
 		 *
@@ -814,9 +814,9 @@ namespace Ceylan
 		 *
 		 * @throw SystemException if waiting or measuring time went wrong.
 		 *
- 		 */
+		 */
 		CEYLAN_DLL Microsecond getActualDurationForSleep(
-			Microsecond requestedMicroseconds, 
+			Microsecond requestedMicroseconds,
 			Second requestedSeconds = 0 ) ;
 
 
@@ -825,7 +825,7 @@ namespace Ceylan
 		 * Returns the run-time computed scheduling granularity of the time
 		 * slice enforced by the operating system.
 		 *
-		 * Sleeping for smaller durations will in general result in sleeping 
+		 * Sleeping for smaller durations will in general result in sleeping
 		 * the duration corresponding to the granularity.
 		 *
 		 * For example, with a scheduling granularity of 10 ms, sleeping for
@@ -851,16 +851,16 @@ namespace Ceylan
 		 * On Linux 2.6 kernels, the expected result (1 ms) is seldom found,
 		 * the measures show on some computers a first stage, quite irregular,
 		 * at 4 ms, with next stages at 8, 12, 16 ms etc., which are quite
-		 * stable. The algorithm detects then a 8 ms granularity, which is 
+		 * stable. The algorithm detects then a 8 ms granularity, which is
 		 * recommended, as in the 4 ms stage (reached for requests between 0
-		 * and 4 ms), there is often a peak: asking for 0.5 ms yields a 
+		 * and 4 ms), there is often a peak: asking for 0.5 ms yields a
 		 * reproducible 25 ms sleeps!
 		 *
 		 * Hence requesting 0.9*granularity should yied a reliable minimal
 		 * waiting. Note that its duration will in most cases not be what was
 		 * requested.
-		 * For example, with a granularity reliably measured at 8 ms 
-		 * (ex: 7994 microsec), one should request 8000*0.9=7200 microsec and 
+		 * For example, with a granularity reliably measured at 8 ms
+		 * (ex: 7994 microsec), one should request 8000*0.9=7200 microsec and
 		 * have a (reliable) 6500 microsec sleep instead.
 		 *
 		 * @note One may force a first call to this method to have the
@@ -899,13 +899,41 @@ namespace Ceylan
 		CEYLAN_DLL bool setLegacyStreamSynchronization( bool synchronized ) ;
 
 
+		/**
+		 * Executes (synchronously, i.e. in a blocking way) the specified
+		 * command, and returns a system-specific error code.
+		 *
+		 * @param command the command to execute.
+		 *
+		 * @return the return status of the command (-1 on error of the system
+		 * execution of the command, not necessarily on the command itself).
+		 *
+		 */
+		CEYLAN_DLL ErrorCode executeCommand( const std::string & command ) ;
+
+
+		/**
+		 * Opens (synchronously, i.e. in a blocking way) the specified URL on
+		 * the default browser of the user.
+		 *
+		 * @note At least on some browsers (ex: Firefox), if a prior instance is
+		 * already running a new tab will be created to display the page
+		 * corresponding to the URL, and once done it will return immediately
+		 * (asynchronous, non-blocking operation).
+		 *
+		 * @param targetURL the URL to open.
+		 *
+		 * @throw SystemException if the operation failed.
+		 *
+		 */
+		CEYLAN_DLL void openURL( const std::string & targetURL ) ;
+
 
 	}
-	
+
 
 }
 
 
 
 #endif // CEYLAN_SYSTEM_H_
-

@@ -112,7 +112,7 @@ extern "C"
 #endif // CEYLAN_CHECK_FOR_FREEZE
 
 
-#include <cstdlib>
+#include <cstdlib>                        // for system
 #include <cerrno>                         // for errno, EAGAIN
 #include <iostream>                       // for sync_with_stdio
 
@@ -2064,5 +2064,115 @@ bool Ceylan::System::setLegacyStreamSynchronization( bool synchronized )
 
 	// Use only C++ streams, and only after this call:
 	return std::ios::sync_with_stdio( synchronized ) ;
+
+}
+
+
+ErrorCode Ceylan::System::executeCommand( const std::string & command )
+{
+
+#if CEYLAN_DEBUG_SYSTEM
+
+  LogPlug::debug( "Executing command '" + command + "'." ) ;
+
+#endif // CEYLAN_DEBUG_SYSTEM
+
+
+#if CEYLAN_ARCH_UNIX
+
+  ErrorCode res = ::system( command.c_str() ) ;
+
+  // Ex: 32512 may correspond to a "command not found".
+  /*
+  std::cout << "::system returned for " << command << ": "
+			<< Ceylan::toString(res) << std::endl ;
+  */
+
+  if ( res == -1 )
+	throw SystemException( "Ceylan::System::executeCommand failed for "
+	  "commmand '" + command + "'." ) ;
+
+  return res ;
+
+#else // CEYLAN_ARCH_UNIX
+
+  throw SystemException( "Ceylan::System::executeCommand: "
+	"not supported on this platform." ) ;
+
+#endif // CEYLAN_ARCH_UNIX
+
+}
+
+
+void Ceylan::System::openURL( const std::string & targetURL )
+{
+
+#if CEYLAN_DEBUG_SYSTEM
+
+  LogPlug::debug( "Opening URL '" + targetURL + "' with default browser." ) ;
+
+#endif // CEYLAN_DEBUG_SYSTEM
+
+#if CEYLAN_ARCH_UNIX
+
+  string command = "xdg-open " + targetURL + " 1>/dev/null 2>&1" ;
+
+  ErrorCode res ;
+
+  try
+  {
+
+	res = executeCommand( command.c_str() ) ;
+
+  }
+  catch( const SystemException & e )
+  {
+
+	throw SystemException( "Ceylan::System::openURL: opening of URL '"
+	  + targetURL + "' failed: " + e.toString() ) ;
+
+  }
+
+  switch( res )
+  {
+
+  case 0:
+	break;
+
+  case 1:
+	throw SystemException( "Ceylan::System::openURL: opening of URL '"
+	  + targetURL + "' failed: error in the command line syntax." ) ;
+	break ;
+
+  case 2:
+	throw SystemException( "Ceylan::System::openURL: opening of URL '"
+	  + targetURL + "' failed: one of the files passed on the command line "
+	  "did not exist." ) ;
+	break ;
+
+  case 3:
+	throw SystemException( "Ceylan::System::openURL: opening of URL '"
+	  + targetURL + "' failed: a required tool could not be found." ) ;
+	break ;
+
+  case 4:
+	throw SystemException( "Ceylan::System::openURL: opening of URL '"
+	  + targetURL + "' failed: the action failed." ) ;
+	break ;
+
+  default:
+	throw SystemException( "Ceylan::System::openURL: opening of URL '"
+	  + targetURL + "' failed: unexpected error." ) ;
+	break ;
+
+  }
+
+
+#else // CEYLAN_ARCH_UNIX
+
+  throw SystemException( "Ceylan::System::openURL: "
+	"not supported on this platform." ) ;
+
+#endif // CEYLAN_ARCH_UNIX
 
 }

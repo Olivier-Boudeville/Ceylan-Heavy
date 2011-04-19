@@ -13,6 +13,7 @@ testssystem_PROGRAMS = \
 	testCeylanMemoryStream.exe                 \
 	testCeylanSignals.exe                      \
 	testCeylanSystemInformation.exe            \
+	testCeylanSystem.exe                       \
 	testCeylanThread.exe                       \
 	testCeylanTime.exe
 
@@ -24,6 +25,7 @@ testCeylanFileLocator_exe_SOURCES         = testCeylanFileLocator.cc
 testCeylanMemoryStream_exe_SOURCES        = testCeylanMemoryStream.cc
 testCeylanSignals_exe_SOURCES             = testCeylanSignals.cc
 testCeylanSystemInformation_exe_SOURCES   = testCeylanSystemInformation.cc
+testCeylanSystem_exe_SOURCES              = testCeylanSystem.cc
 testCeylanThread_exe_SOURCES              = testCeylanThread.cc
 testCeylanTime_exe_SOURCES                = testCeylanTime.cc
 
