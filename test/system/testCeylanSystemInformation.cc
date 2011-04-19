@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -41,10 +41,9 @@ using namespace Ceylan::Log ;
 
 
 /**
- * Test of Ceylan primitives for querying system informations.
+ * Test of Ceylan primitives for querying system information.
  *
  * @see Ceylan::System.
- *
  *
  */
 int main( int argc, char * argv[] )
@@ -53,63 +52,63 @@ int main( int argc, char * argv[] )
 	LogHolder logger( argc, argv ) ;
 
 
-    try
-    {
+	try
+	{
 
 
-        LogPlug::info( "Testing Ceylan's primitives for "
-			"querying system informations." ) ;
+		LogPlug::info( "Testing Ceylan's primitives for "
+			"querying system information." ) ;
 
-		
+
 		/*
 		 * These features depends on sysinfo, which is not available on all
-		 * platforms (ex : it is lacking on vanilla FreeBSD 5.4-RELEASE).
+		 * platforms (ex: it is lacking on vanilla FreeBSD 5.4-RELEASE).
 		 *
 		 */
-		
+
 		try
 		{
-		
-		
-			LogPlug::info( "Number of seconds since the system booted : " 
+
+
+			LogPlug::info( "Number of seconds since the system booted: "
 				+ Ceylan::toString( getSecondsSinceSystemBoot() ) + "." ) ;
-		
-			LogPlug::info( "Current number of running processes : " 
+
+			LogPlug::info( "Current number of running processes: "
 				+ Ceylan::toString( getTotalProcessCount() ) + "." ) ;
-		
-			LogPlug::info( "Total size of usable main memory, in bytes : " 
+
+			LogPlug::info( "Total size of usable main memory, in bytes: "
 				+ Ceylan::toString( getTotalSystemMemorySize() ) + "." ) ;
-		
-			LogPlug::info( 
-				"Size of currently available main memory, in bytes : " 
+
+			LogPlug::info(
+				"Size of currently available main memory, in bytes: "
 				+ Ceylan::toString( getFreeSystemMemorySize() ) + "." ) ;
-		
-			LogPlug::info( "Total size of swap memory, in bytes : " 
+
+			LogPlug::info( "Total size of swap memory, in bytes: "
 				+ Ceylan::toString( getTotalSwapMemorySize() ) + "." ) ;
-		
-			LogPlug::info( 
-				"Size of currently available swap memory, in bytes : " 
+
+			LogPlug::info(
+				"Size of currently available swap memory, in bytes: "
 				+ Ceylan::toString( getFreeSwapMemorySize() ) + "." ) ;
-		
-			LogPlug::info( "Total size of usable high memory, in bytes : " 
+
+			LogPlug::info( "Total size of usable high memory, in bytes: "
 				+ Ceylan::toString( getTotalHighMemorySize() ) + "." ) ;
-		
-			LogPlug::info( 
-				"Size of currently available high memory, in bytes : " 
+
+			LogPlug::info(
+				"Size of currently available high memory, in bytes: "
 				+ Ceylan::toString( getFreeHighMemorySize() ) + "." ) ;
-		
-			LogPlug::info( "Size of memory currently being shared, in bytes : " 
+
+			LogPlug::info( "Size of memory currently being shared, in bytes: "
 				+ Ceylan::toString( getSharedMemorySize() ) + "." ) ;
-		
-			LogPlug::info( 
-				"Size of memory currently used by buffers, in bytes : " 
+
+			LogPlug::info(
+				"Size of memory currently used by buffers, in bytes: "
 				+ Ceylan::toString( getBuffersMemorySize() ) + "." ) ;
-			
-			
-			
+
+
+
 			// OpenGL section.
-			
-			
+
+
 			if ( openGLContextsCanBeLost() )
 				LogPlug::info( "The OpenGL context can be lost "
 					"without notice on this platform." ) ;
@@ -142,43 +141,43 @@ int main( int argc, char * argv[] )
 					"changing the color depth on this platform." ) ;
 
 
-			
+
 		}
 		catch ( const SystemException & e )
 		{
-			LogPlug::error( "Test failed on a non-fatal error : "
+			LogPlug::error( "Test failed on a non-fatal error: "
 				+ e.toString() ) ;
 		}
-		
-		
-        LogPlug::info( "End of querying system information test." ) ;
+
+
+		LogPlug::info( "End of querying system information test." ) ;
 
 
 	}
-	
-    catch ( const Ceylan::Exception & e )
-    {
-        std::cerr << "Ceylan exception caught : "
-        	<< e.toString( Ceylan::high ) << std::endl ;
+
+	catch ( const Ceylan::Exception & e )
+	{
+		std::cerr << "Ceylan exception caught: "
+			<< e.toString( Ceylan::high ) << std::endl ;
 		return Ceylan::ExitFailure ;
 
-    }
+	}
 
-    catch ( const std::exception & e )
-    {
-        std::cerr << "Standard exception caught : " 
+	catch ( const std::exception & e )
+	{
+		std::cerr << "Standard exception caught: "
 			 << e.what() << std::endl ;
 		return Ceylan::ExitFailure ;
 
-    }
+	}
 
-    catch ( ... )
-    {
-        std::cerr << "Unknown exception caught" << std::endl ;
+	catch ( ... )
+	{
+		std::cerr << "Unknown exception caught" << std::endl ;
 		return Ceylan::ExitFailure ;
 
-    }
+	}
 
-    return Ceylan::ExitSuccess ;
+	return Ceylan::ExitSuccess ;
 
 }
