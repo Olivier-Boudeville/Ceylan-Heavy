@@ -45,8 +45,11 @@ export ORGE_ROOT=${LOANI_REPOSITORY}/OSDL-Erlang/Orge/trunk
 
 export ORGE_SRC=${ORGE_ROOT}/src/code
 
+
+export PROJECTS_BASE=$HOME/Projects
+
 export YAG_VERSION=0.5
-export YAG_ROOT=/home/${USER}/Projects/Tools/yag/yag-osdl-${YAG_VERSION}
+export YAG_ROOT=$PROJECTS_BASE/Tools/yag/yag-osdl-${YAG_VERSION}
 
 export PROJECTS_BASE=$HOME/Projects
 
@@ -60,6 +63,11 @@ export SKEL_VERSION=0.1
 export SKEL_ROOT=${GAMES_BASE}/Skelmiskapr-${SKEL_VERSION}
 export SKEL_SRC=${SKEL_ROOT}/src
 export SKEL_DOC=${SKEL_SRC}/doc
+
+export MICRO_PROJECTS=$PROJECTS_BASE/MicroProjects
+
+export AGAR_CURRENT=${LOANI_REPOSITORY}/agar-1.4-from-svn/trunk
+export AGAR_TESTING=${MICRO_PROJECTS}/Agar-testing
 
 
 # For shell scripts:
