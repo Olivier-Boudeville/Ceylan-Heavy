@@ -561,7 +561,7 @@
 ;;(setq frame-background-mode 'dark)
 '(frame-background-mode (quote dark))
 
-
+(setq vc-follow-symlinks nil)
 (setq line-move-visual nil)
 
 (setq default-tab-width 4)
