@@ -317,8 +317,7 @@ namespace Ceylan
 				 * @param path the path to split.
 				 *
 				 * @example SplitPath( "/mnt/raid/md0/LOANI-0.3" ) returns
-				 * on UNIX:
-				 * [ "", "mnt", "raid", "md0", "LOANI-0.3" ].
+				 * on UNIX: [ "", "mnt", "raid", "md0", "LOANI-0.3" ].
 				 *
 				 * @see JoinPath
 				 *
