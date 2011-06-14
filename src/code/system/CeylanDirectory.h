@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -54,41 +54,42 @@ namespace Ceylan
 		 *
 		 */
 		class FileSystemManager ;
-		
-		
+
+
 
 		/**
-		 * Thrown when file operations failed because of underlying
-		 * filesystem manager: the corresponding backend could not 
-		 * be retrieved as expected.
+		 * Thrown when file operations failed because of the underlying
+		 * filesystem manager: the corresponding backend could not be retrieved
+		 * as expected.
 		 *
 		 */
-		class CEYLAN_DLL DirectoryDelegatingException: public DirectoryException
-		{ 
-		
-			public: 
-			
-				explicit DirectoryDelegatingException( 
-					const std::string & reason ) ; 
-					
+		class CEYLAN_DLL DirectoryDelegatingException :
+			public DirectoryException
+		{
+
+			public:
+
+				explicit DirectoryDelegatingException(
+					const std::string & reason ) ;
+
 		} ;
-		
 
 
 
-		
+
+
 		/**
 		 * Abstract directory mother class, so that programs can always
 		 * manipulate Ceylan::Directory instances, whereas per-platform
 		 * specialized classes are actually used by the system.
 		 *
-		 * Examples of convenient cross-platform Directory methods whose use 
-		 * is encouraged: Create, Open, Remove, ExistsAsDirectory.
+		 * Examples of convenient cross-platform Directory methods whose use is
+		 * encouraged: Create, Open, Remove, ExistsAsDirectory.
 		 *
 		 * @see File, FileSystemManager for other file-related operations.
 		 *
 		 */
-		class CEYLAN_DLL Directory: public TextDisplayable
+		class CEYLAN_DLL Directory : public TextDisplayable
 		{
 
 
@@ -102,13 +103,13 @@ namespace Ceylan
 				 * These methods encapsulate calls to the actual filesystem
 				 * manager, so that the developer does not need to mess with
 				 * platform-specific details and/or with the management of
-				 * specialized filesystem managers. 
+				 * specialized filesystem managers.
 				 *
 				 * Should a delegated operation fail, a DirectoryException is
-				 * thrown, including if the filesystem manager backend could 
-				 * not be retrieved. In that case a more specialized exception
-				 * is thrown, a DirectoryDelegatingException.
-				 * 
+				 * thrown, including if the filesystem manager backend could not
+				 * be retrieved. In that case a more specialized exception is
+				 * thrown, a DirectoryDelegatingException.
+				 *
 				 * The filesystem being used is the default one: either one is
 				 * already defined, and it will be used, or none is available
 				 * and the platform-specific default one will be created (thus
@@ -122,27 +123,28 @@ namespace Ceylan
 				 * filesystem managers may be called.
 				 *
 				 */
-				
+
+
 
 				/**
-				 * Tells whether the directory <b>directoryPath</b> exists 
-				 * and is a directory indeed.
+				 * Tells whether the directory <b>directoryPath</b> exists and
+				 * is a directory indeed.
 				 *
 				 * @param directoryPath the directory path to look-up.
 				 *
-				 * @note On Windows, files and directories are 
-				 * case-insensitive, and 'c:' is not a directory 
-				 * (it is seen as a drive), whereas 'c:\' is a directory.
+				 * @note On Windows, files and directories are case-insensitive,
+				 * and 'c:' is not a directory (it is seen as a drive), whereas
+				 * 'c:\' is a directory.
 				 *
-				 * @throw DirectoryException, including DirectoryLookupFailed 
-				 * if the operation failed (existence test failed with no
-				 * answer) or is not supported on this platform, or
-				 * DirectoryDelegatingException should the underlying 
-				 * filesystem manager not be retrieved as expected. 
+				 * @throw DirectoryException, including DirectoryLookupFailed if
+				 * the operation failed (existence test failed with no answer)
+				 * or is not supported on this platform, or
+				 * DirectoryDelegatingException should the underlying filesystem
+				 * manager not be retrieved as expected.
 				 *
 				 */
 				static bool Exists( const std::string & directoryPath ) ;
-				
+
 
 
 				/**
@@ -150,23 +152,22 @@ namespace Ceylan
 				 *
 				 * @param directoryPath the path of the target directory.
 				 *
-				 * @param recursive if false, the specified directory is 
-				 * expected to be empty, and it will be removed. If true,
-				 * then the full directory content (including all files and
-				 * possible subdirectories) and this directory itself will be
-				 * removed.
+				 * @param recursive if false, the specified directory is
+				 * expected to be empty, and it will be removed. If true, then
+				 * the full directory content (including all files and possible
+				 * subdirectories) and this directory itself will be removed.
 				 *
-				 * @throw DirectoryException, including DirectoryRemoveFailed 
-				 * if the operation failed or is not supported on this platform,
-				 * or DirectoryDelegatingException should the underlying 
-				 * filesystem manager not be retrieved as expected. 
+				 * @throw DirectoryException, including DirectoryRemoveFailed if
+				 * the operation failed or is not supported on this platform, or
+				 * DirectoryDelegatingException should the underlying filesystem
+				 * manager not be retrieved as expected.
 				 *
 				 */
-				static void Remove( const std::string & directoryPath, 
+				static void Remove( const std::string & directoryPath,
 					bool recursive = false ) ;
-				
-				
-				
+
+
+
 				/**
 				 * Moves specified directory on filesystem.
 				 *
@@ -177,17 +178,17 @@ namespace Ceylan
 				 *
 				 * @param targetDirectoryname the path of the target directory.
 				 *
-				 * @throw DirectoryException, including DirectoryMoveFailed 
-				 * if the operation failed or is not supported on this platform,
-				 * or DirectoryDelegatingException should the underlying 
-				 * filesystem manager not be retrieved as expected. 
+				 * @throw DirectoryException, including DirectoryMoveFailed if
+				 * the operation failed or is not supported on this platform, or
+				 * DirectoryDelegatingException should the underlying filesystem
+				 * manager not be retrieved as expected.
 				 *
 				 */
 				static void Move( const std::string & sourceDirectoryname,
 					const std::string & targetDirectoryname ) ;
-				
-				
-				
+
+
+
 				/**
 				 * Copies the directory on filesystem.
 				 *
@@ -196,10 +197,10 @@ namespace Ceylan
 				 *
 				 * @param targetDirectoryname the path of the target directory.
 				 *
-				 * @throw DirectoryException, including DirectoryCopyFailed 
-				 * if the operation failed or is not supported on this platform,
-				 * or DirectoryDelegatingException should the underlying 
-				 * filesystem manager not be retrieved as expected. 
+				 * @throw DirectoryException, including DirectoryCopyFailed if
+				 * the operation failed or is not supported on this platform, or
+				 * DirectoryDelegatingException should the underlying filesystem
+				 * manager not be retrieved as expected.
 				 *
 				 */
 				static void Copy( const std::string & sourceDirectoryname,
@@ -219,7 +220,7 @@ namespace Ceylan
 				 * manager could not be retrieved.
 				 *
 				 */
-				static time_t GetLastChangeTime( 
+				static time_t GetLastChangeTime(
 					const std::string & directoryPath ) ;
 
 
@@ -229,17 +230,17 @@ namespace Ceylan
 				 *
 				 * @param directoryString the directory string.
 				 *
-				 * @note If no regular expression support is available, 
-				 * then the name will be deemed always correct.
+				 * @note If no regular expression support is available, then the
+				 * name will be deemed always correct.
 				 *
 				 * @throw DirectoryException if the operation failed or is not
 				 * supported on this platform. This includes throwing a more
 				 * specific DirectoryDelegatingException (a child class of
-				 * DirectoryException), should the underlying filesystem 
-				 * manager not be retrieved as expected. 
+				 * DirectoryException), should the underlying filesystem manager
+				 * not be retrieved as expected.
 				 *
 				 */
-				static bool IsAValidDirectoryPath( 
+				static bool IsAValidDirectoryPath(
 					const std::string & directoryString ) ;
 
 
@@ -253,14 +254,14 @@ namespace Ceylan
 				 * @throw DirectoryException if the operation failed or is not
 				 * supported on this platform. This includes throwing a more
 				 * specific DirectoryDelegatingException (a child class of
-				 * DirectoryException), should the underlying filesystem 
-				 * manager not be retrieved as expected. 
+				 * DirectoryException), should the underlying filesystem manager
+				 * not be retrieved as expected.
 				 *
 				 */
 				static void RemoveLeadingSeparator( std::string & path ) ;
 
-			
-			
+
+
 				/**
 				 * Tells whether specified path is an absolute path.
 				 *
@@ -269,8 +270,8 @@ namespace Ceylan
 				 * @throw DirectoryException if the operation failed or is not
 				 * supported on this platform. This includes throwing a more
 				 * specific DirectoryDelegatingException (a child class of
-				 * DirectoryException), should the underlying filesystem 
-				 * manager not be retrieved as expected. 
+				 * DirectoryException), should the underlying filesystem manager
+				 * not be retrieved as expected.
 				 *
 				 */
 				static bool IsAbsolutePath( const std::string & path ) ;
@@ -283,8 +284,8 @@ namespace Ceylan
 				 * @throw DirectoryException if the operation failed or is not
 				 * supported on this platform. This includes throwing a more
 				 * specific DirectoryDelegatingException (a child class of
-				 * DirectoryException), should the underlying filesystem 
-				 * manager not be retrieved as expected. 
+				 * DirectoryException), should the underlying filesystem manager
+				 * not be retrieved as expected.
 				 *
 				 */
 				static std::string GetCurrentWorkingDirectoryPath()	;
@@ -300,22 +301,22 @@ namespace Ceylan
 				 * @throw DirectoryException if the operation failed or is not
 				 * supported on this platform. This includes throwing a more
 				 * specific DirectoryDelegatingException (a child class of
-				 * DirectoryException), should the underlying filesystem 
-				 * manager not be retrieved as expected. 
+				 * DirectoryException), should the underlying filesystem manager
+				 * not be retrieved as expected.
 				 *
 				 */
-				static void ChangeWorkingDirectory( 
+				static void ChangeWorkingDirectory(
 						const std::string & newWorkingDirectory ) ;
 
 
 
 				/**
-				 * Splits up <b>path</b> into the list of its sub-elements
-				 * (set of directory/file names).
+				 * Splits up <b>path</b> into the list of its sub-elements (set
+				 * of directory/file names).
 				 *
 				 * @param path the path to split.
 				 *
-				 * @example SplitPath( "/mnt/raid/md0/LOANI-0.3" ) returns 
+				 * @example SplitPath( "/mnt/raid/md0/LOANI-0.3" ) returns
 				 * on UNIX:
 				 * [ "", "mnt", "raid", "md0", "LOANI-0.3" ].
 				 *
@@ -324,18 +325,18 @@ namespace Ceylan
 				 * @throw DirectoryException if the operation failed or is not
 				 * supported on this platform. This includes throwing a more
 				 * specific DirectoryDelegatingException (a child class of
-				 * DirectoryException), should the underlying filesystem 
-				 * manager not be retrieved as expected. 
+				 * DirectoryException), should the underlying filesystem manager
+				 * not be retrieved as expected.
 				 *
 				 */
-				static std::list<std::string> SplitPath( 
+				static std::list<std::string> SplitPath(
 					const std::string & path ) ;
 
 
 
 				/**
-				 * Joins the specified path elements with the relevant 
-				 * directory separator.
+				 * Joins the specified path elements with the relevant directory
+				 * separator.
 				 *
 				 * @param pathElements the path elements to join in a path.
 				 *
@@ -347,14 +348,14 @@ namespace Ceylan
 				 * @throw DirectoryException if the operation failed or is not
 				 * supported on this platform. This includes throwing a more
 				 * specific DirectoryDelegatingException (a child class of
-				 * DirectoryException), should the underlying filesystem 
-				 * manager not be retrieved as expected. 
+				 * DirectoryException), should the underlying filesystem manager
+				 * not be retrieved as expected.
 				 *
 				 */
-				static std::string JoinPath( 
+				static std::string JoinPath(
 						const std::list<std::string> & pathElements ) ;
-					
-					
+
+
 
 				/**
 				 * Joins the two specified path elements with the relevant
@@ -364,55 +365,55 @@ namespace Ceylan
 				 *
 				 * @param secondPath the second part of the final path.
 				 *
-				 * @example JoinPath( "/mnt/raid", "md0/LOANI-0.3" ) 
-				 * returns on UNIX: "/mnt/raid/md0/LOANI-0.3".
+				 * @example JoinPath( "/mnt/raid", "md0/LOANI-0.3" ) returns on
+				 * UNIX: "/mnt/raid/md0/LOANI-0.3".
 				 *
 				 * @see SplitPath
 				 *
 				 * @throw DirectoryException if the operation failed or is not
 				 * supported on this platform. This includes throwing a more
 				 * specific DirectoryDelegatingException (a child class of
-				 * DirectoryException), should the underlying filesystem 
-				 * manager not be retrieved as expected. 
+				 * DirectoryException), should the underlying filesystem manager
+				 * not be retrieved as expected.
 				 *
 				 */
 				static std::string JoinPath( const std::string & firstPath,
 					const std::string & secondPath ) ;
-					
-					
-					
+
+
+
 				/**
 				 * Separates the full pathname <b>path</b> into a basename
 				 * <b>base</b> and file name <b>file</b>.
 				 *
-				 * For example, this method applied to 
-				 * "/mnt/raid/md0/LOANI-0.3" returns respectively
-				 * "/mnt/raid/md0" and "LOANI-0.3", when the separator is '/'.
+				 * For example, this method applied to "/mnt/raid/md0/LOANI-0.3"
+				 * returns respectively "/mnt/raid/md0" and "LOANI-0.3", when
+				 * the separator is '/'.
 				 *
 				 * @param path the path which is to be stripped.
 				 *
-				 * @param base if non null, must be a pointer to an 
-				 * already allocated string where the basename will be stored.
-				 * If not interested in the basename, specify a null (0)
-				 * pointer instead: this method will act as UNIX "basename".
+				 * @param base if non null, must be a pointer to an already
+				 * allocated string where the basename will be stored. If not
+				 * interested in the basename, specify a null (0) pointer
+				 * instead: this method will act as UNIX "basename".
 				 *
 				 * @param file if non null, must be a pointer to an already
-				 * allocated string where the filename will be stored. 
-				 * If not interested in the filename, specify a null (0) 
-				 * pointer instead: this method will act as UNIX "dirname".
+				 * allocated string where the filename will be stored. If not
+				 * interested in the filename, specify a null (0) pointer
+				 * instead: this method will act as UNIX "dirname".
 				 *
 				 * @throw DirectoryException if the operation failed or is not
 				 * supported on this platform. This includes throwing a more
 				 * specific DirectoryDelegatingException (a child class of
-				 * DirectoryException), should the underlying filesystem 
-				 * manager not be retrieved as expected. 
+				 * DirectoryException), should the underlying filesystem
+				 * manager not be retrieved as expected.
 				 *
 				 */
 				static void StripFilename( const std::string & path,
 						std::string * base, std::string * file = 0 ) ;
-					
-					
-										
+
+
+
 				/**
 				 * Returns the directory separator, a Latin-1 character.
 				 *
@@ -421,8 +422,8 @@ namespace Ceylan
 				 * @throw DirectoryException if the operation failed or is not
 				 * supported on this platform. This includes throwing a more
 				 * specific DirectoryDelegatingException (a child class of
-				 * DirectoryException), should the underlying filesystem 
-				 * manager not be retrieved as expected. 
+				 * DirectoryException), should the underlying filesystem manager
+				 * not be retrieved as expected.
 				 *
 				 */
 				static Ceylan::Latin1Char GetSeparator() ;
@@ -439,22 +440,22 @@ namespace Ceylan
 				 * @throw DirectoryException if the operation failed or is not
 				 * supported on this platform. This includes throwing a more
 				 * specific DirectoryDelegatingException (a child class of
-				 * DirectoryException), should the underlying filesystem 
-				 * manager not be retrieved as expected. 
+				 * DirectoryException), should the underlying filesystem manager
+				 * not be retrieved as expected.
 				 *
 				 */
 				static std::string GetSeparatorAsString() ;
-				
-				
 
-				
+
+
+
 				// Factory subsection.
 
 
 
 				/**
-				 * Returns a Directory reference on a directory newly created
-				 * on disk.
+				 * Returns a Directory reference on a directory newly created on
+				 * disk.
 				 *
 				 * @param newDirectoryName the name of the directory to create.
 				 *
@@ -469,11 +470,11 @@ namespace Ceylan
 				 * manager could not be retrieved.
 				 *
 				 */
-				static Directory & Create( 
+				static Directory & Create(
 					const std::string & newDirectoryName ) ;
 
 
-				
+
 				/**
 				 * Returns a Directory reference on specified already-existing
 				 * directory, which will be "opened" (i.e. referred to).
@@ -493,9 +494,9 @@ namespace Ceylan
 				 * manager could not be retrieved.
 				 *
 				 */
-				static Directory & Open( 
+				static Directory & Open(
 					const std::string & directoryName = "" ) ;
-					
+
 
 
 				/**
@@ -503,7 +504,7 @@ namespace Ceylan
 				 *
 				 * @see Remove
 				 *
-				 * The destructor must be public as instances created by 
+				 * The destructor must be public as instances created by
 				 * factories have to be deallocated by the user.
 				 *
 				 */
@@ -513,26 +514,26 @@ namespace Ceylan
 
 
 				// Instance methods.
-				
-				
-				
+
+
+
 				// Directory content subsection.
-				
-				
-				
+
+
+
 				/**
-				 * Tells whether the directory has a direct subdirectory named 
+				 * Tells whether the directory has a direct subdirectory named
 				 * <b>subdirectoryName</b>.
 				 *
 				 * @param subdirectoryName the name of the directory entry to
-				 * look-up. Alias for current directory (ex: '.') and parent
-				 * one (ex: '..') are always deemed existing.
+				 * look-up. Alias for current directory (ex: '.') and parent one
+				 * (ex: '..') are always deemed existing.
 				 *
 				 * @throw DirectoryLookupFailed is the operation failed or is
 				 * not supported.
 				 *
 				 */
-				virtual bool hasDirectory( 
+				virtual bool hasDirectory(
 					const std::string & subdirectoryName ) const = 0 ;
 
 
@@ -549,10 +550,10 @@ namespace Ceylan
 				 */
 				virtual bool hasFile( const std::string & fileName ) const = 0 ;
 
-				
-				
+
+
 				/**
-				 * Tells whether the directory has a direct entry named 
+				 * Tells whether the directory has a direct entry named
 				 * <b>entryName</b>.
 				 *
 				 * @param entryName the name of the entry to look-up.
@@ -561,7 +562,7 @@ namespace Ceylan
 				 * not supported.
 				 *
 				 */
-				virtual bool hasEntry( const std::string & entryName ) const 
+				virtual bool hasEntry( const std::string & entryName ) const
 					= 0 ;
 
 
@@ -579,7 +580,7 @@ namespace Ceylan
 				 * and '..') will be filtered out.
 				 *
 				 */
-				virtual void getSubdirectories( 
+				virtual void getSubdirectories(
 					std::list<std::string> & subDirectories ) const = 0 ;
 
 
@@ -600,24 +601,24 @@ namespace Ceylan
 
 
 				/**
-				 * Returns the names of all direct entries of any type of 
-				 * this directory (including files and directories), in the
-				 * specified list.
+				 * Returns the names of all direct entries of any type of this
+				 * directory (including files and directories), in the specified
+				 * list.
 				 *
-				 * @param entries the caller-provided list in which 
-				 * entries will be added.
+				 * @param entries the caller-provided list in which entries will
+				 * be added.
 				 *
-				 * @throw DirectoryLookupFailed if the operation failed or
-				 * is not supported.
-				 *
-				 * @note Aliases for current and parent directories (ex: '.'
-				 * and '..') will be filtered out.
+				 * @throw DirectoryLookupFailed if the operation failed or is
+				 * not supported.
 				 *
 				 * @note Aliases for current and parent directories (ex: '.'
 				 * and '..') will be filtered out.
 				 *
-				 * @throw DirectoryLookupFailed if the operation failed or
-				 * is not supported.
+				 * @note Aliases for current and parent directories (ex: '.'
+				 * and '..') will be filtered out.
+				 *
+				 * @throw DirectoryLookupFailed if the operation failed or is
+				 * not supported.
 				 *
 				 */
 				virtual void getEntries( std::list<std::string> & entries )
@@ -626,28 +627,28 @@ namespace Ceylan
 
 
 				/**
-				 * Returns the names of all direct entries of any type of 
-				 * this directory (including files and directories), in the
+				 * Returns the names of all direct entries of any type of this
+				 * directory (including files and directories), in the
 				 * corresponding specified list.
 				 *
-				 * @param subDirectories the caller-provided list in which 
+				 * @param subDirectories the caller-provided list in which
 				 * subDirectories of this directory will be added.
 				 *
-				 * @param files the caller-provided list in which 
-				 * files of this directory will be added.
+				 * @param files the caller-provided list in which files of this
+				 * directory will be added.
 				 *
-				 * @param otherEntries the caller-provided list in which 
-				 * other entries (named FIFO, sockets, block or character
-				 * device, etc.) of this directory will be added.
+				 * @param otherEntries the caller-provided list in which other
+				 * entries (named FIFO, sockets, block or character device,
+				 * etc.) of this directory will be added.
 				 *
-				 * @throw DirectoryLookupFailed if the operation failed or
-				 * is not supported.
+				 * @throw DirectoryLookupFailed if the operation failed or is
+				 * not supported.
 				 *
 				 * @note Aliases for current and parent directories (ex: '.'
 				 * and '..') will be filtered out.
 				 *
 				 */
-				virtual void getSortedEntries( 
+				virtual void getSortedEntries(
 					std::list<std::string> & subDirectories,
 					std::list<std::string> & files,
 					std::list<std::string> & otherEntries ) const = 0 ;
@@ -656,14 +657,13 @@ namespace Ceylan
 
 
 				// Other instance methods.
-				
+
 
 				/**
 				 * Changes directory to one of its direct subdirectories.
 				 *
-				 * @param subdirectoryName the name of the subdirectory of
-				 * this directory to go to. It should not have any separator
-				 * in it.
+				 * @param subdirectoryName the name of the subdirectory of this
+				 * directory to go to. It should not have any separator in it.
 				 *
 				 * @example myDir.goDown( "data" )
 				 *
@@ -712,8 +712,8 @@ namespace Ceylan
 
 
 				/**
-				 * Returns a user-friendly description of the state of 
-				 * this object.
+				 * Returns a user-friendly description of the state of this
+				 * object.
 				 *
 				 * @param level the requested verbosity level.
 				 *
@@ -722,12 +722,12 @@ namespace Ceylan
 				 * @see TextDisplayable
 				 *
 				 */
-	            virtual const std::string toString( 
+				virtual const std::string toString(
 					Ceylan::VerbosityLevels level = Ceylan::high ) const  ;
 
 
 
-				
+
 
 			protected:
 
@@ -742,7 +742,7 @@ namespace Ceylan
 
 
 				/**
-				 * Returns the filesystem manager that corresponds to the 
+				 * Returns the filesystem manager that corresponds to the
 				 * actual Directory child class.
 				 *
 				 * @throw DirectoryDelegatingException if the operation failed.
@@ -764,7 +764,7 @@ namespace Ceylan
 
 
 				/**
-				 * Returns the filesystem manager that should be used by 
+				 * Returns the filesystem manager that should be used by
 				 * Directory static methods, which is the default manager.
 				 *
 				 * @return the default filesystem manager.
@@ -782,8 +782,9 @@ namespace Ceylan
 
 
 				/**
-				 * Copy constructor made private to ensure that it will 
-				 * be never called.
+				 * Copy constructor made private to ensure that it will be never
+				 * called.
+				 *
 				 * The compiler should complain whenever this undefined
 				 * constructor is called, implicitly or not.
 				 *
@@ -792,17 +793,18 @@ namespace Ceylan
 
 
 				/**
-				 * Assignment operator made private to ensure that it will
-				 * be never called.
-				 * The compiler should complain whenever this undefined
-				 * operator is called, implicitly or not.
+				 * Assignment operator made private to ensure that it will be
+				 * never called.
+				 *
+				 * The compiler should complain whenever this undefined operator
+				 * is called, implicitly or not.
 				 *
 				 */
 				Directory & operator = ( const Directory & source ) ;
-			
+
 
 		} ;
-		
+
 
 	}
 
@@ -811,4 +813,3 @@ namespace Ceylan
 
 
 #endif // CEYLAN_DIRECTORY_H_
-
