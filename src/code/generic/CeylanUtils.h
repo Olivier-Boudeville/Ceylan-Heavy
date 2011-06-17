@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -40,21 +40,44 @@
 
 
 
+/*
+ * Sometimes, the most convenient way of specifying configuration options is to
+ * pass them in the build command-line, rather than for example generating an
+ * ad-hoc file. We thus can use -DFOO=1.2 to have FOO in the code be replaced by
+ * 1.2.
+ *
+ * However, when a path is to be set that way, a problem arises:
+ * -DFOO_PATH=/some/path/foo-0.1.4 will not be accepted (ex: "error: too many
+ * decimal points in number"), as the constant will then be read as a
+ * floating-point value.
+ *
+ * The following preprocessor hack allows to overcome that issue. It *needs* the
+ * two macros.
+ *
+ * Example of use: const string MyPath = CEYLAN_STRINGIFY(FOO_PATH) +
+ *  std::string( "/share/foo/" ) ;
+ *
+ */
+#define CEYLAN_STRINGIFY_HELPER(s) #s
+#define CEYLAN_STRINGIFY(s) CEYLAN_STRINGIFY_HELPER(s)
+
+
+
 /**
- * This part of the Ceylan namespace gathers some convenient conventions 
- * to be widely used.
+ * This part of the Ceylan namespace gathers some convenient conventions to be
+ * widely used.
  *
  */
 
 namespace Ceylan
 {
-	
-	
-	
+
+
+
 	// Some generic and useful definitions.
-	
-	
-	
+
+
+
 	/**
 	 * Returns the version of the Ceylan library currently linked.
 	 *
@@ -62,42 +85,42 @@ namespace Ceylan
 	 *
 	 */
 	CEYLAN_DLL const Ceylan::LibtoolVersion & GetVersion() ;
-	
-	
-	
-	/** 
+
+
+
+	/**
 	 * Allows to ensure that the actual Ceylan library being linked with is
 	 * compatible with the one expected by the code that will use it (be it a
 	 * library itself or a program).
 	 *
-	 * The Ceylan version is directly encoded in the library, whereas the 
+	 * The Ceylan version is directly encoded in the library, whereas the
 	 * version expected by a user program is found in this Ceylan header file,
 	 * according to the version being used to compile it.
 	 *
-	 * Use this macro in your application that way: 
+	 * Use this macro in your application that way:
 	 * 'CHECK_CEYLAN_VERSIONS() ;'
-	 * for example in the first lines of your 'main' function. Of course the 
+	 * for example in the first lines of your 'main' function. Of course the
 	 * main Ceylan header file ('Ceylan.h') should have been included
 	 * previously.
 	 *
-	 * This is a macro since it has to be evaluated within the user code 
+	 * This is a macro since it has to be evaluated within the user code
 	 * environment, not when the Ceylan library is built.
 	 *
 	 */
 	#define CHECK_CEYLAN_VERSIONS()                                            \
-        Ceylan::LibtoolVersion headerVersion(                                  \
+		Ceylan::LibtoolVersion headerVersion(                                  \
 			Ceylan::actualCeylanHeaderLibtoolVersion ) ;                       \
-        if ( ! /* library version */                                           \
-                Ceylan::GetVersion().isCompatibleWith( headerVersion ) )       \
-            Ceylan::emergencyShutdown(                                         \
-                "Ceylan library version currently linked ("                    \
-                + Ceylan::GetVersion().toString()                              \
-                + ") is not compatible with the one read from the Ceylan "     \
-                "header files used to compile this application ("              \
-                + headerVersion.toString() + "), aborting." ) ;
-	
-				
-				
+		if ( ! /* library version */                                           \
+				Ceylan::GetVersion().isCompatibleWith( headerVersion ) )       \
+			Ceylan::emergencyShutdown(                                         \
+				"Ceylan library version currently linked ("                    \
+				+ Ceylan::GetVersion().toString()                              \
+				+ ") is not compatible with the one read from the Ceylan "     \
+				"header files used to compile this application ("              \
+				+ headerVersion.toString() + "), aborting." ) ;
+
+
+
 	/**
 	 * Swaps the two bytes of the specified 16 bit argument.
 	 *
@@ -106,61 +129,61 @@ namespace Ceylan
 	 */
 	inline Ceylan::Uint16 swapBytes( Ceylan::Uint16 arg )
 	{
-	
+
 		return static_cast<Ceylan::Uint16>( (arg<<8) | (arg>>8) ) ;
-		
+
 	}
-	
-	
-	
-	/// Exception raised by common utils services. 
-	class CEYLAN_DLL UtilsException: public Exception
+
+
+
+	/// Exception raised by common utils services.
+	class CEYLAN_DLL UtilsException : public Exception
 	{
-	
+
 		public:
-		
-			UtilsException( const std::string & message ): 
+
+			UtilsException( const std::string & message ):
 				Exception( message )
-			{		
-			
+			{
+
 			}
-		
-			
+
+
 			virtual ~UtilsException() throw()
 			{
-			
-			}	
-		
-	} ;	
+
+			}
+
+	} ;
 
 
 
 	/**
 	 * Exception raised wheneve the parsing of a command line failed, for
-	 * exemple when a given option requires more arguments than available 
-	 * in the command line.
+	 * example when a given option requires more arguments than available in the
+	 * command line.
 	 *
 	 * @see testCeylanCommandLineOptions.cc
 	 *
 	 */
-	class CEYLAN_DLL CommandLineParseException: public UtilsException
+	class CEYLAN_DLL CommandLineParseException : public UtilsException
 	{
-	
+
 		public:
-		
-			CommandLineParseException( const std::string & message ): 
+
+			CommandLineParseException( const std::string & message ):
 				UtilsException( message )
-			{		
-			
+			{
+
 			}
-			
-			
+
+
 			virtual ~CommandLineParseException() throw()
 			{
-			
-			}	
-		
-	} ;	
+
+			}
+
+	} ;
 
 
 
@@ -171,12 +194,12 @@ namespace Ceylan
 	 *
 	 * Arguments are easier to take into account this way.
 	 *
-	 * @param readExecutableName the string where this function will store 
-	 * the executable name.
+	 * @param readExecutableName the string where this function will store the
+	 * executable name.
 	 *
-	 * @param readOptions the list of strings where this function will store 
-	 * the options, one word by string, in the same order as they were in 
-	 * the command line.
+	 * @param readOptions the list of strings where this function will store the
+	 * options, one word by string, in the same order as they were in the
+	 * command line.
 	 *
 	 * @param argumentCount the number of arguments (argc).
 	 *
@@ -186,15 +209,15 @@ namespace Ceylan
 	 *
 	 */
 	CEYLAN_DLL void parseCommandLineOptions( std::string & readExecutableName ,
-		std::list<std::string> & readOptions, 
+		std::list<std::string> & readOptions,
 		Ceylan::Uint16 argumentCount, char ** argumentVector ) ;
-		
-		
-		
+
+
+
 	// Codes to be returned by executables on exit.
 	typedef Ceylan::Sint16 ExitCode ;
-	
-	
+
+
 	/// Return value to be used on success.
 	extern CEYLAN_DLL const ExitCode ExitSuccess ;
 
@@ -206,22 +229,22 @@ namespace Ceylan
 
 
 	/**
-	 * Return value to be used on debug assertion failure. 
+	 * Return value to be used on debug assertion failure.
 	 * It is returned only by "#if CEYLAN_DEBUG"-enclosed sections.
-	 * 
-	 * This value should never been actually returned, since it would mean
-	 * a real basic assumption was unexpectedly not met.
+	 *
+	 * This value should never been actually returned, since it would mean a
+	 * real basic assumption was unexpectedly not met.
 	 *
 	 */
 	extern CEYLAN_DLL const ExitCode ExitDebugFailure ;
-	
-	
-	
+
+
+
 	/**
 	 * Stops immediatly the program, without performing any cleanup.
 	 *
-	 * @note Call me when run-time abnormal behaviours occurs, such
-	 * as state incoherence, that shows that some code is faulty. 
+	 * @note Call me when run-time abnormal behaviours occurs, such as state
+	 * incoherence, that shows that some code is faulty.
 	 *
 	 * @note That kind of function is useful in the cases (that should be
 	 * avoided) where exception specifications are used.
@@ -231,7 +254,7 @@ namespace Ceylan
 
 #ifndef CEYLAN_RUNS_ON_WINDOWS
 				/*
-				 * g++ (gcc) needs this __attribute__ (otherwise a blocking 
+				 * g++ (gcc) needs this __attribute__ (otherwise a blocking
 				 * warning is issued), but Visual C++ does not understand it.
 				 *
 				 * As we are here in a public header file, only the
@@ -239,7 +262,7 @@ namespace Ceylan
 				 * symbol is available here.
 				 *
 				 */
-		__attribute__ ((noreturn))  
+		__attribute__ ((noreturn))
 
 #endif // CEYLAN_RUNS_ON_WINDOWS
 	;
@@ -256,11 +279,11 @@ namespace Ceylan
 	 * read. All key presses are taken into account, no only the new transitions
 	 * from released to pressed.
 	 *
-	 * @throw UtilsException if the operation is not available or could not
-	 * be performed correctly.
+	 * @throw UtilsException if the operation is not available or could not be
+	 * performed correctly.
 	 *
-	 * @note For the Nintendo DS, the libdns scanKeys function is supposed to
-	 * be called regularly outside of this function (ex: once per main loop).
+	 * @note For the Nintendo DS, the libdns scanKeys function is supposed to be
+	 * called regularly outside of this function (ex: once per main loop).
 	 *
 	 */
 	CEYLAN_DLL bool keyboardHit() ;
@@ -268,12 +291,12 @@ namespace Ceylan
 
 
 	/// Corresponds to a read character.
-	typedef Ceylan::Sint32 KeyChar ;  
-  
+	typedef Ceylan::Sint32 KeyChar ;
+
 
 
 #if defined(CEYLAN_ARCH_NINTENDO_DS) && CEYLAN_ARCH_NINTENDO_DS == 1
-  
+
 
 	// Mapping for Nintendo DS buttons.
 
@@ -282,87 +305,87 @@ namespace Ceylan
 	typedef Ceylan::Uint32 DSBinaryInput ;
 
 
-  
-  	/// The keypad 'X' of the Nintendo DS.
+
+	/// The keypad 'X' of the Nintendo DS.
 	extern CEYLAN_DLL const DSBinaryInput ButtonX ;
-	
-	
-  	/// The keypad 'Y' of the Nintendo DS.
+
+
+	/// The keypad 'Y' of the Nintendo DS.
 	extern CEYLAN_DLL const DSBinaryInput ButtonY ;
-	
-	
-	
-  	/// The keypad 'A' of the Nintendo DS.
+
+
+
+	/// The keypad 'A' of the Nintendo DS.
 	extern CEYLAN_DLL const DSBinaryInput ButtonA ;
-	
-	
-  	/// The keypad 'B' of the Nintendo DS.
+
+
+	/// The keypad 'B' of the Nintendo DS.
 	extern CEYLAN_DLL const DSBinaryInput ButtonB ;
-	
-	
-	
-  	/// The keypad 'START' of the Nintendo DS.
+
+
+
+	/// The keypad 'START' of the Nintendo DS.
 	extern CEYLAN_DLL const DSBinaryInput ButtonStart ;
-	
-	
-  	/// The keypad 'SELECT' of the Nintendo DS.
+
+
+	/// The keypad 'SELECT' of the Nintendo DS.
 	extern CEYLAN_DLL const DSBinaryInput ButtonSelect ;
 
 
 
-  	/// The keypad 'left' of the Nintendo DS cursor.
+	/// The keypad 'left' of the Nintendo DS cursor.
 	extern CEYLAN_DLL const DSBinaryInput ButtonLeft ;
-	
-	
-  	/// The keypad 'right' of the Nintendo DS cursor.
+
+
+	/// The keypad 'right' of the Nintendo DS cursor.
 	extern CEYLAN_DLL const DSBinaryInput ButtonRight ;
-	
-	
-	
-  	/// The keypad 'up' of the Nintendo DS cursor.
+
+
+
+	/// The keypad 'up' of the Nintendo DS cursor.
 	extern CEYLAN_DLL const DSBinaryInput ButtonUp ;
-	
-	
-  	/// The keypad 'down' of the Nintendo DS cursor.
+
+
+	/// The keypad 'down' of the Nintendo DS cursor.
 	extern CEYLAN_DLL const DSBinaryInput ButtonDown ;
 
 
 
-  	/// The left shoulder button of the Nintendo DS.
+	/// The left shoulder button of the Nintendo DS.
 	extern CEYLAN_DLL const DSBinaryInput ShoulderButtonLeft ;
-	
-	
-  	/// The right shoulder button of the Nintendo DS.
+
+
+	/// The right shoulder button of the Nintendo DS.
 	extern CEYLAN_DLL const DSBinaryInput ShoulderButtonRight ;
-	
-	
-	
-  	/// The pen down (stylus touches touchscreen) of the Nintendo DS.
+
+
+
+	/// The pen down (stylus touches touchscreen) of the Nintendo DS.
 	extern CEYLAN_DLL const DSBinaryInput StylusContact ;
-	
-	
-  	/// The lid status (open/closed) of the Nintendo DS.
+
+
+	/// The lid status (open/closed) of the Nintendo DS.
 	extern CEYLAN_DLL const DSBinaryInput LidOpen ;
 
 
 
-  	/// Gathers all buttons and stylus contact (everything but the lid).
+	/// Gathers all buttons and stylus contact (everything but the lid).
 	extern CEYLAN_DLL const DSBinaryInput AllUserInputs ;
-	
+
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 
 
-	 
+
 	/**
 	 * Returns a new key being hit.
 	 * Waits, if necessary, until this occurs.
 	 *
 	 * On the Nintendo DS ARM9, returns the key state.
 	 *
-	 * @throw UtilsException if the operation is not available or could not
-	 * be performed correctly.
+	 * @throw UtilsException if the operation is not available or could not be
+	 * performed correctly.
 	 *
 	 */
 	CEYLAN_DLL KeyChar getChar() ;
@@ -382,25 +405,25 @@ namespace Ceylan
 	/**
 	 * Waits for a key to be pressed.
 	 *
-	 * @param the sentence to display once before waiting. Just specify ""
-	 * for no message.
+	 * @param the sentence to display once before waiting. Just specify "" for
+	 * no message.
 	 *
 	 * @return the hit key as getChar read it.
 	 *
-	 * @note One should not use for example: 
+	 * @note One should not use for example:
 	 * <code>"Hit key is: " + waitForKey()</code> since waitForKey returns
 	 * a numerical value. Instead, use:
 	 * <code>"Hit key is: " + toString( waitForKey() )</code>
 	 *
-	 * @throw UtilsException if the operation failed or in not supported
-	 * on this platform.
+	 * @throw UtilsException if the operation failed or in not supported on this
+	 * platform.
 	 *
 	 */
-	CEYLAN_DLL KeyChar waitForKey( const std::string & message 
+	CEYLAN_DLL KeyChar waitForKey( const std::string & message
 		= DefaultWaitForKeyMessage ) ;
 
 
-	
+
 	/**
 	 * Template function splitting a container according to a delimiter.
 	 *
@@ -420,17 +443,17 @@ namespace Ceylan
 	 *
 	 * @param delimiter delimiter between the slices.
 	 *
-	 * @param result list of containers to which will be appended the results 
-	 * of the split.
+	 * @param result list of containers to which will be appended the results of
+	 * the split.
 	 *
 	 * @author Marc Petit.
 	 *
 	 */
 	template<class T, class Element>
-	void split(	const T & toSplit, const Element & delimiter, 
+	void split(	const T & toSplit, const Element & delimiter,
 		std::list<T> & result )
 	{
-	
+
 		typename T::const_iterator beginOfSlice = toSplit.begin() ;
 		typename T::const_iterator endOfSlice   = toSplit.begin() ;
 
@@ -448,17 +471,17 @@ namespace Ceylan
 
 			beginOfSlice = endOfSlice + 1 ;
 		}
-		
+
 	}
 
 
 
 	/**
 	 * Template function splitting a container according to a predicate.
-	 * 
+	 *
 	 * This function takes a container (e.g. a string), a predicate (see
-	 * std::find_if), and appends to the list of containers the ones that 
-	 * result from splitting the first container.
+	 * std::find_if), and appends to the list of containers the ones that result
+	 * from splitting the first container.
 	 *
 	 * Being based on the same algorithm as Split, this function does not
 	 * include the instances found to be "delimiters".
@@ -467,8 +490,8 @@ namespace Ceylan
 	 *
 	 * @param predicate predicate used to differentiate slices.
 	 *
-	 * @param result list of containers to which will be appended the results 
-	 * of the split.
+	 * @param result list of containers to which will be appended the results of
+	 * the split.
 	 *
 	 * @example:
 	 * <pre>
@@ -479,7 +502,7 @@ namespace Ceylan
 	 *	List result ;
 	 *
 	 *	Split( test, d, result ) ;
-	 *	
+	 *
 	 *	int n = 0 ;
 	 *	for( List::iterator i = result.begin(); i != result.end(); ++i, ++n )
 	 *	{
@@ -492,14 +515,14 @@ namespace Ceylan
 	 *
 	 * @see std::find_if
 	 *
- 	 * @author Marc Petit.
+	 * @author Marc Petit.
 	 *
 	 */
 	template<class T, class Predicate>
-	void split_if( const T & toSplit, Predicate & predicate, 
+	void split_if( const T & toSplit, Predicate & predicate,
 		std::list<T> & result )
 	{
-	
+
 		typename T::const_iterator beginOfSlice = toSplit.begin() ;
 		typename T::const_iterator endOfSlice   = toSplit.begin() ;
 
@@ -517,11 +540,11 @@ namespace Ceylan
 
 			beginOfSlice = endOfSlice + 1 ;
 		}
-		
+
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Prints in standard output a checkpoint message, with a checkpoint count
 	 * incremented at each call, starting from 1.
@@ -530,23 +553,22 @@ namespace Ceylan
 	 *
 	 */
 	CEYLAN_DLL void checkpoint( const std::string & message = "" ) ;
-	
-	
-	
+
+
+
 	/**
 	 * Prints in standard output a breakpoint message, with a breakpoint count
-	 * incremented at each call, starting from 1, and then waits for the user 
-	 * to press a key.
+	 * incremented at each call, starting from 1, and then waits for the user to
+	 * press a key.
 	 *
 	 * @note Might be useful for light debugging.
 	 *
 	 */
 	CEYLAN_DLL void breakpoint( const std::string & message = "" ) ;
-	
-			 
+
+
 }
 
 
 
 #endif // CEYLAN_UTILS_H_
-
