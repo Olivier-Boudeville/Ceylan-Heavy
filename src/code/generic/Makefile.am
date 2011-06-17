@@ -1,7 +1,7 @@
 ## Makefile.am for the 'Generic' module of the Ceylan library.
 
 
-# Convenience library for the 'Generic' module :
+# Convenience library for the 'Generic' module:
 noinst_LTLIBRARIES = libCeylanGeneric.la
 
 libCeylanGeneric_la_SOURCES = $(GENERIC_INTERFACES) $(GENERIC_IMPLEMENTATIONS)
@@ -62,6 +62,5 @@ GENERIC_IMPLEMENTATIONS = \
 	CeylanUtils.cc                       \
 	CeylanVersion.cc
 
-	 
-# DISABLED = CeylanSharedPointer.h
 
+# DISABLED = CeylanSharedPointer.h
