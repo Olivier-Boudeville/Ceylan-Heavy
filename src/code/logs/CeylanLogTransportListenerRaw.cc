@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -38,7 +38,7 @@ using std::string ;
 using namespace Ceylan::Log ;
 
 
-LogTransportListenerRaw::LogTransportListenerRaw( 
+LogTransportListenerRaw::LogTransportListenerRaw(
 		LogAggregator & aggregator ) :
 	LogTransport(),
 	LogListener( aggregator )
@@ -55,7 +55,7 @@ LogTransportListenerRaw::~LogTransportListenerRaw() throw()
 
 
 
-void LogTransportListenerRaw::propagate( LogMessage & message ) 
+void LogTransportListenerRaw::propagate( LogMessage & message )
 {
 
 	// Direct link through references, the communication bus is virtual:
@@ -66,10 +66,9 @@ void LogTransportListenerRaw::propagate( LogMessage & message )
 
 
 const string LogTransportListenerRaw::toString( Ceylan::VerbosityLevels level )
-	const 
+	const
 {
 
 	return "LogTransportListenerRaw: " + LogListener::toString( level ) ;
-	
-}
 
+}

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -37,108 +37,109 @@ namespace Ceylan
 
 	namespace Log
 	{
-	
-	
+
+
+
 		// They are transported by LogTransport.
 		class LogMessage ;
-	
-	
+
+
+
 		/**
-		 * This abstract class has for mission to take a Log message from
-		 * a LogSource and to bring it to the relevant LogListener.
+		 * This abstract class has for mission to take a Log message from a
+		 * LogSource and to bring it to the relevant LogListener.
 		 *
-		 * @note the inheritance from TextDisplayable is virtual since, 
-		 * for local log messaging, a LogTransport could be a LogListener
-		 * too, whereas only one instance of the TextDisplayable mother
-		 * class would be required.
+		 * @note the inheritance from TextDisplayable is virtual since, for
+		 * local log messaging, a LogTransport could be a LogListener too,
+		 * whereas only one instance of the TextDisplayable mother class would
+		 * be required.
 		 *
-		 * @note the transport takes ownership of log message objects,
-		 * it has therefore to make sure that they are eventually deallocated.
+		 * @note the transport takes ownership of log message objects, it has
+		 * therefore to make sure that they are eventually deallocated.
 		 *
 		 * @see LogSource, LogListener
 		 *
 		 */
 		class CEYLAN_DLL LogTransport : public virtual TextDisplayable
 		{
-		
+
 			public:
-			
-			
-			
+
+
+
 				/**
 				 * Constructs a blank LogTransport.
 				 *
 				 * @see setTransport
-				 * 
+				 *
 				 */
 				LogTransport() ;
-			
-				
+
+
 				/// Basic virtual destructor.
 				virtual ~LogTransport() throw() ;
-						
-				
-						
-		        /**
-		         * Propagates <b>message</b> to the relevant LogListener.
-		         *
+
+
+
+				/**
+				 * Propagates <b>message</b> to the relevant LogListener.
+				 *
 				 * @param message the message which is to be propagated
 				 *
 				 * @throw LogException should the operation fail.
 				 *
-				 * @note Most implementations, more elaborate that local
-				 * raw log transfers, should end up deallocating the 
-				 * specified message.
-		         *
-		         */		
-				virtual void propagate( LogMessage & message ) = 0 ; 
-				
-						
-										
-	            /**
-	             * Returns a user-friendly description of the state of
-				 * this object.
-	             *
+				 * @note Most implementations, more elaborate that local raw log
+				 * transfers, should end up deallocating the specified message.
+				 *
+				 */
+				virtual void propagate( LogMessage & message ) = 0 ;
+
+
+
+				/**
+				 * Returns a user-friendly description of the state of this
+				 * object.
+				 *
 				 * @param level the requested verbosity level.
 				 *
 				 * @note Text output format is determined from overall settings.
 				 *
 				 * @see TextDisplayable
 				 *
-	             */
-            	virtual const std::string toString( 
+				 */
+				virtual const std::string toString(
 					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
-					
-					
+
+
 			private:
-			
-			
+
+
 				/**
-				 * Copy constructor made private to ensure that it will 
-				 * be never called.
+				 * Copy constructor made private to ensure that it will be never
+				 * called.
 				 *
 				 * The compiler should complain whenever this undefined
 				 * constructor is called, implicitly or not.
-				 * 
-				 */			 
-				LogTransport( const LogTransport & source ) ;
-			
-			
-				/**
-				 * Assignment operator made private to ensure that it 
-				 * will be never called.
 				 *
-				 * The compiler should complain whenever this undefined
-				 * operator is called, implicitly or not.
-				 * 
-				 */			 
+				 */
+				LogTransport( const LogTransport & source ) ;
+
+
+				/**
+				 * Assignment operator made private to ensure that it will be
+				 * never called.
+				 *
+				 * The compiler should complain whenever this undefined operator
+				 * is called, implicitly or not.
+				 *
+				 */
 				LogTransport & operator = ( const LogTransport & source ) ;
-	
-	
+
+
 		} ;
-	
-	
+
+
 	}
 
 
@@ -146,4 +147,3 @@ namespace Ceylan
 
 
 #endif // CEYLAN_LOG_TRANSPORT_H_
-

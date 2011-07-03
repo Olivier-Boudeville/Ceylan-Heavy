@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -44,37 +44,37 @@ using namespace Ceylan::Log ;
 
 
 
-void LogPlugClassical::StartService( const string & plugInitiatorName,  
+void LogPlugClassical::StartService( const string & plugInitiatorName,
 	bool immediateWrite, bool smart )
 {
-	
+
 	CEYLAN_LOG( "Starting LogPlug classical service: "
 		"creating aggregator and transport." ) ;
-	
+
 	// Plug should start empty:
- 	LogPlug::CheckBlank() ;
-    
-    string plugInitiator = LogPlug::GetSpeakerNameFrom( plugInitiatorName ) ;
-    
+	LogPlug::CheckBlank() ;
+
+	string plugInitiator = LogPlug::GetSpeakerNameFrom( plugInitiatorName ) ;
+
 	// Start by the end of the chain and go back to its beginning:
-	
-	LogPlug::Aggregator = new LogAggregatorRaw( 
+
+	LogPlug::Aggregator = new LogAggregatorRaw(
 		/* log ouput file */             plugInitiator + ".log",
 		/* immediate Write */            immediateWrite,
-		/* use Global Level Of Detail */ true, 
+		/* use Global Level Of Detail */ true,
 		/* be smart */                   smart ) ;
-	
+
 	/*
-	 * Listener remains blank, since it is integrated with the 
-	 * transport, with this classical scheme.
+	 * Listener remains blank, since it is integrated with the transport, with
+	 * this classical scheme.
 	 *
 	 */
-	
-	LogPlug::Transport = new LogTransportListenerRaw( * LogPlug::Aggregator ) ;	
-	
+
+	LogPlug::Transport = new LogTransportListenerRaw( * LogPlug::Aggregator ) ;
+
 	// Creates basic standard channels:
 	LogPlug::CreateBasicPlug() ;
-	
+
 	// Last check before service is open:
 	LogPlug::StartService( plugInitiator ) ;
 
@@ -84,18 +84,18 @@ void LogPlugClassical::StartService( const string & plugInitiatorName,
 
 void LogPlugClassical::StopService()
 {
-	
+
 	LogPlug::StopService() ;
-	
+
 	CEYLAN_LOG( "Stopping transport and listener." ) ;
-	delete LogPlug::Transport ; 
+	delete LogPlug::Transport ;
 	LogPlug::Transport = 0 ;
 	// listener is embedded in transport.
-	
+
 	CEYLAN_LOG( "Stopping aggregator." ) ;
-	delete LogPlug::Aggregator ; 
+	delete LogPlug::Aggregator ;
 	LogPlug::Aggregator = 0 ;
-	
+
 }
 
 
@@ -104,11 +104,10 @@ const string LogPlugClassical::ToString( Ceylan::VerbosityLevels level )
 {
 
 	string result = "LogSystem status: using classical plug." ;
-	
+
 	if ( level != Ceylan::low )
 		result += LogPlug::ToString( level ) ;
-	
+
 	return result ;
 
 }
-

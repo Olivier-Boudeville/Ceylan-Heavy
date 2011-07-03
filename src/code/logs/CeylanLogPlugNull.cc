@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -45,15 +45,15 @@ using namespace Ceylan::Log ;
 
 void LogPlugNull::StartService()
 {
-	
+
 	CEYLAN_LOG( "Starting LogPlug null service: "
 		"creating aggregator and transport." ) ;
-	
+
 	// Plug should start empty:
- 	LogPlug::CheckBlank() ;
-    
+	LogPlug::CheckBlank() ;
+
 	LogPlug::CreateNullPlug() ;
-	
+
 	// Last check before service is open:
 	LogPlug::StartService( "(null plug)" ) ;
 
@@ -63,9 +63,9 @@ void LogPlugNull::StartService()
 
 void LogPlugNull::StopService()
 {
-	
+
 	LogPlug::StopService() ;
-		
+
 }
 
 
@@ -74,11 +74,10 @@ const string LogPlugNull::ToString( Ceylan::VerbosityLevels level )
 {
 
 	string result = "LogSystem status: using null plug." ;
-	
+
 	if ( level != Ceylan::low )
 		result += LogPlug::ToString( level ) ;
-	
+
 	return result ;
 
 }
-

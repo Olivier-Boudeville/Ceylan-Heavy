@@ -1,7 +1,7 @@
 ## Makefile.am for the 'Logs' module of the Ceylan library.
 
 
-# Convenience library for the 'Logs' module :
+# Convenience library for the 'Logs' module:
 noinst_LTLIBRARIES = libCeylanLogs.la
 
 libCeylanLogs_la_SOURCES = $(LOGS_INTERFACES) $(LOGS_IMPLEMENTATIONS)
@@ -34,9 +34,9 @@ LOGS_INTERFACES = \
 	CeylanLogTransport.h                 \
 	CeylanMuteLogSource.h                \
 	CeylanLogTransportListenerRaw.h
-	     
-	     
-	     
+
+
+
 LOGS_IMPLEMENTATIONS = \
 	CeylanLogAggregator.cc               \
 	CeylanLogAggregatorConsole.cc        \
@@ -56,4 +56,3 @@ LOGS_IMPLEMENTATIONS = \
 	CeylanLogTransport.cc                \
 	CeylanMuteLogSource.cc               \
 	CeylanLogTransportListenerRaw.cc
-

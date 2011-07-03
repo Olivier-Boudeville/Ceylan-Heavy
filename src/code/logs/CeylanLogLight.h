@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -29,11 +29,11 @@
 
 
 /*
- * This header is private and not meant to be installed.
- * Hence it can depend on CeylanConfig.h.
+ * This header is private and not meant to be installed. Hence it can depend on
+ * CeylanConfig.h.
  *
  */
- 
+
 #ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"       // for CEYLAN_DEBUG_LOG
 #endif // CEYLAN_USES_CONFIG_H
@@ -41,11 +41,10 @@
 
 
 /**
- * Very basic log facility made to debug ... the full Log system!
- * (bootstrap)
+ * Very basic log facility made to debug ... the full Log system! (bootstrap)
  *
  */
- 
+
 #if CEYLAN_DEBUG_LOG
 
 
@@ -55,12 +54,12 @@
 		#ifdef CEYLAN_RUNS_ON_ARM7
 
 			// No log available on the ARM7 yet:
-			#define CEYLAN_LOG(messageString) ; 
-	
+			#define CEYLAN_LOG(messageString) ;
+
 		#else // CEYLAN_RUNS_ON_ARM7
 
 			// For iprintf and al:
-			#include <stdio.h> 
+			#include <stdio.h>
 
 			#define CEYLAN_LOG(messageString) ::iprintf( "[Debug] %s\n", ((messageString).c_str()) )
 
@@ -75,9 +74,9 @@
 
 	#define CEYLAN_LOG(message) std::cerr << "[LogLight] " << message << std::endl << std::flush
 
- 	#endif // CEYLAN_ARCH_NINTENDO_DS
+	#endif // CEYLAN_ARCH_NINTENDO_DS
 
- 
+
 #else // CEYLAN_DEBUG_LOG
 
 	#define CEYLAN_LOG(message)
@@ -87,4 +86,3 @@
 
 
 #endif // CEYLAN_LOG_LIGHT_H_
-

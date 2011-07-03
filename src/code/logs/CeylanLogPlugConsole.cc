@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -44,42 +44,42 @@ using namespace Ceylan::Log ;
 
 
 
-void LogPlugConsole::StartService( const string & plugInitiator,  
+void LogPlugConsole::StartService( const string & plugInitiator,
 	bool immediateWrite, bool smart )
 {
-	
+
 	CEYLAN_LOG( "Starting LogPlug console service: "
 		"creating aggregator and transport." ) ;
-	
+
 	// Plug should start empty:
- 	LogPlug::CheckBlank() ;
+	LogPlug::CheckBlank() ;
 
 
 	// Start by the end of the chain and go back to its beginning:
-	
-	
+
+
 	/*
 	 * Other StandardStream may be LogAggregatorConsole::Output or
 	 * LogAggregatorConsole::Error.
 	 *
 	 */
-	LogPlug::Aggregator = new LogAggregatorConsole( 
+	LogPlug::Aggregator = new LogAggregatorConsole(
 		/* StandardStream */             LogAggregatorConsole::Log,
 		/* immediate Write */            immediateWrite,
-		/* use Global Level Of Detail */ true, 
+		/* use Global Level Of Detail */ true,
 		/* be smart */                   smart ) ;
-	
+
 	/*
-	 * Listener remains blank, since it is integrated with the 
-	 * transport, with the console scheme.
+	 * Listener remains blank, since it is integrated with the transport, with
+	 * the console scheme.
 	 *
 	 */
-	
-	LogPlug::Transport = new LogTransportListenerRaw( * LogPlug::Aggregator ) ;	
-	
+
+	LogPlug::Transport = new LogTransportListenerRaw( * LogPlug::Aggregator ) ;
+
 	// Creates basic standard channels:
 	LogPlug::CreateBasicPlug() ;
-	
+
 	// Last check before service is open:
 	LogPlug::StartService( plugInitiator ) ;
 
@@ -89,18 +89,18 @@ void LogPlugConsole::StartService( const string & plugInitiator,
 
 void LogPlugConsole::StopService()
 {
-	
+
 	LogPlug::StopService() ;
-	
+
 	CEYLAN_LOG( "Stopping transport and listener." ) ;
-	delete LogPlug::Transport ; 
+	delete LogPlug::Transport ;
 	LogPlug::Transport = 0 ;
 	// listener is embedded in transport.
-	
+
 	CEYLAN_LOG( "Stopping aggregator." ) ;
-	delete LogPlug::Aggregator ; 
+	delete LogPlug::Aggregator ;
 	LogPlug::Aggregator = 0 ;
-	
+
 }
 
 
@@ -109,23 +109,23 @@ const string LogPlugConsole::ToString( Ceylan::VerbosityLevels level )
 {
 
 	string result = "LogSystem status: using console plug." ;
-	
+
 	if ( level != Ceylan::low )
 		result += LogPlug::ToString( level ) ;
-	
+
 	return result ;
 
 }
 
 
 
-/* 
-				
-	Not even defined: 
+/*
+
+	Not even defined:
 
 LogPlugConsole::LogPlugConsole() throw( LogException )
 {
-	throw LogException( 
+	throw LogException(
 		"Ceylan::Log::LogPlugConsole should not be instanciated." ) ;
 }
 
@@ -136,4 +136,3 @@ LogPlugConsole::~LogPlugConsole() throw()
 }
 
 */
-

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -59,12 +59,12 @@ LogListener::~LogListener() throw()
 
 const string LogListener::toString( Ceylan::VerbosityLevels level ) const
 {
-	
+
 	if ( _aggregator == 0 )
-		return "This LogListener is not linked with any aggregator" ;		
-		
+		return "This LogListener is not linked with any aggregator" ;
+
 	// An aggregator is available:
-	
+
 	if ( level == Ceylan::high )
 		return "This LogListener is linked with following aggregator: "
 			+ _aggregator->toString( Ceylan::low ) ;
@@ -79,15 +79,14 @@ void LogListener::sendToAggregator( LogMessage & message ) const
 {
 
 #if CEYLAN_DEBUG
-	
+
 	if ( ! _aggregator )
 		throw LogException( "LogListener::sendToAggregator: "
 			"trying to send a message whereas "
 			"the internal aggregator has not been initialized." ) ;
-			
+
 #endif // CEYLAN_DEBUG
 
 	_aggregator->store( message ) ;
-	
-}
 
+}

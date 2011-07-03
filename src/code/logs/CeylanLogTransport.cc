@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -42,18 +42,17 @@ LogTransport::LogTransport()
 
 
 
-LogTransport::~LogTransport() throw() 
+LogTransport::~LogTransport() throw()
 {
 
 }
 
 
 
-const string LogTransport::toString( Ceylan::VerbosityLevels level ) const 
+const string LogTransport::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	return "This LogTransport is a pure intermediary between "
-		"a LogSource and a LogListener" ; 
-		
-}	
+		"a LogSource and a LogListener" ;
 
+}
