@@ -24,16 +24,11 @@
  */
 
 
-#include "CeylanLogPlugNull.h"
+#include "CeylanLogTransportListenerNull.h"
 
 
-#include "CeylanLogSource.h"                 // for LogSource
-#include "CeylanLogTransportListenerNull.h"  // for Log transports
-#include "CeylanLogAggregatorRaw.h"          // for Log aggregators
-
-#include "CeylanOperators.h"                 // for toString operator
-#include "CeylanLogLight.h"                  // for CEYLAN_LOG
-
+#include "CeylanLogMessage.h"
+#include "CeylanLogAggregator.h"
 
 
 
@@ -43,42 +38,34 @@ using std::string ;
 using namespace Ceylan::Log ;
 
 
-void LogPlugNull::StartService()
+LogTransportListenerNull::LogTransportListenerNull() :
+	LogTransport()
 {
-
-	CEYLAN_LOG( "Starting LogPlug null service." ) ;
-
-	// Plug should start empty:
-	LogPlug::CheckBlank() ;
-
-	LogPlug::Transport = new LogTransportListenerNull() ;
-
-	LogPlug::CreateNullPlug() ;
-
-	// Last check before service is open:
-	LogPlug::StartService( "(null plug)" ) ;
 
 }
 
 
 
-void LogPlugNull::StopService()
+LogTransportListenerNull::~LogTransportListenerNull() throw()
 {
-
-	LogPlug::StopService() ;
 
 }
 
 
 
-const string LogPlugNull::ToString( Ceylan::VerbosityLevels level )
+void LogTransportListenerNull::propagate( LogMessage & message )
 {
 
-	string result = "LogSystem status: using null plug." ;
+	// This is a sink which ignores all messages.
 
-	if ( level != Ceylan::low )
-		result += LogPlug::ToString( level ) ;
+}
 
-	return result ;
+
+
+const string LogTransportListenerNull::toString( Ceylan::VerbosityLevels level )
+	const
+{
+
+	return "LogTransportListenerNull" ;
 
 }

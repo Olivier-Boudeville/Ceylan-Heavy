@@ -33,6 +33,7 @@ LOGS_INTERFACES = \
 	CeylanLogSource.h                    \
 	CeylanLogTransport.h                 \
 	CeylanMuteLogSource.h                \
+	CeylanLogTransportListenerNull.h     \
 	CeylanLogTransportListenerRaw.h
 
 
@@ -55,4 +56,5 @@ LOGS_IMPLEMENTATIONS = \
 	CeylanLogSource.cc                   \
 	CeylanLogTransport.cc                \
 	CeylanMuteLogSource.cc               \
+	CeylanLogTransportListenerNull.cc    \
 	CeylanLogTransportListenerRaw.cc

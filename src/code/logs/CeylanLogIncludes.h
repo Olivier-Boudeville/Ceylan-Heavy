@@ -46,15 +46,16 @@
 #include "CeylanLogPlugHTML.h"
 #include "CeylanLogSource.h"
 #include "CeylanLogTransport.h"
+#include "CeylanLogTransportListenerNull.h"
 #include "CeylanLogTransportListenerRaw.h"
 
 
 /*
  * Private non-exported non-installed headers:
  *
- *   - CeylanLogLight.h : only for internal debugging purposes
+ * - CeylanLogLight.h: only for internal debugging purposes
  *
- *   - CeylanLogAg gregatorHTMLFragments.h : made to be included by some
+ * - CeylanLogAg gregatorHTMLFragments.h: made to be included by some
  * implementation files only (CeylanLogAggregatorHTML.cc)
  *
  */

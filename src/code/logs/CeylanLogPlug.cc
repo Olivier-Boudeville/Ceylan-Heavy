@@ -380,8 +380,8 @@ std::string LogPlug::GetSpeakerNameFrom( const string & plugInitiatorFullName )
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	/*
-	 * On the Nintendo DS, argv[0] is a null pointer, a default value is to
-	 * be used instead;
+	 * On the Nintendo DS, argv[0] is a null pointer, a default value is to be
+	 * used instead.
 	 *
 	 */
 
@@ -463,6 +463,10 @@ void LogPlug::CreateNullPlug()
 {
 
 	CEYLAN_LOG( "Creating muted null channels." ) ;
+
+	if ( Transport == 0 )
+		throw LogException( "LogPlug::CreateBasicPlug: "
+			"no transport available" ) ;
 
 	/*
 	 * Instances must be created, as LogPlug::info for example dereferences
