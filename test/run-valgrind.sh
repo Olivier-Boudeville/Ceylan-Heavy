@@ -15,7 +15,7 @@ fi
 
 # One may replace $run_dir by $run_dir/system for example, to perform per-module
 # testings:
-all_tests=`find $run_dir/system -type f -a -name 'testCeylan*.exe'`
+all_tests=`find $run_dir -type f -a -name 'testCeylan*.exe'`
 #echo "all_tests = ${all_tests}"
 
 
