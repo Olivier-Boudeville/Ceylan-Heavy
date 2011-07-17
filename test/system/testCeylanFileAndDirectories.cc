@@ -202,10 +202,33 @@ int main( int argc, char * argv[] )
 		}
 
 		const string targetFilename = "Makefile.am" ;
-		Ceylan::Byte & readContent = File::ReadWholeContent( targetFilename ) ;
+		Ceylan::Byte * readContent = & File::ReadWholeContent( targetFilename ) ;
+
+		/*
+		 * We read the full content of this file, as binary data, however it is
+		 * not a zero-terminated buffer.
+		 *
+		 * So we have to create a second buffer with one extra byte for the
+		 * terminating null, otherwise the string creation would imply a strlen
+		 * which would perform an invalid read of size 1 (past the first
+		 * buffer).
+		 *
+		 */
+		Ceylan::System::Size fileSize = File::GetSize( targetFilename ) ;
+
+		Ceylan::Byte * largerBuffer = new char[ fileSize + 1 ] ;
+
+		for ( Ceylan::System::Size p = 0; p < fileSize ; p++ )
+		  largerBuffer[p] = readContent[p] ;
+
+		delete [] readContent ;
+
+		largerBuffer[fileSize] = 0 ;
 
 		LogPlug::info( "Content of '" + targetFilename + "' is: "
-		  + string( static_cast<char *>( &readContent ) ) ) ;
+		  + string( static_cast<char *>( largerBuffer ) ) ) ;
+
+		delete [] largerBuffer ;
 
 		const string name1 = "ASimpleName" ;
 
