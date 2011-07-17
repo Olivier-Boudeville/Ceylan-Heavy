@@ -1,0 +1,36 @@
+{
+   Ceylan static thread counter 1/2.
+   Memcheck:Leak
+   fun:_Znwm
+   fun:_Z41__static_initialization_and_destruction_0ii
+   fun:_GLOBAL__I_CeylanThread.cc
+}
+
+
+{
+   Ceylan static thread counter 2/2.
+   Memcheck:Leak
+   fun:_Znwm
+   fun:_ZN6Ceylan6System5MutexC1Ev
+   fun:_ZN6Ceylan6System12SynchronizedIjEC1Ej
+   fun:_Z41__static_initialization_and_destruction_0ii
+   fun:_GLOBAL__I_CeylanThread.cc
+}
+
+
+{
+   Ceylan standard filesystem manager.
+   Memcheck:Leak
+   fun:_Znwm
+   fun:_ZN6Ceylan6System25StandardFileSystemManager28GetStandardFileSystemManagerEv
+   fun:_ZN6Ceylan6System17FileSystemManager44SetDefaultFileSystemManagerToPlatformDefaultEv
+   fun:_ZN6Ceylan6System17FileSystemManager30GetAnyDefaultFileSystemManagerEv
+}
+
+
+{
+   ::putenv may or may not take ownership of this user-provided memory.
+   Memcheck:Leak
+   fun:_Znam
+   fun:_ZN6Ceylan6System22setEnvironmentVariableERKSsS2_
+}
