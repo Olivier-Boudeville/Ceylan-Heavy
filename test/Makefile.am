@@ -1,16 +1,22 @@
 SUBDIRS = generic interfaces logs maths middleware modules network system
 
-# All programs using the Ceylan library should use in their 
-# configure.ac the CEYLAN_PATH macro defined in ceylan.m4 :
+# All programs using the Ceylan library should use in their
+# configure.ac the CEYLAN_PATH macro defined in ceylan.m4:
 EXTRA_DIST = \
 	playTests.sh
 
-# Disabled since this script is not to be run from an installed tree :
+# Disabled since this script is not to be run from an installed tree:
 #bin_SCRIPTS = playTests.sh
+
+bin_SCRIPTS = run-valgrind.sh
 
 
 check:
 	@$(srcdir)/playTests.sh
+
+
+valgrind-check:
+	@$(srcdir)/run-valgrind.sh
 
 
 install-data-local:
@@ -20,7 +26,7 @@ install-data-local:
 
 
 clean-local:
-	@echo " Cleaning all test logs"	
+	@echo " Cleaning all test logs"
 	-@/bin/rm -f  `find . -name 'testsOutcome.txt'`
 	-@/bin/rm -f  `find . -name 'test*.log'`
 	-@/bin/rm -f  `find . -name 'test*.xml'`
