@@ -58,9 +58,9 @@ namespace Ceylan
 		 *
 		 * Ceylan's Log system uses interfaces defined in order to abstract,
 		 * through an uniform paradigm, various log implementations: as being
-		 * able to swap log implementations seamlessly is useful for programs
-		 * and objects, they all make use of this Log interface to send their
-		 * log messages.
+		 * able to swap log implementations seamlessly (at runtime) is useful
+		 * for programs and objects, they all make use of this Log interface to
+		 * send their log messages.
 		 *
 		 * The interface in turn delegates log messages according to the
 		 * registered log implementations, thanks to the LogPlug facility.

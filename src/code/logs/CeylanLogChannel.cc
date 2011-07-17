@@ -61,7 +61,7 @@ LogChannel::~LogChannel() throw()
 
 	CEYLAN_LOG( "Deleting log channel " + Ceylan::toString( this )
 		+ " named '" + _name + "', in which there are "
-		+ Ceylan::toString( _messages.size()  ) + " remaining messages." ) ;
+		+ Ceylan::toString( _messages.size() ) + " remaining messages." ) ;
 
 	for ( list<LogMessage *>::iterator it = _messages.begin();
 		it != _messages.end(); it++ )
@@ -107,7 +107,7 @@ void LogChannel::addMessage( LogMessage & message, bool check )
 		}
 	}
 
-	_messages.push_back( & message ) ;
+	_messages.push_back( &message ) ;
 
 	inUse = false ;
 

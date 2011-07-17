@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -36,19 +36,19 @@
 
 namespace Ceylan
 {
-	
+
 
 
 	namespace System
 	{
-	
-	
-	
+
+
+
 		// Some environment variables facilities.
 
 
 		/// Returns whether the specified environment variable is set.
-		CEYLAN_DLL bool isEnvironmentVariableSet( 
+		CEYLAN_DLL bool isEnvironmentVariableSet(
 			const std::string & variableName ) ;
 
 
@@ -57,45 +57,43 @@ namespace Ceylan
 		 * Returns the value of specified environment variable.
 		 * If the variable was not set, returns an empty string.
 		 *
-		 * @throw UtilsException if this operation is not supported or
-		 * failed.
+		 * @throw UtilsException if this operation is not supported or failed.
 		 *
 		 */
-		CEYLAN_DLL const std::string getEnvironmentVariable( 
+		CEYLAN_DLL const std::string getEnvironmentVariable(
 			const std::string & variableName ) ;
-	
-	
-	
+
+
+
 		/**
 		 * Sets specified environment variable to the specified value.
 		 *
-		 * @throw UtilsException if an error occured, which is very rare,
-		 * and should be due to insufficient memory space to allocate 
-		 * the new environment.
+		 * @throw UtilsException if an error occured, which is very rare, and
+		 * should be due to insufficient memory space to allocate the new
+		 * environment.
 		 *
 		 */
-		CEYLAN_DLL void setEnvironmentVariable( 
-			const std::string & variableName, 
+		CEYLAN_DLL void setEnvironmentVariable(
+			const std::string & variableName,
 			const std::string & variableValue ) ;
-	
-	
-		
+
+
+
 		/**
 		 * Unsets specified environment variable.
 		 *
 		 * @throw UtilsException if an error occured, which is very rare.
 		 *
 		 */
-		CEYLAN_DLL void unsetEnvironmentVariable( 
+		CEYLAN_DLL void unsetEnvironmentVariable(
 			const std::string & variableName ) ;
-	
 
 
 	}
-	
+
+
 }
 
 
 
 #endif // CEYLAN_ENVIRONMENT_VARIABLES_H_
-

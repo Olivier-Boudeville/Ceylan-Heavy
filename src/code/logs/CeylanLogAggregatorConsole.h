@@ -248,16 +248,6 @@ namespace Ceylan
 
 
 				/**
-				 * Tells whether a global (aggregator-wide) level of detail for
-				 * channels should be used.
-				 *
-				 * @note If set, will override log channels levels of details.
-				 *
-				 */
-				bool _useGlobalLevelOfDetail ;
-
-
-				/**
 				 * Defines the aggregator-wide level of detail, used if
 				 * _useGlobalLevelOfDetail is set.
 				 *

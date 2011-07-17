@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -70,7 +70,7 @@ using std::map ;
 
 using namespace Ceylan ;
 using namespace Ceylan::Log ;
-		
+
 
 #if CEYLAN_DEBUG_DEMANGLE
 
@@ -79,7 +79,7 @@ using namespace Ceylan::Log ;
 #else // CEYLAN_DEBUG_DEMANGLE
 
 #define DISPLAY_DEBUG_DEMANGLE(message)
-		
+
 #endif // CEYLAN_DEBUG_DEMANGLE
 
 
@@ -91,39 +91,39 @@ StringSize Ceylan::countChars( const string & aString, char targetChar )
 {
 
 	StringSize charCount = 0 ;
-	
+
 	StringSize size = aString.size() ;
-	
+
 	for ( StringSize i = 0; i < size; i++ )
 		if ( aString[i] == targetChar )
 			charCount++ ;
-	
+
 	return charCount ;
-	
+
 }
 
 
 
-std::string Ceylan::reverse( const std::string & source ) 
+std::string Ceylan::reverse( const std::string & source )
 {
 
 	StringSize count = source.size() ;
 
 	if ( count == 0 )
 		return "" ;
-		
+
 	string result ;
-	
+
 	do
 	{
 		count-- ;
 		result += source[count] ;
-	
+
 	}
 	while ( count > 0 ) ;
-					
-	return result ;	
-	
+
+	return result ;
+
 }
 
 
@@ -133,9 +133,9 @@ char * Ceylan::getNonConstCharFrom( const std::string & source )
 
 	// One more character for the trailing '0':
 	char * res = new char[ source.size() + 1 ] ;
-	
+
 	if ( res == 0 )
-		Ceylan::emergencyShutdown( 
+		Ceylan::emergencyShutdown(
 			"Ceylan::getNonConstCharFrom: not enough memory." ) ;
 
 #if CEYLAN_ARCH_WINDOWS
@@ -147,18 +147,18 @@ char * Ceylan::getNonConstCharFrom( const std::string & source )
 	::strcpy( res, source.c_str() ) ;
 
 #endif // CEYLAN_ARCH_WINDOWS
-	
+
 	return res ;
-	
+
 	/*
-	 * Many variations could be used as well: using::strdup instead 
+	 * Many variations could be used as well: using::strdup instead
 	 * (with::free), raising an exception if out of memory, etc.
 	 *
-	 * Too complicated to use (try/catch, even a null pointer checking 
-	 * would be uselessly cumbersome ):
-	
+	 * Too complicated to use (try/catch, even a null pointer checking would be
+	 * uselessly cumbersome ):
+
 	char * result = ::strdup( source.c_str() ) ;
-	
+
 	if ( result )
 	{
 		return result ;
@@ -166,84 +166,84 @@ char * Ceylan::getNonConstCharFrom( const std::string & source )
 	else
 	{
 		// If memory is so low, maybe the exception will fail too:
-		throw UtilsException( 
+		throw UtilsException(
 			"Ceylan::getNonConstCharFrom: not enough memory." ) ;
 	}
-	
+
 	*/
-		
+
 }
 
 
 
-StringSize Ceylan::substituteInString( string & targetString, 
+StringSize Ceylan::substituteInString( string & targetString,
 	const string & toBeReplaced, const string & replacement )
 {
 
 	StringSize substitutionCount = 0 ;
 
 	StringSize charCount ;
-	
-	Ceylan::Sint32 lenDiff = static_cast<Ceylan::Sint32>( 
+
+	Ceylan::Sint32 lenDiff = static_cast<Ceylan::Sint32>(
 		toBeReplaced.size() - replacement.size() ) ;
-	
+
 	do
 	{
-	
+
 		charCount = targetString.find( toBeReplaced ) ;
-		
+
 		if ( charCount == string::npos )
 			break ;
 		substitutionCount++ ;
-		
+
 		/*
-		 * If replacement is longer than replaced string, we have 
-		 * to add dummy characters at the end of each replaced string,
-		 * so that there is enough room for replacement.
+		 * If replacement is longer than replaced string, we have to add dummy
+		 * characters at the end of each replaced string, so that there is
+		 * enough room for replacement.
 		 *
-		 */ 
+		 */
 		if ( lenDiff < 0 )
-			targetString.insert( charCount + toBeReplaced.size(), 
+			targetString.insert( charCount + toBeReplaced.size(),
 				- lenDiff, 'x' ) ;
-			
+
 		targetString.replace( charCount, replacement.size(), replacement ) ;
-		
+
 		/*
 		 * If replaced string is longer than replacement, we have to delete
-		 * exceeding characters at the end of each replacement, so that the 
-		 * end of replaced string is eaten.
+		 * exceeding characters at the end of each replacement, so that the end
+		 * of replaced string is eaten.
 		 *
 		 */
 		if ( lenDiff > 0 )
 			 targetString.erase( charCount + replacement.size(), lenDiff ) ;
-				 	 
-	} 
+
+	}
 	while ( true ) ;
-	
+
 	return substitutionCount ;
-	
+
 }
 
 
 
-string Ceylan::substituteIn( const string & sourceString, 
+string Ceylan::substituteIn( const string & sourceString,
 	const string & toBeReplaced, const string & replacement )
 {
 
 	string res = sourceString ;
-	
+
 	substituteInString( res, toBeReplaced, replacement ) ;
-	
+
 	return res ;
-	
+
 }
-	
-	
+
+
 
 bool Ceylan::isLetter( char targetChar )
 {
 
-	if ( ::isalpha( targetChar ) ) 
+	if ( ::isalpha( targetChar ) )
 		return true ;
 
 	return false ;
@@ -255,7 +255,7 @@ bool Ceylan::isLetter( char targetChar )
 bool Ceylan::isFigure( char targetChar )
 {
 
-	if ( ::isalpha( targetChar ) ) 
+	if ( ::isalpha( targetChar ) )
 		return true ;
 
 	return false ;
@@ -267,7 +267,7 @@ bool Ceylan::isFigure( char targetChar )
 bool Ceylan::isAlphanumeric( char targetChar )
 {
 
-	if ( ::isalnum( targetChar ) ) 
+	if ( ::isalnum( targetChar ) )
 		return true ;
 
 	return false ;
@@ -291,7 +291,7 @@ bool Ceylan::isPunctuation( char targetChar )
 bool Ceylan::isWhitespace( char targetChar )
 {
 
-	if ( ::iswspace( targetChar ) ) 
+	if ( ::iswspace( targetChar ) )
 		return true ;
 
 	return false ;
@@ -304,16 +304,16 @@ string Ceylan::toUppercase( const std::string & text )
 {
 
 	string result ;
-	
-	for ( string::const_iterator it = text.begin(); 
+
+	for ( string::const_iterator it = text.begin();
 			it != text.end(); it++ )
 		if ( ::islower( *it ) )
 			result += static_cast<char>( ::toupper( *it ) ) ;
 		else
 			result += *it ;
-	
-	return result ;			
-	
+
+	return result ;
+
 }
 
 
@@ -322,14 +322,14 @@ string Ceylan::encodeToHTML( const std::string & message )
 {
 
 	string result ;
-	
-	for ( string::const_iterator it = message.begin(); 
+
+	for ( string::const_iterator it = message.begin();
 		it != message.end(); it++ )
 	{
-	
+
 		switch( (*it) )
 		{
-	
+
 			/*
 			 * '"' and many others left untouched, assumed wanted, i.e.
 			 * belonging to an implied HTML expression.
@@ -337,29 +337,29 @@ string Ceylan::encodeToHTML( const std::string & message )
 			 * Only the following might be annoying:
 			 *
 			 */
-			
+
 			case '&':
 				result += "&amp;" ;
 				break ;
-				
+
 			case '<':
 				result += "&lt;" ;
 				break ;
-				
+
 			case '>':
 				result += "&gt;" ;
 				break ;
-				
+
 			default:
 				result += (*it) ;
 				break ;
-	
+
 		}
-	} 
-	
+	}
+
 	return result ;
-	
-}		
+
+}
 
 
 
@@ -367,7 +367,7 @@ string Ceylan::encodeToPhonetic( const std::string & message )
 {
 
 	const std::string phonetics[26] = {
-	
+
 		"alpha",
 		"bravo",
 		"charlie",
@@ -394,13 +394,13 @@ string Ceylan::encodeToPhonetic( const std::string & message )
 		"x-ray",
 		"yankee",
 		"zulu"
-	
+
 	} ;
-	
-	bool firstLetter = true ;	
+
+	bool firstLetter = true ;
 	string result ;
-		
-	for ( string::const_iterator it = message.begin(); 
+
+	for ( string::const_iterator it = message.begin();
 		it != message.end(); it++ )
 	{
 
@@ -408,21 +408,21 @@ string Ceylan::encodeToPhonetic( const std::string & message )
 		if ( firstLetter )
 			firstLetter = false ;
 		else
-			result += " " ;	
-	
+			result += " " ;
+
 		if ( ::isupper( *it ) )
-			result += toUppercase( phonetics[ (*it) - 'A' ] ) ;			
+			result += toUppercase( phonetics[ (*it) - 'A' ] ) ;
 		else
 			if ( ::islower( *it ) )
 				result += phonetics[ (*it) - 'a' ] ;
 			else
 				result += *it ;
-					
-	}			
-	
+
+	}
+
 	return result ;
-	
-}		
+
+}
 
 
 
@@ -431,49 +431,49 @@ string Ceylan::encodeToROT13( const std::string & message )
 
 	string result ;
 
-	for ( string::const_iterator it = message.begin(); 
+	for ( string::const_iterator it = message.begin();
 		it != message.end(); it++ )
 	{
-			
+
 		if ( ( (*it) >= 'A' ) && ( (*it) <= 'Z' ) )
 		{
-		
+
 			result += ( (*it) - 'A' + 13) % 26 + 'A' ;
 
-		} 
-		else if ( (*it) >= 'a' && (*it) <= 'z' ) 
+		}
+		else if ( (*it) >= 'a' && (*it) <= 'z' )
 		{
-		
+
 			result += ( (*it) - 'a' + 13) % 26 + 'a' ;
-			
+
 		}
 		else
 		{
-		
+
 			result += (*it) ;
-			
+
 		}
-		
-	}			
-	
+
+	}
+
 	return result ;
-	
+
 }
 
 
 
 string Ceylan::demangleSymbol( const std::string & symbol )
 {
-	
-	
+
+
 	/*
 	 * Objective: convert something like 'N3One3Two11ExampleFourE' into
 	 * 'One::Two::ExampleFour'
 	 *
 	 */
 	DISPLAY_DEBUG_DEMANGLE( "Initial symbol is " + symbol ) ;
-	 
-	 
+
+
 	/*
 	 * If it does not start by 'N' or does not end by 'E', not a mangled
 	 * message, return as is:
@@ -481,97 +481,101 @@ string Ceylan::demangleSymbol( const std::string & symbol )
 	 */
 	if ( symbol[0] != 'N' || symbol[symbol.size()-1] != 'E' )
 		return symbol ;
-	
+
 	// Removes 'N' and 'E':
 	const string shorten = symbol.substr( 1, symbol.size() - 2 ) ;
 	StringSize shortenSize = shorten.size() ;
-	
-	DISPLAY_DEBUG_DEMANGLE( "Shorten symbol is " + shorten ) ;	
-	
+
+	DISPLAY_DEBUG_DEMANGLE( "Shorten symbol is " + shorten ) ;
+
 	// We would have now: 3One3Two11ExampleFour
-	
+
 	/*
-	 * Algorithm: 
-	 * - while is a digit, add character to numString (here, read 3, could 
-	 * have been 38 or so)
+	 * Algorithm:
+	 *
+	 * - while is a digit, add character to numString (here, read 3, could have
+	 * been 38 or so)
+	 *
 	 * - convert numString into num
+	 *
 	 * - jumps over the word (it might end with digits...) and add it into
 	 * result with "::" added
+	 *
 	 * - loop until end of string reached
 	 *
-	 */ 	
-	
+	 */
+
 	StringSize count = 0 ;
 	StringSize num ;
 	string numString, extracted ;
-	 
+
 	while ( count < shortenSize )
 	{
-	
-		DISPLAY_DEBUG_DEMANGLE( "Count is " 
-			+ Ceylan::toString( 
+
+		DISPLAY_DEBUG_DEMANGLE( "Count is "
+			+ Ceylan::toString(
 				static_cast<Ceylan::Uint32>( count ) )
 			+ ", extracted is "
 			+ extracted
 			+ ", shorten is "
 			+ shorten ) ;
-	
+
 		while ( ::isdigit( shorten[count] ) )
 		{
 			numString += shorten[count] ;
 			count++ ;
 		}
-		
+
 		if ( numString.empty() )
 		{
 			// Abnormal, a misleading symbol such as NxyzE?
 			return symbol ;
 		}
-		
+
 		// We are at the end of the numerical string:
 		num = Ceylan::stringToUnsignedLong( numString ) ;
 
 		if ( num + count > shortenSize )
 		{
 			// Abnormal, a misleading symbol such as N99xyzE?
-			return symbol ;			
-		} 
-		
-		DISPLAY_DEBUG_DEMANGLE( "Count is " 
-			+ Ceylan::toString( 
+			return symbol ;
+		}
+
+		DISPLAY_DEBUG_DEMANGLE( "Count is "
+			+ Ceylan::toString(
 				static_cast<Ceylan::Uint32>( count ) )
-			+ ", extracted is " + extracted 
+			+ ", extracted is " + extracted
 			+ ", shorten is " + shorten ) ;
-			
-		DISPLAY_DEBUG_DEMANGLE( "Jumping " + numString + " (" 
-			+ Ceylan::toString( static_cast<long>( num ) ) 
-			+ ") characters, taking word [" 
+
+		DISPLAY_DEBUG_DEMANGLE( "Jumping " + numString + " ("
+			+ Ceylan::toString( static_cast<long>( num ) )
+			+ ") characters, taking word ["
 			+ shorten.substr( count, num ) + "]" ) ;
 
 		extracted += shorten.substr( count, num ) + "::" ;
 
-		DISPLAY_DEBUG_DEMANGLE( "Count is " 
+		DISPLAY_DEBUG_DEMANGLE( "Count is "
 			+ Ceylan::toString( static_cast<Ceylan::Uint32>( count ) )
 			+ ", extracted is " + extracted
 			+ ", shorten is " + shorten ) ;
 
 		count += num ;
 
-		DISPLAY_DEBUG_DEMANGLE( "Remaining string is " 
+		DISPLAY_DEBUG_DEMANGLE( "Remaining string is "
 			+ shorten.substr( count, shortenSize - count ) ) ;
-	
+
 		numString = "" ;
-		
+
 	}
-	
+
 	// Remove last '::':
 	extracted.erase( extracted.size()-2, 2 ) ;
-	
-	DISPLAY_DEBUG_DEMANGLE( "Ceylan::demangleSymbol returning " 
+
+	DISPLAY_DEBUG_DEMANGLE( "Ceylan::demangleSymbol returning "
 		+ extracted ) ;
-	
+
 	return extracted ;
-	
+
 }
 
 
@@ -584,52 +588,61 @@ list<string> Ceylan::split( const string & stringToSplit, char splittingChar )
 #define CEYLAN_TRUSTS_STL_WITH_TEMPLATES 0
 
 #if CEYLAN_TRUSTS_STL_WITH_TEMPLATES
-	
+
 	split<string, char>( stringToSplit, splittingChar, result ) ;
 
 #else // CEYLAN_TRUSTS_STL_WITH_TEMPLATES
 
 	string splitWord ;
-	
-		
+
+
 	for ( std::string::const_iterator it = stringToSplit.begin() ;
 		it != stringToSplit.end(); it++ )
 	{
-	
-		
+
+
 		if ( *it == splittingChar )
-		{				
+		{
 			result.push_back( splitWord ) ;
 			splitWord.clear() ;
 		}
 		else
-		{	
-			splitWord += *it ;
-		}	 
-	
-	}	
-	
+		{
+
+		  /*
+		   * Valgrind says there is a memory leak with
+		   * std::string::operator+=(char)
+		   * (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.14),
+		   * but we do not believed our code is guilty here:
+		   *
+		   */
+		  splitWord += *it ;
+		  
+		}
+
+	}
+
 	if ( ! splitWord.empty() )
 		result.push_back( splitWord ) ;
-		
-#endif // CEYLAN_TRUSTS_STL_WITH_TEMPLATES	
+
+#endif // CEYLAN_TRUSTS_STL_WITH_TEMPLATES
 
 	return result ;
-	
+
 }
 
 
 /* STL + templates = stupid nightmare
-list<string> Ceylan::split( const string & stringToSplit, 
+list<string> Ceylan::split( const string & stringToSplit,
 	const string & splittingString )
 {
 
 	list<string> result ;
-	
+
 	split<string, const string>( stringToSplit, splittingString, result ) ;
-	
+
 	return result ;
-	
+
 }
 */
 
@@ -639,77 +652,80 @@ string Ceylan::join( const list<string> & toJoin, const string & joiningString )
 {
 
 	// Copying the whole list (and poping it) would not be efficient.
-	
+
 	if ( toJoin.empty() )
 		return "" ;
-	
+
 	string res ;
-	
+
 	list<string>::const_iterator it = toJoin.begin() ;
-	
+
 	res = (*it) ;
-	
+
 	it++ ;
-	
+
 	while ( it != toJoin.end() )
 	{
 		res += joiningString + (*it) ;
 		it++ ;
-	}			
+	}
 
 	return res ;
-	
+
 }
 
 
 
 std::list<string> Ceylan::splitIntoWords( const string & sentenceToSplit )
 {
-	
+
 	/*
 	 * Maybe here all non-space whitespaces should be managed separately.
 	 *
-	 * Usually this function is called on each item of a list build by 
+	 * Usually this function is called on each item of a list build by
 	 * splitIntoParagraphs, hence no '\n' should be left (we expect a sentence).
 	 *
 	 * However '\t' might still exist, each tabulation is replaced by four
 	 * spaces in a row.
 	 *
 	 */
-	 
+
 	string copiedSendtence = sentenceToSplit ;
-	
+
 	substituteInString( copiedSendtence, "\t", "    " ) ;
-	
+
 	list<string> splitted = Ceylan::split( copiedSendtence, ' ' ) ;
-	
+
 	/*
-	 * Some changes are needed in the splitted list in the case where there
-	 * are multiple spaces in a row. 
-	 * More precisely, if there are in the sentence n spaces in a row, then 
-	 * we have A instead of the desired B:
+	 * Some changes are needed in the splitted list in the case where there are
+	 * multiple spaces in a row.
+	 *
+	 * More precisely, if there are in the sentence n spaces in a row, then we
+	 * have A instead of the desired B:
+	 *
 	 * (example pattern: 'a' + n * ' ' + 'b' ):
-	 * n=0: A = [ 'ab' ],                B = [ 'ab' ]  		      -> OK
-	 * n=1: A = [ 'a', 'b' ],            B = [ 'a', 'b' ]  	      -> OK
+	 * n=0: A = [ 'ab' ],                B = [ 'ab' ]			  -> OK
+	 * n=1: A = [ 'a', 'b' ],            B = [ 'a', 'b' ]		  -> OK
 	 * n=2: A = [ 'a', '', 'b' ]    ,    B = [ 'a', '', 'b' ]     -> OK
-	 * n=3: A = [ 'a', '', '', 'b' ],    B = [ 'a', ' ', 'b' ]    -> KO, 
+	 * n=3: A = [ 'a', '', '', 'b' ],    B = [ 'a', ' ', 'b' ]    -> KO,
 	 * must be corrected
-	 * n=4: A = [ 'a', '', '', '', 'b' ],B = [ 'a', '  ', 'b' ]   -> KO, 
+	 * n=4: A = [ 'a', '', '', '', 'b' ],B = [ 'a', '  ', 'b' ]   -> KO,
 	 * must be corrected
 	 *
-	 * Solution is: count all list items equal to '' on a row. 
-	 * Replace them by an item made of (count-1) spaces, if count is equal 
-	 * to 3 or greater.
+	 * Solution is: count all list items equal to '' on a row.
+	 *
+	 * Replace them by an item made of (count-1) spaces, if count is equal to 3
+	 * or greater.
 	 *
 	 * @see testStringUtils.cc
 	 *
 	 */
-	
+
 	list<string> corrected ;
-	
+
 	StringSize voidItemCount = 0 ;
-	
-	for ( list<string>::const_iterator it = splitted.begin(); 
+
+	for ( list<string>::const_iterator it = splitted.begin();
 		it != splitted.end(); it++ )
 	{
 
@@ -717,35 +733,35 @@ std::list<string> Ceylan::splitIntoWords( const string & sentenceToSplit )
 		if ( (*it).empty() )
 		{
 			voidItemCount++ ;
-		}	
+		}
 		else
 		{
-		
+
 			// Here we have a non-empty word. End of space sequence?
-			
+
 			if ( voidItemCount > 0 )
 			{
-					
+
 				string spaces ;
-					
+
 				// Start at 1 so that having (n-1) spaces:
 				for ( Ceylan::Uint32 i = 1; i < voidItemCount; i++ )
 					spaces += " " ;
-				
+
 				corrected.push_back( spaces ) ;
 				voidItemCount = 0 ;
-				
+
 			}
 			// else: no space, nothing special to do.
 
 			corrected.push_back( *it ) ;
-		
+
 		}
-		
+
 	}
-	
+
 	return corrected ;
-	 
+
 }
 
 
@@ -754,18 +770,18 @@ std::list<string> Ceylan::splitIntoParagraphs( const string & textToSplit )
 {
 
 	return Ceylan::split( textToSplit, '\n' ) ;
-	
+
 }
 
 
 
-std::string Ceylan::formatStringList( const list<string> & stringList, 
+std::string Ceylan::formatStringList( const list<string> & stringList,
 	bool surroundByTicks, Ceylan::Uint8 indentationLevel )
 {
 
 	return formatStringList( stringList, TextDisplayable::GetOutputFormat(),
 		surroundByTicks, indentationLevel ) ;
-		
+
 }
 
 
@@ -777,124 +793,124 @@ std::string Ceylan::formatStringList( const list<string> & stringList,
 
 	if ( stringList.empty() )
 		return "(empty list)" ;
-		
+
 	string res ;
-	
+
 	if ( targetFormat == TextDisplayable::html )
 	{
-	
-		res = "<ul>" ; 
-		
-		for ( list<string>::const_iterator it = stringList.begin(); 
+
+		res = "<ul>" ;
+
+		for ( list<string>::const_iterator it = stringList.begin();
 				it != stringList.end();	it++ )
-			if ( surroundByTicks )	
-				res += "<li>'" + ( *it ) + "'</li>" ; 
-			else			
-				res += "<li>" + ( *it ) + "</li>" ; 		
-		
+			if ( surroundByTicks )
+				res += "<li>'" + ( *it ) + "'</li>" ;
+			else
+				res += "<li>" + ( *it ) + "</li>" ;
+
 		res += "</ul>" ;
-		
+
 	}
 	else
 	{
 
 		// Raw text:
-		
-		res = '\n' ;  
-		
+
+		res = '\n' ;
+
 		string prefix ;
-		
+
 		// Two space offset for each indentation level:
 		for ( Ceylan::Uint8 i = 0; i < indentationLevel; i++ )
 			prefix += "  " ;
-			
+
 		switch ( indentationLevel )
 		{
-		
+
 			case 1:
 				prefix += '-' ;
 				break ;
-		
+
 			case 2:
 				prefix += '*' ;
 				break ;
-		
+
 			case 3:
 				prefix += '.' ;
 				break ;
-				
+
 			case 4:
 				prefix += '+' ;
 				break ;
-		
+
 			default:
 				prefix += '-' ;
 				break ;
-				
+
 		}
-		
+
 		prefix += " " ;
-		
-		for ( list<string>::const_iterator it = stringList.begin(); 
+
+		for ( list<string>::const_iterator it = stringList.begin();
 				it != stringList.end();	it++ )
-			if ( surroundByTicks )	
-				res += prefix + "'" + ( *it ) + "'\n" ; 	
-			else		
-				res += prefix + ( *it ) + '\n' ; 		
-	
+			if ( surroundByTicks )
+				res += prefix + "'" + ( *it ) + "'\n" ;
+			else
+				res += prefix + ( *it ) + '\n' ;
+
 	}
 
 	return res ;
-	
+
 }
 
 
 
-std::string Ceylan::formatStringMap( 
+std::string Ceylan::formatStringMap(
 	const std::map<std::string, std::string> & stringMap, bool surroundByTicks )
 {
 
 	if ( stringMap.empty() )
 		return "(empty map)" ;
-		
+
 	string res ;
-	
+
 	if ( TextDisplayable::GetOutputFormat() == TextDisplayable::html )
 	{
-	
-		res = "<ul>" ; 
-		
-		for ( map<string,string>::const_iterator it = stringMap.begin(); 
+
+		res = "<ul>" ;
+
+		for ( map<string,string>::const_iterator it = stringMap.begin();
 				it != stringMap.end();	it++ )
-			if ( surroundByTicks )	
-				res += "<li>'" + (*it).first + "' = '" 
-					+ (*it).second + "'</li>" ; 
-			else			
-				res += "<li>" + (*it).first + " = " 
-					+ (*it).second  + "</li>" ; 	
-		
+			if ( surroundByTicks )
+				res += "<li>'" + (*it).first + "' = '"
+					+ (*it).second + "'</li>" ;
+			else
+				res += "<li>" + (*it).first + " = "
+					+ (*it).second  + "</li>" ;
+
 		res += "</ul>" ;
-		
+
 	}
 	else
 	{
 
 		// Raw text:
-		
-		res = '\n' ;  
-		for ( map<string,string>::const_iterator it = stringMap.begin(); 
+
+		res = '\n' ;
+		for ( map<string,string>::const_iterator it = stringMap.begin();
 				it != stringMap.end();	it++ )
-			if ( surroundByTicks )	
-				res += "\t+ '" + (*it).first + "' = '" 
-					+ (*it).second + "'\n" ; 	
-			else		
-				res += "\t+ " + (*it).first + " = " 
-					+ (*it).second + '\n' ; 		
-	
+			if ( surroundByTicks )
+				res += "\t+ '" + (*it).first + "' = '"
+					+ (*it).second + "'\n" ;
+			else
+				res += "\t+ " + (*it).first + " = "
+					+ (*it).second + '\n' ;
+
 	}
 
 	return res ;
-	
+
 }
 
 
@@ -906,7 +922,7 @@ void Ceylan::display( const string & message )
 
 
 #ifdef CEYLAN_RUNS_ON_ARM7
-	
+
 	throw StringUtilsException( "Ceylan::display: not available for ARM7." ) ;
 
 #elif defined(CEYLAN_RUNS_ON_ARM9)
@@ -917,7 +933,7 @@ void Ceylan::display( const string & message )
 
 
 #else // CEYLAN_ARCH_NINTENDO_DS
-	
+
 	std::cout << message << std::endl << std::flush ;
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
@@ -933,26 +949,25 @@ void Ceylan::displayError( const string & errorMessage )
 
 
 #ifdef CEYLAN_RUNS_ON_ARM7
-	
-	throw StringUtilsException( 
+
+	throw StringUtilsException(
 		"Ceylan::displayError: not available for ARM7." ) ;
 
 #elif defined(CEYLAN_RUNS_ON_ARM9)
 
 	BG_PALETTE_SUB[255] = RGB15(31,0,0) ;
 	display( errorMessage ) ;
-	
+
 	// Supposed default is white:
 	BG_PALETTE_SUB[255] = RGB15(31,31,31) ;
-	
+
 #endif // CEYLAN_RUNS_ON_ARM7
 
 
 #else // CEYLAN_ARCH_NINTENDO_DS
-	
+
 	std::cerr << errorMessage << std::endl << std::flush ;
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
-

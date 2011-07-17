@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -90,9 +90,10 @@ extern "C"
 
 /*
  * Useful documentation resources:
+ *
  *  - http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winsock/winsock/porting_socket_applications_to_winsock.asp
- *  - http://tangentsoft.net/wskfaq/
- *		* http://tangentsoft.net/wskfaq/articles/bsd-compatibility.html
+ *
+ *  - http://tangentsoft.net/wskfaq/articles/bsd-compatibility.html
  *
  *
  * Maybe a ping facility could be provided (see IPPROTO_ICMP).
@@ -141,8 +142,8 @@ struct HostDNSEntry::SystemSpecificHostEntry
 {
 
 	/*
-	 * This will contain a linked list of addrinfo structures 
-	 * containing address informations about the host:
+	 * This will contain a linked list of addrinfo structures containing address
+	 * informations about the host:
 	 *
 	 */
 	struct addrinfo* _entryList ;
@@ -150,9 +151,9 @@ struct HostDNSEntry::SystemSpecificHostEntry
 	SystemSpecificHostEntry() :
 		_entryList( 0 )
 	{
-	
+
 	}
-	
+
 } ;
 
 
@@ -173,16 +174,16 @@ struct HostDNSEntry::SystemSpecificHostEntry
 {
 
 	hostent * _entry ;
-	
+
 	SystemSpecificHostEntry() :
 		_entry( 0 )
 	{
-	
+
 	}
-	
+
 } ;
 
- 
+
 #endif // CEYLAN_USES_NETDB_H
 
 #endif // CEYLAN_USES_WS2TCPIP_H
@@ -191,15 +192,15 @@ struct HostDNSEntry::SystemSpecificHostEntry
 
 
 /*
- * Some of HostDNSEntry methods will return bogus values 
- * (ex: empty structures) whenever called whereas system-specific 
- * headers (ex: netdb.h or ws2tcpip.h) are not available.
+ * Some of HostDNSEntry methods will return bogus values (ex: empty structures)
+ * whenever called whereas system-specific headers (ex: netdb.h or ws2tcpip.h)
+ * are not available.
  *
- * This should not hurt, since the instances these methods should apply to 
+ * This should not hurt, since the instances these methods should apply to
  * cannot exist, since their constructors raise an exception in this context.
  *
  */
- 
+
 
 
 
@@ -224,7 +225,7 @@ HostDNSEntry::HostDNSEntry( const std::string & hostName ) :
 			"running getaddrinfo for '" + hostName + "'." ) ;
 #endif // CEYLAN_DEBUG_NETWORK
 
-	if ( ::getaddrinfo( hostName.c_str(), /* port */ 0, 
+	if ( ::getaddrinfo( hostName.c_str(), /* port */ 0,
 			&callerHints, &_internalEntry->_entryList ) != 0 )
 	{
 		LogPlug::error( "HostDNSEntry constructor failed: "
@@ -238,7 +239,7 @@ HostDNSEntry::HostDNSEntry( const std::string & hostName ) :
 	// Here _entryList should be correctly set.
 
 	manageHostEntry() ;
-	
+
 	// Here the pointer in _internalEntry is not null for sure.
 
 #else // CEYLAN_USES_WS2TCPIP_H
@@ -246,20 +247,20 @@ HostDNSEntry::HostDNSEntry( const std::string & hostName ) :
 #ifdef CEYLAN_USES_NETDB_H
 
 	_internalEntry = new SystemSpecificHostEntry ;
-	
+
 	_internalEntry->_entry =::gethostbyname( hostName.c_str() ) ;
-	
+
 	// Hard to factor code without creating a string most often useless:
 	if ( _internalEntry->_entry == 0 )
-		LogPlug::error( 
+		LogPlug::error(
 			"HostDNSEntry constructor failed for argument '"
 			+ hostName + "'." ) ;
-			
+
 	manageHostEntry() ;
-	
+
 	// Here the pointer in _internalEntry is not null for sure.
 
-	
+
 #else // CEYLAN_USES_NETDB_H
 
 	throw NetworkException( "HostDNSEntry constructor from hostname failed: "
@@ -269,11 +270,11 @@ HostDNSEntry::HostDNSEntry( const std::string & hostName ) :
 
 #endif // CEYLAN_USES_WS2TCPIP_H
 
-}	
+}
 
-		
-			
-HostDNSEntry::HostDNSEntry( const IPAddress & ip ) 
+
+
+HostDNSEntry::HostDNSEntry( const IPAddress & ip )
 {
 
 #ifdef CEYLAN_USES_WS2TCPIP_H
@@ -288,8 +289,8 @@ HostDNSEntry::HostDNSEntry( const IPAddress & ip )
 	callerHints.ai_protocol = /* any protocol    */ 0 ;
 	callerHints.ai_flags    = AI_NUMERICHOST ;
 
-	if ( ::getaddrinfo( ip.toString().c_str(), /* port */ 0, 
-			&callerHints, &_internalEntry->_entryList ) != 0 ) 
+	if ( ::getaddrinfo( ip.toString().c_str(), /* port */ 0,
+			&callerHints, &_internalEntry->_entryList ) != 0 )
 		throw NetworkException( "HostDNSEntry constructor failed: "
 			+ Network::explainSocketError() ) ;
 
@@ -300,33 +301,33 @@ HostDNSEntry::HostDNSEntry( const IPAddress & ip )
 #else // CEYLAN_USES_WS2TCPIP_H
 
 #ifdef CEYLAN_USES_NETDB_H
-	
+
 	_internalEntry = new SystemSpecificHostEntry ;
-	
+
 	// Let's convert "82.225.152.215" in a binary form, for gethostbyaddr:
 	struct in_addr binaryIp ;
-	
+
 	if ( ::inet_aton( ip.toString().c_str(), &binaryIp ) == 0 )
 		throw NetworkException( "HostDNSEntry constructor from IP failed: "
 			"the conversion of " + ip.toString() + " to binary IP failed." ) ;
-	
+
 	if ( ip.getType() == Network::IPv4 )
-		_internalEntry->_entry =::gethostbyaddr( 
-			reinterpret_cast<const char *>( &binaryIp ), 
+		_internalEntry->_entry =::gethostbyaddr(
+			reinterpret_cast<const char *>( &binaryIp ),
 			sizeof(in_addr), AF_INET ) ;
 	else
 		throw NetworkException( "HostDNSEntry constructor from IP failed: "
 			"address type not supported on this platform." ) ;
-			
+
 	// Hard to factor code without creating a string most often useless:
 	if ( _internalEntry->_entry == 0 )
-		LogPlug::error( 
+		LogPlug::error(
 			"HostDNSEntry constructor failed for argument '"
 			+ ip.toString() + "'." ) ;
-			
+
 	manageHostEntry() ;
-	
-	
+
+
 #else // CEYLAN_USES_NETDB_H
 
 	throw NetworkException( "HostDNSEntry constructor from IP failed: "
@@ -337,9 +338,9 @@ HostDNSEntry::HostDNSEntry( const IPAddress & ip )
 #endif // CEYLAN_USES_WS2TCPIP_H
 
 }
-		
-					
-												
+
+
+
 HostDNSEntry::~HostDNSEntry() throw()
 {
 
@@ -358,16 +359,16 @@ HostDNSEntry::~HostDNSEntry() throw()
 	// _internalEntry->_entry may point at static data, so not deallocated.
 	if ( _internalEntry != 0 )
 		delete _internalEntry ;
-		
+
 #endif // CEYLAN_USES_NETDB_H
 
 #endif // CEYLAN_USES_WS2TCPIP_H
 
-}	
+}
 
 
 
-string HostDNSEntry::getOfficialHostName() const 
+string HostDNSEntry::getOfficialHostName() const
 {
 
 #ifdef CEYLAN_USES_WS2TCPIP_H
@@ -388,7 +389,7 @@ string HostDNSEntry::getOfficialHostName() const
 
 	throw NetworkException( "HostDNSEntry::getOfficialHostName: "
 			"not implemented yet." ) ;
-	
+
 #endif // CEYLAN_USES_NETDB_H
 
 #endif // CEYLAN_USES_WS2TCPIP_H
@@ -429,21 +430,21 @@ list<string> & HostDNSEntry::getAliasList() const
 #ifdef CEYLAN_USES_NETDB_H
 
 	list<string> & res = * new list<string> ;
-	
+
 	char** alias = _internalEntry->_entry->h_aliases ;
-	
+
 	while ( (*alias) != 0 )
 	{
-		res.push_back( string( *alias ) ) ;	
+		res.push_back( string( *alias ) ) ;
 		alias++ ;
 	}
 
 	return res ;
-	
+
 #else // CEYLAN_USES_NETDB_H
 
 	return * new list<string> ;
-	
+
 #endif // CEYLAN_USES_NETDB_H
 
 #endif // CEYLAN_USES_WS2TCPIP_H
@@ -463,11 +464,11 @@ NetworkAddressType HostDNSEntry::getAddressType() const
 		case AF_INET:
 			return IPv4 ;
 			break ;
-	
+
 		case AF_INET6:
 			return IPv6 ;
 			break ;
-	
+
 		default:
 			LogPlug::error( "HostDNSEntry::getAddressType: "
 				"unknown address type, returning IPv4 instead." ) ;
@@ -484,27 +485,27 @@ NetworkAddressType HostDNSEntry::getAddressType() const
 
 	switch( _internalEntry->_entry->h_addrtype )
 	{
-	
+
 		case AF_INET:
 			return IPv4 ;
 			break ;
-	
+
 		case AF_INET6:
 			return IPv6 ;
 			break ;
-	
+
 		default:
 			LogPlug::error( "HostDNSEntry::getAddressType: "
 				"unknown address type, returning IPv4 instead." ) ;
 			return IPv4 ;
 			break ;
-	
+
 	}
-	
+
 #else // CEYLAN_USES_NETDB_H
 
 	return IPv4 ;
-	
+
 #endif // CEYLAN_USES_NETDB_H
 
 #endif // CEYLAN_USES_WS2TCPIP_H
@@ -522,52 +523,52 @@ list<IPAddress *> & HostDNSEntry::getAddresses() const
 
 	// This structure is evil.
 
-	addrinfo * currentAddressInfo = _internalEntry->_entryList ; 
+	addrinfo * currentAddressInfo = _internalEntry->_entryList ;
 
 	struct sockaddr_in * currentAddressStruct ;
 	struct in_addr * currentEffectiveAddress ;
 
 	do
 	{
-		
+
 		/*
-		 * currentAddressInfo->ai_addr is a pointer to 'struct sockaddr'
-		 * whereas we need a pointer to 'struct sockaddr_in': 
+		 * currentAddressInfo->ai_addr is a pointer to 'struct sockaddr' whereas
+		 * we need a pointer to 'struct sockaddr_in':
 		 *
 		 * @see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winsock/winsock/sockaddr_2.asp
 		 *
 		 */
-		currentAddressStruct = reinterpret_cast<struct sockaddr_in*>( 
+		currentAddressStruct = reinterpret_cast<struct sockaddr_in*>(
 			currentAddressInfo->ai_addr ) ;
 
 		char * decodedAddress ;
 
-		switch( currentAddressInfo->ai_family )		
+		switch( currentAddressInfo->ai_family )
 		{
-	
+
 			case PF_INET:
-				currentEffectiveAddress = & currentAddressStruct->sin_addr ;	
+				currentEffectiveAddress = & currentAddressStruct->sin_addr ;
 				decodedAddress =::inet_ntoa( *currentEffectiveAddress ) ;
 				if ( decodedAddress != 0 )
-					res.push_back( 
-						new IPAddressvFour( string( decodedAddress ) ) ) ;	
+					res.push_back(
+						new IPAddressvFour( string( decodedAddress ) ) ) ;
 				else
 					LogPlug::error( "HostDNSEntry::getAddresses: "
 						"unable to decode address, skipping it." ) ;
-				break ;	
-						
+				break ;
+
 			case PF_INET6:
 				LogPlug::error( "HostDNSEntry::getAddresses: "
 					"IPv6 not supported yet, skipping address entry." ) ;
 			break ;
-					
+
 			default:
 				LogPlug::error( "HostDNSEntry::getAddresses: "
-					"unsupported address type (" 
+					"unsupported address type ("
 					+ Ceylan::toString( currentAddressInfo->ai_family )
 					+ "), skipping address entry." ) ;
 			break ;
-					
+
 		}
 
 		currentAddressInfo = currentAddressInfo->ai_next ;
@@ -585,43 +586,43 @@ list<IPAddress *> & HostDNSEntry::getAddresses() const
 	list<IPAddress *> & res = * new list<IPAddress *> ;
 
 	// The h_addr_list structure is evil.
-	
+
 	Ceylan::Uint16 addrLen = _internalEntry->_entry->h_length ;
-	
+
 	struct in_addr currentAddressBuffer ;
-	
+
 	char ** currentAddress = _internalEntry->_entry->h_addr_list ;
-	
-	switch( getAddressType() )		
+
+	switch( getAddressType() )
 	{
-	
+
 		case IPv4:
-			
+
 			while ( *currentAddress != 0 )
 			{
-					
+
 				::memcpy( & currentAddressBuffer, *currentAddress, addrLen ) ;
-				
-				string decodedAddress( 
+
+				string decodedAddress(
 					::inet_ntoa( currentAddressBuffer ) ) ;
-					
+
 				res.push_back( new IPAddressvFour( decodedAddress ) ) ;
 				currentAddress++ ;
-					
+
 			}
-			break ;	
-	
-						
+			break ;
+
+
 		case IPv6:
 			LogPlug::error( "HostDNSEntry::getAddresses: "
 				"IPv6 not supported yet, returning empty list." ) ;
 			break ;
-					
+
 		default:
 			LogPlug::error( "HostDNSEntry::getAddresses: "
 				"unexpected address type, returning empty list." ) ;
 			break ;
-					
+
 	}
 
 	return res ;
@@ -639,11 +640,25 @@ list<IPAddress *> & HostDNSEntry::getAddresses() const
 
 
 
+void HostDNSEntry::DeleteAdresses( std::list<IPAddress *> & addresses )
+{
+
+  // Avoids memory leaks:
+  for ( std::list<IPAddress *>::const_iterator it = addresses.begin();
+		it != addresses.end(); it++ )
+	  delete *it ;
+
+  delete & addresses ;
+
+}
+
+
+
 const string HostDNSEntry::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string res ;
-	
+
 	try
 	{
 		res = "The host '" + getOfficialHostName() + "' has " ;
@@ -657,56 +672,56 @@ const string HostDNSEntry::toString( Ceylan::VerbosityLevels level ) const
 	}
 
 	list<string> * alias = & getAliasList() ;
-	
+
 	if ( alias->empty() )
 	{
 		res += "no alias. " ;
-	}	
+	}
 	else
 	{
 		res += "following name alias: " + formatStringList( *alias ) ;
-		
-	}	
-	delete alias ;	
+
+	}
+	delete alias ;
 
 	res += "Its address type is " ;
-	
-	switch( getAddressType() ) 
+
+	switch( getAddressType() )
 	{
-	
+
 		case IPv4:
 			res += "IPv4" ;
 			break ;
-	
+
 		case IPv6:
 			res += "IPv6" ;
 			break ;
-			
+
 		default:
 			res += "unknown (abnormal)" ;
 			break ;
-		
+
 	}
 
 	res += ". Its known network addresses are: " ;
-	
+
 	list<IPAddress *> * addresses = & getAddresses() ;
-	
+
 	list<string> addressDescriptions ;
-	
-	for ( list<IPAddress *>::const_iterator	it = addresses->begin();
+
+	for ( list<IPAddress *>::const_iterator it = addresses->begin();
 			it != addresses->end(); it++ )
 		addressDescriptions.push_back( (*it)->toString( level ) ) ;
-	
-	delete addresses ;
+
+	DeleteAdresses( *addresses ) ;
 
 	return res + formatStringList( addressDescriptions ) ;
-	
+
 }
 
 
 
-void HostDNSEntry::manageHostEntry() 
+void HostDNSEntry::manageHostEntry()
 {
 
 #ifdef CEYLAN_USES_WS2TCPIP_H
@@ -721,37 +736,37 @@ void HostDNSEntry::manageHostEntry()
 
 	if ( _internalEntry->_entry == 0 )
 	{
-	
+
 		switch( h_errno )
 		{
-	
+
 			case HOST_NOT_FOUND:
 				throw NetworkException( "HostDNSEntry constructor failed: "
 					"the specified host is unknown." ) ;
 				break ;
-			
+
 			case NO_ADDRESS /* equal to NO_DATA */:
 				throw NetworkException( "HostDNSEntry constructor failed: "
 					"the requested name is valid but "
 					"does not have an IP address." ) ;
 				break ;
-		
+
 			case NO_RECOVERY:
 				throw NetworkException( "HostDNSEntry constructor failed: "
 					"a non-recoverable name server error occurred." ) ;
 				break ;
-	
+
 			case TRY_AGAIN:
 				throw NetworkException( "HostDNSEntry constructor failed: "
 					"a temporary error occurred on "
 					"an authoritative name server. Try again later" ) ;
 				break ;
-	
+
 			default:
 				throw NetworkException( "HostDNSEntry constructor failed: "
 					"unexpected error code" ) ;
 				break ;
-	
+
 		}
 	}
 
@@ -773,19 +788,19 @@ void HostDNSEntry::manageHostEntry()
 
 
 
-const string Ceylan::Network::getLocalHostName() 
+const string Ceylan::Network::getLocalHostName()
 {
 
 #ifdef CEYLAN_USES_WINSOCK2_H
 
-		// HOST_NAME_MAX does not seem to be widely defined:
+	// HOST_NAME_MAX does not seem to be widely defined:
 	char hostBuffer[ HostDNSEntry::HostNameMaxLength  + 1 ] ;
 
 	if ( ::gethostname( hostBuffer, HostDNSEntry::HostNameMaxLength ) != 0 )
 		throw NetworkException( "Ceylan::Network::getLocalHostName: "
-			"unable to determine local host name (error code: " 
+			"unable to determine local host name (error code: "
 			+ Ceylan::toString( WSAGetLastError() ) + ")." ) ;
-	
+
 	return string( hostBuffer ) ;
 
 #else // CEYLAN_USES_WINSOCK2_H
@@ -793,7 +808,7 @@ const string Ceylan::Network::getLocalHostName()
 #ifdef CEYLAN_USES_GETHOSTNAME
 
 	// int uname(struct utsname *buf) in sys/utsname.h coud be used as well.
-	
+
 	// HOST_NAME_MAX does not seem to be widely defined:
 	char hostBuffer[ HostDNSEntry::HostNameMaxLength  + 1 ] ;
 
@@ -807,7 +822,7 @@ const string Ceylan::Network::getLocalHostName()
 
 	throw NetworkException( "Ceylan::Network::getLocalHostName: "
 		"not available on this platform." ) ;
-		
+
 #endif // CEYLAN_USES_GETHOSTNAME
 
 #endif // CEYLAN_USES_WINSOCK2_H
@@ -816,7 +831,7 @@ const string Ceylan::Network::getLocalHostName()
 
 
 
-void Ceylan::Network::setLocalHostName( const string & newHostName )	
+void Ceylan::Network::setLocalHostName( const string & newHostName )
 {
 
 #ifdef CEYLAN_USES_SETHOSTNAME
@@ -824,8 +839,8 @@ void Ceylan::Network::setLocalHostName( const string & newHostName )
 #if CEYLAN_ARCH_SOLARIS
 
 	/*
-	 * Some versions of Solaris do not declare sethostname in the right <
-	 * header, or do not seem to have it, using sysinfo instead:
+	 * Some versions of Solaris do not declare sethostname in the right header,
+	 * or do not seem to have it, using sysinfo instead:
 	 *
 	 */
 	const char * buf = newHostName.c_str() ;
@@ -836,7 +851,7 @@ void Ceylan::Network::setLocalHostName( const string & newHostName )
 			+ newHostName + ": " + explainError() ) ;
 
 #else // CEYLAN_ARCH_SOLARIS
-		
+
 	if ( ::sethostname( newHostName.c_str(), newHostName.size() ) )
 		throw NetworkException( "Ceylan::Network::setLocalHostName: "
 			"unable to set local host name to "
@@ -844,23 +859,23 @@ void Ceylan::Network::setLocalHostName( const string & newHostName )
 
 #endif // CEYLAN_ARCH_SOLARIS
 
-			
+
 #else // CEYLAN_USES_SETHOSTNAME
 
 	throw NetworkException( "Ceylan::Network::setLocalHostName: "
 		"not available on this platform." ) ;
-		
+
 #endif // CEYLAN_USES_SETHOSTNAME
 
 }
 
 
 
-const string Ceylan::Network::getLocalHostDomainName() 
+const string Ceylan::Network::getLocalHostDomainName()
 {
 
 #ifdef CEYLAN_USES_GETDOMAINNAME
-	
+
 	char domainBuffer[ 256 ] ;
 
 	if ( ::getdomainname( domainBuffer, 255 ) != 0 )
@@ -868,38 +883,38 @@ const string Ceylan::Network::getLocalHostDomainName()
 			+ explainError() ) ;
 
 	string res( domainBuffer ) ;
-	
+
 	if ( res == "(none)" )
 		return "" ;
-		
+
 	return res ;
-	
+
 #else // CEYLAN_USES_GETDOMAINNAME
 
 	throw NetworkException( "Ceylan::Network::getLocalHostDomainName: "
 		"not available on this platform." ) ;
-		
+
 #endif // CEYLAN_USES_GETDOMAINNAME
 
 }
 
 
 
-void Ceylan::Network::setLocalHostDomainName( const string & newDomainName )	
+void Ceylan::Network::setLocalHostDomainName( const string & newDomainName )
 {
 
 #ifdef CEYLAN_USES_SETDOMAINNAME
-	
+
 	if ( ::setdomainname( newDomainName.c_str(), newDomainName.size() ) )
 		throw NetworkException( "Unable to set local host domain name to "
 			+ newDomainName + ": "
 			+ explainError() ) ;
-			
+
 #else // CEYLAN_USES_SETDOMAINNAME
 
 	throw NetworkException( "Ceylan::Network::setLocalHostDomainName: "
 		"not available on this platform." ) ;
-		
+
 #endif // CEYLAN_USES_SETDOMAINNAME
 
 }
@@ -915,54 +930,54 @@ const string Ceylan::Network::getMostPreciseLocalHostName()
 	return "nds" ;
 
 #else // CEYLAN_ARCH_NINTENDO_DS
-	
-	
+
+
 	string guessedFullHostname ;
-	
+
 #ifdef CEYLAN_USES_UNAME
 
 	struct utsname buf ;
 
 	if ( ::uname( & buf ) != 0 )
-	{		
+	{
 		LogPlug::error( "Ceylan::Network::getMostPreciseLocalHostName: "
 			"unable to determine name of local host: " + explainError() ) ;
-	}		
+	}
 	else
-	{		
-	
+	{
+
 		guessedFullHostname = buf.nodename ;
 
 		// Needing a FQDN, checking for dots in the host name:
-		if ( Ceylan::countChars( guessedFullHostname, '.' ) != 0 
+		if ( Ceylan::countChars( guessedFullHostname, '.' ) != 0
 				&& guessedFullHostname != "localhost.localdomain" )
 			return guessedFullHostname ;
-			
+
 	}
-						
-#endif // CEYLAN_USES_UNAME 	
-	
-	
+
+#endif // CEYLAN_USES_UNAME
+
+
 	/*
 	 * Here we have no real FQDN, let's try with the DNS:
 	 *
 	 */
 
 	/*
-	 * Do not catch any exception, since we cannot succeed without the 
-	 * basic hostname:
+	 * Do not catch any exception, since we cannot succeed without the basic
+	 * hostname:
 	 *
 	 */
 	string thisHostname = getLocalHostName() ;
-	
+
 	bool found = false ;
-	
+
 	try
 	{
 
 		guessedFullHostname = getFQDNFromHostname( thisHostname ) ;
 		found = true ;
-		
+
 	}
 	catch( const NetworkException & e )
 	{
@@ -978,7 +993,7 @@ const string Ceylan::Network::getMostPreciseLocalHostName()
 	 * Last try: hostname.domainname, let's go for the domain name:
 	 *
 	 */
-	
+
 	string domain ;
 
 	try
@@ -1014,39 +1029,39 @@ const string Ceylan::Network::getMostPreciseLocalHostName()
 
 
 // Section for all hosts.
-		
-		
-				
+
+
+
 const string Ceylan::Network::getFQDNFromIP( const IPAddress & ip )
 	{
 
 	HostDNSEntry searched( ip ) ;
-	
+
 	return getFQDNFromDNSEntry( searched ) ;
 
 }
-		
-			
-			
+
+
+
 const string Ceylan::Network::getFQDNFromIPv4( const std::string & ipString )
 {
 
 	IPAddressvFour ip( ipString ) ;
-	
+
 	return getFQDNFromIP( ip ) ;
-	
+
 }
-	
-			
-									
-const string Ceylan::Network::getFQDNFromHostname( 
-	const std::string & hostname ) 
+
+
+
+const string Ceylan::Network::getFQDNFromHostname(
+	const std::string & hostname )
 {
 
 	HostDNSEntry searched( hostname ) ;
-	
+
 	return getFQDNFromDNSEntry( searched ) ;
-		
+
 }
 
 
@@ -1065,33 +1080,33 @@ const string Ceylan::Network::getFQDNFromDNSEntry( const HostDNSEntry & entry )
 		LogPlug::debug( "Ceylan::Network::getFQDNFromDNSEntry: "
 			"no official name found." ) ;
 	}
-	
+
 	// Try the official name as FQDN:
 	if ( Ceylan::countChars( current, '.' ) != 0 )
 		return current ;
-	
+
 	// No, try alias:
 	list<string> * alias = & entry.getAliasList() ;
-	
+
 	for ( list<string>::const_iterator it = alias->begin() ;
 			it != alias->end(); it++ )
-	{		
-		if ( Ceylan::countChars( (*it), '.' ) != 0 ) 
+	{
+		if ( Ceylan::countChars( (*it), '.' ) != 0 )
 		{
 			current = *it ;
 			break ;
 		}
 	}
-	
+
 	delete alias ;
-	
+
 	if ( current.empty() )
 		throw NetworkException( "Ceylan::Network::getFQDNFromDNSEntry "
-			"failed to find any FQDN from following entry: " 
+			"failed to find any FQDN from following entry: "
 			+ entry.toString() ) ;
 
-	return current ;	
-		
+	return current ;
+
 }
 
 
@@ -1100,17 +1115,17 @@ bool Ceylan::Network::isAValidHostName( const string & hostnameString )
 {
 
 #if CEYLAN_USES_REGEX
-	
+
 	Ceylan::RegExp target( hostnameString ) ;
 
 	return target.matches(
 		"^(([a-z]|[A-Z]{1,1})([a-z]|[A-Z]|[.]|[0-9]|[-]){0,})$" ) ;
-	
+
 #else // CEYLAN_USES_REGEX
-	
+
 	// Check disabled:
 	return true ;
-	
+
 #endif // CEYLAN_USES_REGEX
 
 }
@@ -1118,15 +1133,16 @@ bool Ceylan::Network::isAValidHostName( const string & hostnameString )
 
 
 /*
- * On Windows, error codes should be interpreted according to the 
- * following table:
+ * On Windows, error codes should be interpreted according to the following
+ * table:
+ *
  * http://msdn.microsoft.com/library/en-us/winsock/winsock/windows_sockets_error_codes_2.asp
  *
- * Sadly the conversion from an error code to a textual message seems
- * to be up to the programmer.
- * 
+ * Sadly the conversion from an error code to a textual message seems to be up
+ * to the programmer.
+ *
  */
-string Ceylan::Network::interpretSocketError( SocketError errorCode ) 
+string Ceylan::Network::interpretSocketError( SocketError errorCode )
 {
 
 #if CEYLAN_ARCH_WINDOWS
@@ -1384,7 +1400,7 @@ string Ceylan::Network::interpretSocketError( SocketError errorCode )
 		return "overlapped operation aborted (WSA_OPERATION_ABORTED)" ;
 		break ;
 
-/* 
+/*
  * Not supported, at least not on Windows XP:
 
 	case WSAINVALIDPROCTABLE:
@@ -1408,8 +1424,8 @@ string Ceylan::Network::interpretSocketError( SocketError errorCode )
 			"generic error code" ;
 		break ;
 
-	default: 
-		return "unknown socket error code #" 
+	default:
+		return "unknown socket error code #"
 			+ Ceylan::toString( errorCode ) + " (abnormal)" ;
 
 	}
@@ -1431,16 +1447,16 @@ SocketError Ceylan::Network::getSocketError()
 #if CEYLAN_ARCH_WINDOWS
 
 	return WSAGetLastError() ;
-	
+
 #else // CEYLAN_ARCH_WINDOWS
 
 	LogPlug::error( "Ceylan::Network::getSocketError called "
 		"whereas not on Windows." ) ;
-		
+
 	return 0 ;
 
 #endif // CEYLAN_ARCH_WINDOWS
-	
+
 }
 
 
@@ -1473,7 +1489,7 @@ std::string Ceylan::Network::explainSocketError()
 NetworkManager NetworkManager::_Manager ;
 
 
-NetworkManager::NetworkManager()  
+NetworkManager::NetworkManager()
 {
 
 #if CEYLAN_DEBUG_SYSTEM
@@ -1485,7 +1501,7 @@ NetworkManager::NetworkManager()
 
 	WORD requestedVersion = MAKEWORD( 2, 2 ) ;
 	WSADATA wsaData ;
- 
+
 	int result = WSAStartup( requestedVersion, & wsaData ) ;
 
 	if ( result != 0 )
@@ -1496,7 +1512,7 @@ NetworkManager::NetworkManager()
 	/*
 	 * Confirms that the WinSock DLL supports 2.2.
 	 *
-	 * @note If the DLL supports versions greater than 2.2 in addition to 2.2, 
+	 * @note If the DLL supports versions greater than 2.2 in addition to 2.2,
 	 * it will still return 2.2 in wVersion since that is the requested version.
 	 *
 	 */
@@ -1508,7 +1524,7 @@ NetworkManager::NetworkManager()
 	}
 
 }
- 
+
 
 
 NetworkManager::~NetworkManager() throw()
@@ -1527,4 +1543,3 @@ NetworkManager::~NetworkManager() throw()
 
 
 #endif // CEYLAN_ARCH_WINDOWS
-

@@ -94,7 +94,7 @@ LogAggregator::~LogAggregator() throw()
 
 	// Deallocating gathered channels, which will deallocate their messages:
 
-	CEYLAN_LOG( "### Removing " + Ceylan::toString( _channelList.size() )
+	CEYLAN_LOG( "### Removing " + Ceylan::toString( _channelList.size() )
 		+ " channels." ) ;
 
 	// Curiously enough, a const_iterator can be used too!

@@ -147,7 +147,7 @@ void LogAggregatorRaw::aggregate()
 		+ " Aggregating Log messages.\n\n" ) ;
 
 	for ( list<LogChannel *>::const_iterator it = _channelList.begin() ;
-		it != _channelList.end() ; it ++ )
+		it != _channelList.end(); it ++ )
 	{
 		write( * (*it) ) ;
 	}

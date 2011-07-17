@@ -97,7 +97,7 @@ namespace Ceylan
 				 * be stored.
 				 *
 				 * @param useGlobalLevelOfDetail Tells whether log channels
-				 * levels of detail are to be overriden by the aggregator-wide
+				 * levels of detail are to be overridden by the aggregator-wide
 				 * one.
 				 *
 				 * @param beSmart tells whether this aggregator should be smart
@@ -273,16 +273,6 @@ namespace Ceylan
 
 				/// The directory where aggregations will take place.
 				System::Directory * _outputDirectory ;
-
-
-				/**
-				 * Tells whether a global (aggregator-wide) level of detail for
-				 * channels should be used.
-				 *
-				 * @note If set, will override log channels levels of details.
-				 *
-				 */
-				bool _useGlobalLevelOfDetail ;
 
 
 				/**
