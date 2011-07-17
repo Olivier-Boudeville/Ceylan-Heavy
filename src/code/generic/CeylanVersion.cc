@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -55,7 +55,7 @@ VersionException::~VersionException() throw()
 
 
 
-Version::Version( VersionNumber major, VersionNumber minor, 
+Version::Version( VersionNumber major, VersionNumber minor,
 		VersionNumber release ):
 	_major( major ),
 	_minor( minor ),
@@ -70,57 +70,57 @@ Version::Version( const std::string & versionText )
 {
 
 	std::list<string> numbers = Ceylan::split( versionText, '.' ) ;
-	
+
 	/*
 	 *
-	for ( std::list<string>::const_iterator it = numbers.begin(); 
+	for ( std::list<string>::const_iterator it = numbers.begin();
 			it != numbers.end(); it++ )
 		std::cerr << "Version constructor: " << *it << std::endl ;
 	 *
 	 */
-	 	 
+
 	if ( numbers.size() != 3 )
 		throw Ceylan::Exception( "Version constructor: input string '"
-			+ versionText 
+			+ versionText
 			+ "' cannot be split into three parts thanks to dots, "
-			"we have " + Ceylan::toString( 
-				static_cast<Ceylan::Uint32>( numbers.size() ) ) 
-			+ " elements: " 
-			+ Ceylan::formatStringList( numbers, 
+			"we have " + Ceylan::toString(
+				static_cast<Ceylan::Uint32>( numbers.size() ) )
+			+ " elements: "
+			+ Ceylan::formatStringList( numbers,
 				/* surroundByTicks */ true ) ) ;
-	
+
 	try
 	{
-	
-		_major = static_cast<VersionNumber>( 
+
+		_major = static_cast<VersionNumber>(
 			Ceylan::stringToUnsignedLong( numbers.front() ) ) ;
 		numbers.pop_front() ;
-	
-		_minor = static_cast<VersionNumber>( 
+
+		_minor = static_cast<VersionNumber>(
 			Ceylan::stringToUnsignedLong( numbers.front() ) ) ;
 		numbers.pop_front() ;
-	
-		_release = static_cast<VersionNumber>( 
+
+		_release = static_cast<VersionNumber>(
 			Ceylan::stringToUnsignedLong( numbers.front() ) ) ;
 		numbers.pop_front() ;
-			
+
 	}
 	catch( const Ceylan::Exception & e )
 	{
 		throw VersionException( "Version constructor: input string <"
-			+ versionText + "> could not be parsed into numbers: " 
+			+ versionText + "> could not be parsed into numbers: "
 			+ e.toString() ) ;
 	}
-	
+
 	if ( ! numbers.empty() )
 		throw VersionException( "Version constructor: input string <"
 			+ versionText + "> has more than three elements" ) ;
-		
-			
+
+
 }
 
- 
- 
+
+
 Version::~Version() throw()
 {
 
@@ -170,17 +170,17 @@ void Version::setReleaseNumber( VersionNumber newNumber )
 
 
 
-bool Version::isCompatibleWith( const Version & expectedVersion ) const 
+bool Version::isCompatibleWith( const Version & expectedVersion ) const
 {
- 
+
 	return ( *this == expectedVersion ) ;
-	 
+
 }
 
 
 
 bool Version::canBeComparedWith( const Version & version ) const
-{	
+{
 	return ( version.isUsualVersionSchemeCompliant() ) ;
 }
 
@@ -189,21 +189,21 @@ bool Version::canBeComparedWith( const Version & version ) const
 const string Version::toString( VerbosityLevels level ) const
 {
 
-	string rawVersion = Ceylan::toNumericalString( _major ) + "." 
-			+ Ceylan::toNumericalString( _minor ) + "." 
+	string rawVersion = Ceylan::toNumericalString( _major ) + "."
+			+ Ceylan::toNumericalString( _minor ) + "."
 			+ Ceylan::toNumericalString( _release ) ;
-			
+
 	if ( level == Ceylan::low )
-    	return rawVersion ;
-		
+		return rawVersion ;
+
 	if ( level == Ceylan::medium )
-    	return "Version " + rawVersion ;
-				
-	return "Version: major number = " 
+		return "Version " + rawVersion ;
+
+	return "Version: major number = "
 		+ Ceylan::toNumericalString( _major ) + ", minor number = "
 		+ Ceylan::toNumericalString( _minor ) + ", release number = "
 		+ Ceylan::toNumericalString( _release ) ;
-		 				
+
 }
 
 
@@ -215,7 +215,7 @@ bool Version::isUsualVersionSchemeCompliant() const
 
 
 
-bool operator < ( const Ceylan::Version & vFirst, 
+bool operator < ( const Ceylan::Version & vFirst,
 	const Ceylan::Version & vSecond ) /* throw( VersionException ) */
 {
 
@@ -223,30 +223,30 @@ bool operator < ( const Ceylan::Version & vFirst,
 		throw VersionException( "Version operator '<': "
 			+ vFirst.toString( Ceylan::high ) + " and "
 			+ vSecond.toString( Ceylan::high ) + " cannot be compared." ) ;
-		
+
 	if ( vFirst.getMajorNumber() < vSecond.getMajorNumber() )
 		return true ;
-	
+
 	if ( vFirst.getMajorNumber() == vSecond.getMajorNumber() )
 	{
 		if ( vFirst.getMinorNumber() < vSecond.getMinorNumber() )
 			return true ;
-			
+
 		if ( vFirst.getMinorNumber() == vSecond.getMinorNumber() )
 		{
 			if ( vFirst.getReleaseNumber() < vSecond.getReleaseNumber() )
-				return true ;		
+				return true ;
 		}
-		
+
 	}
-	
+
 	return false ;
-		
+
 }
 
 
 
-bool operator == ( const Ceylan::Version & vFirst, 
+bool operator == ( const Ceylan::Version & vFirst,
 	const Ceylan::Version & vSecond ) /* throw( VersionException ) */
 {
 
@@ -258,14 +258,13 @@ bool operator == ( const Ceylan::Version & vFirst,
 
 	if ( vFirst.getMajorNumber() != vSecond.getMajorNumber() )
 		return false ;
-	
+
 	if ( vFirst.getMinorNumber() != vSecond.getMinorNumber() )
 		return false ;
-			
+
 	if ( vFirst.getReleaseNumber() != vSecond.getReleaseNumber() )
 		return false ;
-		
-	return true ;
-		
-}
 
+	return true ;
+
+}

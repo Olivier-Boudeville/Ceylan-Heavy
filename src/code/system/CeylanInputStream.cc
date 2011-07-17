@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -37,21 +37,19 @@
 
 
 /*
- * Implementation note:
+ * Implementation notes.
  *
- * the endianness of the system is detected by CEYLAN_RUNS_ON_LITTLE_ENDIAN,
- * or explicitly set, in case of cross-compilation.
+ * The endianness of the system is detected by CEYLAN_RUNS_ON_LITTLE_ENDIAN, or
+ * explicitly set, in case of cross-compilation.
  *
- * Ceylan chosed to order its serialized multi-byte datatypes according to
- * the little endian convention (Least Significant Byte first), despite it 
- * is the opposite of the usual case (network order is defined as being big
- * endian).
+ * Ceylan chosed to order its serialized multi-byte datatypes according to the
+ * little endian convention (Least Significant Byte first), despite it is the
+ * opposite of the usual case (network order is defined as being big endian).
  *
- * The reason for that is that most modern platforms Ceylan is to be run on
- * are little endian, so it spares heavy useless swapping in this general
- * case.
+ * The reason for that is that most modern platforms Ceylan is to be run on are
+ * little endian, so it spares heavy useless swapping in this general case.
  *
- * 
+ *
  */
 
 
@@ -103,7 +101,7 @@ using namespace Ceylan ;
 
 
 InputStream::InputStream( bool blocking ) :
-	Stream( blocking ),	
+	Stream( blocking ),
 	_isSelected( false ),
 	_isFaulty( false )
 {
@@ -123,7 +121,7 @@ bool InputStream::isSelected() const
 {
 
 	return _isSelected ;
-	
+
 }
 
 
@@ -132,31 +130,31 @@ bool InputStream::isFaulty() const
 {
 
 	return _isFaulty ;
-	
-}	
+
+}
 
 
 
 const std::string InputStream::toString( Ceylan::VerbosityLevels level ) const
 {
 
-	string res = "InputStream whose ID is " 
+	string res = "InputStream whose ID is "
 		+ Ceylan::toString( getInputStreamID() ) + ", which is " ;
-		
+
 	if ( ! isSelected() )
 		res += "not " ;
-		 
+
 	res += "selected, and which is " ;
 
 	if ( ! isFaulty() )
 		res += "not " ;
-	
+
 	res += "faulty" ;
-	
+
 	res += ". This is a " + Stream::toString( level ) ;
 
 	return res ;
-	
+
 }
 
 
@@ -171,14 +169,14 @@ Size InputStream::read( Ceylan::Byte * buffer, Size length )
 
 	throw ReadFailedException( "InputStream::read failed: "
 		"this method should have been subclassed." ) ;
-		
+
 }
 
 
 
 void InputStream::clearInput()
 {
-	
+
 	Ceylan::Byte b ;
 
 	while ( hasAvailableData() )
@@ -189,224 +187,224 @@ void InputStream::clearInput()
 
 
 /*
- * The endianness of the target system is to be read from the configure step, 
+ * The endianness of the target system is to be read from the configure step,
  * the symbol is CEYLAN_RUNS_ON_LITTLE_ENDIAN.
  *
  */
-				
+
 
 
 
 // Read integer types subsection.
 
 
-Ceylan::Sint8 InputStream::readSint8() 
+Ceylan::Sint8 InputStream::readSint8()
 {
-	
+
 	const Ceylan::Uint8 TypeSize = 1 ;
-	
+
 	Ceylan::Byte tempBuffer[ TypeSize ] ;
-		
+
 	Size readCount = read( tempBuffer, TypeSize ) ;
-	
-	if ( readCount < TypeSize ) 
+
+	if ( readCount < TypeSize )
 		throw EOFException( "InputStream::readSint8" ) ;
-	
+
 	return * reinterpret_cast<Ceylan::Sint8 *>( tempBuffer ) ;
-			
+
 }
 
 
 
-Ceylan::Uint8 InputStream::readUint8() 
+Ceylan::Uint8 InputStream::readUint8()
 {
-	
+
 	const Ceylan::Uint8 TypeSize = 1 ;
-	
+
 	Ceylan::Byte tempBuffer[ TypeSize ] ;
-		
+
 	Size readCount = read( tempBuffer, TypeSize ) ;
-	
-	if ( readCount < TypeSize ) 
+
+	if ( readCount < TypeSize )
 		throw EOFException( "InputStream::readUint8" ) ;
-	
+
 	return * reinterpret_cast<Ceylan::Uint8 *>( tempBuffer ) ;
-			
+
 }
 
 
 
-Ceylan::Sint16 InputStream::readSint16() 
+Ceylan::Sint16 InputStream::readSint16()
 {
 
 	const Ceylan::Uint8 TypeSize = 2 ;
-	
+
 	Ceylan::Byte tempBuffer[ TypeSize ] ;
-		
+
 	Size readCount = read( tempBuffer, TypeSize ) ;
-	
-	if ( readCount < TypeSize ) 
+
+	if ( readCount < TypeSize )
 		throw EOFException( "InputStream::readSint16" ) ;
-	
+
 	Ceylan::Sint16 * ret = reinterpret_cast<Ceylan::Sint16 *>( tempBuffer ) ;
-	
+
 
 #if CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
 	return *ret ;
-	
+
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
 	return ceylan_bswap_16( *ret ) ;
-	
+
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
-			
+
 }
 
 
 
-Ceylan::Uint16 InputStream::readUint16() 
+Ceylan::Uint16 InputStream::readUint16()
 {
 
 	const Ceylan::Uint8 TypeSize = 2 ;
-	
+
 	Ceylan::Byte tempBuffer[ TypeSize ] ;
-		
+
 	Size readCount = read( tempBuffer, TypeSize ) ;
-	
-	if ( readCount < TypeSize ) 
+
+	if ( readCount < TypeSize )
 		throw EOFException( "InputStream::readUint16" ) ;
-	
+
 	Ceylan::Uint16 * ret = reinterpret_cast<Ceylan::Uint16 *>( tempBuffer ) ;
-	
+
 
 #if CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
 	return *ret ;
-	
+
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
 	return ceylan_bswap_16( *ret ) ;
-	
-	
+
+
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
-			
+
 }
 
 
 
-Ceylan::Sint32 InputStream::readSint32() 
+Ceylan::Sint32 InputStream::readSint32()
 {
 
 	const Ceylan::Uint8 TypeSize = 4 ;
-	
+
 	Ceylan::Byte tempBuffer[ TypeSize ] ;
-		
+
 	Size readCount = read( tempBuffer, TypeSize ) ;
-	
-	if ( readCount < TypeSize ) 
+
+	if ( readCount < TypeSize )
 		throw EOFException( "InputStream::readSint32" ) ;
-	
+
 	Ceylan::Sint32 * ret = reinterpret_cast<Ceylan::Sint32 *>( tempBuffer ) ;
-	
+
 
 #if CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
 	return *ret ;
-	
+
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
 	return ceylan_bswap_32( *ret ) ;
-	
+
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
-		
+
 }
 
 
 
-Ceylan::Uint32 InputStream::readUint32() 
+Ceylan::Uint32 InputStream::readUint32()
 {
 
 	const Ceylan::Uint8 TypeSize = 4 ;
-	
+
 	Ceylan::Byte tempBuffer[ TypeSize ] ;
-		
+
 	Size readCount = read( tempBuffer, TypeSize ) ;
-	
-	if ( readCount < TypeSize ) 
+
+	if ( readCount < TypeSize )
 		throw EOFException( "InputStream::readUint32" ) ;
-	
+
 	Ceylan::Uint32 * ret = reinterpret_cast<Ceylan::Uint32 *>( tempBuffer ) ;
-	
+
 
 #if CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
 	return *ret ;
-	
+
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
 	return ceylan_bswap_32( *ret ) ;
-	
+
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
-			
+
 }
 
 
 
-Ceylan::Float32 InputStream::readFloat32() 
+Ceylan::Float32 InputStream::readFloat32()
 {
 
 	const Ceylan::Uint8 TypeSize = 4 ;
-	
+
 	Ceylan::Byte tempBuffer[ TypeSize ] ;
-		
+
 	Size readCount = read( tempBuffer, TypeSize ) ;
-	
-	if ( readCount < TypeSize ) 
+
+	if ( readCount < TypeSize )
 		throw EOFException( "InputStream::readFloat32" ) ;
-		
+
 
 #if CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
 	Ceylan::Float32 * ret = reinterpret_cast<Ceylan::Float32 *>( tempBuffer ) ;
 	return *ret ;
-	
+
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
 	Ceylan::Uint32 * tmp = reinterpret_cast<Ceylan::Uint32 *>( tempBuffer ) ;
 
 	// Updates 'tempBuffer':
 	*tmp = ceylan_bswap_32( *tmp ) ;
-	
+
 	Ceylan::Float32 * ret = reinterpret_cast<Ceylan::Float32 *>( tmp ) ;
-	
+
 	return *ret ;
-	
-	
+
+
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
-			
+
 }
 
 
 
-Ceylan::Float64 InputStream::readFloat64() 
+Ceylan::Float64 InputStream::readFloat64()
 {
 
 	const Ceylan::Uint8 TypeSize = 8 ;
-	
+
 	Ceylan::Byte tempBuffer[ TypeSize ] ;
-		
+
 	Size readCount = read( tempBuffer, TypeSize ) ;
-	
-	if ( readCount < TypeSize ) 
+
+	if ( readCount < TypeSize )
 		throw EOFException( "InputStream::readFloat64" ) ;
-		
+
 
 #if CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
 	Ceylan::Float64 * ret = reinterpret_cast<Ceylan::Float64 *>( tempBuffer ) ;
 	return *ret ;
-	
+
 #else // CEYLAN_RUNS_ON_LITTLE_ENDIAN
 
 	Ceylan::Uint64 * tmp = reinterpret_cast<Ceylan::Uint64 *>( tempBuffer ) ;
@@ -416,99 +414,98 @@ Ceylan::Float64 InputStream::readFloat64()
 #ifdef CEYLAN_FAKES_64_BIT_TYPE
 
 	Ceylan::byteswap( *tmp ) ;
-		
+
 #else // CEYLAN_FAKES_64_BIT_TYPE
 
 	*tmp = ceylan_bswap_64( *tmp ) ;
-	
+
 #endif // CEYLAN_FAKES_64_BIT_TYPE
 
 
 	Ceylan::Float64 * ret = reinterpret_cast<Ceylan::Float64 *>( tmp ) ;
 
 	return *ret ;
-	
+
 #endif // CEYLAN_RUNS_ON_LITTLE_ENDIAN
-			
+
 }
 
 
 
-void InputStream::readString( std::string & result ) 
+void InputStream::readString( std::string & result )
 {
 
 
 	/*
-	 * The protocol used to marshal/demarshall a string is to specify first
-	 * its length in characters, then to make the characters follow this 
-	 * size.
+	 * The protocol used to marshal/demarshall a string is to specify first its
+	 * length in characters, then to make the characters follow this size.
 	 *
 	 */
-	 
+
 	Uint16 stringSize = readUint16() ;
-	
+
 #if CEYLAN_DEBUG_LOW_LEVEL_STREAMS
 	LogPlug::debug( "InputStream::readString: string size is "
 		+ Ceylan::toString( stringSize ) + " characters." ) ;
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
-	 
-	 
+
+
 	// Blanks the result:
 	result.erase() ;
-	
+
 	if ( stringSize == 0 )
 		return ;
-	
+
 	// The size above which the heap is preferred to the stack:
-	const Sint16 thresholdSize = 255 ; 	
-	
+	const Sint16 thresholdSize = 255 ;
+
 	if ( stringSize < thresholdSize )
 	{
-	
+
 		// Use a simple automatic buffer:
-	
+
 		Ceylan::Byte tempBuffer[thresholdSize] ;
 
 		Size readSize = read( tempBuffer, stringSize ) ;
 
 		if ( readSize < stringSize )
 			throw EOFException( "In InputStream::readString." ) ;
-		
+
 		// Null-terminated string:
 		tempBuffer[stringSize] = 0 ;
-		
-		result = tempBuffer ;	
-				
+
+		result = tempBuffer ;
+
 	}
 	else
 	{
-	
+
 		/*
 		 * Use a dedicated dynamically created buffer:
 		 *
 		 * (Byte type is char)
 		 *
 		 */
-		
+
 		Ceylan::Byte * tempBuffer = new Ceylan::Byte[ stringSize + 1 ] ;
-		
+
 		Size readSize = read( tempBuffer, stringSize ) ;
-		
+
 		if ( readSize < stringSize )
 		{
 			delete tempBuffer ;
 			throw EOFException( "In InputStream::readString." ) ;
-		}	
-		
+		}
+
 		// Null-terminated string:
 		tempBuffer[stringSize] = 0 ;
-		
+
 		result = tempBuffer ;
 		delete tempBuffer ;
-		
-		
+
+
 	}
-	
+
 }
 
 
@@ -517,31 +514,31 @@ void InputStream::skipWhitespaces( Ceylan::Uint8 & firstNonSpace )
 {
 
 	Ceylan::Uint8 readChar ;
-	
+
 	do
 	{
-	
+
 		readChar = readUint8() ;
-		
+
 	} while ( Ceylan::isWhitespace( static_cast<char>( readChar ) ) ) ;
-	
+
 	firstNonSpace = readChar ;
-	
+
 }
 
 
 
-Ceylan::Uint16 InputStream::Select( list<InputStream*> & is ) 
+Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	throw InputStream::SelectFailedException( "InputStream::Select: "
 		"not available on the Nintendo DS." ) ;
-		
+
 #else // CEYLAN_ARCH_NINTENDO_DS
 
-	
+
 #if CEYLAN_ARCH_WINDOWS
 
 #if CEYLAN_USES_NETWORK
@@ -572,12 +569,12 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 	/// Maximum number of select attempts.
 	const int selectAttemptCount = 5 ;
 
-	
+
 	/// Maximum number of select attempts.
 
 	/**
-	 * Each thread will wait for selectWaitingTime seconds before 
-	 * retrying a blocking select.
+	 * Each thread will wait for selectWaitingTime seconds before retrying a
+	 * blocking select.
 	 *
 	 */
 	const Ceylan::Uint8 selectWaitingTime = 2 ;
@@ -585,97 +582,97 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 	Ceylan::Uint8 attemptCount = selectAttemptCount ;
 
 	int selectedCount ;
-	
+
 	for ( ; attemptCount; attemptCount-- )
 	{
-		
-			
+
+
 		// Will block for ever until an error or some data is coming:
-		selectedCount = ::select( 
-			/* number of FD */ maxFD + 1, 
-			/* for reading  */ & waitFDSet, 
-			/* for writing  */ 0, 
-			/* for errors   */ 0, 
+		selectedCount = ::select(
+			/* number of FD */ maxFD + 1,
+			/* for reading  */ & waitFDSet,
+			/* for writing  */ 0,
+			/* for errors   */ 0,
 			/* for time-out */ 0 ) ;
-		
+
 		if ( selectedCount == SOCKET_ERROR )
 		{
-	
+
 			// Error:
 			Network::SocketError error = Network::getSocketError() ;
 			if ( error == WSAEBADF || error == WSAENOTSOCK )
 			{
-			
+
 				LogPlug::error( "InputStream::Select: there seems to be "
 					"at least one bad file descriptor in the list, "
 					"checking them to flag them as faulty ("
-					+ ( ( error == WSAEBADF ) ? 
+					+ ( ( error == WSAEBADF ) ?
 						string( "WSAEBADF" ) : string( "WSAENOTSOCK" ) )
 					+ ")." ) ;
-				
-				for ( list<InputStream*>::iterator it = is.begin(); 
+
+				for ( list<InputStream*>::iterator it = is.begin();
 					it != is.end(); it++ )
 				{
-				
+
 					fd_set testFDSet ;
 					FD_ZERO( & testFDSet ) ;
-					
+
 					FileDescriptor testedFD = (*it)->getInputStreamID() ;
 					FD_SET( testedFD, & testFDSet ) ;
-					
+
 					// No waiting desired:
 					struct timeval timeout ;
 					timeout.tv_sec  = 0 ;
-           			timeout.tv_usec = 0 ;
-					
-					if ( ::select( 
-						/* number of FD */ testedFD + 1, 
-						/* for reading  */ &testFDSet, 
-						/* for writing  */ 0, 
-						/* for errors   */ 0, 
+					timeout.tv_usec = 0 ;
+
+					if ( ::select(
+						/* number of FD */ testedFD + 1,
+						/* for reading  */ &testFDSet,
+						/* for writing  */ 0,
+						/* for errors   */ 0,
 						/* for time-out */ &timeout ) == SOCKET_ERROR )
 					{
 
 						error = Network::getSocketError() ;
 						if ( error == WSAEBADF || error == WSAENOTSOCK )
 						{
-					
+
 							LogPlug::error( "InputStream::Select: "
-								"following stream is faulty: " 
+								"following stream is faulty: "
 								+ (*it)->toString()
-								+ ", flagging it as such ("	
-								+ ( ( error == WSAEBADF ) ? 
-									string( "WSAEBADF" ) : 
+								+ ", flagging it as such ("
+								+ ( ( error == WSAEBADF ) ?
+									string( "WSAEBADF" ) :
 									string( "WSAENOTSOCK" ) )
 								+ ")." ) ;
 							(*it)->setFaulty( true ) ;
-						
+
 						}
-							
+
 					}
-				
+
 				}
 			}
 			else
 			{
-			
+
 				LogPlug::error( "InputStream::Select: "
-					"no InputStream selected ("	+ Network::explainSocketError()
+					"no InputStream selected (" + Network::explainSocketError()
 					+ "), retrying in " + Ceylan::toString( selectWaitingTime )
 					+ " second(s) ..." ) ;
-					
+
 				Thread::Sleep( selectWaitingTime ) ;
-					
+
 			}
-				
-			
+
+
 		}
 		else
 		{
 			if ( selectedCount > 0 )
 				break ;
 		}
-		
+
 	} // for: more select attempts left
 
 	if ( attemptCount == 0 )
@@ -699,7 +696,7 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 
 #else // CEYLAN_USES_NETWORK
 
-	throw InputStream::SelectFailedException( 
+	throw InputStream::SelectFailedException(
 		"InputStream::Select operation not supported on Windows "
 		"when the network feature is disabled." ) ;
 
@@ -735,12 +732,12 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 	/// Maximum number of select attempts.
 	const int selectAttemptCount = 5 ;
 
-	
+
 	/// Maximum number of select attempts.
 
 	/**
-	 * Each thread will wait for selectWaitingTime seconds before 
-	 * retrying a blocking select.
+	 * Each thread will wait for selectWaitingTime seconds before retrying a
+	 * blocking select.
 	 *
 	 */
 	const Ceylan::Uint8 selectWaitingTime = 2 ;
@@ -748,81 +745,81 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 	Ceylan::Uint8 attemptCount = selectAttemptCount ;
 
 	int selectedCount ;
-	
+
 	for ( ; attemptCount; attemptCount-- )
 	{
-		
-			
+
+
 		// Will block for ever until an error or some data is coming:
-		selectedCount = ::select( 
-			/* number of FD */ maxFD + 1, 
-			/* for reading  */ & waitFDSet, 
-			/* for writing  */ 0, 
-			/* for errors   */ 0, 
+		selectedCount = ::select(
+			/* number of FD */ maxFD + 1,
+			/* for reading  */ & waitFDSet,
+			/* for writing  */ 0,
+			/* for errors   */ 0,
 			/* for time-out */ 0 ) ;
-		
+
 		if ( selectedCount < 0 )
 		{
-	
+
 			// Error:
-			
+
 			if ( System::getError() == EBADF )
 			{
-			
+
 				LogPlug::error( "InputStream::Select: there seems to be "
 					"at least one bad file descriptor in the list, "
 					"checking them to flag them as faulty." ) ;
-				
-				for ( list<InputStream*>::iterator it = is.begin(); 
+
+				for ( list<InputStream*>::iterator it = is.begin();
 					it != is.end(); it++ )
 				{
-				
+
 					fd_set testFDSet ;
 					FD_ZERO( & testFDSet ) ;
-					
+
 					FileDescriptor testedFD = (*it)->getInputStreamID() ;
 					FD_SET( testedFD, & testFDSet ) ;
-					
+
 					// No waiting desired:
 					struct timeval timeout ;
 					timeout.tv_sec  = 0 ;
-           			timeout.tv_usec = 0 ;
-					
-					if ( ( ::select( testedFD + 1, 
+					timeout.tv_usec = 0 ;
+
+					if ( ( ::select( testedFD + 1,
 							&testFDSet, 0, 0, &timeout ) < 0 )
 						&& ( System::getError() == EBADF ) )
 					{
-					
+
 						LogPlug::error( "InputStream::Select: "
-							"following stream is faulty: " 
+							"following stream is faulty: "
 							+ (*it)->toString()
 							+ ", flagging it as such." ) ;
 						(*it)->setFaulty( true ) ;
-							
+
 					}
-				
+
 				}
 			}
 			else
 			{
-			
+
 				LogPlug::error( "InputStream::Select: "
 					"no InputStream selected ("	+ explainError()
 					+ "), retrying in " + Ceylan::toString( selectWaitingTime )
 					+ " second(s) ..." ) ;
-					
+
 				Thread::Sleep( selectWaitingTime ) ;
-					
+
 			}
-				
-			
+
+
 		}
 		else
 		{
 			if ( selectedCount > 0 )
 				break ;
 		}
-		
+
 	} // for: more select attempts left
 
 	if ( attemptCount == 0 )
@@ -845,12 +842,12 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS
-	
+
 	// No file descriptors available on platforms such as Windows:
 	throw SelectFailedException( "InputStream::Select: "
 		"File descriptor feature not available on this platform." ) ;
-	
-#endif // CEYLAN_USES_FILE_DESCRIPTORS	
+
+#endif // CEYLAN_USES_FILE_DESCRIPTORS
 
 #endif // CEYLAN_ARCH_WINDOWS
 
@@ -860,7 +857,7 @@ Ceylan::Uint16 InputStream::Select( list<InputStream*> & is )
 
 
 
-Ceylan::Uint16 InputStream::Test( list<InputStream*> & is ) 
+Ceylan::Uint16 InputStream::Test( list<InputStream*> & is )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
@@ -869,7 +866,7 @@ Ceylan::Uint16 InputStream::Test( list<InputStream*> & is )
 		"not available on the Nintendo DS." ) ;
 
 #else // CEYLAN_ARCH_NINTENDO_DS
-		
+
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
 	if ( is.empty() )
@@ -901,56 +898,56 @@ Ceylan::Uint16 InputStream::Test( list<InputStream*> & is )
 
 	if ( ::select( maxFD + 1, & waitFDSet, 0, 0, & tv ) < 0 )
 	{
-	
+
 		// Error:
-			
+
 		if ( System::getError() == EBADF )
 		{
-			
+
 			LogPlug::error( "InputStream::Test: there seems to be "
 				"at least one bad file descriptor in the list, "
 				"checking them to flag them as faulty." ) ;
-				
-			for ( list<InputStream*>::iterator it = is.begin(); 
+
+			for ( list<InputStream*>::iterator it = is.begin();
 				it != is.end(); it++ )
 			{
-				
+
 				fd_set testFDSet ;
 				FD_ZERO( & testFDSet ) ;
-					
+
 				FileDescriptor testedFD = (*it)->getInputStreamID() ;
 				FD_SET( testedFD, & testFDSet ) ;
-				
+
 				// No waiting desired:
 				struct timeval timeout ;
 				timeout.tv_sec  = 0 ;
-           		timeout.tv_usec = 0 ;
-					
-				if ( ( ::select( testedFD + 1, 
+				timeout.tv_usec = 0 ;
+
+				if ( ( ::select( testedFD + 1,
 						&testFDSet, 0, 0, &timeout ) < 0 )
 					&& ( System::getError() == EBADF ) )
 				{
-					
+
 					LogPlug::error( "InputStream::Select: "
 						"following stream is faulty: " + (*it)->toString()
 						+ ", flagging it as such." ) ;
-				
+
 					(*it)->setFaulty( true ) ;
-							
+
 				}
-				
+
 			}
-			
+
 		}
 		else // a real error:
 		{
-				
+
 			throw SelectFailedException(
 				"InputStream select failed in non-blocking test method: "
 				+ explainError( getError() ) ) ;
 		}
-		
-		
+
+
 	}
 
 
@@ -965,14 +962,14 @@ Ceylan::Uint16 InputStream::Test( list<InputStream*> & is )
 	}
 
 	return selectedCount ;
-	
+
 #else // if CEYLAN_USES_FILE_DESCRIPTORS
-	
+
 	// No file descriptors available on platforms such as Windows:
 	throw SelectFailedException( "InputStream::Test: "
 		"File descriptor feature not available on this platform." ) ;
-	
-#endif // if CEYLAN_USES_FILE_DESCRIPTORS	
+
+#endif // if CEYLAN_USES_FILE_DESCRIPTORS
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
@@ -994,9 +991,9 @@ void InputStream::setSelected( bool newStatus )
 		LogPlug::debug( "InputStream::setSelected: selecting descriptor #"
 			+ Ceylan::toString( getInputStreamID() ) ) ;
 #endif // CEYLAN_DEBUG_LOW_LEVEL_STREAMS
-			
+
 	_isSelected = newStatus ;
-	
+
 }
 
 
@@ -1005,14 +1002,13 @@ void InputStream::setFaulty( bool newFaultyState )
 {
 
 	_isFaulty = newFaultyState ;
-	
+
 }
 
 
 
-void InputStream::setStreamID( StreamID newInputStreamID ) 
+void InputStream::setStreamID( StreamID newInputStreamID )
 {
 	throw InputStreamException( "InputStream::setStreamID: "
 		"operation not supportedby this class." ) ;
 }
-

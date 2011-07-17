@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -27,7 +27,7 @@
 #include "CeylanStream.h"
 
 
-#include "CeylanLogPlug.h"                    // for Log primitives
+#include "CeylanLogPlug.h"     // for Log primitives
 #include "CeylanOperators.h"   // for toString
 
 
@@ -51,8 +51,8 @@ extern "C"
 
 #include "fat.h"                          // for Chishm's libfat
 
-#include <fcntl.h> 
-#include <unistd.h> 
+#include <fcntl.h>
+#include <unistd.h>
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
@@ -81,8 +81,8 @@ Stream::Stream( bool blocking ) :
 {
 
 }
-		
-		
+
+
 Stream::~Stream() throw()
 {
 
@@ -94,7 +94,7 @@ bool Stream::isBlocking() const
 {
 
 	return _isBlocking ;
-	
+
 }
 
 
@@ -104,59 +104,59 @@ const std::string Stream::toString( Ceylan::VerbosityLevels level ) const
 
 	if ( _isBlocking )
 		return "Blocking Stream" ;
-	else	
+	else
 		return "Non-blocking Stream" ;
-		
+
 }
 
-	
-	
+
+
 bool Stream::Close( FileDescriptor & fd )
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
 	//LogPlug::trace( "Stream::Close: begin" ) ;
-	
+
 	if ( fd > 0 )
 	{
-	
-		int volatile ret ; 
-		
+
+		int volatile ret ;
+
 		do
 		{
 			ret = ::close( fd ) ;
-		}	
+		}
 		while ( ( ret == -1 ) && ( errno == EINTR ) ) ;
-		
+
 		if ( ret == -1 )
 		{
-			
+
 			switch( errno )
 			{
-			
+
 				case EBADF:
 					throw Stream::CloseException( "Ceylan::System::close: "
-						"file descriptor " + Ceylan::toString( fd ) 
+						"file descriptor " + Ceylan::toString( fd )
 						+ " is invalid." ) ;
-						
+
 				case EIO:
 					throw Stream::CloseException( "Ceylan::System::close: "
-						"an I/O error occurred with file descriptor " 
+						"an I/O error occurred with file descriptor "
 						+ Ceylan::toString( fd ) + "." ) ;
-							
+
 				default:
 					throw Stream::CloseException( "Ceylan::System::close: "
-						"unexpected error occurred with file descriptor " 
+						"unexpected error occurred with file descriptor "
 						+ Ceylan::toString( fd ) + "." ) ;
-						
-			}	
-		} 
-		
+
+			}
+		}
+
 		fd = 0 ;
-		
+
 		return true ;
-		
+
 	}
 
 	return false ;
@@ -172,15 +172,13 @@ bool Stream::Close( FileDescriptor & fd )
 
 
 
-void Stream::setBlocking( bool newStatus ) 
+void Stream::setBlocking( bool newStatus )
 {
 
 	// To be overriden by child classes supporting it (ex: sockets):
 	if ( newStatus == false )
-		throw NonBlockingNotSupportedException( 
+		throw NonBlockingNotSupportedException(
 			"Stream::setBlocking: this stream cannot be put in "
 			"non-blocking mode." ) ;
 
 }
-
-	

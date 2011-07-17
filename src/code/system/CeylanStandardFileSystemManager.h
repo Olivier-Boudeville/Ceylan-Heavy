@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -48,19 +48,19 @@ namespace Ceylan
 
 
 
-		class CEYLAN_DLL StandardFileSystemManagerException: 
+		class CEYLAN_DLL StandardFileSystemManagerException :
 			public FileSystemManagerException
-		{ 
-		
-			public: 
-			
-				explicit StandardFileSystemManagerException( 
+		{
+
+			public:
+
+				explicit StandardFileSystemManagerException(
 						const std::string & reason ) :
 					FileSystemManagerException( reason )
 				{
-				
-				}								
-					
+
+				}
+
 		} ;
 
 
@@ -72,10 +72,10 @@ namespace Ceylan
 		 *
 		 * Standard (POSIX and all) calls are issued by this class.
 		 *
-         * Use GetStandardFileSystemManager to retrieve this manager.
-         *
+		 * Use GetStandardFileSystemManager to retrieve this manager.
+		 *
 		 */
-		class CEYLAN_DLL StandardFileSystemManager: public FileSystemManager
+		class CEYLAN_DLL StandardFileSystemManager : public FileSystemManager
 		{
 
 
@@ -84,35 +84,35 @@ namespace Ceylan
 
 
 				/*
-				 * No static methods exposed: the user is expected to call  
-				 * them from the abstract mother classes: File, Directory and
+				 * No static methods exposed: the user is expected to call them
+				 * from the abstract mother classes: File, Directory and
 				 * FileSystemManager.
 				 *
-				 * So only the pure virtual methods of FileSystemManager have
-				 * to be defined in this child class, that must not be abstract.
+				 * So only the pure virtual methods of FileSystemManager have to
+				 * be defined in this child class, that must not be abstract.
 				 *
 				 */
-				 
-				
-				
-				
+
+
+
+
 				// FileSystemManager-specific section.
-						
-				
-				
+
+
+
 				/**
 				 * Tells whether the filesystem entry <b>entryPath</b> exists,
-				 * be it a file, a symbolic link, a directory, a character
-				 * or block device, a FIFO, a socket, etc.
+				 * be it a file, a symbolic link, a directory, a character or
+				 * block device, a FIFO, a socket, etc.
 				 *
 				 * @param entryPath the path of the entry to look-up.
 				 *
 				 * @throw EntryLookupFailed if the operation failed (existence
-				 * test failed with no answer) or is not supported on this 
+				 * test failed with no answer) or is not supported on this
 				 * platform.
 				 *
 				 */
-				virtual bool existsAsEntry( const std::string & entryPath ) 
+				virtual bool existsAsEntry( const std::string & entryPath )
 					const ;
 
 
@@ -140,11 +140,11 @@ namespace Ceylan
 				 *
 				 * @param entryPath the path of the entry.
 				 *
-				 * @throw GetChangeTimeFailed if the operation failed or
-				 * is not supported.
+				 * @throw GetChangeTimeFailed if the operation failed or is not
+				 * supported.
 				 *
 				 */
-				virtual time_t getEntryChangeTime( 
+				virtual time_t getEntryChangeTime(
 					const std::string & entryPath ) ;
 
 
@@ -154,7 +154,7 @@ namespace Ceylan
 				// Accessors to FilesystemManager constants.
 
 
-				
+
 				/**
 				 * Returns the root directory prefix.
 				 *
@@ -162,9 +162,9 @@ namespace Ceylan
 				 *
 				 */
 				virtual const std::string & getRootDirectoryPrefix() const ;
-	
-	
-	
+
+
+
 				/**
 				 * Returns the directory separator, as a Latin-1 character.
 				 *
@@ -172,31 +172,32 @@ namespace Ceylan
 				 *
 				 */
 				virtual Ceylan::Latin1Char getSeparator() const ;
-	
-	
-	
+
+
+
 				/*
 				 * Already available from FileSystemManager:
+				 *
 				 *   - getSeparatorAsString()
 				 *   - getAliasForCurrentDirectory()
 				 *   - getAliasForParentDirectory()
 				 *
 				 */
-	
-	
+
+
 
 
 
 				// File-related section.
-				
-				
-				
+
+
+
 				/**
 				 * Returns a StandardFile reference on a newly created file.
 				 *
 				 * By default, it creates a new file on disk. If the name
-				 * corresponds to an already-existing file, it will be
-				 * truncated and overwritten.
+				 * corresponds to an already-existing file, it will be truncated
+				 * and overwritten.
 				 *
 				 * @param filename the name of the file.
 				 *
@@ -213,16 +214,19 @@ namespace Ceylan
 				 * instead, as it is the cross-platform factory intended for
 				 * use.
 				 *
+				 * @return A reference to a new file instance, whose ownership
+				 * is transferred to the caller.
+				 *
 				 * @throw FileException, including FileCreationFailed if the
 				 * operation failed or is not supported on this platform.
 				 *
 				 */
-				virtual File & createFile( const std::string & filename, 
+				virtual File & createFile( const std::string & filename,
 					OpeningFlag createFlag = File::CreateToWriteBinary,
 					PermissionFlag permissionFlag = File::OwnerReadWrite ) ;
 
-				
-				
+
+
 				/**
 				 * Returns a File reference on specified already-existing file,
 				 * which will be opened with specified settings.
@@ -238,30 +242,33 @@ namespace Ceylan
 				 * instead, as it is the cross-platform factory intended for
 				 * use.
 				 *
+				 * @return A reference to a new file instance, whose ownership
+				 * is transferred to the caller.
+				 *
 				 * @throw FileException, including FileOpeningFailed if the
 				 * operation failed or is not supported on this platform.
 				 *
 				 */
-				virtual File & openFile( const std::string & filename, 
+				virtual File & openFile( const std::string & filename,
 					OpeningFlag openFlag = File::OpenToReadBinary ) ;
-				
-					
-					
+
+
+
 				/**
-				 * Tells whether the regular file or symbolic link 
+				 * Tells whether the regular file or symbolic link
 				 * <b>filename</b> exists (and is not a directory).
 				 *
 				 * @param filename the filename to look-up.
 				 *
-				 * This method will work as expected whether the 
-				 * symbolic link feature is enabled or not.
+				 * This method will work as expected whether the symbolic link
+				 * feature is enabled or not.
 				 *
 				 * @throw FileLookupFailed if the operation failed (existence
-				 * test failed with no answer) or is not supported on this 
+				 * test failed with no answer) or is not supported on this
 				 * platform.
 				 *
 				 */
-				virtual bool existsAsFileOrSymbolicLink( 
+				virtual bool existsAsFileOrSymbolicLink(
 					const std::string & filename ) const ;
 
 
@@ -336,7 +343,7 @@ namespace Ceylan
 				 * failed or is not supported on this platform.
 				 *
 				 */
-				virtual time_t getLastChangeTimeFile( 
+				virtual time_t getLastChangeTimeFile(
 					const std::string & filename ) ;
 
 
@@ -346,17 +353,17 @@ namespace Ceylan
 
 
 				/**
-				 * Updates the last access and modification times of 
-				 * specified file.
+				 * Updates the last access and modification times of specified
+				 * file.
 				 *
 				 * This is not expected to work for directories.
 				 *
-				 * @param filename the filename of the file whose times must
-				 * be updated.
+				 * @param filename the filename of the file whose times must be
+				 * updated.
 				 *
-				 * @note On contrary to the UNIX command touch, if the
-				 * specified file does not exist, it will not be created.
-				 * A FileTouchFailed exception would be raised instead.
+				 * @note On contrary to the UNIX command touch, if the specified
+				 * file does not exist, it will not be created. A
+				 * FileTouchFailed exception would be raised instead.
 				 *
 				 * @see File::Create to create empty files.
 				 *
@@ -372,33 +379,36 @@ namespace Ceylan
 
 
 
-			
+
 				// Directory-related section.
-			
+
 
 				// Factory-related subsection.
 
-				
+
 				/**
-				 * Returns a Directory reference on a directory newly created
-				 * on filesystem.
+				 * Returns a Directory reference on a directory newly created on
+				 * filesystem.
 				 *
 				 * @param newDirectoryName the name of the directory to create.
 				 *
-				 * @note StandardDirectory helper factory, has to be public 
-				 * but the user should not use it: Directory::Create is 
-				 * expected to be used instead, as it is the cross-platform
-				 * factory intended for use.
+				 * @note StandardDirectory helper factory, has to be public but
+				 * the user should not use it: Directory::Create is expected to
+				 * be used instead, as it is the cross-platform factory intended
+				 * for use.
+				 *
+				 * @return A reference to a new directory instance, whose
+				 * ownership is transferred to the caller.
 				 *
 				 * @throw DirectoryException, including DirectoryCreationFailed
 				 * if the directory creation failed.
 				 *
 				 */
-				virtual Directory & createDirectory( 
+				virtual Directory & createDirectory(
 					const std::string & newDirectoryName ) ;
 
-				
-				
+
+
 				/**
 				 * Returns a Directory reference on specified already-existing
 				 * directory, which will be "opened" (i.e. referred to).
@@ -407,36 +417,39 @@ namespace Ceylan
 				 * specified (the string is empty), returns a reference to the
 				 * current working directory.
 				 *
-				 * @note StandardDirectory helper factory, has to be public 
-				 * but the user should not use it: Directory::Open is 
-				 * expected to be used instead, as it is the cross-platform
-				 * factory intended for use.
+				 * @note StandardDirectory helper factory, has to be public but
+				 * the user should not use it: Directory::Open is expected to be
+				 * used instead, as it is the cross-platform factory intended
+				 * for use.
+				 *
+				 * @return A reference to a new directory instance, whose
+				 * ownership is transferred to the caller.
 				 *
 				 * @throw DirectoryException, including DirectoryOpeningFailed
 				 * if the directory opening failed.
 				 *
 				 */
-				virtual Directory & openDirectory( 
+				virtual Directory & openDirectory(
 					const std::string & directoryName = "" ) ;
-					
+
 
 
 				/**
-				 * Tells whether the directory <b>directoryPath</b> exists 
-				 * and is a directory indeed.
+				 * Tells whether the directory <b>directoryPath</b> exists and
+				 * is a directory indeed.
 				 *
 				 * @param directoryPath the directory path to look-up.
 				 *
-				 * @note On Windows, files and directories are 
-				 * case-insensitive, and 'c:' is not a directory 
-				 * (it is seen as a drive), whereas 'c:\' is a directory.
+				 * @note On Windows, files and directories are case-insensitive,
+				 * and 'c:' is not a directory (it is seen as a drive), whereas
+				 * 'c:\' is a directory.
 				 *
 				 * @throw DirectoryLookupFailed if the operation failed
-				 * (existence test failed with no answer) or is not supported 
-				 * on this platform.
+				 * (existence test failed with no answer) or is not supported on
+				 * this platform.
 				 *
 				 */
-				virtual bool existsAsDirectory( 
+				virtual bool existsAsDirectory(
 					const std::string & directoryPath ) const ;
 
 
@@ -446,14 +459,13 @@ namespace Ceylan
 				 *
 				 * @param directoryPath the path of the target directory.
 				 *
-				 * @param recursive if false, the specified directory is 
-				 * expected to be empty, and it will be removed. If true,
-				 * then the full directory content (including all files and
-				 * possible subdirectories) and this directory itself will be
-				 * removed.
+				 * @param recursive if false, the specified directory is
+				 * expected to be empty, and it will be removed. If true, then
+				 * the full directory content (including all files and possible
+				 * subdirectories) and this directory itself will be removed.
 				 *
-				 * @throw DirectoryRemoveFailed if the operation failed or 
-				 * is not supported.
+				 * @throw DirectoryRemoveFailed if the operation failed or is
+				 * not supported.
 				 *
 				 */
 				virtual void removeDirectory( const std::string & directoryPath,
@@ -475,7 +487,7 @@ namespace Ceylan
 				 * supported on this platform.
 				 *
 				 */
-				virtual void moveDirectory( 
+				virtual void moveDirectory(
 					const std::string & sourceDirectoryPath,
 					const std::string & targetDirectoryPath ) ;
 
@@ -493,7 +505,7 @@ namespace Ceylan
 				 * supported on this platform.
 				 *
 				 */
-				virtual void copyDirectory( 
+				virtual void copyDirectory(
 					const std::string & sourceDirectoryPath,
 					const std::string & targetDirectoryPath ) ;
 
@@ -509,31 +521,31 @@ namespace Ceylan
 				 * failed or is not supported on this platform.
 				 *
 				 */
-				virtual time_t getLastChangeTimeDirectory( 
+				virtual time_t getLastChangeTimeDirectory(
 					const std::string & directoryPath ) ;
-					
-					
-					
+
+
+
 				/**
 				 * Returns whether specified string is a valid directory path.
-				 * (i.e. checks the name can be used, does not look-up any
-				 * real filesystem entry).
+				 * (i.e. checks the name can be used, does not look-up any real
+				 * filesystem entry).
 				 *
 				 * @param directoryString the directory string to examine.
 				 *
-				 * @note If no regular expression support is available, 
-				 * then the path will be deemed always correct.
+				 * @note If no regular expression support is available, then the
+				 * path will be deemed always correct.
 				 *
 				 */
-				virtual bool isAValidDirectoryPath( 
+				virtual bool isAValidDirectoryPath(
 					const std::string & directoryString ) ;
-			
-			
-			
+
+
+
 				// removeLeadingSeparator inherited.
-			
-			
-			
+
+
+
 				/**
 				 * Tells whether specified path is an absolute path.
 				 *
@@ -541,14 +553,14 @@ namespace Ceylan
 				 *
 				 */
 				virtual bool isAbsolutePath( const std::string & path ) ;
-			
-			
-			
+
+
+
 				/**
 				 * Returns the current working directory path.
 				 *
-				 * @throw DirectoryGetCurrentFailed if the operation failed 
-				 * or is not supported on the target platform.
+				 * @throw DirectoryGetCurrentFailed if the operation failed or
+				 * is not supported on the target platform.
 				 *
 				 */
 				virtual std::string getCurrentWorkingDirectoryPath() ;
@@ -561,11 +573,11 @@ namespace Ceylan
 				 *
 				 * @param newWorkingDirectory the target working directory.
 				 *
-				 * @throw DirectoryChangeFailed if the operation failed 
-				 * or is not supported on the target platform.
+				 * @throw DirectoryChangeFailed if the operation failed or is
+				 * not supported on the target platform.
 				 *
 				 */
-				virtual void changeWorkingDirectory( 
+				virtual void changeWorkingDirectory(
 					const std::string & newWorkingDirectory ) ;
 
 
@@ -581,11 +593,11 @@ namespace Ceylan
 
 
 				// StandardFileSystemManager own section.
-				
+
 
 				/**
-				 * Returns a user-friendly description of the state of 
-				 * this object.
+				 * Returns a user-friendly description of the state of this
+				 * object.
 				 *
 				 * @param level the requested verbosity level.
 				 *
@@ -594,21 +606,21 @@ namespace Ceylan
 				 * @see TextDisplayable
 				 *
 				 */
-	            virtual const std::string toString( 
+				virtual const std::string toString(
 					Ceylan::VerbosityLevels level = Ceylan::high ) const ;
-	
+
 
 
 
 
 
 				// Static section to handle standard filesystem manager.
-			
+
 
 
 				/**
-				 * Returns a reference to the unique standard filesystem 
-				 * manager. 
+				 * Returns a reference to the unique standard filesystem
+				 * manager.
 				 *
 				 * Does not set this filesystem manager as the default one.
 				 *
@@ -621,7 +633,7 @@ namespace Ceylan
 				 * failed.
 				 *
 				 */
-				static StandardFileSystemManager & 
+				static StandardFileSystemManager &
 					GetStandardFileSystemManager() ;
 
 
@@ -631,17 +643,17 @@ namespace Ceylan
 				 *
 				 * Must be public, as ancestor has to be able to call it.
 				 *
-				 * @note Removing such manager, if it was set as the default 
+				 * @note Removing such manager, if it was set as the default
 				 * one, will remove it as well.
 				 *
 				 */
 				static void RemoveStandardFileSystemManager() ;
-			
-			
-			
-			
+
+
+
+
 				/**
-				 * Constructs a reference to a standard filesystem, initializes 
+				 * Constructs a reference to a standard filesystem, initializes
 				 * accordingly any needed subsystem.
 				 *
 				 * Cannot be private, as has to be subclassed.
@@ -661,7 +673,7 @@ namespace Ceylan
 
 
 				/**
-				 * Destroys the Ceylan standard filesystem reference, not the 
+				 * Destroys the Ceylan standard filesystem reference, not the
 				 * filesystem itself.
 				 *
 				 * Cannot be private as has to be subclassed.
@@ -676,8 +688,8 @@ namespace Ceylan
 				 *
 				 * @param fd the file descriptor to duplicate.
 				 *
-				 * @throw DuplicateFailed if the operation failed or
-				 * if the file descriptor feature is not available.
+				 * @throw DuplicateFailed if the operation failed or if the file
+				 * descriptor feature is not available.
 				 *
 				 */
 				static FileDescriptor Duplicate( FileDescriptor fd ) ;
@@ -686,12 +698,12 @@ namespace Ceylan
 
 
 			private:
-				
-				
-				
+
+
+
 				// Directory constants.
-				
-				
+
+
 				/**
 				 * Root directory prefix.
 				 * @example "" on Unix, "c:" on Windows.
@@ -708,49 +720,48 @@ namespace Ceylan
 				 *
 				 */
 				static const Ceylan::Latin1Char Separator ;
-				
-						
-						
+
+
+
 				/**
-				 * Copy constructor made private to ensure that it will
-				 * be never called.
+				 * Copy constructor made private to ensure that it will be never
+				 * called.
 				 *
 				 * The compiler should complain whenever this undefined
 				 * constructor is called, implicitly or not.
-				 * 
-				 */			 
-				StandardFileSystemManager( 
-					const StandardFileSystemManager & source ) ;
-			
-			
-			
-				/**
-				 * Assignment operator made private to ensure that it 
-				 * will be never called.
 				 *
-				 * The compiler should complain whenever this undefined 
-				 * operator is called, implicitly or not.
-				 * 
-				 */			 
-				StandardFileSystemManager & operator = ( 
+				 */
+				StandardFileSystemManager(
 					const StandardFileSystemManager & source ) ;
-				
-				
-					
-					
+
+
+
+				/**
+				 * Assignment operator made private to ensure that it will be
+				 * never called.
+				 *
+				 * The compiler should complain whenever this undefined operator
+				 * is called, implicitly or not.
+				 *
+				 */
+				StandardFileSystemManager & operator = (
+					const StandardFileSystemManager & source ) ;
+
+
+
 				/// Pointer to the current standard filesystem manager (if any).
 				static StandardFileSystemManager * _StandardFileSystemManager ;
-				
-				
+
+
 
 		} ;
-		
+
 
 	}
+	
 
 }
 
 
 
 #endif // CEYLAN_STANDARD_FILE_SYSTEM_MANAGER_H_
-

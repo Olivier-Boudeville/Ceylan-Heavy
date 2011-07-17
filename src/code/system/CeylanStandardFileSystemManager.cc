@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -32,7 +32,7 @@
 
 #include "CeylanStringUtils.h"       // for StringSize
 #include "CeylanOperators.h"         // for toString
-#include "CeylanHolder.h"          // for Holder template
+#include "CeylanHolder.h"            // for Holder template
 #include "CeylanRegularExpression.h" // for RegExp
 
 
@@ -41,7 +41,7 @@
 #endif // CEYLAN_USES_CONFIG_H
 
 
-#include <fstream>   // for this class
+#include <fstream>                   // for this class
 using std::ifstream ;
 using std::ios ;
 
@@ -63,11 +63,11 @@ extern "C"
 #endif // CEYLAN_USES_SYS_STAT_H
 
 #ifdef CEYLAN_USES_UTIME_H
-#include <utime.h>             // for utime     
+#include <utime.h>             // for utime
 #endif // CEYLAN_USES_UTIME_H
 
 #ifdef CEYLAN_USES_SYS_UTIME_H
-#include <sys/utime.h>         // for utime     
+#include <sys/utime.h>         // for utime
 #endif // CEYLAN_USES_SYS_UTIME_H
 
 }
@@ -114,33 +114,33 @@ bool StandardFileSystemManager::existsAsEntry( const string & entryPath ) const
 #ifdef CEYLAN_USES_STAT
 
 	struct stat buf ;
-	
+
 	return ( ::stat( entryPath.c_str(), & buf ) == 0 ) ;
-	
+
 #else // CEYLAN_USES_STAT
 
 #ifdef CEYLAN_USES__STAT
 
 	struct _stat buf ;
-	
+
 	return ( ::_stat( entryPath.c_str(), & buf ) == 0 ) ;
 
 
 #else // CEYLAN_USES__STAT
 
-	throw EntryLookupFailed( 
+	throw EntryLookupFailed(
 		"StandardFileSystemManager::existsAsEntry: "
 		"not available on this platform." ) ;
 
 #endif // CEYLAN_USES__STAT
 
 #endif // CEYLAN_USES_STAT
-	
+
 }
 
 
 
-void StandardFileSystemManager::createSymbolicLink( 
+void StandardFileSystemManager::createSymbolicLink(
 	const string & linkTarget, const string & linkName )
 {
 
@@ -148,15 +148,15 @@ void StandardFileSystemManager::createSymbolicLink(
 
 	if ( ::symlink( linkTarget.c_str(), linkName.c_str() ) == -1 )
 		throw SymlinkFailed( "StandardFileSystemManager::createSymbolicLink "
-			"failed when creating link '" + linkName 
-			+ "' which was to point to '" + linkTarget 
+			"failed when creating link '" + linkName
+			+ "' which was to point to '" + linkTarget
 			+ "': " + System::explainError() ) ;
-		
+
 #else // CEYLAN_USES_SYMBOLIC_LINKS
 
 	throw SymlinkFailed( "StandardFileSystemManager::createSymbolicLink: "
 		"symbolic link feature not available" ) ;
-		
+
 #endif // CEYLAN_USES_SYMBOLIC_LINKS
 
 }
@@ -167,14 +167,14 @@ time_t StandardFileSystemManager::getEntryChangeTime( const string & entryPath )
 {
 
 #ifdef CEYLAN_USES_STAT
-	
+
 	struct stat buf ;
 
 	if ( ::stat( entryPath.c_str(), & buf ) == 0 )
 		return buf.st_ctime ;
 
 	// "else" clause at the end of the method.
-			
+
 #else // CEYLAN_USES_STAT
 
 
@@ -197,14 +197,14 @@ time_t StandardFileSystemManager::getEntryChangeTime( const string & entryPath )
 
 #endif // CEYLAN_USES_STAT
 
-	throw GetChangeTimeFailed( 
+	throw GetChangeTimeFailed(
 		"StandardFileSystemManager::getEntryChangeTime: "
 		"unable to get last change time for entry '" + entryPath + "': "
 		+ System::explainError() ) ;
 
 }
-		
-					
+
+
 
 
 
@@ -216,16 +216,16 @@ const string & StandardFileSystemManager::getRootDirectoryPrefix() const
 {
 
 	return RootDirectoryPrefix ;
-	
+
 }
 
-	 
-	    	   					
+
+
 Ceylan::Latin1Char StandardFileSystemManager::getSeparator() const
 {
 
 	return Separator ;
-	
+
 }
 
 
@@ -236,17 +236,17 @@ Ceylan::Latin1Char StandardFileSystemManager::getSeparator() const
 
 
 
-File & StandardFileSystemManager::createFile( const string & filename, 
-	OpeningFlag createFlag,	PermissionFlag permissionFlag ) 
+File & StandardFileSystemManager::createFile( const string & filename,
+	OpeningFlag createFlag, PermissionFlag permissionFlag )
 {
 
 	return StandardFile::Create( filename, createFlag, permissionFlag ) ;
-	
+
 }
 
 
 
-File & StandardFileSystemManager::openFile( const string & filename, 
+File & StandardFileSystemManager::openFile( const string & filename,
 	OpeningFlag openFlag )
 {
 
@@ -256,7 +256,7 @@ File & StandardFileSystemManager::openFile( const string & filename,
 
 
 
-bool StandardFileSystemManager::existsAsFileOrSymbolicLink( 
+bool StandardFileSystemManager::existsAsFileOrSymbolicLink(
 	const string & filename ) const
 {
 
@@ -268,24 +268,24 @@ bool StandardFileSystemManager::existsAsFileOrSymbolicLink(
 #if CEYLAN_USES_SYMBOLIC_LINKS
 
 	// Regular file or link:
-	return ( ::stat( filename.c_str(), & buf ) == 0 
+	return ( ::stat( filename.c_str(), & buf ) == 0
 		&& ( S_ISREG( buf.st_mode ) || S_ISLNK( buf.st_mode ) ) ) ;
-		
-#else // CEYLAN_USES_SYMBOLIC_LINKS 
+
+#else // CEYLAN_USES_SYMBOLIC_LINKS
 
 	// Regular file:
-	return ( ::stat( filename.c_str(), & buf ) == 0 
+	return ( ::stat( filename.c_str(), & buf ) == 0
 		&& S_ISREG( buf.st_mode ) ) ;
-	
+
 #endif // CEYLAN_USES_SYMBOLIC_LINKS
 
 #else // CEYLAN_USES_STAT
 
 #ifdef CEYLAN_USES__STAT
-	
+
 	struct _stat buf ;
 
-	return ( ::_stat( filename.c_str(), & buf ) == 0 
+	return ( ::_stat( filename.c_str(), & buf ) == 0
 		&& ( buf.st_mode & _S_IFREG ) ) ;
 
 #else // CEYLAN_USES__STAT
@@ -297,28 +297,28 @@ bool StandardFileSystemManager::existsAsFileOrSymbolicLink(
 #endif // CEYLAN_USES__STAT
 
 #endif // CEYLAN_USES_STAT
-	 	 
+
 }
 
 
 
-void StandardFileSystemManager::removeFile( const string & filename ) 
+void StandardFileSystemManager::removeFile( const string & filename )
 {
 
-#ifdef CEYLAN_USES_UNLINK	
+#ifdef CEYLAN_USES_UNLINK
 
 	if ( ::unlink( filename.c_str() ) != 0 )
-		throw FileRemoveFailed( 
+		throw FileRemoveFailed(
 			"StandardFileSystemManager::removeFile failed for '"
 			+ filename + "': " + System::explainError() ) ;
-		
+
 #else // CEYLAN_USES_UNLINK
 
-#ifdef CEYLAN_USES__UNLINK	
+#ifdef CEYLAN_USES__UNLINK
 
 	if ( ::_unlink( filename.c_str() ) != 0 )
-		throw FileRemoveFailed( 
-			"StandardFileSystemManager::removeFile failed: file '" + filename 
+		throw FileRemoveFailed(
+			"StandardFileSystemManager::removeFile failed: file '" + filename
 			+ "': " + System::explainError() ) ;
 
 #else // CEYLAN_USES__UNLINK
@@ -328,8 +328,8 @@ void StandardFileSystemManager::removeFile( const string & filename )
 
 #endif // CEYLAN_USES__UNLINK
 
-#endif // CEYLAN_USES_UNLINK	
-	
+#endif // CEYLAN_USES_UNLINK
+
 }
 
 
@@ -341,70 +341,70 @@ void StandardFileSystemManager::moveFile( const string & sourceFilename,
 #ifdef CEYLAN_USES_RENAME
 
 	// rename can move as well:
-	
+
 	if ( ::rename( sourceFilename.c_str(), targetFilename.c_str() ) == -1 )
-		throw FileMoveFailed( 
+		throw FileMoveFailed(
 			"StandardFileSystemManager::moveFile failed when moving '"
-			+ sourceFilename + "' to '" + targetFilename + "': " 
+			+ sourceFilename + "' to '" + targetFilename + "': "
 			+ System::explainError() ) ;
-		
+
 #else // CEYLAN_USES_RENAME
 
 
 	// Moving/Renaming is copying and then removing the source file:
 	try
 	{
-	
+
 		copyFile( sourceFilename, targetFilename ) ;
 		removeFile( sourceFilename ) ;
-		
+
 	}
 	catch( const FileException & e )
 	{
-	
-		throw FileMoveFailed( "StandardFileSystemManager::moveFile failed: " 
+
+		throw FileMoveFailed( "StandardFileSystemManager::moveFile failed: "
 			+ e.toString() ) ;
-		
-	}	
-	
+
+	}
+
 
 #endif // CEYLAN_USES_RENAME
-		
+
 }
 
 
 
-void StandardFileSystemManager::copyFile( const string & sourceFilename, 
+void StandardFileSystemManager::copyFile( const string & sourceFilename,
 	const string & targetFilename )
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
-	
-	
+
+
 	// saveAs only available with file descriptors for the moment.
-	
-	try 
+
+	try
 	{
-	
-		Ceylan::Holder<StandardFile> sourceFile( 
+
+		Ceylan::Holder<StandardFile> sourceFile(
 			StandardFile::Open( sourceFilename ) ) ;
-			
+
 		sourceFile->saveAs( targetFilename ) ;
 		sourceFile->close() ;
-		
+
 		// sourceFile automatically deallocated thanks to Holder.
-		
-	} 
+
+	}
 	catch ( const FileException & e )
 	{
-		throw FileCopyFailed( 
+		throw FileCopyFailed(
 			"StandardFileSystemManager::copyFile failed when copying '"
-			+ sourceFilename + "' to '" + targetFilename + "': " 
+			+ sourceFilename + "' to '" + targetFilename + "': "
 			+ e.toString() ) ;
 	}
-	
-	
-#else // if CEYLAN_USES_FILE_DESCRIPTORS	
+
+
+#else // if CEYLAN_USES_FILE_DESCRIPTORS
 
 	/*
 	 * This is only a hack with C++ streams.
@@ -416,33 +416,33 @@ void StandardFileSystemManager::copyFile( const string & sourceFilename,
 	 *
 	 * targetFile._fstream << sourceFile._fstream.rdbuf() ;
 	 *
-	 *  - or something adapted from (slower?) - 
+	 *  - or something adapted from (slower?) -
 	 *
-	 * while ( true) 
-     * {
+	 * while ( true)
+	 * {
 	 *    char c ;
 	 *	  cin.get(c) ;
 	 *	  if ( cin.fail() )
-	 *	      break;
+	 *		  break;
 	 *	  cout << c ;
 	 * }
 	 *
 	 */
-	
-	try 
+
+	try
 	{
 
 		Size fileSize = getSize( sourceFilename ) ;
-	
+
 		StandardFile & sourceFile = StandardFile::Open( sourceFilename ) ;
-		
-		// Not knowing the permissions to set with C++ Standard Library: 
+
+		// Not knowing the permissions to set with C++ Standard Library:
 		StandardFile & targetFile = StandardFile::Create(
 			targetFilename, File::CreateToWriteBinary, File::OwnerReadWrite ) ;
-		
+
 		Size written = 0 ;
-	
-		Size bufferSize = ( fileSize > File::BigBufferSize ? 
+
+		Size bufferSize = ( fileSize > File::BigBufferSize ?
 			File::BigBufferSize: fileSize ) ;
 
 		char * buf = new char[ bufferSize ] ;
@@ -451,73 +451,73 @@ void StandardFileSystemManager::copyFile( const string & sourceFilename,
 
 		while ( written < fileSize )
 		{
-		
+
 			Size toRead = fileSize - written ;
 
 			if ( toRead > bufferSize )
 				toRead = bufferSize ;
 
 			try
-			{	
-				
-				readCount = static_cast<SignedSize>( 
+			{
+
+				readCount = static_cast<SignedSize>(
 					sourceFile.read( buf, toRead ) ) ;
-					
+
 			}
 			catch( const InputStream::ReadFailedException & e )
 			{
-			
+
 				delete [] buf ;
-				
+
 				throw FileCopyFailed( "StandardFileSystemManager::copyFile "
-					"failed when copying '"	+ sourceFilename + "' to '" 
+					"failed when copying '" + sourceFilename + "' to '"
 					+ targetFilename + "': " + e.toString() ) ;
-					
+
 			}
 
 
 			try
-			{	
-				
+			{
+
 				targetFile.write( buf, readCount ) ;
-				
-			}	
+
+			}
 			catch( const OutputStream::WriteFailedException & e )
 			{
-			
+
 				delete [] buf ;
-				
+
 				throw FileCopyFailed( "StandardFileSystemManager::copyFile "
-					"failed when copying '" + sourceFilename + "' to '" 
+					"failed when copying '" + sourceFilename + "' to '"
 					+ targetFilename + "': " + e.toString() ) ;
-					
+
 			}
 
 			written += readCount ;
 		}
 
 		delete [] buf ;
-	
+
 		targetFile.close() ;
 		sourceFile.close() ;
-		
-	} 
+
+	}
 	catch ( const SystemException & e )
 	{
-	
+
 		throw FileCopyFailed( "StandardFileSystemManager::copyFile "
-			"failed when copying '"	+ sourceFilename + "' to '" 
+			"failed when copying '" + sourceFilename + "' to '"
 			+ targetFilename + "': " + e.toString() ) ;
-					
+
 	}
-	
-#endif // if CEYLAN_USES_FILE_DESCRIPTORS	
- 	
+
+#endif // if CEYLAN_USES_FILE_DESCRIPTORS
+
 }
 
 
 
-Size StandardFileSystemManager::getSize( const string & filename ) 
+Size StandardFileSystemManager::getSize( const string & filename )
 {
 
 #ifdef CEYLAN_USES_STAT
@@ -528,52 +528,52 @@ Size StandardFileSystemManager::getSize( const string & filename )
 		return static_cast<Size>( buf.st_size ) ;
 
 	throw FileSizeRequestFailed( "StandardFileSystemManager::getSize: "
-		"could not stat file '"	+ filename + "': " + System::explainError() ) ;
+		"could not stat file '" + filename + "': " + System::explainError() ) ;
 
 #else // CEYLAN_USES_STAT
 
 
-#if CEYLAN_USES_FILE_DESCRIPTORS == 0 
+#if CEYLAN_USES_FILE_DESCRIPTORS == 0
 
 	// One more hack with C++ streams:
-	
+
 	ifstream tmpFile ;
-	
+
 	tmpFile.open( filename.c_str(), ios::binary ) ;
 
 	if ( ( ! tmpFile.is_open() ) || ( ! tmpFile.good() ) )
-		throw FileSizeRequestFailed( 
+		throw FileSizeRequestFailed(
 			"StandardFileSystemManager::getSize: failed for '" + filename
-			+ "': error opening file, " 
+			+ "': error opening file, "
 			+ StandardFile::InterpretState( tmpFile ) ) ;
-				
+
 	tmpFile.seekg( 0, ios::end ) ;
-	
+
 	Size size = static_cast<Size>( tmpFile.tellg() ) ;
-	
+
 	tmpFile.close() ;
-	
+
 	return size ;
-	
+
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
 	throw FileSizeRequestFailed( "StandardFileSystemManager::getSize: "
 		"not available on this platform." ) ;
-		
-#endif // CEYLAN_USES_FILE_DESCRIPTORS 
+
+#endif // CEYLAN_USES_FILE_DESCRIPTORS
 
 #endif // CEYLAN_USES_STAT
 
 }
 
-	
-	
-time_t StandardFileSystemManager::getLastChangeTimeFile( 
+
+
+time_t StandardFileSystemManager::getLastChangeTimeFile(
 	const string & filename )
 {
 
 #ifdef CEYLAN_USES_STAT
-	
+
 	struct stat buf ;
 
 	if ( ::stat( filename.c_str(), & buf ) == 0 )
@@ -600,37 +600,37 @@ time_t StandardFileSystemManager::getLastChangeTimeFile(
 
 #endif // CEYLAN_USES_STAT
 
-	throw FileLastChangeTimeRequestFailed( 
+	throw FileLastChangeTimeRequestFailed(
 		"StandardFileSystemManager::getLastChangeTimeFile: "
 		"unable to get last change time for file '" + filename + "': "
 		+ System::explainError() ) ;
 
-}	
+}
 
 
 
-void StandardFileSystemManager::touch( const string & filename ) 
+void StandardFileSystemManager::touch( const string & filename )
 {
 
 #ifdef CEYLAN_USES_UTIME
 
 	if ( ::utime( filename.c_str(), 0 ) )
-		throw FileTouchFailed( "StandardFileSystemManager::touch failed for '" 
+		throw FileTouchFailed( "StandardFileSystemManager::touch failed for '"
 			+ filename + "': " + System::explainError() ) ;
-		
+
 #else // CEYLAN_USES_UTIME
 
 #ifdef CEYLAN_USES__UTIME
 
 	if ( ::_utime( filename.c_str(), 0 ) == -1 )
-		throw FileTouchFailed( "StandardFileSystemManager::touch failed for '" 
+		throw FileTouchFailed( "StandardFileSystemManager::touch failed for '"
 			+ filename + "': " + System::explainError() ) ;
 
 #else // CEYLAN_USES__UTIME
 
 	throw FileTouchFailed( "StandardFileSystemManager::touch "
 		"not available on this platform." ) ;
-	
+
 #endif // CEYLAN_USES__UTIME
 
 #endif // CEYLAN_USES_UTIME
@@ -638,16 +638,16 @@ void StandardFileSystemManager::touch( const string & filename )
 }
 
 
-		
-									
-	
+
+
+
 // Directory-related section.
-			
+
 
 // Factory-related subsection.
 
-										
-Directory & StandardFileSystemManager::createDirectory( 
+
+Directory & StandardFileSystemManager::createDirectory(
 	const string & newDirectoryName )
 {
 
@@ -655,9 +655,9 @@ Directory & StandardFileSystemManager::createDirectory(
 
 }
 
-	
-					
-Directory & StandardFileSystemManager::openDirectory( 
+
+
+Directory & StandardFileSystemManager::openDirectory(
 	const string & directoryName )
 {
 
@@ -665,17 +665,17 @@ Directory & StandardFileSystemManager::openDirectory(
 
 }
 
-	
-						
-bool StandardFileSystemManager::existsAsDirectory( 
+
+
+bool StandardFileSystemManager::existsAsDirectory(
 	const string & directoryPath ) const
 {
 
 #ifdef CEYLAN_USES_STAT
 
 	struct stat buf ;
-	
-	return ::stat( directoryPath.c_str(), & buf ) == 0 
+
+	return ::stat( directoryPath.c_str(), & buf ) == 0
 		&& ( S_ISDIR( buf.st_mode ) ) ;
 
 #else // CEYLAN_USES_STAT
@@ -693,7 +693,7 @@ bool StandardFileSystemManager::existsAsDirectory(
 			/*
 			CEYLAN_LOG( "StandardFileSystemManager::existsAsDirectory: "
 				+ directoryPath + " exists and is a directory" ) ;
-			*/	
+			*/
 			return true ;
 
 		}
@@ -701,19 +701,19 @@ bool StandardFileSystemManager::existsAsDirectory(
 		{
 
 			/*
-			CEYLAN_LOG( "StandardFileSystemManager::existsAsDirectory: " 
+			CEYLAN_LOG( "StandardFileSystemManager::existsAsDirectory: "
 				+ directoryPath + " exists but is not a directory" ) ;
-			*/					
+			*/
 			return false ;
 
 		}
-		
+
 	}
 	else
 	{
-		
+
 		/*
-		CEYLAN_LOG( "StandardFileSystemManager::existsAsDirectory: " 
+		CEYLAN_LOG( "StandardFileSystemManager::existsAsDirectory: "
 			+ directoryPath + " is not a directory entry" ) ;
 		*/
 
@@ -723,7 +723,7 @@ bool StandardFileSystemManager::existsAsDirectory(
 
 #else // CEYLAN_USES__STAT
 
-	throw DirectoryLookupFailed( 
+	throw DirectoryLookupFailed(
 		"StandardFileSystemManager::existsAsDirectory: "
 		"operation not supported on this platform." ) ;
 
@@ -735,9 +735,9 @@ bool StandardFileSystemManager::existsAsDirectory(
 
 
 
-void StandardFileSystemManager::removeDirectory( const string & directoryPath, 
+void StandardFileSystemManager::removeDirectory( const string & directoryPath,
 	bool recursive )
-{	
+{
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
@@ -745,7 +745,7 @@ void StandardFileSystemManager::removeDirectory( const string & directoryPath,
 		"not supported on the Nintendo DS platform." ) ;
 
 #else // CEYLAN_ARCH_NINTENDO_DS
-		
+
 #if defined(CEYLAN_USES_RMDIR) || defined(CEYLAN_USES__RMDIR)
 
 
@@ -762,7 +762,7 @@ void StandardFileSystemManager::removeDirectory( const string & directoryPath,
 #endif // CEYLAN_USES_STAT
 
 	if ( directoryPath.empty() )
-		throw DirectoryRemoveFailed( 
+		throw DirectoryRemoveFailed(
 			"StandardFileSystemManager::removeDirectory: "
 			"void directory specified" ) ;
 
@@ -780,7 +780,7 @@ void StandardFileSystemManager::removeDirectory( const string & directoryPath,
 		list<string> nodes ;
 		d.getEntries( nodes ) ;
 
-		for ( list<string>::const_iterator it = nodes.begin(); 
+		for ( list<string>::const_iterator it = nodes.begin();
 			it != nodes.end(); it++ )
 		{
 
@@ -797,7 +797,7 @@ void StandardFileSystemManager::removeDirectory( const string & directoryPath,
 #endif // CEYLAN_USES_STAT
 
 			{
-			
+
 				// Unlinks symlinks and files:
 #if CEYLAN_USES_SYMBOLIC_LINKS
 				if ( S_ISLNK( buf.st_mode ) || ! S_ISDIR( buf.st_mode ) )
@@ -820,7 +820,7 @@ void StandardFileSystemManager::removeDirectory( const string & directoryPath,
 #endif // CEYLAN_USES_UNLINK
 						throw DirectoryRemoveFailed(
 							"StandardFileSystemManager::removeDirectory"
-							" failed in unlink for '" + newPath + ": " 
+							" failed in unlink for '" + newPath + ": "
 							+ System::explainError() ) ;
 				}
 				else
@@ -835,14 +835,14 @@ void StandardFileSystemManager::removeDirectory( const string & directoryPath,
 					// Recursive call:
 					removeDirectory( newPath ) ;
 				}
-				
+
 			}
 			else
 			{
 				// stat failed:
 				throw DirectoryRemoveFailed(
 					"StandardFileSystemManager::removeDirectory "
-					"failed in stat for " + newPath +  ": " 
+					"failed in stat for " + newPath +  ": "
 					+ System::explainError() ) ;
 			}
 		}
@@ -852,15 +852,15 @@ void StandardFileSystemManager::removeDirectory( const string & directoryPath,
 #ifdef CEYLAN_USES_RMDIR
 
 	if ( ::rmdir( thisPath.c_str() ) )
-		throw DirectoryRemoveFailed( 
-			"StandardFileSystemManager::removeDirectory failed in rmdir for " 
+		throw DirectoryRemoveFailed(
+			"StandardFileSystemManager::removeDirectory failed in rmdir for "
 			+ thisPath + ": " + explainError() ) ;
 
 #elif defined(CEYLAN_USES__RMDIR) // CEYLAN_USES_RMDIR
 
 	if ( ::_rmdir( thisPath.c_str() ) )
-		throw DirectoryRemoveFailed( 
-			"StandardFileSystemManager::removeDirectory failed in _rmdir for " 
+		throw DirectoryRemoveFailed(
+			"StandardFileSystemManager::removeDirectory failed in _rmdir for "
 			+ thisPath + ": " + System::explainError() ) ;
 
 #else // CEYLAN_USES_RMDIR
@@ -885,7 +885,7 @@ void StandardFileSystemManager::removeDirectory( const string & directoryPath,
 
 
 
-void StandardFileSystemManager::moveDirectory( 
+void StandardFileSystemManager::moveDirectory(
 	const string & sourceDirectoryPath, const string & targetDirectoryPath )
 {
 
@@ -893,58 +893,58 @@ void StandardFileSystemManager::moveDirectory(
 #ifdef CEYLAN_USES_RENAME
 
 	// rename can move as well, for directories too:
-	
-	if ( ::rename( sourceDirectoryPath.c_str(), targetDirectoryPath.c_str() ) 
+
+	if ( ::rename( sourceDirectoryPath.c_str(), targetDirectoryPath.c_str() )
 			== -1 )
-		throw DirectoryMoveFailed( 
+		throw DirectoryMoveFailed(
 			"StandardFileSystemManager::moveDirectory failed when renaming '"
-			+ sourceDirectoryPath + "' into '" + targetDirectoryPath + "': " 
+			+ sourceDirectoryPath + "' into '" + targetDirectoryPath + "': "
 			+ System::explainError() ) ;
-		
+
 #else // CEYLAN_USES_RENAME
 
 
 	// Renaming is copying and then removing the source directory:
 	try
 	{
-	
+
 		copyDirectory( sourceDirectoryPath, targetDirectoryPath ) ;
 		removeDirectory( sourceDirectoryPath ) ;
-		
+
 	}
 	catch( const DirectoryException & e )
 	{
-	
-		throw DirectoryMoveFailed( 
-			"StandardFileSystemManager::moveDirectory failed: " 
+
+		throw DirectoryMoveFailed(
+			"StandardFileSystemManager::moveDirectory failed: "
 			+ e.toString() ) ;
-		
-	}	
-	
+
+	}
+
 
 #endif // CEYLAN_USES_RENAME
-		
+
 }
 
 
 
-void StandardFileSystemManager::copyDirectory( 
+void StandardFileSystemManager::copyDirectory(
 	const string & sourceDirectoryPath, const string & targetDirectoryPath )
 {
 
 	throw DirectoryCopyFailed( "StandardFileSystemManager::copyDirectory: "
 		"not supported on this platform." ) ;
-		
+
 }
 
 
 
-time_t StandardFileSystemManager::getLastChangeTimeDirectory( 
+time_t StandardFileSystemManager::getLastChangeTimeDirectory(
 	const string & directoryPath )
 {
 
 #ifdef CEYLAN_USES_STAT
-	
+
 	struct stat buf ;
 
 	if ( ::stat( directoryPath.c_str(), & buf ) == 0 )
@@ -971,39 +971,39 @@ time_t StandardFileSystemManager::getLastChangeTimeDirectory(
 
 #endif // CEYLAN_USES_STAT
 
-	throw DirectoryLastChangeTimeRequestFailed( 
+	throw DirectoryLastChangeTimeRequestFailed(
 		"StandardFileSystemManager::getLastChangeTimeDirectory: "
 		"unable to get last change time for directory '" + directoryPath + "': "
 		+ explainError() ) ;
 
 }
 
-	
 
-bool StandardFileSystemManager::isAValidDirectoryPath( 
+
+bool StandardFileSystemManager::isAValidDirectoryPath(
 	const string & directoryString )
 {
 
 #if CEYLAN_USES_REGEX
 
-	string directoryPattern = "^[" + RootDirectoryPrefix 
+	string directoryPattern = "^[" + RootDirectoryPrefix
 		+ Separator + "]{1,1}" ;
 
 	Ceylan::RegExp target( directoryString ) ;
 
 	return target.matches( directoryPattern ) ;
-	
+
 #else // CEYLAN_USES_REGEX
 
 	// A priori correct:
 	return true ;
-	
+
 #endif // CEYLAN_USES_REGEX
 
-}	
-			
-				
-			
+}
+
+
+
 bool StandardFileSystemManager::isAbsolutePath( const string & path )
 {
 
@@ -1011,11 +1011,10 @@ bool StandardFileSystemManager::isAbsolutePath( const string & path )
 		return false ;
 
 	/*
-	 * Starts with separator, or with prefix (if prefix is used):
-	 * absolute path.
+	 * Starts with separator, or with prefix (if prefix is used): absolute path.
 	 *
 	 */
-	 
+
 #if CEYLAN_ARCH_WINDOWS
 
 	/* Was:
@@ -1034,92 +1033,92 @@ bool StandardFileSystemManager::isAbsolutePath( const string & path )
 #else // CEYLAN_ARCH_WINDOWS
 
 	return ( path[0] == Separator ) ;
-	
+
 #endif // CEYLAN_ARCH_WINDOWS
 
-}	
-			
-			
-			
-std::string StandardFileSystemManager::getCurrentWorkingDirectoryPath()	
+}
+
+
+
+std::string StandardFileSystemManager::getCurrentWorkingDirectoryPath()
 {
 
 #ifdef CEYLAN_USES_GETCWD
 
 	/*
-	 * With following automatic variable, frame size is deemed 
-	 * 'too large for reliable stack checking':
-	 
+	 * With following automatic variable, frame size is deemed 'too large for
+	 * reliable stack checking':
+
 	char buf[ PATH_MAX + 1 ] ;
-	 
-	 * Another solution would be to use a static string, but this method 
-	 * would not be reentrant anymore.
+
+	 * Another solution would be to use a static string, but this method would
+	 * not be reentrant anymore.
 	 *
 	 * Hence using dynamic allocation, even if slower:
 	 *
 	 */
 
 	char * buf = new char[ PATH_MAX + 1 ] ;
-	
+
 	if ( ::getcwd( buf, PATH_MAX ) )
 	{
-	
+
 		string res( buf ) ;
 		delete [] buf ;
-		
+
 		return res ;
-		
+
 	}
 	else
 	{
-	
+
 		delete [] buf ;
-	
+
 		throw DirectoryGetCurrentFailed(
 			"StandardFileSystemManager::getCurrentWorkingDirectoryPath: "
 			"unable to determine current directory: " + explainError() ) ;
-			
-	}		
-		 
+
+	}
+
 #else // CEYLAN_USES_GETCWD
 
 #ifdef CEYLAN_USES__GETCWD
 
 
 	/*
-	 * With following automatic variable, frame size is deemed 
-	 * 'too large for reliable stack checking':
-	 
+	 * With following automatic variable, frame size is deemed 'too large for
+	 * reliable stack checking':
+
 	char buf[ PATH_MAX + 1 ] ;
-	 
-	 * Another solution would be to use a static string, but this method 
-	 * would not be reentrant anymore.
+
+	 * Another solution would be to use a static string, but this method would
+	 * not be reentrant anymore.
 	 *
 	 * Hence using dynamic allocation, even if slower:
 	 *
 	 */
 
 	char * buf = new char[ PATH_MAX + 1 ] ;
-	
+
 	if ( ::_getcwd( buf, PATH_MAX ) )
 	{
-	
+
 		string res( buf ) ;
 		delete [] buf ;
-		
+
 		return res ;
-		
+
 	}
 	else
 	{
-	
+
 		delete [] buf ;
-	
+
 		throw DirectoryGetCurrentFailed(
 			"StandardFileSystemManager::getCurrentWorkingdirectoryPath: "
 			"unable to determine current directory: " + explainError() ) ;
-			
-	}		
+
+	}
 
 #else // CEYLAN_USES__GETCWD
 
@@ -1129,13 +1128,13 @@ std::string StandardFileSystemManager::getCurrentWorkingDirectoryPath()
 
 #endif // CEYLAN_USES__GETCWD
 
-#endif // CEYLAN_USES_GETCWD		
+#endif // CEYLAN_USES_GETCWD
 
-}	
+}
 
 
 
-void StandardFileSystemManager::changeWorkingDirectory( 
+void StandardFileSystemManager::changeWorkingDirectory(
 	const string & newWorkingDirectory )
 {
 
@@ -1165,7 +1164,7 @@ void StandardFileSystemManager::changeWorkingDirectory(
 			"unable to change current working directory to "
 			+ newWorkingDirectory + ": " + explainError() ) ;
 
-}	
+}
 
 
 
@@ -1174,14 +1173,14 @@ void StandardFileSystemManager::changeWorkingDirectory(
 // StandardFileSystemManager own section.
 
 
-const string StandardFileSystemManager::toString( 
+const string StandardFileSystemManager::toString(
 	Ceylan::VerbosityLevels level ) const
 {
 
 	return "Standard filesystem manager" ;
-	
+
 }
-	
+
 
 
 
@@ -1189,49 +1188,49 @@ const string StandardFileSystemManager::toString(
 
 
 StandardFileSystemManager &
-	StandardFileSystemManager::GetStandardFileSystemManager() 
+	StandardFileSystemManager::GetStandardFileSystemManager()
 {
 
 	if ( _StandardFileSystemManager == 0 )
 		_StandardFileSystemManager = new StandardFileSystemManager() ;
-	
-	return *_StandardFileSystemManager ;	
-	
+
+	return *_StandardFileSystemManager ;
+
 }
-	
-	
-	
+
+
+
 void StandardFileSystemManager::RemoveStandardFileSystemManager()
 {
 
 	if ( _StandardFileSystemManager != 0 )
 	{
-	
+
 		if ( FileSystemManager::_CurrentDefaultFileSystemManager ==
 				_StandardFileSystemManager )
-			FileSystemManager::_CurrentDefaultFileSystemManager = 0 ;	
-			
+			FileSystemManager::_CurrentDefaultFileSystemManager = 0 ;
+
 		delete _StandardFileSystemManager ;
 		_StandardFileSystemManager = 0 ;
-		
+
 	}
-	
+
 }
 
 
 
 
-StandardFileSystemManager::StandardFileSystemManager() 
+StandardFileSystemManager::StandardFileSystemManager()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
-	throw StandardFileSystemManagerException( 
+	throw StandardFileSystemManagerException(
 		"StandardFileSystemManager constructor: "
 		"not supported on the Nintendo DS platform." ) ;
-		
+
 #endif // CEYLAN_ARCH_NINTENDO_DS
-		
+
 }
 
 
@@ -1241,7 +1240,7 @@ StandardFileSystemManager::~StandardFileSystemManager() throw()
 
 	if ( _StandardFileSystemManager == this )
 		_StandardFileSystemManager = 0 ;
-		
+
 	// Nothing else to switch off this filesystem.
 
 }
@@ -1256,14 +1255,14 @@ StandardFileSystemManager::~StandardFileSystemManager() throw()
 
 
 
-FileDescriptor StandardFileSystemManager::Duplicate( FileDescriptor fd ) 
+FileDescriptor StandardFileSystemManager::Duplicate( FileDescriptor fd )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	throw DuplicateFailed( "StandardFileSystemManager::Duplicate failed: "
 		"not supported on the Nintendo DS platform." ) ;
-	
+
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
@@ -1271,7 +1270,7 @@ FileDescriptor StandardFileSystemManager::Duplicate( FileDescriptor fd )
 	FileDescriptor newFD = ::dup( fd ) ;
 
 	if ( newFD == -1 )
-		throw DuplicateFailed( 
+		throw DuplicateFailed(
 			"StandardFileSystemManager::Duplicate failed for file descriptor "
 			+ Ceylan::toString( fd ) + "." ) ;
 
@@ -1281,10 +1280,9 @@ FileDescriptor StandardFileSystemManager::Duplicate( FileDescriptor fd )
 
 	throw DuplicateFailed( "StandardFileSystemManager::Duplicate: "
 		"file descriptor feature not available." ) ;
-		
-#endif // CEYLAN_USES_FILE_DESCRIPTORS	
+
+#endif // CEYLAN_USES_FILE_DESCRIPTORS
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 }
-

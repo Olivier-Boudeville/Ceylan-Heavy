@@ -138,7 +138,7 @@ namespace Ceylan
 		class CEYLAN_DLL SystemException: public Ceylan::Exception
 		{
 			public:
-				explicit SystemException( const std::string & message )	;
+				explicit SystemException( const std::string & message ) ;
 				virtual ~SystemException() throw() ;
 
 		} ;
