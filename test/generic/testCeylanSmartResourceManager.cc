@@ -432,8 +432,6 @@ int main( int argc, char * argv[] )
 
 		LogPlug::info( "End of Smart Resource manager test." ) ;
 
-
-
 	}
 
 	catch ( const Ceylan::Exception & exception )
@@ -458,6 +456,8 @@ int main( int argc, char * argv[] )
 		return Ceylan::ExitFailure ;
 
 	}
+
+	Ceylan::shutdown() ;
 
 	return Ceylan::ExitSuccess ;
 

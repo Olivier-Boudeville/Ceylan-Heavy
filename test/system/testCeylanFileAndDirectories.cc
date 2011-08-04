@@ -115,19 +115,19 @@ int main( int argc, char * argv[] )
 
 		string testDir( FileSystemManager::GetRootDirectoryPrefix() ) ;
 
-		LogPlug::info( "Does '" + testDir + "' exist ? "
+		LogPlug::info( "Does '" + testDir + "' exist? "
 			+ Ceylan::toString( Directory::Exists( testDir ) ) ) ;
 
 		testDir = FileSystemManager::GetRootDirectoryPrefix()
 			+ FileSystemManager::GetSeparator() ;
 
-		LogPlug::info( "Does '" + testDir + "' exist ? "
+		LogPlug::info( "Does '" + testDir + "' exist? "
 			+ Ceylan::toString( Directory::Exists( testDir ) ) ) ;
 
 		// Test for english-based Windows systems:
 		testDir = "c:\\Documents and Settings" ;
 
-		LogPlug::info( "Does '" + testDir + "' exist ? "
+		LogPlug::info( "Does '" + testDir + "' exist? "
 			+ Ceylan::toString( Directory::Exists( testDir ) ) ) ;
 
 
@@ -202,7 +202,8 @@ int main( int argc, char * argv[] )
 		}
 
 		const string targetFilename = "Makefile.am" ;
-		Ceylan::Byte * readContent = & File::ReadWholeContent( targetFilename ) ;
+		Ceylan::Byte * readContent = & File::ReadWholeContent( 
+		  targetFilename ) ;
 
 		/*
 		 * We read the full content of this file, as binary data, however it is
@@ -264,7 +265,7 @@ int main( int argc, char * argv[] )
 		string joined = Directory::JoinPath( toJoin ) ;
 		LogPlug::info(
 			"Directory::JoinPath( [ '', 'mnt', 'raid', 'md0', 'LOANI-0.3' ] ) "
-			" returns "	+ joined ) ;
+			" returns " + joined ) ;
 
 		LogPlug::info( "Directory::SplitPath( " + joined
 			+ ") should return a void first element as expected: "
@@ -314,6 +315,8 @@ int main( int argc, char * argv[] )
 		return Ceylan::ExitFailure ;
 
 	}
+
+	Ceylan::shutdown() ;
 
 	return Ceylan::ExitSuccess ;
 

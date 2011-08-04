@@ -63,7 +63,7 @@ int main( int argc, char * argv[] )
 
 		LogPlug::info( "Testing XML parser." ) ;
 
-		
+
 		bool testWritingXML = true ;
 		bool testReadingXML = true ;
 
@@ -377,6 +377,8 @@ int main( int argc, char * argv[] )
 		return Ceylan::ExitFailure ;
 
 	}
+
+	Ceylan::shutdown() ;
 
 	return Ceylan::ExitSuccess ;
 

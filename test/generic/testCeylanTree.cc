@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -43,11 +43,11 @@ class TestTreeStringContent ;
 
 class TestTreeVisitor : public Ceylan::TreeVisitor<TestTreeStringContent>
 {
-	
+
 	public:
 
 
-		TestTreeVisitor() 
+		TestTreeVisitor()
 		{
 
 		}
@@ -63,29 +63,29 @@ class TestTreeVisitor : public Ceylan::TreeVisitor<TestTreeStringContent>
 
 		void visit( Tree<TestTreeStringContent> & tree )
 		{
-		
-			LogPlug::info( "TestTreeVisitor::visit for tree: traversing " 
+
+			LogPlug::info( "TestTreeVisitor::visit for tree: traversing "
 				+ tree.toString() ) ;
-				
+
 		}
-		
-		
-		
+
+
+
 		void visit( TestTreeStringContent & content )
 		{
-		
+
 			/*
 			 * Commented so that it avoids a double-dependence between
 			 * TestTreeVisitor and TestTreeStringContent!
-			 * 
-			 
+			 *
+
 			LogPlug::info( "TestTreeVisitor::visit for content: "
 				"traversing " + content.toString() ) ;
-				
+
 			*/
-			
+
 		}
-		
+
 
 } ;
 
@@ -96,7 +96,7 @@ class TestTreeVisitor : public Ceylan::TreeVisitor<TestTreeStringContent>
 /// Test content, eligible for a tree, that contains a simple string.
 class TestTreeStringContent : public Ceylan::TextDisplayable
 {
-	
+
 	public:
 
 
@@ -105,54 +105,53 @@ class TestTreeStringContent : public Ceylan::TextDisplayable
 		{
 
 		}
-		
-		
-		
+
+
+
 		virtual ~TestTreeStringContent() throw()
 		{
-		
+
 		}
-		
-		
-		
+
+
+
 		virtual void accept( Visitor & visitor )
 		{
-		
+
 			/*
-			 * Here: 'visitor.visit( *this ) ;' could not be used,
-			 * a Visitor is not - yet - a templated one, the typename
-			 * being the visited type.
+			 * Here: 'visitor.visit( *this ) ;' could not be used, a Visitor is
+			 * not - yet - a templated one, the typename being the visited type.
 			 * Hence the need for a dynamic_cast.
 			 *
 			 */
-			
-			
-			TestTreeVisitor * actualVisitor = 
+
+
+			TestTreeVisitor * actualVisitor =
 				dynamic_cast<TestTreeVisitor *>( & visitor ) ;
-	
+
 			if ( actualVisitor == 0 )
 				throw VisitException( "TestTreeStringContent::accept failed: "
-					"specified visitor (" + visitor.toString() 
+					"specified visitor (" + visitor.toString()
 					+ ") is not a test tree-enabled visitor." ) ;
-			
+
 			actualVisitor->visit( *this ) ;
-						
+
 		}
-		
-		
-		
-		const std::string toString( 
+
+
+
+		const std::string toString(
 			Ceylan::VerbosityLevels level = Ceylan::high ) const
 		{
-		
+
 			return "'" + _content + "'" ;
-			
+
 		}
 
 
 
 	private:
-	
+
 
 		std::string _content ;
 
@@ -167,7 +166,7 @@ class TestTreeStringContent : public Ceylan::TextDisplayable
  * Test of templated tree facility.
  *
  * @see Ceylan::Tree
- *	
+ *
  */
 int main( int argc, char * argv[] )
 {
@@ -176,25 +175,25 @@ int main( int argc, char * argv[] )
 	LogHolder logger( argc, argv ) ;
 
 
-    try
-    {
+	try
+	{
 
- 
+
 		LogPlug::info( "Testing templated Tree's implementation." ) ;
 
 		LogPlug::info( "Creating a tree whose node content is a string." ) ;
 
 		// No automatic variable, as ownership is taken by the tree:
-		TestTreeStringContent * myContent = new TestTreeStringContent( 
+		TestTreeStringContent * myContent = new TestTreeStringContent(
 			string( "I am the content of the root." ) ) ;
 
 		typedef Tree<TestTreeStringContent> StringTree ;
-			
+
 		StringTree testTree( *myContent ) ;
 
 		LogPlug::info( "Tree created: " + testTree.toString() ) ;
- 
-		TestTreeStringContent * myFirstSonContent = new TestTreeStringContent( 
+
+		TestTreeStringContent * myFirstSonContent = new TestTreeStringContent(
 			string( "I am the content of the first child." ) ) ;
 
 		// No automatic variable, as ownership is taken by the tree:
@@ -204,74 +203,75 @@ int main( int argc, char * argv[] )
 
 		testTree.addSon( *testFirstSon ) ;
 
-		LogPlug::info( "Subtree added to Tree, which is now: " 
+		LogPlug::info( "Subtree added to Tree, which is now: "
 			+ testTree.toString() ) ;
 
-		TestTreeStringContent * mySecondSonContent = new TestTreeStringContent( 
+		TestTreeStringContent * mySecondSonContent = new TestTreeStringContent(
 			string( "I am the content of the second child." ) ) ;
-	
+
 		StringTree * testSecondSon = new StringTree( *mySecondSonContent ) ;
 		testTree.addSon( *testSecondSon ) ;
 
-		LogPlug::info( "After a second subtree was added to Tree: " 
+		LogPlug::info( "After a second subtree was added to Tree: "
 			+ testTree.toString() ) ;
 
-		TestTreeStringContent * myThirdSonContent = new TestTreeStringContent( 
+		TestTreeStringContent * myThirdSonContent = new TestTreeStringContent(
 			string( "I am the content of the third child, "
 				"I am the only son of second subtree." ) ) ;
 
 		StringTree * testThirdSon = new StringTree( *myThirdSonContent ) ;
 		testSecondSon->addSon( *testThirdSon ) ;
 
-		LogPlug::info( "After a subtree was add to second subtree: " 
+		LogPlug::info( "After a subtree was add to second subtree: "
 			+ testTree.toString() ) ;
 
 		LogPlug::info( "Creating a tree visitor now." ) ;
-		
+
 		TestTreeVisitor testTreeVisitor ;
 
 
 		LogPlug::info( "Applying this visitor to the tree, depth-first: "
 			"order should be: first, third, second then root." ) ;
-			
+
 		testTree.traverseDepthFirst( testTreeVisitor,
 			/* visitContent */ true ) ;
 
 
 		LogPlug::info( "Applying the same visitor to the tree, breadth-first: "
 			"order should be: root, first, second, third." ) ;
-			
+
 		testTree.traverseBreadthFirst( testTreeVisitor,
 			/* visitContent */ true ) ;
 
-        LogPlug::info( "End of templated Tree test." ) ;
+		LogPlug::info( "End of templated Tree test." ) ;
 
 	}
-	
-    catch ( const Ceylan::Exception & e )
-    {
-        std::cerr << "Ceylan exception caught: "
-        	<< e.toString( Ceylan::high ) << std::endl ;
+
+	catch ( const Ceylan::Exception & e )
+	{
+		std::cerr << "Ceylan exception caught: "
+			<< e.toString( Ceylan::high ) << std::endl ;
 		return Ceylan::ExitFailure ;
 
-    }
+	}
 
-    catch ( const std::exception & e )
-    {
-        std::cerr << "Standard exception caught: " 
+	catch ( const std::exception & e )
+	{
+		std::cerr << "Standard exception caught: "
 			 << e.what() << std::endl ;
 		return Ceylan::ExitFailure ;
 
-    }
+	}
 
-    catch ( ... )
-    {
-        std::cerr << "Unknown exception caught" << std::endl ;
+	catch ( ... )
+	{
+		std::cerr << "Unknown exception caught" << std::endl ;
 		return Ceylan::ExitFailure ;
 
-    }
+	}
 
-    return Ceylan::ExitSuccess ;
+	Ceylan::shutdown() ;
+
+	return Ceylan::ExitSuccess ;
 
 }
-

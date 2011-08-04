@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -30,7 +30,7 @@ using namespace Ceylan::Log ;
 using namespace Ceylan::Features ;
 
 
-#include <iostream>	   // for cerr, endl
+#include <iostream>      // for cerr, endl
 #include <exception>
 
 #include <string>
@@ -48,7 +48,7 @@ using std::string ;
 int main( int argc, char * argv[] )
 {
 
-	LogHolder logger( argc, argv ) ;	
+	LogHolder logger( argc, argv ) ;
 
 
 	try
@@ -57,43 +57,43 @@ int main( int argc, char * argv[] )
 
 		LogPlug::info( "Testing optional features management." ) ;
 
-		// Testing an example of feature :
-		
+		// Testing an example of feature:
+
 		if ( ! Features::areRegularExpressionsSupported() )
 		{
-			
+
 			bool caught = false ;
-			
+
 			try
 			{
 				checkForSupportedFeatures( Features::RegularExpressions ) ;
 			}
 			catch( const FeatureNotAvailableException & e )
 			{
-				LogPlug::info( "Correctly caught expected exception : " 
+				LogPlug::info( "Correctly caught expected exception: "
 					+ e.toString() ) ;
 				caught = true ;
 			}
-			
+
 			if ( ! caught )
-				throw Ceylan::TestException( 
+				throw Ceylan::TestException(
 					"Expected a feature exception, nothing thrown." ) ;
-		
+
 		}
 		else
 		{
 			checkForSupportedFeatures( Features::RegularExpressions ) ;
-		}	
-		
+		}
+
 		LogPlug::info( Features::describeAvailableFeatures() ) ;
-			
+
 		LogPlug::info( "End of feature test." ) ;
-		
+
 	}
-	
+
 	catch ( const Ceylan::Exception & e )
 	{
-		std::cerr << "Ceylan exception caught : "
+		std::cerr << "Ceylan exception caught: "
 			<< e.toString( Ceylan::high ) << std::endl ;
 		return Ceylan::ExitFailure ;
 
@@ -101,7 +101,7 @@ int main( int argc, char * argv[] )
 
 	catch ( const std::exception & e )
 	{
-		std::cerr << "Standard exception caught : " 
+		std::cerr << "Standard exception caught: "
 			 << e.what() << std::endl ;
 		return Ceylan::ExitFailure ;
 
@@ -113,6 +113,8 @@ int main( int argc, char * argv[] )
 		return Ceylan::ExitFailure ;
 
 	}
+
+	Ceylan::shutdown() ;
 
 	return Ceylan::ExitSuccess ;
 

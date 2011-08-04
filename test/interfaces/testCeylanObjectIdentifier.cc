@@ -77,12 +77,12 @@ int main( int argc, char * argv[] )
 			 reinterpret_cast<void *> ( 22222 ) ) ;
 		LogPlug::info( "Third ObjectIdentifier is " + id3.toString() ) ;
 
-		LogPlug::info( "Does first is different but match itself ? "
+		LogPlug::info( "Does first is different but match itself? "
 			 + Ceylan::toString( id1.differentButMatches( id1 ) ) ) ;
 
-		LogPlug::info( "Does first is different but match second ? "
+		LogPlug::info( "Does first is different but match second? "
 			 + Ceylan::toString( id1.differentButMatches( id2 ) ) ) ;
-		LogPlug::info( "Does first is different but match third ? "
+		LogPlug::info( "Does first is different but match third? "
 			 + Ceylan::toString( id1.differentButMatches( id3 ) ) ) ;
 
 		string validChannelName    =
@@ -182,7 +182,6 @@ int main( int argc, char * argv[] )
 
 		LogPlug::info( "End of ObjectIdentifier implementation test." ) ;
 
-
 	}
 
 	catch ( const Ceylan::Exception & e )
@@ -207,6 +206,8 @@ int main( int argc, char * argv[] )
 		return Ceylan::ExitFailure ;
 
 	}
+
+	Ceylan::shutdown() ;
 
 	return Ceylan::ExitSuccess ;
 

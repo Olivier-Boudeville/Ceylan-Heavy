@@ -482,6 +482,8 @@ int main( int argc, char * argv[] )
 
 	}
 
+	Ceylan::shutdown() ;
+
 	return Ceylan::ExitSuccess ;
 
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -29,7 +29,7 @@ using namespace Ceylan ;
 using namespace Ceylan::Log ;
 
 
-#include <iostream>	// for cerr, endl
+#include <iostream>    // for cerr, endl
 #include <exception>
 
 #include <string>
@@ -46,7 +46,7 @@ using std::string ;
 int main( int argc, char * argv[] )
 {
 
-	LogHolder logger( argc, argv ) ;	
+	LogHolder logger( argc, argv ) ;
 
 
 	try
@@ -56,27 +56,27 @@ int main( int argc, char * argv[] )
 		LogPlug::info( "Testing Module's implementation." ) ;
 
 		Ceylan::Version moduleVersion( 0, 1, 2) ;
-		
-		Ceylan::Module myModule( 
+
+		Ceylan::Module myModule(
 			"TestModule",
 			"a module designed for test",
 			"http://www.esperide.com",
 			"Olivier Boudeville",
-			"olivier.boudeville@online.fr", 
+			"olivier.boudeville@online.fr",
 			moduleVersion,
 			"LGPL" ) ;
 
-		LogPlug::info( "Description of example module : " 
+		LogPlug::info( "Description of example module: "
 			+  myModule.toString( Ceylan::high ) ) ;
 
 
 		LogPlug::info( "End of Module test." ) ;
-		
+
 	}
-	
+
 	catch ( const Ceylan::Exception & e )
 	{
-		std::cerr << "Ceylan exception caught : "
+		std::cerr << "Ceylan exception caught: "
 			<< e.toString( Ceylan::high ) << std::endl ;
 		return Ceylan::ExitFailure ;
 
@@ -84,7 +84,7 @@ int main( int argc, char * argv[] )
 
 	catch ( const std::exception & e )
 	{
-		std::cerr << "Standard exception caught : " 
+		std::cerr << "Standard exception caught: "
 			 << e.what() << std::endl ;
 		return Ceylan::ExitFailure ;
 
@@ -96,6 +96,8 @@ int main( int argc, char * argv[] )
 		return Ceylan::ExitFailure ;
 
 	}
+
+	Ceylan::shutdown() ;
 
 	return Ceylan::ExitSuccess ;
 

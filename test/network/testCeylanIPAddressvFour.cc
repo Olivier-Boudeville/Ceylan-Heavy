@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -50,139 +50,140 @@ int main( int argc, char * argv[] )
 	LogHolder myLog( argc, argv ) ;
 
 
-    try
-    {
+	try
+	{
 
-        LogPlug::info( "Testing IPv4 implementation." ) ;
+		LogPlug::info( "Testing IPv4 implementation." ) ;
 
 		LogPlug::info( "Creating ip1, a new IPv4 address object, "
 			"out of numerical values." ) ;
-		
-		IPAddressvFour ip1( 192,168,0,4 ) ; 
-		
-		LogPlug::info( "ip1 is : " + ip1.toString() ) ;
-		
+
+		IPAddressvFour ip1( 192,168,0,4 ) ;
+
+		LogPlug::info( "ip1 is: " + ip1.toString() ) ;
+
 		const string validIPString    = "192.168.0.4" ;
 		const string invalidIPString1 = "192.168.0.4.5" ;
 		const string invalidIPString2 = "19216804" ;
 		const string invalidIPString3 = "256.168.0.4" ;
-		
+
 		LogPlug::info( "Creating ip2, a new IPv4 address object, "
 			"out of string '" + validIPString + "'." ) ;
-		
-		IPAddressvFour ip2( validIPString ) ; 
-		
-		LogPlug::info( "ip2 is : " + ip2.toString() ) ;
-		
-		
+
+		IPAddressvFour ip2( validIPString ) ;
+
+		LogPlug::info( "ip2 is: " + ip2.toString() ) ;
+
+
 		bool exceptionRaised = false ;
 		LogPlug::info( "Trying to create ip3, "
 			"an invalid IPv4 object from string '" + invalidIPString1
 			+ "'." ) ;
-			
-		try 
+
+		try
 		{
-			
+
 			IPAddressvFour ip3( invalidIPString1 ) ;
-			
-		} 
-		catch( const Ceylan::Exception & e ) 
+
+		}
+		catch( const Ceylan::Exception & e )
 		{
-		
-			LogPlug::info( "Ceylan exception raised : " + e.toString() ) ;
+
+			LogPlug::info( "Ceylan exception raised: " + e.toString() ) ;
 			exceptionRaised = true ;
-			
-		}	
-			
+
+		}
+
 		if ( ! exceptionRaised )
-			throw Ceylan::TestException( 
+			throw Ceylan::TestException(
 				"IPAddressvFour constructor from string should have "
-				"raised an exception when used with IP string " 
+				"raised an exception when used with IP string "
 				+ invalidIPString1 ) ;
-				
+
 		exceptionRaised = false ;
-		
+
 
 		LogPlug::info( "Trying to create ip4, "
 			"an invalid IPv4 object from string '" + invalidIPString2
 			+ "'." ) ;
-			
-		try 
+
+		try
 		{
-			
+
 			IPAddressvFour ip4( invalidIPString2 ) ;
-			
-		} 
-		catch( const Ceylan::Exception & e ) 
+
+		}
+		catch( const Ceylan::Exception & e )
 		{
-		
-			LogPlug::info( "Ceylan exception raised : " + e.toString() ) ;
+
+			LogPlug::info( "Ceylan exception raised: " + e.toString() ) ;
 			exceptionRaised = true ;
-			
-		}	
-			
+
+		}
+
 		if ( ! exceptionRaised )
-			throw Ceylan::TestException( 
+			throw Ceylan::TestException(
 				"IPAddressvFour constructor from string should have "
-				"raised an exception when used with IP string " 
+				"raised an exception when used with IP string "
 				+ invalidIPString2 ) ;
-				
-		exceptionRaised = false ;		
-		
-				
+
+		exceptionRaised = false ;
+
+
 		LogPlug::info( "Trying to create ip5, "
 			"an invalid IPv4 object from string " + invalidIPString1 ) ;
-			
-		try 
+
+		try
 		{
-			
+
 			IPAddressvFour ip5( invalidIPString3 ) ;
-			
-		} 
-		catch( const Ceylan::Exception & e ) 
-		{
-		
-			LogPlug::info( "Ceylan exception raised : " + e.toString() ) ;
-			exceptionRaised = true ;
-			
+
 		}
-				
+		catch( const Ceylan::Exception & e )
+		{
+
+			LogPlug::info( "Ceylan exception raised: " + e.toString() ) ;
+			exceptionRaised = true ;
+
+		}
+
 		if ( ! exceptionRaised )
-			throw Ceylan::TestException( 
+			throw Ceylan::TestException(
 				"IPAddressvFour constructor from string should have "
-				"raised an exception when called with IP string " 
+				"raised an exception when called with IP string "
 				+ invalidIPString3 ) ;
-						
-				
-        LogPlug::info( "End of IPv4 test." ) ;
 
 
-    }
+		LogPlug::info( "End of IPv4 test." ) ;
 
-    catch ( const Ceylan::Exception & e )
-    {
-        LogPlug::error( "Ceylan exception caught : "
-        	 + e.toString( Ceylan::high ) ) ;
-       	return Ceylan::ExitFailure ;
 
-    }
+	}
 
-    catch ( const std::exception & e )
-    {
-        LogPlug::error( "Standard exception caught : " 
+	catch ( const Ceylan::Exception & e )
+	{
+		LogPlug::error( "Ceylan exception caught: "
+			 + e.toString( Ceylan::high ) ) ;
+		return Ceylan::ExitFailure ;
+
+	}
+
+	catch ( const std::exception & e )
+	{
+		LogPlug::error( "Standard exception caught: "
 			 + std::string( e.what() ) ) ;
-       	return Ceylan::ExitFailure ;
+		return Ceylan::ExitFailure ;
 
-    }
+	}
 
-    catch ( ... )
-    {
-        LogPlug::error( "Unknown exception caught" ) ;
-       	return Ceylan::ExitFailure ;
+	catch ( ... )
+	{
+		LogPlug::error( "Unknown exception caught" ) ;
+		return Ceylan::ExitFailure ;
 
-    }
+	}
 
-    return Ceylan::ExitSuccess ;
+	Ceylan::shutdown() ;
+
+	return Ceylan::ExitSuccess ;
 
 }
-
