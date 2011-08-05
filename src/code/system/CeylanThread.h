@@ -67,7 +67,7 @@ namespace Ceylan
 		 * @see Runnable, Synchronized, POSIX threads.
 		 *
 		 */
-		class CEYLAN_DLL Thread: public Runnable
+		class CEYLAN_DLL Thread : public Runnable
 		{
 
 
@@ -336,6 +336,21 @@ namespace Ceylan
 				 */
 				static void Run( Thread & thread ) ;
 
+
+
+				/**
+				 * Shutdowns the thread system: ensures that any global
+				 * structure necessary to manage threads has been deallocated.
+				 *
+				 * Does nothing if the multithreading feature is not
+				 * available.
+				 *
+				 * @note Will not stop any thread: just removes all thread
+				 * management data. Notably, all user-created threads are
+				 * expected to have been removed first.
+				 *
+				 */
+				static void Shutdown() ;
 
 
 

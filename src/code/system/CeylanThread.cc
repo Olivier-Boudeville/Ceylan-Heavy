@@ -130,7 +130,8 @@ struct Thread::SystemSpecificThreadCondition
  * would require having a Mutex constructor available, whereas it would raise a
  * FeatureNotAvailable exception.
  *
- * This is a sustainable memory leak.
+ * This is a sustainable (potential) memory leak.
+ * @see Ceylan::shutdown which removes this unreachable block.
  *
  */
 Synchronized<ThreadCount> * Thread::_Number
@@ -547,6 +548,27 @@ void Thread::Run( Thread & thread )
 
 }
 
+
+
+void Thread::Shutdown()
+{
+
+  if ( _Number != 0 )
+  {
+
+	ThreadCount count = _Number->getValue() ;
+
+	if ( count != 0 )
+	  throw ThreadException( "Thread::Shutdown: there are still "
+		+ Ceylan::toString( count ) + " registered (expected to be alive) "
+		"thread(s)." ) ;
+
+	delete _Number ;
+	_Number = 0 ;
+
+  }
+
+}
 
 
 
