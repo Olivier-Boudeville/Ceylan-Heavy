@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -44,12 +44,11 @@ namespace Ceylan
 
 
 		/**
-		 * Template defining generically objects (notably numerical
-		 * datatypes) protected by a mutex.
+		 * Template defining generically objects (notably numerical datatypes)
+		 * protected by a mutex.
 		 *
-		 * Any write operation first obtains a lock, then modifies
-		 * the value, and unlocks the mutex, thus synchronizing the
-		 * access to the value.
+		 * Any write operation first obtains a lock, then modifies the value,
+		 * and unlocks the mutex, thus synchronizing the access to the value.
 		 *
 		 * @note This template still ought to be thoroughfully tested.
 		 *
@@ -67,8 +66,8 @@ namespace Ceylan
 				/**
 				 * Value assigned constructor.
 				 *
-				 * @note This constructor would not be convenient if it
-				 * used the 'explicit' keyword.
+				 * @note This constructor would not be convenient if it used the
+				 * 'explicit' keyword.
 				 *
 				 */
 				Synchronized( X value ) :
@@ -80,7 +79,7 @@ namespace Ceylan
 
 
 				/*
-				~Synchronized() throw() 
+				~Synchronized() throw()
 				{
 
 				}
@@ -105,14 +104,14 @@ namespace Ceylan
 				/// Returns the current value.
 				const volatile X & getValue() const volatile
 				{
-				
+
 					return _value ;
-					
+
 				}
 
 
-				
-				
+
+
 				// Operators.
 
 
@@ -120,9 +119,9 @@ namespace Ceylan
 				/// Assignment operator.
 				Synchronized & operator = ( const X & value )
 				{
-				
+
 					return setValue( value ) ;
-					
+
 				}
 
 
@@ -130,9 +129,9 @@ namespace Ceylan
 				/// Conversion operator.
 				operator X () const volatile
 				{
-				
+
 					return _value ;
-					
+
 				}
 
 
@@ -154,9 +153,9 @@ namespace Ceylan
 				/// Postfixed increment operator (ex: x++).
 				X operator ++(int)
 				{
-				
+
 					return operator ++() ;
-					
+
 				}
 
 
@@ -197,21 +196,20 @@ namespace Ceylan
 
 
 				/**
-				 * Default constructor made private to ensure that it
-				 * will be never called.
+				 * Default constructor made private to ensure that it will be
+				 * never called.
 				 *
 				 */
 				Synchronized() ;
 
 
 				/**
-				 * Copy constructor made private to ensure that it
-				 * will be never called.
+				 * Copy constructor made private to ensure that it will be never
+				 * called.
 				 *
 				 * Calls such as: <code>Synchronized<int> number = 0 ;</code>
-				 * should be rewritten in:
-				 * <code>Synchronized<int> number( 0 ) ;</code> otherwise
-				 * a copy constructor would be needed.
+				 * should be rewritten in: <code>Synchronized<int> number( 0 )
+				 * ;</code> otherwise a copy constructor would be needed.
 				 *
 				 */
 				Synchronized( const Synchronized & source ) ;
@@ -219,11 +217,11 @@ namespace Ceylan
 
 
 				/**
-				 * Assignment operator made private to ensure that it
-				 * will be never called.
+				 * Assignment operator made private to ensure that it will be
+				 * never called.
 				 *
-				 * The compiler should complain whenever this undefined
-				 * operator is called, implicitly or not.
+				 * The compiler should complain whenever this undefined operator
+				 * is called, implicitly or not.
 				 *
 				 */
 				Synchronized & operator = ( const Synchronized & source ) ;
@@ -241,7 +239,7 @@ namespace Ceylan
 		 * Needed since bool do not implement natively ++ and -- operators.
 		 *
 		 * @note Although its is a partial specialization, at least with some
-		 * compilers (Visual C++ 2005), unchanged methods are not "inherited", 
+		 * compilers (Visual C++ 2005), unchanged methods are not "inherited",
 		 * hence must be duplicated verbatim.
 		 *
 		 */
@@ -256,8 +254,8 @@ namespace Ceylan
 				/**
 				 * Value assigned constructor.
 				 *
-				 * @note This constructor would not be convenient if it
-				 * used the 'explicit' keyword.
+				 * @note This constructor would not be convenient if it used the
+				 * 'explicit' keyword.
 				 *
 				 */
 				Synchronized( bool value ) :
@@ -285,22 +283,22 @@ namespace Ceylan
 				/// Returns the current value.
 				const volatile bool & getValue() const volatile
 				{
-				
+
 					return _value ;
-					
+
 				}
 
-				
-				
+
+
 				// Operators.
 
 
 				/// Assignment operator.
 				Synchronized & operator = ( const bool & value )
 				{
-				
+
 					return setValue( value ) ;
-					
+
 				}
 
 
@@ -308,16 +306,16 @@ namespace Ceylan
 				/// Conversion operator.
 				operator bool () const volatile
 				{
-				
+
 					return _value ;
-					
+
 				}
 
 
 
 				/**
 				 * Prefixed increment operator  (ex: ++x).
-				 * 
+				 *
 				 * Here, reverses the logical value of the bool.
 				 *
 				 */
@@ -337,16 +335,16 @@ namespace Ceylan
 				/// Postfixed increment operator (ex: x++).
 				bool operator ++(int)
 				{
-				
+
 					return operator ++() ;
-					
+
 				}
 
 
 
 				/**
 				 * Prefixed decrement operator  (ex: --x).
-				 * 
+				 *
 				 * Here, reverses the logical value of the bool.
 				 *
 				 */
@@ -365,9 +363,9 @@ namespace Ceylan
 				/// Postfixed decrement operator (ex: x--).
 				bool operator --(int)
 				{
-				
+
 					return operator --() ;
-					
+
 				}
 
 
@@ -386,8 +384,8 @@ namespace Ceylan
 
 
 				/**
-				 * Default constructor made private to ensure that it
-				 * will be never called.
+				 * Default constructor made private to ensure that it will be
+				 * never called.
 				 *
 				 */
 				Synchronized() ;
@@ -395,13 +393,12 @@ namespace Ceylan
 
 
 				/**
-				 * Copy constructor made private to ensure that it
-				 * will be never called.
+				 * Copy constructor made private to ensure that it will be never
+				 * called.
 				 *
 				 * Calls such as: <code>Synchronized<int> number = 0 ;</code>
-				 * should be rewritten in:
-				 * <code>Synchronized<int> number( 0 ) ;</code> otherwise
-				 * a copy constructor would be needed.
+				 * should be rewritten in: <code>Synchronized<int> number( 0 )
+				 * ;</code> otherwise a copy constructor would be needed.
 				 *
 				 */
 				Synchronized( const Synchronized & source ) ;
@@ -409,11 +406,11 @@ namespace Ceylan
 
 
 				/**
-				 * Assignment operator made private to ensure that it
-				 * will be never called.
+				 * Assignment operator made private to ensure that it will be
+				 * never called.
 				 *
-				 * The compiler should complain whenever this undefined
-				 * operator is called, implicitly or not.
+				 * The compiler should complain whenever this undefined operator
+				 * is called, implicitly or not.
 				 *
 				 */
 				Synchronized & operator = ( const Synchronized & source ) ;
@@ -421,11 +418,12 @@ namespace Ceylan
 
 		} ;
 
+
 	}
+
 
 }
 
 
 
 #endif // CEYLAN_SYNCHRONIZED_H_
-
