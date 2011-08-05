@@ -186,6 +186,8 @@ int main( int argc, char * argv[] )
 			LogPlug::info( "Non-interactive test mode, "
 				"no scheduling granularity computed, test finished." ) ;
 
+			Ceylan::shutdown() ;
+
 			return Ceylan::ExitSuccess ;
 
 		}

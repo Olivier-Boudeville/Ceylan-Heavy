@@ -156,6 +156,8 @@ int main( int argc, char * argv[] )
 					Ceylan::Maths::Sin( a ) * 5.1 ) ;
 			}
 
+			Ceylan::shutdown() ;
+
 			return Ceylan::ExitSuccess ;
 
 		}
@@ -200,6 +202,8 @@ int main( int argc, char * argv[] )
 			LogPlug::info( "Non-interactive test mode, "
 				"no scheduling granularity computed, test finished." ) ;
 
+			Ceylan::shutdown() ;
+
 			return Ceylan::ExitSuccess ;
 
 		}
@@ -210,6 +214,8 @@ int main( int argc, char * argv[] )
 
 			LogPlug::info( "No subsecond sleeps available, "
 				"no scheduling granularity computed, test finished." ) ;
+
+			Ceylan::shutdown() ;
 
 			return Ceylan::ExitSuccess ;
 

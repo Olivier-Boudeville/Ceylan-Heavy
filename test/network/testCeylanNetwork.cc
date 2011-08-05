@@ -109,8 +109,13 @@ int main( int argc, char * argv[] )
 
 		if ( ! onlineMode )
 		{
+
 			LogPlug::warning( "Not in online mode, test stops here." ) ;
+
+			Ceylan::shutdown() ;
+
 			return Ceylan::ExitSuccess ;
+
 		}
 
 		/*

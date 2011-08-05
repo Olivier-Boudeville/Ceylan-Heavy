@@ -461,8 +461,19 @@ int main( int argc, char * argv[] )
 
 	catch ( const Ceylan::Exception & e )
 	{
+
 		std::cerr << "Ceylan exception caught: "
 			<< e.toString( Ceylan::high ) << std::endl ;
+
+		/*
+		 * Added here, as Valgrind (through valgrindTest.sh) will run the client
+		 * without the server, thus leading to a connection refused error ending
+		 * up in this code path, which must be as a consequence preferably free
+		 * of alarms:
+		 *
+		 */
+		Ceylan::shutdown() ;
+
 		return Ceylan::ExitFailure ;
 
 	}
