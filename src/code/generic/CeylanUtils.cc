@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -29,11 +29,13 @@
 
 #include "CeylanLogPlug.h"             // for LogPlug::fatal
 #include "CeylanStringUtils.h"         // for display
+#include "CeylanFileSystemManager.h"   // for FileSystemManager
+#include "CeylanThread.h"              // for Thread
 #include "CeylanOperators.h"
 
 
 // for basicSleep, FileDescriptor, InitializeInterrupts:
-#include "CeylanSystem.h"       
+#include "CeylanSystem.h"
 #include "CeylanFeatures.h"            // for areFileDescriptorsSupported
 
 
@@ -42,7 +44,7 @@
 #include <cstring>                     // for memcpy
 
 #include <algorithm>                   // for Split*
-#include <iostream>				       // for cerr, endl, cout
+#include <iostream>					   // for cerr, endl, cout
 
 
 
@@ -85,9 +87,9 @@ extern const Ceylan::DSBinaryInput Ceylan::LidOpen             = KEY_LID ;
 
 
 // Lid status change is not deemed a user input:
-extern const Ceylan::DSBinaryInput Ceylan::AllUserInputs = ButtonX | ButtonY 
-	| ButtonA | ButtonB | ButtonStart | ButtonSelect 
-	| ButtonLeft | ButtonRight | ButtonUp | ButtonDown 
+extern const Ceylan::DSBinaryInput Ceylan::AllUserInputs = ButtonX | ButtonY
+	| ButtonA | ButtonB | ButtonStart | ButtonSelect
+	| ButtonLeft | ButtonRight | ButtonUp | ButtonDown
 	| ShoulderButtonLeft | ShoulderButtonRight | StylusContact ;
 
 
@@ -117,7 +119,7 @@ const Ceylan::ExitCode Ceylan::ExitSuccess      =  0 ;
 const Ceylan::ExitCode Ceylan::ExitFailure      =  1 ;
 const Ceylan::ExitCode Ceylan::ExitDebugFailure = 10 ;
 
-const std::string Ceylan::DefaultWaitForKeyMessage( 
+const std::string Ceylan::DefaultWaitForKeyMessage(
 	"< Press any key to continue >" ) ;
 
 
@@ -140,23 +142,23 @@ const Ceylan::LibtoolVersion & Ceylan::GetVersion()
 #if	CEYLAN_DEBUG_VERSION
 
 	// Intentional memory leak:
-	
+
 	LibtoolVersion * ceylanVersion ;
-	
+
 	try
 	{
-	
+
 		ceylanVersion = new LibtoolVersion( CEYLAN_LIBTOOL_VERSION ) ;
-		
+
 	}
 	catch( const Ceylan::Exception & e )
 	{
-	
-		throw Ceylan::Exception( "Ceylan::GetVersion failed: " 
+
+		throw Ceylan::Exception( "Ceylan::GetVersion failed: "
 			+ e.toString() ) ;
-			
-	}	
-		
+
+	}
+
 	return * ceylanVersion ;
 
 
@@ -165,54 +167,71 @@ const Ceylan::LibtoolVersion & Ceylan::GetVersion()
 	static LibtoolVersion ceylanVersion( CEYLAN_LIBTOOL_VERSION ) ;
 	return ceylanVersion ;
 
-#endif // CEYLAN_DEBUG_VERSION	
-	
+#endif // CEYLAN_DEBUG_VERSION
+
 }
 
 
 
-void Ceylan::parseCommandLineOptions( std::string & readExecutableName, 
-	list<string> & readOptions, Ceylan::Uint16 argumentCount, 
+void Ceylan::parseCommandLineOptions( std::string & readExecutableName,
+	list<string> & readOptions, Ceylan::Uint16 argumentCount,
 	char ** argumentVector )
 {
 
 	readExecutableName = string( argumentVector[0] ) ;
-	
+
 	for ( Ceylan::Uint16 arg = 1; arg < argumentCount; arg++ )
-		readOptions.push_back( argumentVector[arg] ) ;	
+		readOptions.push_back( argumentVector[arg] ) ;
 
 }
 
 
 
-void Ceylan::emergencyShutdown( const string & message ) 
+void Ceylan::shutdown()
+{
+
+  /*
+   * This function has to manually remove each and every bit of Ceylan that may
+   * still be allocated under normal circumstances.
+   *
+   */
+
+  System::FileSystemManager::RemoveDefaultFileSystemManager() ;
+
+  System::Thread::Shutdown() ;
+
+}
+
+
+
+void Ceylan::emergencyShutdown( const string & message )
 {
 
 	string outputMessage = "Fatal error: "
 		"Ceylan is performing an emergency shutdown "
 		"since an abnormal situation occured. "
 		+ message ;
-		
+
 	std::cerr << std::endl << outputMessage << std::endl << std::flush ;
-	
+
 	// Nothing to loose at this point...
 	if ( Log::LogPlug::IsFatalLogSourceAvailable() )
 		Log::LogPlug::fatal( outputMessage ) ;
-		
-	// Try to save the log as well:	
+
+	// Try to save the log as well:
 	Log::LogPlug::StopService( /* warnIfAlreadyStopped */ false ) ;
-	
-	::exit( ExitFailure ) ;	 
-	
+
+	::exit( ExitFailure ) ;
+
 }
 
 
 
-bool Ceylan::keyboardHit()	
+bool Ceylan::keyboardHit()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
-		
+
 #ifdef CEYLAN_RUNS_ON_ARM7
 
 	throw UtilsException( "Ceylan::keyboardHit: only available on the ARM9.") ;
@@ -222,17 +241,19 @@ bool Ceylan::keyboardHit()
 	// Ensures the interrupts are initialized (once):
 	Ceylan::System::InitializeInterrupts() ;
 
-				
+
 	// Update key state:
 	scanKeys() ;
-	
+
 	//CEYLAN_DS_LOG( "Key held   = " + Ceylan::toString( keysHeld() ) ) ;
 	//CEYLAN_DS_LOG( "Key down   = " + Ceylan::toString( keysDown() ) ) ;
 	//CEYLAN_DS_LOG( "Key repeat = " + Ceylan::toString( keysDownRepeat() ) ) ;
-	
+
 	/*
 	 * Touch-screen pen down taken into account here:
+	 *
 	 *  - keysDown would only take held keys once (no autorepeat managed)
+	 *
 	 *  - keysDownRepeat would suppress all key hits (always resetting the
 	 * repeat count)
 	 *
@@ -243,7 +264,7 @@ bool Ceylan::keyboardHit()
 
 #endif // CEYLAN_RUNS_ON_ARM7
 
-	
+
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 
@@ -252,12 +273,12 @@ bool Ceylan::keyboardHit()
 	/*
 	 * Taken from http://www.geocities.com/SiliconValley/Park/4572/tips.html.
 	 *
-	 * Thanks Petey Leinonen !
+	 * Thanks Petey Leinonen!
 	 *
 	 */
-	 
+
 	// Needs: termios, tcsetattr, tcgetattr, memcpy, getchar, ungetc:
-	
+
 	struct termios term, oterm ;
 	System::FileDescriptor fd = 0 ;
 	KeyChar c = 0 ;
@@ -278,8 +299,8 @@ bool Ceylan::keyboardHit()
 	term.c_cc[ VTIME ] = 1 ;
 	::tcsetattr( fd, TCSANOW, & term ) ;
 
-	/* 
-	 * Gets input - timeout after 0.1 seconds or when one character is read. 
+	/*
+	 * Gets input - timeout after 0.1 seconds or when one character is read.
 	 * If timed out, getchar() returns -1, otherwise it returns the character.
 	 *
 	 */
@@ -288,7 +309,7 @@ bool Ceylan::keyboardHit()
 	// Resets the terminal to original state.
 	::tcsetattr( fd, TCSANOW, & oterm ) ;
 
-	/* 
+	/*
 	 * If we retrieved a character, put it back on the input stream.
 	 *
 	 */
@@ -325,29 +346,29 @@ KeyChar Ceylan::getChar()
 	// Would not really make sense here:
 	throw UtilsException( "Ceylan::getChar: "
 		"not available on the Nintendo DS ARM7." ) ;
-		
+
 #else // CEYLAN_RUNS_ON_ARM7
 
 	// Ensures the interrupts are initialized (once):
 	Ceylan::System::InitializeInterrupts() ;
-	
+
 	KeyChar key ;
-	
+
 	do
 	{
-	
+
 		System::atomicSleep() ;
 		scanKeys() ;
 		key = keysDownRepeat() & AllUserInputs ;
-	
-	}	
+
+	}
 	while ( key == 0 ) ;
-	
+
 	return key ;
-		
+
 #endif // CEYLAN_RUNS_ON_ARM7
 
-	
+
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 
@@ -359,28 +380,29 @@ KeyChar Ceylan::getChar()
 	 * UNIX port taken from
 	 * http://www.geocities.com/SiliconValley/Park/4572/tips.html.
 	 *
-	 * Thanks Petey Leinonen !
+	 * Thanks Petey Leinonen!
 	 *
 	 */
 
 	KeyChar c ;
 	int fd = 0 ;
-	
+
 	struct termios term, oterm ;
-	
+
 	// Gets the terminal settings.
 	::tcgetattr( fd, & oterm ) ;
 
 	// Gets a copy of the settings, which we modify.
 	::memcpy( &term, & oterm, sizeof( term ) ) ;
 
-	/* 
-	 * Puts the terminal in non-canonical mode, any reads will 
-	 * wait until a character has been pressed. 
+	/*
+	 * Puts the terminal in non-canonical mode, any reads will wait until a
+	 * character has been pressed.
+	 *
 	 * This function will not time out.
 	 *
 	 */
-	 
+
 	term.c_lflag &= ! ICANON ;
 	term.c_cc[ VMIN ]  = 1 ;
 	term.c_cc[ VTIME ] = 0 ;
@@ -394,8 +416,8 @@ KeyChar Ceylan::getChar()
 
 	// Returns the character:
 	return c ;
-	
-	
+
+
 #elif defined(CEYLAN_USES_CONIO_H)
 
 	return::_getch() ;
@@ -405,21 +427,21 @@ KeyChar Ceylan::getChar()
 #error Ceylan::GetChar() not defined for your architecture.
 
 #endif // CEYLAN_USES_TERMIOS_H
-	
+
 #endif // CEYLAN_ARCH_NINTENDO_DS
-	
+
 }
 
 
 
-KeyChar Ceylan::waitForKey( const string & message ) 
+KeyChar Ceylan::waitForKey( const string & message )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
-		
+
 #ifdef CEYLAN_RUNS_ON_ARM7
 
-	throw UtilsException( 
+	throw UtilsException(
 		"Ceylan::waitForKey: only available on the ARM9." ) ;
 
 #else // CEYLAN_RUNS_ON_ARM7
@@ -441,13 +463,13 @@ KeyChar Ceylan::waitForKey( const string & message )
 	// Leave the terminal untouched if no display wanted.
 	if ( ! message.empty() )
 		display( message ) ;
-	
-		
+
+
 	while ( ! Ceylan::keyboardHit() )
 	{
 
-		
-		// Wait a bit if possible, to save CPU time and laptop batteries: 
+
+		// Wait a bit if possible, to save CPU time and laptop batteries:
 		if ( System::areSubSecondSleepsAvailable() && ! sleepFailed )
 		{
 			try
@@ -458,47 +480,47 @@ KeyChar Ceylan::waitForKey( const string & message )
 			{
 				LogPlug::error( "Ceylan::waitForKey: sleep failed: "
 					+ e.toString() ) ;
-				
-				// Avoids saturating logs, switch to busy waiting:	
-				sleepFailed = true ;
-					
-			}
-			
-		}		
 
-		
+				// Avoids saturating logs, switch to busy waiting:
+				sleepFailed = true ;
+
+			}
+
+		}
+
+
 	}
-			
+
 	return Ceylan::getChar() ;
-		
+
 #endif // CEYLAN_ARCH_NINTENDO_DS
-		
+
 }
 
 
 
 void Ceylan::checkpoint( const std::string & message )
 {
- 
- 	static Ceylan::Uint32 checkpointCount = 1 ;
- 
- 	if ( message.empty() )
-		display( "Checkpoint [" + Ceylan::toString( checkpointCount ) 
+
+	static Ceylan::Uint32 checkpointCount = 1 ;
+
+	if ( message.empty() )
+		display( "Checkpoint [" + Ceylan::toString( checkpointCount )
 			+ "]" ) ;
 	else
-		display( "Checkpoint [" + Ceylan::toString( checkpointCount ) 
+		display( "Checkpoint [" + Ceylan::toString( checkpointCount )
 			+ "]: " + message ) ;
-				
-	checkpointCount++ ;		
-		
+
+	checkpointCount++ ;
+
 }
 
 
 
 void Ceylan::breakpoint( const std::string & message )
 {
- 
- 	static Ceylan::Uint32 breakpointCount = 1 ;
+
+	static Ceylan::Uint32 breakpointCount = 1 ;
 
 	if ( ! message.empty() )
 		display( "Breakpoint number #" + Ceylan::toString( breakpointCount )
@@ -508,8 +530,7 @@ void Ceylan::breakpoint( const std::string & message )
 			+ Ceylan::toString( breakpointCount ) + "." ) ;
 
 	breakpointCount++ ;
-	
-	waitForKey() ;
- 
-}
 
+	waitForKey() ;
+
+}

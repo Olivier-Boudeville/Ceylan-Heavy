@@ -241,13 +241,36 @@ namespace Ceylan
 
 
 	/**
-	 * Stops immediatly the program, without performing any cleanup.
+	 * Performs a full normal clean-up and shutdown of the ceylan library. It
+	 * should be called as one of the last instructions of the user program (as
+	 * no Ceylan service should be used after), for instance just before
+	 * returning the exit code.
+	 *
+	 * @note This call is fully optional (most, if not all Ceylan-using programs
+	 * could work as well without it), however it allows to end the program
+	 * perfectly cleanly, i.e. with no memory leak nor blocks that are still
+	 * reachable due to Ceylan. That is for example useful to run Valgrind
+	 * against a Ceylan-using program with no specific suppression file while
+	 * still seeing neither memory leaks nor still-reachable blocks.
+	 *
+	 * @see also emergencyShutdown
+	 *
+	 */
+	CEYLAN_DLL void shutdown() ;
+
+
+
+	/**
+	 * Stops immediatly the program, without performing any cleanup. Never
+	 * returns.
 	 *
 	 * @note Call me when run-time abnormal behaviours occurs, such as state
 	 * incoherence, that shows that some code is faulty.
 	 *
 	 * @note That kind of function is useful in the cases (that should be
 	 * avoided) where exception specifications are used.
+	 *
+	 * @see also shutdown
 	 *
 	 */
 	CEYLAN_DLL void emergencyShutdown( const std::string & message )
