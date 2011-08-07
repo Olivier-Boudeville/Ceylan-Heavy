@@ -39,6 +39,8 @@ export OSDL_ROOT=${LOANI_REPOSITORY}/osdl/OSDL
 export OSDL_SRC=${OSDL_ROOT}/trunk/src
 export OSDL_DOC=${OSDL_SRC}/doc/web/main/documentation
 
+export OSDL_ENV_FILE="${LOANI_INSTALLATIONS}/OSDL-environment.sh"
+
 
 #export ORGE_ROOT=${LOANI_REPOSITORY}/osdl/Orge/trunk
 export ORGE_ROOT=${LOANI_REPOSITORY}/OSDL-Erlang/Orge/trunk
