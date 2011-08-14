@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -56,7 +56,7 @@ using namespace Ceylan::Features ;
  * Equal to 0b00000000000000000000000000000001.
  *
  */
-const Flags Features::RegularExpressions = 0x00000001 ; 
+const Flags Features::RegularExpressions = 0x00000001 ;
 
 
 
@@ -67,7 +67,7 @@ const Flags Features::RegularExpressions = 0x00000001 ;
  * Equal to 0b00000000000000000000000000000010.
  *
  */
-const Flags Features::Multithreading = 0x00000002 ; 
+const Flags Features::Multithreading = 0x00000002 ;
 
 
 
@@ -78,7 +78,7 @@ const Flags Features::Multithreading = 0x00000002 ;
  * Equal to 0b00000000000000000000000000000100.
  *
  */
-const Flags Features::Networking = 0x00000004 ; 
+const Flags Features::Networking = 0x00000004 ;
 
 
 
@@ -89,7 +89,7 @@ const Flags Features::Networking = 0x00000004 ;
  * Equal to 0b00000000000000000000000000001000.
  *
  */
-const Flags Features::FileDescriptors = 0x00000008 ; 
+const Flags Features::FileDescriptors = 0x00000008 ;
 
 
 
@@ -100,7 +100,7 @@ const Flags Features::FileDescriptors = 0x00000008 ;
  * Equal to 0b00000000000000000000000000010000.
  *
  */
-const Flags Features::SymbolicLinks = 0x00000010 ; 
+const Flags Features::SymbolicLinks = 0x00000010 ;
 
 
 
@@ -111,7 +111,7 @@ const Flags Features::SymbolicLinks = 0x00000010 ;
  * Equal to 0b00000000000000000000000000100000.
  *
  */
-const Flags Features::AdvancedFileAttributes = 0x00000020 ; 
+const Flags Features::AdvancedFileAttributes = 0x00000020 ;
 
 
 
@@ -122,7 +122,7 @@ const Flags Features::AdvancedFileAttributes = 0x00000020 ;
  * Equal to 0b00000000000000000000000001000000.
  *
  */
-const Flags Features::FileLocks = 0x00000040 ; 
+const Flags Features::FileLocks = 0x00000040 ;
 
 
 
@@ -133,7 +133,7 @@ const Flags Features::FileLocks = 0x00000040 ;
  * Equal to 0b00000000000000000000000010000000.
  *
  */
-const Flags Features::AdvancedProcessManagement = 0x00000080 ; 
+const Flags Features::AdvancedProcessManagement = 0x00000080 ;
 
 
 
@@ -144,7 +144,7 @@ const Flags Features::AdvancedProcessManagement = 0x00000080 ;
  * Equal to 0b00000000000000000000000100000000.
  *
  */
-const Flags Features::Plugins = 0x00000100 ; 
+const Flags Features::Plugins = 0x00000100 ;
 
 
 
@@ -155,12 +155,12 @@ const Flags Features::Plugins = 0x00000100 ;
  * Equal to 0b00000000000000000000001000000000.
  *
  */
-const Flags Features::Signals = 0x00000200 ; 
+const Flags Features::Signals = 0x00000200 ;
 
 
 
 
-FeatureNotAvailableException::FeatureNotAvailableException( 
+FeatureNotAvailableException::FeatureNotAvailableException(
 		const std::string & message ) :
 	Ceylan::Exception( message )
 {
@@ -173,75 +173,75 @@ FeatureNotAvailableException::~FeatureNotAvailableException() throw()
 {
 
 }
-	
+
 
 
 void Features::checkForSupportedFeatures( Flags featuresFlag )
 {
-	
+
 	string endOfMessage = " feature not supported by the version "
 		"of the Ceylan library currently linked." ;
-	
+
 	// Test in turn all specified features:
-	
+
 	if ( featuresFlag & RegularExpressions )
 	{
 		if ( ! areRegularExpressionsSupported() )
-			throw FeatureNotAvailableException( "Regular expression" 
-				+ endOfMessage ) ;			
+			throw FeatureNotAvailableException( "Regular expression"
+				+ endOfMessage ) ;
 	}
-	
-	
-	
+
+
+
 	if ( featuresFlag & Multithreading )
 	{
 		if ( ! isMultithreadingSupported() )
-			throw FeatureNotAvailableException( "Multithreading" 
-				+ endOfMessage ) ;			
+			throw FeatureNotAvailableException( "Multithreading"
+				+ endOfMessage ) ;
 	}
-	
-	
-	
+
+
+
 	if ( featuresFlag & Networking )
 	{
 		if ( ! isNetworkingSupported() )
 			throw FeatureNotAvailableException( "Networking" + endOfMessage ) ;
-			
+
 	}
-	
-	
-	
+
+
+
 	if ( featuresFlag & FileDescriptors )
 	{
 		if ( ! areFileDescriptorsSupported() )
-			throw FeatureNotAvailableException( "File descriptor" 
-				+ endOfMessage ) ;			
+			throw FeatureNotAvailableException( "File descriptor"
+				+ endOfMessage ) ;
 	}
-	
-	
-	
+
+
+
 	if ( featuresFlag & SymbolicLinks )
 	{
 		if ( ! areSymbolicLinksSupported() )
-			throw FeatureNotAvailableException( "Symbolic link" 
-				+ endOfMessage ) ;			
+			throw FeatureNotAvailableException( "Symbolic link"
+				+ endOfMessage ) ;
 	}
-	
-	
-	
+
+
+
 	if ( featuresFlag & AdvancedFileAttributes )
 	{
 		if ( ! areAdvancedFileAttributesSupported() )
-			throw FeatureNotAvailableException( "Advanced file attribute" 
-				+ endOfMessage ) ;			
+			throw FeatureNotAvailableException( "Advanced file attribute"
+				+ endOfMessage ) ;
 	}
-	
-	
-	
+
+
+
 	if ( featuresFlag & FileLocks )
 	{
 		if ( ! areFileLocksSupported() )
-			throw FeatureNotAvailableException( "File lock" + endOfMessage ) ;	
+			throw FeatureNotAvailableException( "File lock" + endOfMessage ) ;
 	}
 
 
@@ -249,173 +249,173 @@ void Features::checkForSupportedFeatures( Flags featuresFlag )
 	if ( featuresFlag & AdvancedProcessManagement )
 	{
 		if ( ! isAdvancedProcessManagementSupported() )
-			throw FeatureNotAvailableException( 
-				"Advanced process management" + endOfMessage ) ;			
+			throw FeatureNotAvailableException(
+				"Advanced process management" + endOfMessage ) ;
 	}
-	
-	
-	
+
+
+
 	if ( featuresFlag & AdvancedProcessManagement )
 	{
 		if ( ! arePluginsSupported() )
 			throw FeatureNotAvailableException( "Plugin" + endOfMessage ) ;
-			
+
 	}
-	
-	
-	
+
+
+
 	if ( featuresFlag & Signals )
 	{
 		if ( ! areSignalsSupported() )
 			throw FeatureNotAvailableException( "Signal" + endOfMessage ) ;
-			
+
 	}
-	
-	
+
+
 }
 
 
 
-bool Features::areRegularExpressionsSupported() 
+bool Features::areRegularExpressionsSupported()
 {
 
 #if CEYLAN_USES_REGEX
 	return true ;
-#else // CEYLAN_USES_REGEX 
-	return false ; 	
-#endif // CEYLAN_USES_REGEX 
+#else // CEYLAN_USES_REGEX
+	return false ;
+#endif // CEYLAN_USES_REGEX
 
 }
 
 
 
-bool Features::isMultithreadingSupported() 
+bool Features::isMultithreadingSupported()
 {
 
 #if CEYLAN_USES_THREADS
 	return true ;
 #else // CEYLAN_USES_THREADS
-	return false ; 	
+	return false ;
 #endif // CEYLAN_USES_THREADS
 
 }
 
 
 
-bool Features::isNetworkingSupported() 
+bool Features::isNetworkingSupported()
 {
 
 #if CEYLAN_USES_NETWORK
 	return true ;
 #else // CEYLAN_USES_NETWORK
-	return false ; 	
+	return false ;
 #endif // CEYLAN_USES_NETWORK
 
 }
 
 
 
-bool Features::areFileDescriptorsSupported() 
+bool Features::areFileDescriptorsSupported()
 {
 
 #if CEYLAN_USES_FILE_DESCRIPTORS
 	return true ;
 #else // CEYLAN_USES_FILE_DESCRIPTORS
-	return false ; 	
+	return false ;
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
 
 }
 
 
 
-bool Features::areSymbolicLinksSupported() 
+bool Features::areSymbolicLinksSupported()
 {
 
 #if CEYLAN_USES_SYMBOLIC_LINKS
 	return true ;
 #else // CEYLAN_USES_SYMBOLIC_LINKS
-	return false ; 	
+	return false ;
 #endif // CEYLAN_USES_SYMBOLIC_LINKS
 
 }
 
 
 
-bool Features::areAdvancedFileAttributesSupported() 
+bool Features::areAdvancedFileAttributesSupported()
 {
 
 #if CEYLAN_USES_ADVANCED_FILE_ATTRIBUTES
 	return true ;
 #else // CEYLAN_USES_ADVANCED_FILE_ATTRIBUTES
-	return false ; 	
+	return false ;
 #endif // CEYLAN_USES_ADVANCED_FILE_ATTRIBUTES
 
 }
 
 
 
-bool Features::areFileLocksSupported() 
+bool Features::areFileLocksSupported()
 {
 
 #if CEYLAN_USES_FILE_LOCKS
 	return true ;
 #else // CEYLAN_USES_FILE_LOCKS
-	return false ; 	
+	return false ;
 #endif // CEYLAN_USES_FILE_LOCKS
 
 }
 
 
 
-bool Features::isAdvancedProcessManagementSupported() 
+bool Features::isAdvancedProcessManagementSupported()
 {
 
 #if CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
 	return true ;
 #else // CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
-	return false ; 	
+	return false ;
 #endif // CEYLAN_USES_ADVANCED_PROCESS_MANAGEMENT
 
 }
 
 
 
-bool Features::arePluginsSupported() 
+bool Features::arePluginsSupported()
 {
 
 #if CEYLAN_USES_PLUGINS
 	return true ;
 #else // CEYLAN_USES_PLUGINS
-	return false ; 	
+	return false ;
 #endif // CEYLAN_USES_PLUGINS
 
 }
 
 
 
-bool Features::areSignalsSupported() 
+bool Features::areSignalsSupported()
 {
 
 #if CEYLAN_USES_SIGNALS
 	return true ;
 #else // CEYLAN_USES_SIGNALS
-	return false ; 	
+	return false ;
 #endif // CEYLAN_USES_SIGNALS
 
 }
 
 
-const std::string Features::describeAvailableFeatures()  
+const std::string Features::describeAvailableFeatures()
 {
-		
+
 	list<string> featureList ;
-	
+
 	if ( areRegularExpressionsSupported() )
 		featureList.push_back( "Regular expressions are supported" ) ;
 	else
 		featureList.push_back( "Regular expressions not supported" ) ;
 
-		
+
 	if ( isMultithreadingSupported() )
 		featureList.push_back( "Multithreading is supported" ) ;
 	else
@@ -426,14 +426,14 @@ const std::string Features::describeAvailableFeatures()
 		featureList.push_back( "Networking supported" ) ;
 	else
 		featureList.push_back( "Networking not supported" ) ;
-		
-		
+
+
 	if ( areFileDescriptorsSupported() )
 		featureList.push_back( "File descriptors are supported" ) ;
 	else
 		featureList.push_back( "File descriptors not supported" ) ;
-		
-		
+
+
 	if ( areSymbolicLinksSupported() )
 		featureList.push_back( "Symbolic links are supported" ) ;
 	else
@@ -473,6 +473,5 @@ const std::string Features::describeAvailableFeatures()
 	return "Summary of optional features available with "
 		"the Ceylan library currently linked:"
 		+ Ceylan::formatStringList( featureList ) ;
-			
-}
 
+}

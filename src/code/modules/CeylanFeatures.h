@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -46,6 +46,7 @@ namespace Ceylan
 	 * Optional features can be requested and used, if available.
 	 *
 	 * Current known features are:
+	 *
 	 *  - regular expression support
 	 *  - multithreading support
 	 *  - networking support
@@ -54,29 +55,29 @@ namespace Ceylan
 	 *  - advanced file attributes (for opening and permissions) support
 	 *  - read/write file lock support
 	 *  - advanced process management
-	 *	- plugin support
+	 *  - plugin support
 	 *
 	 */
 	namespace Features
 	{
-	
-	
-	
+
+
+
 		/**
 		 * To be raised whenever a feature is not available on the target
 		 * platform for the currently linked Ceylan library.
 		 *
 		 */
-		class CEYLAN_DLL FeatureNotAvailableException: public Ceylan::Exception
+		class CEYLAN_DLL FeatureNotAvailableException : public Ceylan::Exception
 		{
-	
+
 			public:
-		
-				explicit FeatureNotAvailableException( 
+
+				explicit FeatureNotAvailableException(
 					const std::string & message ) ;
-					
+
 				virtual ~FeatureNotAvailableException() throw() ;
-	
+
 		} ;
 
 
@@ -84,27 +85,28 @@ namespace Ceylan
 
 		/**
 		 * This is the list of Ceylan features that might be available.
+		 *
 		 * They are often available on a per-platform basis, even though each
 		 * available feature can be disabled on request, at the library build
 		 * time.
 		 *
 		 * @example The recommended usage for user code is the following:
-		 * Ceylan::CheckForSupportedFeatures( MyFeature 
-		 *	  | MyOtherFeature | AnotherWantedFeature ) ;
+		 * Ceylan::CheckForSupportedFeatures( MyFeature
+		 *    | MyOtherFeature | AnotherWantedFeature ) ;
 		 *
 		 * If at least one feature is not available, a self-documented
 		 * FeatureNotAvailableException will be thrown accordingly.
 		 *
 		 */
-	
-	
+
+
 		/**
 		 * Designates the regular expression support feature.
 		 *
-		 * If this feature is enabled, then the Ceylan library will make use
-		 * of the regex-provided primitives whenever needed.
+		 * If this feature is enabled, then the Ceylan library will make use of
+		 * the regex-provided primitives whenever needed.
 		 *
-		 */ 
+		 */
 		extern CEYLAN_DLL const Ceylan::Flags RegularExpressions ;
 
 
@@ -112,14 +114,14 @@ namespace Ceylan
 		/**
 		 * Designates the multithreading support feature.
 		 *
-		 * If this feature is enabled, then the Ceylan library will provide
-		 * a basic thread support. 
+		 * If this feature is enabled, then the Ceylan library will provide a
+		 * basic thread support.
 		 *
 		 * @note This do not imply that the Ceylan library itself will be
 		 * multithread-proof, reentrant and/or protected against concurrent
 		 * accesses.
 		 *
-		 */ 
+		 */
 		extern CEYLAN_DLL const Ceylan::Flags Multithreading ;
 
 
@@ -127,11 +129,11 @@ namespace Ceylan
 		/**
 		 * Designates the network support feature.
 		 *
-		 * If this feature is enabled, then the Ceylan library will provide
-		 * a basic networking support, including abstractions of low-level
-		 * communication objects (namey, sockets) and higher-level base
-		 * classes, such as generic clients, servers, and basic custom-made
-		 * RPC-style primitives, a.k.a. Ceylan middleware.
+		 * If this feature is enabled, then the Ceylan library will provide a
+		 * basic networking support, including abstractions of low-level
+		 * communication objects (namey, sockets) and higher-level base classes,
+		 * such as generic clients, servers, and basic custom-made RPC-style
+		 * primitives, a.k.a. Ceylan middleware.
 		 *
 		 */
 		extern CEYLAN_DLL const Ceylan::Flags Networking ;
@@ -141,8 +143,8 @@ namespace Ceylan
 		/**
 		 * Designates the file descriptor feature.
 		 *
-		 * If this feature is enabled, then the Ceylan library will be able 
-		 * to provide file descriptor management, including select operations,
+		 * If this feature is enabled, then the Ceylan library will be able to
+		 * provide file descriptor management, including select operations,
 		 * direct copies, InputStream abstraction for files, sockets, pipes,
 		 * etc.
 		 *
@@ -154,8 +156,8 @@ namespace Ceylan
 		/**
 		 * Designates the symbolic link feature.
 		 *
-		 * If this feature is enabled, then the Ceylan library will be able 
-		 * to provide symbolic management management, including creation,
+		 * If this feature is enabled, then the Ceylan library will be able to
+		 * provide symbolic management management, including creation,
 		 * dereferencement, etc.
 		 *
 		 */
@@ -166,9 +168,11 @@ namespace Ceylan
 		/**
 		 * Designates the advanced file attribute feature, which includes
 		 * the management, for filesystem elements, of additional:
-		 *   - opening flags (non-blocking/synchronous) 
-		 *   - file attributes (beyond 'owner' permissions: 'group'
-		 * and 'other').
+		 *
+		 *   - opening flags (non-blocking/synchronous)
+		 *
+		 *   - file attributes (beyond 'owner' permissions: 'group' and
+		 * 'other').
 		 *
 		 */
 		extern CEYLAN_DLL const Ceylan::Flags AdvancedFileAttributes ;
@@ -184,8 +188,8 @@ namespace Ceylan
 
 
 		/**
-		 * Designates the advanced process management feature, for 
-		 * fine-grained featureful process control.
+		 * Designates the advanced process management feature, for fine-grained
+		 * featureful process control.
 		 *
 		 */
 		extern CEYLAN_DLL const Ceylan::Flags AdvancedProcessManagement ;
@@ -208,12 +212,12 @@ namespace Ceylan
 
 
 
-	
+
 		/**
 		 * Checks that the version of the Ceylan library currently linked
 		 * supports the specified feature(s).
 		 *
-		 * @param featuresFlag an OR'd flag of the requested features, for 
+		 * @param featuresFlag an OR'd flag of the requested features, for
 		 * example: 'MyFeature | MyOtherFeature'
 		 *
 		 * @throw FeatureNotAvailableException if at least one of the specified
@@ -221,63 +225,63 @@ namespace Ceylan
 		 *
 		 */
 		CEYLAN_DLL void checkForSupportedFeatures( Ceylan::Flags featuresFlag );
-	
-	
-	
+
+
+
 		/// Tells whether regular expressions are supported.
 		CEYLAN_DLL bool areRegularExpressionsSupported() ;
-	
-	
+
+
 		/// Tells whether multithreading is supported.
 		CEYLAN_DLL bool isMultithreadingSupported() ;
-	
-	
+
+
 		/// Tells whether network operations are supported.
 		CEYLAN_DLL bool isNetworkingSupported() ;
-	
-	
+
+
 		/// Tells whether file descriptors are supported.
 		CEYLAN_DLL bool areFileDescriptorsSupported() ;
-	
-	
+
+
 		/// Tells whether symbolic links are supported.
 		CEYLAN_DLL bool areSymbolicLinksSupported() ;
-	
-	
+
+
 		/// Tells whether advanced file attributes are supported.
 		CEYLAN_DLL bool areAdvancedFileAttributesSupported() ;
-	
-	
+
+
 		/// Tells whether file locks are supported.
 		CEYLAN_DLL bool areFileLocksSupported() ;
-		
-		
+
+
 		/// Tells whether advanced process management is supported.
 		CEYLAN_DLL bool isAdvancedProcessManagementSupported() ;
-	
-	
+
+
 		/// Tells whether plugins are supported.
 		CEYLAN_DLL bool arePluginsSupported() ;
-	
-	
+
+
 		/// Tells whether signals are supported.
 		CEYLAN_DLL bool areSignalsSupported() ;
-	
-	
-	
+
+
+
 		/**
-		 * Returns a textual description of the optional features available 
-		 * with the Ceylan version currently linked.
+		 * Returns a textual description of the optional features available with
+		 * the Ceylan version currently linked.
 		 *
 		 */
 		CEYLAN_DLL const std::string describeAvailableFeatures() ;
-		
-		
- 	}
-	
+
+
+	}
+
+
 }
 
 
 
 #endif // CEYLAN_FEATURES_H_
-
