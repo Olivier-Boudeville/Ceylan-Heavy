@@ -473,7 +473,7 @@ namespace Ceylan
 	 *
 	 */
 	template<class T, class Element>
-	void split(	const T & toSplit, const Element & delimiter,
+	void split( const T & toSplit, const Element & delimiter,
 		std::list<T> & result )
 	{
 
@@ -572,7 +572,9 @@ namespace Ceylan
 	 * Prints in standard output a checkpoint message, with a checkpoint count
 	 * incremented at each call, starting from 1.
 	 *
-	 * @note Might be useful for light debugging.
+	 * @note Might be useful for light debugging. Do not use std::cout for that,
+	 * as it does not flush the output, putting you at risk of having a program
+	 * go past a std::cout while never being able to see it.
 	 *
 	 */
 	CEYLAN_DLL void checkpoint( const std::string & message = "" ) ;
