@@ -65,7 +65,16 @@ void LogPlugNull::StartService()
 void LogPlugNull::StopService()
 {
 
-	LogPlug::StopService() ;
+  LogPlug::StopService() ;
+
+  CEYLAN_LOG( "Stopping transport." ) ;
+  if ( LogPlug::Transport != 0 )
+  {
+
+	delete LogPlug::Transport ;
+	LogPlug::Transport = 0 ;
+
+  }
 
 }
 

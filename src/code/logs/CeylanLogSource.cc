@@ -181,7 +181,7 @@ void LogSource::directSend( const string & channel, const string & message,
 	LogMessage * newMessage = new LogMessage( message, channel,
 		levelOfDetail ) ;
 
-	_transport->propagate( * newMessage ) ;
+	_transport->propagate( *newMessage ) ;
 
 }
 

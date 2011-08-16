@@ -50,7 +50,7 @@ namespace Ceylan
 		 * - consolePlug: all logs are output in standard console streams, the
 		 * default one being the standard log stream (clog), the others being
 		 * the standard output stream (cout) and the standard error stream
-		 * (cerr). Associated command-line option: '--consolePlug'.
+		 * (cerr). Associated command-line option: '--consolePlug'
 		 *
 		 * - classicalPlug: all logs are output in a *.log file, whose filename
 		 * by default matches the executable name, with a raw encoding, all logs
@@ -63,6 +63,13 @@ namespace Ceylan
 		 *
 		 * - nullPlug: no logs are stored. Associated command-line option:
 		 * '--nullPlug'
+		 *
+		 * @note If using the HTLM plug while running the executable with
+		 * Valgrind, the LogHolder scope must be nested inside a block ending
+		 * before Ceylan::stop() is called, otherwise the LogHolder automatic
+		 * variable will be deallocated *after* Ceylan is stopped, resulting in
+		 * the respawn of a StandardFileSystemManager instance (and thus the
+		 * corresponding blocks being still reachable at program end).
 		 *
 		 */
 		enum KnownPlugs

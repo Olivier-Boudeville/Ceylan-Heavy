@@ -90,16 +90,26 @@ void LogPlugConsole::StartService( const string & plugInitiator,
 void LogPlugConsole::StopService()
 {
 
-	LogPlug::StopService() ;
+  LogPlug::StopService() ;
 
-	CEYLAN_LOG( "Stopping transport and listener." ) ;
+  CEYLAN_LOG( "Stopping transport and listener." ) ;
+  if ( LogPlug::Transport != 0 )
+  {
+
 	delete LogPlug::Transport ;
 	LogPlug::Transport = 0 ;
-	// listener is embedded in transport.
 
-	CEYLAN_LOG( "Stopping aggregator." ) ;
+  }
+  // listener is embedded in transport.
+
+  CEYLAN_LOG( "Stopping aggregator." ) ;
+  if ( LogPlug::Aggregator != 0 )
+  {
+
 	delete LogPlug::Aggregator ;
 	LogPlug::Aggregator = 0 ;
+
+  }
 
 }
 

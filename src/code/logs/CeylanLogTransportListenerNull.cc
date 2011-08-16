@@ -56,7 +56,12 @@ LogTransportListenerNull::~LogTransportListenerNull() throw()
 void LogTransportListenerNull::propagate( LogMessage & message )
 {
 
-	// This is a sink which ignores all messages.
+  /*
+   * This is a sink which ignores all messages, but has to deallocate them, to
+   * avoid leaking the corresponding memory:
+   *
+   */
+  delete & message ;
 
 }
 
