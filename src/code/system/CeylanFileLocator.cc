@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -91,7 +91,7 @@ FileLocator::FileLocator( const string & variableName, char separator ) :
 
 	/*
 	 * No environment variables on the DS, so no path to consider:
-	 
+
 	LogPlug::warning( "FileLocator constructor: running on the DS, "
 		"hence environment variable '" + variableName + "' is ignored." ) ;
 	 *
@@ -100,14 +100,14 @@ FileLocator::FileLocator( const string & variableName, char separator ) :
 	 * implies that the log system may not be started yet.
 	 *
 	 */
-	 	
+
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 	addPathsFromEnvironmentVariable( variableName, separator ) ;
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
-	
-} 
+
+}
 
 
 
@@ -118,48 +118,48 @@ FileLocator::~FileLocator() throw()
 
 
 
-bool FileLocator::addPath( const string & newPath ) 
+bool FileLocator::addPath( const string & newPath )
 {
-	
-	for ( list<string>::const_iterator it = _paths.begin(); 
+
+	for ( list<string>::const_iterator it = _paths.begin();
 			it != _paths.end(); it++ )
 		if ( (*it) == newPath )
 			return false ;
-			
+
 	_paths.push_back( newPath ) ;
-	
-	return true ;	
-		
+
+	return true ;
+
 }
 
 
 
-bool FileLocator::addPaths( const std::list<std::string> & paths ) 
+bool FileLocator::addPaths( const std::list<std::string> & paths )
 {
-	
+
 	bool res = false ;
-	
-	for ( list<string>::const_iterator it = paths.begin(); 
+
+	for ( list<string>::const_iterator it = paths.begin();
 			it != paths.end(); it++ )
 		res |= addPath( (*it ) ) ;
-	
-	return res ;		
-	
+
+	return res ;
+
 }
 
 
 
-bool FileLocator::addPathsFromEnvironmentVariable( 
+bool FileLocator::addPathsFromEnvironmentVariable(
 	const std::string & variableName, char separator )
-{	
+{
 
 	return addPaths( Ceylan::split( getEnvironmentVariable( variableName ),
 		separator ) ) ;
-		
+
 }
 
-	
-	
+
+
 bool FileLocator::removePath( const string & pathToRemove )
 {
 
@@ -170,34 +170,34 @@ bool FileLocator::removePath( const string & pathToRemove )
 			// Iterator will not be used anymore afterwards:
 			_paths.erase( it ) ;
 			return true ;
-		}	
-	
-	return false ;		
-	
+		}
+
+	return false ;
+
 }
 
 
 
-string FileLocator::find( const string & filename ) const 
+string FileLocator::find( const string & filename ) const
 {
 
 	string fullPath ;
-	
-	for ( list<string>::const_iterator it = _paths.begin(); 
+
+	for ( list<string>::const_iterator it = _paths.begin();
 		it != _paths.end(); it++ )
 	{
-	
+
 		fullPath = Directory::JoinPath( (*it), filename ) ;
-		
+
 		//LogPlug::debug( "FileLocator::find: testing '" + fullPath + "'." ) ;
-		
+
 		if ( File::ExistsAsFileOrSymbolicLink( fullPath ) )
 			return fullPath ;
-	}	
-	
-	throw FileLocatorException( "File '" + filename 
+	}
+
+	throw FileLocatorException( "File '" + filename
 		+ "' could not be found through following Locator: " + toString() ) ;
-		
+
 }
 
 
@@ -206,19 +206,18 @@ const std::list<std::string> & FileLocator::getPaths() const
 {
 
 	return _paths ;
-	
+
 }
 
 
 
 const string FileLocator::toString( Ceylan::VerbosityLevels level ) const
 {
-	
-	if ( _paths.empty() ) 
+
+	if ( _paths.empty() )
 		return "Empty File locator" ;
 
 	return "File locator with following registered directories: "
 		+ Ceylan::formatStringList( _paths ) ;
-				 
-}
 
+}
