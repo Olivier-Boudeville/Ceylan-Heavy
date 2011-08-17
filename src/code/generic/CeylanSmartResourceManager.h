@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -46,15 +46,16 @@ namespace Ceylan
 {
 
 
-	
+
 	/**
-	 * Manages a set of SmartResource instances: the smart Resource manager 
-	 * can behave like a basic Resource manager, if the 'NeverDrop' policy is
-	 * used, or it can provide other advanced policies. 
+	 * Manages a set of SmartResource instances: the smart Resource manager can
+	 * behave like a basic Resource manager, if the 'NeverDrop' policy is used,
+	 * or it can provide other advanced policies.
+	 *
 	 * For all policies, supplementary means of storing resources in the cache
 	 * and retrieving them are provided. These new functionalities are allowed
-	 * thanks to the ability of smart resources to compute themselves their 
-	 * size and to be cloned. 
+	 * thanks to the ability of smart resources to compute themselves their size
+	 * and to be cloned.
 	 *
 	 * Various ownerships and 'const'-ness for the submitted and returned
 	 * resources can be chosen, so that only the necessary resource clones are
@@ -70,15 +71,15 @@ namespace Ceylan
 	 * resource and what the user can do with it. The 'scanForAddition' method
 	 * corresponds to this alternative to the 'takeOwnershipOf' method.
 	 *
-	 * Similarly, to the inherited way of retrieving a resource from cache
-	 * (the 'get' method, which returns only a 'const' resource) is added a new
-	 * method ('getClone'), which returns a clone of the resource specified by 
-	 * a key. The ownership of the clone is transferred to the caller, who
-	 * will be able to modify it at will, and will have to delete it, once
-	 * finished with it.
+	 * Similarly, to the inherited way of retrieving a resource from cache (the
+	 * 'get' method, which returns only a 'const' resource) is added a new
+	 * method ('getClone'), which returns a clone of the resource specified by a
+	 * key. The ownership of the clone is transferred to the caller, who will be
+	 * able to modify it at will, and will have to delete it, once finished with
+	 * it.
 	 *
-	 * Various cache policies can be chosen to limit the size in memory taken 
-	 * by the resources cached by a smart manager. 
+	 * Various cache policies can be chosen to limit the size in memory taken by
+	 * the resources cached by a smart manager.
 	 *
 	 * If the smart Resource manager has to enforce a quota (an upper bound to
 	 * the total memory size of cached resources), it will have to drop cached
@@ -91,9 +92,9 @@ namespace Ceylan
 	 * answer to a given request, even if the corresponding entry had been
 	 * recently submitted to the cache. It is the price for memory control.
 	 *
-	 * As computing resource sizes may be demanding, they are recomputed only 
-	 * on request ('updateSizes' method), otherwise the size taken into account
-	 * for a resource is the one it had when lastly managed by the cache.
+	 * As computing resource sizes may be demanding, they are recomputed only on
+	 * request ('updateSizes' method), otherwise the size taken into account for
+	 * a resource is the one it had when lastly managed by the cache.
 	 *
 	 * A smart Resource manager handles the life cycle of the resources whose
 	 * ownership has been given to it: it will deallocate them when itself
@@ -101,117 +102,126 @@ namespace Ceylan
 	 * respect and needing some more room.
 	 *
 	 * The resources can be submitted to the manager at the time when their
-	 * state must be kept, including prior to any use or after they already 
-	 * have been used, at the moment when they would have been deallocated
-	 * should there be no cache. 
-	 * 
-	 * For each use case, both the way of submitting the resource (hereby 
-	 * called a 'put' operation, be it 'takeOwnershipOf' or 'scanForAddition'),
-	 * and of retrieving them (a 'get' operation, be it 'get' or 'getClone'),
-	 * have to be carefully chosen.
-	 * All combinations are valid, there are just different use cases for such
-	 * a cache, depending on what is to be done with the cached resources, 
-	 * which translates into the need for cached resources to be cloned or not.
+	 * state must be kept, including prior to any use or after they already have
+	 * been used, at the moment when they would have been deallocated should
+	 * there be no cache.
+	 *
+	 * For each use case, both the way of submitting the resource (hereby called
+	 * a 'put' operation, be it 'takeOwnershipOf' or 'scanForAddition'), and of
+	 * retrieving them (a 'get' operation, be it 'get' or 'getClone'), have to
+	 * be carefully chosen.
+	 *
+	 * All combinations are valid, there are just different use cases for such a
+	 * cache, depending on what is to be done with the cached resources, which
+	 * translates into the need for cached resources to be cloned or not.
 	 *
 	 * If we take the example of a font rendering system, we saw with basic
-	 * ResourceManager how a 'takeOwnershipOf'/'get' pair could be useful. 
-	 * On the contrary of a mere blit, if a glyph is needed but will be altered
+	 * ResourceManager how a 'takeOwnershipOf'/'get' pair could be useful.  On
+	 * the contrary of a mere blit, if a glyph is needed but will be altered
 	 * after its creation, then when this surface is in some particular state,
 	 * the user may would like to have it cached. In this case, the user will
-	 * submit that surface to the cache, asking that the cache does not take 
-	 * the ownership of it, but makes a clone of it, so that the user can keep
-	 * on using his surface. This can be done thanks to the 'scanForAddition'
+	 * submit that surface to the cache, asking that the cache does not take the
+	 * ownership of it, but makes a clone of it, so that the user can keep on
+	 * using his surface. This can be done thanks to the 'scanForAddition'
 	 * method. If the cache is able to store this smart resource, then it will
-	 * clone it and store the clone. The submitted surface will not be
-	 * modified in any way. 
+	 * clone it and store the clone. The submitted surface will not be modified
+	 * in any way.
+	 *
 	 * If the key associated to this surface is requested afterwards, then, if
 	 * still in cache, it will be returned, either as 'const Resource' or as a
-	 * non-const resource (hence a clone of the initial clone), depending on
-	 * the choice of the caller ('get' or 'getClone').  
+	 * non-const resource (hence a clone of the initial clone), depending on the
+	 * choice of the caller ('get' or 'getClone').
 	 *
 	 * Such an organization allows to clone the resource only if needed, i.e.
 	 * only when the manager knows for sure that the resource will be accepted
 	 * in cache with regard to its state and the current cache policy being
-	 * applied. Otherwise a resource could be cloned before knowing whether
-	 * the clone can be accepted in cache, hence leading to useless cloning
+	 * applied. Otherwise a resource could be cloned before knowing whether the
+	 * clone can be accepted in cache, hence leading to useless cloning
 	 * operations.
 	 *
 	 * The SmartResourceManager class should not be a child class of the
 	 * BasicResourceManager class, since it must deal with smart resources only.
-	 * However its 'NeverDrop' policy results in a behaviour very similar to
-	 * the one of a basic Resource manager.
+	 * However its 'NeverDrop' policy results in a behaviour very similar to the
+	 * one of a basic Resource manager.
 	 *
 	 * @note No CEYLAN_DLL declaration for templates.
 	 *
 	 */
 	template <typename Key>
-	class SmartResourceManager: public Ceylan::ResourceManager<Key>
+	class SmartResourceManager : public Ceylan::ResourceManager<Key>
 	{
-	
-	
+
+
 		public:
-		
-			
+
+
 			/**
 			 * Lists all available cache policies:
 			 *
-			 *  - 'NeverDrop': no quota enforced, no resource dropped, except
-			 * on manager deleting or explicit 'flush' request.
+			 *  - 'NeverDrop': no quota enforced, no resource dropped, except on
+			 * manager deleting or explicit 'flush' request.
+			 *
 			 * If a 'put' operation would lead to an already cached resource
-			 * being replaced by another resource associated to the same key,
-			 * a ResourceManagerException is raised.
+			 * being replaced by another resource associated to the same key, a
+			 * ResourceManagerException is raised.
+			 *
 			 * Therefore the only cause for a non-cloned (const resource)
 			 * returned by a 'get' operation to become invalid is the resource
-			 * manager being deleted (or flushed): its life cycle must
-			 * therefore be correctly managed by the user.
+			 * manager being deleted (or flushed): its life cycle must therefore
+			 * be correctly managed by the user.
 			 *
-			 *	- 'DropLessRequestedFirst': the manager may drop resources for
-			 * three reasons. 
+			 *  - 'DropLessRequestedFirst': the manager may drop resources for
+			 * three reasons.
+			 *
 			 * If the quota is reached, it will drop the less requested
-			 * resources, no matter their size in memory (but if this policy 
-			 * is applied as part of a 'put' operation, the newly cached
-			 * resource will escape this first drop round). 
+			 * resources, no matter their size in memory (but if this policy is
+			 * applied as part of a 'put' operation, the newly cached resource
+			 * will escape this first drop round).
+			 *
 			 * If a resource is put with a key already associated with a
 			 * previously put resource, the new resource will replace the
 			 * previous one, which will be dropped.
+			 *
 			 * If the manager is deleted or flushed, all resources will be
 			 * dropped.
 			 *
 			 * There is a drawback with such templated enumerations: user code
 			 * cannot specify a cache policy independently of the type of the
 			 * key chosen for the template instanciation.
+			 *
 			 * For example, a cache policy cannot be specified as
 			 * SmartResourceManager::CachePolicy, it has to be for example
 			 * SmartResourceManager<int>::CachePolicy. In this case,
 			 * SmartResourceManager<float>::CachePolicy is a completely
-			 * different type, which can be a bit inconvenient. 
+			 * different type, which can be a bit inconvenient.
+			 *
 			 * See OSDL::Font to have an example of issue and work-around.
 			 *
-			 */	
+			 */
 			enum CachePolicy { NeverDrop, DropLessRequestedFirst } ;
-			
-			
-			
+
+
+
 			/**
 			 * Creates a new smart resource manager, which will store, take
-			 * ownership of and make available the resources that will be put
-			 * in it, with the 'NeverDrop' policy, i.e. with no concern for 
-			 * size limit, as a basic ResourceManager would do.
+			 * ownership of and make available the resources that will be put in
+			 * it, with the 'NeverDrop' policy, i.e. with no concern for size
+			 * limit, as a basic ResourceManager would do.
 			 *
-			 * As no resource will be ever dropped until the manager is 
-			 * flushed or deleted, it is the user responsibility to take care
-			 * of what is put in cache, so that the total size in memory does
-			 * not increase too much.
+			 * As no resource will be ever dropped until the manager is flushed
+			 * or deleted, it is the user responsibility to take care of what is
+			 * put in cache, so that the total size in memory does not increase
+			 * too much.
 			 *
 			 */
 			explicit SmartResourceManager() ;
- 
- 
- 
+
+
+
 			/**
 			 * Creates a new smart resource manager, which will store and make
 			 * available resources, with respect to the specified quota and the
-			 * specified policy. 
+			 * specified policy.
 			 *
 			 * It implies dropping a smart Resource if the cache policy
 			 * determines it.
@@ -224,20 +234,20 @@ namespace Ceylan
 			 * @param policy the cache policy to enforce.
 			 *
 			 */
-			explicit SmartResourceManager( System::Size quota, 
+			explicit SmartResourceManager( System::Size quota,
 				CachePolicy policy = DropLessRequestedFirst ) ;
- 
- 
- 
- 			/// Virtual destructor, deletes all owned resources still in cache.
- 			virtual ~SmartResourceManager() throw() ;
-	
-	
-			
-			
+
+
+
+			/// Virtual destructor, deletes all owned resources still in cache.
+			virtual ~SmartResourceManager() throw() ;
+
+
+
+
 			// Two different 'put' operations.
-	
-	
+
+
 			/**
 			 * Puts, if possible, a clone of specified resource in cache,
 			 * associated with specified key, without taking ownership of the
@@ -249,17 +259,16 @@ namespace Ceylan
 			 * done, the association would be left as it was.
 			 *
 			 * With the 'DropLessRequestedFirst' policy, the smart Resource
-			 * manager will do its best to add a clone of the resource in 
-			 * cache: if there is not enough space, the less requested
-			 * resources already in cache will be dropped until the new smart
-			 * resource clone can fit into the cache, provided it is simply
-			 * possible, i.e. the resource size is smaller than the quota.
-			 * Otherwise the resource will be trivially rejected and will not
-			 * be cloned.
+			 * manager will do its best to add a clone of the resource in cache:
+			 * if there is not enough space, the less requested resources
+			 * already in cache will be dropped until the new smart resource
+			 * clone can fit into the cache, provided it is simply possible,
+			 * i.e. the resource size is smaller than the quota.  Otherwise the
+			 * resource will be trivially rejected and will not be cloned.
 			 *
 			 * In all cases, the smart manager will handle on its own the life
-			 * cycle of its clones, and will perform their deleting depending 
-			 * on the cache policy, but no later than its own deleting.
+			 * cycle of its clones, and will perform their deleting depending on
+			 * the cache policy, but no later than its own deleting.
 			 *
 			 * @param key the key by which that resource should be retrieved.
 			 * If this key is already associated with a resource, and, for the
@@ -274,44 +283,45 @@ namespace Ceylan
 			 * @return true iff the specified resource could be cached. For
 			 * example, if the size of the resource is higher than the manager
 			 * quota, then the resource will not be stored and false will be
-			 * directly returned. 
+			 * directly returned.
 			 *
 			 */
-			virtual bool scanForAddition( const Key & key, 
+			virtual bool scanForAddition( const Key & key,
 				const SmartResource & smartResource ) ;
-			
-			
-	
+
+
+
 			/**
 			 * Puts specified resource in cache, associated with specified key,
 			 * and takes ownership of it.
-			 * 
+			 *
 			 * The Resource manager takes ownership of all the supplied
-			 * resources and will perform their deleting whenever its current 
+			 * resources and will perform their deleting whenever its current
 			 * policy requests it, or during its own deleting, or when the
 			 * 'flush' method is called.
 			 *
-			 * If the policy is 'NeverDrop' and if the key is already 
-			 * associated to a resource, then the association is left as is, 
-			 * and a ResourceManagerException is raised.
+			 * If the policy is 'NeverDrop' and if the key is already associated
+			 * to a resource, then the association is left as is, and a
+			 * ResourceManagerException is raised.
 			 *
-			 * @param key the key by which that resource could be retrieved. 
-			 * If this key is already associated with a resource, and if the
-			 * cache policy is 'NeverDrop', an exception is raised. Otherwise
-			 * the preceding entry is dropped and the new resource replaces it.
+			 * @param key the key by which that resource could be retrieved.  If
+			 * this key is already associated with a resource, and if the cache
+			 * policy is 'NeverDrop', an exception is raised. Otherwise the
+			 * preceding entry is dropped and the new resource replaces it.
 			 *
 			 * @param resource the resource to put in cache. It must be a
 			 * dynamically allocated resource (thanks to new, no automatic
 			 * variable) since it will be deallocated by the cache when
 			 * appropriate.
 			 *
-			 * @return true iff the specified resource could be cached.
-			 * Even though the resource could not be cached, the manager will
+			 * @return true iff the specified resource could be cached. Even
+			 * though the resource could not be cached, the manager will
 			 * deallocate it, so that the caller can rely on the fact that in
 			 * all cases he has nothing to do with the submitted resource after
-			 * this call. 
-			 * The caller notably must not delete the resource since the 
-			 * manager will always handle the deleting itself.
+			 * this call.
+			 *
+			 * The caller notably must not delete the resource since the manager
+			 * will always handle the deleting itself.
 			 *
 			 * @throw ResourceManagerException if the specified key was already
 			 * associated with a Resource, and if the policy is 'NeverDrop'.
@@ -319,17 +329,17 @@ namespace Ceylan
 			 * @see isKeyAlreadyAssociated
 			 *
 			 */
-			virtual bool takeOwnershipOf( const Key & key, 
+			virtual bool takeOwnershipOf( const Key & key,
 				const SmartResource & resource )  ;
-			
 
-					
+
+
 			/**
 			 * Tells whether the specified key is already associated with a
 			 * Resource.
 			 *
-			 * Useful to avoid trying to overwrite a resource already 
-			 * associated with a key.
+			 * Useful to avoid trying to overwrite a resource already associated
+			 * with a key.
 			 *
 			 */
 			virtual bool isKeyAlreadyAssociated( const Key & key ) const ;
@@ -338,46 +348,53 @@ namespace Ceylan
 
 
 			// Two different 'get' operations.
-	
-	
+
+
 			/**
 			 * Returns a clone of the resource associated with this key, if
 			 * available in cache.
+			 *
 			 * Otherwise returns a null pointer.
 			 *
 			 * Cloning, even if it is complex or resource-demanding, is
-			 * necessary since with this method the caller should be able to 
-			 * do anything with the returned resource, including modifying it
-			 * and/or deallocating it independently from the resource 
-			 * manager and its life cycle.
+			 * necessary since with this method the caller should be able to do
+			 * anything with the returned resource, including modifying it
+			 * and/or deallocating it independently from the resource manager
+			 * and its life cycle.
 			 *
-			 * @note This ethod cannot be 'const' since some metadata in cache
+			 * @note This method cannot be 'const' since some metadata in cache
 			 * entries might be updated.
+			 *
+			 * @see get for a non-copy counterpart.
 			 *
 			 */
 			virtual SmartResource * getClone( const Key & key ) ;
-			
+
 
 
 			/**
-			 * Returns directly the smart resource associated with this key, 
-			 * if available in cache.
+			 * Returns directly the smart resource associated with this key, if
+			 * available in cache.
+			 *
 			 * Otherwise returns a null pointer.
 			 *
-			 * The signature of this inherited method tells it returns
-			 * Resource instances, but more precisely in the case of a smart
-			 * manager it will be always SmartResource instances.
+			 * The signature of this inherited method tells it returns Resource
+			 * instances, but more precisely in the case of a smart manager it
+			 * will be always SmartResource instances.
 			 *
 			 * @return A 'const' resource since it must not be changed in any
 			 * way by the caller (not modified nor deallocated, etc.) so that
-			 * the version in cache remains unaltered. 
+			 * the version in cache remains unaltered.
+			 *
 			 * Similarly, no entry with the same key must be put in cache nor
-			 * the cache itself must be deallocated while a returned resource 
-			 * is in use, since it would result in the deallocation of this
+			 * the cache itself must be deallocated while a returned resource is
+			 * in use, since it would result in the deallocation of this
 			 * resource.
 			 *
-			 * @note The method itself cannot be 'const' since some metadata 
-			 * in cache entries might be updated.
+			 * @note The method itself cannot be 'const' since some metadata in
+			 * cache entries might be updated.
+			 *
+			 * @see getClone for a copy-based counterpart.
 			 *
 			 */
 			 virtual const Resource * get( const Key & key ) ;
@@ -386,33 +403,34 @@ namespace Ceylan
 
 			// Section about policies and sizes.
 
-			
+
 			/**
 			 * Returns the smart resource manager current quota, in bytes.
-			 * 
+			 *
 			 * @note A non-null quota does not imply resources can be dropped,
 			 * the only criterion is the cache policy.
 			 *
 			 */
 			virtual System::Size getQuota() const ;
-		
-		
+
+
 
 			/**
 			 * Returns the cache policy currently being enforced.
 			 *
 			 */
 			virtual CachePolicy getCachePolicy() const ;
-			
-			
-					
+
+
+
 			/**
 			 * Returns the approximate size of the memory used by all currently
 			 * cached resources, in bytes.
-			 * 
+			 *
 			 * The size of the smart resource manager itself is not taken into
 			 * account in the sum.
-			 * In most cases its size is negligible compared to the total 
+			 *
+			 * In most cases its size is negligible compared to the total
 			 * resource size.
 			 *
 			 * @note The sizes taken into account are the ones that are already
@@ -422,24 +440,24 @@ namespace Ceylan
 			 *
 			 */
 			virtual System::Size getFootprint() const ;
-		
-		
-		
-		
+
+
+
+
 			// Various cache management facilities.
-			
-			
+
+
 			/**
-			 * Updates the cache metadata: recomputes the size in memory of
-			 * each cache entry, and applies the selected cache policy.
+			 * Updates the cache metadata: recomputes the size in memory of each
+			 * cache entry, and applies the selected cache policy.
 			 *
 			 * @see updateSizes, applyPolicy
 			 *
 			 */
 			virtual void update() ;
-			
-			
-			
+
+
+
 			/**
 			 * Recomputes the size in memory of each cache entry.
 			 *
@@ -451,15 +469,16 @@ namespace Ceylan
 			 * Applies the current policy on cache entries.
 			 *
 			 * @note The size which is taken into account is based onto the
-			 * metadata of the entries, which may be out-of-date. 
+			 * metadata of the entries, which may be out-of-date.
+			 *
 			 * If one wants the cache policy to rely on accurate sizes, the
 			 * 'updateSizes' method should be called first.
-			 * 
+			 *
 			 */
 			virtual void applyPolicy() ;
-			
-			
-			 
+
+
+
 			/**
 			 * Removes and deletes all resources currently in cache.
 			 *
@@ -467,9 +486,9 @@ namespace Ceylan
 			 *
 			 */
 			virtual void flush() ;
-						
-			
-			
+
+
+
 			/**
 			 * Returns a user-friendly description of the state of this object.
 			 *
@@ -480,33 +499,34 @@ namespace Ceylan
 			 * @see TextDisplayable
 			 *
 			 */
-			 virtual const std::string toString( 
-			 	Ceylan::VerbosityLevels level = Ceylan::high ) const ;
+			 virtual const std::string toString(
+				Ceylan::VerbosityLevels level = Ceylan::high ) const ;
 
 
-			
-			
+
+
 		protected:
-		
-		
+
+
 			// Forward declaration.
 			struct CacheEntry ;
-			
-			
-			
+
+
+
 			/**
 			 * Applies the current policy.
 			 *
 			 * @param lastCached, if non null, indicates that the policy is
 			 * being applied just upon this last resource has been put in cache,
 			 * and therefore this resource should be preserved from this first
-			 * shrink. 
+			 * shrink.
+			 *
 			 * If lastCached is null, the policy will be applied uniformly
 			 * against all cache entries.
 			 *
 			 */
 			virtual void applyPolicy( const SmartResource * lastCached ) ;
-			
+
 
 
 			/**
@@ -514,14 +534,14 @@ namespace Ceylan
 			 * entries.
 			 *
 			 */
-			virtual void applyDropLessRequestedFirst( 
+			virtual void applyDropLessRequestedFirst(
 				const SmartResource * lastCached = 0 ) ;
-			
-			
-			
+
+
+
 			/**
-			 * Adds a new cached entry, with the specified resource and key. 
-			 * If the key is already associated with a cache entry, this cache
+			 * Adds a new cached entry, with the specified resource and key. If
+			 * the key is already associated with a cache entry, this cache
 			 * entry will be deleted first, including its embedded resource.
 			 *
 			 * @param key the key for this new cache entry. If the key is
@@ -534,19 +554,19 @@ namespace Ceylan
 			 * avoid useless size recomputations, since they might be
 			 * demanding). If null, the actual size will be computed on the fly.
 			 *
-			 * @throw ResourceManagerException if the policy is 'NeverDrop' 
-			 * and the key is already associated to a resource. In this case,
-			 * the association remains untouched.
+			 * @throw ResourceManagerException if the policy is 'NeverDrop' and
+			 * the key is already associated to a resource. In this case, the
+			 * association remains untouched.
 			 *
 			 */
-			virtual void addEntry( const Key & key, 
-					const SmartResource & newResource, 
+			virtual void addEntry( const Key & key,
+					const SmartResource & newResource,
 					Ceylan::System::Size size = 0 ) ;
-				
-				
-			
+
+
+
 			/**
-			 * Drops specified cache entry: helper for cache policy execution. 
+			 * Drops specified cache entry: helper for cache policy execution.
 			 *
 			 * Should be called by all methods applying a policy such as
 			 * 'applyDropLessRequestedFirst' (since this method does everything
@@ -556,31 +576,31 @@ namespace Ceylan
 			 * @param pos the iterator pointing to the cache entry to drop.
 			 *
 			 */
-			virtual void dropEntryDueToPolicy( 
+			virtual void dropEntryDueToPolicy(
 				typename std::map<Key,CacheEntry *>::iterator pos ) ;
-			
-			
-			
+
+
+
 			/**
-			 * Drops specified cache entry. 
+			 * Drops specified cache entry.
 			 *
 			 * @param pos the iterator pointing to the cache entry to drop.
 			 *
 			 */
-			virtual void dropEntry( 
+			virtual void dropEntry(
 				typename std::map<Key, CacheEntry *>::iterator pos ) ;
-			
-			
-			
+
+
+
 			/**
-			 * The quota that would be enforced by this cache, provided that 
-			 * a policy makes us of it.
+			 * The quota that would be enforced by this cache, provided that a
+			 * policy makes us of it.
 			 *
 			 */
 			System::Size _quota ;
-	
 
-			
+
+
 			/**
 			 * The approximate total size of all cached resources, as computed
 			 * after last resource inspection and updated on drop/put
@@ -588,14 +608,14 @@ namespace Ceylan
 			 *
 			 */
 			System::Size _totalSize ;
-			
-			
-			
+
+
+
 			/// The policy enforced by this cache.
 			CachePolicy _policy ;
-			
-			
-			
+
+
+
 			/**
 			 * Records the total number of resources dropped by this manager
 			 * because of cache policy (counting neither resource replacements
@@ -604,40 +624,40 @@ namespace Ceylan
 			 *
 			 */
 			Ceylan::Uint32 _droppedByPolicy ;
-			
-			
-			
+
+
+
 			/// Metadata associated to a cached resource.
 			struct CacheEntry
 			{
-			
-			
+
+
 				/// A pointer to the Resource itself.
 				const SmartResource * _resource ;
-				
+
 				/**
-				 * The number of times that this resource was already
-				 * requested through this cache.
+				 * The number of times that this resource was already requested
+				 * through this cache.
 				 *
 				 */
 				Uint32 _requestCount ;
-				
+
 				/// The number of times this smart resource had to be cloned.
-				Uint32 _cloneCount ;	
-							
+				Uint32 _cloneCount ;
+
 				/// The size in memory of this resource.
 				System::Size _size ;
-			
-			
-			} ;	
-			
 
-/* 
+
+			} ;
+
+
+/*
  * Takes care of the awful issue of Windows DLL with templates.
  *
- * @see Ceylan's developer guide and README-build-for-windows.txt 
- * to understand it, and to be aware of the associated risks. 
- * 
+ * @see Ceylan's developer guide and README-build-for-windows.txt to understand
+ * it, and to be aware of the associated risks.
+ *
  */
 #pragma warning( push )
 #pragma warning( disable: 4251 )
@@ -645,36 +665,38 @@ namespace Ceylan
 			// The cache itself.
 			std::map<Key, CacheEntry *> _entries ;
 
-#pragma warning( pop ) 			
-			
-			
-		
+#pragma warning( pop )
+
+
+
 		private:
-		
-		
-		
+
+
+
 			/**
-			 * Copy constructor made private to ensure that it will never be 
+			 * Copy constructor made private to ensure that it will never be
 			 * called.
+			 *
 			 * The compiler should complain whenever this undefined constructor
 			 * is called, implicitly or not.
-			 * 
-			 */			 
+			 *
+			 */
 			SmartResourceManager( const SmartResourceManager & source ) ;
-			
-			
+
+
 			/**
 			 * Assignment operator made private to ensure that it will never be
 			 * called.
-			 * The compiler should complain whenever this undefined operator 
-			 * is called, implicitly or not.
-			 * 
 			 *
-			 */			 
-			SmartResourceManager & operator = ( 
+			 * The compiler should complain whenever this undefined operator is
+			 * called, implicitly or not.
+			 *
+			 *
+			 */
+			SmartResourceManager & operator = (
 				const SmartResourceManager & source ) ;
-			
-			
+
+
 	} ;
 
 
@@ -692,11 +714,11 @@ namespace Ceylan
 		_droppedByPolicy( 0 ),
 		_entries()
 	{
-	
-	}	
 
-		
-		
+	}
+
+
+
 	template <typename Key>
 	SmartResourceManager<Key>::SmartResourceManager( System::Size quota,
 			CachePolicy policy ) :
@@ -707,110 +729,112 @@ namespace Ceylan
 		_droppedByPolicy( 0 ),
 		_entries()
 	{
-	
-	}	
-	
-		
-		
+
+	}
+
+
+
 	template <typename Key>
 	SmartResourceManager<Key>::~SmartResourceManager() throw()
 	{
-	
+
 		/**
-		 * There does not seem to exist any way of calling 'flush' from 
-		 * the abstract mother class, so that no child class could forget to
-		 * call it.
+		 * There does not seem to exist any way of calling 'flush' from the
+		 * abstract mother class, so that no child class could forget to call
+		 * it.
 		 *
 		 */
-		flush() ; 
-		
-	}	
-			
+		flush() ;
 
-
-	
-	// New methods provided by the smart Resource manager.
-	
-	
-	template <typename Key>
-	System::Size SmartResourceManager<Key>::getQuota() const 
-	{
-	
-		return _quota ;
-		
-	}	
-
-
-
-	template <typename Key>
-	typename Ceylan::SmartResourceManager<Key>::CachePolicy 
-		SmartResourceManager<Key>::getCachePolicy() const 
-	{
-	
-		return _policy ;
-		
-	}	
-		
-					
-					
-	template <typename Key>
-	System::Size SmartResourceManager<Key>::getFootprint() const 
-	{
-	
-		/*
-		 * A call to 'updateSizes' should not be necessary since the total
-		 * size should be updated at each drop/put operation.
-		 *			
-		 */
-		
-		return _totalSize ;
-		
 	}
-	
-	
+
+
+
+
+	// New methods provided by the smart Resource manager.
+
 
 	template <typename Key>
-	bool SmartResourceManager<Key>::scanForAddition( const Key & key, 
-		const SmartResource & smartResource ) 
+	System::Size SmartResourceManager<Key>::getQuota() const
+	{
+
+		return _quota ;
+
+	}
+
+
+
+	template <typename Key>
+	typename Ceylan::SmartResourceManager<Key>::CachePolicy
+		SmartResourceManager<Key>::getCachePolicy() const
+	{
+
+		return _policy ;
+
+	}
+
+
+
+	template <typename Key>
+	System::Size SmartResourceManager<Key>::getFootprint() const
+	{
+
+		/*
+		 * A call to 'updateSizes' should not be necessary since the total size
+		 * should be updated at each drop/put operation.
+		 *
+		 */
+
+		return _totalSize ;
+
+	}
+
+
+
+	template <typename Key>
+	bool SmartResourceManager<Key>::scanForAddition( const Key & key,
+		const SmartResource & smartResource )
 	{
 
 
 		/*
-		 * Code very similar to the one of the 'takeOwnershipOf', which could 
-		 * be called by this method with a clone of the resource, at the 
-		 * expense of useless operations.
-		 * Duplicating code seems to be simpler, sharing would involve adding
-		 * a policy-dependent 'bool canBeCached( const SmartResource &
+		 * Code very similar to the one of the 'takeOwnershipOf', which could be
+		 * called by this method with a clone of the resource, at the expense of
+		 * useless operations.
+		 *
+		 * Duplicating code seems to be simpler, sharing would involve adding a
+		 * policy-dependent 'bool canBeCached( const SmartResource &
 		 * smartResource ) const '.
 		 *
 		 */
-		 
+
 		System::Size resourceSize = smartResource.getSizeInMemory() ;
-		
+
 		// Trivial rejection: can drop and should drop -> drop.
 		if ( _policy != NeverDrop && resourceSize > _quota )
 			return false ;
-		
-		
+
+
 		/*
 		 * Do nothing if the policy is 'NeverDrop' and the key is already
 		 * associated: otherwise this new resource would replace the previous
 		 * one, which would then be dropped despite the policy.
 		 *
-		 */		
+		 */
 		if ( _policy == NeverDrop && isKeyAlreadyAssociated( key ) )
 			return false ;
-				
-				
-		// Incorporates unconditionally this resource in cache:	
-		
-		
+
+
+		// Incorporates unconditionally this resource in cache:
+
+
 		SmartResource & clone = * dynamic_cast<SmartResource *>(
 			& smartResource.clone() ) ;
-		
+
 		/*
 		 * Records the new entry, with a clone of the resource (hence should
 		 * have the same size).
+		 *
 		 * No exception should be raised here since the key has already been
 		 * checked for any association already set, if policy is 'NeverDrop'.
 		 *
@@ -825,38 +849,39 @@ namespace Ceylan
 		 *
 		 */
 		applyPolicy( & clone ) ;
-		
+
 		return true ;
-		
+
 	}
 
 
 
 	template <typename Key>
-	bool SmartResourceManager<Key>::takeOwnershipOf( const Key & key, 
-		const SmartResource & smartResource ) 
+	bool SmartResourceManager<Key>::takeOwnershipOf( const Key & key,
+		const SmartResource & smartResource )
 	{
 
 		/*
-		 * Code very similar to the one of the 'scanForAddition', which may
-		 * call this method with a clone of the resource, at the expense of
-		 * useless operations.
-		 * Duplicating code seems to be simpler, sharing would involve adding
-		 * a policy-dependent 'bool canBeCached( const SmartResource &
+		 * Code very similar to the one of the 'scanForAddition', which may call
+		 * this method with a clone of the resource, at the expense of useless
+		 * operations.
+		 *
+		 * Duplicating code seems to be simpler, sharing would involve adding a
+		 * policy-dependent 'bool canBeCached( const SmartResource &
 		 * smartResource ) const '.
 		 *
 		 */
-		 
+
 		System::Size resourceSize = smartResource.getSizeInMemory() ;
-		
+
 		// Trivial rejection: can drop and should drop -> drop.
 		if ( _policy != NeverDrop && resourceSize > _quota )
 			return false ;
-			
-			
-		// Incorporates unconditionally this resource in cache:	
-		
-		
+
+
+		// Incorporates unconditionally this resource in cache:
+
+
 		// Records the new entry, with directly the provided resource:
 		addEntry( key, smartResource, resourceSize ) ;
 
@@ -867,33 +892,33 @@ namespace Ceylan
 		 *
 		 */
 		applyPolicy( & smartResource ) ;
-		
+
 		return true ;
-		
+
 	}
-		
-		
+
+
 
 	template <typename Key>
 	SmartResource * SmartResourceManager<Key>::getClone( const Key & key )
 	{
-	
+
 		// Look-up entry, if any:
-		typename std::map<Key, CacheEntry *>::const_iterator it = 
+		typename std::map<Key, CacheEntry *>::const_iterator it =
 			_entries.find( key ) ;
-		
+
 		if ( it == _entries.end() )
 			return 0 ;
-		
+
 		// Found, let's clone it:
 		this->_cacheHits++ ;
 		(*it).second->_requestCount++ ;
 
 #if CEYLAN_DEBUG_SMART_RESOURCE_MANAGER
-		
-		SmartResource * res = dynamic_cast<SmartResource *>( 
+
+		SmartResource * res = dynamic_cast<SmartResource *>(
 			& (*it).second->_resource->clone() ) ;
-			
+
 		if ( res != 0 )
 			return res ;
 		else
@@ -901,40 +926,40 @@ namespace Ceylan
 			Ceylan::emergencyShutdown( "SmartResourceManager<Key>::getClone: "
 				"clone cannot be casted back to Smart resource for "
 				+ (*it).second->_resource->toString() ) ;
-			// Avoid warning:	
-			return res ;		
-		}			
-		
+			// Avoid warning:
+			return res ;
+		}
+
 #else // CEYLAN_DEBUG_SMART_RESOURCE_MANAGER
-		
-		return dynamic_cast<SmartResource *>( 
+
+		return dynamic_cast<SmartResource *>(
 			& (*it).second->_resource->clone() ) ;
-		
+
 #endif // CEYLAN_DEBUG_SMART_RESOURCE_MANAGER
 
 	}
-	
 
 
-	
+
+
 	template <typename Key>
-	void SmartResourceManager<Key>::update() 
+	void SmartResourceManager<Key>::update()
 	{
-	
+
 		updateSizes() ;
 		applyPolicy() ;
-		
+
 	}
 
-	
-	
+
+
 	template <typename Key>
-	void SmartResourceManager<Key>::updateSizes() 
+	void SmartResourceManager<Key>::updateSizes()
 	{
-	
-		System::Size resourceSize ;		
+
+		System::Size resourceSize ;
 		_totalSize = 0 ;
-		
+
 		for ( typename std::map<Key, CacheEntry *>::const_iterator it =
 			_entries.begin() ; it != _entries.end(); it++ )
 		{
@@ -942,28 +967,28 @@ namespace Ceylan
 			(*it).second->_size = resourceSize ;
 			_totalSize += resourceSize ;
 		}
-		
+
 	}
-	
-		
-		
+
+
+
 	template <typename Key>
-	void SmartResourceManager<Key>::applyPolicy() 
+	void SmartResourceManager<Key>::applyPolicy()
 	{
-	
+
 		applyPolicy( /* no newcomer in cache */ 0 ) ;
-		
+
 	}
 
 
 
-	
-	// Section of overriding methods inherited from ResourceManager.	
+
+	// Section of overriding methods inherited from ResourceManager.
 
 
 	template <typename Key>
 	bool SmartResourceManager<Key>::isKeyAlreadyAssociated( const Key & key )
-		const 
+		const
 	{
 
 		// Look-up any previous entry:
@@ -974,12 +999,12 @@ namespace Ceylan
 
 
 	template <typename Key>
-	const Resource * SmartResourceManager<Key>::get( const Key & key ) 
+	const Resource * SmartResourceManager<Key>::get( const Key & key )
 	{
-	
-		typename std::map<Key, CacheEntry *>::const_iterator it = 
+
+		typename std::map<Key, CacheEntry *>::const_iterator it =
 			_entries.find( key ) ;
-			
+
 		if ( it != _entries.end() )
 		{
 			this->_cacheHits++ ;
@@ -991,219 +1016,222 @@ namespace Ceylan
 			// Cache miss:
 			this->_cacheMisses++ ;
 			return 0 ;
-		}	
-		
+		}
+
 	}
 
 
-	
+
 	template <typename Key>
-	void SmartResourceManager<Key>::flush() 
+	void SmartResourceManager<Key>::flush()
 	{
-	
+
 		/*
 		 * Could use dropEntry as well, but removing elements from a STL
 		 * container while iterating on it might be dangerous.
 		 *
 		 */
-		
+
 		for ( typename std::map<Key, CacheEntry *>::const_iterator it =
 			 _entries.begin() ; it != _entries.end(); it++ )
 		{
-		
+
 			// Delete the resource:
 			delete (*it).second->_resource ;
-			
+
 			// Delete the cache entry:
 			delete (*it).second ;
 		}
-		
+
 		_entries.clear() ;
 		_totalSize = 0 ;
-		
+
 	}
-	
+
 
 
 	template <typename Key>
-	const std::string SmartResourceManager<Key>::toString( 
-		VerbosityLevels level ) const 
+	const std::string SmartResourceManager<Key>::toString(
+		VerbosityLevels level ) const
 	{
-		
+
 		std::string res = "Smart resource manager applying " ;
-		
+
 		switch( _policy )
 		{
-		
+
 			case NeverDrop:
 				res += "the 'Never drop'" ;
 				break ;
-				
+
 			case DropLessRequestedFirst:
 				res += "the 'Drop less requested first'" ;
 				break ;
-			
+
 			default:
-				res += "an unknown (hence abnormal)" ;			
-				break ;	
+				res += "an unknown (hence abnormal)" ;
+				break ;
 		}
-		
+
 		res += " cache policy" ;
-		
+
 		if ( _policy != NeverDrop )
-			res += ", with a memory size quota of " 
-			+ Ceylan::toString( static_cast<Ceylan::Uint32>( _quota ) ) 
+			res += ", with a memory size quota of "
+			+ Ceylan::toString( static_cast<Ceylan::Uint32>( _quota ) )
 			+ " bytes" ;
-		
+
 		if ( level == Ceylan::low )
 			return res ;
-			
+
 		res += ". It is currently managing " ;
-				
+
 		System::Size resourceCount = _entries.size() ;
-		
+
 		if ( resourceCount == 0 )
 			res += "no resource" ;
-		else	
-			res += Ceylan::toString( 
-					static_cast<Ceylan::Uint32>( resourceCount ) ) 
+		else
+			res += Ceylan::toString(
+					static_cast<Ceylan::Uint32>( resourceCount ) )
 				+ " resource(s), for a total estimated size of "
-				+ Ceylan::toString( static_cast<Ceylan::Uint32>( _totalSize ) ) 
+				+ Ceylan::toString( static_cast<Ceylan::Uint32>( _totalSize ) )
 				+ " bytes" ;
-				
+
 		if ( _droppedByPolicy == 0 )
 			res += ". No resource dropped because of cache policy" ;
 		else
-			res += ". " + Ceylan::toString( _droppedByPolicy ) 
+			res += ". " + Ceylan::toString( _droppedByPolicy )
 				+ " resource(s) dropped because of cache policy" ;
-				 	
+
 		Ceylan::Uint32 total = this->_cacheHits + this->_cacheMisses ;
-		
+
 		if ( total == 0 )
-			res += ". No resource request processed for the moment" ;	
+			res += ". No resource request processed for the moment" ;
 		else
-			res += ". The average cache success is " 
-				+ Ceylan::toNumericalString( 
-					static_cast<Ceylan::Uint8>( 
+			res += ". The average cache success is "
+				+ Ceylan::toNumericalString(
+					static_cast<Ceylan::Uint8>(
 						( 100.0f * this->_cacheHits ) / total ) )
-				+ "% (" + Ceylan::toString( this->_cacheHits ) 
-				+ " cache hit(s) for " 
+				+ "% (" + Ceylan::toString( this->_cacheHits )
+				+ " cache hit(s) for "
 				+ Ceylan::toString( this->_cacheMisses ) + " cache misse(s))" ;
 
 
-		if ( level == Ceylan::medium )	
+		if ( level == Ceylan::medium )
 			return res ;
-		
+
 		if ( resourceCount == 0 )
 			return res ;
-			
+
 		res += ". Displaying current cached entrie(s): " ;
-		
+
 		Ceylan::Uint32 count = 0 ;
 		std::list<std::string> entries ;
-			
+
 		for ( typename std::map<Key, CacheEntry *>::const_iterator it =
 			 _entries.begin() ; it != _entries.end(); it++ )
 		{
-		
+
 			count++ ;
-			entries.push_back( "[Entry #" + Ceylan::toString( count ) 
-				+ "]: size = "	
-				+ Ceylan::toString( 
-					static_cast<Ceylan::Uint32>( (*it).second->_size ) ) 
-				+ ", request count = "	
-				+ Ceylan::toString( (*it).second->_requestCount ) 
-				+ ", resource description = '"	
+			entries.push_back( "[Entry #" + Ceylan::toString( count )
+				+ "]: size = "
+				+ Ceylan::toString(
+					static_cast<Ceylan::Uint32>( (*it).second->_size ) )
+				+ ", request count = "
+				+ Ceylan::toString( (*it).second->_requestCount )
+				+ ", resource description = '"
 				+ (*it).second->_resource->toString( Ceylan::low )
-				+ "'" ) ; 
-		}	
-		
+				+ "'" ) ;
+		}
+
 		return res + Ceylan::formatStringList( entries ) ;
-		
+
 	}
-	
-	
-	
-	
+
+
+
+
 	// Protected section: implementation.
 
 
 
 	template <typename Key>
-	void SmartResourceManager<Key>::applyPolicy( 
-		const SmartResource * lastCached ) 
+	void SmartResourceManager<Key>::applyPolicy(
+		const SmartResource * lastCached )
 	{
-	
+
 		switch( _policy )
 		{
-		
+
 			case NeverDrop:
 				// No 'applyNeverDrop()', since nothing to do.
 				break ;
-				
+
 			case DropLessRequestedFirst:
 				applyDropLessRequestedFirst( lastCached ) ;
 				break ;
-				
+
 			default:
 				Ceylan::emergencyShutdown(
-					"SmartResourceManager<Key>::applyPolicy	: "
+					"SmartResourceManager<Key>::applyPolicy: "
 					"unknown cache policy requested." ) ;
-				break ;	
+				break ;
 		}
 
 	}
 
 
 
-	template <typename Key>	
-	void SmartResourceManager<Key>::applyDropLessRequestedFirst( 
-		const SmartResource * lastCached ) 
+	template <typename Key>
+	void SmartResourceManager<Key>::applyDropLessRequestedFirst(
+		const SmartResource * lastCached )
 	{
-		
-		
+
+
 		Uint32 minRequestCount = 0 ;
 		Uint32 minRequestCurrent ;
-		
+
 
 		typename std::map<Key, CacheEntry *>::iterator minIterator ;
 		bool minAlreadyFound ;
-		
-		
+
+
 		// While too big, shrink:
 		while ( getFootprint() > _quota )
 		{
-		
-		
+
+
 			/*
-			 * One entry has to be dropped during this iteration. 
+			 * One entry has to be dropped during this iteration.
+			 *
 			 * It will be the first encountered one among the ones with the
 			 * lowest request count, the lastCached one (if any) excluded, to
-			 * give it a chance. 
+			 * give it a chance.
+			 *
 			 * There is always at least another resource to drop before
 			 * lastCached, since lastCached is smaller than the cache quota
 			 * (otherwise it would have been trivially rejected in the 'put'
-			 * method and no policy would have been applied) and 
-			 * nevertheless the footprint is higher than the quota.	
+			 * method and no policy would have been applied) and nevertheless
+			 * the footprint is higher than the quota.
+			 *
 			 * The 'worst' situation is thus a cache with only the lastCached
 			 * entry left.
 			 *
 			 */
-			 
+
 			minAlreadyFound = false ;
-			
+
 			for ( typename std::map<Key, CacheEntry *>::iterator it =
 				 _entries.begin(); it != _entries.end(); it++ )
 			{
-			
+
 				/*
-				 * Ignores new entry lastCached 
+				 * Ignores new entry lastCached
 				 * (if any: null lastCached -> test always true):
 				 *
 				 */
 				if ( (*it).second->_resource != lastCached )
 				{
-				
+
 					minRequestCurrent = (*it).second->_requestCount ;
 
 					if ( minRequestCurrent == 0 )
@@ -1212,7 +1240,7 @@ namespace Ceylan
 						minIterator = it ;
 						break ;
 					}
-					
+
 					// Select the entry with the fewer accesses:
 					if ( ! minAlreadyFound )
 					{
@@ -1229,108 +1257,108 @@ namespace Ceylan
 							minRequestCount = minRequestCurrent ;
 							minIterator = it ;
 						}
-					}	
-				}	
+					}
+				}
 			}
-		
+
 			/*
 			 * We hereby have the first found entry among the entries of lowest
 			 * request count, let's drop it:
 			 *
 			 */
 			dropEntryDueToPolicy( minIterator ) ;
-			
-		
+
+
 		}
-		
+
 	}
-	
-	
-	
-	template <typename Key>	
-	void SmartResourceManager<Key>::addEntry( const Key & key, 
+
+
+
+	template <typename Key>
+	void SmartResourceManager<Key>::addEntry( const Key & key,
 			const SmartResource & newResource, Ceylan::System::Size size )
 	{
-	
+
 		// Erases the content of any previous entry associated with this key:
 		typename std::map<Key, CacheEntry *>::iterator it =
 			_entries.find( key ) ;
-			
+
 		if ( it != _entries.end() )
 		{
-		
+
 			if ( _policy == NeverDrop )
 				throw ResourceManagerException(
 					"SmartResourceManager<Key>::addEntry: "
 					"specified key was already associated to a resource, "
 					"and the current policy, 'NeverDrop', prevents from "
-					"removing already associated resource." ) ; 
-		
+					"removing already associated resource." ) ;
+
 			/*
 			 * Inconsistency risk since the already computed size might have
 			 * changed since then: better use the same estimation even if the
 			 * actual size changed, since every call to getSizeInMemory should
-			 * lead to an update of _totalSize. They should thus match at 
-			 * all times, even if 'updateSizes' is called in between.
+			 * lead to an update of _totalSize. They should thus match at all
+			 * times, even if 'updateSizes' is called in between.
 			 *
 			 * Delete this resource, since the manager owns it in all 'put'
 			 * cases:
 			 *
 			 */
-			dropEntry( it ) ; 
-			
+			dropEntry( it ) ;
+
 		}
-		
+
 		// Records the new entry:
 		CacheEntry * newEntry = new CacheEntry() ;
-		
+
 		// Here we must be dealing with the clone only:
 		newEntry->_resource = & newResource ;
 		newEntry->_requestCount = 0 ;
-		
+
 		if ( size == 0 )
 			size = newResource.getSizeInMemory() ;
-			
+
 		newEntry->_size = size ;
-		
+
 		_entries[ key ] = newEntry ;
-		
+
 		_totalSize += size ;
-		
-	
+
+
 	}
-	
-		
-	
-	template <typename Key>	
-	void SmartResourceManager<Key>::dropEntryDueToPolicy( 
-		typename std::map<Key, CacheEntry *>::iterator pos ) 
-	{	
+
+
+
+	template <typename Key>
+	void SmartResourceManager<Key>::dropEntryDueToPolicy(
+		typename std::map<Key, CacheEntry *>::iterator pos )
+	{
 
 		dropEntry( pos ) ;
 		_droppedByPolicy++ ;
-		
-	}		
+
+	}
 
 
 
-	template <typename Key>	
-	void SmartResourceManager<Key>::dropEntry( 
-		typename std::map<Key, CacheEntry *>::iterator pos ) 
-		
-	{	
-	
+	template <typename Key>
+	void SmartResourceManager<Key>::dropEntry(
+		typename std::map<Key, CacheEntry *>::iterator pos )
+
+	{
+
 		// Update cache size:
 		_totalSize -= (*pos).second->_size ;
-		
+
 		// Delete embedded resource:
 		delete (*pos).second->_resource ;
-		
+
 		// Remove and delete the cache entry:
 		delete (*pos).second ;
 		_entries.erase( pos ) ;
-		
-	}		
+
+	}
 
 
 
@@ -1339,4 +1367,3 @@ namespace Ceylan
 
 
 #endif // CEYLAN_SMART_RESOURCE_MANAGER_H_
-
