@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -41,7 +41,7 @@
 
 namespace Ceylan
 {
-	
+
 
 	/**
 	 * Describes a 16-bit UNICODE value.
@@ -53,7 +53,7 @@ namespace Ceylan
 
 	/**
 	 * Encapsulates a Unicode string to facilitate its management.
-	 * 
+	 *
 	 * A first UTF-8 (Unicode Transformation Format-8) encoding support is
 	 * provided as well.
 	 *
@@ -67,96 +67,96 @@ namespace Ceylan
 	 */
 	class CEYLAN_DLL UnicodeString : public Ceylan::TextDisplayable
 	{
-	
-	
+
+
 		public:
-		
-		
+
+
 			/**
 			 * Constructs an empty Unicode string.
 			 *
 			 */
 			UnicodeString() ;
-			
-			
-			
+
+
+
 			/// Virtual destructor.
 			virtual ~UnicodeString() throw() ;
-			
-			
-			
+
+
+
 			/// Returns the number of characters in this Unicode string.
 			virtual StringSize size() const ;
-			
-			
-			
+
+
+
 			/**
 			 * Creates a new Unicode string which is the copy of this Unicode
 			 * string.
 			 *
-			 * Ownership of the new string is transferred to the caller, 
-			 * which will have to deallocate it when not useful anymore.
+			 * Ownership of the new string is transferred to the caller, which
+			 * will have to deallocate it when not useful anymore.
 			 *
 			 */
 			virtual UnicodeString & copy( bool swap = false ) const ;
-		
-		
-		
+
+
+
 			/**
 			 * Sets this string from the specified Latin-1 encoded string.
-			 * 
+			 *
 			 * @param latin1String the Latin-1 encoded string which will be
 			 * copied and encoded in Unicode in this string.
 			 *
 			 */
 			virtual void setFromLatin1( const std::string & latin1String ) ;
-			
-			
-			
+
+
+
 			/**
 			 * Sets this string from the specified UTF-8 encoded string.
 			 *
-			 * @param utf8String the UTF-8 encoded string which will be 
+			 * @param utf8String the UTF-8 encoded string which will be
 			 * copied and encoded in Unicode in this string.
 			 *
-			 * @param size the number of characters encoded in the UTF-8 
+			 * @param size the number of characters encoded in the UTF-8
 			 * string (not the string size, since a UTF-8 character may be
 			 * encoded in more than one byte).
 			 *
 			 */
-			virtual void setFromUTF8( const std::string & utf8String, 
+			virtual void setFromUTF8( const std::string & utf8String,
 				StringSize characterCount ) ;
-			
-			
-			
+
+
+
 			/**
-	         * Returns an user-friendly description of the state of this object.
-	         *
+			 * Returns an user-friendly description of the state of this object.
+			 *
 			 * @param level the requested verbosity level.
 			 *
 			 * @note Text output format is determined from overall settings.
 			 *
 			 * @see Ceylan::TextDisplayable
-	         *
-	         */
-		 	virtual const std::string toString( 
+			 *
+			 */
+			virtual const std::string toString(
 				Ceylan::VerbosityLevels level = Ceylan::high ) const ;
-			
-			
-			
+
+
+
 			// Static section.
-			
-			
+
+
 			/// Converts specified Latin-1 encoded character to Unicode.
 			static Unicode ConvertFromLatin1( Ceylan::Latin1Char latin1Char ) ;
-			
-			
-			
-			
+
+
+
+
 		protected:
-		
-		
-		
+
+
+
 			/**
 			 * Sets the internal character buffer so that it has the specified
 			 * capacity.
@@ -165,46 +165,45 @@ namespace Ceylan
 			 *
 			 */
 			virtual void setCapacity( StringSize newSize ) ;
-			
-			
-			
+
+
+
 			/// The buffer storing Unicode characters.
 			Unicode * _buffer ;
-			
-			
-			
-			
-		private:	
-	
-	
+
+
+
+
+		private:
+
+
 			/**
 			 * Copy constructor made private to ensure that it will never be
 			 * called.
 			 *
-			 * The compiler should complain whenever this undefined 
-			 * constructor is called, implicitly or not.
-			 * 
-			 */			 
+			 * The compiler should complain whenever this undefined constructor
+			 * is called, implicitly or not.
+			 *
+			 */
 			UnicodeString( const UnicodeString & source ) ;
-		
-		
+
+
 			/**
 			 * Assignment operator made private to ensure that it will never be
 			 * called.
 			 *
-			 * The compiler should complain whenever this undefined operator 
-			 * is called, implicitly or not.
-			 * 
-			 */			 
+			 * The compiler should complain whenever this undefined operator is
+			 * called, implicitly or not.
+			 *
+			 */
 			UnicodeString & operator = ( const UnicodeString & source ) ;
-			
-	
+
+
 	} ;
-	
+
 
 }
 
 
 
 #endif // CEYLAN_UNICODE_H_
-
