@@ -116,7 +116,7 @@ namespace Ceylan
 	 * translates into the need for cached resources to be cloned or not.
 	 *
 	 * If we take the example of a font rendering system, we saw with basic
-	 * ResourceManager how a 'takeOwnershipOf'/'get' pair could be useful.  On
+	 * ResourceManager how a 'takeOwnershipOf'/'get' pair could be useful. On
 	 * the contrary of a mere blit, if a glyph is needed but will be altered
 	 * after its creation, then when this surface is in some particular state,
 	 * the user may would like to have it cached. In this case, the user will
