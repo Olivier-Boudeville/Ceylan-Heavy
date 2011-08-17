@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -51,33 +51,32 @@ using namespace Ceylan::Log ;
 
 
 
-Object::Object( bool trackInstance, bool dropIdentifierOnExit ) : 
+Object::Object( bool trackInstance, bool dropIdentifierOnExit ) :
 	IdentifierOwner(),
 	Loggable( "Unknown object" ),
-	_trackInstance( trackInstance ) 
+	_trackInstance( trackInstance )
 {
 
 
-	CEYLAN_LOG( "Ceylan::Object entering constructor" ) ; 
-	
+	CEYLAN_LOG( "Ceylan::Object entering constructor" ) ;
+
 	if ( _trackInstance )
 	{
-	
+
 		CEYLAN_LOG( "Object sending its first message "
 			"just after allocation." ) ;
-			
+
 		send( "Being allocated now." ) ;
-		
+
 		/*
-		 * Used to force rebuilding of its identifier so that it 
-		 * is not mangled:
+		 * Used to force rebuilding of its identifier so that it is not mangled:
 		 *
 		 */
 		if ( dropIdentifierOnExit )
 			dropIdentifier() ;
-			
-	}	
-	
+
+	}
+
 }
 
 
@@ -87,14 +86,14 @@ Object::~Object() throw()
 
 	if ( _trackInstance )
 	{
-	
-		CEYLAN_LOG( 
-			"Object sending its last message just before deallocation." ) ;	
-				
+
+		CEYLAN_LOG(
+			"Object sending its last message just before deallocation." ) ;
+
 		send( "Being deallocated now." ) ;
-		
+
 	}
-		
+
 }
 
 
@@ -102,37 +101,37 @@ Object::~Object() throw()
 const std::string Object::getClassName() const
 {
 
-    string className = typeid( * this ).name() ;
-	
+	string className = typeid( * this ).name() ;
+
 	/*
 	 * On g++, this name is prefixed with the length in characters of the name
 	 * (Log would be 3Log), so we remove this numerical prefix.
 	 *
 	 */
-	 
-	Ceylan::Uint16 i = 0 ; 
-	 
-	while ( ::isdigit( className[ i ] ) ) 
+
+	Ceylan::Uint16 i = 0 ;
+
+	while ( ::isdigit( className[ i ] ) )
 		i++ ;
 
 	/*
-	 * With Visual C++ 2005 compiler, class names start with 'class ', 
-	 * we remove this mostly useless prefix.
+	 * With Visual C++ 2005 compiler, class names start with 'class ', we remove
+	 * this mostly useless prefix.
 	 *
 	 */
 	const string toRemove = "class " ;
-	string::size_type pos = className.find( toRemove, 
+	string::size_type pos = className.find( toRemove,
 		/* starting position */ 0) ;
 
 	if ( pos != string::npos && pos == 0 )
 		className = className.substr( toRemove.size() ) ;
 
-	string result = className.substr( i ) ;	 
-	
+	string result = className.substr( i ) ;
+
 	CEYLAN_LOG( "Object::getClassName is: " + result ) ;
-	
+
 	return result ;
-	
+
 }
 
 
@@ -140,8 +139,8 @@ const std::string Object::getClassName() const
 bool Object::isOfSameType( const Object & other ) const
 {
 
-    return ( getClassName() == other.getClassName() ) ;
-	
+	return ( getClassName() == other.getClassName() ) ;
+
 }
 
 
@@ -150,16 +149,16 @@ void Object::logState( Ceylan::VerbosityLevels level )
 {
 
 	send( toString( level ) ) ;
-	
+
 }
 
 
 
-void Object::send( const string & message, LevelOfDetail levelOfDetail ) 
+void Object::send( const string & message, LevelOfDetail levelOfDetail )
 {
 
 	CEYLAN_LOG( "Object::send: will send message " + message ) ;
-	
+
 	if ( ! hasIdentifier() )
 	{
 
@@ -173,17 +172,17 @@ void Object::send( const string & message, LevelOfDetail levelOfDetail )
 
 		}
 
-		CEYLAN_LOG( "Object::send: channel name set to " 
+		CEYLAN_LOG( "Object::send: channel name set to "
 			+ getIdentifier().toString() ) ;
 
 		setChannelName( getIdentifier().toString() ) ;
 
-	}	
-	
+	}
+
 	CEYLAN_LOG( "Object::send: effective sending of message " + message ) ;
-	
-	Loggable::send( message, levelOfDetail ) ;	
-	
+
+	Loggable::send( message, levelOfDetail ) ;
+
 }
 
 
@@ -192,39 +191,38 @@ const string Object::toString( Ceylan::VerbosityLevels level ) const
 {
 
 	string result ;
-	
+
 	if ( _trackInstance )
 		result = "This Ceylan object instance's life cycle is monitored. " ;
 	else
 		result = "No monitoring for this Ceylan object "
 			"instance's life cycle. " ;
-	
-	result += Loggable::toString( level ) + ". " 
-		+ IdentifierOwner::toString( level ) ; 
+
+	result += Loggable::toString( level ) + ". "
+		+ IdentifierOwner::toString( level ) ;
 
 	return result ;
-	
+
 }
-	
-	
-	
+
+
+
 void Object::forgeIdentifier()
 {
-	
+
 	CEYLAN_LOG( "Object::forgeIdentifier: new identifier required." ) ;
-	
+
 	if ( hasIdentifier() )
 		dropIdentifier() ;
-		
+
 	CEYLAN_LOG( "Object::forgeIdentifier: creating new object identifier." ) ;
 
 	ObjectIdentifier * newID ;
 
 	/*
-	 * This was the place where using this instead of *this caused 
-	 * the object constructor to be mistakenly called 
-	 * (this pointer being converted to bool, and Object constructor
-	 * had not the explicit keyword).
+	 * This was the place where using this instead of *this caused the object
+	 * constructor to be mistakenly called (this pointer being converted to
+	 * bool, and Object constructor had not the explicit keyword).
 	 *
 	 */
 	try
@@ -233,7 +231,7 @@ void Object::forgeIdentifier()
 		newID = new ObjectIdentifier( * this ) ;
 
 	}
-	catch( const Identifier::IdentifierException & e ) 
+	catch( const Identifier::IdentifierException & e )
 	{
 		throw Log::LogException( "Object::forgeIdentifier: " + e.toString() ) ;
 	}
@@ -251,10 +249,10 @@ void Object::forgeIdentifier()
 	}
 
 
-	CEYLAN_LOG( "Object::forgeIdentifier: new ID is " 
+	CEYLAN_LOG( "Object::forgeIdentifier: new ID is "
 		+ getIdentifier().toString() ) ;
 
-}	
+}
 
 
 
@@ -264,4 +262,3 @@ void Object::dropIdentifier()
 	deleteIdentifier() ;
 
 }
-
