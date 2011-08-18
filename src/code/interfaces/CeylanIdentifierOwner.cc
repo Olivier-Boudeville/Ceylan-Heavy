@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -45,7 +45,7 @@ using namespace Ceylan ;
 
 
 IdentifierNotAvailableException::IdentifierNotAvailableException(
-    	const string & message ) :
+		const string & message ) :
 	Ceylan::Exception( message )
 {
 
@@ -65,7 +65,7 @@ IdentifierOwner::IdentifierOwner() :
 {
 
 	CEYLAN_LOG( "IdentifierOwner constructor" ) ;
-	
+
 }
 
 
@@ -73,8 +73,8 @@ IdentifierOwner::IdentifierOwner() :
 IdentifierOwner::~IdentifierOwner() throw()
 {
 
-    if ( hasIdentifier() )
-        deleteIdentifier() ;
+	if ( hasIdentifier() )
+		deleteIdentifier() ;
 
 }
 
@@ -83,16 +83,16 @@ IdentifierOwner::~IdentifierOwner() throw()
 Identifier & IdentifierOwner::getIdentifier() const
 {
 
-    if ( _id != 0 )
-    {
-        return * _id ;
-    }
-    else
-    {
-        throw IdentifierNotAvailableException(
-            "No available identifier to return for "
+	if ( _id != 0 )
+	{
+		return * _id ;
+	}
+	else
+	{
+		throw IdentifierNotAvailableException(
+			"No available identifier to return for "
 			"IdentifierOwner::getIdentifier" ) ;
-    }
+	}
 
 }
 
@@ -101,16 +101,16 @@ Identifier & IdentifierOwner::getIdentifier() const
 void IdentifierOwner::setIdentifier( Identifier & id )
 {
 
-    if ( _id != 0 )
-    {
-        throw IdentifierNotAvailableException( 
+	if ( _id != 0 )
+	{
+		throw IdentifierNotAvailableException(
 			"IdentifierOwner::setIdentifier unable to assign "
-            "new identifier cause a previous one is still available." ) ;
-    }
-    else
-    {
-        _id = & id ;
-    }
+			"new identifier cause a previous one is still available." ) ;
+	}
+	else
+	{
+		_id = & id ;
+	}
 
 }
 
@@ -119,8 +119,8 @@ void IdentifierOwner::setIdentifier( Identifier & id )
 bool IdentifierOwner::hasIdentifier() const
 {
 
-    return ( _id != 0 ) ;
-	
+	return ( _id != 0 ) ;
+
 }
 
 
@@ -130,21 +130,21 @@ void IdentifierOwner::deleteIdentifier()
 
 #if CEYLAN_DEBUG
 
-    if ( _id != 0 )
-    {
-        delete _id ;
+	if ( _id != 0 )
+	{
+		delete _id ;
 		_id = 0 ;
-    }
-    else
-    {
-        Ceylan::emergencyShutdown( 
+	}
+	else
+	{
+		Ceylan::emergencyShutdown(
 			"IdentifierOwner::deleteIdentifier: trying to "
 			"delete a non-existing identifier." ) ;
-    }
+	}
 
 #else // CEYLAN_DEBUG
 
-    delete _id ;
+	delete _id ;
 	_id = 0 ;
 
 #endif // CEYLAN_DEBUG
@@ -160,11 +160,10 @@ const string IdentifierOwner::toString( VerbosityLevels level ) const
 	{
 		return "This identifier owner has a registered identifier: "
 			+ _id->toString( level ) ;
-	}	
+	}
 	else
-	{		
+	{
 		return "This identifier owner has no registered identifier" ;
-	}	
+	}
 
 }
-  
