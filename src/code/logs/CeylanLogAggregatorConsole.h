@@ -92,7 +92,7 @@ namespace Ceylan
 				 *
 				 *  - Error is the standard error stream
 				 *
-				 *	- Log is the standard log stream
+				 *  - Log is the standard log stream
 				 *
 				 * The difference between Log and Error is that Log is buffered
 				 * whereas Error is not.

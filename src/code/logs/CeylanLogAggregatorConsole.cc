@@ -184,7 +184,6 @@ LogAggregatorConsole::~LogAggregatorConsole() throw()
 void LogAggregatorConsole::aggregate()
 {
 
-
 	if ( _immediateWrite )
 	{
 		CEYLAN_LOG( "LogAggregatorConsole::aggregate: "
