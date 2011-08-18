@@ -125,7 +125,7 @@ Ceylan::Log::ObjectIdentifier::ObjectIdentifier( const Object & object ) :
 
 
 
-ObjectIdentifier::ObjectIdentifier(	const std::string & hostname, Pid pid,
+ObjectIdentifier::ObjectIdentifier( const std::string & hostname, Pid pid,
 		const std::string & className, const void * address) :
 	_hostname( hostname ),
 	_pid( pid ),
