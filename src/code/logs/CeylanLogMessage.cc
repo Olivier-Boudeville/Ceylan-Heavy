@@ -74,7 +74,6 @@ LogMessage::LogMessage( const string & message,
 	CEYLAN_LOG( "Creating log message " + Ceylan::toString( this )
 		+ ": '" + message + "' in " + channelName ) ;
 
-
 	try
 	{
 
@@ -221,7 +220,7 @@ const string LogMessage::toString( Ceylan::VerbosityLevels level ) const
 	else
 	{
 
-		/// Mainly for log debugging purpose:
+		// Mainly for log debugging purpose:
 
 		std::list<string> res ;
 
