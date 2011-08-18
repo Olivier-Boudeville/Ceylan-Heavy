@@ -96,6 +96,8 @@ Object::~Object() throw()
 
 }
 
+#include "CeylanUtils.h"
+#include "CeylanStringUtils.h"
 
 
 const std::string Object::getClassName() const
@@ -103,34 +105,7 @@ const std::string Object::getClassName() const
 
 	string className = typeid( * this ).name() ;
 
-	/*
-	 * On g++, this name is prefixed with the length in characters of the name
-	 * (Log would be 3Log), so we remove this numerical prefix.
-	 *
-	 */
-
-	Ceylan::Uint16 i = 0 ;
-
-	while ( ::isdigit( className[ i ] ) )
-		i++ ;
-
-	/*
-	 * With Visual C++ 2005 compiler, class names start with 'class ', we remove
-	 * this mostly useless prefix.
-	 *
-	 */
-	const string toRemove = "class " ;
-	string::size_type pos = className.find( toRemove,
-		/* starting position */ 0) ;
-
-	if ( pos != string::npos && pos == 0 )
-		className = className.substr( toRemove.size() ) ;
-
-	string result = className.substr( i ) ;
-
-	CEYLAN_LOG( "Object::getClassName is: " + result ) ;
-
-	return result ;
+	return Ceylan::demangleSymbol( className ) ;
 
 }
 
