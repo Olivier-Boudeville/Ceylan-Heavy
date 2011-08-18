@@ -479,12 +479,37 @@ string Ceylan::demangleSymbol( const std::string & symbol )
 	 * message, return as is:
 	 *
 	 */
-	if ( symbol[0] != 'N' || symbol[symbol.size()-1] != 'E' )
-		return symbol ;
+	//if ( symbol[0] != 'N' || symbol[symbol.size()-1] != 'E' )
+	//	return symbol ;
 
-	// Removes 'N' and 'E':
-	const string shorten = symbol.substr( 1, symbol.size() - 2 ) ;
+	/*
+	 * Code above disabled, as we can have:
+	 * typeid( * this ).name() = "10ExampleTwo" (thus to become "ExampleTwo").
+	 *
+	 */
+
+	string shorten ;
+
+	/*
+	 * Removes 'N' and 'E' if necessary (assuming either none or both are
+	 * there):
+	 *
+	 */
+	if ( symbol[0] == 'N' || symbol[symbol.size()-1] == 'E' ) 
+	{
+
+	  shorten = symbol.substr( 1, symbol.size() - 2 ) ;
+
+	}
+	else
+	{
+
+	  shorten = symbol ;
+
+	}
+
 	StringSize shortenSize = shorten.size() ;
+
 
 	DISPLAY_DEBUG_DEMANGLE( "Shorten symbol is " + shorten ) ;
 
@@ -504,6 +529,27 @@ string Ceylan::demangleSymbol( const std::string & symbol )
 	 * - loop until end of string reached
 	 *
 	 */
+
+	/*
+	 * On g++, a name is prefixed with the length in characters of the name (Log
+	 * would be 3Log), so we remove this numerical prefix.
+	 *
+	 */
+
+
+	/*
+	 * With Visual C++ 2005 compiler, class names start with 'class ', we remove
+	 * this mostly useless prefix.
+	 *
+	 * (to be checked back on Windows)
+	 *
+	 */
+	//const string toRemove = "class " ;
+	//string::size_type pos = className.find( toRemove,
+	//	/* starting position */ 0) ;
+
+	//if ( pos != string::npos && pos == 0 )
+	//	className = className.substr( toRemove.size() ) ;
 
 	StringSize count = 0 ;
 	StringSize num ;
@@ -617,7 +663,7 @@ list<string> Ceylan::split( const string & stringToSplit, char splittingChar )
 		   *
 		   */
 		  splitWord += *it ;
-		  
+
 		}
 
 	}
