@@ -32,6 +32,8 @@
 #include "CeylanStringUtils.h"          // for formatStringList
 #include "CeylanRegularExpression.h"    // for RegExp
 #include "CeylanIPAddressvFour.h"       // for IPAddressvFour
+#include "CeylanUtils.h"                // for checkpoint
+
 
 
 #ifdef CEYLAN_USES_CONFIG_H
@@ -921,6 +923,21 @@ void Ceylan::Network::setLocalHostDomainName( const string & newDomainName )
 
 
 
+/// Tells whether the specified name should be considered as blank.
+bool isABlankHostname( const string & name )
+{
+
+  if ( name == "localhost.localdomain" )
+	return true ;
+
+  if ( name == "localhost6.localdomain6" )
+	return true ;
+
+  return false ;
+
+}
+
+
 const string Ceylan::Network::getMostPreciseLocalHostName()
 {
 
@@ -948,9 +965,11 @@ const string Ceylan::Network::getMostPreciseLocalHostName()
 
 		guessedFullHostname = buf.nodename ;
 
+		//Ceylan::checkpoint( "uname told: " + guessedFullHostname ) ;
+
 		// Needing a FQDN, checking for dots in the host name:
 		if ( Ceylan::countChars( guessedFullHostname, '.' ) != 0
-				&& guessedFullHostname != "localhost.localdomain" )
+		  && ( ! isABlankHostname( guessedFullHostname ) ) )
 			return guessedFullHostname ;
 
 	}
@@ -970,6 +989,8 @@ const string Ceylan::Network::getMostPreciseLocalHostName()
 	 */
 	string thisHostname = getLocalHostName() ;
 
+	//Ceylan::checkpoint( "getLocalHostName told: " + thisHostname ) ;
+
 	bool found = false ;
 
 	try
@@ -985,8 +1006,16 @@ const string Ceylan::Network::getMostPreciseLocalHostName()
 			"FQDN not available: " + e.toString() ) ;
 	}
 
-	if ( found && guessedFullHostname != "localhost.localdomain" )
+	if ( found )
+	{
+
+	  //Ceylan::checkpoint( "getFQDNFromHostname told: " + thisHostname ) ;
+
+	  if ( ! isABlankHostname( guessedFullHostname )  )
 		return guessedFullHostname ;
+
+	}
+
 
 	/*
 	 * Damned, not found.
