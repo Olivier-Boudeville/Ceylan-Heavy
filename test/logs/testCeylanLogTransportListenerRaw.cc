@@ -50,66 +50,68 @@ using std::string ;
 int main( int argc, char * argv[] )
 {
 
+  {
 
 	try
 	{
 
-		cout << endl << "Testing LogTransportListenerRaw implementation."
-			 << endl << endl ;
+	  cout << endl << "Testing LogTransportListenerRaw implementation."
+		   << endl << endl ;
 
-		// First pre-requesite for this test: a valid aggragator.
-		LogAggregatorRaw rawAggregator( "testLogTransportListenerRaw.log" ) ;
-
-
-		// Second pre-requesite for this test: a valid message.
-		LogMessage * aMessage = new LogMessage( "Hello virtual log bus !",
-			"A Channel" ) ;
+	  // First pre-requesite for this test: a valid aggragator.
+	  LogAggregatorRaw rawAggregator( "testLogTransportListenerRaw.log" ) ;
 
 
-		// Real testing: create the tested object.
-		LogTransportListenerRaw rawLogBus( rawAggregator ) ;
+	  // Second pre-requesite for this test: a valid message.
+	  LogMessage * aMessage = new LogMessage( "Hello virtual log bus !",
+		"A Channel" ) ;
 
-		// And let the ball rollin':
-		rawLogBus.propagate( * aMessage ) ;
 
-		cout << endl << "End of test for LogTransportListenerRaw "
-			 << "implementation." << endl ;
+	  // Real testing: create the tested object.
+	  LogTransportListenerRaw rawLogBus( rawAggregator ) ;
 
-		/*
-		 * No LogMessage to delete, Aggregators take care of it (ownership
-		 * taken).
-		 *
-		 * Aggregation will be triggered now, since rawAggregator is going out
-		 * of scope.
-		 *
-		 */
+	  // And let the ball rollin':
+	  rawLogBus.propagate( * aMessage ) ;
+
+	  cout << endl << "End of test for LogTransportListenerRaw "
+		   << "implementation." << endl ;
+
+	  /*
+	   * No LogMessage to delete, Aggregators take care of it (ownership taken).
+	   *
+	   * Aggregation will be triggered now, since rawAggregator is going out of
+	   * scope.
+	   *
+	   */
 
 
 	}
 	catch ( const Ceylan::Exception & e )
 	{
-		cerr << "Ceylan exception caught: "
-			 << e.toString( Ceylan::high ) << endl ;
-		return Ceylan::ExitFailure ;
+	  cerr << "Ceylan exception caught: "
+		   << e.toString( Ceylan::high ) << endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( const std::exception & e )
 	{
-		cerr << "Standard exception caught: " << e.what() << endl ;
-		return Ceylan::ExitFailure ;
+	  cerr << "Standard exception caught: " << e.what() << endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( ... )
 	{
-		cerr << "Unknown exception caught" << endl ;
-		return Ceylan::ExitFailure ;
+	  cerr << "Unknown exception caught" << endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
-	Ceylan::shutdown() ;
+  }
 
-	return Ceylan::ExitSuccess ;
+  Ceylan::shutdown() ;
+
+  return Ceylan::ExitSuccess ;
 
 }

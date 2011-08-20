@@ -43,61 +43,63 @@ class TestEvent : public Ceylan::Event
 {
 
 
-	public:
+public:
 
-		TestEvent( const std::string & message, EventSource & source ) throw() :
-			Event( source ),
-			_message( message )
-		{
-
-
-		}
+  TestEvent( const std::string & message, EventSource & source ) throw() :
+	Event( source ),
+	_message( message )
+  {
 
 
-		virtual ~TestEvent() throw()
-		{
-
-		}
+  }
 
 
-		virtual const std::string toString( Ceylan::VerbosityLevels level
-			= Ceylan::high ) const throw()
-		{
-			return "Test event: " + _message ;
-		}
+  virtual ~TestEvent() throw()
+  {
+
+  }
 
 
-	protected:
+  virtual const std::string toString( Ceylan::VerbosityLevels level
+	= Ceylan::high ) const throw()
+  {
+	return "Test event: " + _message ;
+  }
 
-		std::string _message ;
+
+protected:
+
+  std::string _message ;
 
 } ;
+
 
 
 class FirstListener : public Ceylan::EventListener
 {
 
-	public:
+public:
 
-		virtual void beNotifiedOf( const Event & newEvent ) throw()
-		{
-			LogPlug::info( "I am a FirstListener and "
-				"I received following event: " + newEvent.toString() ) ;
-		}
+  virtual void beNotifiedOf( const Event & newEvent ) throw()
+  {
+	LogPlug::info( "I am a FirstListener and "
+	  "I received following event: " + newEvent.toString() ) ;
+  }
 
 } ;
+
 
 
 class SecondListener : public Ceylan::EventListener
 {
 
-	public:
+public:
 
-		virtual void beNotifiedOf( const Event & newEvent ) throw()
-		{
-			LogPlug::info( "I am a SecondListener and "
-				"I received following event: " + newEvent.toString() ) ;
-		}
+  virtual void beNotifiedOf( const Event & newEvent ) throw()
+  {
+	LogPlug::info( "I am a SecondListener and "
+	  "I received following event: " + newEvent.toString() ) ;
+  }
 
 } ;
 
@@ -106,22 +108,22 @@ class SecondListener : public Ceylan::EventListener
 class FirstSource : public Ceylan::EventSource
 {
 
-	public:
+public:
 
-		FirstSource()
-		{
+  FirstSource()
+  {
 
-		}
+  }
 
 
-		void sendEvent()
-		{
+  void sendEvent()
+  {
 
-			TestEvent newEvent( "I am an event of first source.", * this ) ;
+	TestEvent newEvent( "I am an event of first source.", * this ) ;
 
-			notifyAllListeners( newEvent ) ;
+	notifyAllListeners( newEvent ) ;
 
-		}
+  }
 
 } ;
 
@@ -129,21 +131,21 @@ class FirstSource : public Ceylan::EventSource
 class SecondSource : public Ceylan::EventSource
 {
 
-	public:
+public:
 
-		SecondSource()
-		{
+  SecondSource()
+  {
 
-		}
+  }
 
 
-		void sendEvent()
-		{
-			TestEvent newEvent( "I am an event of second source.", * this ) ;
+  void sendEvent()
+  {
+	TestEvent newEvent( "I am an event of second source.", * this ) ;
 
-			notifyAllListeners( newEvent ) ;
+	notifyAllListeners( newEvent ) ;
 
-		}
+  }
 
 } ;
 
@@ -159,145 +161,149 @@ class SecondSource : public Ceylan::EventSource
 int main( int argc, char * argv[] )
 {
 
+  {
+
 	LogHolder logger( argc, argv ) ;
 
 
 	try
 	{
 
-		LogPlug::info( "Starting testing event framework." ) ;
+	  LogPlug::info( "Starting testing event framework." ) ;
 
-		FirstSource firstSource ;
+	  FirstSource firstSource ;
 
-		LogPlug::info( "Sending an event to newly created first event source "
-			"whereas no listener is registered, displaying source: "
-			+ firstSource.toString() ) ;
+	  LogPlug::info( "Sending an event to newly created first event source "
+		"whereas no listener is registered, displaying source: "
+		+ firstSource.toString() ) ;
 
-		firstSource.sendEvent() ;
+	  firstSource.sendEvent() ;
 
-		LogPlug::info( "Adding a listener to this source." ) ;
+	  LogPlug::info( "Adding a listener to this source." ) ;
 
-		FirstListener firstListener ;
-		SecondListener secondListener ;
+	  FirstListener firstListener ;
+	  SecondListener secondListener ;
 
-		firstListener.subscribeTo( firstSource ) ;
+	  firstListener.subscribeTo( firstSource ) ;
 
-		LogPlug::info( "Sending a new event." ) ;
-		firstSource.sendEvent() ;
+	  LogPlug::info( "Sending a new event." ) ;
+	  firstSource.sendEvent() ;
 
-		LogPlug::info( "Again." ) ;
-		firstSource.sendEvent() ;
+	  LogPlug::info( "Again." ) ;
+	  firstSource.sendEvent() ;
 
-		LogPlug::info( "Adding another listener to this source." ) ;
+	  LogPlug::info( "Adding another listener to this source." ) ;
 
-		secondListener.subscribeTo( firstSource ) ;
+	  secondListener.subscribeTo( firstSource ) ;
 
-		LogPlug::info( "Sending a new event." ) ;
-		firstSource.sendEvent() ;
+	  LogPlug::info( "Sending a new event." ) ;
+	  firstSource.sendEvent() ;
 
-		LogPlug::info( "Subscribing the same new listener "
-			"to another source." ) ;
+	  LogPlug::info( "Subscribing the same new listener "
+		"to another source." ) ;
 
-		SecondSource secondSource ;
+	  SecondSource secondSource ;
 
-		secondListener.subscribeTo( secondSource ) ;
+	  secondListener.subscribeTo( secondSource ) ;
 
-		LogPlug::info( "Second source sending a new event." ) ;
-		secondSource.sendEvent() ;
+	  LogPlug::info( "Second source sending a new event." ) ;
+	  secondSource.sendEvent() ;
 
-		LogPlug::info( "Unsubscribing first listener of first source." ) ;
-		firstListener.unsubscribeFrom( firstSource ) ;
+	  LogPlug::info( "Unsubscribing first listener of first source." ) ;
+	  firstListener.unsubscribeFrom( firstSource ) ;
 
-		LogPlug::info( "Sending a new event to first source." ) ;
-		firstSource.sendEvent() ;
-
-
-		LogPlug::info( "Unsubscribing first listener from second source, "
-			"whereas it had not subscribed to it." ) ;
+	  LogPlug::info( "Sending a new event to first source." ) ;
+	  firstSource.sendEvent() ;
 
 
-		bool caught = false ;
-
-		try
-		{
-
-			firstListener.unsubscribeFrom( secondSource ) ;
-
-		}
-		catch( const EventException & e )
-		{
-			caught = true ;
-			LogPlug::info( "Correct, EventException thrown as expected: "
-				+ e.toString() ) ;
-		}
-
-		if ( ! caught )
-			LogPlug::error( "No exception raised after first listener "
-				"unsubscribed from second source whereas "
-				"it had not subscribed to it." ) ;
+	  LogPlug::info( "Unsubscribing first listener from second source, "
+		"whereas it had not subscribed to it." ) ;
 
 
-		LogPlug::info( "Unsubscribing second listener from all its sources, "
-			"which means from the two existing sources." ) ;
+	  bool caught = false ;
 
-		secondListener.unsubscribeFromAllSources() ;
+	  try
+	  {
 
-		LogPlug::info( "New state of second subscriber: "
-			+ secondListener.toString() ) ;
+		firstListener.unsubscribeFrom( secondSource ) ;
 
-		LogPlug::info( "New state of first source: "
-			+ firstListener.toString() ) ;
+	  }
+	  catch( const EventException & e )
+	  {
+		caught = true ;
+		LogPlug::info( "Correct, EventException thrown as expected: "
+		  + e.toString() ) ;
+	  }
 
-		LogPlug::info( "New state of second source: "
-			+ secondListener.toString() ) ;
+	  if ( ! caught )
+		LogPlug::error( "No exception raised after first listener "
+		  "unsubscribed from second source whereas "
+		  "it had not subscribed to it." ) ;
 
-		LogPlug::info( "Sending a new event to both sources." ) ;
-		firstSource.sendEvent() ;
-		secondSource.sendEvent() ;
 
-		LogPlug::info( "Adding back the two listeners to first source "
-			"just before deallocation to test faulty life cycles." ) ;
+	  LogPlug::info( "Unsubscribing second listener from all its sources, "
+		"which means from the two existing sources." ) ;
 
-		firstListener.subscribeTo( firstSource ) ;
-		secondListener.subscribeTo( firstSource ) ;
+	  secondListener.unsubscribeFromAllSources() ;
 
-		LogPlug::info( "End of event framework test." ) ;
+	  LogPlug::info( "New state of second subscriber: "
+		+ secondListener.toString() ) ;
 
-		/*
-		 * Sources and listeners are deleted in unspecified order, the framework
-		 * must be robust.
-		 *
-		 */
+	  LogPlug::info( "New state of first source: "
+		+ firstListener.toString() ) ;
 
-		Ceylan::shutdown() ;
+	  LogPlug::info( "New state of second source: "
+		+ secondListener.toString() ) ;
+
+	  LogPlug::info( "Sending a new event to both sources." ) ;
+	  firstSource.sendEvent() ;
+	  secondSource.sendEvent() ;
+
+	  LogPlug::info( "Adding back the two listeners to first source "
+		"just before deallocation to test faulty life cycles." ) ;
+
+	  firstListener.subscribeTo( firstSource ) ;
+	  secondListener.subscribeTo( firstSource ) ;
+
+	  LogPlug::info( "End of event framework test." ) ;
+
+	  /*
+	   * Sources and listeners are deleted in unspecified order, the framework
+	   * must be robust.
+	   *
+	   */
+
+	  Ceylan::shutdown() ;
 
 	}
 
 	catch ( const Ceylan::Exception & e )
 	{
-		std::cerr << "Ceylan exception caught: "
-			<< e.toString( Ceylan::high ) << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Ceylan exception caught: "
+				<< e.toString( Ceylan::high ) << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( const std::exception & e )
 	{
-		std::cerr << "Standard exception caught: "
-			 << e.what() << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Standard exception caught: "
+				<< e.what() << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( ... )
 	{
-		std::cerr << "Unknown exception caught" << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Unknown exception caught" << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
-	Ceylan::shutdown() ;
+  }
 
-	return Ceylan::ExitSuccess ;
+  Ceylan::shutdown() ;
+
+  return Ceylan::ExitSuccess ;
 
 }

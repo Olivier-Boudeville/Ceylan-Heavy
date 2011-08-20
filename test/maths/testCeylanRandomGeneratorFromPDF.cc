@@ -47,6 +47,7 @@ using std::string ;
 int main( int argc, char * argv[] )
 {
 
+  {
 
 	LogHolder logger( argc, argv ) ;
 
@@ -55,123 +56,124 @@ int main( int argc, char * argv[] )
 	{
 
 
-		LogPlug::info( "Testing PDF-based random generator's "
-			"implementation." ) ;
+	  LogPlug::info( "Testing PDF-based random generator's implementation." ) ;
 
-		Seed seed = 145 ;
+	  Seed seed = 145 ;
 
-		Sample mean = 77 ;
-		Deviation sigma = 4 ;
+	  Sample mean = 77 ;
+	  Deviation sigma = 4 ;
 
-		LogPlug::info( "Creating a probability density function (PDF) "
-			"corresponding to a normal distribution whose "
-			"sample mean is " + Ceylan::toString( mean )
-			+ " and whose standard deviation is "
-			+ Ceylan::toString( sigma ) + "." ) ;
+	  LogPlug::info( "Creating a probability density function (PDF) "
+		"corresponding to a normal distribution whose "
+		"sample mean is " + Ceylan::toString( mean )
+		+ " and whose standard deviation is "
+		+ Ceylan::toString( sigma ) + "." ) ;
 
-		NormalProbabilityFunction myGaussian( mean, sigma ) ;
-
-
-		RandomValue sampleStart = 50 ;
-		RandomValue sampleStop  = 120 ;
-
-		LogPlug::info( "Creating a random generator, whose PDF is: "
-			+ myGaussian.toString() + ". Samples will range from "
-			+ Ceylan::toString( sampleStart ) + " (included) to "
-			+ Ceylan::toString( sampleStop )  + " (excluded)." ) ;
-
-		RandomGeneratorFromPDF myGaussianGenerator( myGaussian,
-			sampleStart, sampleStop, seed ) ;
-
-		LogPlug::info( "Random generator created." ) ;
-
-		/*
-		 * A Gaussian generator embeds a WhiteNoiseGenerator, which is the
-		 * second object to have a dedicated channel in logs:
-		 *
-		 */
-		myGaussianGenerator.send( myGaussianGenerator.toString() ) ;
-
-		LogPlug::info( "Displaying normal law. "
-			+ myGaussianGenerator.displayProbabilities() ) ;
+	  NormalProbabilityFunction myGaussian( mean, sigma ) ;
 
 
-		Ceylan::Uint16 sampleCount = 500 ;
+	  RandomValue sampleStart = 50 ;
+	  RandomValue sampleStop  = 120 ;
 
-		LogPlug::info( "Generating a series of "
-			+ Ceylan::toString( sampleCount ) + " random samples." ) ;
+	  LogPlug::info( "Creating a random generator, whose PDF is: "
+		+ myGaussian.toString() + ". Samples will range from "
+		+ Ceylan::toString( sampleStart ) + " (included) to "
+		+ Ceylan::toString( sampleStop )  + " (excluded)." ) ;
 
-		RandomValue newValue ;
+	  RandomGeneratorFromPDF myGaussianGenerator( myGaussian,
+		sampleStart, sampleStop, seed ) ;
+
+	  LogPlug::info( "Random generator created." ) ;
+
+	  /*
+	   * A Gaussian generator embeds a WhiteNoiseGenerator, which is the second
+	   * object to have a dedicated channel in logs:
+	   *
+	   */
+	  myGaussianGenerator.send( myGaussianGenerator.toString() ) ;
+
+	  LogPlug::info( "Displaying normal law. "
+		+ myGaussianGenerator.displayProbabilities() ) ;
 
 
-		/*
-		 * Constructs a table recording how many samples are drawn for each
-		 * possible value.
-		 *
-		 */
+	  Ceylan::Uint16 sampleCount = 500 ;
 
-		Ceylan::Uint32 * distributionTable =
-			new Ceylan::Uint32[ sampleStop - sampleStart ] ;
+	  LogPlug::info( "Generating a series of "
+		+ Ceylan::toString( sampleCount ) + " random samples." ) ;
 
-		for ( Ceylan::Uint32 i = 0 ; i < sampleStop - sampleStart; i++ )
-			distributionTable[ i ] = 0 ;
+	  RandomValue newValue ;
 
-		LogPlug::info( "Throwing dice (one out of ten displayed)..." ) ;
 
-		for ( Ceylan::Uint32 drawCount = 0; drawCount < sampleCount;
+	  /*
+	   * Constructs a table recording how many samples are drawn for each
+	   * possible value.
+	   *
+	   */
+
+	  Ceylan::Uint32 * distributionTable =
+		new Ceylan::Uint32[ sampleStop - sampleStart ] ;
+
+	  for ( Ceylan::Uint32 i = 0 ; i < sampleStop - sampleStart; i++ )
+		distributionTable[ i ] = 0 ;
+
+	  LogPlug::info( "Throwing dice (one out of ten displayed)..." ) ;
+
+	  for ( Ceylan::Uint32 drawCount = 0; drawCount < sampleCount;
 			drawCount++ )
-		{
+	  {
 
-			newValue = myGaussianGenerator.getNewValue() ;
+		newValue = myGaussianGenerator.getNewValue() ;
 
-			// Avoid too many useless logs:
-			if ( drawCount % 10 == 0 )
-				LogPlug::info( "Drawing value "
-					+ Ceylan::toString( newValue ) + "." ) ;
+		// Avoid too many useless logs:
+		if ( drawCount % 10 == 0 )
+		  LogPlug::info( "Drawing value "
+			+ Ceylan::toString( newValue ) + "." ) ;
 
-			distributionTable[ newValue - sampleStart ] += 1 ;
+		distributionTable[ newValue - sampleStart ] += 1 ;
 
-		}
-
-
-		LogPlug::info( "Displaying final distribution table: " ) ;
-
-		for ( Ceylan::Uint32 i = 0 ; i < sampleStop - sampleStart; i++)
-			LogPlug::info( Ceylan::toString( i + sampleStart ) + " occured "
-				+ Ceylan::toString( distributionTable[ i ] ) + " time(s)." ) ;
+	  }
 
 
-		delete [] distributionTable ;
+	  LogPlug::info( "Displaying final distribution table: " ) ;
 
-		LogPlug::info( "End of PDF-based random generator's test." ) ;
+	  for ( Ceylan::Uint32 i = 0 ; i < sampleStop - sampleStart; i++)
+		LogPlug::info( Ceylan::toString( i + sampleStart ) + " occured "
+		  + Ceylan::toString( distributionTable[ i ] ) + " time(s)." ) ;
+
+
+	  delete [] distributionTable ;
+
+	  LogPlug::info( "End of PDF-based random generator's test." ) ;
 
 	}
 
 	catch ( const Ceylan::Exception & e )
 	{
-		std::cerr << "Ceylan exception caught: "
-			<< e.toString( Ceylan::high ) << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Ceylan exception caught: "
+				<< e.toString( Ceylan::high ) << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( const std::exception & e )
 	{
-		std::cerr << "Standard exception caught: "
-			 << e.what() << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Standard exception caught: "
+				<< e.what() << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( ... )
 	{
-		std::cerr << "Unknown exception caught" << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Unknown exception caught" << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
-	Ceylan::shutdown() ;
+  }
 
-	return Ceylan::ExitSuccess ;
+  Ceylan::shutdown() ;
+
+  return Ceylan::ExitSuccess ;
 
 }

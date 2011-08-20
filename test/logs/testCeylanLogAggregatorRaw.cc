@@ -50,84 +50,86 @@ using std::string ;
 int main( int argc, char * argv[] )
 {
 
+  {
 
 	try
 	{
 
-		cout << endl << "Testing LogAggregatorRaw implementation."
-			 << endl << endl ;
+	  cout << endl << "Testing LogAggregatorRaw implementation."
+		   << endl << endl ;
 
-		LogAggregatorRaw rawAggregator( "testLogAggregatorRaw.log" ) ;
+	  LogAggregatorRaw rawAggregator( "testLogAggregatorRaw.log" ) ;
+
+	  rawAggregator.createBasicChannel( "FirstChannel" ) ;
+
+	  bool exceptionRaised = false ;
+	  try
+	  {
 
 		rawAggregator.createBasicChannel( "FirstChannel" ) ;
 
-		bool exceptionRaised = false ;
-		try
-		{
+	  }
+	  catch( const LogException )
+	  {
+		cout << "OK, creating an already created channel "
+		  "raises an exception." << endl ;
+		exceptionRaised = true ;
+	  }
 
-			rawAggregator.createBasicChannel( "FirstChannel" ) ;
+	  if ( ! exceptionRaised )
+		cout << "Warning: creating twice the same channel "
+		  "does not raise a log exception "
+		  "(the exception should be raised only if "
+		  "Ceylan is compiled with CEYLAN_DEBUG)" ;
 
-		}
-		catch( const LogException )
-		{
-			cout << "OK, creating an already created channel "
-				"raises an exception." << endl ;
-			exceptionRaised = true ;
-		}
+	  rawAggregator.createBasicChannel( "SecondChannel" ) ;
 
-		if ( ! exceptionRaised )
-			cout << "Warning: creating twice the same channel "
-				"does not raise a log exception "
-				"(the exception should be raised only if "
-				"Ceylan is compiled with CEYLAN_DEBUG)" ;
+	  LogMessage * toSecondChannel = new LogMessage(
+		"Hello second channel!", "SecondChannel" ) ;
 
-		rawAggregator.createBasicChannel( "SecondChannel" ) ;
+	  cout << "Displaying LogMessage: " << toSecondChannel->toString()
+		   << endl ;
 
-		LogMessage * toSecondChannel = new LogMessage(
-			"Hello second channel!", "SecondChannel" ) ;
+	  rawAggregator.store( * toSecondChannel ) ;
 
-		cout << "Displaying LogMessage: " << toSecondChannel->toString()
-			<< endl ;
+	  cout << endl << "End of test for LogAggregatorRaw implementation."
+		   << endl ;
 
-		rawAggregator.store( * toSecondChannel ) ;
-
-		cout << endl << "End of test for LogAggregatorRaw implementation."
-			 << endl ;
-
-		/*
-		 * No LogMessage to delete, Aggregators take care of it (ownership
-		 * taken).
-		 *
-		 * Aggregation triggered by rawAggregator deletion since going out of
-		 * scope.
-		 *
-		 */
+	  /*
+	   * No LogMessage to delete, Aggregators take care of it (ownership taken).
+	   *
+	   * Aggregation triggered by rawAggregator deletion since going out of
+	   * scope.
+	   *
+	   */
 
 	}
 	catch ( const Ceylan::Exception & e )
 	{
-		cerr << "Ceylan exception caught: "
-			 << e.toString( Ceylan::high ) << endl ;
-		return Ceylan::ExitFailure ;
+	  cerr << "Ceylan exception caught: "
+		   << e.toString( Ceylan::high ) << endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( const std::exception & e )
 	{
-		cerr << "Standard exception caught: " << e.what() << endl ;
-		return Ceylan::ExitFailure ;
+	  cerr << "Standard exception caught: " << e.what() << endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( ... )
 	{
-		cerr << "Unknown exception caught" << endl ;
-		return Ceylan::ExitFailure ;
+	  cerr << "Unknown exception caught" << endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
-	Ceylan::shutdown() ;
+  }
 
-	return Ceylan::ExitSuccess ;
+  Ceylan::shutdown() ;
+
+  return Ceylan::ExitSuccess ;
 
 }

@@ -63,33 +63,33 @@ using namespace Ceylan::Log ;
 class TestCountedPointer : public Ceylan::Object
 {
 
-	public:
+public:
 
 
-		TestCountedPointer()
-		{
-			send( "Created a TestCountedPointer." ) ;
-		}
+  TestCountedPointer()
+  {
+	send( "Created a TestCountedPointer." ) ;
+  }
 
 
-		~TestCountedPointer() throw()
-		{
-			send( "Destroying a TestCountedPointer." ) ;
-		}
+  ~TestCountedPointer() throw()
+  {
+	send( "Destroying a TestCountedPointer." ) ;
+  }
 
 
-		TestCountedPointer & operator = ( const TestCountedPointer & source )
-		{
+  TestCountedPointer & operator = ( const TestCountedPointer & source )
+  {
 
-			send( "Assigning a TestCountedPointer." ) ;
-			return * this ;
+	send( "Assigning a TestCountedPointer." ) ;
+	return * this ;
 
-		}
+  }
 
 
-	private:
+private:
 
-		TestCountedPointer( const TestCountedPointer & source ) ;
+  TestCountedPointer( const TestCountedPointer & source ) ;
 
 
 } ;
@@ -101,10 +101,10 @@ class TestCountedPointer : public Ceylan::Object
 Ceylan::ReferenceCount aFunction( CountedPointer<TestCountedPointer> counted )
 {
 
-	LogPlug::info( "aFunction: argument reference count is: "
-		+ counted.toString() + "." ) ;
+  LogPlug::info( "aFunction: argument reference count is: "
+	+ counted.toString() + "." ) ;
 
-	return counted.getReferenceCount() ;
+  return counted.getReferenceCount() ;
 
 }
 
@@ -123,6 +123,8 @@ Ceylan::ReferenceCount aFunction( CountedPointer<TestCountedPointer> counted )
 int main( int argc, char * argv[] )
 {
 
+  {
+
 	LogHolder logger( argc, argv ) ;
 
 
@@ -130,97 +132,97 @@ int main( int argc, char * argv[] )
 	{
 
 
-		LogPlug::info( "Testing counted pointer implementation." ) ;
+	  LogPlug::info( "Testing counted pointer implementation." ) ;
 
-		LogPlug::info( "Normally, exactly one TestCountedPointer "
-			"instance should be created." ) ;
+	  LogPlug::info( "Normally, exactly one TestCountedPointer "
+		"instance should be created." ) ;
 
-		CountedPointer<TestCountedPointer> myCounted =
-			new TestCountedPointer() ;
+	  CountedPointer<TestCountedPointer> myCounted =
+		new TestCountedPointer() ;
 
-		LogPlug::info( "Displaying first counted pointer: "
-			+ myCounted.toString() ) ;
+	  LogPlug::info( "Displaying first counted pointer: "
+		+ myCounted.toString() ) ;
 
 
-		if ( myCounted.getReferenceCount() != 1 )
-			throw Ceylan::TestException(
-				"#1: expected reference count equal to one." ) ;
+	  if ( myCounted.getReferenceCount() != 1 )
+		throw Ceylan::TestException(
+		  "#1: expected reference count equal to one." ) ;
+	  else
+		LogPlug::info(
+		  "Having reference count equal to one, as expected." ) ;
+
+
+	  // This block will force myOtherCounted deallocation:
+	  {
+
+		LogPlug::info(
+		  "Creating a copy of the original counted pointer." ) ;
+
+		CountedPointer<TestCountedPointer> myOtherCounted = myCounted ;
+
+		LogPlug::info(
+		  "Displaying first counted pointer after assignment: "
+		  + myCounted.toString() ) ;
+
+		if ( myCounted.getReferenceCount() != 2 )
+		  throw Ceylan::TestException(
+			"#2: expected reference count equal to two, got instead "
+			+ Ceylan::toString( myCounted.getReferenceCount() )
+			+ "." ) ;
 		else
-			LogPlug::info(
-				"Having reference count equal to one, as expected." ) ;
+		  LogPlug::info( "First counted pointer having reference count "
+			"equal to two, as expected." ) ;
 
+		LogPlug::info( "Displaying second counted pointer: "
+		  + myOtherCounted.toString() ) ;
 
-		// This block will force myOtherCounted deallocation:
-		{
-
-			LogPlug::info(
-				"Creating a copy of the original counted pointer." ) ;
-
-			CountedPointer<TestCountedPointer> myOtherCounted = myCounted ;
-
-			LogPlug::info(
-				"Displaying first counted pointer after assignment: "
-				+ myCounted.toString() ) ;
-
-			if ( myCounted.getReferenceCount() != 2 )
-				throw Ceylan::TestException(
-					"#2: expected reference count equal to two, got instead "
-					+ Ceylan::toString( myCounted.getReferenceCount() )
-					+ "." ) ;
-			else
-				LogPlug::info( "First counted pointer having reference count "
-					"equal to two, as expected." ) ;
-
-			LogPlug::info( "Displaying second counted pointer: "
-				+ myOtherCounted.toString() ) ;
-
-			if ( myOtherCounted.getReferenceCount() != 2 )
-				throw Ceylan::TestException(
-					"#3: expected reference count equal to two, got instead "
-					+ Ceylan::toString( myOtherCounted.getReferenceCount() )
-					+ "." ) ;
-			else
-				LogPlug::info( "Second counted pointer having reference count "
-					"equal to two, as expected." ) ;
-
-			Ceylan::ReferenceCount result = aFunction( myOtherCounted ) ;
-
-			if ( result != 3 )
-				throw Ceylan::TestException(
-					"#4: expected reference count equal to three, got instead "
-					+ Ceylan::toString( result ) + "." ) ;
-			else
-				LogPlug::info( "After function call, reference count "
-					"equal to three, as expected." ) ;
-
-			LogPlug::info( "Second counted pointer going out of scope." ) ;
-
-		}
-
-		LogPlug::info( "Second counted pointer gone out of scope." ) ;
-
-		Ceylan::ReferenceCount result = aFunction( myCounted ) ;
-
-		if ( result != 2 )
-			throw Ceylan::TestException(
-				"#5: expected reference count equal to two, got instead "
-				+ Ceylan::toString( result ) + " )." ) ;
+		if ( myOtherCounted.getReferenceCount() != 2 )
+		  throw Ceylan::TestException(
+			"#3: expected reference count equal to two, got instead "
+			+ Ceylan::toString( myOtherCounted.getReferenceCount() )
+			+ "." ) ;
 		else
-			LogPlug::info( "After second function call, reference count "
-				"equal to two, as expected." ) ;
+		  LogPlug::info( "Second counted pointer having reference count "
+			"equal to two, as expected." ) ;
 
-		if ( myCounted.getReferenceCount() != 1 )
-			throw Ceylan::TestException(
-				"#6: expected reference count equal to one, got instead "
-				+ Ceylan::toString( myCounted.getReferenceCount() ) + "." ) ;
+		Ceylan::ReferenceCount result = aFunction( myOtherCounted ) ;
+
+		if ( result != 3 )
+		  throw Ceylan::TestException(
+			"#4: expected reference count equal to three, got instead "
+			+ Ceylan::toString( result ) + "." ) ;
 		else
-			LogPlug::info( "New reference count equal to one, as expected." ) ;
+		  LogPlug::info( "After function call, reference count "
+			"equal to three, as expected." ) ;
+
+		LogPlug::info( "Second counted pointer going out of scope." ) ;
+
+	  }
+
+	  LogPlug::info( "Second counted pointer gone out of scope." ) ;
+
+	  Ceylan::ReferenceCount result = aFunction( myCounted ) ;
+
+	  if ( result != 2 )
+		throw Ceylan::TestException(
+		  "#5: expected reference count equal to two, got instead "
+		  + Ceylan::toString( result ) + " )." ) ;
+	  else
+		LogPlug::info( "After second function call, reference count "
+		  "equal to two, as expected." ) ;
+
+	  if ( myCounted.getReferenceCount() != 1 )
+		throw Ceylan::TestException(
+		  "#6: expected reference count equal to one, got instead "
+		  + Ceylan::toString( myCounted.getReferenceCount() ) + "." ) ;
+	  else
+		LogPlug::info( "New reference count equal to one, as expected." ) ;
 
 
-		LogPlug::info( "Displaying final counted pointer: "
-			+ myCounted.toString() ) ;
+	  LogPlug::info( "Displaying final counted pointer: "
+		+ myCounted.toString() ) ;
 
-		LogPlug::info( "End of counted pointer test." ) ;
+	  LogPlug::info( "End of counted pointer test." ) ;
 
 	}
 
@@ -231,49 +233,51 @@ int main( int argc, char * argv[] )
 	 * Can be checked by setting CEYLAN_COUNTED_POINTER_DEBUG during the build,
 	 * one should then see in the console after the test something like:
 
-[CountedPointer] after referent construction for resource pointer 0,
-	refcount = 1
-[CountedPointer] after referent construction for resource pointer 0x9ad2f60,
-	refcount = 0
-[CountedPointer] after setReferent, refcount = 1 for 0x9ad2f60
-[CountedPointer] after setReferent, refcount = 2 for 0x9ad2f60
-[CountedPointer] after setReferent, refcount = 3 for 0x9ad2f60
-[CountedPointer] after release, refcount = 2 for 0x9ad2f60
-[CountedPointer] after release, refcount = 1 for 0x9ad2f60
-[CountedPointer] after setReferent, refcount = 2 for 0x9ad2f60
-[CountedPointer] after release, refcount = 1 for 0x9ad2f60
-[CountedPointer] after release, refcount is null, deallocating resource
-	0x9ad2f60
-[CountedPointer] referent destructor deallocating its resource 0x9ad2f60
+	 [CountedPointer] after referent construction for resource pointer 0,
+	 refcount = 1
+	 [CountedPointer] after referent construction for resource pointer 0x9ad2f60,
+	 refcount = 0
+	 [CountedPointer] after setReferent, refcount = 1 for 0x9ad2f60
+	 [CountedPointer] after setReferent, refcount = 2 for 0x9ad2f60
+	 [CountedPointer] after setReferent, refcount = 3 for 0x9ad2f60
+	 [CountedPointer] after release, refcount = 2 for 0x9ad2f60
+	 [CountedPointer] after release, refcount = 1 for 0x9ad2f60
+	 [CountedPointer] after setReferent, refcount = 2 for 0x9ad2f60
+	 [CountedPointer] after release, refcount = 1 for 0x9ad2f60
+	 [CountedPointer] after release, refcount is null, deallocating resource
+	 0x9ad2f60
+	 [CountedPointer] referent destructor deallocating its resource 0x9ad2f60
 
-	 */
+	*/
 
 
 	catch ( const Ceylan::Exception & e )
 	{
-		std::cerr << "Ceylan exception caught: "
-			<< e.toString( Ceylan::high ) << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Ceylan exception caught: "
+				<< e.toString( Ceylan::high ) << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( const std::exception & e )
 	{
-		std::cerr << "Standard exception caught: "
-			 << e.what() << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Standard exception caught: "
+				<< e.what() << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( ... )
 	{
-		std::cerr << "Unknown exception caught" << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Unknown exception caught" << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
- Ceylan::shutdown() ;
+  }
 
- return Ceylan::ExitSuccess ;
+  Ceylan::shutdown() ;
+
+  return Ceylan::ExitSuccess ;
 
 }

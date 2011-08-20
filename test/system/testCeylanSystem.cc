@@ -49,47 +49,51 @@ using namespace Ceylan::Log ;
 int main( int argc, char * argv[] )
 {
 
+  {
+
 	LogHolder logger( argc, argv ) ;
 
 
 	try
 	{
 
-		LogPlug::info( "Testing Ceylan's system-level operations." ) ;
+	  LogPlug::info( "Testing Ceylan's system-level operations." ) ;
 
-		Ceylan::System::openURL( "http://ceylan.esperide.com" ) ;
+	  Ceylan::System::openURL( "http://ceylan.esperide.com" ) ;
 
-		//Ceylan::System::executeCommand( "nedit ./testCeylanSystem.cc" ) ;
+	  //Ceylan::System::executeCommand( "nedit ./testCeylanSystem.cc" ) ;
 
-		LogPlug::info( "End of test for system-level operations." ) ;
+	  LogPlug::info( "End of test for system-level operations." ) ;
 
 	}
 
 	catch ( const Ceylan::Exception & e )
 	{
-		std::cerr << "Ceylan exception caught: "
-			<< e.toString( Ceylan::high ) << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Ceylan exception caught: "
+				<< e.toString( Ceylan::high ) << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( const std::exception & e )
 	{
-		std::cerr << "Standard exception caught: "
-			 << e.what() << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Standard exception caught: "
+				<< e.what() << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( ... )
 	{
-		std::cerr << "Unknown exception caught" << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Unknown exception caught" << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
-	Ceylan::shutdown() ;
+  }
 
-	return Ceylan::ExitSuccess ;
+  Ceylan::shutdown() ;
+
+  return Ceylan::ExitSuccess ;
 
 }

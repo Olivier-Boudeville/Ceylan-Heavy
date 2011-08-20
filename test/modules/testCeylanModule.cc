@@ -46,6 +46,8 @@ using std::string ;
 int main( int argc, char * argv[] )
 {
 
+  {
+
 	LogHolder logger( argc, argv ) ;
 
 
@@ -53,52 +55,54 @@ int main( int argc, char * argv[] )
 	{
 
 
-		LogPlug::info( "Testing Module's implementation." ) ;
+	  LogPlug::info( "Testing Module's implementation." ) ;
 
-		Ceylan::Version moduleVersion( 0, 1, 2) ;
+	  Ceylan::Version moduleVersion( 0, 1, 2) ;
 
-		Ceylan::Module myModule(
-			"TestModule",
-			"a module designed for test",
-			"http://www.esperide.com",
-			"Olivier Boudeville",
-			"olivier.boudeville@online.fr",
-			moduleVersion,
-			"LGPL" ) ;
+	  Ceylan::Module myModule(
+		"TestModule",
+		"a module designed for test",
+		"http://www.esperide.com",
+		"Olivier Boudeville",
+		"olivier.boudeville@online.fr",
+		moduleVersion,
+		"LGPL" ) ;
 
-		LogPlug::info( "Description of example module: "
-			+  myModule.toString( Ceylan::high ) ) ;
+	  LogPlug::info( "Description of example module: "
+		+  myModule.toString( Ceylan::high ) ) ;
 
 
-		LogPlug::info( "End of Module test." ) ;
+	  LogPlug::info( "End of Module test." ) ;
 
 	}
 
 	catch ( const Ceylan::Exception & e )
 	{
-		std::cerr << "Ceylan exception caught: "
-			<< e.toString( Ceylan::high ) << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Ceylan exception caught: "
+				<< e.toString( Ceylan::high ) << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( const std::exception & e )
 	{
-		std::cerr << "Standard exception caught: "
-			 << e.what() << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Standard exception caught: "
+				<< e.what() << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( ... )
 	{
-		std::cerr << "Unknown exception caught" << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Unknown exception caught" << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
-	Ceylan::shutdown() ;
+  }
 
-	return Ceylan::ExitSuccess ;
+  Ceylan::shutdown() ;
+
+  return Ceylan::ExitSuccess ;
 
 }

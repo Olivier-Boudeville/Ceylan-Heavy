@@ -60,92 +60,92 @@ using std::string ;
 
 
 /// Testing NoViewModel.
-class TestNoViewModel: public NoViewModel
+class TestNoViewModel : public NoViewModel
 {
 
-	public:
+public:
 
-		TestNoViewModel( Ceylan::Uint32 initialState ):
-			NoViewModel(),
-			_state( initialState )
-		{
+  TestNoViewModel( Ceylan::Uint32 initialState ):
+	NoViewModel(),
+	_state( initialState )
+  {
 
-			LogPlug::info( "Creating TestNoViewModel test model." ) ;
+	LogPlug::info( "Creating TestNoViewModel test model." ) ;
 
-		}
+  }
 
 
-		~TestNoViewModel() throw()
-		{
+  ~TestNoViewModel() throw()
+  {
 
-			// View shall be automatically deallocated.
-			LogPlug::info( "Deleting TestNoViewModel test model." ) ;
+	// View shall be automatically deallocated.
+	LogPlug::info( "Deleting TestNoViewModel test model." ) ;
 
-		}
+  }
 
-		Ceylan::Uint32 getTestingState() const throw()
-		{
+  Ceylan::Uint32 getTestingState() const throw()
+  {
 
-			return _state ;
+	return _state ;
 
-		}
+  }
 
-		void update()
-		{
+  void update()
+  {
 
-			_state += 1 ;
+	_state += 1 ;
 
-		}
+  }
 
-	private:
+private:
 
-		Ceylan::Uint32 _state ;
+  Ceylan::Uint32 _state ;
 
 } ;
 
 
 
 /// Testing SingleViewModel.
-class TestSingleViewModel: public SingleViewModel
+class TestSingleViewModel : public SingleViewModel
 {
 
-	public:
+public:
 
-		TestSingleViewModel( Ceylan::Uint32 initialState ):
-			SingleViewModel(),
-			_state( initialState )
-		{
+  TestSingleViewModel( Ceylan::Uint32 initialState ):
+	SingleViewModel(),
+	_state( initialState )
+  {
 
-			LogPlug::info( "Creating TestSingleViewModel test model." ) ;
+	LogPlug::info( "Creating TestSingleViewModel test model." ) ;
 
-		}
+  }
 
 
-		~TestSingleViewModel() throw()
-		{
+  ~TestSingleViewModel() throw()
+  {
 
-			// View shall be automatically deallocated.
-			LogPlug::info( "Deleting TestSingleViewModel test model." ) ;
+	// View shall be automatically deallocated.
+	LogPlug::info( "Deleting TestSingleViewModel test model." ) ;
 
-		}
+  }
 
-		Ceylan::Uint32 getTestingState() const throw()
-		{
+  Ceylan::Uint32 getTestingState() const throw()
+  {
 
-			return _state ;
+	return _state ;
 
-		}
+  }
 
-		void update()
-		{
+  void update()
+  {
 
-			_state += 1 ;
+	_state += 1 ;
 
-		}
+  }
 
-	private:
+private:
 
-		Ceylan::Uint32 _state ;
+  Ceylan::Uint32 _state ;
 
 } ;
 
@@ -158,41 +158,41 @@ class TestSingleViewModel: public SingleViewModel
  * view (this one).
  *
  */
-class TestSingleModelWithSingleViewGenericView:
-	public SingleModelGenericView<TestSingleViewModel>
+class TestSingleModelWithSingleViewGenericView :
+  public SingleModelGenericView<TestSingleViewModel>
 {
 
-	public:
+public:
 
-		TestSingleModelWithSingleViewGenericView(
-				const TestSingleViewModel & model ) :
-			SingleModelGenericView<TestSingleViewModel>( model )
-		{
+  TestSingleModelWithSingleViewGenericView(
+	const TestSingleViewModel & model ) :
+	SingleModelGenericView<TestSingleViewModel>( model )
+  {
 
-			LogPlug::info( "Creating "
-				"TestSingleModelWithSingleViewGenericView test view." ) ;
+	LogPlug::info( "Creating "
+	  "TestSingleModelWithSingleViewGenericView test view." ) ;
 
-		}
-
-
-		~TestSingleModelWithSingleViewGenericView() throw()
-		{
-
-			LogPlug::info( "Deleting "
-				"TestSingleModelWithSingleViewGenericView test view." ) ;
-
-		}
+  }
 
 
-		void render()
-		{
+  ~TestSingleModelWithSingleViewGenericView() throw()
+  {
 
-			LogPlug::info( "TestSingleModelWithSingleViewGenericView "
-				"instance is rendering for " + _model->toString()
-				+ ", whose state is "
-				+ Ceylan::toString( _model->getTestingState() ) ) ;
+	LogPlug::info( "Deleting "
+	  "TestSingleModelWithSingleViewGenericView test view." ) ;
 
-		}
+  }
+
+
+  void render()
+  {
+
+	LogPlug::info( "TestSingleModelWithSingleViewGenericView "
+	  "instance is rendering for " + _model->toString()
+	  + ", whose state is "
+	  + Ceylan::toString( _model->getTestingState() ) ) ;
+
+  }
 
 } ;
 
@@ -200,46 +200,46 @@ class TestSingleModelWithSingleViewGenericView:
 
 
 /// Testing MultipleViewModel.
-class TestMultipleViewModel: public MultipleViewModel
+class TestMultipleViewModel : public MultipleViewModel
 {
 
-	public:
+public:
 
-		TestMultipleViewModel( Ceylan::Uint32 initialState ):
-			MultipleViewModel(),
-			_state( initialState )
-		{
+  TestMultipleViewModel( Ceylan::Uint32 initialState ):
+	MultipleViewModel(),
+	_state( initialState )
+  {
 
-			LogPlug::info( "Creating TestMultipleViewModel test model." ) ;
+	LogPlug::info( "Creating TestMultipleViewModel test model." ) ;
 
-		}
+  }
 
 
-		~TestMultipleViewModel() throw()
-		{
+  ~TestMultipleViewModel() throw()
+  {
 
-			// View shall be automatically deallocated.
-			LogPlug::info( "Deleting TestMultipleViewModel test model." ) ;
+	// View shall be automatically deallocated.
+	LogPlug::info( "Deleting TestMultipleViewModel test model." ) ;
 
-		}
+  }
 
-		Ceylan::Uint32 getTestingState() const throw()
-		{
+  Ceylan::Uint32 getTestingState() const throw()
+  {
 
-			return _state ;
+	return _state ;
 
-		}
+  }
 
-		void update()
-		{
+  void update()
+  {
 
-			_state += 1 ;
+	_state += 1 ;
 
-		}
+  }
 
-	private:
+private:
 
-		Ceylan::Uint32 _state ;
+  Ceylan::Uint32 _state ;
 
 } ;
 
@@ -253,41 +253,41 @@ class TestMultipleViewModel: public MultipleViewModel
  * number of views.
  *
  */
-class TestSingleModelWithMultipleViewGenericView:
-	public SingleModelGenericView<TestMultipleViewModel>
+class TestSingleModelWithMultipleViewGenericView :
+  public SingleModelGenericView<TestMultipleViewModel>
 {
 
-	public:
+public:
 
-		TestSingleModelWithMultipleViewGenericView(
-				const TestMultipleViewModel & model ) :
-			SingleModelGenericView<TestMultipleViewModel>( model )
-		{
+  TestSingleModelWithMultipleViewGenericView(
+	const TestMultipleViewModel & model ) :
+	SingleModelGenericView<TestMultipleViewModel>( model )
+  {
 
-			LogPlug::info( "Creating "
-				"TestSingleModelWithMultipleViewGenericView test view." ) ;
+	LogPlug::info( "Creating "
+	  "TestSingleModelWithMultipleViewGenericView test view." ) ;
 
-		}
-
-
-		~TestSingleModelWithMultipleViewGenericView() throw()
-		{
-
-			LogPlug::info( "Deleting "
-				"TestSingleModelWithMultipleViewGenericView test view." ) ;
-
-		}
+  }
 
 
-		void render()
-		{
+  ~TestSingleModelWithMultipleViewGenericView() throw()
+  {
 
-			LogPlug::info( "TestSingleModelWithMultipleViewGenericView "
-				"instance is rendering for: " + _model->toString()
-				+ ", whose state is "
-				+ Ceylan::toString( _model->getTestingState() ) ) ;
+	LogPlug::info( "Deleting "
+	  "TestSingleModelWithMultipleViewGenericView test view." ) ;
 
-		}
+  }
+
+
+  void render()
+  {
+
+	LogPlug::info( "TestSingleModelWithMultipleViewGenericView "
+	  "instance is rendering for: " + _model->toString()
+	  + ", whose state is "
+	  + Ceylan::toString( _model->getTestingState() ) ) ;
+
+  }
 
 } ;
 
@@ -308,99 +308,103 @@ class TestSingleModelWithMultipleViewGenericView:
 int main( int argc, char * argv[] )
 {
 
+  {
+
 	LogHolder logger( argc, argv ) ;
 
 	try
 	{
 
-		LogPlug::info( "Starting testing lightweight MVC framework." ) ;
+	  LogPlug::info( "Starting testing lightweight MVC framework." ) ;
 
 
-		LogPlug::info( "Testing no view - one model." ) ;
+	  LogPlug::info( "Testing no view - one model." ) ;
 
-		TestNoViewModel & myNoViewModel = * new TestNoViewModel( 1 ) ;
+	  TestNoViewModel & myNoViewModel = * new TestNoViewModel( 1 ) ;
 
-		myNoViewModel.update() ;
-		myNoViewModel.update() ;
+	  myNoViewModel.update() ;
+	  myNoViewModel.update() ;
 
-		delete & myNoViewModel ;
-
-
-
-		LogPlug::info( "Testing one view - one model." ) ;
-
-		TestSingleViewModel & mySingleViewModel =
-			* new TestSingleViewModel( 10 ) ;
-
-		// Auto-registers to the model:
-		TestSingleModelWithSingleViewGenericView & mySingleModelView =
-			* new TestSingleModelWithSingleViewGenericView(
-				mySingleViewModel ) ;
-
-		mySingleModelView.render() ;
-		mySingleViewModel.update() ;
-		mySingleModelView.render() ;
-
-		delete & mySingleViewModel ;
+	  delete & myNoViewModel ;
 
 
 
-		LogPlug::info( "Testing multiple views - one model." ) ;
+	  LogPlug::info( "Testing one view - one model." ) ;
 
-		TestMultipleViewModel & myMultipleViewModel =
-			* new TestMultipleViewModel( 100 ) ;
+	  TestSingleViewModel & mySingleViewModel =
+		* new TestSingleViewModel( 10 ) ;
 
-		TestSingleModelWithMultipleViewGenericView & myFirstMultiView = * new
-			TestSingleModelWithMultipleViewGenericView( myMultipleViewModel ) ;
+	  // Auto-registers to the model:
+	  TestSingleModelWithSingleViewGenericView & mySingleModelView =
+		* new TestSingleModelWithSingleViewGenericView(
+		  mySingleViewModel ) ;
 
-		myFirstMultiView.render() ;
-		myMultipleViewModel.update() ;
-		myFirstMultiView.render() ;
+	  mySingleModelView.render() ;
+	  mySingleViewModel.update() ;
+	  mySingleModelView.render() ;
 
-		TestSingleModelWithMultipleViewGenericView & mySecondMultiView = * new
-			TestSingleModelWithMultipleViewGenericView( myMultipleViewModel ) ;
-
-		myFirstMultiView.render() ;
-		mySecondMultiView.render() ;
-
-		myMultipleViewModel.update() ;
-
-		myFirstMultiView.render() ;
-		mySecondMultiView.render() ;
-
-		delete & myMultipleViewModel ;
+	  delete & mySingleViewModel ;
 
 
-		LogPlug::info( "End of lightweight MVC framework test." ) ;
+
+	  LogPlug::info( "Testing multiple views - one model." ) ;
+
+	  TestMultipleViewModel & myMultipleViewModel =
+		* new TestMultipleViewModel( 100 ) ;
+
+	  TestSingleModelWithMultipleViewGenericView & myFirstMultiView = * new
+		TestSingleModelWithMultipleViewGenericView( myMultipleViewModel ) ;
+
+	  myFirstMultiView.render() ;
+	  myMultipleViewModel.update() ;
+	  myFirstMultiView.render() ;
+
+	  TestSingleModelWithMultipleViewGenericView & mySecondMultiView = * new
+		TestSingleModelWithMultipleViewGenericView( myMultipleViewModel ) ;
+
+	  myFirstMultiView.render() ;
+	  mySecondMultiView.render() ;
+
+	  myMultipleViewModel.update() ;
+
+	  myFirstMultiView.render() ;
+	  mySecondMultiView.render() ;
+
+	  delete & myMultipleViewModel ;
+
+
+	  LogPlug::info( "End of lightweight MVC framework test." ) ;
 
 
 	}
 
 	catch ( const Ceylan::Exception & e )
 	{
-		std::cerr << "Ceylan exception caught: "
-			<< e.toString( Ceylan::high ) << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Ceylan exception caught: "
+				<< e.toString( Ceylan::high ) << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( const std::exception & e )
 	{
-		std::cerr << "Standard exception caught: "
-			 << e.what() << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Standard exception caught: "
+				<< e.what() << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( ... )
 	{
-		std::cerr << "Unknown exception caught" << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Unknown exception caught" << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
-	Ceylan::shutdown() ;
+  }
 
-	return Ceylan::ExitSuccess ;
+  Ceylan::shutdown() ;
+
+  return Ceylan::ExitSuccess ;
 
 }

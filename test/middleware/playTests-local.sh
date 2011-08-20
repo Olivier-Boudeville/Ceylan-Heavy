@@ -1,7 +1,7 @@
 # Not designed to be executed, must be sourced.
 
-# This script is a necessary special case since the server must be run
-# before the client is launched.
+# This script is a necessary special case since the server must be run before
+# the client is launched.
 
 # One can ensure with:
 # ps -edf|grep testCeylan
@@ -60,10 +60,12 @@ if [ $is_batch -eq 0 ] ; then
 	echo "
 
 	########### Running now $t" >> ${test_log_file}
-	$t --batch ${network_option} 1>> ${test_log_file} 2>&1 &
+	echo "Command line: $t --batch ${network_option} ${log_plug_option}" >>${test_log_file}
+	$t --batch ${network_option} ${log_plug_option} 1>> ${test_log_file} 2>&1 &
 	server_pid=$!
 else
-	$t --interactive ${network_option} &
+	echo "Command line: $t --interactive ${network_option} ${log_plug_option}" >>${test_log_file}
+	$t --interactive ${network_option} ${log_plug_option} &
 	server_pid=$!
 fi
 
@@ -106,14 +108,16 @@ if [ $is_batch -eq 0 ] ; then
 	echo "
 
 	########### Running now $t" >> ${test_log_file}
-	$t --batch ${network_option} 1>> ${test_log_file} 2>&1 &
+	echo "Command line: $t --batch ${network_option} ${log_plug_option}" >>${test_log_file}
+	$t --batch ${network_option}  ${log_plug_option} 1>> ${test_log_file} 2>&1 &
 	server_pid=$!
-	
+
 else
 
-	$t --interactive ${network_option} &
+	echo "Command line: $t --interactive ${network_option} ${log_plug_option}" >>${test_log_file}
+	$t --interactive ${network_option} ${log_plug_option} &
 	server_pid=$!
-	
+
 fi
 
 

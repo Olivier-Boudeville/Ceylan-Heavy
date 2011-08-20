@@ -50,53 +50,55 @@ using std::string ;
 int main( int argc, char * argv[] )
 {
 
+  {
 
 	try
 	{
 
-		cout << endl << "Testing LogMessage implementation."
-			 << endl << endl ;
+	  cout << endl << "Testing LogMessage implementation."
+		   << endl << endl ;
 
-		LogMessage myMessage( "Hello channels!", "AChannel" ) ;
+	  LogMessage myMessage( "Hello channels!", "AChannel" ) ;
 
-		cout << "Displaying LogMessage : " << endl ;
-		cout << myMessage.toString() << endl ;
-
-
-		cout << endl << "End of test for LogMessage implementation ." ;
+	  cout << "Displaying LogMessage : " << endl ;
+	  cout << myMessage.toString() << endl ;
 
 
-		/*
-		 * No LogMessage to delete, Aggregators take care of it (ownership
-		 * taken).
-		 *
-		 */
+	  cout << endl << "End of test for LogMessage implementation ." ;
+
+
+	  /*
+	   * No LogMessage to delete, Aggregators take care of it (ownership taken).
+	   *
+	   */
 
 	}
 	catch ( const Ceylan::Exception & e )
 	{
-		cerr << "Ceylan exception caught: "
-			 << e.toString( Ceylan::high ) << endl ;
-		return Ceylan::ExitFailure ;
+	  cerr << "Ceylan exception caught: "
+		   << e.toString( Ceylan::high ) << endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( const std::exception & e )
 	{
-		cerr << "Standard exception caught: " << e.what() << endl ;
-		return Ceylan::ExitFailure ;
+	  cerr << "Standard exception caught: " << e.what() << endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( ... )
 	{
-		cerr << "Unknown exception caught" << endl ;
-		return Ceylan::ExitFailure ;
+	  cerr << "Unknown exception caught" << endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
-	Ceylan::shutdown() ;
+  }
 
-	return Ceylan::ExitSuccess ;
+  Ceylan::shutdown() ;
+
+  return Ceylan::ExitSuccess ;
 
 }

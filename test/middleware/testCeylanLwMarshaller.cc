@@ -50,6 +50,8 @@ int main( int argc, char * argv[] )
 {
 
 
+  {
+
 	LogHolder logger( argc, argv ) ;
 
 
@@ -57,187 +59,189 @@ int main( int argc, char * argv[] )
 	{
 
 
-		LogPlug::info( "Testing Ceylan's light-weight "
-			"marshaller implementation." ) ;
+	  LogPlug::info( "Testing Ceylan's light-weight "
+		"marshaller implementation." ) ;
 
 
-		LogPlug::info( "Creating a fake input/output stream in memory." ) ;
+	  LogPlug::info( "Creating a fake input/output stream in memory." ) ;
 
-		MemoryStream * bufferStream = new MemoryStream( 1000 /* bytes */ ) ;
+	  MemoryStream * bufferStream = new MemoryStream( 1000 /* bytes */ ) ;
 
-		LightWeightMarshaller * myMarshaller = new LightWeightMarshaller(
-			*bufferStream ) ;
-
-
-		LogPlug::info( "Testing integer marshalling." ) ;
-
-		Sint8 encodedSint8 = 122 ;
-		myMarshaller->encodeSint8( encodedSint8 ) ;
-
-		Sint8 decodedSint8 = myMarshaller->decodeSint8() ;
-
-		if ( encodedSint8 != decodedSint8 )
-			throw TestException( "Marshalling of Sint8 failed: encoded '"
-				+ Ceylan::toNumericalString( encodedSint8 )
-				+ "', decoded '" + Ceylan::toNumericalString( decodedSint8 )
-				+ "'." ) ;
+	  LightWeightMarshaller * myMarshaller = new LightWeightMarshaller(
+		*bufferStream ) ;
 
 
-		Uint8 encodedUint8 = 202 ;
-		myMarshaller->encodeUint8( encodedUint8 ) ;
+	  LogPlug::info( "Testing integer marshalling." ) ;
 
-		Uint8 decodedUint8 = myMarshaller->decodeUint8() ;
+	  Sint8 encodedSint8 = 122 ;
+	  myMarshaller->encodeSint8( encodedSint8 ) ;
 
-		if ( encodedUint8 != decodedUint8 )
-			throw TestException( "Marshalling of Uint8 failed: encoded '"
-				+ Ceylan::toNumericalString( encodedUint8 )
-				+ "', decoded '" + Ceylan::toNumericalString( decodedUint8 )
-				+ "'." ) ;
+	  Sint8 decodedSint8 = myMarshaller->decodeSint8() ;
 
-
-		Sint16 encodedSint16 = 12345 ;
-		myMarshaller->encodeSint16( encodedSint16 ) ;
-
-		Sint16 decodedSint16 = myMarshaller->decodeSint16() ;
-
-		if ( encodedSint16 != decodedSint16 )
-			throw TestException( "Marshalling of Sint16 failed: encoded '"
-				+ Ceylan::toString( encodedSint16 )
-				+ "', decoded '" + Ceylan::toString( decodedSint16 )
-				+ "'." ) ;
+	  if ( encodedSint8 != decodedSint8 )
+		throw TestException( "Marshalling of Sint8 failed: encoded '"
+		  + Ceylan::toNumericalString( encodedSint8 )
+		  + "', decoded '" + Ceylan::toNumericalString( decodedSint8 )
+		  + "'." ) ;
 
 
-		Uint16 encodedUint16 = 55001 ;
-		myMarshaller->encodeUint16( encodedUint16 ) ;
+	  Uint8 encodedUint8 = 202 ;
+	  myMarshaller->encodeUint8( encodedUint8 ) ;
 
-		Uint16 decodedUint16 = myMarshaller->decodeUint16() ;
+	  Uint8 decodedUint8 = myMarshaller->decodeUint8() ;
 
-		if ( encodedUint16 != decodedUint16 )
-			throw TestException( "Marshalling of Uint16 failed: encoded '"
-				+ Ceylan::toString( encodedUint16 )
-				+ "', decoded '" + Ceylan::toString( decodedUint16 )
-				+ "'." ) ;
-		else
-			LogPlug::info( "Marshalling of Uint16 succeeded: encoded '"
-				+ Ceylan::toString( encodedUint16 )
-				+ "', decoded '" + Ceylan::toString( decodedUint16 )
-				+ "'." ) ;
+	  if ( encodedUint8 != decodedUint8 )
+		throw TestException( "Marshalling of Uint8 failed: encoded '"
+		  + Ceylan::toNumericalString( encodedUint8 )
+		  + "', decoded '" + Ceylan::toNumericalString( decodedUint8 )
+		  + "'." ) ;
 
 
-		Sint32 encodedSint32 = 1234567 ;
-		myMarshaller->encodeSint32( encodedSint32 ) ;
+	  Sint16 encodedSint16 = 12345 ;
+	  myMarshaller->encodeSint16( encodedSint16 ) ;
 
-		Sint32 decodedSint32 = myMarshaller->decodeSint32() ;
+	  Sint16 decodedSint16 = myMarshaller->decodeSint16() ;
 
-		if ( encodedSint32 != decodedSint32 )
-			throw TestException( "Marshalling of Sint32 failed: encoded '"
-				+ Ceylan::toString( encodedSint32 )
-				+ "', decoded '" + Ceylan::toString( decodedSint32 )
-				+ "'." ) ;
-
-
-		Uint32 encodedUint32 = 3034201 ;
-		myMarshaller->encodeUint32( encodedUint32 ) ;
-
-		Uint32 decodedUint32 = myMarshaller->decodeUint32() ;
-
-		if ( encodedUint32 != decodedUint32 )
-			throw TestException( "Marshalling of Uint32 failed: encoded '"
-				+ Ceylan::toString( encodedUint32 )
-				+ "', decoded '" + Ceylan::toString( decodedUint32 )
-				+ "'." ) ;
+	  if ( encodedSint16 != decodedSint16 )
+		throw TestException( "Marshalling of Sint16 failed: encoded '"
+		  + Ceylan::toString( encodedSint16 )
+		  + "', decoded '" + Ceylan::toString( decodedSint16 )
+		  + "'." ) ;
 
 
+	  Uint16 encodedUint16 = 55001 ;
+	  myMarshaller->encodeUint16( encodedUint16 ) ;
 
-		LogPlug::info( "Testing floating-point marshalling." ) ;
+	  Uint16 decodedUint16 = myMarshaller->decodeUint16() ;
+
+	  if ( encodedUint16 != decodedUint16 )
+		throw TestException( "Marshalling of Uint16 failed: encoded '"
+		  + Ceylan::toString( encodedUint16 )
+		  + "', decoded '" + Ceylan::toString( decodedUint16 )
+		  + "'." ) ;
+	  else
+		LogPlug::info( "Marshalling of Uint16 succeeded: encoded '"
+		  + Ceylan::toString( encodedUint16 )
+		  + "', decoded '" + Ceylan::toString( decodedUint16 )
+		  + "'." ) ;
 
 
-		Float32 encodedFloat32 = 1234567.1F ;
-		myMarshaller->encodeFloat32( encodedFloat32 ) ;
+	  Sint32 encodedSint32 = 1234567 ;
+	  myMarshaller->encodeSint32( encodedSint32 ) ;
 
-		Float32 decodedFloat32 = myMarshaller->decodeFloat32() ;
+	  Sint32 decodedSint32 = myMarshaller->decodeSint32() ;
 
-		if ( ! Ceylan::Maths::AreExactlyEqual(
-				encodedFloat32, decodedFloat32 ) )
-			throw TestException( "Marshalling of Float32 failed: encoded '"
-				+ Ceylan::toString( encodedFloat32 )
-				+ "', decoded '" + Ceylan::toString( decodedFloat32 )
-				+ "'." ) ;
+	  if ( encodedSint32 != decodedSint32 )
+		throw TestException( "Marshalling of Sint32 failed: encoded '"
+		  + Ceylan::toString( encodedSint32 )
+		  + "', decoded '" + Ceylan::toString( decodedSint32 )
+		  + "'." ) ;
 
 
-		Float64 encodedFloat64 = 1234567.123 ;
-		myMarshaller->encodeFloat64( encodedFloat64 ) ;
+	  Uint32 encodedUint32 = 3034201 ;
+	  myMarshaller->encodeUint32( encodedUint32 ) ;
 
-		Float64 decodedFloat64 = myMarshaller->decodeFloat64() ;
+	  Uint32 decodedUint32 = myMarshaller->decodeUint32() ;
 
-		if ( ! Ceylan::Maths::AreExactlyEqual(
-				encodedFloat64, decodedFloat64 ) )
-			throw TestException( "Marshalling of Float64 failed: encoded '"
-				+ Ceylan::toString( encodedFloat64 )
-				+ "', decoded '" + Ceylan::toString( decodedFloat64 )
-				+ "'." ) ;
-		else
-			LogPlug::info( "Marshalling of Float64 succeeded: encoded '"
-				+ Ceylan::toString( encodedFloat64 )
-				+ "', decoded '" + Ceylan::toString( decodedFloat64 )
-				+ "'." ) ;
+	  if ( encodedUint32 != decodedUint32 )
+		throw TestException( "Marshalling of Uint32 failed: encoded '"
+		  + Ceylan::toString( encodedUint32 )
+		  + "', decoded '" + Ceylan::toString( decodedUint32 )
+		  + "'." ) ;
 
 
 
-		LogPlug::info( "Testing string marshalling." ) ;
-
-		string encodedString =
-			"Here comes the little red riding hood again." ;
-
-		myMarshaller->encodeString( encodedString ) ;
-
-		string decodedString ;
-		myMarshaller->decodeString( decodedString ) ;
-
-		if ( encodedString != decodedString )
-			throw TestException( "Marshalling of string failed: encoded '"
-				+ encodedString + "', decoded '" + decodedString + "'." ) ;
-		else
-			LogPlug::info( "Marshalling of string succeeded: encoded '"
-				+ encodedString + "', decoded '" + decodedString + "'." ) ;
+	  LogPlug::info( "Testing floating-point marshalling." ) ;
 
 
+	  Float32 encodedFloat32 = 1234567.1F ;
+	  myMarshaller->encodeFloat32( encodedFloat32 ) ;
 
-		delete myMarshaller ;
+	  Float32 decodedFloat32 = myMarshaller->decodeFloat32() ;
 
-		// Marshaller does not own it:
-		delete bufferStream ;
+	  if ( ! Ceylan::Maths::AreExactlyEqual(
+		  encodedFloat32, decodedFloat32 ) )
+		throw TestException( "Marshalling of Float32 failed: encoded '"
+		  + Ceylan::toString( encodedFloat32 )
+		  + "', decoded '" + Ceylan::toString( decodedFloat32 )
+		  + "'." ) ;
 
-		LogPlug::info( "End of light-weight marshaller test." ) ;
+
+	  Float64 encodedFloat64 = 1234567.123 ;
+	  myMarshaller->encodeFloat64( encodedFloat64 ) ;
+
+	  Float64 decodedFloat64 = myMarshaller->decodeFloat64() ;
+
+	  if ( ! Ceylan::Maths::AreExactlyEqual(
+		  encodedFloat64, decodedFloat64 ) )
+		throw TestException( "Marshalling of Float64 failed: encoded '"
+		  + Ceylan::toString( encodedFloat64 )
+		  + "', decoded '" + Ceylan::toString( decodedFloat64 )
+		  + "'." ) ;
+	  else
+		LogPlug::info( "Marshalling of Float64 succeeded: encoded '"
+		  + Ceylan::toString( encodedFloat64 )
+		  + "', decoded '" + Ceylan::toString( decodedFloat64 )
+		  + "'." ) ;
+
+
+
+	  LogPlug::info( "Testing string marshalling." ) ;
+
+	  string encodedString =
+		"Here comes the little red riding hood again." ;
+
+	  myMarshaller->encodeString( encodedString ) ;
+
+	  string decodedString ;
+	  myMarshaller->decodeString( decodedString ) ;
+
+	  if ( encodedString != decodedString )
+		throw TestException( "Marshalling of string failed: encoded '"
+		  + encodedString + "', decoded '" + decodedString + "'." ) ;
+	  else
+		LogPlug::info( "Marshalling of string succeeded: encoded '"
+		  + encodedString + "', decoded '" + decodedString + "'." ) ;
+
+
+
+	  delete myMarshaller ;
+
+	  // Marshaller does not own it:
+	  delete bufferStream ;
+
+	  LogPlug::info( "End of light-weight marshaller test." ) ;
 
 
 	}
 
 	catch ( const Ceylan::Exception & e )
 	{
-		std::cerr << "Ceylan exception caught: "
-			<< e.toString( Ceylan::high ) << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Ceylan exception caught: "
+				<< e.toString( Ceylan::high ) << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( const std::exception & e )
 	{
-		std::cerr << "Standard exception caught: "
-			 << e.what() << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Standard exception caught: "
+				<< e.what() << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( ... )
 	{
-		std::cerr << "Unknown exception caught" << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Unknown exception caught" << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
-	Ceylan::shutdown() ;
+  }
 
-	return Ceylan::ExitSuccess ;
+  Ceylan::shutdown() ;
+
+  return Ceylan::ExitSuccess ;
 
 }

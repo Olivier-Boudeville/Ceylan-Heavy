@@ -49,80 +49,85 @@ using std::string ;
 int main( int argc, char * argv[] )
 {
 
+
+  {
+
 	try
 	{
 
-		// We are debugging the log system, so it cannot be used here.
+	  // We are debugging the log system, so it cannot be used here.
 
-		cout << endl << "Testing Channel implementation."
-			 << endl << endl ;
+	  cout << endl << "Testing Channel implementation."
+		   << endl << endl ;
 
-		const string firstName = "FirstChannel" ;
+	  const string firstName = "FirstChannel" ;
 
-		cout << "Creating a channel named "
-			<< firstName << endl ;
+	  cout << "Creating a channel named "
+		   << firstName << endl ;
 
-		LogChannel channelOne( firstName ) ;
+	  LogChannel channelOne( firstName ) ;
 
-		cout << "Displaying this Channel information:" << endl ;
-		cout << channelOne.toString() << endl ;
+	  cout << "Displaying this Channel information:" << endl ;
+	  cout << channelOne.toString() << endl ;
 
 
-		cout << "Adding first message" << endl ;
-		channelOne.addMessage(
-			* new LogMessage(
-				"Hello world!",
-				firstName,
-				MaximumLevelOfDetailForMessage,
-				* new Ceylan::Timestamp()
-			)
-		) ;
+	  cout << "Adding first message" << endl ;
+	  channelOne.addMessage(
+		* new LogMessage(
+		  "Hello world!",
+		  firstName,
+		  MaximumLevelOfDetailForMessage,
+		  * new Ceylan::Timestamp()
+						 )
+							) ;
 
-		cout << "Displaying this Channel information:" << endl ;
-		cout << channelOne.toString() << endl ;
+	  cout << "Displaying this Channel information:" << endl ;
+	  cout << channelOne.toString() << endl ;
 
-		cout << "Adding second message" << endl ;
-		channelOne.addMessage(
-			* new LogMessage(
-				"For my second message, I would like to emphasize "
-				"the fact that Ceylan rocks!",
-				firstName,
-				MaximumLevelOfDetailForMessage,
-				* new Ceylan::Timestamp()
-			)
-		) ;
+	  cout << "Adding second message" << endl ;
+	  channelOne.addMessage(
+		* new LogMessage(
+		  "For my second message, I would like to emphasize "
+		  "the fact that Ceylan rocks!",
+		  firstName,
+		  MaximumLevelOfDetailForMessage,
+		  * new Ceylan::Timestamp()
+						 )
+							) ;
 
-		cout << "Displaying this Channel information:" << endl ;
-		cout << channelOne.toString() << endl ;
+	  cout << "Displaying this Channel information:" << endl ;
+	  cout << channelOne.toString() << endl ;
 
-		cout << endl << "End of test for Channel implementation." ;
+	  cout << endl << "End of test for Channel implementation." ;
 
 
 	}
 	catch ( const Ceylan::Exception & e )
 	{
-		cerr << "Ceylan exception caught: "
-			 << e.toString( Ceylan::high ) << endl ;
-		return Ceylan::ExitFailure ;
+	  cerr << "Ceylan exception caught: "
+		   << e.toString( Ceylan::high ) << endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( const std::exception & e )
 	{
-		cerr << "Standard exception caught: " << e.what() << endl ;
-		return Ceylan::ExitFailure ;
+	  cerr << "Standard exception caught: " << e.what() << endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( ... )
 	{
-		cerr << "Unknown exception caught" << endl ;
-		return Ceylan::ExitFailure ;
+	  cerr << "Unknown exception caught" << endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
-	Ceylan::shutdown() ;
+  }
 
-	return Ceylan::ExitSuccess ;
+  Ceylan::shutdown() ;
+
+  return Ceylan::ExitSuccess ;
 
 }

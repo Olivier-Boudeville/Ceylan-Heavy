@@ -44,19 +44,19 @@ using std::string ;
 class ExampleOfObject : public Ceylan::Object
 {
 
-	public:
+public:
 
 
-		ExampleOfObject() throw( LogException )
-		{
+  ExampleOfObject() throw( LogException )
+  {
 
-		}
+  }
 
 
-		virtual void aVirtualMethod()
-		{
+  virtual void aVirtualMethod()
+  {
 
-		}
+  }
 
 } ;
 
@@ -77,79 +77,81 @@ int main( int argc, char * argv[] )
 {
 
 
+  {
+
 	try
 	{
 
-		// To avoid writing logs alongside the test executable:
-		std::string speakerName ;
+	  // To avoid writing logs alongside the test executable:
+	  std::string speakerName ;
 
-		Ceylan::System::Directory::StripFilename( argv[0],
-			/* base path */ 0, & speakerName ) ;
+	  Ceylan::System::Directory::StripFilename( argv[0],
+		/* base path */ 0, & speakerName ) ;
 
-		LogPlugHTML::StartService( speakerName, /* smart */ true ) ;
+	  LogPlugHTML::StartService( speakerName, /* smart */ true ) ;
 
-		LogPlug::info( "Starting testing LogPlugHTML implementation "
-			"in non-immediate mode." ) ;
+	  LogPlug::info( "Starting testing LogPlugHTML implementation "
+		"in non-immediate mode." ) ;
 
-		// No LogHolder to set the output format, doing it now instead:
-		TextDisplayable::SetOutputFormat( Ceylan::TextDisplayable::html ) ;
+	  // No LogHolder to set the output format, doing it now instead:
+	  TextDisplayable::SetOutputFormat( Ceylan::TextDisplayable::html ) ;
 
-		LogPlug::info( "Dumping some informations about the log system: "
-			+ LogPlugHTML::ToString() ) ;
+	  LogPlug::info( "Dumping some informations about the log system: "
+		+ LogPlugHTML::ToString() ) ;
 
-		LogPlug::info( "Creating a Ceylan::Object "
-			"whose class name will start mangled, "
-			"in order to check whether the smart demangling works.") ;
+	  LogPlug::info( "Creating a Ceylan::Object "
+		"whose class name will start mangled, "
+		"in order to check whether the smart demangling works.") ;
 
-		ExampleOfObject * myExample = new ExampleOfObject() ;
+	  ExampleOfObject * myExample = new ExampleOfObject() ;
 
-		myExample->send( "Ceylan rocks!" ) ;
-		myExample->send( "OSDL rocks!" ) ;
+	  myExample->send( "Ceylan rocks!" ) ;
+	  myExample->send( "OSDL rocks!" ) ;
 
-		delete myExample ;
+	  delete myExample ;
 
-		LogPlug::info( "End of test for LogPlugHTML implementation." ) ;
+	  LogPlug::info( "End of test for LogPlugHTML implementation." ) ;
 
 
-		/*
-		 * No LogMessage to delete, Aggregators take care of it (ownership
-		 * taken).
-		 *
-		 */
+	  /*
+	   * No LogMessage to delete, Aggregators take care of it (ownership taken).
+	   *
+	   */
 
 
 	}
 
 	catch ( const Ceylan::Exception & e )
 	{
-		cerr << "Ceylan exception caught: "
-			 << e.toString( Ceylan::high ) << endl ;
-		LogPlugHTML::StopService() ;
-		return Ceylan::ExitFailure ;
+	  cerr << "Ceylan exception caught: "
+		   << e.toString( Ceylan::high ) << endl ;
+	  LogPlugHTML::StopService() ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( const std::exception & e )
 	{
-		cerr << "Standard exception caught: " << e.what() << endl ;
-		LogPlugHTML::StopService() ;
-		return Ceylan::ExitFailure ;
+	  cerr << "Standard exception caught: " << e.what() << endl ;
+	  LogPlugHTML::StopService() ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( ... )
 	{
-		cerr << "Unknown exception caught" << endl ;
-		LogPlugHTML::StopService() ;
-		return Ceylan::ExitFailure ;
+	  cerr << "Unknown exception caught" << endl ;
+	  LogPlugHTML::StopService() ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
+  }
 
-	LogPlugHTML::StopService() ;
+  LogPlugHTML::StopService() ;
 
-	Ceylan::shutdown() ;
+  Ceylan::shutdown() ;
 
-	return Ceylan::ExitSuccess ;
+  return Ceylan::ExitSuccess ;
 
 }

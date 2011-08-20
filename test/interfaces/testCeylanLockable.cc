@@ -39,65 +39,65 @@ using namespace Ceylan::Log ;
 class LockableExample : public Lockable
 {
 
-	public:
+public:
 
 
-		LockableExample() throw() :
-			Lockable(),
-			_postLockCalled( false ),
-			_preUnlockCalled( false )
-		{
+  LockableExample() throw() :
+  Lockable(),
+	_postLockCalled( false ),
+	_preUnlockCalled( false )
+  {
 
-		}
-
-
-		virtual ~LockableExample() throw()
-		{
-
-		}
+  }
 
 
-		virtual bool mustLock() const throw()
-		{
-			return true ;
-		}
+  virtual ~LockableExample() throw()
+  {
+
+  }
 
 
-
-		bool getPostConditionCalled() const throw()
-		{
-			return _postLockCalled ;
-		}
-
-
-		bool getPreConditionCalled() const throw()
-		{
-			return _preUnlockCalled ;
-		}
+  virtual bool mustLock() const throw()
+  {
+	return true ;
+  }
 
 
 
-	protected:
+  bool getPostConditionCalled() const throw()
+  {
+	return _postLockCalled ;
+  }
+
+
+  bool getPreConditionCalled() const throw()
+  {
+	return _preUnlockCalled ;
+  }
 
 
 
-		virtual void postLock() throw()
-		{
-			_postLockCalled = true ;
-		}
-
-
-		virtual void preUnlock() throw()
-		{
-			_preUnlockCalled = true ;
-		}
+protected:
 
 
 
-	private:
+  virtual void postLock() throw()
+  {
+	_postLockCalled = true ;
+  }
 
-		bool _postLockCalled ;
-		bool _preUnlockCalled ;
+
+  virtual void preUnlock() throw()
+  {
+	_preUnlockCalled = true ;
+  }
+
+
+
+private:
+
+  bool _postLockCalled ;
+  bool _preUnlockCalled ;
 
 
 } ;
@@ -114,148 +114,152 @@ class LockableExample : public Lockable
 int main( int argc, char * argv[] )
 {
 
+  {
+
 	LogHolder myLog( argc, argv ) ;
 
 	try
 	{
 
 
-		LogPlug::info( "Testing Lockable implementation." ) ;
+	  LogPlug::info( "Testing Lockable implementation." ) ;
 
 
-		LockableExample myExample ;
+	  LockableExample myExample ;
 
-		LogPlug::info( "Before lock : " + myExample.toString()
-			+ ", locking now test Lockable." ) ;
+	  LogPlug::info( "Before lock : " + myExample.toString()
+		+ ", locking now test Lockable." ) ;
 
-		myExample.lock() ;
+	  myExample.lock() ;
 
-		LogPlug::info( "After lock, before unlocking: "
-			+ myExample.toString() ) ;
+	  LogPlug::info( "After lock, before unlocking: "
+		+ myExample.toString() ) ;
 
-		LogPlug::info( "Unlocking test Lockable." ) ;
+	  LogPlug::info( "Unlocking test Lockable." ) ;
+	  myExample.unlock() ;
+
+	  bool caught = false ;
+
+	  LogPlug::info( "After unlock: " + myExample.toString() ) ;
+
+
+	  // Should raise a LockException.
+	  try
+	  {
+		LogPlug::info( "Unlocking test Lockable "
+		  "(whereas not locked)." ) ;
 		myExample.unlock() ;
-
-		bool caught = false ;
-
-		LogPlug::info( "After unlock: " + myExample.toString() ) ;
-
-
-		// Should raise a LockException.
-		try
-		{
-			LogPlug::info( "Unlocking test Lockable "
-				"(whereas not locked)." ) ;
-			myExample.unlock() ;
-		}
-		catch( const Lockable::LockException & e )
-		{
-			LogPlug::info( "Alright, LockException caught ("
-				+ e.toString() + ")." ) ;
-			caught = true ;
-		}
+	  }
+	  catch( const Lockable::LockException & e )
+	  {
+		LogPlug::info( "Alright, LockException caught ("
+		  + e.toString() + ")." ) ;
+		caught = true ;
+	  }
 
 
-		if ( ! caught )
-			throw TestException( "Unlocking a non-locked Lockable "
-				"should raise a LockException." ) ;
+	  if ( ! caught )
+		throw TestException( "Unlocking a non-locked Lockable "
+		  "should raise a LockException." ) ;
 
 
-		caught = false ;
+	  caught = false ;
+	  myExample.lock() ;
+
+	  // Should raise a LockException:
+	  try
+	  {
+		LogPlug::info( "Locking test Lockable "
+		  "(whereas already locked)." ) ;
 		myExample.lock() ;
-
-		// Should raise a LockException:
-		try
-		{
-			LogPlug::info( "Locking test Lockable "
-				"(whereas already locked)." ) ;
-			myExample.lock() ;
-		}
-		catch( const Lockable::LockException & e )
-		{
-			LogPlug::info( "Alright, LockException caught ("
-				 + e.toString() + ")." ) ;
-			caught = true ;
-		}
+	  }
+	  catch( const Lockable::LockException & e )
+	  {
+		LogPlug::info( "Alright, LockException caught ("
+		  + e.toString() + ")." ) ;
+		caught = true ;
+	  }
 
 
-		if ( ! caught )
-			throw TestException( "Locking an already locked Lockable "
-				"should raise a LockException." ) ;
+	  if ( ! caught )
+		throw TestException( "Locking an already locked Lockable "
+		  "should raise a LockException." ) ;
 
 
-		LogPlug::info( "Checking correctness of postLock/preUnlock calls." ) ;
+	  LogPlug::info( "Checking correctness of postLock/preUnlock calls." ) ;
 
-		LockableExample myOtherExample ;
-
-
-		// Each time, test first whether postLock was called, then preUnlock.
-
-		if ( myOtherExample.getPostConditionCalled() )
-			throw TestException(
-				"Lockable starts with wrong post-condition." ) ;
-
-		if ( myOtherExample.getPreConditionCalled() )
-			throw TestException(
-				"Lockable starts with wrong pre-condition." ) ;
-
-		myOtherExample.lock() ;
-
-		if ( ! myOtherExample.getPostConditionCalled() )
-			throw TestException(
-				"Lockable after lock is in wrong post-condition." ) ;
-
-		if ( myOtherExample.getPreConditionCalled() )
-			throw TestException(
-				"Lockable after lock is in wrong pre-condition." ) ;
-
-		myOtherExample.unlock() ;
+	  LockableExample myOtherExample ;
 
 
-		if ( ! myOtherExample.getPostConditionCalled() )
-			throw TestException(
-				"Lockable after unlock is in wrong post-condition." ) ;
+	  // Each time, test first whether postLock was called, then preUnlock.
 
-		if ( ! myOtherExample.getPreConditionCalled() )
-			throw TestException(
-				"Lockable after unlock is in wrong pre-condition." ) ;
+	  if ( myOtherExample.getPostConditionCalled() )
+		throw TestException(
+		  "Lockable starts with wrong post-condition." ) ;
 
-		LogPlug::info( "A warning should have been triggered since "
-			"a Lockable will still be locked when deallocated." ) ;
+	  if ( myOtherExample.getPreConditionCalled() )
+		throw TestException(
+		  "Lockable starts with wrong pre-condition." ) ;
 
-		/*
-		 * Both myExample and myOtherExample are deallocated here. 'myExample'
-		 * should trigger a warning since it is still locked.
-		 *
-		 */
+	  myOtherExample.lock() ;
+
+	  if ( ! myOtherExample.getPostConditionCalled() )
+		throw TestException(
+		  "Lockable after lock is in wrong post-condition." ) ;
+
+	  if ( myOtherExample.getPreConditionCalled() )
+		throw TestException(
+		  "Lockable after lock is in wrong pre-condition." ) ;
+
+	  myOtherExample.unlock() ;
+
+
+	  if ( ! myOtherExample.getPostConditionCalled() )
+		throw TestException(
+		  "Lockable after unlock is in wrong post-condition." ) ;
+
+	  if ( ! myOtherExample.getPreConditionCalled() )
+		throw TestException(
+		  "Lockable after unlock is in wrong pre-condition." ) ;
+
+	  LogPlug::info( "A warning should have been triggered since "
+		"a Lockable will still be locked when deallocated." ) ;
+
+	  /*
+	   * Both myExample and myOtherExample are deallocated here. 'myExample'
+	   * should trigger a warning since it is still locked.
+	   *
+	   */
 
 	}
 
 	catch ( const Ceylan::Exception & e )
 	{
-		LogPlug::error( "Ceylan exception caught: "
-			 + e.toString( Ceylan::high ) ) ;
-		return Ceylan::ExitFailure ;
+	  LogPlug::error( "Ceylan exception caught: "
+		+ e.toString( Ceylan::high ) ) ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( const std::exception & e )
 	{
-		LogPlug::error( "Standard exception caught: "
-			 + std::string( e.what() ) ) ;
-		return Ceylan::ExitFailure ;
+	  LogPlug::error( "Standard exception caught: "
+		+ std::string( e.what() ) ) ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( ... )
 	{
-		LogPlug::error( "Unknown exception caught" ) ;
-		return Ceylan::ExitFailure ;
+	  LogPlug::error( "Unknown exception caught" ) ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
-	Ceylan::shutdown() ;
+  }
 
-	return Ceylan::ExitSuccess ;
+  Ceylan::shutdown() ;
+
+  return Ceylan::ExitSuccess ;
 
 }

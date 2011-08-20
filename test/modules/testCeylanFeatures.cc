@@ -48,6 +48,8 @@ using std::string ;
 int main( int argc, char * argv[] )
 {
 
+  {
+
 	LogHolder logger( argc, argv ) ;
 
 
@@ -55,67 +57,69 @@ int main( int argc, char * argv[] )
 	{
 
 
-		LogPlug::info( "Testing optional features management." ) ;
+	  LogPlug::info( "Testing optional features management." ) ;
 
-		// Testing an example of feature:
+	  // Testing an example of feature:
 
-		if ( ! Features::areRegularExpressionsSupported() )
+	  if ( ! Features::areRegularExpressionsSupported() )
+	  {
+
+		bool caught = false ;
+
+		try
 		{
-
-			bool caught = false ;
-
-			try
-			{
-				checkForSupportedFeatures( Features::RegularExpressions ) ;
-			}
-			catch( const FeatureNotAvailableException & e )
-			{
-				LogPlug::info( "Correctly caught expected exception: "
-					+ e.toString() ) ;
-				caught = true ;
-			}
-
-			if ( ! caught )
-				throw Ceylan::TestException(
-					"Expected a feature exception, nothing thrown." ) ;
-
+		  checkForSupportedFeatures( Features::RegularExpressions ) ;
 		}
-		else
+		catch( const FeatureNotAvailableException & e )
 		{
-			checkForSupportedFeatures( Features::RegularExpressions ) ;
+		  LogPlug::info( "Correctly caught expected exception: "
+			+ e.toString() ) ;
+		  caught = true ;
 		}
 
-		LogPlug::info( Features::describeAvailableFeatures() ) ;
+		if ( ! caught )
+		  throw Ceylan::TestException(
+			"Expected a feature exception, nothing thrown." ) ;
 
-		LogPlug::info( "End of feature test." ) ;
+	  }
+	  else
+	  {
+		checkForSupportedFeatures( Features::RegularExpressions ) ;
+	  }
+
+	  LogPlug::info( Features::describeAvailableFeatures() ) ;
+
+	  LogPlug::info( "End of feature test." ) ;
 
 	}
 
 	catch ( const Ceylan::Exception & e )
 	{
-		std::cerr << "Ceylan exception caught: "
-			<< e.toString( Ceylan::high ) << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Ceylan exception caught: "
+				<< e.toString( Ceylan::high ) << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( const std::exception & e )
 	{
-		std::cerr << "Standard exception caught: "
-			 << e.what() << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Standard exception caught: "
+				<< e.what() << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( ... )
 	{
-		std::cerr << "Unknown exception caught" << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Unknown exception caught" << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
-	Ceylan::shutdown() ;
+  }
 
-	return Ceylan::ExitSuccess ;
+  Ceylan::shutdown() ;
+
+  return Ceylan::ExitSuccess ;
 
 }

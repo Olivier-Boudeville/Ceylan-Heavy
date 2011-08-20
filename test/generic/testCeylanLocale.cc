@@ -46,74 +46,77 @@ using namespace std ;
 int main( int argc,  char * argv[] )
 {
 
+  {
 
 	LogHolder myLog( argc, argv ) ;
 
 	try
 	{
 
-		LogPlug::info( "Testing Locale implementation." ) ;
+	  LogPlug::info( "Testing Locale implementation." ) ;
 
-		LogPlug::info( "Creating a locale." ) ;
+	  LogPlug::info( "Creating a locale." ) ;
 
-		LocalizationSettings myLocaleSettings ;
+	  LocalizationSettings myLocaleSettings ;
 
-		LogPlug::info( "Displaying it: " + myLocaleSettings.toString() ) ;
+	  LogPlug::info( "Displaying it: " + myLocaleSettings.toString() ) ;
 
-		LogPlug::info( "Declaring support for french." ) ;
-		myLocaleSettings.addSupportedLocale( "french" ) ;
+	  LogPlug::info( "Declaring support for french." ) ;
+	  myLocaleSettings.addSupportedLocale( "french" ) ;
 
-		LogPlug::info( "Displaying it: " + myLocaleSettings.toString() ) ;
+	  LogPlug::info( "Displaying it: " + myLocaleSettings.toString() ) ;
 
-		// Not even known:
-		string locale = "vulcan" ;
+	  // Not even known:
+	  string locale = "vulcan" ;
 
-		if ( myLocaleSettings.isSupported( locale ) )
-			throw Ceylan::TestException( "Locale '" + locale
-				+ "' should not be declared as supported." ) ;
+	  if ( myLocaleSettings.isSupported( locale ) )
+		throw Ceylan::TestException( "Locale '" + locale
+		  + "' should not be declared as supported." ) ;
 
-		// Not supported here:
-		locale = "german" ;
+	  // Not supported here:
+	  locale = "german" ;
 
-		if ( myLocaleSettings.isSupported( locale ) )
-			throw Ceylan::TestException( "Locale '" + locale
-				+ "' should not be declared as supported." ) ;
+	  if ( myLocaleSettings.isSupported( locale ) )
+		throw Ceylan::TestException( "Locale '" + locale
+		  + "' should not be declared as supported." ) ;
 
-		locale = "french" ;
+	  locale = "french" ;
 
-		if ( ! myLocaleSettings.isSupported( locale ) )
-			throw Ceylan::TestException( "Locale '" + locale
-				+ "' should be declared as supported." ) ;
+	  if ( ! myLocaleSettings.isSupported( locale ) )
+		throw Ceylan::TestException( "Locale '" + locale
+		  + "' should be declared as supported." ) ;
 
-		LogPlug::info( "End of Locale test." ) ;
+	  LogPlug::info( "End of Locale test." ) ;
 
 	}
 
 	catch ( const Ceylan::Exception & e )
 	{
-		LogPlug::error( "Ceylan exception caught: "
-			 + e.toString( Ceylan::high ) ) ;
-		return Ceylan::ExitFailure ;
+	  LogPlug::error( "Ceylan exception caught: "
+		+ e.toString( Ceylan::high ) ) ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( const std::exception & e )
 	{
-		LogPlug::error( "Standard exception caught: "
-			 + std::string( e.what() ) ) ;
-		return Ceylan::ExitFailure ;
+	  LogPlug::error( "Standard exception caught: "
+		+ std::string( e.what() ) ) ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( ... )
 	{
-		LogPlug::error( "Unknown exception caught" ) ;
-		return Ceylan::ExitFailure ;
+	  LogPlug::error( "Unknown exception caught" ) ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
-	Ceylan::shutdown() ;
+  }
 
-	return Ceylan::ExitSuccess ;
+  Ceylan::shutdown() ;
+
+  return Ceylan::ExitSuccess ;
 
 }

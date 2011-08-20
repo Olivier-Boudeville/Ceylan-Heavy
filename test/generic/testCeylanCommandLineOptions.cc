@@ -48,117 +48,120 @@ using namespace Ceylan::Log ;
 int main( int argc,  char * argv[] )
 {
 
+  {
 
 	LogHolder myLog( argc, argv ) ;
 
 	try
 	{
 
-		LogPlug::info( "Testing command line option management." ) ;
+	  LogPlug::info( "Testing command line option management." ) ;
 
-		std::string executableName ;
-		std::list<std::string> options ;
+	  std::string executableName ;
+	  std::list<std::string> options ;
 
-		Ceylan::parseCommandLineOptions( executableName, options, argc, argv ) ;
+	  Ceylan::parseCommandLineOptions( executableName, options, argc, argv ) ;
 
-		LogPlug::info( "Executable name is: '" + executableName
-			+ "', option count is "
-			+ Ceylan::toString( static_cast<Ceylan::Uint32>( options.size() ) )
-			+ ", option list is "
-			+ formatStringList( options, /* surroundByTicks */ true ) ) ;
-
-
-		LogPlug::info( "Example of use of Ceylan::parseCommandLineOptions "
-			"to parse easily options, with detection of unsupported options "
-			"and use of options taking arguments." ) ;
+	  LogPlug::info( "Executable name is: '" + executableName
+		+ "', option count is "
+		+ Ceylan::toString( static_cast<Ceylan::Uint32>( options.size() ) )
+		+ ", option list is "
+		+ formatStringList( options, /* surroundByTicks */ true ) ) ;
 
 
-
-		// No switch allowed, using if/else clauses:
-
-
-		std::string token ;
-		bool tokenEaten ;
+	  LogPlug::info( "Example of use of Ceylan::parseCommandLineOptions "
+		"to parse easily options, with detection of unsupported options "
+		"and use of options taking arguments." ) ;
 
 
-		while ( ! options.empty() )
+
+	  // No switch allowed, using if/else clauses:
+
+
+	  std::string token ;
+	  bool tokenEaten ;
+
+
+	  while ( ! options.empty() )
+	  {
+
+		token = options.front() ;
+		options.pop_front() ;
+
+		tokenEaten = false ;
+
+		if ( token == "--batch" )
 		{
-
-			token = options.front() ;
-			options.pop_front() ;
-
-			tokenEaten = false ;
-
-			if ( token == "--batch" )
-			{
-				LogPlug::info( "Batch mode selected (but ignored)" ) ;
-				tokenEaten = true ;
-			} else
-			if ( token == "--interactive" )
-			{
-				LogPlug::info( "Interactive mode selected (but ignored)" ) ;
-				tokenEaten = true ;
-			} else
+		  LogPlug::info( "Batch mode selected (but ignored)" ) ;
+		  tokenEaten = true ;
+		} else
+		  if ( token == "--interactive" )
+		  {
+			LogPlug::info( "Interactive mode selected (but ignored)" ) ;
+			tokenEaten = true ;
+		  } else
 			if ( token == "--online" )
 			{
-				LogPlug::info( "Online mode selected (but ignored)" ) ;
-				tokenEaten = true ;
+			  LogPlug::info( "Online mode selected (but ignored)" ) ;
+			  tokenEaten = true ;
 			} else
-			if ( token == "--countedOption" )
-			{
+			  if ( token == "--countedOption" )
+			  {
 				if ( options.empty() )
-					throw CommandLineParseException( "Option " + token
-						+ " expected one argument, none found." ) ;
+				  throw CommandLineParseException( "Option " + token
+					+ " expected one argument, none found." ) ;
 
 				std::string count = options.front() ;
 				options.pop_front() ;
 				LogPlug::info( "Option with argument selected, argument is: "
-					+ count ) ;
+				  + count ) ;
 				tokenEaten = true ;
-			} else
-			if ( LogHolder::IsAKnownPlugOption( token ) )
-			{
-				// Ignores log-related (argument-less) options.
-				tokenEaten = true ;
-			}
+			  } else
+				if ( LogHolder::IsAKnownPlugOption( token ) )
+				{
+				  // Ignores log-related (argument-less) options.
+				  tokenEaten = true ;
+				}
 
-			if ( ! tokenEaten )
-			{
-				throw CommandLineParseException(
-					"Unexpected command line argument: " + token ) ;
-			}
-
+		if ( ! tokenEaten )
+		{
+		  throw CommandLineParseException(
+			"Unexpected command line argument: " + token ) ;
 		}
 
-		LogPlug::info( "End of command line option management test." ) ;
+	  }
+
+	  LogPlug::info( "End of command line option management test." ) ;
 
 	}
 
 	catch ( const Ceylan::Exception & e )
 	{
-		LogPlug::error( "Ceylan exception caught: "
-			 + e.toString( Ceylan::high ) ) ;
-		return Ceylan::ExitFailure ;
+	  LogPlug::error( "Ceylan exception caught: "
+		+ e.toString( Ceylan::high ) ) ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( const std::exception & e )
 	{
-		LogPlug::error( "Standard exception caught: "
-			 + std::string( e.what() ) ) ;
-		return Ceylan::ExitFailure ;
+	  LogPlug::error( "Standard exception caught: "
+		+ std::string( e.what() ) ) ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( ... )
 	{
-		LogPlug::error( "Unknown exception caught" ) ;
-		return Ceylan::ExitFailure ;
+	  LogPlug::error( "Unknown exception caught" ) ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
-	Ceylan::shutdown() ;
+  }
 
-	return Ceylan::ExitSuccess ;
+  Ceylan::shutdown() ;
+
+  return Ceylan::ExitSuccess ;
 
 }

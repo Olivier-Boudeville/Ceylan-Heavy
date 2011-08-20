@@ -45,6 +45,7 @@ using namespace Ceylan::System ;
 int main( int argc, char * argv[] )
 {
 
+  {
 
 	LogHolder logger( argc, argv ) ;
 
@@ -53,149 +54,150 @@ int main( int argc, char * argv[] )
 	{
 
 
-		LogPlug::info( "Testing Timestamp's implementation." ) ;
+	  LogPlug::info( "Testing Timestamp's implementation." ) ;
 
 
-		LogPlug::info( "First time-stamp: " ) ;
-		Timestamp firstStamp ;
-		LogPlug::info( firstStamp.toString() ) ;
+	  LogPlug::info( "First time-stamp: " ) ;
+	  Timestamp firstStamp ;
+	  LogPlug::info( firstStamp.toString() ) ;
 
-		if ( Features::areFileDescriptorsSupported() )
-		{
-			// 1/10 second waiting:
-			Ceylan::System::basicSleep( 0 /* second */,
-				/* nanoseconds */ 100000000 ) ;
-		}
-		else
-		{
+	  if ( Features::areFileDescriptorsSupported() )
+	  {
+		// 1/10 second waiting:
+		Ceylan::System::basicSleep( 0 /* second */,
+		  /* nanoseconds */ 100000000 ) ;
+	  }
+	  else
+	  {
 
-			LogPlug::warning( "Ceylan::System::basicSleep not available, "
-				"defaulting to Ceylan::System::sleepForSeconds" ) ;
+		LogPlug::warning( "Ceylan::System::basicSleep not available, "
+		  "defaulting to Ceylan::System::sleepForSeconds" ) ;
 
-			// Otherwise sleep for one second:
-			Ceylan::System::sleepForSeconds( 1 ) ;
-		}
-
-		LogPlug::info( "Second time-stamp: " ) ;
-		Timestamp secondStamp ;
-		LogPlug::info( secondStamp.toString() ) ;
-
-		// Sleep for a full second:
+		// Otherwise sleep for one second:
 		Ceylan::System::sleepForSeconds( 1 ) ;
+	  }
+
+	  LogPlug::info( "Second time-stamp: " ) ;
+	  Timestamp secondStamp ;
+	  LogPlug::info( secondStamp.toString() ) ;
+
+	  // Sleep for a full second:
+	  Ceylan::System::sleepForSeconds( 1 ) ;
 
 
-		LogPlug::info( "Third time-stamp: " ) ;
-		Timestamp thirdStamp ;
-		LogPlug::info( thirdStamp.toString() ) ;
+	  LogPlug::info( "Third time-stamp: " ) ;
+	  Timestamp thirdStamp ;
+	  LogPlug::info( thirdStamp.toString() ) ;
 
-		LogPlug::info( "Testing comparison operator "
-			"applied to Timestamps: " ) ;
+	  LogPlug::info( "Testing comparison operator "
+		"applied to Timestamps: " ) ;
 
-		if ( firstStamp < secondStamp )
-			LogPlug::info( "First timestamp is inferior to second." ) ;
+	  if ( firstStamp < secondStamp )
+		LogPlug::info( "First timestamp is inferior to second." ) ;
+	  else
+	  {
+		if ( secondStamp < firstStamp )
+		  throw Ceylan::TestException( "First timestamp ("
+			+ firstStamp.toString()
+			+ ") should be at most equal to second ("
+			+ secondStamp.toString() + "), if not inferior." ) ;
 		else
-		{
-			if ( secondStamp < firstStamp )
-				throw Ceylan::TestException( "First timestamp ("
-					+ firstStamp.toString()
-					+ ") should be at most equal to second ("
-					+ secondStamp.toString() + "), if not inferior." ) ;
-			else
-				LogPlug::info( "First timestamp is equal to second." ) ;
-		}
+		  LogPlug::info( "First timestamp is equal to second." ) ;
+	  }
 
 
-		if ( thirdStamp < firstStamp  )
-			throw Ceylan::TestException(
-				"Third timestamp (" + thirdStamp.toString()
-					+ ") is inferior to first (" + firstStamp.toString()
-					+ "), which is abnormal." ) ;
-		else
-			LogPlug::info( "Third timestamp is superior "
-				"or equal to first." ) ;
+	  if ( thirdStamp < firstStamp  )
+		throw Ceylan::TestException(
+		  "Third timestamp (" + thirdStamp.toString()
+		  + ") is inferior to first (" + firstStamp.toString()
+		  + "), which is abnormal." ) ;
+	  else
+		LogPlug::info( "Third timestamp is superior "
+		  "or equal to first." ) ;
 
-		LogPlug::info( "Testing now duration descriptions." ) ;
+	  LogPlug::info( "Testing now duration descriptions." ) ;
 
-		Second duration = 0 ;
+	  Second duration = 0 ;
 
-		LogPlug::info( "A duration of " + Ceylan::toString( duration )
-			+ " second is described as: "
-			+ Timestamp::DescribeDuration( duration ) + "." ) ;
+	  LogPlug::info( "A duration of " + Ceylan::toString( duration )
+		+ " second is described as: "
+		+ Timestamp::DescribeDuration( duration ) + "." ) ;
 
-		duration = 1 ;
+	  duration = 1 ;
 
-		LogPlug::info( "A duration of " + Ceylan::toString( duration )
-			+ " second is described as: "
-			+ Timestamp::DescribeDuration( duration ) + "." ) ;
+	  LogPlug::info( "A duration of " + Ceylan::toString( duration )
+		+ " second is described as: "
+		+ Timestamp::DescribeDuration( duration ) + "." ) ;
 
-		duration = 60 ;
+	  duration = 60 ;
 
-		LogPlug::info( "A duration of " + Ceylan::toString( duration )
-			+ " seconds is described as: "
-			+ Timestamp::DescribeDuration( duration ) + "." ) ;
+	  LogPlug::info( "A duration of " + Ceylan::toString( duration )
+		+ " seconds is described as: "
+		+ Timestamp::DescribeDuration( duration ) + "." ) ;
 
-		duration = 188 ;
+	  duration = 188 ;
 
-		LogPlug::info( "A duration of " + Ceylan::toString( duration )
-			+ " seconds is described as: "
-			+ Timestamp::DescribeDuration( duration ) + "." ) ;
+	  LogPlug::info( "A duration of " + Ceylan::toString( duration )
+		+ " seconds is described as: "
+		+ Timestamp::DescribeDuration( duration ) + "." ) ;
 
-		duration = 8000 ;
+	  duration = 8000 ;
 
-		LogPlug::info( "A duration of " + Ceylan::toString( duration )
-			+ " seconds is described as: "
-			+ Timestamp::DescribeDuration( duration ) + "." ) ;
+	  LogPlug::info( "A duration of " + Ceylan::toString( duration )
+		+ " seconds is described as: "
+		+ Timestamp::DescribeDuration( duration ) + "." ) ;
 
-		duration = 1036827 ;
+	  duration = 1036827 ;
 
-		LogPlug::info( "A duration of " + Ceylan::toString( duration )
-			+ " seconds is described as: "
-			+ Timestamp::DescribeDuration( duration ) + "." ) ;
+	  LogPlug::info( "A duration of " + Ceylan::toString( duration )
+		+ " seconds is described as: "
+		+ Timestamp::DescribeDuration( duration ) + "." ) ;
 
-		duration = 157681234 ;
+	  duration = 157681234 ;
 
-		LogPlug::info( "A duration of " + Ceylan::toString( duration )
-			+ " seconds is described as: "
-			+ Timestamp::DescribeDuration( duration ) + "." ) ;
+	  LogPlug::info( "A duration of " + Ceylan::toString( duration )
+		+ " seconds is described as: "
+		+ Timestamp::DescribeDuration( duration ) + "." ) ;
 
-		duration = 1892160000 ;
+	  duration = 1892160000 ;
 
-		LogPlug::info( "A duration of " + Ceylan::toString( duration )
-			+ " seconds is described as: "
-			+ Timestamp::DescribeDuration( duration ) + "." ) ;
+	  LogPlug::info( "A duration of " + Ceylan::toString( duration )
+		+ " seconds is described as: "
+		+ Timestamp::DescribeDuration( duration ) + "." ) ;
 
 
-		LogPlug::info( "End of Timestamp test." ) ;
+	  LogPlug::info( "End of Timestamp test." ) ;
 
 
 	}
 
 	catch ( const Ceylan::Exception & e )
 	{
-		std::cerr << "Ceylan exception caught: "
-			<< e.toString( Ceylan::high ) << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Ceylan exception caught: "
+				<< e.toString( Ceylan::high ) << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( const std::exception & e )
 	{
-		std::cerr << "Standard exception caught: "
-			 << e.what() << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Standard exception caught: "
+				<< e.what() << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
 	catch ( ... )
 	{
-		std::cerr << "Unknown exception caught" << std::endl ;
-		return Ceylan::ExitFailure ;
+	  std::cerr << "Unknown exception caught" << std::endl ;
+	  return Ceylan::ExitFailure ;
 
 	}
 
+  }
 
-	Ceylan::shutdown() ;
+  Ceylan::shutdown() ;
 
-	return Ceylan::ExitSuccess ;
+  return Ceylan::ExitSuccess ;
 
 }
