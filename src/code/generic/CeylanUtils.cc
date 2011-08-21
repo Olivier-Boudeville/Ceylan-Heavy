@@ -190,6 +190,8 @@ void Ceylan::parseCommandLineOptions( std::string & readExecutableName,
 void Ceylan::shutdown()
 {
 
+  //Ceylan::checkpoint( "Ceylan::shutdown now." ) ;
+
   /*
    * This function has to manually remove each and every bit of Ceylan that may
    * still be allocated under normal circumstances.
