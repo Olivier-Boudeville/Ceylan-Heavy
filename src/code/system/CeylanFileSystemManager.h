@@ -54,7 +54,6 @@ namespace Ceylan
 		class Directory ;
 
 
-
 		/// Thrown when filesystem manager operations failed.
 		class CEYLAN_DLL FileSystemManagerException : public FileSystemException
 		{
@@ -970,6 +969,22 @@ namespace Ceylan
 
 
 				/**
+				 * Returns whether there is currently at least one opened file
+				 * through this file system manager.
+				 *
+				 */
+				bool hasOpenFiles() const ;
+
+
+				/**
+				 * Returns the list of files currently opened through this file
+				 * manager.
+				 *
+				 */
+				const std::list<std::string> & getOpenFileList() const ;
+
+
+				/**
 				 * Returns a user-friendly description of the state of this
 				 * object.
 				 *
@@ -1112,10 +1127,13 @@ namespace Ceylan
 				 *
 				 * Cannot be private as has to be subclassed.
 				 *
+				 * @param trackOpenedFiles tells whether opened files should be
+				 * tracked.
+				 *
 				 * @throw FileSystemManagerException if the operation failed.
 				 *
 				 */
-				FileSystemManager() ;
+				explicit FileSystemManager( bool trackOpenedFiles = false ) ;
 
 
 
@@ -1128,6 +1146,29 @@ namespace Ceylan
 				 */
 				virtual ~FileSystemManager() throw() ;
 
+
+				/**
+				 * Allows this filesystem manager to keep track of the files it
+				 * opened.
+				 *
+				 */
+				void declareFileOpening( const Ceylan::System::File & file ) ;
+
+
+				/**
+				 * Allows this filesystem manager to keep track of the files it
+				 * opened.
+				 *
+				 */
+				void declareFileClosing( const Ceylan::System::File & file ) ;
+
+
+				/**
+				 * Returns a textual description of the files currently opened
+				 * through this filesystem manager.
+				 *
+				 */
+				std::string listOpenFiles() const ;
 
 
 				/**
@@ -1150,9 +1191,30 @@ namespace Ceylan
 				static FileSystemManager * _CurrentDefaultFileSystemManager ;
 
 
+				/**
+				 * Tells whether this filesystem manager should monitor the
+				 * files that were opened through it (and have been not closed
+				 * yet).
+				 *
+				 */
+				bool _trackOpenFiles ;
+
+
+				/**
+				 * Stores the list of currently opened files (if any, and if
+				 * enabled).
+				 *
+				 * @note Protected, as some specific filesystem managers may
+				 * have to transform that list (ex: cyphered filenames).
+				 *
+				 */
+				std::list<std::string> _openFiles ;
+
+
 
 
 			private:
+
 
 
 				/**

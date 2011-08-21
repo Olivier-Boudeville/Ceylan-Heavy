@@ -79,6 +79,8 @@ namespace Ceylan
 		{
 
 
+			friend class StandardFile ;
+
 
 			public:
 
@@ -660,6 +662,9 @@ namespace Ceylan
 				 * Cannot be protected, as has to be instanciated by factories
 				 * from the mother class.
 				 *
+				 * @param trackOpenedFiles tells whether opened files should be
+				 * tracked.
+				 *
 				 * @note Not to be called by the user.
 				 *
 				 * @see GetStandardFileSystemManager instead.
@@ -668,7 +673,8 @@ namespace Ceylan
 				 * failed.
 				 *
 				 */
-				StandardFileSystemManager() ;
+				explicit StandardFileSystemManager(
+				  bool trackOpenedFiles = true ) ;
 
 
 
@@ -680,7 +686,6 @@ namespace Ceylan
 				 *
 				 */
 				virtual ~StandardFileSystemManager() throw() ;
-
 
 
 				/**
@@ -758,7 +763,7 @@ namespace Ceylan
 
 
 	}
-	
+
 
 }
 

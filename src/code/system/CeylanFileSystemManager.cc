@@ -32,6 +32,7 @@
 #include "CeylanLogPlug.h"     // for LogPlug
 #include "CeylanFile.h"        // for File
 #include "CeylanOperators.h"   // for toString
+#include "CeylanUtils.h"       // for checkpoint
 
 
 
@@ -657,8 +658,14 @@ void FileSystemManager::RemoveDefaultFileSystemManager()
 // Protected section.
 
 
-FileSystemManager::FileSystemManager()
+FileSystemManager::FileSystemManager( bool trackOpenedFiles ) :
+  _trackOpenFiles( trackOpenedFiles )
 {
+
+  /*
+  Ceylan::checkpoint( "FileSystemManager instance " + Ceylan::toString( this )
+	+ " created." ) ;
+  */
 
 }
 
@@ -666,5 +673,129 @@ FileSystemManager::FileSystemManager()
 
 FileSystemManager::~FileSystemManager() throw()
 {
+
+  /*
+  Ceylan::checkpoint( "FileSystemManager " + Ceylan::toString( this )
+	+ " deleted." ) ;
+  */
+
+  if ( _trackOpenFiles )
+  {
+
+	// No exception shall be raised from a destructor (no log used either):
+	if ( ! _openFiles.empty() )
+	  Ceylan::checkpoint( "FileSystemManager destructor for instance "
+		+ Ceylan::toString( this ) + " called whereas "
+		"following files were still reported as open:"
+		+ Ceylan::formatStringList( _openFiles ) ) ;
+
+  }
+
+}
+
+
+void FileSystemManager::declareFileOpening( const System::File & file )
+{
+
+  if ( _trackOpenFiles )
+  {
+
+	_openFiles.push_back( file.getName() ) ;
+
+	/*
+	Ceylan::checkpoint( "FileSystemManager::declareFileOpening "
+	  + Ceylan::toString( this ) + " for '"
+	  + file.getName() + "', new list is: "
+	  + Ceylan::formatStringList( _openFiles ) ) ;
+	*/
+
+  }
+
+}
+
+
+
+void FileSystemManager::declareFileClosing( const System::File & file )
+{
+
+  if ( _trackOpenFiles )
+  {
+
+	string name = file.getName() ;
+
+	/*
+	Ceylan::checkpoint( "FileSystemManager::declareFileClosing "
+	  + Ceylan::toString( this ) + " for '"
+	  + name + "'." ) ;
+	*/
+
+
+	/*
+	 * Removes only the first occurrence of a path name:
+	 * (could be opened multiple times)
+	 *
+	 */
+	for ( list<string>::iterator it = _openFiles.begin();
+		  it != _openFiles.end(); it++ )
+	{
+
+	  if ( (*it) == name )
+	  {
+
+		_openFiles.erase( it ) ;
+
+		/*
+		Ceylan::checkpoint( "FileSystemManager::declareFileClosing for '"
+		  + file.getName() + "', new list is: "
+		  + Ceylan::formatStringList( _openFiles ) ) ;
+		*/
+
+		return ;
+
+	  }
+
+	}
+
+	/*
+	Ceylan::checkpoint( "FileSystemManager::declareFileClosing for '"
+	  + file.getName() + "', list was: "
+	  + Ceylan::formatStringList( _openFiles ) ) ;
+	*/
+
+	throw FileSystemManagerException( "FileSystemManager::declareFileClosing "
+	  "failed: file '" + name
+	  + "' was declared closed, whereas it was not recorded as being open." ) ;
+
+  }
+
+}
+
+
+
+string FileSystemManager::listOpenFiles() const
+{
+
+  if ( _openFiles.empty() )
+	return "not having any open file currently" ;
+
+  return "having following files currently opened:"
+	+ Ceylan::formatStringList( _openFiles ) ;
+
+}
+
+
+
+bool FileSystemManager::hasOpenFiles() const
+{
+
+  return ( ! _openFiles.empty() ) ;
+
+}
+
+
+const list<string> & FileSystemManager::getOpenFileList() const
+{
+
+  return _openFiles ;
 
 }

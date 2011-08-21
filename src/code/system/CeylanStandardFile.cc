@@ -29,7 +29,7 @@
 #include "CeylanLogPlug.h"                    // for Log primitives
 #include "CeylanOperators.h"                  // for toString
 #include "CeylanStandardFileSystemManager.h"  // for StandardFileSystemManager
-
+#include "CeylanUtils.h"                      // for checkpoint
 
 #ifdef CEYLAN_USES_CONFIG_H
 #include "CeylanConfig.h"      // for configure-time feature settings
@@ -40,7 +40,6 @@
 // Not available in their C++ form:
 extern "C"
 {
-
 
 #ifdef CEYLAN_USES_SYS_TYPES_H
 #include <sys/types.h>         // for mode_t
@@ -115,6 +114,7 @@ using namespace Ceylan::Log ;
 // Avoid exposing system-dependent mode_t in the headers:
 struct StandardFile::SystemSpecificPermissionFlag
 {
+
 	mode_t _mode ;
 
 } ;
@@ -218,6 +218,8 @@ bool StandardFile::isOpen() const
 bool StandardFile::close()
 {
 
+	//Ceylan::checkpoint( "StandardFile::close called." ) ;
+
 	if ( ! isOpen() )
 	{
 
@@ -247,8 +249,15 @@ bool StandardFile::close()
 		 *
 		 */
 
+		// getCorrespondingFileSystemManager() would require a cast to standard:
+		StandardFileSystemManager & manager =
+		  StandardFileSystemManager::GetStandardFileSystemManager() ;
+
+		manager.declareFileClosing( *this ) ;
+
 #if CEYLAN_USES_FILE_DESCRIPTORS
 
+		// Zeroes _fdes (transmitted by reference):
 		return Stream::Close( _fdes ) ;
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS
@@ -1097,7 +1106,8 @@ StandardFile & StandardFile::Open( const std::string & filename,
 
 StandardFile::StandardFile( const string & name, OpeningFlag openFlag,
 		PermissionFlag permissions ) :
-	File( name, openFlag, permissions )
+  File( name, openFlag, permissions ),
+  _fdes( 0 )
 {
 
 	// (File constructor may raise FileException)
@@ -1148,6 +1158,8 @@ FileSystemManager & StandardFile::getCorrespondingFileSystemManager() const
 void StandardFile::reopen()
 {
 
+	//Ceylan::checkpoint( "StandardFile::reopen called." ) ;
+
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	throw FileOpeningFailed( "StandardFile::reopen: "
@@ -1167,7 +1179,6 @@ void StandardFile::reopen()
 	if ( _fdes < 0 )
 		throw FileOpeningFailed( "StandardFile::reopen failed for '" + _name
 			+ "': " + System::explainError() ) ;
-
 
 #else // if CEYLAN_USES_FILE_DESCRIPTORS
 
@@ -1209,7 +1220,14 @@ void StandardFile::reopen()
 
 #endif // if CEYLAN_USES_FILE_DESCRIPTORS
 
+	// getCorrespondingFileSystemManager() would require a cast to standard:
+	StandardFileSystemManager & manager =
+	  StandardFileSystemManager::GetStandardFileSystemManager() ;
+
+	manager.declareFileOpening( *this ) ;
+
 #endif // CEYLAN_ARCH_NINTENDO_DS
+
 
 }
 

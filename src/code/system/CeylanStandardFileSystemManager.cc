@@ -1177,7 +1177,10 @@ const string StandardFileSystemManager::toString(
 	Ceylan::VerbosityLevels level ) const
 {
 
-	return "Standard filesystem manager" ;
+  if ( _trackOpenFiles )
+	return "Standard filesystem manager " + listOpenFiles() ;
+  else
+	return "Standard filesystem manager (not tracking open files)" ;
 
 }
 
@@ -1192,7 +1195,8 @@ StandardFileSystemManager &
 {
 
 	if ( _StandardFileSystemManager == 0 )
-		_StandardFileSystemManager = new StandardFileSystemManager() ;
+	  _StandardFileSystemManager = new StandardFileSystemManager(
+		/* track opened files */ true ) ;
 
 	return *_StandardFileSystemManager ;
 
@@ -1220,7 +1224,8 @@ void StandardFileSystemManager::RemoveStandardFileSystemManager()
 
 
 
-StandardFileSystemManager::StandardFileSystemManager()
+StandardFileSystemManager::StandardFileSystemManager( bool trackOpenedFiles ) :
+  FileSystemManager( trackOpenedFiles )
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
