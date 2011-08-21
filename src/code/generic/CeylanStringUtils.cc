@@ -461,6 +461,19 @@ string Ceylan::encodeToROT13( const std::string & message )
 }
 
 
+list<string> Ceylan::encodeToROT13( const list<string> & messages )
+{
+
+  list<string> res ;
+
+  for ( list<string>::const_iterator it = messages.begin();
+		it != messages.end(); it++ )
+	res.push_back( encodeToROT13( *it ) ) ;
+
+  return res ;
+
+}
+
 
 string Ceylan::demangleSymbol( const std::string & symbol )
 {

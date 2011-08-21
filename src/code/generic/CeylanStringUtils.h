@@ -428,6 +428,23 @@ namespace Ceylan
 	CEYLAN_DLL std::string encodeToROT13( const std::string & message ) ;
 
 
+	/**
+	 * Encodes each of the strings in the specified list in 'rot13', a very
+	 * simple substitution cipher, and returns a new list with their encoded
+	 * version (whereas the specified list is not changed).
+	 *
+	 * @see http://en.wikipedia.org/wiki/ROT13
+	 *
+	 * Non alphabetic characters (not in a-z, A-Z) are left untouched.
+	 *
+	 * @note ROT13 is its own inverse, that some function can be used for
+	 * decoding as well.
+	 *
+	 */
+	CEYLAN_DLL std::list<std::string> encodeToROT13(
+	  const std::list<std::string> & messages ) ;
+
+
 
 	/**
 	 * Demangles a C++ symbol so that it becomes human-readable.
