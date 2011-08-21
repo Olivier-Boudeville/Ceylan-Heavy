@@ -731,7 +731,8 @@ namespace Ceylan
 
 				/**
 				 * Returns a File reference on specified already-existing file,
-				 * which will be opened with specified settings.
+				 * which will be opened with specified settings. Ownership of
+				 * this File instance is transferred to the caller.
 				 *
 				 * @param filename the name of the file.
 				 *
@@ -767,7 +768,7 @@ namespace Ceylan
 				 * archive).
 				 *
 				 */
-				static File & Open( const std::string & filename,
+				static File & Open( const std::string & filname,
 					OpeningFlag openFlag = OpenToReadBinary ) ;
 
 
