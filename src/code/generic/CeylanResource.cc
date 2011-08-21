@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -69,11 +69,10 @@ Resource::~Resource() throw()
 
 
 
-const string Resource::toString( Ceylan::VerbosityLevels level ) const 
+const string Resource::toString( Ceylan::VerbosityLevels level ) const
 {
 
-	return "Ressource at address " 
+	return "Ressource at address "
 		+ Ceylan::toString( static_cast<const void *>( this ) ) ;
-		
-}
 
+}
