@@ -521,7 +521,7 @@ const std::string Socket::toString( Ceylan::VerbosityLevels level ) const
 	}
 	catch( const Ceylan::Exception & e )
 	{
-		return "Socket::toString failed (abnormal)" ;
+	  return "Socket::toString failed (abnormal): " + e.toString() ;
 	}
 
 	if ( level == Ceylan::low )
