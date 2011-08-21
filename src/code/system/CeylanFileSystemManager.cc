@@ -775,14 +775,24 @@ void FileSystemManager::declareFileClosing( const System::File & file )
 string FileSystemManager::listOpenFiles() const
 {
 
-  if ( _openFiles.empty() )
-	return "not having any open file currently" ;
+  if ( _trackOpenFiles )
+  {
 
-  return "having following files currently opened:"
+	if ( _openFiles.empty() )
+	  return "not having any open file currently" ;
+
+	return "having following files currently opened:"
 	+ Ceylan::formatStringList( _openFiles ) ;
 
-}
+  }
+  else
+  {
 
+	return "(tracking of open files not activated)" ;
+
+  }
+
+}
 
 
 bool FileSystemManager::hasOpenFiles() const
