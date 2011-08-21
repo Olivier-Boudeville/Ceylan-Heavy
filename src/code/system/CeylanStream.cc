@@ -163,7 +163,7 @@ bool Stream::Close( FileDescriptor & fd )
 
 #else // CEYLAN_USES_FILE_DESCRIPTORS
 
-	throw Stream::CloseException( "Ceylan::System::close: "
+	throw Stream::CloseException( "Ceylan::Stream::Close: "
 		"file descriptor feature not available" ) ;
 
 #endif // CEYLAN_USES_FILE_DESCRIPTORS
