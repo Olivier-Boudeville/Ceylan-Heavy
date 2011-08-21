@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -45,24 +45,24 @@ namespace Ceylan
 	/// Exception to be raised whenever a loadable operation fails.
 	class CEYLAN_DLL LoadableException : public Ceylan::Exception
 	{
-	
+
 		public:
-		
+
 			explicit LoadableException( const std::string & message ) ;
-			
-			virtual ~LoadableException() throw() ;	
-	
+
+			virtual ~LoadableException() throw() ;
+
 	} ;
-	
-	
-	
-	
+
+
+
+
 	/*
-	 * The overall goal is to rely on a Loadable mother class, that can be
-	 * used simply, while, thanks to the Loadable<Content> template, to be
-	 * able to retrieve the content directly, with its correct type.
+	 * The overall goal is to rely on a Loadable mother class, that can be used
+	 * simply, while, thanks to the Loadable<Content> template, to be able to
+	 * retrieve the content directly, with its correct type.
 	 *
-	 * User is expected to subclass the template, so that she can rely on a 
+	 * User is expected to subclass the template, so that she can rely on a
 	 * useful abstraction:
 	 *
 	 * @example class MyOwnContent: public Loadable<MyContent> {...} ;
@@ -74,25 +74,25 @@ namespace Ceylan
 	 * @see testCeylanLoadable.cc
 	 *
 	 */
-	 
-	 
-	
-    /**
-     * Interface that every object which can be loaded dynamically from file
-	 * should implement. 
-     *
+
+
+
+	/**
+	 * Interface that every object which can be loaded dynamically from file
+	 * should implement.
+	 *
 	 * @see the associated child template, Loadable<Content>.
 	 *
 	 * @see testCeylanLoadable.cc
 	 *
-     */
-    class CEYLAN_DLL Loadable
-    {
+	 */
+	class CEYLAN_DLL Loadable
+	{
 
 
-        public:
-		
-		
+		public:
+
+
 
 			/**
 			 * Creates a new loadable instance, whose content file is designated
@@ -105,15 +105,15 @@ namespace Ceylan
 			 *
 			 */
 			explicit Loadable( const std::string & contentFilePath ) ;
-			
-			
-			
+
+
+
 			/// Virtual destructor.
 			virtual ~Loadable() throw() ;
-			
-			
-			
-            /**
+
+
+
+			/**
 			 * Loads the content of this instance from file.
 			 *
 			 * @return true iff the content had to be actually loaded (otherwise
@@ -122,11 +122,11 @@ namespace Ceylan
 			 * @throw LoadableException whenever the loading fails.
 			 *
 			 */
-            virtual bool load() = 0 ;
-		
-		
-		
-            /**
+			virtual bool load() = 0 ;
+
+
+
+			/**
 			 * Unloads the content of this instance.
 			 *
 			 * @return true iff the content had to be actually unloaded
@@ -135,8 +135,8 @@ namespace Ceylan
 			 * @throw LoadableException whenever the unloading fails.
 			 *
 			 */
-            virtual bool unload() = 0 ;
-		
+			virtual bool unload() = 0 ;
+
 
 
 			/**
@@ -148,37 +148,38 @@ namespace Ceylan
 
 
 		protected:
-		
-		
+
+
 			/// The path to the file used for content loading.
-			std::string _contentPath ;					
-		
-		
-			
+			std::string _contentPath ;
+
+
+
 		private:
-		
-		
+
+
 			/**
-			 * Copy constructor made private to ensure that it will never be 
+			 * Copy constructor made private to ensure that it will never be
 			 * called.
-			 * The compiler should complain whenever this undefined 
-			 * constructor is called, implicitly or not.
-			 * 
-			 */			 
+			 *
+			 * The compiler should complain whenever this undefined constructor
+			 * is called, implicitly or not.
+			 *
+			 */
 			Loadable( const Loadable & source ) ;
-			
-			
+
+
 			/**
 			 * Assignment operator made private to ensure that it will never be
 			 * called.
 			 * The compiler should complain whenever this undefined operator
 			 * is called, implicitly or not.
-			 * 
-			 */			 
+			 *
+			 */
 			Loadable & operator = ( const Loadable & source ) ;
-			
 
-    } ;
+
+	} ;
 
 
 
@@ -198,12 +199,12 @@ namespace Ceylan
 	template <typename Content>
 	class LoadableWithContent : public Loadable
 	{
-	
-	
+
+
 		public:
-		
-		
-		
+
+
+
 			/**
 			 * Creates a new loadable instance, whose content file is designated
 			 * by the specified filename, but does not load anything.
@@ -212,9 +213,9 @@ namespace Ceylan
 			 *
 			 */
 			explicit LoadableWithContent( const std::string & contentFilePath );
-				
-		
-				
+
+
+
 			/**
 			 * Virtual destructor.
 			 *
@@ -223,10 +224,10 @@ namespace Ceylan
 			 *
 			 */
 			virtual ~LoadableWithContent() throw() ;
-			
-			
-			
-            /**
+
+
+
+			/**
 			 * Loads the content of this instance from file.
 			 *
 			 * @return true iff the content had to be actually loaded (otherwise
@@ -234,18 +235,18 @@ namespace Ceylan
 			 *
 			 * @throw LoadableException whenever the loading fails.
 			 *
-			 * @note This method is still pure virtual here, as loading the
-			 * file in memory would not be enough: a Content object is still 
-			 * to be created, and we cannot expect that each Content type is 
-			 * a class, and has a constructor taking exactly, for example, a
-			 * Ceylan::Byte pointer.
+			 * @note This method is still pure virtual here, as loading the file
+			 * in memory would not be enough: a Content object is still to be
+			 * created, and we cannot expect that each Content type is a class,
+			 * and has a constructor taking exactly, for example, a Ceylan::Byte
+			 * pointer.
 			 *
 			 */
-            virtual bool load() = 0 ;
-		
-		
-		
-            /**
+			virtual bool load() = 0 ;
+
+
+
+			/**
 			 * Unloads the content of this instance.
 			 *
 			 * @return true iff the content had to be actually unloaded
@@ -257,37 +258,36 @@ namespace Ceylan
 			 * content can be specific to the content.
 			 *
 			 */
-            virtual bool unload() = 0 ;
+			virtual bool unload() = 0 ;
 
 
 
-            /**
+			/**
 			 * Reloads the content of this instance.
 			 *
-			 * @param forceLoad if true, then any previously loaded content
-			 * will be deleted before an unconditional loading is performed.
-			 * If false, then if there were no content already loaded, no 
-			 * loading will be performed (content availability will be kept
-			 * as was), but if the content was loaded, it will be unloaded and
-			 * reloaded.
+			 * @param forceLoad if true, then any previously loaded content will
+			 * be deleted before an unconditional loading is performed. If
+			 * false, then if there were no content already loaded, no loading
+			 * will be performed (content availability will be kept as was), but
+			 * if the content was loaded, it will be unloaded and reloaded.
 			 *
 			 * @return true iff a reload had to take place.
 			 *
 			 * @throw LoadableException whenever the reloading fails.
 			 *
 			 */
-            virtual bool reload( bool forceLoad = false ) ;
+			virtual bool reload( bool forceLoad = false ) ;
 
 
-			
+
 			/**
 			 * Returns true iff the content is already loaded.
 			 *
 			 */
 			virtual bool hasContent() const ;
-			
-			
-			
+
+
+
 			/**
 			 * Returns the already loaded content.
 			 *
@@ -299,9 +299,9 @@ namespace Ceylan
 			 *
 			 */
 			virtual Content & getExistingContent() ;
-			
-			
-			
+
+
+
 			/**
 			 * Returns a constant reference to the already loaded content.
 			 *
@@ -313,9 +313,9 @@ namespace Ceylan
 			 *
 			 */
 			virtual const Content & getExistingContentAsConst() const ;
-			
-			
-			
+
+
+
 			/**
 			 * Returns the loaded content, either directly (if already
 			 * available), otherwise after having loaded it.
@@ -326,9 +326,9 @@ namespace Ceylan
 			 *
 			 */
 			virtual Content & getContent() ;
-			
-			
-			
+
+
+
 			/**
 			 * Returns a constant reference to the loaded content, either
 			 * directly (if already available), otherwise after having loaded
@@ -338,199 +338,200 @@ namespace Ceylan
 			 *
 			 * @note Ownership of the content is kept by this instance.
 			 *
-			 * @note The method cannot be const as it may have to load the 
+			 * @note The method cannot be const as it may have to load the
 			 * content.
 			 *
 			 * @see getExistingContentAsConst
 			 *
 			 */
 			virtual const Content & getContentAsConst() ;
-			
-			
+
+
 
 		protected:
-		
-		
+
+
 			/// The loaded content, if any.
 			Content * _content ;
-						
-			
-				
+
+
+
 		private:
-		
-		
+
+
 			/**
-			 * Copy constructor made private to ensure that it will never be 
+			 * Copy constructor made private to ensure that it will never be
 			 * called.
-			 * The compiler should complain whenever this undefined 
-			 * constructor is called, implicitly or not.
-			 * 
-			 */			 
+			 *
+			 * The compiler should complain whenever this undefined constructor
+			 * is called, implicitly or not.
+			 *
+			 */
 			LoadableWithContent( const LoadableWithContent & source ) ;
-			
-			
+
+
 			/**
 			 * Assignment operator made private to ensure that it will never be
 			 * called.
-			 * The compiler should complain whenever this undefined operator
-			 * is called, implicitly or not.
-			 * 
-			 */			 
-			LoadableWithContent & operator = ( 
+			 *
+			 * The compiler should complain whenever this undefined operator is
+			 * called, implicitly or not.
+			 *
+			 */
+			LoadableWithContent & operator = (
 				const LoadableWithContent & source ) ;
 
 
-    } ;
-			
+	} ;
+
 
 
 
 	// Implementation of the LoadableWithContent template.
-	
-	
+
+
 	template <typename Content>
-	LoadableWithContent<Content>::LoadableWithContent( 
+	LoadableWithContent<Content>::LoadableWithContent(
 			const std::string & contentFilePath ) :
 		Loadable( contentFilePath ),
-		_content( 0 )		 				
+		_content( 0 )
 	{
-	
+
 		/*
 		 * Cannot preload here as the load method is abstract.
 		 * Instanciable child classes should offer to preload:
-		
+
 		if ( preLoad )
 			load() ;
-		
-		 */	
-		 
+
+		 */
+
 	}
-	
-	
-	
+
+
+
 	template <typename Content>
 	LoadableWithContent<Content>::~LoadableWithContent() throw()
 	{
-	
-	
+
+
 		/*
 		 * Cannot unload here as the unload method is abstract.
 		 * Instanciable child classes should deallocate any loaded content:
-		
+
 		if ( hasContent() )
 			unload() ;
-		
-		 */	
-		
+
+		 */
+
 		// Cannot deallocate, but can warn:
 		if ( _content != 0 )
-			Ceylan::Log::LogPlug::error( 
+			Ceylan::Log::LogPlug::error(
 				"LoadableWithContent<Content> destructor: "
 				"still existing content has been found" ) ;
-					
+
 	}
-	
-	
-	
+
+
+
 	template <typename Content>
-	bool LoadableWithContent<Content>::reload( bool forceLoad ) 
+	bool LoadableWithContent<Content>::reload( bool forceLoad )
 	{
-	
+
 		if ( hasContent() )
 		{
-		
+
 			// Does not depend on forceLoad:
 			unload() ;
 			load() ;
-			
+
 			return true ;
-			
+
 		}
 		else
 		{
-		
+
 			// No prior content.
 			if ( forceLoad )
 				load() ;
-			
-			return forceLoad ; 
-		
+
+			return forceLoad ;
+
 		}
-		
+
 	}
-	
-	
-	
+
+
+
 	template <typename Content>
 	bool LoadableWithContent<Content>::hasContent() const
 	{
-	
+
 		return ( _content != 0 ) ;
-		
+
 	}
 
 
-	
+
 	template <typename Content>
-	Content & LoadableWithContent<Content>::getExistingContent() 
+	Content & LoadableWithContent<Content>::getExistingContent()
 	{
-	
+
 		if ( ! hasContent() )
-			throw LoadableException( 
+			throw LoadableException(
 				"LoadableWithContent<Content>::getExistingContent failed: "
 				"no content available" ) ;
-				
-		return	* _content ;
-			
+
+		return * _content ;
+
 	}
-		
-	
-		
-	template <typename Content>
-	const Content & LoadableWithContent<Content>::getExistingContentAsConst()
-		const 
-	{
-	
-		if ( ! hasContent() )
-			throw LoadableException( 	
-				"LoadableWithContent<Content>::getExistingContentAsConst "
-				"failed: no content available" ) ;
-				
-		return	* _content ;
-			
-	}
-		
-		
+
+
 
 	template <typename Content>
-	Content & LoadableWithContent<Content>::getContent() 
+	const Content & LoadableWithContent<Content>::getExistingContentAsConst()
+		const
+	{
+
+		if ( ! hasContent() )
+			throw LoadableException(
+				"LoadableWithContent<Content>::getExistingContentAsConst "
+				"failed: no content available" ) ;
+
+		return * _content ;
+
+	}
+
+
+
+	template <typename Content>
+	Content & LoadableWithContent<Content>::getContent()
 	{
 
 		if ( ! hasContent() )
 			load() ;
-		
-		return	* _content ;
-				
+
+		return * _content ;
+
 	}
-	
-	
-		
+
+
+
 	template <typename Content>
 	const Content & LoadableWithContent<Content>::getContentAsConst()
 	{
 
 		if ( ! hasContent() )
 			load() ;
-		
-		return	* _content ;
-				
+
+		return * _content ;
+
 	}
-		
-		
+
+
 
 }
 
 
 
 #endif // CEYLAN_LOADABLE_H_
-

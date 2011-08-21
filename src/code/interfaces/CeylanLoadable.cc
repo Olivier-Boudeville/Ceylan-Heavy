@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -38,14 +38,14 @@ LoadableException::LoadableException( const std::string & message ) :
 	Exception( "Loadable exception: " + message )
 {
 
-}			
+}
 
 
 LoadableException::~LoadableException() throw()
 {
-			
+
 }
-			
+
 
 
 
@@ -56,7 +56,7 @@ Loadable::Loadable( const std::string & contentFilePath ) :
 	_contentPath( contentFilePath )
 {
 
-}	
+}
 
 
 
@@ -71,6 +71,5 @@ const std::string & Loadable::getContentPath() const
 {
 
 	return _contentPath ;
-	
-}
 
+}
