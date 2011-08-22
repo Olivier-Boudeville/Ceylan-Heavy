@@ -845,11 +845,10 @@ void LibfatFileSystemManager::RemoveLibfatFileSystemManager()
 
 		if ( FileSystemManager::_CurrentDefaultFileSystemManager ==
 				_LibfatFileSystemManager )
-			_LibfatFileSystemManager = 0 ;
+		  FileSystemManager::_CurrentDefaultFileSystemManager = 0 ;
 
 		delete _LibfatFileSystemManager ;
 		_LibfatFileSystemManager = 0 ;
-
 
 	}
 
