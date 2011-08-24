@@ -58,6 +58,7 @@ export PROJECTS_BASE=$HOME/Projects
 export GAMES_BASE=${PROJECTS_BASE}/${LOCAL_PROJECT_OFFSET}
 
 export DARM=${GAMES_BASE}/DARM/trunk
+export DARM_ENV_FILE="${LOANI_INSTALLATIONS}/DARM-environment.sh"
 
 export GAMES_BASE=${PROJECTS_BASE}/OSDL-common/club/games
 
