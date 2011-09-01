@@ -264,7 +264,7 @@ clean-doc-logs:
 
 
 clean-gnuplot:
-	@# Let's hope we do not remove user files:
+	@# Let's hope we do not remove user files:
 	-@if [ `basename $$PWD` != "doc" ]; then \
 	/bin/rm -f *robe*.dat *robe*.p; fi
 
