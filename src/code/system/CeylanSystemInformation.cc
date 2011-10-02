@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003-2011 Olivier Boudeville
  *
  * This file is part of the Ceylan library.
@@ -6,7 +6,7 @@
  * The Ceylan library is free software: you can redistribute it and/or modify
  * it under the terms of either the GNU Lesser General Public License or
  * the GNU General Public License, as they are published by the Free Software
- * Foundation, either version 3 of these Licenses, or (at your option) 
+ * Foundation, either version 3 of these Licenses, or (at your option)
  * any later version.
  *
  * The Ceylan library is distributed in the hope that it will be useful,
@@ -55,7 +55,7 @@ using namespace Ceylan::System ;        // for SystemException
 
 
 // Needed to know free and used memory:
-extern "C" 
+extern "C"
 {
 
 #include <unistd.h>
@@ -65,19 +65,18 @@ extern "C"
 
 
 /// End of static code and data:
-extern u8 __end__[] ;        
+extern u8 __end__[] ;
 
 /// farthest point to which the heap will grow:
-extern u8 __eheap_end[] ;    
+extern u8 __eheap_end[] ;
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
 
 
 
 
-extern "C" 
+extern "C"
 {
-
 
 #ifdef CEYLAN_USES_SYS_SYSINFO_H
 
@@ -94,135 +93,135 @@ extern "C"
 
 
 
-UnsignedLongInteger Ceylan::System::getSecondsSinceSystemBoot() 
-{ 
-	
+UnsignedLongInteger Ceylan::System::getSecondsSinceSystemBoot()
+{
+
 #ifdef CEYLAN_USES_SYSINFO
 
 #if CEYLAN_ARCH_SOLARIS
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::getSecondsSinceSystemBoot: "
-		"not available on Solaris platform." ) ;	
+		"not available on Solaris platform." ) ;
 
 #else // CEYLAN_ARCH_SOLARIS
 
 	struct sysinfo sysinfoStruct ;
-	
+
 	if ( ::sysinfo( & sysinfoStruct ) != 0 )
-		throw SystemException( 
+		throw SystemException(
 			"Ceylan::System::getSecondsSinceSystemBoot: "
-			"unable to query system: "	+ explainError() ) ;
-	
+			"unable to query system: " + explainError() ) ;
+
 	return static_cast<UnsignedLongInteger>( sysinfoStruct.uptime ) ;
 
 #endif // CEYLAN_ARCH_SOLARIS
 
 #else // CEYLAN_USES_SYSINFO
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::getSecondsSinceSystemBoot: "
-		"not available on this platform." ) ;	
-	
+		"not available on this platform." ) ;
+
 #endif // CEYLAN_USES_SYSINFO
-	
-} 
+
+}
 
 
 
-Ceylan::Uint32 Ceylan::System::getTotalProcessCount() 
-{ 
+Ceylan::Uint32 Ceylan::System::getTotalProcessCount()
+{
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	return 1 ;
-	
+
 #else // CEYLAN_ARCH_NINTENDO_DS
-	
+
 #ifdef CEYLAN_USES_SYSINFO
 
 #if CEYLAN_ARCH_SOLARIS
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::getTotalProcessCount: "
-		"not available on Solaris platform." ) ;	
+		"not available on Solaris platform." ) ;
 
 #else // CEYLAN_ARCH_SOLARIS
-	
+
 	struct sysinfo sysinfoStruct ;
-	
+
 	if ( ::sysinfo( & sysinfoStruct ) != 0 )
-		throw SystemException( 
+		throw SystemException(
 			"Ceylan::System::getTotalProcessCount: "
-			"unable to query system: "	+ explainError() ) ;
-	
+			"unable to query system: " + explainError() ) ;
+
 	return static_cast<Ceylan::Uint32>( sysinfoStruct.procs ) ;
 
 #endif // CEYLAN_ARCH_SOLARIS
-	
+
 #else // CEYLAN_USES_SYSINFO
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::getTotalProcessCount: "
-		"not available on this platform." ) ;	
-	
+		"not available on this platform." ) ;
+
 #endif // CEYLAN_USES_SYSINFO
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
-	
-} 
+
+}
 
 
 
 
-UnsignedLongInteger Ceylan::System::getTotalSystemMemorySize() 
-{ 
+UnsignedLongInteger Ceylan::System::getTotalSystemMemorySize()
+{
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	// Main RAM is 4 MB-KkB:
 	return (4*1024 - 4) * 1024 ;
-	
+
 #else // CEYLAN_ARCH_NINTENDO_DS
-	
+
 #ifdef CEYLAN_USES_SYSINFO
 
 #if CEYLAN_ARCH_SOLARIS
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::getTotalSystemMemorySize: "
-		"not available on Solaris platform." ) ;	
+		"not available on Solaris platform." ) ;
 
 #else // CEYLAN_ARCH_SOLARIS
 
 	struct sysinfo sysinfoStruct ;
-	
+
 	if ( ::sysinfo( & sysinfoStruct ) != 0 )
-		throw SystemException( 
+		throw SystemException(
 			"Ceylan::System::getTotalSystemMemorySize: "
-			"unable to query system: "	+ explainError() ) ;
-	
-	return static_cast<UnsignedLongInteger>( 
+			"unable to query system: " + explainError() ) ;
+
+	return static_cast<UnsignedLongInteger>(
 		sysinfoStruct.mem_unit * sysinfoStruct.totalram ) ;
 
 #endif // CEYLAN_ARCH_SOLARIS
-	
+
 #else // CEYLAN_USES_SYSINFO
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::getTotalSystemMemorySize: "
-		"not available on this platform." ) ;	
-	
+		"not available on this platform." ) ;
+
 #endif // CEYLAN_USES_SYSINFO
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
-	
-} 
+
+}
 
 
 
-UnsignedLongInteger Ceylan::System::getFreeSystemMemorySize() 
-{ 
+UnsignedLongInteger Ceylan::System::getFreeSystemMemorySize()
+{
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
@@ -233,49 +232,49 @@ UnsignedLongInteger Ceylan::System::getFreeSystemMemorySize()
 	 *
 	 */
    struct mallinfo mi = mallinfo() ;
-   
+
    return mi.fordblks + __eheap_end - (u8*) sbrk(0) ;
 
 #else // CEYLAN_ARCH_NINTENDO_DS
-	
+
 #ifdef CEYLAN_USES_SYSINFO
 
 #if CEYLAN_ARCH_SOLARIS
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::getFreeSystemMemorySize: "
-		"not available on Solaris platform." ) ;	
+		"not available on Solaris platform." ) ;
 
 #else // CEYLAN_ARCH_SOLARIS
 
 	struct sysinfo sysinfoStruct ;
-	
+
 	if ( ::sysinfo( & sysinfoStruct ) != 0 )
-		throw SystemException( 
+		throw SystemException(
 			"Ceylan::System::getFreeSystemMemorySize: "
-			"unable to query system: "	+ explainError() ) ;
-	
-	return static_cast<UnsignedLongInteger>( 
+			"unable to query system: " + explainError() ) ;
+
+	return static_cast<UnsignedLongInteger>(
 		sysinfoStruct.mem_unit * sysinfoStruct.freeram ) ;
 
 #endif // CEYLAN_ARCH_SOLARIS
-	
+
 #else // CEYLAN_USES_SYSINFO
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::getFreeSystemMemorySize: "
-		"not available on this platform." ) ;	
-	
+		"not available on this platform." ) ;
+
 #endif // CEYLAN_USES_SYSINFO
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
-	
-} 
+
+}
 
 
 
-UnsignedLongInteger Ceylan::System::getUsedSystemMemorySize() 
-{ 
+UnsignedLongInteger Ceylan::System::getUsedSystemMemorySize()
+{
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
@@ -287,288 +286,288 @@ UnsignedLongInteger Ceylan::System::getUsedSystemMemorySize()
 	 */
    struct mallinfo mi = mallinfo() ;
 
-   return mi.uordblks ; 
-   
+   return mi.uordblks ;
+
 #else // CEYLAN_ARCH_NINTENDO_DS
-	
-	throw SystemException( 
+
+	throw SystemException(
 		"Ceylan::System::getUsedSystemMemorySize: "
-		"not available on this platform." ) ;	
-	
+		"not available on this platform." ) ;
+
 #endif // CEYLAN_ARCH_NINTENDO_DS
-	
-} 
+
+}
 
 
 
-UnsignedLongInteger Ceylan::System::getTotalSwapMemorySize() 
-{ 
+UnsignedLongInteger Ceylan::System::getTotalSwapMemorySize()
+{
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	return 0 ;
-	
+
 #else // CEYLAN_ARCH_NINTENDO_DS
-	
+
 #ifdef CEYLAN_USES_SYSINFO
 
 #if CEYLAN_ARCH_SOLARIS
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::getTotalSwapMemorySize: "
-		"not available on Solaris platform." ) ;	
+		"not available on Solaris platform." ) ;
 
 #else // CEYLAN_ARCH_SOLARIS
 
 	struct sysinfo sysinfoStruct ;
-	
+
 	if ( ::sysinfo( & sysinfoStruct ) != 0 )
-		throw SystemException( 
+		throw SystemException(
 			"Ceylan::System::getTotalSwapMemorySize: "
 			"unable to query system: " + explainError() ) ;
-	
-	return static_cast<UnsignedLongInteger>( 
+
+	return static_cast<UnsignedLongInteger>(
 		sysinfoStruct.mem_unit * sysinfoStruct.totalswap ) ;
-	
+
 #endif // CEYLAN_ARCH_SOLARIS
 
 #else // CEYLAN_USES_SYSINFO
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::getTotalSwapMemorySize: "
-		"not available on this platform." ) ;	
-	
+		"not available on this platform." ) ;
+
 #endif // CEYLAN_USES_SYSINFO
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
-	
-} 
+
+}
 
 
 
-UnsignedLongInteger Ceylan::System::getFreeSwapMemorySize() 
-{ 
-	
+UnsignedLongInteger Ceylan::System::getFreeSwapMemorySize()
+{
+
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	return 0 ;
-	
+
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 #ifdef CEYLAN_USES_SYSINFO
 
 #if CEYLAN_ARCH_SOLARIS
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::getFreeSwapMemorySize: "
-		"not available on Solaris platform." ) ;	
+		"not available on Solaris platform." ) ;
 
 #else // CEYLAN_ARCH_SOLARIS
 
 	struct sysinfo sysinfoStruct ;
-	
+
 	if ( ::sysinfo( & sysinfoStruct ) != 0 )
-		throw SystemException( 
+		throw SystemException(
 			"Ceylan::System::getFreeSwapMemorySize: "
-			"unable to query system: "	+ explainError() ) ;
-	
-	return static_cast<UnsignedLongInteger>( 
+			"unable to query system: " + explainError() ) ;
+
+	return static_cast<UnsignedLongInteger>(
 		sysinfoStruct.mem_unit * sysinfoStruct.freeswap ) ;
 
 #endif // CEYLAN_ARCH_SOLARIS
-	
+
 #else // CEYLAN_USES_SYSINFO
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::getFreeSwapMemorySize: "
-		"not available on this platform." ) ;	
-	
+		"not available on this platform." ) ;
+
 #endif // CEYLAN_USES_SYSINFO
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
-	
-} 
+
+}
 
 
 
-UnsignedLongInteger Ceylan::System::getTotalHighMemorySize() 
-{ 
+UnsignedLongInteger Ceylan::System::getTotalHighMemorySize()
+{
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	return 0 ;
-	
+
 #else // CEYLAN_ARCH_NINTENDO_DS
-	
+
 #ifdef CEYLAN_USES_SYSINFO
 
 #if CEYLAN_ARCH_SOLARIS
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::getTotalHighMemorySize: "
-		"not available on Solaris platform." ) ;	
+		"not available on Solaris platform." ) ;
 
 #else // CEYLAN_ARCH_SOLARIS
 
 	struct sysinfo sysinfoStruct ;
-	
+
 	if ( ::sysinfo( & sysinfoStruct ) != 0 )
-		throw SystemException( 
+		throw SystemException(
 			"Ceylan::System::getTotalHighMemorySize: "
-			"unable to query system: "	+ explainError() ) ;
-	
-	return static_cast<UnsignedLongInteger>( 
+			"unable to query system: " + explainError() ) ;
+
+	return static_cast<UnsignedLongInteger>(
 		sysinfoStruct.mem_unit * sysinfoStruct.totalhigh ) ;
 
 #endif // CEYLAN_ARCH_SOLARIS
-	
+
 #else // CEYLAN_USES_SYSINFO
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::getTotalHighMemorySize: "
-		"not available on this platform." ) ;	
-	
+		"not available on this platform." ) ;
+
 #endif // CEYLAN_USES_SYSINFO
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
-	
-} 
+
+}
 
 
 
-UnsignedLongInteger Ceylan::System::getFreeHighMemorySize() 
-{ 
-	
+UnsignedLongInteger Ceylan::System::getFreeHighMemorySize()
+{
+
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	return 0 ;
-	
+
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 #ifdef CEYLAN_USES_SYSINFO
 
 #if CEYLAN_ARCH_SOLARIS
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::getFreeHighMemorySize: "
-		"not available on Solaris platform." ) ;	
+		"not available on Solaris platform." ) ;
 
 #else // CEYLAN_ARCH_SOLARIS
 
 	struct sysinfo sysinfoStruct ;
-	
+
 	if ( ::sysinfo( & sysinfoStruct ) != 0 )
-		throw SystemException( 
+		throw SystemException(
 			"Ceylan::System::getFreeHighMemorySize: "
 			"unable to query system: " + explainError() ) ;
-	
-	return static_cast<UnsignedLongInteger>( 
+
+	return static_cast<UnsignedLongInteger>(
 		sysinfoStruct.mem_unit * sysinfoStruct.freehigh ) ;
 
 #endif // CEYLAN_ARCH_SOLARIS
-	
+
 #else // CEYLAN_USES_SYSINFO
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::getFreeHighMemorySize: "
-		"not available on this platform." ) ;	
-	
+		"not available on this platform." ) ;
+
 #endif // CEYLAN_USES_SYSINFO
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
-	
-} 
+
+}
 
 
 
-UnsignedLongInteger Ceylan::System::getSharedMemorySize() 
-{ 
-	
+UnsignedLongInteger Ceylan::System::getSharedMemorySize()
+{
+
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	// Main RAM shared between the ARMs:
 	return getTotalSystemMemorySize() ;
-	
+
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 #ifdef CEYLAN_USES_SYSINFO
 
 #if CEYLAN_ARCH_SOLARIS
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::getSharedMemorySize: "
-		"not available on Solaris platform." ) ;	
+		"not available on Solaris platform." ) ;
 
 #else // CEYLAN_ARCH_SOLARIS
 
 	struct sysinfo sysinfoStruct ;
-	
+
 	if ( ::sysinfo( & sysinfoStruct ) != 0 )
-		throw SystemException( 
+		throw SystemException(
 			"Ceylan::System::getSharedMemorySize: "
-			"unable to query system: "	+ explainError() ) ;
-	
-	return static_cast<UnsignedLongInteger>( 
+			"unable to query system: " + explainError() ) ;
+
+	return static_cast<UnsignedLongInteger>(
 		sysinfoStruct.mem_unit * sysinfoStruct.sharedram ) ;
 
 #endif // CEYLAN_ARCH_SOLARIS
-	
+
 #else // CEYLAN_USES_SYSINFO
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::getSharedMemorySize: "
-		"not available on this platform." ) ;	
-	
+		"not available on this platform." ) ;
+
 #endif // CEYLAN_USES_SYSINFO
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
-	
-} 
+
+}
 
 
 
-UnsignedLongInteger Ceylan::System::getBuffersMemorySize() 
-{ 
-	
+UnsignedLongInteger Ceylan::System::getBuffersMemorySize()
+{
+
 #if CEYLAN_ARCH_NINTENDO_DS
 
 	return 0 ;
-	
+
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 #ifdef CEYLAN_USES_SYSINFO
 
 #if CEYLAN_ARCH_SOLARIS
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::getBuffersMemorySize: "
-		"not available on Solaris platform." ) ;	
+		"not available on Solaris platform." ) ;
 
 #else // CEYLAN_ARCH_SOLARIS
 
 	struct sysinfo sysinfoStruct ;
-	
+
 	if ( ::sysinfo( & sysinfoStruct ) != 0 )
-		throw SystemException( 
+		throw SystemException(
 			"Ceylan::System::getBuffersMemorySize: "
-			"unable to query system: "	+ explainError() ) ;
-	
-	return static_cast<UnsignedLongInteger>( 
+			"unable to query system: " + explainError() ) ;
+
+	return static_cast<UnsignedLongInteger>(
 		sysinfoStruct.mem_unit * sysinfoStruct.bufferram ) ;
 
 #endif // CEYLAN_ARCH_SOLARIS
 
 #else // CEYLAN_USES_SYSINFO
 
-	throw SystemException( 
+	throw SystemException(
 		"Ceylan::System::getBuffersMemorySize: "
-		"not available on this platform." ) ;	
-	
+		"not available on this platform." ) ;
+
 #endif // CEYLAN_USES_SYSINFO
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
-	
-} 
+
+}
 
 
 
@@ -579,7 +578,7 @@ UnsignedLongInteger Ceylan::System::getBuffersMemorySize()
 
 
 string Ceylan::System::GetUserName()
-{ 
+{
 
 #if CEYLAN_ARCH_NINTENDO_DS
 
@@ -589,33 +588,33 @@ string Ceylan::System::GetUserName()
 	 * Heavily inspired of http://licklick.wordpress.com/2006/08/,
 	 * thanks Rick Wong (Lick).
 	 *
-	 */	
+	 */
 	char name[11] ;
-   
+
 	// Gets ASCII-bits from UTF-16 name:
-   
+
 	for ( Ceylan::Uint32 i = 0; i < PersonalData->nameLen; i++ )
-		name[i] = static_cast<char>( PersonalData->name[i] & 0xff ) ; 
- 
+		name[i] = static_cast<char>( PersonalData->name[i] & 0xff ) ;
+
 	name[PersonalData->nameLen] = 0 ;
-	
+
 	return string( name ) ;
-		
+
 #else // CEYLAN_RUNS_ON_ARM9
 
 	throw SystemException( "Ceylan::System::getUserName: "
-		"not available on the ARM7." ) ;	
-	
+		"not available on the ARM7." ) ;
+
 #endif // CEYLAN_RUNS_ON_ARM9
 
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 	throw SystemException( "Ceylan::System::getUserName: "
-		"not available on this platform." ) ;	
+		"not available on this platform." ) ;
 
 #endif // CEYLAN_ARCH_NINTENDO_DS
-	
-} 
+
+}
 
 
 
@@ -623,26 +622,26 @@ BatteryStatus Ceylan::System::GetBatteryStatus()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
-	
+
 #ifdef CEYLAN_RUNS_ON_ARM9
-	
+
 
 	// Let the exceptions propagate:
 	FIFO & fifo = FIFO::GetActivatedFIFO() ;
-	
+
 	fifo.sendBatteryStatusRequest() ;
-	
+
 	// Blocking wait:
 	return fifo.getBatteryStatus() ;
 
-					
+
 #else // CEYLAN_RUNS_ON_ARM9
 
 	throw SystemException( "GetBatteryStatus failed: "
 		"not available on the ARM7." ) ;
-	
+
 #endif // CEYLAN_RUNS_ON_ARM9
-		
+
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 	throw SystemException( "GetBatteryStatus failed: "
@@ -658,26 +657,26 @@ DSType Ceylan::System::GetDSType()
 {
 
 #if CEYLAN_ARCH_NINTENDO_DS
-	
+
 #ifdef CEYLAN_RUNS_ON_ARM9
-	
+
 
 	// Let the exceptions propagate:
 	FIFO & fifo = FIFO::GetActivatedFIFO() ;
-	
+
 	fifo.sendDSTypeRequest() ;
-	
+
 	// Blocking wait:
 	return fifo.getDSType() ;
 
-					
+
 #else // CEYLAN_RUNS_ON_ARM9
 
 	throw SystemException( "GetDSType failed: "
 		"not available on the ARM7." ) ;
-	
+
 #endif // CEYLAN_RUNS_ON_ARM9
-		
+
 #else // CEYLAN_ARCH_NINTENDO_DS
 
 	throw SystemException( "GetDSType failed: "
@@ -700,12 +699,12 @@ DSType Ceylan::System::GetDSType()
  * On Windows, the OpenGL contexts can be lost when:
  *   - window resizing/changing resolutions, including going to fullscreen
  *   - switching to another application
- *	 - changing color depth
+ *   - changing color depth
  *
  * On Mac OS X, the OpenGL contexts may (not sure) be lost when:
  *   - window resizing/changing resolutions, including going to fullscreen
  *   - switching to another application
- *	 - changing color depth
+ *   - changing color depth
  *
  * On GNU/Linux and other platforms, the contexts are not lost at random.
  * This is the default setting.
@@ -716,7 +715,7 @@ DSType Ceylan::System::GetDSType()
 bool Ceylan::System::openGLContextsCanBeLost()
 {
 
-	return openGLContextsLostOnResize() 
+	return openGLContextsLostOnResize()
 		|| openGLContextsLostOnApplicationSwitch()
 		|| openGLContextsLostOnColorDepthChange() ;
 
@@ -726,7 +725,7 @@ bool Ceylan::System::openGLContextsCanBeLost()
 
 bool Ceylan::System::openGLContextsLostOnResize()
 {
- 
+
 #if CEYLAN_ARCH_WINDOWS
 
 	return true ;
@@ -742,45 +741,17 @@ bool Ceylan::System::openGLContextsLostOnResize()
 #else // CEYLAN_ARCH_MACOSX
 
 	return false ;
-	
+
 #endif // CEYLAN_ARCH_MACOSX
 
- 
+
 #endif // CEYLAN_ARCH_WINDOWS
 
 }
 
 
 
-bool Ceylan::System::openGLContextsLostOnApplicationSwitch() 
-{
-	 
-#if CEYLAN_ARCH_WINDOWS
-
-	return true ;
-
-#else // CEYLAN_ARCH_WINDOWS
-
-
-
-#if CEYLAN_ARCH_MACOSX
-
-	return true ;
-
-#else // CEYLAN_ARCH_MACOSX
-
-	return false ;
-	
-#endif // CEYLAN_ARCH_MACOSX
-
- 
-#endif // CEYLAN_ARCH_WINDOWS
-
-}
-
-
-
-bool Ceylan::System::openGLContextsLostOnColorDepthChange() 
+bool Ceylan::System::openGLContextsLostOnApplicationSwitch()
 {
 
 #if CEYLAN_ARCH_WINDOWS
@@ -798,11 +769,38 @@ bool Ceylan::System::openGLContextsLostOnColorDepthChange()
 #else // CEYLAN_ARCH_MACOSX
 
 	return false ;
-	
+
 #endif // CEYLAN_ARCH_MACOSX
 
- 
+
 #endif // CEYLAN_ARCH_WINDOWS
 
 }
 
+
+
+bool Ceylan::System::openGLContextsLostOnColorDepthChange()
+{
+
+#if CEYLAN_ARCH_WINDOWS
+
+	return true ;
+
+#else // CEYLAN_ARCH_WINDOWS
+
+
+
+#if CEYLAN_ARCH_MACOSX
+
+	return true ;
+
+#else // CEYLAN_ARCH_MACOSX
+
+	return false ;
+
+#endif // CEYLAN_ARCH_MACOSX
+
+
+#endif // CEYLAN_ARCH_WINDOWS
+
+}
