@@ -3,9 +3,9 @@
 # Created 2002, June 26.
 # Author: Olivier Boudeville (olivier.boudeville@online.fr)
 
-# This script triggers the UNIX-common part (.bashrc.common)
-# and then the OS-specific one, if available (ex: .bashrc.Linux,
-# .bashrc.SunOS, etc.)
+# This script triggers the UNIX-common part (.bashrc.common) and then the
+# OS-specific one, if available (ex: .bashrc.Linux, .bashrc.SunOS, etc.)
+#
 # An initial host-related overriding hook is provided as well.
 
 
@@ -21,7 +21,7 @@ fi
 
 # Common to all Unices:
 if [ -f $MYHOME/.bashrc.common ] ; then
-	source $MYHOME/.bashrc.common	
+	source $MYHOME/.bashrc.common
 fi
 
 
@@ -29,6 +29,3 @@ fi
 if [ -f $MYHOME/.bashrc.`uname` ] ; then
 	source $MYHOME/.bashrc.`uname`
 fi
-
-
-
