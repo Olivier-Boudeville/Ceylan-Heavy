@@ -31,10 +31,14 @@ LoginGraceTime 120
 # Use sudo with non-priviledged user instead:
 PermitRootLogin no
 
-AllowUsers FIXME1 FIXME2 FIXME3
+AllowUsers FIXME1 FIXME2
 
 # Only login thanks to public key:
 PasswordAuthentication no
+ChallengeResponseAuthentication no
+PasswordAuthentication no
+UsePAM no
+
 
 StrictModes yes
 
@@ -90,3 +94,7 @@ AcceptEnv LANG LC_*
 Subsystem sftp /usr/lib/openssh/sftp-server
 
 UsePAM yes
+
+# Allows a specific user only to use password:
+Match User FIXME2
+	PasswordAuthentication yes
