@@ -7,7 +7,6 @@
 (byte-recompile-directory "~/.emacs.d" 0)
 
 
-
 ;; RST files support section.
 
 ;; May be disabled if slowing emacs down way too much:
@@ -34,6 +33,7 @@
 								   (?* simple 0)
 								   (?: simple 0)
 								   (?+ simple 0) ))
+
 
 
 ;; Erlang support:
@@ -115,7 +115,7 @@
 
 
 (defun fix-behaviours-for-rst-mode ()
-  ;;(message "############## Fixing behaviours for RST mode ###########")
+  (message "############## Fixing behaviours for RST mode ###########")
 
   ;; Advanced automatic indentation not adapted to text modes:
   (remove-hook 'find-file-hooks 'set-advanced-ret-behaviour)
@@ -441,10 +441,10 @@
 ;;(standard-display-european 1)
 
 
-
 ;; Spelling section.
 
 ;; Hit F9 to toggle english and french dictionaries:
+
 
 (setq ispell-dictionary "english")
 (setq ispell-program-name "aspell")
@@ -463,6 +463,8 @@
 ;; Not working apparently:
 ;;(require 'flyspell-guess)
 ;;(eval-after-load "flyspell-guess" '(flyspell-insinuate-guess-indicator))
+
+
 
 
 (show-paren-mode t)
@@ -504,32 +506,34 @@
   (let ((found-pos (search-forward text nil t)))
 	(if (not found-pos)
 		(progn (goto-char (point-min))
-			   (let ((wrapped-found-pos (search-forward text nil t)))
+		       (let ((wrapped-found-pos (search-forward text nil t)))
 			   (goto-char (- wrapped-found-pos (length text)))
 			   (set-mark wrapped-found-pos)))
-		(progn (goto-char found-pos) (set-mark (- found-pos (length text)))))))
-
-  ;; (interactive)
-  ;; (yank-pop (isearch-forward (kill-ring-save begin end)))
+	    (progn (goto-char found-pos) (set-mark (- found-pos (length text)))))))
 )
 
 
-;;(defun mouse-search-backward (begin end)
-;;  (interactive (list (point) (mark)))
-;;  (let ((text (filter-buffer-substring begin end nil t)))
-;; (goto-char (max begin end))
-;;  (let ((found-pos (search-backward text nil t)))
-;;	(if (not found-pos)
-;;		(progn (goto-char begin) (error "not found"))
-;;	  (progn (goto-char found-pos) (set-mark (- found-pos (length text)))))))
-;; )
+(defun mouse-search-backward (begin end)
+  (interactive (list (point) (mark)))
+  (let ((text (filter-buffer-substring begin end nil t)))
+  (goto-char (min begin end))
+  (let ((found-pos (search-backward text nil t)))
+	(if (not found-pos)
+		(progn (goto-char (point-max))
+		       (let ((wrapped-found-pos (search-backward text nil t)))
+			   (goto-char (+ wrapped-found-pos (length text)))
+			   (set-mark wrapped-found-pos)))
+	    (progn (goto-char found-pos) (set-mark (+ found-pos (length text)))))))
+)
+
 
 ;; For the mouse wheel:
 (mwheel-install)
 
 (define-key global-map [(down-mouse-3)] nil)
 (define-key global-map [(mouse-3)] 'mouse-search-forward)
-;;(define-key global-map [(shift mouse-3)] 'mouse-search-backward)
+(define-key global-map [(shift mouse-3)] 'mouse-search-backward)
+
 
 
 ;; Set foreground and background
@@ -628,10 +632,12 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 107 :width normal :foundry "unknown" :family "DejaVu Sans Mono"))))
+ '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 113 :width normal :foundry "unknown" :family "DejaVu Sans Mono"))))
  '(rst-level-1-face ((t (:background "#00f" :foreground "#fff"))) t)
  '(rst-level-2-face ((t (:background "#00a" :foreground "#ddd"))) t)
  '(rst-level-3-face ((t (:background "#003" :foreground "#bbb"))) t)
  '(rst-level-4-face ((t (:background "#000" :foreground "#999"))) t)
  '(rst-level-5-face ((t (:background "#010" :foreground "#666"))) t)
  '(rst-level-6-face ((t (:background "#020" :foreground "#555"))) t))
+
+(delete-other-windows)
