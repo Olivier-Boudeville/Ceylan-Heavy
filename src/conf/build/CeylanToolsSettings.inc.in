@@ -17,8 +17,8 @@
 libtool_VERSION="2.4.2"
 libtool_FULL_VERSION="${libtool_VERSION}"
 libtool_ARCHIVE="libtool-${libtool_FULL_VERSION}.tar.gz"
-libtool_DOWNLOAD_LOCATION="http://mirror.clarkson.edu/gnu/libtool/"
-libtool_ALTERNATE_DOWNLOAD_LOCATION="http://mirrors.usc.edu/pub/gnu/libtool"
+libtool_DOWNLOAD_LOCATION="http://mirror.rit.edu/gnu/gnu/libtool/"
+libtool_ALTERNATE_DOWNLOAD_LOCATION="http://ftp.igh.cnrs.fr/pub/gnu/libtool/"
 libtool_MD5="d2f3b7d4627e69e13514a40e72a24d50"
 
 
@@ -76,7 +76,7 @@ binutils_VERSION="2.22"
 binutils_ARCHIVE="binutils-${binutils_VERSION}.tar.bz2"
 binutils_DOWNLOAD_LOCATION="ftp://ftp.cs.tu-berlin.de/pub/gnu/binutils"
 binutils_ALTERNATE_DOWNLOAD_LOCATION="http://ftp.gnu.org/gnu/binutils"
-binutils_MD5="8b3ad7090e3989810943aa19103fdb83"
+binutils_MD5="ee0f10756c84979622b992a4a61ea3f5"
 
 
 
