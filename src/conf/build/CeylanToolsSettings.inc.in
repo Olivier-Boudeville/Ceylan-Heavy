@@ -60,12 +60,12 @@ win_pthread_MD5="xxx"
 
 # gcc: http://www.gnu.org/software/gcc/gcc.html
 
-gcc_VERSION="4.6.2"
+gcc_VERSION="4.7.2"
 
 gcc_ARCHIVE="gcc-${gcc_VERSION}.tar.bz2"
 gcc_DOWNLOAD_LOCATION="ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/gcc-${gcc_VERSION}"
 gcc_ALTERNATE_DOWNLOAD_LOCATION="ftp://ftp.uvsq.fr/pub/gcc/releases/gcc-${gcc_VERSION}"
-gcc_MD5="028115c4fbfb6cfd75d6369f4a90d87e"
+gcc_MD5="cc308a0891e778cfda7a151ab8a6e762"
 gcc_BUILD_TREE="gcc-${gcc_VERSION}-buildTree"
 gcc_SOURCE_TREE="gcc-${gcc_VERSION}-sourceTree"
 
@@ -82,11 +82,11 @@ binutils_MD5="8b3ad7090e3989810943aa19103fdb83"
 
 # gdb: http://www.gnu.org/software/gdb/gdb.html
 
-gdb_VERSION="7.4"
+gdb_VERSION="7.5"
 gdb_ARCHIVE="gdb-${gdb_VERSION}.tar.bz2"
 gdb_DOWNLOAD_LOCATION="ftp://ftp.cs.tu-berlin.de/pub/gnu/gdb"
 gdb_ALTERNATE_DOWNLOAD_LOCATION="http://ftp.gnu.org/gnu/gdb"
-gdb_MD5="7877875c8af7c7ef7d06d329ac961d3f"
+gdb_MD5="24a6779a9fe0260667710de1b082ef61"
 
 
 
@@ -145,12 +145,12 @@ dot_MD5="8d26c1171f30ca3b1dc1b429f7937e58"
 
 # doxygen: http://www.stack.nl/~dimitri/doxygen/
 
-# Actually 1.7.6.1 (defined in configure-template.ac):
+# Actually 1.8.2 (defined in configure-template.ac):
 doxygen_VERSION="@DOXYGEN_VERSION@"
 doxygen_ARCHIVE="doxygen-${doxygen_VERSION}.src.tar.gz"
 doxygen_DOWNLOAD_LOCATION="ftp://ftp.stack.nl/pub/users/dimitri"
 doxygen_ALTERNATE_DOWNLOAD_LOCATION=""
-doxygen_MD5="084f1db244b77b3abff335550ef8eec5"
+doxygen_MD5="6fa7baf995fa3f71cfc09e264ba88a83"
 
 
 
