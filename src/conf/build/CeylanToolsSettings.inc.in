@@ -27,7 +27,7 @@ libtool_MD5="d2f3b7d4627e69e13514a40e72a24d50"
 
 # Use g++ with standard C++ exceptions:
 win_pthread_DLL="pthreadGCE.dll"
-win_pthread_DLL_MD5="xxx"
+win_pthread_DLL_MD5="update_me"
 
 win_pthread_VERSION="2003-09-18"
 win_pthread_ARCHIVE="${win_pthread_DLL}"
@@ -37,17 +37,17 @@ win_pthread_DOWNLOAD_LOCATION="ftp://${win_pthread_wget_dir}/pub/pthreads-win32/
 win_pthread_ALTERNATE_DOWNLOAD_LOCATION=""
 
 win_pthread_HEADER_MAIN="pthread.h"
-win_pthread_HEADER_MAIN_MD5="xxx"
+win_pthread_HEADER_MAIN_MD5="update_me"
 
 win_pthread_HEADER_SCHED="sched.h"
-win_pthread_HEADER_SCHED_MD5="xxx"
+win_pthread_HEADER_SCHED_MD5="update_me"
 
 win_pthread_HEADER_SEM="semaphore.h"
-win_pthread_HEADER_SEM_MD5="xxx"
+win_pthread_HEADER_SEM_MD5="update_me"
 
 # Checking for whole directory will be always false, actual test will be made in
 # getwin_pthread.
-win_pthread_MD5="xxx"
+win_pthread_MD5="update_me"
 
 
 
@@ -101,31 +101,31 @@ devkitarm_VERSION="r20"
 devkitarm_ARCHIVE="devkitARM_${devkitarm_VERSION}-linux.tar.bz2"
 devkitarm_DOWNLOAD_LOCATION="http://heanet.dl.sourceforge.net/sourceforge/devkitpro"
 devkitarm_ALTERNATE_DOWNLOAD_LOCATION="http://downloads.sourceforge.net/devkitpro"
-devkitarm_MD5="xxx"
+devkitarm_MD5="update_me"
 
 libnds_VERSION="20070503"
 libnds_ARCHIVE="libnds-${libnds_VERSION}.tar.bz2"
 libnds_DOWNLOAD_LOCATION="http://heanet.dl.sourceforge.net/sourceforge/devkitpro"
 libnds_ALTERNATE_DOWNLOAD_LOCATION="http://downloads.sourceforge.net/devkitpro"
-libnds_MD5="xxx"
+libnds_MD5="update_me"
 
 libnds_examples_VERSION="20070327"
 libnds_examples_ARCHIVE="nds-examples-${libnds_examples_VERSION}.tar.bz2"
 libnds_examples_DOWNLOAD_LOCATION="http://heanet.dl.sourceforge.net/sourceforge/devkitpro"
 libnds_examples_ALTERNATE_DOWNLOAD_LOCATION="http://downloads.sourceforge.net/devkitpro"
-libnds_examples_MD5="xxx"
+libnds_examples_MD5="update_me"
 
 libfat_VERSION="20070127"
 libfat_ARCHIVE="libfat-nds-${libfat_VERSION}.tar.bz2"
 libfat_DOWNLOAD_LOCATION="http://heanet.dl.sourceforge.net/sourceforge/devkitpro"
 libfat_ALTERNATE_DOWNLOAD_LOCATION="http://downloads.sourceforge.net/devkitpro"
-libfat_MD5="xxx"
+libfat_MD5="update_me"
 
 dswifi_VERSION="0.3.1"
 dswifi_ARCHIVE="dswifi-${dswifi_VERSION}.tar.bz2"
 dswifi_DOWNLOAD_LOCATION="http://heanet.dl.sourceforge.net/sourceforge/devkitpro"
 dswifi_ALTERNATE_DOWNLOAD_LOCATION="http://downloads.sourceforge.net/devkitpro"
-dswifi_MD5="xxx"
+dswifi_MD5="update_me"
 
 
 
@@ -161,7 +161,7 @@ tidy_ARCHIVE="tidy_src.tgz"
 tidy_DOWNLOAD_LOCATION="http://tidy.sourceforge.net/src"
 tidy_ALTERNATE_DOWNLOAD_LOCATION=""
 # Changes often, not serious if does not match:
-tidy_MD5="xxx"
+tidy_MD5="update_me"
 
 
 # End of Ceylan tools definitions.
