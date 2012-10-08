@@ -78,7 +78,7 @@ SF_SHELL_HOMEDIR     = /home/users/`echo "@CEYLAN_DEFAULT_SF_USER@" | head -c 1`
 
 
 # Mirror settings.
-MIRROR_HOSTNAME      = aranor
+MIRROR_HOSTNAME      = sonata
 MIRROR_WEB_URL       = http://@UNIX_PROJECT_NAME@.esperide.com
 MIRROR_WEB_USER      = web-srv
 MIRROR_WEB_DIR       = /var/www/@PROJECT_NAME@
