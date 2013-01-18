@@ -55,7 +55,7 @@ export YAG_ROOT=$PROJECTS_BASE/Tools/yag/yag-osdl-${YAG_VERSION}
 
 export PROJECTS_BASE=$HOME/Projects
 
-export GAMES_BASE=${PROJECTS_BASE}/${LOCAL_PROJECT_OFFSET}
+export GAMES_BASE=${PROJECTS_BASE}/${LOCAL_PROJECT_OFFSET}/Games
 
 export DARM=${GAMES_BASE}/DARM/trunk
 export DARM_ENV_FILE="${LOANI_INSTALLATIONS}/DARM-environment.sh"
@@ -166,6 +166,7 @@ alias tesla='ssh boudevil@tesla'
 alias red='ssh wondersye@red'
 alias orge='ssh orge@orge-testing.esperide.com'
 alias pastek='ssh wondersye@pastek.nainwak.org'
+alias wanderlust='ssh wondersye@wanderlust'
 
 
 # Shell section:
@@ -205,6 +206,7 @@ export TORED="wondersye@red:/home/wondersye"
 export TOORGE="orge@orge-testing.esperide.com:/home/orge"
 export TOPASTEK="wondersye@pastek.nainwak.org:/home/darm/wondersye"
 export TOARANOR_FTP="www-data@aranor:/home/ftp/LOANI-archive-repository"
+export TOWANDERLUST="wondersye@wanderlust:/home/wondersye"
 
 
 # Cubbyhole section:
