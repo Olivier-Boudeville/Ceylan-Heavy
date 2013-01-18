@@ -2,7 +2,7 @@
  * This is the Ceylan library, a free portable high-level open-source
  * general-purpose C++ library.
  *
- * Copyright (C) 2003-2011 Olivier Boudeville
+ * Copyright (C) 2003-2013 Olivier Boudeville
  *
  * The Ceylan library is released under a disjunctive bi-license LGPL/GPL
  * (choose the one that you prefer).
