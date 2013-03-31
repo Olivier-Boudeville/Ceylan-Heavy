@@ -15,7 +15,7 @@ export LOANI_VERSION=latest
 # LOANI_BASE may have been set before by .bashrc.local:
 if [ -z "${LOANI_BASE}" ] ; then
 	# Defaults to:
-	export LOANI_BASE=$HOME/Projects
+	export LOANI_BASE=/home/wondersye/Projects
 fi
 
 LOANI_VERSION_BASE=${LOANI_BASE}/LOANI-${LOANI_VERSION}
