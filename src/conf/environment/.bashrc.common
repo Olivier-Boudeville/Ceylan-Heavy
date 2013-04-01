@@ -30,20 +30,20 @@ export DS_TRANSFER=/media/DS-homebrew/NDS
 
 export CEYLAN_VERSION=0.7
 export CEYLAN_ROOT=${LOANI_REPOSITORY}/ceylan/Ceylan
-export CEYLAN_SRC=${CEYLAN_ROOT}/trunk/src
+export CEYLAN_SRC=${CEYLAN_ROOT}/src
 export CEYLAN_DOC=${CEYLAN_SRC}/doc/web/main/documentation
 
 export OSDL_VERSION=0.5
 export OSDL_ROOT=${LOANI_REPOSITORY}/osdl/OSDL
 # Do not interfere with LOANI: export OSDL=${OSDL_ROOT}/src
-export OSDL_SRC=${OSDL_ROOT}/trunk/src
+export OSDL_SRC=${OSDL_ROOT}/src
 export OSDL_DOC=${OSDL_SRC}/doc/web/main/documentation
 
 export OSDL_ENV_FILE="${LOANI_INSTALLATIONS}/OSDL-environment.sh"
 
 
-#export ORGE_ROOT=${LOANI_REPOSITORY}/osdl/Orge/trunk
-export ORGE_ROOT=${LOANI_REPOSITORY}/OSDL-Erlang/Orge/trunk
+#export ORGE_ROOT=${LOANI_REPOSITORY}/osdl/Orge
+export ORGE_ROOT=${LOANI_REPOSITORY}/OSDL-Erlang/Orge
 
 export ORGE_SRC=${ORGE_ROOT}/src/code
 
@@ -135,6 +135,7 @@ alias mn='make -f Makefile.cross CROSS_TARGET=nintendo-ds'
 
 # Aliases section:
 
+alias l='ls -aF --color=auto'
 alias ll='ls -l'
 alias la='ls -alg $*|more'
 alias lc='ls -clt'
