@@ -15,7 +15,7 @@ export LOANI_VERSION=latest
 # LOANI_BASE may have been set before by .bashrc.local:
 if [ -z "${LOANI_BASE}" ] ; then
 	# Defaults to:
-	export LOANI_BASE=/home/wondersye/Projects
+	export LOANI_BASE=$HOME/Projects
 fi
 
 LOANI_VERSION_BASE=${LOANI_BASE}/LOANI-${LOANI_VERSION}
@@ -57,7 +57,7 @@ export PROJECTS_BASE=$HOME/Projects
 
 export GAMES_BASE=${PROJECTS_BASE}/${LOCAL_PROJECT_OFFSET}/Games
 
-export DARM=${GAMES_BASE}/DARM/trunk
+export DARM=${GAMES_BASE}/DARM
 export DARM_ENV_FILE="${LOANI_INSTALLATIONS}/DARM-environment.sh"
 
 export GAMES_BASE=${PROJECTS_BASE}/OSDL-common/club/games
@@ -69,7 +69,7 @@ export SKEL_DOC=${SKEL_SRC}/doc
 
 export MICRO_PROJECTS=$PROJECTS_BASE/MicroProjects
 
-export AGAR_CURRENT=${LOANI_REPOSITORY}/agar-1.4-from-svn/trunk
+export AGAR_CURRENT=${LOANI_REPOSITORY}/agar-1.4-from-svn
 export AGAR_TESTING=${MICRO_PROJECTS}/Agar-testing
 
 
@@ -90,6 +90,7 @@ fi
 export SF_USER=wondersye
 export SF=${SF_USER}@shell.sourceforge.net
 export SF_SHELL="${SF}:/home/users/"`echo "${SF_USER}" | head -c 1`"/"`echo "${SF_USER}" | head -c 2`"/${SF_USER}"
+
 
 
 # Compile farm:
@@ -169,6 +170,7 @@ alias orge='ssh orge@orge-testing.esperide.com'
 alias pastek='ssh wondersye@pastek.nainwak.org'
 alias wanderlust='ssh wondersye@wanderlust'
 
+alias g='git'
 
 # Shell section:
 
@@ -184,7 +186,26 @@ export LD_LIBRARY_PATH=/usr/lib:/usr/local/lib:$LD_LIBRARY_PATH
 
 export LS_COLORS='no=00:fi=00:di=01;35:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jpg=01;35:*.png=01;35:*.gif=01;35:*.bmp=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.png=01;35:*.mpg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:'
 
-export PS1="\n\e[95m\h \e[92m\u\e[95m \e[96m\t \e[93m"'$PWD'"\e[97m\n> "
+
+# Inspired from http://www.micahcarrick.com/show-git-branch-in-shell-prompt.html:
+#
+parse_git_branch() {
+ # git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+ res=`git branch 2>/dev/null`
+ if [ -n "$res" ] ; then
+
+ 	branch=`echo "$res" | sed -e '/^[^*]/d' -e 's|* ||'`
+	echo " [$branch]"
+
+ fi	  
+}
+
+
+# With user:
+export PS1="\n\e[95m\h \e[92m\u\e[95m \e[96m\t \e[93m"'$PWD'"\e[96m\$(parse_git_branch)\[\033[31m\]\e[95m\e[97m\n>"
+
+# Without user:
+#export PS1="\n\e[95m\h\e[95m \e[96m\t \e[93m"'$PWD'"\e[92m\$(parse_git_branch)\[\033[31m\]\e[95m\e[97m\n>"
 
 export MANPATH=/usr/share/man:$MANPATH
 export EDITOR=emacs
