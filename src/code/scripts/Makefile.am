@@ -7,5 +7,6 @@ SUBDIRS = python shell
 DIST_SUBDIRS = $(SUBDIRS)
 
 
-all: all-local
+all:
+
 
