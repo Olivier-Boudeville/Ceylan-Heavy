@@ -1,4 +1,6 @@
-# erlang not listed here, as relies on classical makefiles, not using autotools:
+# erlang not listed here, as now stored in separated repositories, for
+# modularity:
+#
 SUBDIRS = python shell
 
 # These are the subdirectories which will be distributed with 'make dist':
@@ -7,30 +9,3 @@ DIST_SUBDIRS = $(SUBDIRS)
 
 all: all-local
 
-
-# Hidden target as, from a fresh full Ceylan trunk, the symbolic links, for
-# example in common/doc, are dead: they are meant to be used once installed as a
-# dedicated Ceylan-Erlang source package.
-all-local:
-
-all-local-hidden:
-	@if `which erlc 1>/dev/null 2>&1` ; then \
-	echo "  Erlang build activated" && cd erlang && \
-	$(MAKE) -f GNUmakefile all ; else echo "  Erlang build disabled" ; fi
-
-
-# We have to hide the install target hook as well, otherwise will attempt again
-# to build:
-install-data-local-hidden:
-	@if `which erlc 1>/dev/null 2>&1` ; then \
-	echo "  Erlang install activated" && $(MAKE) install-erlang ; \
-	else echo "  Erlang install disabled" ; fi
-
-
-install-erlang:
-	@echo; echo "@CEYLAN_INSTALL_STYLE@    Installing Erlang BEAMS in \
-	$(srcdir) to $(DESTDIR)@CEYLAN_INSTALL_ERLANG_DIR@ \
-	@CEYLAN_DEFAULT_STYLE@"
-	@mkdir -p $(DESTDIR)@CEYLAN_INSTALL_ERLANG_DIR@
-	@cd erlang && $(MAKE) install \
-	INSTALLATION_PREFIX=$(DESTDIR)@CEYLAN_INSTALL_ERLANG_DIR@
