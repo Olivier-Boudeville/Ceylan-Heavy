@@ -274,7 +274,7 @@ int main( int argc, char * argv[] )
 	  Ceylan::Uint8 a = 1 ;
 	  Ceylan::Uint8 b = 0 ;
 	  Ceylan::Uint8 c ;
-
+	  
 	  switch( currentChosenStop )
 	  {
 
@@ -294,6 +294,7 @@ int main( int argc, char * argv[] )
 	  case StopOnDivisionByZero:
 		LogPlug::warning( "Division by zero now!" ) ;
 		c = a / b ;
+		LogPlug::error( "We should have crashed with this c=" + Ceylan::toString( c ) ) ;
 		break ;
 
 	  default:
