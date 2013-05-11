@@ -597,7 +597,7 @@ fi
 # --disable-colored-build
 
 # See also: function updateColorSupport of
-# trunk/src/code/scripts/shell/termUtils.sh
+# src/code/scripts/shell/termUtils.sh
 
 
 # Text color codes:
@@ -1849,5 +1849,5 @@ Configuration:
   Host System Type:       ${host}
   Install path (prefix):  ${CEYLAN_INSTALL_SHARED_DIR}
 
-  See trunk/src/code/CeylanConfig.h for further configuration information.
+  See src/code/CeylanConfig.h for further configuration information.
 ------------------------------------------------------------------------"
