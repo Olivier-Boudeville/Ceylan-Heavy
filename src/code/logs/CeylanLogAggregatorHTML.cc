@@ -303,16 +303,21 @@ void LogAggregatorHTML::write( const LogChannel & channel ) const
 			File::TransformIntoValidFilename( channel.getName() )
 				+ HTMLPageSuffix ) ) ) ;
 
-	LevelOfDetail sourceLevelOfDetail ;
-
 	WriteChannelHeader( channel, logChannelPageHolderFile.get() ) ;
 
 	// Level of detail globally overridden?
+	
+	/* Not used afterwards currently:
+
+	LevelOfDetail sourceLevelOfDetail ;
+	   
 	if ( _useGlobalLevelOfDetail )
 		sourceLevelOfDetail = _globalLevelOfDetail ;
 	else
 		sourceLevelOfDetail = MaximumLevelOfDetailForMessage ;
 
+	*/
+	
 	for ( list<LogMessage *>::const_iterator it =
 		channel._messages.begin(); it != channel._messages.end() ; it++ )
 	{

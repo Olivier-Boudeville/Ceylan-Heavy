@@ -51,9 +51,9 @@ namespace Ceylan
 		/*
 		 * Numerical constants commonly used for mathematic computations.
 		 *
-		 * Instead of standard variables (ex: M_E), their GNU counterparts
-		 * (ex: M_El) are used, since their accuracy (precision) is better:
-		 * they are adequate for computation using `Ceylan::LongFloat'.
+		 * Instead of standard variables (ex: M_E), their GNU counterparts (ex:
+		 * M_El) are used, since their accuracy (precision) is better: they are
+		 * adequate for computation using `Ceylan::LongFloat'.
 		 * 
 		 * Since depending on a GNU set of constants would not be portable
 		 * enough, their values are explicitly set here, one time for all.
@@ -72,8 +72,8 @@ namespace Ceylan
 		 *
 		 * @see GNU extension of math.h 
 		 *
-		 * @todo Maybe add signal handler or similar device to catch 
-		 * floating point exceptions.
+		 * @todo Maybe add signal handler or similar device to catch floating
+		 * point exceptions.
 		 *
 		 */
 
@@ -84,8 +84,8 @@ namespace Ceylan
 		
 		
 		/**
-		 * Real is the floating-point coordinate used in Ceylan's 
-		 * linear services.
+		 * Real is the floating-point coordinate used in Ceylan's linear
+		 * services.
 		 *
 		 * @note Float32 corresponds also to GLfloat and GLclampf.
 		 *
@@ -115,8 +115,8 @@ namespace Ceylan
 		
 		
 		/**
-		 * Integer percentage values, which should range from 0 to 100, 
-		 * both included.
+		 * Integer percentage values, which should range from 0 to 100, both
+		 * included.
 		 *
 		 */
 		typedef Ceylan::Uint8 Percentage ;
@@ -295,8 +295,8 @@ namespace Ceylan
 	
 	
 		/**
-		 * A very small number, used for floating point comparisons:
-		 * two numbers x and y are deemed equal if | x - y | < EpsilonFloat32
+		 * A very small number, used for floating point comparisons: two numbers
+		 * x and y are deemed equal if | x - y | < EpsilonFloat32
 		 *
 		 */
 		extern CEYLAN_DLL const Ceylan::LongFloat EpsilonFloat32 ;
@@ -313,8 +313,8 @@ namespace Ceylan
 
 
 		/**
-		 * A very small number, used for floating point comparisons: 
-		 * two numbers x and y are deemed equal if | x - y | < EpsilonLongFloat
+		 * A very small number, used for floating point comparisons: two numbers
+		 * x and y are deemed equal if | x - y | < EpsilonLongFloat
 		 *
 		 */
 		extern CEYLAN_DLL const Ceylan::LongFloat EpsilonLongFloat ;
@@ -322,8 +322,8 @@ namespace Ceylan
 
 
 		/**
-		 * A very small number, used for floating point comparisons:
-		 * two numbers x and y are deemed equal if | x - y | < Epsilon
+		 * A very small number, used for floating point comparisons: two numbers
+		 * x and y are deemed equal if | x - y | < Epsilon
 		 *
 		 */
 		extern CEYLAN_DLL const Ceylan::LongFloat Epsilon ;
@@ -391,6 +391,63 @@ namespace Ceylan
 		CEYLAN_DLL bool IsNull( Ceylan::LongFloat x, 
 			Ceylan::LongFloat epsilon ) ;
 		
+
+
+		
+				
+		/**
+		 * Absolute value, polluted by ambiguous calls.
+		 *
+		 * @note To be declared that early, otherwise while compiling the
+		 * AreRelativelyEqual template will complain that it was not declared in
+		 * this scope, and no declarations were found by argument-dependent
+		 * lookup at the point of instantiation.
+		 *
+		 */
+		
+		
+		// Integer signed types:
+
+		/// Computes the absolute value of specified argument.
+		CEYLAN_DLL Ceylan::Sint8 Abs( Ceylan::Sint8 x ) ;		
+		
+		
+		/// Computes the absolute value of specified argument.
+		CEYLAN_DLL Ceylan::Sint16 Abs( Ceylan::Sint16 x ) ;
+				
+				
+		/// Computes the absolute value of specified argument.
+		CEYLAN_DLL Ceylan::Sint32 Abs( Ceylan::Sint32 x ) ;
+				
+				
+		/// Computes the absolute value of specified argument.
+		CEYLAN_DLL Ceylan::SignedLongInteger Abs( Ceylan::SignedLongInteger x ) ;
+		
+		
+		
+		/**
+		 * Computes the absolute value of specified argument.
+		 *
+		 * @note Disabled since ISO C++ does not support `long long'.
+		 *
+		 */
+		//long long int Abs( long long int x ) ;
+		
+		
+		
+		// Floating point types:
+		 
+		 
+		/// Computes the absolute value of specified argument.
+		CEYLAN_DLL Ceylan::Float32 Abs( Ceylan::Float32 x ) ;
+		
+		
+		/// Computes the absolute value of specified argument.
+		CEYLAN_DLL Ceylan::Float64 Abs( Ceylan::Float64 x ) ;
+		
+		
+		/// Computes the absolute value of specified argument.
+		CEYLAN_DLL Ceylan::LongFloat Abs( Ceylan::LongFloat x ) ;
 		
 		
 		
@@ -438,13 +495,13 @@ namespace Ceylan
 
 		/** 
 		 * Tells whether x and y are exactly 'equal': x == y, with no compile
-		 * warning about the fact that comparing floating point values 
-		 * with == operator is most of the time absurd, which is true indeed.
+		 * warning about the fact that comparing floating point values with ==
+		 * operator is most of the time absurd, which is true indeed.
 		 *
 		 * @note Only to be used on special cases where one wants bit-per-bit
 		 * comparison, for example for marshalling tests. Hence usually using
-		 * this function is a mistake, as comparing floating point with ==
-		 * or != is unsafe.
+		 * this function is a mistake, as comparing floating point with == or !=
+		 * is unsafe.
 		 *
 		 */
 		CEYLAN_DLL bool AreExactlyEqual( Ceylan::Float64 x, 
@@ -474,17 +531,17 @@ namespace Ceylan
 		 * Relative comparison.
 		 *
 		 * @note When the values to compare are integers, it is generally useful
-		 * to use a floating-point type for typename T, for example 
-		 * Ceylan:Float32, to avoid ambiguity with the Abs call. So in all
-		 * cases T is expected to be a floating-point value.
+		 * to use a floating-point type for typename T, for example
+		 * Ceylan:Float32, to avoid ambiguity with the Abs call. So in all cases
+		 * T is expected to be a floating-point value.
 		 *
 		 * @param x the first value to compare.
 		 *
 		 * @param y the second value to compare.
 		 *
-		 * @note The chosen epsilon, the criterion of relative 
-		 * equality, is the default epsilon used for the templated type for
-		 * tests against zero, and EpsilonFloat32 for the relative test.
+		 * @note The chosen epsilon, the criterion of relative equality, is the
+		 * default epsilon used for the templated type for tests against zero,
+		 * and EpsilonFloat32 for the relative test.
 		 *
 		 */
 		template <typename T>
@@ -499,8 +556,8 @@ namespace Ceylan
 			 *   - otherwise x != 0 implies x != y (since x == -y),
 			 * hence they are not deemed equal.
 			 *
-			 * EpsilonFloat32 not used, otherwise the IsNull calls are
-			 * deemed ambiguous.
+			 * EpsilonFloat32 not used, otherwise the IsNull calls are deemed
+			 * ambiguous.
 			 * 
 			 */
 			if ( IsNull( x + y ) )
@@ -510,14 +567,13 @@ namespace Ceylan
 			/*
 			 * Here x + y != 0.
 			 * 
-			 * Relative comparison: compare their difference (|x-y|) 
-			 * to their mean value ((x+y)/2), here using 
-			 * EpsilonFloat32 as equality criterion.
+			 * Relative comparison: compare their difference (|x-y|) to their
+			 * mean value ((x+y)/2), here using EpsilonFloat32 as equality
+			 * criterion.
 			 *
-			 * @note The second Abs, in the denominator, is necessary if 
-			 * x + y is negative, for example if x and y are negative.
-			 * The cast to a T value is then necessary to avoid an integer
-			 * division. 
+			 * @note The second Abs, in the denominator, is necessary if x + y
+			 * is negative, for example if x and y are negative. The cast to a T
+			 * value is then necessary to avoid an integer division.
 			 *
 			 */
 			return ( 2 * Abs( x - y ) / static_cast<T>( Abs( x + y ) ) 
@@ -532,9 +588,9 @@ namespace Ceylan
 		 * Relative comparison with user-supplied epsilon.
 		 *
 		 * @note When the values to compare are integers, it is generally useful
-		 * to use a floating-point type for typename T, for example 
-		 * Ceylan:Float32, to avoid ambiguity with the Abs call. So in all
-		 * cases T is expected to be a floating-point value.
+		 * to use a floating-point type for typename T, for example
+		 * Ceylan:Float32, to avoid ambiguity with the Abs call. So in all cases
+		 * T is expected to be a floating-point value.
 		 *
 		 * @param x the first value to compare.
 		 *
@@ -564,9 +620,8 @@ namespace Ceylan
 			/*
 			 * Here x + y != 0.
 			 * 
-			 * Relative comparison: compare their difference (|x-y|) 
-			 * to their mean value ((x+y)/2), here using epsilon as 
-			 * equality criterion.
+			 * Relative comparison: compare their difference (|x-y|) to their
+			 * mean value ((x+y)/2), here using epsilon as equality criterion.
 			 *
 			 * @note The second Abs, in the denominator, is necessary if 
 			 * x + y is negative, for example if x and y are negative.
@@ -587,9 +642,9 @@ namespace Ceylan
 		 *
 		 * These functions are designed to help computations.
 		 *
-		 * In order to display floating-point values with a limited number
-		 * of digits, one should prefer toString methods, whose second
-		 * parameter allows to select the precision.
+		 * In order to display floating-point values with a limited number of
+		 * digits, one should prefer toString methods, whose second parameter
+		 * allows to select the precision.
 		 *
 		 * @see Ceylan::toString
 		 *
@@ -603,8 +658,8 @@ namespace Ceylan
 		 *
 		 * @return A floating point value containing an integer.
 		 *
-		 * @note A floating-point point value is returned to avoid 
-		 * overflow of integer types.
+		 * @note A floating-point point value is returned to avoid overflow of
+		 * integer types.
 		 *
 		 * @example Floor(-2)   = -2
 		 * @example Floor(-1.5) = -2
@@ -624,8 +679,8 @@ namespace Ceylan
 		 *
 		 * @return A floating point value containing an integer.
 		 *
-		 * @note A floating-point point value is returned to avoid 
-		 * overflow of integer types.
+		 * @note A floating-point point value is returned to avoid overflow of
+		 * integer types.
 		 *
 		 * @example Floor(-2)   = -2
 		 * @example Floor(-1.5) = -2
@@ -645,8 +700,8 @@ namespace Ceylan
 		 *
 		 * @return A floating point value containing an integer.
 		 *
-		 * @note A floating-point point value is returned to avoid 
-		 * overflow of integer types.
+		 * @note A floating-point point value is returned to avoid overflow of
+		 * integer types.
 		 *
 		 * @example Floor(-2)   = -2
 		 * @example Floor(-1.5) = -2
@@ -667,8 +722,8 @@ namespace Ceylan
 		 *
 		 * @return A floating point value containing an integer.
 		 *
-		 * @note A floating-point point value is returned to avoid 
-		 * overflow of integer types.
+		 * @note A floating-point point value is returned to avoid overflow of
+		 * integer types.
 		 *
 		 * @example Ceil(-2)   = -2
 		 * @example Ceil(-1.5) = -1
@@ -688,8 +743,8 @@ namespace Ceylan
 		 *
 		 * @return A floating point value containing an integer.
 		 *
-		 * @note A floating-point point value is returned to avoid 
-		 * overflow of integer types.
+		 * @note A floating-point point value is returned to avoid overflow of
+		 * integer types.
 		 *
 		 * @example Ceil(-2)   = -2
 		 * @example Ceil(-1.5) = -1
@@ -709,8 +764,8 @@ namespace Ceylan
 		 *
 		 * @return A floating point value containing an integer.
 		 *
-		 * @note A floating-point point value is returned to avoid 
-		 * overflow of integer types.
+		 * @note A floating-point point value is returned to avoid overflow of
+		 * integer types.
 		 *
 		 * @example Ceil(-2)   = -2
 		 * @example Ceil(-1.5) = -1
@@ -728,17 +783,18 @@ namespace Ceylan
 		
 		
 		/**
-		 * Returns nearest integer value from argument. 
-		 * When half-way (ex: 0.5 or -1.5), will choose, among the 
-		 * two nearest integers, the one with the greater absolute value 
-		 * (i.e. rounds away from zero).
+		 * Returns nearest integer value from argument.
+		 *
+		 * When half-way (ex: 0.5 or -1.5), will choose, among the two nearest
+		 * integers, the one with the greater absolute value (i.e. rounds away
+		 * from zero).
 		 *
 		 * @param x the floating-point value to round.
 		 *
 		 * @return A floating point value containing an integer.
 		 *
-		 * @note A floating-point point value is returned to avoid 
-		 * overflow of integer types.
+		 * @note A floating-point point value is returned to avoid overflow of
+		 * integer types.
 		 *
 		 * @example Round(-2)   = -2
 		 * @example Round(-1.5) = -2
@@ -746,8 +802,8 @@ namespace Ceylan
 		 * @example Round(0.5)  =  1
 		 * @example Round(1.6)  =  2
 		 *
-		 * @note On some platforms (at least OpenBSD 3.8), round operation 
-		 * is not available, floor will be used instead.
+		 * @note On some platforms (at least OpenBSD 3.8), round operation is
+		 * not available, floor will be used instead.
 		 *
 		 */
 		CEYLAN_DLL Ceylan::Float32 Round( Ceylan::Float32 x ) ;
@@ -755,12 +811,12 @@ namespace Ceylan
 
 
 		/**
-		 * Returns nearest float value, with specified fractional 
-		 * precision, from argument. 
+		 * Returns nearest float value, with specified fractional precision,
+		 * from argument.
 		 *
-		 * When half-way (ex: 0.5 or -1.5), will choose, among the 
-		 * two nearest floats, the one with the greater absolute value
-		 * (i.e. rounds away from zero).
+		 * When half-way (ex: 0.5 or -1.5), will choose, among the two nearest
+		 * floats, the one with the greater absolute value (i.e. rounds away
+		 * from zero).
 		 *
 		 * @param x the floating-point value to round.
 		 *
@@ -768,24 +824,24 @@ namespace Ceylan
 		 *
 		 * @return A floating point value rounded appropriately.
 		 *
-		 * As floating values have limited accuracy, rounding '1.676' 
-		 * (which translates into an actual number '1.6759999...') to 
-		 * 2 digits after the dot may result, instead of the expected 
-		 * '1.68', to '1.679999...'. 
-		 * If the reason for the round is to have a text with not too
-		 * many useless digits after the dot, then use Ceylan::toString 
-		 * with two parameters, the number and the output precision.
+		 * As floating values have limited accuracy, rounding '1.676' (which
+		 * translates into an actual number '1.6759999...') to 2 digits after
+		 * the dot may result, instead of the expected '1.68', to '1.679999...'.
 		 *
-		 * @note A floating-point point value is returned to avoid 
-		 * overflow of integer types.
+		 * If the reason for the round is to have a text with not too many
+		 * useless digits after the dot, then use Ceylan::toString with two
+		 * parameters, the number and the output precision.
+		 *
+		 * @note A floating-point point value is returned to avoid overflow of
+		 * integer types.
 		 *
 		 * @see Ceylan::toString
 		 *
 		 * @example Round(1.676, 2) = 1.68 or 1.67999999...
 		 * @example Round(-3,23456, 3 ) = -3,235 or -3.2349999...
 		 *
-		 * @note On some platforms (at least OpenBSD 3.8), round operation 
-		 * is not available, floor will be used instead.
+		 * @note On some platforms (at least OpenBSD 3.8), round operation is
+		 * not available, floor will be used instead.
 		 *
 		 */
 		CEYLAN_DLL Ceylan::Float32 Round( Ceylan::Float32 x, 
@@ -794,17 +850,18 @@ namespace Ceylan
 		
 		
 		/**
-		 * Returns nearest integer value from argument. 
-		 * When half-way (ex: 0.5 or -1.5), will choose, among the 
-		 * two nearest integers, the one with the greater absolute value 
-		 * (i.e. rounds away from zero).
+		 * Returns nearest integer value from argument.
+		 *
+		 * When half-way (ex: 0.5 or -1.5), will choose, among the two nearest
+		 * integers, the one with the greater absolute value (i.e. rounds away
+		 * from zero).
 		 *
 		 * @param x the floating-point value to round.
 		 *
 		 * @return A floating point value containing an integer.
 		 *
-		 * @note A floating-point point value is returned to avoid 
-		 * overflow of integer types.
+		 * @note A floating-point point value is returned to avoid overflow of
+		 * integer types.
 		 *
 		 * @example Round(-2)   = -2
 		 * @example Round(-1.5) = -2
@@ -812,8 +869,8 @@ namespace Ceylan
 		 * @example Round(0.5)  =  1
 		 * @example Round(1.6)  =  2
 		 *
-		 * @note On some platforms (at least OpenBSD 3.8), round operation 
-		 * is not available, floor will be used instead.
+		 * @note On some platforms (at least OpenBSD 3.8), round operation is
+		 * not available, floor will be used instead.
 		 *
 		 */
 		CEYLAN_DLL Ceylan::Float64 Round( Ceylan::Float64 x ) ;
@@ -821,12 +878,12 @@ namespace Ceylan
 
 
 		/**
-		 * Returns nearest double value, with specified fractional 
-		 * precision, from argument. 
+		 * Returns nearest double value, with specified fractional precision,
+		 * from argument.
 		 *
-		 * When half-way (ex: 0.5 or -1.5), will choose, among the
-		 * two nearest floats, the one 
-		 * with the greater absolute value (i.e. rounds away from zero).
+		 * When half-way (ex: 0.5 or -1.5), will choose, among the two nearest
+		 * floats, the one with the greater absolute value (i.e. rounds away
+		 * from zero).
 		 *
 		 * @param x the floating-point value to round.
 		 *
@@ -834,26 +891,27 @@ namespace Ceylan
 		 *
 		 * @return A floating point value rounded appropriately.
 		 *
-		 * @note A floating-point point value is returned to avoid 
-		 * overflow of integer types.
-		 * As floating values have limited accuracy, rounding '1.676'
-		 * (which translates into an actual number '1.6759999...') to 
-		 * 2 digits after the dot may result, instead of the expected 
-		 * '1.68', to '1.679999...'. 
-		 * If the reason for the round is to have a text with not too 
-		 * many useless digits after the dot, then use Ceylan::toString 
-		 * with two parameters, the number and the output precision.
+		 * @note A floating-point point value is returned to avoid overflow of
+		 * integer types.
 		 *
-		 * @note A floating-point point value is returned to avoid 
-		 * overflow of integer types.
+		 * As floating values have limited accuracy, rounding '1.676' (which
+		 * translates into an actual number '1.6759999...') to 2 digits after
+		 * the dot may result, instead of the expected '1.68', to '1.679999...'.
+		 *
+		 * If the reason for the round is to have a text with not too many
+		 * useless digits after the dot, then use Ceylan::toString with two
+		 * parameters, the number and the output precision.
+		 *
+		 * @note A floating-point point value is returned to avoid overflow of
+		 * integer types.
 		 *
 		 * @see Ceylan::toString
 		 *
 		 * @example Round(1.676, 2) = 1.68 or 1.67999999...
 		 * @example Round(-3,23456, 3 ) = -3,235 or -3.2349999...
 		 *
-		 * @note On some platforms (at least OpenBSD 3.8), round operation 
-		 * is not available, floor will be used instead.
+		 * @note On some platforms (at least OpenBSD 3.8), round operation is
+		 * not available, floor will be used instead.
 		 *
 		 */
 		CEYLAN_DLL Ceylan::Float64 Round( Ceylan::Float64 x, 
@@ -863,17 +921,18 @@ namespace Ceylan
 				
 		
 		/**
-		 * Returns nearest integer value from argument. 
-		 * When half-way (ex: 0.5 or -1.5), will choose, among the 
-		 * two nearest integers, the one with the greater absolute value 
-		 * (i.e. rounds away from zero).
+		 * Returns nearest integer value from argument.
+		 *
+		 * When half-way (ex: 0.5 or -1.5), will choose, among the two nearest
+		 * integers, the one with the greater absolute value (i.e. rounds away
+		 * from zero).
 		 *
 		 * @param x the floating-point value to round.
 		 *
 		 * @return A floating point value containing an integer.
 		 *
-		 * @note A floating-point point value is returned to avoid 
-		 * overflow of integer types.
+		 * @note A floating-point point value is returned to avoid overflow of
+		 * integer types.
 		 *
 		 * @example Round(-2)   = -2
 		 * @example Round(-1.5) = -2
@@ -881,8 +940,8 @@ namespace Ceylan
 		 * @example Round(0.5)  =  1
 		 * @example Round(1.6)  =  2
 		 *
-		 * @note On some platforms (at least OpenBSD 3.8), round operation 
-		 * is not available, floor will be used instead.
+		 * @note On some platforms (at least OpenBSD 3.8), round operation is
+		 * not available, floor will be used instead.
 		 *
 		 */
 		CEYLAN_DLL Ceylan::LongFloat Round( Ceylan::LongFloat x ) ;
@@ -890,12 +949,12 @@ namespace Ceylan
 
 
 		/**
-		 * Returns nearest float value, with specified fractional 
-		 * precision, from argument. 
+		 * Returns nearest float value, with specified fractional precision,
+		 * from argument.
 		 *
-		 * When half-way (ex: 0.5 or -1.5), will choose, among the 
-		 * two nearest floats, the one with the greater absolute value
-		 * (i.e. rounds away from zero).
+		 * When half-way (ex: 0.5 or -1.5), will choose, among the two nearest
+		 * floats, the one with the greater absolute value (i.e. rounds away
+		 * from zero).
 		 *
 		 * @param x the floating-point value to round.
 		 *
@@ -903,26 +962,27 @@ namespace Ceylan
 		 *
 		 * @return A floating point value rounded appropriately.
 		 *
-		 * @note A floating-point point value is returned to avoid 
-		 * overflow of integer types.
-		 * As floating values have limited accuracy, rounding 
-		 * '1.676' (which translates into an actual number '1.6759999...') 
-		 * to 2 digits after the dot may result, instead of the expected
-		 * '1.68', to '1.679999...'. 
-		 * If the reason for the round is to have a text with not too 
-		 * many useless digits after the dot, then use Ceylan::toString 
-		 * with two parameters, the number and the output precision.
+		 * @note A floating-point point value is returned to avoid overflow of
+		 * integer types.
 		 *
-		 * @note A floating-point point value is returned to avoid 
-		 * overflow of integer types.
+		 * As floating values have limited accuracy, rounding '1.676' (which
+		 * translates into an actual number '1.6759999...')  to 2 digits after
+		 * the dot may result, instead of the expected '1.68', to '1.679999...'.
+		 *
+		 * If the reason for the round is to have a text with not too many
+		 * useless digits after the dot, then use Ceylan::toString with two
+		 * parameters, the number and the output precision.
+		 *
+		 * @note A floating-point point value is returned to avoid overflow of
+		 * integer types.
 		 *
 		 * @see Ceylan::toString
 		 *
 		 * @example Round(1.676, 2) = 1.68 or 1.67999999...
 		 * @example Round(-3,23456, 3 ) = -3,235 or -3.2349999...
 		 *
-		 * @note On some platforms (at least OpenBSD 3.8), round operation 
-		 * is not available, floor will be used instead.
+		 * @note On some platforms (at least OpenBSD 3.8), round operation is
+		 * not available, floor will be used instead.
 		 *
 		 */
 		CEYLAN_DLL Ceylan::LongFloat Round( Ceylan::LongFloat x, 
@@ -930,63 +990,15 @@ namespace Ceylan
 	
 		
 			
-				
-		/// Absolute value, polluted by ambiguous calls:
-		
-		
-		// Integer signed types:
-
-		/// Computes the absolute value of specified argument.
-		CEYLAN_DLL Ceylan::Sint8 Abs( Ceylan::Sint8 x ) ;		
-		
-		
-		/// Computes the absolute value of specified argument.
-		CEYLAN_DLL Ceylan::Sint16 Abs( Ceylan::Sint16 x ) ;
-				
-				
-		/// Computes the absolute value of specified argument.
-		CEYLAN_DLL Ceylan::Sint32 Abs( Ceylan::Sint32 x ) ;
-				
-				
-		/// Computes the absolute value of specified argument.
-		CEYLAN_DLL Ceylan::SignedLongInteger Abs( 
-			Ceylan::SignedLongInteger x ) ;
-		
-		
-		
-		/**
-		 * Computes the absolute value of specified argument.
-		 *
-		 * @note Disabled since ISO C++ does not support `long long'.
-		 *
-		 */
-		//long long int Abs( long long int x ) ;
-		
-		
-		
-		// Floating point types:
-		 
-		 
-		/// Computes the absolute value of specified argument.
-		CEYLAN_DLL Ceylan::Float32 Abs( Ceylan::Float32 x ) ;
-		
-		
-		/// Computes the absolute value of specified argument.
-		CEYLAN_DLL Ceylan::Float64 Abs( Ceylan::Float64 x ) ;
-		
-		
-		/// Computes the absolute value of specified argument.
-		CEYLAN_DLL Ceylan::LongFloat Abs( Ceylan::LongFloat x ) ;
-		
 		
 		
 		/// Min:
 		
 
 		/**
-		 * Min operator template available, since using only specialized
-		 * Min functions lead to way too many ambiguities and implies 
-		 * several uneasy static_cast.
+		 * Min operator template available, since using only specialized Min
+		 * functions lead to way too many ambiguities and implies several uneasy
+		 * static_cast.
 		 *
 		 */
 		template<typename T>
@@ -1001,9 +1013,9 @@ namespace Ceylan
 		/**
 		 * Three-argument Min operator.
 		 *
-		 * Available as a template, since using only specialized
-		 * Min functions lead to way too many ambiguities and implies 
-		 * several uneasy static_cast.
+		 * Available as a template, since using only specialized Min functions
+		 * lead to way too many ambiguities and implies several uneasy
+		 * static_cast.
 		 *
 		 */
 		template<typename T>
@@ -1158,9 +1170,9 @@ namespace Ceylan
 
 		
 		/**
-		 * Max operator template available, since using only 
-		 * specialized Max functions lead to way too many ambiguities 
-		 * and implies several uneasy static_cast.
+		 * Max operator template available, since using only specialized Max
+		 * functions lead to way too many ambiguities and implies several uneasy
+		 * static_cast.
 		 *
 		 */
 		template<typename T>
@@ -1311,8 +1323,8 @@ namespace Ceylan
 		
 		
 		/**
-		 * Computes the value of e (the base of natural logarithms) 
-		 * raised to the power of x.
+		 * Computes the value of e (the base of natural logarithms) raised to
+		 * the power of x.
 		 *
 		 */
 		CEYLAN_DLL Ceylan::Float32 Exp( Ceylan::Float32 x ) ;
@@ -1320,8 +1332,8 @@ namespace Ceylan
 	
 		
 		/**
-		 * Computes the value of e (the base of natural logarithms) 
-		 * raised to the power of x.
+		 * Computes the value of e (the base of natural logarithms) raised to
+		 * the power of x.
 		 *
 		 */
 		CEYLAN_DLL Ceylan::Float64 Exp( Ceylan::Float64 x ) ;
@@ -1329,8 +1341,8 @@ namespace Ceylan
 	
 		
 		/**
-		 * Computes the value of e (the base of natural logarithms)
-		 * raised to the power of x.
+		 * Computes the value of e (the base of natural logarithms) raised to
+		 * the power of x.
 		 *
 		 */
 		CEYLAN_DLL Ceylan::LongFloat Exp( Ceylan::LongFloat x ) ;
@@ -1572,8 +1584,8 @@ namespace Ceylan
 #ifdef CEYLAN_RUNS_ON_ARM9
 
 		/**
-		 * Computes the fixed-point cosine of 'angle', where angle is
-		 * itself fixed-point, and given in radians.
+		 * Computes the fixed-point cosine of 'angle', where angle is itself
+		 * fixed-point, and given in radians.
 		 *
 		 * @return a value between -1 and 1.
 		 *
@@ -1584,8 +1596,9 @@ namespace Ceylan
 
 
 		/**
-		 * Computes the fixed-point sine of 'angle', where angle is
-		 * itself fixed-point, and given in radians.
+		 * Computes the fixed-point sine of 'angle', where angle is itself
+		 * fixed-point, and given in radians.
+		 *
 		 * @return a value between -1 and 1.
 		 *
 		 * @note Uses a look-up table on the ARM9 Nintendo DS.
@@ -1595,8 +1608,8 @@ namespace Ceylan
 	
 
 		/**
-		 * Computes the fixed-point tangent of 'angle', where angle is
-		 * itself fixed-point, and given in radians.
+		 * Computes the fixed-point tangent of 'angle', where angle is itself
+		 * fixed-point, and given in radians.
 		 *
 		 * @return the tangent.
 		 *
@@ -1625,16 +1638,14 @@ namespace Ceylan
 		
 		
 		/**
-		 * Returns the first power of 2 greater or equal to the 
-		 * specified value.
+		 * Returns the first power of 2 greater or equal to the specified value.
 		 *
 		 * Useful for example to compute OpenGL texture sizes.
 		 *
-		 * @param value for which the smallest power of two must be 
-		 * returned.
+		 * @param value for which the smallest power of two must be returned.
 		 *
-		 * @return the smallest power of 2 greater or equal to the 
-		 * specified value.
+		 * @return the smallest power of 2 greater or equal to the specified
+		 * value.
 		 *
 		 * @note No overflow checking is done.
 		 *
@@ -1653,8 +1664,8 @@ namespace Ceylan
 
 		
 		/**
-		 * Returns the first multiple of specified multiple greater or equal 
-		 * to the specified value.
+		 * Returns the first multiple of specified multiple greater or equal to
+		 * the specified value.
 		 *
 		 * @param multiple the multiple to align the value with
 		 *
@@ -1665,8 +1676,8 @@ namespace Ceylan
 		 *
 		 * @note No overflow checking is done.
 		 *
-		 * @example NextMultipleOf( 8, 15 ) == 16, and 
-		 * NextMultipleOf( 8, 16 ) == 16.
+		 * @example NextMultipleOf( 8, 15 ) == 16, and NextMultipleOf( 8, 16 )
+		 * == 16.
 		 *
 		 */
 		CEYLAN_DLL Uint16 NextMultipleOf( Uint16 multiple, Uint16 value ) ;
@@ -1676,8 +1687,8 @@ namespace Ceylan
 
 		
 		/**
-		 * A functor dealing with integers (one integer as parameter, 
-		 * returns integer).
+		 * A functor dealing with integers (one integer as parameter, returns
+		 * integer).
 		 *
 		 */
 		class CEYLAN_DLL IntToIntFunctor: public Ceylan::Functor
@@ -1704,13 +1715,12 @@ namespace Ceylan
 		
 		
 	            /**
-	             * Returns a user-friendly description of the state of
-				 * this object.
+	             * Returns a user-friendly description of the state of this
+				 * object.
 	             *
 				 * @param level the requested verbosity level.
 				 *
-				 * @note Text output format is determined from overall
-				 * settings.
+				 * @note Text output format is determined from overall settings.
 				 *
 				 * @see TextDisplayable
 				 *
@@ -1724,8 +1734,8 @@ namespace Ceylan
 			
 			
 				/** 
-				 * Internal integer, which should be used when evaluating 
-				 * the functor.
+				 * Internal integer, which should be used when evaluating the
+				 * functor.
 				 *
 				 */
 				Ceylan::Sint32 _creationParameter ;

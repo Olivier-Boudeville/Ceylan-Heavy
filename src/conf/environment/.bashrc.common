@@ -172,6 +172,10 @@ alias wanderlust='ssh wondersye@wanderlust'
 
 alias g='git'
 
+alias ga='git add'
+alias gp='git push'
+
+
 # Shell section:
 
 HISTSIZE=1000

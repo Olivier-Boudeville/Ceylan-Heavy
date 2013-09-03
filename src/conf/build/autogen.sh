@@ -213,7 +213,7 @@ fi
 # a shell, but the errors then triggered can be safely ignored here:
 . ${VERSION_FILE} 2>/dev/null
 
-PREFIX_DEFAULT=`pwd | sed 's|LOANI-repository/ceylan/Ceylan/trunk/src/conf/build||1'`LOANI-installations/Ceylan-${CEYLAN_MAJOR_VERSION}.${CEYLAN_MINOR_VERSION}
+PREFIX_DEFAULT=`pwd | sed 's|LOANI-repository/ceylan/Ceylan/src/conf/build||1'`LOANI-installations/Ceylan-${CEYLAN_MAJOR_VERSION}.${CEYLAN_MINOR_VERSION}
 
 debug "Default prefix = ${PREFIX_DEFAULT}"
 
@@ -248,7 +248,7 @@ if [ $do_target_nds -eq 0 ] ; then
 
 	echo "Cross-compiling for the Nintendo DS."
 
-	# Go back in trunk directory:
+	# Go back in source directory:
 	cd ${SOURCE_OFFSET}
 
 	# Quite convenient:
