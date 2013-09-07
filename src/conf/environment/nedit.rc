@@ -1,17 +1,16 @@
 ! Preferences file for NEdit
-! (User settings in X "application defaults" format)
 !
-! This file is overwritten by the "Save Defaults..." command in NEdit
+! This file is overwritten by the "Save Defaults..." command in NEdit 
 ! and serves only the interactively settable options presented in the NEdit
-! "Preferences" menu.  To modify other options, such as key bindings, use
-! the .Xdefaults file in your home directory (or the X resource
-! specification method appropriate to your system).  The contents of this
+! "Preferences" menu.  To modify other options, such as key bindings, use 
+! the .Xdefaults file in your home directory (or the X resource 
+! specification method appropriate to your system).  The contents of this 
 ! file can be moved into an X resource file, but since resources in this file
 ! override their corresponding X resources, either this file should be 
 ! deleted or individual resource lines in the file should be deleted for the
 ! moved lines to take effect.
 
-nedit.fileVersion: 5.6
+nedit.fileVersion: 5.5
 nedit.shellCommands: \
 	spell:Alt+B:s:EX:\n\
 		cat>spellTmp; xterm -e ispell -x spellTmp; cat spellTmp; rm spellTmp\n\
@@ -29,182 +28,99 @@ nedit.shellCommands: \
 		unexpand\n
 nedit.macroCommands: \
 	Complete Word:Alt+D::: {\n\
-		# This macro attempts to complete the current word by\n\
-		# finding another word in the same document that has\n\
-		# the same prefix; repeated invocations of the macro\n\
-		# (by repeated typing of its accelerator, say) cycles\n\
-		# through the alternatives found.\n\
-		# \n\
-		# Make sure $compWord contains something (a dummy index)\n\
-		$compWord[""] = ""\n\
+		# Tuning parameters\n\
+		ScanDistance = 200\n\
 		\n\
-		# Test whether the rest of $compWord has been initialized:\n\
-		# this avoids having to initialize the global variable\n\
-		# $compWord in an external macro file\n\
-		if (!("wordEnd" in $compWord)) {\n\
-		    # we need to initialize it\n\
-		    $compWord["wordEnd"] = 0\n\
-		    $compWord["repeat"] = 0\n\
-		    $compWord["init"] = 0\n\
-		    $compWord["wordStart"] = 0\n\
+		# Search back to a word boundary to find the word to complete\n\
+		startScan = max(0, $cursor - ScanDistance)\n\
+		endScan = min($text_length, $cursor + ScanDistance)\n\
+		scanString = get_range(startScan, endScan)\n\
+		keyEnd = $cursor-startScan\n\
+		keyStart = search_string(scanString, "<", keyEnd, "backward", "regex")\n\
+		if (keyStart == -1)\n\
+		    return\n\
+		keyString = "<" substring(scanString, keyStart, keyEnd)\n\
+		\n\
+		# search both forward and backward from the cursor position.  Note that\n\
+		# using a regex search can lead to incorrect results if any of the special\n\
+		# regex characters is encountered, which is not considered a delimiter\n\
+		backwardSearchResult = search_string(scanString, keyString, keyStart-1, \\\n\
+		    	"backward", "regex")\n\
+		forwardSearchResult = search_string(scanString, keyString, keyEnd, "regex")\n\
+		if (backwardSearchResult == -1 && forwardSearchResult == -1) {\n\
+		    beep()\n\
+		    return\n\
 		}\n\
 		\n\
-		if ($compWord["wordEnd"] == $cursor) {\n\
-		        $compWord["repeat"] += 1\n\
-		}\n\
+		# if only one direction matched, use that, otherwise use the nearest\n\
+		if (backwardSearchResult == -1)\n\
+		    matchStart = forwardSearchResult\n\
+		else if (forwardSearchResult == -1)\n\
+		    matchStart = backwardSearchResult\n\
 		else {\n\
-		   $compWord["repeat"] = 1\n\
-		   $compWord["init"] = $cursor\n\
-		\n\
-		   # search back to a word boundary to find the word to complete\n\
-		   # (we use \\w here to allow for programming "words" that can include\n\
-		   # digits and underscores; use \\l for letters only)\n\
-		   $compWord["wordStart"] = search("<\\\\w+", $cursor, "backward", "regex", "wrap")\n\
-		\n\
-		   if ($compWord["wordStart"] == -1)\n\
-		      return\n\
-		\n\
-		    if ($search_end == $cursor)\n\
-		       $compWord["word"] = get_range($compWord["wordStart"], $cursor)\n\
+		    if (keyStart - backwardSearchResult <= forwardSearchResult - keyEnd)\n\
+		    	matchStart = backwardSearchResult\n\
 		    else\n\
-		        return\n\
+		    	matchStart = forwardSearchResult\n\
 		}\n\
-		s = $cursor\n\
-		for (i=0; i <= $compWord["repeat"]; i++)\n\
-		    s = search($compWord["word"], s - 1, "backward", "regex", "wrap")\n\
 		\n\
-		if (s == $compWord["wordStart"]) {\n\
-		   beep()\n\
-		   $compWord["repeat"] = 0\n\
-		   s = $compWord["wordStart"]\n\
-		   se = $compWord["init"]\n\
-		}\n\
-		else\n\
-		   se = search(">", s, "regex")\n\
+		# find the complete word\n\
+		matchEnd = search_string(scanString, ">", matchStart, "regex")\n\
+		completedWord = substring(scanString, matchStart, matchEnd)\n\
 		\n\
-		replace_range($compWord["wordStart"], $cursor, get_range(s, se))\n\
-		\n\
-		$compWord["wordEnd"] = $cursor\n\
+		# replace it in the window\n\
+		replace_range(startScan + keyStart, $cursor, completedWord)\n\
 	}\n\
 	Fill Sel. w/Char:::R: {\n\
-		# This macro replaces each character position in\n\
-		# the selection with the string typed into the dialog\n\
-		# it displays.\n\
 		if ($selection_start == -1) {\n\
 		    beep()\n\
 		    return\n\
 		}\n\
 		\n\
 		# Ask the user what character to fill with\n\
-		fillChar = string_dialog("Fill selection with what character?", \\\n\
-		                         "OK", "Cancel")\n\
+		fillChar = string_dialog("Fill selection with what character?", "OK", "Cancel")\n\
 		if ($string_dialog_button == 2 || $string_dialog_button == 0)\n\
 		    return\n\
 		\n\
-		# Count the number of lines (NL characters) in the selection\n\
-		# (by removing all non-NLs in selection and counting the remainder)\n\
-		nLines = length(replace_in_string(get_selection(), \\\n\
-		                                  "^.*$", "", "regex"))\n\
-		\n\
-		rectangular = $selection_left != -1\n\
-		\n\
-		# work out the pieces of required of the replacement text\n\
-		# this will be top mid bot where top is empty or ends in NL,\n\
-		# mid is 0 or more lines of repeats ending with NL, and\n\
-		# bot is 0 or more repeats of the fillChar\n\
-		\n\
-		toplen = -1 # top piece by default empty (no NL)\n\
-		midlen = 0\n\
-		botlen = 0\n\
-		\n\
-		if (rectangular) {\n\
-		    # just fill the rectangle:  mid\\n \\ nLines\n\
-		    #                           mid\\n /\n\
-		    #                           bot   - last line with no nl\n\
-		    midlen = $selection_right -  $selection_left\n\
-		    botlen = $selection_right -  $selection_left\n\
-		} else {\n\
-		    #                  |col[0]\n\
-		    #         .........toptoptop\\n                      |col[0]\n\
-		    # either  midmidmidmidmidmid\\n \\ nLines - 1   or ...botbot...\n\
-		    #         midmidmidmidmidmid\\n /                          |col[1]\n\
-		    #         botbot...         |\n\
-		    #                 |col[1]   |wrap margin\n\
-		    # we need column positions col[0], col[1] of selection start and\n\
-		    # end (use a loop and arrays to do the two positions)\n\
-		    sel[0] = $selection_start\n\
-		    sel[1] = $selection_end\n\
-		\n\
-		    # col[0] = pos_to_column($selection_start)\n\
-		    # col[1] = pos_to_column($selection_end)\n\
-		\n\
-		    for (i = 0; i < 2; ++i) {\n\
-		        end = sel[i]\n\
-		        pos = search("^", end, "regex", "backward")\n\
-		        thisCol = 0\n\
-		        while (pos < end) {\n\
-		            nexttab = search("\\t", pos)\n\
-		            if (nexttab < 0 || nexttab >= end) {\n\
-		                thisCol += end - pos # count remaining non-tabs\n\
-		                nexttab = end\n\
-		            } else {\n\
-		                thisCol += nexttab - pos + $tab_dist\n\
-		                thisCol -= (thisCol % $tab_dist)\n\
-		            }\n\
-		            pos = nexttab + 1 # skip past the tab or end\n\
-		        }\n\
-		        col[i] = thisCol\n\
-		    }\n\
-		    toplen = max($wrap_margin - col[0], 0)\n\
-		    botlen = min(col[1], $wrap_margin)\n\
-		\n\
-		    if (nLines == 0) {\n\
-		        toplen = -1\n\
-		        botlen = max(botlen - col[0], 0)\n\
-		    } else {\n\
-		        midlen = $wrap_margin\n\
-		        if (toplen < 0)\n\
-		            toplen = 0\n\
-		        nLines-- # top piece will end in a NL\n\
-		    }\n\
-		}\n\
+		# Count the number of lines in the selection\n\
+		nLines = 0\n\
+		for (i=$selection_start; i<$selection_end; i++)\n\
+		    if (get_character(i) == "\\n")\n\
+		    	nLines++\n\
 		\n\
 		# Create the fill text\n\
-		# which is the longest piece? make a line of that length\n\
-		# (use string doubling - this allows the piece to be\n\
-		# appended to double in size at each iteration)\n\
-		\n\
-		len = max(toplen, midlen, botlen)\n\
-		charlen = length(fillChar) # maybe more than one char given!\n\
-		\n\
+		rectangular = $selection_left != -1\n\
 		line = ""\n\
-		while (len > 0) {\n\
-		    if (len % 2)\n\
-		        line = line fillChar\n\
-		    len /= 2\n\
-		    if (len > 0)\n\
-		        fillChar = fillChar fillChar\n\
+		fillText = ""\n\
+		if (rectangular) {\n\
+		    for (i=0; i<$selection_right-$selection_left; i++)\n\
+			line = line fillChar\n\
+		    for (i=0; i<nLines; i++)\n\
+			fillText = fillText line "\\n"\n\
+		    fillText = fillText line\n\
+		} else {\n\
+		    if (nLines == 0) {\n\
+		    	for (i=$selection_start; i<$selection_end; i++)\n\
+		    	    fillText = fillText fillChar\n\
+		    } else {\n\
+		    	startIndent = 0\n\
+		    	for (i=$selection_start-1; i>=0 && get_character(i)!="\\n"; i--)\n\
+		    	    startIndent++\n\
+		    	for (i=0; i<$wrap_margin-startIndent; i++)\n\
+		    	    fillText = fillText fillChar\n\
+		    	fillText = fillText "\\n"\n\
+			for (i=0; i<$wrap_margin; i++)\n\
+			    line = line fillChar\n\
+			for (i=0; i<nLines-1; i++)\n\
+			    fillText = fillText line "\\n"\n\
+			for (i=$selection_end-1; i>=$selection_start && get_character(i)!="\\n"; \\\n\
+			    	i--)\n\
+			    fillText = fillText fillChar\n\
+		    }\n\
 		}\n\
-		# assemble our pieces\n\
-		toppiece = ""\n\
-		midpiece = ""\n\
-		botpiece = ""\n\
-		if (toplen >= 0)\n\
-		    toppiece = substring(line, 0, toplen * charlen) "\\n"\n\
-		if (botlen > 0)\n\
-		    botpiece = substring(line, 0, botlen * charlen)\n\
 		\n\
-		# assemble midpiece (use doubling again)\n\
-		line = substring(line, 0, midlen * charlen) "\\n"\n\
-		while (nLines > 0) {\n\
-		    if (nLines % 2)\n\
-		        midpiece = midpiece line\n\
-		    nLines /= 2\n\
-		    if (nLines > 0)\n\
-		        line = line line\n\
-		}\n\
-		# Replace the selection with the complete fill text\n\
-		replace_selection(toppiece midpiece botpiece)\n\
+		# Replace the selection with the fill text\n\
+		replace_selection(fillText)\n\
 	}\n\
 	Quote Mail Reply:::: {\n\
 		if ($selection_start == -1)\n\
@@ -225,13 +141,22 @@ nedit.macroCommands: \
 		select(selStart, selEnd + 6)\n\
 	}\n\
 	Comments>/* Uncomment */@C@C++@Java@CSS@JavaScript@Lex:::R: {\n\
-		pos = search("(?n\\\\s*/\\\\*\\\\s*)", $selection_start, "regex")\n\
-		start = $search_end\n\
-		end = search("(?n\\\\*/\\\\s*)", $selection_end, "regex", "backward")\n\
-		if (pos != $selection_start || end == -1 )\n\
-		    return\n\
-		replace_selection(get_range(start, end))\n\
-		select(pos, $cursor)\n\
+		sel = get_selection()\n\
+		selStart = $selection_start\n\
+		selEnd = $selection_end\n\
+		commentStart = search_string(sel, "/*", 0)\n\
+		if (substring(sel, commentStart + 2, commentStart + 3) == " ")\n\
+		    keepStart = commentStart + 3\n\
+		else\n\
+		    keepStart = commentStart + 2\n\
+		keepEnd = search_string(sel, "*/", length(sel), "backward")\n\
+		commentEnd = keepEnd + 2\n\
+		if (substring(sel, keepEnd - 1, keepEnd) == " ")\n\
+		    keepEnd = keepEnd - 1\n\
+		replace_range(selStart + commentStart, selStart + commentEnd, \\\n\
+			substring(sel, keepStart, keepEnd))\n\
+		select(selStart, selEnd - (keepStart-commentStart) - \\\n\
+			(commentEnd - keepEnd))\n\
 	}\n\
 	Comments>// Comment@C@C++@Java@JavaScript:::R: {\n\
 		replace_in_selection("^.*$", "// &", "regex")\n\
@@ -279,19 +204,12 @@ nedit.macroCommands: \
 	Comments>Bar Uncomment@C:::R: {\n\
 		selStart = $selection_start\n\
 		selEnd = $selection_end\n\
-		pos = search("/\\\\*\\\\s*\\\\n", selStart, "regex")\n\
-		if (pos != selStart) return\n\
-		start = $search_end\n\
-		end = search("\\\\n\\\\s*\\\\*/\\\\s*\\\\n?", selEnd, "regex", "backward")\n\
-		if (end == -1 || $search_end < selEnd) return\n\
-		newText = get_range(start, end)\n\
-		newText = replace_in_string(newText,"^ *\\\\* ?", "", "regex", "copy")\n\
-		if (get_range(selEnd, selEnd - 1) == "\\n") selEnd -= 1\n\
+		newText = get_range(selStart+3, selEnd-4)\n\
+		newText = replace_in_string(newText, "^ \\\\* ", "", "regex")\n\
 		replace_range(selStart, selEnd, newText)\n\
 		select(selStart, selStart + length(newText))\n\
 	}\n\
 	Make C Prototypes@C@C++:::: {\n\
-		# simplistic extraction of C function prototypes, usually good enough\n\
 		if ($selection_start == -1) {\n\
 		    start = 0\n\
 		    end = $text_length\n\
@@ -300,10 +218,6 @@ nedit.macroCommands: \
 		    end = $selection_end\n\
 		}\n\
 		string = get_range(start, end)\n\
-		# remove all C++ and C comments, then all blank lines in the extracted range\n\
-		string = replace_in_string(string, "//.*$", "", "regex", "copy")\n\
-		string = replace_in_string(string, "(?n/\\\\*.*?\\\\*/)", "", "regex", "copy")\n\
-		string = replace_in_string(string, "^\\\\s*\\n", "", "regex", "copy")\n\
 		nDefs = 0\n\
 		searchPos = 0\n\
 		prototypes = ""\n\
@@ -374,38 +288,17 @@ nedit.highlightPatterns: Ada:Default\n\
 	Verilog:Default\n\
 	XML:Default\n\
 	X Resources:Default\n\
-	Yacc:Default\n\
-	Erlang:1:0{\n\
-		Comment:"%":"$"::Comment::\n\
-		WooperMacro:"\\?<(getAttr|getAttribute|getWrappedAttribute|setAttribute|removeAttribute|getSender)>":::WooperPlain::\n\
-		WooperHelper:"<(new|new_link|synchronous_new|synchronous_new_link|construct|delete)>":::WooperPlain::\n\
-		WooperPrefixed:"<wooper_[_A-Za-z]*|\\?wooper_[_A-Za-z]*>":::Wooper::\n\
-		Macro:"\\?[0-9A-Za-z_]*":::Preprocessor::\n\
-		ExportedFunc:"[A-Za-z_]*:[A-Za-z_]*":::ExportedFunc::\n\
-		Module attribute:"^[ 	]*-[_A-Za-z]*":::Preprocessor::\n\
-		Keyword:"<(after|case|end|if|of|receive|when|fun)>":::Keyword::\n\
-		Operator:"<(and|band|bsl|bsr|bor|bxor|div|or|rem|andalso|orelse|is_atom|is_binary|is_bitstring|is_float|is_function|is_integer|is_list|is_number|is_pid|is_port|is_record|is_reference|is_tuple)>":::Keyword::\n\
-		Builtin function:"<(abs|apply|atom|atom_to_list|binary|binary_to_list|binary_to_term|catch|date|element|erase|exit|float|float_to_list|get|halt|hash|hd|info|integer|integer_to_list|length|link|list|list_to_atom|list_to_float|list_to_integer|list_to_tuple|node|nodes|now|pid|port|ports|processes|put|reference|register|registered|round|self|setelement|size|spawn|spawn_link|throw|time|tl|trace|trunc|tuple|tuple_to_list|unlink|unregister|whereis)>":::Storage Type::\n\
-		Special identifier:"<(error|false|infinity|nil|ok|true|undefined)>":::Identifier1::\n\
-		Atom:"<[a-z][0-9a-zA-Z_]*>":::Plain::\n\
-		Character:"(\\$\\\\?.)":::Character Const::\n\
-		Float:"<(\\+|-)?[0-9]+\\.[0-9]+((E|e)(\\+|-)?[0-9]+)?>":::Numeric Const::\n\
-		Integer:"<(2#[01]+|8#[0-7]+|16#[0-9A-Fa-f]+|(10#)?[0-9]+)>":::Numeric Const::\n\
-		Variable:"<[A-Z_][0-9a-zA-Z_]*>":::Identifier::\n\
-		Single-quoted string:"'":"'"::String::\n\
-		Double-quoted string:"""":""""::String::\n\
-		String escape:"\\\\(.|\\n)":::String1:Double-quoted string:\n\
-	}
+	Yacc:Default
 nedit.languageModes: 	Ada:.ada .ad .ads .adb .a:::::::\n\
 	Awk:.awk:::::::\n\
 	C++:.cc .hh .C .H .i .cxx .hxx .cpp .c++::::::".,/\\`'!|@#%^&*()-=+{}[]"":;<>?~":\n\
 	C:.c .h::::::".,/\\`'!|@#%^&*()-=+{}[]"":;<>?~":\n\
 	CSS:css::Auto:None:::".,/\\`'!|@#%^&*()=+{}[]"":;<>?~":\n\
-	Csh:.csh .cshrc .tcshrc .login .logout:"^[ \\t]*#[ \\t]*![ \\t]*/bin/t?csh"::::::\n\
+	Csh:.csh .cshrc .login .logout:"^[ \\t]*#[ \\t]*![ \\t]*/bin/csh"::::::\n\
 	Fortran:.f .f77 .for:::::::\n\
 	Java:.java:::::::\n\
 	JavaScript:.js:::::::\n\
-	LaTeX:.tex .sty .cls .ltx .ins .clo .fd:::::::\n\
+	LaTeX:.tex .sty .cls .ltx .ins:::::::\n\
 	Lex:.lex:::::::\n\
 	Makefile:Makefile makefile .gmk:::None:8:8::\n\
 	Matlab:.m .oct .sci:::::::\n\
@@ -422,28 +315,22 @@ nedit.languageModes: 	Ada:.ada .ad .ads .adb .a:::::::\n\
 	VHDL:.vhd .vhdl .vdl:::::::\n\
 	Verilog:.v:::::::\n\
 	XML:.xml .xsl .dtd:"\\<(?i\\?xml|!doctype)"::None:::"<>/=""'()+*?|":\n\
-	X Resources:.Xresources .Xdefaults .nedit .pats nedit.rc:"^[!#].*([Aa]pp|[Xx]).*[Dd]efaults"::::::\n\
-	Yacc:.y::::::".,/\\`'!|@#%^&*()-=+{}[]"":;<>?~":\n\
-	Erlang:.erl .hrl:::::::
-nedit.styles: 	ExportedFunc:#66FFFF:Plain\n\
-	Plain:white:Plain\n\
-	Comment:gray:Italic\n\
-	Keyword:green:Bold\n\
-	Wooper:#FFC94D:Bold\n\
-	WooperPlain:#FFC94D:Plain\n\
-	Operator:dark blue:Bold\n\
-	Bracket:dark blue:Bold\n\
-	Storage Type:lightgreen:Bold\n\
+	X Resources:.Xresources .Xdefaults .nedit:"^[!#].*([Aa]pp|[Xx]).*[Dd]efaults"::::::\n\
+	Yacc:.y::::::".,/\\`'!|@#%^&*()-=+{}[]"":;<>?~":
+nedit.styles: 	Plain:black:Plain\n\
+	Comment:gray20:Italic\n\
+	Keyword:black:Bold\n\
+	Storage Type:brown:Bold\n\
 	Storage Type1:saddle brown:Bold\n\
-	String:red:Plain\n\
+	String:darkGreen:Plain\n\
 	String1:SeaGreen:Plain\n\
-	String2:#CC0056:Bold\n\
-	Preprocessor:#FFFF66:Plain\n\
-	Preprocessor1:red:Plain\n\
-	Character Const:Green:Plain\n\
-	Numeric Const:green:Plain\n\
-	Identifier:grey:Plain\n\
-	Identifier1:magenta:Plain\n\
+	String2:darkGreen:Bold\n\
+	Preprocessor:RoyalBlue4:Plain\n\
+	Preprocessor1:blue:Plain\n\
+	Character Const:darkGreen:Plain\n\
+	Numeric Const:darkGreen:Plain\n\
+	Identifier:brown:Plain\n\
+	Identifier1:RoyalBlue4:Plain\n\
 	Identifier2:SteelBlue:Plain\n\
 	Subroutine:brown:Plain\n\
 	Subroutine1:chocolate:Plain\n\
@@ -470,7 +357,7 @@ nedit.autoWrap: Continuous
 nedit.wrapMargin: 0
 nedit.autoIndent: Auto
 nedit.autoSave: True
-nedit.openInTab: False
+nedit.openInTab: True
 nedit.saveOldVersion: False
 nedit.showMatching: Delimiter
 nedit.matchSyntaxBased: True
@@ -487,8 +374,8 @@ nedit.appendLF: True
 nedit.sortOpenPrevMenu: True
 nedit.statisticsLine: True
 nedit.iSearchLine: True
-nedit.sortTabs: True
-nedit.tabBar: False
+nedit.sortTabs: False
+nedit.tabBar: True
 nedit.tabBarHideOne: True
 nedit.toolTips: True
 nedit.globalTabNavigate: False
@@ -500,22 +387,21 @@ nedit.warnExit: True
 nedit.searchMethod: Literal
 nedit.textRows: 60
 nedit.textCols: 80
-nedit.tabDistance: 4
+nedit.tabDistance: 8
 nedit.emulateTabs: 0
 nedit.insertTabs: True
 nedit.textFont: -*-courier-medium-r-normal--*-120-*-*-*-iso8859-1
 nedit.boldHighlightFont: -*-courier-bold-r-normal--*-120-*-*-*-iso8859-1
 nedit.italicHighlightFont: -*-courier-medium-o-normal--*-120-*-*-*-iso8859-1
 nedit.boldItalicHighlightFont: -*-courier-bold-o-normal--*-120-*-*-*-iso8859-1
-nedit.textFgColor: white
-nedit.textBgColor: black
-nedit.selectFgColor: #000000
-nedit.selectBgColor: gray50
+nedit.textFgColor: black
+nedit.textBgColor: rgb:e5/e5/e5
+nedit.selectFgColor: black
+nedit.selectBgColor: rgb:cc/cc/cc
 nedit.hiliteFgColor: white
 nedit.hiliteBgColor: red
-nedit.lineNoFgColor: red
-nedit.cursorFgColor: white
-nedit.shell: /bin/bash
+nedit.lineNoFgColor: black
+nedit.cursorFgColor: black
 nedit.smartTags: True
 nedit.prefFileRead: True
 nedit.titleFormat: {%c} [%s] %f (%S) - %d
