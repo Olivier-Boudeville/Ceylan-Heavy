@@ -8,6 +8,8 @@
 .PHONY: all clean co ci up st
 
 
+# Note: most if not all Erlang code went to the Ceylan-common repository.
+
 
 USER_NAME := wondersye
 

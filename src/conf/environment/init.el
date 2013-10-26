@@ -1,10 +1,49 @@
+;; Default standard emacs location:
 (setq load-path (cons "~/.emacs.d" load-path))
 
-;; Compiles .el files newer than their .elc counterpart, or not having one:
-;; One can also use M-x byte-compile-file to precompile .el files (ex: linum).
-;; Warning: apparently, unless the .elc file is removed, changes will be
-;; effective only when having started emacs again *twice*.
-(byte-recompile-directory "~/.emacs.d" 0)
+;; This corresponds to a symbolic link created by our install-erlang.sh script,
+;; so that the next configuration path does not depend on Erlang versions:
+;; (like lib/tools-2.6.11/emacs) 
+(setq load-path (cons "~/Software/Erlang/Erlang-current-install/lib/erlang/emacs" load-path))
+      
+(setq erlang-root-dir "~/Software/Erlang/Erlang-current-install")
+(setq exec-path (cons "~/Software/Erlang/Erlang-current-install/bin" exec-path))
+ 
+ ;; From the current Erlang install:
+(require 'erlang-start)
+(require 'erlang-flymake)
+
+(require 'erlang)
+(setq auto-mode-alist
+	  (append '(("\\.escript$"  . erlang-mode)) auto-mode-alist))
+
+(add-hook 'erlang-mode-hook 'my-erlang-mode-hook)
+
+(defun my-erlang-mode-hook () )
+
+
+;; To display line numbers on the left edge:
+(global-linum-mode 1)
+(require 'linum)
+
+;; 85 width would already allow to display correctly even files with
+;; 9999 lines, knowing that the leftmost column for line numbers uses
+;; some place. Selecting 88 instead to leave some room to the ... sign
+;; used to show a block was folded (anyway the 80-limit is shown by
+;; background color).
+(add-to-list 'default-frame-alist (cons 'width  88))
+
+;; Depends on the screen height:
+;;(add-to-list 'default-frame-alist (cons 'height 45))
+(add-to-list 'default-frame-alist (cons 'height 53))
+
+
+(require 'whitespace)
+(setq-default whitespace-style '(face trailing lines empty indentation::space space tabs lines-tail indentation space-before-tab space-after-tab))
+(setq-default whitespace-line-column 80)
+(setq global-whitespace-mode 1)
+	
+(global-whitespace-mode 1)
 
 
 ;; RST files support section.
@@ -16,10 +55,37 @@
 				("\\.rst$"  . rst-mode)
 				("\\.rest$" . rst-mode)) auto-mode-alist))
 
-
 ;; Automatically update the table of contents everytime you adjust a
 ;; section title:
 (add-hook 'rst-adjust-hook 'rst-toc-update)
+
+
+
+(message "<<<<<<######### init.el version 1.1 #########>>>>>>")
+
+;; Indentation:
+;; Starting from its second line, a multi-line statement should be
+;; indented of 2 characters from the beginning of line, not relatively
+;; to, say, the opening parenthesis which can be close to the right edge
+;; of the line.
+(setq c-offsets-alist '(
+		;; Otherwise parameters are aligned with the first, whereas we want a
+		;; fixed offset:
+		(arglist-cont-nonempty . 2)
+		(arglist-intro . 2)
+						))
+
+
+
+;; Support for C-like languages:
+;; (customizations for all of c-mode, c++-mode, objc-mode, java-mode)
+(defun my-c-mode-common-hook ()
+  (setq cc-default-style "bsd")
+  (c-set-offset 'substatement-open 0)
+  )
+
+(add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
+(add-hook 'cc-mode-common-hook 'my-c-mode-common-hook)
 
 
 ;; Corresponds to conventions in demo-for-css-testing.rst:
@@ -36,47 +102,6 @@
 
 
 
-;; Erlang support:
-(require 'erlang-start)
-(setq auto-mode-alist
-	  (append '(("\\.escript$"  . erlang-mode)) auto-mode-alist))
-
-(add-hook 'erlang-mode-hook 'my-erlang-mode-hook)
-
-(defun my-erlang-mode-hook () )
-
-(message "<<<<<<######### init.el version 1.0 #########>>>>>>")
-
-;; Indentation:
-;; Starting from its second line, a multi-line statement should be
-;; indented of 2 characters from the beginning of line, not relatively
-;; to, say, the opening parenthesis which can be closo to the right edge
-;; of the line.
-(setq c-offsets-alist '(
-		;; Otherwise parameters are aligned with the first, whereas we want a
-		;; fixed offset:
-		(arglist-cont-nonempty . 2)
-		(arglist-intro . 2)
-						)
-)
-
-
-;; Support for C-like languages:
-;; (customizations for all of c-mode, c++-mode, objc-mode, java-mode)
-(defun my-c-mode-common-hook ()
-  (setq cc-default-style "bsd")
-  (c-set-offset 'substatement-open 0)
-  )
-
-(add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
-(add-hook 'cc-mode-common-hook 'my-c-mode-common-hook)
-
-
-;; Displaying of line number on the left:
-;; (see also 'longlines')
-(require 'linum)
-(add-hook 'find-file-hook (lambda () (linum-mode 1)))
-
 
 ;; Not working apparently with emacs 22.2.1:
 ;;(auto-raise-mode t)
@@ -87,7 +112,6 @@
 ;; cursor going downward...)
 ;;(require 'physical-line)
 ;;(add-hook 'find-file-hooks 'physical-line-mode-without-exception)
-
 
 
 ;; Automatic indentation while typing:
@@ -113,7 +137,6 @@
 ;;(add-hook 'find-file-hooks 'set-advanced-ret-behaviour)
 
 
-
 (defun fix-behaviours-for-rst-mode ()
   (message "############## Fixing behaviours for RST mode ###########")
 
@@ -123,25 +146,12 @@
   ;; This basic indentation is fine with text modes:
   (global-set-key (kbd "RET") 'newline-and-indent)
 
-  ;;Long lines are normal in text modes:
-  (remove-hook 'find-file-hook 'highlight-80+-mode)
+  ;; Long lines are normal in text modes:
+  (setq-default whitespace-style '(face trailing empty indentation::space space tabs indentation space-before-tab space-after-tab))
 
   )
 
 (add-hook 'rst-mode-hook 'fix-behaviours-for-rst-mode)
-
-
-
-;; Indenting buffers as a whole:
-(defun indent-whole-buffer ()
-  "indent whole buffer"
-  (interactive)
-  (delete-trailing-whitespace)
-  (indent-region (point-min) (point-max) nil)
-  )
-
-;;(add-hook 'find-file-hook 'indent-whole-buffer)
-;;(add-hook 'find-file-hook 'whitespace-cleanup)
 
 
 
@@ -165,28 +175,6 @@
 (setq uniquify-buffer-name-style 'post-forward)
 (setq uniquify-after-kill-buffer-p 1)
 (setq uniquify-ignore-buffers-re "^\\*")
-
-(require 'whitespace)
-(global-whitespace-mode 1)
-(setq-default show-trailing-whitespace nil)
-(setq whitespace-style '(space tabs lines-tail trailing empty indentation space-before-tab space-after-tab))
-(setq whitespace-line-column 80)
-
-;; We want to see whether we go past column 80:
-(require 'highlight-80+)
-(add-hook 'find-file-hook 'highlight-80+-mode)
-
-
-;; 85 width would already allow to display correctly even files with
-;; 9999 lines, knowing that the leftmost column for line numbers uses
-;; some place. Selecting 88 instead to leave some room to the ... sign
-;; used to show a block was folded (anyway the 80-limit is shown by
-;; background color).
-(add-to-list 'default-frame-alist (cons 'width  88))
-
-;; Depends on the screen height:
-;;(add-to-list 'default-frame-alist (cons 'height 45))
-(add-to-list 'default-frame-alist (cons 'height 58))
 
 
 ;; Key section:
@@ -388,6 +376,8 @@
 
 
 
+
+
 ;; Compilation section.
 ;; Mostly taken from http://ensiwiki.ensimag.fr/index.php/Dot_Emacs
 
@@ -499,40 +489,15 @@
 (set-mouse-color "white")
 
 
-(defun mouse-search-forward (begin end)
-  (interactive (list (point) (mark)))
-  (let ((text (filter-buffer-substring begin end nil t)))
-  (goto-char (max begin end))
-  (let ((found-pos (search-forward text nil t)))
-	(if (not found-pos)
-		(progn (goto-char (point-min))
-		       (let ((wrapped-found-pos (search-forward text nil t)))
-			   (goto-char (- wrapped-found-pos (length text)))
-			   (set-mark wrapped-found-pos)))
-	    (progn (goto-char found-pos) (set-mark (- found-pos (length text)))))))
-)
-
-
-(defun mouse-search-backward (begin end)
-  (interactive (list (point) (mark)))
-  (let ((text (filter-buffer-substring begin end nil t)))
-  (goto-char (min begin end))
-  (let ((found-pos (search-backward text nil t)))
-	(if (not found-pos)
-		(progn (goto-char (point-max))
-		       (let ((wrapped-found-pos (search-backward text nil t)))
-			   (goto-char (+ wrapped-found-pos (length text)))
-			   (set-mark wrapped-found-pos)))
-	    (progn (goto-char found-pos) (set-mark (+ found-pos (length text)))))))
-)
-
-
 ;; For the mouse wheel:
 (mwheel-install)
 
+;; From http://www.emacswiki.org/emacs/AcmeSearch:
+(require 'acme-search)
+
 (define-key global-map [(down-mouse-3)] nil)
-(define-key global-map [(mouse-3)] 'mouse-search-forward)
-(define-key global-map [(shift mouse-3)] 'mouse-search-backward)
+(define-key global-map [(mouse-3)] 'acme-search-forward)
+(define-key global-map [(shift mouse-3)] 'acme-search-backward)
 
 
 
@@ -641,3 +606,21 @@
  '(rst-level-6-face ((t (:background "#020" :foreground "#555"))) t))
 
 (delete-other-windows)
+
+
+;; Generated code below:
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector ["#242424" "#e5786d" "#95e454" "#cae682" "#8ac6f2" "#333366" "#ccaa8f" "#f6f3e8"])
+ '(custom-enabled-themes (quote (tsdh-dark)))
+ '(inhibit-startup-screen t))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(whitespace-line ((t (:background "red" :foreground "white smoke")))))
