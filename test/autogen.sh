@@ -32,9 +32,9 @@ ceylan_install_prefix="/usr/local"
 
 while [ $# -gt 0 ] ; do
 	token_eaten=1
-		
+
 	if [ "$1" = "-g" -o "$1" = "--guess-ceylan-prefix" ] ; then
-	
+
 		# Here we suppose we want to find a LOANI-installed Ceylan:
 		COMMAND=$0
 
@@ -43,7 +43,7 @@ while [ $# -gt 0 ] ; do
 
 		# Let's guess this Ceylan version:
 		ceylan_version=`grep CEYLAN_VERSION ../src/code/CeylanConfig.h|awk '{printf $3}'|sed 's|^.||1'|sed 's|.$||1'`
-		#echo "guessed ceylan_version = $ceylan_version"	
+		#echo "guessed ceylan_version = $ceylan_version"
 
 
 		# Default value guessed from current path:
@@ -54,7 +54,7 @@ while [ $# -gt 0 ] ; do
 		#echo "loani_installations = $loani_installations"
 
 		ceylan_install_prefix="${loani_installations}/Ceylan-${ceylan_version}"
-		
+
 		if [ ! -d "$ceylan_install_prefix" ] ; then
 			echo "Error, guessed prefix for Ceylan install ($ceylan_install_prefix) does not exist.$USAGE" 1>&2
 			exit 10
@@ -75,7 +75,7 @@ while [ $# -gt 0 ] ; do
 		do_stop_after_configure=0
 		token_eaten=0
 	fi
-	
+
 	if [ "$1" = "--ceylan-install-prefix" ] ; then
 		shift
 		ceylan_install_prefix="$1"
@@ -85,7 +85,7 @@ while [ $# -gt 0 ] ; do
 		fi
 		token_eaten=0
 	fi
-	
+
 	if [ "$1" = "-h" -o "$1" = "--help" ] ; then
 		echo "$USAGE"
 		exit
@@ -95,7 +95,7 @@ while [ $# -gt 0 ] ; do
 	if [ $token_eaten -eq 1 ] ; then
 		echo "Error, unknown argument ($1).$USAGE" 1>&2
 		exit 4
-	fi	
+	fi
 	shift
 done
 
@@ -107,7 +107,7 @@ debug()
 {
 	if [ $debug_mode -eq 0 ] ; then
 		echo "debug: $*"
-	fi	
+	fi
 }
 
 
@@ -149,8 +149,8 @@ wait()
 	if [ $wait_activated -eq 0 ] ; then
 		echo "  <press enter key to continue>"
 		read
-	fi	
-	
+	fi
+
 }
 
 cd `dirname $0`
@@ -199,7 +199,7 @@ copy="--copy"
 #force="--force"
 force=""
 
-# Warning selection: 
+# Warning selection:
 warnings="--warnings=all"
 #warnings=""
 
@@ -215,7 +215,7 @@ execute()
 {
 
 	echo "    Executing $*"
-	
+
 	if [ $log_on_file -eq 0 ] ; then
 		echo "    Executing $* from "`pwd` >>"$log_filename"
 		eval $* >>"$log_filename" 2>&1
@@ -223,7 +223,7 @@ execute()
 		echo "----------------------------------------" >>"$log_filename"
 		echo >>"$log_filename"
 	else
-		eval $* 
+		eval $*
 		RES=$?
 	fi
 
@@ -235,44 +235,44 @@ execute()
 			echo "Error while executing '$*'" 1>&2
 			if [ "$1" = "./configure" ]; then
 				echo "
-Note: check the following log:" test/config.log	
-  			fi
-			
+Note: check the following log:" test/config.log
+			fi
+
 			if [ "$1" = "aclocal" ]; then
 				echo "
 Hint: forgot to use the -g option? One may also look at the --ceylan-install-prefix option, with a parameter that could be similar to $HOME/Projects/LOANI-x.y/LOANI-installations/Ceylan-p.q"
-  			fi
-			
+			fi
+
 		fi
-			
+
 		exit $RES
 	fi
-	
+
 	wait
-	
-}                 
-    
-	                                                 
+
+}
+
+
 generateCustom()
-# Old-fashioned way of regenerating the build system from scratch: 
+# Old-fashioned way of regenerating the build system from scratch:
 {
 
 
 	echo "--- generating build system"
-	
+
 	if [ $do_remove_generated -eq 0 ] ; then
 		echo
 		echo " - removing all generated files"
 		./cleanGeneratedConfigFiles.sh
 	fi
-	
+
 	# Update timestamps since SVN may mess them up:
 	CONFIG_SOURCE=configure-template.ac
 	CONFIG_TARGET=configure.ac
-	
+
 	touch $CONFIG_SOURCE
-	
-		
+
+
 	echo
 	echo " - generating $CONFIG_TARGET, by filling $CONFIG_SOURCE with ${CEYLAN_SETTINGS_FILE}"
 
@@ -281,33 +281,33 @@ generateCustom()
 
 	echo
 	echo " - preparing libtool, by executing libtoolize"
-	
-	
+
+
 	(libtool --version) < /dev/null > /dev/null 2>&1 || {
 		echo
 		echo "**Error**: You must have \`libtool' installed and available in your path (forgot to request to guess where the OSDL environment file is ?)."
-		echo "You can get libtool from: ftp://ftp.gnu.org/pub/gnu/" 
+		echo "You can get libtool from: ftp://ftp.gnu.org/pub/gnu/"
 		exit 20
-   	}
-	
+	}
+
 	(libtoolize --version) < /dev/null > /dev/null 2>&1 || {
 		echo
 		echo "**Error**: You must have \`libtoolize' installed."
-		echo "You can get it from: ftp://ftp.gnu.org/pub/gnu/" 
+		echo "You can get it from: ftp://ftp.gnu.org/pub/gnu/"
 		exit 21
-   	}
+	}
 
 	if test -z "$verbose"; then
 		libtoolize_verbose=""
 	else
 		libtoolize_verbose="--debug"
 	fi
-	
+
 	execute libtoolize --automake $copy $force $libtoolize_verbose
-	
+
 	echo
 	echo " - generating aclocal.m4, by scanning configure.ac"
-	
+
 	(aclocal --version) < /dev/null > /dev/null 2>&1 || {
 		echo
 		echo "**Error**: Missing \`aclocal'.  The version of \`automake'"
@@ -316,19 +316,27 @@ generateCustom()
 		exit 22
 	}
 
-	# Where ceylan.m4, pkg.m4, etc. should be found: 
+	# Where ceylan.m4, pkg.m4, etc. should be found:
 	CEYLAN_M4_DIR=$ceylan_install_prefix/share/Ceylan
-	
+
 	ACLOCAL_OUTPUT=aclocal.m4
-	
+
+	# Not used anymore, as, for example with Arch Linux, libtool is
+	# '/bin/libtool', and most if not all m4 files are in /usr/share/aclocal.
+	# Not adding specific includes seems to work correctly now:
+
 	# With newer libtool (ex: 2.2.4), we need to include a whole bunch of *.m4
 	# files, otherwise 'warning: LTOPTIONS_VERSION is m4_require'd but not
 	# m4_defun'd' ... ', same thing for LTSUGAR_VERSION, LTVERSION_VERSION, etc.
-	GUESSED_LIBTOOL_BASE=`which libtool|sed 's|/bin/libtool$||1'`
+	#GUESSED_LIBTOOL_BASE=`which libtool|sed 's|/bin/libtool$||1'`
+
 
 	# Do not use '--acdir=.' since it prevents aclocal from writing its file:
-	execute aclocal -I $CEYLAN_M4_DIR -I ${GUESSED_LIBTOOL_BASE}/share/aclocal --output=$ACLOCAL_OUTPUT $force $verbose
-	
+	#execute aclocal -I $CEYLAN_M4_DIR -I ${GUESSED_LIBTOOL_BASE}/share/aclocal --output=$ACLOCAL_OUTPUT $force $verbose
+
+	# Apparently sufficient now:
+	execute aclocal -I $CEYLAN_M4_DIR --output=$ACLOCAL_OUTPUT $force $verbose
+
 	echo
 	echo " - generating '.in' files from '.am' files with automake"
 
@@ -339,12 +347,12 @@ generateCustom()
 		exit 24
 	}
 
-	automake_strictness="--foreign" 
+	automake_strictness="--foreign"
 	#automake_strictness="--gnu"
-	
-	execute automake --add-missing --include-deps $automake_strictness $warnings $copy $verbose  
 
-	
+	execute automake --add-missing --include-deps $automake_strictness $warnings $copy $verbose
+
+
 	(autoconf --version) < /dev/null > /dev/null 2>&1 || {
 		echo
 		echo "**Error**: You must have \`autoconf' installed."
@@ -352,73 +360,73 @@ generateCustom()
 		echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
 		exit 25
 	}
-	
+
 	echo
 	echo " - generating 'configure' script"
- 	execute autoconf $warnings $force $verbose
+	execute autoconf $warnings $force $verbose
 
 	# Add GNU gettext (autopoint) ?
-	
+
 	if [ $do_stop_after_configure -eq 0 ] ; then
 		echo
 		echo "Now you are ready to run configure"
 		return
 	fi
-		
+
 	echo
 	echo " - executing 'configure' script"
-	
+
 	(./configure --version) < /dev/null > /dev/null 2>&1 || {
 		echo
 		echo "**Error**: the 'configure' cannot be properly used"
 		exit 26
 	}
-	
+
 
 	if [ -n "$ceylan_install_prefix_opt" ] ; then
 		echo "(updating, for this script only, library search path with ${ceylan_install_prefix}/lib)"
 		LD_LIBRARY_PATH=$ceylan_install_prefix/lib:$LD_LIBRARY_PATH
 	fi
-	
- 	execute ./configure $configure_opt
-	
+
+	execute ./configure $configure_opt
+
 
 	if [ $do_clean -eq 0 ] ; then
 		echo
 		echo " - cleaning all"
-	 	execute make clean
+		execute make clean
 	fi
-	
-	
+
+
 	if [ $do_build -eq 0 ] ; then
 		echo
 		echo " - building all"
-	 	execute make
+		execute make
 	fi
-	
-	
+
+
 	if [ $do_install -eq 0 ] ; then
 		echo
 		echo " - installing"
-	 	execute make install
+		execute make install
 	else
-	
+
 		if [ -n "$ceylan_install_prefix_opt" ] ; then
 			echo 1>&2
 			echo "Warning: not installing tests and using $ceylan_install_prefix_opt implies updating library search paths to select the correct library, for example one may enter: " 1>&2
 			echo "export LD_LIBRARY_PATH=$ceylan_install_prefix/lib:\$LD_LIBRARY_PATH" 1>&2
 		fi
-		
+
 	fi
 
 	if [ $do_test -eq 0 ] ; then
 		export LD_LIBRARY_PATH=$ceylan_install_prefix/lib:$LD_LIBRARY_PATH
 		echo
 		echo " - running unit tests"
-	 	execute make check
+		execute make check
 	fi
-	
-		
+
+
 }
 
 
@@ -428,17 +436,14 @@ regenerateWithAutoreconf()
 {
 
 	echo "--- updating build system using autoreconf"
-	
+
 	autoreconf_opt="--force --install"
-	autoreconf_warnings="--warnings=all" 
-	
+	autoreconf_warnings="--warnings=all"
+
 	autoreconf $autoreconf_opt $autoreconf_warnings
-	
+
 }
-	
-	
+
+
 generateCustom
 #regenerateWithAutoreconf
-
-
-
