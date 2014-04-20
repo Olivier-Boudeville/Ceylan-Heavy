@@ -17,8 +17,8 @@
 libtool_VERSION="2.4.2"
 libtool_FULL_VERSION="${libtool_VERSION}"
 libtool_ARCHIVE="libtool-${libtool_FULL_VERSION}.tar.gz"
-libtool_DOWNLOAD_LOCATION="http://mirror.rit.edu/gnu/gnu/libtool/"
-libtool_ALTERNATE_DOWNLOAD_LOCATION="http://ftp.igh.cnrs.fr/pub/gnu/libtool/"
+libtool_DOWNLOAD_LOCATION="ftp://ftp.igh.cnrs.fr/pub/gnu/libtool/"
+libtool_ALTERNATE_DOWNLOAD_LOCATION="ftp://mirrors.kernel.org/gnu/libtool/"
 libtool_MD5="d2f3b7d4627e69e13514a40e72a24d50"
 
 
