@@ -311,7 +311,7 @@ toSF-scp: check-scp site
 	[@CEYLAN_LOCAL_WEB_DIR@] using scp@CEYLAN_DEFAULT_STYLE@"
 	@echo
 	@opt=$(SCP_OPT); $(SCP) $$opt @CEYLAN_LOCAL_WEB_DIR@/* \
-	@CEYLAN_DEFAULT_SF_USER@@$(SF_WEB_SERVER):$(SF_WEB_DIR)
+	@CEYLAN_DEFAULT_SF_USER@,@UNIX_PROJECT_NAME@@$(SF_WEB_SERVER):$(SF_WEB_DIR)
 	@echo "@CEYLAN_COMMAND_STYLE@    + you can bookmark \
 	@PROJECT_NAME@'s website on Sourceforge at \
 	$(SF_WEB_URL)@CEYLAN_DEFAULT_STYLE@"
