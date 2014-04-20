@@ -479,13 +479,21 @@ generateCustom()
 
 	ACLOCAL_OUTPUT=src/conf/build/m4/aclocal.m4
 
+	# Not used anymore, as, for example with Arch Linux, libtool is
+	# '/bin/libtool', and most if not all m4 files are in /usr/share/aclocal.
+	# Not adding specific includes seems to work correctly now:
+
 	# With newer libtool (ex: 2.2.4), we need to include a whole bunch of *.m4
 	# files, otherwise 'warning: LTOPTIONS_VERSION is m4_require'd but not
 	# m4_defun'd' ... ', same thing for LTSUGAR_VERSION, LTVERSION_VERSION, etc.
-	GUESSED_LIBTOOL_BASE=`which libtool|sed 's|/bin/libtool$||1'`
+	#GUESSED_LIBTOOL_BASE=`which libtool|sed 's|/bin/libtool$||1'`
+
 
 	# Do not use '--acdir=.' since it prevents aclocal from writing its file:
-	execute aclocal -I ${M4_DIR} -I ${GUESSED_LIBTOOL_BASE}/share/aclocal --output=$ACLOCAL_OUTPUT $force $verbose
+	#execute aclocal -I ${M4_DIR} -I ${GUESSED_LIBTOOL_BASE}/share/aclocal --output=$ACLOCAL_OUTPUT $force $verbose
+
+	# Apparently sufficient now:
+	execute aclocal -I ${M4_DIR} --output=$ACLOCAL_OUTPUT $force $verbose
 
 	# automake wants absolutely to find aclocal.m4 in the top-level directory:
 	ln -sf src/conf/build/m4/aclocal.m4
