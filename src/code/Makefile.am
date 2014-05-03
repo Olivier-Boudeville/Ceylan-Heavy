@@ -21,7 +21,7 @@ BUILT_SUBDIRS = \
 EXTRA_SUBDIRS =	@CEYLAN_EXTRA_DIRS@
 
 # Subdirectories taken into account but not especially built:
-OTHER_SUBDIRS = scripts
+OTHER_SUBDIRS =
 
 # These are the subdirectories which will be taken into account now:
 SUBDIRS = $(BUILT_SUBDIRS) $(OTHER_SUBDIRS) $(EXTRA_SUBDIRS)
