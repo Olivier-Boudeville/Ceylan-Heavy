@@ -1,49 +1,14 @@
-;; Default standard emacs location:
+;; Use our 'update-emacs-modules.sh' to update the *.el files of interest.
+
 (setq load-path (cons "~/.emacs.d" load-path))
 
-;; This corresponds to a symbolic link created by our install-erlang.sh script,
-;; so that the next configuration path does not depend on Erlang versions:
-;; (like lib/tools-2.6.11/emacs) 
-(setq load-path (cons "~/Software/Erlang/Erlang-current-install/lib/erlang/emacs" load-path))
-      
-(setq erlang-root-dir "~/Software/Erlang/Erlang-current-install")
-(setq exec-path (cons "~/Software/Erlang/Erlang-current-install/bin" exec-path))
- 
- ;; From the current Erlang install:
-(require 'erlang-start)
-(require 'erlang-flymake)
-
-(require 'erlang)
-(setq auto-mode-alist
-	  (append '(("\\.escript$"  . erlang-mode)) auto-mode-alist))
-
-(add-hook 'erlang-mode-hook 'my-erlang-mode-hook)
-
-(defun my-erlang-mode-hook () )
-
-
-;; To display line numbers on the left edge:
-(global-linum-mode 1)
-(require 'linum)
-
-;; 85 width would already allow to display correctly even files with
-;; 9999 lines, knowing that the leftmost column for line numbers uses
-;; some place. Selecting 88 instead to leave some room to the ... sign
-;; used to show a block was folded (anyway the 80-limit is shown by
-;; background color).
-(add-to-list 'default-frame-alist (cons 'width  88))
-
-;; Depends on the screen height:
-;;(add-to-list 'default-frame-alist (cons 'height 45))
-(add-to-list 'default-frame-alist (cons 'height 53))
-
-
-(require 'whitespace)
-(setq-default whitespace-style '(face trailing lines empty indentation::space space tabs lines-tail indentation space-before-tab space-after-tab))
-(setq-default whitespace-line-column 80)
-(setq global-whitespace-mode 1)
-	
-(global-whitespace-mode 1)
+;; Compiles .el files newer than their .elc counterpart, or not having one:
+;; One can also use M-x byte-compile-file to precompile .el files (ex: linum).
+;; Warning: apparently, unless the .elc file is removed, changes will be
+;; effective only when having started emacs again *twice*.
+;; Now disabled, to avoid spurious errors, like load-path not being then found,
+;; or complaints about free variables:
+;;(byte-recompile-directory "~/.emacs.d" 0)
 
 
 ;; RST files support section.
@@ -55,13 +20,50 @@
 				("\\.rst$"  . rst-mode)
 				("\\.rest$" . rst-mode)) auto-mode-alist))
 
+
 ;; Automatically update the table of contents everytime you adjust a
 ;; section title:
 (add-hook 'rst-adjust-hook 'rst-toc-update)
 
 
+;; Corresponds to conventions in demo-for-css-testing.rst:
+;; (not correctly applied apparently, though)
+(setq rst-preferred-adornments'( (?= over-and-under 0)
+								   (?- over-and-under 0)
+								   (?= simple 0)
+								   (?- simple 0)
+								   (?. simple 0)
+								   (?_ simple 0)
+								   (?* simple 0)
+								   (?: simple 0)
+								   (?+ simple 0) ))
 
-(message "<<<<<<######### init.el version 1.1 #########>>>>>>")
+
+
+;; Erlang support:
+
+;; Adapted from the README distributed with the OTP tarballs:
+
+(setq load-path (cons "~/Software/Erlang/Erlang-current-install/lib/erlang/lib/tools-2.6.15/emacs" load-path))
+(setq erlang-root-dir "~/Software/Erlang/Erlang-current-install/lib/erlang")
+(setq exec-path (cons "~/Software/Erlang/Erlang-current-install/lib/erlang/bin" exec-path))
+
+(require 'erlang-start)
+
+;; Not used anymore, as faulty errors are triggered when using WOOPER:
+;;(require 'erlang-flymake)
+
+
+
+
+(setq auto-mode-alist
+	  (append '(("\\.escript$"  . erlang-mode)) auto-mode-alist))
+
+(add-hook 'erlang-mode-hook 'my-erlang-mode-hook)
+
+(defun my-erlang-mode-hook () )
+
+(message "<<<<<<######### init.el version 1.0 #########>>>>>>")
 
 ;; Indentation:
 ;; Starting from its second line, a multi-line statement should be
@@ -73,8 +75,8 @@
 		;; fixed offset:
 		(arglist-cont-nonempty . 2)
 		(arglist-intro . 2)
-						))
-
+						)
+)
 
 
 ;; Support for C-like languages:
@@ -88,19 +90,10 @@
 (add-hook 'cc-mode-common-hook 'my-c-mode-common-hook)
 
 
-;; Corresponds to conventions in demo-for-css-testing.rst:
-;; (not correctly applied apparently, though)
-(setq rst-preferred-decorations '( (?= over-and-under 0)
-								   (?- over-and-under 0)
-								   (?= simple 0)
-								   (?- simple 0)
-								   (?. simple 0)
-								   (?_ simple 0)
-								   (?* simple 0)
-								   (?: simple 0)
-								   (?+ simple 0) ))
-
-
+;; Displaying of line number on the left:
+;; (see also 'longlines')
+(require 'linum)
+(add-hook 'find-file-hook (lambda () (linum-mode 1)))
 
 
 ;; Not working apparently with emacs 22.2.1:
@@ -112,6 +105,7 @@
 ;; cursor going downward...)
 ;;(require 'physical-line)
 ;;(add-hook 'find-file-hooks 'physical-line-mode-without-exception)
+
 
 
 ;; Automatic indentation while typing:
@@ -137,6 +131,7 @@
 ;;(add-hook 'find-file-hooks 'set-advanced-ret-behaviour)
 
 
+
 (defun fix-behaviours-for-rst-mode ()
   (message "############## Fixing behaviours for RST mode ###########")
 
@@ -146,12 +141,25 @@
   ;; This basic indentation is fine with text modes:
   (global-set-key (kbd "RET") 'newline-and-indent)
 
-  ;; Long lines are normal in text modes:
-  (setq-default whitespace-style '(face trailing empty indentation::space space tabs indentation space-before-tab space-after-tab))
+  ;;Long lines are normal in text modes:
+  (remove-hook 'find-file-hook 'highlight-80+-mode)
 
   )
 
 (add-hook 'rst-mode-hook 'fix-behaviours-for-rst-mode)
+
+
+
+;; Indenting buffers as a whole:
+(defun indent-whole-buffer ()
+  "indent whole buffer"
+  (interactive)
+  (delete-trailing-whitespace)
+  (indent-region (point-min) (point-max) nil)
+  )
+
+;;(add-hook 'find-file-hook 'indent-whole-buffer)
+;;(add-hook 'find-file-hook 'whitespace-cleanup)
 
 
 
@@ -175,6 +183,33 @@
 (setq uniquify-buffer-name-style 'post-forward)
 (setq uniquify-after-kill-buffer-p 1)
 (setq uniquify-ignore-buffers-re "^\\*")
+
+(require 'whitespace)
+(global-whitespace-mode 1)
+;;(setq-default show-trailing-whitespace nil)
+;;(setq whitespace-style '(space tabs lines-tail trailing empty indentation space-before-tab space-after-tab))
+;; Removed: spaces space-mark tab-mark newline-mark
+(setq whitespace-style '(face
+	tabs trailing lines space-before-tab newline
+	indentation empty space-after-tab))
+(setq whitespace-line-column 80)
+
+;; We want to see whether we go past column 80:
+;; (currently disabled, as provided by the whitespace mode)
+;;(require 'highlight-80+)
+;;(add-hook 'find-file-hook 'highlight-80+-mode)
+
+
+;; 85 width would already allow to display correctly even files with
+;; 9999 lines, knowing that the leftmost column for line numbers uses
+;; some place. Selecting 88 instead to leave some room to the ... sign
+;; used to show a block was folded (anyway the 80-limit is shown by
+;; background color).
+(add-to-list 'default-frame-alist (cons 'width  88))
+
+;; Depends on the screen height:
+(add-to-list 'default-frame-alist (cons 'height 35))
+;;(add-to-list 'default-frame-alist (cons 'height 58))
 
 
 ;; Key section:
@@ -322,6 +357,7 @@
 ;; Usable and behaves like expected:
 (global-set-key [f8]              'whitespace-cleanup)
 (global-set-key [XF86Save]        'whitespace-cleanup)
+(global-set-key [XF86AudioNext]   'whitespace-cleanup)
 
 
 ;; Intercepted by Ubuntu:
@@ -370,11 +406,9 @@
 (global-set-key [M-right] 'next-buffer)
 (global-set-key [M-left]  'previous-buffer)
 
-(global-set-key [delete] 'delete-char)	;
+(global-set-key [delete] 'delete-char)
 
 ;;(global-set-key "TAB" 'reindent-then-newline-and-indent)
-
-
 
 
 
@@ -441,14 +475,16 @@
 (add-hook 'text-mode-hook 'flyspell-mode)
 
 (defun fd-switch-dictionary()
-      (interactive)
-      (let* ((dic ispell-current-dictionary)
-    	 (change (if (string= dic "english") "francais" "english")))
-        (ispell-change-dictionary change)
-        (message "Dictionary switched from %s to %s" dic change)
-        ))
-    
-(global-set-key (kbd "<f9>")   'fd-switch-dictionary)
+	  (interactive)
+	  (let* ((dic ispell-current-dictionary)
+		 (change (if (string= dic "english") "francais" "english")))
+		(ispell-change-dictionary change)
+		(message "Dictionary switched from %s to %s" dic change)
+		))
+
+(global-set-key (kbd "<f9>")                   'fd-switch-dictionary)
+(global-set-key (kbd "<XF86AudioLowerVolume>") 'fd-switch-dictionary)
+
 
 ;; Not working apparently:
 ;;(require 'flyspell-guess)
@@ -488,16 +524,10 @@
 ;; Set mouse color
 (set-mouse-color "white")
 
-
-;; For the mouse wheel:
-(mwheel-install)
-
-;; From http://www.emacswiki.org/emacs/AcmeSearch:
+;; For proper mouse search:
 (require 'acme-search)
-
-(define-key global-map [(down-mouse-3)] nil)
-(define-key global-map [(mouse-3)] 'acme-search-forward)
-(define-key global-map [(shift mouse-3)] 'acme-search-backward)
+(global-set-key [(mouse-3)] 'acme-search-forward)
+(global-set-key [(shift mouse-3)] 'acme-search-backward)
 
 
 
@@ -606,21 +636,3 @@
  '(rst-level-6-face ((t (:background "#020" :foreground "#555"))) t))
 
 (delete-other-windows)
-
-
-;; Generated code below:
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector ["#242424" "#e5786d" "#95e454" "#cae682" "#8ac6f2" "#333366" "#ccaa8f" "#f6f3e8"])
- '(custom-enabled-themes (quote (tsdh-dark)))
- '(inhibit-startup-screen t))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(whitespace-line ((t (:background "red" :foreground "white smoke")))))
