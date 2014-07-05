@@ -142,8 +142,9 @@
   (global-set-key (kbd "RET") 'newline-and-indent)
 
   ;;Long lines are normal in text modes:
-  (remove-hook 'find-file-hook 'highlight-80+-mode)
-
+  ;;(remove-hook 'find-file-hook 'highlight-80+-mode)
+  ;; Surely an hack, but works great:
+  (setq whitespace-line-column 9999999)
   )
 
 (add-hook 'rst-mode-hook 'fix-behaviours-for-rst-mode)
@@ -208,7 +209,13 @@
 (add-to-list 'default-frame-alist (cons 'width  88))
 
 ;; Depends on the screen height:
-(add-to-list 'default-frame-alist (cons 'height 35))
+
+;; For a netbook:
+;;(add-to-list 'default-frame-alist (cons 'height 35))
+
+;; For a normal screen:
+(add-to-list 'default-frame-alist (cons 'height 49))
+
 ;;(add-to-list 'default-frame-alist (cons 'height 58))
 
 
