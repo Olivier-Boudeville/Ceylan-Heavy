@@ -144,7 +144,7 @@
   ;;Long lines are normal in text modes:
   ;;(remove-hook 'find-file-hook 'highlight-80+-mode)
   ;; Surely an hack, but works great:
-  (setq whitespace-line-column 9999999)
+  (setq whitespace-line-column 9999)
   )
 
 (add-hook 'rst-mode-hook 'fix-behaviours-for-rst-mode)
