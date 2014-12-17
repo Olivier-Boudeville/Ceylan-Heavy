@@ -2,6 +2,10 @@
 
 (setq load-path (cons "~/.emacs.d/my-modules" load-path))
 
+;; No more annoying, unmutable bell (ex: when reaching buffer bounds):
+(setq ring-bell-function 'ignore)
+
+
 ;; Compiles .el files newer than their .elc counterpart, or not having one:
 ;; One can also use M-x byte-compile-file to precompile .el files (ex: linum).
 ;; Warning: apparently, unless the .elc file is removed, changes will be
@@ -44,7 +48,7 @@
 
 ;; Adapted from the README distributed with the OTP tarballs:
 
-(setq load-path (cons 
+(setq load-path (cons
 "~/Software/Erlang/Erlang-current-install/lib/erlang/lib/tools-2.7.1/emacs" load-path))
 (setq erlang-root-dir "~/Software/Erlang/Erlang-current-install/lib/erlang")
 (setq exec-path (cons "~/Software/Erlang/Erlang-current-install/lib/erlang/bin" exec-path))
@@ -212,10 +216,10 @@
 ;; Depends on the screen height:
 
 ;; For a netbook:
-;;(add-to-list 'default-frame-alist (cons 'height 35))
+(add-to-list 'default-frame-alist (cons 'height 35))
 
 ;; For a normal screen:
-(add-to-list 'default-frame-alist (cons 'height 49))
+;;(add-to-list 'default-frame-alist (cons 'height 49))
 
 ;;(add-to-list 'default-frame-alist (cons 'height 58))
 
