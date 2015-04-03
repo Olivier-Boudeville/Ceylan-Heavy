@@ -49,7 +49,7 @@
 ;; Adapted from the README distributed with the OTP tarballs:
 
 (setq load-path (cons
-"~/Software/Erlang/Erlang-current-install/lib/erlang/lib/tools-2.7.1/emacs" load-path))
+"~/Software/Erlang/Erlang-current-install/lib/erlang/lib/tools-2.7.2/emacs" load-path))
 (setq erlang-root-dir "~/Software/Erlang/Erlang-current-install/lib/erlang")
 (setq exec-path (cons "~/Software/Erlang/Erlang-current-install/lib/erlang/bin" exec-path))
 
