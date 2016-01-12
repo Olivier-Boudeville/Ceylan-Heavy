@@ -48,8 +48,14 @@
 
 ;; Adapted from the README distributed with the OTP tarballs:
 
+;; Note: 'emacs' is here a symbolic link typically created by our
+;; install-erlang.sh script, so that upgrading Erlang does not risk
+;; to make this directory (ex: lib/tools-2.8.2/emacs) vanish because
+;; of a change in the 'tools' version (thus requiring the current file
+;; to be endlessly modified)
+
 (setq load-path (cons
-"~/Software/Erlang/Erlang-current-install/lib/erlang/lib/tools-2.7.2/emacs" load-path))
+"~/Software/Erlang/Erlang-current-install/lib/erlang/emacs" load-path))
 (setq erlang-root-dir "~/Software/Erlang/Erlang-current-install/lib/erlang")
 (setq exec-path (cons "~/Software/Erlang/Erlang-current-install/lib/erlang/bin" exec-path))
 
@@ -216,10 +222,10 @@
 ;; Depends on the screen height:
 
 ;; For a netbook:
-(add-to-list 'default-frame-alist (cons 'height 35))
+;;(add-to-list 'default-frame-alist (cons 'height 35))
 
 ;; For a normal screen:
-;;(add-to-list 'default-frame-alist (cons 'height 49))
+(add-to-list 'default-frame-alist (cons 'height 49))
 
 ;;(add-to-list 'default-frame-alist (cons 'height 58))
 
