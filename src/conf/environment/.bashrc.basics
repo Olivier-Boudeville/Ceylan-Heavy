@@ -199,10 +199,12 @@ if [ -z "${CEYLAN_ROOT}" ] ; then
    export CEYLAN_ROOT="${SOFTWARE_ROOT}/ceylan"
 fi
 
+export CEYLAN_HEAVY=${CEYLAN_ROOT}/Ceylan-Heavy
 export CEYLAN_HULL=${CEYLAN_ROOT}/Ceylan-Hull
 export CEYLAN_MYRIAD=${CEYLAN_ROOT}/Ceylan-Myriad
-export CEYLAN_WOOPER=${CEYLAN_ROOT}/Ceylan-WOOPER
+export CEYLAN_SNAKE=${CEYLAN_ROOT}/Ceylan-Snake
 export CEYLAN_TRACES=${CEYLAN_ROOT}/Ceylan-Traces
+export CEYLAN_WOOPER=${CEYLAN_ROOT}/Ceylan-WOOPER
 
 export PATH=${CEYLAN_HULL}:${CEYLAN_BIN}:${CEYLAN_MYRIAD}/src/scripts:${PATH}
 
