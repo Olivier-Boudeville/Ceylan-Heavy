@@ -10,7 +10,7 @@ setCompiler()
 {
 
 	# Compilers section:
-	
+
 	# Intel C++ compiler:
 	alias icc=/opt/intel/compiler70/ia32/bin/icc
 
@@ -33,8 +33,8 @@ setCompiler()
 			export C_COMPILER=$GCC_ALTERNATE_LOCATION
 			export GCC_ROOT=$GCC_ALTERNATE_ROOT
 		else
-			unset C_COMPILER	
-		fi	
+			unset C_COMPILER
+		fi
 	fi
 
 
@@ -49,9 +49,9 @@ setCompiler()
 			alias g++='$GPP_ALTERNATE_LOCATION'
 			export CPP_COMPILER=$GPP_ALTERNATE_LOCATION
 		else
-			unset CPP_COMPILER	
+			unset CPP_COMPILER
 			unset GCC_ROOT
-		fi	
+		fi
 	fi
 
 }
@@ -70,9 +70,9 @@ export PATH="$HOME/Software/Sox/bin:${PATH}"
 
 # Linux-specific aliases:
 
-alias l='ls -aF --color=auto'
-alias ls='ls -F --color=auto'
-alias ll='ls -aF -l --color=auto'
+alias l='ls -a --color=auto'
+alias ls='ls --color=auto'
+alias ll='ls -a -l --color=auto'
 
 
 # "cd" keyboard counterparts:

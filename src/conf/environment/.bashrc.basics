@@ -206,7 +206,7 @@ export CEYLAN_TRACES=${CEYLAN_ROOT}/Ceylan-Traces
 
 export PATH=${CEYLAN_HULL}:${CEYLAN_BIN}:${CEYLAN_MYRIAD}/src/scripts:${PATH}
 
-
+export EDITOR=emacs
 
 # Options for X servers:
 #
