@@ -1,31 +1,57 @@
-# Bash configuration file.
+# Bash main configuration file.
 
 # Created 2002, June 26.
-# Author: Olivier Boudeville (olivier.boudeville@online.fr)
+# Author : Olivier Boudeville (olivier (dot) boudeville (at) esperide (dot) com)
 
-# This script triggers the UNIX-common part (.bashrc.common) and then the
-# OS-specific one, if available (ex: .bashrc.Linux, .bashrc.SunOS, etc.)
+# This script triggers in turn (order matters!) the relevant bash configuration
+# files.
+
+
+# Sources specified bash configuration file, if existing.
 #
-# An initial host-related overriding hook is provided as well.
+# (helper)
+#
+source_if_exists()
+{
+
+	target_file="${1}"
+
+	# Regular file or symlink allowed:
+	#
+	if [ -f "${target_file}" ] || [ -h "${target_file}" ] ; then
+
+		#echo "  (sourcing ${target_file})"
+		source "${target_file}"
+
+	else
+
+		!
+		#echo "  (no '${target_file}' found, hence skipped)" 1>&2
+
+	fi
+
+}
+
 
 
 # Retrieves the directory where this file and its helper files are stored:
-MYHOME=$HOME
+#
+MYHOME="${HOME}"
 
 
-# Per-host configuration, if needed:
-if [ -f $MYHOME/.bashrc.local ] ; then
-	source $MYHOME/.bashrc.local
-fi
+# From the most specific cases to the least:
 
+# Local, host-specific overridden settings:
+source_if_exists "${MYHOME}/.bashrc.local"
 
-# Common to all Unices:
-if [ -f $MYHOME/.bashrc.common ] ; then
-	source $MYHOME/.bashrc.common
-fi
+# Context-specific settings (ex: for a given organisation):
+source_if_exists "${MYHOME}/.bashrc.contextual"
 
+# Platform-specific settings:
+source_if_exists "${MYHOME}/.bashrc.$(uname)"
 
-# Particular to this specific operating system:
-if [ -f $MYHOME/.bashrc.`uname` ] ; then
-	source $MYHOME/.bashrc.`uname`
-fi
+# User-specific settings:
+source_if_exists "${MYHOME}/.bashrc.$(whoami)"
+
+# General-purpose, universal basic settings:
+source_if_exists "${MYHOME}/.bashrc.basics"

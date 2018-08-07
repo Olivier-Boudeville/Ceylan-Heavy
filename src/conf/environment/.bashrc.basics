@@ -1,0 +1,221 @@
+# Author: Olivier Boudeville [olivier (dot) boudeville (at) esperide (dot) com]
+#
+# Bash Basics: everything that is not specific to any particular setting.
+#
+# Creation date: 26/6/2002
+
+# See also:  http://www.tldp.org/LDP/abs/html/sample-bashrc.html
+
+
+if [ -z "$PROFILE_LOADED" -a -e /etc/profile ]; then
+	. /etc/profile
+fi
+
+#-----------------------------------
+# Source global definitions (if any)
+#-----------------------------------
+
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+umask 002
+
+
+#---------------
+# Some settings
+#---------------
+
+#ulimit -S -c 0		# Don't want any coredumps
+set -o notify
+set -o noclobber
+set -o ignoreeof
+#set -o nounset
+#set -o xtrace          # useful for debuging
+
+# Enable options:
+shopt -s cdspell
+shopt -s cdable_vars
+shopt -s checkhash
+shopt -s checkwinsize
+shopt -s mailwarn
+shopt -s sourcepath
+shopt -s no_empty_cmd_completion  # bash>=2.04 only
+shopt -s cmdhist
+shopt -s histappend histreedit histverify
+shopt -s extglob   # necessary for programmable completion
+shopt -s direxpand # To avoid that 'cp * $T/' becomes 'cp * \$T/' when tab is hit
+
+if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+  . /etc/bash_completion
+fi
+
+# Disable options:
+shopt -u mailwarn
+unset MAILCHECK   # I don't want my shell to warn me of incoming mail
+shopt -s checkwinsize
+
+export TIMEFORMAT=$'\nreal %3R\tuser %3U\tsys %3S\tpcpu %P\n'
+export HISTIGNORE="&:bg:fg:ll:h"
+export HOSTFILE=$HOME/.hosts   # Put a list of remote hosts in ~/.hosts
+
+
+# They are possibly already set in ~/.bashrc.local:
+
+if [ -z "${HOME_ROOT}" ] ; then
+   export HOME_ROOT="${HOME}"
+fi
+
+
+if [ -z "${SOFTWARE_ROOT}" ] ; then
+   export SOFTWARE_ROOT="${HOME_ROOT}/Software"
+fi
+
+
+# Therefore ~/bin can override system ones:
+export PATH=${SOFTWARE_ROOT}/bin:$HOME/bin:/usr/bin:/sbin:/usr/local/bin:/usr/bin/X11:/usr/sbin:$PATH:.
+
+
+export LS_COLORS='no=00:fi=00:di=01;35:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=41;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jpg=01;35:*.png=01;35:*.gif=01;35:*.bmp=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.png=01;35:*.mpg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:'
+
+
+# Inspired from http://www.micahcarrick.com/show-git-branch-in-shell-prompt.html:
+#
+parse_git_branch() {
+ # git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+ res=$(git branch 2>/dev/null)
+ if [ -n "$res" ] ; then
+
+	branch=$(echo "$res" | sed -e '/^[^*]/d' -e 's|* ||')
+	echo " [$branch]"
+
+ fi
+}
+
+
+# With user and verbatim host:
+#export PS1="\n\e[95m\h \e[92m\u\e[95m \e[96m\t \e[93m"'$PWD'"\e[96m\$(parse_git_branch)\[\033[31m\]\e[95m\e[97m\n>"
+
+
+export PS1="\n\e[95m${host} \e[92m\u\e[95m \e[96m\t \e[93m"'$PWD'"\e[96m\$(parse_git_branch)\[\033[31m\]\e[95m\e[97m\n>"
+
+
+# Without user:
+#export PS1="\n\e[95m\h\e[95m \e[96m\t \e[93m"'$PWD'"\e[92m\$(parse_git_branch)\[\033[31m\]\e[95m\e[97m\n>"
+
+
+
+HISTSIZE=500
+HISTCONTROL=ignoreboth
+
+IGNOREOF=1
+
+
+alias mo='more'
+
+alias ll='ls -l'
+alias la='ls -alg $*|more'
+
+alias lr='ls -Rx $*|more'
+alias dir='ls -l $*|more'
+
+alias cls='ct ls'
+
+alias c='cd'
+
+alias s='cd ..'
+alias vf='cd'
+alias dc='cd'
+alias cp='cp -i'
+alias rm='rm -i'
+alias mv='mv -i'
+alias mkdir='mkdir -p'
+
+alias m='make'
+alias m='make 2>&1'
+alias ma='make all'
+
+alias g='git'
+alias ga='git add'
+alias gp='git push'
+alias gl='git pull'
+
+alias gr='grep --color'
+alias rgr='regrep'
+
+alias j='jobs -l'
+#alias r='rlogin'
+alias h='history'
+
+alias pu="pushd"
+alias po="popd"
+
+alias top='top.sh'
+
+
+# Re-run the previous, supposedly failed command, as sudoer:
+alias please='sudo $(history -p \!\!)'
+
+
+# Printer section.
+
+alias print='lpr -p'
+alias printText='a2ps'
+
+
+
+alias r='fc -e -'
+alias x='/usr/bin/X11/xterm -bg black -fg white -name $(basename $PWD) &'
+
+
+# Re-used again, so that Python interpreters built from sources make the right
+# use of the "up arrow" and all:
+#
+# If 'ImportError: No module named readline' then install libncurses-dev and
+# libreadline-dev (and rebuild)
+#
+export PYTHONSTARTUP=~/.pythonrc.py
+
+# For Python's virtual env:
+export PATH=${PATH}:${HOME}/.local/bin
+
+alias psm='echo "COMMAND            PID %CPU   VSZ USER"; ps -e -o args,pid,pcpu,vsz,user | grep $(whoami)'
+
+export TRASH=$HOME/tmp/Trash
+
+
+export LOGMX_ROOT="${SOFTWARE_ROOT}/LogMX/LogMX-current-install"
+export PATH="${LOGMX_ROOT}:${PATH}"
+
+
+export ERLANG_ROOT="${SOFTWARE_ROOT}/Erlang"
+export PATH="${ERLANG_ROOT}/Erlang-current-install/bin:${PATH}"
+
+
+set -o emacs
+unset PROFILE_LOADED
+
+if [ -z "${CEYLAN_ROOT}" ] ; then
+   export CEYLAN_ROOT="${SOFTWARE_ROOT}/ceylan"
+fi
+
+export CEYLAN_HULL=${CEYLAN_ROOT}/Ceylan-Hull
+export CEYLAN_MYRIAD=${CEYLAN_ROOT}/Ceylan-Myriad
+export CEYLAN_WOOPER=${CEYLAN_ROOT}/Ceylan-WOOPER
+export CEYLAN_TRACES=${CEYLAN_ROOT}/Ceylan-Traces
+
+export PATH=${CEYLAN_HULL}:${CEYLAN_BIN}:${CEYLAN_MYRIAD}/src/scripts:${PATH}
+
+
+
+# Options for X servers:
+#
+# (note: -Y, i.e. trusted mode, shall be preferred to ${SSH_X_OPT, otherwise
+# your AltGr may not work in most text editors...)
+SSH_X_OPT="-Y"
+
+
+# Keyboard configuration moved to '~/.bash_profile'.
+
+
+#echo "-- Bash basically initialized --"
