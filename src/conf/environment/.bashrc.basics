@@ -135,6 +135,8 @@ alias m='make'
 alias m='make 2>&1'
 alias ma='make all'
 
+alias mbd='make build-debug'
+
 alias g='git'
 alias ga='git add'
 alias gp='git push'
