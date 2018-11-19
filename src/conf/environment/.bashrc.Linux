@@ -73,6 +73,7 @@ export PATH="$HOME/Software/Sox/bin:${PATH}"
 alias l='ls -a --color=auto'
 alias ls='ls --color=auto'
 alias ll='ls -a -l --color=auto'
+alias lo='locate'
 
 
 # "cd" keyboard counterparts:
@@ -88,7 +89,7 @@ alias vf='cd $1'
 #echo "-- Bash initialized according to Boudeville Standards on Linux --"
 
 
-#FORTUNE=`which fortune`
+#FORTUNE=$(which fortune)
 #
 #if [ -x "${FORTUNE}" ]; then
 #	echo
