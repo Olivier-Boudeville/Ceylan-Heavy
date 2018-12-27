@@ -1,1 +1,11 @@
 # Localhost-specific settings shall be specified here.
+
+export PROJECTS=$HOME/Projects
+
+export LOANI_REPOSITORY=$PROJECTS/LOANI-latest/LOANI-repository
+
+export CEYLAN_ROOT=$LOANI_ROOT/ceylan
+
+export PATH=/usr/local/Ceylan-Hull:$PATH
+
+hostname=$(hostname)

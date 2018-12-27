@@ -26,7 +26,7 @@ umask 002
 # Some settings
 #---------------
 
-#ulimit -S -c 0		# Don't want any coredumps
+#ulimit -S -c 0     # Don't want any coredumps
 set -o notify
 set -o noclobber
 set -o ignoreeof
@@ -63,12 +63,17 @@ export HOSTFILE=$HOME/.hosts   # Put a list of remote hosts in ~/.hosts
 # They are possibly already set in ~/.bashrc.local:
 
 if [ -z "${HOME_ROOT}" ] ; then
+
    export HOME_ROOT="${HOME}"
+
 fi
 
 
 if [ -z "${SOFTWARE_ROOT}" ] ; then
+
    export SOFTWARE_ROOT="${HOME_ROOT}/Software"
+   export PATH="${SOFTWARE_ROOT}/bin/:${PATH}"
+
 fi
 
 
@@ -76,7 +81,9 @@ fi
 export PATH=${SOFTWARE_ROOT}/bin:$HOME/bin:/usr/bin:/sbin:/usr/local/bin:/usr/bin/X11:/usr/sbin:$PATH:.
 
 
+
 export LS_COLORS='no=00:fi=00:di=01;35:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=41;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jpg=01;35:*.png=01;35:*.gif=01;35:*.bmp=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.png=01;35:*.mpg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:'
+
 
 
 # Inspired from http://www.micahcarrick.com/show-git-branch-in-shell-prompt.html:
@@ -97,7 +104,7 @@ parse_git_branch() {
 #export PS1="\n\e[95m\h \e[92m\u\e[95m \e[96m\t \e[93m"'$PWD'"\e[96m\$(parse_git_branch)\[\033[31m\]\e[95m\e[97m\n>"
 
 
-export PS1="\n\e[95m${host} \e[92m\u\e[95m \e[96m\t \e[93m"'$PWD'"\e[96m\$(parse_git_branch)\[\033[31m\]\e[95m\e[97m\n>"
+export PS1="\n\e[95m${hostname} \e[92m\u\e[95m \e[96m\t \e[93m"'$PWD'"\e[96m\$(parse_git_branch)\[\033[31m\]\e[95m\e[97m\n>"
 
 
 # Without user:
@@ -215,6 +222,7 @@ export EDITOR=emacs
 # (note: -Y, i.e. trusted mode, shall be preferred to ${SSH_X_OPT, otherwise
 # your AltGr may not work in most text editors...)
 SSH_X_OPT="-Y"
+
 
 
 # Keyboard configuration moved to '~/.bash_profile'.

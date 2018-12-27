@@ -79,6 +79,9 @@ alias ll='ls -a -l --color=auto'
 alias xs='cd $1'
 alias vf='cd $1'
 
+alias lo='locate'
+
+alias mbd='make all CORE_COUNT=1 | more'
 
 # Versions and path for OSDL and Ceylan set in .bashrc.common
 
