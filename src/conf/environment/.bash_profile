@@ -2,6 +2,7 @@
 # ~/.bash_profile
 #
 
+echo "(bash profile sourced)"
 
 # To disable the 'capslock' key:
 setxkbmap -option ctrl:nocaps 2>/dev/null
@@ -16,7 +17,7 @@ xmodmap -e 'keycode 118 =' 2>/dev/null
 NUMLOCK_TOOL=$(which numlockx 2>/dev/null)
 
 if [ -x "${NUMLOCK_TOOL}" ]; then
-    ${NUMLOCK_TOOL} on
+	${NUMLOCK_TOOL} on
 fi
 
 # To disable the 'numlock' key:

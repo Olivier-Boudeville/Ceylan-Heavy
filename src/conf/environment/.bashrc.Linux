@@ -58,8 +58,10 @@ setCompiler()
 
 
 # Sox:
-export PATH="$HOME/Software/Sox/bin:${PATH}"
+#export PATH="$HOME/Software/Sox/bin:${PATH}"
 
+# For any general script to be available:
+export PATH=${PATH}:${HOME}/bin
 
 # Python Imaging Library (PIL):
 #IMAGING_VERSION=1.1.4
@@ -73,6 +75,7 @@ export PATH="$HOME/Software/Sox/bin:${PATH}"
 alias l='ls -a --color=auto'
 alias ls='ls --color=auto'
 alias ll='ls -a -l --color=auto'
+alias lo='locate'
 
 
 # "cd" keyboard counterparts:
@@ -91,7 +94,7 @@ alias mbd='make all CORE_COUNT=1 | more'
 #echo "-- Bash initialized according to Boudeville Standards on Linux --"
 
 
-#FORTUNE=`which fortune`
+#FORTUNE=$(which fortune)
 #
 #if [ -x "${FORTUNE}" ]; then
 #	echo
