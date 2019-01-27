@@ -85,6 +85,8 @@ alias vf='cd $1'
 alias lo='locate'
 
 alias mbd='make all CORE_COUNT=1 | more'
+alias mr='make rebuild'
+
 
 # Versions and path for OSDL and Ceylan set in .bashrc.common
 
