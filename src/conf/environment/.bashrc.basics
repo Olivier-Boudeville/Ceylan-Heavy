@@ -118,13 +118,16 @@ HISTCONTROL=ignoreboth
 IGNOREOF=1
 
 
-alias mo='more'
+#alias mo='most'
+alias mo='less'
+
+export LESS="-r -X"
 
 alias ll='ls -l'
-alias la='ls -alg $*|more'
+alias la="ls -alg $*|${mo}"
 
-alias lr='ls -Rx $*|more'
-alias dir='ls -l $*|more'
+alias lr="ls -Rx $*|${mo}"
+alias dir="ls -l $*|${mo}"
 
 alias cls='ct ls'
 
@@ -149,7 +152,7 @@ alias ga='git add'
 alias gp='git push'
 alias gl='git pull'
 
-alias gr='grep --color'
+alias gr='grep --color=always'
 alias rgr='regrep'
 
 alias j='jobs -l'
@@ -209,15 +212,26 @@ if [ -z "${CEYLAN_ROOT}" ] ; then
 fi
 
 export CEYLAN_HEAVY=${CEYLAN_ROOT}/Ceylan-Heavy
-export CEYLAN_HULL=${CEYLAN_ROOT}/Ceylan-Hull
+
+export CEYLAN_HULL=/usr/local/Ceylan-Hull
+
+if [ ! -d "${CEYLAN_HULL}" ] ; then
+
+   export CEYLAN_HULL=${CEYLAN_ROOT}/Ceylan-Hull
+
+fi
+
 export CEYLAN_MYRIAD=${CEYLAN_ROOT}/Ceylan-Myriad
 export CEYLAN_SNAKE=${CEYLAN_ROOT}/Ceylan-Snake
 export CEYLAN_TRACES=${CEYLAN_ROOT}/Ceylan-Traces
 export CEYLAN_WOOPER=${CEYLAN_ROOT}/Ceylan-WOOPER
+export CEYLAN_SEAPLUS=${CEYLAN_ROOT}/Ceylan-Seaplus
+
 
 export PATH=${CEYLAN_HULL}:${CEYLAN_BIN}:${CEYLAN_MYRIAD}/src/scripts:${PATH}
 
-export EDITOR=emacs
+#export EDITOR=emacs
+export EDITOR='emacsclient --alternate-editor=emacs'
 
 # Options for X servers:
 #
