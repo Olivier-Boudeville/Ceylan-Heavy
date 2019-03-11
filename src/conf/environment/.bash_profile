@@ -2,7 +2,7 @@
 # ~/.bash_profile
 #
 
-echo "(bash profile sourced)"
+#echo "(bash profile sourced)"
 
 # To disable the 'capslock' key:
 setxkbmap -option ctrl:nocaps 2>/dev/null

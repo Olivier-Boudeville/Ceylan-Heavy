@@ -40,6 +40,9 @@ MYHOME="${HOME}"
 
 
 # From the most specific cases to the least:
+#
+# (note however that general settings may then overwrite specific ones, if
+# blindly settings values)
 
 # Local, host-specific overridden settings:
 source_if_exists "${MYHOME}/.bashrc.local"
