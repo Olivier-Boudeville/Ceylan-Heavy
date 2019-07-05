@@ -226,7 +226,8 @@ export PATH="${LOGMX_ROOT}:${PATH}"
 
 
 export ERLANG_ROOT="${SOFTWARE_ROOT}/Erlang"
-export PATH="${ERLANG_ROOT}/Erlang-current-install/bin:${PATH}"
+
+export PATH="${ERLANG_ROOT}/Erlang-current-install/bin:${ERLANG_ROOT}/Erlang-current-install/lib/erlang/:${PATH}"
 
 
 set -o emacs
@@ -255,8 +256,8 @@ export CEYLAN_SEAPLUS=${CEYLAN_ROOT}/Ceylan-Seaplus
 
 export PATH=${CEYLAN_HULL}:${CEYLAN_BIN}:${CEYLAN_MYRIAD}/src/scripts:${PATH}
 
-#export EDITOR=emacs
-export EDITOR='emacsclient --alternate-editor=emacs'
+export EDITOR=emacs
+#export EDITOR='emacsclient --alternate-editor=emacs'
 
 # Options for X servers:
 #
