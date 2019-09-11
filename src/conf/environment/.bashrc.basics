@@ -247,10 +247,12 @@ if [ ! -d "${CEYLAN_HULL}" ] ; then
 
 fi
 
-export CEYLAN_MYRIAD=${CEYLAN_ROOT}/Ceylan-Myriad
 export CEYLAN_SNAKE=${CEYLAN_ROOT}/Ceylan-Snake
-export CEYLAN_TRACES=${CEYLAN_ROOT}/Ceylan-Traces
-export CEYLAN_WOOPER=${CEYLAN_ROOT}/Ceylan-WOOPER
+
+export CEYLAN_MYRIAD=${CEYLAN_ROOT}/myriad
+export CEYLAN_WOOPER=${CEYLAN_ROOT}/wooper
+export CEYLAN_TRACES=${CEYLAN_ROOT}/traces
+
 export CEYLAN_SEAPLUS=${CEYLAN_ROOT}/Ceylan-Seaplus
 
 
