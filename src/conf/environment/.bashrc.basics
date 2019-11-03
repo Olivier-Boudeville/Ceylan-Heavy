@@ -50,13 +50,11 @@ if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
   . /etc/bash_completion
 fi
 
-
 # Some terminals do not manage UTF8:
 LANG=en_GB.utf8
 #LANG=en_GB
 #LANG=fr_FR.iso885915@euro
 #LANG=fr_FR.utf8
-
 
 # Disable options:
 shopt -u mailwarn
@@ -107,6 +105,7 @@ parse_git_branch() {
  fi
 }
 
+hostname=$(hostname --short)
 
 # With user and verbatim host:
 #export PS1="\n\e[95m\h \e[92m\u\e[95m \e[96m\t \e[93m"'$PWD'"\e[96m\$(parse_git_branch)\[\033[31m\]\e[95m\e[97m\n>"
@@ -152,7 +151,6 @@ alias la="ls -alg $*|${mo}"
 alias lr="ls -Rx $*|${mo}"
 alias dir="ls -l $*|${mo}"
 
-
 alias cls='ct ls'
 
 alias c='cd'
@@ -172,12 +170,15 @@ alias ma='make all'
 alias mbd='make build-debug'
 alias mr='make rebuild'
 
+
 alias g='git'
 alias ga='git add'
 alias gp='git push'
 alias gl='git pull'
 
+#alias gr='grep --color'
 alias gr='grep --color=always'
+
 alias rgr='regrep'
 
 alias j='jobs -l'
@@ -226,36 +227,55 @@ export PATH="${LOGMX_ROOT}:${PATH}"
 
 
 export ERLANG_ROOT="${SOFTWARE_ROOT}/Erlang"
-
 export PATH="${ERLANG_ROOT}/Erlang-current-install/bin:${ERLANG_ROOT}/Erlang-current-install/lib/erlang/:${PATH}"
 
 
 set -o emacs
 unset PROFILE_LOADED
 
+
+# Do not overwrite any already-set (ex: contextual) information:
+
 if [ -z "${CEYLAN_ROOT}" ] ; then
    export CEYLAN_ROOT="${SOFTWARE_ROOT}/ceylan"
 fi
 
-export CEYLAN_HEAVY=${CEYLAN_ROOT}/Ceylan-Heavy
-
-export CEYLAN_HULL=/usr/local/Ceylan-Hull
-
-if [ ! -d "${CEYLAN_HULL}" ] ; then
-
-   export CEYLAN_HULL=${CEYLAN_ROOT}/Ceylan-Hull
-
+if [ -z "${CEYLAN_HEAVY}" ] ; then
+   export CEYLAN_HEAVY=${CEYLAN_ROOT}/heavy
 fi
 
-export CEYLAN_SNAKE=${CEYLAN_ROOT}/Ceylan-Snake
+if [ -z "${CEYLAN_HULL}" ] ; then
+   export CEYLAN_HULL=${CEYLAN_ROOT}/hull
+fi
 
-export CEYLAN_MYRIAD=${CEYLAN_ROOT}/myriad
-export CEYLAN_WOOPER=${CEYLAN_ROOT}/wooper
-export CEYLAN_TRACES=${CEYLAN_ROOT}/traces
+if [ -z "${CEYLAN_MYRIAD}" ] ; then
+   export CEYLAN_MYRIAD=${CEYLAN_ROOT}/myriad
+fi
 
-export CEYLAN_SEAPLUS=${CEYLAN_ROOT}/Ceylan-Seaplus
+if [ -z "${CEYLAN_WOOPER}" ] ; then
+   export CEYLAN_WOOPER=${CEYLAN_ROOT}/wooper
+fi
+
+if [ -z "${CEYLAN_TRACES}" ] ; then
+   export CEYLAN_TRACES=${CEYLAN_ROOT}/traces
+fi
+
+if [ -z "${CEYLAN_SEAPLUS}" ] ; then
+   export CEYLAN_SEAPLUS=${CEYLAN_ROOT}/seaplus
+fi
+
+if [ -z "${CEYLAN_MOBILE}" ] ; then
+   export CEYLAN_MOBILE=${CEYLAN_ROOT}/mobile
+fi
+
+if [ -z "${CEYLAN_SNAKE}" ] ; then
+   export CEYLAN_SNAKE=${CEYLAN_ROOT}/snake
+fi
 
 
+# ':${CEYLAN_MYRIAD}/src/apps/generate-password' removed, as, in ~/Software/bin,
+# generate-password.sh is expected to be a symlink to the right script:
+#
 export PATH=${CEYLAN_HULL}:${CEYLAN_BIN}:${CEYLAN_MYRIAD}/src/scripts:${PATH}
 
 export EDITOR=emacs
