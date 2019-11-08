@@ -287,7 +287,7 @@ export EDITOR=emacs
 # your AltGr may not work in most text editors...)
 SSH_X_OPT="-Y"
 
-
+alias mkcd='function _mkcd(){ mkdir "$1" && cd "$1"; };_mkcd'
 
 # Keyboard configuration moved to '~/.bash_profile'.
 
