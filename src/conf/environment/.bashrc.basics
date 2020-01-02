@@ -1,10 +1,11 @@
+
 # Author: Olivier Boudeville [olivier (dot) boudeville (at) esperide (dot) com]
 #
 # Bash Basics: everything that is not specific to any particular setting.
 #
 # Creation date: 26/6/2002
 
-# See also:  http://www.tldp.org/LDP/abs/html/sample-bashrc.html
+# See also: http://www.tldp.org/LDP/abs/html/sample-bashrc.html
 
 
 if [ -z "$PROFILE_LOADED" -a -e /etc/profile ]; then
@@ -136,7 +137,7 @@ PAGER=$(which ${PAGER_NAME} 2>/dev/null)
 
 if [ ! -x "${PAGER}" ] ; then
 
-   # Preferred to less:
+   # Preferred to less (content stays in terminal window afterwards):
    PAGER=$(which more)
 
    #PAGER=$(which less) --no-init
@@ -147,6 +148,9 @@ alias mo="${PAGER}"
 
 alias ll='ls -l'
 alias la="ls -alg $*|${mo}"
+
+alias lc='ls -clt'
+alias sl='ls'
 
 alias lr="ls -Rx $*|${mo}"
 alias dir="ls -l $*|${mo}"
@@ -161,7 +165,9 @@ alias dc='cd'
 alias cp='cp -i'
 alias rm='rm -i'
 alias mv='mv -i'
+
 alias mkdir='mkdir -p'
+alias mdkir='mkdir -p'
 
 alias m='make'
 alias m='make 2>&1'
@@ -183,7 +189,9 @@ alias rgr='regrep'
 
 alias j='jobs -l'
 #alias r='rlogin'
-alias h='history'
+
+# Limiting the screen clobber:
+alias h='history 100'
 
 alias pu="pushd"
 alias po="popd"
@@ -200,6 +208,7 @@ alias please='sudo $(history -p \!\!)'
 alias print='lpr -p'
 alias printText='a2ps'
 
+alias lock='xlock -mode blank'
 
 
 alias r='fc -e -'
