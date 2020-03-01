@@ -119,9 +119,29 @@ export PS1="\n\e[95m${hostname} \e[92m\u\e[95m \e[96m\t \e[93m"'$PWD'"\e[96m\$(p
 #export PS1="\n\e[95m\h\e[95m \e[96m\t \e[93m"'$PWD'"\e[92m\$(parse_git_branch)\[\033[31m\]\e[95m\e[97m\n>"
 
 
+# History: not too much memory (saturates consoles; however one may use 'history
+# 150' for example to limit outputs, see the 'h' alias), no duplicates stored,
+# and commands started with a space *are* now again recorded:
 
-HISTSIZE=500
-HISTCONTROL=ignoreboth
+HISTSIZE=2000
+
+# No ignorespace wanted (so no ignoreboth either):
+HISTCONTROL=ignoredups
+
+
+# Removes from the bash history the last executed command:
+#
+# (more reliable than setting temporarily export HISTFILE=/dev/null)
+#
+function forget_last_command()
+{
+
+	# Done twice to remove the call to this function as well; also: force-written in history file for proper, safer deleting:
+
+	history -d $( history | awk 'END{print $1-1}' ) && history -d $( history | awk 'END{print $1}' ) && history -w
+
+}
+
 
 IGNOREOF=1
 
@@ -131,7 +151,7 @@ IGNOREOF=1
 export PAGER_NAME=less
 #export PAGER_NAME=most
 
-export LESS="-r -X"
+export LESS="-r -X --force"
 
 PAGER=$(which ${PAGER_NAME} 2>/dev/null)
 
