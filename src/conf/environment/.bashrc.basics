@@ -144,7 +144,11 @@ if [ ! -x "${PAGER}" ] ; then
 
 fi
 
+# Not wanting systemctl to scroll horizontally:
+export SYSTEMD_PAGER=/bin/more
+
 alias mo="${PAGER}"
+
 
 alias ll='ls -l'
 alias la="ls -alg $*|${mo}"
