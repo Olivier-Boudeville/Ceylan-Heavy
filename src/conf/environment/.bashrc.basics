@@ -160,7 +160,10 @@ IGNOREOF=1
 # Preferred pager:
 
 #export PAGER_NAME=more
+
+# Use ':n' to display the next file:
 export PAGER_NAME=less
+
 #export PAGER_NAME=most
 
 export LESS="-r -X --force"
