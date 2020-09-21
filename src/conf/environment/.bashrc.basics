@@ -157,7 +157,7 @@ PAGER=$(which ${PAGER_NAME} 2>/dev/null)
 
 if [ ! -x "${PAGER}" ] ; then
 
-   # Preferred to less (content stays in terminal window afterwards):
+   # Used to be preferred to less (content stays in terminal window afterwards):
    PAGER=$(which more)
 
    #PAGER=$(which less) --no-init
@@ -207,7 +207,7 @@ alias gp='git push'
 alias gl='git pull'
 
 #alias gr='grep --color'
-alias gr='grep --color=always'
+alias gr='grep --color=always --text'
 
 alias rgr='regrep'
 
