@@ -1,0 +1,23 @@
+# See https://www.emacswiki.org/emacs/GnuScreen to avoid screen's Ctrl-a
+# interfering with Emacs conventions.
+
+
+
+# To replace Ctrl-a (emacs conventions):
+# Ctrl-o is already used by nano:
+#escape ^Oo
+
+# Ctrl-Space:
+escape ^@@
+
+
+# Do not trash BackSpace, usually DEL:
+bindkey -k kb
+bindkey -d -k kb
+
+# Do not trash Delete, usually ESC [ 3 ~:
+bindkey -k kD
+bindkey -d -k kD
+
+# Set scrollback buffer to 10000
+defscrollback 10000

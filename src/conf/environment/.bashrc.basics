@@ -52,10 +52,21 @@ if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
 fi
 
 # Some terminals do not manage UTF8:
-LANG=en_GB.utf8
-#LANG=en_GB
-#LANG=fr_FR.iso885915@euro
-#LANG=fr_FR.utf8
+export LANG=en_GB.utf8
+#export LANG=en_GB
+#export LANG=fr_FR.iso885915@euro
+#export LANG=fr_FR.utf8
+
+# Otherwise perl will protest a lot with:
+#perl: warning: Setting locale failed.
+#perl: warning: Please check that your locale settings:
+#	LANGUAGE = (unset),
+#	LC_ALL = (unset),
+#	LANG = "en_GB.utf8"
+#    are supported and installed on your system.
+#perl: warning: Falling back to the standard locale ("C").
+#
+export LC_ALL=en_US.UTF-8
 
 # Disable options:
 shopt -u mailwarn
@@ -88,13 +99,14 @@ fi
 export PATH=${SOFTWARE_ROOT}/bin:$HOME/bin:/usr/bin:/sbin:/usr/local/bin:/usr/bin/X11:/usr/sbin:$PATH:.
 
 
-
-export LS_COLORS='no=00:fi=00:di=01;35:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=41;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jpg=01;35:*.png=01;35:*.gif=01;35:*.bmp=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.png=01;35:*.mpg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:'
+# Proper colors assigned:
+# Not pleasant: *.rst=01;37
+#
+export LS_COLORS='no=00:fi=00:di=01;35:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=41;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jpg=01;94:*.png=01;94:*.gif=01;94:*.bmp=01;94:*.ppm=01;94:*.tga=01;94:*.xbm=01;94:*.xpm=01;94:*.tif=01;94:*.png=01;94:*.mpg=01;94:*.avi=01;94:*.fli=01;35:*.gl=01;35:*.dl=01;35'
 
 
 
 # Inspired from http://www.micahcarrick.com/show-git-branch-in-shell-prompt.html:
-#
 parse_git_branch() {
  # git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
  res=$(git branch 2>/dev/null)
@@ -148,7 +160,10 @@ IGNOREOF=1
 # Preferred pager:
 
 #export PAGER_NAME=more
+
+# Use ':n' to display the next file:
 export PAGER_NAME=less
+
 #export PAGER_NAME=most
 
 export LESS="-r -X --force"
