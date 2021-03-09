@@ -44,7 +44,10 @@ MYHOME="${HOME}"
 # (note however that general settings may then overwrite specific ones, if
 # blindly settings values)
 
-# Local, host-specific overridden settings:
+# Cross-user, host-specific overridden settings:
+source_if_exists "/etc/bash.bashrc"
+
+# Local overridden settings:
 source_if_exists "${MYHOME}/.bashrc.local"
 
 # Context-specific settings (ex: for a given organisation):
