@@ -320,6 +320,10 @@ if [ -z "${CEYLAN_SNAKE}" ] ; then
    export CEYLAN_SNAKE=${CEYLAN_ROOT}/snake
 fi
 
+if [ -z "${CEYLAN_LEEC}" ] ; then
+   export CEYLAN_LEEC=${CEYLAN_ROOT}/leec
+fi
+
 
 # ':${CEYLAN_MYRIAD}/src/apps/generate-password' removed, as, in ~/Software/bin,
 # generate-password.sh is expected to be a symlink to the right script:
