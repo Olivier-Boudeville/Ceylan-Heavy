@@ -1,4 +1,3 @@
-
 # Author: Olivier Boudeville [olivier (dot) boudeville (at) esperide (dot) com]
 #
 # Bash Basics: everything that is not specific to any particular setting.
@@ -80,14 +79,14 @@ export HOSTFILE=$HOME/.hosts   # Put a list of remote hosts in ~/.hosts
 
 # They are possibly already set in ~/.bashrc.local:
 
-if [ -z "${HOME_ROOT}" ] ; then
+if [ -z "${HOME_ROOT}" ]; then
 
    export HOME_ROOT="${HOME}"
 
 fi
 
 
-if [ -z "${SOFTWARE_ROOT}" ] ; then
+if [ -z "${SOFTWARE_ROOT}" ]; then
 
    export SOFTWARE_ROOT="${HOME_ROOT}/Software"
    export PATH="${SOFTWARE_ROOT}/bin/:${PATH}"
@@ -110,7 +109,7 @@ export LS_COLORS='no=00:fi=00:di=01;35:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40
 parse_git_branch() {
  # git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
  res=$(git branch 2>/dev/null)
- if [ -n "$res" ] ; then
+ if [ -n "$res" ]; then
 
 	branch=$(echo "$res" | sed -e '/^[^*]/d' -e 's|* ||')
 	echo " [$branch]"
@@ -170,7 +169,7 @@ export LESS="-r -X --force"
 
 PAGER=$(which ${PAGER_NAME} 2>/dev/null)
 
-if [ ! -x "${PAGER}" ] ; then
+if [ ! -x "${PAGER}" ]; then
 
    # Preferred to less (content stays in terminal window afterwards):
    PAGER=$(which more)
@@ -186,13 +185,18 @@ alias mo="${PAGER}"
 
 
 alias ll='ls -l'
-alias la="ls -alg $*|${mo}"
+
+#alias la="ls -alg $*|mo"
+alias la="ls -alg $*"
 
 alias lc='ls -clt'
 alias sl='ls'
 
-alias lr="ls -Rx $*|${mo}"
-alias dir="ls -l $*|${mo}"
+#alias lr="ls -Rx $*|mo"
+alias lr="ls -Rx $*"
+
+#alias dir="ls -l $*|mo"
+alias dir="ls -l $*"
 
 alias cls='ct ls'
 
@@ -257,10 +261,10 @@ alias x='/usr/bin/X11/xterm -bg black -fg white -name $(basename $PWD) &'
 # Re-used again, so that Python interpreters built from sources make the right
 # use of the "up arrow" and all:
 #
-# If 'ImportError: No module named readline' then install libncurses-dev and
-# libreadline-dev (and rebuild)
+# If 'ImportError: No module named readline' is reported, then install
+# libncurses-dev and libreadline-dev (and rebuild)
 #
-export PYTHONSTARTUP=~/.pythonrc.py
+#export PYTHONSTARTUP=~/.pythonrc.py
 
 # For Python's virtual env:
 export PATH=${PATH}:${HOME}/.local/bin
@@ -284,43 +288,47 @@ unset PROFILE_LOADED
 
 # Do not overwrite any already-set (ex: contextual) information:
 
-if [ -z "${CEYLAN_ROOT}" ] ; then
+if [ -z "${CEYLAN_ROOT}" ]; then
    export CEYLAN_ROOT="${SOFTWARE_ROOT}/ceylan"
 fi
 
-if [ -z "${CEYLAN_HEAVY}" ] ; then
+if [ -z "${CEYLAN_HEAVY}" ]; then
    export CEYLAN_HEAVY=${CEYLAN_ROOT}/heavy
 fi
 
-if [ -z "${CEYLAN_HULL}" ] ; then
-   export CEYLAN_HULL=${CEYLAN_ROOT}/hull
-fi
-
-if [ -z "${CEYLAN_MYRIAD}" ] ; then
-   export CEYLAN_MYRIAD=${CEYLAN_ROOT}/myriad
-fi
-
-if [ -z "${CEYLAN_WOOPER}" ] ; then
-   export CEYLAN_WOOPER=${CEYLAN_ROOT}/wooper
-fi
-
-if [ -z "${CEYLAN_TRACES}" ] ; then
-   export CEYLAN_TRACES=${CEYLAN_ROOT}/traces
-fi
-
-if [ -z "${CEYLAN_SEAPLUS}" ] ; then
-   export CEYLAN_SEAPLUS=${CEYLAN_ROOT}/seaplus
-fi
-
-if [ -z "${CEYLAN_MOBILE}" ] ; then
-   export CEYLAN_MOBILE=${CEYLAN_ROOT}/mobile
-fi
-
-if [ -z "${CEYLAN_SNAKE}" ] ; then
+if [ -z "${CEYLAN_SNAKE}" ]; then
    export CEYLAN_SNAKE=${CEYLAN_ROOT}/snake
 fi
 
-if [ -z "${CEYLAN_LEEC}" ] ; then
+if [ -z "${CEYLAN_HULL}" ]; then
+   export CEYLAN_HULL=${CEYLAN_ROOT}/hull
+fi
+
+if [ -z "${CEYLAN_MYRIAD}" ]; then
+   export CEYLAN_MYRIAD=${CEYLAN_ROOT}/myriad
+fi
+
+if [ -z "${CEYLAN_WOOPER}" ]; then
+   export CEYLAN_WOOPER=${CEYLAN_ROOT}/wooper
+fi
+
+if [ -z "${CEYLAN_TRACES}" ]; then
+   export CEYLAN_TRACES=${CEYLAN_ROOT}/traces
+fi
+
+if [ -z "${CEYLAN_SEAPLUS}" ]; then
+   export CEYLAN_SEAPLUS=${CEYLAN_ROOT}/seaplus
+fi
+
+if [ -z "${CEYLAN_MOBILE}" ]; then
+   export CEYLAN_MOBILE=${CEYLAN_ROOT}/mobile
+fi
+
+if [ -z "${CEYLAN_SNAKE}" ]; then
+   export CEYLAN_SNAKE=${CEYLAN_ROOT}/snake
+fi
+
+if [ -z "${CEYLAN_LEEC}" ]; then
    export CEYLAN_LEEC=${CEYLAN_ROOT}/leec
 fi
 
