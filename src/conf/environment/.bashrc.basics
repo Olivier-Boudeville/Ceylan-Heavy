@@ -324,12 +324,16 @@ if [ -z "${CEYLAN_MOBILE}" ]; then
    export CEYLAN_MOBILE=${CEYLAN_ROOT}/mobile
 fi
 
-if [ -z "${CEYLAN_SNAKE}" ]; then
-   export CEYLAN_SNAKE=${CEYLAN_ROOT}/snake
-fi
-
 if [ -z "${CEYLAN_LEEC}" ]; then
    export CEYLAN_LEEC=${CEYLAN_ROOT}/leec
+fi
+
+if [ -z "${CEYLAN_CURRY}" ]; then
+   export CEYLAN_CURRY=${CEYLAN_ROOT}/curry
+fi
+
+if [ -z "${CEYLAN_SNAKE}" ]; then
+   export CEYLAN_SNAKE=${CEYLAN_ROOT}/snake
 fi
 
 
