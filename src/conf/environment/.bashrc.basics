@@ -226,7 +226,14 @@ alias gp='git push'
 alias gl='git pull'
 
 #alias gr='grep --color'
-alias gr='grep --color=always'
+#alias gr='grep --color=always'
+
+# Avoid that piping 'gr' does not work correctly because of color control
+# sequences (another option is to make it a script and use 'if [ -t 1 ];
+# then...') or pipe with a color-enabled pager afterwards (ex: with 'less -r
+# -X') so that 'always' can be used:
+#
+alias gr='grep --color=auto'
 
 alias rgr='regrep'
 
