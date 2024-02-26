@@ -83,10 +83,9 @@ function lo
 
 	excluded="myriad-backups"
 	echo "  Trying to locate '$1' (excluding the '${excluded}' pattern):"
-	locate "$1" | grep -v "${excluded}" | ${PAGER_NAME}
+	locate $1 | grep -v "${excluded}" | grep -v "${excluded}" | /bin/ls -l --color | ${PAGER_NAME} ${PAGER_PRESERVE_COLORS}
 
 }
-
 
 # "cd" keyboard counterparts:
 alias xs='cd $1'

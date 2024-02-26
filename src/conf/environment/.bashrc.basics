@@ -197,6 +197,8 @@ IGNOREOF=1
 
 # Use ':n' to display the next file:
 export PAGER_NAME=less
+export PAGER_PRESERVE_COLORS="--use-color --raw-control-chars"
+
 
 #export PAGER_NAME=most
 
@@ -207,7 +209,9 @@ PAGER=$(which ${PAGER_NAME} 2>/dev/null)
 
 if [ ! -x "${PAGER}" ]; then
 
-   # Used to be preferred to 'less' (content stays in terminal window afterwards):
+   # Used to be preferred to 'less' (content stays in terminal window
+   # afterwards):
+
    PAGER=$(which more)
 
    #PAGER=$(which less) --no-init
