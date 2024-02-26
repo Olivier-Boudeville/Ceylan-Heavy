@@ -104,30 +104,65 @@ export PATH=${SOFTWARE_ROOT}/bin:$HOME/bin:/usr/bin:/sbin:/usr/local/bin:/usr/bi
 export LS_COLORS='no=00:fi=00:di=01;35:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=41;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jpg=01;94:*.png=01;94:*.gif=01;94:*.bmp=01;94:*.ppm=01;94:*.tga=01;94:*.xbm=01;94:*.xpm=01;94:*.tif=01;94:*.png=01;94:*.mpg=01;94:*.avi=01;94:*.fli=01;35:*.gl=01;35:*.dl=01;35'
 
 
-
+# Wanting to display either nothing (if not in a Git working tree) or the
+# current branch name, between brackets.
+#
 # Inspired from http://www.micahcarrick.com/show-git-branch-in-shell-prompt.html:
-parse_git_branch() {
- # git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
- res=$(git branch 2>/dev/null)
- if [ -n "$res" ]; then
+parse_git_branch()
+{
+	#echo "[TEST]"
 
-	branch=$(echo "$res" | sed -e '/^[^*]/d' -e 's|* ||')
-	echo " [$branch]"
+	# Fully suitable:
+	#git branch 2>/dev/null | grep '^*' | colrm 1 2
 
- fi
+	# More complex, and extra parentheses:
+	#git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+
+	# Presumably quicker, yet unable to report detached heads:
+	#git symbolic-ref HEAD --short 2>/dev/null
+
+	branch="$(git branch 2>/dev/null | grep '^*' | colrm 1 2)"
+
+	if [ -n "${branch}" ]; then
+	   echo " [${branch}]"
+	#else
+	#   echo " (not in a Git clone)"
+	fi
 }
 
+
+# As stashes may be forgotten:
+parse_git_stash()
+{
+	stash="$(git stash list 2>/dev/null)"
+
+	if [ -n "${stash}" ]; then
+	   echo " (stash)"
+	#else
+	#   echo " (no stash)"
+	fi
+}
+
+
 hostname=$(hostname --short)
-
-# With user and verbatim host:
-#export PS1="\n\e[95m\h \e[92m\u\e[95m \e[96m\t \e[93m"'$PWD'"\e[96m\$(parse_git_branch)\[\033[31m\]\e[95m\e[97m\n>"
-
-
-export PS1="\n\e[95m${hostname} \e[92m\u\e[95m \e[96m\t \e[93m"'$PWD'"\e[96m\$(parse_git_branch)\[\033[31m\]\e[95m\e[97m\n>"
 
 
 # Without user:
 #export PS1="\n\e[95m\h\e[95m \e[96m\t \e[93m"'$PWD'"\e[92m\$(parse_git_branch)\[\033[31m\]\e[95m\e[97m\n>"
+
+# Note that at least prompt-related variables may be re-evaluated (e.g. in
+# ~/.bashrc.final) to account for variables (e.g. like 'hostname') that may have
+# been udpated since then.
+
+# With user and verbatim host:
+#export PS1="\n\e[95m\h \e[92m\u\e[95m \e[96m\t \e[93m"'$PWD'"\e[96m\$(parse_git_branch)\[\033[31m\$(parse_git_stash)]\e[95m\e[97m\n>"
+
+# Git branch and stash:
+#export PS1="\n\e[95m${hostname} \e[92m\u\e[95m \e[96m\t \e[93m"'$PWD'"\e[96m\$(parse_git_branch)\[\033[31m\$(parse_git_stash)\]\e[95m\e[97m\n>"
+
+
+# Git branch and stash, and mamba:
+export PS1="\n\e[95m${hostname} \e[92m\u\e[95m \e[96m\t \e[93m"'$PWD'"\e[96m\$(parse_git_branch)\[\033[34m\$(parse_git_stash)\$(my_mamba_setup)${EXTRA_PROMPT}\e[95m\e[97m\n>"
 
 
 # History: not too much memory (saturates consoles; however one may use 'history
@@ -165,13 +200,14 @@ export PAGER_NAME=less
 
 #export PAGER_NAME=most
 
-export LESS="-r -X --force"
+# This is a special variable name for 'less':
+export LESS="-r -X --force --QUIT-AT-EOF"
 
 PAGER=$(which ${PAGER_NAME} 2>/dev/null)
 
 if [ ! -x "${PAGER}" ]; then
 
-   # Used to be preferred to less (content stays in terminal window afterwards):
+   # Used to be preferred to 'less' (content stays in terminal window afterwards):
    PAGER=$(which more)
 
    #PAGER=$(which less) --no-init
