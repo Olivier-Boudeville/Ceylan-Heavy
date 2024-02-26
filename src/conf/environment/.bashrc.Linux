@@ -75,14 +75,22 @@ export PATH=${PATH}:${HOME}/bin
 alias l='ls -a --color=auto'
 alias ls='ls --color=auto'
 alias ll='ls -a -l --color=auto'
-alias lo='locate'
+
+#alias lo='locate'
+
+function lo
+{
+
+	excluded="myriad-backups"
+	echo "  Trying to locate '$1' (excluding the '${excluded}' pattern):"
+	locate "$1" | grep -v "${excluded}" | ${PAGER_NAME}
+
+}
 
 
 # "cd" keyboard counterparts:
 alias xs='cd $1'
 alias vf='cd $1'
-
-alias lo='locate'
 
 alias mbd='make all CORE_COUNT=1 | more'
 alias mr='make rebuild'
