@@ -82,8 +82,11 @@ function lo
 {
 
 	excluded="myriad-backups"
-	echo "  Trying to locate '$1' (excluding the '${excluded}' pattern):"
-	locate $1 | grep -v "${excluded}" | grep -v "${excluded}" | /bin/ls -l --color | ${PAGER_NAME} ${PAGER_PRESERVE_COLORS}
+	#locate $1 | grep -v "${excluded}" | /bin/ls -l --color | ${PAGER_NAME} ${PAGER_PRESERVE_COLORS}
+	#(for e in $(locate --existing "$1" | grep -v "${excluded}"); do /bin/ls -1 -s --human-readable --color "$e" 2>&1; done) | ${PAGER_NAME} ${PAGER_PRESERVE_COLORS}
+
+	# Prompt included in pager ('null' for proper xargs interpretation):
+	(echo "  Trying to locate '$1' (excluding the '${excluded}' pattern, listing newly-modified files first):"; locate --existing --null "$1" | xargs --null /bin/ls --directory --sort=time -1 -s --human-readable --color | grep -v "${excluded}" 2>&1) | ${PAGER_NAME} ${PAGER_PRESERVE_COLORS}
 
 }
 
