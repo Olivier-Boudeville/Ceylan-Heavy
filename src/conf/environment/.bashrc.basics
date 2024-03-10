@@ -212,9 +212,9 @@ if [ ! -x "${PAGER}" ]; then
    # Used to be preferred to 'less' (content stays in terminal window
    # afterwards):
 
-   PAGER=$(which more)
+   PAGER=$(which more 2>/dev/null)
 
-   #PAGER=$(which less) --no-init
+   #PAGER=$(which less 2>/dev/null) --no-init
 
 fi
 
