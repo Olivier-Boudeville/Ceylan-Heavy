@@ -184,7 +184,7 @@ function forget_last_command()
 
 	# Done twice to remove the call to this function as well; also: force-written in history file for proper, safer deleting:
 
-	history -d $( history | awk 'END{print $1-1}' ) && history -d $( history | awk 'END{print $1}' ) && history -w
+	history -d $(history | awk 'END{print $1-1}') && history -d $(history|awk 'END{print $1}') && history -w
 
 }
 
