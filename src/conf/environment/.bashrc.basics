@@ -51,7 +51,8 @@ if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
 fi
 
 # Some terminals do not manage UTF8:
-export LANG=en_GB.utf8
+export LANG=en_US.utf8
+#export LANG=en_GB.utf8
 #export LANG=en_GB
 #export LANG=fr_FR.iso885915@euro
 #export LANG=fr_FR.utf8
