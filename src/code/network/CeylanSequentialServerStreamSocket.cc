@@ -19,7 +19,7 @@
  * License and the GNU General Public License along with the Ceylan library.
  * If not, see <http://www.gnu.org/licenses/>.
  *
- * Author: Olivier Boudeville (olivier.boudeville@esperide.com)
+ * Author: Olivier Boudeville (olivier (dot) boudeville (at) esperide (dot) com)
  *
  */
 

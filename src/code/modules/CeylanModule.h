@@ -19,7 +19,7 @@
  * License and the GNU General Public License along with the Ceylan library.
  * If not, see <http://www.gnu.org/licenses/>.
  *
- * Author: Olivier Boudeville (olivier.boudeville@esperide.com)
+ * Author: Olivier Boudeville (olivier (dot) boudeville (at) esperide (dot) com)
  *
  */
 
@@ -90,7 +90,7 @@ namespace Ceylan
 			 * 'Olivier Boudeville'.
 			 *
 			 * @param authorMail the e-mail address of the author, example:
-             * 'olivier.boudeville@online.fr'. 
+             * 'olivier (dot) boudeville (at) online (dot) fr'. 
 			 *
 			 * @param version the full version of this module. The version
 			 * object is copied, the module does not take ownership of it.

@@ -19,7 +19,7 @@
  * License and the GNU General Public License along with the Ceylan library.
  * If not, see <http://www.gnu.org/licenses/>.
  *
- * Author: Olivier Boudeville (olivier.boudeville@esperide.com)
+ * Author: Olivier Boudeville (olivier (dot) boudeville (at) esperide (dot) com)
  *
  */
 
@@ -79,7 +79,7 @@ extern const string Description =
 	
 extern const string Url        = "http://ceylan.sourceforge.net" ;
 extern const string Author     = "Olivier Boudeville" ;
-extern const string AuthorMail = "olivier.boudeville@esperide.com" ;
+extern const string AuthorMail = "olivier (dot) boudeville (at) esperide (dot) com" ;
 extern const string Version    = "0.0.2" ;
 extern const string Licence    = "LGPL" ;
 

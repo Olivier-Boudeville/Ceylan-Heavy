@@ -22,7 +22,7 @@
  * License and the GNU General Public License along with the Ceylan library.
  * If not, see <http://www.gnu.org/licenses/>.
  *
- * You can contact the author at olivier.boudeville@esperide.com
+ * You can contact the author at olivier (dot) boudeville (at) esperide (dot) com
  *
  * More information available in COPYING.LIB and at Ceylan's official website:
  * http://ceylan.sourceforge.net

@@ -26,7 +26,7 @@ customize this style sheet.
 
 table.borderless td, table.borderless th {
   /* Override padding for "table.docutils td" with "! important".
-     The right padding separates the table cells. */
+	 The right padding separates the table cells. */
   padding: 0 0.5em 0 0 ! important }
 
 .first {
@@ -541,47 +541,47 @@ ul.auto-toc {
 % Declaring all variations of WOOPER standard life-cycle operations:
 % (template pasted, just two replacements performed to update arities)
 -define( wooper_construct_export, new/4, new_link/4,
-    synchronous_new/4, synchronous_new_link/4,
-    synchronous_timed_new/4, synchronous_timed_new_link/4,
-    remote_new/5, remote_new_link/5, remote_synchronous_new/5,
-    remote_synchronous_new_link/5, remote_synchronous_timed_new/5,
-    remote_synchronous_timed_new_link/5, construct/5 ).
+	synchronous_new/4, synchronous_new_link/4,
+	synchronous_timed_new/4, synchronous_timed_new_link/4,
+	remote_new/5, remote_new_link/5, remote_synchronous_new/5,
+	remote_synchronous_new_link/5, remote_synchronous_timed_new/5,
+	remote_synchronous_timed_new_link/5, construct/5 ).
 
 % Method declarations.
 -define( wooper_method_export, getTeatCount/1, canEat/2,
-      getWhiskerColor/1 ).
+	  getWhiskerColor/1 ).
 
 % Allows to define WOOPER base variables and methods for that class:
 -include(&quot;wooper.hrl&quot;).
 
 % Constructs a new Cat.
 construct( State, ?wooper_construct_parameters ) -&gt;
-    % First the direct mother classes:
-    MammalState = class_Mammal:construct( State, Age, Gender, FurColor ),
-    ViviparousMammalState = class_ViviparousBeing:construct( MammalState ),
-    % Then the class-specific attributes:
-    ?setAttribute( ViviparousMammalState, whisker_color, WhiskerColor ).
+	% First the direct mother classes:
+	MammalState = class_Mammal:construct( State, Age, Gender, FurColor ),
+	ViviparousMammalState = class_ViviparousBeing:construct( MammalState ),
+	% Then the class-specific attributes:
+	?setAttribute( ViviparousMammalState, whisker_color, WhiskerColor ).
 
 % No guarantee on biological fidelity:
 getTeatCount(State) -&gt;
-    ?wooper_return_state_result( State, 6 ).
+	?wooper_return_state_result( State, 6 ).
 
 % Cats are supposed carnivorous though:
 canEat(State,soup) -&gt;
-    ?wooper_return_state_result( State, true );
+	?wooper_return_state_result( State, true );
 
 canEat(State,croquette) -&gt;
-    ?wooper_return_state_result( State, true );
+	?wooper_return_state_result( State, true );
 
 canEat(State,meat) -&gt;
-    ?wooper_return_state_result( State, true );
+	?wooper_return_state_result( State, true );
 
 canEat(State,_) -&gt;
-    ?wooper_return_state_result( State, false ).
+	?wooper_return_state_result( State, false ).
 
 % This method is cat-specific:
 getWhiskerColor(State)-&gt;
-    ?wooper_return_state_result( State, ?getAttr(whisker_color) ).
+	?wooper_return_state_result( State, ?getAttr(whisker_color) ).
 </pre>
 <p>Straightforward, isn't it? We will discuss it in-depth though.</p>
 <p>To test this class, just extract your WOOPER archive, like in:</p>
@@ -756,21 +756,21 @@ class_Cat
 % Calling the canEat request of our cat instance:
 MyCat ! {canEat,soup,self()},
 receive
-    {wooper_result,true} -&gt;
-                 io:format( &quot;This cat likes soup!!!&quot; );
+	{wooper_result,true} -&gt;
+				 io:format( &quot;This cat likes soup!!!&quot; );
 
-    {wooper_result,false} -&gt;
-                 io:format( &quot;This cat does not seem omnivorous.&quot; )
+	{wooper_result,false} -&gt;
+				 io:format( &quot;This cat does not seem omnivorous.&quot; )
 end,
 
 % A parameter-less request:
 MyCat ! {getWhiskersColor,[],self()},
 receive
-    {wooper_result,white} -&gt;
-                 io:format( &quot;This cat has normal whiskers.&quot; );
+	{wooper_result,white} -&gt;
+				 io:format( &quot;This cat has normal whiskers.&quot; );
 
-    {wooper_result,blue} -&gt;
-                 io:format( &quot;What a weird cat...&quot; )
+	{wooper_result,blue} -&gt;
+				 io:format( &quot;What a weird cat...&quot; )
 end,
 
 % A parameter-less oneway:
@@ -814,12 +814,12 @@ MyCat ! declareBirthday.
 <pre class="literal-block">
 MyPoint ! {getCoordinates,[],self()},
 receive
-                 {wooper_result,[X,Y]} -&gt;
-                                 [...];
-                 % Could be left out to ignore errors.
-                 % Otherwise one might prefer making this caller block:
-                 Error -&gt;
-                                 [...]
+				 {wooper_result,[X,Y]} -&gt;
+								 [...];
+				 % Could be left out to ignore errors.
+				 % Otherwise one might prefer making this caller block:
+				 Error -&gt;
+								 [...]
 end,
 </pre>
 </div>
@@ -913,30 +913,30 @@ Therefore one could make use of that information, as in:</p>
 <pre class="literal-block">
 MyPoint ! {getCoordinates,[],self()},
 receive
-    {wooper_result, [X,Y] } -&gt;
-                 [...];
-    {wooper_method_not_found, Pid, Class, Method, Arity, Params} -&gt;
-                 [...];
-    {wooper_method_failed, Pid, Class, Method, Arity, Params, ErrorTerm} -&gt;
-                 [...];
-    % Error term can be a tuple {Pid,Error} as well, depending on the exit:
-    {wooper_method_failed, Pid, Class, Method, Arity, Params, {Pid,Error}} -&gt;
-                 [...];
-    {wooper_method_faulty_return, Pid, Class, Method, Arity, Params, UnexpectedTerm} -&gt;
-                 [...];
-    wooper_method_returns_void -&gt;
-                 [...];
-    OtherError -&gt;
-                 % Should never happen:
-                 [...]
+	{wooper_result, [X,Y] } -&gt;
+				 [...];
+	{wooper_method_not_found, Pid, Class, Method, Arity, Params} -&gt;
+				 [...];
+	{wooper_method_failed, Pid, Class, Method, Arity, Params, ErrorTerm} -&gt;
+				 [...];
+	% Error term can be a tuple {Pid,Error} as well, depending on the exit:
+	{wooper_method_failed, Pid, Class, Method, Arity, Params, {Pid,Error}} -&gt;
+				 [...];
+	{wooper_method_faulty_return, Pid, Class, Method, Arity, Params, UnexpectedTerm} -&gt;
+				 [...];
+	wooper_method_returns_void -&gt;
+				 [...];
+	OtherError -&gt;
+				 % Should never happen:
+				 [...]
 end.
 </pre>
 <p>However defensive development is not really favoured in Erlang, one may let the caller crash on unexpected return instead. Therefore generally one may rely simply on matching the message sent in case of success <a class="footnote-reference" href="#id5" id="id4" name="id4">[2]</a>:</p>
 <pre class="literal-block">
 MyPoint ! {getCoordinates,[],self()},
 receive
-    {wooper_result, [X,Y] } -&gt;
-                 [...]
+	{wooper_result, [X,Y] } -&gt;
+				 [...]
 end.
 </pre>
 <table class="docutils footnote" frame="void" id="id5" rules="none">
@@ -957,7 +957,7 @@ end.
 <p>In this case the initial state parameter is directly returned, as is:</p>
 <pre class="literal-block">
 getWhiskerColor(State) -&gt;
-    ?wooper_return_state_result( State, ?getAttr(whisker_color) ).
+	?wooper_return_state_result( State, ?getAttr(whisker_color) ).
 </pre>
 <p>State is unchanged here.</p>
 <p>Note that when a method &quot;returns&quot; the state of the instance, it returns it to the (local, process-wise) private WOOPER-based main loop of that instance: in other words, the state variable will never be exported outside of its process. Encapsulation is ensured, as the instance is the only process able to access its own state. On method ending, the instance then just loops again, with an updated state.</p>
@@ -969,13 +969,13 @@ getWhiskerColor(State) -&gt;
 <p>For example:</p>
 <pre class="literal-block">
 getAge(State) -&gt;
-                 ?wooper_return_state_result(State,?getAttr(age)).
+				 ?wooper_return_state_result(State,?getAttr(age)).
 </pre>
 <p>All methods are of course given the parameters specified at their call.</p>
 <p>For example, we can declare:</p>
 <pre class="literal-block">
 giveBirth(State,NumberOfMaleChildren,NumberOfFemaleChildren) -&gt;
-                 [..]
+				 [..]
 </pre>
 <p>And then we may call it, in the case of a cat having 2 male kitten and 3 female ones, with:</p>
 <pre class="literal-block">
@@ -1175,8 +1175,8 @@ displayAge(State) -&gt;
 % directly in the class:
 MyCat ! {getAge,[],self()},
 receive
-                 {wooper_result,Age} -&gt;
-                                 io:format( &quot;This is a ~B year old cat.&quot;, [Age] )
+				 {wooper_result,Age} -&gt;
+								 io:format( &quot;This is a ~B year old cat.&quot;, [Age] )
 end,
 
 % Polymorphism is immediate:
@@ -1184,13 +1184,13 @@ end,
 % hence from class_Creature).
 MyPetList = [ MyCat, MyPlatypus ],
 foreach(
-                 fun(AnyCreature) -&gt;
-                                 AnyCreature ! {getAge,[],self()},
-                                 receive
-                                                 {wooper_result,Age} -&gt;
-                                                                 io:format( &quot;This is a ~B year old creature.&quot;, [Age] )
-                                 end,
-                 MyPetList).
+				 fun(AnyCreature) -&gt;
+								 AnyCreature ! {getAge,[],self()},
+								 receive
+												 {wooper_result,Age} -&gt;
+																 io:format( &quot;This is a ~B year old creature.&quot;, [Age] )
+								 end,
+				 MyPetList).
 </pre>
 <p>should output some like:</p>
 <pre class="literal-block">
@@ -1295,22 +1295,22 @@ MyThirdDog  = Class_Dog:new( create_from_weight, 4.4 ).
 % Declaring all variations of WOOPER standard life-cycle operations:
 % (template pasted, two replacements performed to update arities)
 -define( wooper_construct_export, new/N, new_link/N,
-    synchronous_new/N, synchronous_new_link/N,
-    synchronous_timed_new/N, synchronous_timed_new_link/N,
-    remote_new/N+1, remote_new_link/N+1, remote_synchronous_new/N+1,
-    remote_synchronous_new_link/N+1, remote_synchronous_timed_new/N+1,
-    remote_synchronous_timed_new_link/N+1, construct/N+1 ).
+	synchronous_new/N, synchronous_new_link/N,
+	synchronous_timed_new/N, synchronous_timed_new_link/N,
+	remote_new/N+1, remote_new_link/N+1, remote_synchronous_new/N+1,
+	remote_synchronous_new_link/N+1, remote_synchronous_timed_new/N+1,
+	remote_synchronous_timed_new_link/N+1, construct/N+1 ).
 </pre>
 <p>As there are quite a lot of construction operators available, the recommended mode of operation of declaring them all is to use the following template:</p>
 <pre class="literal-block">
 % Declaring all variations of WOOPER standard life-cycle operations:
 % (template pasted, two replacements performed to update arities)
 -define( wooper_construct_export, new/A, new_link/A,
-    synchronous_new/A, synchronous_new_link/A,
-    synchronous_timed_new/A, synchronous_timed_new_link/A,
-    remote_new/B, remote_new_link/B, remote_synchronous_new/B,
-    remote_synchronous_new_link/B, remote_synchronous_timed_new/B,
-    remote_synchronous_timed_new_link/B, construct/B, delete/1 ).
+	synchronous_new/A, synchronous_new_link/A,
+	synchronous_timed_new/A, synchronous_timed_new_link/A,
+	remote_new/B, remote_new_link/B, remote_synchronous_new/B,
+	remote_synchronous_new_link/B, remote_synchronous_timed_new/B,
+	remote_synchronous_timed_new_link/B, construct/B, delete/1 ).
 </pre>
 <p>and to use your text editor to replace <tt class="docutils literal"><span class="pre">A</span></tt> with your actual <tt class="docutils literal"><span class="pre">N</span></tt> and <tt class="docutils literal"><span class="pre">B</span></tt> with <tt class="docutils literal"><span class="pre">N+1</span></tt>.</p>
 <p>If the class does not declare a specific destructor, then the corresponding declaration in the previous template (<tt class="docutils literal"><span class="pre">delete/1</span></tt>) must be removed.</p>
@@ -1328,11 +1328,11 @@ MyThirdDog  = Class_Dog:new( create_from_weight, 4.4 ).
 % Declaring all variations of WOOPER standard life-cycle operations:
 % (template pasted, two replacements performed to update arities)
 -define( wooper_construct_export, new/2, new_link/2,
-    synchronous_new/2, synchronous_new_link/2,
-    synchronous_timed_new/2, synchronous_timed_new_link/2,
-    remote_new/3, remote_new_link/3, remote_synchronous_new/3,
-    remote_synchronous_new_link/3, remote_synchronous_timed_new/3,
-    remote_synchronous_timed_new_link/3, construct/3, delete/1 ).
+	synchronous_new/2, synchronous_new_link/2,
+	synchronous_timed_new/2, synchronous_timed_new_link/2,
+	remote_new/3, remote_new_link/3, remote_synchronous_new/3,
+	remote_synchronous_new_link/3, remote_synchronous_timed_new/3,
+	remote_synchronous_timed_new_link/3, construct/3, delete/1 ).
 
 % Method declarations.
 -define( wooper_method_export, my_first_method/X, second_method/Y ).
@@ -1354,11 +1354,11 @@ construct( State, ?wooper_construct_parameters ) -&gt;
 % Declaring all variations of WOOPER standard life-cycle operations:
 % (template pasted, two replacements performed to update arities)
 -define( wooper_construct_export, new/0, new_link/0,
-    synchronous_new/0, synchronous_new_link/0,
-    synchronous_timed_new/0, synchronous_timed_new_link/0,
-    remote_new/1, remote_new_link/1, remote_synchronous_new/1,
-    remote_synchronous_new_link/1, remote_synchronous_timed_new/1,
-    remote_synchronous_timed_new_link/1, construct/1, delete/1 ).
+	synchronous_new/0, synchronous_new_link/0,
+	synchronous_timed_new/0, synchronous_timed_new_link/0,
+	remote_new/1, remote_new_link/1, remote_synchronous_new/1,
+	remote_synchronous_new_link/1, remote_synchronous_timed_new/1,
+	remote_synchronous_timed_new_link/1, construct/1, delete/1 ).
 
 % Method declarations.
 -define( wooper_method_export, my_first_method/X, second_method/Y ).
@@ -1383,42 +1383,42 @@ construct( State ) -&gt;
 -define(wooper_construct_parameters,Age,Gender,FurColor,WhiskerColor).
 [..]
 -define( wooper_construct_export, new/4, new_link/4,
-    synchronous_new/4, synchronous_new_link/4,
-    synchronous_timed_new/4, synchronous_timed_new_link/4,
-    remote_new/5, remote_new_link/5, remote_synchronous_new/5,
-    remote_synchronous_new_link/5, remote_synchronous_timed_new/5,
-    remote_synchronous_timed_new_link/5, construct/5 ).
+	synchronous_new/4, synchronous_new_link/4,
+	synchronous_timed_new/4, synchronous_timed_new_link/4,
+	remote_new/5, remote_new_link/5, remote_synchronous_new/5,
+	remote_synchronous_new_link/5, remote_synchronous_timed_new/5,
+	remote_synchronous_timed_new_link/5, construct/5 ).
 
 [..]
 % Constructs a new Cat.
 construct(State,?wooper_construct_parameters) -&gt;
-    % First the direct mother classes:
-    MammalState = class_Mammal:construct( State, Age, Gender, FurColor ),
-    ViviparousMammalState = class_ViviparousBeing:construct( MammalState ),
-    % Then the class-specific attributes:
-    ?setAttribute( ViviparousMammalState, whisker_color, WhiskerColor ).
+	% First the direct mother classes:
+	MammalState = class_Mammal:construct( State, Age, Gender, FurColor ),
+	ViviparousMammalState = class_ViviparousBeing:construct( MammalState ),
+	% Then the class-specific attributes:
+	?setAttribute( ViviparousMammalState, whisker_color, WhiskerColor ).
 </pre>
 <p>The fact that the <tt class="docutils literal"><span class="pre">Mammal</span></tt> class itself inherits from the <tt class="docutils literal"><span class="pre">Creature</span></tt> class must not appear here: it is to be managed directly by <tt class="docutils literal"><span class="pre">class_Mammal:construct</span></tt> (at any given inheritance level, only direct classes must be taken into account).</p>
 <p>One should ensure that, in constructors, the successive states are always built from the last updated one, unlike:</p>
 <pre class="literal-block">
 % WRONG, the age update is lost:
 construct(State,Age,Gender) -&gt;
-    AgeState = setAttribute(State,age,Age),
-                 % AgeState should be used here, not State:
-    setAttribute(State,gender,Gender),
+	AgeState = setAttribute(State,age,Age),
+				 % AgeState should be used here, not State:
+	setAttribute(State,gender,Gender),
 </pre>
 <p>This would be correct:</p>
 <pre class="literal-block">
 % RIGHT but a bit clumsy:
 construct(State,Age,Gender) -&gt;
-    AgeState = setAttribute(State,age,Age),
-    setAttribute(AgeState,gender,Gender).
+	AgeState = setAttribute(State,age,Age),
+	setAttribute(AgeState,gender,Gender).
 </pre>
 <p>Recommended form:</p>
 <pre class="literal-block">
 % BEST:
 construct(State,Age,Gender) -&gt;
-    setAttributes( State, [ {age,Age}, {gender,Gender} ]).
+	setAttributes( State, [ {age,Age}, {gender,Gender} ]).
 </pre>
 </div>
 </div>
@@ -1473,9 +1473,9 @@ delete(State) -&gt;
 <p>For example:</p>
 <pre class="literal-block">
 onWooperExitReceived(State,Pid,ExitType) -&gt;
-                 io:format( &quot;MyClass EXIT handler ignored signal '~w'&quot;
-                                &quot; from ~w.~n&quot;, [ExitType,Pid] ),
-                 ?wooper_return_state_only(State).
+				 io:format( &quot;MyClass EXIT handler ignored signal '~w'&quot;
+								&quot; from ~w.~n&quot;, [ExitType,Pid] ),
+				 ?wooper_return_state_only(State).
 </pre>
 <p>results in:</p>
 <pre class="literal-block">
@@ -1695,9 +1695,9 @@ svn export http://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/doc
 <pre class="literal-block">
 my_server(S) -&gt;
   receive
-              {command,{M,P}} -&gt;
-                      S_new = f(S,M,P),
-                      my_server( S_new )
+			  {command,{M,P}} -&gt;
+					  S_new = f(S,M,P),
+					  my_server( S_new )
   end.
 </pre>
 <p>In each instance, WOOPER manages the tail-recursive infinite surrounding loop, <tt class="docutils literal"><span class="pre">S</span></tt> corresponds to the state of the instance (<tt class="docutils literal"><span class="pre">State</span></tt>), and <tt class="docutils literal"><span class="pre">f(S,M,P)</span></tt> corresponds to the WOOPER logic that triggers the user-defined method <tt class="docutils literal"><span class="pre">M</span></tt> with the current state (<tt class="docutils literal"><span class="pre">S</span></tt>) and the specified parameters (<tt class="docutils literal"><span class="pre">P</span></tt>), and that may return a result.</p>
@@ -1794,7 +1794,7 @@ svn copy https://ceylan.svn.sourceforge.net/svnroot/ceylan/Ceylan/trunk/src/code
 </div>
 <div class="section">
 <h1><a class="toc-backref" href="#id112" id="please-react" name="please-react">15&nbsp;&nbsp;&nbsp;Please React!</a></h1>
-<p>If you have information more detailed or more recent than those presented in this document, if you noticed errors, neglects or points insufficiently discussed, <a class="reference" href="mailto:olivier.boudeville&#64;online.fr?subject=[Ceylan]%20WOOPER">drop us a line</a>!</p>
+<p>If you have information more detailed or more recent than those presented in this document, if you noticed errors, neglects or points insufficiently discussed, <a class="reference" href="mailto:olivier (dot) boudeville at online dot fr?subject=[Ceylan]%20WOOPER">drop us a line</a>!</p>
 </div>
 </div>
 </body>
