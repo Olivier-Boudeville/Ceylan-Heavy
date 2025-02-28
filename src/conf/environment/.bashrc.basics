@@ -19,7 +19,70 @@ if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
 
-umask 002
+
+# Set default permissions for newly created files and directories
+# (user file-creation mode mask).
+#
+# Only the file permission bits of the mask are used under Linux (see
+# umask(2)), the suid, sgid and sticky bits of the mask are ignored).
+#
+# Use 'umask -S' to display the corresponding default permissions.
+
+# Created files are "-rw-rw-r--", directories are "drwxrwxr-x":
+#umask 0002
+
+# Safer, preferred, but potentially causing hassles:
+# Created files are "drwxr-x---", directories are "rw-r-----":
+umask 0027
+
+# Safe editing, to fallback to at least an acceptable Emacs if possible:
+function esafe()
+{
+
+	emacs=$(which emacs 2>/dev/null)
+
+	if [ ! -x "${emacs}" ]; then
+
+		gedit=$(which gedit 2>/dev/null)
+
+		if [ ! -x "${gedit}" ]; then
+
+		   nano=$(which nano 2>/dev/null)
+
+	   if [ ! -x "${nano}" ]; then
+
+		   echo "  Error, no text editor found (no emacs, gedit or nano)." 1>&2
+		   #exit 10
+
+	   else
+			   ${nano} $* &
+	   fi
+
+		else
+			${gedit} $* &
+	fi
+
+	else
+
+	emacs_init_opt=""
+
+	emacs_fallback_dir="${HOME}/.emacs.d-fallback"
+
+	if [ -d "${emacs_fallback_dir}" ]; then
+	   emacs_init_opt="--init-directory=${emacs_fallback_dir}"
+	fi
+
+		${emacs} ${emacs_init_opt=} $* &
+
+	fi
+
+}
+
+
+
+# Tells the shell to apply Emacs editing conventions:
+set -o emacs
+
 
 
 #---------------
@@ -29,7 +92,12 @@ umask 002
 #ulimit -S -c 0     # Don't want any coredumps
 set -o notify
 set -o noclobber
+
+# So that Ctrl-d does not exit the shell:
+IGNOREOF=1
+
 set -o ignoreeof
+
 #set -o nounset
 #set -o xtrace          # useful for debuging
 
@@ -306,6 +374,7 @@ alias r='fc -e -'
 alias x='/usr/bin/X11/xterm -bg black -fg white -name $(basename $PWD) &'
 
 
+
 # Re-used again, so that Python interpreters built from sources make the right
 # use of the "up arrow" and all:
 #
@@ -385,8 +454,9 @@ if [ -z "${CEYLAN_SNAKE}" ]; then
 fi
 
 
-# ':${CEYLAN_MYRIAD}/src/apps/generate-password' removed, as, in ~/Software/bin,
-# generate-password.sh is expected to be a symlink to the right script:
+# ':${CEYLAN_MYRIAD}/src/apps/generate-password' removed, as, in
+# ${SOFTWARE_ROOT}/bin, generate-password.sh is expected to be a symlink to the
+# right script:
 #
 export PATH=${CEYLAN_HULL}:${CEYLAN_BIN}:${CEYLAN_MYRIAD}/src/scripts:${PATH}
 
@@ -400,6 +470,11 @@ export EDITOR=emacs
 SSH_X_OPT="-Y"
 
 alias mkcd='function _mkcd(){ mkdir "$1" && cd "$1"; };_mkcd'
+
+# Change to the dirname of the specified path (stripping the last part of that
+# path):
+#
+alias cdp='function _cdp(){ cd "$(dirname $1)"; };_cdp'
 
 # Keyboard configuration moved to '~/.bash_profile'.
 
