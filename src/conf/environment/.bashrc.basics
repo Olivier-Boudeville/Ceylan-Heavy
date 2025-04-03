@@ -35,44 +35,88 @@ fi
 # Created files are "drwxr-x---", directories are "rw-r-----":
 umask 0027
 
+
 # Safe editing, to fallback to at least an acceptable Emacs if possible:
 function esafe()
 {
 
-	emacs=$(which emacs 2>/dev/null)
+	emacs="$(which emacs 2>/dev/null)"
 
 	if [ ! -x "${emacs}" ]; then
 
-		gedit=$(which gedit 2>/dev/null)
+		gedit="$(which gedit 2>/dev/null)"
 
 		if [ ! -x "${gedit}" ]; then
 
-		   nano=$(which nano 2>/dev/null)
+			nano="$(which nano 2>/dev/null)"
 
-	   if [ ! -x "${nano}" ]; then
+			if [ ! -x "${nano}" ]; then
 
-		   echo "  Error, no text editor found (no emacs, gedit or nano)." 1>&2
-		   #exit 10
+				echo "  Error, no text editor found (no emacs, gedit or nano)." 1>&2
+				#exit 10
 
-	   else
-			   ${nano} $* &
-	   fi
+			else
+				"${nano}" $* &
+			fi
 
 		else
-			${gedit} $* &
-	fi
+			"${gedit}" $* &
+
+		fi
 
 	else
 
-	emacs_init_opt=""
+		emacs_init_opt=""
 
-	emacs_fallback_dir="${HOME}/.emacs.d-fallback"
+		emacs_fallback_dir="${HOME}/.emacs.d/myriad-fallback"
 
-	if [ -d "${emacs_fallback_dir}" ]; then
-	   emacs_init_opt="--init-directory=${emacs_fallback_dir}"
+		if [ -d "${emacs_fallback_dir}" ]; then
+			emacs_init_opt="--init-directory=${emacs_fallback_dir}"
+		fi
+
+		# Not wanting new Emacs "safe" windows to be merged
+		# with any prior one:
+		#
+		# (no --create-frame, we are not using emacsclient here)
+		#
+		"${emacs}" ${emacs_init_opt} $* &
+
 	fi
 
-		${emacs} ${emacs_init_opt=} $* &
+}
+
+
+
+# Simplest Erlang editing.
+function eerl()
+{
+
+	emacs="$(which emacs 2>/dev/null)"
+
+	if [ ! -x "${emacs}" ]; then
+
+		echo "  Error, no Emacs found." 1>&2
+		#exit 15
+
+	else
+
+		emacs_erl_dir="${HOME}/.emacs.d/myriad-erlang-base"
+
+		if [ -d "${emacs_erl_dir}" ]; then
+
+			# Not wanting such new Emacs windows to be merged with any prior
+			# one:
+			#
+			# (no --create-frame, we are not using emacsclient here)
+			#
+			"${emacs}" --init-directory="${emacs_erl_dir}" $* &
+
+		else
+
+			echo "  Error, no Emacs Erlang configuration directory ('{emacs_erl_dir}') found." 1>&2
+			#exit 20
+
+		fi
 
 	fi
 
