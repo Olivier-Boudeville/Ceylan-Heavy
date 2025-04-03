@@ -3,6 +3,12 @@
 ;; Author: Dan McCarthy <daniel.c.mccarthy@gmail.com>
 ;; Copyright (C) 2006, Dan McCarthy, see section 'Terms'.
 
+;; This is an version updated by Olivier Boudeville (olivier (dot) boudeville
+;; (at) esperide (dot) com), released on Sunday, March 16, 2025 under the same
+;; terms.
+
+
+
 ;; Description:
 
 ;; In the Acme editor, right-clicking on a word finds the next occurrence
@@ -34,7 +40,9 @@
 ;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth
 ;; Floor, Boston, MA 02110-1301, USA.
 
-(eval-when-compile (require 'cl)) ;;when, unless, case
+;; cl being deprecated, we replaced it with cl-lib:
+;;(eval-when-compile (require 'cl)) ;; for: when, unless, case
+(eval-when-compile (require 'cl-lib)) ;; for: when, unless, cl-case
 
 (defun header-line-active-p ()
   (not (null header-line-format)))
@@ -43,9 +51,9 @@
   "Move the mouse pointer to point in the current window."
   (let* ((coords (posn-col-row (posn-at-point)))
 	 (window-coords (window-inside-edges))
-	 (x (+ (car coords) (car window-coords) -1)) ;the fringe is 0
+	 (x (+ (car coords) (car window-coords) -1)) ; The fringe is 0
 	 (y (+ (cdr coords) (cadr window-coords)
-	       (if (header-line-active-p)
+		   (if (header-line-active-p)
 		   -1
 		 0))))
     (set-mouse-position (selected-frame) x y)))
@@ -54,35 +62,35 @@
   "Make the text between START and END blink."
   (let ((overlay (make-overlay start end)))
     (overlay-put overlay 'face 'region)
-    (run-at-time 0.1 nil 'delete-overlay overlay)))
+    (run-at-time 0.5 nil 'delete-overlay overlay)))
 
 (defun acme-search (posn direction)
   "Search forward for the symbol under mouse, moving mouse and point forward.
 This is inspired by Rob Pike's Acme."
   (mouse-set-point posn)
   (let ((sym (thing-at-point 'symbol))
-	(search-function (case direction
+	(search-function (cl-case direction
 			   ((forward) 'word-search-forward)
 			   ((backward) 'word-search-backward)
 			   (t (error "Direction must be forward or backward"))))
-	(restart-point (case direction
+	(restart-point (cl-case direction
 			 ((forward) (point-min))
 			 ((backward) (point-max)))))
     (when (eq direction 'backward)
-      ;;We have to move point backwards to before the symbol under the mouse, or
-      ;;else search-backward will only find this instance of the symbol.
+      ;; We have to move point backwards to before the symbol under the mouse,
+      ;; or else search-backward will only find this instance of the symbol.
       (backward-char (length sym)))
     (unless (funcall search-function sym nil t)
       (message "Search failed; restarting from %s..."
-	       (if (eq direction 'forward)
+		   (if (eq direction 'forward)
 		   "top"
 		 "bottom"))
       (goto-char restart-point)
       (funcall search-function sym nil t))
     (when (eq direction 'backward)
-      ;;search-backward leaves point at the beginning of the symbol
+      ;; search-backward leaves point at the beginning of the symbol
       (forward-char (length sym))))
-  ;;Redisplay the screen if we search off the bottom of the window.
+  ;; Redisplay the screen if we search off the bottom of the window.
   (unless (posn-at-point)
     (universal-argument)
     (recenter))
